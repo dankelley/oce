@@ -80,6 +80,15 @@ bottom a vector of "mast" values.  Finally, the columns of
 \code{data$v[,,1:3]} are filled in with the result of the matrix
 multiplication.
 }
+\section{Limitations}{
+
+For AD2CP objects (resulting from a call to \code{\link{read.adp.ad2cp}}),
+the transformation to ENU coordinates is only possible if the instrument
+orientation is \code{"AHRS"}. Other orientations may be added, if users
+indicat a need for them, and supply the developers with test file (including
+at least a few expected results).
+}
+
 \references{
 1. Teledyne RD Instruments. “ADCP Coordinate Transformation: Formulas and Calculations,”
 January 2010. P/N 951-6079-00.

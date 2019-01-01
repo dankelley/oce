@@ -40,14 +40,8 @@ East.}
 \item{latitude}{optional signed number indicating the latitude in degrees
 North.}
 
-\item{orientation}{Optional character string specifying the orientation of the
-sensor, provided for those cases in which it cannot be inferred from the
-data file. (As of early 2019, the orientation could not be inferred
-in any test file available to the developer.)
-The valid choices are \code{"upward"}, \code{"downward"}, and
-\code{"sideward"}. If provided, this overrides any value inferred from
-the file. Note that the value only matters when converting to east-north-up
-coordinates, e.g. with \code{\link{toEnuAdp}} or \code{\link{xyzToEnuAdp}}.}
+\item{orientation}{Ignored by this function, and provided only for similarity
+to other adp-reading functions.}
 
 \item{distance}{Ignored by this function, and provided only for similarity
 to other adp-reading functions.}
@@ -109,6 +103,11 @@ d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
 1. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2017.
 
 2. Nortek AS. “Operations Manual - Signature250, 500 and 1000.” Nortek AS, September 21, 2018.
+
+3. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2018. (This revision of
+[1] is useful in including new information about instrument orientation. Note that
+most of the comments within the \code{read.adp.ad2cp} code refer to [1], which has different
+page numbers than [3].)
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},

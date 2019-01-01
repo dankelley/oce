@@ -464,14 +464,8 @@ is.ad2cp <- function(x)
 #' This function is incomplete in several ways, and is still in active
 #' development and testing, as of early 2019.
 #'
-#' @param orientation Optional character string specifying the orientation of the
-#' sensor, provided for those cases in which it cannot be inferred from the
-#' data file. (As of early 2019, the orientation could not be inferred
-#' in any test file available to the developer.)
-#' The valid choices are \code{"upward"}, \code{"downward"}, and
-#' \code{"sideward"}. If provided, this overrides any value inferred from
-#' the file. Note that the value only matters when converting to east-north-up
-#' coordinates, e.g. with \code{\link{toEnuAdp}} or \code{\link{xyzToEnuAdp}}.
+#' @param orientation Ignored by this function, and provided only for similarity
+#' to other adp-reading functions.
 #'
 #' @param distance Ignored by this function, and provided only for similarity
 #' to other adp-reading functions.
@@ -511,6 +505,11 @@ is.ad2cp <- function(x)
 #'
 #' 2. Nortek AS. “Operations Manual - Signature250, 500 and 1000.” Nortek AS, September 21, 2018.
 #'
+#' 3. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2018. (This revision of
+#' [1] is useful in including new information about instrument orientation. Note that
+#' most of the comments within the \code{read.adp.ad2cp} code refer to [1], which has different
+#' page numbers than [3].)
+#'
 #' @family things related to \code{adp} data
 read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                            longitude=NA, latitude=NA,
@@ -518,12 +517,12 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                            monitor=FALSE, despike=FALSE, processingLog,
                            debug=getOption("oceDebug"), ...)
 {
+    if (!missing(orientation))
+        warning("ignoring 'orientation' (see documentation)")
+    if (!missing(distance))
+        warning("ignoring 'distance' (see documentation)")
     planGiven <- !missing(plan)
     typeGiven <- !missing(type)
-    orientationGiven <- !missing(orientation)
-    distanceGiven <- !missing(distance)
-    if (distanceGiven)
-        warning("ignoring 'distance' (see documentation)")
     oceDebug(debug, "read.adp.ad2cp(...,from=", format(from),
              ",to=", if (missing(to)) "(missing)" else format(to),
              ", by=", by,
@@ -608,26 +607,17 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Nortek docs say bit 16 indicates the active configuration, but they
     ## count from 0, so it is bit 17 here.
     activeConfiguration <- as.integer(status[17, ])
-    if (orientationGiven) {
-        valid <- c("upward", "downward", "sideward")
-        if (!(orientation %in% valid)) {
-            stop("orientation is '", orientation, "', but only the following are allowed: '", paste(valid, sep="' '"), "'")
-        }
-    } else {
-        ## FIXME: decode the orientation from the file.
-        ## Nortek docs say bits 25-27 (0-offset notation) store orientation, so 26-28 here.
-        ## Table 1 tells how to interpret the bits:
-        ## 0=xup 1=xdown 4=zup 5=zdown
-        ## but I am not getting such values in my test files.
-        orientation1 <- as.integer(status[26, ])
-        orientation2 <- as.integer(status[27, ])
-        orientation3 <- as.integer(status[28, ])
-        O1 <- orientation1 + 2*orientation2 + 4*orientation3
-        O2 <- 4*orientation1 + 2*orientation2 + orientation3
-        if (debug > 0) message(vectorShow(O1))
-        if (debug > 0) message(vectorShow(O2))
-        orientation <- "upward"
-    }
+    ## Decode the orientation from bits 25-27 in 0-offset notation, i.e. 26-28 here.
+    ## Note that reference [1 table 1 page 55] only has some of the
+    ## permitted codes, but the updated manual [3 table 1 page 64], has more,
+    ## including the value 7 that is used in the three sample files available
+    ## to the author as of late December, 2018.
+    orientation1 <- as.integer(status[26, ])
+    orientation2 <- as.integer(status[27, ])
+    orientation3 <- as.integer(status[28, ])
+    O1 <- orientation1 + 2*orientation2 + 4*orientation3 # FIXME: possibly the order is reversed
+    orientation <- c("xup", "xdown", "yup", "ydown", "zup", "zdown", "AHRS")[O1]
+
     ## DEBUG message("table(activeConfiguration):")
     ## DEBUG print(table(activeConfiguration))
     ## DEBUG browser()
@@ -666,6 +656,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         d$id <- d$id[keep]
         status <- status[, keep, drop=FALSE]
         activeConfiguration <- activeConfiguration[keep]
+        orientation <- orientation[keep]
         N <- sum(keep)
         pointer1 <- d$index
         pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
@@ -859,6 +850,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                       blankingDistance=blankingDistance[p$burst[1]],
                       ensemble=ensemble[p$burst],
                       time=time[p$burst],
+                      orientation=orientation[p$burst],
                       heading=heading[p$burst],
                       pitch=pitch[p$burst],
                       roll=roll[p$burst],
@@ -927,6 +919,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         blankingDistance=blankingDistance[p$average[1]],
                         ensemble=ensemble[p$average],
                         time=time[p$average],
+                        orientation=orientation[p$average],
                         heading=heading[p$average],
                         pitch=pitch[p$average],
                         roll=roll[p$average],
@@ -995,6 +988,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             blankingDistance=blankingDistance[p$bottomTrack[1]],
                             ensemble=ensemble[p$bottomTrack],
                             time=time[p$bottomTrack],
+                            orientation=orientation[p$bottomTrack],
                             heading=heading[p$bottomTrack],
                             pitch=pitch[p$bottomTrack],
                             roll=roll[p$bottomTrack],
@@ -1046,6 +1040,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                       blankingDistance=blankingDistance[p$interleavedBurst[1]],
                       ensemble=ensemble[p$interleavedBurst],
                       time=time[p$interleavedBurst],
+                      orientation=orientation[p$interleavedBurst],
                       heading=heading[p$interleavedBurst],
                       pitch=pitch[p$interleavedBurst],
                       roll=roll[p$interleavedBurst],
@@ -1114,6 +1109,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                       blankingDistance=blankingDistance[p$burstAltimeter[1]],
                       ensemble=ensemble[p$burstAltimeter],
                       time=time[p$burstAltimeter],
+                      orientation=orientation[p$burstAltimeter],
                       heading=heading[p$burstAltimeter],
                       pitch=pitch[p$burstAltimeter],
                       roll=roll[p$burstAltimeter],
@@ -1182,6 +1178,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                       blankingDistance=blankingDistance[p$DVLBottomTrack[1]],
                       ensemble=ensemble[p$DVLBottomTrack],
                       time=time[p$DVLBottomTrack],
+                      orientation=orientation[p$DVLBottomTrack],
                       heading=heading[p$DVLBottomTrack],
                       pitch=pitch[p$DVLBottomTrack],
                       roll=roll[p$DVLBottomTrack],
@@ -1248,6 +1245,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         blankingDistance=blankingDistance[p$echosounder[1]],
                         ensemble=ensemble[p$echosounder],
                         time=time[p$echosounder],
+                        orientation=orientation[p$echosounder],
                         heading=heading[p$echosounder],
                         pitch=pitch[p$echosounder],
                         roll=roll[p$echosounder],
@@ -1322,6 +1320,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             blankingDistance=blankingDistance[p$DVLWaterTrack[1]],
                             ensemble=ensemble[p$DVLWaterTrack],
                             time=time[p$DVLWaterTrack],
+                            orientation=orientation[p$DVLWaterTrack],
                             heading=heading[p$DVLWaterTrack],
                             pitch=pitch[p$DVLWaterTrack],
                             roll=roll[p$DVLWaterTrack],
@@ -1373,6 +1372,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             blankingDistance=blankingDistance[p$altimeter[1]],
                             ensemble=ensemble[p$altimeter],
                             time=time[p$altimeter],
+                            orientation=orientation[p$altimeter],
                             heading=heading[p$altimeter],
                             pitch=pitch[p$altimeter],
                             roll=roll[p$altimeter],
@@ -1424,6 +1424,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             blankingDistance=blankingDistance[p$averageAltimeter[1]],
                             ensemble=ensemble[p$averageAltimeter],
                             time=time[p$averageAltimeter],
+                            orientation=orientation[p$averageAltimeter],
                             heading=heading[p$averageAltimeter],
                             pitch=pitch[p$averageAltimeter],
                             roll=roll[p$averageAltimeter],
@@ -1997,7 +1998,8 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Prepare data
     data <- list(powerLevel=powerLevel, # FIXME: put in individual items?
                  status=status,
-                 activeConfiguration=activeConfiguration)
+                 activeConfiguration=activeConfiguration,
+                 orientation=orientation)
     if (!is.null(burst)) {             # 0x15
         burst$i <- NULL
         data$burst <- burst

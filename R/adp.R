@@ -654,7 +654,7 @@ setMethod(f="[[",
                                   "cellSize", "blankingDistance", "orientation",
                                   "beamAngle", "beamUnspreaded",
                                   "accelerometerx", "accelerometery", "accelerometerz",
-                                  "heading", "pitch", "roll",
+                                  "orientation", "heading", "pitch", "roll",
                                   "ensemble", "time", "pressure", "soundSpeed",
                                   "temperature", "temperatureMagnetometer", "temperatureRTC",
                                   "nominalCorrelation",
@@ -3001,6 +3001,14 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 #' @return An object with \code{data$v[,,1:3]} altered appropriately, and
 #' \code{x[["oceCoordinate"]]} changed from \code{xyz} to \code{enu}.
 #' @author Dan Kelley and Clark Richards
+#'
+#' @section Limitations:
+#' For AD2CP objects (resulting from a call to \code{\link{read.adp.ad2cp}}),
+#' the transformation to ENU coordinates is only possible if the instrument
+#' orientation is \code{"AHRS"}. Other orientations may be added, if users
+#' indicat a need for them, and supply the developers with test file (including
+#' at least a few expected results).
+#'
 #' @references
 #' 1. Teledyne RD Instruments. “ADCP Coordinate Transformation: Formulas and Calculations,”
 #' January 2010. P/N 951-6079-00.
@@ -3017,7 +3025,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         stop("method is only for objects of class '", "adp", "'")
     manufacturer <- x[["manufacturer"]]
     oceCoordinate = x[["oceCoordinate"]]
-    orientation = x[["orientation"]]
+    orientation = x[["orientation"]][1]
     if (is.null(orientation)) {
         warning("instrument orientation is not stored in x; assuming it is \"upward\"")
         orientation <- "upward"
@@ -3073,6 +3081,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
                 forwardBv <- res@data$bv[, 2]
                 mastBv <- -res@data$bv[, 3]
             }
+            oceDebug(debug, "  defined starboard, etc\n")
         } else if (orientation == "downward") {
             oceDebug(debug, "Case 4: RDI ADCP in XYZ coordinates with downward-pointing sensor.\n")
             oceDebug(debug, "        Using roll=-roll, S=X, F=Y, and M=Z.\n")
@@ -3092,7 +3101,9 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     } else if (1 == length(agrep("nortek", manufacturer))) {
         ## h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14
         V <- x[["v"]]
-        if (orientation == "upward") {
+        if (orientation == "AHRS") {
+            ## The case orientation == "AHRS", which can happen for AD2CP data, is handled later
+        } else if (orientation == "upward") {
             oceDebug(debug, "Case 3: Nortek ADP with upward-pointing sensor.\n")
             oceDebug(debug, "        Using heading=heading-90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
             heading <- heading - 90
@@ -3125,7 +3136,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
                 mastBv <- res@data$bv[, 3]
             }
         } else {
-            stop("need orientation='upward' or 'downward', not '", orientation, "'")
+            stop("need orientation='upward', 'downward', or 'AHRS', not '", orientation, "'")
         }
     } else if (1 == length(agrep("sontek", manufacturer))) {
         ## "sontek"
@@ -3169,27 +3180,35 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     oceDebug(debug, vectorShow(heading, "heading (after adjustment)"))
     oceDebug(debug, vectorShow(pitch, "pitch (after adjustment)"))
     oceDebug(debug, vectorShow(roll, "roll (after adjustment)"))
-    nc <- dim(x[["v"]])[2]           # numberOfCells
-    np <- dim(x[["v"]])[1]           # number of profiles
-    if (length(heading) < np)
-        heading <- rep(heading, length.out=np)
-    if (length(pitch) < np)
-        pitch <- rep(pitch, length.out=np)
-    if (length(roll) < np)
-        roll <- rep(roll, length.out=np)
-    ## ADP and ADV calculations are both handled by sfm_enu
     if (isAD2CP) {
-        j <- ad2cpDefaultDataItem(x) # FIXME: should we let user specify this?
-        if (is.null(j))
-            stop("cannot determine which data record-type to work with")
-        for (c in 1:nc) {
-            enu <- do_sfm_enu(heading + declination, pitch, roll, starboard[, c], forward[, c], mast[, c])
-            res@data[[j]]$v[,c,1] <- enu$east
-            res@data[[j]]$v[,c,2] <- enu$north
-            res@data[[j]]$v[,c,3] <- enu$up
-        }
-        res@data[[j]]$oceCoordinate <- "enu"
+        if (orientation == "AHRS") {
+            j <- ad2cpDefaultDataItem(x) # FIXME: should we let user specify this?
+            if (is.null(j))
+                stop("cannot determine which data record-type to work with")
+            AHRS <- x[["AHRS"]]
+            if (is.null(AHRS))
+                stop("AD2CP data with orientation \"AHRS\" can only be converted to ENU if dataset contains AHRS data")
+            nc <- dim(V)[2]
+            e <- V[,,1]*rep(AHRS[,1], each=nc) + V[,,2]*rep(AHRS[,2], each=nc) + V[,,3]*rep(AHRS[,3], each=nc)
+            n <- V[,,1]*rep(AHRS[,4], each=nc) + V[,,2]*rep(AHRS[,5], each=nc) + V[,,3]*rep(AHRS[,6], each=nc)
+            u <- V[,,1]*rep(AHRS[,7], each=nc) + V[,,2]*rep(AHRS[,8], each=nc) + V[,,3]*rep(AHRS[,9], each=nc)
+            res@data[[j]]$v[,,1] <- e
+            res@data[[j]]$v[,,2] <- n
+            res@data[[j]]$v[,,3] <- u
+            res@data[[j]]$oceCoordinate <- "enu"
+       } else {
+           stop("AD2CP data can only be converted to ENU if orientation is \"AHRS\" (github issue 1471)")
+       }
     } else {
+        nc <- dim(x@data$v)[2]         # numberOfCells
+        np <- dim(x@data$v)[1]         # number of profiles
+        if (length(heading) < np)
+            heading <- rep(heading, length.out=np)
+        if (length(pitch) < np)
+            pitch <- rep(pitch, length.out=np)
+        if (length(roll) < np)
+            roll <- rep(roll, length.out=np)
+        ## ADP and ADV calculations are both handled by sfm_enu for non-AD2CP.
         for (c in 1:nc) {
             enu <- do_sfm_enu(heading + declination, pitch, roll, starboard[, c], forward[, c], mast[, c])
             res@data$v[, c, 1] <- enu$east
