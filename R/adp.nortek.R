@@ -614,12 +614,21 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     orientation1 <- as.integer(status[26, ])
     orientation2 <- as.integer(status[27, ])
     orientation3 <- as.integer(status[28, ])
-    O1 <- orientation1 + 2*orientation2 + 4*orientation3 # FIXME: possibly the order is reversed
-    orientation <- c("xup", "xdown", "yup", "ydown", "zup", "zdown", "AHRS")[O1]
+    O <- orientation1 + 2*orientation2 + 4*orientation3
+    orientation <- c("xup", "xdown", "yup", "ydown", "zup", "zdown", "-", "AHRS")[O+1]
+    ## TEST below is a test of whether I have the bits wrong. Comparison
+    ## TEST with the header in 4 files suggests I am doing this right.
+    ## TEST message(vectorShow(O))
+    ## TEST message(vectorShow(orientation))
+    ## TEST O2 <- 4*orientation1 + 2*orientation2 + orientation3
+    ## TEST message(vectorShow(O2))
+    ## TEST orientation2 <- c("xup", "xdown", "yup", "ydown", "zup", "zdown", "-", "AHRS")[O2+1]
+    ## TEST message(vectorShow(orientation2))
+    ## TEST message("I think O1/orientation is correct")
 
-    ## DEBUG message("table(activeConfiguration):")
-    ## DEBUG print(table(activeConfiguration))
-    ## DEBUG browser()
+    ## Plan (active configuration)
+    ## TEST message("table(activeConfiguration):")
+    ## TEST print(table(activeConfiguration))
     ## If the 'plan' argument is missing, we select the most common one in the data subset.
     if (!planGiven) {
         u <- unique(activeConfiguration)
@@ -1498,7 +1507,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
             if (altimeterRawIncluded[ch]) {
-                burst$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little",signed=FALSE)
+                burst$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
                 i0 <- i0 + 4
                 burst$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
                 i0 <- i0 + 2
@@ -1550,7 +1559,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
             if (altimeterRawIncluded[ch]) {
-                average$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little",signed=FALSE)
+                average$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
                 i0 <- i0 + 4
                 average$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
                 i0 <- i0 + 2
@@ -1627,7 +1636,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
             if (altimeterRawIncluded[ch]) {
-                interleavedBurst$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little",signed=FALSE)
+                interleavedBurst$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
                 i0 <- i0 + 4
                 interleavedBurst$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
                 i0 <- i0 + 2
@@ -1679,7 +1688,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
             if (altimeterRawIncluded[ch]) {
-                burstAltimeter$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little",signed=FALSE)
+                burstAltimeter$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
                 i0 <- i0 + 4
                 burstAltimeter$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
                 i0 <- i0 + 2
@@ -1731,7 +1740,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
             if (altimeterRawIncluded[ch]) {
-                DVLBottomTrack$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little",signed=FALSE)
+                DVLBottomTrack$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
                 i0 <- i0 + 4
                 DVLBottomTrack$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
                 i0 <- i0 + 2
@@ -1789,7 +1798,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             ##?     i0 <- i0 + 12 # skip spare (8 bytes)
             ##? }
             ##? if (altimeterRawIncluded[ch]) {
-            ##?     echosounder$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little",signed=FALSE)
+            ##?     echosounder$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little")
             ##?     i0 <- i0 + 4
             ##?     echosounder$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
             ##?     i0 <- i0 + 2
@@ -1841,7 +1850,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
             if (altimeterRawIncluded[ch]) {
-                DVLWaterTrack$altimeterRawNumberOfSamples <- readBin(d$buf[i + i0 + 0:3], "integer", size=4, n=1, endian="little", signed=FALSE)
+                DVLWaterTrack$altimeterRawNumberOfSamples <- readBin(d$buf[i + i0 + 0:3], "integer", size=4, n=1, endian="little")
                 i0 <- i0 + 4
                 DVLWaterTrack$altimeterRawSampleDistance <- readBin(d$buf[i + i0 + 0:1], "integer", size=2, n=1, endian="little", signed=FALSE)
                 i0 <- i0 + 2
@@ -1894,7 +1903,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
             if (altimeterRawIncluded[ch]) {
-                altimeter$altimeterRawNumberOfSamples <- readBin(d$buf[i + i0 + 0:3], "integer", size=4, n=1, endian="little", signed=FALSE)
+                altimeter$altimeterRawNumberOfSamples <- readBin(d$buf[i + i0 + 0:3], "integer", size=4, n=1, endian="little")
                 i0 <- i0 + 4
                 altimeter$altimeterRawSampleDistance <- readBin(d$buf[i + i0 + 0:1], "integer", size=2, n=1, endian="little", signed=FALSE)
                 i0 <- i0 + 2
@@ -1946,7 +1955,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
             if (altimeterRawIncluded[ch]) {
-                averageAltimeter$altimeterRawNumberOfSamples <- readBin(d$buf[i + i0 + 0:3], "integer", size=4, n=1, endian="little", signed=FALSE)
+                averageAltimeter$altimeterRawNumberOfSamples <- readBin(d$buf[i + i0 + 0:3], "integer", size=4, n=1, endian="little")
                 i0 <- i0 + 4
                 averageAltimeter$altimeterRawSampleDistance <- readBin(d$buf[i + i0 + 0:1], "integer", size=2, n=1, endian="little", signed=FALSE)
                 i0 <- i0 + 2

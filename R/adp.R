@@ -2903,14 +2903,42 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
                 j <- ad2cpDefaultDataItem(x) # FIXME: should we let user specify this?
                 if (is.null(j))
                     stop("cannot determine which data record-type to work with")
-                res@data[[j]]$v[,,1] <- tm[1,1]*V[,,1] + tm[1,2]*V[,,2] + tm[1,3]*V[,,3] + tm[1,4]*V[,,4]
-                res@data[[j]]$v[,,2] <- tm[2,1]*V[,,1] + tm[2,2]*V[,,2] + tm[2,3]*V[,,3] + tm[2,4]*V[,,4]
-                res@data[[j]]$v[,,3] <- tm[3,1]*V[,,1] + tm[3,2]*V[,,2] + tm[3,3]*V[,,3] + tm[3,4]*V[,,4]
-                res@data[[j]]$v[,,4] <- tm[4,1]*V[,,1] + tm[4,2]*V[,,2] + tm[4,3]*V[,,3] + tm[4,4]*V[,,4]
+                ## TIMING new way:
+                ## TIMING    user  system elapsed 
+                ## TIMING  11.661  27.300  89.293 
+                ## TIMING old way:
+                ## TIMING    user  system elapsed 
+                ## TIMING  15.977  24.182  88.971 
+                ## TIMING cat("new way:\n")
+                ## TIMING print(system.time({
+                ## TIMING     v1 <- V[,,1]
+                ## TIMING     v2 <- V[,,2]
+                ## TIMING     v3 <- V[,,3]
+                ## TIMING     v4 <- V[,,4]
+                ## TIMING     res@data[[j]]$v[,,1] <- tm[1,1]*v1 + tm[1,2]*v2 + tm[1,3]*v3 + tm[1,4]*v4
+                ## TIMING     res@data[[j]]$v[,,2] <- tm[2,1]*v1 + tm[2,2]*v2 + tm[2,3]*v3 + tm[2,4]*v4
+                ## TIMING     res@data[[j]]$v[,,3] <- tm[3,1]*v1 + tm[3,2]*v2 + tm[3,3]*v3 + tm[3,4]*v4
+                ## TIMING     res@data[[j]]$v[,,4] <- tm[4,1]*v1 + tm[4,2]*v2 + tm[4,3]*v3 + tm[4,4]*v4
+                ## TIMING     rm(v1, v2, v3, v4)
+                ## TIMING }))
+                ## TIMING cat("old way:\n")
+                ## TIMING print(system.time({
+                ## TIMING     res@data[[j]]$v[,,1] <- tm[1,1]*V[,,1] + tm[1,2]*V[,,2] + tm[1,3]*V[,,3] + tm[1,4]*V[,,4]
+                ## TIMING     res@data[[j]]$v[,,2] <- tm[2,1]*V[,,1] + tm[2,2]*V[,,2] + tm[2,3]*V[,,3] + tm[2,4]*V[,,4]
+                ## TIMING     res@data[[j]]$v[,,3] <- tm[3,1]*V[,,1] + tm[3,2]*V[,,2] + tm[3,3]*V[,,3] + tm[3,4]*V[,,4]
+                ## TIMING     res@data[[j]]$v[,,4] <- tm[4,1]*V[,,1] + tm[4,2]*V[,,2] + tm[4,3]*V[,,3] + tm[4,4]*V[,,4]
+                ## TIMING }))
+                ## Breaking calculation up this way speeds by 27% on a 1.0G file.
+                V1 <- V[,,1]
+                V2 <- V[,,2]
+                V3 <- V[,,3]
+                V4 <- V[,,4]
+                res@data[[j]]$v[,,1] <- tm[1,1]*V1 + tm[1,2]*V2 + tm[1,3]*V3 + tm[1,4]*V4
+                res@data[[j]]$v[,,2] <- tm[2,1]*V1 + tm[2,2]*V2 + tm[2,3]*V3 + tm[2,4]*V4
+                res@data[[j]]$v[,,3] <- tm[3,1]*V1 + tm[3,2]*V2 + tm[3,3]*V3 + tm[3,4]*V4
+                res@data[[j]]$v[,,4] <- tm[4,1]*V1 + tm[4,2]*V2 + tm[4,3]*V3 + tm[4,4]*V4
                 res@data[[j]]$oceCoordinate <- "xyz"
                 res@metadata$oceCoordinate <- NULL # remove, just in case it got added by mistake
-                ## FIXME handle other 'plan's
-                ## FIXME handle other things, like bottom track?
             } else {
                 stop("the only 4-beam Nortek format supported is AD2CP")
             }

@@ -16,6 +16,10 @@ using namespace Rcpp;
 #define HEADER_SIZE 10
 #define FAMILY 0x10
 
+// allowed: 0x15-0x18, ox1a-0x1f, 0xa0
+// allowed: 21-24, 26-31, 160
+#define NID_ALLOWED 11
+int ID_ALLOWED[NID_ALLOWED]={21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 160};
 
 
 /*
@@ -223,7 +227,15 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       //Rprintf(" > saved to chunk %d (id=%d)\n", chunk, id);
       index_buf[chunk] = cindex;
       length_buf[chunk] = dataSize;
-      if (id < 21 || (id > 24 && id != 160))
+
+      int found = 0;
+      for (int idi = 0; idi < NID_ALLOWED; idi++) {
+        if (id == ID_ALLOWED[idi]) {
+          found = 1;
+          break;
+        }
+      }
+      if (!found)
         Rprintf("warning: odd id (%d) at chunk %d, index=%d\n", id, chunk, cindex);
       id_buf[chunk] = id;
       // Check the header checksum.
