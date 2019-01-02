@@ -663,7 +663,7 @@ setMethod(f="[[",
                                   "echosounder", "AHRS", "altimeterDistance", "altimeterFigureOfMerit")) {
                   ##message("i='", i, "'")
                   metadataNames <- names(x@metadata)
-                  dataNames <- names(x@data)
+                  ##. dataNames <- names(x@data)
                   if (is.ad2cp(x)) {
                       ## AD2CP has 'burst' data records in one list, with 'average' records in another one.
                       ## Permit e.g. "burst:numeric" and "burst numeric" ## FIXME: document this

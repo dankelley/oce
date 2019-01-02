@@ -814,19 +814,11 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
               burstAltimeter=which(d$id==0x1a), # coded, but no sample-data test and no plot()
               DVLBottomTrack=which(d$id==0x1b), # coded, but no sample-data test and no plot()
               echosounder=which(d$id==0x1c), # coded, but no sample-data test and no plot()
-              waterTrack=which(d$id==0x1d), # coded, but no sample-data test and no plot()
+              DVLWaterTrack=which(d$id==0x1d), # coded, but no sample-data test and no plot()
               altimeter=which(d$id==0x1e), # coded, but no sample-data test and no plot()
               averageAltimeter=which(d$id==0x1f), # coded, but no sample-data test and no plot()
               text=which(d$id==0xa0)) # coded and checked against .cfg file
     recordCount <- lapply(p, length)
-
-    ##- ## Inform the user of things we don't attempt to read
-    ##- for (n in c("burstAltimeter", "DVLBottomTrack", "waterTrack", "altimeter", "averageAltimeter")) {
-    ##-     if (recordCount[[n]] > 0) {
-    ##-         warning("skipped ", recordCount[[n]], " '", n, "' data records; only 'average', 'burst', 'interleavedBurst', 'echosounder' and 'text' are handled\n", sep="")
-    ##-     }
-    ##- }
-
 
     ## 2. get some things in slow index-based form.
     if (length(p$burst) > 0) {         # key=0x15
@@ -1813,57 +1805,57 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             ##? }
             echosounder$i <- echosounder$i + 1
 
-        } else if (key == 0x1d) { # waterTrack
+        } else if (key == 0x1d) { # DVLWaterTrack
 
-            ncol <- waterTrack$numberOfBeams
-            nrow <- waterTrack$numberOfCells
+            ncol <- DVLWaterTrack$numberOfBeams
+            nrow <- DVLWaterTrack$numberOfCells
             n <- ncol * nrow
             n2 <- 2 * n
             i0 <- 77
             if (velocityIncluded[ch]) {
                 v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)], "integer",size=2,n=n,endian="little")
-                waterTrack$v[waterTrack$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
+                DVLWaterTrack$v[DVLWaterTrack$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n2
             }
             if (amplitudeIncluded[ch]) {
                 a <- d$buf[i + i0 + seq(0,n-1)]
-                waterTrack$a[waterTrack$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+                DVLWaterTrack$a[DVLWaterTrack$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
             }
             if (correlationIncluded[ch]) {
                 q <- d$buf[i + i0 + seq(0,n-1)]
-                waterTrack$q[waterTrack$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+                DVLWaterTrack$q[DVLWaterTrack$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
             }
             if (altimeterIncluded[ch]) {
-                waterTrack$altimeterDistance[waterTrack$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+                DVLWaterTrack$altimeterDistance[DVLWaterTrack$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 ## FIXME: perhaps save altimeterQuality from next 2 bytes
                 ## FIXME: perhaps save altimeterStatus from next 2 bytes
                 i0 <- i0 + 8
             }
             if (ASTIncluded[ch]) {
                 ## bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
-                waterTrack$ASTDistance <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+                DVLWaterTrack$ASTDistance <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
-                waterTrack$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+                DVLWaterTrack$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
                 i0 <- i0 + 12 # skip spare (8 bytes)
             }
             if (altimeterRawIncluded[ch]) {
-                waterTrack$altimeterRawNumberOfSamples <- readBin(d$buf[i + i0 + 0:3], "integer", size=4, n=1, endian="little", signed=FALSE)
+                DVLWaterTrack$altimeterRawNumberOfSamples <- readBin(d$buf[i + i0 + 0:3], "integer", size=4, n=1, endian="little", signed=FALSE)
                 i0 <- i0 + 4
-                waterTrack$altimeterRawSampleDistance <- readBin(d$buf[i + i0 + 0:1], "integer", size=2, n=1, endian="little", signed=FALSE)
+                DVLWaterTrack$altimeterRawSampleDistance <- readBin(d$buf[i + i0 + 0:1], "integer", size=2, n=1, endian="little", signed=FALSE)
                 i0 <- i0 + 2
-                waterTrack$altimeterRawSamples <- readBin(d$buf[i + i0 + 0:1], "integer", size=2, n=1, endian="little") # 'singed frac' in docs
+                DVLWaterTrack$altimeterRawSamples <- readBin(d$buf[i + i0 + 0:1], "integer", size=2, n=1, endian="little") # 'singed frac' in docs
                 i0 <- i0 + 2
             }
             if (echosounderIncluded[ch]) {
-                waterTrack$echosounder[waterTrack$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
+                DVLWaterTrack$echosounder[DVLWaterTrack$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
                 i0 <- i0 + 2 * nrow
             }
             if (AHRSIncluded[ch]) {
-                waterTrack$AHRS[waterTrack$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
+                DVLWaterTrack$AHRS[DVLWaterTrack$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
             }
-            waterTrack$i <- waterTrack$i + 1
+            DVLWaterTrack$i <- DVLWaterTrack$i + 1
 
 
         } else if (key == 0x1e) { # altimeter
