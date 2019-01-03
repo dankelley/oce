@@ -530,15 +530,16 @@ setMethod(f="summary",
               orientation <- object[["orientation"]]
               beamUnspreaded <- object[["oceBeamUnspreaded"]]
               if (!isAD2CP) {
-                  cat("* Beam number:      ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "\n")
-                  cat("       angle:       ", if (is.null(beamAngle)) "?" else beamAngle , "\n")
-                  cat("       orientation: ", if (is.null(orientation)) "?" else orientation, "\n")
-                  cat("       unspreaded:  ", if (is.null(beamUnspreaded)) "?" else beamUnspreaded, "\n")
+                  cat("* Beams::\n")
+                  cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "\n")
+                  cat("    Slantwise Angle: ", if (is.null(beamAngle)) "?" else beamAngle , "\n")
+                  cat("    Orientation:     ", if (is.null(orientation)) "?" else orientation, "\n")
+                  cat("    Unspreaded:      ", if (is.null(beamUnspreaded)) "?" else beamUnspreaded, "\n")
               }
               transformationMatrix <- object[["transformationMatrix"]]
               if (!is.null(transformationMatrix) && dim(transformationMatrix)[2] >= 3) {
                   digits <- 4
-                  cat("* Transformation matrix::\n\n")
+                  cat("* Transformation matrix::\n")
                   cat("  ", format(transformationMatrix[1, ], width=digits+4, digits=digits, justify="right"), "\n")
                   cat("  ", format(transformationMatrix[2, ], width=digits+4, digits=digits, justify="right"), "\n")
                   cat("  ", format(transformationMatrix[3, ], width=digits+4, digits=digits, justify="right"), "\n")
@@ -549,14 +550,15 @@ setMethod(f="summary",
                   default <- ad2cpDefaultDataItem(object)
                   for (rt in object[["recordTypes"]]) {
                       isTheDefault <- rt == default
-                      cat("* Record type '", rt, "'", if (isTheDefault) " (the default item):\n" else ":\n", sep="")
-                      cat("  Number of profiles: ", length(object[["time", rt]]), "\n")
-                      cat("  Number of cells:    ", object[["numberOfCells", rt]], "\n")
-                      cat("  Blanking distance:  ", object[["blankingDistance", rt]], "\n")
-                      cat("  Cell size:          ", object[["cellSize", rt]], "\n")
-                      cat("  Number of beams:    ", object[["numberOfBeams", rt]], "\n")
-                      cat("  Beam angle:         ", object[["beamAngle", rt]], "\n")
-                      cat("  Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
+                      cat("* Record type '", rt, "'", if (isTheDefault) " (the default item)::\n" else "::\n", sep="")
+                      cat("    Number of profiles: ", length(object[["time", rt]]), "\n")
+                      cat("    Number of cells:    ", object[["numberOfCells", rt]], "\n")
+                      cat("    Blanking distance:  ", object[["blankingDistance", rt]], "\n")
+                      cat("    Cell size:          ", object[["cellSize", rt]], "\n")
+                      numberOfBeams <- object[["numberOfBeams", rt]]
+                      cat("    Number of beams:    ", numberOfBeams, "\n")
+                      cat("    Beam angle:         ", if (numberOfBeams == 1) 0 else object[["beamAngle", rt]], "\n")
+                      cat("    Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
                   }
               } else {
                   invisible(callNextMethod()) # summary
@@ -611,6 +613,7 @@ setMethod(f="concatenate",
 setMethod(f="[[",
           signature(x="adp", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              ##>message("top: i='", i, "'")
               ## if (i == "a") {
               ##     if (!missing(j) && j == "numeric") {
               ##         res <- x@data$a
@@ -642,17 +645,21 @@ setMethod(f="[[",
               ##     }
               ##     res
               ##} else
+              ISAD2CP <- is.ad2cp(x)
+              ##>message("ISAD2CP=", ISAD2CP)
               if (i == "distance") {
-                  if (is.ad2cp(x)) {
+                  ##>message("asking for 'distance'")
+                  if (ISAD2CP) {
                       ## AD2CP is stored in a tricky way.
                       j <- if (missing(j)) ad2cpDefaultDataItem(x) else ad2cpDefaultDataItem(x, j)
-                      x@data[[j]]$blankingDistance + x@data[[j]]$cellSize*seq(1, x@data[[j]]$numberOfCells)
+                      res <- x@data[[j]]$blankingDistance + x@data[[j]]$cellSize*seq(1, x@data[[j]]$numberOfCells)
                   } else {
-                      x@data$distance
+                      res <- x@data$distance
                   }
+                  res
               } else if (i %in% c("originalCoordinate", "oceCoordinate",
                                   "cellSize", "blankingDistance", "orientation",
-                                  "beamAngle", "beamUnspreaded",
+                                  "beamUnspreaded", # Note: beamAngle is handled later since it is in metadata
                                   "accelerometerx", "accelerometery", "accelerometerz",
                                   "orientation", "heading", "pitch", "roll",
                                   "ensemble", "time", "pressure", "soundSpeed",
@@ -661,37 +668,38 @@ setMethod(f="[[",
                                   "powerLevel", "transmitEnergy",
                                   "v", "a", "q", "g",
                                   "echosounder", "AHRS", "altimeterDistance", "altimeterFigureOfMerit")) {
+                  ##>message("asking for i='", i, "' which is in that long list")
                   ##message("i='", i, "'")
                   metadataNames <- names(x@metadata)
                   ##. dataNames <- names(x@data)
-                  if (is.ad2cp(x)) {
+                  if (ISAD2CP) {
                       ## AD2CP has 'burst' data records in one list, with 'average' records in another one.
                       ## Permit e.g. "burst:numeric" and "burst numeric" ## FIXME: document this
                       returnNumeric <- FALSE # defult: leave 'raw' data as 'raw'.
                       if (missing(j)) {
-                          ##message("0 a")
+                          ##>message("0 a")
                           j <- ad2cpDefaultDataItem(x)
                           returnNumeric <- FALSE
                           jorig <- "(missing)"
-                          ## message("'[[' is defaulting to '", j, "' type of data-record, since 'j' not specified", sep="")
+                          ##>message("'[[' is defaulting to '", j, "' type of data-record, since 'j' not specified", sep="")
                       } else {
                           jorig <- j
-                          ##message("0 a. j='", j, "'")
+                          ##>message("0 a. j='", j, "'")
                           ## find out if numeric or raw, and clean 'j' of that flag once it is known
                           if (length(grep("numeric", j))) {
                               returnNumeric <- TRUE
                               j <- gsub("numeric", "", j)
-                              ##message("0 b. j='", j, "'")
+                              ##>message("0 b. j='", j, "'")
                           } else if (length(grep("raw", j))) {
                               returnNumeric <- FALSE
                               j <- gsub("raw", "", j)
-                              ##message("0 c. j='", j, "'")
+                              ##>message("0 c. j='", j, "'")
                           }
                           j <- gsub("[ :]+", "", j) # clean spaces or colons, if any
                           ## Look up this name
-                          ##message("0 d. j='", j, "'")
+                          ##>message("0 d. j='", j, "'")
                           j <- ad2cpDefaultDataItem(x, j)
-                          ##message("0 e. j='", j, "'")
+                          ##>message("0 e. j='", j, "'")
                       }
                       ##message("1. j = '", j, "'; jorig='", jorig, "'", sep="")
                       ##numericMode <- 1 == length(grep("numeric", j))
@@ -706,17 +714,17 @@ setMethod(f="[[",
                       ## Default to "average" if no j specified
                       if (1 == length(grep("^[ ]*$", j)))
                           j <- "average"
-                      ##message("5. j = '", j, "'", sep="")
+                      ##>message("5. j = '", j, "'", sep="")
                       j <- ad2cpDefaultDataItem(x, j)
-                      ##message("6. i='", i, "', j='", j, "', returnNumeric=", returnNumeric)
+                      ##>message("6. i='", i, "', j='", j, "', returnNumeric=", returnNumeric)
                       res <- x@data[[j]][[i]]
                       if (returnNumeric) {
-                          ##message("6-a.")
+                          ##>message("6-a.")
                           dimres <- dim(res)
                           res <- as.numeric(res)
                           dim(res) <- dimres
                       }
-                      ##message("7")
+                      ##>message("7 res=", res)
                       res
                  } else {
                       if (!missing(j) && 1 == length(grep("numeric", j))) {
@@ -730,19 +738,46 @@ setMethod(f="[[",
                       }
                   }
               } else if (i %in% c("numberOfBeams", "numberOfCells")) {
+                  ##>message("asking for 'numberOfBeams' or 'numberOfCells'")
                   ##message("AA i=", i)
-                  if (is.ad2cp(x)) {
+                  if (ISAD2CP) {
                       j <- if (missing(j)) ad2cpDefaultDataItem(x) else ad2cpDefaultDataItem(x, j)
                       x@data[[j]][[i]]
                   } else {
                       x@metadata[[i]]
                   }
+              } else if (i == "transformationMatrix") {
+                  ##>message("0000")
+                  if (ISAD2CP) {
+                      ##>message("AD2CP  tm...")
+                      theta <- x@metadata$beamAngle * atan2(1, 1) / 45
+                      ## The creation of a transformation matrix is covered in Section 5.3 of
+                      ## RD Instruments. “ADCP Coordinate Transformation.” RD Instruments, July 1998.
+                      TMc <- 1 # for convex beam stup; use -1 for concave
+                      TMa <- 1 / (2 * sin(theta))
+                      TMb <- 1 / (4 * cos(theta))
+                      TMd <- TMa / sqrt(2)
+                      rbind(c(TMc*TMa, -TMc*TMa,        0,       0),
+                            c(      0,        0, -TMc*TMa, TMc*TMa),
+                            c(    TMb,      TMb,      TMb,     TMb),
+                            c(    TMd,      TMd,     -TMd,    -TMd))
+                  } else {
+                      ## message("normal tm...")
+                      x@metadata$transformationMatrix
+                  }
               } else if (i == "recordTypes") {
+                  ##>message("asking for 'recordTypes'")
                   ## FIXME: _AD2CPrecordtype_ update if new record types added to read.adp.ad2cp()
-                  allowed <- c("burst", "average", "bottomTrack", "interleavedBurst", "burstAltimeter",
-                               "DVLBottomTrack", "echosounder", "waterTrack", "altimeter", "averageAltimeter", "text")
-                  allowed[allowed %in% names(x@data)]
+                  if (ISAD2CP) {
+                      allowed <- c("burst", "average", "bottomTrack", "interleavedBurst", "burstAltimeter",
+                                   "DVLBottomTrack", "echosounder", "waterTrack", "altimeter", "averageAltimeter", "text")
+                      res <- allowed[allowed %in% names(x@data)]
+                  } else {
+                      res <- "depends on the data setup"
+                  }
+                  res
               } else if (i == "va") {
+                  ##>message("asking for 'va'")
                   if (!missing(j) && 1 == length(grep("numeric", j))) {
                       res <- x@data$va
                       dim <- dim(res)
@@ -753,6 +788,7 @@ setMethod(f="[[",
                   }
                   res
               } else if (i == "vq") {
+                  ##>message("asking for 'vq'")
                   if (!missing(j) && 1 == length(grep("numeric", j))) {
                       res <- x@data$vq
                       dim <- dim(res)
@@ -763,6 +799,7 @@ setMethod(f="[[",
                   }
                   res
               } else if (i == "vg") {
+                  ##>message("asking for 'vg'")
                   if (!missing(j) && 1 == length(grep("numeric", j))) {
                       res <- x@data$vg
                       dim <- dim(res)
@@ -772,8 +809,6 @@ setMethod(f="[[",
                       res <- x@data$vg
                   }
                   res
-              ##} else if (i == "coordinate") {
-              ##    res <- x@metadata$oceCoordinate
               } else {
                   callNextMethod()     # [[
               }

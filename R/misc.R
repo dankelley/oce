@@ -13,7 +13,7 @@ abbreviateVector <- function(x)
 }
 
 
-#' Add a Column to the Data Slot of an Oce object [defunct]
+#' Add a Column to the data Slot of an oce object [defunct]
 #'
 #' \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
 #'

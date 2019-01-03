@@ -452,7 +452,7 @@ is.ad2cp <- function(x)
     if (!inherits(x, "adp")) {
         FALSE
     } else {
-        fileType <- x[["fileType"]]
+        fileType <- x@metadata$fileType
         !is.null(fileType) && fileType == "AD2CP"
     }
  }
@@ -477,20 +477,19 @@ is.ad2cp <- function(x)
 #' If this is not provided, an attempt is made to infer it
 #' from the file header (if there is one), and \code{"Signature1000"}
 #' is used, otherwise. The importance
-#' of knowing the type is for inferring the beam angle, which is usd in the
-#' conversion from beam coordinates to xyz or enu coordinates. If \code{type} is
+#' of knowing the type is for inferring the slantwise beam angle, which is usd in the
+#' conversion from beam coordinates to xyz coordinates. If \code{type} is
 #' provided, it must be one of \code{"Signature250"}, \code{"Signature500"},
-#' or \code{"Signature1000"}. The slant-beam angle is 20 degrees for Signature250,
-#' and 25 degrees for the other types (see [2], section 2 on page 6).
+#' or \code{"Signature1000"}; the first of these has a 20 degree
+#' slant-beam angle, while the others each have 20 degrees (see [2],
+#' section 2 on page 6). Note that \code{\link{oceSetMetadata}}
+#' can be used to alter the slantwise beam angle of an existing object,
+#' and this will alter any later conversion from beam to xyz coordinates.
 #'
 #' @param despike Ignored by this function, and provided only for similarity
 #' to other adp-reading functions.
 #'
 #' @template adpTemplate
-#'
-#' @section Beam-to-xyz conversion:
-#' The device orientation is not inferred correctly from the file, and
-#' so a default is assumed, namely that the orientation is upwards.
 #'
 #' @examples
 #' \dontrun{
@@ -2061,18 +2060,11 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$type <- type
     res@metadata$frequency <- ad2cpHeaderValue(x=header, key="BEAMCFGLIST,BEAM=1", item="FREQ", default=NA)
     res@metadata$beamAngle <- switch(type, "Signature1000"=25, "Signature500"=25, "Signature250"=20)
-    theta <- res@metadata$beamAngle * atan2(1,1) / 45
-    ## The creation of a transformation matrix is covered in Section 5.3 of
-    ## RD Instruments. “ADCP Coordinate Transformation.” RD Instruments, July 1998.
-    TMc <- 1 # for convex beam stup; use -1 for concave
-    TMa <- 1 / (2 * sin(theta))
-    TMb <- 1 / (4 * cos(theta))
-    TMd <- TMa / sqrt(2)
-    res@metadata$transformationMatrix <- rbind(c(TMc*TMa, -TMc*TMa,        0,       0),
-                                               c(      0,        0, -TMc*TMa, TMc*TMa),
-                                               c(    TMb,      TMb,      TMb,     TMb),
-                                               c(    TMd,      TMd,     -TMd,    -TMd))
-    ## Remove the overall coordinate (created by initializer) since it has no meaning here.
+    ## Note: metadata$transformationMatrix is not defined; we make "[[" compute
+    ## that, because the user may realize that x@metadata$beamAngle is wrong,
+    ## and want to correct it.  This makes ad2cp different from other adp
+    ## types.  Also, we must remove the overall coordinate (created by
+    ## initializer) since it has no meaning here.
     res@metadata$oceCoordinate <- NULL
     ## Insert data
     res@data <- data

@@ -54,11 +54,14 @@ common plan in the requested subset of the data.}
 If this is not provided, an attempt is made to infer it
 from the file header (if there is one), and \code{"Signature1000"}
 is used, otherwise. The importance
-of knowing the type is for inferring the beam angle, which is usd in the
-conversion from beam coordinates to xyz or enu coordinates. If \code{type} is
+of knowing the type is for inferring the slantwise beam angle, which is usd in the
+conversion from beam coordinates to xyz coordinates. If \code{type} is
 provided, it must be one of \code{"Signature250"}, \code{"Signature500"},
-or \code{"Signature1000"}. The slant-beam angle is 20 degrees for Signature250,
-and 25 degrees for the other types (see [2], section 2 on page 6).}
+or \code{"Signature1000"}; the first of these has a 20 degree
+slant-beam angle, while the others each have 20 degrees (see [2],
+section 2 on page 6). Note that \code{\link{oceSetMetadata}}
+can be used to alter the slantwise beam angle of an existing object,
+and this will alter any later conversion from beam to xyz coordinates.}
 
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
 in reading the file, either by printing a dot for each profile or by writing
@@ -87,12 +90,6 @@ in the \code{data} slot).
 This function is incomplete in several ways, and is still in active
 development and testing, as of early 2019.
 }
-\section{Beam-to-xyz conversion}{
-
-The device orientation is not inferred correctly from the file, and
-so a default is assumed, namely that the orientation is upwards.
-}
-
 \examples{
 \dontrun{
 d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
