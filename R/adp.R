@@ -3162,11 +3162,13 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             stop("need orientation='upward' or 'downward', not '", orientation, "'")
         }
     } else if (1 == length(agrep("nortek", manufacturer))) {
-        ## h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14
         V <- x[["v"]]
         if (orientation == "AHRS") {
             ## The case orientation == "AHRS", which can happen for AD2CP data, is handled later
+            ## FIXME: deal with other ad2cp orientations. Can (should) we use a methodology
+            ## similar to the non-ad2cp, for non-AHRS cases?
         } else if (orientation == "upward") {
+            ## h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14
             oceDebug(debug, "Case 3: Nortek ADP with upward-pointing sensor.\n")
             oceDebug(debug, "        Using heading=heading-90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
             heading <- heading - 90
@@ -3252,6 +3254,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             if (is.null(AHRS))
                 stop("AD2CP data with orientation \"AHRS\" can only be converted to ENU if dataset contains AHRS data")
             nc <- dim(V)[2]
+            ## FIXME: could (should) we use do_sfm_enu() here, for speed and memory conservation?
             e <- V[,,1]*rep(AHRS[,1], each=nc) + V[,,2]*rep(AHRS[,2], each=nc) + V[,,3]*rep(AHRS[,3], each=nc)
             n <- V[,,1]*rep(AHRS[,4], each=nc) + V[,,2]*rep(AHRS[,5], each=nc) + V[,,3]*rep(AHRS[,6], each=nc)
             u <- V[,,1]*rep(AHRS[,7], each=nc) + V[,,2]*rep(AHRS[,8], each=nc) + V[,,3]*rep(AHRS[,9], each=nc)
