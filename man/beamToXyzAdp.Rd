@@ -48,14 +48,15 @@ an estimate of the
 error in velocity may be computed as
 \eqn{e=d(B_1+B_2-B_3-B_4)}{e=d*(B1+B2-B3-B4)}.
 The geometrical factors in these formulae are:
-\code{c} is +1 for convex beam geometry or -1 for concave beam geometry;
-\eqn{a=1/(2\sin\theta)}{a=1/(2*sin(theta))},
-where \eqn{\theta}{theta} is the angle the beams make to the axial direction,
-\eqn{b=1/(4\cos\theta)}{b=1/(4*cos(theta))} and
-\eqn{d=a/\sqrt{2}}{d=a/sqrt(2)},
-(It is worth noting that multiplier in the \eqn{e}{e} equation is subject to
-discussion; RDI suggests one multiplier, but some oceanographers favour
-another.)
+\code{c} is +1 for convex beam geometry or -1 for concave beam geometry,
+\eqn{a=1/(2\sin\theta)}{a=1/(2*sin(theta))}
+where \eqn{\theta}{theta} is the angle the beams make to the axial direction
+(which is available as \code{x[["beamAngle"]]}),
+\eqn{b=1/(4\cos\theta)}{b=1/(4*cos(theta))}, and
+\eqn{d=a/\sqrt{2}}{d=a/sqrt(2)}.
+(Note that appropriate value for \code{d} is open to discussion,
+with RDI suggesting the value used here [reference 1],
+but some oceanographers favouring another.)
 }
 \references{
 1. Teledyne RD Instruments. “ADCP Coordinate Transformation: Formulas and
