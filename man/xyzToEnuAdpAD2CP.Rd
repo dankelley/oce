@@ -4,7 +4,7 @@
 \alias{xyzToEnuAdpAD2CP}
 \title{Convert ADP2CP adp object From XYZ to ENU Coordinates}
 \usage{
-xyzToEnuAdpAD2CP(x, declination, debug = getOption("oceDebug"))
+xyzToEnuAdpAD2CP(x, declination = 0, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{An \code{adp} object created by \code{\link{read.adp.ad2cp}}.}

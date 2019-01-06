@@ -2,7 +2,7 @@
 % Please edit documentation in R/ad.R
 \name{xyzToEnu}
 \alias{xyzToEnu}
-\title{Convert acoustic-Doppler data from xyz coordinates to enu coordinates}
+\title{Convert Acoustic-Doppler Data From xyz to enu Coordinates}
 \usage{
 xyzToEnu(x, ...)
 }
@@ -11,14 +11,15 @@ xyzToEnu(x, ...)
 \code{\link{adp-class}} or \code{\link{adv-class}}.}
 
 \item{\dots}{extra arguments that are passed on to \code{\link{xyzToEnuAdp}}
-or \code{\link{xyzToEnuAdv}}.}
+or \code{\link{xyzToEnuAdv}}; see the documentation for those functions,
+for th details.}
 }
 \value{
 An object of the same type as \code{x}, but with velocities
 in east-north-up coordinates instead of xyz coordinates.
 }
 \description{
-Convert acoustic-Doppler data from xyz coordinates to enu coordinates
+Convert Acoustic-Doppler Data From xyz to enu Coordinates
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},

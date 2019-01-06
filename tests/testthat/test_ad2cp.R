@@ -304,13 +304,21 @@ test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burs
             ##>> Data.Average_CorBeam4(1:4,1)
             expect_equal(d1[["q", "average numeric"]][1:4, 1, 4], c(38, 53, 71, 66))
 
+            ## Next is not a test against matlab ground-truth, since I don't
+            ## have any ENU from matlab, but rather it is just a test against
+            ## code changes, with the check values being what the code
+            ## produced on 2019-01-06.
             d1enu <- toEnu(d1)
             expect_equal(d1enu[["v"]][1:2,1:2,1:4],
-            structure(c(-0.0423407864127893, -0.0417258014516849, -1.18658233863229,
-                        -0.655129212847584, -2.04226357900539, -2.20827012417185, -0.684468639431669,
-                        -1.64117820418386, 0.134903747336107, -0.554842650583574, 2.92161411078296,
-                        4.13639724453489, 0.551305292490936, 0.155603618214437, -1.78358555931817,
-                        -2.23533799929557), .Dim = c(2L, 2L, 4L)))
+                         structure(c(-0.0423407864127893, -0.0412083140396359,
+                                     -1.18658233863229, -0.655501998134796,
+                                     -2.04226357900539, -2.20814086810278,
+                                     -0.684468639431669, -1.64208610236321,
+                                     0.134903747336107, -0.555275548908209,
+                                     2.92161411078296, 4.13594858163354,
+                                     0.551305292490936, 0.155603618214437,
+                                     -1.78358555931817, -2.23533799929557),
+                                   .Dim = c(2L, 2L, 4L)))
 
             expect_silent(plot(d1))
             expect_silent(plot(d1, which="velocity"))

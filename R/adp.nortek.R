@@ -2058,6 +2058,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         warning("defaulting 'type' to '", type, "', since no header was found in the file, and the 'type' argument was not provided")
     }
     res@metadata$type <- type
+    res@metadata$declination <- ad2cpHeaderValue(x=header, key="GETUSER", item="DECL", default=NA)
     res@metadata$frequency <- ad2cpHeaderValue(x=header, key="BEAMCFGLIST,BEAM=1", item="FREQ", default=NA)
     res@metadata$beamAngle <- switch(type, "Signature1000"=25, "Signature500"=25, "Signature250"=20)
     ## Note: metadata$transformationMatrix is not defined; we make "[[" compute

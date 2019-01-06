@@ -3009,7 +3009,13 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 #'
 #' Convert ADP velocity components from a xyz-based coordinate system to
 #' an enu-based coordinate system, by using the instrument's recording of
-#' heading, pitch, and roll.
+#' information relating to heading, pitch, and roll. The action is based
+#' on what is stored in the data, and so it depends greatly on instrument type
+#' and the style of original data format. This function handles data from
+#' RDI Teledyne, Sontek, and some Nortek instruments directly. However, Nortek
+#' data stored in in the AD2CP format are handled by the specialized
+#' function \code{\link{xyzToEnuAdpAD2CP}}, the documentation for which
+#' should be consulted, rather than the material given blow.
 #'
 #' The first step is to convert the (x,y,z) velocity components (stored in the
 #' three columns of \code{x[["v"]][,,1:3]}) into what RDI [1, pages 11 and 12]
@@ -3089,8 +3095,10 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     debug <- if (debug > 0) 1 else 0
     if (!inherits(x, "adp"))
         stop("method is only for objects of class '", "adp", "'")
-    ## Treat AD2CP differently because e.g. if it has AHRS, then there is no need or
-    ## benefit in extracting heading, etc., as for the other cases.
+    ## Treat AD2CP differently because e.g. if it has AHRS, then there is may be need or
+    ## benefit in extracting heading, etc., as for the other cases. Also, the orientation
+    ## names are different for this type, so isolating the code makes things clearer
+    ## and easier to maintain.  (FIXME: consider splitting the RDI and Sontek cases, too.)
     if (is.ad2cp(x))
         return(xyzToEnuAdpAD2CP(x, declination, debug))
     oceDebug(debug, "xyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="", unindent=1)
@@ -3306,7 +3314,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 #' https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
 #'
 #' @family things related to \code{adp} data
-xyzToEnuAdpAD2CP <- function(x, declination, debug=getOption("oceDebug"))
+xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     debug <- if (debug > 0) 1 else 0
     oceDebug(debug, "xyzToEnuAdpAD2CP(x, declination=", declination, ", debug=", debug, ") {\n", sep="", unindent=1)
