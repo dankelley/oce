@@ -367,6 +367,7 @@ export(abbreviateTimeLabels,
        utm2lonlat,
        xyzToEnu,
        xyzToEnuAdp,
+       xyzToEnuAdpAD2CP,
        xyzToEnuAdv)
 
 S3method(head, oce)

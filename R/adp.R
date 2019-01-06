@@ -509,27 +509,27 @@ setMethod(f="summary",
               ##             format(subsampleEnd),  attr(subsampleEnd, "tzone"),
               ##             1 / subsampleDeltat))
               metadataNames <- names(object@metadata)
-              isAD2CP <- is.ad2cp(object)
-              if ("numberOfCells" %in% metadataNames) {
-                  dist <- object[["distance"]]
-                  if (object[["numberOfCells"]] > 1) {
-                      cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
-                                  object[["numberOfCells"]], dist[1], tail(dist, 1), diff(dist[1:2])), ...)
-                  } else {
-                      cat(sprintf("* Cells:              one cell, centered at %.3f m\n", dist[1]), ...)
-                  }
-              }
-              originalCoordinate <- object[["originalCoordinate"]]
-              oceCoordinate <- object[["oceCoordinate"]]
-              cat("* Coordinate system: ",
-                  if (is.null(originalCoordinate)) "?" else originalCoordinate, "[originally],",
-                  if (is.null(oceCoordinate)) "?" else oceCoordinate, "[presently]\n", ...)
               cat("* Frequency:         ", object[["frequency"]], "kHz\n", ...)
-              numberOfBeams <- object[["numberOfBeams"]]
-              beamAngle <- object[["beamAngle"]]
-              orientation <- object[["orientation"]]
-              beamUnspreaded <- object[["oceBeamUnspreaded"]]
+              isAD2CP <- is.ad2cp(object)
               if (!isAD2CP) {
+                  if ("numberOfCells" %in% metadataNames) {
+                      dist <- object[["distance"]]
+                      if (object[["numberOfCells"]] > 1) {
+                          cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
+                                      object[["numberOfCells"]], dist[1], tail(dist, 1), diff(dist[1:2])), ...)
+                      } else {
+                          cat(sprintf("* Cells:              one cell, centered at %.3f m\n", dist[1]), ...)
+                      }
+                  }
+                  originalCoordinate <- object[["originalCoordinate"]]
+                  oceCoordinate <- object[["oceCoordinate"]]
+                  cat("* Coordinate system: ",
+                      if (is.null(originalCoordinate)) "?" else originalCoordinate, "[originally],",
+                      if (is.null(oceCoordinate)) "?" else oceCoordinate, "[presently]\n", ...)
+                  numberOfBeams <- object[["numberOfBeams"]]
+                  beamAngle <- object[["beamAngle"]]
+                  orientation <- object[["orientation"]]
+                  beamUnspreaded <- object[["oceBeamUnspreaded"]]
                   cat("* Beams::\n")
                   cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "\n")
                   cat("    Slantwise Angle: ", if (is.null(beamAngle)) "?" else beamAngle , "\n")
@@ -543,23 +543,27 @@ setMethod(f="summary",
                   cat("  ", format(transformationMatrix[1, ], width=digits+4, digits=digits, justify="right"), "\n")
                   cat("  ", format(transformationMatrix[2, ], width=digits+4, digits=digits, justify="right"), "\n")
                   cat("  ", format(transformationMatrix[3, ], width=digits+4, digits=digits, justify="right"), "\n")
-                  if (numberOfBeams > 3)
+                  if (object[["numberOfBeams"]] > 3)
                       cat("  ", format(transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n")
               }
               if (isAD2CP) {
                   default <- ad2cpDefaultDataItem(object)
                   for (rt in object[["recordTypes"]]) {
-                      isTheDefault <- rt == default
-                      cat("* Record type '", rt, "'", if (isTheDefault) " (the default item)::\n" else "::\n", sep="")
-                      cat("    Number of profiles: ", length(object[["time", rt]]), "\n")
-                      cat("    Number of cells:    ", object[["numberOfCells", rt]], "\n")
-                      cat("    Blanking distance:  ", object[["blankingDistance", rt]], "\n")
-                      cat("    Cell size:          ", object[["cellSize", rt]], "\n")
-                      numberOfBeams <- object[["numberOfBeams", rt]]
-                      cat("    Number of beams:    ", numberOfBeams, "\n")
-                      cat("    Beam angle:         ", if (numberOfBeams == 1) 0 else object[["beamAngle", rt]], "\n")
-                      cat("    Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
+                      if (rt != "text") {
+                          isTheDefault <- rt == default
+                          cat("* Record type '", rt, "'", if (isTheDefault) " (the default item)::\n" else "::\n", sep="")
+                          cat("    Number of profiles: ", length(object[["time", rt]]), "\n")
+                          cat("    Number of cells:    ", object[["numberOfCells", rt]], "\n")
+                          cat("    Blanking distance:  ", object[["blankingDistance", rt]], "\n")
+                          cat("    Cell size:          ", object[["cellSize", rt]], "\n")
+                          numberOfBeams <- object[["numberOfBeams", rt]]
+                          cat("    Number of beams:    ", numberOfBeams, "\n")
+                          cat("    Beam angle:         ", if (numberOfBeams == 1) 0 else object[["beamAngle", rt]], "\n")
+                          cat("    Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
+                      }
                   }
+                  processingLogShow(object)
+                  invisible()
               } else {
                   invisible(callNextMethod()) # summary
               }
@@ -2939,11 +2943,11 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
                 if (is.null(j))
                     stop("cannot determine which data record-type to work with")
                 ## TIMING new way:
-                ## TIMING    user  system elapsed 
-                ## TIMING  11.661  27.300  89.293 
+                ## TIMING    user  system elapsed
+                ## TIMING  11.661  27.300  89.293
                 ## TIMING old way:
-                ## TIMING    user  system elapsed 
-                ## TIMING  15.977  24.182  88.971 
+                ## TIMING    user  system elapsed
+                ## TIMING  15.977  24.182  88.971
                 ## TIMING cat("new way:\n")
                 ## TIMING print(system.time({
                 ## TIMING     v1 <- V[,,1]
@@ -3065,12 +3069,12 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 #' \code{x[["oceCoordinate"]]} changed from \code{xyz} to \code{enu}.
 #' @author Dan Kelley and Clark Richards
 #'
-#' @section Limitations:
-#' For AD2CP objects (resulting from a call to \code{\link{read.adp.ad2cp}}),
-#' the transformation to ENU coordinates is only possible if the instrument
-#' orientation is \code{"AHRS"}. Other orientations may be added, if users
-#' indicat a need for them, and supply the developers with test file (including
-#' at least a few expected results).
+## @section Limitations:
+## For AD2CP objects, created by\code{\link{read.adp.ad2cp}},
+## the transformation to ENU coordinates is only possible if the instrument
+## orientation is \code{"AHRS"}. Other orientations may be added, if users
+## indicat a need for them, and supply the developers with test file (including
+## at least a few expected results).
 #'
 #' @references
 #' 1. Teledyne RD Instruments. “ADCP Coordinate Transformation: Formulas and Calculations,”
@@ -3083,9 +3087,14 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     debug <- if (debug > 0) 1 else 0
-    oceDebug(debug, "xyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="", unindent=1)
     if (!inherits(x, "adp"))
         stop("method is only for objects of class '", "adp", "'")
+    ## Treat AD2CP differently because e.g. if it has AHRS, then there is no need or
+    ## benefit in extracting heading, etc., as for the other cases.
+    if (is.ad2cp(x))
+        return(xyzToEnuAdpAD2CP(x, declination, debug))
+    oceDebug(debug, "xyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="", unindent=1)
+    ## Now, address non-AD2CP cases.
     manufacturer <- x[["manufacturer"]]
     oceCoordinate = x[["oceCoordinate"]]
     orientation = x[["orientation"]][1]
@@ -3163,11 +3172,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         }
     } else if (1 == length(agrep("nortek", manufacturer))) {
         V <- x[["v"]]
-        if (orientation == "AHRS") {
-            ## The case orientation == "AHRS", which can happen for AD2CP data, is handled later
-            ## FIXME: deal with other ad2cp orientations. Can (should) we use a methodology
-            ## similar to the non-ad2cp, for non-AHRS cases?
-        } else if (orientation == "upward") {
+        if (orientation == "upward") {
             ## h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14
             oceDebug(debug, "Case 3: Nortek ADP with upward-pointing sensor.\n")
             oceDebug(debug, "        Using heading=heading-90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
@@ -3201,7 +3206,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
                 mastBv <- res@data$bv[, 3]
             }
         } else {
-            stop("need orientation='upward', 'downward', or 'AHRS', not '", orientation, "'")
+            stop("need orientation='upward' or 'downward', not '", orientation, "'")
         }
     } else if (1 == length(agrep("sontek", manufacturer))) {
         ## "sontek"
@@ -3245,56 +3250,144 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     oceDebug(debug, vectorShow(heading, "heading (after adjustment)"))
     oceDebug(debug, vectorShow(pitch, "pitch (after adjustment)"))
     oceDebug(debug, vectorShow(roll, "roll (after adjustment)"))
-    if (isAD2CP) {
-        if (orientation == "AHRS") {
-            j <- ad2cpDefaultDataItem(x) # FIXME: should we let user specify this?
-            if (is.null(j))
-                stop("cannot determine which data record-type to work with")
-            AHRS <- x[["AHRS"]]
-            if (is.null(AHRS))
-                stop("AD2CP data with orientation \"AHRS\" can only be converted to ENU if dataset contains AHRS data")
-            nc <- dim(V)[2]
-            ## FIXME: could (should) we use do_sfm_enu() here, for speed and memory conservation?
-            e <- V[,,1]*rep(AHRS[,1], each=nc) + V[,,2]*rep(AHRS[,2], each=nc) + V[,,3]*rep(AHRS[,3], each=nc)
-            n <- V[,,1]*rep(AHRS[,4], each=nc) + V[,,2]*rep(AHRS[,5], each=nc) + V[,,3]*rep(AHRS[,6], each=nc)
-            u <- V[,,1]*rep(AHRS[,7], each=nc) + V[,,2]*rep(AHRS[,8], each=nc) + V[,,3]*rep(AHRS[,9], each=nc)
-            res@data[[j]]$v[,,1] <- e
-            res@data[[j]]$v[,,2] <- n
-            res@data[[j]]$v[,,3] <- u
-            res@data[[j]]$oceCoordinate <- "enu"
-       } else {
-           stop("AD2CP data can only be converted to ENU if orientation is \"AHRS\" (github issue 1471)")
-       }
-    } else {
-        nc <- dim(x@data$v)[2]         # numberOfCells
-        np <- dim(x@data$v)[1]         # number of profiles
-        if (length(heading) < np)
-            heading <- rep(heading, length.out=np)
-        if (length(pitch) < np)
-            pitch <- rep(pitch, length.out=np)
-        if (length(roll) < np)
-            roll <- rep(roll, length.out=np)
-        ## ADP and ADV calculations are both handled by sfm_enu for non-AD2CP.
-        for (c in 1:nc) {
-            enu <- do_sfm_enu(heading + declination, pitch, roll, starboard[, c], forward[, c], mast[, c])
-            res@data$v[, c, 1] <- enu$east
-            res@data$v[, c, 2] <- enu$north
-            res@data$v[, c, 3] <- enu$up
-        }
-        if (haveBv) {
-            enu <- do_sfm_enu(heading + declination, pitch, roll, starboardBv, forwardBv, mastBv)
-            res@data$bv[, 1] <- enu$east
-            res@data$bv[, 2] <- enu$north
-            res@data$bv[, 3] <- enu$up
-        }
-        res@metadata$oceCoordinate <- "enu"
+    nc <- dim(x@data$v)[2]         # numberOfCells
+    np <- dim(x@data$v)[1]         # number of profiles
+    if (length(heading) < np)
+        heading <- rep(heading, length.out=np)
+    if (length(pitch) < np)
+        pitch <- rep(pitch, length.out=np)
+    if (length(roll) < np)
+        roll <- rep(roll, length.out=np)
+    ## ADP and ADV calculations are both handled by sfm_enu for non-AD2CP.
+    for (c in 1:nc) {
+        enu <- do_sfm_enu(heading + declination, pitch, roll, starboard[, c], forward[, c], mast[, c])
+        res@data$v[, c, 1] <- enu$east
+        res@data$v[, c, 2] <- enu$north
+        res@data$v[, c, 3] <- enu$up
     }
+    if (haveBv) {
+        enu <- do_sfm_enu(heading + declination, pitch, roll, starboardBv, forwardBv, mastBv)
+        res@data$bv[, 1] <- enu$east
+        res@data$bv[, 2] <- enu$north
+        res@data$bv[, 3] <- enu$up
+    }
+    res@metadata$oceCoordinate <- "enu"
     res@processingLog <- processingLogAppend(res@processingLog,
-                                       paste("xyzToEnu(x", ", declination=", declination, ", debug=", debug, ")", sep=""))
+                                       paste("xyzToEnuAdp(x", ", declination=", declination, ", debug=", debug, ")", sep=""))
     oceDebug(debug, "} # xyzToEnuAdp()\n", unindent=1)
     res
 }
 
+#' Convert ADP2CP adp object From XYZ to ENU Coordinates
+#'
+#' \strong{This function will b in active development through the early
+#' months of 2019, and both the methodology and user interface may change
+#' without notice. Only developers (or invitees) should be trying to
+#' use this function.}
+#'
+#' @param x An \code{adp} object created by \code{\link{read.adp.ad2cp}}.
+#'
+#' @param declination IGNORED at present, but will be used at some later time.
+#' @template debugTemplate
+#'
+#' @return An object with \code{data$v[,,1:3]} altered appropriately, and
+#' \code{x[["oceCoordinate"]]} changed from \code{xyz} to \code{enu}.
+#'
+#' @author Dan Kelley
+#'
+#' @section Limitations:
+#' This only works if the instrument orientation is \code{"AHRS"}, and even
+#' that is not tested yet. Plus, as noted, the declination is ignored.
+#'
+#' @references
+#' 1. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2017.
+#'
+#' 2. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2018.
+#' https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
+#'
+#' @family things related to \code{adp} data
+xyzToEnuAdpAD2CP <- function(x, declination, debug=getOption("oceDebug"))
+{
+    debug <- if (debug > 0) 1 else 0
+    oceDebug(debug, "xyzToEnuAdpAD2CP(x, declination=", declination, ", debug=", debug, ") {\n", sep="", unindent=1)
+    if (!inherits(x, "adp"))
+        stop("method is only for objects of class '", "adp", "'")
+    if (!is.ad2cp(x))
+        stop("this function only works for adp objects created by read.adp.ad2cp()")
+    if (0 != declination)
+        stop("nonzero declination is not handled yet; please contact the author if you ned this") # FIXME
+    res <- x
+    ## FIXME: deal with other ad2cp orientations. Can (should) we use a methodology
+    ## similar to the non-ad2cp, for non-AHRS cases?
+    ## FIXME: do a loop like this for beamToXyzAdpAD2CP() also.
+    for (item in names(x@data)) {
+        ## Do not try to rotate non-rotatable items, e.g. the vertical beam, the altimeter, etc.
+        if (is.list(x@data[[item]])) {
+            numberOfBeams <- x@data[[item]]$numberOfBeams
+            ##. message("  numberOfBeams=", numberOfBeams)
+            if (!is.null(numberOfBeams) && numberOfBeams == 4) {
+                orientation <- x@data[[item]]$orientation
+                if (is.null(orientation))
+                    stop("no known orientation for '", item, "' in the object data slot")
+                ## FIXME: handle 'xup', 'xdown', 'yup', 'ydown', 'zup', 'zdown'
+                if (orientation[1] != "AHRS")
+                    stop("only the 'AHRS' orientation is handled, but '", item, "' has orientation '", orientation[1], "'")
+                AHRS <- x@data[[item]]$AHRS
+                if (is.null(AHRS))
+                    stop("'", item, "' within the object data slot does not contain coordinate-change matrix 'AHRS'")
+                oceCoordinate <- x@data[[item]]$oceCoordinate
+                if (is.null(oceCoordinate))
+                    stop("'", item, "' within the object data slot has no 'oceCoordinate'")
+                ## If the item is already in 'enu', we just leave it alone
+                ##. message("oceCoordinate: '", oceCoordinate, "'")
+                if (oceCoordinate == "xyz") {
+                    V <- x@data[[item]]$v
+                    if (is.null(V))
+                        stop("'", item, "' within the object data slot does not contain velocity 'v'")
+                    nc <- dim(V)[2]
+                    ## DEVELOPER NOTE
+                    ##
+                    ## I thought it might be faster to use C++ for the calculations, since the memory pressure ought to
+                    ## be a bit smaller (because there is no need to rep() the AHRS values across cells). However, I
+                    ## tried a test, but the results, below, suggest the R method is much faster. Also, it will be
+                    ## easier for others to modify, I think, so we will use it.
+                    ##
+                    ## Speed test with 292M file:
+                    ##
+                    ## C++ method
+                    ##  user  system elapsed 
+                    ## 2.553   0.952   3.511 
+                    ##> message("C++ method")
+                    ##> for (cell in 1:nc) {
+                    ##>     res@data[[item]]$v[, cell, 1:3] <- do_ad2cp_ahrs(V[, cell, 1:3], AHRS)
+                    ##
+                    ## R method
+                    ## user  system elapsed 
+                    ## 0.400   0.139   0.540 
+                    ##
+                    ##> message("R method")
+                    e <- V[,,1]*rep(AHRS[,1], times=nc) + V[,,2]*rep(AHRS[,2], times=nc) + V[,,3]*rep(AHRS[,3], times=nc)
+                    n <- V[,,1]*rep(AHRS[,4], times=nc) + V[,,2]*rep(AHRS[,5], times=nc) + V[,,3]*rep(AHRS[,6], times=nc)
+                    u <- V[,,1]*rep(AHRS[,7], times=nc) + V[,,2]*rep(AHRS[,8], times=nc) + V[,,3]*rep(AHRS[,9], times=nc)
+                    ## FIXME: perhaps use the declination now, rotating e and n.  But first, we will need to know
+                    ## what declination was used by the instrument, in its creation of AHRS.
+                    res@data[[item]]$v[,,1] <- e
+                    res@data[[item]]$v[,,2] <- n
+                    res@data[[item]]$v[,,3] <- u
+                    res@data[[item]]$oceCoordinate <- "enu"
+                } else if (oceCoordinate == "beam") {
+                    stop("cannot convert from beam to Enu coordinates; use beamToXyz() first")
+                }
+            }
+        }
+    }
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                             paste("xyzToEnuAdpAD2CP(x",
+                                                   ", declination=", declination,
+                                                   ", debug=", debug, ")", sep=""))
+    oceDebug(debug, "} # xyzToEnuAdpAD2CP()\n", unindent=1)
+    res
+}
 
 #' Convert ADP ENU to Rotated Coordinate
 #'
