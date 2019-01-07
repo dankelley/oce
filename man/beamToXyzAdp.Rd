@@ -28,6 +28,11 @@ changed from \code{beam} to \code{xyz}.
 \description{
 Convert ADP velocity components from a beam-based coordinate system to a
 xyz-based coordinate system. The action depends on the type of object.
+Objects creating by reading RDI Teledyne, Sontek, and some Nortek
+instruments are handled directly. However, Nortek
+data stored in in the AD2CP format are handled by the specialized
+function \code{\link{beamToXyzAdpAD2CP}}, the documentation for which
+should be consulted, rather than the material given blow.
 }
 \details{
 For a 3-beam Nortek \code{aquadopp} object, the beams are transformed into
@@ -45,7 +50,7 @@ system referenced to the instrument using the following formulae:
 \eqn{u=ca(B_1-B_2)}{u=c*a*(B1-B2)}, \eqn{v=ca(B_4-B_3)}{v=c*a*(B4-B3)},
 \eqn{w=-b(B_1+B_2+B_3+B_4)}{w=-b*(B1+B2+B3+B4)}. In addition to these,
 an estimate of the
-error in velocity may be computed as
+error in velocity is computed as
 \eqn{e=d(B_1+B_2-B_3-B_4)}{e=d*(B1+B2-B3-B4)}.
 The geometrical factors in these formulae are:
 \code{c} is +1 for convex beam geometry or -1 for concave beam geometry,
@@ -54,9 +59,6 @@ where \eqn{\theta}{theta} is the angle the beams make to the axial direction
 (which is available as \code{x[["beamAngle"]]}),
 \eqn{b=1/(4\cos\theta)}{b=1/(4*cos(theta))}, and
 \eqn{d=a/\sqrt{2}}{d=a/sqrt(2)}.
-(Note that appropriate value for \code{d} is open to discussion,
-with RDI suggesting the value used here [reference 1],
-but some oceanographers favouring another.)
 }
 \references{
 1. Teledyne RD Instruments. “ADCP Coordinate Transformation: Formulas and
@@ -74,6 +76,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdpAD2CP}},
   \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
   \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
   \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
