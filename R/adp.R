@@ -2834,6 +2834,11 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #'
 #' Convert ADP velocity components from a beam-based coordinate system to a
 #' xyz-based coordinate system. The action depends on the type of object.
+#' Objects creating by reading RDI Teledyne, Sontek, and some Nortek
+#' instruments are handled directly. However, Nortek
+#' data stored in in the AD2CP format are handled by the specialized
+#' function \code{\link{beamToEnuAD2CP}}, the documentation for which
+#' should be consulted, rather than the material given blow.
 #'
 #' For a 3-beam Nortek \code{aquadopp} object, the beams are transformed into
 #' velocities using the matrix stored in the header.
@@ -2889,12 +2894,17 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #' @family things related to \code{adp} data
 beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 {
-    debug <- if (debug > 0) 1 else 0
-    oceDebug(debug, "beamToXyzAdp(x, debug=", debug, ") {\n", sep="", unindent=1)
     if (!inherits(x, "adp"))
         stop("method is only for objects of class \"adp\"")
     if (x[["oceCoordinate"]] != "beam")
         stop("input must be in beam coordinates")
+    if (is.ad2cp(x)) {
+        oceDebug(debug, "beamToXyzAdp(x, debug=", debug, ") {\n", sep="", unindent=1)
+        res <- beamToXyzAdpAD2CP(x=x, debug=debug - 1)
+        oceDebug(debug, "} # beamToXyzAdp()\n", unindent=1)
+        return(res)
+    }
+    oceDebug(debug, "beamToXyzAdp(x, debug=", debug, ") {\n", sep="", unindent=1)
     nb <- x[["numberOfBeams"]]
     if (is.null(nb))
         stop("missing x[[\"numberOfBeams\"]]")
@@ -2911,7 +2921,6 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         print(tm)
     res <- x
     V <- x[["v"]]
-    ## Note that oceCoordinate is in metadata for all but AD2CP types.
     if (length(grep(".*rdi.*", manufacturer))) {
         if (nb != 4)
             stop("can only handle 4-beam ADP units from RDI")
@@ -2930,8 +2939,6 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         res@metadata$oceCoordinate <- "xyz"
     } else if (length(grep(".*nortek.*", manufacturer))) {
         if (nb == 3) {
-            if (is.ad2cp(x))
-                stop("only 4-beam AD2CP data are handled")
             res@data$v[,,1] <- tm[1,1]*V[,,1] + tm[1,2]*V[,,2] + tm[1,3]*V[,,3]
             res@data$v[,,2] <- tm[2,1]*V[,,1] + tm[2,2]*V[,,2] + tm[2,3]*V[,,3]
             res@data$v[,,3] <- tm[3,1]*V[,,1] + tm[3,2]*V[,,2] + tm[3,3]*V[,,3]
@@ -2944,50 +2951,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
             }
             res@metadata$oceCoordinate <- "xyz"
         } else if (nb == 4) {
-            if (is.ad2cp(x)) {
-                ## AD2CP is stored in a tricky way.
-                j <- ad2cpDefaultDataItem(x) # FIXME: should we let user specify this?
-                if (is.null(j))
-                    stop("cannot determine which data record-type to work with")
-                ## TIMING new way:
-                ## TIMING    user  system elapsed
-                ## TIMING  11.661  27.300  89.293
-                ## TIMING old way:
-                ## TIMING    user  system elapsed
-                ## TIMING  15.977  24.182  88.971
-                ## TIMING cat("new way:\n")
-                ## TIMING print(system.time({
-                ## TIMING     v1 <- V[,,1]
-                ## TIMING     v2 <- V[,,2]
-                ## TIMING     v3 <- V[,,3]
-                ## TIMING     v4 <- V[,,4]
-                ## TIMING     res@data[[j]]$v[,,1] <- tm[1,1]*v1 + tm[1,2]*v2 + tm[1,3]*v3 + tm[1,4]*v4
-                ## TIMING     res@data[[j]]$v[,,2] <- tm[2,1]*v1 + tm[2,2]*v2 + tm[2,3]*v3 + tm[2,4]*v4
-                ## TIMING     res@data[[j]]$v[,,3] <- tm[3,1]*v1 + tm[3,2]*v2 + tm[3,3]*v3 + tm[3,4]*v4
-                ## TIMING     res@data[[j]]$v[,,4] <- tm[4,1]*v1 + tm[4,2]*v2 + tm[4,3]*v3 + tm[4,4]*v4
-                ## TIMING     rm(v1, v2, v3, v4)
-                ## TIMING }))
-                ## TIMING cat("old way:\n")
-                ## TIMING print(system.time({
-                ## TIMING     res@data[[j]]$v[,,1] <- tm[1,1]*V[,,1] + tm[1,2]*V[,,2] + tm[1,3]*V[,,3] + tm[1,4]*V[,,4]
-                ## TIMING     res@data[[j]]$v[,,2] <- tm[2,1]*V[,,1] + tm[2,2]*V[,,2] + tm[2,3]*V[,,3] + tm[2,4]*V[,,4]
-                ## TIMING     res@data[[j]]$v[,,3] <- tm[3,1]*V[,,1] + tm[3,2]*V[,,2] + tm[3,3]*V[,,3] + tm[3,4]*V[,,4]
-                ## TIMING     res@data[[j]]$v[,,4] <- tm[4,1]*V[,,1] + tm[4,2]*V[,,2] + tm[4,3]*V[,,3] + tm[4,4]*V[,,4]
-                ## TIMING }))
-                ## Breaking calculation up this way speeds by 27% on a 1.0G file.
-                V1 <- V[,,1]
-                V2 <- V[,,2]
-                V3 <- V[,,3]
-                V4 <- V[,,4]
-                res@data[[j]]$v[,,1] <- tm[1,1]*V1 + tm[1,2]*V2 + tm[1,3]*V3 + tm[1,4]*V4
-                res@data[[j]]$v[,,2] <- tm[2,1]*V1 + tm[2,2]*V2 + tm[2,3]*V3 + tm[2,4]*V4
-                res@data[[j]]$v[,,3] <- tm[3,1]*V1 + tm[3,2]*V2 + tm[3,3]*V3 + tm[3,4]*V4
-                res@data[[j]]$v[,,4] <- tm[4,1]*V1 + tm[4,2]*V2 + tm[4,3]*V3 + tm[4,4]*V4
-                res@data[[j]]$oceCoordinate <- "xyz"
-                res@metadata$oceCoordinate <- NULL # remove, just in case it got added by mistake
-            } else {
-                stop("the only 4-beam Nortek format supported is AD2CP")
-            }
+            stop("the only 4-beam Nortek format supported is AD2CP")
         } else {
             stop("can only handle 3-beam and 4-beam ADP units from nortek")
         }
@@ -3011,7 +2975,114 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
     res
 }
 
-
+#' Convert AD2CP-style adp data From Beam to XYZ Coordinates
+#'
+#' This looks at all the items in the \code{data} slot of \code{x}, to
+#' see if they contain an array named \code{v} that holds velocity.
+#' If that velocity has 4 components, and if \code{oceCoordinate} for
+#' the item is \code{"beam"}, then a transformation matrix is computed
+#' based on the beam angle, using the formulae explained in the
+#' documentation for \code{\link{xyzToBeamAdp}}, which is derived
+#' from Section 5.3 of reference [1].
+#'
+#' @param x an object of class \code{"adp"}, e.g. created by \code{\link{read.adp.ad2cp}}
+#' or by other functions that end up calling this function.
+#'
+#' @template debugTemplate
+#'
+#' @references
+#' 1. Teledyne RD Instruments.
+#' “ADCP Coordinate Transformation: Formulas and Calculations,”
+#' January 2010. P/N 951-6079-00.
+#
+#' @family things related to \code{adp} data
+beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
+{
+    debug <- if (debug > 0) 1 else 0
+    oceDebug(debug, "beamToXyzAdpAD2CP(x, debug=", debug, ") {\n", sep="", unindent=1)
+    if (!inherits(x, "adp"))
+        stop("method is only for objects of class \"adp\"")
+    if (!is.ad2cp(x))
+        stop("method is only for AD2CP objects")
+    if (!is.ad2cp(x))
+        stop("only 4-beam AD2CP data are handled")
+    res <- x
+    for (item in names(x@data)) {
+        oceDebug(debug, "item='", item, "'...\n", sep="")
+        ## Do not try to alter unsuitable items, e.g. the vertical beam, the altimeter, etc.
+        if (is.list(x@data[[item]]) && "v" %in% names(x@data[[item]])) {
+            if (x@data[[item]]$oceCoordinate == "beam") {
+                numberOfBeams <- x@data[[item]]$numberOfBeams
+                oceDebug(debug, "  numberOfBeams=", numberOfBeams, "\n")
+                if (4 == numberOfBeams) {
+                    v <- x@data[[item]]$v
+                    ## Possibly speed things up by reducing need to index 4 times.
+                    v1 <- v[,,1]
+                    v2 <- v[,,2]
+                    v3 <- v[,,3]
+                    v4 <- v[,,4]
+                    rm(v)              # perhaps help by reducing memory pressure a bit
+                    beamAngle <- x@metadata$beamAngle
+                    if (is.null(beamAngle))
+                        stop("cannot look up beamAngle")
+                    theta <- beamAngle * atan2(1, 1) / 45
+                    TMc <- 1 # for convex beam stup; use -1 for concave
+                    TMa <- 1 / (2 * sin(theta))
+                    TMb <- 1 / (4 * cos(theta))
+                    TMd <- TMa / sqrt(2)
+                    tm <- rbind(c(TMc*TMa, -TMc*TMa,        0,       0),
+                                c(      0,        0, -TMc*TMa, TMc*TMa),
+                                c(    TMb,      TMb,      TMb,     TMb),
+                                c(    TMd,      TMd,     -TMd,    -TMd))
+                    ## TIMING new way:
+                    ## TIMING    user  system elapsed
+                    ## TIMING  11.661  27.300  89.293
+                    ## TIMING old way:
+                    ## TIMING    user  system elapsed
+                    ## TIMING  15.977  24.182  88.971
+                    ## TIMING cat("new way:\n")
+                    ## TIMING print(system.time({
+                    ## TIMING     v1 <- V[,,1]
+                    ## TIMING     v2 <- V[,,2]
+                    ## TIMING     v3 <- V[,,3]
+                    ## TIMING     v4 <- V[,,4]
+                    ## TIMING     res@data[[j]]$v[,,1] <- tm[1,1]*v1 + tm[1,2]*v2 + tm[1,3]*v3 + tm[1,4]*v4
+                    ## TIMING     res@data[[j]]$v[,,2] <- tm[2,1]*v1 + tm[2,2]*v2 + tm[2,3]*v3 + tm[2,4]*v4
+                    ## TIMING     res@data[[j]]$v[,,3] <- tm[3,1]*v1 + tm[3,2]*v2 + tm[3,3]*v3 + tm[3,4]*v4
+                    ## TIMING     res@data[[j]]$v[,,4] <- tm[4,1]*v1 + tm[4,2]*v2 + tm[4,3]*v3 + tm[4,4]*v4
+                    ## TIMING     rm(v1, v2, v3, v4)
+                    ## TIMING }))
+                    ## TIMING cat("old way:\n")
+                    ## TIMING print(system.time({
+                    ## TIMING     res@data[[j]]$v[,,1] <- tm[1,1]*V[,,1] + tm[1,2]*V[,,2] + tm[1,3]*V[,,3] + tm[1,4]*V[,,4]
+                    ## TIMING     res@data[[j]]$v[,,2] <- tm[2,1]*V[,,1] + tm[2,2]*V[,,2] + tm[2,3]*V[,,3] + tm[2,4]*V[,,4]
+                    ## TIMING     res@data[[j]]$v[,,3] <- tm[3,1]*V[,,1] + tm[3,2]*V[,,2] + tm[3,3]*V[,,3] + tm[3,4]*V[,,4]
+                    ## TIMING     res@data[[j]]$v[,,4] <- tm[4,1]*V[,,1] + tm[4,2]*V[,,2] + tm[4,3]*V[,,3] + tm[4,4]*V[,,4]
+                    ## TIMING }))
+                    res@data[[item]]$v[,,1] <- tm[1,1]*v1 + tm[1,2]*v2 + tm[1,3]*v3 + tm[1,4]*v4
+                    res@data[[item]]$v[,,2] <- tm[2,1]*v1 + tm[2,2]*v2 + tm[2,3]*v3 + tm[2,4]*v4
+                    res@data[[item]]$v[,,3] <- tm[3,1]*v1 + tm[3,2]*v2 + tm[3,3]*v3 + tm[3,4]*v4
+                    res@data[[item]]$v[,,4] <- tm[4,1]*v1 + tm[4,2]*v2 + tm[4,3]*v3 + tm[4,4]*v4
+                    res@data[[item]]$oceCoordinate <- "xyz"
+                    res@metadata$oceCoordinate <- NULL # remove, just in case it got added by mistake
+                    oceDebug(debug, "  converted from 'beam' to 'xyz'\n")
+                } else {
+                    oceDebug(debug, "  skipping, since not 4 beams\n")
+                }
+            } else {
+                oceDebug(debug, "  skipping, since not in 'beam' coordinate\n")
+            }
+        } else {
+            oceDebug(debug, "  skipping, since not a list\n")
+        }
+    }
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                             paste("beamToXyzAdpAD2CP(x",
+                                                   ", debug=", debug, ")", sep=""))
+    oceDebug(debug, "} # beamToXyzAdpAD2CP()\n", unindent=1)
+    res
+}
+ 
 #' Convert ADP From XYZ to ENU Coordinates
 #'
 #' Convert ADP velocity components from a xyz-based coordinate system to
@@ -3107,7 +3178,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     ## names are different for this type, so isolating the code makes things clearer
     ## and easier to maintain.  (FIXME: consider splitting the RDI and Sontek cases, too.)
     if (is.ad2cp(x))
-        return(xyzToEnuAdpAD2CP(x, declination, debug))
+        return(xyzToEnuAdpAD2CP(x=x, declination=declination, debug=debug))
     oceDebug(debug, "xyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="", unindent=1)
     ## Now, address non-AD2CP cases.
     manufacturer <- x[["manufacturer"]]
