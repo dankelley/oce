@@ -65,6 +65,11 @@ data(section)
 GS <- subset(section, 109<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 plot(GSg, map.xlim=c(-80,-60))
+# Show difference between 'approx' and 'approxML' interpolation methods.
+GSgML <- sectionGrid(GS, p=seq(0, 5000, 100), method="approxML")
+par(mfrow=c(1, 2))
+plot(GSg, which="temperature", ztype="image")
+plot(GSgML, which="temperature", ztype="image")
 
 }
 \seealso{

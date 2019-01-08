@@ -23,7 +23,7 @@ License: GPL (>= 2)
 Encoding: UTF-8
 URL: https://dankelley.github.io/oce
 LazyData: false
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 BuildVignettes: true
 VignetteBuilder: knitr
 NeedsCompilation: yes
