@@ -1608,22 +1608,22 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
 
 #' Decimate a CTD profile
 #'
-#' Interpolate a CTD profile to specified pressure values.
+#' Interpolate a CTD profile to specified pressure values.  This is used
+#' by \code{\link{sectionGrid}}, but is also useful for dealing with individual
+#' CTD/bottle profiles.
 #'
-#' The \code{"approx"} method is best for bottle data, in which the usual task is
-#' to interpolate from a coarse sampling grid to a finer one. For CTD data, the
-#' \code{"boxcar"} method is the more common choice, because the task is normally
+#' The \code{"approx"} and \code{"approxML"} methods may be best for bottle data,
+#' in which the usual task is
+#' to interpolate from a coarse sampling grid to a finer one. The distinction
+#' is that \code{"approxML"} assumes a mixed-layer above the top sample value. For CTD data, the
+#' \code{"boxcar"} method may be the preferred choice, because the task is normally
 #' to sub-sample, and some degree of smoothing is usually desired.  (The
-#' \code{"lm"} method is quite slow, and the results are similar to those of the
+#' \code{"lm"} method can be quite slow, and its results may be quite similar to those of the
 #' boxcar method.)
 #'
-#' Note that a sort of numerical cabeling effect can result from this procedure,
-#' but it can be avoided as follows
-#'
-#' \preformatted{
-#' xd <- ctdDecimate(x)
-#' xd[["sigmaTheta"]] <- swSigmaTheta(xd[["salinity"]],xd[["temperature"]],xd[["pressure"]])
-#' }
+#' For widely-spaced data, a sort of numerical cabeling effect can result when
+#' density is computed based on interpolated salinity and temperature.
+#' See reference [2] for a discussion of this issue and possible solutions.
 #'
 #' @template flagDeletionTemplate
 #'
@@ -1636,13 +1636,23 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
 #'
 #' @param method the method to be used for calculating decimated values.  This may
 #' be a function or a string naming a built-in method.  The built-in methods are
-#' \code{"boxcar"} (based on a local average), \code{"approx"} (based on linear
+#' as follows.
+#'\itemize{
+#' \item \code{"boxcar"} (based on a local average)
+#' \item \code{"approx"} (based on linear
 #' interpolation between neighboring points, using \code{\link{approx}}
-#' with the \code{rule} argument specified here), \code{"lm"} (based on local
-#' regression, with \code{e} setting the size of the local region), \code{"rr"}
-#' (for the Reiniger and Ross method, carried out with \code{\link{oce.approx}})
-#' and \code{"unesco"} (for the UNESCO method, carried out with.
-#' \code{\link{oce.approx}}.  If \code{method} is a function, then it must take
+#' with the \code{rule} argument specified here)
+#' \item \code{"approxML"} as \code{"approx"},
+#' except that a mixed layer is assumed to apply above the top data value; this
+#' is done by setting the \code{yleft} argument to \code{\link{approx}}, and
+#' by calling that function with \code{rule=c(2,1))}
+#' \item \code{"lm"} (based on local
+#' regression, with \code{e} setting the size of the local region);
+#' \item \code{"rr"} for the Reiniger and Ross method, carried out with \code{\link{oce.approx}};
+#' \item \code{"unesco"} (for the UNESCO method, carried out with.
+#' \code{\link{oce.approx}}.
+#' }
+#' On the other hand, if \code{method} is a function, then it must take
 #' three arguments, the first being pressure, the second being an arbitrary
 #' variable in another column of the data, and the third being a vector of target
 #' pressures at which the calculation is carried out, and the return value must be
@@ -1685,9 +1695,14 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
 #'
 #'
 #' @references
-#' R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
+#' 1. R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
 #' application to oceanographic data.  \emph{Deep Sea Research}, \bold{15},
 #' 185-193.
+#'
+#' 2. Oguma, Sachiko, Toru Suzuki, Yutaka Nagata, Hidetoshi Watanabe, Hatsuyo Yamaguchi,
+#' and Kimio Hanawa. “Interpolation Scheme for Standard Depth Data Applicable for Areas
+#' with a Complex Hydrographical Structure.” Journal of Atmospheric and Oceanic Technology
+#' 21, no. 4 (April 1, 2004): 704–15.
 #'
 #' @author Dan Kelley
 #'
@@ -1696,14 +1711,16 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 {
     methodFunction <- is.function(method)
     if (!methodFunction) {
-        methods <- c("boxcar", "approx", "lm", "rr", "unesco")
+        methods <- c("boxcar", "approx", "approxML", "lm", "rr", "unesco")
         imethod <- pmatch(method, methods, nomatch=0)
         if (imethod > 0) method <- methods[imethod] else
-            stop('unknown method "', method, '"')
+            stop('unknown method "', method, '"; valid methods are: "', paste(methods, collapse='", "'), '"')
     }
     warningMessages <- NULL
-    oceDebug(debug, "ctdDecimate(x, p, method=\"",
-             if (methodFunction) "(a function)" else method,
+    oceDebug(debug, "ctdDecimate(x, p, method=",
+             if (methodFunction) "(a function)" else paste('"', method, '"', sep=""),
+             ", rule=c(", paste(rule, collapse=","), ")",
+             ", e=", e,
              "\", ...) {\n", sep="", unindent=1)
     ## if (!inherits(x, "ctd"))
     ##     stop("method is only for objects of class '", "ctd", "'")
@@ -1747,7 +1764,29 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
         }
         dataNew[["pressure"]] <- pt
     } else {
-        if (method == "approx") {
+        if (method == "approxML") {
+            numGoodPressures <- sum(!is.na(x[["pressure"]]))
+            if (numGoodPressures > 0)
+                tooDeep <- pt > max(x@data[["pressure"]], na.rm=TRUE)
+            for (datumName in dataNames) {
+                ## oceDebug(debug, "decimating \"", datumName, "\"\n", sep="")
+                if (numGoodPressures < 2 || !length(x[[datumName]])) {
+                    dataNew[[datumName]] <- rep(NA, npt)
+                } else {
+                    if (datumName != "pressure") {
+                        wgood <- which(is.finite(x@data[[datumName]]))
+                        good <- length(wgood)
+                        if (good > 2) {
+                            dataNew[[datumName]] <- approx(x@data[["pressure"]], x@data[[datumName]], pt, rule=c(2, 1), yleft=x@data[[datumName]][wgood[1]])$y
+                            ##.message("yleft=", x@data[[datumName]][wgood[1]])
+                            dataNew[[datumName]][tooDeep] <- NA
+                        } else {
+                            dataNew[[datumName]] <- rep(NA, npt)
+                        }
+                    }
+                }
+            }
+        } else if (method == "approx") {
             numGoodPressures <- sum(!is.na(x[["pressure"]]))
             if (numGoodPressures > 0)
                 tooDeep <- pt > max(x@data[["pressure"]], na.rm=TRUE)

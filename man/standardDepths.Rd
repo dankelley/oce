@@ -4,13 +4,48 @@
 \alias{standardDepths}
 \title{Standard Oceanographic Depths}
 \usage{
-standardDepths()
+standardDepths(n = 0)
+}
+\arguments{
+\item{n}{Integer specifying the number of subdivisions to insert between
+each of the stated levels. For exmple, setting \code{n=1} puts a 5m level
+between the 0 and 10m levels, and \code{n=2} puts 3.33 and 6.66 between
+0 and 10m.}
 }
 \value{
-A vector of depths, c(0, 10, ...).
+A vector of depths that are more closely spaced for small values,
+i.e. a finer grid near the ocean surface.
 }
 \description{
-This returns so-called standard depths 0m, 10m, etc. below the sea surface.
+This returns a vector of numbers that build upon the shorter lists
+provided in Chapter 10 of reference [1] and the more modern World
+Ocean Atlases [e.g. 2].
+With the default call,
+i.e. with \code{n=0}, the result is
+\code{c(0, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250,
+seq(300, 1500, by=100), 1750, seq(2000, 10000, by=500))}.
+For higher values of \code{n}, progressively more and more values
+are added between each pair in this sequence.
+See the documentation for 
+\code{\link{sectionGrid}} for how \code{standardDepths} can be used
+in gridding data for section plots.
+}
+\examples{
+depth  <- standardDepths()
+depth1 <- standardDepths(1)
+plot(depth, depth)
+points(depth1, depth1, col=2, pch=20, cex=1/2)
+
+}
+\references{
+1. Sverdrup, H U, Martin W Johnson, and Richard H Fleming. The Oceans,
+Their Physics, Chemistry, and General Biology. New York: Prentice-Hall, 1942.
+\url{http://ark.cdlib.org/ark:/13030/kt167nb66r}
+
+2.Locarnini, R. A., A. V. Mishonov, J. I. Antonov, T. P. Boyer,
+H. E. Garcia, O. K. Baranova, M. M. Zweng, D. R. Johnson, and
+S. Levitus. “World Ocean Atlas 2009 Temperature.”
+US Government printing Office, 2010.
 }
 \author{
 Dan Kelley
