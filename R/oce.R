@@ -1532,16 +1532,58 @@ oce.write.table <- function (x, file="", ...)
 
 #' Standard Oceanographic Depths
 #'
-#' This returns so-called standard depths 0m, 10m, etc. below the sea surface.
+#' This returns a vector of numbers that build upon the shorter lists
+#' provided in Chapter 10 of reference [1] and the more modern World
+#' Ocean Atlases [e.g. 2].
+#' With the default call,
+#' i.e. with \code{n=0}, the result is
+#' \code{c(0, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250,
+#' seq(300, 1500, by=100), 1750, seq(2000, 10000, by=500))}.
+#' For higher values of \code{n}, progressively more and more values
+#' are added between each pair in this sequence.
+#' See the documentation for 
+#' \code{\link{sectionGrid}} for how \code{standardDepths} can be used
+#' in gridding data for section plots.
 #'
-#' @return A vector of depths, c(0, 10, ...).
+#' @param n Integer specifying the number of subdivisions to insert between
+#' each of the stated levels. For exmple, setting \code{n=1} puts a 5m level
+#' between the 0 and 10m levels, and \code{n=2} puts 3.33 and 6.66 between
+#' 0 and 10m.
+#'
+#' @return A vector of depths that are more closely spaced for small values,
+#' i.e. a finer grid near the ocean surface.
+#'
+#' @examples
+#' depth  <- standardDepths()
+#' depth1 <- standardDepths(1)
+#' plot(depth, depth)
+#' points(depth1, depth1, col=2, pch=20, cex=1/2)
+#'
 #' @author Dan Kelley
-standardDepths <- function()
+#'
+#' @references
+#' 1. Sverdrup, H U, Martin W Johnson, and Richard H Fleming. The Oceans,
+#' Their Physics, Chemistry, and General Biology. New York: Prentice-Hall, 1942.
+#' \url{http://ark.cdlib.org/ark:/13030/kt167nb66r}
+#'
+#' 2.Locarnini, R. A., A. V. Mishonov, J. I. Antonov, T. P. Boyer,
+#' H. E. Garcia, O. K. Baranova, M. M. Zweng, D. R. Johnson, and
+#' S. Levitus. “World Ocean Atlas 2009 Temperature.”
+#' US Government printing Office, 2010.
+standardDepths <- function(n=0)
 {
-    c(0,   10,   20,   30,   50,   75,  100,  125,  150,  200,
-      250,  300,  400,  500,  600,  700,  800,  900, 1000, 1100,
-      1200, 1300, 1400, 1500, 1750, 2000, 2500, 3000, 3500, 4000,
-      4500, 5000, 5500)
+    d <- c(0, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250,
+           seq(300, 1500, by=100), 1750, seq(2000, 10000, by=500))
+    n <- as.integer(n)
+    if (n < 0)
+        stop("cannot have negative n")
+    if (n == 0)
+        return(d)
+    ul <- cbind(head(d, -1), tail(d, -1))
+    res <- NULL
+    for (i in seq_len(nrow(ul)))
+        res <- c(res, approx(c(0, 1), ul[i,], seq(0, 1, by=1/(n+1)))$y)
+    unique(res) # remove duplicates from one 'l' being the next 'u'
 }
 
 #' Find the Type of an Oceanographic Data File
@@ -1837,17 +1879,22 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
 #'
 #' @param file a connection or a character string giving the name of the file
 #' to load.
+#'
 #' @param ... arguments to be handed to whichever instrument-specific reading
 #' function is selected, based on the header.
+#'
 #' @return An object of \code{\link{oce-class}} that is
 #' specialized to the data type, e.g. \code{\link{ctd-class}},
 #' if the data file contains \code{ctd} data.
+#'
 #' @author Dan Kelley
+#'
 #' @seealso The file type is determined by \code{\link{oceMagic}}.  If the file
 #' type can be determined, then one of the following is called:
 #' \code{\link{read.ctd}}, \code{\link{read.coastline}}
 #' \code{\link{read.lobo}}, \code{\link{read.rsk}},
 #' \code{\link{read.sealevel}}, etc.
+#'
 #' @examples
 #'
 #' library(oce)

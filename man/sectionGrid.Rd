@@ -4,7 +4,7 @@
 \alias{sectionGrid}
 \title{Grid a Section}
 \usage{
-sectionGrid(section, p, method = "approx",
+sectionGrid(section, p, method = "approx", trim = TRUE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -14,14 +14,20 @@ sectionGrid(section, p, method = "approx",
 should be done.  If this is not supplied, the pressure levels will be
 calculated based on the typical spacing in the ctd profiles stored within
 \code{section}.  If \code{p="levitus"}, then pressures will be set to be those
-of the Levitus atlas, given by \code{\link{standardDepths}}, trimmed to the
-maximum pressure in \code{section}.  If \code{p} is a single numerical value,
+of the Levitus atlas, given by \code{\link{standardDepths}}.
+If \code{p} is a single numerical value,
 it is taken as the number of subdivisions to use in a call to \code{\link{seq}}
 that has range from 0 to the maximum pressure in \code{section}.  Finally, if a
-vector numerical values is provided, then it is used as is.}
+vector numerical values is provided, perhaps. constructed with \code{\link{seq}}
+or \code{\link{standardDepths}(5)} (as in the examples),
+then it is used as is, after trimming any values that exceed the maximum
+pressure in the station data stored within \code{section}.}
 
 \item{method}{The method to use to decimate data within the stations; see
 \code{\link{ctdDecimate}}, which is used for the decimation.}
+
+\item{trim}{Logical value indicating whether to trim gridded pressures
+to the range of the data in \code{section}.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -65,11 +71,17 @@ data(section)
 GS <- subset(section, 109<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 plot(GSg, map.xlim=c(-80,-60))
-# Show difference between 'approx' and 'approxML' interpolation methods.
-GSgML <- sectionGrid(GS, p=seq(0, 5000, 100), method="approxML")
-par(mfrow=c(1, 2))
-plot(GSg, which="temperature", ztype="image")
-plot(GSgML, which="temperature", ztype="image")
+# Show effects of various depth schemes
+par(mfrow=c(3, 1))
+default <- sectionGrid(GS)
+approxML <- sectionGrid(GS, method="approxML")
+standardDepths5 <- sectionGrid(GS, p=standardDepths(5))
+plot(default, which="temperature", ztype="image", ylim=c(200,0))
+mtext("default sectionGrid()")
+plot(approxML, which="temperature", ztype="image", ylim=c(200,0))
+mtext("sectionGrid(..., method=\\"approxML\\")")
+plot(standardDepths5, which="temperature", ztype="image", ylim=c(200,0))
+mtext("sectionGrid(..., p=standardDepths(5))")
 
 }
 \seealso{

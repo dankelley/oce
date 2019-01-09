@@ -1621,13 +1621,9 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
 #' \code{"lm"} method can be quite slow, and its results may be quite similar to those of the
 #' boxcar method.)
 #'
-#' Note that a sort of numerical cabeling effect can result from this procedure,
-#' but it can be avoided as follows
-#'
-#' \preformatted{
-#' xd <- ctdDecimate(x)
-#' xd[["sigmaTheta"]] <- swSigmaTheta(xd[["salinity"]],xd[["temperature"]],xd[["pressure"]])
-#' }
+#' For widely-spaced data, a sort of numerical cabeling effect can result when
+#' density is computed based on interpolated salinity and temperature.
+#' See reference [2] for a discussion of this issue and possible solutions.
 #'
 #' @template flagDeletionTemplate
 #'
@@ -1699,9 +1695,14 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
 #'
 #'
 #' @references
-#' R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
+#' 1. R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
 #' application to oceanographic data.  \emph{Deep Sea Research}, \bold{15},
 #' 185-193.
+#'
+#' 2. Oguma, Sachiko, Toru Suzuki, Yutaka Nagata, Hidetoshi Watanabe, Hatsuyo Yamaguchi,
+#' and Kimio Hanawa. “Interpolation Scheme for Standard Depth Data Applicable for Areas
+#' with a Complex Hydrographical Structure.” Journal of Atmospheric and Oceanic Technology
+#' 21, no. 4 (April 1, 2004): 704–15.
 #'
 #' @author Dan Kelley
 #'
