@@ -1,3 +1,4 @@
+^doc$
 ^revdep$
 ^cran-comments.md$
 ^CONTRIBUTING.md$
@@ -10,9 +11,9 @@
 .travis.yml
 ^.*.nc$
 ^.*.csv$
-create_data
-README_developers.md
-R/.*.swo
+^create_data$
+^README_developers.md$
+^.*.swo$
 css
 _layouts
 _site
