@@ -1,5 +1,4 @@
 ^R/check_urls\.R$
-^Meta$
 ^doc$
 ^revdep$
 ^cran-comments.md$
@@ -13,9 +12,9 @@
 .travis.yml
 ^.*.nc$
 ^.*.csv$
-create_data
-README_developers.md
-R/.*.swo
+^create_data$
+^README_developers.md$
+^.*.swo$
 css
 _layouts
 _site

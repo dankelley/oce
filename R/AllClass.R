@@ -55,9 +55,9 @@ setClass("oce",
 setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {
-              dataNames <- names(object@data)
               metadataNames <- names(object@metadata)
-              isTime <- grepl("^time", dataNames, ignore.case=TRUE) # pass timestampIMU
+              datanames <- names(object@data)
+              isTime <- grepl("^time$", names) # OLD: more permissive name, but that breaks on some data
               if (any(isTime)) {
                   time <- object@data[[which(isTime)[1]]]
                   ## Times are always in POSIXct, so the length() does something useful
