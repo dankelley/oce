@@ -55,6 +55,7 @@ setClass("oce",
 setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {
+              metadataNames <- names(object@metadata)
               dataNames <- names(object@data)
               isTime <- grepl("^time$", dataNames) # OLD: more permissive name, but that breaks on some data
               if (any(isTime)) {
@@ -88,7 +89,7 @@ setMethod(f="summary",
                       threes[i, ] <- threenum(object@data[[i]])
                   }
                   ##rownames(threes) <- paste("   ", names[!isTime])
-                  units <- if ("units" %in% names(object@metadata)) object@metadata$units else NULL
+                  units <- if ("units" %in% metadataNames) object@metadata$units else NULL
                   ## paste the scale after the unit
                   unitsNames <- names(object@metadata$units)
                   units <- unlist(lapply(seq_along(object@metadata$units),
