@@ -1,5 +1,6 @@
 ^R/check_urls\.R$
 ^doc$
+^Meta$
 ^revdep$
 ^cran-comments.md$
 ^CONTRIBUTING.md$
