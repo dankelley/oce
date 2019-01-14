@@ -56,8 +56,8 @@ setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {
               metadataNames <- names(object@metadata)
-              datanames <- names(object@data)
-              isTime <- grepl("^time$", names) # OLD: more permissive name, but that breaks on some data
+              dataNames <- names(object@data)
+              isTime <- grepl("^time$", dataNames) # OLD: more permissive name, but that breaks on some data
               if (any(isTime)) {
                   time <- object@data[[which(isTime)[1]]]
                   ## Times are always in POSIXct, so the length() does something useful
