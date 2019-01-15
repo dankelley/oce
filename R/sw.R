@@ -308,31 +308,35 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
         SA <- ctd[["SA"]]
         CT <- ctd[["CT"]]
         p <- ctd[["pressure"]]
-        ##np <- length(p)
-        ok <- !is.na(p) & !is.na(SA) & !is.na(CT)
-        depths <- sum(!is.na(p))
+        ok <- is.finite(p) & is.finite(SA) & is.finite(CT)
+        nok <- sum(ok)
         if (missing(df)) {
-            df <- if (depths > 100) f <- floor(depths / 10) # at least 10
-                else if (depths > 20) f <- floor(depths / 3) # at least 7
-                else if (depths > 10) f <- floor(depths / 2) # at least 5
-                else depths
-            oceDebug(debug, "df=", df, " (calculated using depths=", depths, ")\n", sep="")
+            df <- if (nok > 100) floor(nok / 10) # at least 10
+                else if (nok > 20) floor(nok / 3) # at least 7
+                else if (nok > 10) floor(nok / 2) # at least 5
+                else nok
+            oceDebug(debug, "df=", df, " (calculated using nok=", nok, ")\n", sep="")
         } else {
             oceDebug(debug, "df=", df, " (given as an argument to swNw())\n", sep="")
         }
-        if (sum(ok) > 4 && is.finite(df)) {
-            SA <- predict(smooth.spline(p[ok], SA[ok], df=df), p[ok])$y
-            CT <- predict(smooth.spline(p[ok], CT[ok], df=df), p[ok])$y
+        ## Focus on non-NA values
+        pok <- p[ok]
+        SAok <- SA[ok]
+        CTok <- CT[ok]
+        ## Smooth with a spline, but only if have enough data
+        if (nok > 4 && is.finite(df)) {
+            SAok <- predict(smooth.spline(pok, SAok, df=df), pok)$y
+            CTok <- predict(smooth.spline(pok, CTok, df=df), pok)$y
         }
         latitude <- ctd[["latitude"]]
+        if (is.null(latitude))
+            stop("cannot compute N2 without latitude, for eos=\"gsw\"")
         if (is.na(latitude[1]))
             latitude <- 0
-        l <- gsw::gsw_Nsquared(SA=SA, CT=CT, p=p, latitude=latitude[1])
+        l <- gsw::gsw_Nsquared(SA=SAok, CT=CTok, p=pok, latitude=latitude[1])
         ## approx back to the given pressures
-        ok <- is.finite(l$p_mid) & is.finite(l$N2)
-        x <- l$p_mid[ok]
-        y <- l$N2[ok]
-        res <- approx(x, y, p, rule=2)$y
+        good <- is.finite(l$p_mid) & is.finite(l$N2)
+        res <- approx(x=l$p_mid[good], y=l$N2[good], p, rule=2)$y
     }
     oceDebug(debug, "} # swN2()\n", sep="", unindent=1)
     res
