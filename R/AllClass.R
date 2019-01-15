@@ -96,7 +96,7 @@ setMethod(f="summary",
                           threes[i, ] <- threenum(object@data[[i]])
                       }
                   }
-                  ##rownames(threes) <- paste("   ", names[!isTime])
+                  ##rownames(threes) <- paste("   ", dataNames[!isTime])
                   units <- if ("units" %in% metadataNames) object@metadata$units else NULL
                   ## paste the scale after the unit
                   unitsNames <- names(object@metadata$units)
@@ -167,7 +167,7 @@ setMethod(f="summary",
                       }
                       ##print(OriginalName)
                       ## I'm not sure the following will ever happen, if we always remember
-                      ## to use ctdAddColumn(), but I don't want names getting recycled, so
+                      ## to use ctdAddColumn(), but I don't want dataNames getting recycled, so
                       ## the next if-block prevents that.
                       if (length(OriginalName) < length(dataNames))
                           OriginalName <- c(OriginalName, rep("-", length(dataNames)-length(OriginalName)))
@@ -181,7 +181,7 @@ setMethod(f="summary",
                           }
                       }
                       if ("time" %in% dataNames)
-                          threes <- threes[-which("time"==dataNames), , drop=FALSE]
+                          threes <- threes[-which("time" == dataNames), , drop=FALSE]
                       owidth <- options('width')
                       options(width=150) # make wide to avoid line breaks
                       print(threes, quote=FALSE)
@@ -444,8 +444,8 @@ setMethod(f="show",
                   filename <- object[["filename"]]
               else
                   filename <- "(filename unknown)"
-              names <- names(object@data)
-              ncol <- length(names)
+              dataNames <- names(object@data)
+              ncol <- length(dataNames)
               if (is.null(filename) || filename == "" || is.na(filename) || filename=="(filename unknown)") {
                   if (ncol > 0) {
                       cat(class(object)[1], " object has data as follows.\n", sep="")
@@ -459,26 +459,26 @@ setMethod(f="show",
                       cat(class(object)[1], " object, from file '", filename, "', has nothing in its data slot.\n", sep="")
                   }
               }
-              for (i in seq_along(names)) {
+              for (i in seq_along(dataNames)) {
                   d <- object@data[[i]]
                   if (0 == length(d)) {
-                      cat("  ", names[i], ": empty\n")
+                      cat("  ", dataNames[i], ": empty\n")
                   } else {
                       if (inherits(d, "POSIXt")) {
-                          cat(vectorShow(d, paste("  ", names[i])))
+                          cat(vectorShow(d, paste("  ", dataNames[i])))
                       } else if (is.vector(d)) {
-                          cat(vectorShow(d, paste("  ", names[i])))
+                          cat(vectorShow(d, paste("  ", dataNames[i])))
                       } else if (is.array(d)) {
                           dim <- dim(object@data[[i]])
                           if (length(dim) == 1) {
-                              cat(vectorShow(d, paste("  ", names[i])))
+                              cat(vectorShow(d, paste("  ", dataNames[i])))
                           } else if (length(dim) == 2) {
-                              cat("   ", names[i], ", a ", dim[1], "x", dim[2], " array with value ", d[1, 1], " at [1,1] position\n", sep="")
+                              cat("   ", dataNames[i], ", a ", dim[1], "x", dim[2], " array with value ", d[1, 1], " at [1,1] position\n", sep="")
                           } else if (length(dim) == 3) {
-                              cat("   ", names[i], ", a ", dim[1], "x", dim[2], "x", dim[3], " array with value ", d[1, 1, 1],
+                              cat("   ", dataNames[i], ", a ", dim[1], "x", dim[2], "x", dim[3], " array with value ", d[1, 1, 1],
                                   " at [1,1,1] position\n", sep="")
                           } else {
-                              cat("   ", names[i], ", an array of more than 3 dimensions\n")
+                              cat("   ", dataNames[i], ", an array of more than 3 dimensions\n")
                           }
                       }
                   }
@@ -560,7 +560,7 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
     }
     if (missing(debug))
         debug <- 0
-    if (any(names(flags)!=names(actions)))
+    if (any(names(flags) != names(actions)))
         stop("names of flags must match those of actions")
     schemeMappingNames <- names(object@metadata$flagScheme$mapping)
     ##> if (is.character(flags[[1]])) {
