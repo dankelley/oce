@@ -3549,11 +3549,12 @@ setMethod(f="plot",
                       ##     yloc <- yloc - d.yloc
                       ## }
                   } else if (which[w] == 5) {
+                      oceDebug(debug, "drawing a map\n")
                       ## map
                       if (!is.null(x[["latitude"]]) &&
                           !is.null(x[["longitude"]]) &&
-                          is.finite(x[["latitude"]][1]) &&
-                          is.finite(x[["longitude"]][1])) {
+                          any(is.finite(x[["latitude"]])) &&
+                          any(is.finite(x[["longitude"]]))) {
                           oceDebug(debug, "plot(ctd, ...) { # of type MAP\n")
                           ## Calculate span, if not given
                           if (missing(span)) {
@@ -3708,8 +3709,13 @@ setMethod(f="plot",
                               }
                           }
                           ## draw isobaths
-                          stationLon <- standardizeLongitude(x[["longitude"]][1])
-                          stationLat <- x[["latitude"]][1]
+                          xlon <- x[["longitude"]]
+                          xlat <- x[["latitude"]]
+                          ok <- is.finite(xlon) & is.finite(xlat)
+                          xlon <- xlon[ok]
+                          xlat <- xlat[ok]
+                          stationLon <- standardizeLongitude(xlon)
+                          stationLat <- xlat
                           if (is.numeric(drawIsobaths) || (is.logical(drawIsobaths) && drawIsobaths)) {
                               data("topoWorld", package="oce", envir=environment())
                               topoWorld <- get("topoWorld")
