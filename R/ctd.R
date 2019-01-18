@@ -3216,7 +3216,7 @@ setMethod(f="plot",
               } else if (lw == 3) {
                   par(mfcol=c(3, 1))
               } else if (lw == 4) {
-                  par(mfcol=c(2, 2))
+                  par(mfrow=c(2, 2))
               } else {
                   nnn <- floor(sqrt(lw))
                   par(mfcol=c(nnn, ceiling(lw/nnn)))
