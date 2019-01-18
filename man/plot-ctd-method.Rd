@@ -208,7 +208,8 @@ which will yield breaks in the lines.}
 same length as \code{which}, if necessary, and then supplied to
 each of the individual plot calls. If it is not supplied,
 then those plot calls use defaults (e.g. using a line for
-\code{\link{plotProfile}} and using dots for \code{\link{plotTS}}.}
+\code{\link{plotProfile}}, using dots for \code{\link{plotTS}},
+etc).}
 
 \item{mgp}{Three-element numerical vector specifying axis-label geometry,
 passed to \code{\link{par}}.
