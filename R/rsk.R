@@ -868,7 +868,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             isMeasured <- channelsTable$isMeasured == 1
         } else {
             isMeasured <- channelsTable$isDerived == 0
-            warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
+            ##warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
         }
         dataNamesOriginal <- c("-", channelsTable$shortName[isMeasured])
         ##[issue 1483] print(cbind(channelsTable,isMeasured))
@@ -962,7 +962,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             w <- which("cond12" == names)[1]
             if (is.na(unitsRsk[w])) {
                 res@metadata$units$cond12 <- NULL # remove existing
-                res@metadata$units$conductivity <- list(unit=expression(mu*S/cm), scale="")
+                res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
             }
             newnames <- gsub("cond12", "conductivity", names(res@data))
             names(res@data) <- newnames
