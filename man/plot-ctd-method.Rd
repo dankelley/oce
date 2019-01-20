@@ -217,7 +217,12 @@ The default establishes tighter margins than in the usual R setup.}
 
 \item{mar}{Four-element numerical vector specifying margin geometry,
 passed to \code{\link{par}}.
-The default establishes tighter margins than in the usual R setup.}
+The default establishes tighter margins than in the usual R setup.
+Note that the value of \code{mar} is ignored for the map panel
+of multi-panel maps; instead, the present value of
+\code{\link{par}("mar")} is used, which in the default call will
+make the map plot region equal that of the previously-drawn
+profiles and TS plot.}
 
 \item{inset}{Set to \code{TRUE} for use within \code{\link{plotInset}}.  The
 effect is to prevent the present function from adjusting margins, which is

@@ -3038,6 +3038,11 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' @param mar Four-element numerical vector specifying margin geometry,
 #' passed to \code{\link{par}}.
 #' The default establishes tighter margins than in the usual R setup.
+#' Note that the value of \code{mar} is ignored for the map panel
+#' of multi-panel maps; instead, the present value of
+#' \code{\link{par}("mar")} is used, which in the default call will
+#' make the map plot region equal that of the previously-drawn
+#' profiles and TS plot.
 #'
 #' @param inset Set to \code{TRUE} for use within \code{\link{plotInset}}.  The
 #' effect is to prevent the present function from adjusting margins, which is
@@ -3550,6 +3555,10 @@ setMethod(f="plot",
                       ## }
                   } else if (which[w] == 5) {
                       oceDebug(debug, "drawing a map\n")
+                      ## obey 'mar' only if length(which)==1.
+                      omar <- mar # AAAAAAAA
+                      if (length(which) > 1)
+                          mar <- par("mar")
                       ## map
                       if (!is.null(x[["latitude"]]) &&
                           !is.null(x[["longitude"]]) &&
@@ -3754,14 +3763,15 @@ setMethod(f="plot",
                           ## draw some text in top margin
                           if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
                               mtext(x@metadata$station,
-                                    side=3, adj=0, cex=0.8*par("cex"), line=1.125)
+                                    side=3, adj=0, cex=0.8*par("cex"), line=0.5)
                           if (!is.null(x@metadata$startTime) && 4 < nchar(x@metadata$startTime, "bytes"))
                               mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%M:%S"),
-                                    side=3, adj=1, cex=0.8*par("cex"), line=1.125)
+                                    side=3, adj=1, cex=0.8*par("cex"), line=0.5)
                           else if (!is.null(x@data$time))
                               mtext(format(x@data$time[1], "%Y-%m-%d %H:%M:%S"),
-                                    side=3, adj=1, cex=0.8*par("cex"), line=1.125)
+                                    side=3, adj=1, cex=0.8*par("cex"), line=0.5)
                       }
+                      mar <- omar # recover mar, which was altered for multi-panel plots
                       oceDebug(debug, "} # plot(ctd, ...) of type \"map\"\n", unindent=1)
                   } else if (which[w] == 20) { # CT
                       plotProfile(x, xtype="CT", xlab=resizableLabel("CT", debug=debug-1),
