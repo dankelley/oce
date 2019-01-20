@@ -3024,7 +3024,12 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' which will yield breaks in the lines.
 #'
 #' @param type The type of plot to draw, using the same scheme as
-#' \code{\link{plot}}.
+#' \code{\link{plot}}. If supplied, this is increased to be the
+#' same length as \code{which}, if necessary, and then supplied to
+#' each of the individual plot calls. If it is not supplied,
+#' then those plot calls use defaults (e.g. using a line for
+#' \code{\link{plotProfile}}, using dots for \code{\link{plotTS}},
+#' etc).
 #'
 #' @param mgp Three-element numerical vector specifying axis-label geometry,
 #' passed to \code{\link{par}}.
@@ -3105,7 +3110,7 @@ setMethod(f="plot",
                               useSmoothScatter=FALSE,
                               df,
                               keepNA=FALSE,
-                              type='l',
+                              type,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1]+1.5, mgp[1]+1),
                               inset=FALSE,
@@ -3139,6 +3144,8 @@ setMethod(f="plot",
                   dt <- x@metadata$deploymentType
                   if (is.null(dt)) {
                       which <- c(1, 2, 3, 5)
+                      if (missing(type))
+                          type <- c("l", "l", "p", "p")
                   } else {
                       types <- c("profile", "moored", "thermosalinograph", "tsg", "towyo")
                       itype <- pmatch(dt, types, nomatch=0)
@@ -3149,18 +3156,30 @@ setMethod(f="plot",
                           dt <- types[itype]
                       }
                       if ("profile" == dt) {
-                          which <- c(1, 2, 3, 5)
+                          which <- c(1, 2, 3, 5) # salinity+temperature density+N2 TS map
+                          if (missing(type))
+                              type <- c("l", "l", "p", "p")
                       } else if ("moored" == dt) {
-                          which <- c(30, 31, 32, 5) # S T p map
+                          which <- c(30, 31, 32, 5) # Sts Tts pts map
+                          if (missing(type))
+                              type <- c("l", "l", "l", "p")
                       } else if ("thermosalinograph" == dt) {
-                          which <- c(30, 3, 31, 5)
+                          which <- c(30, 3, 31, 5) # Sts TS Tts
+                          if (missing(type))
+                              type <- c("l", "p", "l", "l")
                       } else if ("tsg" == dt) {
                           ## @richardsc -- do you think we still need this?
-                          which <- c(30, 3, 31, 5)
+                          which <- c(30, 3, 31, 5) # Sts TS Tts map
+                          if (missing(type))
+                              type <- c("l", "p", "l", "p")
                       } else if ("towyo" == dt) {
-                          which <- c(30, 3, 33, 5)
+                          which <- c(30, 3, 33, 5) # Sts TS pts map
+                          if (missing(type))
+                              type <- c("l", "l", "l", "p")
                       } else {
-                          which <- c(1, 2, 3, 5)
+                          which <- c(1, 2, 3, 5) # salinity+temperature density+N2 TS map
+                          if (missing(type))
+                              type <- c("l", "l", "p", "p")
                       }
                   }
                } else {
@@ -3183,8 +3202,11 @@ setMethod(f="plot",
                   add <- FALSE
               }
               if (lw > 1) on.exit(par(opar))
-              if (length(type) < lw)
-                  type <- rep(type, lw) # FIXME: recycle more sensibly
+              if (missing(type))
+                  type <- rep("p", lw)
+              if (length(type) < lw) {
+                  type <- rep(type, lw)
+              }
               if (length(pch) < lw)
                   pch <- rep(pch, lw) # FIXME: recycle more sensibly
               if (length(cex) < lw)
@@ -3216,7 +3238,7 @@ setMethod(f="plot",
               } else if (lw == 3) {
                   par(mfcol=c(3, 1))
               } else if (lw == 4) {
-                  par(mfcol=c(2, 2))
+                  par(mfrow=c(2, 2))
               } else {
                   nnn <- floor(sqrt(lw))
                   par(mfcol=c(nnn, ceiling(lw/nnn)))
@@ -3283,7 +3305,9 @@ setMethod(f="plot",
                                       eos=eos,
                                       useSmoothScatter=useSmoothScatter,
                                       grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                      cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                      cex=cex[w], pch=pch[w],
+                                      type=if (!missing(type)) type[w],
+                                      keepNA=keepNA, inset=inset, add=add,
                                       debug=debug-1,
                                       ...)
                       } else {
@@ -3297,7 +3321,9 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  type=if (!missing(type)) type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 2) {
@@ -3307,7 +3333,9 @@ setMethod(f="plot",
                                   useSmoothScatter=useSmoothScatter,
                                   df=df,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  type=if (!missing(type)) type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 6) {
@@ -3317,7 +3345,9 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  type=if (!missing(type)) type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 7) {
@@ -3325,7 +3355,9 @@ setMethod(f="plot",
                                   plim=plim, densitylim=densitylim, timelim=timelim,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  ##type=type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 8) {
@@ -3335,7 +3367,9 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  type=if (!missing(type)) type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 9) {
@@ -3346,7 +3380,9 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  type=if (!missing(type)) type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 10) {
@@ -3357,7 +3393,9 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  type=if (!missing(type)) type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 11) {
@@ -3369,7 +3407,9 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  type=if (!missing(type)) type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 12) {
@@ -3382,7 +3422,9 @@ setMethod(f="plot",
                                   df=df,
                                   useSmoothScatter=useSmoothScatter,
                                   col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  type=if (!missing(type)) type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 13) {
@@ -3392,7 +3434,9 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  type=if (!missing(type)) type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 14) {
@@ -3402,7 +3446,9 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  type=if (!missing(type)) type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 15) {
@@ -3412,7 +3458,9 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  type=if (!missing(type)) type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 16) {
@@ -3422,7 +3470,9 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  type=if (!missing(type)) type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 17) {
@@ -3431,10 +3481,13 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  type=if (!missing(type)) type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 3) {
+                      oceDebug(debug, "which=3, for a TS diagram\n")
                       ##par(mar=c(3.5,3,2,2))
                       lwd.rho <- if ("lwd.rho" %in% names(dots)) dots$lwd.rho else par('lwd')
                       lty.rho <- if ("lty.rho" %in% names(dots)) dots$lty.rho else par('lty')
@@ -3442,7 +3495,8 @@ setMethod(f="plot",
                              grid=grid, col.grid="lightgray", lty.grid="dotted",
                              eos=eos,
                              lwd.rho=lwd.rho, lty.rho=lty.rho,
-                             useSmoothScatter=useSmoothScatter, pch=pch, cex=cex, type=type[1],
+                             useSmoothScatter=useSmoothScatter, pch=pch, cex=cex,
+                             type=if (!missing(type)) type[w],
                              inset=inset,
                              add=add,
                              debug=debug-1, ...) # FIXME use inset here
@@ -3495,11 +3549,12 @@ setMethod(f="plot",
                       ##     yloc <- yloc - d.yloc
                       ## }
                   } else if (which[w] == 5) {
+                      oceDebug(debug, "drawing a map\n")
                       ## map
                       if (!is.null(x[["latitude"]]) &&
                           !is.null(x[["longitude"]]) &&
-                          is.finite(x[["latitude"]][1]) &&
-                          is.finite(x[["longitude"]][1])) {
+                          any(is.finite(x[["latitude"]])) &&
+                          any(is.finite(x[["longitude"]]))) {
                           oceDebug(debug, "plot(ctd, ...) { # of type MAP\n")
                           ## Calculate span, if not given
                           if (missing(span)) {
@@ -3654,8 +3709,13 @@ setMethod(f="plot",
                               }
                           }
                           ## draw isobaths
-                          stationLon <- standardizeLongitude(x[["longitude"]][1])
-                          stationLat <- x[["latitude"]][1]
+                          xlon <- x[["longitude"]]
+                          xlat <- x[["latitude"]]
+                          ok <- is.finite(xlon) & is.finite(xlat)
+                          xlon <- xlon[ok]
+                          xlat <- xlat[ok]
+                          stationLon <- standardizeLongitude(xlon)
+                          stationLat <- xlat
                           if (is.numeric(drawIsobaths) || (is.logical(drawIsobaths) && drawIsobaths)) {
                               data("topoWorld", package="oce", envir=environment())
                               topoWorld <- get("topoWorld")
@@ -3708,7 +3768,9 @@ setMethod(f="plot",
                                   Tlim=Tlim, plim=plim, eos="gsw",
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  type=if (!missing(type)) type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 21) { # SA
@@ -3716,7 +3778,9 @@ setMethod(f="plot",
                                   Tlim=Tlim, plim=plim, eos="gsw",
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  cex=cex[w], pch=pch[w],
+                                  type=if (!missing(type)) type[w],
+                                  keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] ==30) {
@@ -4176,11 +4240,13 @@ plotTS <- function (x,
                     debug=getOption("oceDebug"),
                     ...)
 {
-    oceDebug(debug, "plotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho,
-             ", eos=\"", eos, "\", ",
-             ", mgp=c(", paste(mgp, collapse=","), "), ",
-             ", mar=c(", paste(mar, collapse=","), "), ",
-             ", ...) {\n", sep="", unindent=1)
+    oceDebug(debug, "plotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho, ",",
+             "Slim=", if (!missing(Slim)) paste("c(", Slim[1], ",", Slim[2], ")") else "(missing)", ", ",
+             "Tlim=", if (!missing(Tlim)) paste("c(", Tlim[1], ",", Tlim[2], ")") else "(missing)", ", ",
+             "eos=\"", eos, "\", ",
+             "mgp=c(", paste(mgp, collapse=","), "), ",
+             "mar=c(", paste(mar, collapse=","), "), ",
+             "...) {\n", sep="", unindent=1)
     eos <- match.arg(eos, c("unesco", "gsw"))
     xat <- NULL
     yat <- NULL

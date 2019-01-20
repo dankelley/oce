@@ -29,9 +29,11 @@ library(oce)
 ## 1. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2017.
 
 context("Nortek AD2CP")
+f1 <- "~/Dropbox/oce_secret_data/ad2cp_secret_1.ad2cp"
+f2 <- "~/Dropbox/oce_secret_data/ad2cp_secret_2.ad2cp"
+f3 <- "~/Dropbox/oce_secret_data/ad2cp_secret_3.ad2cp"
 
 test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burst' data", {
-          f1 <- "~/Dropbox/ad2cp_secret_1.ad2cp"
           if (file.exists(f1)) {
             expect_silent(read.adp.ad2cp(f1, 1, 100, 1, plan=0))
             expect_error(read.adp.ad2cp(f1, 1, 100, 1, plan=10),
@@ -336,7 +338,6 @@ test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burs
 
 
 test_that("read.adp() on a private AD2CP file that has only 'burst' data", {
-          f2 <- "~/Dropbox/ad2cp_secret_2.ad2cp"
           if (file.exists(f2)) {
             N <- 500
             ## Note: using read.adp() to ensure that it also works
@@ -390,7 +391,6 @@ test_that("read.adp() on a private AD2CP file that has only 'burst' data", {
 
 
 test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedBurst' data", {
-          f3 <- "~/Dropbox/ad2cp_secret_3.ad2cp"
           if (file.exists(f3)) {
             N <- 100
             ## Note: using read.oce() to ensure that it also works

@@ -16,9 +16,9 @@
   projection = NULL, parameters = NULL, orientation = NULL,
   latlon.pch = 20, latlon.cex = 1.5, latlon.col = "red", cex = 1,
   cex.axis = par("cex.axis"), pch = 1, useSmoothScatter = FALSE, df,
-  keepNA = FALSE, type = "l", mgp = getOption("oceMgp"),
-  mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1),
-  inset = FALSE, add = FALSE, debug = getOption("oceDebug"), ...)
+  keepNA = FALSE, type, mgp = getOption("oceMgp"), mar = c(mgp[1] +
+  1.5, mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1), inset = FALSE,
+  add = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -204,7 +204,12 @@ named \code{df}.}
 which will yield breaks in the lines.}
 
 \item{type}{The type of plot to draw, using the same scheme as
-\code{\link{plot}}.}
+\code{\link{plot}}. If supplied, this is increased to be the
+same length as \code{which}, if necessary, and then supplied to
+each of the individual plot calls. If it is not supplied,
+then those plot calls use defaults (e.g. using a line for
+\code{\link{plotProfile}}, using dots for \code{\link{plotTS}},
+etc).}
 
 \item{mgp}{Three-element numerical vector specifying axis-label geometry,
 passed to \code{\link{par}}.

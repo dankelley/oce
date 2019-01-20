@@ -252,6 +252,8 @@ unitFromStringRsk <- function(s)
         list(unit=expression(degree*C), scale="ITS-90") # guessing on scale
     else if (1 == length(grep("\\xc2\\xb5Mol/m\\xc2\\xb2/s", s, useBytes=TRUE))) # µMol/m²/s
         list(unit=expression(mu*mol/m^2/s), scale="")
+    else if (is.na(s))
+        list(unit=expression(), scale="?")
     else {
         warning("'", s, "' is not in the list of known .rsk units", sep="")
         list(unit=as.expression(s), scale="")
@@ -717,10 +719,14 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         rskv <- dbInfo[1, 1]
         rskVersion <- as.numeric(strsplit(gsub(".[a-z].*$", "", gsub("^.*- *", "", rskv)), "\\.")[[1]])
         ## Ruskin software version number
-        appSettings <- RSQLite::dbReadTable(con, "appSettings")
-        rv <- appSettings[1, 2]
-        ##OLD rv <- read.table(pipe(cmd), sep="|")[1, 2]
-        ruskinVersion <- as.numeric(strsplit(gsub(".[a-z].*$", "", gsub("^.*- *", "", rv)), "\\.")[[1]])
+        if (RSQLite::dbExistsTable(con, "appSettings")) {
+            appSettings <- RSQLite::dbReadTable(con, "appSettings")
+            rv <- appSettings[1, 2]
+            ##OLD rv <- read.table(pipe(cmd), sep="|")[1, 2]
+            ruskinVersion <- as.numeric(strsplit(gsub(".[a-z].*$", "", gsub("^.*- *", "", rv)), "\\.")[[1]])
+        } else {
+            ruskinVersion <- "mobile"
+        }
         ##message("NEW: ruskinVersion: ", paste(ruskinVersion, collapse="."))
         ## Next block got triggered with too many files, and it seems more sensible
         ## to just go ahead and try to get something from the file as best we can.
@@ -865,6 +871,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
         }
         dataNamesOriginal <- c("-", channelsTable$shortName[isMeasured])
+        ##[issue 1483] print(cbind(channelsTable,isMeasured))
         names <- names[isMeasured] # only take names of things that are in the data table
         unitsRsk <- channelsTable$units[isMeasured]
         ## Check for duplicated names, and append digits to make unique
@@ -940,8 +947,30 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         if (hasDatasetID) res@metadata$datasetID <- datasetID
         ## There is actually no need to set the conductivity unit since new()
         ## sets it, but do it anyway, as a placeholder to show where to do
-        ## this, in case some RBR devices use different units
-        res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="") # FIXME: will this work for all RBR rsks?
+        ## this, in case some RBR devices use different units.
+        if ("cond12" %in% names(res@data)) {
+            ## [issue 1483] Change the name, and possibly unit, of 'cond12'
+            ##
+            ## For a sample file, channelsTable gives the unit for cond12 as
+            ## NA.  Rather than make unitFromStringRsk() give a conductivity
+            ## unit whenever it gets an NA value (which might occur for other
+            ## fields -- who knows?), we will switch NA to uS/cm because
+            ## that seems to be the usual unit for RBR instruments. However,
+            ## if the cond12 unit is not NA, we will leave it as it is, on the
+            ## assumption that unitFromStringRsk() has already interpreted
+            ## it correctly
+            w <- which("cond12" == names)[1]
+            if (is.na(unitsRsk[w])) {
+                res@metadata$units$cond12 <- NULL # remove existing
+                res@metadata$units$conductivity <- list(unit=expression(mu*S/cm), scale="")
+            }
+            newnames <- gsub("cond12", "conductivity", names(res@data))
+            names(res@data) <- newnames
+            names(res@metadata$dataNamesOriginal) <- newnames
+        } else {
+            ## FIXME: will this work for all RBR rsks that don't contain cond12?
+            res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
+        }
         res@metadata$pressureAtmospheric <- pressureAtmospheric
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
