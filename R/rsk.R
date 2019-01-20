@@ -962,7 +962,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             w <- which("cond12" == names)[1]
             if (is.na(unitsRsk[w])) {
                 res@metadata$units$cond12 <- NULL # remove existing
-                res@metadata$units$conductivity <- list(unit=expression(mu*S/cm), scale="")
+                res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
             }
             newnames <- gsub("cond12", "conductivity", names(res@data))
             names(res@data) <- newnames
