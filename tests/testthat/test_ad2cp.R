@@ -3,8 +3,10 @@ library(oce)
 
 context("Nortek AD2CP")
 
+message("NOTE: this only works in the 'ad2cp' branch. The 'develop' branch will fail")
 test_that("read.ad2cp() on private file", {
-          f <- "~/Dropbox/oce_ad2cp/labtestsig3.ad2cp"
+          f <- "~/Dropbox/oce_secret_data/ad2cp01_00.ad2cp"
+          ## f <- "~/Dropbox/oce_ad2cp/labtestsig3_00.ad2cp"
           if (file.exists(f)) {
               d <- read.ad2cp(f, 1, 10, 1)
               expect_equal(head(d$buf, 6), as.raw(c(0xa5, 0x0a, 0xa0, 0x10, 0x86, 0x15)))

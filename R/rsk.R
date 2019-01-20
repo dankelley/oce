@@ -947,12 +947,23 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         if (hasDatasetID) res@metadata$datasetID <- datasetID
         ## There is actually no need to set the conductivity unit since new()
         ## sets it, but do it anyway, as a placeholder to show where to do
-        ## this, in case some RBR devices use different units
+        ## this, in case some RBR devices use different units.
         if ("cond12" %in% names(res@data)) {
+            ## [issue 1483] Change the name, and possibly unit, of 'cond12'
+            ##
+            ## For a sample file, channelsTable gives the unit for cond12 as
+            ## NA.  Rather than make unitFromStringRsk() give a conductivity
+            ## unit whenever it gets an NA value (which might occur for other
+            ## fields -- who knows?), we will switch NA to uS/cm because
+            ## that seems to be the usual unit for RBR instruments. However,
+            ## if the cond12 unit is not NA, we will leave it as it is, on the
+            ## assumption that unitFromStringRsk() has already interpreted
+            ## it correctly
             w <- which("cond12" == names)[1]
-            names[w] <- "conductivity"
-            res@metadata$units$cond12 <- NULL
-            res@metadata$units$conductivity$unit <- expression()
+            if (is.na(unitsRsk[w])) {
+                res@metadata$units$cond12 <- NULL # remove existing
+                res@metadata$units$conductivity <- list(unit=expression(mu*S/cm), scale="")
+            }
             newnames <- gsub("cond12", "conductivity", names(res@data))
             names(res@data) <- newnames
             names(res@metadata$dataNamesOriginal) <- newnames
