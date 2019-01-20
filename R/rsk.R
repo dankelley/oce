@@ -717,10 +717,14 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         rskv <- dbInfo[1, 1]
         rskVersion <- as.numeric(strsplit(gsub(".[a-z].*$", "", gsub("^.*- *", "", rskv)), "\\.")[[1]])
         ## Ruskin software version number
-        appSettings <- RSQLite::dbReadTable(con, "appSettings")
-        rv <- appSettings[1, 2]
-        ##OLD rv <- read.table(pipe(cmd), sep="|")[1, 2]
-        ruskinVersion <- as.numeric(strsplit(gsub(".[a-z].*$", "", gsub("^.*- *", "", rv)), "\\.")[[1]])
+        if (RSQLite::dbExistsTable(con, "appSettings")) {
+            appSettings <- RSQLite::dbReadTable(con, "appSettings")
+            rv <- appSettings[1, 2]
+            ##OLD rv <- read.table(pipe(cmd), sep="|")[1, 2]
+            ruskinVersion <- as.numeric(strsplit(gsub(".[a-z].*$", "", gsub("^.*- *", "", rv)), "\\.")[[1]])
+        } else {
+            ruskinVersion <- "mobile"
+        }
         ##message("NEW: ruskinVersion: ", paste(ruskinVersion, collapse="."))
         ## Next block got triggered with too many files, and it seems more sensible
         ## to just go ahead and try to get something from the file as best we can.
