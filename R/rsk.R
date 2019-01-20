@@ -868,7 +868,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             isMeasured <- channelsTable$isMeasured == 1
         } else {
             isMeasured <- channelsTable$isDerived == 0
-            warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
+            ##warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
         }
         dataNamesOriginal <- c("-", channelsTable$shortName[isMeasured])
         ##[issue 1483] print(cbind(channelsTable,isMeasured))
