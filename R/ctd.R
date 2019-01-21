@@ -1184,10 +1184,21 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         cruise <- m$cruise
         station <- m$station
         startTime <- if (is.character(m$startTime)) startTime <- as.POSIXct(m$startTime, tz="UTC") else m$startTime
-        if (is.null(latitude) && "latitude" %in% names(m))
-            latitude <- m$latitude
-        if (is.null(longitude) && "longitude" %in% names(m))
-            longitude <- m$longitude
+        ## Look for lon and lat first in data slot, second in metadata slot
+        if (is.null(longitude)) {
+            if ("longitude" %in% dnames) {
+                longitude <- d$longitude
+            } else if ("longitude" %in% mnames) {
+                longitude <- m$longitude
+            }
+        }
+        if (is.null(latitude)) {
+            if ("latitude" %in% dnames) {
+                latitude <- d$latitude
+            } else if ("latitude" %in% mnames) {
+                latitude <- m$latitude
+            }
+        }
         ##1108 if (missing(date) && "date" %in% names(m)) {
         ##1108     date <- m$date
         ##1108 }
@@ -1512,6 +1523,15 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
     ## FIXME: setting waterDepth can have tricky results ... we've had issues with this
     if (is.na(res@metadata$waterDepth) && !is.na(waterDepth))
         res@metadata$waterDepth <- waterDepth
+    ## Remove lon and lat form metadata, if they are in data. This is so plot() will
+    ## show multiple stations, as can be the case in converting from multi-station
+    ## data.
+    if ("longitude" %in% names(res@metadata) && "longitude" %in% names(res@data) &&
+        "latitude" %in% names(res@metadata) && "latitude" %in% names(res@data))
+    {
+        res@metadata$longitude <- NULL
+        res@metadata$latitude <- NULL
+    }
     oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
     res
 }
