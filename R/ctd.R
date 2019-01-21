@@ -3257,14 +3257,13 @@ setMethod(f="plot",
               if (!inset)
                   par(mar=mar)
               par(mgp=mgp)
-
               if (lw == 2) {
                   par(mfcol=c(2, 1))
               } else if (lw == 3) {
                   par(mfcol=c(3, 1))
               } else if (lw == 4) {
                   par(mfrow=c(2, 2))
-              } else {
+              } else if (lw != 1) {
                   nnn <- floor(sqrt(lw))
                   par(mfcol=c(nnn, ceiling(lw/nnn)))
                   rm(nnn)
