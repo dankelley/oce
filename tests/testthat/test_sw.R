@@ -300,6 +300,19 @@ test_that("depth and pressure", {
 })
 
 test_that("spiciness", {
-          sp <- swSpice(35, T90fromT68(10), 100)
+          expect_error(swSpice(35, T90fromT68(10), 100, eos="gsw"), "must supply longitude")
+          ## Q: is this test value from Flament's paper, or is it just a consistency check?
+          sp <- swSpice(35, T90fromT68(10), 100, eos="unesco")
           expect_equal(sp, 1.131195, tolerance=0.0000015)
+          ## compare against direct gsw:: computation
+          data(ctd)
+          S <- ctd[["salinity"]]
+          T <- ctd[["temperature"]]
+          p <- ctd[["pressure"]]
+          lon <- rep(ctd[["longitude"]], length(S))
+          lat <- rep(ctd[["latitude"]], length(S))
+          piOce <- swSpice(S, T, p, longitude=lon, latitude=lat, eos="gsw")
+          piGsw <- gsw::gsw_spiciness0(ctd[["SA"]], ctd[["CT"]])
+          expect_equal(piOce, piGsw)
+
 })

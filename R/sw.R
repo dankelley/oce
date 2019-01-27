@@ -1413,6 +1413,7 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
 #' \sQuote{Details}).
 #' @param eos equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
 #' [3,4].
+#'
 #' @return \emph{In-situ} density [kg/m\eqn{^3}{^3}].
 #' @section Temperature units: The UNESCO formulae are defined in terms of
 #' temperature measured on the IPTS-68 scale, whereas the replacement GSW
@@ -1423,10 +1424,13 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
 #' old code has to be modified, by replacing e.g. \code{swRho(S, T, p)} with
 #' \code{swRho(S, T90fromT68(T), p)}. At typical oceanic values, the difference
 #' between the two scales is a few millidegrees.
+#'
 #' @author Dan Kelley
+#'
 #' @seealso Related density routines include \code{\link{swSigma0}} (and
 #' equivalents at other pressure horizons), \code{\link{swSigmaT}}, and
 #' \code{\link{swSigmaTheta}}.
+#'
 #' @references
 #' 1. Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
 #' fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
@@ -1980,7 +1984,8 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 
 #' Seawater spiciness
 #'
-#' Compute seawater "spice" (a variable orthogonal to density in TS space).
+#' Compute seawater "spice" (a variable orthogonal to density in TS space), in
+#' either the formulation of Flament [1] or the Gibbs SeaWater formulation [2].
 #'
 #' If the first argument is a \code{ctd} object, then salinity, temperature and
 #' pressure values are extracted from it, and used for the calculation.
@@ -1989,31 +1994,88 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #' salty compared with less spicy water. Another interpretation is that spice
 #' is a variable measuring distance orthogonal to isopycnal lines on TS
 #' diagrams (if the diagrams are scaled to make the isopycnals run at 45
-#' degrees). The definition used here is that of Pierre Flament. (Other
-#' formulations exist.)  Note that pressure is ignored in the definition.
-#' Spiciness is sometimes denoted \eqn{\pi(S,t,p)}{pi(S,t,p)}.
+#' degrees). Note that pressure, longitude and latitude are all
+#'  ignored in the Flament definition.
 #'
 #' @param salinity either salinity [PSU] (in which case \code{temperature} and
 #' \code{pressure} must be provided) \strong{or} a \code{ctd} object (in which
 #' case \code{salinity}, \code{temperature} and \code{pressure} are determined
 #' from the object, and must not be provided in the argument list).
+#'
 #' @param temperature \emph{in-situ} temperature [\eqn{^\circ}{deg}C] on the
 #' ITS-90 scale; see \dQuote{Temperature units} in the documentation for
 #' \code{\link{swRho}}.
-#' @param pressure seawater pressure [dbar]
-#' @return Spice [kg/m\eqn{^3}{^3}].
-#' @author Dan Kelley
-#' @references P. Flament, 2002. A state variable for characterizing water
-#' masses and their diffusive stability: spiciness.  \emph{Progr. Oceanog.},
-#' \bold{54}, 493-501.
+#'
+#' @param pressure Seawater pressure [dbar] (only used if \code{eos} is
+#' \code{"gsw"}); see \sQuote{Details}..
+#'
+#' @param longitude longitude of observation (only used if \code{eos} is
+#' \code{"gsw"}; see \sQuote{Details}).
+#'
+#' @param latitude latitude of observation (only used if \code{eos} is
+#' \code{"gsw"}; see \sQuote{Details}).
+#'
+#' @param eos Character value specifying the equation of state,
+#' either \code{"unesco"} (for the Flament formulation, although this
+#' is not actually part of UNESCO)
+#' or \code{"gsw"} for the Gibbs SeaWater formulation.
+#'
+#' @return Flament-formulated spice \eqn{kg/m^3} if \code{eos} is \code{"unesco"}
+#' or surface-referenced GSW spiciness0 \eqn{kg/m^3} if \code{eos} is \code{"gsw"},
+#' the latter provided by \code{\link[gsw]{gsw_spiciness0}}, and hence aimed
+#' at application within the top half-kilometre of the ocean.
+#'
+#' @author Dan Kelley coded this, merely an interface to the code describd
+#' by [1] and [2].
+#'
+#' @examples
+#' ## Contrast the two formulations.
+#' library(oce)
+#' data(ctd)
+#' p <- ctd[["pressure"]]
+#' plot(swSpice(ctd, eos="unesco"), p,
+#'      xlim=c(-2.7, -1.5), ylim=rev(range(p)),
+#'      xlab="Spice", ylab="Pressure [dbar]")
+#' points(swSpice(ctd, eos="gsw"), p,col=2)
+#' mtext("black=unesco, red=gsw")
+#'
+#' @references
+#' 1. Flament, P. “A State Variable for Characterizing Water Masses and Their
+#' Diffusive Stability: Spiciness.” Progress in Oceanography, Observations of the
+#' 1997-98 El Nino along the West Coast of North America, 54, no. 1
+#' (July 1, 2002):493–501.
+#' \url{https://doi.org/10.1016/S0079-6611(02)00065-4}
+#'
+#' 2.McDougall, Trevor J., and Oliver A. Krzysik. “Spiciness.”
+#' Journal of Marine Research 73, no. 5 (September 1, 2015): 141–52.
+#' \url{https://doi.org/10.1357/002224015816665589}
+#'
 #' @family functions that calculate seawater properties
-swSpice <- function(salinity, temperature=NULL, pressure=NULL)
+swSpice <- function(salinity, temperature=NULL, pressure=NULL,
+                    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must provide salinity")
-    l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure))
+    if (eos == "gsw") {
+        if (inherits(salinity, "oce")) {
+            if (is.null(longitude))
+                longitude <- salinity[["longitude"]]
+            if (is.null(latitude))
+                latitude <- salinity[["latitude"]]
+        }
+        if (is.null(longitude))
+            stop("must supply longitude")
+        if (is.null(latitude))
+            stop("must supply latitude")
+        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
+                             longitude=longitude, latitude=latitude, eos=eos))
+    } else { # must be "unesco"
+        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
+    }
     if (is.null(l$temperature))
         stop("must provide temperature")
+    if (eos == "gsw" && is.null(l$pressure))
+        stop("must provide pressure")
     Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
@@ -2023,9 +2085,15 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
     if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
-    res <- .C("sw_spice", as.integer(nS), as.double(l$salinity),
-               as.double(T68fromT90(l$temperature)), as.double(l$pressure),
-               value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
+    if (eos == "unesco") {
+        res <- .C("sw_spice", as.integer(nS), as.double(l$salinity),
+                  as.double(T68fromT90(l$temperature)), as.double(l$pressure),
+                  value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
+    } else if (eos == "gsw") {
+        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
+        res <- gsw::gsw_spiciness0(SA, CT)
+    }
     if (Smatrix) dim(res) <- dim
     res
 }
