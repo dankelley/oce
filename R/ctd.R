@@ -5033,7 +5033,7 @@ plotProfile <- function (x,
                 plot(salinity[look], y[look],
                      xlim=Slim, ylim=ylim, lty=lty, cex=cex, pch=pch,
                      type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-                if (eos == "gsw") {
+                if (eos == "gsw" || xtype == "SA") {
                     mtext(resizableLabel("absolute salinity", "x", unit=NULL, debug=debug-1),
                           side=3, line=axisNameLoc, cex=par("cex"))
                 } else {
