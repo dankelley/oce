@@ -749,21 +749,21 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #' If the first argument is a \code{ctd} object, then the quantities
 #' specified by the other arguments are instead sought from within the object.
 #'
-#' @param either practical salinity [PSU] or a \code{ctd} object from which
+#' @param salinity Either practical salinity [PSU] or a \code{ctd} object from which
 #' practical salinity and the other arguments are to be inferred.
 #'
-#' @param pressure seawater pressure [dbar].
+#' @param pressure Seawater pressure [dbar].
 #'
-#' @param longitude longitude of observation (only used if \code{eos="gsw"};
+#' @param longitude Longitude of observation (only used if \code{eos="gsw"};
 #' see \sQuote{Details}).
 #'
-#' @param latitude latitude of observation (only used if \code{eos="gsw"}; see
+#' @param latitude Latitude of observation (only used if \code{eos="gsw"}; see
 #' \sQuote{Details}).
 #'
-#' @param saturation_fraction saturation fraction of dissolved air in seawater,
+#' @param saturation_fraction The saturation fraction of dissolved air in seawater,
 #' ignored if \code{eos="unesco"}).
 #'
-#' @param eos equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
+#' @param eos The equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}.
 #' [3,4].
 #'
 #' @return Temperature [\eqn{^\circ}{deg}C], defined on the ITS-90 scale.

@@ -8,22 +8,22 @@ swTFreeze(salinity, pressure = 0, longitude = NULL, latitude = NULL,
   saturation_fraction = 1, eos = getOption("oceEOS", default = "gsw"))
 }
 \arguments{
-\item{pressure}{seawater pressure [dbar].}
+\item{salinity}{Either practical salinity [PSU] or a \code{ctd} object from which
+practical salinity and the other arguments are to be inferred.}
 
-\item{longitude}{longitude of observation (only used if \code{eos="gsw"};
+\item{pressure}{Seawater pressure [dbar].}
+
+\item{longitude}{Longitude of observation (only used if \code{eos="gsw"};
 see \sQuote{Details}).}
 
-\item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
+\item{latitude}{Latitude of observation (only used if \code{eos="gsw"}; see
 \sQuote{Details}).}
 
-\item{saturation_fraction}{saturation fraction of dissolved air in seawater,
+\item{saturation_fraction}{The saturation fraction of dissolved air in seawater,
 ignored if \code{eos="unesco"}).}
 
-\item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
+\item{eos}{The equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}.
 [3,4].}
-
-\item{either}{practical salinity [PSU] or a \code{ctd} object from which
-practical salinity and the other arguments are to be inferred.}
 }
 \value{
 Temperature [\eqn{^\circ}{deg}C], defined on the ITS-90 scale.
