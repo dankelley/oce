@@ -2462,7 +2462,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
     pMax <- max(section[["pressure"]], na.rm=TRUE)
     if (missing(p)) {
         oceDebug(debug, "argument 'p' not given\n")
-        p.max <- 0
+        ## p.max <- 0
         for (i in 1:n) {
             p <- section@data$station[[i]]@data$pressure
             dp.list <- c(dp.list, mean(diff(p), na.rm=TRUE))
