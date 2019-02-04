@@ -746,13 +746,16 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #' by using \code{\link[gsw]{gsw_SA_from_SP}} to get Absolute Salinity, and
 #' then \code{\link[gsw]{gsw_t_freezing}} to get the freezing temperature).
 #'
-#' If the first argument is a \code{ctd} object, then the quantities
-#' specified by the other arguments are instead sought from within the object.
+#' If the first argument is an \code{oce} object, and if \code{longitude}
+#' and \code{latitude} are \code{NULL} (the default), then these two
+#' values are inferred from the object.
 #'
 #' @param salinity Either practical salinity [PSU] or a \code{ctd} object from which
 #' practical salinity and the other arguments are to be inferred.
 #'
-#' @param pressure Seawater pressure [dbar].
+#' @param pressure Seawater pressure [dbar]. Note that this is \strong{not} sought
+#' within the first argument (if that argument is an \code{oce} object); the
+#' value provided as the argument takes precedence.
 #'
 #' @param longitude Longitude of observation (only used if \code{eos="gsw"};
 #' see \sQuote{Details}).
@@ -788,6 +791,7 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #' the Gibbs Seawater (GSW) Oceanographic Toolbox. SCOR/IAPSO WG127, 2011.
 #'
 #' @examples
+#' # 1. Test for a check-value given in [1].
 #' swTFreeze(salinity=40, pressure=500, eos="unesco") # -2.588567 degC
 #'
 #' @family functions that calculate seawater properties
@@ -808,18 +812,20 @@ swTFreeze <- function(salinity, pressure=0,
             stop("must supply longitude")
         if (is.null(latitude))
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, pressure=pressure, longitude=longitude, latitude=latitude))
+        ## Note: the pressure in the next line is for computing SA; see below.
+        l <- lookWithin(list(salinity=salinity, latitude=latitude, longitude=longitude, pressure=pressure))
     } else {
-        l <- lookWithin(list(salinity=salinity, pressure=pressure))
+        l <- lookWithin(list(salinity=salinity))
     }
     Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
-    if (eos == "unesco") {
-        res <- (-.0575+1.710523e-3*sqrt(abs(l$salinity))-2.154996e-4*l$salinity)*l$salinity-7.53e-4*l$pressure
-        res <- T90fromT68(res)
-    } else if (eos == "gsw") {
+    if (eos == "gsw") {
+        ## Note that l$pressure is used for computing SA, but not for gsw_t_freezing().
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
         res <- gsw::gsw_t_freezing(SA=SA, p=pressure, saturation_fraction=saturation_fraction)
+    } else if (eos == "unesco") {
+        res <- (-.0575+1.710523e-3*sqrt(abs(l$salinity))-2.154996e-4*l$salinity)*l$salinity-7.53e-4*pressure
+        res <- T90fromT68(res)
     }
     if (Smatrix) dim(res) <- dim
     res

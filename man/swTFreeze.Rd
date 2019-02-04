@@ -11,7 +11,9 @@ swTFreeze(salinity, pressure = 0, longitude = NULL, latitude = NULL,
 \item{salinity}{Either practical salinity [PSU] or a \code{ctd} object from which
 practical salinity and the other arguments are to be inferred.}
 
-\item{pressure}{Seawater pressure [dbar].}
+\item{pressure}{Seawater pressure [dbar]. Note that this is \strong{not} sought
+within the first argument (if that argument is an \code{oce} object); the
+value provided as the argument takes precedence.}
 
 \item{longitude}{Longitude of observation (only used if \code{eos="gsw"};
 see \sQuote{Details}).}
@@ -35,10 +37,12 @@ by using \code{\link[gsw]{gsw_SA_from_SP}} to get Absolute Salinity, and
 then \code{\link[gsw]{gsw_t_freezing}} to get the freezing temperature).
 }
 \details{
-If the first argument is a \code{ctd} object, then the quantities
-specified by the other arguments are instead sought from within the object.
+If the first argument is an \code{oce} object, and if \code{longitude}
+and \code{latitude} are \code{NULL} (the default), then these two
+values are inferred from the object.
 }
 \examples{
+# 1. Test for a check-value given in [1].
 swTFreeze(salinity=40, pressure=500, eos="unesco") # -2.588567 degC
 
 }
