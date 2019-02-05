@@ -21,25 +21,40 @@ T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature * (100-tempe
 
 #' Look Within the First Element of a List for Replacement Values
 #'
-#' @details
-#' This is a helper function used by various seawater functions. It is used for a
-#' call like \code{\link{swRho}(ctd)}, in which the first argument, which is
-#' normally \code{salinity} may be an object that contains salinity plus
-#' the other items that \code{\link{swRho}} expects to see as arguments. This
-#' shorthand is very helpful in calls to the suite of \code{sw} functions.  If
-#' this first argument is an object of this sort, then the other arguments
-#' are ignored \emph{except} for two special cases:
-#' \itemize{
-#' \item an item named \code{eos} is copied directly from \code{list}
-#' \item if the object stores \code{temperature} defined with the IPTS-68
-#' scale, then \code{\link{T90fromT68}} is used to convert to the ITS-90 scale,
-#' because this is what is expected in most seawater functions. (For example,
-#' the RMS difference between these temperature variants is 0.002C for the
-#' \code{\link{ctd}} dataset.)
-#' }
+#' This is a helper function used by some seawater functions
+#' (with names starting with \code{sw}) to
+#' facilitate the specification of water properties either with
+#' distinct arguments, or with data stored within an \code{oce}
+#' object that is the first argument.
+#'
+#' If \code{list[1]} is not an \code{oce} object, then the
+#' return value of \code{lookWithin} is the same as the input
+#' value, except that (a) \code{eos} is completed to either
+#' \code{"gsw"} or \code{"unesco"} and (b) if \code{longitude}
+#' and \code{latitude} are within \code{list[1]}, then they
+#' are possibly lengthened, to have the same length as the first
+#' item in the \code{data} slot of \code{list[1]}.
+#'
+#' The examples may clarify this somewhat.
 #'
 #' @param list A list of elements, typically arguments that will be used in sw functions.
+#'
 #' @return A list with elements of the same names but possibly filled in from the first element.
+#'
+#' @examples
+#' ## 1. If first item is not a CTD object, just return the input
+#' lookWithin(list(a=1, b=2)) # returns a list
+#' ## 2. Extract salinity from a CTD object
+#' data(ctd)
+#' str(lookWithin(list(salinity=ctd)))
+#' ## 3. Extract salinity and temperature. Note that the
+#' ## value specified for temperature is ignored; all that matters
+#' ## is that temperature is named.
+#' str(lookWithin(list(salinity=ctd, temperature=NULL)))
+#' ## 4. How it is used by swRho()
+#' rho1 <- swRho(ctd, eos="unesco")
+#' rho2 <- swRho(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]], eos="unesco")
+#' expect_equal(rho1, rho2)
 lookWithin <- function(list)
 {
     n <- length(list)
@@ -741,21 +756,21 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 
 #' Seawater freezing temperature
 #'
-#' Compute freezing temperature of seawater, using either the UNESCO formulation
+#' Compute in-situ freezing temperature of seawater, using either the UNESCO formulation
 #' (computed as in Section 5 of reference [1]) or the GSW formulation (computed
 #' by using \code{\link[gsw]{gsw_SA_from_SP}} to get Absolute Salinity, and
 #' then \code{\link[gsw]{gsw_t_freezing}} to get the freezing temperature).
 #'
-#' If the first argument is an \code{oce} object, and if \code{longitude}
-#' and \code{latitude} are \code{NULL} (the default), then these two
-#' values are inferred from the object.
+#' If the first argument is an \code{oce} object, and if the \code{pressure}
+#' argument is \code{NULL}, then the pressure is sought within the first
+#' argument. In the case of \code{eos="gsw"}, then a similar procedure
+#' also applies to the \code{longitude} and \code{latitude} arguments.
 #'
 #' @param salinity Either practical salinity [PSU] or a \code{ctd} object from which
-#' practical salinity and the other arguments are to be inferred.
+#' practical salinity and pressure (plus in the \code{eos="gsw"} case,
+#' longitude and latitude) are inferred, using \code{\link{lookWithin}}.
 #'
-#' @param pressure Seawater pressure [dbar]. Note that this is \strong{not} sought
-#' within the first argument (if that argument is an \code{oce} object); the
-#' value provided as the argument takes precedence.
+#' @param pressure Seawater pressure [dbar].
 #'
 #' @param longitude Longitude of observation (only used if \code{eos="gsw"};
 #' see \sQuote{Details}).
@@ -791,16 +806,35 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #' the Gibbs Seawater (GSW) Oceanographic Toolbox. SCOR/IAPSO WG127, 2011.
 #'
 #' @examples
-#' # 1. Test for a check-value given in [1].
-#' swTFreeze(salinity=40, pressure=500, eos="unesco") # -2.588567 degC
+#' # 1. Test for a check-value given in [1]. This value, -2.588567 degC,
+#' # is in the 1968 temperature scale (IPTS-68), but swTFreeze reports
+#' # in the newer ITS-90 scale, so we must convert before checking.
+#' Tcheck <- -2.588567 # IPTS-68
+#' T <- swTFreeze(salinity=40, pressure=500, eos="unesco")
+#' expect_equal(Tcheck, T68fromT90(T), tolerance=1e-6)
+#'
+#' # 2. Compare unesco and gsw formulations.
+#' data(ctd)
+#' p <- ctd[["pressure"]]
+#' par(mfrow=c(1, 2), mar=c(3, 3, 1, 2), mgp=c(2, 0.7, 0))
+#' plot(swTFreeze(ctd, eos="unesco"),
+#'      p, xlab="unesco", ylim=rev(range(p)))
+#' plot(swTFreeze(ctd, eos="unesco") - swTFreeze(ctd, eos="gsw"),
+#'      p, xlab="unesco-gsw", ylim=rev(range(p)))
 #'
 #' @family functions that calculate seawater properties
-swTFreeze <- function(salinity, pressure=0,
+swTFreeze <- function(salinity, pressure=NULL,
                       longitude=NULL, latitude=NULL, saturation_fraction=1,
                       eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must supply salinity (which may be S or a CTD object)")
+    if (inherits(salinity, "oce")) {
+        if (is.null(pressure))
+            pressure <- salinity[["pressure"]]
+    }
+    if (is.null(pressure))
+        stop("must supply pressure")
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
             if (is.null(longitude))
@@ -815,16 +849,16 @@ swTFreeze <- function(salinity, pressure=0,
         ## Note: the pressure in the next line is for computing SA; see below.
         l <- lookWithin(list(salinity=salinity, latitude=latitude, longitude=longitude, pressure=pressure))
     } else {
-        l <- lookWithin(list(salinity=salinity))
+        l <- lookWithin(list(salinity=salinity, pressure=pressure))
     }
     Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     if (eos == "gsw") {
         ## Note that l$pressure is used for computing SA, but not for gsw_t_freezing().
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        res <- gsw::gsw_t_freezing(SA=SA, p=pressure, saturation_fraction=saturation_fraction)
+        res <- gsw::gsw_t_freezing(SA=SA, p=l$pressure, saturation_fraction=saturation_fraction)
     } else if (eos == "unesco") {
-        res <- (-.0575+1.710523e-3*sqrt(abs(l$salinity))-2.154996e-4*l$salinity)*l$salinity-7.53e-4*pressure
+        res <- (-.0575+1.710523e-3*sqrt(abs(l$salinity))-2.154996e-4*l$salinity)*l$salinity-7.53e-4*l$pressure
         res <- T90fromT68(res)
     }
     if (Smatrix) dim(res) <- dim
