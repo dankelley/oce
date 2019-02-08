@@ -12,9 +12,10 @@ dimensions must conform to lat.}
 
 \item{latitude}{latitude in degrees north, a number, vector, or matrix.}
 
-\item{time}{either a decimal year or a POSIX time corresponding to the
-\code{longitude} and \code{latitude} values, or a vector or matrix matching
-these location values.}
+\item{time}{The time at which the field is desired. This may be a
+single value or a vector or matrix that is structured to match
+\code{longitude} and \code{latitude}. The value may a decimal year,
+a POSIXt time, or a Date time.}
 }
 \value{
 A list containing \code{declination}, \code{inclination}, and
@@ -35,7 +36,7 @@ with only the values from 1945 to 2010 being considered definitive.
 
 Reference [2] suggest that a new version to the underlying source
 code might be expected in 2019 or 2020, but a check on January 31,
-2019, showed that version 12, as incoporated in oce since 
+2019, showed that version 12, as incoporated in oce since
 2015, remains the active version.
 }
 \examples{
