@@ -4,46 +4,36 @@
 \alias{read.adp.ad2cp}
 \title{Read an AD2CP File}
 \usage{
-read.adp.ad2cp(file, from = 1, to, by = 1, tz = getOption("oceTz"),
-  longitude = NA, latitude = NA, orientation, distance, plan, type,
-  monitor = FALSE, despike = FALSE, processingLog,
-  debug = getOption("oceDebug"), ...)
+read.adp.ad2cp(file, from = 1, to = 0, by = 1,
+  tz = getOption("oceTz"), longitude = NA, latitude = NA,
+  orientation, distance, plan, type, monitor = FALSE, despike = FALSE,
+  processingLog, debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{file}{a connection or a character string giving the name of the file
-to load.  (For \code{read.adp.sontek.serial}, this is generally a list of
-files, which will be concatenated.)}
+\item{file}{A connection or a character string giving the name of the file to load.}
 
-\item{from}{indication of the first profile to read.  This can be an
-integer, the sequence number of the first profile to read, or a POSIXt time
-before which profiles should be skipped, or a character string that converts
-to a POSIXt time (assuming UTC timezone).  See \dQuote{Examples}, and make
-careful note of the use of the \code{tz} argument. If \code{from} is not
-supplied, it defaults to 1.}
+\item{from}{An integer indicating the index number of the first record to
+read. This must equal 1, for this version of \code{read.adp.ad2cp}.
+(If not provided, \code{from} defaults to 1.)}
 
-\item{to}{an optional indication of the last profile to read, in a
-format as described for \code{from}.  As a special case, \code{to=0} means
-to read the file to the end.  If \code{to} is not supplied, then it defaults
-to 0.}
+\item{to}{An integer indicating the final record to read.
+(If not provided, \code{by} defaults to 1e9.)}
 
-\item{by}{an optional indication of the stride length to use while walking through
-the file.  If this is an integer, then \code{by-1} profiles are skipped
-between each pair of profiles that is read, e.g. the default \code{by=1}
-means to read all the data.  (For RDI files \emph{only}, there are some
-extra features to avoid running out of memory; see \dQuote{Memory considerations}.)}
+\item{by}{An integer indicating the step from record to record. This
+must equal 1, for this version of \code{read.adp.ad2cp}.
+(If not provided, \code{by} defaults to 1.)}
 
-\item{tz}{character string indicating time zone to be assumed in the data.}
+\item{tz}{Character alue indicating time zone. This is used in interpreting
+times stored in the file.}
 
-\item{longitude}{optional signed number indicating the longitude in degrees
-East.}
+\item{longitude}{Numerical value indicating the longitude of observation.}
 
-\item{latitude}{optional signed number indicating the latitude in degrees
-North.}
+\item{latitude}{Numerical value indicating the latitude of observation.}
 
-\item{orientation}{Ignored by this function, and provided only for similarity
+\item{orientation}{Ignored by \code{read.adp.ad2cp}, and provided only for similarity
 to other adp-reading functions.}
 
-\item{distance}{Ignored by this function, and provided only for similarity
+\item{distance}{Ignored by \code{read.adp.ad2cp}, and provided only for similarity
 to other adp-reading functions.}
 
 \item{plan}{Optional integer specifying which 'plan' to focus on (see [1]
@@ -63,32 +53,36 @@ section 2 on page 6). Note that \code{\link{oceSetMetadata}}
 can be used to alter the slantwise beam angle of an existing object,
 and this will alter any later conversion from beam to xyz coordinates.}
 
-\item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
-in reading the file, either by printing a dot for each profile or by writing
-a textual progress bar with \code{\link{txtProgressBar}}.}
+\item{monitor}{Logical value indicating whether the progress in reading
+the file is to be illustrated by calling \code{\link{txtProgressBar}}.}
 
 \item{despike}{Ignored by this function, and provided only for similarity
 to other adp-reading functions.}
 
-\item{processingLog}{if provided, the action item to be stored in the log.
-(Typically only provided for internal calls; the default that it provides is
-better for normal calls by a user.)}
+\item{processingLog}{Character value that, if provided, is saved
+within the \code{processingLog} slot of th returned value.}
 
-\item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
-amount of debugging information, or to 2 to get more.}
+\item{debug}{Integer value indicating the level of debugging.
+Set to 1 to get a moderate  amount of debugging information,
+or to 2 to get more.}
 
-\item{\dots}{additional arguments, passed to called routines.}
-}
-\value{
-An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
-The form of this object varies with instrument type. In some cases
-navigational data may be included, e.g. \code{read.adp.rdi} can
-read NMEA strings (which get stored in an item called \code{nmea}
-in the \code{data} slot).
+\item{\dots}{Ignored by this function.}
 }
 \description{
-This function is incomplete in several ways, and is still in active
-development and testing, as of early 2019.
+This function may be incomplete in some important ways,
+because AD2CP data formats are not described clearly enough
+in references [1], [2] and [3] to be certain of how to handle
+the range of file configurations that may be possible. The code
+has been tested with a small number of files that are available
+to the author, but these do not cover some cases that users might
+require, e.g. involving echosounder and altimeter data streams.
+Please be on the lookout for problems and contact
+the author if you need help. Also, note that some of the standard
+\code{read.adp.*} arguments are handled differently with
+this function, e.g. \code{by} must equal 1, because skipping
+records makes little sense with blended multiple streams;
+see the \dQuote{Arguments} section for other limitations
+that stem from the specifics of this file format.
 }
 \examples{
 \dontrun{

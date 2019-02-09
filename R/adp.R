@@ -2977,7 +2977,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 #' This looks at all the items in the \code{data} slot of \code{x}, to
 #' see if they contain an array named \code{v} that holds velocity.
 #' If that velocity has 4 components, and if \code{oceCoordinate} for
-#' the item is \code{"beam"}, then 
+#' the item is \code{"beam"}, then
 #' along-beam velocity components \eqn{B_1}{B1}
 #' \eqn{B_2}{B1}, \eqn{B_3}{B3}, and \eqn{B_4}{B4}
 #' are converted to instrument-oriented Cartesian velocity components \eqn{u}{u}
@@ -3093,7 +3093,7 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
     oceDebug(debug, "} # beamToXyzAdpAD2CP()\n", unindent=1)
     res
 }
- 
+
 #' Convert ADP From XYZ to ENU Coordinates
 #'
 #' Convert ADP velocity components from a xyz-based coordinate system to
@@ -3452,15 +3452,15 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
                     ## Speed test with 292M file:
                     ##
                     ## C++ method
-                    ##  user  system elapsed 
-                    ## 2.553   0.952   3.511 
+                    ##  user  system elapsed
+                    ## 2.553   0.952   3.511
                     ##> message("C++ method")
                     ##> for (cell in 1:nc) {
                     ##>     res@data[[item]]$v[, cell, 1:3] <- do_ad2cp_ahrs(V[, cell, 1:3], AHRS)
                     ##
                     ## R method
-                    ## user  system elapsed 
-                    ## 0.400   0.139   0.540 
+                    ## user  system elapsed
+                    ## 0.400   0.139   0.540
                     ##
                     ##> message("R method")
                     e <- V[,,1]*rep(AHRS[,1], times=nc) + V[,,2]*rep(AHRS[,2], times=nc) + V[,,3]*rep(AHRS[,3], times=nc)

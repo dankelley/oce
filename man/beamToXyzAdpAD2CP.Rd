@@ -22,7 +22,7 @@ by specifying higher \code{debug} values.}
 This looks at all the items in the \code{data} slot of \code{x}, to
 see if they contain an array named \code{v} that holds velocity.
 If that velocity has 4 components, and if \code{oceCoordinate} for
-the item is \code{"beam"}, then 
+the item is \code{"beam"}, then
 along-beam velocity components \eqn{B_1}{B1}
 \eqn{B_2}{B1}, \eqn{B_3}{B3}, and \eqn{B_4}{B4}
 are converted to instrument-oriented Cartesian velocity components \eqn{u}{u}

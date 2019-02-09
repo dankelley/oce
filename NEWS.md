@@ -128,7 +128,7 @@
 * ctdTrim() can have "method" as a function
 * as.topo() can convert "bathy" objects from the marmap package
 * "+.section" renamed sectionAddStation()
-* oceApprox() renamed oce.approx(), with an alias for compatibility 
+* oceApprox() renamed oce.approx(), with an alias for compatibility
 * oce.grid() added
 * "tdr" class renamed "logger"
 * swCSTp() added
@@ -215,7 +215,7 @@
 * plot.echosounder(): use white for below-threshold values
 * plot.echosounder(): add arg 'beam' to e.g. display Sv
 * read.echosounder(): handle dual-beam and split-beam data
-* read.echosounder(): decode bottom-pick 
+* read.echosounder(): decode bottom-pick
 * swSoundAbsorption()
 * read.adp: improve doc regarding variable orientation of RDI files
 
@@ -244,7 +244,7 @@
 
 0.9-6
 * address compilation error on Windows-64 platform
-* make some long-running operations more interruptible 
+* make some long-running operations more interruptible
 * oceApprox(): permit equal x values [issue 279]
 
 0.9-5
@@ -579,7 +579,7 @@
 * plot.TS(): fix isopycnal labels for fresh water; add args Slim, Tlim
 * read.ctd(): make it understand another SBE format
 * add parseLatlon()
-* oce.edit(): add argument 'action' 
+* oce.edit(): add argument 'action'
 * add oce.write.table()
 * add fillGap()
 
@@ -623,7 +623,7 @@
 * add read.pt(), summary.pt(), plot.pt(), and ptTrim()
 * make plot.TS() isopycnal label size be same on top and right sides
   http://code.google.com/p/r-oce/issues/detail?id=26
-* add lwd argument to plot.profile() 
+* add lwd argument to plot.profile()
 * give plot.section() ability to control contour levels and labels
 * give plot.section() tics for station-location
 
@@ -731,7 +731,7 @@
 * set up data files to permit latin1 encoding of some content
 
 0.1.58
-* rename all seawater-related functions to e.g. swTheta(), to allow 
+* rename all seawater-related functions to e.g. swTheta(), to allow
   for atmospheric analogs
 
 0.1.57

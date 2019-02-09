@@ -460,13 +460,45 @@ is.ad2cp <- function(x)
 
 #' Read an AD2CP File
 #'
-#' This function is incomplete in several ways, and is still in active
-#' development and testing, as of early 2019.
+#' This function may be incomplete in some important ways,
+#' because AD2CP data formats are not described clearly enough
+#' in references [1], [2] and [3] to be certain of how to handle
+#' the range of file configurations that may be possible. The code
+#' has been tested with a small number of files that are available
+#' to the author, but these do not cover some cases that users might
+#' require, e.g. involving echosounder and altimeter data streams.
+#' Please be on the lookout for problems and contact
+#' the author if you need help. Also, note that some of the standard
+#' \code{read.adp.*} arguments are handled differently with
+#' this function, e.g. \code{by} must equal 1, because skipping
+#' records makes little sense with blended multiple streams;
+#' see the \dQuote{Arguments} section for other limitations
+#' that stem from the specifics of this file format.
 #'
-#' @param orientation Ignored by this function, and provided only for similarity
+#' @param file A connection or a character string giving the name of the file to load.
+#'
+#' @param from An integer indicating the index number of the first record to
+#' read. This must equal 1, for this version of \code{read.adp.ad2cp}.
+#' (If not provided, \code{from} defaults to 1.)
+#'
+#' @param by An integer indicating the step from record to record. This
+#' must equal 1, for this version of \code{read.adp.ad2cp}.
+#' (If not provided, \code{by} defaults to 1.)
+#'
+#' @param to An integer indicating the final record to read.
+#' (If not provided, \code{by} defaults to 1e9.)
+#'
+#' @param tz Character alue indicating time zone. This is used in interpreting
+#' times stored in the file.
+#'
+#' @param longitude Numerical value indicating the longitude of observation.
+#'
+#' @param latitude Numerical value indicating the latitude of observation.
+#'
+#' @param orientation Ignored by \code{read.adp.ad2cp}, and provided only for similarity
 #' to other adp-reading functions.
 #'
-#' @param distance Ignored by this function, and provided only for similarity
+#' @param distance Ignored by \code{read.adp.ad2cp}, and provided only for similarity
 #' to other adp-reading functions.
 #'
 #' @param plan Optional integer specifying which 'plan' to focus on (see [1]
@@ -486,13 +518,23 @@ is.ad2cp <- function(x)
 #' can be used to alter the slantwise beam angle of an existing object,
 #' and this will alter any later conversion from beam to xyz coordinates.
 #'
+#' @param monitor Logical value indicating whether the progress in reading
+#' the file is to be illustrated by calling \code{\link{txtProgressBar}}.
+#'
 #' @param despike Ignored by this function, and provided only for similarity
 #' to other adp-reading functions.
 #'
-#' @template adpTemplate
+#' @param processingLog Character value that, if provided, is saved
+#' within the \code{processingLog} slot of th returned value.
+#'
+#' @param debug Integer value indicating the level of debugging.
+#' Set to 1 to get a moderate  amount of debugging information,
+#' or to 2 to get more.
+#'
+#' @param \dots Ignored by this function.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
 #'}
 #'
@@ -509,7 +551,7 @@ is.ad2cp <- function(x)
 #' page numbers than [3].)
 #'
 #' @family things related to \code{adp} data
-read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
+read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
                            longitude=NA, latitude=NA,
                            orientation, distance, plan, type,
                            monitor=FALSE, despike=FALSE, processingLog,
@@ -519,11 +561,18 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         warning("ignoring 'orientation' (see documentation)")
     if (!missing(distance))
         warning("ignoring 'distance' (see documentation)")
+    if (!missing(despike))
+        warning("ignoring 'despike' (see documentation)")
+    fromGiven <- !missing(from)
+    toGiven <- !missing(to)
+    byGiven <- !missing(by)
     planGiven <- !missing(plan)
     typeGiven <- !missing(type)
-    oceDebug(debug, "read.adp.ad2cp(...,from=", format(from),
-             ",to=", if (missing(to)) "(missing)" else format(to),
-             ", by=", by,
+
+    oceDebug(debug, "read.adp.ad2cp(...",
+             ", from=", if (fromGiven) format(from) else "(missing)",
+             ", to=", if (toGiven) to else "(missing)",
+             ", by=", if (byGiven) by else "(missing)",
              ", plan=", if (planGiven) plan else "(missing)",
              ", type=\"", if (typeGiven) type else "(missing)",
              "\",...)\n", sep="", unindent=1)
@@ -534,11 +583,21 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             stop("type must be \"Signature1000\", \"Signature500\", or \"Signature250\", but it is \"", type, "\"")
         type <- typeAllowed[typei]
     }
+    if (!fromGiven)
+        from <- 1
+    if (!byGiven)
+        by <- 1
+    if (!toGiven)
+        to <- 0
     if (by != 1)
         stop("must have by=1, since skipping makes no sense in complex ad2cp files")
-    if (by < 1)
-        stop("cannot have by < 1")
-    if (missing(to))
+    if (to < 0)
+        stop("cannot have to<0")
+    if (from != 1)
+        stop("must have from=1")
+    ##. if (by < 1)
+    ##.     stop("cannot have by < 1")
+    if (to == 0)
         to <- 1e9                      # this should be enough to read any file
     if (is.character(file)) {
         filename <- fullFilename(file)
