@@ -41,11 +41,10 @@ code might be expected in 2019 or 2020, but a check on January 31,
 }
 \examples{
 library(oce)
-# Halifax NS
-magneticField(-(63+36/60), 44+39/60, 2013)
+# 1. Today's value at Halifax NS
+magneticField(-(63+36/60), 44+39/60, Sys.Date())
 
-\dontrun{
-## map of North American values
+# 2. Map of North American values at the start of year 2000.
 data(coastlineWorld)
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
         projection="+proj=lcc +lat_0=20 +lat_1=60 +lon_0=-100")
@@ -54,13 +53,12 @@ lat <- seq(-90, 90)
 lonm <- rep(lon, each=length(lat))
 latm <- rep(lat, times=length(lon))
 ## Note the counter-intuitive nrow argument
-decl <- matrix(magneticField(lonm, latm, 2013)$declination,
+decl <- matrix(magneticField(lonm, latm, 2000)$declination,
                nrow=length(lon), byrow=TRUE)
 mapContour(lon, lat, decl, col='red', levels=seq(-90, 90, 5))
 incl <- matrix(magneticField(lonm, latm, 2013)$inclination,
                nrow=length(lon), byrow=TRUE)
 mapContour(lon, lat, incl, col='blue', levels=seq(-90, 90, 5))
-}
 
 }
 \references{
