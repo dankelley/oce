@@ -3257,14 +3257,13 @@ setMethod(f="plot",
               if (!inset)
                   par(mar=mar)
               par(mgp=mgp)
-
               if (lw == 2) {
                   par(mfcol=c(2, 1))
               } else if (lw == 3) {
                   par(mfcol=c(3, 1))
               } else if (lw == 4) {
                   par(mfrow=c(2, 2))
-              } else {
+              } else if (lw != 1) {
                   nnn <- floor(sqrt(lw))
                   par(mfcol=c(nnn, ceiling(lw/nnn)))
                   rm(nnn)
@@ -3781,15 +3780,20 @@ setMethod(f="plot",
                               mapPoints(stationLon, stationLat, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           }
                           ## draw some text in top margin
-                          if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
+                          if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
                               mtext(x@metadata$station,
                                     side=3, adj=0, cex=0.8*par("cex"), line=0.5)
-                          if (!is.null(x@metadata$startTime) && 4 < nchar(x@metadata$startTime, "bytes"))
+                          }
+                          if (!is.null(x@metadata$startTime) && 4 < nchar(x@metadata$startTime, "bytes")) {
                               mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%M:%S"),
                                     side=3, adj=1, cex=0.8*par("cex"), line=0.5)
-                          else if (!is.null(x@data$time))
-                              mtext(format(x@data$time[1], "%Y-%m-%d %H:%M:%S"),
-                                    side=3, adj=1, cex=0.8*par("cex"), line=0.5)
+                          } else if (!is.null(x@data$time)) {
+                              goodTimes <- which(!is.na(x@data$time))
+                              if (length(goodTimes)) {
+                                  mtext(format(x@data$time[goodTimes[1]], "%Y-%m-%d %H:%M:%S"),
+                                        side=3, adj=1, cex=0.8*par("cex"), line=0.5)
+                              }
+                          }
                       }
                       mar <- omar # recover mar, which was altered for multi-panel plots
                       oceDebug(debug, "} # plot(ctd, ...) of type \"map\"\n", unindent=1)
@@ -5029,7 +5033,7 @@ plotProfile <- function (x,
                 plot(salinity[look], y[look],
                      xlim=Slim, ylim=ylim, lty=lty, cex=cex, pch=pch,
                      type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-                if (eos == "gsw") {
+                if (eos == "gsw" || xtype == "SA") {
                     mtext(resizableLabel("absolute salinity", "x", unit=NULL, debug=debug-1),
                           side=3, line=axisNameLoc, cex=par("cex"))
                 } else {

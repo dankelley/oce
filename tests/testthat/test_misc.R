@@ -253,6 +253,9 @@ test_that("magnetism", {
           expect_equal(-17.976, magneticField(-63.562,44.640,2013)$declination,tolerance=1e-3)
           expect_equal(67.562, magneticField(-63.562,44.640,2013)$inclination,tolerance=1e-3)
           expect_equal(52096, magneticField(-63.562,44.640,2013)$intensity,tolerance=1e-3)
+          ## Retest this last, to ensure that POSIXt and Date formats work
+          expect_equal(52096, magneticField(-63.562,44.640,as.POSIXct("2013-01-01"))$intensity,tolerance=1e-3)
+          expect_equal(52096, magneticField(-63.562,44.640,as.Date("2013-01-01"))$intensity,tolerance=1e-3)
 })
 
 test_that("matchBytes", {

@@ -562,7 +562,7 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
         debug <- 0
     if (any(names(flags) != names(actions)))
         stop("names of flags must match those of actions")
-    schemeMappingNames <- names(object@metadata$flagScheme$mapping)
+    ##> schemeMappingNames <- names(object@metadata$flagScheme$mapping)
     ##> if (is.character(flags[[1]])) {
     ##>     for (f in flags[[1]]) {
     ##>         if (!(f %in% schemeMappingNames))

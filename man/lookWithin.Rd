@@ -13,22 +13,35 @@ lookWithin(list)
 A list with elements of the same names but possibly filled in from the first element.
 }
 \description{
-Look Within the First Element of a List for Replacement Values
+This is a helper function used by some seawater functions
+(with names starting with \code{sw}) to
+facilitate the specification of water properties either with
+distinct arguments, or with data stored within an \code{oce}
+object that is the first argument.
 }
 \details{
-This is a helper function used by various seawater functions. It is used for a
-call like \code{\link{swRho}(ctd)}, in which the first argument, which is
-normally \code{salinity} may be an object that contains salinity plus
-the other items that \code{\link{swRho}} expects to see as arguments. This
-shorthand is very helpful in calls to the suite of \code{sw} functions.  If
-this first argument is an object of this sort, then the other arguments
-are ignored \emph{except} for two special cases:
-\itemize{
-\item an item named \code{eos} is copied directly from \code{list}
-\item if the object stores \code{temperature} defined with the IPTS-68
-scale, then \code{\link{T90fromT68}} is used to convert to the ITS-90 scale,
-because this is what is expected in most seawater functions. (For example,
-the RMS difference between these temperature variants is 0.002C for the
-\code{\link{ctd}} dataset.)
+If \code{list[1]} is not an \code{oce} object, then the
+return value of \code{lookWithin} is the same as the input
+value, except that (a) \code{eos} is completed to either
+\code{"gsw"} or \code{"unesco"} and (b) if \code{longitude}
+and \code{latitude} are within \code{list[1]}, then they
+are possibly lengthened, to have the same length as the first
+item in the \code{data} slot of \code{list[1]}.
+
+The examples may clarify this somewhat.
 }
+\examples{
+## 1. If first item is not a CTD object, just return the input
+lookWithin(list(a=1, b=2)) # returns a list
+## 2. Extract salinity from a CTD object
+data(ctd)
+str(lookWithin(list(salinity=ctd)))
+## 3. Extract salinity and temperature. Note that the
+## value specified for temperature is ignored; all that matters
+## is that temperature is named.
+str(lookWithin(list(salinity=ctd, temperature=NULL)))
+## 4. How it is used by swRho()
+rho1 <- swRho(ctd, eos="unesco")
+rho2 <- swRho(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]], eos="unesco")
+expect_equal(rho1, rho2)
 }

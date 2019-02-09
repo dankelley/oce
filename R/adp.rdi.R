@@ -607,7 +607,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          debug=getOption("oceDebug"),
                          ...)
 {
-    warningBinaryFixedAttitudeCount <- 0
+    ##. warningBinaryFixedAttitudeCount <- 0
     warningUnknownCode <- list()
     fromGiven <- !missing(from) # FIXME document THIS
     toGiven <- !missing(to) # FIXME document THIS
@@ -1124,7 +1124,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
 
             oceDebug(debug, "profilesToRead=", profilesToRead, "\n")
             unhandled <- list(xxGGA=0, xxVTA=0, xxGSA=0)
-            unknownWarningCount <- 0
+            ##. unknownWarningCount <- 0
             nmea <- NULL
             nmeaLen <- 0
             for (i in 1:profilesToRead) {

@@ -102,7 +102,8 @@ angleRemap <- function(theta)
 #' @author Dan Kelley
 #' @seealso Use \code{\link{magneticField}} to determine the declination,
 #' inclination and intensity at a given spot on the world, at a given time.
-#' @references \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
+#' @references
+#' 1. \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
 #'
 #' @family things related to magnetism
 applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
@@ -3899,19 +3900,27 @@ integerToAscii <- function(i)
 #'
 #' Implements the 12th generation International Geomagnetic Reference Field
 #' (IGRF), based on a reworked version of a Fortran program downloaded from a
-#' NOAA website [1].  The code (subroutine \code{igrf12syn}) seems to have
+#' NOAA website [1].
+#'
+#' The code (subroutine \code{igrf12syn}) seems to have
 #' been written by Susan Macmillan of the British Geological Survey.  Comments
-#' in the code indicate that it employs coefficients agreed to in December 2014
-#' by the IAGA Working Group V-MOD.  Comments in the \code{igrf12syn} source
-#' code also suggest that the valid time interval is from years 1900 to 2020,
+#' in the source code indicate that it employs coefficients agreed to in
+#' December 2014 by the IAGA Working Group V-MOD.  Other comments in that code
+#' suggest that the valid time interval is from years 1900 to 2020,
 #' with only the values from 1945 to 2010 being considered definitive.
+#'
+#' Reference [2] suggest that a new version to the underlying source
+#' code might be expected in 2019 or 2020, but a check on January 31,
+#' 2019, showed that version 12, as incoporated in oce since
+#' 2015, remains the active version.
 #'
 #' @param longitude longitude in degrees east (negative for degrees west).  The
 #' dimensions must conform to lat.
 #' @param latitude latitude in degrees north, a number, vector, or matrix.
-#' @param time either a decimal year or a POSIX time corresponding to the
-#' \code{longitude} and \code{latitude} values, or a vector or matrix matching
-#' these location values.
+#' @param time The time at which the field is desired. This may be a
+#' single value or a vector or matrix that is structured to match
+#' \code{longitude} and \code{latitude}. The value may a decimal year,
+#' a POSIXt time, or a Date time.
 #' @return A list containing \code{declination}, \code{inclination}, and
 #' \code{intensity}.
 #' @author Dan Kelley wrote the R code and a fortran wrapper to the
@@ -3920,9 +3929,13 @@ integerToAscii <- function(i)
 #' SM to DK dated June 5, 2015).
 #' @references
 #' 1. The underlying Fortran code is from \code{igrf12.f}, downloaded the NOAA
-#' website (\samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
-#' 2015. (That website suggests that there have been no update to the
-#' algorithm as of March 29, 2017.)
+#' website (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
+#' 2015.
+#'
+#' 2. Witze, Alexandra. “Earth’s Magnetic Field Is Acting up and Geologists Don’t Know Why.”
+#' Nature 565 (January 9, 2019): 143.
+#' \url{https://doi.org/10.1038/d41586-019-00007-1}.
+#"
 #' @examples
 #' library(oce)
 #' # Halifax NS
@@ -3955,6 +3968,8 @@ magneticField <- function(longitude, latitude, time)
     if (!all(dim == dim(longitude)))
         stop("dimensions of longitude and latitude must agree")
     n <- length(latitude)
+    if (inherits(time, "Date"))
+        time <- as.POSIXct(time)
     if (inherits(time, "POSIXt")) {
         d <- as.POSIXlt(time)
         year <- d$year+1900

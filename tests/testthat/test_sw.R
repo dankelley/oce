@@ -124,9 +124,14 @@ test_that("freezing temperature", {
           ## 5.1 UNESCO freezing temperature [1 p29]
           Tf <- swTFreeze(40, 500, eos="unesco")
           expect_equal(Tf, T90fromT68(-2.588567), scale=1, tolerance=1e-6)
-          ## 5.2 GSW freezing temperature
+          ## 5.2 GSW freezing temperature. This is actually just a test that
+          ## the GSW functions are called correctly -- it is *not* using
+          ## check values. However, we don't have to worry about check
+          ## values, because in the gsw package test suite, there are multiple
+          ## tests that check values against those published on the GSW/TEOS10
+          ## website.
           SA <- gsw::gsw_SA_from_SP(SP=40, p=500, longitude=300, latitude=30)
-          TfGSW <- gsw::gsw_t_freezing(SA=SA, p=0, saturation_fraction=1)
+          TfGSW <- gsw::gsw_t_freezing(SA=SA, p=500, saturation_fraction=1)
           Tf <- swTFreeze(40, 500, longitude=300, latitude=30, eos="gsw")
           expect_equal(TfGSW, Tf)
 })
@@ -300,6 +305,19 @@ test_that("depth and pressure", {
 })
 
 test_that("spiciness", {
-          sp <- swSpice(35, T90fromT68(10), 100)
+          expect_error(swSpice(35, T90fromT68(10), 100, eos="gsw"), "must supply longitude")
+          ## Q: is this test value from Flament's paper, or is it just a consistency check?
+          sp <- swSpice(35, T90fromT68(10), 100, eos="unesco")
           expect_equal(sp, 1.131195, tolerance=0.0000015)
+          ## compare against direct gsw:: computation
+          data(ctd)
+          S <- ctd[["salinity"]]
+          T <- ctd[["temperature"]]
+          p <- ctd[["pressure"]]
+          lon <- rep(ctd[["longitude"]], length(S))
+          lat <- rep(ctd[["latitude"]], length(S))
+          piOce <- swSpice(S, T, p, longitude=lon, latitude=lat, eos="gsw")
+          piGsw <- gsw::gsw_spiciness0(ctd[["SA"]], ctd[["CT"]])
+          expect_equal(piOce, piGsw)
+
 })
