@@ -26,7 +26,7 @@ i.e. with \code{n=0}, the result is
 seq(300, 1500, by=100), 1750, seq(2000, 10000, by=500))}.
 For higher values of \code{n}, progressively more and more values
 are added between each pair in this sequence.
-See the documentation for 
+See the documentation for
 \code{\link{sectionGrid}} for how \code{standardDepths} can be used
 in gridding data for section plots.
 }

@@ -47,7 +47,7 @@ setClass("coastline", contains="oce")
 #' users find it convenient to do the loading in an \code{\link{Rprofile}}
 #' startup file.
 #' @author Dan Kelley
-#' @source Downloaded from \url{http://www.naturalearthdata.com}, in
+#' @source Downloaded from \url{https://www.naturalearthdata.com}, in
 #' \code{ne_110m_admin_0_countries.shp} in July 2015, with an
 #' update on December 16, 2017.
 #' @family datasets provided with \code{oce}
@@ -740,7 +740,7 @@ setMethod(f="plot",
 #'}
 #'
 #' @references
-#' 1. The NaturalEarth server is at \url{http://www.naturalearthdata.com}
+#' 1. The NaturalEarth server is at \url{https://www.naturalearthdata.com}
 #'
 #' @family functions that download files
 #' @family things related to \code{coastline} data
@@ -755,7 +755,7 @@ download.coastline <- function(resolution, item="coastline",
     if (!(resolution %in% resolutionChoices))
         stop("'resolution' must be one of: '", paste(resolutionChoices, collapse="' '"), "'")
     if (server == "naturalearth")
-        urlBase <- "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download"
+        urlBase <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download"
     else
         stop("the only server that works is naturalearth")
     filename <- paste("ne_", resolution, "_", item, ".zip", sep="")
@@ -770,7 +770,7 @@ download.coastline <- function(resolution, item="coastline",
         oceDebug(debug, "Downloaded file stored as '", destination, "'\n", sep="")
     }
     ## The following is a sample URL, from which I reverse-engineered the URL construction.
-    ##    http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/50m/physical/ne_50m_lakes.zip
+    ##    https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/50m/physical/ne_50m_lakes.zip
     destination
 }
 
@@ -902,7 +902,7 @@ read.coastline <- function(file,
 #' Technical Description}, March 1998, available at
 #' \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
 #'
-#' \item 2. The NaturalEarth website \url{http://www.naturalearthdata.com/downloads}
+#' \item 2. The NaturalEarth website \url{https://www.naturalearthdata.com/downloads}
 #' provides coastline datasets in three resolutions, along with similar files
 #' lakes and rivers, for borders, etc. It is highly recommended.
 #'}

@@ -25,14 +25,18 @@ test_that("download/read/plot works with hourly data", {
           f <- download.met(id=6358, year=2003, month=9, destdir=".")
           m <- read.met(f)
           summary(m)
+          if (!interactive()) png("met_01_01.png")
           plot(m)
+          if (!interactive()) dev.off()
 })
 
 test_that("download/read/plot works with monthly data", {
           f <- download.met(id=1887, deltat="month", destdir=".")
           m <- read.met(f)
           summary(m)
+          if (!interactive()) png("met_01_02.png")
           plot(m)
+          if (!interactive()) dev.off()
 })
 
 test_that("read.met() works on some files downloaded in 2009", {

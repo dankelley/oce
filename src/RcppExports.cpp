@@ -5,6 +5,18 @@
 
 using namespace Rcpp;
 
+// do_ad2cp_ahrs
+NumericMatrix do_ad2cp_ahrs(NumericMatrix v, NumericMatrix ahrs);
+RcppExport SEXP _oce_do_ad2cp_ahrs(SEXP vSEXP, SEXP ahrsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type v(vSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type ahrs(ahrsSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_ad2cp_ahrs(v, ahrs));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_adv_vector_time
 NumericVector do_adv_vector_time(NumericVector vvdStart, NumericVector vsdStart, NumericVector vsdTime, NumericVector vvdhStart, NumericVector vvdhTime, NumericVector n, NumericVector f);
 RcppExport SEXP _oce_do_adv_vector_time(SEXP vvdStartSEXP, SEXP vsdStartSEXP, SEXP vsdTimeSEXP, SEXP vvdhStartSEXP, SEXP vvdhTimeSEXP, SEXP nSEXP, SEXP fSEXP) {

@@ -33,16 +33,6 @@ f1 <- "~/Dropbox/oce_secret_data/ad2cp_secret_1.ad2cp"
 f2 <- "~/Dropbox/oce_secret_data/ad2cp_secret_2.ad2cp"
 f3 <- "~/Dropbox/oce_secret_data/ad2cp_secret_3.ad2cp"
 
-## These tests only work on the "ad2cp" branch, so we ensure they will be
-## skipped in the "develop" branch. This comment and the next
-## few lines are deleted in the "ad2cp" branch, *after* adding them
-## in the "develop" branch. Since the "develop" branch ought not to
-## be making changes to the present R file, this means that the "ad2cp"
-## branchd can be merged into "develop" at some time, without conflict.
-f1 <- "there_is_no_such_file_in_the_develop_branch"
-f2 <- "there_is_no_such_file_in_the_develop_branch"
-f3 <- "there_is_no_such_file_in_the_develop_branch"
-
 test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burst' data", {
           if (file.exists(f1)) {
             expect_silent(read.adp.ad2cp(f1, 1, 100, 1, plan=0))

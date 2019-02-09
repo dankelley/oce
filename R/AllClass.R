@@ -84,9 +84,17 @@ setMethod(f="summary",
               ndata <- length(object@data)
               threes <- NULL
               if (ndata > 0) {
-                  threes <- matrix(nrow=ndata, ncol=4)
-                  for (i in 1:ndata) {
-                      threes[i, ] <- threenum(object@data[[i]])
+                  if (is.ad2cp(object)) {
+                      threes <- matrix(nrow=3, ncol=4)
+                      ## FIXME get burst and average separately
+                      threes[1, ] <- threenum(object[["v"]])
+                      threes[2, ] <- threenum(object[["a"]])
+                      threes[3, ] <- threenum(object[["q"]])
+                  } else {
+                      threes <- matrix(nrow=ndata, ncol=4)
+                      for (i in 1:ndata) {
+                          threes[i, ] <- threenum(object@data[[i]])
+                      }
                   }
                   ##rownames(threes) <- paste("   ", dataNames[!isTime])
                   units <- if ("units" %in% metadataNames) object@metadata$units else NULL
@@ -139,10 +147,14 @@ setMethod(f="summary",
                   names(units) <- unitsNames
                   ##> message("units:");str(units)
                   if (!is.null(threes)) {
-                      rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
+                      if (is.ad2cp(object)) {
+                          rownames(threes) <- c("v", "a", "q")
+                      } else {
+                          rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
+                      }
                       colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.")
                       cat("* Data\n\n")
-                      if ("dataNamesOriginal" %in% names(object@metadata)) {
+                      if ("dataNamesOriginal" %in% metadataNames) {
                           if (is.list(object@metadata$dataNamesOriginal)) {
                               OriginalName <- unlist(lapply(dataNames, function(n)
                                                             if (n %in% names(object@metadata$dataNamesOriginal))
@@ -162,7 +174,11 @@ setMethod(f="summary",
                       ##print(OriginalName)
                       OriginalName[0==nchar(OriginalName, "bytes")] <- "-"
                       if (!is.null(OriginalName)) {
-                          threes <- cbind(threes, OriginalName)
+                          if (is.ad2cp(object)) {
+                              threes <- cbind(threes, "-")
+                          } else {
+                              threes <- cbind(threes, OriginalName)
+                          }
                       }
                       if ("time" %in% dataNames)
                           threes <- threes[-which("time" == dataNames), , drop=FALSE]

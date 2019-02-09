@@ -5,9 +5,8 @@
 \title{Read an ADP File}
 \usage{
 read.adp(file, from, to, by, tz = getOption("oceTz"), longitude = NA,
-  latitude = NA, manufacturer = c("rdi", "nortek", "sontek"),
-  monitor = FALSE, despike = FALSE, processingLog,
-  debug = getOption("oceDebug"), ...)
+  latitude = NA, manufacturer, monitor = FALSE, despike = FALSE,
+  processingLog, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -40,9 +39,12 @@ East.}
 \item{latitude}{optional signed number indicating the latitude in degrees
 North.}
 
-\item{manufacturer}{a character string indicating the manufacturer, used by
-the general function \code{read.adp} to select a subsidiary function to use,
-such as \code{read.adp.nortek}.}
+\item{manufacturer}{an optional character string indicating the manufacturer, used by
+the general function \code{read.adp} to select a subsidiary function to use. If this
+is not given, then \code{\link{oceMagic}} is used to try to infer the type. If this
+is provided, then the value \code{"rdi"} will cause \code{\link{read.adp.rdi}}
+to be used, \code{"nortek"} will cause \code{\link{read.adp.nortek}} to be used,
+and \code{"sontek"} will cause \code{\link{read.adp.sontek}} to be used.}
 
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
 in reading the file, either by printing a dot for each profile or by writing
@@ -81,15 +83,18 @@ been documented under the heading \code{\link{read.adv}}.
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+  \code{\link{[[<-,adp-method}},
+  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdpAD2CP}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
   \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
   \code{\link{enuToOther}},
   \code{\link{handleFlags,adp-method}},
-  \code{\link{plot,adp-method}}, \code{\link{read.ad2cp}},
+  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
+  \code{\link{read.adp.ad2cp}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
@@ -101,6 +106,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
 \author{

@@ -1541,7 +1541,7 @@ oce.write.table <- function (x, file="", ...)
 #' seq(300, 1500, by=100), 1750, seq(2000, 10000, by=500))}.
 #' For higher values of \code{n}, progressively more and more values
 #' are added between each pair in this sequence.
-#' See the documentation for 
+#' See the documentation for
 #' \code{\link{sectionGrid}} for how \code{standardDepths} can be used
 #' in gridding data for section plots.
 #'
@@ -1904,53 +1904,53 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
 read.oce <- function(file, ...)
 {
     type <- oceMagic(file)
-    debug <- if ("debug" %in% names(list(...))) list(...)$debug else 0
+    dots <- list(...)
+    debug <- if ("debug" %in% names(dots)) dots$debug else 0
     oceDebug(debug,
              "read.oce(\"", as.character(file), "\", ...) inferred type=\"", type, "\"\n",
              sep="", unindent=1)
     ##> OLD: deparse is unhelpful if "file" is a variable in the calling code
     ##> OLD: processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    dots <- list(...)
     processingLog <- paste('read.oce("', file, '"', ifelse(length(dots), ", ...)", ")"), sep="")
 
     ## read.index if (type == "index")
     ## read.index     return(read.index(file))
-    if (type == "shapefile")
-        return(read.coastline.shapefile(file, processingLog=processingLog, ...))
-    if (type == "openstreetmap")
-        return(read.coastline.openstreetmap(file, processingLog=processingLog, ...))
-    if (type == "echosounder")
-        return(read.echosounder(file, processingLog=processingLog, ...))
-    if (type == "adp/rdi")
-        return(read.adp.rdi(file, processingLog=processingLog, ...))
-    if (type == "adp/sontek")
-        return(read.adp.sontek(file, processingLog=processingLog, ...)) # FIXME is pcadcp different?
-    if (type == "adp/nortek/aquadopp")
-        return(read.aquadopp(file, processingLog=processingLog, ...))
-    if (type == "adp/nortek/aquadoppProfiler")
-        return(read.aquadoppProfiler(file, processingLog=processingLog, ...))
-    if (type == "adp/nortek/aquadoppHR")
-        return(read.aquadoppHR(file, processingLog=processingLog, ...))
-    if (type == "adp/nortek/ad2cp")
-        return(read.ad2cp(file, processingLog=processingLog, ...))
-    if (type == "adv/nortek/vector")
-        return(read.adv.nortek(file, processingLog=processingLog, ...))
-    if (type == "adv/sontek/adr")
-        return(read.adv.sontek.adr(file, processingLog=processingLog, ...))
+    if (type == "shapefile") {
+        res <- read.coastline.shapefile(file, processingLog=processingLog, ...)
+    } else if (type == "openstreetmap") {
+        res <- read.coastline.openstreetmap(file, processingLog=processingLog, ...)
+    } else if (type == "echosounder") {
+        res <- read.echosounder(file, processingLog=processingLog, ...)
+    } else if (type == "adp/rdi") {
+        res <- read.adp.rdi(file, processingLog=processingLog, ...)
+    } else if (type == "adp/sontek") {
+        res <- read.adp.sontek(file, processingLog=processingLog, ...) # FIXME is pcadcp different?
+    } else if (type == "adp/nortek/aquadopp") {
+        res <- read.aquadopp(file, processingLog=processingLog, ...)
+    } else if (type == "adp/nortek/aquadoppProfiler") {
+        res <- read.aquadoppProfiler(file, processingLog=processingLog, ...)
+    } else if (type == "adp/nortek/aquadoppHR") {
+        res <- read.aquadoppHR(file, processingLog=processingLog, ...)
+    } else if (type == "adp/nortek/ad2cp") {
+        res <- read.adp.ad2cp(file, processingLog=processingLog, ...)
+    } else if (type == "adv/nortek/vector") {
+        res <- read.adv.nortek(file, processingLog=processingLog, ...)
+    } else if (type == "adv/sontek/adr") {
+        res <- read.adv.sontek.adr(file, processingLog=processingLog, ...)
     ## FIXME need adv/sontek (non adr)
-    if (type == "interocean/s4")
-        return(read.cm.s4(file, processingLog=processingLog, ...))
-    if (type == "ctd/sbe/19")
-        return(read.ctd.sbe(file, processingLog=processingLog, ...))
-    if (type == "ctd/woce/exchange")
-        return(read.ctd.woce(file, processingLog=processingLog, ...))
-    if (type == "ctd/woce/other")
-        return(read.ctd.woce.other(file, processingLog=processingLog, ...))
-    if (type == "ctd/odf" || type == "mctd/odf" || type == "mvctd/odf")
-        return(read.ctd.odf(file, processingLog=processingLog, ...))
-    if (length(grep("/odf$", type)))
-        return(read.odf(file, debug=debug))
-    if (type == "mtg/odf") {
+    } else if (type == "interocean/s4") {
+        res <- read.cm.s4(file, processingLog=processingLog, ...)
+    } else if (type == "ctd/sbe/19") {
+        res <- read.ctd.sbe(file, processingLog=processingLog, ...)
+    } else if (type == "ctd/woce/exchange") {
+        res <- read.ctd.woce(file, processingLog=processingLog, ...)
+    } else if (type == "ctd/woce/other") {
+        res <- read.ctd.woce.other(file, processingLog=processingLog, ...)
+    } else if (type == "ctd/odf" || type == "mctd/odf" || type == "mvctd/odf") {
+        res <- read.ctd.odf(file, processingLog=processingLog, ...)
+    } else if (length(grep("/odf$", type))) {
+        res <- read.odf(file, debug=debug)
+    } else if (type == "mtg/odf") {
         ## FIXME: document this data type
         ## Moored tide gauge: returns a data frame.
         fromHeader <- function(key)
@@ -1968,58 +1968,60 @@ read.oce <- function(file, ...)
             stop("found zero or multiple '-- DATA --' (end of header) lines in a mtg/odf file")
         ##header <- lines[1:headerEnd]
         data <- lines[seq.int(headerEnd+1, nlines)]
-        d <- read.table(text=data, header=FALSE, col.names=c("time", "temperature", "ptotal", "psea", "depth"))
-        d$time <- strptime(d$time, "%d-%B-%Y %H:%M:%S", tz="UTC") # guess on timezone
+        res <- read.table(text=data, header=FALSE, col.names=c("time", "temperature", "ptotal", "psea", "depth"))
+        res$time <- strptime(res$time, "%d-%B-%Y %H:%M:%S", tz="UTC") # guess on timezone
         missing_value <- -99.0 # FIXME: it's different for each column
-        d[d==missing_value] <- NA
-        attr(d, "scientist") <- fromHeader("CHIEF_SCIENTIST")
-        attr(d, "latitude") <- as.numeric(fromHeader("INITIAL_LATITUDE"))
-        attr(d, "longitude") <- as.numeric(fromHeader("INITIAL_LONGITUDE"))
-        attr(d, "cruise_name") <- fromHeader("CRUISE_NAME")
-        attr(d, "cruise_description") <- fromHeader("CRUISE_DESCRIPTION")
-        attr(d, "inst_type") <- fromHeader("INST_TYPE")
-        attr(d, "model") <- fromHeader("MODEL")
-        attr(d, "serial_number") <- fromHeader("SERIAL_NUMBER")
-        attr(d, "missing_value") <- missing_value
+        res[res==missing_value] <- NA
+        attr(res, "scientist") <- fromHeader("CHIEF_SCIENTIST")
+        attr(res, "latitude") <- as.numeric(fromHeader("INITIAL_LATITUDE"))
+        attr(res, "longitude") <- as.numeric(fromHeader("INITIAL_LONGITUDE"))
+        attr(res, "cruise_name") <- fromHeader("CRUISE_NAME")
+        attr(res, "cruise_description") <- fromHeader("CRUISE_DESCRIPTION")
+        attr(res, "inst_type") <- fromHeader("INST_TYPE")
+        attr(res, "model") <- fromHeader("MODEL")
+        attr(res, "serial_number") <- fromHeader("SERIAL_NUMBER")
+        attr(res, "missing_value") <- missing_value
         warning("Missing-value code for mtg/odf is hard-wired to -99, which will likely be wrong in other files")
         warning("The format of mtg/odf objects is likely to change throughout April, 2015")
-        return(d)
-    }
     ## if (type == "ctd/odv")
     ##     return(read.ctd.odv(file, processingLog=processingLog, ...))
-    if (type == "ctd/itp")
-        return(read.ctd.itp(file, processingLog=processingLog, ...))
-    if (type == "gpx")
-        return(read.gps(file, type="gpx", processingLog=processingLog, ...))
-    if (type == "coastline")
-        return(read.coastline(file, type="mapgen", processingLog=processingLog, ...))
-    if (type == "argo")
-        return(read.argo(file, ...))
-    if (type == "lisst")
-        return(read.lisst(file))
-    if (type == "sealevel")
-        return(read.sealevel(file, processingLog=processingLog, ...))
-    if (type == "topo")
-        return(read.topo(file))
-    if (type == "RBR/dat") # FIXME: obsolete; to be removed by Fall 2015
-        return(read.rsk(file, processingLog=processingLog, ...))
-    if (type == "RBR/rsk")
-        return(read.rsk(file, processingLog=processingLog, ...))
-    if (type == "RBR/txt")
-        return(read.rsk(file, processingLog=processingLog, type='txt', ...))
-    if (type == "section")
-        return(read.section(file, processingLog=processingLog, ...))
-    if (type == "ctd/woce/other")
-        return(read.ctd.woce.other(file, processingLog=processingLog, ...))
-    if (type == "landsat")
-        return(read.landsat(file, ...))
-    if (type == "netcdf")
-        return(read.netcdf(file, ...))
-    if (type == "met")
-        return(read.met(file, ...))
-    if (type == "odf")
-        return(read.odf(file, ...))
-    stop("unknown file type \"", type, "\"")
+    } else if (type == "ctd/itp") {
+        res <- read.ctd.itp(file, processingLog=processingLog, ...)
+    } else if (type == "gpx") {
+        res <- read.gps(file, type="gpx", processingLog=processingLog, ...)
+    } else if (type == "coastline") {
+        res <- read.coastline(file, type="mapgen", processingLog=processingLog, ...)
+    } else if (type == "argo") {
+        res <- read.argo(file, ...)
+    } else if (type == "lisst") {
+        res <- read.lisst(file)
+    } else if (type == "sealevel") {
+        res <- read.sealevel(file, processingLog=processingLog, ...)
+    } else if (type == "topo") {
+        res <- read.topo(file)
+    } else if (type == "RBR/dat") { # FIXME: obsolete; to be removed by Fall 2015
+        res <- read.rsk(file, processingLog=processingLog, ...)
+    } else if (type == "RBR/rsk") {
+        res <- read.rsk(file, processingLog=processingLog, ...)
+    } else if (type == "RBR/txt") {
+        res <- read.rsk(file, processingLog=processingLog, type='txt', ...)
+    } else if (type == "section") {
+        res <- read.section(file, processingLog=processingLog, ...)
+    } else if (type == "ctd/woce/other") {
+        res <- read.ctd.woce.other(file, processingLog=processingLog, ...)
+    } else if (type == "landsat") {
+        res <- read.landsat(file, ...)
+    } else if (type == "netcdf") {
+        res <- read.netcdf(file, ...)
+    } else if (type == "met") {
+        res <- read.met(file, ...)
+    } else if (type == "odf") {
+        res <- read.odf(file, ...)
+    } else {
+        stop("unknown file type \"", type, "\"")
+    }
+    oceDebug(debug, "} # read.oce()\n", unindent=1)
+    res
 }
 
 #' Read a NetCDF File

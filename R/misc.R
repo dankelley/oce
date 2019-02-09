@@ -13,7 +13,7 @@ abbreviateVector <- function(x)
 }
 
 
-#' Add a Column to the Data Slot of an Oce object [defunct]
+#' Add a Column to the data Slot of an oce object [defunct]
 #'
 #' \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
 #'
@@ -2547,6 +2547,8 @@ rotateAboutZ <- function(x, angle)
         stop("cannot rotate for class \"", class(x), "\"; try one of: \"",
              paste(allowedClasses, collapse="\" \""), "\")")
     if (inherits(x, "adp")) {
+        if (is.ad2cp(x))
+            stop("this function does not work yet for AD2CP data")
         if (x[["oceCoordinate"]] != "enu")
             stop("cannot rotate adp unless coordinate system is 'enu'; see ?toEnu or ?xyzToEnu")
         V <- x[["v"]]
@@ -2661,7 +2663,7 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 #' Determine time offset from timezone
 #'
 #' The data are from
-#' \url{http://www.timeanddate.com/library/abbreviations/timezones/} and were
+#' \url{https://www.timeanddate.com/library/abbreviations/timezones/} and were
 #' hand-edited to develop this code, so there may be errors.  Also, note that
 #' some of these contradict; if you examine the code, you'll see some
 #' commented-out portions that represent solving conflicting definitions by
@@ -2677,7 +2679,7 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 GMTOffsetFromTz <- function(tz)
 {
     ## Data are from
-    ##   http://www.timeanddate.com/library/abbreviations/timezones/
+    ##   https://www.timeanddate.com/library/abbreviations/timezones/
     ## and hand-edited, so there may be errors.  Also, note that some of these
     ## contradict ... I've commented out conflicting definitions that I think
     ## will come up most rarely in use, but perhaps something better should

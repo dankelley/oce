@@ -216,7 +216,7 @@ line bisecting beam pairs.  The length of this vector equals
     standard 4-beam fields.
 }
 
-\section{Accessing and altering information within \code{adp-class} objects}{
+\section{Accessing and altering information within \code{\link{adp-class}} objects}{
 
 \emph{Extracting values} Matrix data may be accessed as illustrated
 above, e.g.  or an adp object named \code{adv}, the data are provided by
@@ -260,7 +260,8 @@ format.} P/N 957-6156-00 (November 2007).
 A file containing ADP data is usually recognized by Oce, and so
 \code{\link{read.oce}} will usually read the data.  If not, one may use the
 general ADP function \code{\link{read.adp}} or specialized variants
-\code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}} or
+\code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}},
+\code{\link{read.adp.ad2cp}},
 \code{\link{read.adp.sontek}} or \code{\link{read.adp.sontek.serial}}.
 
 ADP data may be plotted with \code{\link{plot,adp-method}}, which is a
@@ -287,14 +288,17 @@ Other classes provided by \code{oce}: \code{\link{adv-class}},
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
+  \code{\link{ad2cpHeaderValue}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdpAD2CP}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
   \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
   \code{\link{enuToOther}},
   \code{\link{handleFlags,adp-method}},
-  \code{\link{plot,adp-method}}, \code{\link{read.ad2cp}},
+  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
+  \code{\link{read.adp.ad2cp}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
@@ -306,6 +310,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
 \concept{classes provided by \code{oce}}

@@ -84,7 +84,7 @@ and after that the format is simple, with columns separated by slash
 second. A simple search will reveal the dac.
 For example \code{data(argo)} is based on float 6900388, and the line
 containing that token is
-\url{bodc/6900388/6900388_meta.nc,846,BO,20120225005617}, from
+\code{bodc/6900388/6900388_meta.nc,846,BO,20120225005617}, from
 which the dac is seen to be the British Oceanographic Data Centre
 (\code{bodc}). Armed with that information, visit
 \url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}

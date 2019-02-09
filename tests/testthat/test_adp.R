@@ -2,11 +2,23 @@
 library(oce)
 data(adp)
 
-context("ADP")
+context("ADP (not AD2CP)")
 
-test_that("plot(adp,which=23,control=list('bin'=1)) works", {
+test_that("various plots", {
           expect_silent(plot(adp, which=23, control=list('bin'=1)))
+          expect_silent(plot(adp))
+          expect_silent(plot(adp, which="velocity"))
+          expect_silent(plot(adp, which="amplitude"))
+          expect_silent(plot(adp, which="quality"))
+          expect_silent(plot(adp, which="hydrography"))
+          expect_silent(plot(adp, which="angles"))
+          expect_silent(plot(adp, which="uv"))
+          expect_silent(plot(adp, which="uv+ellipse"))
+          expect_silent(plot(adp, which="uv+ellipse+arrow"))
+          expect_warning(plot(adp, which="bottomRange"), "cannot handle which= 40 because this instrument lacked bottom tracking")
+          expect_silent(plot(adp, which="progressiveVector"))
 })
+
 
 test_that("as.adp() inserts data properly", {
           data(adp)

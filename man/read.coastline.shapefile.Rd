@@ -47,7 +47,7 @@ constructed, of which coastlines could be a subset.
 Technical Description}, March 1998, available at
 \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
 
-\item 2. The NaturalEarth website \url{http://www.naturalearthdata.com/downloads}
+\item 2. The NaturalEarth website \url{https://www.naturalearthdata.com/downloads}
 provides coastline datasets in three resolutions, along with similar files
 lakes and rivers, for borders, etc. It is highly recommended.
 }
