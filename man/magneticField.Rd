@@ -44,22 +44,24 @@ library(oce)
 # 1. Today's value at Halifax NS
 magneticField(-(63+36/60), 44+39/60, Sys.Date())
 
-# 2. Map of North American values at the start of year 2000.
+# 2. World map of declination in year 2000.
 data(coastlineWorld)
-mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
-        projection="+proj=lcc +lat_0=20 +lat_1=60 +lon_0=-100")
-lon <- seq(-180, 180, 1)
+# Use Robinson projection to show whole world
+mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
+# Construct matrix holding declination
+lon <- seq(-180, 180)
 lat <- seq(-90, 90)
-lonm <- rep(lon, each=length(lat))
-latm <- rep(lat, times=length(lon))
-## Note the counter-intuitive nrow argument
-decl <- matrix(magneticField(lonm, latm, 2000)$declination,
-               nrow=length(lon), byrow=TRUE)
-mapContour(lon, lat, decl, col='red', levels=seq(-90, 90, 5))
-incl <- matrix(magneticField(lonm, latm, 2013)$inclination,
-               nrow=length(lon), byrow=TRUE)
-mapContour(lon, lat, incl, col='blue', levels=seq(-90, 90, 5))
-
+dec2000 <- function(lon, lat)
+    magneticField(lon, lat, 2000)$declination
+dec <- outer(lon, lat, dec2000) # hint: outer() is very handy!
+# Contour. Since mapContour() does not label contours, we
+# indicate them with colours and line types. Zero declination
+# is contoured black, with blue for negative values and red for 
+# positive values. Solid lines indicate increments of 10deg, with
+# dashed lines at 5deg between.
+mapContour(lon, lat, dec, col='blue', levels=seq(-180, -5, 5), lty=c(1,3))
+mapContour(lon, lat, dec, col='red', levels=seq(180, 5, -5), lty=c(1,3))
+mapContour(lon, lat, dec,  levels=0, lwd=2)
 }
 \references{
 1. The underlying Fortran code is from \code{igrf12.f}, downloaded the NOAA
