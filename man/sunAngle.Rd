@@ -8,7 +8,7 @@ sunAngle(t, longitude = 0, latitude = 0, useRefraction = FALSE)
 }
 \arguments{
 \item{t}{time, a POSIXt object (converted to timezone \code{"UTC"},
-if it is not already in that timezone), or a numeric value that
+if it is not already in that timezone), a character or numeric value that
 corresponds to such a time.}
 
 \item{longitude}{observer longitude in degrees east}
