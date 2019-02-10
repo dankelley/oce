@@ -220,7 +220,7 @@ julianCenturyAnomaly <- function(jd)
 #' \code{\link{equatorialToLocalHorizontal}}.
 #'
 #' @param t time, a POSIXt object (converted to timezone \code{"UTC"},
-#' if it is not already in that timezone), or a numeric value that
+#' if it is not already in that timezone), a character or numeric value that
 #' corresponds to such a time.
 #' @param longitude observer longitude in degrees east
 #' @param latitude observer latitude in degrees north
@@ -289,7 +289,11 @@ julianCenturyAnomaly <- function(jd)
 #' @family things related to astronomy
 moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
 {
-    if (missing(t)) stop("must give 't'")
+    if (missing(t)) stop("must provide 't'")
+    if (is.character(t))
+        t <- as.POSIXct(t, tz="UTC")
+    else if (inherits(t, "Date"))
+        t <- as.POSIXct(t)
     if (!inherits(t, "POSIXt")) {
         if (is.numeric(t)) {
             tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC") # arbitrary
@@ -298,10 +302,10 @@ moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
             stop("t must be POSIXt or a number corresponding to POSIXt (in UTC)")
         }
     }
-    if ("UTC" != attr(as.POSIXct(t[1]), "tzone"))
+    ## Ensure that the timezone is UTC. Note that Sys.Date() gives a NULL tzone.
+    tzone <- attr(as.POSIXct(t[1]), "tzone")
+    if (is.null(tzone) || "UTC" != tzone)
         attributes(t)$tzone <- "UTC"
-    if (missing(longitude)) stop("must give 'longitude'")
-    if (missing(latitude)) stop("must give 'latitude'")
     RPD <- atan2(1, 1) / 45            # radians per degree
     ## In this cde, the symbol names follow [1] Meeus 1982 chapter 30, with e.g. "p"
     ## used to indicate primes, e.g. Lp stands for L' in Meeus' notation.
