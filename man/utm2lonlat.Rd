@@ -37,7 +37,7 @@ utm2lonlat(852863, 5029997, 19)
 
 }
 \references{
-\url{http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
+\url{https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
 downloaded May 31, 2014.
 }
 \seealso{
@@ -62,3 +62,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley
 }
+\concept{functions related to maps}

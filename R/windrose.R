@@ -1,8 +1,7 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' @title Class to Store Windrose Data
+#' Class to Store Windrose Data
 #'
-#' @description
 #' Windrose objects store statistical information about winds, mainly for
 #' plotting as "wind rose" plots (see \code{\link{plot,windrose-method}}.
 #' There is no reading method, because there is no standard way to store
@@ -12,6 +11,18 @@
 #' \code{\link{[[<-,windrose-method}}. Data summaries are provided with
 #' \code{\link{summary,windrose-method}}.
 #'
+#' @templateVar class windrose
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
+##'
 #' @family classes provided by \code{oce}
 #' @family things related to \code{windrose} data
 setClass("windrose", contains="oce")
@@ -183,7 +194,7 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 #'
 #' @param convention String indicating whether to use meteorological convention or
 #' oceanographic convention for the arrows that emanate from the centre of the
-#' rose.  In meteorological convenction, an arrow emanates towards the right on
+#' rose.  In meteorological convection, an arrow emanates towards the right on
 #' the diagram if the wind is from the east; in oceanographic convention, such an
 #' arrow indicates flow \emph{to} the east.
 #'
@@ -193,11 +204,11 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 #'
 #' @param mar Four-element numerical vector to be used with \code{\link{par}("mar")}.
 #'
-#' @param col Optional list of colours to use.  If not set, the colours will be
+#' @param col Optional list of colors to use.  If not set, the colors will be
 #' \code{c("red", "pink", "blue", "lightgray")}.  For the first three types of
-#' plot, the first colour in this list is used to fill in the rose, the third is
+#' plot, the first color in this list is used to fill in the rose, the third is
 #' used for the petals of the rose, and the fourth is used for grid lines. For the
-#' \code{"fivenum"} type, the first colour is used for the inter-quartile range,
+#' \code{"fivenum"} type, the first color is used for the inter-quartile range,
 #' the second is used outside this range, the third is used for the median, and
 #' the fourth is, again, used for the grid lines.
 #'
@@ -218,6 +229,7 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{windrose} data
+#' @aliases plot.windrose
 setMethod(f="plot",
           signature=signature("windrose"),
           definition=function(x,
@@ -253,7 +265,7 @@ setMethod(f="plot",
                   col <- c("red", "pink", "blue", "darkgray")
               else {
                   if (length(col) != 4)
-                      stop("'col' should be a list of 4 colours")
+                      stop("'col' should be a list of 4 colors")
               }
                                         # Draw circle and radii
               tt <- seq(0, 2*pi, length.out=100)

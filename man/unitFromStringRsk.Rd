@@ -29,3 +29,4 @@ Other functions that interpret variable names and units from headers: \code{\lin
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}
 }
+\concept{functions that interpret variable names and units from headers}

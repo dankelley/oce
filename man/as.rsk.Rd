@@ -58,3 +58,4 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{rsk} data}

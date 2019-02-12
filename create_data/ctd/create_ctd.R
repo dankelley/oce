@@ -1,10 +1,8 @@
 library(oce)
-source("../../R/ctd.sbe.R")
-source("../../R/ctd.R")
-source("../../R/oce.R")
-ctd <- read.oce("ctd.cnv")
-ctd <- oce.edit(ctd, "startTime", ctd[["systemUploadTime"]],
-                reason="startTime in file has Y2K error", person="Dan Kelley")
+ctd <- read.oce("ctd.cnv", debug=10)
+ctd <- oce.edit(ctd, "startTime",
+                as.POSIXct(gsub("1903", "2003", format(ctd[["startTime"]])), tz="UTC")+4*3600,
+                reason="file had year=1903, instead of 2003", person="Dan Kelley")
 ##ctd <- oce.edit(ctd, "temperature", T90fromT68(ctd[["temperature"]]),
 ##                reason="File uses old IPTS-68 convention", person="Dan Kelley")
 ##ctd@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")

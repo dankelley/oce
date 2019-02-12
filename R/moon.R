@@ -12,7 +12,7 @@
 #' @return A data frame containing columns \code{rightAscension} and
 #' \code{declination} both in degrees.
 #' @author Dan Kelley, based on formulae in [1] and [2].
-#' @references 1. Meeus, Jean, 1982. Astronomical formuae for Calculators.
+#' @references 1. Meeus, Jean, 1982. Astronomical formulae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages.
 #'
 #' 2. Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
@@ -88,7 +88,7 @@ equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitud
 #' ignored.
 #' @return A sidereal time, in hours in the range from 0 to 24.
 #' @author Dan Kelley
-#' @references Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+#' @references Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages
 #' @examples
 #'
@@ -143,13 +143,12 @@ siderealTime <- function(t)
 #' @return A Julian-Day number, in astronomical convention as explained in
 #' Meeus.
 #' @author Dan Kelley
-#' @references Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+#' @references Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages
 #' @examples
 #'
-#' t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="ET")+0.4*86400
-#' jd <- julianDay(t)
-#' cat(format(t), "is Julian Day", format(jd, digits=14), "\n")
+#' t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="UTC")+0.4*86400
+#' expect_equal(julianDay(t), 2443259.9) # example from Meeus
 #'
 #' @family things related to astronomy
 #' @family things related to time
@@ -187,7 +186,7 @@ julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz=
 #' @param jd a julian day number, e.g. as given by \code{\link{julianDay}}.
 #' @return Julian century since noon on January 1, 1900.
 #' @author Dan Kelley
-#' @references Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+#' @references Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages
 #' @examples
 #'
@@ -221,7 +220,7 @@ julianCenturyAnomaly <- function(jd)
 #' \code{\link{equatorialToLocalHorizontal}}.
 #'
 #' @param t time, a POSIXt object (converted to timezone \code{"UTC"},
-#' if it is not already in that timezone), or a numeric value that
+#' if it is not already in that timezone), a character or numeric value that
 #' corresponds to such a time.
 #' @param longitude observer longitude in degrees east
 #' @param latitude observer latitude in degrees north
@@ -268,7 +267,7 @@ julianCenturyAnomaly <- function(jd)
 #' y <- 2012
 #' m <- 4
 #' days <- 1:3
-#' ## Halifax sunrise/sunset (see e.g. http://www.timeanddate.com/worldclock)
+#' ## Halifax sunrise/sunset (see e.g. https://www.timeanddate.com/worldclock)
 #' rises <- ISOdatetime(y, m, days,c(13,15,16), c(55, 04, 16),0,tz="UTC") + 3 * 3600 # ADT
 #' sets <- ISOdatetime(y, m,days,c(3,4,4), c(42, 15, 45),0,tz="UTC") + 3 * 3600
 #' azrises <- c(69, 75, 82)
@@ -290,7 +289,11 @@ julianCenturyAnomaly <- function(jd)
 #' @family things related to astronomy
 moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
 {
-    if (missing(t)) stop("must give 't'")
+    if (missing(t)) stop("must provide 't'")
+    if (is.character(t))
+        t <- as.POSIXct(t, tz="UTC")
+    else if (inherits(t, "Date"))
+        t <- as.POSIXct(t)
     if (!inherits(t, "POSIXt")) {
         if (is.numeric(t)) {
             tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC") # arbitrary
@@ -299,10 +302,10 @@ moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
             stop("t must be POSIXt or a number corresponding to POSIXt (in UTC)")
         }
     }
-    if ("UTC" != attr(as.POSIXct(t[1]), "tzone"))
+    ## Ensure that the timezone is UTC. Note that Sys.Date() gives a NULL tzone.
+    tzone <- attr(as.POSIXct(t[1]), "tzone")
+    if (is.null(tzone) || "UTC" != tzone)
         attributes(t)$tzone <- "UTC"
-    if (missing(longitude)) stop("must give 'longitude'")
-    if (missing(latitude)) stop("must give 'latitude'")
     RPD <- atan2(1, 1) / 45            # radians per degree
     ## In this cde, the symbol names follow [1] Meeus 1982 chapter 30, with e.g. "p"
     ## used to indicate primes, e.g. Lp stands for L' in Meeus' notation.

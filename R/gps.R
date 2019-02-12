@@ -1,11 +1,21 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-
-#' @title Class to Store GPS Data
+#' Class to Store GPS Data
 #'
-#' @description
-#' Class to store gps data. These objects may be read with
+#' This class stores GPS data. These objects may be read with
 #' \code{\link{read.gps}} or assembled with \code{\link{as.gps}}.
+#'
+#' @templateVar class gps
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @name gps-class
 #' @docType class
@@ -117,7 +127,7 @@ setMethod(f="[[<-",
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #' @param mar value to be used with \code{\link{par}("mar")}.
-#' @param bg optional colour to be used for the background of the map.  This
+#' @param bg optional color to be used for the background of the map.  This
 #' comes in handy for drawing insets (see \dQuote{details}).
 #' @param axes boolean, set to \code{TRUE} to plot axes.
 #' @param cex.axis value for axis font size factor.
@@ -143,6 +153,7 @@ setMethod(f="[[<-",
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{gps} data
+#' @aliases plot.gps
 setMethod(f="plot",
           signature=signature("gps"),
           definition=function (x,

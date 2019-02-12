@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,odf-method}
 \alias{plot,odf-method}
+\alias{plot.odf}
 \title{Plot an ODF Object}
 \usage{
 \S4method{plot}{odf}(x, blanks = TRUE, debug = getOption("oceDebug"))
@@ -46,6 +47,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -60,6 +62,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
@@ -70,3 +73,5 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{odf} data}

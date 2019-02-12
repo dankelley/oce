@@ -28,10 +28,10 @@ of having to know the station number. See the documentation for
 \seealso{
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{colors}},
-  \code{\link{ctdRaw}}, \code{\link{ctd}},
-  \code{\link{echosounder}}, \code{\link{landsat}},
-  \code{\link{lisst}}, \code{\link{lobo}},
+  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
+  \code{\link{ctd}}, \code{\link{echosounder}},
+  \code{\link{landsat}}, \code{\link{lisst}},
+  \code{\link{lobo}}, \code{\link{ocecolors}},
   \code{\link{rsk}}, \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
@@ -43,3 +43,5 @@ Other things related to \code{met} data: \code{\link{[[,met-method}},
   \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
+\concept{datasets provided with \code{oce}}
+\concept{things related to \code{met} data}

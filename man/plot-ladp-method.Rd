@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,ladp-method}
 \alias{plot,ladp-method}
+\alias{plot.ladp}
 \title{Plot an ladp object}
 \usage{
 \S4method{plot}{ladp}(x, which = c("u", "v"), ...)
@@ -20,7 +21,8 @@ and northerly velocity components.
 }
 \seealso{
 Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
-  \code{\link{as.ladp}}, \code{\link{ladp-class}},
+  \code{\link{[[<-,ladp-method}}, \code{\link{as.ladp}},
+  \code{\link{ladp-class}},
   \code{\link{summary,ladp-method}}
 
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
@@ -32,6 +34,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,coastline-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -49,3 +52,5 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{ladp} data}

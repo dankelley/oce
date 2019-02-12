@@ -21,25 +21,40 @@ T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature * (100-tempe
 
 #' Look Within the First Element of a List for Replacement Values
 #'
-#' @details
-#' This is a helper function used by various seawater functions. It is used for a
-#' call like \code{\link{swRho}(ctd)}, in which the first argument, which is
-#' normally \code{salinity} may be an object that contains salinity plus
-#' the other items that \code{\link{swRho}} expects to see as arguments. This
-#' shorthand is very helpful in calls to the suite of \code{sw} functions.  If
-#' this first argument is an object of this sort, then the other arguments
-#' are ignored \emph{except} for two special cases:
-#' \itemize{
-#' \item an item named \code{eos} is copied directly from \code{list}
-#' \item if the object stores \code{temperature} defined with the IPTS-68
-#' scale, then \code{\link{T90fromT68}} is used to convert to the ITS-90 scale,
-#' because this is what is expected in most seawater functions. (For example,
-#' the RMS difference between these temperature variants is 0.002C for the
-#' \code{\link{ctd}} dataset.)
-#' }
+#' This is a helper function used by some seawater functions
+#' (with names starting with \code{sw}) to
+#' facilitate the specification of water properties either with
+#' distinct arguments, or with data stored within an \code{oce}
+#' object that is the first argument.
+#'
+#' If \code{list[1]} is not an \code{oce} object, then the
+#' return value of \code{lookWithin} is the same as the input
+#' value, except that (a) \code{eos} is completed to either
+#' \code{"gsw"} or \code{"unesco"} and (b) if \code{longitude}
+#' and \code{latitude} are within \code{list[1]}, then they
+#' are possibly lengthened, to have the same length as the first
+#' item in the \code{data} slot of \code{list[1]}.
+#'
+#' The examples may clarify this somewhat.
 #'
 #' @param list A list of elements, typically arguments that will be used in sw functions.
+#'
 #' @return A list with elements of the same names but possibly filled in from the first element.
+#'
+#' @examples
+#' ## 1. If first item is not a CTD object, just return the input
+#' lookWithin(list(a=1, b=2)) # returns a list
+#' ## 2. Extract salinity from a CTD object
+#' data(ctd)
+#' str(lookWithin(list(salinity=ctd)))
+#' ## 3. Extract salinity and temperature. Note that the
+#' ## value specified for temperature is ignored; all that matters
+#' ## is that temperature is named.
+#' str(lookWithin(list(salinity=ctd, temperature=NULL)))
+#' ## 4. How it is used by swRho()
+#' rho1 <- swRho(ctd, eos="unesco")
+#' rho2 <- swRho(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]], eos="unesco")
+#' expect_equal(rho1, rho2)
 lookWithin <- function(list)
 {
     n <- length(list)
@@ -232,6 +247,7 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
 #' @param eos equation of state, either \code{"unesco"} or \code{"gsw"}.
 #' @param \dots additional argument, passed to \code{\link{smooth.spline}}, in
 #' the case that \code{derivs="smoothing"}.  See \dQuote{Details}.
+#' @template debugTemplate
 #' @return Square of buoyancy frequency [\eqn{radian^2/s^2}{radian^2/s^2}].
 #' @author Dan Kelley
 #' @examples
@@ -251,8 +267,10 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
 #' abline(v=0)
 #' @family functions that calculate seawater properties
 swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
-                 eos=getOption("oceEOS", default="gsw"), ...)
+                 eos=getOption("oceEOS", default="gsw"),
+                 debug=getOption("oceDebug"),  ...)
 {
+    oceDebug(debug, "swN2(...) {\n", sep="", unindent=1)
     ##cat("swN2(..., df=", df, ")\n",sep="")
     eos <- match.arg(eos, c("unesco", "gsw"))
     ##useSmoothing <- !missing(df) && is.finite(df)
@@ -305,22 +323,37 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
         SA <- ctd[["SA"]]
         CT <- ctd[["CT"]]
         p <- ctd[["pressure"]]
-        ##np <- length(p)
-        ok <- !is.na(p) & !is.na(SA) & !is.na(CT)
-        if (missing(df))
-            df <- round(length(p[ok]) / 10)
-        df <- max(df, 2) # smooth.spline won't work if df<2
-        if (length(p[ok]) > 4 && is.finite(df)) {
-            SA <- predict(smooth.spline(p[ok], SA[ok], df=df), p)$y
-            CT <- predict(smooth.spline(p[ok], CT[ok], df=df), p)$y
+        ok <- is.finite(p) & is.finite(SA) & is.finite(CT)
+        nok <- sum(ok)
+        if (missing(df)) {
+            df <- if (nok > 100) floor(nok / 10) # at least 10
+                else if (nok > 20) floor(nok / 3) # at least 7
+                else if (nok > 10) floor(nok / 2) # at least 5
+                else nok
+            oceDebug(debug, "df=", df, " (calculated using nok=", nok, ")\n", sep="")
+        } else {
+            oceDebug(debug, "df=", df, " (given as an argument to swNw())\n", sep="")
+        }
+        ## Focus on non-NA values
+        pok <- p[ok]
+        SAok <- SA[ok]
+        CTok <- CT[ok]
+        ## Smooth with a spline, but only if have enough data
+        if (nok > 4 && is.finite(df)) {
+            SAok <- predict(smooth.spline(pok, SAok, df=df), pok)$y
+            CTok <- predict(smooth.spline(pok, CTok, df=df), pok)$y
         }
         latitude <- ctd[["latitude"]]
+        if (is.null(latitude))
+            stop("cannot compute N2 without latitude, for eos=\"gsw\"")
         if (is.na(latitude[1]))
             latitude <- 0
-        l <- gsw::gsw_Nsquared(SA=SA, CT=CT, p=p, latitude=latitude[1])
+        l <- gsw::gsw_Nsquared(SA=SAok, CT=CTok, p=pok, latitude=latitude[1])
         ## approx back to the given pressures
-        res <- approx(l$p_mid, l$N2, p, rule=2)$y
+        good <- is.finite(l$p_mid) & is.finite(l$N2)
+        res <- approx(x=l$p_mid[good], y=l$N2[good], p, rule=2)$y
     }
+    oceDebug(debug, "} # swN2()\n", sep="", unindent=1)
     res
 }
 
@@ -723,48 +756,85 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 
 #' Seawater freezing temperature
 #'
-#' Compute freezing temperature of seawater.
+#' Compute in-situ freezing temperature of seawater, using either the UNESCO formulation
+#' (computed as in Section 5 of reference [1]) or the GSW formulation (computed
+#' by using \code{\link[gsw]{gsw_SA_from_SP}} to get Absolute Salinity, and
+#' then \code{\link[gsw]{gsw_t_freezing}} to get the freezing temperature).
 #'
-#' In the first form, the argument is a \code{ctd} object, from which the
-#' salinity and pressure values are extracted and used to for the calculation.
+#' If the first argument is an \code{oce} object, and if the \code{pressure}
+#' argument is \code{NULL}, then the pressure is sought within the first
+#' argument. In the case of \code{eos="gsw"}, then a similar procedure
+#' also applies to the \code{longitude} and \code{latitude} arguments.
 #'
-#' @param salinity either salinity [PSU] or a \code{ctd} object from which
-#' salinity will be inferred.
-#' @param pressure seawater pressure [dbar]
-#' @param longitude longitude of observation (only used if \code{eos="gsw"};
+#' @param salinity Either practical salinity [PSU] or a \code{ctd} object from which
+#' practical salinity and pressure (plus in the \code{eos="gsw"} case,
+#' longitude and latitude) are inferred, using \code{\link{lookWithin}}.
+#'
+#' @param pressure Seawater pressure [dbar].
+#'
+#' @param longitude Longitude of observation (only used if \code{eos="gsw"};
 #' see \sQuote{Details}).
-#' @param latitude latitude of observation (only used if \code{eos="gsw"}; see
+#'
+#' @param latitude Latitude of observation (only used if \code{eos="gsw"}; see
 #' \sQuote{Details}).
-#' @param saturation_fraction saturation fraction of dissolved air in seawater
-#' (used only if \code{eos="gsw"}).
-#' @param eos equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
+#'
+#' @param saturation_fraction The saturation fraction of dissolved air in seawater,
+#' ignored if \code{eos="unesco"}).
+#'
+#' @param eos The equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}.
 #' [3,4].
+#'
 #' @return Temperature [\eqn{^\circ}{deg}C], defined on the ITS-90 scale.
+#'
 #' @author Dan Kelley
-#' @references [1] Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
-#' computation of fundamental properties of seawater. \emph{Unesco Technical
-#' Papers in Marine Science}, \bold{44}, 53 pp
 #'
-#' [2] Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
-#' York, 662 pp.
+#' @references
+#' 1. Fofonoff, N. P., and R. C. Millard. “Algorithms for Computation of
+#' Fundamental Properties of Seawater.” UNESCO Technical Papers in Marine
+#' Research. SCOR working group on Evaluation of CTD data; UNESCO/ICES/SCOR/IAPSO
+#' Joint Panel on Oceanographic Tables and Standards, 1983.
+#' https://unesdoc.unesco.org/ark:/48223/pf0000059832.
 #'
-#' [3] IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
+#' 2. Gill, A E. Atmosphere-Ocean Dynamics. New York, NY, USA: Academic Press,
+#' 1982.
+#'
+#' 3. IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
 #' seawater-2010: Calculation and use of thermodynamic properties.  Technical
-#' Report 56, Intergovernmental Oceanographic Commission, Manuals and Guide.
+#' Report 56, Intergovernmental Oceanographic Commission, Manuals and Guide, 2010.
 #'
-#' [4] McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
-#' the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
-#' ISBN 978-0-646-55621-5.
+#' 4. McDougall, Trevor J., and Paul M. Barker. Getting Started with TEOS-10 and
+#' the Gibbs Seawater (GSW) Oceanographic Toolbox. SCOR/IAPSO WG127, 2011.
+#'
 #' @examples
-#' swTFreeze(salinity=40, pressure=500, eos="unesco") # -2.588567 degC
+#' # 1. Test for a check-value given in [1]. This value, -2.588567 degC,
+#' # is in the 1968 temperature scale (IPTS-68), but swTFreeze reports
+#' # in the newer ITS-90 scale, so we must convert before checking.
+#' Tcheck <- -2.588567 # IPTS-68
+#' T <- swTFreeze(salinity=40, pressure=500, eos="unesco")
+#' expect_equal(Tcheck, T68fromT90(T), tolerance=1e-6)
+#'
+#' # 2. Compare unesco and gsw formulations.
+#' data(ctd)
+#' p <- ctd[["pressure"]]
+#' par(mfrow=c(1, 2), mar=c(3, 3, 1, 2), mgp=c(2, 0.7, 0))
+#' plot(swTFreeze(ctd, eos="unesco"),
+#'      p, xlab="unesco", ylim=rev(range(p)))
+#' plot(swTFreeze(ctd, eos="unesco") - swTFreeze(ctd, eos="gsw"),
+#'      p, xlab="unesco-gsw", ylim=rev(range(p)))
 #'
 #' @family functions that calculate seawater properties
-swTFreeze <- function(salinity, pressure=0,
+swTFreeze <- function(salinity, pressure=NULL,
                       longitude=NULL, latitude=NULL, saturation_fraction=1,
                       eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must supply salinity (which may be S or a CTD object)")
+    if (inherits(salinity, "oce")) {
+        if (is.null(pressure))
+            pressure <- salinity[["pressure"]]
+    }
+    if (is.null(pressure))
+        stop("must supply pressure")
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
             if (is.null(longitude))
@@ -776,20 +846,20 @@ swTFreeze <- function(salinity, pressure=0,
             stop("must supply longitude")
         if (is.null(latitude))
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, pressure=pressure,
-                             longitude=longitude, latitude=latitude,
-                             saturation_fraction=saturation_fraction, eos=eos))
+        ## Note: the pressure in the next line is for computing SA; see below.
+        l <- lookWithin(list(salinity=salinity, latitude=latitude, longitude=longitude, pressure=pressure))
     } else {
-        l <- lookWithin(list(salinity=salinity, pressure=pressure, eos=eos))
+        l <- lookWithin(list(salinity=salinity, pressure=pressure))
     }
     Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
-    if (eos == "unesco") {
+    if (eos == "gsw") {
+        ## Note that l$pressure is used for computing SA, but not for gsw_t_freezing().
+        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        res <- gsw::gsw_t_freezing(SA=SA, p=l$pressure, saturation_fraction=saturation_fraction)
+    } else if (eos == "unesco") {
         res <- (-.0575+1.710523e-3*sqrt(abs(l$salinity))-2.154996e-4*l$salinity)*l$salinity-7.53e-4*l$pressure
         res <- T90fromT68(res)
-    } else if (eos == "gsw") {
-        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        res <- gsw::gsw_t_freezing(SA=SA, p=0, saturation_fraction=l$saturation_fraction)
     }
     if (Smatrix) dim(res) <- dim
     res
@@ -876,7 +946,7 @@ swAlpha <- function(salinity, temperature=NULL, pressure=0,
 #' @return Value in psu/\eqn{^\circ}{deg}C.
 #' @author Dan Kelley
 #' @references The \code{eos="unesco"} formulae are based on the UNESCO
-#' equation of state, but are formulaed empirically by Trevor J. McDougall,
+#' equation of state, but are formulated empirically by Trevor J. McDougall,
 #' 1987, Neutral Surfaces, Journal of Physical Oceanography, volume 17, pages
 #' 1950-1964. The \code{eos="gsw"} formulae come from GSW; see references in
 #' the \code{\link{swRho}} documentation.
@@ -1397,6 +1467,7 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
 #' \sQuote{Details}).
 #' @param eos equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
 #' [3,4].
+#'
 #' @return \emph{In-situ} density [kg/m\eqn{^3}{^3}].
 #' @section Temperature units: The UNESCO formulae are defined in terms of
 #' temperature measured on the IPTS-68 scale, whereas the replacement GSW
@@ -1407,10 +1478,13 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
 #' old code has to be modified, by replacing e.g. \code{swRho(S, T, p)} with
 #' \code{swRho(S, T90fromT68(T), p)}. At typical oceanic values, the difference
 #' between the two scales is a few millidegrees.
+#'
 #' @author Dan Kelley
+#'
 #' @seealso Related density routines include \code{\link{swSigma0}} (and
 #' equivalents at other pressure horizons), \code{\link{swSigmaT}}, and
 #' \code{\link{swSigmaTheta}}.
+#'
 #' @references
 #' 1. Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
 #' fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
@@ -1578,7 +1652,7 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
 #' @author Dan Kelley
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @examples
-#' expect_equal(26.42066, swSigmaTheta(35, 13, 1000, eos="unesco"), tolerance=0.00001)
+#' expect_equal(26.4212790994, swSigmaTheta(35, 13, 1000, eos="unesco"))
 #'
 #' @family functions that calculate seawater properties
 swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
@@ -1964,7 +2038,8 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 
 #' Seawater spiciness
 #'
-#' Compute seawater "spice" (a variable orthogonal to density in TS space).
+#' Compute seawater "spice" (a variable orthogonal to density in TS space), in
+#' either the formulation of Flament [1] or the Gibbs SeaWater formulation [2].
 #'
 #' If the first argument is a \code{ctd} object, then salinity, temperature and
 #' pressure values are extracted from it, and used for the calculation.
@@ -1973,31 +2048,88 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #' salty compared with less spicy water. Another interpretation is that spice
 #' is a variable measuring distance orthogonal to isopycnal lines on TS
 #' diagrams (if the diagrams are scaled to make the isopycnals run at 45
-#' degres). The definition used here is that of Pierre Flament. (Other
-#' formulations exist.)  Note that pressure is ignored in the definition.
-#' Spiceness is sometimes denoted \eqn{\pi(S,t,p)}{pi(S,t,p)}.
+#' degrees). Note that pressure, longitude and latitude are all
+#'  ignored in the Flament definition.
 #'
 #' @param salinity either salinity [PSU] (in which case \code{temperature} and
 #' \code{pressure} must be provided) \strong{or} a \code{ctd} object (in which
 #' case \code{salinity}, \code{temperature} and \code{pressure} are determined
 #' from the object, and must not be provided in the argument list).
+#'
 #' @param temperature \emph{in-situ} temperature [\eqn{^\circ}{deg}C] on the
 #' ITS-90 scale; see \dQuote{Temperature units} in the documentation for
 #' \code{\link{swRho}}.
-#' @param pressure seawater pressure [dbar]
-#' @return Spice [kg/m\eqn{^3}{^3}].
-#' @author Dan Kelley
-#' @references P. Flament, 2002. A state variable for characterizing water
-#' masses and their diffusive stability: spiciness.  \emph{Progr. Oceanog.},
-#' \bold{54}, 493-501.
+#'
+#' @param pressure Seawater pressure [dbar] (only used if \code{eos} is
+#' \code{"gsw"}); see \sQuote{Details}..
+#'
+#' @param longitude longitude of observation (only used if \code{eos} is
+#' \code{"gsw"}; see \sQuote{Details}).
+#'
+#' @param latitude latitude of observation (only used if \code{eos} is
+#' \code{"gsw"}; see \sQuote{Details}).
+#'
+#' @param eos Character value specifying the equation of state,
+#' either \code{"unesco"} (for the Flament formulation, although this
+#' is not actually part of UNESCO)
+#' or \code{"gsw"} for the Gibbs SeaWater formulation.
+#'
+#' @return Flament-formulated spice \eqn{kg/m^3} if \code{eos} is \code{"unesco"}
+#' or surface-referenced GSW spiciness0 \eqn{kg/m^3} if \code{eos} is \code{"gsw"},
+#' the latter provided by \code{\link[gsw]{gsw_spiciness0}}, and hence aimed
+#' at application within the top half-kilometre of the ocean.
+#'
+#' @author Dan Kelley coded this, merely an interface to the code describd
+#' by [1] and [2].
+#'
+#' @examples
+#' ## Contrast the two formulations.
+#' library(oce)
+#' data(ctd)
+#' p <- ctd[["pressure"]]
+#' plot(swSpice(ctd, eos="unesco"), p,
+#'      xlim=c(-2.7, -1.5), ylim=rev(range(p)),
+#'      xlab="Spice", ylab="Pressure [dbar]")
+#' points(swSpice(ctd, eos="gsw"), p,col=2)
+#' mtext("black=unesco, red=gsw")
+#'
+#' @references
+#' 1. Flament, P. “A State Variable for Characterizing Water Masses and Their
+#' Diffusive Stability: Spiciness.” Progress in Oceanography, Observations of the
+#' 1997-98 El Nino along the West Coast of North America, 54, no. 1
+#' (July 1, 2002):493–501.
+#' \url{https://doi.org/10.1016/S0079-6611(02)00065-4}
+#'
+#' 2.McDougall, Trevor J., and Oliver A. Krzysik. “Spiciness.”
+#' Journal of Marine Research 73, no. 5 (September 1, 2015): 141–52.
+#' \url{https://doi.org/10.1357/002224015816665589}
+#'
 #' @family functions that calculate seawater properties
-swSpice <- function(salinity, temperature=NULL, pressure=NULL)
+swSpice <- function(salinity, temperature=NULL, pressure=NULL,
+                    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must provide salinity")
-    l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure))
+    if (eos == "gsw") {
+        if (inherits(salinity, "oce")) {
+            if (is.null(longitude))
+                longitude <- salinity[["longitude"]]
+            if (is.null(latitude))
+                latitude <- salinity[["latitude"]]
+        }
+        if (is.null(longitude))
+            stop("must supply longitude")
+        if (is.null(latitude))
+            stop("must supply latitude")
+        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
+                             longitude=longitude, latitude=latitude, eos=eos))
+    } else { # must be "unesco"
+        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
+    }
     if (is.null(l$temperature))
         stop("must provide temperature")
+    if (eos == "gsw" && is.null(l$pressure))
+        stop("must provide pressure")
     Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
@@ -2007,9 +2139,15 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
     if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
-    res <- .C("sw_spice", as.integer(nS), as.double(l$salinity),
-               as.double(T68fromT90(l$temperature)), as.double(l$pressure),
-               value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
+    if (eos == "unesco") {
+        res <- .C("sw_spice", as.integer(nS), as.double(l$salinity),
+                  as.double(T68fromT90(l$temperature)), as.double(l$pressure),
+                  value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
+    } else if (eos == "gsw") {
+        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
+        res <- gsw::gsw_spiciness0(SA, CT)
+    }
     if (Smatrix) dim(res) <- dim
     res
 }
@@ -2069,7 +2207,7 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
 #' @examples
 #' library(oce)
 #' ## test value from Fofonoff et al., 1983
-#' expect_equal(36.89073, swTheta(40, T90fromT68(40), 10000, 0, eos="unesco"), tolerance=0.00001)
+#' expect_equal(36.8818748026, swTheta(40, T90fromT68(40), 10000, 0, eos="unesco"))
 #'
 #' # Example from a cross-Atlantic section
 #' data(section)
@@ -2121,11 +2259,14 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
         res <- gsw::gsw_pt_from_t(SA=SA, t=l$temperature, p=l$pressure, p_ref=referencePressure)
     } else if (eos == "unesco") {
+        ## Note the conversion to the T68 scale, because that's the scale
+        ## used by the UNESCO formula.
         res <- .C("theta_UNESCO_1983",
                   as.integer(nS),
                   as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
                   as.double(referencePressure),
                   value=double(nS), NAOK=TRUE, PACKAGE = "oce")$value
+        res <- T90fromT68(res)
     }
     if (Smatrix)
         dim(res) <- dim

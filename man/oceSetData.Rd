@@ -2,7 +2,7 @@
 % Please edit documentation in R/accessors.R
 \name{oceSetData}
 \alias{oceSetData}
-\title{Set something in the \code{data} slot of an \code{oce} object}
+\title{Set Something in the data Slot of an oce Object}
 \usage{
 oceSetData(object, name, value, unit, originalName, note = "")
 }
@@ -19,12 +19,18 @@ three possible forms (see \dQuote{Details}).}
 \item{originalName}{Optional character string giving an 'original' name (e.g.
 as stored in the header of a data file).}
 
-\item{note}{A note to be stored in the processing log. If an empty string
-(the default) then an entry will be constructed from the function call. If
-\code{NULL}, then no entry will be added to the processing log.}
+\item{note}{Either empty (the default), a character string, or \code{NULL},
+to control additions made to the processing log of the return value. If
+\code{note=""} then the an entry is created based on deparsing the function call.
+If \code{note} is a non-empty string, then that string gets added added
+to the processing log. Finally, if \code{note=NULL}, then nothing is
+added to the processing log. This last form is useful in cases where
+\code{oceSetData} is to be called many times in succession, resulting
+in an overly verbose processing log; in such cases, it might help
+to add a note by e.g. \code{processingLog(a) <- "QC (memo dek-2018-01/31)"}}
 }
 \description{
-Set something in the \code{data} slot of an \code{oce} object
+Set Something in the data Slot of an oce Object
 }
 \details{
 There are three possibilities for \code{unit}:

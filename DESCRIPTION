@@ -1,13 +1,14 @@
 Package: oce
 Type: Package
 Title: Analysis of Oceanographic Data
-Version: 0.9-23
-Authors@R: c(person(given="Dan", family="Kelley", email="Dan.Kelley@Dal.Ca", role=c("aut", "cre")),
- person(given="Clark", family="Richards", email="clark.richards@gmail.com", role=c("aut")),
- person(given="Chantelle", family="Layton", email="chantelle.layton@dal.ca", role=c("ctb"), comment="curl() coauthor"),
- person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field subroutine"))
+Version: 1.0-2.1
+Authors@R: c(
+    person(given="Dan", family="Kelley", email="Dan.Kelley@Dal.Ca", role=c("aut", "cre"), comment=c(ORCID="https://orcid.org/0000-0001-7808-5911")),
+    person(given="Clark", family="Richards", email="clark.richards@gmail.com", role=c("aut"), comment=c(ORCID="https://orcid.org/0000-0002-7833-206X")),
+    person(given="Chantelle", family="Layton", email="chantelle.layton@dal.ca", role=c("ctb"), comment=c(ORCID="https://orcid.org/0000-0002-3199-5763", "curl() coauthor")),
+    person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field subroutine"))
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
-Depends: R (>= 2.15), utils, methods, gsw, testthat
+Depends: R (>= 2.15), utils, methods, testthat, gsw
 Suggests: ocedata, foreign, ncdf4, tiff, akima, RSQLite, DBI, rgdal (>=
         1.1-9), R.utils, knitr, rmarkdown, marmap, lubridate
 BugReports: https://github.com/dankelley/oce/issues
@@ -22,12 +23,9 @@ License: GPL (>= 2)
 Encoding: UTF-8
 URL: https://dankelley.github.io/oce
 LazyData: false
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 BuildVignettes: true
 VignetteBuilder: knitr
 NeedsCompilation: yes
-Packaged: 2017-08-25 23:19:39 UTC; kelley
-Author: Dan Kelley [aut, cre],
-  Clark Richards [aut],
-  Chantelle Layton [ctb] (curl() coauthor),
-  British Geological Survey [ctb, cph] (magnetic-field subroutine)
+LinkingTo: Rcpp
+Imports: Rcpp

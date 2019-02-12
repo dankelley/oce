@@ -4,8 +4,8 @@
 \alias{makeFilter}
 \title{Make a digital filter}
 \usage{
-makeFilter(type = c("blackman-harris", "rectangular", "hamming", "hann"), m,
-  asKernel = TRUE)
+makeFilter(type = c("blackman-harris", "rectangular", "hamming", "hann"),
+  m, asKernel = TRUE)
 }
 \arguments{
 \item{type}{a string indicating the type of filter to use.  (See Harris

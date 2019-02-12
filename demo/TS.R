@@ -1,6 +1,6 @@
 library(oce)
 # Plot TS diagram for data along 36N Atlantic section,
-# colour-coded for longitude (which ranges -8 to -74)
+# color-coded for longitude (which ranges -8 to -74)
 data(section)
 for (i in 1:124) {
     profile <- section[["station", i]]

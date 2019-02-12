@@ -61,3 +61,4 @@ Other functions that calculate seawater properties: \code{\link{T90fromT48}},
 \author{
 Dan Kelley
 }
+\concept{functions that calculate seawater properties}

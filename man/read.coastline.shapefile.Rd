@@ -4,8 +4,8 @@
 \alias{read.coastline.shapefile}
 \title{Read a Coastline File in Shapefile Format}
 \usage{
-read.coastline.shapefile(file, lonlim = c(-180, 180), latlim = c(-90, 90),
-  debug = getOption("oceDebug"), monitor = FALSE, processingLog)
+read.coastline.shapefile(file, lonlim = c(-180, 180), latlim = c(-90,
+  90), debug = getOption("oceDebug"), monitor = FALSE, processingLog)
 }
 \arguments{
 \item{file}{name of file containing coastline data (a file ending in \code{.shp})
@@ -47,7 +47,7 @@ constructed, of which coastlines could be a subset.
 Technical Description}, March 1998, available at
 \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
 
-\item 2. The NaturalEarth website \url{http://www.naturalearthdata.com/downloads}
+\item 2. The NaturalEarth website \url{https://www.naturalearthdata.com/downloads}
 provides coastline datasets in three resolutions, along with similar files
 lakes and rivers, for borders, etc. It is highly recommended.
 }
@@ -68,3 +68,4 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
 \author{
 Dan Kelley
 }
+\concept{things related to \code{coastline} data}

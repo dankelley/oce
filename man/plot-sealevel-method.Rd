@@ -3,12 +3,14 @@
 \docType{methods}
 \name{plot,sealevel-method}
 \alias{plot,sealevel-method}
+\alias{plot.sealevel}
 \title{Plot Sealevel Data}
 \usage{
 \S4method{plot}{sealevel}(x, which = 1:3,
-  drawTimeRange = getOption("oceDrawTimeRange"), mgp = getOption("oceMgp"),
-  mar = c(mgp[1] + 0.5, mgp[1] + 1.5, mgp[2] + 1, mgp[2] + 3/4),
-  marginsAsImage = FALSE, debug = getOption("oceDebug"), ...)
+  drawTimeRange = getOption("oceDrawTimeRange"),
+  mgp = getOption("oceMgp"), mar = c(mgp[1] + 0.5, mgp[1] + 1.5, mgp[2]
+  + 1, mgp[2] + 3/4), marginsAsImage = FALSE,
+  debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{an object of class \code{"sealevel"}, e.g. as read by
@@ -85,6 +87,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -110,3 +113,5 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{sealevel} data}

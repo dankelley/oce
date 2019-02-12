@@ -4,8 +4,8 @@
 \alias{decodeHeaderNortek}
 \title{Decode a Nortek Header}
 \usage{
-decodeHeaderNortek(buf, type = c("aquadoppHR", "aquadoppProfiler", "aquadopp",
-  "vector"), debug = getOption("oceDebug"), ...)
+decodeHeaderNortek(buf, type = c("aquadoppHR", "aquadoppProfiler",
+  "aquadopp", "vector"), debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{buf}{a ``raw'' buffer containing the header}
@@ -31,21 +31,20 @@ designed to be used by \code{\link{read.adp}} and \code{\link{read.adv}},
 but can be used directly as well.  The code is based on information in the
 Nortek System Integrator Guide (2008) and on postings on the Nortek
 ``knowledge center'' discussion board.  One might assume that the latter is
-less authorative than the former.  For example, the inference of cell size
+less authoritative than the former.  For example, the inference of cell size
 follows advice found at
-\url{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
-(downloaded June 2012)), which contains a typo in an early posting that is
+\code{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
+(downloaded June 2012, link no longer working), which contains a typo in an early posting that is
 corrected later on.
 }
 \references{
 1. Information on Nortek profilers (including the System
 Integrator Guide, which explains the data format byte-by-byte) is available
-at \url{http://www.nortekusa.com/}.  (One must join the site to see the
-manuals.)
+at \url{http://www.nortekusa.com/usa?set_language=usa} after login.
 
 2. The Nortek Knowledge Center
-\url{http://www.nortekusa.com/en/knowledge-center} may be of help if
-problems arise in dealing with data from Nortek instruments.
+\code{http://www.nortekusa.com/en/knowledge-center} (link no longer working)
+may be of help if problems arise in dealing with data from Nortek instruments.
 }
 \seealso{
 Most users should employ the functions \code{\link{read.adp}} and

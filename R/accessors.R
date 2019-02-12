@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Get data from an \code{oce} object
+#' Get Something from the data Slot of an oce Object
 #'
 #' In contrast to the various \code{[[} functions, this is
 #' guaranteed to look only within the \code{data} slot. If
@@ -17,8 +17,7 @@ oceGetData <- function(object, name)
     object@data[[name]]
 }
 
-
-#' Delete data from an \code{oce} object
+#' Delete Something in the data Slot of an oce Object
 #'
 #' Return a copy of the supplied object that lacks the named
 #' element in its \code{data} slot, and that has a note
@@ -36,7 +35,7 @@ oceDeleteData <- function(object, name)
     object
 }
 
-#' Set something in the \code{data} slot of an \code{oce} object
+#' Set Something in the data Slot of an oce Object
 #'
 #' @details
 #' There are three possibilities for \code{unit}:
@@ -64,9 +63,15 @@ oceDeleteData <- function(object, name)
 #' three possible forms (see \dQuote{Details}).
 #' @param originalName Optional character string giving an 'original' name (e.g.
 #' as stored in the header of a data file).
-#' @param note A note to be stored in the processing log. If an empty string
-#' (the default) then an entry will be constructed from the function call. If
-#' \code{NULL}, then no entry will be added to the processing log.
+#' @param note Either empty (the default), a character string, or \code{NULL},
+#' to control additions made to the processing log of the return value. If
+#' \code{note=""} then the an entry is created based on deparsing the function call.
+#' If \code{note} is a non-empty string, then that string gets added added
+#' to the processing log. Finally, if \code{note=NULL}, then nothing is
+#' added to the processing log. This last form is useful in cases where
+#' \code{oceSetData} is to be called many times in succession, resulting
+#' in an overly verbose processing log; in such cases, it might help
+#' to add a note by e.g. \code{processingLog(a) <- "QC (memo dek-2018-01/31)"}
 #'
 #' @examples
 #' data(ctd)
@@ -81,13 +86,9 @@ oceSetData <- function(object, name, value, unit, originalName, note="")
     if (!inherits(object, "oce"))
         stop("oceSetData() only works for oce objects")
     object@data[[name]] <- value
-    if (nchar(note) > 0)
-        object@processingLog <- processingLogAppend(object@processingLog, note)
-    else if (!is.null(note))
-        object@processingLog <- processingLogAppend(object@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     if (!missing(unit)) {
-       if  (!("units" %in% names(object@metadata))) # some objects might not have units yet
-           object@metadata$units <- list()
+        if  (!("units" %in% names(object@metadata))) # some objects might not have units yet
+            object@metadata$units <- list()
         if (is.list(unit)) {
             ## message("case 1")
             if (is.null(names(unit)))
@@ -134,10 +135,18 @@ oceSetData <- function(object, name, value, unit, originalName, note="")
             object@metadata$dataNamesOriginal[[name]] <- originalName
         }
     }
+    if (!is.null(note)) {
+        if (nchar(note) > 0)
+            object@processingLog <- processingLogAppend(object@processingLog, note)
+        else
+            object@processingLog <- processingLogAppend(object@processingLog,
+                                                        paste(deparse(match.call()),
+                                                              sep="", collapse=""))
+    }
     object
 }
 
-#' Get metadata element from an \code{oce} object
+#' Get Something From the metadata Slot in an oce Object
 #'
 #' In contrast to the various \code{[[} functions, this is
 #' guaranteed to look only within the \code{metadata} slot. If
@@ -154,8 +163,7 @@ oceGetMetadata <- function(object, name)
     object@metadata[[name]]
 }
 
-
-#' Delete metadata from an \code{oce} object
+#' Delete Something in the metadata Slot of an oce Object
 #'
 #' Return a copy of the supplied object that lacks the named
 #' element in its \code{metadata} slot, and that has a note
@@ -173,18 +181,32 @@ oceDeleteMetadata <- function(object, name)
     object
 }
 
-#' Set something in the \code{metadata} slot of an \code{oce} object
+#' Set Something in the metadata Slot of an oce Object
 #' @param object an \code{oce} object
 #' @param name String indicating the name of the item to be set.
 #' @param value Value for the item.
-#' @param note A note to be stored in the processing log.
+#' @param note Either empty (the default), a character string, or \code{NULL},
+#' to control additions made to the processing log of the return value. If
+#' \code{note=""} then the an entry is created based on deparsing the function call.
+#' If \code{note} is a non-empty string, then that string gets added added
+#' to the processing log. Finally, if \code{note=NULL}, then nothing is
+#' added to the processing log.  This last form is useful in cases where
+#' \code{oceSetData} is to be called many times in succession, resulting
+#' in an overly verbose processing log; in such cases, it might help
+#' to add a note by e.g. \code{processingLog(a) <- "QC (memo dek-2018-01/31)"}
+#'
 oceSetMetadata <- function(object, name, value, note="")
 {
     if (!inherits(object, "oce"))
         stop("oceSetData() only works for oce objects")
     object@metadata[[name]] <- value
-    object@processingLog <- processingLogAppend(object@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    if (nchar(note) > 0)
-        object@processingLog <- processingLogAppend(object@processingLog, note)
+    if (!is.null(note)) {
+        if (nchar(note) > 0)
+            object@processingLog <- processingLogAppend(object@processingLog, note)
+        else
+            object@processingLog <- processingLogAppend(object@processingLog,
+                                                        paste(deparse(match.call()),
+                                                              sep="", collapse=""))
+    }
     object
 }

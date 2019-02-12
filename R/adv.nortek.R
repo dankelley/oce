@@ -16,7 +16,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=NA, latitude=NA,
                             type=c("vector", "aquadopp"),
                             haveAnalog1=FALSE, haveAnalog2=FALSE,
-                            debug=getOption("oceDebug"), monitor=FALSE, processingLog)
+                            debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
 {
     ##   vvd=vector velocity data [p35 SIG], containing the data: pressure, vel, amp, corr (plus sensemble counter etc)
     ##   vsd=velocity system data [p36 SIG], containing times, temperatures, angles, etc
@@ -99,7 +99,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$oceCoordinate <- header$user$originalCoordinate
     res@metadata$oceBeamUnspreaded <- FALSE
     res@metadata$comments <- header$user$comments
-    if (missing(processingLog))
+    if (is.null(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
@@ -589,7 +589,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ## Also, what I'm doing here is probably fine, since bursts last an hour and so looping
         ## also them won't be expensive.
         sss <- NULL
-        for (b in 1:length(vvdhRecords)) {
+        for (b in seq_along(vvdhRecords)) {
             sss <- c(sss, as.numeric(vvdhTime[b]) + seq(0, by=1/res@metadata$samplingRate, length.out=vvdhRecords[b]))
         }
         time <- sss[look] + (vsdTime[1] - as.numeric(vsdTime[1]))
@@ -597,7 +597,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         time <- time + delayForWarmup
     } else {
         res@metadata$samplingMode <- "continuous"
-        time <- numberAsPOSIXct(.Call("adv_vector_time", vvdStart, vsdStart, vsdTime, vvdhStart, vvdhTime, 0, res@metadata$samplingRate))
+        time <- numberAsPOSIXct(do_adv_vector_time(vvdStart, vsdStart, vsdTime, vvdhStart, vvdhTime, 0, res@metadata$samplingRate))
     }
     res@metadata$numberOfSamples <- dim(v)[1]
     res@metadata$numberOfBeams <- dim(v)[2]

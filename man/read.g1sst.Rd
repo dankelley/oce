@@ -20,7 +20,7 @@ As noted in the documentation for \code{\link{g1sst-class}}, one
 must be aware of the incorporation of model simulations in the
 \code{g1sst} product. For example, the code presented below
 might lead one to believe that the mapped field represents
-observatins, whereas in fact it can be verified by
+observations, whereas in fact it can be verified by
 consulting [2] (clicking and unclicking the radio button to
 show just the data) that the field mostly derives from simulation.
 }
@@ -32,7 +32,7 @@ lon0 <- -66.5
 lon1 <- -64.0
 lat0 <- 44
 lat1 <- 46
-source <- paste("http://coastwatch.pfeg.noaa.gov/erddap/griddap/",
+source <- paste("https://coastwatch.pfeg.noaa.gov/erddap/griddap/",
                 "jplG1SST.nc?",
                 "SST\%5B(", day, "T12:00:00Z)",
                 "\%5D\%5B(", lat0, "):(", lat1, ")",
@@ -48,8 +48,8 @@ lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
 
 }
 \references{
-1. ERDDAP Portal \url{http://coastwatch.pfeg.noaa.gov/erddap/}
-2. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
+1. ERDDAP Portal \url{https://coastwatch.pfeg.noaa.gov/erddap/}
+2. JPO OurOcean Portal \code{https://ourocean.jpl.nasa.gov/SST/}
 (link worked in 2016 but was seen to fail 2017 Feb 2).
 }
 \seealso{
@@ -61,3 +61,4 @@ Other things related to satellite data: \code{\link{g1sst-class}},
 \author{
 Dan Kelley
 }
+\concept{things related to satellite data}

@@ -1,12 +1,24 @@
-#' @title Class to Store LOBO Data
+#' Class to Store LOBO Data
 #'
-#' @description
-#' Class to store LOBO data.
+#' This class stores LOBO data.
+#'
 #' A \code{lobo} object may be read with \code{\link{read.lobo}} or
 #' constructed with \code{\link{as.lobo}}.  Plots can be made with
 #' \code{\link{plot,lobo-method}}, while \code{\link{summary,lobo-method}} produces
 #' statistical summaries. Data within a \code{lobo} object may be retrieved with
 #' \code{\link{[[,lobo-method}} and altered with \code{\link{[[,lobo-method}}.
+#'
+#' @templateVar class lobo
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}
@@ -265,6 +277,7 @@ plot.lobo.TS <- function(lobo, ...)
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{lobo} data
+#' @aliases plot.lobo
 setMethod(f="plot",
           signature=signature("lobo"),
           definition=function(x,
@@ -294,7 +307,7 @@ setMethod(f="plot",
                       oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S"), debug=debug-1, ...)
                   } else if (w == 3) {
                       if (any(!is.na(x[['pressure']]))) {
-                          plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), eos="unesco", debug=debug-1, ...) 
+                          plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), eos="unesco", debug=debug-1, ...)
                       } else {
                           plotTS(as.ctd(x[["salinity"]], x[["temperature"]], 0), eos="unesco", debug=debug-1, ...)
                       }
@@ -421,8 +434,8 @@ read.lobo <- function(file, cols=7, processingLog)
 #' @param v vector of y velocity component observations
 #' @param salinity vector of salinity observations
 #' @param temperature vector of temperature observations
-#' @param pressure vector of pressure observationss
-#' @param nitrate vector of nitrate observationss
+#' @param pressure vector of pressure observations
+#' @param nitrate vector of nitrate observations
 #' @param fluorescence vector of fluoresence observations
 #' @param filename source filename
 #' @return An object of \code{\link{lobo-class}}.

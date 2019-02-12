@@ -4,8 +4,8 @@
 \alias{julianDay}
 \title{Convert a POSIXt time to a Julian day}
 \usage{
-julianDay(t, year = NA, month = NA, day = NA, hour = NA, min = NA,
-  sec = NA, tz = "UTC")
+julianDay(t, year = NA, month = NA, day = NA, hour = NA,
+  min = NA, sec = NA, tz = "UTC")
 }
 \arguments{
 \item{t}{a time, in POSIXt format, e.g. as created by
@@ -46,13 +46,12 @@ here.
 }
 \examples{
 
-t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="ET")+0.4*86400
-jd <- julianDay(t)
-cat(format(t), "is Julian Day", format(jd, digits=14), "\\n")
+t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="UTC")+0.4*86400
+expect_equal(julianDay(t), 2443259.9) # example from Meeus
 
 }
 \references{
-Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages
 }
 \seealso{
@@ -71,3 +70,5 @@ Other things related to time: \code{\link{ctimeToSeconds}},
 \author{
 Dan Kelley
 }
+\concept{things related to astronomy}
+\concept{things related to time}

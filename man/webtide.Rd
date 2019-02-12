@@ -11,8 +11,8 @@ Department of Fisheries and Oceans (Canada) website at
 }
 \usage{
 webtide(action = c("map", "predict"), longitude, latitude, node, time,
-  basedir = getOption("webtide"), region = "nwatl", plot = TRUE, tformat,
-  debug = getOption("oceDebug"), ...)
+  basedir = getOption("webtide"), region = "nwatl", plot = TRUE,
+  tformat, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{action}{An indication of the action, either \code{action="map"} to

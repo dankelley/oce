@@ -16,7 +16,7 @@ This holds data from ARGO 6900388 in the North Atlantic.
 \details{
 To quote Argo's website: "These data were collected and made freely
 available by the International Argo Program and the national programs
-that contribute to it.  (http://www.argo.ucsd.edu,
+that contribute to it.  (http//www.argo.ucsd.edu,
 http://argo.jcommops.org).  The Argo Program is part of the
 Global Ocean Observing System."
 
@@ -39,11 +39,11 @@ plot(argo, which="trajectory", coastline=coastlineWorld)
 \seealso{
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{colors}},
-  \code{\link{ctdRaw}}, \code{\link{ctd}},
-  \code{\link{echosounder}}, \code{\link{landsat}},
-  \code{\link{lisst}}, \code{\link{lobo}},
-  \code{\link{met}}, \code{\link{rsk}},
+  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
+  \code{\link{ctd}}, \code{\link{echosounder}},
+  \code{\link{landsat}}, \code{\link{lisst}},
+  \code{\link{lobo}}, \code{\link{met}},
+  \code{\link{ocecolors}}, \code{\link{rsk}},
   \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
@@ -57,3 +57,5 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }
+\concept{datasets provided with \code{oce}}
+\concept{things related to \code{argo} data}

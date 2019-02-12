@@ -28,3 +28,22 @@ test_that("forward=inverse", {
 
 })
 
+test_that("geodDist()", {
+          ## Test for same values after rewriting the C code in C++.
+          d <- geodDist(10, 45, 10, 46)
+          expect_equal(d, 111.1415, tolerance=1e-4)
+          data(section)
+          expect_equal(head(geodDist(section)),
+                       c(0.00000000, 19.32428588, 41.97088286, 55.38400049,
+                         77.12095421, 97.43227620))
+          expect_equal(head(geodDist(section, alongPath=TRUE)),
+                       c(0.00000000, 19.32428588, 41.98024777, 55.45123647,
+                         77.19516929, 110.46625932))
+          expect_equal(head(geodDist(section, alongPath=FALSE)),
+                       c(0.00000000, 19.32428588, 41.97088286, 55.38400049,
+                         77.12095421, 97.43227620))
+          expect_equal(tail(geodDist(section, alongPath=FALSE)),
+                       c(5587.849412, 5599.757509, 5610.041722, 5621.557394,
+                         5629.160056, 5633.492666))
+})
+

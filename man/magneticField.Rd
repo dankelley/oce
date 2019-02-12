@@ -12,9 +12,10 @@ dimensions must conform to lat.}
 
 \item{latitude}{latitude in degrees north, a number, vector, or matrix.}
 
-\item{time}{either a decimal year or a POSIX time corresponding to the
-\code{longitude} and \code{latitude} values, or a vector or matrix matching
-these location values.}
+\item{time}{The time at which the field is desired. This may be a
+single value or a vector or matrix that is structured to match
+\code{longitude} and \code{latitude}. The value may a decimal year,
+a POSIXt time, or a Date time.}
 }
 \value{
 A list containing \code{declination}, \code{inclination}, and
@@ -23,42 +24,53 @@ A list containing \code{declination}, \code{inclination}, and
 \description{
 Implements the 12th generation International Geomagnetic Reference Field
 (IGRF), based on a reworked version of a Fortran program downloaded from a
-NOAA website [1].  The code (subroutine \code{igrf12syn}) seems to have
+NOAA website [1].
+}
+\details{
+The code (subroutine \code{igrf12syn}) seems to have
 been written by Susan Macmillan of the British Geological Survey.  Comments
-in the code indicate that it employs coefficients agreed to in December 2014
-by the IAGA Working Group V-MOD.  Comments in the \code{igrf12syn} source
-code also suggest that the valid time interval is from years 1900 to 2020,
+in the source code indicate that it employs coefficients agreed to in
+December 2014 by the IAGA Working Group V-MOD.  Other comments in that code
+suggest that the valid time interval is from years 1900 to 2020,
 with only the values from 1945 to 2010 being considered definitive.
+
+Reference [2] suggest that a new version to the underlying source
+code might be expected in 2019 or 2020, but a check on January 31,
+2019, showed that version 12, as incoporated in oce since
+2015, remains the active version.
 }
 \examples{
 library(oce)
-# Halifax NS
-magneticField(-(63+36/60), 44+39/60, 2013)
+# 1. Today's value at Halifax NS
+magneticField(-(63+36/60), 44+39/60, Sys.Date())
 
-\dontrun{
-## map of North American values
+# 2. World map of declination in year 2000.
 data(coastlineWorld)
-mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
-        projection="+proj=lcc +lat_0=20 +lat_1=60 +lon_0=-100")
-lon <- seq(-180, 180, 1)
+# Use Robinson projection to show whole world
+mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
+# Construct matrix holding declination
+lon <- seq(-180, 180)
 lat <- seq(-90, 90)
-lonm <- rep(lon, each=length(lat))
-latm <- rep(lat, times=length(lon))
-## Note the counter-intuitive nrow argument
-decl <- matrix(magneticField(lonm, latm, 2013)$declination,
-               nrow=length(lon), byrow=TRUE)
-mapContour(lon, lat, decl, col='red', levels=seq(-90, 90, 5))
-incl <- matrix(magneticField(lonm, latm, 2013)$inclination,
-               nrow=length(lon), byrow=TRUE)
-mapContour(lon, lat, incl, col='blue', levels=seq(-90, 90, 5))
-}
-
+dec2000 <- function(lon, lat)
+    magneticField(lon, lat, 2000)$declination
+dec <- outer(lon, lat, dec2000) # hint: outer() is very handy!
+# Contour. Since mapContour() does not label contours, we
+# indicate them with colours and line types. Zero declination
+# is contoured black, with blue for negative values and red for 
+# positive values. Solid lines indicate increments of 10deg, with
+# dashed lines at 5deg between.
+mapContour(lon, lat, dec, col='blue', levels=seq(-180, -5, 5), lty=c(1,3))
+mapContour(lon, lat, dec, col='red', levels=seq(180, 5, -5), lty=c(1,3))
+mapContour(lon, lat, dec,  levels=0, lwd=2)
 }
 \references{
 1. The underlying Fortran code is from \code{igrf12.f}, downloaded the NOAA
-website (\samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
-2015. (That website suggests that there have been no update to the
-algorithm as of March 29, 2017.)
+website (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
+2015.
+
+2. Witze, Alexandra. “Earth’s Magnetic Field Is Acting up and Geologists Don’t Know Why.”
+Nature 565 (January 9, 2019): 143.
+\url{https://doi.org/10.1038/d41586-019-00007-1}.
 }
 \seealso{
 Other things related to magnetism: \code{\link{applyMagneticDeclination}}
@@ -69,3 +81,4 @@ Dan Kelley wrote the R code and a fortran wrapper to the
 British Geological Survey and distributed ``without limitation'' (email from
 SM to DK dated June 5, 2015).
 }
+\concept{things related to magnetism}

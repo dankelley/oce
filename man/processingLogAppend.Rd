@@ -20,3 +20,9 @@ and the text notations of those entries..
 \description{
 Append an item to a processing log
 }
+\seealso{
+Other things related to processing logs: \code{\link{processingLog<-}},
+  \code{\link{processingLogItem}},
+  \code{\link{processingLogShow}}
+}
+\concept{things related to processing logs}

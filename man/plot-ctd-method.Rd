@@ -3,19 +3,21 @@
 \docType{methods}
 \name{plot,ctd-method}
 \alias{plot,ctd-method}
+\alias{plot.ctd}
 \title{Plot CTD Data}
 \usage{
-\S4method{plot}{ctd}(x, which, col = par("fg"), fill, borderCoastline = NA,
-  colCoastline = "lightgray", eos = getOption("oceEOS", default = "gsw"),
-  ref.lat = NaN, ref.lon = NaN, grid = TRUE, coastline = "best", Slim,
-  Clim, Tlim, plim, densitylim, N2lim, Rrholim, dpdtlim, timelim, lonlim,
-  latlim, drawIsobaths = FALSE, clongitude, clatitude, span,
-  showHemi = TRUE, lonlabel = NULL, latlabel = NULL, sides = NULL,
+\S4method{plot}{ctd}(x, which, col = par("fg"), fill,
+  borderCoastline = NA, colCoastline = "lightgray",
+  eos = getOption("oceEOS", default = "gsw"), ref.lat = NaN,
+  ref.lon = NaN, grid = TRUE, coastline = "best", Slim, Clim, Tlim,
+  plim, densitylim, N2lim, Rrholim, dpdtlim, timelim, lonlim, latlim,
+  drawIsobaths = FALSE, clongitude, clatitude, span, showHemi = TRUE,
+  lonlabel = NULL, latlabel = NULL, sides = NULL,
   projection = NULL, parameters = NULL, orientation = NULL,
   latlon.pch = 20, latlon.cex = 1.5, latlon.col = "red", cex = 1,
   cex.axis = par("cex.axis"), pch = 1, useSmoothScatter = FALSE, df,
-  keepNA = FALSE, type = "l", mgp = getOption("oceMgp"), mar = c(mgp[1]
-  + 1.5, mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1), inset = FALSE,
+  keepNA = FALSE, type, mgp = getOption("oceMgp"), mar = c(mgp[1] +
+  1.5, mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1), inset = FALSE,
   add = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -72,15 +74,15 @@ follows.
     \item \code{which=33} gives a time series of sigmaTheta
 }}
 
-\item{col}{Colour of lines or symbols.}
+\item{col}{Color of lines or symbols.}
 
 \item{fill}{A legacy parameter that will be permitted only temporarily; see
 \dQuote{History}.}
 
-\item{borderCoastline}{Colour of coastlines and international borders, passed
+\item{borderCoastline}{Color of coastlines and international borders, passed
 to \code{\link{plot,coastline-method}} if a map is included in \code{which}.}
 
-\item{colCoastline}{Fill colour of coastlines and international borders, passed
+\item{colCoastline}{Fill color of coastlines and international borders, passed
 to \code{\link{plot,coastline-method}} if a map is included in \code{which}. Set to
 \code{NULL} to avoid filling.}
 
@@ -115,7 +117,8 @@ supply the object as an argument, as opposed to the name of the object.}
 
 \item{plim}{Optional limits of pressure axes.}
 
-\item{densitylim}{Optional limits of density axis.}
+\item{densitylim}{Optional limits of density axis, whether that axis be horizontal
+or vertical.}
 
 \item{N2lim}{Optional limits of \eqn{N^2}{N^2} axis.}
 
@@ -143,7 +146,7 @@ If \code{drawIsobaths} is a numerical vector,
 then the indicated depths are drawn. For plots drawn with \code{projection}
 set to \code{NULL}, the contours are added with \code{\link{contour}}
 and otherwise \code{\link{mapContour}} is used. To customize
-the resultant contours, e.g. setting particular line types or colours,
+the resultant contours, e.g. setting particular line types or colors,
 users should call these functions directly (see e.g. Example 2).}
 
 \item{clongitude}{Center longitude.}
@@ -181,7 +184,7 @@ since February 2016; see \link{oce-deprecated}.}
 \item{latlon.cex}{Symbol expansion factor for sample location (ignored if no
 map plotted).}
 
-\item{latlon.col}{Colour of symbol for sample location (ignored if no map
+\item{latlon.col}{Color of symbol for sample location (ignored if no map
 plotted).}
 
 \item{cex}{Size to be used for plot symbols (see \code{\link{par}}).}
@@ -201,7 +204,12 @@ named \code{df}.}
 which will yield breaks in the lines.}
 
 \item{type}{The type of plot to draw, using the same scheme as
-\code{\link{plot}}.}
+\code{\link{plot}}. If supplied, this is increased to be the
+same length as \code{which}, if necessary, and then supplied to
+each of the individual plot calls. If it is not supplied,
+then those plot calls use defaults (e.g. using a line for
+\code{\link{plotProfile}}, using dots for \code{\link{plotTS}},
+etc).}
 
 \item{mgp}{Three-element numerical vector specifying axis-label geometry,
 passed to \code{\link{par}}.
@@ -209,7 +217,12 @@ The default establishes tighter margins than in the usual R setup.}
 
 \item{mar}{Four-element numerical vector specifying margin geometry,
 passed to \code{\link{par}}.
-The default establishes tighter margins than in the usual R setup.}
+The default establishes tighter margins than in the usual R setup.
+Note that the value of \code{mar} is ignored for the map panel
+of multi-panel maps; instead, the present value of
+\code{\link{par}("mar")} is used, which in the default call will
+make the map plot region equal that of the previously-drawn
+profiles and TS plot.}
 
 \item{inset}{Set to \code{TRUE} for use within \code{\link{plotInset}}.  The
 effect is to prevent the present function from adjusting margins, which is
@@ -257,8 +270,8 @@ analysis with \code{\link{locator}} to flag bad data, etc.
 \section{History}{
 
 Until February, 2016, \code{plot,ctd-method} relied on a now-defunct argument
-\code{fill} to control colours; \code{colCoastline} is to be used now, instead.
-Also, now it is possible to set the colour of coasts and international
+\code{fill} to control colors; \code{colCoastline} is to be used now, instead.
+Also, now it is possible to set the color of coasts and international
 boundaries, with \code{borderCoastline}.
 }
 
@@ -297,6 +310,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,coastline-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -317,6 +331,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
+  \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
@@ -324,6 +340,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{setFlags,ctd-method}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
@@ -332,3 +349,5 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{ctd} data}

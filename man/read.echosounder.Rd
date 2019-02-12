@@ -4,8 +4,9 @@
 \alias{read.echosounder}
 \title{Read an Echosounder File}
 \usage{
-read.echosounder(file, channel = 1, soundSpeed, tz = getOption("oceTz"),
-  debug = getOption("oceDebug"), processingLog)
+read.echosounder(file, channel = 1, soundSpeed,
+  tz = getOption("oceTz"), debug = getOption("oceDebug"),
+  processingLog)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -40,7 +41,7 @@ V3, and may not work properly with other file formats.
 }
 \section{Bugs}{
  Only the amplitude information (in counts) is determined.  A
-future version of this funciton may provide conversion to dB, etc.  The
+future version of this function may provide conversion to dB, etc.  The
 handling of dual-beam and split-beam files is limited.  In the dual-beam
 cse, only the wide beam signal is processed (I think ... it could be the
 narrow beam, actually, given the confusing endian tricks being played).  In
@@ -49,8 +50,8 @@ angle data being ignored.
 }
 
 \references{
-Various echousounder instruments provided by BioSonics are
-described at the company website, \url{http://www.biosonicsinc.com/}.  The
+Various echosounder instruments provided by BioSonics are
+described at the company website, \url{https://www.biosonicsinc.com/}.  The
 document listed as [1] below was provided to the author of this function in
 November 2011, which suggests that the data format was not changed since
 July 2010.
@@ -76,3 +77,4 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
 \author{
 Dan Kelley, with help from Clark Richards
 }
+\concept{things related to \code{echosounder} data}

@@ -5,7 +5,8 @@
 \title{Read a WOCE-type CTD file with First Word "CTD"}
 \usage{
 read.ctd.woce(file, columns = NULL, station = NULL, missingValue,
-  monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
+  deploymentType = "unknown", monitor = FALSE,
+  debug = getOption("oceDebug"), processingLog, ...)
 }
 \arguments{
 \item{file}{A connection or a character string giving the name of the file to
@@ -17,8 +18,16 @@ pattern.}
 
 \item{columns}{An optional \code{\link{list}} that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
-\code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}; see
-\dQuote{Examples}.}
+\code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}. For example,
+if a data file named salinity as \code{"SAL"}, then using
+\preformatted{
+d <- read.ctd(f, columns=list(
+    salinity=list(name="SAL",
+                  unit=list(unit=expression(),
+                  scale="PSS-78"))))
+}
+would assign the \code{"SAL"} column to the \code{salinity} entry in the data
+slot of the CTD object returned by the \code{read.*} function.}
 
 \item{station}{Optional character string containing an identifying name or
 number for the station. This can be useful if the routine cannot determine the
@@ -36,6 +45,15 @@ whether salinity and/or temperature has a minimum that is under -8 in value;
 this should catch common values in files, without false positives. A warning
 will be issued in this case, and a note inserted in the processing log of
 the return value.}
+
+\item{deploymentType}{character string indicating the type of deployment. Use
+\code{"unknown"} if this is not known, \code{"profile"} for a profile (in
+which the data were acquired during a downcast, while the device was lowered
+into the water column, perhaps also including an upcast; \code{"moored"} if
+the device is installed on a fixed mooring, \code{"thermosalinograph"} (or
+\code{"tsg"}) if the device is mounted on a moving vessel, to record
+near-surface properties, or \code{"towyo"} if the device is repeatedly
+lowered and raised.}
 
 \item{monitor}{Boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}
@@ -81,6 +99,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
+  \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
@@ -88,7 +108,9 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
   \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd}}, \code{\link{subset,ctd-method}},
+  \code{\link{read.ctd}},
+  \code{\link{setFlags,ctd-method}},
+  \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
@@ -96,3 +118,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{ctd} data}

@@ -14,7 +14,7 @@ Number of hours in offset, e.g. \code{AST} yields 4.
 }
 \description{
 The data are from
-\url{http://www.timeanddate.com/library/abbreviations/timezones/} and were
+\url{https://www.timeanddate.com/library/abbreviations/timezones/} and were
 hand-edited to develop this code, so there may be errors.  Also, note that
 some of these contradict; if you examine the code, you'll see some
 commented-out portions that represent solving conflicting definitions by
@@ -30,3 +30,4 @@ Other functions relating to time: \code{\link{decodeTime}}
 \author{
 Dan Kelley
 }
+\concept{functions relating to time}

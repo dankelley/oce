@@ -9,7 +9,7 @@ test_that("amsr", {
                              "rainDay", "rainNight", "SSTDay", "SSTNight", "timeDay", "timeNight", "vaporDay",
                              "vaporNight"), 
                            sort(names(amsr@data)))
-              summary(amsr)
+              ##> summary(amsr)
               expect_warning(plot(amsr), "auto-decimating first index of large image by 3")
           }
 })

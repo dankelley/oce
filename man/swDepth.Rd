@@ -4,7 +4,8 @@
 \alias{swDepth}
 \title{Water depth}
 \usage{
-swDepth(pressure, latitude = 45, eos = getOption("oceEOS", default = "gsw"))
+swDepth(pressure, latitude = 45, eos = getOption("oceEOS", default =
+  "gsw"))
 }
 \arguments{
 \item{pressure}{either pressure [dbar], in which case \code{lat} must also
@@ -75,3 +76,4 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
 \author{
 Dan Kelley
 }
+\concept{functions that calculate seawater properties}

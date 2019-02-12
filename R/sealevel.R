@@ -1,21 +1,18 @@
-#' @title Class to Store Sealevel Data
+#' Class to Store Sealevel Data
 #'
-#' @description
-#' Class to store sealevel data, e.g. from a tide gauge, with standard slots
-#' \code{metadata}, \code{data} and \code{processingLog}.
+#' This class stores sealevel data, e.g. from a tide gauge.
 #'
-#' @section Methods: Data may be accessed as e.g.  \code{sealevel[["time"]]},
-#' where the string could also be e.g.  \code{"elevation"} for the
-#' corresponding sea-level elevation, or e.g.  \code{"longitude"} or
-#' \code{"latitude"} for scalars.  Items in \code{metadata} must be specifield
-#' by full name, but those in \code{data} may be abbreviated, so long as the
-#' abbreviation is unique.
+#' @templateVar class sealevel
 #'
-#' Everything that may be accessed may also be assigned, e.g.
-#' \code{sealevel[["elevation"]] <- value}.
+#' @templateVar dataExample The key items stored in this slot are \code{time} and \code{elevation}.
 #'
-#' The \code{show} method displays information about the object, while
-#' \code{\link{summary,sealevel-method}} provides a statistical summary.
+#' @templateVar metadataExample An example of the former might be the location at which a \code{sealevel} measurement was made, stored in \code{longitude} and \code{latitude}, and of the latter might be \code{filename}, the name of the data source.
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}
 #' @family things related to \code{sealevel} data
@@ -87,6 +84,12 @@ NULL
 #' detided <- elevation - predict(tide)
 #' lines(time, detided, col="red")
 #' }
+#'
+#' @section Historical note:
+#' Until Jan 6, 2018, the time in this dataset had been increased
+#' by 7 hours. However, this alteration was removed on this date,
+#' to make for simpler comparison of amplitude and phase output with
+#' the results obtained by Foreman (1977) and Pawlowicz et al. (2002).
 #'
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{sealevel} data
@@ -386,6 +389,7 @@ as.sealevel <- function(elevation,
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{sealevel} data
+#' @aliases plot.sealevel
 setMethod(f="plot",
           signature=signature("sealevel"),
           definition=function(x, which=1:3,
@@ -469,7 +473,7 @@ setMethod(f="plot",
               which2 <- oce.pmatch(which, list(all=1, month=2, spectrum=3, cumulativespectrum=4))
               oceDebug(debug, "which2:", which2, "\n")
 
-              for (w in 1:length(which2)) {
+              for (w in seq_along(which2)) {
                   oceDebug(debug, "plotting for code which2[", w, "] = ", which2[w], "\n", sep="")
                   if (which2[w] == 1) {
                       plot(x@data$time, x@data$elevation-MSL,
@@ -758,7 +762,8 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     res@metadata$referenceCode <- referenceCode
     res@metadata$units <- list(elevation=list(unit=expression(m), scale=""))
     res@metadata$n <- length(time)
-    res@metadata$deltat <- as.numeric(difftime(time[2], time[1], units <- "hours"))
+    ## deltat is in hours
+    res@metadata$deltat <- if (res@metadata$n > 1) (as.numeric(time[2]) - as.numeric(time[1])) / 3600 else 0
     if (missing(processingLog))
         processingLog <- paste('read.sealevel(file="', file, '", tz="', tz, sep="", collapse="")
     res@data$elevation <- elevation

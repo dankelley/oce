@@ -52,7 +52,7 @@ extracted from it, and used for the calculation instead of any values
 provided in the other arguments.
 }
 \examples{
-expect_equal(26.42066, swSigmaTheta(35, 13, 1000, eos="unesco"), tolerance=0.00001)
+expect_equal(26.4212790994, swSigmaTheta(35, 13, 1000, eos="unesco"))
 
 }
 \references{
@@ -84,3 +84,4 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
 \author{
 Dan Kelley
 }
+\concept{functions that calculate seawater properties}

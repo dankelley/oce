@@ -3,13 +3,63 @@
 \docType{class}
 \name{adp-class}
 \alias{adp-class}
-\title{Class to Hold ADP (ADCP) Data}
+\title{Class to Store adp (ADCP) Data}
 \description{
 This class stores data from acoustic Doppler profilers. Some manufacturers
 call these ADCPs, while others call them ADPs; here the shorter form is
 used by analogy to ADVs.
 }
-\details{
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{adp} objects is a
+\code{\link{list}} containing the main data for the object.
+The key items stored in this slot include \code{time}, \code{distance}, and \code{v}, along with angles \code{heading}, \code{pitch} and \code{roll}.}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{adp} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+Examples that are of common interest include \code{oceCoordinate}, \code{orientation}, \code{frequency}, and \code{beamAngle}.}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{adp} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
+
+
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{adp} objects (see \code{\link{[[<-,adp-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
+
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{adp}
+object named \code{adp} may be retrieved in the standard R way. For example,
+\code{slot(adp, "data")} and \code{slot(adp, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,adp-method}} operator can also be used to access slots,
+with \code{adp[["data"]]} and \code{adp[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,adp-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+}
+
+\section{Reading/creating \code{adp} objects}{
+
+
 The \code{metadata} slot contains various
 items relating to the dataset, including source file name, sampling rate,
 velocity resolution, velocity maximum value, and so on.  Some of these are
@@ -92,7 +142,7 @@ echo intensity).
 Teledyne-RDI profilers have an additional item \code{g} (for
 percent-good).
 
-VmDas-equiped Teledyne-RDI profilers additional navigation data, with
+VmDas-equipped Teledyne-RDI profilers additional navigation data, with
 details listed in the table below; note that the RDI documentation [2] and
 the RDI gui use inconsistent names for most items.
 
@@ -135,18 +185,18 @@ of reference 1.
 
 \itemize{
 
-\item \code{v} is ``velocity'' in m/s, inferred from two-byte signed
+  \item \code{v} is ``velocity'' in m/s, inferred from two-byte signed
   integer values (multiplied by the scale factor that is stored in
   \code{velocityScale} in the metadata).
 
-\item \code{q} is ``correlation magnitude'' a one-byte quantity stored
+  \item \code{q} is ``correlation magnitude'' a one-byte quantity stored
   as type \code{raw} in the object. The values may range from 0 to 255.
 
-\item \code{a} is ``backscatter amplitude``, also known as ``echo
+  \item \code{a} is ``backscatter amplitude``, also known as ``echo
   intensity'' a one-byte quantity stored as type \code{raw} in the object.
   The values may range from 0 to 255.
 
-\item \code{g} is ``percent good'' a one-byte quantity stored as \code{raw}
+  \item \code{g} is ``percent good'' a one-byte quantity stored as \code{raw}
   in the object.  The values may range from 0 to 100.
 
 }
@@ -155,9 +205,8 @@ Finally, there is a vector \code{adp[["distance"]]} that indicates the bin
 distances from the sensor, measured in metres along an imaginary centre
 line bisecting beam pairs.  The length of this vector equals
 \code{dim(adp[["v"]])[2]}.
-
-The \code{processingLog} slot is in standard form and needs little comment.
 }
+
 \section{Teledyne-RDI Sentinel V ADCPs}{
  As of 2016-09-27 there is
     provisional support for the TRDI "SentinelV" ADCPs, which are 5
@@ -167,7 +216,7 @@ The \code{processingLog} slot is in standard form and needs little comment.
     standard 4-beam fields.
 }
 
-\section{Accessing and altering information within \code{adp-class} objects}{
+\section{Accessing and altering information within \code{\link{adp-class}} objects}{
 
 \emph{Extracting values} Matrix data may be accessed as illustrated
 above, e.g.  or an adp object named \code{adv}, the data are provided by
@@ -211,7 +260,8 @@ format.} P/N 957-6156-00 (November 2007).
 A file containing ADP data is usually recognized by Oce, and so
 \code{\link{read.oce}} will usually read the data.  If not, one may use the
 general ADP function \code{\link{read.adp}} or specialized variants
-\code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}} or
+\code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}},
+\code{\link{read.adp.ad2cp}},
 \code{\link{read.adp.sontek}} or \code{\link{read.adp.sontek.serial}}.
 
 ADP data may be plotted with \code{\link{plot,adp-method}}, which is a
@@ -229,31 +279,39 @@ transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 Other classes provided by \code{oce}: \code{\link{adv-class}},
   \code{\link{argo-class}}, \code{\link{bremen-class}},
   \code{\link{cm-class}}, \code{\link{coastline-class}},
-  \code{\link{ctd-class}}, \code{\link{echosounder-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}},
+  \code{\link{ctd-class}}, \code{\link{lisst-class}},
+  \code{\link{lobo-class}}, \code{\link{met-class}},
+  \code{\link{oce-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
+  \code{\link{ad2cpHeaderValue}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdpAD2CP}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
   \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}}, \code{\link{plot,adp-method}},
-  \code{\link{read.ad2cp}}, \code{\link{read.adp.nortek}},
+  \code{\link{enuToOther}},
+  \code{\link{handleFlags,adp-method}},
+  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
+  \code{\link{read.adp.ad2cp}},
+  \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
   \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
   \code{\link{read.aquadoppHR}},
   \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}},
+  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
+  \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
+\concept{classes provided by \code{oce}}
+\concept{things related to \code{adp} data}

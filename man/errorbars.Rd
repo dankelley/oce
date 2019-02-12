@@ -4,7 +4,8 @@
 \alias{errorbars}
 \title{Draw error bars on an existing xy diagram}
 \usage{
-errorbars(x, y, xe, ye, percent = FALSE, style = 0, length = 0.025, ...)
+errorbars(x, y, xe, ye, percent = FALSE, style = 0, length = 0.025,
+  ...)
 }
 \arguments{
 \item{x}{x coordinates of points on the existing plot.}

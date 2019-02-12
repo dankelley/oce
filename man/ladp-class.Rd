@@ -3,32 +3,66 @@
 \docType{class}
 \name{ladp-class}
 \alias{ladp-class}
-\title{Class to store lowered-adp data}
+\title{Class to Store Lowered-adp Data}
 \description{
-Class to store data measured with a lowered ADP (also
+This class stores data measured with a lowered ADP (also
 known as ADCP) device.
 }
-\section{Accessing data}{
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{ladp} objects is a
+\code{\link{list}} containing the main data for the object.
+{}}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{ladp} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+{}}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{ladp} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
 
 
-    Consider an object named \code{ladp}.
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{ladp} objects (see \code{\link{[[<-,ladp-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
 
-    Metadata (contained in the S4 slot named \code{metadata}) may be retrieved
-    or set by name, \code{ladp[["longitude"]] <- ladp[["longitude"]] + 1}
-    corrects a one-degree error.  Use \code{names(ladp@metadata)} to find the
-    names of the metadata.
+\section{Retrieving slot contents}{
 
-    Column data may be accessed by name, e.g. \code{ladp[["u"]]},
-    \code{ladp[["v"]]}, \code{ladp[["pressure"]]}, etc.  There may also be
-    columns for \code{"temperature"} and \code{"salinity"}, and possibly other
-    things. Use \code{names(ladp@data)} to find the names of the data.
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{ladp}
+object named \code{ladp} may be retrieved in the standard R way. For example,
+\code{slot(ladp, "data")} and \code{slot(ladp, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,ladp-method}} operator can also be used to access slots,
+with \code{ladp[["data"]]} and \code{ladp[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,ladp-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
 }
 
 \seealso{
 Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
-  \code{\link{as.ladp}}, \code{\link{plot,ladp-method}},
+  \code{\link{[[<-,ladp-method}}, \code{\link{as.ladp}},
+  \code{\link{plot,ladp-method}},
   \code{\link{summary,ladp-method}}
 }
 \author{
 Dan Kelley
 }
+\concept{things related to \code{ladp} data}

@@ -1,7 +1,10 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 #' Read a CTD file in ODF format
+#'
 #' @template readCtdTemplate
+#'
+#' @author Dan Kelley
 #'
 #' @details
 #' \code{read.ctd.odf} reads files stored in Ocean Data Format, used in
@@ -11,12 +14,12 @@
 #' The ODF format, used by the Canadian Department of Fisheries and Oceans, is
 #' described to some extent in the documentation for \code{\link{read.odf}}.  It
 #' is not clear that ODF format is handled correctly in \code{read.ctd.odf}, or
-#' the more general function \code{\link{read.odf}}, because the format 
+#' the more general function \code{\link{read.odf}}, because the format
 #' varies between some sample files the author has encountered in his research.
 #' @family things related to \code{ctd} data
 #' @family things related to \code{odf} data
-read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, monitor=FALSE,
-                         debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
+                         monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {\n", sep="", unindent=1)
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
@@ -33,6 +36,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, monitor
     for (mname in names(odf@metadata))
         res@metadata[[mname]] <- odf@metadata[[mname]]
     res@metadata$pressureType <- "sea"
+    res@metadata$deploymentType <- deploymentType
     oceDebug(debug, "} # read.ctd.odf()\n", unindent=1)
     res
 }

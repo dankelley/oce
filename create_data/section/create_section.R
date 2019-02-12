@@ -3,6 +3,7 @@ library(oce)
 # download.file("https://cchdo.ucsd.edu/data/7872/a03_hy1.csv", "a03_hy1.csv")
 section <- read.section("a03_hy1.csv", sectionId="a03", institute="SIO",
                         ship="R/V Professor Multanovskiy", scientist="Vladimir Tereschenkov") 
+section <- initializeFlagScheme(section, "WHP bottle")
 save(section, file="section.rda")
 tools::resaveRdaFiles("section.rda")
 n <- length(section[['station',1]]@data)

@@ -8,7 +8,7 @@ moonAngle(t, longitude = 0, latitude = 0, useRefraction = TRUE)
 }
 \arguments{
 \item{t}{time, a POSIXt object (converted to timezone \code{"UTC"},
-if it is not already in that timezone), or a numeric value that
+if it is not already in that timezone), a character or numeric value that
 corresponds to such a time.}
 
 \item{longitude}{observer longitude in degrees east}
@@ -72,7 +72,7 @@ par(mfrow=c(3,2))
 y <- 2012
 m <- 4
 days <- 1:3
-## Halifax sunrise/sunset (see e.g. http://www.timeanddate.com/worldclock)
+## Halifax sunrise/sunset (see e.g. https://www.timeanddate.com/worldclock)
 rises <- ISOdatetime(y, m, days,c(13,15,16), c(55, 04, 16),0,tz="UTC") + 3 * 3600 # ADT
 sets <- ISOdatetime(y, m,days,c(3,4,4), c(42, 15, 45),0,tz="UTC") + 3 * 3600
 azrises <- c(69, 75, 82)
@@ -111,3 +111,4 @@ Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
 \author{
 Dan Kelley, based on formulae in Meeus [1982].
 }
+\concept{things related to astronomy}

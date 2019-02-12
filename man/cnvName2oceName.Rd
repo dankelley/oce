@@ -50,7 +50,7 @@ with \code{~} in the table; their decoding is done with \code{\link{grep}}.
 It is important to note that this table is by no means complete, since there
 are a great many SBE names listed in their document [1], plus names
 not listed there but present in data files
-supplied by prominent archiving agencies. If an SBE name is not recogized,
+supplied by prominent archiving agencies. If an SBE name is not recognized,
 then the oce name is set to that SBE name. This can cause problems in
 some other processing steps (e.g. if \code{\link{swRho}} or a similar
 function is called with an \code{oce} object as first argument), and so
@@ -76,8 +76,11 @@ variants.)
   \code{C2-C1mS/cm}  \tab \code{conductivityDifference}       \tab mS/cm               \tab    \cr
   \code{C2-C1uS/cm}  \tab \code{conductivityDifference}       \tab uS/cm               \tab    \cr
   \code{c~mS/cm}     \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
+  \code{cond~mS/cm}  \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
   \code{c~S/m}       \tab \code{conductivity}                 \tab S/m                 \tab    \cr
+  \code{cond~S/m}    \tab \code{conductivity}                 \tab S/m                 \tab    \cr
   \code{c~uS/cm}     \tab \code{conductivity}                 \tab uS/cm               \tab    \cr
+  \code{cond~uS/cm}  \tab \code{conductivity}                 \tab uS/cm               \tab    \cr
   \code{CStarAt~}    \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
   \code{CStarTr~}    \tab \code{beamTransmission}             \tab percent             \tab    \cr
   \code{density~~}   \tab \code{density}                      \tab kg/m^3              \tab    \cr
@@ -93,10 +96,11 @@ variants.)
   \code{flCUVA~}     \tab \code{fluorescence}                 \tab ug/l; Chelsea UV Aquatracka\tab\cr
   \code{flEC-AFL~}   \tab \code{fluorescence}                 \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
   \code{flS}         \tab \code{fluorescence}                 \tab -; Seatech          \tab    \cr
+  \code{flScufa~}    \tab \code{fluorescence}                 \tab -; Turner SCUFA [RFU]\tab\cr
   \code{flSP}        \tab \code{fluorescence}                 \tab -; Seapoint         \tab    \cr
   \code{flSPR}       \tab \code{fluorescence}                 \tab -; Seapoint, Rhodamine\tab  \cr
   \code{flSPuv}      \tab \code{fluorescence}                 \tab -; Seapoint, UV      \tab   \cr
-  \code{flT}         \tab \code{fluorescence}                 \tab -; Turneri 10-005 flT\tab   \cr
+  \code{flT}         \tab \code{fluorescence}                 \tab -; Turner 10-005 flT\tab   \cr
   \code{gpa}         \tab \code{geopotentialAnomaly}          \tab -; J/kg              \tab   \cr
   \code{latitude}    \tab \code{latitude}                     \tab degN                 \tab   \cr
   \code{longitude}   \tab \code{longitude}                    \tab degE                 \tab   \cr
@@ -104,6 +108,7 @@ variants.)
   \code{n2satMg/L}   \tab \code{nitrogenSaturation}           \tab mg/l                 \tab   \cr
   \code{n2satumol/kg}\tab \code{nitrogenSaturation}           \tab umol/kg              \tab   \cr
   \code{nbin}        \tab \code{nbin}                         \tab                      \tab   \cr
+  \code{obsscufa~}   \tab \code{backscatter}                  \tab NTU; Turner SCUFA    \tab   \cr
   \code{opoxMg/L}    \tab \code{oxygen}                       \tab mg/l; Optode, Anderaa\tab   \cr
   \code{opoxML/L}    \tab \code{oxygen}                       \tab ml/l; Optode, Anderaa\tab   \cr
   \code{opoxMm/L}    \tab \code{oxygen}                       \tab umol/l; Optode, Anderaa\tab \cr
@@ -133,12 +138,17 @@ variants.)
   \code{rhodflTC~}   \tab \code{Rhodamine}                    \tab ppb; Turner Cyclops  \tab   \cr
   \code{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
+  \code{sbox~ML/L}   \tab \code{oxygen}                       \tab ml/l; SBE43 (?)      \tab   \cr
   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab umol/kg; SBE43       \tab   \cr
+  \code{sbox~Mm/Kg}  \tab \code{oxygen}                       \tab umol/kg; SBE43 (?)   \tab   \cr
   \code{sbeox~Mm/L}  \tab \code{oxygen}                       \tab umol/l; SBE43        \tab   \cr
+  \code{sbox~Mm/L}   \tab \code{oxygen}                       \tab umol/l; SBE43 (?)    \tab   \cr
   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
+  \code{sbox~PS}     \tab \code{oxygen}                       \tab percent; SBE43 (?)   \tab   \cr
   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
+  \code{sbox~V}      \tab \code{oxygenRaw}                    \tab V; SBE43 (?)         \tab   \cr
   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
-  \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
+  \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; Seapoint        \tab   \cr
   \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
@@ -169,13 +179,14 @@ variants.)
   \code{t38~90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{t3868C~}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{t38~38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-  \code{timeH}       \tab \code{time}                         \tab hour; elapsed        \tab   \cr
-  \code{timeJ}       \tab \code{time}                         \tab day; elapsed         \tab   \cr
-  \code{timeK}       \tab \code{time}                         \tab s; since Jan 1, 2000 \tab\cr
-  \code{timeM}       \tab \code{time}                         \tab minute; elapsed      \tab   \cr
-  \code{timeN}       \tab \code{time}                         \tab s; NMEA since Jan 1, 1970\tab\cr
-  \code{timeQ}       \tab \code{time}                         \tab s; NMEA since Jan 1, 2000\tab\cr
-  \code{timeS}       \tab \code{time}                         \tab s; elapsed           \tab   \cr
+  \code{timeH}       \tab \code{timeH}                        \tab hour; elapsed        \tab   \cr
+  \code{timeJ}       \tab \code{timeJ}                        \tab julian day           \tab   \cr
+  \code{timeJV2}     \tab \code{timeJV2}                      \tab julian day           \tab   \cr
+  \code{timeK}       \tab \code{timeK}                        \tab s; since Jan 1, 2000 \tab   \cr
+  \code{timeM}       \tab \code{timeM}                        \tab minute; elapsed      \tab   \cr
+  \code{timeN}       \tab \code{timeN}                        \tab s; NMEA since Jan 1, 1970\tab\cr
+  \code{timeQ}       \tab \code{timeQ}                        \tab s; NMEA since Jan 1, 2000\tab\cr
+  \code{timeS}       \tab \code{timeS}                        \tab s; elapsed           \tab   \cr
   \code{turbflTC~}   \tab \code{turbidity}                    \tab NTU; Turner Cyclops  \tab   \cr
   \code{turbflTCdiff}\tab \code{turbidityDifference}          \tab NTU; Turner Cyclops  \tab   \cr
   \code{turbWETbb~}  \tab \code{turbidity}                    \tab 1/(m*sr); WET Labs ECO\tab   \cr
@@ -208,7 +219,14 @@ within R or in the operating system.}
 }
 }
 \references{
-1. A SBE data processing manual is at \url{http://www.seabird.com/document/sbe-data-processing-manual}.
+1. A SBE data processing manual was once at
+\code{http://www.seabird.com/document/sbe-data-processing-manual},
+but as of summer 2018, this no longer seems to be provided by SeaBird.
+A web search will turn up copies of the manual that have been put
+online by various research groups and data-archiving agencies.
+As of 2018-07-05, the latest version was named
+\code{SBEDataProcessing_7.26.4.pdf} and had release date 12/08/2017,
+and this was the reference version used in coding \code{oce}.
 }
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
@@ -217,6 +235,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
+  \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
@@ -225,6 +245,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{setFlags,ctd-method}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
@@ -241,3 +262,5 @@ Other functions that interpret variable names and units from headers: \code{\lin
 \author{
 Dan Kelley
 }
+\concept{functions that interpret variable names and units from headers}
+\concept{things related to \code{ctd} data}

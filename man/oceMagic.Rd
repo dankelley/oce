@@ -2,7 +2,6 @@
 % Please edit documentation in R/oce.R
 \name{oceMagic}
 \alias{oceMagic}
-\alias{oce.magic}
 \title{Find the Type of an Oceanographic Data File}
 \usage{
 oceMagic(file, debug = getOption("oceDebug"))
@@ -29,8 +28,7 @@ within the file, the file name, or a combination of the two.
 }
 \details{
 \code{oceMagic} was previously called \code{oce.magic}, but that
-alias will be removed towards the end of the year 2016; see
-\link{oce-deprecated}.
+alias was removed in version 0.9.24; see \link{oce-defunct}.
 }
 \seealso{
 This is used mainly by \code{\link{read.oce}}.

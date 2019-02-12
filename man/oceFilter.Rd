@@ -40,7 +40,7 @@ the time series where the index on \code{x} would be less than 1.
 
 By contrast with the \code{\link{filter}} function of R, \code{oce.filter}
 lacks the option to do a circular filter.  As a consequence,
-\code{oce.filter} introduces a phase lag.  One way to remove this lag is to
+\code{oceFilter} introduces a phase lag.  One way to remove this lag is to
 run the filter forwards and then backwards, as in the \dQuote{Examples}.
 However, the result is still problematic, in the sense that applying it in
 the reverse order would yield a different result.  (Matlab's \code{filtfilt}
@@ -58,12 +58,12 @@ b <- rep(1, 5)/5
 a <- 1
 x <- seq(0, 10)
 y <- ifelse(x == 5, 1, 0)
-f1 <- oce.filter(y, a, b)
+f1 <- oceFilter(y, a, b)
 plot(x, y, ylim=c(-0, 1.5), pch="o", type='b')
 points(x, f1, pch="x", col="red")
 
 # remove the phase lag
-f2 <- oce.filter(y, a, b, TRUE)
+f2 <- oceFilter(y, a, b, TRUE)
 points(x, f2, pch="+", col="blue")
 
 legend("topleft", col=c("black","red","blue"), pch=c("o","x","+"),

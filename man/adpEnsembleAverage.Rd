@@ -17,7 +17,7 @@ in \code{x}. If \code{leftover} is \code{FALSE} (the default) then any extra
 ensembles at the end of \code{x} are ignored. Otherwise, they are used
 to create a final ensemble in the returned value.}
 
-\item{na.rm}{a logical value indicating whether NA values should be stripped 
+\item{na.rm}{a logical value indicating whether NA values should be stripped
 before the computation proceeds}
 
 \item{...}{extra arguments to be passed to the \code{mean()} function.}
@@ -46,25 +46,32 @@ plot(adpAvg)
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+  \code{\link{[[<-,adp-method}},
+  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adp}}, \code{\link{as.adp}},
-  \code{\link{beamName}}, \code{\link{beamToXyzAdp}},
-  \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
-  \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
-  \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
-  \code{\link{plot,adp-method}}, \code{\link{read.ad2cp}},
+  \code{\link{beamName}}, \code{\link{beamToXyzAdpAD2CP}},
+  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
+  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
+  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
+  \code{\link{enuToOther}},
+  \code{\link{handleFlags,adp-method}},
+  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
+  \code{\link{read.adp.ad2cp}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
   \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
   \code{\link{read.aquadoppHR}},
   \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}},
+  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
+  \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
 \author{
 Clark Richards and Dan Kelley
 }
+\concept{things related to \code{adp} data}

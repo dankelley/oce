@@ -3,13 +3,15 @@
 \docType{methods}
 \name{plot,adv-method}
 \alias{plot,adv-method}
+\alias{plot.adv}
 \title{Plot ADV data}
 \usage{
-\S4method{plot}{adv}(x, which = c(1:3, 14, 15), col, titles, type = "l",
-  lwd = par("lwd"), drawTimeRange = getOption("oceDrawTimeRange"),
-  drawZeroLine = FALSE, useSmoothScatter, mgp = getOption("oceMgp"),
-  mar = c(mgp[1] + 1.5, mgp[1] + 1.5, 1.5, 1.5), tformat,
-  marginsAsImage = FALSE, cex = par("cex"), cex.axis = par("cex.axis"),
+\S4method{plot}{adv}(x, which = c(1:3, 14, 15), col, titles,
+  type = "l", lwd = par("lwd"),
+  drawTimeRange = getOption("oceDrawTimeRange"), drawZeroLine = FALSE,
+  useSmoothScatter, mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5,
+  mgp[1] + 1.5, 1.5, 1.5), tformat, marginsAsImage = FALSE,
+  cex = par("cex"), cex.axis = par("cex.axis"),
   cex.main = par("cex.main"), xlim, ylim, brushCorrelation,
   colBrush = "red", main = "", debug = getOption("oceDebug"), ...)
 }
@@ -20,7 +22,7 @@
 down from the top of the page.  See \dQuote{Details} for the meanings of
 various values of \code{which}.}
 
-\item{col}{Optional indication of colour(s) to use.  If not provided, the
+\item{col}{Optional indication of color(s) to use.  If not provided, the
 default for images is \code{oce.colorsPalette(128,1)}, and for lines and points
 is black.}
 
@@ -75,12 +77,12 @@ which case the rows are used, in order, for the panels of the graph.}
 which case the rows are used, in order, for the panels of the graph.}
 
 \item{brushCorrelation}{Optional number between 0 and 100, indicating a
-per-beam correlation threshhold below which data are to be considered suspect.
+per-beam correlation threshold below which data are to be considered suspect.
 If the plot type is \code{p}, the suspect points (velocity, backscatter
-amplitude, or correlation) will be coloured red; otherwise, this argument is
+amplitude, or correlation) will be colored red; otherwise, this argument is
 ignored.}
 
-\item{colBrush}{Colour to use for brushed (bad) data, if
+\item{colBrush}{Color to use for brushed (bad) data, if
 \code{brushCorrelation} is active.}
 
 \item{main}{Main title for plot, used just on the top panel, if there are
@@ -193,6 +195,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -215,7 +218,8 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{read.adv.sontek.adr}},
   \code{\link{read.adv.sontek.serial}},
   \code{\link{read.adv.sontek.text}},
-  \code{\link{read.adv}}, \code{\link{subset,adv-method}},
+  \code{\link{read.adv}}, \code{\link{rotateAboutZ}},
+  \code{\link{subset,adv-method}},
   \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
@@ -223,3 +227,5 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{adv} data}

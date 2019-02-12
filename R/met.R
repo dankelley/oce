@@ -1,10 +1,8 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' @title Class to Store Meteorological Data
+#' Class to Store Meteorological Data
 #'
-#' @description
-#' Class to store meteorological data, with standard slots \code{metadata},
-#' \code{data} and \code{processingLog}.  For objects created with
+#' This class stores meteorological data. For objects created with
 #' \code{\link{read.met}}, the \code{data} slot will contain all the columns
 #' within the original file (with some guesses as to units) in addition to
 #' several calculated quantities such as \code{u} and \code{v}, which are
@@ -12,25 +10,17 @@
 #' obey the oceanographic convention that \code{u>0} is a wind towards the
 #' east.
 #'
-#' @section Methods:
+#' @templateVar class met
 #'
-#' \emph{Accessing values.} For an object named \code{m}, temperature (in degC)
-#' may be accessed as \code{m[["temperature"]]}, dew point (in degC) as
-#' \code{m[["dewPoint"]]}, pressure (in kPa) as \code{m[["pressure"]]},
-#' eastward wind component (in m/s) as \code{m[["u"]]}, northward wind
-#' component (in m/s) as \code{m[["v"]]}, and wind direction (in degrees
-#' clockwise of North) as \code{"direction"}.
-#' The filename from which the data came
-#' (if any) may be found with \code{m[["filename"]]}.  Items in \code{metadata}
-#' must be specifield by full name, but those in \code{data} may be
-#' abbreviated, so long as the abbreviation is unique.
+#' @templateVar dataExample {}
 #'
-#' \emph{Assigning values.} Everything that may be accessed may also be
-#' assigned, e.g.
-#' \preformatted{
-#' m[["temperature"]] <- 1 + m[["temperature"]]
-#' }
-#' increases temperature by 1C.
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}
@@ -209,7 +199,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
             names <- names(time)
         }
         ## Change the following names.
-        ## DateTime Temp DewPointTemp RelHumidity WindDir WindSpeed Visibility Pressure Humidex WindChill Weather 
+        ## DateTime Temp DewPointTemp RelHumidity WindDir WindSpeed Visibility Pressure Humidex WindChill Weather
         if ("WindDir" %in% names)
             time$WindDir <- 10 * time$WindDir
         if ("WindSpeed" %in% names)
@@ -285,7 +275,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' a copy of the Environment Canada listing of stations, and its
 #' \code{find_station} function provides an easy way to determine Station IDs.
 #' After that, its \code{hcd_hourly} function (and related functions) make
-#' it easy to read data. These data can then be converted to the 
+#' it easy to read data. These data can then be converted to the
 #' \code{met} class with \code{\link{as.met}}, although doing so leaves
 #' many important metadata blank.
 #'
@@ -397,7 +387,7 @@ download.met <- function(id, year, month, deltat, destdir=".", destfile,
 #'
 #' Several quantities in the returned object differ from their values in the source
 #' file. For example, speed is converted from km/h to m/s, and angles are converted
-#' from tens of degres to degrees. Also, some items are created from scratch, e.g.
+#' from tens of degrees to degrees. Also, some items are created from scratch, e.g.
 #' \code{u} and \code{v}, the eastward and northward velocity, are computed from speed
 #' and direction. (Note that e.g. u is positive if the wind blows to the east; the
 #' data are thus in the normal Physics convention.)
@@ -419,39 +409,39 @@ metNames2oceNames <- function(names, scheme)
             res <- ODFNames2oceNames(ODFnames=names, ODFunits=NULL)
         } else if (scheme == "met") {
             ## next block handles monthly data
-            if (1 == length(i <- grep("^Date\\.Time$", res))) res[i] <- "DateTime"
+            if (1 == length(i <- grep("^Date.Time$", res))) res[i] <- "DateTime"
             if (1 == length(i <- grep("^Year$", res))) res[i] <- "Year"
             if (1 == length(i <- grep("^Month$", res))) res[i] <- "Month"
-            if (1 == length(i <- grep("^Mean\\.Max\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "temperatureMaximum"
-            if (1 == length(i <- grep("^Extr\\.Max\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "temperatureExtraMaximum"
-            if (1 == length(i <- grep("^Extr\\.Max\\.Temp\\.Flag$", res))) res[i] <- "temperatureExtraMaximumFlag"
-            if (1 == length(i <- grep("^Mean\\.Min\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "temperatureMinimum"
-            if (1 == length(i <- grep("^Extr\\.Min\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "temperatureExtraMinimum"
-            if (1 == length(i <- grep("^Extr\\.Min\\.Temp\\.Flag$", res))) res[i] <- "temperatureExtraMinimumFlag"
-            if (1 == length(i <- grep("^Mean\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "temperature"
-            if (1 == length(i <- grep("^Mean\\.Max\\.Temp\\.Flag$", res))) res[i] <- "temperatureMaximumFlag"
-            if (1 == length(i <- grep("^Mean\\.Min\\.Temp\\.Flag$", res))) res[i] <- "temperatureMinimumFlag"
-            if (1 == length(i <- grep("^Mean\\.Temp\\.Flag$", res))) res[i] <- "temperatureFlag"
-            if (1 == length(i <- grep("^Total\\.Rain\\.\\.mm\\.$", res))) res[i] <- "rain"
-            if (1 == length(i <- grep("^Total\\.Rain\\.Flag$", res))) res[i] <- "rainFlag"
-            if (1 == length(i <- grep("^Total\\.Snow\\.\\.cm\\.$", res))) res[i] <- "snow"
-            if (1 == length(i <- grep("^Snow\\.Grnd\\.Last\\.Day\\.\\.cm\\.$", res))) res[i] <- "snowGroundLastDay"
-            if (1 == length(i <- grep("^Snow\\.Grnd\\.Last\\.Day\\.Flag$", res))) res[i] <- "snowGroundLastDayFlag"
-            if (1 == length(i <- grep("^Total\\.Snow\\.Flag$", res))) res[i] <- "snowFlag"
-            if (1 == length(i <- grep("^Total\\.Precip\\.\\.mm", res))) res[i] <- "precipitation"
-            if (1 == length(i <- grep("^Total\\.Precip\\.Flag", res))) res[i] <- "precipitationFlag"
-            if (1 == length(i <- grep("^Dir\\.of\\.Max\\.Gust\\.\\.10\\.s\\.deg\\.$", res))) res[i] <- "directionMaximumGust"
-            if (1 == length(i <- grep("^Dir\\.of\\.Max\\.Gust\\.Flag$", res))) res[i] <- "directionMaximumGustFlag"
-            if (1 == length(i <- grep("^Spd\\.of\\.Max\\.Gust\\.\\.km\\.h\\.$", res))) res[i] <- "speedMaximumGust"
-            if (1 == length(i <- grep("^Spd\\.of\\.Max\\.Gust\\.Flag$", res))) res[i] <- "speedMaximumGustFlag"
+            if (1 == length(i <- grep("^Mean.Max.Temp...C.$", res))) res[i] <- "temperatureMaximum"
+            if (1 == length(i <- grep("^Extr.Max.Temp...C.$", res))) res[i] <- "temperatureExtraMaximum"
+            if (1 == length(i <- grep("^Extr.Max.Temp.Flag$", res))) res[i] <- "temperatureExtraMaximumFlag"
+            if (1 == length(i <- grep("^Mean.Min.Temp...C.$", res))) res[i] <- "temperatureMinimum"
+            if (1 == length(i <- grep("^Extr.Min.Temp...C.$", res))) res[i] <- "temperatureExtraMinimum"
+            if (1 == length(i <- grep("^Extr.Min.Temp.Flag$", res))) res[i] <- "temperatureExtraMinimumFlag"
+            if (1 == length(i <- grep("^Mean.Temp...C.$", res))) res[i] <- "temperature"
+            if (1 == length(i <- grep("^Mean.Max.Temp.Flag$", res))) res[i] <- "temperatureMaximumFlag"
+            if (1 == length(i <- grep("^Mean.Min.Temp.Flag$", res))) res[i] <- "temperatureMinimumFlag"
+            if (1 == length(i <- grep("^Mean.Temp.Flag$", res))) res[i] <- "temperatureFlag"
+            if (1 == length(i <- grep("^Total.Rain..mm.$", res))) res[i] <- "rain"
+            if (1 == length(i <- grep("^Total.Rain.Flag$", res))) res[i] <- "rainFlag"
+            if (1 == length(i <- grep("^Total.Snow..cm.$", res))) res[i] <- "snow"
+            if (1 == length(i <- grep("^Snow.Grnd.Last.Day..cm.$", res))) res[i] <- "snowGroundLastDay"
+            if (1 == length(i <- grep("^Snow.Grnd.Last.Day.Flag$", res))) res[i] <- "snowGroundLastDayFlag"
+            if (1 == length(i <- grep("^Total.Snow.Flag$", res))) res[i] <- "snowFlag"
+            if (1 == length(i <- grep("^Total.Precip..mm", res))) res[i] <- "precipitation"
+            if (1 == length(i <- grep("^Total.Precip.Flag", res))) res[i] <- "precipitationFlag"
+            if (1 == length(i <- grep("^Dir.of.Max.Gust..10.s.deg.$", res))) res[i] <- "directionMaximumGust"
+            if (1 == length(i <- grep("^Dir.of.Max.Gust.Flag$", res))) res[i] <- "directionMaximumGustFlag"
+            if (1 == length(i <- grep("^Spd.of.Max.Gust..km.h.$", res))) res[i] <- "speedMaximumGust"
+            if (1 == length(i <- grep("^Spd.of.Max.Gust.Flag$", res))) res[i] <- "speedMaximumGustFlag"
             ## next block handles hourly data
-            if (1 == length(i <- grep("^Data\\.Quality$", res))) res[i] <- "dataQuality"
-            if (1 == length(i <- grep("^Dew\\.Point\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "dewPoint"
-            if (1 == length(i <- grep("^Dew\\.Point\\.Temp\\.Flag$", res))) res[i] <- "dewPointFlag"
+            if (1 == length(i <- grep("^Data.Quality$", res))) res[i] <- "dataQuality"
+            if (1 == length(i <- grep("^Dew.Point.Temp.*C.$", res))) res[i] <- "dewPoint"
+            if (1 == length(i <- grep("^Dew.Point.Temp.Flag$", res))) res[i] <- "dewPointFlag"
             if (1 == length(i <- grep("^Hmdx$", res))) res[i] <- "humidex"
-            if (1 == length(i <- grep("^Hmdx\\.Flag$", res))) res[i] <- "humidexFlag"
-            if (1 == length(i <- grep("^Rel\\.Hum\\.\\.\\.\\.$", res))) res[i] <- "humidity"
-            if (1 == length(i <- grep("^Rel\\.Hum\\.Flag$", res))) res[i] <- "humidityFlag"
+            if (1 == length(i <- grep("^Hmdx.Flag$", res))) res[i] <- "humidexFlag"
+            if (1 == length(i <- grep("^Rel.Hum....$", res))) res[i] <- "humidity"
+            if (1 == length(i <- grep("^Rel.Hum.Flag$", res))) res[i] <- "humidityFlag"
             if (1 == length(i <- grep("^Stn.*Press.*kPa.*$", res))) res[i] <- "pressure"
             if (1 == length(i <- grep("^Stn.Press.Flag$", res))) res[i] <- "pressureFlag"
             if (1 == length(i <- grep("^Temp.*C.*$", res))) res[i] <- "temperature"
@@ -461,10 +451,10 @@ metNames2oceNames <- function(names, scheme)
             if (1 == length(i <- grep("^Wind.*Spd.*km.*$", res))) res[i] <- "wind"
             if (1 == length(i <- grep("^Wind.*Spd.*Flag$", res))) res[i] <- "windFlag"
             ## some files have "10s" and others "10.s" (I think)
-            if (1 == length(i <- grep("^Wind\\.Dir\\.\\.10\\.*s\\.deg\\.$", res))) res[i] <- "direction"
-            if (1 == length(i <- grep("^Wind\\.Dir\\.Flag$", res))) res[i] <- "directionFlag"
-            if (1 == length(i <- grep("^Wind\\.Chill$", res))) res[i] <- "windChill"
-            if (1 == length(i <- grep("^Wind\\.Chill\\.Flag$", res))) res[i] <- "windChillFlag"
+            if (1 == length(i <- grep("^Wind.Dir..10.*s.deg.$", res))) res[i] <- "direction"
+            if (1 == length(i <- grep("^Wind.Dir.Flag$", res))) res[i] <- "directionFlag"
+            if (1 == length(i <- grep("^Wind.Chill$", res))) res[i] <- "windChill"
+            if (1 == length(i <- grep("^Wind.Chill.Flag$", res))) res[i] <- "windChillFlag"
             if (1 == length(i <- grep("^Weather$", res))) res[i] <- "weather"
         } else {
             warning("unknown scheme ", scheme)
@@ -475,9 +465,8 @@ metNames2oceNames <- function(names, scheme)
         if (1 == length(col))
             res[col] <- "temperature"
     }
-    ## message("names,res >>")
-    ## print(data.frame(names, res))
-    ## message("<<")
+    ## cat("in metNames2oceNames:\n")
+    ## print(data.frame(names=names,res=res))
     res
 }
 
@@ -509,7 +498,7 @@ metNames2oceNames <- function(names, scheme)
 #' m/s and are the components of the vector of wind direction.  In other words,
 #' the oceanographic convention on velocity is employed, not the meteorological
 #' one; the weather forecaster's "North wind" has positive \code{v} and zero
-#' \code{u}.  In addition to these things, \code{data} also contains 
+#' \code{u}.  In addition to these things, \code{data} also contains
 #' \code{wind} (in km/h), taken straight from the data file.
 #' @section Note: There seem to be several similar formats in use, so this
 #' function may not work in all cases.
@@ -579,7 +568,9 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
     res@metadata$WMOIdentifier <- WMOIdentifier
     res@metadata$TCIdentifier <- TCIdentifier
     res@metadata$filename <- filename
-    rawData <- read.csv(text=text, skip=skip, encoding="UTF-8", header=TRUE)
+    ## Use stringsAsFactors=TRUE to compact weather conditions somewhat ... note that flags are converted to character type
+    ## later on, when they are moved from 'data' into 'metadata$flags'.
+    rawData <- read.csv(text=text, skip=skip, encoding="UTF-8", header=TRUE, stringsAsFactors=TRUE)
     names <- names(rawData)
     ## FIXME: handle daily data, if the column names differ
     if ("Day" %in% names && "Time" %in% names) {
@@ -617,7 +608,7 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
         rawData[["v"]][zero] <- 0
     }
     rawData$time <- time
-    res@data <- rawData
+    res@data <- as.list(rawData)
     pl <- paste("read.met(\"", filename, "\", type=", if (is.null(type)) "NULL" else type, ", tz=\"", tz, "\")", sep="")
     res@processingLog <- processingLogAppend(res@processingLog, pl)
     names <- names(res@data)
@@ -726,7 +717,11 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
                        "windChill")) {
         flagName <- paste(flagType, "Flag", sep="")
         if (flagName %in% names) {
-            res@metadata$flags[[flagType]] <- res@data[[flagName]]
+            ## The check on being logical type handles the case where a flag consists entirely of empty strings in the .csv
+            ## file. I think that in that case, all the values end up being NA, so we just ignore this and make a bunch of
+            ## zero-length strings.
+            res@metadata$flags[[flagType]] <- if (is.logical(res@data[[flagName]])) rep("", length(res@data[[flagName]]))
+                else as.character(res@data[[flagName]])
             res@data[[flagName]] <- NULL
         }
     }
@@ -797,12 +792,12 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
 #'
 #' ## Wind speed and direction during Hurricane Juan
 #' ## Compare with the final figure in a white paper by Chris Fogarty
-#' ## (available at http://www.novaweather.net/Hurricane_Juan_files/McNabs_plot.pdf 
+#' ## (available at http://www.novaweather.net/Hurricane_Juan_files/McNabs_plot.pdf
 #' ## downloaded 2017-01-02).
 #' library(oce)
 #' data(met)
 #' t0 <- as.POSIXct("2003-09-29 04:00:00", tz="UTC")
-#' dt <- 12 * 3600 
+#' dt <- 12 * 3600
 #' juan <- subset(met, t0 - dt <= time & time <= t0 + dt)
 #' par(mfrow=c(2,1))
 #' plot(juan, which=5)
@@ -812,6 +807,7 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{met} data
+#' @aliases plot.met
 setMethod(f="plot",
            signature=signature("met"),
            definition=function(x, which = 1:4, mgp, mar, tformat, debug=getOption("oceDebug"))

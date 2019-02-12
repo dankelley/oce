@@ -5,25 +5,23 @@
 #' @param deltat the time between samples.
 read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                    longitude=NA, latitude=NA,
-                                   start, deltat,
-                                   debug=getOption("oceDebug"), monitor=FALSE, processingLog)
+                                   start=NULL, deltat=NULL,
+                                   debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
 {
     oceDebug(debug, paste("read.adv.sontek.serial(file[1]=\"", file[1],
                            "\", from=", format(from),
                            if (!missing(to)) sprintf(", to=%s, ", format(to)),
                            ", by=", by,
-                           if (!missing(start)) sprintf(", start[1]=%s, ", format(start[1])),
-                           if (!missing(deltat)) sprintf(", deltat=%f, ", deltat),
-                           "debug=", debug,
+                           ", start[1]=", format(start[1]),
+                           ", deltat=", deltat,
+                           ", debug=", debug,
                            ", monitor=", monitor,
                            ", processingLog=(not shown)) {\n", sep=""), unindent=1)
-    if (missing(start))
-        stop("must supply start, a POSIXct time (or suitable string for time, in UTC) at which the first observation was made")
-    if (is.numeric(start))
+    if (is.null(start) || is.numeric(start))
         stop("'start' must be a string, or a POSIXt time")
     if (is.character(start))
         start <- as.POSIXct(start, tz=tz)
-    if (missing(deltat))
+    if (!is.numeric(deltat))
         stop("must supply deltat, the number of seconds between observations")
     nstart <- length(start)
     nfile <- length(file)
@@ -140,7 +138,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     res@metadata$units$pitch <- list(unit=expression(degree), scale="")
     res@metadata$units$roll <- list(unit=expression(degree), scale="")
     res@metadata$units$temperature <- list(unit=expression(degree*C), scale="")
-    if (missing(processingLog))
+    if (is.null(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     ##gc()
@@ -154,7 +152,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
 read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                 header=TRUE,
                                 longitude=NA, latitude=NA,
-                                debug=getOption("oceDebug"), monitor=FALSE, processingLog)
+                                debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
 {
     bisectAdvSontekAdr <- function(burstTime, tFind, add=0, debug=0) {
         oceDebug(debug, "bisectAdvSontekAdr(tFind=", format(tFind), ", add=", add, "\n")
@@ -247,7 +245,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         if (!res@metadata$compassInstalled)
             stop("cannot handle data files for ADV files that lack compass data")
 
-        res@metadata$recorderInstalled <- if (as.integer(hardwareConfiguration[6]) == 1) TRUE else FALSE;
+        res@metadata$recorderInstalled <- if (as.integer(hardwareConfiguration[6]) == 1) TRUE else FALSE
         oceDebug(debug, "recorderInstalled=", res@metadata$recorderInstalled, "\n")
 
         res@metadata$thermometerInstalled <- as.integer(hardwareConfiguration[7]) == 1
@@ -564,7 +562,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         if (is.character(by)) {
             subsamplingRate <- floor(0.5 + ctimeToSeconds(by) * res@metadata$samplingRate)
             oceDebug(debug, paste(" by = '", by, "' yields subsamplingRate=", subsamplingRate, "\n"), sep="")
-            samples <- 1:length(iii)
+            samples <- seq_along(iii)
             oceDebug(debug, "before interpreting 'by', iii true for", sum(iii), "cases\n")
             iii <- iii & !(samples %% subsamplingRate)
             oceDebug(debug, "after  interpreting 'by', iii true for", sum(iii), "cases\n")
@@ -588,7 +586,11 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     v <- v[iii, ]
     a <- a[iii, ]
     q <- q[iii, ]
-    time <- time[iii]
+    ## No need to subset time if 'from' and 'to' are integers; I am not really
+    ## sure we want to in the POSIX case, either, but I am not changing that for now.
+    ## DEK (issue 1386)
+    if (fromToPOSIX)
+        time <- time[iii]
     pressure <- pressure[iii]
     temperature <- temperature[iii]
     pitch <- pitch[iii]
@@ -611,7 +613,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$units$pitch <- list(unit=expression(degree), scale="")
     res@metadata$units$roll <- list(unit=expression(degree), scale="")
     res@metadata$units$temperature <- list(unit=expression(degree*C), scale="")
-    if (missing(processingLog))
+    if (is.null(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
     res@processingLog <- hitem
@@ -635,7 +637,7 @@ read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                  originalCoordinate="xyz", transformationMatrix,
                                  longitude=NA, latitude=NA,
                                  debug=getOption("oceDebug"), monitor=FALSE,
-                                 processingLog)
+                                 processingLog=NULL)
 {
     ## FIXME: It would be better to deal with the binary file, but the format is unclear to me;
     ## FIXME: two files are available to me, and they differ considerably, neither matching the
@@ -782,7 +784,7 @@ read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$oceCoordinate <- originalCoordinate
     res@metadata$originalCoordinate <- originalCoordinate
     warning("sensor orientation cannot be inferred without a header; \"", res@metadata$orientation, "\" was assumed.")
-    if (missing(processingLog))
+    if (is.null(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
     res@processingLog <- hitem

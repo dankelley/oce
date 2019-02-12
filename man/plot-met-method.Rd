@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,met-method}
 \alias{plot,met-method}
+\alias{plot.met}
 \title{Plot met Data}
 \usage{
 \S4method{plot}{met}(x, which = 1:4, mgp, mar, tformat,
@@ -62,12 +63,12 @@ plot(met, which=3:4)
 
 ## Wind speed and direction during Hurricane Juan
 ## Compare with the final figure in a white paper by Chris Fogarty
-## (available at http://www.novaweather.net/Hurricane_Juan_files/McNabs_plot.pdf 
+## (available at http://www.novaweather.net/Hurricane_Juan_files/McNabs_plot.pdf
 ## downloaded 2017-01-02).
 library(oce)
 data(met)
 t0 <- as.POSIXct("2003-09-29 04:00:00", tz="UTC")
-dt <- 12 * 3600 
+dt <- 12 * 3600
 juan <- subset(met, t0 - dt <= time & time <= t0 + dt)
 par(mfrow=c(2,1))
 plot(juan, which=5)
@@ -87,6 +88,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,odf-method}},
@@ -110,3 +112,5 @@ Other things related to \code{met} data: \code{\link{[[,met-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{met} data}

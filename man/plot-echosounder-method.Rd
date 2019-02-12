@@ -3,14 +3,15 @@
 \docType{methods}
 \name{plot,echosounder-method}
 \alias{plot,echosounder-method}
+\alias{plot.echosounder}
 \title{Plot Echosounder Data}
 \usage{
-\S4method{plot}{echosounder}(x, which = 1, beam = "a", newx, xlab, ylab,
-  xlim, ylim, zlim, type = "l", col = oce.colorsJet, lwd = 2,
+\S4method{plot}{echosounder}(x, which = 1, beam = "a", newx, xlab,
+  ylab, xlim, ylim, zlim, type = "l", col = oceColorsJet, lwd = 2,
   despike = FALSE, drawBottom, ignore = 5, drawTimeRange = FALSE,
   drawPalette = TRUE, radius, coastline, mgp = getOption("oceMgp"),
-  mar = c(mgp[1] + 1, mgp[1] + 1, mgp[1] + 1, mgp[1] + 1), atTop, labelsTop,
-  tformat, debug = getOption("oceDebug"), ...)
+  mar = c(mgp[1] + 1, mgp[1] + 1, mgp[1] + 1, mgp[1] + 1), atTop,
+  labelsTop, tformat, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{An \code{echosounder} object, e.g. as read by
@@ -42,12 +43,12 @@ not provided, the labels depend on the value of \code{which}.}
 
 \item{ylim}{optional range for y axis.}
 
-\item{zlim}{optional range for colour scale.}
+\item{zlim}{optional range for color scale.}
 
 \item{type}{type of graph, \code{"l"} for line, \code{"p"} for points, or
 \code{"b"} for both.}
 
-\item{col}{colour scale for image, a function}
+\item{col}{color scale for image, a function}
 
 \item{lwd}{line width (ignored if \code{type="p"})}
 
@@ -57,7 +58,7 @@ smooth across image columns, row by row.}
 \item{drawBottom}{optional flag used for section images.  If \code{TRUE},
 then the bottom is inferred as a smoothed version of the ridge of highest
 image value, and data below that are grayed out after the image is drawn.
-If \code{drawBottom} is a colour, then that colour is used, instead of
+If \code{drawBottom} is a color, then that color is used, instead of
 white.  The bottom is detected with \code{\link{findBottom}}, using the
 \code{ignore} value described next.}
 
@@ -108,7 +109,7 @@ values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
 }
 \description{
 Plot echosounder data.
-Simple linear approximation is used when a \code{newx} value is specifie
+Simple linear approximation is used when a \code{newx} value is specified
 with the \code{which=2} method, but arguably a gridding method should be
 used, and this may be added in the future.
 }
@@ -133,3 +134,4 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
 \author{
 Dan Kelley, with extensive help from Clark Richards
 }
+\concept{things related to \code{echosounder} data}

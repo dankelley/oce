@@ -3,16 +3,18 @@
 \docType{methods}
 \name{plot,section-method}
 \alias{plot,section-method}
+\alias{plot.section}
 \title{Plot a Section}
 \usage{
 \S4method{plot}{section}(x, which = c(1, 2, 3, 99), eos, at = NULL,
   labels = TRUE, grid = FALSE, contourLevels = NULL,
-  contourLabels = NULL, stationIndices, coastline = "best", xlim = NULL,
-  ylim = NULL, zlim = NULL, map.xlim = NULL, map.ylim = NULL,
-  clongitude, clatitude, span, projection = NULL, xtype = "distance",
-  ytype = "depth", ztype = "contour", zbreaks = NULL, zcol = NULL,
-  legend.loc = "bottomright", showStations = FALSE, showStart = TRUE,
-  showBottom = TRUE, axes = TRUE, mgp, mar, col, cex, pch, debug, ...)
+  contourLabels = NULL, stationIndices, coastline = "best",
+  xlim = NULL, ylim = NULL, zlim = NULL, map.xlim = NULL,
+  map.ylim = NULL, clongitude, clatitude, span, projection = NULL,
+  xtype = "distance", ytype = "depth", ztype = "contour",
+  zbreaks = NULL, zcol = NULL, legend.loc = "bottomright",
+  showStations = FALSE, showStart = TRUE, showBottom = TRUE,
+  axes = TRUE, mgp, mar, col, cex, pch, labcex = 1, debug, ...)
 }
 \arguments{
 \item{x}{a \code{section} object, e.g. as created by \code{\link{as.section}}
@@ -92,7 +94,7 @@ contours, \code{"image"} for an image (drawn with \code{\link{imagep}} with
 In the first two cases, the data must be gridded, with identical pressures at
 each station.}
 
-\item{zbreaks, zcol}{Indication of breaks and colours to be used if \code{ztype="points"} or
+\item{zbreaks, zcol}{Indication of breaks and colors to be used if \code{ztype="points"} or
 \code{"image"}. If not provided, reasonable default are used. If \code{zlim}
 is given but \code{breaks} is not given, then \code{breaks} is computed to
 run from \code{zlim[1]} to \code{zlim[2]}. If \code{zcol} is a function,
@@ -113,7 +115,7 @@ is rendered with a gray polygon. If \code{showBottom} is a character string,
 then there are three possibilities: is the string is \code{"polygon"} then
 a polygon is drawn, if it is \code{"lines"} then a line is drawn, and if it
 is \code{"points"} then points are drawn. If \code{showBottom} is an object
-inherinting from \code{\link{topo-class}} then the station locations are
+inheriting from \code{\link{topo-class}} then the station locations are
 interpolated to that topography and the results are shown with a polygon.
 In this last case, the interpolation is set at a grid that is roughly
 in accordance with the resolution of the latitudes in the \code{topo} object.
@@ -128,11 +130,14 @@ See \dQuote{Examples}.}
 \item{mar}{Value to be used with \code{\link{par}("mar")}. If not provided,
 a default is set up.}
 
-\item{col}{Colour, which defaults to \code{\link{par}("col")}.}
+\item{col}{Color, which defaults to \code{\link{par}("col")}.}
 
 \item{cex}{Numerical character-expansion factor, which defaults to \code{\link{par}("cex")}.}
 
 \item{pch}{Indication of symbol type; defaults to \code{\link{par}("pch")}.}
+
+\item{labcex}{Size of characters in contour labels (passed to
+\code{\link{contour}}).}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -141,15 +146,14 @@ turns off the printing, while higher values suggest that more information
 be printed. If \code{debug} is not supplied, it defaults to
 \code{\link{getOption}("oceDebug")}.}
 
-\item{...}{Optional arguments passed to the contouring function, e.g. using
-\code{labcex=1} will increase the size of contour labels.}
+\item{...}{Optional arguments passed to the contouring function.}
 }
 \value{
 If the original section was gridded, the return value is that section.
 Otherwise, the gridded section that was constructed for the plot is returned.
 In both cases, the value is returned silently. The
 purpose of returning the section is to enable subsequent processing
-of the grid, including adding elements to the plot.
+of the grid, including adding elements to the plot (see example 5).
 }
 \description{
 Creates a summary plot for a CTD section, with one panel for each value of
@@ -159,6 +163,7 @@ Creates a summary plot for a CTD section, with one panel for each value of
 The type of plot is governed by \code{which}, as follows.
 
 \itemize{
+    \item \code{which=0} or \code{"potential temperature"} for temperature contours
     \item \code{which=1} or \code{"temperature"} for temperature contours (the default)
     \item \code{which=2} or \code{"salinity"} for salinity contours
     \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
@@ -191,8 +196,8 @@ library(oce)
 data(section)
 sg <- sectionGrid(section)
 
-## 1. AO3 section, default fields.
-plot(section)
+## 1. start of section, default fields.
+plot(head(section))
 
 ## 2. Gulf Stream
 GS <- subset(section, 109<=stationId&stationId<=129)
@@ -205,12 +210,14 @@ plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
 
 par(mfrow=c(1, 1))
 
-## 3. Image, with coloured dots to indicate grid-data mismatch.
+## 3. Image, with colored dots to indicate grid-data mismatch.
+\dontrun{
 plot(GSg, which=1, ztype='image')
 T <- GS[['temperature']]
-col <- oce.colorsJet(100)[rescale(T, rlow=1, rhigh=100)]
+col <- oceColorsJet(100)[rescale(T, rlow=1, rhigh=100)]
 points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
 points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
+}
 
 
 \dontrun{
@@ -221,6 +228,15 @@ points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 f <- download.topo(west=-80, east=0, south=35, north=40, resolution=4)
 t <- read.topo(f)
 plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
+}
+
+\dontrun{
+## 5. Temperature with salinity added in red
+s <- plot(section, which="temperature")
+distance <- s[["distance", "byStation"]]
+depth <- s[["station", 1]][["depth"]]
+salinity <- matrix(s[["salinity"]], byrow=TRUE, nrow=length(s[["station"]]))
+contour(distance, depth, salinity, col=2, add=TRUE)
 }
 
 }
@@ -239,6 +255,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -256,6 +273,7 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{handleFlags,section-method}},
+  \code{\link{initializeFlagScheme,section-method}},
   \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},
   \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
@@ -266,3 +284,5 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{section} data}

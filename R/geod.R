@@ -14,7 +14,7 @@
 #' geodesic curve} connecting (\code{longitude[i]}, \code{latitude[i]}) with
 #' (\code{longitudeRef}, \code{latitude[i]}). The resultant distance
 #' is multiplied by -1 if \code{longitude[i]-longitudeRef} is negative,
-#' and the result is assigned to \code{x[i]}. 
+#' and the result is assigned to \code{x[i]}.
 #' A similar procedure is used for \code{y[i]}.
 #'
 #' @section Caution: This scheme is without known precedent in the literature, and
@@ -64,7 +64,7 @@
 #' UTM <- lonlat2utm(lon, lat, zone=18) # we need to set the zone for this task!
 #' angleUTM <- 180/pi*atan(coef(lm(northing~easting, data=UTM))[2])
 #' mapCoordinateSystem(lonR, latR, 500, angleUTM, col=3)
-#' legend("topright", lwd=1, col=2:3, bg="white", title="Axis Rotation Angle", 
+#' legend("topright", lwd=1, col=2:3, bg="white", title="Axis Rotation Angle",
 #'        legend=c(sprintf("geod: %.1f deg", angle), sprintf("utm: %.1f deg",angleUTM)))
 #' }
 #' @family functions relating to geodesy
@@ -77,17 +77,8 @@ geodXy <- function(longitude, latitude, longitudeRef, latitudeRef, debug=getOpti
     if (missing(latitudeRef)) stop("must provide latitudeRef")
     n <- length(longitude)
     if (length(latitude) != n) stop("longitude and latitude vectors of unequal length")
-    xy  <- .C("geod_xy", NAOK=TRUE, PACKAGE="oce",
-              as.integer(n),
-              as.double(longitude),
-              as.double(latitude),
-              as.double(longitudeRef),
-              as.double(latitudeRef),
-              as.double(a),
-              as.double(f),
-              x=double(n),
-              y=double(n),
-              as.integer(debug))
+    ##xy  <- .C("geod_xy", NAOK=TRUE, PACKAGE="oce",
+    xy  <- do_geod_xy(longitude, latitude, longitudeRef, latitudeRef, a, f)
     ## if (rotate != 0) {
     ##     S <- sin(rotate * pi / 180)
     ##     C <- cos(rotate * pi / 180)
@@ -109,7 +100,7 @@ geodXy <- function(longitude, latitude, longitudeRef, latitudeRef, debug=getOpti
 #' The minimum is calculated in C for speed, using the \code{nmmin} function
 #' that is the underpinning for the Nelder-Meade version of the R function
 #' \code{\link{optim}}. If you find odd results, try setting \code{debug=1}
-#' and rerunning, to see whether this optimizer is having difficulting
+#' and rerunning, to see whether this optimizer is having difficulty
 #' finding a minimum of the mismatch function.
 #'
 #' @param x value of x in metres, as given by \code{\link{geodXy}}
@@ -132,17 +123,8 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
     if (missing(latitudeRef)) stop("must provide latitudeRef")
     n <- length(x)
     if (length(y) != n) stop("x and y vectors of unequal length")
-    ll <- .C("geod_xy_inverse", NAOK=TRUE, PACKAGE="oce",
-             as.integer(n),
-             as.double(x),
-             as.double(y),
-             as.double(longitudeRef),
-             as.double(latitudeRef),
-             as.double(a),
-             as.double(f),
-             longitude=double(n),
-             latitude=double(n),
-             as.integer(debug))
+    ##ll <- .C("geod_xy_inverse", NAOK=TRUE, PACKAGE="oce",
+    ll <- do_geod_xy_inverse(x, y, longitudeRef, latitudeRef, a, f)
     data.frame(longitude=ll$longitude, latitude=ll$latitude)
 }
 
@@ -166,7 +148,7 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
 #'
 #' Case 2: \code{longitude1} is a vector.  If \code{longitude2} and
 #' \code{latitude2} are not given, then the return value is a vector containing
-#' the distances of each point from the first one, \emph{or} the distancce
+#' the distances of each point from the first one, \emph{or} the distance
 #' along the path connecting the points, according to the value of
 #' \code{alongPath}.  On the other hand, if both \code{longitude2} and
 #' \code{latitude2} are specified, then the return result depends on the length
@@ -198,8 +180,8 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
 #' @seealso \code{\link{geodXy}}
 #' @references T. Vincenty, "Direct and Inverse Solutions of Ellipsoid on the
 #' Ellipsoid with Application of Nested Equations", \emph{Survey Review}, April
-#' 1975.  (As of early 2009, this document is available at
-#' \url{http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf}.)
+#' 1975.
+#'
 #' @examples
 #' library(oce)
 #' km <- geodDist(100, 45, 100, 46)
@@ -214,21 +196,21 @@ geodDist <- function (longitude1, latitude1=NULL, longitude2=NULL, latitude2=NUL
     f <- 1/298.257223563     # WGS84 flattening parameter
     if (inherits(longitude1, "section")) {
         section <- longitude1
-        latitude <- section[["latitude", "byStation"]]
         longitude <- section[["longitude", "byStation"]]
+        latitude <- section[["latitude", "byStation"]]
         if (alongPath) {
-            res <- .Call("geoddist_alongpath", latitude, longitude, a, f) / 1000
+            ##res <- .Call("geoddist_alongpath", latitude, longitude, a, f) / 1000
+            res <- do_geoddist_alongpath(longitude, latitude, a, f) / 1000
         } else {
             n <- length(section@data$station)
-            res <- .Call("geoddist",
-                         as.double(rep(latitude[1], length.out=n)),
-                         as.double(rep(longitude[1], length.out=n)),
-                         as.double(latitude), as.double(longitude),
-                         as.double(a), as.double(f)) / 1000
+            ##res <- .Call("geoddist",
+            res <- do_geoddist(rep(longitude[1], length.out=n), rep(latitude[1], length.out=n),
+                         longitude, latitude, a, f) / 1000
         }
     } else {
         if (alongPath) {
-            res <- .Call("geoddist_alongpath", latitude1, longitude1, a, f) / 1000
+            ##res <- .Call("geoddist_alongpath", latitude1, longitude1, a, f) / 1000
+            res <- do_geoddist_alongpath(longitude1, latitude1, a, f) / 1000
         } else {
             n1 <- length(latitude1)
             if (length(longitude1) != n1)
@@ -245,10 +227,8 @@ geodDist <- function (longitude1, latitude1=NULL, longitude2=NULL, latitude2=NUL
                 latitude2 <- latitude2[1:n1]
                 longitude2 <- longitude2[1:n1]
             }
-            res <- .Call("geoddist",
-                      as.double(latitude1), as.double(longitude1),
-                      as.double(latitude2), as.double(longitude2),
-                      as.double(a), as.double(f)) / 1000
+            ##res <- .Call("geoddist",
+            res <- do_geoddist(longitude1, latitude1, longitude2, latitude2, a, f) / 1000
         }
     }
     res

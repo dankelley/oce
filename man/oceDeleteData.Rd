@@ -2,7 +2,7 @@
 % Please edit documentation in R/accessors.R
 \name{oceDeleteData}
 \alias{oceDeleteData}
-\title{Delete data from an \code{oce} object}
+\title{Delete Something in the data Slot of an oce Object}
 \usage{
 oceDeleteData(object, name)
 }

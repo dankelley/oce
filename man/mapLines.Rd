@@ -58,3 +58,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley
 }
+\concept{functions related to maps}

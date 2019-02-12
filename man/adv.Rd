@@ -35,11 +35,11 @@ for (a in seq(-20, 20, by=1))
 \seealso{
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{colors}},
-  \code{\link{ctdRaw}}, \code{\link{ctd}},
-  \code{\link{echosounder}}, \code{\link{landsat}},
-  \code{\link{lisst}}, \code{\link{lobo}},
-  \code{\link{met}}, \code{\link{rsk}},
+  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
+  \code{\link{ctd}}, \code{\link{echosounder}},
+  \code{\link{landsat}}, \code{\link{lisst}},
+  \code{\link{lobo}}, \code{\link{met}},
+  \code{\link{ocecolors}}, \code{\link{rsk}},
   \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
@@ -53,8 +53,11 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{read.adv.sontek.adr}},
   \code{\link{read.adv.sontek.serial}},
   \code{\link{read.adv.sontek.text}},
-  \code{\link{read.adv}}, \code{\link{subset,adv-method}},
+  \code{\link{read.adv}}, \code{\link{rotateAboutZ}},
+  \code{\link{subset,adv-method}},
   \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
+\concept{datasets provided with \code{oce}}
+\concept{things related to \code{adv} data}

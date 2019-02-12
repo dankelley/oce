@@ -1,19 +1,27 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' @title Class to Store Rsk Data
+#' Class to Store Rsk Data
 #'
-#' @description
-#' Class for data stored in the ``Ruskin'' format used by RBR [1], including both
-#' \code{rsk} SQLite files and the ASCII \code{txt} exported files.
+#' This class stores ``Ruskin'' data, from RBR [1].
 #'
 #' A \code{rsk} object may be read with \code{\link{read.rsk}} or created with
 #' \code{\link{as.rsk}}.  Plots can be made with \code{\link{plot,rsk-method}}, while
 #' \code{\link{summary,rsk-method}} produces statistical summaries and \code{show}
 #' produces overviews.   If atmospheric pressure has not been removed from the
 #' data, the functions \code{\link{rskPatm}} may provide guidance as to its value;
-#' however, this last function is no equal to decent record-keeping at sea.  Data
-#' may be retrieved with \code{\link{[[,rsk-method}} or replaced with
-#' \code{\link{[[<-,rsk-method}}.
+#' however, this last function is no equal to decent record-keeping at sea.
+#'
+#' @templateVar class rsk
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @references
 #' 1. \href{https://www.rbr-global.com/products}{RBR website: www.rbr-global.com/products}
@@ -112,6 +120,7 @@ setMethod(f="summary",
 #' @title Extract Something From a Rsk Object
 #' @param x A rsk object, i.e. one inheriting from \code{\link{rsk-class}}.
 #' @template sub_subTemplate
+#' @author Dan Kelley
 #' @family things related to \code{rsk} data
 setMethod(f="[[",
           signature(x="rsk", i="ANY", j="ANY"),
@@ -243,6 +252,8 @@ unitFromStringRsk <- function(s)
         list(unit=expression(degree*C), scale="ITS-90") # guessing on scale
     else if (1 == length(grep("\\xc2\\xb5Mol/m\\xc2\\xb2/s", s, useBytes=TRUE))) # µMol/m²/s
         list(unit=expression(mu*mol/m^2/s), scale="")
+    else if (is.na(s))
+        list(unit=expression(), scale="?")
     else {
         warning("'", s, "' is not in the list of known .rsk units", sep="")
         list(unit=as.expression(s), scale="")
@@ -419,6 +430,7 @@ as.rsk <- function(time, columns,
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{rsk} data
+#' @aliases plot.rsk
 setMethod(f="plot",
           signature=signature("rsk"),
           definition=function(x, which="timeseries",
@@ -641,12 +653,12 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
     ##measurement.deltat <- 0
     if (is.numeric(from) && from < 1)
         stop("from cannot be an integer less than 1")
-    
-    if(!missing(to)){
-      if (is.numeric(to) && to < 1)
-        stop("to cannot be an integer less than 1")
+
+    if (!missing(to)) {
+        if (is.numeric(to) && to < 1)
+            stop("to cannot be an integer less than 1")
     }
-    
+
     ##from.keep <- from
     if (!missing(to))
         to.keep <- to
@@ -707,10 +719,14 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         rskv <- dbInfo[1, 1]
         rskVersion <- as.numeric(strsplit(gsub(".[a-z].*$", "", gsub("^.*- *", "", rskv)), "\\.")[[1]])
         ## Ruskin software version number
-        appSettings <- RSQLite::dbReadTable(con, "appSettings")
-        rv <- appSettings[1, 2]
-        ##OLD rv <- read.table(pipe(cmd), sep="|")[1, 2]
-        ruskinVersion <- as.numeric(strsplit(gsub(".[a-z].*$", "", gsub("^.*- *", "", rv)), "\\.")[[1]])
+        if (RSQLite::dbExistsTable(con, "appSettings")) {
+            appSettings <- RSQLite::dbReadTable(con, "appSettings")
+            rv <- appSettings[1, 2]
+            ##OLD rv <- read.table(pipe(cmd), sep="|")[1, 2]
+            ruskinVersion <- as.numeric(strsplit(gsub(".[a-z].*$", "", gsub("^.*- *", "", rv)), "\\.")[[1]])
+        } else {
+            ruskinVersion <- "mobile"
+        }
         ##message("NEW: ruskinVersion: ", paste(ruskinVersion, collapse="."))
         ## Next block got triggered with too many files, and it seems more sensible
         ## to just go ahead and try to get something from the file as best we can.
@@ -732,6 +748,11 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         }, silent=TRUE)
         if (warn)
             warning("non-standard pressureAtmospheric value: ", pressureAtmospheric)
+        ## some cases can have an empty pressureAtmospheric
+        if (length(pressureAtmospheric) == 0) {
+            warning("empty pressureAtmospheric value in rsk file. Setting to default value of 10.1325")
+            pressureAtmospheric <- 10.1325
+        }
         ##message("NEW: pressureAtmospheric:", pressureAtmospheric)
         oceDebug(debug, "after studying the RSK file, now have pressureAtmospheric=", pressureAtmospheric, "\n")
 
@@ -743,71 +764,78 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         ## to avoid the problem that R lacks 64 bit integers.
         fields <- DBI::dbListFields(con, "data")
         fields <- fields[!grepl('tstamp', fields)]
-        sql_fields <- paste0("1.0*tstamp AS tstamp")
-        
+        sql_fields <- if (packageVersion("RSQLite") < "2.0") "1.0*tstamp AS tstamp" else "tstamp"
+
         sql_fields <- paste(c(sql_fields, fields), collapse=',')
         sql_fields <- paste("SELECT", sql_fields, "FROM data")
-        
-        
+
+
         # When to and from are numeric and not equal to 1 we have to query the table
         # and then sort the times so that the limits are meaningful.  This code
-        # does that only when required and will be slower than when from and to 
+        # does that only when required and will be slower than when from and to
         # are dates or character.
         time <- NA
-        
-        if(!missing(to)){
-          if(inherits(to, 'POSIXt')){
-            to <- as.character(as.numeric(to)*1000)
-          } else if (inherits(to, 'character')){
-            to <- as.character(as.numeric(as.POSIXct(to, tz=tz))*1000)
-          } else if(is.numeric(to)){
-            res <- DBI::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
+
+        if (!missing(to)) {
+            if (inherits(to, 'POSIXt')) {
+                to <- as.character(as.numeric(to)*1000)
+            } else if (inherits(to, 'character')) {
+                to <- as.character(as.numeric(as.POSIXct(to, tz=tz))*1000)
+            } else if (is.numeric(to)) {
+                res <- DBI::dbSendQuery(con,
+                                        if (packageVersion("RSQLite") < "2.0")
+                                            "select 1.0*tstamp from data order by tstamp;"
+                                        else
+                                            "select tstamp from data order by tstamp;")
+                t1000 <- DBI::dbFetch(res, n=-1)[[1]]
+                RSQLite::dbClearResult(res)
+                time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
+            }
+        }
+
+        if (is.numeric(from) & from != 1 & all(is.na(time))) {
+            res <- DBI::dbSendQuery(con,
+                                    if (packageVersion("RSQLite") < "2.0")
+                                        "select 1.0*tstamp from data order by tstamp;"
+                                    else
+                                        "select tstamp from data order by tstamp;")
             t1000 <- DBI::dbFetch(res, n=-1)[[1]]
             RSQLite::dbClearResult(res)
             time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
-          }
         }
-        
-        if(is.numeric(from) & from != 1 & all(is.na(time))){
-          res <- DBI::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
-          t1000 <- DBI::dbFetch(res, n=-1)[[1]]
-          RSQLite::dbClearResult(res)
-          time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
-        }
-        
-        
-        # format to and from that match tstamp from the rsk file
-        if(inherits(from, 'POSIXt')) {
-          from <- as.character(as.numeric(from)*1000)
+
+        ## format to and from that match tstamp from the rsk file
+        if (inherits(from, 'POSIXt')) {
+            from <- as.character(as.numeric(from)*1000)
         } else if (inherits(from, 'character')) {
-          from <- as.character(as.numeric(as.POSIXct(from, tz=tz))*1000)
+            from <- as.character(as.numeric(as.POSIXct(from, tz=tz))*1000)
         }
-        
-        if(!all(is.na(time))){
-          if(is.numeric(from)){
-            from <- t1000[from]
-          }
-          if(missing(to)){
-            to <- tail(t1000, 1)
-          } else if(is.numeric(to)){
-            to <- t1000[to]
-          }
+
+        if (!all(is.na(time))) {
+            if (is.numeric(from)) {
+                from <- t1000[from]
+            }
+            if (missing(to)) {
+                to <- tail(t1000, 1)
+            } else if (is.numeric(to)) {
+                to <- t1000[to]
+            }
         }
-        # Generate the sql that contains the time filters
-        if(missing(to)){
-          if(is.numeric(from)){
-            res <- DBI::dbSendQuery(con, paste(sql_fields, ";"))
-          } else {
-            res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
-          }
+        ## Generate the sql that contains the time filters
+        if (missing(to)) {
+            if (is.numeric(from)) {
+                res <- DBI::dbSendQuery(con, paste(sql_fields, ";"))
+            } else {
+                res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
+            }
         } else {
-          if(missing(to)){
-            res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
-          } else if(from==1){
-            res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp <=",  to, ";"))
-          } else {
-            res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp between",  from, "and", to, ";"))
-          }
+            if (missing(to)) {
+                res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
+            } else if (from==1) {
+                res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp <=",  to, ";"))
+            } else {
+                res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp between",  from, "and", to, ";"))
+            }
         }
 
         ## Now, get only the specified time range
@@ -840,9 +868,10 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             isMeasured <- channelsTable$isMeasured == 1
         } else {
             isMeasured <- channelsTable$isDerived == 0
-            warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
+            ##warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
         }
         dataNamesOriginal <- c("-", channelsTable$shortName[isMeasured])
+        ##[issue 1483] print(cbind(channelsTable,isMeasured))
         names <- names[isMeasured] # only take names of things that are in the data table
         unitsRsk <- channelsTable$units[isMeasured]
         ## Check for duplicated names, and append digits to make unique
@@ -918,8 +947,30 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         if (hasDatasetID) res@metadata$datasetID <- datasetID
         ## There is actually no need to set the conductivity unit since new()
         ## sets it, but do it anyway, as a placeholder to show where to do
-        ## this, in case some RBR devices use different units
-        res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="") # FIXME: will this work for all RBR rsks?
+        ## this, in case some RBR devices use different units.
+        if ("cond12" %in% names(res@data)) {
+            ## [issue 1483] Change the name, and possibly unit, of 'cond12'
+            ##
+            ## For a sample file, channelsTable gives the unit for cond12 as
+            ## NA.  Rather than make unitFromStringRsk() give a conductivity
+            ## unit whenever it gets an NA value (which might occur for other
+            ## fields -- who knows?), we will switch NA to uS/cm because
+            ## that seems to be the usual unit for RBR instruments. However,
+            ## if the cond12 unit is not NA, we will leave it as it is, on the
+            ## assumption that unitFromStringRsk() has already interpreted
+            ## it correctly
+            w <- which("cond12" == names)[1]
+            if (is.na(unitsRsk[w])) {
+                res@metadata$units$cond12 <- NULL # remove existing
+                res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
+            }
+            newnames <- gsub("cond12", "conductivity", names(res@data))
+            names(res@data) <- newnames
+            names(res@metadata$dataNamesOriginal) <- newnames
+        } else {
+            ## FIXME: will this work for all RBR rsks that don't contain cond12?
+            res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
+        }
         res@metadata$pressureAtmospheric <- pressureAtmospheric
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
@@ -1167,8 +1218,8 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
 #' @param deploymentType character string indicating the type of deployment (see
 #' \code{\link{as.ctd}}).
 #' @template debugTemplate
-rsk2ctd <- function(x, pressureAtmospheric=0, longitude, latitude,
-                    ship, cruise, station, deploymentType,
+rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
+                    ship=NULL, cruise=NULL, station=NULL, deploymentType=NULL,
                     debug=getOption("oceDebug"))
 {
     oceDebug(debug, "rsk2ctd(...) {\n", sep="", unindent=1)
@@ -1178,17 +1229,17 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude, latitude,
     ## we have to take care of two cases in deciding on some things. The procedure is
     ## to use the argument to rsk2ctd if one is given, otherwise to use the value already
     ## in x@metadata, otherwise to set a default that matches as.ctd().
-    res@metadata$longitude <- if (!missing(longitude)) longitude else
+    res@metadata$longitude <- if (!is.null(longitude)) longitude else
         if (is.null(res@metadata$longitude)) NA else res@metadata$longitude
-    res@metadata$latitude <- if (!missing(latitude)) latitude else
+    res@metadata$latitude <- if (!is.null(latitude)) latitude else
         if (is.null(res@metadata$latitude)) NA else res@metadata$latitude
-    res@metadata$ship <- if (!missing(ship)) ship else
+    res@metadata$ship <- if (!is.null(ship)) ship else
         if (is.null(res@metadata$ship)) "" else res@metadata$ship
-    res@metadata$cruise <- if (!missing(cruise)) cruise else
+    res@metadata$cruise <- if (!is.null(cruise)) cruise else
         if (is.null(res@metadata$cruise)) "" else res@metadata$cruise
-    res@metadata$station <- if (!missing(station)) station else
+    res@metadata$station <- if (!is.null(station)) station else
         if (is.null(res@metadata$station)) "" else res@metadata$station
-    res@metadata$deploymentType <- if (!missing(deploymentType)) deploymentType else
+    res@metadata$deploymentType <- if (!is.null(deploymentType)) deploymentType else
         if (is.null(res@metadata$deploymentType)) "unknown" else res@metadata$deploymentType
 
     ## We start by copying the data, but we may need to do some fancy footwork for pressure, because

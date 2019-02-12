@@ -19,8 +19,8 @@ field.}
 
 \item{code}{code of arrows, passed to \code{\link{arrows}}.}
 
-\item{col}{colour of arrows.  This may be a single colour, or a matrix
-of colours of the same dimension as \code{u}.}
+\item{col}{color of arrows.  This may be a single color, or a matrix
+of colors of the same dimension as \code{u}.}
 
 \item{\dots}{optional arguments passed to \code{\link{arrows}}, e.g.
 \code{angle} and \code{lwd} can be useful in differentiating different
@@ -78,3 +78,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley
 }
+\concept{functions related to maps}

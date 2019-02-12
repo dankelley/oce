@@ -48,7 +48,7 @@ stations, in the order in which they are stored in the section.
 
 Case 2: \code{longitude1} is a vector.  If \code{longitude2} and
 \code{latitude2} are not given, then the return value is a vector containing
-the distances of each point from the first one, \emph{or} the distancce
+the distances of each point from the first one, \emph{or} the distance
 along the path connecting the points, according to the value of
 \code{alongPath}.  On the other hand, if both \code{longitude2} and
 \code{latitude2} are specified, then the return result depends on the length
@@ -71,8 +71,7 @@ geodDist(section, alongPath=TRUE)
 \references{
 T. Vincenty, "Direct and Inverse Solutions of Ellipsoid on the
 Ellipsoid with Application of Nested Equations", \emph{Survey Review}, April
-1975.  (As of early 2009, this document is available at
-\url{http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf}.)
+1975.
 }
 \seealso{
 \code{\link{geodXy}}
@@ -85,3 +84,4 @@ Dan Kelley based this on R code sent to him by Darren Gillis, who in
 2003 had modified Fortran code that, according to comments in the source,
 had been written in 1974 by L. Pfeifer and J. G. Gergen.
 }
+\concept{functions relating to geodesy}

@@ -30,3 +30,4 @@ Other bin-related functions: \code{\link{binApply1D}},
 \author{
 Dan Kelley
 }
+\concept{bin-related functions}

@@ -6,7 +6,8 @@
 \usage{
 mapGrid(dlongitude = 15, dlatitude = 15, longitude, latitude,
   col = "darkgray", lty = "solid", lwd = 0.5 * par("lwd"),
-  polarCircle = 0, longitudelim, latitudelim, debug = getOption("oceDebug"))
+  polarCircle = 0, longitudelim, latitudelim,
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{dlongitude}{increment in longitude, ignored if \code{longitude}
@@ -21,7 +22,7 @@ longitude lines.}
 \item{latitude}{vector of latitudes, or \code{NULL} to prevent drawing
 latitude lines.}
 
-\item{col}{colour of lines}
+\item{col}{color of lines}
 
 \item{lty}{line type}
 
@@ -86,3 +87,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley
 }
+\concept{functions related to maps}

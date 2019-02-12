@@ -2,7 +2,7 @@
 % Please edit documentation in R/accessors.R
 \name{oceSetMetadata}
 \alias{oceSetMetadata}
-\title{Set something in the \code{metadata} slot of an \code{oce} object}
+\title{Set Something in the metadata Slot of an oce Object}
 \usage{
 oceSetMetadata(object, name, value, note = "")
 }
@@ -13,8 +13,16 @@ oceSetMetadata(object, name, value, note = "")
 
 \item{value}{Value for the item.}
 
-\item{note}{A note to be stored in the processing log.}
+\item{note}{Either empty (the default), a character string, or \code{NULL},
+to control additions made to the processing log of the return value. If
+\code{note=""} then the an entry is created based on deparsing the function call.
+If \code{note} is a non-empty string, then that string gets added added
+to the processing log. Finally, if \code{note=NULL}, then nothing is
+added to the processing log.  This last form is useful in cases where
+\code{oceSetData} is to be called many times in succession, resulting
+in an overly verbose processing log; in such cases, it might help
+to add a note by e.g. \code{processingLog(a) <- "QC (memo dek-2018-01/31)"}}
 }
 \description{
-Set something in the \code{metadata} slot of an \code{oce} object
+Set Something in the metadata Slot of an oce Object
 }

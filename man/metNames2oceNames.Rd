@@ -30,7 +30,7 @@ e.g. sometimes a symbol is used for the degree sign, other times not.
 
 Several quantities in the returned object differ from their values in the source
 file. For example, speed is converted from km/h to m/s, and angles are converted
-from tens of degres to degrees. Also, some items are created from scratch, e.g.
+from tens of degrees to degrees. Also, some items are created from scratch, e.g.
 \code{u} and \code{v}, the eastward and northward velocity, are computed from speed
 and direction. (Note that e.g. u is positive if the wind blows to the east; the
 data are thus in the normal Physics convention.)

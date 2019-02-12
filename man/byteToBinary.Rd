@@ -2,9 +2,9 @@
 % Please edit documentation in R/misc.R
 \name{byteToBinary}
 \alias{byteToBinary}
-\title{Format bytes as binary}
+\title{Format bytes as binary [defunct]}
 \usage{
-byteToBinary(x, endian)
+byteToBinary(x, endian = "big")
 }
 \arguments{
 \item{x}{an integer to be interpreted as a byte.}
@@ -23,7 +23,7 @@ See \dQuote{Examples} for how this relates to the output from
 }
 \description{
 \strong{WARNING:} The \code{endian} argument will soon be removed
-from this function; see \link{oce-deprecated}.
+from this function; see \link{oce-defunct}.
 This is because the actions for \code{endian="little"} made
 no sense in practical work. The default value for \code{endian}
 was changed to \code{"big"} on 2017 May 6.
@@ -32,8 +32,8 @@ was changed to \code{"big"} on 2017 May 6.
 library(oce)
 ## Note comparison with rawToBits():
 a <- as.raw(0x0a)
-byteToBinary(a, "big") # "00001010"
-rev(rawToBits(a))      # 00 00 00 00 01 00 01 00
+byteToBinary(a, "big")        # "00001010"
+as.integer(rev(rawToBits(a))) # 0 0 0 0 1 0 1 0
 }
 \author{
 Dan Kelley

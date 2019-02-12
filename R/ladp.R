@@ -1,24 +1,22 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 
-#' Class to store lowered-adp data
+#' Class to Store Lowered-adp Data
 #'
-#' Class to store data measured with a lowered ADP (also
+#' This class stores data measured with a lowered ADP (also
 #' known as ADCP) device.
 #'
-#' @section Accessing data:
+#' @templateVar class ladp
 #'
-#'     Consider an object named \code{ladp}.
+#' @templateVar dataExample {}
 #'
-#'     Metadata (contained in the S4 slot named \code{metadata}) may be retrieved
-#'     or set by name, \code{ladp[["longitude"]] <- ladp[["longitude"]] + 1}
-#'     corrects a one-degree error.  Use \code{names(ladp@@metadata)} to find the
-#'     names of the metadata.
+#' @templateVar metadataExample {}
 #'
-#'     Column data may be accessed by name, e.g. \code{ladp[["u"]]},
-#'     \code{ladp[["v"]]}, \code{ladp[["pressure"]]}, etc.  There may also be
-#'     columns for \code{"temperature"} and \code{"salinity"}, and possibly other
-#'     things. Use \code{names(ladp@@data)} to find the names of the data.
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley
 #'
@@ -76,20 +74,15 @@ setMethod(f="summary",
           })
 
 #' @title Extract Something From an ladp Object
-#'
 #' @param x A \code{ladp} object, i.e. one inheriting from \code{\link{ladp-class}}.
 #' @template sub_subTemplate
-#'
 #' @examples
 #' data(ctd)
 #' head(ctd[["temperature"]])
-#'
 #' @author Dan Kelley
-#'
 #' @family things related to \code{ladp} data
 setMethod(f="[[",
           signature(x="ladp", i="ANY", j="ANY"),
-          ##definition=function(x, i, j=NULL, drop=NULL) {
           definition=function(x, i, j, ...) {
               if (i == "pressure" || i == "p") {
                   x@data$pressure
@@ -112,6 +105,17 @@ setMethod(f="[[",
           })
 
 
+#' @title Replace Parts of a ladp Object
+#' @param x A \code{ladp} object, i.e. one inheriting from \code{\link{ladp-class}}.
+#' @template sub_subsetTemplate
+#'
+#' @family things related to \code{ladp} data
+setMethod(f="[[<-",
+          signature(x="ladp", i="ANY", j="ANY"),
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ..., value=value) # [[<-
+          })
+
 #' Plot an ladp object
 #'
 #' Uses \code{\link{plotProfile}} to create panels of depth variation of easterly
@@ -125,6 +129,7 @@ setMethod(f="[[",
 #'
 #' @family things related to \code{ladp} data
 #' @family functions that plot \code{oce} data
+#' @aliases plot.ladp
 setMethod(f="plot",
           signature=signature("ladp"),
           definition=function(x, which=c("u", "v"), ...) {

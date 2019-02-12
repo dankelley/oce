@@ -2,9 +2,10 @@
 
 setClass("satellite", contains="oce")
 
-#' @title Class to Hold G1SST Satellite-model Data
+#' Class to Store G1SST Satellite-model Data
 #'
-#' @description
+#' This class stores G1SST model-satellite products.
+#'
 #' G1SST is an acronym for global 1-km sea surface temperature, a product
 #' that combines satellite data with the model output. It is provided by
 #' the JPO ROMS (Regional Ocean Modelling System) modelling group.
@@ -12,7 +13,6 @@ setClass("satellite", contains="oce")
 #' the \code{\link{read.g1sst}} documentation for an example
 #' of downloading and plotting.
 #'
-#' @details
 #' It is important not to regard G1SST data in the same category as,
 #' say, \code{\link{amsr-class}} data, because the two products
 #' differ greatly with respect to cloud cover. The satellite used by
@@ -22,9 +22,21 @@ setClass("satellite", contains="oce")
 #' [1] for a given time, clicking and then unclicking the radio button
 #' that turns off the model-based filling of cloud gaps.
 #'
+#' @templateVar class g1sst
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
+#'
 #' @concept satellite
 #' @references
-#' 1. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
+#' 1. JPO OurOcean Portal \code{https://ourocean.jpl.nasa.gov/SST/}
 #' (link worked in 2016 but was seen to fail 2017 Feb 2).
 #' @author Dan Kelley
 #' @family things related to satellite data
@@ -64,7 +76,7 @@ setMethod(f="[[<-",
 #' must be aware of the incorporation of model simulations in the
 #' \code{g1sst} product. For example, the code presented below
 #' might lead one to believe that the mapped field represents
-#' observatins, whereas in fact it can be verified by
+#' observations, whereas in fact it can be verified by
 #' consulting [2] (clicking and unclicking the radio button to
 #' show just the data) that the field mostly derives from simulation.
 #'
@@ -79,7 +91,7 @@ setMethod(f="[[<-",
 #' lon1 <- -64.0
 #' lat0 <- 44
 #' lat1 <- 46
-#' source <- paste("http://coastwatch.pfeg.noaa.gov/erddap/griddap/",
+#' source <- paste("https://coastwatch.pfeg.noaa.gov/erddap/griddap/",
 #'                 "jplG1SST.nc?",
 #'                 "SST%5B(", day, "T12:00:00Z)",
 #'                 "%5D%5B(", lat0, "):(", lat1, ")",
@@ -95,8 +107,8 @@ setMethod(f="[[<-",
 #'
 #' @author Dan Kelley
 #' @references
-#' 1. ERDDAP Portal \url{http://coastwatch.pfeg.noaa.gov/erddap/}
-#' 2. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
+#' 1. ERDDAP Portal \url{https://coastwatch.pfeg.noaa.gov/erddap/}
+#' 2. JPO OurOcean Portal \code{https://ourocean.jpl.nasa.gov/SST/}
 #' (link worked in 2016 but was seen to fail 2017 Feb 2).
 #' @family things related to satellite data
 read.g1sst <- function(filename)
@@ -105,8 +117,9 @@ read.g1sst <- function(filename)
         stop('must install.packages("ncdf4") to read g1sst data')
     f <- ncdf4::nc_open(filename)
     res <- new("g1sst", filename=filename)
-    res@metadata$longitude <- ncdf4::ncvar_get(f, "longitude")
-    res@metadata$latitude <- ncdf4::ncvar_get(f, "latitude")
+    ## Change the 1-col ncdf4 output to a vector
+    res@metadata$longitude <- as.vector(ncdf4::ncvar_get(f, "longitude"))
+    res@metadata$latitude <- as.vector(ncdf4::ncvar_get(f, "latitude"))
     res@metadata$time <- numberAsPOSIXct(ncdf4::ncvar_get(f, "time"))
     res@metadata$units$SST <- list(unit=expression(degree*C), scale="ITS-90")
     res@metadata$satellite <- "g1sst"

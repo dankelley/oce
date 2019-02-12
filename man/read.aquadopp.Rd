@@ -5,8 +5,9 @@
 \title{Read a Nortek Aquadopp File}
 \usage{
 read.aquadopp(file, from = 1, to, by = 1, tz = getOption("oceTz"),
-  longitude = NA, latitude = NA, orientation, distance, monitor = FALSE,
-  despike = FALSE, processingLog, debug = getOption("oceDebug"), ...)
+  longitude = NA, latitude = NA, orientation, distance,
+  monitor = FALSE, despike = FALSE, processingLog,
+  debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -69,6 +70,10 @@ amount of debugging information, or to 2 to get more.}
 }
 \value{
 An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+The form of this object varies with instrument type. In some cases
+navigational data may be included, e.g. \code{read.adp.rdi} can
+read NMEA strings (which get stored in an item called \code{nmea}
+in the \code{data} slot).
 }
 \description{
 The R code is based on information in
@@ -76,8 +81,8 @@ the Nortek System Integrator Guide (2008) and on postings on the Nortek
 ``knowledge center'' discussion board.  One might assume that the latter is
 less authoritative than the former.  For example, the inference of cell size
 follows advice found at
-\url{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
-(downloaded June 2012), which contains a typo in an early posting that is
+\code{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
+(downloaded June 2012, link no longer working), which contains a typo in an early posting that is
 corrected later on.
 }
 \references{
@@ -92,24 +97,33 @@ problems arise in dealing with data from Nortek instruments.
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+  \code{\link{[[<-,adp-method}},
+  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdpAD2CP}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
   \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}}, \code{\link{plot,adp-method}},
-  \code{\link{read.ad2cp}}, \code{\link{read.adp.nortek}},
+  \code{\link{enuToOther}},
+  \code{\link{handleFlags,adp-method}},
+  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
+  \code{\link{read.adp.ad2cp}},
+  \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
   \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
   \code{\link{read.aquadoppHR}},
   \code{\link{read.aquadoppProfiler}},
+  \code{\link{rotateAboutZ}},
+  \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
 \author{
 Dan Kelley
 }
+\concept{things related to \code{adp} data}

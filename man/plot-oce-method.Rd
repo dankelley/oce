@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,oce-method}
 \alias{plot,oce-method}
+\alias{plot.oce}
 \title{Plot an oce Object}
 \usage{
 \S4method{plot}{oce}(x, y, ...)
@@ -16,7 +17,8 @@ plot methods, e.g. a \code{\link{ctd-class}} object would go to
 \item{y}{Ignored; only present here because S4 object for generic \code{plot}
 need to have a second parameter before the \code{...} parameter.}
 
-\item{...}{Passed to \code{\link{hist}}, \code{\link{plot}}, or to}
+\item{...}{Passed to \code{\link{hist}}, \code{\link{plot}}, or to
+\code{\link{pairs}}, according to whichever does the plotting.}
 }
 \description{
 This creates a \code{\link{pairs}} plot of the elements in the \code{data}

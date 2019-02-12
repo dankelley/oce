@@ -1,22 +1,27 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' @title Class for data stored in a format used at Bremen
+#' Class to Store Bremen-formatted Data
 #'
-#' @description
-#' Class for data stored in a format used at Bremen. This is somewhat unusual
-#' amongst \code{oce} classes, in that it does not map to a particular
-#' instrument. Although some functions are provided for dealing with these
+#' This class is for data stored in a format used at Bremen.
+#' It is somewhat similar to the \code{\link{odf-class}}, in the sense
+#' that it does not apply just to a particular instrument.
+#' Although some functions are provided for dealing with these
 #' data (see \dQuote{Details}), the most common action is to read the
 #' data with \code{\link{read.bremen}}, and then to coerce the object to
 #' another storage class (e.g. using \code{\link{as.ctd}} for CTD-style
 #' data) so that specialized functions can be used thereafter.
 #'
-#' @description
-#' The main function is \code{\link{read.bremen}}.  A simple
-#' plotting method is provided with \code{\link{plot,bremen-method}}, and
-#' \code{\link{summary,bremen-method}} provides summaries. Data may be
-#' retrieved with \code{\link{[[,bremen-method}} or replaced with
-#' \code{\link{[[<-,bremen-method}}.
+#' @templateVar class bremen
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}
@@ -59,16 +64,17 @@ setMethod(f="[[<-",
 #' Plot a \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
 #' If \code{x} seems to be a CTD dataset, uses \code{\link{plot,ctd-method}};
 #' otherwise, \code{x} is assumed to be a lowered-adp object, and a two-panel
-#' plot is created with \code{\link{plot,ladp-method}} to show velocity varation with
+#' plot is created with \code{\link{plot,ladp-method}} to show velocity variation with
 #' pressure.
 #'
 #' @param x A \code{bremen} object, e.g. as read by \code{\link{read.bremen}}.
 #' @param type Optional string indicating the type to which \code{x} should be
-#' coerced before ploting. The choices are \code{ctd} and \code{ladp}.
+#' coerced before plotting. The choices are \code{ctd} and \code{ladp}.
 #' @param ... Other arguments, passed to plotting functions.
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{bremen} data
+#' @aliases plot.bremen
 setMethod(f="plot",
           signature=signature("bremen"),
           definition=function(x, type, ...) {
@@ -156,7 +162,7 @@ findInHeaderBremen <- function(key, lines)
 #' @return An object of \code{\link{bremen-class}}.
 #' @section Issues: This function may be renamed (or removed) without notice.
 #' It was created to read some data being used in a particular research
-#' project, and will be rendered uselss if Bremen changes this data format.
+#' project, and will be rendered useless if Bremen changes this data format.
 #' @author Dan Kelley
 #' @family things related to \code{bremen} data
 read.bremen <- function(file)

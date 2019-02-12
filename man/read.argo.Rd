@@ -23,7 +23,7 @@ An object of \code{\link{argo-class}}.
 }
 \description{
 \code{read.argo} is used to read an Argo file, producing an object of type
-\code{argo}. The file must be in the ARGO-style netCDF format described at
+\code{argo}. The file must be in the ARGO-style NetCDF format described at
 in the Argo documentation [2,3].
 }
 \details{
@@ -84,7 +84,7 @@ and after that the format is simple, with columns separated by slash
 second. A simple search will reveal the dac.
 For example \code{data(argo)} is based on float 6900388, and the line
 containing that token is
-\url{bodc/6900388/6900388_meta.nc,846,BO,20120225005617}, from
+\code{bodc/6900388/6900388_meta.nc,846,BO,20120225005617}, from
 which the dac is seen to be the British Oceanographic Data Centre
 (\code{bodc}). Armed with that information, visit
 \url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}
@@ -157,3 +157,4 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{argo} data}

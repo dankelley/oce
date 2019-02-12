@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,lobo-method}
 \alias{plot,lobo-method}
+\alias{plot.lobo}
 \title{Plot LOBO data}
 \usage{
 \S4method{plot}{lobo}(x, which = c(1, 2, 3), mgp = getOption("oceMgp"),
@@ -53,6 +54,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,met-method}},
   \code{\link{plot,odf-method}},
@@ -75,3 +77,5 @@ Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{lobo} data}
