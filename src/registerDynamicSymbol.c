@@ -11,6 +11,7 @@ extern SEXP _oce_do_approx3d(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_biosonics_ping(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_curl1(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_curl2(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _oce_parametricDerivative(SEXP, SEXP);
 extern SEXP _oce_do_epic_time_to_ymdhms(SEXP, SEXP);
 extern SEXP _oce_do_fill_gap_1d(SEXP, SEXP);
 extern SEXP _oce_do_geoddist(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
@@ -44,6 +45,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_oce_do_biosonics_ping", (DL_FUNC) &_oce_do_biosonics_ping, 4},
     {"_oce_do_curl1", (DL_FUNC) &_oce_do_curl1, 5},
     {"_oce_do_curl2", (DL_FUNC) &_oce_do_curl2, 5},
+    {"_oce_parametricDerivative", (DL_FUNC) &_oce_parametricDerivative, 2},
     {"_oce_do_epic_time_to_ymdhms", (DL_FUNC) &_oce_do_epic_time_to_ymdhms, 2},
     {"_oce_do_fill_gap_1d", (DL_FUNC) &_oce_do_fill_gap_1d, 2},
     {"_oce_do_geoddist", (DL_FUNC) &_oce_do_geoddist, 6},
