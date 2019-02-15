@@ -782,25 +782,25 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             } else if (inherits(to, 'character')) {
                 to <- as.character(as.numeric(as.POSIXct(to, tz=tz))*1000)
             } else if (is.numeric(to)) {
-                res <- DBI::dbSendQuery(con,
-                                        if (packageVersion("RSQLite") < "2.0")
-                                            "select 1.0*tstamp from data order by tstamp;"
-                                        else
-                                            "select tstamp from data order by tstamp;")
-                t1000 <- DBI::dbFetch(res, n=-1)[[1]]
-                RSQLite::dbClearResult(res)
+                qres <- DBI::dbSendQuery(con,
+                                         if (packageVersion("RSQLite") < "2.0")
+                                             "select 1.0*tstamp from data order by tstamp;"
+                                         else
+                                             "select tstamp from data order by tstamp;")
+                t1000 <- DBI::dbFetch(qres, n=-1)[[1]]
+                RSQLite::dbClearResult(qres)
                 time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
             }
         }
 
         if (is.numeric(from) & from != 1 & all(is.na(time))) {
-            res <- DBI::dbSendQuery(con,
-                                    if (packageVersion("RSQLite") < "2.0")
-                                        "select 1.0*tstamp from data order by tstamp;"
-                                    else
-                                        "select tstamp from data order by tstamp;")
-            t1000 <- DBI::dbFetch(res, n=-1)[[1]]
-            RSQLite::dbClearResult(res)
+            qres <- DBI::dbSendQuery(con,
+                                     if (packageVersion("RSQLite") < "2.0")
+                                         "select 1.0*tstamp from data order by tstamp;"
+                                     else
+                                         "select tstamp from data order by tstamp;")
+            t1000 <- DBI::dbFetch(qres, n=-1)[[1]]
+            RSQLite::dbClearResult(qres)
             time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
         }
 
@@ -824,22 +824,22 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         ## Generate the sql that contains the time filters
         if (missing(to)) {
             if (is.numeric(from)) {
-                res <- DBI::dbSendQuery(con, paste(sql_fields, ";"))
+                qres <- DBI::dbSendQuery(con, paste(sql_fields, ";"))
             } else {
-                res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
+                qres <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
             }
         } else {
             if (missing(to)) {
-                res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
+                qres <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
             } else if (from==1) {
-                res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp <=",  to, ";"))
+                qres <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp <=",  to, ";"))
             } else {
-                res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp between",  from, "and", to, ";"))
+                qres <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp between",  from, "and", to, ";"))
             }
         }
 
         ## Now, get only the specified time range
-        data <- DBI::dbFetch(res, n=-1)
+        data <- DBI::dbFetch(qres, n=-1)
         data <- data[order(data$tstamp),]
         time <- numberAsPOSIXct(as.numeric(data[,1])/1000, type='unix')
 
@@ -851,7 +851,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             data <- data[, -grep('datasetID', names(data)), drop=FALSE]
         }
         data <- data[,c(-1), drop=FALSE] # drop the corrupted time column
-        DBI::dbClearResult(res)
+        DBI::dbClearResult(qres)
         ## Get column names from the 'channels' table.
         names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
         ## FIXME: some longnames have UTF-8 characters, and/or
@@ -871,6 +871,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             ##warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
         }
         dataNamesOriginal <- c("-", channelsTable$shortName[isMeasured])
+        ##1491> message("below is dataNamesOriginal: (at start)");print(dataNamesOriginal)
         ##[issue 1483] print(cbind(channelsTable,isMeasured))
         names <- names[isMeasured] # only take names of things that are in the data table
         unitsRsk <- channelsTable$units[isMeasured]
@@ -893,6 +894,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         sampleInterval <- schedules$samplingPeriod/1000 # stored as milliseconds in rsk
         RSQLite::dbDisconnect(con)
         res <- new("rsk", time=time, filename=filename)
+        res@metadata$dataNamesOriginal <- dataNamesOriginal
         for (iname in seq_along(names)) {
             res@data[[names[iname]]] <- data[[names[iname]]]
             res@metadata$units[[names[iname]]] <- unitFromStringRsk(unitsRsk[iname])
@@ -904,6 +906,8 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             }
         }
         res@metadata$units$pressure$scale <- "absolute"
+        ##1491> message("res@metadata$dataNamesOriginal L909:");print(res@metadata$dataNamesOriginal)
+        ##?browser()
         if ("pressure" %in% names) {
             ## possibly compute sea pressure
             if (is.logical(patm)) {
@@ -915,7 +919,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
                     res@metadata$units$pressureOriginal <- list(unit=expression(dbar), scale="absolute")
                     res@data$pressure <- res@data$pressureOriginal - 10.1325
                     res@metadata$units$pressure <- list(unit=expression(dbar), scale="sea")
-                    res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "")
+                    res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "-")
                     res@metadata$pressureType <- "sea"
                     oceDebug(debug, "patm=TRUE, so removing std atmospheric pressure, 10.1325 dbar\n")
                 }
@@ -931,18 +935,21 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
                 res@metadata$units$pressureOriginal <- list(unit=expression(dbar), scale="absolute")
                 res@data$pressure <- res@data$pressureOriginal - patm
                 res@metadata$units$pressure <- list(unit=expression(dbar), scale="sea")
-                res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "")
+                res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "-")
                 res@metadata$pressureType <- "sea"
             } else {
                 stop("patm must be logical or numeric")
             }
         }
+        ##1491> message("res@metadata$dataNamesOriginal L944:");print(res@metadata$dataNamesOriginal)
         res@metadata$model <- model
         res@metadata$serialNumber <- serialNumber
         res@metadata$sampleInterval <- sampleInterval
         res@metadata$rskVersion <- rskVersion
         res@metadata$ruskinVersion <- ruskinVersion
-        res@metadata$dataNamesOriginal <- as.list(dataNamesOriginal)
+        ##1491> message("res@metadata$dataNamesOriginal L951:");print(res@metadata$dataNamesOriginal)
+        ##1491> message("names(res@data) L952:");print(names(res@data))
+        ## HERE
         names(res@metadata$dataNamesOriginal) <- names(res@data)
         if (hasDatasetID) res@metadata$datasetID <- datasetID
         ## There is actually no need to set the conductivity unit since new()
@@ -971,6 +978,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             ## FIXME: will this work for all RBR rsks that don't contain cond12?
             res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
         }
+        ##1491> message("str(dataNamesOriginal) L984:");print(res@metadata$dataNamesOriginal)
         res@metadata$pressureAtmospheric <- pressureAtmospheric
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
