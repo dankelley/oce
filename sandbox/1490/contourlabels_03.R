@@ -10,8 +10,11 @@ y <- seq(0, 1, length.out=n)
 set.seed(2019.0212)
 z <- outer(x, y, function(x,y) 1.5*(x-x0)^2+(y-y0)^2) + rnorm(n*n, sd=0.01)
 levels <- seq(0.05, 1, 0.05)
-if (!interactive()) pdf("contourlabels_02.pdf")
+if (!interactive()) pdf("contourlabels_03.pdf", height=4)
 par(mar=c(2, 2, 1, 1))
+par(mfrow=c(1, 2))
+contour(x, y, z, levels=levels, labcex=1)
+
 contour(x, y, z, levels=levels, labcex=1, drawlabels=FALSE)
 ##.stop()
 
@@ -59,24 +62,24 @@ for (level in levels) {
             }
         }
         if (canlabel) {
+            labelj <- floor(0.5 + 0.5*(slopeMinj + slopeMinj2))
+            angle <- atan2(yc[slopeMinj2]-yc[slopeMinj], xc[slopeMinj2]-xc[slopeMinj])
             if (debug > 0) {
                 cat(sprintf("j=%d j2=%d slopeMin=%.3g slopeMinj=%d slopeMinj2=%d\n",
                             j, j2, slopeMin, slopeMinj, slopeMinj2))
                 points(xc[slopeMinj], yc[slopeMinj], col="darkgreen", pch=20)
                 points(xc[slopeMinj2], yc[slopeMinj2], col="red", pch=20)
                 points(xc[labelj], yc[labelj], col="blue", pch=20) # centre
+                if (label == "0.25")
+                    cat(sprintf("step 1: label='%s' x=%.2g y=%.2g angle=%.9g deg\n",
+                                label, xc[labelj], yc[labelj], angle*180/pi))
             }
-            labelj <- floor(0.5 + 0.5*(slopeMinj + slopeMinj2))
-            angle <- atan2(yc[slopeMinj2]-yc[slopeMinj], xc[slopeMinj2]-xc[slopeMinj])
-            if (label == "0.25")
-                cat(sprintf("step 1: label='%s' x=%.2g y=%.2g angle=%.9g deg\n",
-                            label, xc[labelj], yc[labelj], angle*180/pi))
             ##if (angle < 0)
             ##    angle <- angle + 360
             if (angle > pi/2 || angle < -pi/2)
                 angle <- angle + pi
             ##if (label == "0.2") browser()
-            if (label == "0.25")
+            if (debug > 0 && label == "0.25")
                 cat(sprintf("step 2: label='%s' x=%.2g y=%.2g angle=%.9g deg\n",
                             label, xc[labelj], yc[labelj], angle*180/pi))
             w <- 1.1*strwidth(label, "user")
