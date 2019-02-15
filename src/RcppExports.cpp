@@ -120,18 +120,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// parametricDerivative
-NumericVector parametricDerivative(NumericVector x, CharacterVector ends);
-RcppExport SEXP _oce_parametricDerivative(SEXP xSEXP, SEXP endsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type ends(endsSEXP);
-    rcpp_result_gen = Rcpp::wrap(parametricDerivative(x, ends));
-    return rcpp_result_gen;
-END_RCPP
-}
 // do_biosonics_ping
 List do_biosonics_ping(RawVector bytes, NumericVector Rspp, NumericVector Rns, NumericVector Rtype);
 RcppExport SEXP _oce_do_biosonics_ping(SEXP bytesSEXP, SEXP RsppSEXP, SEXP RnsSEXP, SEXP RtypeSEXP) {

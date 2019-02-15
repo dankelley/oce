@@ -44,34 +44,6 @@ do_curl2 <- function(u, v, x, y, geographical) {
     .Call(`_oce_do_curl2`, u, v, x, y, geographical)
 }
 
-#' Centred Finite-Difference Parametric Derivative
-#'
-#' If \code{x} has length exceeding 2, the return value
-#' is a vector of parameteric derivatives, computed as e.g.
-#' \eqn{D[i] = 0.5 (x[i+1] - x[i-1])} in the interior and
-#' as controlled by the \code{ends} argument at the ends. If
-#' \code{x} is of length 2, the return value is \code{rep(diff(x), 2)}.
-#' If \code{x} consists of a single value, the return value is
-#' \code{0}. An error is reported if \code{x} is of zero length.
-#'
-NULL
-
-#' @param ends Character value that determines how endpoints are
-#' handled. If \code{ends} is \code{"NA"}, then the first and last
-#' values of the returned vector are \code{NA}; if \code{ends} is
-#' \code{"extend"}, then the derivative at the endpoints will be
-#' set to the value yielding zero second derivatives there (i.e.
-#' the curve straightens out at the ends); otherwise, an error
-#' results.
-#'
-#' @return An estimate of the parametric derivative, computed
-#' with centred-difference in the interior and as controlled by
-#' \code{ends} at the end-points.
-#'
-parametricDerivative <- function(x, ends) {
-    .Call(`_oce_parametricDerivative`, x, ends)
-}
-
 do_biosonics_ping <- function(bytes, Rspp, Rns, Rtype) {
     .Call(`_oce_do_biosonics_ping`, bytes, Rspp, Rns, Rtype)
 }
