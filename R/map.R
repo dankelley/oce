@@ -666,7 +666,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                             polygon(xc[labelj]+XYrot[,1], yc[labelj]+XYrot[,2],
                                     col=colUnderLabel, border=colUnderLabel)
                         } else if (underlay == "interrupt") {
-                            erase <- 1==sp::point.in.polygon(xc, yc, 
+                            erase <- 1==sp::point.in.polygon(xc, yc,
                                                              xc[labelj]+XYrot[,1], yc[labelj]+XYrot[,2])
                             oceDebug(debug, "ignoring", sum(erase), "points under", label, "contour\n")
                             XC <- xc
@@ -679,6 +679,8 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                         }
                         text(xc[labelj], yc[labelj], label, col=col[ilevel],
                              srt=angle*180/pi, cex=labcex[ilevel])
+                    } else {
+                        lines(xc, yc, lwd=lwd[ilevel], lty=lty[ilevel], col=col[ilevel])
                     }
                 } else {
                     lines(xc, yc, lwd=lwd[ilevel], lty=lty[ilevel], col=col[ilevel])
