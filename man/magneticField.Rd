@@ -47,6 +47,7 @@ magneticField(-(63+36/60), 44+39/60, Sys.Date())
 # 2. World map of declination in year 2000.
 data(coastlineWorld)
 # Use Robinson projection to show whole world
+par(mar=rep(0.5, 4)) # no axes on whole-world projection
 mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
 # Construct matrix holding declination
 lon <- seq(-180, 180)
@@ -54,14 +55,16 @@ lat <- seq(-90, 90)
 dec2000 <- function(lon, lat)
     magneticField(lon, lat, 2000)$declination
 dec <- outer(lon, lat, dec2000) # hint: outer() is very handy!
-# Contour. Since mapContour() does not label contours, we
-# indicate them with colours and line types. Zero declination
-# is contoured black, with blue for negative values and red for 
-# positive values. Solid lines indicate increments of 10deg, with
-# dashed lines at 5deg between.
-mapContour(lon, lat, dec, col='blue', levels=seq(-180, -5, 5), lty=c(1,3))
-mapContour(lon, lat, dec, col='red', levels=seq(180, 5, -5), lty=c(1,3))
-mapContour(lon, lat, dec,  levels=0, lwd=2)
+# Contour, unlabelled for small increments, labeled for
+# larger increments.
+mapContour(lon, lat, dec, col='blue', levels=seq(-180, -5, 5),
+           lty=3, drawlabels=FALSE)
+mapContour(lon, lat, dec, col='blue', levels=seq(-180, -20, 20))
+mapContour(lon, lat, dec, col='red', levels=seq(5, 180, 5),
+           lty=3, drawlabels=FALSE)
+mapContour(lon, lat, dec, col='red', levels=seq(20, 180, 20))
+mapContour(lon, lat, dec, levels=180, col='black', lwd=2, drawlabels=FALSE)
+mapContour(lon, lat, dec, levels=0, col='black', lwd=2)
 }
 \references{
 1. The underlying Fortran code is from \code{igrf12.f}, downloaded the NOAA
