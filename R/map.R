@@ -499,36 +499,56 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
 #'
 #' @param levels vector of contour levels.
 #'
-#' @param col line color.
+#' @param labcex \code{cex} value used for contour labelling. As with 
+#' \code{\link{contour}}, this is an absolute size, not a multiple of
+#' \code{\link{par}("cex")}.
 #'
-#' @param lty line type.
+#' @param drawlabels logical value or vector indicating whether to draw contour
+#' labels.  If the length of \code{drawlabels} is less than the number of
+#' levels specified, then \code{\link{rep}} is used to increase the length,
+#' providing a value for each contour line. For those levels that are thus
+#' indicated, labels are added, at a spot where the contour line is
+#' closest to horizontal on the page. First, though, the region underneath
+#' the label is filled with the colour given by \code{\link{par}("bg")}.
+#' See \dQuote{Limitations} for notes on the status of contour
+#' labelling, and its limitations.
 #'
-#' @param lwd line width.
+#' @param underlay character value relating to handling labels. If
+#' this is \code{"erase"} (the default), then the contour line is drawn
+#' first, then the area under the label is erased (filled with white 'ink'),
+#' and then the label is drawn. If it is \code{"interrupt"}, then the
+#' contour line is interupted in the region of the label.
+#'
+#' @param col colour of the contour line, as for \code{\link{par}("col")},
+#' except here \code{col} gets lengthened by calling \code{\link{rep}},
+#' so that individual contours can be coloured distinctly.
+#'
+#' @param lty type of the contour line, as for \code{\link{par}("lty")},
+#' except for lengthening, as described for \code{col}.
+#'
+#' @param lwd width of the contour line, as for \code{\link{par}("lwd")},
+#' except for lengthening, as described for \code{col} and \code{lty}.
+#'
+#' @template debugTemplate
 #'
 #' @details
 #' Adds contour lines to an existing map, using \code{\link{mapLines}}.
-#' The arguments are based on those to \code{\link{contour}} and
-#' \code{\link{contourLines}}.
 #'
-#' @section Bugs:
-#' As with \code{\link{mapLines}}, long lines should be subdivided
-#' into multiple segments so that e.g. great circle lines will be curved.
+#' The ability to label the contours was added in February, 2019, and
+#' how this works may change through the summer months of that year.
+#' Note that label placement in \code{mapContour} is handled differently
+#' than in \code{\link{contour}}.
 #'
 #' @examples
-#' \dontrun{
 #' library(oce)
 #' data(coastlineWorld)
+#' data(levitus, package="ocedata")
 #' par(mar=rep(1, 4))
-#' ## Arctic 100m, 2km, 3km isobaths, showing shelves and ridges.
-#' mapPlot(coastlineWorld, latitudelim=c(60, 120), longitudelim=c(-130,-50),
-#'         projection="+proj=stere +lat_0=90")
-#' data(topoWorld)
-#' lon <- topoWorld[['longitude']]
-#' lat <- topoWorld[['latitude']]
-#' z <- topoWorld[['z']]
-#' mapContour(lon, lat, z, levels=c(-100, -2000, -3000), col=1:3, lwd=2)
-#' }
+#' mapPlot(coastlineWorld, projection="+proj=robin", col="gray")
+#' mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+#'
 #' @author Dan Kelley
+#'
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
 #' @family functions related to maps
 mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
@@ -538,15 +558,21 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        ##labels=null,
                        ##xlim=range(longitude, finite=TRUE),
                        #ylim=range(latitude, finite=TRUE),
-                       ##labcex=0.6,
-                       #drawlabels=TRUE,
-                       ##method="flattest",
+                       labcex=0.6,
+                       drawlabels=TRUE,
+                       underlay="erase",
                        ##vfont,
                        ## axes=TRUE, frame.plot=axes,
-                       col=par("fg"), lty=par("lty"), lwd=par("lwd"))
+                       col=par("fg"), lty=par("lty"), lwd=par("lwd"),
+                       debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "mapContour() {\n", sep="", unindent=1)
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
+    if (!underlay %in% c("erase", "interrupt"))
+        stop("underlay must be \"erase\" or \"interrupt\"")
+    if (underlay == "interrupt" && !requireNamespace("sp", quietly=TRUE))
+        stop("must have \"sp\" package available for underlay=\"interupt\"")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'topo' class
         3 == sum(c("longitude", "latitude", "z") %in% names(longitude@data))) {
         z <- longitude@data$z
@@ -557,6 +583,8 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
     col <- rep(col, nlevels)
     lty <- rep(lty, nlevels)
     lwd <- rep(lwd, nlevels)
+    drawlabels <- rep(drawlabels, nlevels)
+    labcex <- rep(labcex, nlevels)
     xx <- seq_along(longitude)
     yy <- seq_along(latitude)
     if (length(xx) > 1 && diff(longitude[1:2]) < 0) {
@@ -569,22 +597,96 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
         z <- z[, yy]
         ##cat("flipped in y\n")
     }
+    colUnderLabel <- "white" # use a variable in case we want to add as an arg
     for (ilevel in 1:nlevels) {
+        oceDebug(debug, "contouring at level ", levels[ilevel], "\n")
+        label <- as.character(levels[ilevel]) # ignored unless drawlabels=TRUE
+        w <- 1.0*strwidth(levels[ilevel], "user", cex=labcex) # ignored unless drawlabels=TRUE
+        h <- 1.0*strheight(label, "user", cex=labcex) # ignored unless drawlabels=TRUE
+        oceDebug(debug > 1, "w=", w, ", h=", h, "\n")
         cl <- contourLines(x=longitude[xx],
                            y=latitude[yy],
                            z=z, levels=levels[ilevel])
-        for (segment in seq_along(cl)) {
-            if (length(cl) > 0) {
-                mapLines(cl[[segment]]$x, cl[[segment]]$y,
-                         lty=lty[ilevel], lwd=lwd[ilevel], col=col[ilevel])
-                ## if (segment == 1) {
-                ##     cat(str(cl[[segment]]$x))
-                ##     cat(str(cl[[segment]]$y))
-                ## }
+        if (length(cl) > 0) {
+            for (i in seq_along(cl)) {
+                oceDebug(debug > 1, "segment number=i=", i, "; level=", levels[ilevel], "\n")
+                xy <- lonlat2map(cl[[i]]$x, cl[[i]]$y)
+                xc <- xy$x
+                yc <- xy$y
+                nc <- length(xc)
+                if (drawlabels[ilevel]) {
+                    slopeMin <- 9999999 # big
+                    slopeMinj <- NULL
+                    slopeMinj2 <- NULL
+                    canlabel <- FALSE
+                    for (j in 1:nc) {
+                        j2 <- j
+                        while (j2 < nc) {
+                            dy <- yc[j2] - yc[j]
+                            dx <- xc[j2] - xc[j]
+                            dist <- sqrt(dx^2 + dy^2)
+                            if (dist > 1.4 * w && dx != 0.0) {
+                                oceDebug(debug > 2, "enough space at j=",j,", j2=", j2, "\n")
+                                slope <- dy / dx
+                                if (abs(slope) < slopeMin) {
+                                    slopeMin <- abs(slope)
+                                    slopeMinj <- j
+                                    slopeMinj2 <- j2
+                                    canlabel <- TRUE
+                                }
+                                break
+                            }
+                            j2 <- j2 + 1
+                        }
+                    }
+                    if (canlabel) {
+                        labelj <- floor(0.5 + 0.5*(slopeMinj + slopeMinj2))
+                        angle <- atan2(yc[slopeMinj2]-yc[slopeMinj], xc[slopeMinj2]-xc[slopeMinj])
+                        oceDebug(debug > 1,
+                                 sprintf("j=%d j2=%d slopeMin=%.3g slopeMinj=%d slopeMinj2=%d\n",
+                                         j, j2, slopeMin, slopeMinj, slopeMinj2))
+                        if (debug > 2) {
+                            points(xc[slopeMinj], yc[slopeMinj], col="darkgreen", pch=20)
+                            points(xc[slopeMinj2], yc[slopeMinj2], col="red", pch=20)
+                            points(xc[labelj], yc[labelj], col="blue", pch=20) # centre
+                        }
+                        if (angle > pi/2 || angle < -pi/2)
+                            angle <- angle + pi
+                        oceDebug(debug, sprintf("step 2: label='%s' x=%.2g y=%.2g angle=%.9g deg\n",
+                                                label, xc[labelj], yc[labelj], angle*180/pi))
+                        S <- sin(-angle)
+                        C <- cos(-angle)
+                        rot <- matrix(c(C, -S, S, C), byrow=TRUE, nrow=2)
+                        X <- c(-w/2, -w/2, w/2, w/2)
+                        Y <- c(-h/2, h/2, h/2, -h/2)
+                        XY <- cbind(X, Y)
+                        XYrot <- XY %*% rot
+                        if (underlay == "erase") {
+                            lines(xc, yc, lwd=lwd[ilevel], lty=lty[ilevel], col=col[ilevel])
+                            polygon(xc[labelj]+XYrot[,1], yc[labelj]+XYrot[,2],
+                                    col=colUnderLabel, border=colUnderLabel)
+                        } else if (underlay == "interrupt") {
+                            erase <- 1==sp::point.in.polygon(xc, yc, 
+                                                             xc[labelj]+XYrot[,1], yc[labelj]+XYrot[,2])
+                            oceDebug(debug, "ignoring", sum(erase), "points under", label, "contour\n")
+                            XC <- xc
+                            YC <- yc
+                            XC[erase] <- NA
+                            YC[erase] <- NA
+                            lines(XC, YC, lwd=lwd[ilevel], lty=lty[ilevel], col=col[ilevel])
+                        } else {
+                            stop("cannot have underlay=\"", underlay, "\"; please report as a bug")
+                        }
+                        text(xc[labelj], yc[labelj], label, col=col[ilevel],
+                             srt=angle*180/pi, cex=labcex[ilevel])
+                    }
+                } else {
+                    lines(xc, yc, lwd=lwd[ilevel], lty=lty[ilevel], col=col[ilevel])
+                }
             }
         }
     }
-    ## FIXME: labels, using labcex and vfont
+    oceDebug(debug, "} # mapContour()\n", sep="", unindent=1)
 }
 
 #' Draw a coordinate system
