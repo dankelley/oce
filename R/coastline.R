@@ -1247,11 +1247,12 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' call to \link[rgdal]{project} in the \CRANpkg{rgdal} package.
 #'
 #' @examples
+#'\dontrun{
 #' library(oce)
 #' data(coastlineWorld)
-#' \dontrun{
-#' mapPlot(coastlineCut(coastlineWorld, lon_0=100), proj="+proj=robin +lon_0=100")#, col='gray')
-#' }
+#' mapPlot(coastlineCut(coastlineWorld, lon_0=100),
+#'         proj="+proj=moll +lon_0=100", col='gray')
+#'}
 #'
 #' @return a new coastline object
 #' @family things related to \code{coastline} data

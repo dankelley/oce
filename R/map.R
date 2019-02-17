@@ -545,12 +545,14 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
 #' than in \code{\link{contour}}.
 #'
 #' @examples
+#'\dontrun{
 #' library(oce)
 #' data(coastlineWorld)
 #' data(levitus, package="ocedata")
 #' par(mar=rep(1, 4))
-#' mapPlot(coastlineWorld, projection="+proj=robin", col="gray")
+#' mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
 #' mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+#'}
 #'
 #' @author Dan Kelley
 #'

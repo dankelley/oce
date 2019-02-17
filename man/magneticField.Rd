@@ -45,8 +45,8 @@ library(oce)
 magneticField(-(63+36/60), 44+39/60, Sys.Date())
 
 # 2. World map of declination in year 2000.
+\dontrun{
 data(coastlineWorld)
-# Use Robinson projection to show whole world
 par(mar=rep(0.5, 4)) # no axes on whole-world projection
 mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
 # Construct matrix holding declination
@@ -65,6 +65,8 @@ mapContour(lon, lat, dec, col='red', levels=seq(5, 180, 5),
 mapContour(lon, lat, dec, col='red', levels=seq(20, 180, 20))
 mapContour(lon, lat, dec, levels=180, col='black', lwd=2, drawlabels=FALSE)
 mapContour(lon, lat, dec, levels=0, col='black', lwd=2)
+}
+
 }
 \references{
 1. The underlying Fortran code is from \code{igrf12.f}, downloaded the NOAA

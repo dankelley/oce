@@ -32,10 +32,11 @@ ground between this and the \code{clipPolys} function in the
 }
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
-\dontrun{
-mapPlot(coastlineCut(coastlineWorld, lon_0=100), proj="+proj=robin +lon_0=100")#, col='gray')
+mapPlot(coastlineCut(coastlineWorld, lon_0=100),
+        proj="+proj=moll +lon_0=100", col='gray')
 }
 
 }

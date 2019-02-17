@@ -77,12 +77,14 @@ Note that label placement in \code{mapContour} is handled differently
 than in \code{\link{contour}}.
 }
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 data(levitus, package="ocedata")
 par(mar=rep(1, 4))
-mapPlot(coastlineWorld, projection="+proj=robin", col="gray")
+mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
 mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+}
 
 }
 \seealso{
