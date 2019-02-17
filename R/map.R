@@ -493,13 +493,14 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
 #'
 #' @param latitude vector of latitudes of points to be plotted.
 #'
-#' @param z matrix to be contoured.
+#' @param z matrix to be contoured. The number of rows and columns in \code{z}
+#' must equal the lengths of \code{longitude} and \code{latitude}, respectively.
 #'
 #' @param nlevels number of contour levels, if and only if \code{levels} is not supplied.
 #'
 #' @param levels vector of contour levels.
 #'
-#' @param labcex \code{cex} value used for contour labelling. As with 
+#' @param labcex \code{cex} value used for contour labelling. As with
 #' \code{\link{contour}}, this is an absolute size, not a multiple of
 #' \code{\link{par}("cex")}.
 #'
@@ -514,10 +515,14 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
 #' labelling, and its limitations.
 #'
 #' @param underlay character value relating to handling labels. If
-#' this is \code{"erase"} (the default), then the contour line is drawn
-#' first, then the area under the label is erased (filled with white 'ink'),
-#' and then the label is drawn. If it is \code{"interrupt"}, then the
-#' contour line is interupted in the region of the label.
+#' this equals \code{"erase"} (which is the default), then the contour line
+#' is drawn  first, then the area under the label is erased (filled with
+#' white 'ink'), and then the label is drawn. This can be useful
+#' in drawing coarsely-spaced labelled contours on top of finely-spaced
+#' unlabelled contours. On the othr hand, if \code{underlay} equals
+#' \code{"interrupt"}, then the contour line is interupted in the
+#' region of the label, which is closer to the scheme used by the
+#' base \code{\link{contour}} function.
 #'
 #' @param col colour of the contour line, as for \code{\link{par}("col")},
 #' except here \code{col} gets lengthened by calling \code{\link{rep}},
@@ -551,9 +556,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
 #'
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
 #' @family functions related to maps
-mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
-                       latitude=seq(0, 1, length.out=ncol(z)),
-                       z,
+mapContour <- function(longitude, latitude, z,
                        nlevels=10, levels=pretty(range(z, na.rm=TRUE), nlevels),
                        ##labels=null,
                        ##xlim=range(longitude, finite=TRUE),
@@ -569,6 +572,18 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
     oceDebug(debug, "mapContour() {\n", sep="", unindent=1)
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
+    if (missing(longitude))
+        stop("must supply longitude")
+    if ("data" %in% slotNames(longitude) && # handle e.g. 'topo' class
+        3 == sum(c("longitude", "latitude", "z") %in% names(longitude@data))) {
+        z <- longitude@data$z
+        latitude <- longitude@data$latitude
+        longitude <- longitude@data$longitude
+    }
+    if (missing(latitude))
+        stop("must supply latitude")
+    if (missing(z))
+        stop("must supply z")
     if (!underlay %in% c("erase", "interrupt"))
         stop("underlay must be \"erase\" or \"interrupt\"")
     if (underlay == "interrupt" && !requireNamespace("sp", quietly=TRUE))

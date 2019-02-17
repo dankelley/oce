@@ -4,8 +4,7 @@
 \alias{mapContour}
 \title{Add Contours on a Existing map}
 \usage{
-mapContour(longitude = seq(0, 1, length.out = nrow(z)),
-  latitude = seq(0, 1, length.out = ncol(z)), z, nlevels = 10,
+mapContour(longitude, latitude, z, nlevels = 10,
   levels = pretty(range(z, na.rm = TRUE), nlevels), labcex = 0.6,
   drawlabels = TRUE, underlay = "erase", col = par("fg"),
   lty = par("lty"), lwd = par("lwd"), debug = getOption("oceDebug"))
@@ -17,13 +16,14 @@ class \code{topo} (see \code{\link{topo-class}}), in which case
 
 \item{latitude}{vector of latitudes of points to be plotted.}
 
-\item{z}{matrix to be contoured.}
+\item{z}{matrix to be contoured. The number of rows and columns in \code{z}
+must equal the lengths of \code{longitude} and \code{latitude}, respectively.}
 
 \item{nlevels}{number of contour levels, if and only if \code{levels} is not supplied.}
 
 \item{levels}{vector of contour levels.}
 
-\item{labcex}{\code{cex} value used for contour labelling. As with 
+\item{labcex}{\code{cex} value used for contour labelling. As with
 \code{\link{contour}}, this is an absolute size, not a multiple of
 \code{\link{par}("cex")}.}
 
@@ -38,10 +38,14 @@ See \dQuote{Limitations} for notes on the status of contour
 labelling, and its limitations.}
 
 \item{underlay}{character value relating to handling labels. If
-this is \code{"erase"} (the default), then the contour line is drawn
-first, then the area under the label is erased (filled with white 'ink'),
-and then the label is drawn. If it is \code{"interrupt"}, then the
-contour line is interupted in the region of the label.}
+this equals \code{"erase"} (which is the default), then the contour line
+is drawn  first, then the area under the label is erased (filled with
+white 'ink'), and then the label is drawn. This can be useful
+in drawing coarsely-spaced labelled contours on top of finely-spaced
+unlabelled contours. On the othr hand, if \code{underlay} equals
+\code{"interrupt"}, then the contour line is interupted in the
+region of the label, which is closer to the scheme used by the
+base \code{\link{contour}} function.}
 
 \item{col}{colour of the contour line, as for \code{\link{par}("col")},
 except here \code{col} gets lengthened by calling \code{\link{rep}},
