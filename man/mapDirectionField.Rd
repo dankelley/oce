@@ -43,7 +43,7 @@ library(oce)
 data(coastlineWorld)
 par(mar=rep(2, 4))
 mapPlot(coastlineWorld, longitudelim=c(-120,-55), latitudelim=c(35, 50),
-        proj="+proj=laea +lat0=40 +lat1=60" +lon_0=-110)
+        proj="+proj=laea +lat0=40 +lat1=60 +lon_0=-110")
 lon <- seq(-120, -60, 15)
 lat <- 45 + seq(-15, 15, 5)
 lonm <- matrix(expand.grid(lon, lat)[, 1], nrow=length(lon))
