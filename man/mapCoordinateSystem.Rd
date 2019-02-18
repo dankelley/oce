@@ -28,7 +28,7 @@ This is a preliminary version of this function. It only
 works if the lines of constant latitude are horizontal on the plot.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorldFine, package='ocedata')
 HfxLon <- -63.5752

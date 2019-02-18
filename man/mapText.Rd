@@ -23,7 +23,7 @@ Plot text on an existing map.
 Adds text to an existing map, by analogy to \code{\link{text}}.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 longitude <- coastlineWorld[['longitude']]

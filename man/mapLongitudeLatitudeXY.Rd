@@ -26,7 +26,7 @@ present projection.
 This is mainly a wrapper around \code{\link{lonlat2map}}.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 par(mfrow=c(2, 1), mar=rep(2, 4))

@@ -38,8 +38,7 @@ because otherwise, if a new projection is called for, it will ruin any
 additions to the existing plot.
 }
 \examples{
-
-\dontrun{
+\donttest{
 library(oce)
 ## Cape Split, in the Minas Basin of the Bay of Fundy
 cs <- list(longitude=-64.49657, latitude=45.33462)

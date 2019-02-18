@@ -30,7 +30,7 @@ increasingly inaccurate away from that spot, with the error depending on
 the projection and the fraction of the earth that is shown.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 ## Arctic Ocean

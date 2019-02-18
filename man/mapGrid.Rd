@@ -59,7 +59,7 @@ this more analogous with \code{\link{grid}}.
 }
 
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l', grid=FALSE,

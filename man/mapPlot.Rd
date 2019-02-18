@@ -382,7 +382,7 @@ wildly inaccurate in a Pacific Antarctic-Alaska application
 }
 
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 

@@ -34,7 +34,7 @@ The purpose and interpretation are outlined in [1], but should also be
 self-explanatory.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 par(mfrow=c(1, 1), mar=c(2, 2, 1, 1))

@@ -77,7 +77,7 @@ Note that label placement in \code{mapContour} is handled differently
 than in \code{\link{contour}}.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 data(levitus, package="ocedata")
