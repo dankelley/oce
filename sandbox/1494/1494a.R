@@ -14,7 +14,6 @@ read.xbt <- function(filename)
     res@metadata$units$depth <- list(unit=expression(m), scale="")
     res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
     res@metadata$units$soundspeed <- list(unit=expression(m/s), scale="")
-    ## FIXME: add units
     res
 }
 d <- read.xbt("fake.edf")
