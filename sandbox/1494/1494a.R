@@ -38,7 +38,7 @@ read.xbt <- function(filename)
     res@metadata$filename <- filename
     res@metadata$units$depth <- list(unit=expression(m), scale="")
     res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-    res@metadata$units$soundspeed <- list(unit=expression(m/s), scale="")
+    res@metadata$units$soundSpeed <- list(unit=expression(m/s), scale="")
     res
 }
 d <- read.xbt("xbt.edf")
