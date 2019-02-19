@@ -57,7 +57,7 @@ setClass("argo", contains="oce")
 #' data(argo)
 #' summary(argo)
 #' data(coastlineWorld)
-#' plot(argo, which="trajectory", coastline=coastlineWorld)
+#' plot(argo, which="trajectory")
 #'}
 #'
 #' @source This file was downloaded using the unix command
