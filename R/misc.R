@@ -886,8 +886,9 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
     ## this 'method' is just for testing during development. For the data in
     ## tests/testthat/test_misc.R, we get the same results for the two
     ## methods. Still, I plan to keep this code in here for a while.
-    method <- 2
+    method <- 1
     if (method == 1) {
+        ## this is 28X faster on the secchi example.
         A <- split(f, cut(y, ybreaks, labels=FALSE))
         B <- split(x, cut(y, ybreaks, labels=FALSE))
         for (i in seq_along(A)) {
