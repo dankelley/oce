@@ -67,7 +67,7 @@ plotTS(argo)
 plotTS(subset(argo, "adjusted"))
 
 # Example 4. Subset by a polygon determined with locator()
-\donttest{
+\dontrun{
 par(mfrow=c(2, 1))
 plot(argo, which="map")
 bdy <- locator(4) # Click the mouse on 4 boundary points

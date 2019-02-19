@@ -49,12 +49,12 @@ if (require(ocedata)) {
     drawPalette(colormap=cm, zlab="Secchi Depth")
     data(coastlineWorld)
     mapPlot(coastlineWorld, longitudelim=c(-5, 20), latitudelim=c(50, 66),
-      grid=5, fill='gray', projection="+proj=lcc +lat_1=50 +lat_2=65")
+      grid=5, col='gray', projection="+proj=lcc +lat_1=50 +lat_2=65")
     bc <- binApply2D(secchi$longitude, secchi$latitude,
                      pretty(secchi$longitude, 80),
                      pretty(secchi$latitude, 40),
                      f=secchi$depth, FUN=mean)
-    mapImage(bc$xmids, bc$ymids, bc$result, zlim=zlim, col=cm$zcol)
+    mapImage(bc$xmids, bc$ymids, bc$result, zlim=cm$zlim, col=cm$zcol)
     mapPolygon(coastlineWorld, col="gray")
 }
 }
