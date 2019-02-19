@@ -34,7 +34,7 @@ read.xbt <- function(filename)
     res@metadata$terminalDepth <- as.numeric(gsub("[ ]*m$", "", getHeaderItem(l, "Terminal Depth"))) # FIXME: assumes metric
     ## FIXME: will data always be in this order?
     ## FIXME: is the data list always the same?
-    res@data <- read.table(filename, skip=headerEnd+1, col.names=c("depth", "temperature", "soundspeed"))
+    res@data <- read.table(filename, skip=headerEnd+1, col.names=c("depth", "temperature", "soundSpeed"))
     res@metadata$filename <- filename
     res@metadata$units$depth <- list(unit=expression(m), scale="")
     res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
@@ -43,12 +43,25 @@ read.xbt <- function(filename)
 }
 d <- read.xbt("xbt.edf")
 summary(d)
-## FIXME: once we make a formal object, we can code plot methods
-if (!interactive()) png("1494a.png")
-plot(d[["temperature"]], d[["depth"]], ylim=rev(range(d[["depth"]])), type="l")
-## FIXME: get larger dataset (open-data) so we can work on subset() etc
-
 cat("next is the metadata ... we'll get more display of this in summary() when this is formalized\n")
 print(d@metadata)
-if (!interactive()) dev.off()
 
+## FIXME: once we make a formal object, we can code plot methods
+if (!interactive()) png("1494a.png")
+par(mfrow=c(1, 3), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+plot(d[["temperature"]], d[["depth"]], ylim=rev(range(d[["depth"]])), type="l")
+grid()
+## FIXME: get larger dataset (open-data) so we can work on subset() etc
+
+
+p <- d[["depth"]]
+T <- d[["temperature"]]
+S <- rep(30, length(T))
+ssGSW <- swSoundSpeed(S, T, p, eos="gsw", longitude=d[["longitude"]], latitude=d[["latitude"]])
+plot(ssGSW-d[["soundSpeed"]], d[["depth"]], ylim=rev(range(d[["depth"]])), type="l")
+grid()
+ssUNESCO <- swSoundSpeed(S, T, p, eos="unesco")
+plot(ssUNESCO-d[["soundSpeed"]], d[["depth"]], ylim=rev(range(d[["depth"]])), type="l")
+grid()
+
+if (!interactive()) dev.off()
