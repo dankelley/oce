@@ -52,13 +52,13 @@ setClass("argo", contains="oce")
 #' @docType data
 #'
 #' @examples
-#' \dontrun{
+#'\donttest{
 #' library(oce)
 #' data(argo)
 #' summary(argo)
 #' data(coastlineWorld)
 #' plot(argo, which="trajectory", coastline=coastlineWorld)
-#' }
+#'}
 #'
 #' @source This file was downloaded using the unix command
 #'\preformatted{
@@ -402,7 +402,7 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' plotTS(subset(argo, "adjusted"))
 #'
 #' # Example 4. Subset by a polygon determined with locator()
-#' \dontrun{
+#'\donttest{
 #' par(mfrow=c(2, 1))
 #' plot(argo, which="map")
 #' bdy <- locator(4) # Click the mouse on 4 boundary points
@@ -835,7 +835,7 @@ argoDecodeFlags <- function(f) # local function
 #' An object of \code{\link{argo-class}}.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' ## Example 1: read from a local file
 #' library(oce)
 #' d <- read.argo("/data/OAR/6900388_prof.nc")
@@ -857,7 +857,7 @@ argoDecodeFlags <- function(f) # local function
 #' download.file(float, profile)
 #' argo <- read.argo(profile)
 #' summary(argo)
-#' }
+#'}
 #'
 #'
 #' @seealso

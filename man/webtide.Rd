@@ -120,7 +120,19 @@ mtext(sprintf("prediction at \%fN \%fE", latitude, longitude), line=0.75, side=3
 ## 2. map
 webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
 }
+
+}
+\seealso{
+Other things related to tides: \code{\link{[[,tidem-method}},
+  \code{\link{[[<-,tidem-method}}, \code{\link{as.tidem}},
+  \code{\link{plot,tidem-method}},
+  \code{\link{predict.tidem}},
+  \code{\link{summary,tidem-method}},
+  \code{\link{tidedata}}, \code{\link{tidem-class}},
+  \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
+  \code{\link{tidem}}
 }
 \author{
 Dan Kelley
 }
+\concept{things related to tides}

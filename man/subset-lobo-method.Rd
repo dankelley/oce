@@ -23,10 +23,10 @@ Subset an lobo object, in a way that is somewhat
 analogous to \code{\link{subset.data.frame}}.
 }
 \seealso{
-Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
+Other things related to code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},
   \code{\link{lobo-class}}, \code{\link{lobo}},
-  \code{\link{plot,lobo-method}},
+  \code{\link{read.lobo}},
   \code{\link{summary,lobo-method}}
 
 Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
@@ -49,4 +49,4 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
 Dan Kelley
 }
 \concept{functions that subset \code{oce} objects}
-\concept{things related to \code{lobo} data}
+\concept{things related to code{lobo} data}

@@ -64,14 +64,14 @@ setClass("section", contains="oce")
 #' for more information on World Hydrographic Program flag conventions.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' # Gulf Stream
 #' data(section)
 #' GS <- subset(section, 109<=stationId&stationId<=129)
 #' GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 #' plot(GSg, map.xlim=c(-80,-60))
-#' }
+#'}
 #'
 #' @name section
 #'
@@ -591,7 +591,7 @@ setMethod(f="show",
 #'                     5 < length(s[["pressure"]]))))
 #'
 #' # Example 7. Subset by a polygon determined with locator()
-#' \dontrun{
+#'\dontrun{
 #' par(mfrow=c(2, 1))
 #' plot(section, which="map")
 #' bdy <- locator(4) # choose a polygon near N. America
@@ -813,7 +813,7 @@ setMethod(f="subset",
 #' variation than the input section.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' # Eastern North Atlantic, showing Mediterranean water;
 #' # sorting by longitude makes it easier to compare
 #' # the map and the section.
@@ -822,7 +822,7 @@ setMethod(f="subset",
 #' s <- sectionGrid(subset(section, -30 <= longitude))
 #' ss <- sectionSort(ss, by="longitude")
 #' plot(ss)
-#' }
+#'}
 #'
 #' @author Dan Kelley
 #'
@@ -1134,7 +1134,7 @@ sectionAddCtd <- sectionAddStation
 ## #' look <- spice > 1.8 & depth > 500
 ## #' points(distance[look], depth[look], col='red')
 #'
-#' \dontrun{
+#'\dontrun{
 #' ## 4. Image of Absolute Salinity, with 4-minute bathymetry
 #' ## It's easy to calculate the desired area for the bathymetry,
 #' ## but for brevity we'll hard-code it. Note that download.topo()
@@ -1144,7 +1144,7 @@ sectionAddCtd <- sectionAddStation
 #' plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
 #'}
 #'
-#' \dontrun{
+#'\dontrun{
 #' ## 5. Temperature with salinity added in red
 #' s <- plot(section, which="temperature")
 #' distance <- s[["distance", "byStation"]]
@@ -2583,10 +2583,10 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
 #' gss1 <- sectionSmooth(gsg, "spline", df=16)
 #' plot(gss1)
-#' \dontrun{
+#'\dontrun{
 #' gss2 <- sectionSmooth(gsg, "barnes", xr=24, yr=100)
 #' plot(gss2)
-#' }
+#'}
 #'
 #' @author Dan Kelley
 #'

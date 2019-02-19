@@ -67,6 +67,7 @@ longitudelim=c(-80, 10), latitudelim=c(0, 120),
 projection="+proj=ortho")
 mapGrid(15, 15, polarCircle=15)
 }
+
 }
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.

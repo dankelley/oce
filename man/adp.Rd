@@ -16,7 +16,7 @@ upward-pointing ADP manufactured by Teledyne-RDI, as part of the St Lawrence
 Internal Wave Experiment (SLEIWEX).
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(adp)
 

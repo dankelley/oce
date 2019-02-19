@@ -74,7 +74,8 @@ legend("topright", col=1:3, cex=2/3, pch=1,
 #    the latter is based on random white noise, and
 #    includes a particular value for the spans
 #    argument of spectrum(), etc.
-\dontrun{ # need signal package for this example
+\dontrun{
+# need signal package for this example
 r <- rnorm(2048)
 rh <- stats::filter(r, H)
 rh <- rh[is.finite(rh)] # kludge to remove NA at start/end

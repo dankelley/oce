@@ -45,7 +45,7 @@ library(oce)
 magneticField(-(63+36/60), 44+39/60, Sys.Date())
 
 # 2. World map of declination in year 2000.
-\dontrun{
+\donttest{
 data(coastlineWorld)
 par(mar=rep(0.5, 4)) # no axes on whole-world projection
 mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")

@@ -80,10 +80,12 @@ than in \code{\link{contour}}.
 \donttest{
 library(oce)
 data(coastlineWorld)
-data(levitus, package="ocedata")
-par(mar=rep(1, 4))
-mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
-mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+if (require(ocedata)) {
+    data(levitus, package="ocedata")
+    par(mar=rep(1, 4))
+    mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
+    mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+}
 }
 
 }

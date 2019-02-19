@@ -43,7 +43,7 @@ t <- adp[["time"]]
 d <- adp[["distance"]]
 v <- adp[["v"]]
 a <- as.adp(time=t, distance=d, v=v)
-\dontrun{
+\donttest{
 plot(a)
 }
 

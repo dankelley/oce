@@ -41,12 +41,12 @@ setClass("cm", contains="oce")
 #' @docType data
 #' @usage data(cm)
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' data(cm)
 #' summary(cm)
 #' plot(cm)
-#' }
+#'}
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{cm} data
 NULL
@@ -432,12 +432,12 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' \code{u} and \code{v} values.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #'   library(oce)
 #'   cm <- read.oce("cm_interocean_0811786.s4a.tab")
 #'   summary(cm)
 #'   plot(cm)
-#' }
+#'}
 #'
 #'
 #' @author Dan Kelley

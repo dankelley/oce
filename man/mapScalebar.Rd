@@ -39,6 +39,7 @@ mapPlot(coastlineWorld, latitudelim=c(60, 120), longitudelim=c(-130,-50),
         col="lightgray", projection="+proj=stere +lat_0=90")
 mapScalebar()
 }
+
 }
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.

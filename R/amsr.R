@@ -144,7 +144,7 @@ setMethod(f="summary",
 #' @author Dan Kelley
 #' @template sub_subTemplate
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' # Show a daytime SST image, along with an indication of whether
 #' # the NA values are from rain.
 #' library(oce)
@@ -159,7 +159,7 @@ setMethod(f="summary",
 #' asp <- 1 / cos(pi*mean(lat)/180)
 #' imagep(lon, lat, rainy, asp=asp)
 #' mtext("red: too rainy to sense SSTDay")
-#' }
+#'}
 #' @family things related to \code{amsr} data
 setMethod(f="[[",
           signature(x="amsr", i="ANY", j="ANY"),
@@ -269,13 +269,13 @@ setMethod(f="[[<-",
 #' @param ... Ignored.
 #' @return An \code{amsr} object.
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' earth <- read.amsr("f34_20160102v7.2.gz") # not provided with oce
 #' fclat <- subset(earth , 45<=latitude & latitude <= 49)
 #' fc <- subset(fclat , longitude <= -47 & longitude <= -43)
 #' plot(fc)
-#' }
+#'}
 #' @author Dan Kelley
 #'
 #' @family things related to \code{amsr} data
@@ -329,13 +329,13 @@ setMethod(f="subset",
 #' @concept satellite
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' d <- read.amsr("f34_20160102v7.2.gz")
 #' asp <- 1/cos(pi*40/180)
 #' plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
 #' data(coastlineWorldMedium, package="ocedata")
 #' lines(coastlineWorldMedium[['longitude']], coastlineWorldMedium[['latitude']])
-#' }
+#'}
 #'
 #' @author Dan Kelley
 #'

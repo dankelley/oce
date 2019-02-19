@@ -45,6 +45,7 @@ cs <- list(longitude=-64.49657, latitude=45.33462)
 xy <- lonlat2map(cs, projection="+proj=merc")
 map2lonlat(xy)
 }
+
 }
 \seealso{
 \code{mapLongitudeLatitudeXY} is a safer alternative, if a map has

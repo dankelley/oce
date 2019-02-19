@@ -36,6 +36,7 @@ lat <- 44.6479
 mapPoints(lon, lat, pch=20, col="red")
 mapText(lon, lat, "Halifax", col="red", pos=1, offset=1)
 }
+
 }
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.

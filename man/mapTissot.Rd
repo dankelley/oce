@@ -43,6 +43,7 @@ mapPlot(coastlineWorld, projection=p, col="gray",
 longitudelim=c(-90,0), latitudelim=c(0, 50))
 mapTissot(c(15, 15), col='red')
 }
+
 }
 \references{
 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS

@@ -27,7 +27,7 @@ Argo (2017). Argo float data and metadata from Global Data Assembly Centre
 \url{http://doi.org/10.17882/42182#50865}
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(argo)
 summary(argo)

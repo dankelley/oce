@@ -38,6 +38,7 @@ mapPlot(coastlineWorldFine, proj='+proj=merc',
         col='lightgrey')
 mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
 }
+
 }
 \author{
 Chantelle Layton

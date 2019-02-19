@@ -819,33 +819,41 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
 #' consider using \code{\link{binMean2D}} instead, since it should be faster.)
 #'
 #' @param x a vector of numerical values.
+#'
 #' @param y a vector of numerical values.
+#'
 #' @param f a vector of data to which the elements of \code{FUN} may be
 #' supplied
-#' @param xbreaks values of x at the boundaries between bins; calculated using
-#' \code{\link{pretty}} if not supplied.
-#' @param ybreaks values of y at the boundaries between bins; calculated using
-#' \code{\link{pretty}} if not supplied.
-#' @param FUN function to apply to the data
+#'
+#' @param xbreaks values of \code{x} at the boundaries between the
+#' bins; calculated using \code{\link{pretty}} if not supplied.
+#'
+#' @param ybreaks as \code{xbreaks}, but for \code{y}.
+#'
+#' @param FUN univariate function that is applied to the \code{f} data within
+#' any given bin
+#'
 #' @param \dots arguments to pass to the function \code{FUN}
-#' @return A list with the following elements: the breaks in x and y
-#' (\code{xbreaks} and \code{ybreaks}), the break mid-points (\code{xmids} and
-#' \code{ymids}), and a matrix containing the result of applying function
-#' \code{FUN} to \code{f} subsetted by these breaks.
+#'
+#' @return A list with the following elements: the breaks in \code{x} and
+#' \code{y} (i.e. \code{xbreaks} and \code{ybreaks}), the break mid-points
+#' (i.e. \code{xmids} and \code{ymids}), and a matrix containing the
+#' result of applying \code{FUN()} to the \code{f} values, as
+#' subsetted by these breaks.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' library(oce)
-#' \dontrun{
+#'\donttest{
 #' ## secchi depths in lat and lon bins
 #' if (require(ocedata)) {
 #'     data(secchi, package="ocedata")
-#'     col <- rev(oce.colorsJet(100))[rescale(secchi$depth,
-#'                                            xlow=0, xhigh=20,
-#'                                            rlow=1, rhigh=100)]
-#'     zlim <- c(0, 20)
-#'     breaksPalette <- seq(min(zlim), max(zlim), 1)
-#'     colPalette <- rev(oce.colorsJet(length(breaksPalette)-1))
-#'     drawPalette(zlim, "Secchi Depth", breaksPalette, colPalette)
+#'     ## Note that zlim is provided to the colormap(), to prevent a few
+#'     ## points from setting a very wide scale.
+#'     cm <- colormap(z=secchi$depth, col=oceColorsViridis, zlim=c(0, 15))
+#'     par(mar=c(2, 2, 2, 2))
+#'     drawPalette(colormap=cm, zlab="Secchi Depth")
 #'     data(coastlineWorld)
 #'     mapPlot(coastlineWorld, longitudelim=c(-5, 20), latitudelim=c(50, 66),
 #'       grid=5, fill='gray', projection="+proj=lcc +lat_1=50 +lat_2=65")
@@ -853,10 +861,11 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
 #'                      pretty(secchi$longitude, 80),
 #'                      pretty(secchi$latitude, 40),
 #'                      f=secchi$depth, FUN=mean)
-#'     mapImage(bc$xmids, bc$ymids, bc$result, zlim=zlim, col=colPalette)
-#'     mapPolygon(coastlineWorld, col='gray')
+#'     mapImage(bc$xmids, bc$ymids, bc$result, zlim=zlim, col=cm$zcol)
+#'     mapPolygon(coastlineWorld, col="gray")
 #' }
-#' }
+#'}
+#'
 #' @family bin-related functions
 binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 {
@@ -873,13 +882,15 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
     if (nxbreaks < 2) stop("must have more than 1 xbreak")
     nybreaks <- length(ybreaks)
     if (nybreaks < 2) stop("must have more than 1 ybreak")
-    res <- matrix(nrow=nxbreaks-1, ncol=nybreaks-1)
+    res <- matrix(NA_real_, nrow=nxbreaks-1, ncol=nybreaks-1)
     A <- split(f, cut(y, ybreaks, labels=FALSE))
     B <- split(x, cut(y, ybreaks, labels=FALSE))
     for (i in seq_along(A)) {
         fSplit <- split(A[[i]], cut(B[[i]], xbreaks, labels=FALSE))
+        RHS <- unlist(lapply(fSplit, FUN, ...))
+        ##message("i=", i, " length(A)=",length(A), " length(B)=",length(B), " length(fSplit)=", length(fSplit), " length(RHS)=", length(RHS))
         ##res[, i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
-        res[, i] <- unlist(lapply(fSplit, FUN, ...))
+        res[as.numeric(names(fSplit)), i] <- RHS
     }
     res[!is.finite(res)] <- NA
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks),
@@ -2868,7 +2879,8 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' #    the latter is based on random white noise, and
 #' #    includes a particular value for the spans
 #' #    argument of spectrum(), etc.
-#' \dontrun{ # need signal package for this example
+#'\dontrun{
+#' # need signal package for this example
 #' r <- rnorm(2048)
 #' rh <- stats::filter(r, H)
 #' rh <- rh[is.finite(rh)] # kludge to remove NA at start/end
@@ -2892,10 +2904,7 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' grid()
 #' legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
 #'        legend=c("Practical", "Theory"), bg="white")
-#
-
-
-#' }
+#'}
 makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=TRUE)
 {
     type <- match.arg(type)
@@ -3244,7 +3253,7 @@ coriolis <- function(latitude, degrees=TRUE)
 #' adjusted appropriately.
 #' @author Dan Kelley
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' rbr011855 <- read.oce(
 #'  "/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/raw/pt_rbr_011855.dat")
@@ -3252,7 +3261,7 @@ coriolis <- function(latitude, degrees=TRUE)
 #' x <- undriftTime(d, 1)   # clock lost 1 second over whole experiment
 #' summary(d)
 #' summary(x)
-#' }
+#'}
 undriftTime <- function(x, slowEnd = 0, tname="time")
 {
     if (!inherits(x, "oce"))
@@ -3942,7 +3951,7 @@ integerToAscii <- function(i)
 #' magneticField(-(63+36/60), 44+39/60, Sys.Date())
 #'
 #' # 2. World map of declination in year 2000.
-#'\dontrun{
+#'\donttest{
 #' data(coastlineWorld)
 #' par(mar=rep(0.5, 4)) # no axes on whole-world projection
 #' mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")

@@ -32,7 +32,7 @@ ground between this and the \code{clipPolys} function in the
 }
 
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineCut(coastlineWorld, lon_0=100),

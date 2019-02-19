@@ -121,7 +121,7 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
 #' @author Dan Kelley
 #' @family functions related to maps
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' par(mar=c(2, 2, 1, 1))
@@ -136,7 +136,7 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
 #' plot(pacific, proj=oceCRS("Pacific"), span=15000, col=NULL)
 #' plot(pacific, proj=oceCRS("North Pacific"), span=12000, col=NULL)
 #' plot(pacific, proj=oceCRS("South Pacific"), span=12000, col=NULL)
-#' }
+#'}
 oceCRS <- function(region)
 {
     regionChoices <- c("North Atlantic", "South Atlantic", "Atlantic", "Arctic", "Antarctic",
@@ -302,7 +302,7 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' Note that if a grid line crosses the axis twice, only one label will be drawn.
 #'
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' par(mar=c(2, 2, 3, 1))
@@ -313,7 +313,7 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #'         grid=FALSE)
 #' mapGrid(15, 15, polarCircle=1/2)
 #' mapAxis()
-#' }
+#'}
 #'
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
@@ -548,10 +548,12 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
 #'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
-#' data(levitus, package="ocedata")
-#' par(mar=rep(1, 4))
-#' mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
-#' mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+#' if (require(ocedata)) {
+#'     data(levitus, package="ocedata")
+#'     par(mar=rep(1, 4))
+#'     mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
+#'     mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+#' }
 #'}
 #'
 #' @author Dan Kelley
@@ -725,7 +727,7 @@ mapContour <- function(longitude, latitude, z,
 #' see \dQuote{Examples} for how to control the arrow-head size.
 #'
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorldFine, package='ocedata')
 #' HfxLon <- -63.5752
@@ -734,7 +736,8 @@ mapContour <- function(longitude, latitude, z,
 #'         longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
 #'         col='lightgrey')
 #' mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
-#' }
+#'}
+#'
 #' @author Chantelle Layton
 mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 {
@@ -789,7 +792,7 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #' vectors with lengths that match appropriately.
 #'
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' par(mar=rep(2, 4))
@@ -807,10 +810,12 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #' # Color code by longitude, using thick lines
 #' col <- colormap(lonm)$zcol
 #' mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=2)
-#' }
+#'}
 #'
 #' @author Dan Kelley
+#'
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#'
 #' @family functions related to maps
 mapDirectionField <- function(longitude, latitude, u, v,
                               scale=1, length=0.05, code=2, col=par("fg"), ...)
@@ -861,17 +866,19 @@ mapDirectionField <- function(longitude, latitude, u, v,
 #'
 #'
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' par(mfrow=c(2, 1), mar=rep(2, 4))
 #' mapPlot(coastlineWorld, projection="+proj=moll") # sets a projection
 #' xy <- mapLongitudeLatitudeXY(coastlineWorld)
 #' plot(xy, type='l', asp=1)
-#' }
+#'}
 #'
 #' @author Dan Kelley
+#'
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#'
 #' @family functions related to maps
 mapLongitudeLatitudeXY <- function(longitude, latitude)
 {
@@ -1041,7 +1048,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' projections (with graphs).
 #'
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #'
@@ -1108,8 +1115,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'                 xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
 #'     }
 #' }
-#' dev.off()
-#' }
+#'}
 #
 #' @section Available Projections:
 #' Map projections are provided by the
@@ -1759,16 +1765,19 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #' this more analogous with \code{\link{grid}}.
 #'
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' mapPlot(coastlineWorld, type='l', grid=FALSE,
 #' longitudelim=c(-80, 10), latitudelim=c(0, 120),
 #' projection="+proj=ortho")
 #' mapGrid(15, 15, polarCircle=15)
-#' }
+#'}
+#'
 #' @author Dan Kelley
+#'
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#'
 #' @family functions related to maps
 mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
@@ -2040,7 +2049,7 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
 #' the projection and the fraction of the earth that is shown.
 #'
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' ## Arctic Ocean
@@ -2048,9 +2057,12 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
 #' mapPlot(coastlineWorld, latitudelim=c(60, 120), longitudelim=c(-130,-50),
 #'         col="lightgray", projection="+proj=stere +lat_0=90")
 #' mapScalebar()
-#' }
+#'}
+#'
 #' @author Dan Kelley
+#'
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#'
 #' @family functions related to maps
 mapScalebar <- function(x, y=NULL, length,
                         lwd=1.5*par("lwd"), cex=par("cex"),
@@ -2126,7 +2138,7 @@ mapScalebar <- function(x, y=NULL, length,
 #' Adds text to an existing map, by analogy to \code{\link{text}}.
 #'
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' longitude <- coastlineWorld[['longitude']]
@@ -2138,9 +2150,12 @@ mapScalebar <- function(x, y=NULL, length,
 #' lat <- 44.6479
 #' mapPoints(lon, lat, pch=20, col="red")
 #' mapText(lon, lat, "Halifax", col="red", pos=1, offset=1)
-#' }
+#'}
+#'
 #' @author Dan Kelley
+#'
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#'
 #' @family functions related to maps
 mapText <- function(longitude, latitude, labels, ...)
 {
@@ -2192,7 +2207,7 @@ mapText <- function(longitude, latitude, labels, ...)
 #' \url{pubs.usgs.gov/pp/1395/report.pdf}).
 #'
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' par(mfrow=c(1, 1), mar=c(2, 2, 1, 1))
@@ -2200,9 +2215,12 @@ mapText <- function(longitude, latitude, labels, ...)
 #' mapPlot(coastlineWorld, projection=p, col="gray",
 #' longitudelim=c(-90,0), latitudelim=c(0, 50))
 #' mapTissot(c(15, 15), col='red')
-#' }
+#'}
+#'
 #' @author Dan Kelley
+#'
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#'
 #' @family functions related to maps
 mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 {
@@ -2312,7 +2330,7 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
 #' Adds lines to an existing map, by analogy to \code{\link{lines}}.
 #'
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' mapPlot(coastlineWorld, type='l',
@@ -2322,10 +2340,12 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
 #' lat <- c(44.6479, 51.5171)
 #' mapPoints(lon, lat, col='red')
 #' mapLines(lon, lat, col='red')
-#' }
+#'}
 #'
 #' @author Dan Kelley
+#'
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#'
 #' @family functions related to maps
 mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 {
@@ -2385,17 +2405,19 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
 #'
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' mapPlot(coastlineWorld, longitudelim=c(-80, 0), latitudelim=c(20, 50),
 #'         col="lightgray", projection="+proj=laea +lon_0=-35")
 #' data(section)
 #' mapPoints(section)
-#' }
+#'}
 #'
 #' @author Dan Kelley
+#'
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#'
 #' @family functions related to maps
 mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 {
@@ -2447,7 +2469,7 @@ mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 #' @param ... optional arguments passed to \code{\link{arrows}}.
 #'
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' mapPlot(coastlineWorld, longitudelim=c(-120, -60), latitudelim=c(30, 60),
@@ -2457,10 +2479,12 @@ mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 #' lat <- 45 + rep(0, n)
 #' # Draw meridional arrows in N America, from 45N to 60N.
 #' mapArrows(lon, lat, lon, lat+15, length=0.05, col="blue")
-#' }
+#'}
 #'
 #' @author Dan Kelley
+#'
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#'
 #' @family functions related to maps
 mapArrows <- function(longitude0, latitude0,
                       longitude1=longitude0, latitude1=latitude0,
@@ -2644,18 +2668,20 @@ mapLocator <- function(n=512, type='n', ...)
 #' values indicating points that are off the globe as displayed.
 #'
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' ## Cape Split, in the Minas Basin of the Bay of Fundy
 #' cs <- list(longitude=-64.49657, latitude=45.33462)
 #' xy <- lonlat2map(cs, projection="+proj=merc")
 #' map2lonlat(xy)
-#' }
+#'}
 #'
 #' @seealso \code{\link{lonlat2map}} does the inverse operation.
 #'
 #' @author Dan Kelley
+#'
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#'
 #' @family functions related to maps
 map2lonlat <- function(x, y, init=c(0, 0))
 {
@@ -2928,7 +2954,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' 1. \url{http://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
 #'
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' data(topoWorld)
@@ -2981,10 +3007,12 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' drawPalette(colormap=cm)
 #' mapPlot(c(-180,180), c(-90,90), type="n") # defaults to moll projection
 #' mapImage(topoWorld, colormap=cm)
-#' }
+#'}
 #'
 #' @author Dan Kelley
+#'
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#'
 #' @family functions related to maps
 mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                      breaks, col, colormap, border=NA,
@@ -3587,13 +3615,14 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 #' \code{map2lonlat}.
 #'
 #' @examples
-#' \donttest{
+#'\donttest{
 #' library(oce)
 #' ## Cape Split, in the Minas Basin of the Bay of Fundy
 #' cs <- list(longitude=-64.49657, latitude=45.33462)
 #' xy <- lonlat2map(cs, projection="+proj=merc")
 #' map2lonlat(xy)
-#' }
+#'}
+#'
 #' @family functions related to maps
 lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceDebug"))
 {
@@ -3635,6 +3664,9 @@ lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceD
     options(warn=-1)
     oceDebug(debug, "projection=", projection, "\n")
     ## April 2016: rgdal::project will soon return named quantities, so we use unname() to prepare
+    ##> NOTE: the legacy=FALSE is to cause i386/windows code to be used. This causes
+    ##> an error if any data are NA.
+    ##> capture.output(XY <- unname(rgdal::project(ll, proj=as.character(projection), inv=FALSE, legacy=FALSE)))
     capture.output(XY <- unname(rgdal::project(ll, proj=as.character(projection), inv=FALSE)))
     options(warn=owarn)
     xy <- list(x=XY[, 1], y=XY[, 2])

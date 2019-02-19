@@ -33,7 +33,7 @@ the results obtained by Foreman (1977) and Pawlowicz et al. (2002).
 }
 
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(sealevelTuktoyaktuk)
 time <- sealevelTuktoyaktuk[["time"]]

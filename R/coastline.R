@@ -347,7 +347,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' dealing with them.
 #'
 #' @examples
-#' \dontrun{
+#'\donttest{
 #' library(oce)
 #' par(mar=c(2, 2, 1, 1))
 #' data(coastlineWorld)
@@ -357,7 +357,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' ## Canada in Lambert projection
 #' plot(coastlineWorld, clongitude=-95, clatitude=65, span=5500,
 #'      grid=10, projection='+proj=laea +lon_0=-100 +lat_0=55')
-#' }
+#'}
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{coastline} data
@@ -1247,7 +1247,7 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' call to \link[rgdal]{project} in the \CRANpkg{rgdal} package.
 #'
 #' @examples
-#'\dontrun{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' mapPlot(coastlineCut(coastlineWorld, lon_0=100),
