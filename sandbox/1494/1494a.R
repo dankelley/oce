@@ -19,6 +19,7 @@ read.xbt <- function(filename)
                                     format="%m/%d/%Y %H:%M:%S", tz="UTC")
     res@metadata$serialNumber <- getHeaderItem(l, "Serial #")
     res@metadata$sequenceNumber <- as.integer(getHeaderItem(l, "Sequence #"))
+    res@metadata$dataNamesOriginal <- list(depth="Depth", temperature="Temperature", soundSpeed="Sound Velocity")
     ## Some steps needed for hemispheres.
     lat <- getHeaderItem(l, "Latitude")
     lats <- strsplit(lat, " ")[[1]]
