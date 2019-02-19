@@ -883,16 +883,27 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
     nybreaks <- length(ybreaks)
     if (nybreaks < 2) stop("must have more than 1 ybreak")
     res <- matrix(NA_real_, nrow=nxbreaks-1, ncol=nybreaks-1)
-    A <- split(f, cut(y, ybreaks, labels=FALSE))
-    B <- split(x, cut(y, ybreaks, labels=FALSE))
-    for (i in seq_along(A)) {
-        fSplit <- split(A[[i]], cut(B[[i]], xbreaks, labels=FALSE))
-        RHS <- unlist(lapply(fSplit, FUN, ...))
-        ##message("i=", i, " length(A)=",length(A), " length(B)=",length(B), " length(fSplit)=", length(fSplit), " length(RHS)=", length(RHS))
-        ##res[, i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
-        res[as.numeric(names(fSplit)), i] <- RHS
+    ## this 'method' is just for testing during development. For the data in
+    ## tests/testthat/test_misc.R, we get the same results for the two
+    ## methods. Still, I plan to keep this code in here for a while.
+    method <- 2
+    if (method == 1) {
+        A <- split(f, cut(y, ybreaks, labels=FALSE))
+        B <- split(x, cut(y, ybreaks, labels=FALSE))
+        for (i in seq_along(A)) {
+            fSplit <- split(A[[i]], cut(B[[i]], xbreaks, labels=FALSE))
+            res[as.numeric(names(fSplit)), i] <- unlist(lapply(fSplit, FUN, ...))
+        }
+        res[!is.finite(res)] <- NA
+    } else {
+        for (ix in seq.int(1, nxbreaks-1)) {
+            for (iy in seq.int(1, nybreaks-1)) {
+                keep <- xbreaks[ix] <= x & x < xbreaks[ix+1] & ybreaks[iy] <= y & y < ybreaks[iy+1]
+                if (any(keep))
+                    res[ix, iy] <- FUN(f[keep], ...)
+            }
+        }
     }
-    res[!is.finite(res)] <- NA
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks),
          ybreaks=ybreaks, ymids=ybreaks[-1]-0.5*diff(ybreaks),
          result=res)
