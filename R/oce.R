@@ -1250,7 +1250,15 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
             yat <- axis(4, labels=FALSE)
         }
         if (grid) {
-            abline(h=axTicks(2), col=grid.col, lty=grid.lty, lwd=grid.lwd)
+            if (log == "y") {
+                at <- axTicks(2)
+                lat <- log10(at)
+                powerOfTen <- abs(lat - as.integer(lat)) < 1e-4
+                    abline(h=if (any(powerOfTen)) at[powerOfTen] else at,
+                           col=grid.col, lty=grid.lty, lwd=grid.lwd)
+            } else {
+                abline(h=axTicks(2), col=grid.col, lty=grid.lty, lwd=grid.lwd)
+            }
             abline(v=axTicks(1), col=grid.col, lty=grid.lty, lwd=grid.lwd)
         }
         oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
