@@ -1065,6 +1065,11 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' so that autoscaling will yield limits for y that make sense within the
 #' window.
 #' @param ylim optional limit for y axis.
+#' @param log a character value that must be either empty (the default) for linear
+#' \code{y} axis, or \code{"y"} for logarithmic \code{y} axis.  (Unlike
+#' \code{\link{plot.default}} etc., \code{oce.plot.ts} does not permit
+#' logarithmic time, or \code{x} axis.)
+#' 
 #' @param drawTimeRange an optional indication of whether/how to draw a time range,
 #' in the top-left margin of the plot; see \code{\link{oce.axis.POSIXct}} for details.
 #'
@@ -1115,7 +1120,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' t <- seq(t0, length.out=48, by="30 min")
 #' y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
 #' oce.plot.ts(t, y, type='l', xaxs='i')
-oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
+oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
                         drawTimeRange, fill=FALSE,
                         xaxs=par("xaxs"), yaxs=par("yaxs"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
@@ -1144,10 +1149,13 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     debug <- min(debug, 4)
     oceDebug(debug, "oce.plot.ts(...,debug=", debug,
              ",type=\"", type, "\"",
+             ",log=\"", log, "\"",
              ",mar=c(", paste(mar, collapse=","), ")",
              ",mgp=c(", paste(mgp, collapse=","), ")",
              ",cex=", cex,
              ",...){\n", sep="", unindent=1)
+    if (!log %in% c("", "y"))
+        stop("log must be either an empty string or \"y\", not \"", log, "\" as given")
     #oceDebug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
     #oceDebug(debug, "marginsAsImage=", marginsAsImage, ")\n")
     oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
@@ -1182,7 +1190,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     if (!is.finite(yrange[1])) {
         plot(xrange, c(0, 1), axes=FALSE, xaxs=xaxs, yaxs=yaxs,
              xlim=if (xlimGiven) xlim else xrange,
-             xlab=xlab, ylab=ylab, type='n')
+             xlab=xlab, ylab=ylab, type='n', log=log)
         oce.axis.POSIXct(1, drawTimeRange=FALSE)
         box()
         mtext("bad data", side=3, line=-1, cex=cex)
@@ -1196,7 +1204,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
             plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
                  xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
                  xlab=xlab, ylab=ylab,
-                 type=type, cex=cex, ...)
+                 type=type, cex=cex, log=log, ...)
             fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
             do.call(polygon, list(x=xx, y=yy, col=fillcol))
         } else {
@@ -1204,7 +1212,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                  xlim=if (missing(xlim)) NULL else xlim,
                  ylim=if (missing(ylim)) NULL else ylim,
                  xlab=xlab, ylab=ylab,
-                 type=type, cex=cex, ...)
+                 type=type, cex=cex, log=log, ...)
         }
         xat <- NULL
         yat <- NULL
@@ -1228,8 +1236,12 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                 if (drawxaxis)
                     abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
                 yaxp <- par("yaxp")
-                abline(h=seq(yaxp[1], yaxp[2], length.out=1+yaxp[3]),
-                       col="lightgray", lty="dotted", lwd=lwd)
+                if (log == "y") {
+                    abline(h=axTicks(2), col="lightgray", lty="dotted", lwd=lwd)
+                } else {
+                    abline(h=seq(yaxp[1], yaxp[2], length.out=1+yaxp[3]),
+                           col="lightgray", lty="dotted", lwd=lwd)
+                }
             }
             box()
             ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
@@ -1237,8 +1249,9 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                 axis(2, cex.axis=cex.axis, cex=cex.axis)
             yat <- axis(4, labels=FALSE)
         }
-        if (grid)
-            grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
+        ##> if (grid) {
+        ##>     grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
+        ##> }
         oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
         invisible(list(xat=xat, yat=yat))
     }
