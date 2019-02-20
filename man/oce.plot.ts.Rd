@@ -11,7 +11,7 @@ oce.plot.ts(x, y, type = "l", xlim, ylim, log = "", xlab, ylab,
   mar = c(mgp[1] + if (nchar(xlab) > 0) 1.5 else 1, mgp[1] + 1.5, mgp[2]
   + 1, mgp[2] + 3/4), main = "", despike = FALSE, axes = TRUE,
   tformat, marginsAsImage = FALSE, grid = FALSE,
-  grid.col = "darkgray", grid.lty = "dotted", grid.lwd = 1,
+  grid.col = "lightgray", grid.lty = "dotted", grid.lwd = par("lwd"),
   debug = getOption("oceDebug"), ...)
 }
 \arguments{

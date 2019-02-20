@@ -1130,7 +1130,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
                         despike=FALSE,
                         axes=TRUE, tformat,
                         marginsAsImage=FALSE,
-                        grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
+                        grid=FALSE, grid.col="lightgray", grid.lty="dotted", grid.lwd=par("lwd"),
                         debug=getOption("oceDebug"),
                         ...)
 {
@@ -1231,7 +1231,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
                 xat <- xlabs
                 oceDebug(debug, "drawing x axis; set xat=c(", paste(xat, collapse=","), ")", "\n", sep="")
             }
-            if (grid) {
+            if (FALSE && grid) { # FIXME: don't w do this below? Why here also?
                 lwd <- par("lwd")
                 if (drawxaxis)
                     abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
@@ -1249,9 +1249,10 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
                 axis(2, cex.axis=cex.axis, cex=cex.axis)
             yat <- axis(4, labels=FALSE)
         }
-        ##> if (grid) {
-        ##>     grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
-        ##> }
+        if (grid) {
+            abline(h=axTicks(2), col=grid.col, lty=grid.lty, lwd=grid.lwd)
+            abline(v=axTicks(1), col=grid.col, lty=grid.lty, lwd=grid.lwd)
+        }
         oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
         invisible(list(xat=xat, yat=yat))
     }
