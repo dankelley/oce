@@ -1253,7 +1253,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
             if (log == "y") {
                 at <- axTicks(2)
                 lat <- log10(at)
-                powerOfTen <- abs(lat - as.integer(lat)) < 1e-4
+                powerOfTen <- abs(lat - round(lat)) < 1e-4
                     abline(h=if (any(powerOfTen)) at[powerOfTen] else at,
                            col=grid.col, lty=grid.lty, lwd=grid.lwd)
             } else {
