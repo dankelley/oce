@@ -1048,7 +1048,6 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' projections (with graphs).
 #'
 #' @examples
-#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #'
@@ -1097,6 +1096,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'         proj="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
 #' mtext("Stereographic", adj=1)
 #'
+#'\donttest{
 #' # Example 5.
 #' # Spinning globe: create PNG files that can be assembled into a movie
 #' png("globe-%03d.png")

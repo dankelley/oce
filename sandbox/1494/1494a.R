@@ -13,6 +13,7 @@ read.xbt <- function(filename)
     if (0 == length(headerEnd))
         stop("programming error: increase #lines read for header")
     res <- new("oce")
+    res@metadata$header <- l[1:headerEnd]
     date <- getHeaderItem(l, "Date of Launch")
     hms <- getHeaderItem(l, "Time of Launch")
     res@metadata$time <- as.POSIXct(paste(date, hms, sep=" "),
@@ -55,7 +56,7 @@ grid()
 ## FIXME: get larger dataset (open-data) so we can work on subset() etc
 
 
-p <- d[["depth"]]
+p <- swPressure(d[["depth"]], latitude=d[["latitude"]])
 T <- d[["temperature"]]
 S <- rep(30, length(T))
 ssGSW <- swSoundSpeed(S, T, p, eos="gsw", longitude=d[["longitude"]], latitude=d[["latitude"]])
