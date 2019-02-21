@@ -92,6 +92,75 @@ two facts control the maximum recordable velocity and the velocity
 resolution, values that may be retrieved for an ADP object name \code{d}
 with \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
 }
+\section{Names of items in data slot}{
+
+
+The names of items in the \code{data} slot are below. Not all items are present
+for ll file varieties; use \code{\link{names}(d[["data"]])} to determine the
+names used in an object named \code{d}. In this list, items are either
+a vector (with one sample per time of measurement), a 
+``matrix'' with first index for time and second for bin number,
+or an ``array'' with first index for time, second for bin number,
+and third for beam number. (Items are of vector type, unless
+otherwise indicated.)
+
+\strong{\code{a}}=signal amplitude array [units?];
+\strong{\code{ambientTemp}}=ambient temperature [degC];
+\strong{\code{attitude}}=attitude [deg];
+\strong{\code{attitudeTemp}}=XXX;
+\strong{\code{avgMagnitudeVelocityEast}}=XXX;
+\strong{\code{avgMagnitudeVelocityNorth}}=XXX;
+\strong{\code{avgSpeed}}=XXX;
+\strong{\code{avgTrackMagnetic}}=XXX;
+\strong{\code{avgTrackTrue}}=XXX;
+\strong{\code{avgTrueVelocityEast}}=XXX;
+\strong{\code{avgTrueVelocityNorth}}=XXX;
+\strong{\code{br}}=bottom range matrix [m];
+\strong{\code{bv}}=bottom velocity matrix [m/s];
+\strong{\code{contaminationSensor}}=XXX;
+\strong{\code{depth}}=depth [m];
+\strong{\code{directionMadeGood}}=XXX;
+\strong{\code{distance}}=XXX;
+\strong{\code{firstLatitude}}=latitude at start of profile [deg];
+\strong{\code{firstLongitude}}=longitude at start of profile [deg];
+\strong{\code{firstTime}}=XXX;
+\strong{\code{g}}=data goodness matrix [units?];
+\strong{\code{heading}}=instrument heading [degrees];
+\strong{\code{headingStd}}=instrument heading std-dev [deg];
+\strong{\code{lastLatitude}}=latitude at end of profile [deg];
+\strong{\code{lastLongitude}}=longitude at end of profile [deg];
+\strong{\code{lastTime}}=XXX;
+\strong{\code{numberOfHeadingSamplesAveraged}}=XXX;
+\strong{\code{numberOfMagneticTrackSamplesAveraged}}=XXX;
+\strong{\code{numberOfPitchRollSamplesAveraged}}=XXX;
+\strong{\code{numberOfSpeedSamplesAveraged}}=XXX;
+\strong{\code{numberOfTrueTrackSamplesAveraged}}=XXX;
+\strong{\code{pitch}}=instrument pitch [deg];
+\strong{\code{pitchStd}}=instrument pitch std-dev [deg];
+\strong{\code{pressure}}=pressure [dbar];
+\strong{\code{pressureMinus}}=XXX;
+\strong{\code{pressurePlus}}=XXX;
+\strong{\code{pressureStd}}=pressure std-dev [dbar];
+\strong{\code{primaryFlags}}=XXX;
+\strong{\code{q}}=data quality array;
+\strong{\code{roll}}=instrument roll [deg];
+\strong{\code{rollStd}}=instrument roll std-dev [deg];
+\strong{\code{salinity}}=salinity;
+\strong{\code{shipHeading}}=ship heading [deg];
+\strong{\code{shipPitch}}=ship pitch [deg];
+\strong{\code{shipRoll}}=ship roll [deg];
+\strong{\code{soundSpeed}}=sound speed [m/s];
+\strong{\code{speedMadeGood}}=speed over ground (?) [m/s];
+\strong{\code{speedMadeGoodEast}}=XXX;
+\strong{\code{speedMadeGoodNorth}}=XXX;
+\strong{\code{temperature}}=temperature [degC];
+\strong{\code{time}}=profile time [POSIXct];
+\strong{\code{v}}=velocity array [m/s];
+\strong{\code{xmitCurrent}}=transmit current [unit?];
+and
+\strong{\code{xmitVoltage}}=transmit voltage.
+}
+
 \section{Memory considerations}{
 
 
