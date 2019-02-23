@@ -103,7 +103,7 @@ If a \code{\link{png}} device is to be used, it is advised to supply
 arguments \code{type="cairo"} and \code{antialias="none"}; see [1].
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 data(topoWorld)

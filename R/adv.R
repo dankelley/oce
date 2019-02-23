@@ -56,7 +56,7 @@ setClass("adv", contains="oce")
 #' @usage data(adv)
 #'
 #' @examples
-#' \dontrun{
+#'\donttest{
 #' library(oce)
 #' data(adv)
 #'
@@ -68,7 +68,7 @@ setClass("adv", contains="oce")
 #' plot(log10(s$freq), log10(s$spec), type='l')
 #' for (a in seq(-20, 20, by=1))
 #'     abline(a=a, b=-5/3, col='gray', lty='dotted')
-#' }
+#'}
 #'
 #' @source This file came from the SLEIWEX-2008 experiment.
 #'

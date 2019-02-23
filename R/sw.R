@@ -1258,7 +1258,7 @@ swZ <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"))
 #' @references Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
 #' Press, New York, 662 pp.
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' data(section)
 #'
@@ -1286,7 +1286,7 @@ swZ <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"))
 #' v <- diff(dh.gs$height)/diff(dh.gs$distance) * g / f / 1e3
 #' plot(dh.gs$distance[-1], v, type='l', col="blue",
 #'   xlab="distance [km]", ylab="velocity [m/s]")
-#' }
+#'}
 #'
 #' @family functions that calculate seawater properties
 swDynamicHeight <- function(x, referencePressure=2000,
@@ -2415,10 +2415,10 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
 #' TEOS-10 and the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp.,
 #' SCOR/IAPSO WG127, ISBN 978-0-646-55621-5.
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' sa <- swAbsoluteSalinity(35.5, 300, 260, 16)
 #' stopifnot(abs(35.671358392019094 - sa) < 00.000000000000010)
-#' }
+#'}
 #'
 #' @family functions that calculate seawater properties
 swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL)

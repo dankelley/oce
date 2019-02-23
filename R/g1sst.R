@@ -84,7 +84,7 @@ setMethod(f="[[<-",
 #'
 #' @return An object of \code{\link{g1sst-class}}.
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' # Construct query, making it easier to understand and modify.
 #' day <- "2016-01-02"
 #' lon0 <- -66.5
@@ -103,7 +103,7 @@ setMethod(f="[[<-",
 #' plot(d, "SST", col=oceColorsJet)
 #' data(coastlineWorldFine, package="ocedata")
 #' lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
-#' }
+#'}
 #'
 #' @author Dan Kelley
 #' @references

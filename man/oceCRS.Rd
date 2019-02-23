@@ -30,7 +30,7 @@ guided by real-world usage.
 }
 
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 par(mar=c(2, 2, 1, 1))

@@ -480,11 +480,11 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' @author Dan Kelley, with extensive help from Clark Richards
 #' @examples
 #'
-#' \dontrun{
+#'\donttest{
 #' library(oce)
 #' data(echosounder)
 #' plot(echosounder, which=c(1,2), drawBottom=TRUE)
-#' }
+#'}
 #' @family things related to \code{echosounder} data
 #' @aliases plot.echosounder
 setMethod(f="plot",

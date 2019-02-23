@@ -819,44 +819,53 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
 #' consider using \code{\link{binMean2D}} instead, since it should be faster.)
 #'
 #' @param x a vector of numerical values.
+#'
 #' @param y a vector of numerical values.
+#'
 #' @param f a vector of data to which the elements of \code{FUN} may be
 #' supplied
-#' @param xbreaks values of x at the boundaries between bins; calculated using
-#' \code{\link{pretty}} if not supplied.
-#' @param ybreaks values of y at the boundaries between bins; calculated using
-#' \code{\link{pretty}} if not supplied.
-#' @param FUN function to apply to the data
+#'
+#' @param xbreaks values of \code{x} at the boundaries between the
+#' bins; calculated using \code{\link{pretty}} if not supplied.
+#'
+#' @param ybreaks as \code{xbreaks}, but for \code{y}.
+#'
+#' @param FUN univariate function that is applied to the \code{f} data within
+#' any given bin
+#'
 #' @param \dots arguments to pass to the function \code{FUN}
-#' @return A list with the following elements: the breaks in x and y
-#' (\code{xbreaks} and \code{ybreaks}), the break mid-points (\code{xmids} and
-#' \code{ymids}), and a matrix containing the result of applying function
-#' \code{FUN} to \code{f} subsetted by these breaks.
+#'
+#' @return A list with the following elements: the breaks in \code{x} and
+#' \code{y} (i.e. \code{xbreaks} and \code{ybreaks}), the break mid-points
+#' (i.e. \code{xmids} and \code{ymids}), and a matrix containing the
+#' result of applying \code{FUN()} to the \code{f} values, as
+#' subsetted by these breaks.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' library(oce)
-#' \dontrun{
+#'\donttest{
 #' ## secchi depths in lat and lon bins
 #' if (require(ocedata)) {
 #'     data(secchi, package="ocedata")
-#'     col <- rev(oce.colorsJet(100))[rescale(secchi$depth,
-#'                                            xlow=0, xhigh=20,
-#'                                            rlow=1, rhigh=100)]
-#'     zlim <- c(0, 20)
-#'     breaksPalette <- seq(min(zlim), max(zlim), 1)
-#'     colPalette <- rev(oce.colorsJet(length(breaksPalette)-1))
-#'     drawPalette(zlim, "Secchi Depth", breaksPalette, colPalette)
+#'     ## Note that zlim is provided to the colormap(), to prevent a few
+#'     ## points from setting a very wide scale.
+#'     cm <- colormap(z=secchi$depth, col=oceColorsViridis, zlim=c(0, 15))
+#'     par(mar=c(2, 2, 2, 2))
+#'     drawPalette(colormap=cm, zlab="Secchi Depth")
 #'     data(coastlineWorld)
 #'     mapPlot(coastlineWorld, longitudelim=c(-5, 20), latitudelim=c(50, 66),
-#'       grid=5, fill='gray', projection="+proj=lcc +lat_1=50 +lat_2=65")
+#'       grid=5, col='gray', projection="+proj=lcc +lat_1=50 +lat_2=65")
 #'     bc <- binApply2D(secchi$longitude, secchi$latitude,
 #'                      pretty(secchi$longitude, 80),
 #'                      pretty(secchi$latitude, 40),
 #'                      f=secchi$depth, FUN=mean)
-#'     mapImage(bc$xmids, bc$ymids, bc$result, zlim=zlim, col=colPalette)
-#'     mapPolygon(coastlineWorld, col='gray')
+#'     mapImage(bc$xmids, bc$ymids, bc$result, zlim=cm$zlim, col=cm$zcol)
+#'     mapPolygon(coastlineWorld, col="gray")
 #' }
-#' }
+#'}
+#'
 #' @family bin-related functions
 binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 {
@@ -873,15 +882,29 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
     if (nxbreaks < 2) stop("must have more than 1 xbreak")
     nybreaks <- length(ybreaks)
     if (nybreaks < 2) stop("must have more than 1 ybreak")
-    res <- matrix(nrow=nxbreaks-1, ncol=nybreaks-1)
-    A <- split(f, cut(y, ybreaks, labels=FALSE))
-    B <- split(x, cut(y, ybreaks, labels=FALSE))
-    for (i in seq_along(A)) {
-        fSplit <- split(A[[i]], cut(B[[i]], xbreaks, labels=FALSE))
-        ##res[, i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
-        res[, i] <- unlist(lapply(fSplit, FUN, ...))
+    res <- matrix(NA_real_, nrow=nxbreaks-1, ncol=nybreaks-1)
+    ## this 'method' is just for testing during development. For the data in
+    ## tests/testthat/test_misc.R, we get the same results for the two
+    ## methods. Still, I plan to keep this code in here for a while.
+    method <- 1
+    if (method == 1) {
+        ## this is 28X faster on the secchi example.
+        A <- split(f, cut(y, ybreaks, labels=FALSE))
+        B <- split(x, cut(y, ybreaks, labels=FALSE))
+        for (i in seq_along(A)) {
+            fSplit <- split(A[[i]], cut(B[[i]], xbreaks, labels=FALSE))
+            res[as.numeric(names(fSplit)), i] <- unlist(lapply(fSplit, FUN, ...))
+        }
+        res[!is.finite(res)] <- NA
+    } else {
+        for (ix in seq.int(1, nxbreaks-1)) {
+            for (iy in seq.int(1, nybreaks-1)) {
+                keep <- xbreaks[ix] <= x & x < xbreaks[ix+1] & ybreaks[iy] <= y & y < ybreaks[iy+1]
+                if (any(keep))
+                    res[ix, iy] <- FUN(f[keep], ...)
+            }
+        }
     }
-    res[!is.finite(res)] <- NA
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks),
          ybreaks=ybreaks, ymids=ybreaks[-1]-0.5*diff(ybreaks),
          result=res)
@@ -2868,7 +2891,8 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' #    the latter is based on random white noise, and
 #' #    includes a particular value for the spans
 #' #    argument of spectrum(), etc.
-#' \dontrun{ # need signal package for this example
+#'\dontrun{
+#' # need signal package for this example
 #' r <- rnorm(2048)
 #' rh <- stats::filter(r, H)
 #' rh <- rh[is.finite(rh)] # kludge to remove NA at start/end
@@ -2892,10 +2916,7 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' grid()
 #' legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
 #'        legend=c("Practical", "Theory"), bg="white")
-#
-
-
-#' }
+#'}
 makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=TRUE)
 {
     type <- match.arg(type)
@@ -3244,7 +3265,7 @@ coriolis <- function(latitude, degrees=TRUE)
 #' adjusted appropriately.
 #' @author Dan Kelley
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' rbr011855 <- read.oce(
 #'  "/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/raw/pt_rbr_011855.dat")
@@ -3252,7 +3273,7 @@ coriolis <- function(latitude, degrees=TRUE)
 #' x <- undriftTime(d, 1)   # clock lost 1 second over whole experiment
 #' summary(d)
 #' summary(x)
-#' }
+#'}
 undriftTime <- function(x, slowEnd = 0, tname="time")
 {
     if (!inherits(x, "oce"))
@@ -3942,8 +3963,9 @@ integerToAscii <- function(i)
 #' magneticField(-(63+36/60), 44+39/60, Sys.Date())
 #'
 #' # 2. World map of declination in year 2000.
+#'\donttest{
 #' data(coastlineWorld)
-#' # Use Robinson projection to show whole world
+#' par(mar=rep(0.5, 4)) # no axes on whole-world projection
 #' mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
 #' # Construct matrix holding declination
 #' lon <- seq(-180, 180)
@@ -3951,14 +3973,18 @@ integerToAscii <- function(i)
 #' dec2000 <- function(lon, lat)
 #'     magneticField(lon, lat, 2000)$declination
 #' dec <- outer(lon, lat, dec2000) # hint: outer() is very handy!
-#' # Contour. Since mapContour() does not label contours, we
-#' # indicate them with colours and line types. Zero declination
-#' # is contoured black, with blue for negative values and red for 
-#' # positive values. Solid lines indicate increments of 10deg, with
-#' # dashed lines at 5deg between.
-#' mapContour(lon, lat, dec, col='blue', levels=seq(-180, -5, 5), lty=c(1,3))
-#' mapContour(lon, lat, dec, col='red', levels=seq(180, 5, -5), lty=c(1,3))
-#' mapContour(lon, lat, dec,  levels=0, lwd=2)
+#' # Contour, unlabelled for small increments, labeled for
+#' # larger increments.
+#' mapContour(lon, lat, dec, col='blue', levels=seq(-180, -5, 5),
+#'            lty=3, drawlabels=FALSE)
+#' mapContour(lon, lat, dec, col='blue', levels=seq(-180, -20, 20))
+#' mapContour(lon, lat, dec, col='red', levels=seq(5, 180, 5),
+#'            lty=3, drawlabels=FALSE)
+#' mapContour(lon, lat, dec, col='red', levels=seq(20, 180, 20))
+#' mapContour(lon, lat, dec, levels=180, col='black', lwd=2, drawlabels=FALSE)
+#' mapContour(lon, lat, dec, levels=0, col='black', lwd=2)
+#'}
+#'
 #' @family things related to magnetism
 magneticField <- function(longitude, latitude, time)
 {

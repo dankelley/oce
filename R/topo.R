@@ -53,13 +53,13 @@ setClass("topo", contains="oce")
 #' between -180 and 180 degrees.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' data(topoWorld)
 #' par(mfrow=c(2, 1))
 #' plot(topoWorld, location=NULL)
 #' imagep(topoWorld)
-#' }
+#'}
 #'
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{topo} data
@@ -810,11 +810,11 @@ setMethod(f="plot",
 #'
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' topoMaritimes <- read.topo("topoMaritimes.asc")
 #' plot(topographyMaritimes)
-#' }
+#'}
 #'
 #' @author Dan Kelley
 #' @family things related to \code{topo} data

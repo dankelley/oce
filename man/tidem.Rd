@@ -259,15 +259,16 @@ harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 Computers and Geosciences, 28, 929-937.
 }
 \seealso{
-Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
-  \code{\link{[[<-,tidem-method}},
+Other things related to tides: \code{\link{[[,tidem-method}},
+  \code{\link{[[<-,tidem-method}}, \code{\link{as.tidem}},
   \code{\link{plot,tidem-method}},
   \code{\link{predict.tidem}},
   \code{\link{summary,tidem-method}},
   \code{\link{tidedata}}, \code{\link{tidem-class}},
-  \code{\link{tidemAstron}}, \code{\link{tidemVuf}}
+  \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
+  \code{\link{webtide}}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{tidem} data}
+\concept{things related to tides}

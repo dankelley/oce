@@ -347,7 +347,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' dealing with them.
 #'
 #' @examples
-#' \dontrun{
+#'\donttest{
 #' library(oce)
 #' par(mar=c(2, 2, 1, 1))
 #' data(coastlineWorld)
@@ -357,7 +357,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' ## Canada in Lambert projection
 #' plot(coastlineWorld, clongitude=-95, clatitude=65, span=5500,
 #'      grid=10, projection='+proj=laea +lon_0=-100 +lat_0=55')
-#' }
+#'}
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{coastline} data
@@ -432,7 +432,7 @@ setMethod(f="plot",
                   oceDebug(debug, "plot,coastline-method calling mapPlot (code location 1)\n")
                   mapPlot(x[["longitude"]], x[["latitude"]], projection=projection,
                           longitudelim=longitudelim, latitudelim=latitudelim,
-                          bg=col, fill=fill, border=border, debug=debug-1)
+                          bg=col, col=fill, border=border, debug=debug-1)
                   return(invisible())
               }
               if (!missing(clongitude))
@@ -1247,11 +1247,12 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' call to \link[rgdal]{project} in the \CRANpkg{rgdal} package.
 #'
 #' @examples
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
-#' \dontrun{
-#' mapPlot(coastlineCut(coastlineWorld, lon_0=100), proj="+proj=robin +lon_0=100")#, col='gray')
-#' }
+#' mapPlot(coastlineCut(coastlineWorld, lon_0=100),
+#'         proj="+proj=moll +lon_0=100", col='gray')
+#'}
 #'
 #' @return a new coastline object
 #' @family things related to \code{coastline} data

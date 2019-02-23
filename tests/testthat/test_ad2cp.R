@@ -45,14 +45,14 @@ test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burs
             expect_equal(c(TRUE, FALSE, FALSE), nnn %in% names(subset(d1, "average")@data))
             expect_equal(c(FALSE, TRUE, FALSE), nnn %in% names(subset(d1, "burst")@data))
             expect_equal(sort(names(d1[["burst"]])),
-                         c("a", "accelerometerx", "accelerometery",
+                         sort(c("a", "accelerometerx", "accelerometery",
                            "accelerometerz", "AHRS", "blankingDistance", "cellSize",
                            "ensemble", "heading", "nominalCorrelation",
                            "numberOfBeams", "numberOfCells", "oceCoordinate", "orientation",
                            "originalCoordinate", "pitch", "powerLevel", "pressure", "q",
                            "roll", "soundSpeed", "temperature",
                            "temperatureMagnetometer", "temperatureRTC", "time",
-                           "transmitEnergy", "v"))
+                           "transmitEnergy", "v")))
             expect_equal(d1[["type"]], "Signature1000")
             expect_equal(d1[["type"]], ad2cpHeaderValue(d1, "ID", "STR", FALSE))
             expect_equal(d1[["fileType"]], "AD2CP")

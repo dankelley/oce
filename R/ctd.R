@@ -110,11 +110,11 @@ setClass("ctd", contains="oce")
 #' @usage data(ctd)
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' data(ctd)
 #' plot(ctd)
-#' }
+#'}
 #'
 #' @seealso The full profile (not trimmed to the downcast) is available as
 #' \code{data(\link{ctdRaw})}.
@@ -2018,7 +2018,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #' of CTD objects, and also outlines the other functions dealing with them.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' ## Example 1.
 #' d <- read.csv("towyow.csv", header=TRUE)
@@ -2030,7 +2030,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #'   plotProfile(cast, "salinity")
 #'   plotProfile(cast, "temperature")
 #'   plotTS(cast, type='o')
-#' }
+#'}
 #'
 #' ## Example 2.
 #' ## Using a moving average to smooth pressure, instead of the default
@@ -2304,7 +2304,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #' data flags to be inserted into the object.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' data(ctdRaw)
 #' plot(ctdRaw) # barely recognizable, due to pre- and post-cast junk
@@ -2317,7 +2317,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #' }
 #' trimmed <- ctdTrim(ctdRaw, trimByIndex, parameters=c(130, 380))
 #' plot(trimmed)
-#' }
+#'}
 #'
 #' @references
 #' The Seabird CTD instrument is described at
@@ -2748,13 +2748,13 @@ ctdUpdateHeader <- function (x, debug=FALSE)
 #' of CTD objects.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' data(ctd)
 #' write.ctd(ctd, "ctd.csv")
 #' d <- read.csv("ctd.csv")
 #' plot(as.ctd(d$salinity, d$temperature, d$pressure))
-#' }
+#'}
 #'
 #' @author Dan Kelley
 #'

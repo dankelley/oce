@@ -13,7 +13,7 @@ This is sample lobo dataset obtained in the Northwest Arm of Halifax by
 Satlantic.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(lobo)
 summary(lobo)
@@ -32,9 +32,9 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 
-Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
+Other things related to code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},
-  \code{\link{lobo-class}}, \code{\link{plot,lobo-method}},
+  \code{\link{lobo-class}}, \code{\link{read.lobo}},
   \code{\link{subset,lobo-method}},
   \code{\link{summary,lobo-method}}
 }
@@ -42,4 +42,4 @@ Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
 Dan Kelley
 }
 \concept{datasets provided with \code{oce}}
-\concept{things related to \code{lobo} data}
+\concept{things related to code{lobo} data}

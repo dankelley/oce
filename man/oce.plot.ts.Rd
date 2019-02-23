@@ -4,14 +4,14 @@
 \alias{oce.plot.ts}
 \title{Oce Variant of plot.ts}
 \usage{
-oce.plot.ts(x, y, type = "l", xlim, ylim, xlab, ylab, drawTimeRange,
-  fill = FALSE, xaxs = par("xaxs"), yaxs = par("yaxs"),
-  cex = par("cex"), cex.axis = par("cex.axis"),
+oce.plot.ts(x, y, type = "l", xlim, ylim, log = "", xlab, ylab,
+  drawTimeRange, fill = FALSE, xaxs = par("xaxs"),
+  yaxs = par("yaxs"), cex = par("cex"), cex.axis = par("cex.axis"),
   cex.main = par("cex.main"), mgp = getOption("oceMgp"),
   mar = c(mgp[1] + if (nchar(xlab) > 0) 1.5 else 1, mgp[1] + 1.5, mgp[2]
   + 1, mgp[2] + 3/4), main = "", despike = FALSE, axes = TRUE,
   tformat, marginsAsImage = FALSE, grid = FALSE,
-  grid.col = "darkgray", grid.lty = "dotted", grid.lwd = 1,
+  grid.col = "lightgray", grid.lty = "dotted", grid.lwd = par("lwd"),
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -27,6 +27,11 @@ so that autoscaling will yield limits for y that make sense within the
 window.}
 
 \item{ylim}{optional limit for y axis.}
+
+\item{log}{a character value that must be either empty (the default) for linear
+\code{y} axis, or \code{"y"} for logarithmic \code{y} axis.  (Unlike
+\code{\link{plot.default}} etc., \code{oce.plot.ts} does not permit
+logarithmic time, or \code{x} axis.)}
 
 \item{xlab}{name for x axis; defaults to \code{""}.}
 

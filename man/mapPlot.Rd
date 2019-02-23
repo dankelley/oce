@@ -382,7 +382,6 @@ wildly inaccurate in a Pacific Antarctic-Alaska application
 }
 
 \examples{
-\dontrun{
 library(oce)
 data(coastlineWorld)
 
@@ -431,6 +430,7 @@ mapPlot(coastlineCut(coastlineWorld, -135),
         proj="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
 mtext("Stereographic", adj=1)
 
+\donttest{
 # Example 5.
 # Spinning globe: create PNG files that can be assembled into a movie
 png("globe-\%03d.png")
@@ -449,7 +449,6 @@ for (i in seq_along(lons)) {
                 xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
     }
 }
-dev.off()
 }
 }
 \references{

@@ -244,7 +244,7 @@ setClass("adp", contains="oce")
 #' @usage data(adp)
 #'
 #' @examples
-#' \dontrun{
+#'\donttest{
 #' library(oce)
 #' data(adp)
 #'
@@ -253,7 +253,7 @@ setClass("adp", contains="oce")
 #'
 #' # Note that tides have moved the mooring.
 #' plot(adp, which=15:18)
-#' }
+#'}
 #'
 #'
 #' @source This file came from the SLEIWEX-2008 experiment.
@@ -1075,9 +1075,9 @@ setMethod(f="subset",
 #' d <- adp[["distance"]]
 #' v <- adp[["v"]]
 #' a <- as.adp(time=t, distance=d, v=v)
-#' \dontrun{
+#'\donttest{
 #' plot(a)
-#' }
+#'}
 #'
 #' @author Dan Kelley
 #'
@@ -3626,7 +3626,7 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 #' at Department of Oceanography at Dalhousie University.
 #' @examples
 #'
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' beam <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000",
 #'                  from=as.POSIXct("2008-06-26", tz="UTC"),
@@ -3637,7 +3637,7 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 #' plot(enuToOther(toEnu(beam2), heading=-31.5))
 #' plot(beam, which=5:8) # backscatter amplitude
 #' plot(beam2, which=5:8)
-#' }
+#'}
 #'
 #' @family things related to \code{adp} data
 binmapAdp <- function(x, debug=getOption("oceDebug"))
