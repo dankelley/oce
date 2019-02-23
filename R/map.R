@@ -2701,7 +2701,12 @@ map2lonlat <- function(x, y, init=c(0, 0))
         owarn <- options()$warn
         options(warn=-1)
         ## April 2016: rgdal::project started returning named quantities
-        capture.output(XY <- unname(rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE)))
+        ## Feb 2019: allowNAs_if_not_legacy was added in rgdal 1.3-9 to prevent an error on i386/windows.
+        if (packageVersion("rgdal") >= "1.3.9") {
+            capture.output(XY <- unname(rgdal::project(xy=cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE, allowNAs_if_not_legacy=TRUE)))
+        } else {
+            capture.output(XY <- unname(rgdal::project(xy=cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE)))
+        }
         options(warn=owarn)
         ## See https://github.com/dankelley/oce/issues/653#issuecomment-107040093 for why I gave
         ## up on the idea of using rawTransform().
@@ -3664,10 +3669,12 @@ lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceD
     options(warn=-1)
     oceDebug(debug, "projection=", projection, "\n")
     ## April 2016: rgdal::project will soon return named quantities, so we use unname() to prepare
-    ##> NOTE: the legacy=FALSE is to cause i386/windows code to be used. This causes
-    ##> an error if any data are NA.
-    ##> capture.output(XY <- unname(rgdal::project(ll, proj=as.character(projection), inv=FALSE, legacy=FALSE)))
-    capture.output(XY <- unname(rgdal::project(ll, proj=as.character(projection), inv=FALSE)))
+    ## Feb 2019: allowNAs_if_not_legacy was added in rgdal 1.3-9 to prevent an error on i386/windows.
+    if (packageVersion("rgdal") >= "1.3.9") {
+        capture.output(XY <- unname(rgdal::project(xy=ll, proj=as.character(projection), inv=FALSE, allowNAs_if_not_legacy=TRUE)))
+    } else {
+        capture.output(XY <- unname(rgdal::project(xy=ll, proj=as.character(projection), inv=FALSE)))
+    }
     options(warn=owarn)
     xy <- list(x=XY[, 1], y=XY[, 2])
     .Projection(list(type="proj4", projection=projection))
