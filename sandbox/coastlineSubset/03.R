@@ -278,6 +278,8 @@ mtext(sprintf("after step 4 (trim to north of S=%.2f)", S), cex=2/3)
 
 res <- as.coastline(cllon, cllat)
 plot(res)
-mtext("FINAL", side=1, cex=2/3)
+lines(c(W, W, E, E, W), c(S, N, N, S, S), col="cyan", lwd=1)
+fac <- length(cl[["longitude"]]) / length(cllon)
+mtext(sprintf("FINAL: size reduced by factor %.2f", fac), cex=2/3)
 
 ##polygon(cllon, cllat, col="pink")
