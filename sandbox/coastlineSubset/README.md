@@ -12,3 +12,9 @@ only need to use it in constructing coastline subsets to speed up individual
 projects, so a 1-minute operation is not a real pain and (b) it is purposely
 written in an indexing/looping style, so it can be made into C easily.
 
+# 03.R
+
+Trim four sides (but wrong on step 3, e.g. for USA)
+
+
+
