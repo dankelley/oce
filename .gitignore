@@ -33,3 +33,4 @@ oce_[a-zA-Z]*.Rproj
 revdep
 f34*gz
 *.o.tmp
+*.tmp.R
