@@ -1,8 +1,8 @@
 library(oce)
 library(sp)
 debug <- !TRUE
-span0 <- 8*geodDist(-180,-90,0,0)
-z <- 1
+##span0 <- 8*geodDist(-180,-90,0,0)
+##z <- 1
 if (!interactive()) pdf("02.pdf")
 par(mfrow=c(1, 1))
 ## 1. Q: can we recognize points in polygon?
@@ -22,12 +22,12 @@ S <- 35
 px <- c(-70, -70, -45, -45)
 py <- c(35, 52, 52, 35)
 
-n <- length(lon)
+##.n <- length(lon)
 
 na <- which(is.na(lon))
 nseg <- length(na)
 
-examine <- 118
+##examine <- 118
 cllon <- cl[["longitude"]]
 cllat <- cl[["latitude"]]
 par(mar=c(2, 2, 1, 1))
@@ -35,8 +35,8 @@ while (TRUE) {
     plot(cl)# , clon=E, clat=N, span=span0/z, type="l", pch=20)
     ##plot(cl)
     abline(v=E, col=4)
-    abline(h=N, col=4)
-    mtext(sprintf("E=%.1f N=%.1f; close window to exit",
+    ##abline(h=N, col=4)
+    mtext(sprintf("E=%.1f N=%.1f (click to revise); close window to exit",
                   E, N), side=3, col=2, font=2, cex=0.8)
     cat("--reset--\n")
     for (iseg in 2:nseg) {
@@ -51,12 +51,9 @@ while (TRUE) {
         j <- 1L
         for (i in seq.int(1, n)) {
             if (lon[i] < E) {
-                ## cat("case 1 inside (i=", i, " j=", j, ")\n")
                 if (i>1 && lon[i-1] >=E) {
                     ## Interpolate crossing point
-                    cat("seg=", iseg, ": case 1A last outside (i=", i, " j=", j, ")\n")
-                    ##>LAT[j] <- NA
-                    ##>LON[j] <- NA
+                    cat("seg=", iseg, ": case 1: last outside (i=", i, " j=", j, ")\n")
                     latfake <- if (lon[i] == lon[i-1])
                         0.5*(lat[i-1] + lat[i])
                     else
@@ -74,9 +71,8 @@ while (TRUE) {
                 LON[j] <- lon[i]
                 j <- j + 1
             } else if (lon[i] >= E) {
-                ##cat("case 2 outside (i=", i, " j=", j, ")\n")
                 if (i > 1 && lon[i-1] < E) {
-                    cat("seg=", iseg, ": case 2A last was outside (i=", i, " j=", j, ")\n")
+                    cat("seg=", iseg, ": case 2: last was outside (i=", i, " j=", j, ")\n")
                     latfake <- if (lon[i] == lon[i-1])
                         0.5*(lat[i-1] + lat[i])
                     else
@@ -86,23 +82,20 @@ while (TRUE) {
                     if (debug > 0) {
                         points(LON[j], LAT[j], col="blue", pch=2)
                     }
-                    ##LAT[j + 1] <- NA
-                    ##LON[j + 1] <- NA
                     j <- j + 1
                 }
             }
         }
-        ## lines(LON, LAT, col=3, lwd=3)
         polygon(LON, LAT, col=rgb(1,0,0,alpha=0.2))
-        if (debug && iseg == examine) {
-            plot(lon,lat,asp=1/cos(pi*mean(lat)/180), type="o",pch=20,cex=1/2)
-            polygon(lon, lat, col=rgb(0,1,0,alpha=0.1))
-            polygon(LON, LAT, col=rgb(1,0,0,alpha=0.2))
-            points(lon, lat, pch=20, col=2) # data
-            points(lon[1], lat[1], pch=1, col=2) # data
-            points(LON, LAT, pch=20, col=3, cex=1/2) # why an extra point?
-            browser()
-        }
+        ## if (debug && iseg == examine) {
+        ##     plot(lon,lat,asp=1/cos(pi*mean(lat)/180), type="o",pch=20,cex=1/2)
+        ##     polygon(lon, lat, col=rgb(0,1,0,alpha=0.1))
+        ##     polygon(LON, LAT, col=rgb(1,0,0,alpha=0.2))
+        ##     points(lon, lat, pch=20, col=2) # data
+        ##     points(lon[1], lat[1], pch=1, col=2) # data
+        ##     points(LON, LAT, pch=20, col=3, cex=1/2) # why an extra point?
+        ##     browser()
+        ## }
     }
     ##> polygon(LON, LAT, col=rgb(1,0,0,alpha=0.2))
     if (!interactive())
@@ -118,15 +111,14 @@ while (TRUE) {
     E <- xy$x
     N <- xy$y
     ##span <- span / 1.1
-    if (debug) {
-        m <- menu(c("world view", "focus", "+ zoom in", "- zoom out", "quit"), "action")
-        if (m == 1) {z <- 1; E <- 0; N <- 0}
-        else if (m == 2) z <- 1
-        else if (m == 3) z <- z * 1.1
-        else if (m == 4) z <- z / 1.1
-        else if (m == 5) break
-    }
-
+    ##if (debug) {
+    ##    m <- menu(c("world view", "focus", "+ zoom in", "- zoom out", "quit"), "action")
+    ##    if (m == 1) {z <- 1; E <- 0; N <- 0}
+    ##    else if (m == 2) z <- 1
+    ##    else if (m == 3) z <- z * 1.1
+    ##    else if (m == 4) z <- z / 1.1
+    ##    else if (m == 5) break
+    ##}
 }
 ##LAT <- LAT[1:j]
 ##LON <- LON[1:j]
