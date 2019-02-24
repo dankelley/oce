@@ -6,12 +6,17 @@ par(mfrow=c(1, 1))
 ##> cl <- coastlineWorldFine
 data(coastlineWorld)
 cl <- coastlineWorld
-lon <- cl[["longitude"]]
-lat <- cl[["latitude"]]
 
-
-cllon <- cl[["longitude"]]             # gets revised at each of 4 steps
-cllat <- cl[["latitude"]]              # "
+## we add NA at start and end because that's how we find segments.
+NAendpoints <- function(x) {
+    if (!is.na(x[1]))
+        x <- c(NA, x)
+    if (!is.na(x[length(x)]))
+        x <- c(x, NA)
+    x
+}
+cllon <- NAendpoints(cl[["longitude"]]) # gets revised at each of 4 steps
+cllat <- NAendpoints(cl[["latitude"]]) # "
 
 
 par(mfrow=c(3, 2), mar=c(2, 2, 2, 1))
@@ -79,8 +84,8 @@ for (iseg in 2:nseg) {
         latTrimmed <- c(latTrimmed, NA, LAT)
     }
 }
-cllon <- lonTrimmed
-cllat <- latTrimmed
+cllon <- NAendpoints(lonTrimmed)
+cllat <- NAendpoints(latTrimmed)
 
 plot(cl)
 lines(c(W, W, E, E, W), c(S, N, N, S, S), col="cyan", lwd=1)
@@ -140,8 +145,8 @@ for (iseg in 2:nseg) {
         latTrimmed <- c(latTrimmed, NA, LAT)
     }
 }
-cllon <- lonTrimmed
-cllat <- latTrimmed
+cllon <- NAendpoints(lonTrimmed)
+cllat <- NAendpoints(latTrimmed)
 
 plot(cl)
 lines(c(W, W, E, E, W), c(S, N, N, S, S), col="cyan", lwd=1)
@@ -201,8 +206,8 @@ for (iseg in 2:nseg) {
         latTrimmed <- c(latTrimmed, NA, LAT)
     }
 }
-cllon <- lonTrimmed
-cllat <- latTrimmed
+cllon <- NAendpoints(lonTrimmed)
+cllat <- NAendpoints(latTrimmed)
 
 plot(cl)
 polygon(cllon, cllat, col="pink")
@@ -263,8 +268,8 @@ for (iseg in 2:nseg) {
         latTrimmed <- c(latTrimmed, NA, LAT)
     }
 }
-cllon <- lonTrimmed
-cllat <- latTrimmed
+cllon <- NAendpoints(lonTrimmed)
+cllat <- NAendpoints(latTrimmed)
 
 plot(cl)
 lines(c(W, W, E, E, W), c(S, N, N, S, S), col="cyan", lwd=1)
