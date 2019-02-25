@@ -14,7 +14,10 @@ written in an indexing/looping style, so it can be made into C easily.
 
 # 03.R
 
-Trim four sides (but wrong on step 3, e.g. for USA)
+Trim four sides (but wrong on step 3)
 
+# 04.R
 
+I think this works now. The coasts are colourized, but they may repeat since
+I'm just running through them, not doing a 4-colouring method.
 
