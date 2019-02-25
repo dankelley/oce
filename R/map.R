@@ -996,7 +996,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @param projection optional indication of projection, in one of two
 #' forms. First, it may be a character string in the "CRS" format that is
-#' used by the \code{rgdal} package (and in much of modern computer-based
+#' used by the \CRANpkg{rgdal} package (and in much of modern computer-based
 #' cartography). For example, \code{projection="+proj=merc"} specifies a
 #' Mercator projection. The second format is the output from
 #' \code{\link[sp]{CRS}} in the \CRANpkg{sp} package, which is an object
@@ -1024,7 +1024,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @details
 #' Creates a map using the indicated projection.  As noted in the
 #' information on the \code{projection} argument, projections are specified in
-#' the notation used by \code{project()} in the \code{rgdal} package; see
+#' the notation used by \code{project()} in the \CRANpkg{rgdal} package; see
 #' \dQuote{Available Projections} for a list of possibilities.
 #'
 #' Once a projection is set, other \code{map*} functions may be used to add to
@@ -1119,14 +1119,14 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #
 #' @section Available Projections:
 #' Map projections are provided by the
-#' \code{rgdal} package, but not all projections in that package are
+#' \CRANpkg{rgdal} package, but not all projections in that package are
 #' available. The available list is given in the table
 #' below. The cartographic community has set up a naming scheme in a coded
 #' scheme, e.g. \code{projection="+proj=aea"} selects the Albers equal area
 #' projection.
 #'
 #' The allowed projections include those PROJ.4 projections provided by
-#' \code{rgdal} that have inverses, minus a few that cause problems:
+#' \CRANpkg{rgdal} that have inverses, minus a few that cause problems:
 #' \code{alsk} overdraws \code{coastlineWorld}, and is a niche projection for Alaska;
 #' \code{calcofi} is not a real projection, but rather a coordinate system;
 #' \code{gs48} overdraws \code{coastlineWorld}, and is a niche projection for the USA;
@@ -1149,7 +1149,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' Further details of the projections and the controlling arguments are
 #' provided at several websites, because PROJ.4 has been incorporated into
-#' \code{rgdal} and other R packages, plus many other software systems; a good
+#' \CRANpkg{rgdal} and other R packages, plus many other software systems; a good
 #' starting point for learning is [6].
 #'
 #' See \dQuote{Examples} for suggested projections for some common
@@ -1331,7 +1331,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' See \url{https://github.com/dankelley/oce/issues/1319} for details.
 #'
 #' \item 2017-11-17: \code{lsat} removed, because it does not work in
-#' \code{rgdal} or in the latest standalone PROJ.4 application.
+#' \CRANpkg{rgdal} or in the latest standalone PROJ.4 application.
 #' This is a also problem in the standalone PROJ.4 application version
 #' 4.9.3, downloaded and built on OSX.
 #' See \url{https://github.com/dankelley/oce/issues/1337} for details.
@@ -3604,7 +3604,7 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 #' @param latitude a vector containing decimal latitude (ignored if
 #' \code{longitude} is a list, as described above).
 #' @param projection optional indication of projection.  This must be character
-#' string in the format used by the \code{rgdal} package;
+#' string in the format used by the \CRANpkg{rgdal} package;
 #' see \code{\link{mapPlot}}.)
 #' @template debugTemplate
 #' @return A list containing \code{x} and \code{y}.

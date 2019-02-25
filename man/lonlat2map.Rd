@@ -16,7 +16,7 @@ the indicated values are used, and next argument is ignored.}
 \code{longitude} is a list, as described above).}
 
 \item{projection}{optional indication of projection.  This must be character
-string in the format used by the \code{rgdal} package;
+string in the format used by the \CRANpkg{rgdal} package;
 see \code{\link{mapPlot}}.)}
 
 \item{debug}{an integer specifying whether debugging information is
