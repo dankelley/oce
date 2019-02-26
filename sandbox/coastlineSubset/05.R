@@ -39,7 +39,6 @@ if (REAL) {
     S <- 30
     N <- 60
 }
-mtext(sprintf("Box: W=%.2f E=%.2f S=%.2f N=%.2f", W, E, S, N), font=2, col=2, line=-1)
 box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
 lines(c(W, W, E, E, W), c(S, N, N, S, S), col="magenta")
 
@@ -104,4 +103,6 @@ for (iseg in 2:nseg) {
         cat("iseg=", iseg, ": < 3 points\n")
     }
 }
+mtext(sprintf("Box: W=%.2f E=%.2f S=%.2f N=%.2f", W, E, S, N), font=2, col=2)
 options(warn=owarn)
+
