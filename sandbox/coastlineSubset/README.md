@@ -17,4 +17,11 @@ written in an indexing/looping style, so it can be made into C easily.
 Trim four sides (but wrong on step 3, e.g. for USA)
 
 
+# 04.R
+
+?
+
+# 05.R
+
+Trial solution using raster package functions.
 
