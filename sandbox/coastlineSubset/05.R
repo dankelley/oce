@@ -50,38 +50,9 @@ cllon <- NAendpoints(coastlineWorld[["longitude"]])
 cllat <- NAendpoints(coastlineWorld[["latitude"]])
 na <- which(is.na(cllon))
 nseg <- length(na)
-col <- 1
 owarn <- options("warn")$warn
 options(warn=-1)
-for (iseg in 2:nseg) {
-    look <- seq.int(na[iseg-1]+1, na[iseg]-1)
-    lon <- cllon[look]
-    if (any(is.na(lon))) stop("step 1: double lon NA at iseg=", iseg) # checks ok on coastlineWorld
-    lat <- cllat[look]
-    if (any(is.na(lat))) stop("step 1: double lat NA at iseg=", iseg) # checks ok on coastlineWorld
-    n <- length(lon)
-    if (n < 1) stop("how can we have no data?")
-    if (length(lon) > 2) {
-        A <- sp::Polygon(cbind(lon, lat))
-        B <- sp::Polygons(list(A), "A")
-        C <- sp::SpatialPolygons(list(B))
-        ##? if (iseg == 42) browser()
-        i <- raster::intersect(box, C)
-        if (!is.null(i)) {
-            xy <- i@polygons[[1]]@Polygons[[1]]@coords
-            polygon(xy[,1], xy[,2], col=col)
-            col <- (col + 1) %% 5 + 1
-            cat("iseg=", iseg, ": plotted in col=", col, "\n")
-        } else {
-            cat("iseg=", iseg, ": no intersection\n")
-        }
-    } else {
-        cat("iseg=", iseg, ": < 3 points\n")
-    }
-}
-options(warn=owarn)
-options(warn=-1)
-plot(as.coastline(c(E, W), c(S, N)), type="n")
+col <- 0
 for (iseg in 2:nseg) {
     look <- seq.int(na[iseg-1]+1, na[iseg]-1)
     lon <- cllon[look]
@@ -98,14 +69,40 @@ for (iseg in 2:nseg) {
         i <- raster::intersect(box, C)
         if (!is.null(i)) {
             xy <- i@polygons[[1]]@Polygons[[1]]@coords
-            polygon(xy[,1], xy[,2], col=col)
-            col <- (col + 1) %% 5 + 1
-            cat("iseg=", iseg, ": plotted in col=", col, "\n")
+            polygon(xy[,1], xy[,2], col=col+1)
+            cat("World view: iseg=", iseg, ": plotted in col=", col+1, "\n")
+            col <- (col + 1) %% 8
         } else {
-            cat("iseg=", iseg, ": no intersection\n")
+            #cat("iseg=", iseg, ": no intersection\n")
         }
-    } else {
-        cat("iseg=", iseg, ": < 3 points\n")
+    }
+}
+options(warn=owarn)
+options(warn=-1)
+plot(as.coastline(c(E, W), c(S, N)), type="n")
+col <- 0
+for (iseg in 2:nseg) {
+    look <- seq.int(na[iseg-1]+1, na[iseg]-1)
+    lon <- cllon[look]
+    if (any(is.na(lon))) stop("step 1: double lon NA at iseg=", iseg) # checks ok on coastlineWorld
+    lat <- cllat[look]
+    if (any(is.na(lat))) stop("step 1: double lat NA at iseg=", iseg) # checks ok on coastlineWorld
+    n <- length(lon)
+    if (n < 1) stop("how can we have no data?")
+    if (length(lon) > 0) {
+        A <- sp::Polygon(cbind(lon, lat))
+        B <- sp::Polygons(list(A), "A")
+        C <- sp::SpatialPolygons(list(B))
+        ##? if (iseg == 42) browser()
+        i <- raster::intersect(box, C)
+        if (!is.null(i)) {
+            xy <- i@polygons[[1]]@Polygons[[1]]@coords
+            polygon(xy[,1], xy[,2], col=col+1)
+            cat("Zoomed-in: iseg=", iseg, ": plotted in col=", col+1, "\n")
+            col <- (col + 1) %% 8
+        } else {
+            #cat("iseg=", iseg, ": no intersection\n")
+        }
     }
 }
 mtext(sprintf("Box: W=%.2f E=%.2f S=%.2f N=%.2f", W, E, S, N), font=2, col=2)
