@@ -39,6 +39,7 @@ if (REAL) {
     S <- 30
     N <- 60
 }
+mtext(sprintf("Box: W=%.2f E=%.2f S=%.2f N=%.2f", W, E, S, N), font=2, col=2, line=-1)
 box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
 lines(c(W, W, E, E, W), c(S, N, N, S, S), col="magenta")
 
@@ -47,9 +48,9 @@ cllat <- NAendpoints(coastlineWorld[["latitude"]])
 na <- which(is.na(cllon))
 nseg <- length(na)
 col <- 1
-
+owarn <- options("warn")$warn
+options(warn=-1)
 for (iseg in 2:nseg) {
-    message("iseg=", iseg)             # 290 in coastlineWorld
     look <- seq.int(na[iseg-1]+1, na[iseg]-1)
     lon <- cllon[look]
     if (any(is.na(lon))) stop("step 1: double lon NA at iseg=", iseg) # checks ok on coastlineWorld
@@ -58,7 +59,6 @@ for (iseg in 2:nseg) {
     n <- length(lon)
     if (n < 1) stop("how can we have no data?")
     if (length(lon) > 2) {
-        message("  long enough")
         A <- sp::Polygon(cbind(lon, lat))
         B <- sp::Polygons(list(A), "A")
         C <- sp::SpatialPolygons(list(B))
@@ -76,4 +76,4 @@ for (iseg in 2:nseg) {
         cat("iseg=", iseg, ": < 3 points\n")
     }
 }
-
+options(warn=owarn)
