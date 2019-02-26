@@ -23,10 +23,10 @@ getCoords <- function(sp)
 }
 
 data(coastlineWorld, package="oce")
+par(mfrow=c(2, 1), mar=rep(1, 4))
 plot(coastlineWorld)
 mtext("Click twice to define a box", font=2, col=2)
 requireNamespace("raster") # we only need a few functions and I prefer to name them
-par(mar=rep(1, 4))
 if (REAL) {
     bb <- locator(2)
     W <- min(bb$x)
@@ -50,6 +50,34 @@ nseg <- length(na)
 col <- 1
 owarn <- options("warn")$warn
 options(warn=-1)
+for (iseg in 2:nseg) {
+    look <- seq.int(na[iseg-1]+1, na[iseg]-1)
+    lon <- cllon[look]
+    if (any(is.na(lon))) stop("step 1: double lon NA at iseg=", iseg) # checks ok on coastlineWorld
+    lat <- cllat[look]
+    if (any(is.na(lat))) stop("step 1: double lat NA at iseg=", iseg) # checks ok on coastlineWorld
+    n <- length(lon)
+    if (n < 1) stop("how can we have no data?")
+    if (length(lon) > 2) {
+        A <- sp::Polygon(cbind(lon, lat))
+        B <- sp::Polygons(list(A), "A")
+        C <- sp::SpatialPolygons(list(B))
+        ##? if (iseg == 42) browser()
+        i <- raster::intersect(box, C)
+        if (!is.null(i)) {
+            xy <- i@polygons[[1]]@Polygons[[1]]@coords
+            polygon(xy[,1], xy[,2], col=col)
+            col <- (col + 1) %% 5 + 1
+            cat("iseg=", iseg, ": plotted in col=", col, "\n")
+        } else {
+            cat("iseg=", iseg, ": no intersection\n")
+        }
+    } else {
+        cat("iseg=", iseg, ": < 3 points\n")
+    }
+}
+options(warn=owarn)
+plot(as.coastline(c(E, W), c(S, N)), type="n")
 for (iseg in 2:nseg) {
     look <- seq.int(na[iseg-1]+1, na[iseg]-1)
     lon <- cllon[look]
