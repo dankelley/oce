@@ -1,6 +1,7 @@
 REAL <- !TRUE # to avoid having to click whilst writing code
 library(raster)
 library(oce)
+## install.packages("rgeos")
 
 #' Ensure that vector starts and ends with NA
 #' @param x a vector
@@ -23,6 +24,8 @@ getCoords <- function(sp)
 }
 
 data(coastlineWorld, package="oce")
+cllon <- coastlineWorld[["longitude"]]
+cllat <- coastlineWorld[["latitude"]]
 par(mfrow=c(2, 1), mar=rep(1, 4))
 plot(coastlineWorld)
 mtext("Click twice to define a box", font=2, col=2)
@@ -46,12 +49,14 @@ if (REAL) {
 box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
 lines(c(W, W, E, E, W), c(S, N, N, S, S), col="magenta")
 
-options(warn=owarn)
+owarn <- options("warn")$warn
 options(warn=-1)
 EWdel <- 0.1 * (E - W)
 NSdel <- 0.1 * (N - S)
 plot(as.coastline(c(E-EWdel, W+EWdel), c(S-NSdel, N+NSdel)), type="n")
 col <- 0
+na <- which(is.na(cllon))
+nseg <- length(na)
 for (iseg in 2:nseg) {
     look <- seq.int(na[iseg-1]+1, na[iseg]-1)
     lon <- cllon[look]
