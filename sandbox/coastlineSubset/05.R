@@ -1,4 +1,4 @@
-REAL <- TRUE # to avoid having to click whilst writing code
+REAL <- !TRUE # to avoid having to click whilst writing code
 library(raster)
 library(oce)
 
@@ -38,6 +38,10 @@ if (REAL) {
     E <- -50
     S <- 30
     N <- 60
+    W <- -76.01
+    E <- -62.47
+    S <- 37.72
+    N <- 53.96
 }
 box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
 lines(c(W, W, E, E, W), c(S, N, N, S, S), col="magenta")
@@ -76,6 +80,7 @@ for (iseg in 2:nseg) {
     }
 }
 options(warn=owarn)
+options(warn=-1)
 plot(as.coastline(c(E, W), c(S, N)), type="n")
 for (iseg in 2:nseg) {
     look <- seq.int(na[iseg-1]+1, na[iseg]-1)
@@ -85,7 +90,7 @@ for (iseg in 2:nseg) {
     if (any(is.na(lat))) stop("step 1: double lat NA at iseg=", iseg) # checks ok on coastlineWorld
     n <- length(lon)
     if (n < 1) stop("how can we have no data?")
-    if (length(lon) > 2) {
+    if (length(lon) > 1) {
         A <- sp::Polygon(cbind(lon, lat))
         B <- sp::Polygons(list(A), "A")
         C <- sp::SpatialPolygons(list(B))
