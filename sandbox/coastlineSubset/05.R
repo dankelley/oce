@@ -1,4 +1,4 @@
-REAL <- TRUE # to avoid having to click whilst writing code
+REAL <- !TRUE # to avoid having to click whilst writing code
 library(raster)
 library(oce)
 
@@ -34,14 +34,14 @@ if (REAL) {
     S <- min(bb$y)
     N <- max(bb$y)
 } else {
-    W <- -100
-    E <- -50
-    S <- 30
-    N <- 60
-    W <- -76.01
-    E <- -62.47
-    S <- 37.72
-    N <- 53.96
+    W <- -70.79
+    E <- -61.79
+    S <- 39.56
+    N <- 53.42
+    ## DK: testing effect of moving the boundary
+    N <- N + 10
+    E <- E + 5
+    W <- W - 2
 }
 box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
 lines(c(W, W, E, E, W), c(S, N, N, S, S), col="magenta")
@@ -90,7 +90,7 @@ for (iseg in 2:nseg) {
     if (any(is.na(lat))) stop("step 1: double lat NA at iseg=", iseg) # checks ok on coastlineWorld
     n <- length(lon)
     if (n < 1) stop("how can we have no data?")
-    if (length(lon) > 1) {
+    if (length(lon) > 0) {
         A <- sp::Polygon(cbind(lon, lat))
         B <- sp::Polygons(list(A), "A")
         C <- sp::SpatialPolygons(list(B))
