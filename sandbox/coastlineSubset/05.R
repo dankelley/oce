@@ -14,7 +14,7 @@ NAendpoints <- function(x) {
     x
 }
 
-#' Extract coordinates from SpatialPolygons object
+#' (BROKEN and UNUSED) Extract coordinates from SpatialPolygons object
 #' @param sp a SpatialPolygons object
 #' @return a matrix with two columns, first for x, second for y
 getCoords <- function(sp)
@@ -23,14 +23,16 @@ getCoords <- function(sp)
     sp@Polygons[[1]]@coords
 }
 
-data(coastlineWorld, package="oce")
-cllon <- coastlineWorld[["longitude"]]
-cllat <- coastlineWorld[["latitude"]]
+data(coastlineWorldFine, package="ocedata")
+cllon <- coastlineWorldFine[["longitude"]]
+cllat <- coastlineWorldFine[["latitude"]]
+norig <- length(cllon)
+if (!interactive()) png("05.png", res=150, width=7, height=7, unit="in")
 par(mfrow=c(2, 1), mar=rep(1, 4))
-plot(coastlineWorld)
-mtext("Click twice to define a box", font=2, col=2)
+plot(coastlineWorldFine)
 requireNamespace("raster") # we only need a few functions and I prefer to name them
 if (REAL) {
+    mtext("Click twice to define a box", font=2, col=2)
     bb <- locator(2)
     W <- min(bb$x)
     E <- max(bb$x)
@@ -57,6 +59,7 @@ plot(as.coastline(c(E-EWdel, W+EWdel), c(S-NSdel, N+NSdel)), type="n")
 col <- 0
 na <- which(is.na(cllon))
 nseg <- length(na)
+nnew <- 0
 for (iseg in 2:nseg) {
     look <- seq.int(na[iseg-1]+1, na[iseg]-1)
     lon <- cllon[look]
@@ -77,7 +80,10 @@ for (iseg in 2:nseg) {
                 ##> message("and is this 1? ", length(i@polygons))
                 for (k in seq_along(i@polygons[[1]]@Polygons)) {
                     xy <- i@polygons[[j]]@Polygons[[k]]@coords
-                    polygon(xy[,1], xy[,2], col=col+1)
+                    seglon <- xy[, 1]
+                    seglat <- xy[, 2]
+                    nnew <- nnew + length(seglon)
+                    polygon(seglon, seglat, col=col+1)
                     cat("iseg=", iseg, ", j=", j, ", k=", k, ": plotted in col=", col+1, "\n", sep="")
                     col <- (col + 1) %% 8
                 }
@@ -87,8 +93,10 @@ for (iseg in 2:nseg) {
         }
     }
 }
-lines(cllon, cllat, lwd=1/2, col="gray", type="o", pch=20, cex=1/3)
+lines(cllon, cllat, lwd=1/2)
 lines(c(W, W, E, E, W), c(S, N, N, S, S), col="magenta")
-mtext(sprintf("Box: W=%.2f E=%.2f S=%.2f N=%.2f", W, E, S, N), font=2, col=2)
+mtext(sprintf("Box: W=%.2f E=%.2f S=%.2f N=%.2f; data shrinkage factor=%.1f",
+              W, E, S, N, norig/nnew), font=2, col=2)
 options(warn=owarn)
+if (!interactive()) dev.off()
 
