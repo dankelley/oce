@@ -3,6 +3,7 @@
   is done in the "develop" git branch, or of branches that feed into "develop".
   The rightmost fractional number is not always increased with updates to "develop".
 * read.ctd.sbe() handles more column names
+* i386/windows gets map projections
 
 1.0-1
 * Renamed 0.9-24, released with OAR book publication.

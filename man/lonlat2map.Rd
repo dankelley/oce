@@ -37,6 +37,12 @@ other arguments will be inferred by \code{lonlat2map}.  This is important
 because otherwise, if a new projection is called for, it will ruin any
 additions to the existing plot.
 }
+\section{Bugs}{
+
+This uses \CRANpkg{rgdal}, and will fail on i386/windows machines unless
+that package is version 1.3-9 or higher.
+}
+
 \examples{
 \donttest{
 library(oce)

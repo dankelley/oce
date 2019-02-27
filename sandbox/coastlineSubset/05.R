@@ -14,25 +14,6 @@ NAendpoints <- function(x) {
     x
 }
 
-<<<<<<< HEAD
-#' Extract coordinates from SpatialPolygons object
-#' @param sp a SpatialPolygons object
-#' @return a matrix with two columns, first for x, second for y
-getCoords <- function(sp)
-{
-    stopifnot(1 == length(sp@Polygons)) # I don't know if this is always true
-    sp@Polygons[[1]]@coords
-}
-
-data(coastlineWorld, package="oce")
-cllon <- coastlineWorld[["longitude"]]
-cllat <- coastlineWorld[["latitude"]]
-par(mfrow=c(2, 1), mar=rep(1, 4))
-plot(coastlineWorld)
-mtext("Click twice to define a box", font=2, col=2)
-requireNamespace("raster") # we only need a few functions and I prefer to name them
-if (REAL) {
-=======
 data(coastlineWorldFine, package="ocedata")
 cllon <- coastlineWorldFine[["longitude"]]
 cllat <- coastlineWorldFine[["latitude"]]
@@ -43,7 +24,6 @@ plot(coastlineWorldFine)
 requireNamespace("raster") # we only need a few functions and I prefer to name them
 if (REAL) {
     mtext("Click twice to define a box", font=2, col=2)
->>>>>>> develop
     bb <- locator(2)
     W <- min(bb$x)
     E <- max(bb$x)
@@ -70,12 +50,9 @@ plot(as.coastline(c(E-EWdel, W+EWdel), c(S-NSdel, N+NSdel)), type="n")
 col <- 0
 na <- which(is.na(cllon))
 nseg <- length(na)
-<<<<<<< HEAD
-=======
 nnew <- 0
 outlon <- NULL
 outlat <- NULL
->>>>>>> develop
 for (iseg in 2:nseg) {
     look <- seq.int(na[iseg-1]+1, na[iseg]-1)
     lon <- cllon[look]
@@ -88,17 +65,6 @@ for (iseg in 2:nseg) {
         A <- sp::Polygon(cbind(lon, lat))
         B <- sp::Polygons(list(A), "A")
         C <- sp::SpatialPolygons(list(B))
-<<<<<<< HEAD
-        ##? if (iseg == 42) browser()
-        i <- raster::intersect(box, C)
-        if (!is.null(i)) {
-            for (j in seq_along(i@polygons)) {
-                ##> message("is this 1? ", length(i@polygons[[1]]@Polygons))
-                ##> message("and is this 1? ", length(i@polygons))
-                for (k in seq_along(i@polygons[[1]]@Polygons)) {
-                    xy <- i@polygons[[j]]@Polygons[[k]]@coords
-                    polygon(xy[,1], xy[,2], col=col+1)
-=======
         i <- raster::intersect(box, C)
         if (!is.null(i)) {
             for (j in seq_along(i@polygons)) {
@@ -110,22 +76,10 @@ for (iseg in 2:nseg) {
                     outlon <- c(outlon, NA, seglon)
                     outlat <- c(outlat, NA, seglat)
                     polygon(seglon, seglat, col=col+1)
->>>>>>> develop
                     cat("iseg=", iseg, ", j=", j, ", k=", k, ": plotted in col=", col+1, "\n", sep="")
                     col <- (col + 1) %% 8
                 }
             }
-<<<<<<< HEAD
-        } else {
-                                        #cat("iseg=", iseg, ": no intersection\n")
-        }
-    }
-}
-lines(cllon, cllat, lwd=1/2, col="gray", type="o", pch=20, cex=1/3)
-lines(c(W, W, E, E, W), c(S, N, N, S, S), col="magenta")
-mtext(sprintf("Box: W=%.2f E=%.2f S=%.2f N=%.2f", W, E, S, N), font=2, col=2)
-options(warn=owarn)
-=======
         }
     }
 }
@@ -137,5 +91,4 @@ mtext(sprintf("W=%.2f E=%.2f S=%.2f N=%.2f; shrinkage factor=%.1f; saved 'coastl
               W, E, S, N, norig/length(outlon)), font=2, cex=0.9, line=1, col=2)
 options(warn=owarn)
 if (!interactive()) dev.off()
->>>>>>> develop
 

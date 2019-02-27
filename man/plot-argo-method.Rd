@@ -69,9 +69,9 @@ mean float latitude.  If \code{projection="automatic"}, then one
 of two projections is used: stereopolar (i.e. \code{"+proj=stere +lon_0=X"}
 where \code{X} is the mean longitude), or Mercator (i.e. \code{"+proj=merc"})
 otherwise.  Otherwise, \code{projection} must be a character string specifying
-a projection in the notation used by \link[rgdal]{project} in the \CRANpkg{rgdal};
-this will be familiar to many readers as the PROJ.4 notation;
-see \code{\link{mapPlot}}.}
+a projection in the notation used by the \code{link[rgdal]{project}} function
+in the \CRANpkg{rgdal} package; this will be familiar to many readers as
+the PROJ.4 notation; see \code{\link{mapPlot}}.}
 
 \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also for
 \code{par(mar)}, computed from this.  The default is tighter than the R

@@ -1244,7 +1244,8 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #'
 #' @param coastline original coastline object
 #' @param lon_0 longitude as would be given in a \code{+lon_0=} item in a
-#' call to \link[rgdal]{project} in the \CRANpkg{rgdal} package.
+#' call to the \code{\link[rgdal]{project}} function in the
+#' \CRANpkg{rgdal} package.
 #'
 #' @examples
 #'\donttest{
