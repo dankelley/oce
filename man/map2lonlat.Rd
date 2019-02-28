@@ -4,7 +4,7 @@
 \alias{map2lonlat}
 \title{Convert X and Y to Longitude and Latitude}
 \usage{
-map2lonlat(x, y, init)
+map2lonlat(x, y, init = NULL)
 }
 \arguments{
 \item{x}{vector containing the x component of points in the projected space, or

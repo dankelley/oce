@@ -752,10 +752,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     ## names to which the assignments are made apply to average/burst data,
     ## while comments are used to indicate values for other data, e.g.
     ## bottomTrack.
-    pressureValid <- configuration[, 1]
-    temperatureValid <- configuration[, 2]
-    compassValid <- configuration[, 3]
-    tiltValid <- configuration[, 4]
+    ##UNUSED pressureValid <- configuration[, 1]
+    ##UNUSED temperatureValid <- configuration[, 2]
+    ##UNUSED compassValid <- configuration[, 3]
+    ##UNUSED tiltValid <- configuration[, 4]
     ## configuration[, 5] -
     velocityIncluded <- configuration[, 6]
     amplitudeIncluded <- configuration[, 7] # bottomTrack:-
@@ -834,7 +834,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     powerLevel <- readBin(d$buf[pointer1 + 60], "integer", size=1, n=N, signed=TRUE, endian="little")
     temperatureMagnetometer <- 0.001 * readBin(d$buf[pointer2 + 61], "integer", size=2, n=N, signed=TRUE, endian="little")
     temperatureRTC <- 0.01 * readBin(d$buf[pointer2 + 63], "integer", size=2, n=N, endian="little")
-    error <- readBin(d$buf[pointer2 + 65], "integer", size=4, n=N, endian="little") # FIXME: UNUSED
+    ##UNUSED error <- readBin(d$buf[pointer2 + 65], "integer", size=4, n=N, endian="little") # FIXME: UNUSED
 
     ## status0, byte 67:68, skipped
     ## status,  byte 69:71, already read above so we could infer activeConfiguration
@@ -885,7 +885,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
               altimeter=which(d$id==0x1e), # coded, but no sample-data test and no plot()
               averageAltimeter=which(d$id==0x1f), # coded, but no sample-data test and no plot()
               text=which(d$id==0xa0)) # coded and checked against .cfg file
-    recordCount <- lapply(p, length)
 
     ## 2. get some things in slow index-based form.
     if (length(p$burst) > 0) {         # key=0x15

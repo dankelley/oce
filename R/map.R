@@ -14,7 +14,7 @@
 #'
 #' This function is used to isolate other oce functions from
 #' changes to the \code{\link[rgdal]{project}} function in the \CRANpkg{rgdal}
-#' package, which calculations of both forward
+#' package, which is used for calculations involved in both forward
 #' and inverse map projections.
 #'
 #' Some highlights of the evolving relationship with rgdal are:
@@ -25,7 +25,11 @@
 #'    \CRANpkg{rgdal} package.
 #' \item 2016 Apr: rgdal::project started returning named quantities
 #' \item 2019 Feb: allowNAs_if_not_legacy was added in rgdal 1.3-9 to prevent
-#'    an error on i386/windows.
+#'    an error on i386/windows. However, using this argument imposes a
+#'    burden on users to update \CRANpkg{rgdal}, so the approach taken
+#'    here (by default, i.e. with \code{passNA=FALSE}) is to
+#'    temporarily switch NA data to 0, and then switch
+#'    back to NA after the calculation.
 #'}
 #'
 #' @param xy As for the \code{\link[rgdal]{project}} function in the
@@ -34,27 +38,45 @@
 #' @param inv "
 #' @param use_ob_tran "
 #' @param legacy "
+#' @param passNA Logical value indicating whether to pass NA values into
+#' \CRANpkg{rgdal}.  The default is \code{FALSE}, meaning that any NA
+#' values are first converted to 0 before the calculation, and then
+#' converted to NA afterwards. Setting this to \code{TRUE} produces
+#' errors on the i386/windows platform, but it seems likely that a version
+#' of \CRANpkg{rgdal} released after 1.3-9 may not have that error.
 #'
 #' @return A two-column matrix, with first column holding either
 #' \code{longitude} or \code{x}, and second column holding either
 #' \code{latitude} or \code{y}.
-oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE)
+oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, passNA=FALSE)
 {
+    if (!requireNamespace("rgdal", quietly=TRUE))
+        stop('must install.packages("rgdal") to do map projections')
     owarn <- options()$warn # this, and the capture.output, quieten the processing
     options(warn=-1)
-    if (.Platform$OS.type == "windows" && .Platform$r_arch == "i386") {
-        if (packageVersion("rgdal") < "1.3.9")
-            stop("rgdal must be at least version 1.3.9, on i386/windows platforms")
-        capture.output(XY <- unname(rgdal::project(xy,
-                                                   proj=proj,
-                                                   inv=inv,
-                                                   legacy=legacy,
-                                                   allowNAs_if_not_legacy=TRUE)))
+    if (passNA) {
+        na <- which(is.na(xy[,1]))
+        xy[na, ] <- 0
+        capture.output(XY <- unname(rgdal::project(xy, proj=proj, inv=inv)))
+        XY[na, ] <- NA
     } else {
-        capture.output(XY <- unname(rgdal::project(xy=xy,
-                                                   proj=proj,
-                                                   inv=inv,
-                                                   legacy=legacy)))
+        ## Actually, I think 1.3-9 is still broken, on inverse transforms,
+        ## for i386/windows.  See https://github.com/dankelley/oce/issues/1500
+        ## for more discussion.
+        if (.Platform$OS.type == "windows" && .Platform$r_arch == "i386") {
+            if (packageVersion("rgdal") < "1.3.9")
+                stop("rgdal must be at least version 1.3.9, on i386/windows platforms")
+            capture.output(XY <- unname(rgdal::project(xy,
+                                                       proj=proj,
+                                                       inv=inv,
+                                                       legacy=legacy,
+                                                       allowNAs_if_not_legacy=TRUE)))
+        } else {
+            capture.output(XY <- unname(rgdal::project(xy=xy,
+                                                       proj=proj,
+                                                       inv=inv,
+                                                       legacy=legacy)))
+        }
     }
     options(warn=owarn)
     XY
@@ -2734,7 +2756,7 @@ mapLocator <- function(n=512, type='n', ...)
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
 #'
 #' @family functions related to maps
-map2lonlat <- function(x, y, init)
+map2lonlat <- function(x, y, init=NULL)
 {
     if (missing(x))
         stop("must supply x")
@@ -3614,7 +3636,6 @@ lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceD
     n <- length(longitude)
     if (n != length(latitude))
         stop("lengths of longitude and latitude must match, but they are ", n, " and ", length(latitude))
-    ll <- cbind(longitude, latitude)
     XY <- oceProject(xy=cbind(longitude, latitude), proj=as.character(projection), inv=FALSE)
     .Projection(list(type="proj4", projection=projection))
     oceDebug(debug, "} # lonlat2map()\n", unindent=1, sep="")

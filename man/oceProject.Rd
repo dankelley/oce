@@ -4,7 +4,8 @@
 \alias{oceProject}
 \title{Wrapper to rgdal::project()}
 \usage{
-oceProject(xy, proj, inv = FALSE, use_ob_tran = FALSE, legacy = TRUE)
+oceProject(xy, proj, inv = FALSE, use_ob_tran = FALSE, legacy = TRUE,
+  passNA = FALSE)
 }
 \arguments{
 \item{xy}{As for the \code{\link[rgdal]{project}} function in the
@@ -17,6 +18,13 @@ oceProject(xy, proj, inv = FALSE, use_ob_tran = FALSE, legacy = TRUE)
 \item{use_ob_tran}{"}
 
 \item{legacy}{"}
+
+\item{passNA}{Logical value indicating whether to pass NA values into
+\CRANpkg{rgdal}.  The default is \code{FALSE}, meaning that any NA
+values are first converted to 0 before the calculation, and then
+converted to NA afterwards. Setting this to \code{TRUE} produces
+errors on the i386/windows platform, but it seems likely that a version
+of \CRANpkg{rgdal} released after 1.3-9 may not have that error.}
 }
 \value{
 A two-column matrix, with first column holding either
@@ -26,7 +34,7 @@ A two-column matrix, with first column holding either
 \description{
 This function is used to isolate other oce functions from
 changes to the \code{\link[rgdal]{project}} function in the \CRANpkg{rgdal}
-package, which calculations of both forward
+package, which is used for calculations involved in both forward
 and inverse map projections.
 }
 \details{
@@ -38,6 +46,10 @@ Some highlights of the evolving relationship with rgdal are:
    \CRANpkg{rgdal} package.
 \item 2016 Apr: rgdal::project started returning named quantities
 \item 2019 Feb: allowNAs_if_not_legacy was added in rgdal 1.3-9 to prevent
-   an error on i386/windows.
+   an error on i386/windows. However, using this argument imposes a
+   burden on users to update \CRANpkg{rgdal}, so the approach taken
+   here (by default, i.e. with \code{passNA=FALSE}) is to
+   temporarily switch NA data to 0, and then switch
+   back to NA after the calculation.
 }
 }
