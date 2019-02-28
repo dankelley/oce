@@ -3036,7 +3036,9 @@ oce.filter <- oceFilter
 #' @param z a vector of z values, one at each (x,y) location.
 #' @param w a optional vector of weights at the (x,y) location.  If not
 #' supplied, then a weight of 1 is used for each point, which means equal
-#' weighting.  Higher weights give data points more influence.
+#' weighting.  Higher weights give data points more influence. If \code{pregrid}
+#' is \code{TRUE}, then any supplied value of \code{w} is ignored, and instead
+#' each of the pregriddd points is given equal weight.
 #' @param xg,yg optional vectors defining the x and y grids.  If not supplied,
 #' these values are inferred from the data, using e.g. \code{pretty(x, n=50)}.
 #' @param xgl,ygl optional lengths of the x and y grids, to be constructed with
@@ -3177,6 +3179,7 @@ interpBarnes <- function(x, y, z, w,
             x <- pg$x
             y <- pg$y
             z <- pg$f
+            w <- rep(1, length(x))
         }
     } else {
         if (!is.numeric(pregrid))
