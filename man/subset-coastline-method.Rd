@@ -10,7 +10,7 @@
 \arguments{
 \item{x}{A \code{coastline} object, i.e. one inheriting from \code{\link{coastline-class}}.}
 
-\item{subset}{An expression indicating how to subset \code{x}.}
+\item{subset}{An expression indicating how to subset \code{x}. See \dQuote{Details}.}
 
 \item{...}{Ignored.}
 }
@@ -18,7 +18,30 @@
 A \code{coastline} object.
 }
 \description{
-Summarizes coastline length, bounding box, etc.
+Subsets a coastline object according to limiting values for longitude
+and latitude. The \CRANpkg{raster} package must be installed for this
+to work, because it relies on the \code{\link[raster]{intersect}} function
+from that package.
+
+As illustrated in the \dQuote{Examples}, \code{subset} must be an
+expression that indicates limits on \code{latitude} and
+\code{longitude}. The individual elements are provided in R notation,
+not mathematical notation (i.e. \code{30<latitude<60} would not work).
+Ampersands must be used to combine the limits.  The simplest way
+to understand this is to copy the example directly, and then modify
+the stated limits. Note that \code{>} comparison is not permitted,
+and that \code{<} is converted to \code{<=} in the calculation.
+Similarly, \code{&&} is converted to \code{&}. Spaces in the
+expression are ignored. For convenience, \code{longitude} and
+and \code{latitude} may be abbreviated as \code{lon} and \code{lat},
+as in the \dQuote{Examples}.
+}
+\examples{
+\donttest{
+data(coastlineWorld)
+cl <- subset(coastlineWorld, -70<lon & lon<-40 & 30<lat & lat<60)
+plot(cl)
+}
 }
 \seealso{
 Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},

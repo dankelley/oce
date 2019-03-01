@@ -97,12 +97,40 @@ setMethod(f="[[<-",
 #' @title Subset a Coastline Object
 #'
 #' @description
-#' Summarizes coastline length, bounding box, etc.
+#' Subsets a coastline object according to limiting values for longitude
+#' and latitude. The \CRANpkg{raster} package must be installed for this
+#' to work, because it relies on the \code{\link[raster]{intersect}} function
+#' from that package.
+#'
+#' As illustrated in the \dQuote{Examples}, \code{subset} must be an
+#' expression that indicates limits on \code{latitude} and
+#' \code{longitude}. The individual elements are provided in R notation,
+#' not mathematical notation (i.e. \code{30<latitude<60} would not work).
+#' Ampersands must be used to combine the limits.  The simplest way
+#' to understand this is to copy the example directly, and then modify
+#' the stated limits. Note that \code{>} comparison is not permitted,
+#' and that \code{<} is converted to \code{<=} in the calculation.
+#' Similarly, \code{&&} is converted to \code{&}. Spaces in the
+#' expression are ignored. For convenience, \code{longitude} and
+#' and \code{latitude} may be abbreviated as \code{lon} and \code{lat},
+#' as in the \dQuote{Examples}.
+#'
 #' @param x A \code{coastline} object, i.e. one inheriting from \code{\link{coastline-class}}.
-#' @param subset An expression indicating how to subset \code{x}.
+#'
+#' @param subset An expression indicating how to subset \code{x}. See \dQuote{Details}.
+#'
 #' @param ... Ignored.
+#'
 #' @return A \code{coastline} object.
+#'
 #' @author Dan Kelley
+#'
+#' @examples
+#'\donttest{
+#' data(coastlineWorld)
+#' cl <- subset(coastlineWorld, -70<lon & lon<-40 & 30<lat & lat<60)
+#' plot(cl)
+#'}
 #' @family things related to \code{coastline} data
 #' @family functions that subset \code{oce} objects
 setMethod(f="subset",
@@ -110,12 +138,60 @@ setMethod(f="subset",
           definition=function(x, subset, ...) {
               if (missing(subset))
                   stop("must give 'subset'")
-              ## FIXME: need the stuff that's below??
-              ###   subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              ###   if (!length(grep("latitude", subsetString)) && !length(grep("longitude", subsetString)))
-              ###       stop("can only subset a coastline by 'latitude' or 'longitude'")
-              keep <- eval(substitute(subset), x@data, parent.frame(2))
+              if (!requireNamespace("raster"))
+                  stop("must install.packages(\"raster\") for coastline subset to work")
+              dots <- list(...)
+              debug <- dots$debug
+              if (is.null(debug))
+                  debug <- options("oceDebug")$debug
+              if (is.null(debug))
+                  debug <- 0
+              ## 's0' is a character string that we decompose to find W, E, S
+              ## and N.  This is done in small steps because that might help in
+              ## locating any bugs that might crop up. Note that the elements
+              ## of the string are broken down to get W, E, S and N, and so
+              ## we must start with some cleanup (e.g. removal of spaces,
+              ## conversion of && to & and <= to <) for the pattern matching
+              ## to work simply.
+              s0 <- deparse(substitute(subset), width.cutoff=500)
+              if (length(grep(">", s0)))
+                  stop("the 'subset' may not contain the character '>'")
+              oceDebug(debug, "s0='", s0, "'\n", sep="")
+              s1 <- gsub(" ", "", s0) # remove all spaces
+              oceDebug(debug, "s1='", s1, "'\n", sep="")
+              s2 <- gsub("&&", "&", gsub("=", "", gsub("[ ]*", "", s1))) # && becomes &
+              oceDebug(debug, "s2='", s2, "'\n", sep="")
+              s3 <- gsub("<=", "<", s2) # <= becomes <
+              oceDebug(debug, "s3='", s3, "'\n", sep="")
+              s4 <- strsplit(s3, "&")[[1]]
+              oceDebug(debug, "s4='", paste(s4, collapse="' '"), "'\n", sep="")
+              E <- W <- S <- N <- NA
+              for (ss in s4) {
+                  s4 <- gsub("<=", "<", ss)
+                  oceDebug(debug, "ss='", ss, "'\n", sep="")
+                  if (length(grep("<lon", s4))) {
+                      oceDebug(debug, "looking for W in '", s4, "'\n", sep="")
+                      W <- as.numeric(strsplit(s4, "<")[[1]][1])
+                  } else if (length(grep("lon[a-z]*<", s4))) {
+                      oceDebug(debug, "looking for E in '", s4, "'\n", sep="")
+                      E <- as.numeric(strsplit(s4, "<")[[1]][2])
+                  } else if (length(grep("<lat", s4))) {
+                      oceDebug(debug, "looking for S in '", s4, "'\n", sep="")
+                      S <- as.numeric(strsplit(s4, "<")[[1]][1])
+                  } else if (length(grep("lat[a-z]*<", s4))) {
+                      oceDebug(debug, "looking for N in '", s4, "'\n", sep="")
+                      N <- as.numeric(strsplit(s4, "<")[[1]][2])
+                  }
+              }
+              if (is.na(W)) stop("could not determine western longitude limit")
+              if (is.na(E)) stop("could not determine eastern longitude limit")
+              if (is.na(S)) stop("could not determine southern latitude limit")
+              if (is.na(N)) stop("could not determine northern latitude limit")
+              message("FIXME: 'subset,coastline-method' is under construction; below is the inferred box:")
+              print(c(W=W, E=E, S=S, N=N))
+              keep <- W<=x@data$longitude & x@data$longitude<=E & S<=x@data$latitude & x@data$latitude<=N
               res <- x
+              ## FIXME: this is terrible. We gain nothing i.t.o. speed by merely setting to NA.
               res@data$latitude[!keep] <- NA
               res@data$longitude[!keep] <- NA
               res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
