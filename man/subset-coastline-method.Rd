@@ -12,7 +12,12 @@
 
 \item{subset}{An expression indicating how to subset \code{x}. See \dQuote{Details}.}
 
-\item{...}{Ignored.}
+\item{...}{optional additional arguments, the only one of which is considered
+is one named \code{debug}, an integer that controlls the level of debugging. If
+this is not supplied, \code{debug} is assumed to be 0, meaning no debugging. If
+it is 1, the steps of determining the bounding box are shown. If it is 2 or larger,
+then additional processing steps are shown, including the extraction of every
+polygon involved in the final result.}
 }
 \value{
 A \code{coastline} object.
@@ -22,7 +27,8 @@ Subsets a coastline object according to limiting values for longitude
 and latitude. The \CRANpkg{raster} package must be installed for this
 to work, because it relies on the \code{\link[raster]{intersect}} function
 from that package.
-
+}
+\details{
 As illustrated in the \dQuote{Examples}, \code{subset} must be an
 expression that indicates limits on \code{latitude} and
 \code{longitude}. The individual elements are provided in R notation,
@@ -38,9 +44,13 @@ as in the \dQuote{Examples}.
 }
 \examples{
 \donttest{
+library(oce)
 data(coastlineWorld)
-cl <- subset(coastlineWorld, -70<lon & lon<-40 & 30<lat & lat<60)
-plot(cl)
+## Eastern Canada
+cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
+## The plot demonstrates that the trimming is as requested.
+plot(cl, clon=-65, clat=45, span=6000)
+rect(-80, 30, -50, 60, bg="transparent", border="red")
 }
 }
 \seealso{

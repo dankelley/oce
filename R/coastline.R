@@ -94,9 +94,8 @@ setMethod(f="[[<-",
               callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
-#' @title Subset a Coastline Object
+#' Subset a Coastline Object
 #'
-#' @description
 #' Subsets a coastline object according to limiting values for longitude
 #' and latitude. The \CRANpkg{raster} package must be installed for this
 #' to work, because it relies on the \code{\link[raster]{intersect}} function
@@ -119,7 +118,12 @@ setMethod(f="[[<-",
 #'
 #' @param subset An expression indicating how to subset \code{x}. See \dQuote{Details}.
 #'
-#' @param ... Ignored.
+#' @param ... optional additional arguments, the only one of which is considered
+#' is one named \code{debug}, an integer that controlls the level of debugging. If
+#' this is not supplied, \code{debug} is assumed to be 0, meaning no debugging. If
+#' it is 1, the steps of determining the bounding box are shown. If it is 2 or larger,
+#' then additional processing steps are shown, including the extraction of every
+#' polygon involved in the final result.
 #'
 #' @return A \code{coastline} object.
 #'
@@ -127,9 +131,13 @@ setMethod(f="[[<-",
 #'
 #' @examples
 #'\donttest{
+#' library(oce)
 #' data(coastlineWorld)
-#' cl <- subset(coastlineWorld, -70<lon & lon<-40 & 30<lat & lat<60)
-#' plot(cl)
+#' ## Eastern Canada
+#' cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
+#' ## The plot demonstrates that the trimming is as requested.
+#' plot(cl, clon=-65, clat=45, span=6000)
+#' rect(-80, 30, -50, 60, bg="transparent", border="red")
 #'}
 #' @family things related to \code{coastline} data
 #' @family functions that subset \code{oce} objects
@@ -187,14 +195,63 @@ setMethod(f="subset",
               if (is.na(E)) stop("could not determine eastern longitude limit")
               if (is.na(S)) stop("could not determine southern latitude limit")
               if (is.na(N)) stop("could not determine northern latitude limit")
-              message("FIXME: 'subset,coastline-method' is under construction; below is the inferred box:")
-              print(c(W=W, E=E, S=S, N=N))
-              keep <- W<=x@data$longitude & x@data$longitude<=E & S<=x@data$latitude & x@data$latitude<=N
+              oceDebug(debug, "W=", W, ", E=", E, ", S=", S, ", N=", N)
               res <- x
-              ## FIXME: this is terrible. We gain nothing i.t.o. speed by merely setting to NA.
-              res@data$latitude[!keep] <- NA
-              res@data$longitude[!keep] <- NA
-              res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+              ##OLD ## FIXME: this is terrible. We gain nothing i.t.o. speed by merely setting to NA.
+              ##OLD keep <- W<=x@data$longitude & x@data$longitude<=E & S<=x@data$latitude & x@data$latitude<=N
+              ##OLD res@data$latitude[!keep] <- NA
+              ##OLD res@data$longitude[!keep] <- NA
+              NAendpoints <- function(x) {
+                  if (!is.na(x[1]))
+                      x <- c(NA, x)
+                  if (!is.na(x[length(x)]))
+                      x <- c(x, NA)
+                  x
+              }
+              cllon <- x[["longitude"]]
+              cllat <- x[["latitude"]]
+              norig <- length(cllon)
+              box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
+              owarn <- options("warn")$warn
+              options(warn=-1)
+              na <- which(is.na(cllon))
+              nseg <- length(na)
+              nnew <- 0
+              outlon <- NULL
+              outlat <- NULL
+              for (iseg in 2:nseg) {
+                  look <- seq.int(na[iseg-1]+1, na[iseg]-1)
+                  lon <- cllon[look]
+                  if (any(is.na(lon))) stop("step 1: double lon NA at iseg=", iseg) # checks ok on coastlineWorld
+                  lat <- cllat[look]
+                  if (any(is.na(lat))) stop("step 1: double lat NA at iseg=", iseg) # checks ok on coastlineWorld
+                  n <- length(lon)
+                  if (n < 1) stop("how can we have no data?")
+                  if (length(lon) > 1) {
+                      A <- sp::Polygon(cbind(lon, lat))
+                      B <- sp::Polygons(list(A), "A")
+                      C <- sp::SpatialPolygons(list(B))
+                      i <- raster::intersect(box, C)
+                      if (!is.null(i)) {
+                          for (j in seq_along(i@polygons)) {
+                              for (k in seq_along(i@polygons[[1]]@Polygons)) {
+                                  xy <- i@polygons[[j]]@Polygons[[k]]@coords
+                                  seglon <- xy[, 1]
+                                  seglat <- xy[, 2]
+                                  nnew <- nnew + length(seglon)
+                                  outlon <- c(outlon, NA, seglon)
+                                  outlat <- c(outlat, NA, seglat)
+                                  oceDebug(debug > 1, "iseg=", iseg, ", j=", j, ", k=", k, "\n", sep="")
+                              }
+                          }
+                      }
+                  }
+              }
+              res@data$longitude <- outlon
+              res@data$latitude <- outlat
+              options(warn=owarn)
+              res@processingLog <- processingLogAppend(res@processingLog,
+                                                       paste("subset(x, ", s0, ")", sep=""))
               res
           })
 
