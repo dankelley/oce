@@ -61,7 +61,7 @@ if (requireNamespace("rgdal", quietly=TRUE)) {
             cs <- list(longitude=-64.4966,latitude=45.3346)
             xy <- lonlat2map(cs$longitude, cs$latitude, "+proj=merc")
             cs2 <- map2lonlat(xy$x, xy$y)
-            expect_equal(cs, cs2, tolerance=1e-6)
+            expect_equal(cs, cs2)
 })
 }
 

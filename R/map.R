@@ -10,6 +10,79 @@
     function(new) if (!missing(new)) val <<- new else val
 })
 
+#' Wrapper to rgdal::project()
+#'
+#' This function is used to isolate other oce functions from
+#' changes to the \code{\link[rgdal]{project}} function in the \CRANpkg{rgdal}
+#' package, which is used for calculations involved in both forward
+#' and inverse map projections.
+#'
+#' Some highlights of the evolving relationship with rgdal are:
+#'\enumerate{
+#' \item See https://github.com/dankelley/oce/issues/653#issuecomment-107040093
+#'    for the reason why oce switched from using \code{\link[rgdal]{rawTransform}},
+#'    to \code{\link[rgdal]{project}}, both functions provided by the
+#'    \CRANpkg{rgdal} package.
+#' \item 2016 Apr: rgdal::project started returning named quantities
+#' \item 2019 Feb: allowNAs_if_not_legacy was added in rgdal 1.3-9 to prevent
+#'    an error on i386/windows. However, using this argument imposes a
+#'    burden on users to update \CRANpkg{rgdal}, so the approach taken
+#'    here (by default, i.e. with \code{passNA=FALSE}) is to
+#'    temporarily switch NA data to 0, and then switch
+#'    back to NA after the calculation.
+#'}
+#'
+#' @param xy As for the \code{\link[rgdal]{project}} function in the
+#' \CRANpkg{rgdal} package.
+#' @param proj "
+#' @param inv "
+#' @param use_ob_tran "
+#' @param legacy "
+#' @param passNA Logical value indicating whether to pass NA values into
+#' \CRANpkg{rgdal}.  The default is \code{FALSE}, meaning that any NA
+#' values are first converted to 0 before the calculation, and then
+#' converted to NA afterwards. Setting this to \code{TRUE} produces
+#' errors on the i386/windows platform, but it seems likely that a version
+#' of \CRANpkg{rgdal} released after 1.3-9 may not have that error.
+#'
+#' @return A two-column matrix, with first column holding either
+#' \code{longitude} or \code{x}, and second column holding either
+#' \code{latitude} or \code{y}.
+oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, passNA=FALSE)
+{
+    if (!requireNamespace("rgdal", quietly=TRUE))
+        stop('must install.packages("rgdal") to do map projections')
+    owarn <- options()$warn # this, and the capture.output, quieten the processing
+    options(warn=-1)
+    if (passNA) {
+        na <- which(is.na(xy[,1]))
+        xy[na, ] <- 0
+        capture.output(XY <- unname(rgdal::project(xy, proj=proj, inv=inv)))
+        XY[na, ] <- NA
+    } else {
+        ## Actually, I think 1.3-9 is still broken, on inverse transforms,
+        ## for i386/windows.  See https://github.com/dankelley/oce/issues/1500
+        ## for more discussion.
+        if (.Platform$OS.type == "windows" && .Platform$r_arch == "i386") {
+            if (packageVersion("rgdal") < "1.3.9")
+                stop("rgdal must be at least version 1.3.9, on i386/windows platforms")
+            capture.output(XY <- unname(rgdal::project(xy,
+                                                       proj=proj,
+                                                       inv=inv,
+                                                       legacy=legacy,
+                                                       allowNAs_if_not_legacy=TRUE)))
+        } else {
+            capture.output(XY <- unname(rgdal::project(xy=xy,
+                                                       proj=proj,
+                                                       inv=inv,
+                                                       legacy=legacy)))
+        }
+    }
+    options(warn=owarn)
+    XY
+}
+
+
 #' Calculate lon-lat coordinates of plot-box trace
 #'
 #' Trace along the plot box, converting from xy coordinates to lonlat
@@ -1096,7 +1169,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'         proj="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
 #' mtext("Stereographic", adj=1)
 #'
-#'\donttest{
+#'\dontrun{
 #' # Example 5.
 #' # Spinning globe: create PNG files that can be assembled into a movie
 #' png("globe-%03d.png")
@@ -2658,23 +2731,23 @@ mapLocator <- function(n=512, type='n', ...)
 #' presently ignored.
 #'
 #' @section Bugs:
-#' \code{oce} uses \link[rgdal]{project} in the \CRANpkg{rgdal}
+#' \code{oce} uses \code{\link[rgdal]{project}} in the \CRANpkg{rgdal}
 #' package to handle projections. Only those projections that have inverses are
 #' permitted within \code{oce}, and even those can sometimes yield errors, owing
-#' to limitations in \CRANpkg{rgdal}.
+#' to limitations in \CRANpkg{rgdal}. On i386/windows machines, the version
+#' of \CRANpkg{rgdal} must be 1.3-9 or higher, to prevent an error with
+#' \code{map2lonlat}.
 #'
 #' @return
 #' A list containing \code{longitude} and \code{latitude}, with \code{NA}
 #' values indicating points that are off the globe as displayed.
 #'
 #' @examples
-#'\donttest{
 #' library(oce)
 #' ## Cape Split, in the Minas Basin of the Bay of Fundy
 #' cs <- list(longitude=-64.49657, latitude=45.33462)
 #' xy <- lonlat2map(cs, projection="+proj=merc")
 #' map2lonlat(xy)
-#'}
 #'
 #' @seealso \code{\link{lonlat2map}} does the inverse operation.
 #'
@@ -2683,8 +2756,10 @@ mapLocator <- function(n=512, type='n', ...)
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
 #'
 #' @family functions related to maps
-map2lonlat <- function(x, y, init=c(0, 0))
+map2lonlat <- function(x, y, init=NULL)
 {
+    if (missing(x))
+        stop("must supply x")
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     if (is.list(x)) {
@@ -2693,102 +2768,9 @@ map2lonlat <- function(x, y, init=c(0, 0))
     }
     n <- length(x)
     if (n != length(y))
-        stop("lengths of x and y must match but they are ", n, " and ", length(y))
-    ##20150612 ## NB. if projections are set by mapPlot() or lonlat2map(), only one of the
-    ##20150612 ## following two tests can be true.
-    ##20150612 if ("proj4" == .Projection()$type) {
-    if (requireNamespace("rgdal", quietly=TRUE)) {
-        owarn <- options()$warn
-        options(warn=-1)
-        ## April 2016: rgdal::project started returning named quantities
-        capture.output(XY <- unname(rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE)))
-        options(warn=owarn)
-        ## See https://github.com/dankelley/oce/issues/653#issuecomment-107040093 for why I gave
-        ## up on the idea of using rawTransform().
-        ##> n <- length(x)
-        ##> XY <- rgdal::rawTransform(projfom=as.character(.Projection()$projection), projto="+proj=longlat", n=n, x=x, y=y)
-        return(list(longitude=XY[, 1], latitude=XY[, 2]))
-        ## See https://github.com/dankelley/oce/issues/653#issuecomment-107040093 for why I gave
-        ## up on the idea of using rawTransform().
-        ##> return(list(longitude=XY[[1]], latitude=XY[[2]]))
-    } else {
-        stop('must install.packages("rgdal") to plot maps with projections')
-    }
-    ## 20150523 if (!getOption("externalProj4", FALSE)) {
-    ## 20150523     ##message("doing PROJ.4 calculations within Oce, for speed and accuracy")
-    ## 20150523     owarn <- options()$warn
-    ## 20150523     options(warn=-1)
-    ## 20150523     XY <- rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE)
-    ## 20150523     options(warn=owarn)
-    ## 20150523     return(list(longitude=XY[,1], latitude=XY[,2]))
-    ## 20150523     ##pre-rgdal XY <- .C("proj4_interface", as.character(.Projection()$projection), as.integer(FALSE),
-    ## 20150523     ##pre-rgdal          as.integer(n), as.double(x), as.double(y),
-    ## 20150523     ##pre-rgdal          X=double(n), Y=double(n), NAOK=TRUE)
-    ## 20150523     ##pre-rgdal return(list(longitude=XY$X, latitude=XY$Y))
-    ## 20150523 } else {
-    ## 20150523     ##message("doing projection calculations with 'proj4' package")
-    ## 20150523     if (!requireNamespace("proj4", quietly=TRUE))
-    ## 20150523         stop("must install 'proj4' package to get options(externalProj4=TRUE) to work")
-    ## 20150523     xy <- list(x=NA, y=NA)
-    ## 20150523     ## FIXME: maybe we should do point-by-point if this yields an error
-    ## 20150523     try({
-    ## 20150523         xy <- proj4::project(list(x=x, y=y), proj=.Projection()$projection, inverse=TRUE)
-    ## 20150523     }, silent=TRUE)
-    ## 20150523     return(list(longitude=xy$x, latitude=xy$y))
-    ## 20150523 }
-    ## 20150612 } else if ("mapproj" == .Projection()$type) {
-    ## 20150612     if (!requireNamespace("mapproj", quietly=TRUE))
-    ## 20150612         stop("must install 'mapproj' package to use mapproj-style map projections")
-    ## 20150612     lp <- mapproj::.Last.projection()
-    ## 20150612     projection <- lp$projection
-    ## 20150612     parameters <- lp$parameters
-    ## 20150612     orientation <- lp$orientation
-    ## 20150612     lon <- vector("numeric", n)
-    ## 20150612     lat <- vector("numeric", n)
-    ## 20150612     for (i in 1:n) {
-    ## 20150612         xy <- c(x[i], y[i])
-    ## 20150612         lon[i] <- NA
-    ## 20150612         lat[i] <- NA
-    ## 20150612         ##message("i:", i, ", xy[1]:", xy[1], ", xy[2]:", xy[2])
-    ## 20150612         try({
-    ## 20150612             error <- FALSE
-    ## 20150612             ## message("init:", init[1], " ", init[2])
-    ## 20150612             ## Note: using L-BFGS-B so we can limit the bounds; otherwise
-    ## 20150612             ## it can select lat > 90 etc.
-    ## 20150612             worstMisfit <- 0           # try to avoid errors with NA
-    ## 20150612             o <- optim(init,
-    ## 20150612                        function(xyTrial) {
-    ## 20150612                            xyp <- mapproj::mapproject(xyTrial[1], xyTrial[2],
-    ## 20150612                                                       projection=projection,
-    ## 20150612                                                       parameters=parameters,
-    ## 20150612                                                       orientation=orientation)
-    ## 20150612                            error <<- xyp$error
-    ## 20150612                            misfit <- sqrt((xyp$x-xy[1])^2+(xyp$y-xy[2])^2)
-    ## 20150612                            ## message(format(xyTrial[1], digits=4), "E ",
-    ## 20150612                            ##         format(xyTrial[2], digits=4), "N ",
-    ## 20150612                            ##         "misfit: ", format(misfit, digits=5), ", error: ", xyp$error)
-    ## 20150612                            if (error) {
-    ## 20150612                                ## message("got error so returning ", worstMisfit)
-    ## 20150612                                return(worstMisfit)
-    ## 20150612                            } else {
-    ## 20150612                                worstMisfit <<- max(misfit, worstMisfit, na.rm=TRUE)
-    ## 20150612                                ## message("no error; set worstMisfit ", worstMisfit)
-    ## 20150612                                return(misfit)
-    ## 20150612                            }
-    ## 20150612                        }, method="L-BFGS-B", lower=c(-180, -89.9999), upper=c(180, 89.9999))
-    ## 20150612             if (o$convergence == 0 && !error) {
-    ## 20150612                 lonlat <- o$par
-    ## 20150612                 lon[i] <- lonlat[1]
-    ## 20150612                 lat[i] <- lonlat[2]
-    ## 20150612             }
-    ## 20150612             ## str(o)
-    ## 20150612         }, silent=TRUE)
-    ## 20150612     }
-    ## 20150612     ##message("map2lonlat returning lon=", lon, " lat=", lat)
-    ## 20150612     return(list(longitude=lon, latitude=lat))
-    ## 20150612 } else {
-    ## 20150612     stop("unknown projection software type '", .Projection()$type, "'")
-    ## 20150612 }
+        stop("lengths of x and y must match, but they are ", n, " and ", length(y))
+    XY <- oceProject(xy=cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE)
+    list(longitude=XY[, 1], latitude=XY[, 2])
 }
 
 
@@ -3614,6 +3596,10 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 #' alter an existing projection. \code{\link{map2lonlat}} is an inverse to
 #' \code{map2lonlat}.
 #'
+#' @section Bugs:
+#' This uses \CRANpkg{rgdal}, and will fail on i386/windows machines unless
+#' that package is version 1.3-9 or higher.
+#'
 #' @examples
 #'\donttest{
 #' library(oce)
@@ -3627,12 +3613,14 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceDebug"))
 {
     oceDebug(debug, "lonlat2map() {\n", unindent=1, sep="")
+    if (missing(longitude))
+        stop("must supply longitude")
     if (is.list(longitude)) {
         latitude <- longitude$latitude
         longitude <- longitude$longitude
     }
     if (missing(latitude))
-        stop("latitude is missing")
+        stop("must supply latitude")
     n <- length(longitude)
     if (n != length(latitude))
         stop("lengths of longitude and latitude must match but they are ", n, " and ", length(latitude))
@@ -3645,32 +3633,11 @@ lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceD
     #gsub(" .*$", "", gsub("^\\+proj=", "", projection))
     if (!(pr %in% knownProj4))
         stop("projection '", pr, "' is unknown; try one of: ", paste(knownProj4, collapse=','))
-    ll <- cbind(longitude, latitude)
-    ## 1339 20171118 ## Next added 20150523 for rgdal transition; keep old code for a while
-    ## 1339 20171118 if (0 == length(grep("ellps=", projection))) {
-    ## 1339 20171118     ## we cannot append the +ellps=sphere token for +proj=geos
-    ## 1339 20171118     ## because doing so will show the opposite side of the world;
-    ## 1339 20171118     ## see https://github.com/dankelley/oce/issues/1338
-    ## 1339 20171118     if (1 == length(grep("=[ ]*geos", projection))) {
-    ## 1339 20171118         warning("projection contains +proj=geos, so +ellps=sphere is NOT appended")
-    ## 1339 20171118     } else {
-    ## 1339 20171118         ## projection <- paste(projection, "+ellps=sphere")
-    ## 1339 20171118     }
-    ## 1339 20171118 }
     n <- length(longitude)
-    if (!requireNamespace("rgdal", quietly=TRUE))
-        stop('must install.packages("rgdal") to plot maps with projections')
-    owarn <- options()$warn
-    options(warn=-1)
-    oceDebug(debug, "projection=", projection, "\n")
-    ## April 2016: rgdal::project will soon return named quantities, so we use unname() to prepare
-    ##> NOTE: the legacy=FALSE is to cause i386/windows code to be used. This causes
-    ##> an error if any data are NA.
-    ##> capture.output(XY <- unname(rgdal::project(ll, proj=as.character(projection), inv=FALSE, legacy=FALSE)))
-    capture.output(XY <- unname(rgdal::project(ll, proj=as.character(projection), inv=FALSE)))
-    options(warn=owarn)
-    xy <- list(x=XY[, 1], y=XY[, 2])
+    if (n != length(latitude))
+        stop("lengths of longitude and latitude must match, but they are ", n, " and ", length(latitude))
+    XY <- oceProject(xy=cbind(longitude, latitude), proj=as.character(projection), inv=FALSE)
     .Projection(list(type="proj4", projection=projection))
     oceDebug(debug, "} # lonlat2map()\n", unindent=1, sep="")
-    xy
+    list(x=XY[, 1], y=XY[, 2])
 }

@@ -1263,9 +1263,9 @@ as.argo <- function(time, longitude, latitude,
 #' of two projections is used: stereopolar (i.e. \code{"+proj=stere +lon_0=X"}
 #' where \code{X} is the mean longitude), or Mercator (i.e. \code{"+proj=merc"})
 #' otherwise.  Otherwise, \code{projection} must be a character string specifying
-#' a projection in the notation used by \link[rgdal]{project} in the \CRANpkg{rgdal};
-#' this will be familiar to many readers as the PROJ.4 notation;
-#' see \code{\link{mapPlot}}.
+#' a projection in the notation used by the \code{link[rgdal]{project}} function
+#' in the \CRANpkg{rgdal} package; this will be familiar to many readers as
+#' the PROJ.4 notation; see \code{\link{mapPlot}}.
 #'
 #' @param mar value to be used with \code{\link{par}}("mar").
 #'
