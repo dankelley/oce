@@ -3370,28 +3370,37 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
 #' @param longitude decimal longitude.  May also be a list containing items
 #' named \code{longitude} and \code{latitude}, in which case the indicated
 #' values are used, and next argument is ignored.
+#'
 #' @param latitude decimal latitude (ignored if \code{longitude} is a list
 #' containing both coordinates)
+#'
 #' @param zone optional indication of UTM zone.  Normally this is inferred from
 #' the longitude, but specifying it can be helpful in dealing with Landsat
 #' images, which may cross zones and which therefore are described by a single
 #' zone.
+#'
 #' @param km logical value indicating whether \code{easting} and
 #' \code{northing} are in kilometers or meters.
+#'
 #' @return A list containing \code{easting}, \code{northing}, \code{zone} and
 #' \code{hemisphere}.
+#'
 #' @author Dan Kelley
+#'
 #' @seealso \code{\link{utm2lonlat}} does the inverse operation.  For general
 #' projections and their inverses, use \code{\link{lonlat2map}} and
 #' \code{\link{map2lonlat}}.
+#'
 #' @references
 #' \url{https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
 #' downloaded May 31, 2014.
-#' @examples
 #'
+#' @examples
+#'\donttest{
 #' library(oce)
 #' ## Cape Split, in the Minas Basin of the Bay of Fundy
 #' lonlat2utm(-64.496567, 45.334626)
+#'}
 #'
 #' @family functions related to maps
 lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
@@ -3458,26 +3467,36 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
 #' \code{km}).  Alternatively, a list containing items named \code{easting},
 #' \code{northing}, and \code{zone}, in which case these are taken from the
 #' list and the arguments named \code{northing}, \code{zone} and are ignored.
+#'
 #' @param northing northing coordinate (in km or m, depending on value of
 #' \code{km}).
+#'
 #' @param zone UTM zone
+#'
 #' @param hemisphere indication of hemisphere; \code{"N"} for North, anything
 #' else for South.
+#'
 #' @param km logical value indicating whether \code{easting} and
 #' \code{northing} are in kilometers or meters.
+#'
 #' @return A list containing \code{longitude} and \code{latitude}.
+#'
 #' @author Dan Kelley
+#'
 #' @seealso \code{\link{lonlat2utm}} does the inverse operation.  For general
 #' projections and their inverses, use \code{\link{lonlat2map}} and
 #' \code{\link{map2lonlat}}.
+#'
 #' @references
 #' \url{https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
 #' downloaded May 31, 2014.
-#' @examples
 #'
+#' @examples
+#'\donttest{
 #' library(oce)
 #' ## Cape Split, in the Minas Basin of the Bay of Fundy
 #' utm2lonlat(852863, 5029997, 19)
+#'}
 #'
 #' @family functions related to maps
 utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
