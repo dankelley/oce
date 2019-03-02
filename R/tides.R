@@ -1548,27 +1548,26 @@ predict.tidem <- function(object, newdata, ...)
 #' @template debugTemplate
 #' @param \dots optional arguments passed to plotting functions. A common
 #' example is to set \code{xlim} and \code{ylim}, to focus a map region.
-#' @return If \code{action="map"} the return value is a
+#'
+#' @return The value depends on \code{action}:
+#'\itemize{
+#'\item If \code{action="map"} the return value is a
 #' list containing the index of the nearest node, along with the
 #' \code{latitude} and \code{longitude} of that node.  If
 #' \code{plot} is \code{FALSE}, this value is returned invisibly.
 #'
-#' If \code{action="predict"}, the return value is a list containing a vector
+#'\item If \code{action="predict"}, the return value is a list containing a vector
 #' of times (\code{time}), as well as vectors of the predicted \code{elevation}
 #' in metres and the predicted horizontal components of velocity, \code{u} and
 #' \code{v}, along with the \code{node} number, and the \code{basedir} and
 #' \code{region} as supplied to this function.
 #' If \code{plot} is \code{FALSE}, this value is returned invisibly.
+#'}
 #'
 #' @source The WebTide software may be downloaded for free at the
 #' Department of Fisheries and Oceans (Canada) website at
 #' \code{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php}
 #' (checked February 2016 and May 2017).
-#'
-#' @return a list containing \code{node}, \code{longitude} and \code{latitude}. If
-#' no node was provided to \code{webtide} then this list will cover the whole
-#' set of nodes in the WebTide model; otherwise, it will be just the node that
-#' was requested.
 #'
 #' @section Caution:
 #' WebTide is not an open-source application, so the present function was
