@@ -88,6 +88,10 @@
 #' @family classes provided by \code{oce}
 setClass("ctd", contains="oce")
 
+setAs("list", "ctd", function(from) {
+      as.ctd(from) #salinity=from$salinity, temperature=from$temperature, pressure=from$pressure)
+})
+
 
 #' A CTD profile in Halifax Harbour
 #'
