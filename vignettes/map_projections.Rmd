@@ -1,0 +1,36 @@
+---
+title: "Map Projections in Oce"
+author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911) and Clark Richards (https://orcid.org/0000-0002-7833-206X)"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    number_sections: true
+    fig_caption: yes
+    fig_width: 5
+    fig_height: 5
+    dpi: 72
+    dev.args: list(pointsize=11)
+vignette: >
+  %\VignetteIndexEntry{Map projections in oce}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<!-- HOW TO BUILD THE VIGNETTE. -->
+<!-- Look in oce.Rmd for instructions. -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+**Abstract.** FIXME: DK to write this
+
+# Introduction
+
+FIXME: DK to write this
+
+**Exercise 1.** a. FIXME: DK to write this
+
+
+
