@@ -1,6 +1,6 @@
 ---
 title: "Map Projections in Oce"
-author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911) and Clark Richards (https://orcid.org/0000-0002-7833-206X)"
+author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911)
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
