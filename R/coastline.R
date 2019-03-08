@@ -565,7 +565,7 @@ setMethod(f="plot",
                   oceDebug(debug, "plot,coastline-method calling mapPlot (code location 1)\n")
                   mapPlot(x[["longitude"]], x[["latitude"]], projection=projection,
                           longitudelim=longitudelim, latitudelim=latitudelim,
-                          bg=col, col=fill, border=border, debug=debug-1)
+                          bg=col, col=if (missing(fill)) "lightgray" else fill, border=border, debug=debug-1)
                   return(invisible())
               }
               if (!missing(clongitude))
