@@ -42,14 +42,13 @@ Oce handles map projections by calling the \code{projection} function of the
 \code{rgdal} R package, and so the notation for representing the projection is
 borrowed from \code{rgdal}.  This system will be familiar to many readers,
 because it is used in other R packages, and more widely in the software called
-PROJ.4, 2019), which has interfaces in python and other programming languages
-(PROJ.4, 2019). Since oce uses inverse projections in some of its graphical
-work, only PROJ.4 projections that have inverses are incorporated into oce.
-Furthermore, some projections are omitted from oce because they have been
-witnessed to cause problems on the oce developer's computers, including
-infinite loops and core dumps. See the help for the oce function
-[`mapPlot`](../help/mapPlot) for a list of the available projections, and some
-advice on choosing them.
+PROJ.4, which has interfaces in python and other programming languages (PROJ.4,
+2019). Since oce uses inverse projections in some of its graphical work, only
+PROJ.4 projections that have inverses are incorporated into oce.  Furthermore,
+some projections are omitted from oce because they have been witnessed to cause
+problems on the oce developer's computers, including infinite loops and core
+dumps. See the help for the oce function [`mapPlot`](../help/mapPlot) for a
+list of the available projections, and some advice on choosing them.
 
 # Avoiding projections for limited-area plots
 
@@ -73,10 +72,9 @@ plot(lon, lat, type="l",
 ```
 
 Readers familiar with this region will see immediately that the coastline
-shapes are distorted.  However, setting `asp` to yield equal scaling of
-east-west and north-south *distances* at a central latitude yields the
-following.
-
+shapes are distorted.  The solution to this problem is to set
+the `asp` argument of `plot()` to a value that will compensate
+for meridional convergence at the poles, as below.
 
 ```{r}
 par(mar=c(4, 4, 0.5, 0.5))
@@ -84,9 +82,9 @@ plot(lon, lat, type="l",
      xlim=c(-80, -50), ylim=c(40, 50), asp=1/cos(45*pi/180))
 ```
 
-This scaling yields results that more faithfully represent coastline shapes.
-The effort of setting the aspect ratio and of using line-type plots is spared
-by using the generic `plot()` function for `coastline` objects, as follows.
+Although the above approach is not exactly taxing, the effort of setting the
+aspect ratio and setting line-type plots can be spared by using the generic
+`plot()` function for `coastline` objects, as follows.
 
 ```{r}
 plot(coastlineWorldFine,
@@ -223,11 +221,17 @@ mapPlot(coastlineWorldFine, col="lightgray",
 Conic projection.
 
 In the solution given below, note how the `lon_0` argument is set to be at the
-central value of `longitudelim`. This makes the 60W line be vertical on the
-plot. The settings for `lat_1` and `lat_2` are the locations at which the cone
-intersects the earth, so distortion is minimized at those latitudes. Note how
-the lines of constant longitude are changed, compared with those in the
-Mercator view.
+central value of `longitudelim`. This makes the $60^\circ$W line be vertical on
+the plot. The settings for `lat_1` and `lat_2` are the locations at which the
+cone intersects the earth, so distortion is minimized at those latitudes. Note
+how the lines of constant longitude are changed, compared with those in the
+Mercator view. It may be informative to compare the relative ratio of the area
+of Nova Scotia (at $45^\circ$N) and Ungava Bay (at $60^\circ$N) in this Albers
+Equal-Area projection, and the Mercator projection shown in the previous
+diagram.
+
+
+
 ```{r}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorldFine, col="lightgray",
@@ -239,7 +243,7 @@ mapPlot(coastlineWorldFine, col="lightgray",
 surface temperature as contours.
 
 ```{r fig.height=3}
-par(mar=c(1.5, 1.5, 0.5, 0.5))
+par(mar=rep(0.5, 4))
 data(levitus, package="ocedata")
 mapPlot(coastlineWorld, col="lightgray")
 mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
