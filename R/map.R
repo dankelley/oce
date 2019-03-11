@@ -1464,8 +1464,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 {
     dots <- list(...)
     gridOrig <- grid
-    if (1 == length(gridOrig))
-        gridOrig <- rep(gridOrig, 2)
+    if (1 == length(grid))
+        grid <- rep(grid, 2)
     if (!missing(projection) && inherits(projection, "CRS")) {
         projection <- projection@projargs
     }
@@ -1474,7 +1474,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
              ", longitudelim=", if (missing(latitudelim)) "(missing)" else c("c(", paste(format(latitudelim, digits=4), collapse=","), ")"),
              ", type=\"", type, "\"",
              ", projection=\"", if (is.null(projection)) "NULL" else projection, "\"",
-             ", grid=", grid,
+             ", grid=c(", paste(gridOrig, collapse=","), ")",
              ", ...) {\n", sep="", unindent=1)
     if (missing(longitude)) {
         data("coastlineWorld", package="oce", envir=environment())
@@ -1509,7 +1509,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         grid <- grid[1:2]
     if (length(grid) == 1)
         grid <- rep(grid[1], 2)
+    oceDebug(debug, "after making it length 2, grid is c(", paste(grid, collapse=","), ")\n", sep="")
     drawGrid <- (is.logical(grid[1]) && grid[1]) || (is.numeric(grid[1]) && grid[1] > 0)
+    oceDebug(debug, "drawGrid=", drawGrid, "\n")
     # FIXME: 20150326
     #if (is.logical(grid[1]) && grid[1])
     #    grid <- rep(15, 2)
@@ -1740,40 +1742,49 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 dy <- (usr[4] - usr[3]) / ntick
                 ll <- map2lonlat(x0-dx, y0-dy)
                 ur <- map2lonlat(x0+dx, y0+dy)
-                if (debug > 0) {
-                    cat(vectorShow(ll))
-                    cat(vectorShow(ur))
-                }
-                ls <- geodDist(ll$longitude, ll$latitude, ll$longitude, ur$latitude)
-                rs <- geodDist(ur$longitude, ll$latitude, ur$longitude, ur$latitude)
-                ts <- geodDist(ll$longitude, ur$latitude, ur$longitude, ur$latitude)
-                bs <- geodDist(ll$longitude, ll$latitude, ur$longitude, ll$latitude)
-                t <- median(c(ls, rs, ts, bs)) / 111 # tick, in degrees
-                if (debug > 0)  {
-                    cat(vectorShow(ls))
-                    cat(vectorShow(rs))
-                    cat(vectorShow(ts))
-                    cat(vectorShow(ts))
-                }
-                oceDebug(debug, "t: ", t, "(scale between ticks, in deg)\n")
-                ## message("tickEW: ", tickEW)
-                ## message("tickNS: ", tickNS)
-                ## message("tick: ", tick)
-                if (!is.finite(t)) {
-                    grid <- c(5, 5) # may be ok in many instances
+                ## If ll and ur are finite, the plot covers a fraction of the
+                ## globe, and we can compute a grid based on the scale.
+                ## Otherwise, assume the earth's shape is just a fraction of
+                ## the plot area, meaning we are looking at a globe, and use
+                ## a 45 deg grid.
+                if (all(is.finite(c(ll$longitude, ll$latitude, ur$longitude, ur$latitude)))) {
+                    if (debug) {
+                        cat(vectorShow(ll))
+                        cat(vectorShow(ur))
+                    }
+                    ls <- geodDist(ll$longitude, ll$latitude, ll$longitude, ur$latitude)
+                    rs <- geodDist(ur$longitude, ll$latitude, ur$longitude, ur$latitude)
+                    ts <- geodDist(ll$longitude, ur$latitude, ur$longitude, ur$latitude)
+                    bs <- geodDist(ll$longitude, ll$latitude, ur$longitude, ll$latitude)
+                    t <- median(c(ls, rs, ts, bs)) / 111 # tick, in degrees
+                    if (debug)  {
+                        cat(vectorShow(ls))
+                        cat(vectorShow(rs))
+                        cat(vectorShow(ts))
+                        cat(vectorShow(ts))
+                    }
+                    oceDebug(debug, "t: ", t, "(scale between ticks, in deg)\n")
+                    ## message("tickEW: ", tickEW)
+                    ## message("tickNS: ", tickNS)
+                    ## message("tick: ", tick)
+                    if (!is.finite(t)) {
+                        grid <- c(5, 5) # may be ok in many instances
+                    } else {
+                        g <- if (t > 45) 45 else if (t > 10) 15 else if (t > 5) 10 else if (t > 4) 5 else if (t > 2) 1 else pretty(t)[2]
+                        grid <- rep(g, 2)
+                        oceDebug(debug, "grid=c(", paste(grid, collapse=","), ")\n")
+                    }
                 } else {
-                    g <- if (t > 45) 45 else if (t > 10) 15 else if (t > 5) 10
-                        else if (t > 4) 5 else if (t > 2) 1 else pretty(t)[2]
-                    grid <- rep(g, 2)
-                    oceDebug(debug, "grid:", grid[1], "\n")
+                    grid <- c(45, 45) # perhaps reasonable default, for world view
                 }
+                if (grid[1] == 0)
+                    drawGrid <- FALSE
                 oceDebug(debug, "limits not given (or inferred) near map.R:1546 -- set grid=", paste(grid, collapse=" "), "\n")
             }
         }
         if (drawGrid) {
-            mapGrid(longitude=NULL, dlatitude=grid[2], polarCircle=polarCircle,
-                    longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
-            mapGrid(dlongitude=grid[1], latitude=NULL, polarCircle=polarCircle,
+            oceDebug(debug, "about to call mapGrid(), using grid=c(", paste(grid, collapse=","), ")\n")
+            mapGrid(dlongitude=grid[1], dlatitude=grid[2], polarCircle=polarCircle,
                     longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
         }
         if (axes) {
@@ -1858,7 +1869,10 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     debug=getOption("oceDebug"))
 {
     oceDebug(debug, "mapGrid(dlongitude=", dlongitude,
-             ", dlatitude=", dlatitude, "(etc) ...) {\n", unindent=1, sep="")
+             ", dlatitude=", dlatitude,
+             ", longitude=", if (missing(longitude)) "(missing)" else "(given)",
+             ", latitude=", if (missing(latitude)) "(missing)" else "(given)",
+             ", (etc)) {\n", unindent=1, sep="")
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     boxLonLat <- usrLonLat(debug=debug-1)
@@ -1879,10 +1893,14 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                  paste(longitudelim, collapse=","), ")\n")
     }
     small <- 0
-    if (missing(longitude))
-        longitude <- seq(-180, 180, dlongitude)
-    if (missing(latitude))
-        latitude <- seq(-90+small, 90-small, dlatitude)
+    if (missing(longitude)) {
+        longitude <- if (dlongitude > 0) seq(-180, 180, dlongitude) else NULL
+    }
+    if (missing(latitude)) {
+        latitude <- if (dlatitude > 0) seq(-90+small, 90-small, dlatitude) else NULL
+    }
+    if (is.null(longitude) && is.null(latitude))
+        return()
 
     ## If a pole is present, we put longitude lines around the world, no matter
     ## what else is true.
