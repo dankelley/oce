@@ -1069,7 +1069,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' \code{y} axis, or \code{"y"} for logarithmic \code{y} axis.  (Unlike
 #' \code{\link{plot.default}} etc., \code{oce.plot.ts} does not permit
 #' logarithmic time, or \code{x} axis.)
-#' 
+#'
 #' @param drawTimeRange an optional indication of whether/how to draw a time range,
 #' in the top-left margin of the plot; see \code{\link{oce.axis.POSIXct}} for details.
 #'
@@ -1168,9 +1168,12 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
             stop("'xlim' must be of length 2")
         if (xlim[2] <= xlim[1])
             stop("the elements of xlim must be in order")
-        ends <- trim_ts(x, xlim, 0.04)
-        x <- x[seq.int(ends$from, ends$to)]
-        y <- y[seq.int(ends$from, ends$to)]
+        ## Comment-out next line for issue 1508, since trim_ts
+        ## fails if times are NA.
+        ## ends <- trim_ts(x, xlim, 0.04)
+        keep <- xlim[1] < x & x < xlim[2]
+        x <- x[keep]
+        y <- y[keep]
     }
     if (length(y) == 1)
         y <- rep(y, length(x))
