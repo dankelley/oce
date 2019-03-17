@@ -1133,7 +1133,10 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
 #' oce.plot.ts(t, y, type='l', xaxs='i')
 #' # Ugly plot showing how col, pch and cex get recycled
-#' oce.plot.ts(t, y, type='p', xaxs='i', col=1:3, pch=c(rep(1, 6), rep(20, 6)), cex=sqrt(1:6))
+#' oce.plot.ts(t, y, type='p', xaxs='i',
+#'             col=1:3, pch=c(rep(1, 6), rep(20, 6)), cex=sqrt(1:6))
+#' # Demonstrate xlim trimming; note the narrowing of the y view
+#' oce.plot.ts(t, y, type='p', xlim=c(t[6], t[12]))
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
                         drawTimeRange, fill=FALSE, col=par("col"), pch=par("pch"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
