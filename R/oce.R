@@ -1627,7 +1627,7 @@ oce.write.table <- function (x, file="", ...)
 #'
 #' 2.Locarnini, R. A., A. V. Mishonov, J. I. Antonov, T. P. Boyer,
 #' H. E. Garcia, O. K. Baranova, M. M. Zweng, D. R. Johnson, and
-#' S. Levitus. “World Ocean Atlas 2009 Temperature.”
+#' S. Levitus. \dQuote{World Ocean Atlas 2009 Temperature.}
 #' US Government printing Office, 2010.
 standardDepths <- function(n=0)
 {
@@ -3068,7 +3068,8 @@ numberAsHMS <- function(t, default=0)
 #' \url{https://github.com/dankelley/oce/issues/738}
 #'
 #' [4] EPIC times: software and manuals at \url{https://www.pmel.noaa.gov/epic/download/index.html#epslib};
-#' see also Denbo, Donald W., and Nancy N. Soreide. “EPIC.” Oceanography 9 (1996). https://doi.org/10.5670/oceanog.1996.10.
+#' see also Denbo, Donald W., and Nancy N. Soreide. \dQuote{EPIC.} Oceanography 9 (1996).
+#' https://doi.org/10.5670/oceanog.1996.10.
 #'
 #' @examples
 #'

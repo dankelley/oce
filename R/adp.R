@@ -756,7 +756,7 @@ setMethod(f="[[",
                       ##>message("AD2CP  tm...")
                       theta <- x@metadata$beamAngle * atan2(1, 1) / 45
                       ## The creation of a transformation matrix is covered in Section 5.3 of
-                      ## RD Instruments. “ADCP Coordinate Transformation.” RD Instruments, July 1998.
+                      ## RD Instruments. ADCP Coordinate Transformation. RD Instruments, July 1998.
                       TMc <- 1 # for convex (diverging) beam setup; use -1 for concave
                       TMa <- 1 / (2 * sin(theta))
                       TMb <- 1 / (4 * cos(theta))
@@ -2882,8 +2882,8 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #' objects of class \code{"adp"}.
 #'
 #' @references
-#' 1. Teledyne RD Instruments. “ADCP Coordinate Transformation: Formulas and
-#' Calculations,” January 2010. P/N 951-6079-00.
+#' 1. Teledyne RD Instruments. \dQuote{ADCP Coordinate Transformation: Formulas and
+#' Calculations,} January 2010. P/N 951-6079-00.
 #'
 #' 2. WHOI/USGS-provided Matlab code for beam-enu transformation
 #' \samp{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
@@ -3003,7 +3003,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 #'
 #' @references
 #' 1. Teledyne RD Instruments.
-#' “ADCP Coordinate Transformation: Formulas and Calculations,”
+#' \dQuote{ADCP Coordinate Transformation: Formulas and Calculations,}
 #' January 2010. P/N 951-6079-00.
 #
 #' @family things related to \code{adp} data
@@ -3172,7 +3172,7 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
 ## at least a few expected results).
 #'
 #' @references
-#' 1. Teledyne RD Instruments. “ADCP Coordinate Transformation: Formulas and Calculations,”
+#' 1. Teledyne RD Instruments. \dQuote{ADCP Coordinate Transformation: Formulas and Calculations,}
 #' January 2010. P/N 951-6079-00.
 #'
 #' 2. Clark Richards, 2012, PhD Dalhousie University Department of
@@ -3397,9 +3397,9 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 #' that is not tested yet. Plus, as noted, the declination is ignored.
 #'
 #' @references
-#' 1. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2017.
+#' 1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
 #'
-#' 2. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2018.
+#' 2. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018.
 #' https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
 #'
 #' @family things related to \code{adp} data
@@ -3513,8 +3513,8 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
 #' @seealso See \code{\link{read.adp}} for other functions that relate to
 #' objects of class \code{"adp"}.
 #' @references
-#' 1. Teledyne RD Instruments. “ADCP Coordinate Transformation: Formulas and
-#' Calculations,” January 2010. P/N 951-6079-00.
+#' 1. Teledyne RD Instruments. \dQuote{ADCP Coordinate Transformation: Formulas and
+#' Calculations,} January 2010. P/N 951-6079-00.
 #'
 #' @examples
 #'

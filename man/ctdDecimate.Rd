@@ -115,8 +115,8 @@ application to oceanographic data.  \emph{Deep Sea Research}, \bold{15},
 185-193.
 
 2. Oguma, Sachiko, Toru Suzuki, Yutaka Nagata, Hidetoshi Watanabe, Hatsuyo Yamaguchi,
-and Kimio Hanawa. “Interpolation Scheme for Standard Depth Data Applicable for Areas
-with a Complex Hydrographical Structure.” Journal of Atmospheric and Oceanic Technology
+and Kimio Hanawa. \dQuote{Interpolation Scheme for Standard Depth Data Applicable for Areas
+with a Complex Hydrographical Structure.} Journal of Atmospheric and Oceanic Technology
 21, no. 4 (April 1, 2004): 704–15.
 }
 \seealso{

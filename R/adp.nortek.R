@@ -541,11 +541,11 @@ is.ad2cp <- function(x)
 #' @author Dan Kelley
 #'
 #' @references
-#' 1. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2017.
+#' 1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
 #'
-#' 2. Nortek AS. “Operations Manual - Signature250, 500 and 1000.” Nortek AS, September 21, 2018.
+#' 2. Nortek AS. \dQuote{Operations Manual - Signature250, 500 and 1000.} Nortek AS, September 21, 2018.
 #'
-#' 3. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2018. (This revision of
+#' 3. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018. (This revision of
 #' [1] is useful in including new information about instrument orientation. Note that
 #' most of the comments within the \code{read.adp.ad2cp} code refer to [1], which has different
 #' page numbers than [3].)

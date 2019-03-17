@@ -66,13 +66,13 @@ mtext("black=unesco, red=gsw")
 
 }
 \references{
-1. Flament, P. “A State Variable for Characterizing Water Masses and Their
-Diffusive Stability: Spiciness.” Progress in Oceanography, Observations of the
+1. Flament, P. \dQuote{A State Variable for Characterizing Water Masses and Their
+Diffusive Stability: Spiciness.} Progress in Oceanography, Observations of the
 1997-98 El Nino along the West Coast of North America, 54, no. 1
 (July 1, 2002):493–501.
 \url{https://doi.org/10.1016/S0079-6611(02)00065-4}
 
-2.McDougall, Trevor J., and Oliver A. Krzysik. “Spiciness.”
+2.McDougall, Trevor J., and Oliver A. Krzysik. \dQuote{Spiciness.}
 Journal of Marine Research 73, no. 5 (September 1, 2015): 141–52.
 \url{https://doi.org/10.1357/002224015816665589}
 }

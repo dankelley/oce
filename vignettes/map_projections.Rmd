@@ -261,7 +261,7 @@ Snyder, John Parr. Flattening the Earth: Two Thousand Years of Map Projections.
 Chicago, IL: University of Chicago Press, 1993.
 https://www.press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html.
 
-Snyder, John P., and Philip M. Voxland. “An Album of Map Projections.” U. S.
+Snyder, John P., and Philip M. Voxland. \dQuote{An Album of Map Projections.} U. S.
 Geological Survey Professional Paper. Washington, DC, USA: U. S. Department of
 the Interior: U. S. Geological Survey, 1994.
 https://pubs.er.usgs.gov/publication/pp1453.

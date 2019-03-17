@@ -43,7 +43,7 @@ where \eqn{\theta}{theta} is the angle the beams make to the axial direction
 }
 \references{
 1. Teledyne RD Instruments.
-“ADCP Coordinate Transformation: Formulas and Calculations,”
+\dQuote{ADCP Coordinate Transformation: Formulas and Calculations,}
 January 2010. P/N 951-6079-00.
 }
 \seealso{

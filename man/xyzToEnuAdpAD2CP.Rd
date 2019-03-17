@@ -36,9 +36,9 @@ that is not tested yet. Plus, as noted, the declination is ignored.
 }
 
 \references{
-1. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2017.
+1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
 
-2. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2018.
+2. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018.
 https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
 }
 \seealso{

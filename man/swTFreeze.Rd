@@ -61,8 +61,8 @@ plot(swTFreeze(ctd, eos="unesco") - swTFreeze(ctd, eos="gsw"),
 
 }
 \references{
-1. Fofonoff, N. P., and R. C. Millard. “Algorithms for Computation of
-Fundamental Properties of Seawater.” UNESCO Technical Papers in Marine
+1. Fofonoff, N. P., and R. C. Millard. \dQuote{Algorithms for Computation of
+Fundamental Properties of Seawater.} UNESCO Technical Papers in Marine
 Research. SCOR working group on Evaluation of CTD data; UNESCO/ICES/SCOR/IAPSO
 Joint Panel on Oceanographic Tables and Standards, 1983.
 https://unesdoc.unesco.org/ark:/48223/pf0000059832.

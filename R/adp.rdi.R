@@ -602,7 +602,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'   06     00           06     01    Bottom Track Data
 #'   20     00           20     00    Navigation
 #'   30     00           30     00    Binary Fixed Attitude
-#'   30  40-F0           30  40–F0    Binary Variable Attitude
+#'   30  40-F0           30  40-F0    Binary Variable Attitude
 #' }
 #' \item
 #' Table 6 on p90 of [4] lists "Fixed Leader Navigation" ID

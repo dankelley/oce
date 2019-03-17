@@ -789,8 +789,8 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #' @author Dan Kelley
 #'
 #' @references
-#' 1. Fofonoff, N. P., and R. C. Millard. “Algorithms for Computation of
-#' Fundamental Properties of Seawater.” UNESCO Technical Papers in Marine
+#' 1. Fofonoff, N. P., and R. C. Millard. \dQuote{Algorithms for Computation of
+#' Fundamental Properties of Seawater.} UNESCO Technical Papers in Marine
 #' Research. SCOR working group on Evaluation of CTD data; UNESCO/ICES/SCOR/IAPSO
 #' Joint Panel on Oceanographic Tables and Standards, 1983.
 #' https://unesdoc.unesco.org/ark:/48223/pf0000059832.
@@ -2094,13 +2094,13 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #' mtext("black=unesco, red=gsw")
 #'
 #' @references
-#' 1. Flament, P. “A State Variable for Characterizing Water Masses and Their
-#' Diffusive Stability: Spiciness.” Progress in Oceanography, Observations of the
+#' 1. Flament, P. \dQuote{A State Variable for Characterizing Water Masses and Their
+#' Diffusive Stability: Spiciness.} Progress in Oceanography, Observations of the
 #' 1997-98 El Nino along the West Coast of North America, 54, no. 1
 #' (July 1, 2002):493–501.
 #' \url{https://doi.org/10.1016/S0079-6611(02)00065-4}
 #'
-#' 2.McDougall, Trevor J., and Oliver A. Krzysik. “Spiciness.”
+#' 2.McDougall, Trevor J., and Oliver A. Krzysik. \dQuote{Spiciness.}
 #' Journal of Marine Research 73, no. 5 (September 1, 2015): 141–52.
 #' \url{https://doi.org/10.1357/002224015816665589}
 #'

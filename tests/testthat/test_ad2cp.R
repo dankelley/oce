@@ -26,7 +26,7 @@ library(oce)
 ## in statusBits[2], use read.adp.ad2cp(..., debug=1).
 ##
 ## REFERENCES
-## 1. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2017.
+## 1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
 
 context("Nortek AD2CP")
 f1 <- "~/Dropbox/oce_secret_data/ad2cp_secret_1.ad2cp"

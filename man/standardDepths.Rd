@@ -44,7 +44,7 @@ Their Physics, Chemistry, and General Biology. New York: Prentice-Hall, 1942.
 
 2.Locarnini, R. A., A. V. Mishonov, J. I. Antonov, T. P. Boyer,
 H. E. Garcia, O. K. Baranova, M. M. Zweng, D. R. Johnson, and
-S. Levitus. “World Ocean Atlas 2009 Temperature.”
+S. Levitus. \dQuote{World Ocean Atlas 2009 Temperature.}
 US Government printing Office, 2010.
 }
 \author{
