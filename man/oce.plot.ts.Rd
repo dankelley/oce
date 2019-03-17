@@ -5,14 +5,14 @@
 \title{Oce Variant of plot.ts}
 \usage{
 oce.plot.ts(x, y, type = "l", xlim, ylim, log = "", xlab, ylab,
-  drawTimeRange, fill = FALSE, xaxs = par("xaxs"),
-  yaxs = par("yaxs"), cex = par("cex"), cex.axis = par("cex.axis"),
-  cex.main = par("cex.main"), mgp = getOption("oceMgp"),
-  mar = c(mgp[1] + if (nchar(xlab) > 0) 1.5 else 1, mgp[1] + 1.5, mgp[2]
-  + 1, mgp[2] + 3/4), main = "", despike = FALSE, axes = TRUE,
-  tformat, marginsAsImage = FALSE, grid = FALSE,
-  grid.col = "lightgray", grid.lty = "dotted", grid.lwd = par("lwd"),
-  debug = getOption("oceDebug"), ...)
+  drawTimeRange, fill = FALSE, col = par("col"), pch = par("pch"),
+  cex = par("cex"), cex.axis = par("cex.axis"),
+  cex.main = par("cex.main"), xaxs = par("xaxs"), yaxs = par("yaxs"),
+  mgp = getOption("oceMgp"), mar = c(mgp[1] + if (nchar(xlab) > 0) 1.5
+  else 1, mgp[1] + 1.5, mgp[2] + 1, mgp[2] + 3/4), main = "",
+  despike = FALSE, axes = TRUE, tformat, marginsAsImage = FALSE,
+  grid = FALSE, grid.col = "lightgray", grid.lty = "dotted",
+  grid.lwd = par("lwd"), debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{the times of observations.}
@@ -43,15 +43,28 @@ in the top-left margin of the plot; see \code{\link{oce.axis.POSIXct}} for detai
 \item{fill}{boolean, set \code{TRUE} to fill the curve to zero (which it
 does incorrectly if there are missing values in \code{y}).}
 
+\item{col}{The colours for points (if \code{type=="p"}) or lines (if \code{type=="l"}).
+For the \code{type="p"} case,
+if there are fewer \code{col} values than there are \code{x} values, then the \code{col} values
+are recycled in the standard fashion.
+For the \code{type="l"} case, the line is plotted in the first colour specified.}
+
+\item{pch}{character code, used if \code{type=="p"}.
+If there are fewer \code{pch} values than there are \code{x} values, then the \code{pch} values
+are recycled in the standard fashion.
+See \code{\link{points}} for the possible values for \code{pch}.}
+
+\item{cex}{character expansion factor, used if \code{type} is \code{"p"}.
+If there are fewer \code{pch} values than there are \code{x} values, then the \code{pch} values
+are recycled in the standard fashion. See \code{\link{par}} for more on \code{cex}.}
+
+\item{cex.axis}{character expansion factor for axes; see \code{\link[graphics]{par}}("cex.axis").}
+
+\item{cex.main}{see \code{\link[graphics]{par}}("cex.main").}
+
 \item{xaxs}{control x axis ending; see \code{\link{par}("xaxs")}.}
 
 \item{yaxs}{control y axis ending; see \code{\link{par}("yaxs")}.}
-
-\item{cex}{size of labels on axes; see \code{\link[graphics]{par}}("cex").}
-
-\item{cex.axis}{see \code{\link[graphics]{par}}("cex.axis").}
-
-\item{cex.main}{see \code{\link[graphics]{par}}("cex.main").}
 
 \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also
 for \code{par(mar)}, computed from this.  The default is tighter than the R
@@ -111,13 +124,14 @@ remove any possible confusion.
 The time axis is drawn with \code{\link{oce.axis.POSIXct}}.
 }
 \examples{
-
 library(oce)
 t0 <- as.POSIXct("2008-01-01", tz="UTC")
 t <- seq(t0, length.out=48, by="30 min")
 y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
 oce.plot.ts(t, y, type='l', xaxs='i')
+# Ugly plot showing how col, pch and cex get recycled
+oce.plot.ts(t, y, type='p', xaxs='i', col=1:3, pch=c(rep(1, 6), rep(20, 6)), cex=sqrt(1:6))
 }
 \author{
-Dan Kelley
+Dan Kelley and Clark Richards
 }

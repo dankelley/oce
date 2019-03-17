@@ -1075,14 +1075,24 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #'
 #' @param fill boolean, set \code{TRUE} to fill the curve to zero (which it
 #' does incorrectly if there are missing values in \code{y}).
-#' @param col The colors for lines and points.  Multiple colors can be specified so that each point can be given its own color.  If there are fewer colors than points they are recycled in the standard fashion.  Lines will all be plotted in the first colour specified.
+#' @param col The colours for points (if \code{type=="p"}) or lines (if \code{type=="l"}).
+#' For the \code{type="p"} case,
+#' if there are fewer \code{col} values than there are \code{x} values, then the \code{col} values
+#' are recycled in the standard fashion.
+#' For the \code{type="l"} case, the line is plotted in the first colour specified.
+#' @param pch character code, used if \code{type=="p"}.
+#' If there are fewer \code{pch} values than there are \code{x} values, then the \code{pch} values
+#' are recycled in the standard fashion.
+#' See \code{\link{points}} for the possible values for \code{pch}.
+#' @param cex character expansion factor, used if \code{type} is \code{"p"}.
+#' If there are fewer \code{pch} values than there are \code{x} values, then the \code{pch} values
+#' are recycled in the standard fashion. See \code{\link{par}} for more on \code{cex}.
+#' @param cex.axis character expansion factor for axes; see \code{\link[graphics]{par}}("cex.axis").
+#' @param cex.main see \code{\link[graphics]{par}}("cex.main").
 #' @param xlab name for x axis; defaults to \code{""}.
 #' @param ylab name for y axis; defaults to the plotted item.
 #' @param xaxs control x axis ending; see \code{\link{par}("xaxs")}.
 #' @param yaxs control y axis ending; see \code{\link{par}("yaxs")}.
-#' @param cex size of labels on axes; see \code{\link[graphics]{par}}("cex").
-#' @param cex.axis see \code{\link[graphics]{par}}("cex.axis").
-#' @param cex.main see \code{\link[graphics]{par}}("cex.main").
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
@@ -1113,18 +1123,21 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' @param \dots graphical parameters passed down to \code{\link{plot}}.
 #' @return A list is silently returned, containing \code{xat} and \code{yat},
 #' values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
-#' @author Dan Kelley
-#' @examples
 #'
+#' @author Dan Kelley and Clark Richards
+#'
+#' @examples
 #' library(oce)
 #' t0 <- as.POSIXct("2008-01-01", tz="UTC")
 #' t <- seq(t0, length.out=48, by="30 min")
 #' y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
 #' oce.plot.ts(t, y, type='l', xaxs='i')
+#' # Ugly plot showing how col, pch and cex get recycled
+#' oce.plot.ts(t, y, type='p', xaxs='i', col=1:3, pch=c(rep(1, 6), rep(20, 6)), cex=sqrt(1:6))
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
-                        drawTimeRange, fill=FALSE, col=1,
-                        xaxs=par("xaxs"), yaxs=par("yaxs"),
+                        drawTimeRange, fill=FALSE, col=par("col"), pch=par("pch"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+                        xaxs=par("xaxs"), yaxs=par("yaxs"),
                         mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if (nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
                         main="",
@@ -1160,6 +1173,16 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
     #oceDebug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
     #oceDebug(debug, "marginsAsImage=", marginsAsImage, ")\n")
     oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
+    ## Repeat col, pch and cex to the right length, for possible trimming later.
+    drawingPoints <- type == "p" || type == "o" || type == "b"
+    if (drawingPoints) {
+        ## BOOKMARK 1a: alter 1b if more added or subtracted here
+        nx <- length(x)
+        col <- rep(col, length.out=nx)
+        pch <- rep(pch, length.out=nx)
+        cex <- rep(cex, length.out=nx)
+    }
+
     pc <- paletteCalculations(maidiff=rep(0, 4))
     par(mgp=mgp, mar=mar)
     args <- list(...)
@@ -1174,9 +1197,14 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
         ## ends <- trim_ts(x, xlim, 0.04)
         dx  <- diff(as.numeric(xlim))
         keep <- (xlim[1] - dx*0.04) < x & x < (xlim[2] + dx*0.04)
-        if (length(col) == length(x)) col <- col[keep]
         x <- x[keep]
         y <- y[keep]
+        if (drawingPoints) {
+            ## BOOKMARK 1b: alter 1a if more added or subtracted here
+            col <- col[keep]
+            pch <- pch[keep]
+            cex <- cex[keep]
+        }
     }
     if (length(y) == 1)
         y <- rep(y, length(x))
@@ -1196,7 +1224,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
     if (!is.finite(yrange[1])) {
         plot(xrange, c(0, 1), axes=FALSE, xaxs=xaxs, yaxs=yaxs,
              xlim=if (xlimGiven) xlim else xrange,
-             xlab=xlab, ylab=ylab, type='n', log=log, col=col)
+             xlab=xlab, ylab=ylab, type='n', log=log, col=col, pch=pch, cex=cex)
         oce.axis.POSIXct(1, drawTimeRange=FALSE)
         box()
         mtext("bad data", side=3, line=-1, cex=cex)
@@ -1210,7 +1238,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
             plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
                  xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
                  xlab=xlab, ylab=ylab,
-                 type=type, cex=cex, log=log, col=col, ...)
+                 type=type, col=col, cex=cex, pch=pch, log=log, ...)
             fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
             do.call(polygon, list(x=xx, y=yy, col=fillcol))
         } else {
@@ -1218,7 +1246,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
                  xlim=if (missing(xlim)) NULL else xlim,
                  ylim=if (missing(ylim)) NULL else ylim,
                  xlab=xlab, ylab=ylab,
-                 type=type, cex=cex, log=log, col=col, ...)
+                 type=type, col=col, cex=cex, pch=pch, log=log, ...)
         }
         xat <- NULL
         yat <- NULL
