@@ -1172,7 +1172,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
         ## Comment-out next line for issue 1508, since trim_ts
         ## fails if times are NA.
         ## ends <- trim_ts(x, xlim, 0.04)
-        keep <- xlim[1] < x & x < xlim[2]
+        dx  <- diff(as.numeric(xlim))
+        keep <- (xlim[1] - dx*0.04) < x & x < (xlim[2] + dx*0.04)
         if (length(col) == length(x)) col <- col[keep]
         x <- x[keep]
         y <- y[keep]
