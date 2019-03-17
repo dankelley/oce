@@ -1075,6 +1075,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #'
 #' @param fill boolean, set \code{TRUE} to fill the curve to zero (which it
 #' does incorrectly if there are missing values in \code{y}).
+#' @param col The colors for lines and points.  Multiple colors can be specified so that each point can be given its own color.  If there are fewer colors than points they are recycled in the standard fashion.  Lines will all be plotted in the first colour specified.
 #' @param xlab name for x axis; defaults to \code{""}.
 #' @param ylab name for y axis; defaults to the plotted item.
 #' @param xaxs control x axis ending; see \code{\link{par}("xaxs")}.
@@ -1121,7 +1122,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
 #' oce.plot.ts(t, y, type='l', xaxs='i')
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
-                        drawTimeRange, fill=FALSE,
+                        drawTimeRange, fill=FALSE, col=1,
                         xaxs=par("xaxs"), yaxs=par("yaxs"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
@@ -1172,6 +1173,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
         ## fails if times are NA.
         ## ends <- trim_ts(x, xlim, 0.04)
         keep <- xlim[1] < x & x < xlim[2]
+        if (length(col) == length(x)) col <- col[keep]
         x <- x[keep]
         y <- y[keep]
     }
@@ -1193,7 +1195,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
     if (!is.finite(yrange[1])) {
         plot(xrange, c(0, 1), axes=FALSE, xaxs=xaxs, yaxs=yaxs,
              xlim=if (xlimGiven) xlim else xrange,
-             xlab=xlab, ylab=ylab, type='n', log=log)
+             xlab=xlab, ylab=ylab, type='n', log=log, col=col)
         oce.axis.POSIXct(1, drawTimeRange=FALSE)
         box()
         mtext("bad data", side=3, line=-1, cex=cex)
@@ -1207,7 +1209,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
             plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
                  xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
                  xlab=xlab, ylab=ylab,
-                 type=type, cex=cex, log=log, ...)
+                 type=type, cex=cex, log=log, col=col, ...)
             fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
             do.call(polygon, list(x=xx, y=yy, col=fillcol))
         } else {
@@ -1215,7 +1217,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
                  xlim=if (missing(xlim)) NULL else xlim,
                  ylim=if (missing(ylim)) NULL else ylim,
                  xlab=xlab, ylab=ylab,
-                 type=type, cex=cex, log=log, ...)
+                 type=type, cex=cex, log=log, col=col, ...)
         }
         xat <- NULL
         yat <- NULL
