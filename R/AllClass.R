@@ -369,6 +369,10 @@ setMethod(f="[[",
                       ## some special cases
                       if (i == "sigmaTheta") {
                           return(swSigmaTheta(x))
+                      } else if (i == "sigma0") {
+                          return(swSigma0(x))
+                      } else if (i == "spice") {
+                          return(swSpice(x))
                       } else {
                           ## Check original data names
                           if (i %in% x@metadata$dataNamesOriginal)

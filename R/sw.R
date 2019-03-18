@@ -57,13 +57,15 @@ T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature * (100-tempe
 #' expect_equal(rho1, rho2)
 lookWithin <- function(list)
 {
+    ##>>> message("in lookWithin")
     n <- length(list)
     names <- names(list)
     ## str(list)
     list1 <- list[[1]]
     if (inherits(list[[1]], "oce")) {
+        ##>>> message("  in lookWithin, list type; n=", n)
         for (i in 1:n) {
-            ##message("names[", i, "]: ", names[i])
+            ##>>> message("names[", i, "]: ", names[i])
             if ("eos" != names[i]) {
                 ## Note: the accessor [[]] will return temperature
                 ## in ITS-90 regardless of how it is stored, and similarly pressure
@@ -74,6 +76,7 @@ lookWithin <- function(list)
             }
         }
         if (inherits(list1, "ctd")) {
+            ##>>> message(" lookWithin it is a CTD")
             nrows <- length(list[[names[1]]])
             if (length(list[["longitude"]]))
                 list[["longitude"]] <- rep(mean(list[["longitude"]], na.rm=TRUE), nrows)
@@ -1658,7 +1661,8 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
 swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
                          longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
-   if (missing(salinity))
+    ##>>> message("in swSigmaTheta; eos=", eos)
+    if (missing(salinity))
        stop("must provide salinity")
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
@@ -1666,12 +1670,11 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
                 longitude <- salinity[["longitude"]]
             if (is.null(latitude))
                 latitude <- salinity[["latitude"]]
-        } else {
-            if (is.null(longitude))
-                stop("must supply longitude")
-            if (is.null(latitude))
-                stop("must supply latitude")
         }
+        if (is.null(longitude))
+            stop("must supply longitude")
+        if (is.null(latitude))
+            stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude, eos=eos))
     } else {
@@ -1723,6 +1726,7 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
 swSigma0 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
+    ##>>> message("in swSigma0")
     swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=0,
                  longitude=longitude, latitude=latitude, eos=eos)
 }
