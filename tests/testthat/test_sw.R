@@ -321,3 +321,40 @@ test_that("spiciness", {
           expect_equal(piOce, piGsw)
 
 })
+
+test_that("CTD object accessors for derived properties", {
+          data(ctd)
+          sigma0 <- swSigma0(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]],
+                             longitude=ctd[["longitude"]], latitude=ctd[["latitude"]])
+          sigmaTheta <- swSigmaTheta(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]],
+                                     longitude=ctd[["longitude"]], latitude=ctd[["latitude"]])
+          spice <- swSpice(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]],
+                           longitude=ctd[["longitude"]], latitude=ctd[["latitude"]])
+          sigmaTheta <- swSigmaTheta(ctd)
+          expect_equal(sigma0, ctd[["sigma0"]])
+          expect_equal(sigmaTheta, ctd[["sigmaTheta"]])
+          expect_equal(spice, ctd[["spice"]])
+          expect_equal(sigma0, swSigma0(ctd))
+          expect_equal(sigmaTheta, swSigmaTheta(ctd))
+          expect_equal(spice, swSpice(ctd))
+})
+
+test_that("non-CTD object accessors for derived properties", {
+          data(ctd)
+          sigma0 <- swSigma0(ctd)
+          sigmaTheta <- swSigmaTheta(ctd)
+          spice <- swSpice(ctd)
+          general <- new("oce")
+          general <- oceSetData(general, "temperature", ctd[["temperature"]])
+          general <- oceSetData(general, "salinity", ctd[["salinity"]])
+          general <- oceSetData(general, "pressure", ctd[["pressure"]])
+          general <- oceSetMetadata(general, "longitude", ctd[["longitude"]])
+          general <- oceSetMetadata(general, "latitude", ctd[["latitude"]])
+          expect_equal(sigma0, general[["sigma0"]])
+          expect_equal(sigmaTheta, general[["sigmaTheta"]])
+          expect_equal(spice, general[["spice"]])
+          expect_equal(sigma0, swSigma0(general))
+          expect_equal(sigmaTheta, swSigmaTheta(general))
+          expect_equal(spice, swSpice(general))
+})
+
