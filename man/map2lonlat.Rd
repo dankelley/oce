@@ -41,13 +41,11 @@ of \CRANpkg{rgdal} must be 1.3-9 or higher, to prevent an error with
 }
 
 \examples{
-\donttest{
 library(oce)
 ## Cape Split, in the Minas Basin of the Bay of Fundy
 cs <- list(longitude=-64.49657, latitude=45.33462)
 xy <- lonlat2map(cs, projection="+proj=merc")
 map2lonlat(xy)
-}
 
 }
 \seealso{
