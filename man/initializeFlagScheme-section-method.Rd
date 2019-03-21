@@ -86,10 +86,14 @@ changes until the autumn of that year.  Use with caution.
 }
 
 \examples{
+\dontrun{
 data(section)
+section <- read.section("a03_hy1.csv", sectionId="a03", institute="SIO",
+                        ship="R/V Professor Multanovskiy", scientist="Vladimir Tereschenkov")
 sectionWithFlags <- initializeFlagScheme(section, "WHP bottle")
 station1 <- sectionWithFlags[["station", 1]]
 str(station1[["flagScheme"]])
+}
 }
 \references{
 1. The codes for \code{"Argo"} are defined at
