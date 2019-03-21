@@ -14,6 +14,7 @@ addons:
 r_packages:
     - devtools
     - rgdal
+    - rgeos
     - ncdf4
     - covr
 env:
