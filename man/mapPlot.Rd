@@ -391,6 +391,80 @@ wildly inaccurate in a Pacific Antarctic-Alaska application
 }
 }
 
+\examples{
+projectionsWork <- !(.Platform$OS.type=="windows"&&.Platform$r_arch=="i386")
+if (projectionsWork) {
+    library(oce)
+    data(coastlineWorld)
+
+    # Example 1.
+    # Mollweide ([1] page 54) is an equal-area projection that works well
+    # for whole-globe views.
+    mapPlot(coastlineWorld, projection="+proj=moll", col='gray')
+    mtext("Mollweide", adj=1)
+
+    # Example 2.
+    # Note that filling is not employed (\\code{col} is not
+    # given) when the prime meridian is shifted, because
+    # this causes a problem with Antarctica
+    cl180 <- coastlineCut(coastlineWorld, lon_0=-180)
+    mapPlot(cl180, projection="+proj=moll +lon_0=-180")
+    mtext("Mollweide with coastlineCut", adj=1)
+
+    # Example 3.
+    # Orthographic projections resemble a globe, making them attractive for
+    # non-technical use, but they are neither conformal nor equal-area, so they
+    # are somewhat limited for serious use on large scales.  See Section 20 of
+    # [1]. Note that filling is not employed because it causes a problem with
+    # Antarctica.
+    par(mar=c(3, 3, 1, 1))
+    mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
+    mtext("Orthographic", adj=1)
+
+    # Example 4.
+    # The Lambert conformal conic projection is an equal-area projection
+    # recommended by [1], page 95, for regions of large east-west extent
+    # away from the equator, here illustrated for the USA and Canada.
+    par(mar=c(3, 3, 1, 1))
+    mapPlot(coastlineCut(coastlineWorld, -100),
+            longitudelim=c(-130,-55), latitudelim=c(35, 60),
+            projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
+    mtext("Lambert conformal", adj=1)
+
+    # Example 5.
+    # The stereographic projection [1], page 120, is conformal, used
+    # below for an Arctic view with a Canadian focus.  Note the trick of going
+    # past the pole: the second latitudelim value is 180 minus the first, and the
+    # second longitudelim is 180 plus the first; this uses image points "over"
+    # the pole.
+    par(mar=c(3, 3, 1, 1))
+    mapPlot(coastlineCut(coastlineWorld, -135),
+            longitudelim=c(-130, 50), latitudelim=c(70, 110),
+            proj="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
+    mtext("Stereographic", adj=1)
+
+    # Example 6.
+    # Spinning globe: create PNG files that can be assembled into a movie
+\dontrun{
+    png("globe-\%03d.png")
+    lons <- seq(360, 0, -15)
+    par(mar=rep(0, 4))
+    for (i in seq_along(lons)) {
+        p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
+        if (i == 1) {
+            mapPlot(coastlineCut(coastlineWorld, lons[i]),
+                    projection=p, col="lightgray")
+            xlim <- par("usr")[1:2]
+            ylim <- par("usr")[3:4]
+        } else {
+            mapPlot(coastlineCut(coastlineWorld, lons[i]),
+                    projection=p, col="lightgray",
+                    xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
+        }
+    }
+}
+}
+}
 \references{
 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 Professional Paper: 1395 (available at
