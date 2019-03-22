@@ -12,8 +12,8 @@ NumericMatrix do_ad2cp_ahrs(NumericMatrix v, NumericMatrix ahrs)
 {
     if (ahrs.ncol() != 9)
       Rf_error("ncol(ahrs) must be 9, but it is %d", ahrs.ncol());
-    unsigned int nrow = v.nrow();
-    unsigned int ncol = v.ncol();
+    int nrow = v.nrow();
+    int ncol = v.ncol();
     if (ncol != 3)
       Rf_error("ncol(v) must be 3, but it is %d", ncol);
     if (ahrs.nrow() != nrow)
@@ -26,7 +26,7 @@ NumericMatrix do_ad2cp_ahrs(NumericMatrix v, NumericMatrix ahrs)
       enu(i, 2) = v(i, 0)*ahrs(i, 6) + v(i, 1)*ahrs(i, 7) + v(i, 2)*ahrs(i, 8);
       //if (i < 4)
       //  Rprintf("i=%d ahrs=%12.9f %12.9f %12.9f %12.9f %12.9f %12.9f %12.9f %12.9f %12.9f\n    v=%12.9f %12.9f %12.9f\n",
-      //      i, 
+      //      i,
       //      ahrs(i,0), ahrs(i,1), ahrs(i,2),
       //      ahrs(i,3), ahrs(i,4), ahrs(i,5),
       //      ahrs(i,6), ahrs(i,7), ahrs(i,8),
