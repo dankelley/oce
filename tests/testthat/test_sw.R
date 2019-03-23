@@ -262,6 +262,13 @@ test_that("electrical conductivity: definitional check values", {
           expect_equal(swCSTp(35, T90fromT68(15), 0, eos="gsw"), 1)
           expect_equal(swSCTp( 1, T90fromT68(15), 0, eos="unesco"), 35)
           expect_equal(swSCTp( 1, T90fromT68(15), 0, eos="gsw"), 35)
+          expect_equal(swSCTp(0.5, 10, 100, eos="unesco"),
+                       swSCTp(0.5, 10, 100, eos="gsw"))
+          ## These test values are not against a known standard; rather, they simply
+          ## assure that there has been no change since a test done on 2019 Mar 23
+          ## whilst working on issue https://github.com/dankelley/oce/issues/1514
+          expect_equal(swSCTp(0.02, 10, 100, eos="gsw"), 0.601398102117915)
+          expect_equal(swSCTp(0.02, 10, 100, eos="unesco"), 0.601172086373874)
 })
 
 test_that("electrical conductivity: semi-definitional check values (AUTHOR IS CONFUSED ON THESE)", {
