@@ -803,6 +803,8 @@ imagep <- function(x, y, z,
              "...) {\n", sep="", unindent=1)
     oceDebug(debug, "par('mai'):", paste(format(par('mai'), digits=2)), "\n")
     oceDebug(debug, "par('mar'):", paste(format(par('mar'), digits=2)), "\n")
+    if (!is.logical(flipy))
+        stop("flipy must be TRUE or FALSE")
 
     if (is.logical(add)) {
         if (add) {

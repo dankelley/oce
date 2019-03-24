@@ -226,7 +226,7 @@ approx3d <- function(x, y, z, f, xout, yout, zout)
 #' @param nshow number of values to show at first (if length(x)> 1)
 #' @param last indicates whether this is the final argument to the function
 #' @param sep the separator between name and value
-argShow <- function(x, nshow=2, last=FALSE, sep="=")
+argShow <- function(x, nshow=4, last=FALSE, sep="=")
 {
     if (missing(x))
         return("")
@@ -239,23 +239,23 @@ argShow <- function(x, nshow=2, last=FALSE, sep="=")
             res <- NULL
         } else {
             nx <- length(x)
-            if (nx > 1)
-                name <- paste(name, "[", nx, "]", sep="")
+            ##if (nx > 1)
+            ##    name <- paste(name, "[", nx, "]", sep="")
             if (is.function(x)) {
                 res <- "(provided)"
-            } else if (is.character(x) && nx==1) {
-                res <- paste('"', x[1], '"', sep="")
+            } else if (nx==1) {
+                res <- if (is.character(x)) paste('"', x[1], '"', sep="") else x[1]
             } else {
-                look <- 1:min(nshow, nx)
-                res <- paste(format(x[look], digits=4), collapse=" ")
-                if (nx > nshow)
-                    res <- paste(res, "...", x[nx])
+                look <- seq.int(1L, min(nshow, nx)-1)
+                res <- paste(format(x[look], digits=4), collapse=",")
+                res <- paste(res, if (nx > nshow) ", ..., " else ",", x[nx], sep="")
             }
         }
     }
+    res <- if (nx == 1) paste(name, "=", res,  sep="") else paste(name, "=c(", res, ")", sep="")
     if (!last)
-        res <- paste(res, ", ", sep="")
-    paste(name, res, sep="=")
+        res <- paste(res, ",", sep="")
+    res
 }
 
 #' Read a World Ocean Atlas NetCDF File

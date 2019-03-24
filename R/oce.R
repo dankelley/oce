@@ -1165,19 +1165,19 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
         ylab  <- deparse(substitute(y))
     if (missing(drawTimeRange))
         drawTimeRange <- getOption("oceDrawTimeRange", TRUE)
-    if (!is.logical(flipy))
-        stop("flipy must be TRUE or FALSE")
     ##ocex <- par("cex")
     #par(cex=cex)
     debug <- min(debug, 4)
-    oceDebug(debug, "oce.plot.ts(...,debug=", debug,
-             ",type=\"", type, "\"",
-             ",flipy=\"", flipy, "\"",
-             ",log=\"", log, "\"",
-             ",mar=c(", paste(mar, collapse=","), ")",
-             ",mgp=c(", paste(mgp, collapse=","), ")",
-             ",cex=", cex,
-             ",...){\n", sep="", unindent=1)
+    oceDebug(debug, "oce.plot.ts(...,debug=", debug,",",
+             argShow(type),
+             argShow(flipy),
+             argShow(log),
+             argShow(mar), #",mar=c(", paste(mar, collapse=","), ")",
+             argShow(mgp), #",mgp=c(", paste(mgp, collapse=","), ")",
+             argShow(cex), #",cex=", cex,
+             "...) {\n", sep="", unindent=1)
+    if (!is.logical(flipy))
+        stop("flipy must be TRUE or FALSE")
     if (!log %in% c("", "y"))
         stop("log must be either an empty string or \"y\", not \"", log, "\" as given")
     #oceDebug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
