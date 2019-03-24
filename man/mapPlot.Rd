@@ -392,8 +392,8 @@ wildly inaccurate in a Pacific Antarctic-Alaska application
 }
 
 \examples{
-projectionsWork <- .Platform$OS.type!="windows" && require("rgdal")
-if (projectionsWork) {
+canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
+if (canProject) {
     library(oce)
     data(coastlineWorld)
 
