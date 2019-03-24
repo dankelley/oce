@@ -4,9 +4,9 @@
 \alias{oce.plot.ts}
 \title{Oce Variant of plot.ts}
 \usage{
-oce.plot.ts(x, y, type = "l", xlim, ylim, log = "", xlab, ylab,
-  drawTimeRange, fill = FALSE, col = par("col"), pch = par("pch"),
-  cex = par("cex"), cex.axis = par("cex.axis"),
+oce.plot.ts(x, y, type = "l", xlim, ylim, log = "", flipy = FALSE,
+  xlab, ylab, drawTimeRange, fill = FALSE, col = par("col"),
+  pch = par("pch"), cex = par("cex"), cex.axis = par("cex.axis"),
   cex.main = par("cex.main"), xaxs = par("xaxs"), yaxs = par("yaxs"),
   mgp = getOption("oceMgp"), mar = c(mgp[1] + if (nchar(xlab) > 0) 1.5
   else 1, mgp[1] + 1.5, mgp[2] + 1, mgp[2] + 3/4), main = "",
@@ -32,6 +32,9 @@ window.}
 \code{y} axis, or \code{"y"} for logarithmic \code{y} axis.  (Unlike
 \code{\link{plot.default}} etc., \code{oce.plot.ts} does not permit
 logarithmic time, or \code{x} axis.)}
+
+\item{flipy}{Logical, with \code{TRUE} indicating that the graph
+should have the y axis reversed.}
 
 \item{xlab}{name for x axis; defaults to \code{""}.}
 
@@ -129,11 +132,13 @@ t0 <- as.POSIXct("2008-01-01", tz="UTC")
 t <- seq(t0, length.out=48, by="30 min")
 y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
 oce.plot.ts(t, y, type='l', xaxs='i')
-# Ugly plot showing how col, pch and cex get recycled
+# Show how col, pch and cex get recycled
 oce.plot.ts(t, y, type='p', xaxs='i',
             col=1:3, pch=c(rep(1, 6), rep(20, 6)), cex=sqrt(1:6))
-# Demonstrate xlim trimming; note the narrowing of the y view
+# Trimming x; note the narrowing of the y view
 oce.plot.ts(t, y, type='p', xlim=c(t[6], t[12]))
+# Flip the y axis
+oce.plot.ts(t, y, flipy=TRUE)
 }
 \author{
 Dan Kelley and Clark Richards

@@ -1089,6 +1089,8 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' are recycled in the standard fashion. See \code{\link{par}} for more on \code{cex}.
 #' @param cex.axis character expansion factor for axes; see \code{\link[graphics]{par}}("cex.axis").
 #' @param cex.main see \code{\link[graphics]{par}}("cex.main").
+#' @param  flipy Logical, with \code{TRUE} indicating that the graph
+#' should have the y axis reversed.
 #' @param xlab name for x axis; defaults to \code{""}.
 #' @param ylab name for y axis; defaults to the plotted item.
 #' @param xaxs control x axis ending; see \code{\link{par}("xaxs")}.
@@ -1132,12 +1134,14 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' t <- seq(t0, length.out=48, by="30 min")
 #' y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
 #' oce.plot.ts(t, y, type='l', xaxs='i')
-#' # Ugly plot showing how col, pch and cex get recycled
+#' # Show how col, pch and cex get recycled
 #' oce.plot.ts(t, y, type='p', xaxs='i',
 #'             col=1:3, pch=c(rep(1, 6), rep(20, 6)), cex=sqrt(1:6))
-#' # Demonstrate xlim trimming; note the narrowing of the y view
+#' # Trimming x; note the narrowing of the y view
 #' oce.plot.ts(t, y, type='p', xlim=c(t[6], t[12]))
-oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
+#' # Flip the y axis
+#' oce.plot.ts(t, y, flipy=TRUE)
+oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, ylab,
                         drawTimeRange, fill=FALSE, col=par("col"), pch=par("pch"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         xaxs=par("xaxs"), yaxs=par("yaxs"),
@@ -1161,11 +1165,14 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
         ylab  <- deparse(substitute(y))
     if (missing(drawTimeRange))
         drawTimeRange <- getOption("oceDrawTimeRange", TRUE)
+    if (!is.logical(flipy))
+        stop("flipy must be TRUE or FALSE")
     ##ocex <- par("cex")
     #par(cex=cex)
     debug <- min(debug, 4)
     oceDebug(debug, "oce.plot.ts(...,debug=", debug,
              ",type=\"", type, "\"",
+             ",flipy=\"", flipy, "\"",
              ",log=\"", log, "\"",
              ",mar=c(", paste(mar, collapse=","), ")",
              ",mgp=c(", paste(mgp, collapse=","), ")",
@@ -1224,9 +1231,11 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
     }
     xrange <- range(x, na.rm=TRUE)
     yrange <- range(y, na.rm=TRUE)
+    maybeflip <- function(y) if (flipy) rev(sort(y)) else y
     if (!is.finite(yrange[1])) {
         plot(xrange, c(0, 1), axes=FALSE, xaxs=xaxs, yaxs=yaxs,
              xlim=if (xlimGiven) xlim else xrange,
+             ylim=if (missing(ylim)) maybeflip(range(y)) else maybeflip(ylim),
              xlab=xlab, ylab=ylab, type='n', log=log, col=col, pch=pch, cex=cex)
         oce.axis.POSIXct(1, drawTimeRange=FALSE)
         box()
@@ -1240,6 +1249,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
             yy <- c(0, y, 0)
             plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
                  xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
+                 ylim=if (missing(ylim)) maybeflip(range(y)) else maybeflip(ylim),
                  xlab=xlab, ylab=ylab,
                  type=type, col=col, cex=cex, pch=pch, log=log, ...)
             fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
@@ -1247,7 +1257,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", xlab, ylab,
         } else {
             plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
                  xlim=if (missing(xlim)) NULL else xlim,
-                 ylim=if (missing(ylim)) NULL else ylim,
+                 ylim=if (missing(ylim)) maybeflip(range(y)) else maybeflip(ylim),
                  xlab=xlab, ylab=ylab,
                  type=type, col=col, cex=cex, pch=pch, log=log, ...)
         }
