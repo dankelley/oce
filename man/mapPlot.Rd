@@ -392,7 +392,7 @@ wildly inaccurate in a Pacific Antarctic-Alaska application
 }
 
 \examples{
-projectionsWork <- !(.Platform$OS.type=="windows"&&.Platform$r_arch=="i386")
+projectionsWork <- .Platform$OS.type!="windows" && require("rgdal")
 if (projectionsWork) {
     library(oce)
     data(coastlineWorld)

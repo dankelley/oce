@@ -44,7 +44,7 @@ that package is version 1.3-9 or higher.
 }
 
 \examples{
-projectionsWork <- !(.Platform$OS.type=="windows"&&.Platform$r_arch=="i386")
+projectionsWork <- .Platform$OS.type!="windows" && require("rgdal")
 if (projectionsWork) {
     library(oce)
     ## Cape Split, in the Minas Basin of the Bay of Fundy
