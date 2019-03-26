@@ -4314,6 +4314,22 @@ plotTS <- function (x,
                 latitude <- rep(x[["latitude"]], each=dim[1])
             }
             x <- as.ctd(SP, t, p, longitude=longitude, latitude=latitude)
+        } else if (is.list(x)) {
+            if (inherits(x[[1]], "ctd")) {
+                x <- if (eos == "gsw") {
+                    as.ctd(salinity=unlist(lapply(x, function(xi) xi[["salinity"]])),
+                           temperature=unlist(lapply(x, function(xi) xi[["temperature"]])),
+                           pressure=unlist(lapply(x, function(xi) xi[["pressure"]])),
+                           longitude=unlist(lapply(x, function(xi) xi[["longitude"]])),
+                           latitude=unlist(lapply(x, function(xi) xi[["latitude"]])))
+                } else {
+                    as.ctd(unlist(lapply(x, function(xi) xi[["salinity"]])),
+                           unlist(lapply(x, function(xi) xi[["temperature"]])),
+                           unlist(lapply(x, function(xi) xi[["pressure"]])))
+                }
+            } else {
+                stop("If x is a list, it must be a list of ctd objects")
+            }
         } else {
             names <- names(x)
             if ("temperature" %in% names && "salinity" %in% names) {
