@@ -1090,7 +1090,8 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' @param cex.axis character expansion factor for axes; see \code{\link[graphics]{par}}("cex.axis").
 #' @param cex.main see \code{\link[graphics]{par}}("cex.main").
 #' @param  flipy Logical, with \code{TRUE} indicating that the graph
-#' should have the y axis reversed.
+#' should have the y axis reversed, i.e. with smaller values at
+#' the bottom of the page.
 #' @param xlab name for x axis; defaults to \code{""}.
 #' @param ylab name for y axis; defaults to the plotted item.
 #' @param xaxs control x axis ending; see \code{\link{par}("xaxs")}.

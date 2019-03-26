@@ -4,6 +4,7 @@
   The rightmost fractional number is not always increased with updates to "develop".
 * read.ctd.sbe() handles more column names
 * i386/windows gets map projections
+* imagep() handles combined flipy and ylim arguments differently
 
 1.0-1
 * Renamed 0.9-24, released with OAR book publication.

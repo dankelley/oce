@@ -34,7 +34,8 @@ window.}
 logarithmic time, or \code{x} axis.)}
 
 \item{flipy}{Logical, with \code{TRUE} indicating that the graph
-should have the y axis reversed.}
+should have the y axis reversed, i.e. with smaller values at
+the bottom of the page.}
 
 \item{xlab}{name for x axis; defaults to \code{""}.}
 
