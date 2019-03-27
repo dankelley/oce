@@ -581,8 +581,10 @@ setMethod(f="summary",
 #' \item \code{SP}: Salinity on the Practical Salinity Scale, which is
 #' \code{salinity} in the \code{data} slot.
 #'
-#' \item \code{spice}: a variable that is in some sense orthogonal to density,
-#' calculated with \code{\link{swSpice}(x)}.
+#' \item \code{spice} or \code{spiciness0}: a variable that is in some sense
+#' orthogonal to density, calculated with \code{\link{swSpice}(x)}.
+#' Note that this is defined differently for \code{eos="unesco"} and
+#' \code{eos="gsw"}.
 #'
 #' \item \code{SR}: Reference Salinity computed with
 #' \code{\link[gsw]{gsw_SR_from_SP}} in the \code{gsw} package.
@@ -623,6 +625,7 @@ setMethod(f="[[",
               metadata <- x@metadata
               dataNames <- names(data)
               metadataNames <- names(metadata)
+              ## message("i=\"", i, "\"")
               if (i == "conductivity") {
                   C <- data$conductivity
                   ##message("i=", i, ", j=", if (missing(j)) "(missing)" else j)
@@ -829,7 +832,7 @@ setMethod(f="[[",
                   swTheta(x)
               } else if (i == "Rrho") {
                   swRrho(x)
-              } else if (i == "spice") {
+              } else if (i == "spice" || i == "spiciness") {
                   swSpice(x)
               } else if (i %in% c("absolute salinity", "SA")) {
                   if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))

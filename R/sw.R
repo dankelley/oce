@@ -2066,18 +2066,24 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 
 #' Seawater spiciness
 #'
-#' Compute seawater "spice" (a variable orthogonal to density in TS space), in
-#' either the formulation of Flament [1] or the Gibbs SeaWater formulation [2].
+#' Compute seawater "spice", also called "spiciness" (a variable orthogonal
+#' to density in TS space), in either of two formulations, depending on
+#' the value of the \code{eos} argument. If \code{eos="unesco"} then
+#' Flament's [reference 1] formulation is used. If \code{eos="gsw"}
+#' then the Gibbs SeaWater formulation for "spiciness0" is used
+#' [reference 2].
 #'
 #' If the first argument is a \code{ctd} object, then salinity, temperature and
-#' pressure values are extracted from it, and used for the calculation.
+#' pressure values are extracted from it, and used for the calculation. (For
+#' the \code{eos="gsw"} case, longitude and latitude are also extacted, because
+#' these are required for the formulation of spiciness0.
 #'
 #' Roughly speaking, seawater with a high spiciness is relatively warm and
 #' salty compared with less spicy water. Another interpretation is that spice
 #' is a variable measuring distance orthogonal to isopycnal lines on TS
 #' diagrams (if the diagrams are scaled to make the isopycnals run at 45
 #' degrees). Note that pressure, longitude and latitude are all
-#'  ignored in the Flament definition.
+#' ignored in the Flament definition.
 #'
 #' @param salinity either salinity [PSU] (in which case \code{temperature} and
 #' \code{pressure} must be provided) \strong{or} a \code{ctd} object (in which
