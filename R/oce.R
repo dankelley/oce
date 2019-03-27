@@ -1236,7 +1236,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
     if (!is.finite(yrange[1])) {
         plot(xrange, c(0, 1), axes=FALSE, xaxs=xaxs, yaxs=yaxs,
              xlim=if (xlimGiven) xlim else xrange,
-             ylim=if (missing(ylim)) maybeflip(range(y)) else maybeflip(ylim),
+             ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
              xlab=xlab, ylab=ylab, type='n', log=log, col=col, pch=pch, cex=cex)
         oce.axis.POSIXct(1, drawTimeRange=FALSE)
         box()
@@ -1250,7 +1250,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
             yy <- c(0, y, 0)
             plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
                  xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
-                 ylim=if (missing(ylim)) maybeflip(range(y)) else maybeflip(ylim),
+                 ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
                  xlab=xlab, ylab=ylab,
                  type=type, col=col, cex=cex, pch=pch, log=log, ...)
             fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
@@ -1258,7 +1258,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
         } else {
             plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
                  xlim=if (missing(xlim)) NULL else xlim,
-                 ylim=if (missing(ylim)) maybeflip(range(y)) else maybeflip(ylim),
+                 ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
                  xlab=xlab, ylab=ylab,
                  type=type, col=col, cex=cex, pch=pch, log=log, ...)
         }
