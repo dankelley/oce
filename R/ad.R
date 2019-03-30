@@ -89,11 +89,15 @@ beamToXyz <- function(x, ...)
         stop("class of object must inherit from either 'adv' or 'adp'")
 }
 
-#' Convert acoustic-Doppler data from xyz coordinates to enu coordinates
+#' Convert Acoustic-Doppler Data From xyz to enu Coordinates
+#'
 #' @param x an \code{adp} or \code{adv} object, i.e. one inheriting from
 #' \code{\link{adp-class}} or \code{\link{adv-class}}.
+#'
 #' @param \dots extra arguments that are passed on to \code{\link{xyzToEnuAdp}}
-#' or \code{\link{xyzToEnuAdv}}.
+#' or \code{\link{xyzToEnuAdv}}; see the documentation for those functions,
+#' for th details.
+#'
 #' @return An object of the same type as \code{x}, but with velocities
 #' in east-north-up coordinates instead of xyz coordinates.
 #'

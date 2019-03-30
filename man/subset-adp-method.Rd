@@ -20,9 +20,14 @@ A new \code{\link{adp-class}} object.
 }
 \description{
 Subset an adp (acoustic Doppler profile) object, in a manner that is function
-is somewhat analogous to \code{\link{subset.data.frame}}.  Subsetting can be by
-\code{time} or \code{distance}, but these may not be combined; use a sequence
-of calls to subset by both.
+is somewhat analogous to \code{\link{subset.data.frame}}. For any data type,
+subsetting can be by \code{time} or \code{distance}, but these may not be
+combined; use a sequence of calls to subset by both. For the special
+case of AD2CP data (see \code{\link{read.adp.ad2cp}}), it is possible to subset
+to the "average" data records with \code{subset="average"}, to the
+"burst" records with \code{subset="burst"}, or to the "interleavedBurst"
+with \code{subset="interleavedBurst"}; note that no warning is issued,
+if this leaves an object with no useful data.
 }
 \examples{
 library(oce)
@@ -33,15 +38,18 @@ plot(subset(adp, time < mean(range(adp[['time']]))))
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+  \code{\link{[[<-,adp-method}},
+  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdpAD2CP}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
   \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
   \code{\link{enuToOther}},
   \code{\link{handleFlags,adp-method}},
-  \code{\link{plot,adp-method}}, \code{\link{read.ad2cp}},
+  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
+  \code{\link{read.adp.ad2cp}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
@@ -52,6 +60,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{setFlags,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 
 Other functions that subset \code{oce} objects: \code{\link{subset,adv-method}},

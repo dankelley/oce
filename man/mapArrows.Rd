@@ -36,7 +36,7 @@ velocities; for that, see \code{\link{mapDirectionField}}.
 Adds arrows to an existing map, by analogy to \code{\link{arrows}}.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, longitudelim=c(-120, -60), latitudelim=c(30, 60),

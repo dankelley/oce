@@ -26,7 +26,6 @@ expressions.
 Format geographical positions to degrees, minutes, and hemispheres
 }
 \examples{
-
 library(oce)
 formatPosition(10+1:10/60+2.8/3600)
 formatPosition(10+1:10/60+2.8/3600, type="string")

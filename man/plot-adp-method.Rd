@@ -6,9 +6,8 @@
 \alias{plot.adp}
 \title{Plot ADP Data}
 \usage{
-\S4method{plot}{adp}(x, which = 1:dim(x@data$v)[3], mode = c("normal",
-  "diagnostic"), col, breaks, zlim, titles, lwd = par("lwd"),
-  type = "l", ytype = c("profile", "distance"),
+\S4method{plot}{adp}(x, which, j, col, breaks, zlim, titles,
+  lwd = par("lwd"), type = "l", ytype = c("profile", "distance"),
   drawTimeRange = getOption("oceDrawTimeRange"), useSmoothScatter,
   missingColor = "gray", mgp = getOption("oceMgp"), mar = c(mgp[1] +
   1.5, mgp[1] + 1.5, 1.5, 1.5), mai.palette = rep(0, 4), tformat,
@@ -23,15 +22,18 @@
 \item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
 
 \item{which}{list of desired plot types.  These are graphed in panels
-running down from the top of the page.  See \dQuote{Details} for the
-meanings of various values of \code{which}.}
+running down from the top of the page.  If \code{which} is not given,
+the plot will show images of the distance-time dependence of velocity
+for each beam. See \dQuote{Details} for the meanings of various values of \code{which}.}
 
-\item{mode}{a string indicating whether to plot the conventional signal
-(\code{normal}) or or, in the special case of Aquadopp single-bin profilers,
-possibly the \code{diagnostic} signal.  This argument is ignored except in
-the case of Aquadopp instruments.  Perhaps a third option will become
-available in the future, for the \code{burst} mode that some instruments
-provide.}
+\item{j}{optional string specifying a sub-class of \code{which}. For
+Nortek Aquadopp profilers, this may either be \code{"default"} (or missing)
+to get the main signal, or \code{"diagnostic"} to get a diagnostic
+signal. For Nortek AD2CP profiles, this may be any one of
+\code{"average"} (or missing) for averaged data, \code{"burst"}
+for burst data, or \code{"interleaved burst"} for interleaved burst data;
+more data types are provided by that instrument, and may be added here
+at some future time.}
 
 \item{col}{optional indication of color(s) to use.  If not provided, the
 default for images is \code{oce.colorsPalette(128,1)}, and for lines and
@@ -244,7 +246,7 @@ depending on the coordinate system.
 beam 4, for \code{beam} coordinates, or velocity estimate, for other
 coordinates.  (This is ignored for 3-beam data.)
 
-\item \code{which=23} yields a progressive-vector diagram in the horizontal
+\item \code{which="progressiveVector"} (or \code{which=23}) yields a progressive-vector diagram in the horizontal
 plane, plotted with \code{asp=1}.  Normally, the depth-averaged velocity
 components are used, but if the \code{control} list contains an item named
 \code{bin}, then the depth bin will be used (with an error resulting if the
@@ -292,14 +294,29 @@ depth-averaged, vertical velocity, i.e. a time series of heaving.
 \item \code{which=100} (or \code{"soundSpeed"}) for a time series of sound
 speed.
 
-} In addition to the above, there are some groupings defined: \itemize{
-\item \code{which="velocity"} equivalent to \code{which=1:3} (velocity
-components) \item \code{which="amplitude"} equivalent to \code{which=5:7}
-(backscatter intensity components) \item \code{which="quality"} equivalent
-to \code{which=9:11} (quality components) \item \code{which="hydrography"}
-equivalent to \code{which=14:15} (temperature and pressure) \item
-\code{which="angles"} equivalent to \code{which=16:18} (heading, pitch and
-roll) }
+}
+
+In addition to the above, the following shortcuts are defined:
+
+\itemize{
+
+\item \code{which="velocity"} equivalent to \code{which=1:3} or \code{1:4}
+(depending on the device) for velocity components.
+
+\item \code{which="amplitude"} equivalent to \code{which=5:7}
+or \code{5:8} (depending on the device) for backscatter intensity
+components.
+
+\item \code{which="quality"} equivalent to \code{which=9:11} or \code{9:12}
+(depending on the device) for quality components.
+
+\item \code{which="hydrography"} equivalent to \code{which=14:15}
+for temperature and pressure.
+
+\item \code{which="angles"} equivalent to \code{which=16:18} for
+heading, pitch and roll.
+
+}
 
 The color scheme for image plots (\code{which} in 1:12) is provided by the
 \code{col} argument, which is passed to \code{\link{image}} to do the actual
@@ -357,15 +374,18 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+  \code{\link{[[<-,adp-method}},
+  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdpAD2CP}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
   \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
   \code{\link{enuToOther}},
   \code{\link{handleFlags,adp-method}},
-  \code{\link{read.ad2cp}}, \code{\link{read.adp.nortek}},
+  \code{\link{is.ad2cp}}, \code{\link{read.adp.ad2cp}},
+  \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
   \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
@@ -376,6 +396,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
 \author{

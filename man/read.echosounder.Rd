@@ -51,7 +51,7 @@ angle data being ignored.
 
 \references{
 Various echosounder instruments provided by BioSonics are
-described at the company website, \url{http://www.biosonicsinc.com/}.  The
+described at the company website, \url{https://www.biosonicsinc.com/}.  The
 document listed as [1] below was provided to the author of this function in
 November 2011, which suggests that the data format was not changed since
 July 2010.

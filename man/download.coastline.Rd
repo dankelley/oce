@@ -65,7 +65,7 @@ plot(coastline)
 
 }
 \references{
-1. The NaturalEarth server is at \url{http://www.naturalearthdata.com}
+1. The NaturalEarth server is at \url{https://www.naturalearthdata.com}
 }
 \seealso{
 The work is done with \code{\link[utils]{download.file}}.

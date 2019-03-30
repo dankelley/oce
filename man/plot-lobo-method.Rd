@@ -67,12 +67,6 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,windrose-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
-
-Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
-  \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},
-  \code{\link{lobo-class}}, \code{\link{lobo}},
-  \code{\link{subset,lobo-method}},
-  \code{\link{summary,lobo-method}}
 }
 \author{
 Dan Kelley

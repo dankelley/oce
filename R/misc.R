@@ -13,7 +13,7 @@ abbreviateVector <- function(x)
 }
 
 
-#' Add a Column to the Data Slot of an Oce object [defunct]
+#' Add a Column to the data Slot of an oce object [defunct]
 #'
 #' \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
 #'
@@ -102,7 +102,8 @@ angleRemap <- function(theta)
 #' @author Dan Kelley
 #' @seealso Use \code{\link{magneticField}} to determine the declination,
 #' inclination and intensity at a given spot on the world, at a given time.
-#' @references \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
+#' @references
+#' 1. \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
 #'
 #' @family things related to magnetism
 applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
@@ -225,7 +226,7 @@ approx3d <- function(x, y, z, f, xout, yout, zout)
 #' @param nshow number of values to show at first (if length(x)> 1)
 #' @param last indicates whether this is the final argument to the function
 #' @param sep the separator between name and value
-argShow <- function(x, nshow=2, last=FALSE, sep="=")
+argShow <- function(x, nshow=4, last=FALSE, sep="=")
 {
     if (missing(x))
         return("")
@@ -238,23 +239,23 @@ argShow <- function(x, nshow=2, last=FALSE, sep="=")
             res <- NULL
         } else {
             nx <- length(x)
-            if (nx > 1)
-                name <- paste(name, "[", nx, "]", sep="")
+            ##if (nx > 1)
+            ##    name <- paste(name, "[", nx, "]", sep="")
             if (is.function(x)) {
                 res <- "(provided)"
-            } else if (is.character(x) && nx==1) {
-                res <- paste('"', x[1], '"', sep="")
+            } else if (nx==1) {
+                res <- if (is.character(x)) paste('"', x[1], '"', sep="") else x[1]
             } else {
-                look <- 1:min(nshow, nx)
-                res <- paste(format(x[look], digits=4), collapse=" ")
-                if (nx > nshow)
-                    res <- paste(res, "...", x[nx])
+                look <- seq.int(1L, min(nshow, nx)-1)
+                res <- paste(format(x[look], digits=4), collapse=",")
+                res <- paste(res, if (nx > nshow) ", ..., " else ",", x[nx], sep="")
             }
         }
     }
+    res <- if (nx == 1) paste(name, "=", res,  sep="") else paste(name, "=c(", res, ")", sep="")
     if (!last)
-        res <- paste(res, ", ", sep="")
-    paste(name, res, sep="=")
+        res <- paste(res, ",", sep="")
+    res
 }
 
 #' Read a World Ocean Atlas NetCDF File
@@ -818,44 +819,53 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
 #' consider using \code{\link{binMean2D}} instead, since it should be faster.)
 #'
 #' @param x a vector of numerical values.
+#'
 #' @param y a vector of numerical values.
+#'
 #' @param f a vector of data to which the elements of \code{FUN} may be
 #' supplied
-#' @param xbreaks values of x at the boundaries between bins; calculated using
-#' \code{\link{pretty}} if not supplied.
-#' @param ybreaks values of y at the boundaries between bins; calculated using
-#' \code{\link{pretty}} if not supplied.
-#' @param FUN function to apply to the data
+#'
+#' @param xbreaks values of \code{x} at the boundaries between the
+#' bins; calculated using \code{\link{pretty}} if not supplied.
+#'
+#' @param ybreaks as \code{xbreaks}, but for \code{y}.
+#'
+#' @param FUN univariate function that is applied to the \code{f} data within
+#' any given bin
+#'
 #' @param \dots arguments to pass to the function \code{FUN}
-#' @return A list with the following elements: the breaks in x and y
-#' (\code{xbreaks} and \code{ybreaks}), the break mid-points (\code{xmids} and
-#' \code{ymids}), and a matrix containing the result of applying function
-#' \code{FUN} to \code{f} subsetted by these breaks.
+#'
+#' @return A list with the following elements: the breaks in \code{x} and
+#' \code{y} (i.e. \code{xbreaks} and \code{ybreaks}), the break mid-points
+#' (i.e. \code{xmids} and \code{ymids}), and a matrix containing the
+#' result of applying \code{FUN()} to the \code{f} values, as
+#' subsetted by these breaks.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' library(oce)
-#' \dontrun{
+#'\donttest{
 #' ## secchi depths in lat and lon bins
 #' if (require(ocedata)) {
 #'     data(secchi, package="ocedata")
-#'     col <- rev(oce.colorsJet(100))[rescale(secchi$depth,
-#'                                            xlow=0, xhigh=20,
-#'                                            rlow=1, rhigh=100)]
-#'     zlim <- c(0, 20)
-#'     breaksPalette <- seq(min(zlim), max(zlim), 1)
-#'     colPalette <- rev(oce.colorsJet(length(breaksPalette)-1))
-#'     drawPalette(zlim, "Secchi Depth", breaksPalette, colPalette)
+#'     ## Note that zlim is provided to the colormap(), to prevent a few
+#'     ## points from setting a very wide scale.
+#'     cm <- colormap(z=secchi$depth, col=oceColorsViridis, zlim=c(0, 15))
+#'     par(mar=c(2, 2, 2, 2))
+#'     drawPalette(colormap=cm, zlab="Secchi Depth")
 #'     data(coastlineWorld)
 #'     mapPlot(coastlineWorld, longitudelim=c(-5, 20), latitudelim=c(50, 66),
-#'       grid=5, fill='gray', projection="+proj=lcc +lat_1=50 +lat_2=65")
+#'       grid=5, col='gray', projection="+proj=lcc +lat_1=50 +lat_2=65")
 #'     bc <- binApply2D(secchi$longitude, secchi$latitude,
 #'                      pretty(secchi$longitude, 80),
 #'                      pretty(secchi$latitude, 40),
 #'                      f=secchi$depth, FUN=mean)
-#'     mapImage(bc$xmids, bc$ymids, bc$result, zlim=zlim, col=colPalette)
-#'     mapPolygon(coastlineWorld, col='gray')
+#'     mapImage(bc$xmids, bc$ymids, bc$result, zlim=cm$zlim, col=cm$zcol)
+#'     mapPolygon(coastlineWorld, col="gray")
 #' }
-#' }
+#'}
+#'
 #' @family bin-related functions
 binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 {
@@ -872,15 +882,29 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
     if (nxbreaks < 2) stop("must have more than 1 xbreak")
     nybreaks <- length(ybreaks)
     if (nybreaks < 2) stop("must have more than 1 ybreak")
-    res <- matrix(nrow=nxbreaks-1, ncol=nybreaks-1)
-    A <- split(f, cut(y, ybreaks, labels=FALSE))
-    B <- split(x, cut(y, ybreaks, labels=FALSE))
-    for (i in seq_along(A)) {
-        fSplit <- split(A[[i]], cut(B[[i]], xbreaks, labels=FALSE))
-        ##res[, i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
-        res[, i] <- unlist(lapply(fSplit, FUN, ...))
+    res <- matrix(NA_real_, nrow=nxbreaks-1, ncol=nybreaks-1)
+    ## this 'method' is just for testing during development. For the data in
+    ## tests/testthat/test_misc.R, we get the same results for the two
+    ## methods. Still, I plan to keep this code in here for a while.
+    method <- 1
+    if (method == 1) {
+        ## this is 28X faster on the secchi example.
+        A <- split(f, cut(y, ybreaks, labels=FALSE))
+        B <- split(x, cut(y, ybreaks, labels=FALSE))
+        for (i in seq_along(A)) {
+            fSplit <- split(A[[i]], cut(B[[i]], xbreaks, labels=FALSE))
+            res[as.numeric(names(fSplit)), i] <- unlist(lapply(fSplit, FUN, ...))
+        }
+        res[!is.finite(res)] <- NA
+    } else {
+        for (ix in seq.int(1, nxbreaks-1)) {
+            for (iy in seq.int(1, nybreaks-1)) {
+                keep <- xbreaks[ix] <= x & x < xbreaks[ix+1] & ybreaks[iy] <= y & y < ybreaks[iy+1]
+                if (any(keep))
+                    res[ix, iy] <- FUN(f[keep], ...)
+            }
+        }
     }
-    res[!is.finite(res)] <- NA
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks),
          ybreaks=ybreaks, ymids=ybreaks[-1]-0.5*diff(ybreaks),
          result=res)
@@ -2546,6 +2570,8 @@ rotateAboutZ <- function(x, angle)
         stop("cannot rotate for class \"", class(x), "\"; try one of: \"",
              paste(allowedClasses, collapse="\" \""), "\")")
     if (inherits(x, "adp")) {
+        if (is.ad2cp(x))
+            stop("this function does not work yet for AD2CP data")
         if (x[["oceCoordinate"]] != "enu")
             stop("cannot rotate adp unless coordinate system is 'enu'; see ?toEnu or ?xyzToEnu")
         V <- x[["v"]]
@@ -2660,7 +2686,7 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 #' Determine time offset from timezone
 #'
 #' The data are from
-#' \url{http://www.timeanddate.com/library/abbreviations/timezones/} and were
+#' \url{https://www.timeanddate.com/library/abbreviations/timezones/} and were
 #' hand-edited to develop this code, so there may be errors.  Also, note that
 #' some of these contradict; if you examine the code, you'll see some
 #' commented-out portions that represent solving conflicting definitions by
@@ -2676,7 +2702,7 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 GMTOffsetFromTz <- function(tz)
 {
     ## Data are from
-    ##   http://www.timeanddate.com/library/abbreviations/timezones/
+    ##   https://www.timeanddate.com/library/abbreviations/timezones/
     ## and hand-edited, so there may be errors.  Also, note that some of these
     ## contradict ... I've commented out conflicting definitions that I think
     ## will come up most rarely in use, but perhaps something better should
@@ -2865,7 +2891,8 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' #    the latter is based on random white noise, and
 #' #    includes a particular value for the spans
 #' #    argument of spectrum(), etc.
-#' \dontrun{ # need signal package for this example
+#'\dontrun{
+#' # need signal package for this example
 #' r <- rnorm(2048)
 #' rh <- stats::filter(r, H)
 #' rh <- rh[is.finite(rh)] # kludge to remove NA at start/end
@@ -2889,10 +2916,7 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' grid()
 #' legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
 #'        legend=c("Practical", "Theory"), bg="white")
-#
-
-
-#' }
+#'}
 makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=TRUE)
 {
     type <- match.arg(type)
@@ -3012,7 +3036,9 @@ oce.filter <- oceFilter
 #' @param z a vector of z values, one at each (x,y) location.
 #' @param w a optional vector of weights at the (x,y) location.  If not
 #' supplied, then a weight of 1 is used for each point, which means equal
-#' weighting.  Higher weights give data points more influence.
+#' weighting.  Higher weights give data points more influence. If \code{pregrid}
+#' is \code{TRUE}, then any supplied value of \code{w} is ignored, and instead
+#' each of the pregriddd points is given equal weight.
 #' @param xg,yg optional vectors defining the x and y grids.  If not supplied,
 #' these values are inferred from the data, using e.g. \code{pretty(x, n=50)}.
 #' @param xgl,ygl optional lengths of the x and y grids, to be constructed with
@@ -3153,6 +3179,7 @@ interpBarnes <- function(x, y, z, w,
             x <- pg$x
             y <- pg$y
             z <- pg$f
+            w <- rep(1, length(x))
         }
     } else {
         if (!is.numeric(pregrid))
@@ -3241,7 +3268,7 @@ coriolis <- function(latitude, degrees=TRUE)
 #' adjusted appropriately.
 #' @author Dan Kelley
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' rbr011855 <- read.oce(
 #'  "/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/raw/pt_rbr_011855.dat")
@@ -3249,7 +3276,7 @@ coriolis <- function(latitude, degrees=TRUE)
 #' x <- undriftTime(d, 1)   # clock lost 1 second over whole experiment
 #' summary(d)
 #' summary(x)
-#' }
+#'}
 undriftTime <- function(x, slowEnd = 0, tname="time")
 {
     if (!inherits(x, "oce"))
@@ -3897,19 +3924,27 @@ integerToAscii <- function(i)
 #'
 #' Implements the 12th generation International Geomagnetic Reference Field
 #' (IGRF), based on a reworked version of a Fortran program downloaded from a
-#' NOAA website [1].  The code (subroutine \code{igrf12syn}) seems to have
+#' NOAA website [1].
+#'
+#' The code (subroutine \code{igrf12syn}) seems to have
 #' been written by Susan Macmillan of the British Geological Survey.  Comments
-#' in the code indicate that it employs coefficients agreed to in December 2014
-#' by the IAGA Working Group V-MOD.  Comments in the \code{igrf12syn} source
-#' code also suggest that the valid time interval is from years 1900 to 2020,
+#' in the source code indicate that it employs coefficients agreed to in
+#' December 2014 by the IAGA Working Group V-MOD.  Other comments in that code
+#' suggest that the valid time interval is from years 1900 to 2020,
 #' with only the values from 1945 to 2010 being considered definitive.
+#'
+#' Reference [2] suggest that a new version to the underlying source
+#' code might be expected in 2019 or 2020, but a check on January 31,
+#' 2019, showed that version 12, as incoporated in oce since
+#' 2015, remains the active version.
 #'
 #' @param longitude longitude in degrees east (negative for degrees west).  The
 #' dimensions must conform to lat.
 #' @param latitude latitude in degrees north, a number, vector, or matrix.
-#' @param time either a decimal year or a POSIX time corresponding to the
-#' \code{longitude} and \code{latitude} values, or a vector or matrix matching
-#' these location values.
+#' @param time The time at which the field is desired. This may be a
+#' single value or a vector or matrix that is structured to match
+#' \code{longitude} and \code{latitude}. The value may a decimal year,
+#' a POSIXt time, or a Date time.
 #' @return A list containing \code{declination}, \code{inclination}, and
 #' \code{intensity}.
 #' @author Dan Kelley wrote the R code and a fortran wrapper to the
@@ -3918,31 +3953,40 @@ integerToAscii <- function(i)
 #' SM to DK dated June 5, 2015).
 #' @references
 #' 1. The underlying Fortran code is from \code{igrf12.f}, downloaded the NOAA
-#' website (\samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
-#' 2015. (That website suggests that there have been no update to the
-#' algorithm as of March 29, 2017.)
+#' website (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
+#' 2015.
+#'
+#' 2. Witze, Alexandra. \dQuote{Earth’s Magnetic Field Is Acting up and Geologists Don’t Know Why.}
+#' Nature 565 (January 9, 2019): 143.
+#' \url{https://doi.org/10.1038/d41586-019-00007-1}.
+#"
 #' @examples
 #' library(oce)
-#' # Halifax NS
-#' magneticField(-(63+36/60), 44+39/60, 2013)
+#' # 1. Today's value at Halifax NS
+#' magneticField(-(63+36/60), 44+39/60, Sys.Date())
 #'
-#' \dontrun{
-#' ## map of North American values
+#' # 2. World map of declination in year 2000.
+#'\donttest{
 #' data(coastlineWorld)
-#' mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
-#'         projection="+proj=lcc +lat_0=20 +lat_1=60 +lon_0=-100")
-#' lon <- seq(-180, 180, 1)
+#' par(mar=rep(0.5, 4)) # no axes on whole-world projection
+#' mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
+#' # Construct matrix holding declination
+#' lon <- seq(-180, 180)
 #' lat <- seq(-90, 90)
-#' lonm <- rep(lon, each=length(lat))
-#' latm <- rep(lat, times=length(lon))
-#' ## Note the counter-intuitive nrow argument
-#' decl <- matrix(magneticField(lonm, latm, 2013)$declination,
-#'                nrow=length(lon), byrow=TRUE)
-#' mapContour(lon, lat, decl, col='red', levels=seq(-90, 90, 5))
-#' incl <- matrix(magneticField(lonm, latm, 2013)$inclination,
-#'                nrow=length(lon), byrow=TRUE)
-#' mapContour(lon, lat, incl, col='blue', levels=seq(-90, 90, 5))
-#' }
+#' dec2000 <- function(lon, lat)
+#'     magneticField(lon, lat, 2000)$declination
+#' dec <- outer(lon, lat, dec2000) # hint: outer() is very handy!
+#' # Contour, unlabelled for small increments, labeled for
+#' # larger increments.
+#' mapContour(lon, lat, dec, col='blue', levels=seq(-180, -5, 5),
+#'            lty=3, drawlabels=FALSE)
+#' mapContour(lon, lat, dec, col='blue', levels=seq(-180, -20, 20))
+#' mapContour(lon, lat, dec, col='red', levels=seq(5, 180, 5),
+#'            lty=3, drawlabels=FALSE)
+#' mapContour(lon, lat, dec, col='red', levels=seq(20, 180, 20))
+#' mapContour(lon, lat, dec, levels=180, col='black', lwd=2, drawlabels=FALSE)
+#' mapContour(lon, lat, dec, levels=0, col='black', lwd=2)
+#'}
 #'
 #' @family things related to magnetism
 magneticField <- function(longitude, latitude, time)
@@ -3953,6 +3997,8 @@ magneticField <- function(longitude, latitude, time)
     if (!all(dim == dim(longitude)))
         stop("dimensions of longitude and latitude must agree")
     n <- length(latitude)
+    if (inherits(time, "Date"))
+        time <- as.POSIXct(time)
     if (inherits(time, "POSIXt")) {
         d <- as.POSIXlt(time)
         year <- d$year+1900
@@ -4094,7 +4140,6 @@ matrixSmooth <- function(m, passes=1)
     storage.mode(m) <- "double"
     if (passes > 0) {
         for (pass in seq.int(1, passes, 1)) {
-            message("pass=", pass)
             m <- do_matrix_smooth(m)
         }
     } else {

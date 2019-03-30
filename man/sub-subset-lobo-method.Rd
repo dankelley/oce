@@ -75,11 +75,11 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
 
-Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
+Other things related to code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{as.lobo}}, \code{\link{lobo-class}},
-  \code{\link{lobo}}, \code{\link{plot,lobo-method}},
+  \code{\link{lobo}}, \code{\link{read.lobo}},
   \code{\link{subset,lobo-method}},
   \code{\link{summary,lobo-method}}
 }
 \concept{functions that replace parts of \code{oce} objects}
-\concept{things related to \code{lobo} data}
+\concept{things related to code{lobo} data}

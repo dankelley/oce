@@ -13,7 +13,7 @@
 #' @references
 #' 1. Information about Sontek profilers is available at
 #'
-#' \url{http://www.sontek.com}.
+#' \url{https://www.sontek.com}.
 #'
 #' @author Dan Kelley and Clark Richards
 #'

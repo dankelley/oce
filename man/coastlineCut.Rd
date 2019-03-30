@@ -10,7 +10,8 @@ coastlineCut(coastline, lon_0 = 0)
 \item{coastline}{original coastline object}
 
 \item{lon_0}{longitude as would be given in a \code{+lon_0=} item in a
-call to \link[rgdal]{project} in the \CRANpkg{rgdal} package.}
+call to the \code{\link[rgdal]{project}} function in the
+\CRANpkg{rgdal} package.}
 }
 \value{
 a new coastline object
@@ -32,10 +33,11 @@ ground between this and the \code{clipPolys} function in the
 }
 
 \examples{
+\donttest{
 library(oce)
 data(coastlineWorld)
-\dontrun{
-mapPlot(coastlineCut(coastlineWorld, lon_0=100), proj="+proj=robin +lon_0=100")#, col='gray')
+mapPlot(coastlineCut(coastlineWorld, lon_0=100),
+        proj="+proj=moll +lon_0=100", col='gray')
 }
 
 }

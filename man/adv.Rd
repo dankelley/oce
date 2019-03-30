@@ -17,7 +17,7 @@ Internal Wave Experiment (SLEIWEX).  Various identifying features have been
 redacted.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(adv)
 

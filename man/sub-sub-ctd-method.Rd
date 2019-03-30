@@ -177,8 +177,10 @@ referenced to a pressure of 4000dbar, computed with \code{\link{swSigma4}(x)}.
 \item \code{SP}: Salinity on the Practical Salinity Scale, which is
 \code{salinity} in the \code{data} slot.
 
-\item \code{spice}: a variable that is in some sense orthogonal to density,
-calculated with \code{\link{swSpice}(x)}.
+\item \code{spice} or \code{spiciness0}: a variable that is in some sense
+orthogonal to density, calculated with \code{\link{swSpice}(x)}.
+Note that this is defined differently for \code{eos="unesco"} and
+\code{eos="gsw"}.
 
 \item \code{SR}: Reference Salinity computed with
 \code{\link[gsw]{gsw_SR_from_SP}} in the \code{gsw} package.

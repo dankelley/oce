@@ -62,11 +62,16 @@ test_that("binApply2D", {
           x <- runif(n)
           y <- runif(n)
           z <- outer(x, y)
-          b <- binApply2D(x, y, z, xbreaks=seq(0,1,0.25), ybreaks=seq(0,1,0.25), FUN=mean)
+          b <- binApply2D(x, y, z, xbreaks=seq(0,1,0.25), ybreaks=seq(0,1,0.25), FUN=mean, na.rm=TRUE)
           expect_equal(names(b), c("xbreaks", "xmids", "ybreaks", "ymids", "result"))
-          expect_equal(b$result[1,], c(0.27639419054, 0.28860414805, 0.21404595826, 0.02384287241))
-          expect_equal(b$result[2,], c(0.4796382017, 0.4125746934, 0.4621441855, 0.1947436835))
-          expect_equal(b$result[3,], c(0.27639419054, 0.28860414805, 0.21404595826, 0.02384287241))
+          ## This tests for consistency, as of 2019-Feb-19. Note that there was
+          ## an error before this time; see https://github.com/dankelley/oce/issues/1493
+          ## for details.
+          expect_equal(b$result,
+                       structure(c(NA, NA, 0.27639419053949, 0.479638201680171, NA,
+                                   NA, 0.288604148050149, 0.412574693391033, NA, 0.21404595826396,
+                                   NA, 0.462144185463384, 0.0238428724141042, 0.19474368350674,
+                                   NA, NA), .Dim = c(4L, 4L)))
 })
 
 test_that("binAverage", {
@@ -253,6 +258,9 @@ test_that("magnetism", {
           expect_equal(-17.976, magneticField(-63.562,44.640,2013)$declination,tolerance=1e-3)
           expect_equal(67.562, magneticField(-63.562,44.640,2013)$inclination,tolerance=1e-3)
           expect_equal(52096, magneticField(-63.562,44.640,2013)$intensity,tolerance=1e-3)
+          ## Retest this last, to ensure that POSIXt and Date formats work
+          expect_equal(52096, magneticField(-63.562,44.640,as.POSIXct("2013-01-01"))$intensity,tolerance=1e-3)
+          expect_equal(52096, magneticField(-63.562,44.640,as.Date("2013-01-01"))$intensity,tolerance=1e-3)
 })
 
 test_that("matchBytes", {

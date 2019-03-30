@@ -17,6 +17,8 @@ adp@metadata$deploymentName <- "(redacted)"
 adp@metadata$comments <- "sample ADP file"
 save(adp, file='adp.rda')
 
+summary(adp)
+
 expect_equal(adpOld[["data"]], adp[["data"]])
 names <- names(adp[["metadata"]])
 namesOld <- names(adpOld[["metadata"]])

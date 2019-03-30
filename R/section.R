@@ -64,14 +64,14 @@ setClass("section", contains="oce")
 #' for more information on World Hydrographic Program flag conventions.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' # Gulf Stream
 #' data(section)
 #' GS <- subset(section, 109<=stationId&stationId<=129)
 #' GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 #' plot(GSg, map.xlim=c(-80,-60))
-#' }
+#'}
 #'
 #' @name section
 #'
@@ -150,10 +150,14 @@ setMethod("handleFlags",
 #' @template initializeFlagSchemeTemplate
 #'
 #' @examples
+#'\dontrun{
 #' data(section)
+#' section <- read.section("a03_hy1.csv", sectionId="a03", institute="SIO",
+#'                         ship="R/V Professor Multanovskiy", scientist="Vladimir Tereschenkov")
 #' sectionWithFlags <- initializeFlagScheme(section, "WHP bottle")
 #' station1 <- sectionWithFlags[["station", 1]]
 #' str(station1[["flagScheme"]])
+#'}
 setMethod("initializeFlagScheme",
           c(object="section", name="ANY", mapping="ANY", debug="ANY"),
           function(object, name=NULL, mapping=NULL, debug=getOption("oceDebug")) {
@@ -591,7 +595,7 @@ setMethod(f="show",
 #'                     5 < length(s[["pressure"]]))))
 #'
 #' # Example 7. Subset by a polygon determined with locator()
-#' \dontrun{
+#'\dontrun{
 #' par(mfrow=c(2, 1))
 #' plot(section, which="map")
 #' bdy <- locator(4) # choose a polygon near N. America
@@ -813,7 +817,7 @@ setMethod(f="subset",
 #' variation than the input section.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' # Eastern North Atlantic, showing Mediterranean water;
 #' # sorting by longitude makes it easier to compare
 #' # the map and the section.
@@ -822,7 +826,7 @@ setMethod(f="subset",
 #' s <- sectionGrid(subset(section, -30 <= longitude))
 #' ss <- sectionSort(ss, by="longitude")
 #' plot(ss)
-#' }
+#'}
 #'
 #' @author Dan Kelley
 #'
@@ -1134,7 +1138,7 @@ sectionAddCtd <- sectionAddStation
 ## #' look <- spice > 1.8 & depth > 500
 ## #' points(distance[look], depth[look], col='red')
 #'
-#' \dontrun{
+#'\dontrun{
 #' ## 4. Image of Absolute Salinity, with 4-minute bathymetry
 #' ## It's easy to calculate the desired area for the bathymetry,
 #' ## but for brevity we'll hard-code it. Note that download.topo()
@@ -1144,7 +1148,7 @@ sectionAddCtd <- sectionAddStation
 #' plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
 #'}
 #'
-#' \dontrun{
+#'\dontrun{
 #' ## 5. Temperature with salinity added in red
 #' s <- plot(section, which="temperature")
 #' distance <- s[["distance", "byStation"]]
@@ -2406,14 +2410,20 @@ read.section <- function(file, directory, sectionId="", flags,
 #' should be done.  If this is not supplied, the pressure levels will be
 #' calculated based on the typical spacing in the ctd profiles stored within
 #' \code{section}.  If \code{p="levitus"}, then pressures will be set to be those
-#' of the Levitus atlas, given by \code{\link{standardDepths}}, trimmed to the
-#' maximum pressure in \code{section}.  If \code{p} is a single numerical value,
+#' of the Levitus atlas, given by \code{\link{standardDepths}}.
+#' If \code{p} is a single numerical value,
 #' it is taken as the number of subdivisions to use in a call to \code{\link{seq}}
 #' that has range from 0 to the maximum pressure in \code{section}.  Finally, if a
-#' vector numerical values is provided, then it is used as is.
+#' vector numerical values is provided, perhaps. constructed with \code{\link{seq}}
+#' or \code{\link{standardDepths}(5)} (as in the examples),
+#' then it is used as is, after trimming any values that exceed the maximum
+#' pressure in the station data stored within \code{section}.
 #'
 #' @param method The method to use to decimate data within the stations; see
 #' \code{\link{ctdDecimate}}, which is used for the decimation.
+#'
+#' @param trim Logical value indicating whether to trim gridded pressures
+#' to the range of the data in \code{section}.
 #'
 #' @template debugTemplate
 #'
@@ -2431,43 +2441,65 @@ read.section <- function(file, directory, sectionId="", flags,
 #' GS <- subset(section, 109<=stationId&stationId<=129)
 #' GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 #' plot(GSg, map.xlim=c(-80,-60))
+#' # Show effects of various depth schemes
+#' par(mfrow=c(3, 1))
+#' default <- sectionGrid(GS)
+#' approxML <- sectionGrid(GS, method="approxML")
+#' standardDepths5 <- sectionGrid(GS, p=standardDepths(5))
+#' plot(default, which="temperature", ztype="image", ylim=c(200,0))
+#' mtext("default sectionGrid()")
+#' plot(approxML, which="temperature", ztype="image", ylim=c(200,0))
+#' mtext("sectionGrid(..., method=\"approxML\")")
+#' plot(standardDepths5, which="temperature", ztype="image", ylim=c(200,0))
+#' mtext("sectionGrid(..., p=standardDepths(5))")
 #'
 #' @author Dan Kelley
 #'
 #' @family things related to \code{section} data
-sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug"), ...)
+sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "sectionGrid(section, p, method=\"", if (is.function(method)) "(function)" else method, "\", ...) {\n", sep="", unindent=1)
     warningMessages <- NULL
     n <- length(section@data$station)
     oceDebug(debug, "have", n, "stations in this section\n")
     dp.list <- NULL
+    pMax <- max(section[["pressure"]], na.rm=TRUE)
     if (missing(p)) {
         oceDebug(debug, "argument 'p' not given\n")
-        p.max <- 0
+        ## p.max <- 0
         for (i in 1:n) {
             p <- section@data$station[[i]]@data$pressure
             dp.list <- c(dp.list, mean(diff(p), na.rm=TRUE))
-            p.max <- max(c(p.max, p), na.rm=TRUE)
-            ## message("i: ", i, ", p.max: ", p.max)
         }
-        dp <- mean(dp.list, na.rm=TRUE) / 1.5 # make it a little smaller
-        pt <- pretty(c(0, p.max), n=min(200, floor(abs(p.max / dp))))
-        oceDebug(debug, "p.max=", p.max, "; dp=", dp, "\n")
+        dp <- mean(dp.list, na.rm=TRUE) / 5 # make it a little smaller
+        pt <- pretty(c(0, pMax), n=min(200, floor(abs(pMax / dp))))
+        oceDebug(debug, "pMax=", pMax, "; dp=", dp, "\n")
         oceDebug(debug, "pt=", pt, "\n")
+        oceDebug(debug, "length(pt)=", length(pt), "\n")
     } else {
         if (length(p) == 1) {
             if (p=="levitus") {
                 pt <- standardDepths()
-                pt <- pt[pt < max(section[["pressure"]], na.rm=TRUE)]
             } else {
                 if (!is.numeric(p))
                     stop("p must be numeric")
-                pMax <- max(section[["pressure"]], na.rm=TRUE)
+                if (p <= 0)
+                    stop("p must be a positive number")
                 pt <- seq(0, pMax, p)
             }
         } else {
             pt <- p
+        }
+    }
+    if (trim) {
+        ## allow one extra level, for bracketing
+        ##. message("pMax=", pMax)
+        w <- which(pt > pMax)
+        ##. message("w=", paste(w, collapse=" "))
+        ##. message("pt=", paste(pt, collapse=" "))
+        if (length(w)) {
+            pt <- pt[1:w[1]]
+            ##> message("pt=", paste(pt, collapse=" "))
         }
     }
     ## BUG should handle all variables (but how to interpolate on a flag?)
@@ -2555,10 +2587,10 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
 #' gss1 <- sectionSmooth(gsg, "spline", df=16)
 #' plot(gss1)
-#' \dontrun{
+#'\dontrun{
 #' gss2 <- sectionSmooth(gsg, "barnes", xr=24, yr=100)
 #' plot(gss2)
-#' }
+#'}
 #'
 #' @author Dan Kelley
 #'

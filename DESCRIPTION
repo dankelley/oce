@@ -9,8 +9,8 @@ Authors@R: c(
     person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field subroutine"))
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
 Depends: R (>= 2.15), utils, methods, testthat, gsw
-Suggests: ocedata, foreign, ncdf4, tiff, akima, RSQLite, DBI, rgdal (>=
-        1.1-9), R.utils, knitr, rmarkdown, marmap, lubridate
+Suggests: ocedata, foreign, ncdf4, tiff, akima,  rgdal (>= 1.4.3), RSQLite,
+    DBI, R.utils, knitr, rmarkdown, marmap, lubridate, sp
 BugReports: https://github.com/dankelley/oce/issues
 Description: Supports the analysis of Oceanographic data, including 'ADCP'
     measurements, measurements made with 'argo' floats, 'CTD' measurements,
@@ -23,7 +23,7 @@ License: GPL (>= 2)
 Encoding: UTF-8
 URL: https://dankelley.github.io/oce
 LazyData: false
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 BuildVignettes: true
 VignetteBuilder: knitr
 NeedsCompilation: yes

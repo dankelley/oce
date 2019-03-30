@@ -564,7 +564,7 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #' grid()
 #' par(mar=mar)
 #'
-#' \dontrun{
+#'\dontrun{
 #' ## Example 2. topographic image with a standard color scheme
 #' par(mfrow=c(1,1))
 #' data(topoWorld)
@@ -609,7 +609,7 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #' z <- seq(0, 1, length.out=length(x))
 #' drawPalette(colormap=cm)
 #' plot(x, y, pch=21, bg=cm$colfunction(z), cex=3)
-#' }
+#'}
 #' @family things related to colors
 colormap <- function(z=NULL,
                      zlim, zclip=FALSE,

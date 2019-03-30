@@ -22,43 +22,47 @@ An object with the first 3 velocity indices having been altered to
 represent velocity components in xyz (or instrument) coordinates.  (For
 \code{rdi} data, the values at the 4th velocity index are changed to
 represent the "error" velocity.)
-
-To indicate the change, the value of \code{metadata$oce.orientation} is
+To indicate the change, the value of \code{x[["oceCoordinate"]]} is
 changed from \code{beam} to \code{xyz}.
 }
 \description{
 Convert ADP velocity components from a beam-based coordinate system to a
-xyz-based coordinate system.
+xyz-based coordinate system. The action depends on the type of object.
+Objects creating by reading RDI Teledyne, Sontek, and some Nortek
+instruments are handled directly. However, Nortek
+data stored in in the AD2CP format are handled by the specialized
+function \code{\link{beamToXyzAdpAD2CP}}, the documentation for which
+should be consulted, rather than the material given blow.
 }
 \details{
-The action depends on the type of object.
-
-For a 3-beam \code{aquadopp} object, the beams are transformed into
+For a 3-beam Nortek \code{aquadopp} object, the beams are transformed into
 velocities using the matrix stored in the header.
 
-For 4-beam \code{rdi} object, the beams are converted to velocity components
+For 4-beam objects (and for the slanted 4 beams of 5-beam
+objects), the along-beam velocity components \eqn{B_1}{B1}
+\eqn{B_2}{B1}, \eqn{B_3}{B3}, and \eqn{B_4}{B4}
+are converted to Cartesian velocity components \eqn{u}{u}
+\eqn{v}{v} and \eqn{w}{w}
 using formulae from section 5.5 of \emph{RD Instruments} (1998), viz. the
 along-beam velocity components \eqn{B_1}{B1}, \eqn{B_2}{B2}, \eqn{B_3}{B3},
 and \eqn{B_4}{B4} are used to calculate velocity components in a cartesian
 system referenced to the instrument using the following formulae:
 \eqn{u=ca(B_1-B_2)}{u=c*a*(B1-B2)}, \eqn{v=ca(B_4-B_3)}{v=c*a*(B4-B3)},
-\eqn{w=-b(B_1+B_2+B_3+B_4)}{w=-b*(B1+B2+B3+B4)}, and an estimate of the
-error in velocity is calculated using \eqn{e=d(B_1+B_2-B_3-B_4)}{e=d*(B1+
-B2 - B3 - B4)}
-
-(Note that the multiplier on \eqn{e}{e} is subject to discussion; RDI
-suggests one multiplier, but some oceanographers favour another.)
-
-In the above, \eqn{c=1}{c=1} if the beam geometry is convex, and
-\eqn{c=-1}{c=-1} if the beam geometry is concave,
-\eqn{a=1/(2\sin\theta)}{a=1/(2*sin(theta))},
-\eqn{b=1/(4\cos\theta)}{b=1/(4*cos(theta))} and
-\eqn{d=a/\sqrt{2}}{d=a/sqrt(2)}, where \eqn{\theta}{theta} is the angle the
-beams make to the instrument \dQuote{vertical}.
+\eqn{w=-b(B_1+B_2+B_3+B_4)}{w=-b*(B1+B2+B3+B4)}. In addition to these,
+an estimate of the
+error in velocity is computed as
+\eqn{e=d(B_1+B_2-B_3-B_4)}{e=d*(B1+B2-B3-B4)}.
+The geometrical factors in these formulae are:
+\code{c} is +1 for convex beam geometry or -1 for concave beam geometry,
+\eqn{a=1/(2\sin\theta)}{a=1/(2*sin(theta))}
+where \eqn{\theta}{theta} is the angle the beams make to the axial direction
+(which is available as \code{x[["beamAngle"]]}),
+\eqn{b=1/(4\cos\theta)}{b=1/(4*cos(theta))}, and
+\eqn{d=a/\sqrt{2}}{d=a/sqrt(2)}.
 }
 \references{
-1. R D Instruments, 1998. \emph{ADP Coordinate Transformation, formulas and
-calculations.} P/N 951-6079-00 (July 1998).
+1. Teledyne RD Instruments. \dQuote{ADCP Coordinate Transformation: Formulas and
+Calculations,} January 2010. P/N 951-6079-00.
 
 2. WHOI/USGS-provided Matlab code for beam-enu transformation
 \samp{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
@@ -68,14 +72,17 @@ See \code{\link{read.adp}} for other functions that relate to
 objects of class \code{"adp"}.
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+  \code{\link{[[<-,adp-method}},
+  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdpAD2CP}},
   \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
   \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
   \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
   \code{\link{handleFlags,adp-method}},
-  \code{\link{plot,adp-method}}, \code{\link{read.ad2cp}},
+  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
+  \code{\link{read.adp.ad2cp}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
@@ -87,6 +94,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
 \author{

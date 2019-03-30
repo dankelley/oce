@@ -31,7 +31,7 @@ test_that("defunct", {
                        "ctdAddColumn\\(\\) is disallowed and will be removed soon. Use oceSetData\\(\\) instead. See \\?'oce-defunct'.")
           expect_error(ctdUpdateHeader(ctd), # 0.9.24
                        "ctdUpdateHeader\\(\\) is disallowed and will be removed soon. See \\?'oce-defunct'.")
-          expect_error(findInOrdered(), # 0.9.24
+          expect_error(findInOrdered(x=NULL,f=NULL), # 0.9.24
                        "findInOrdered\\(\\) is disallowed and will be removed soon. Use findInterval\\(\\) instead. See \\?'oce-defunct'.")
           expect_error(oce.as.POSIXlt("1999-01-01"), # 0.9.24
                        "oce.as.POSIXlt\\(\\) will be removed soon. Use lubridate::parse_date_time\\(\\) instead. See \\?'oce-defunct'.")

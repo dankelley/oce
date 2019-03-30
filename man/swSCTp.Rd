@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swSCTp}
 \alias{swSCTp}
-\title{Salinity from electrical conductivity, temperature and pressure}
+\title{Practical salinity from electrical conductivity, temperature and pressure}
 \usage{
 swSCTp(conductivity, temperature = NULL, pressure = NULL,
   conductivityUnit, eos = getOption("oceEOS", default = "gsw"))
@@ -16,7 +16,7 @@ all the other arguments to \code{swSCTp} are ignored.}
 on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
 \code{\link{swRho}}.}
 
-\item{pressure}{pressure [dbar]}
+\item{pressure}{pressure [dbar].}
 
 \item{conductivityUnit}{string indicating the unit used for conductivity.
 This may be \code{"ratio"} or \code{""} (meaning conductivity ratio),
@@ -24,34 +24,48 @@ This may be \code{"ratio"} or \code{""} (meaning conductivity ratio),
 measured conductivity has been divided by the standard conductivity
 of 4.2914 S/m.}
 
-\item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
+\item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.#'}
 }
 \value{
-Practical salinity.
+Practical Salinity.
 }
 \description{
-Compute salinity based on electrical conductivity, temperature, and
-pressure.
-}
-\details{
 Calculate salinity from what is actually measured by a CTD, \emph{i.e.}
 conductivity, \emph{in-situ} temperature and pressure.  Often this is done
 by the CTD processing software, but sometimes it is helpful to do this
 directly, \emph{e.g.} when there is a concern about mismatches in sensor
-response times.  If \code{eos="unesco"} then salinity is calculated using
-the UNESCO algorithm described by Fofonoff and Millard (1983); if it is
-\code{"gsw"} then the Gibbs-SeaWater formulation is used, via
-\code{\link{gsw_SP_from_C}}.
+response times.  Two variants are provided. First, if \code{eos} is
+\code{"unesco"}, then salinity is calculated using
+the UNESCO algorithm described by Fofonoff and Millard (1983) as in
+reference 1. Second, if \code{eos} is \code{"gsw"}, then the
+Gibbs-SeaWater formulation is used, via \code{\link[gsw]{gsw_SP_from_C}}
+in the \CRANpkg{gsw} package. The latter starts with the same formula
+as the former, but if this yields a Practical Salinity less than 2,
+then the result is instead calculated using
+formulae provided by Hill et al. (1986; reference 2), modified to match the
+\code{"unesco"} value at Practical salinity equal to 2 (reference 3).
 }
 \examples{
-swSCTp(1, T90fromT68(15), 0, eos="unesco") # 35
-swSCTp(1, T90fromT68(15), 0, eos="gsw")    # 35
+# 1. Demonstrate agreement with test value in UNESCO documents
+swSCTp(1, T90fromT68(15), 0, eos="unesco") # expect 35
+# 2. Demonstrate agreement of gsw and unesco, S>2 case
+swSCTp(1, T90fromT68(15), 0, eos="gsw") # again, expect 35
+# 3. Demonstrate close values even in very brackish water
+swSCTp(0.02, 10, 100, eos="gsw")    # 0.6013981
+swSCTp(0.02, 10, 100, eos="unesco") # 0.6011721
 
 }
 \references{
-Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
+1. Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
 computation of fundamental properties of seawater. \emph{Unesco Technical
-Papers in Marine Science}, \bold{44}, 53 pp
+Papers in Marine Science}, \bold{44}, 53 pp.
+
+2.  K. Hill, T. Dauphinee, and D. Woods. \dQuote{The Extension of the Practical
+Salinity Scale 1978 to Low Salinities.} IEEE Journal of Oceanic Engineering 11,
+no. 1 (January 1986): 109–12. https://doi.org/10.1109/JOE.1986.1145154.
+
+3. \code{gsw_from_SP} online documentation, available at
+\code{http://www.teos-10.org/pubs/gsw/html/gsw_C_from_SP.html}
 }
 \seealso{
 For thermal (as opposed to electrical) conductivity, see

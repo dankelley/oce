@@ -38,7 +38,7 @@ setClass("argo", contains="oce")
 #'
 #' To quote Argo's website: "These data were collected and made freely
 #' available by the International Argo Program and the national programs
-#' that contribute to it.  (http://www.argo.ucsd.edu,
+#' that contribute to it.  (http//www.argo.ucsd.edu,
 #' http://argo.jcommops.org).  The Argo Program is part of the
 #' Global Ocean Observing System."
 #'
@@ -52,13 +52,13 @@ setClass("argo", contains="oce")
 #' @docType data
 #'
 #' @examples
-#' \dontrun{
+#'\donttest{
 #' library(oce)
 #' data(argo)
 #' summary(argo)
 #' data(coastlineWorld)
-#' plot(argo, which="trajectory", coastline=coastlineWorld)
-#' }
+#' plot(argo, which="trajectory")
+#'}
 #'
 #' @source This file was downloaded using the unix command
 #'\preformatted{
@@ -284,14 +284,13 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 #'
 #' @references
 #' 1. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-#' \url{https://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+#' \url{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
 #' (but note that this is a draft; newer versions may have
 #' replaced this by now).
 #'
 #' 2. Argo list of parameters in an excel spreadsheet, available at
-#' \code{https://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
-#' (but note that the certificate at this website was noticed to be invalid on December 17, 2016,
-#' so exercise caution in downloading the file).
+#' \url{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
+#'
 #' @family things related to \code{argo} data
 argoNames2oceNames <- function(names, ignore.case=TRUE)
 {
@@ -403,7 +402,7 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' plotTS(subset(argo, "adjusted"))
 #'
 #' # Example 4. Subset by a polygon determined with locator()
-#' \dontrun{
+#'\dontrun{
 #' par(mfrow=c(2, 1))
 #' plot(argo, which="map")
 #' bdy <- locator(4) # Click the mouse on 4 boundary points
@@ -836,7 +835,7 @@ argoDecodeFlags <- function(f) # local function
 #' An object of \code{\link{argo-class}}.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' ## Example 1: read from a local file
 #' library(oce)
 #' d <- read.argo("/data/OAR/6900388_prof.nc")
@@ -858,7 +857,7 @@ argoDecodeFlags <- function(f) # local function
 #' download.file(float, profile)
 #' argo <- read.argo(profile)
 #' summary(argo)
-#' }
+#'}
 #'
 #'
 #' @seealso
@@ -899,7 +898,7 @@ argoDecodeFlags <- function(f) # local function
 #' second. A simple search will reveal the dac.
 #' For example \code{data(argo)} is based on float 6900388, and the line
 #' containing that token is
-#' \url{bodc/6900388/6900388_meta.nc,846,BO,20120225005617}, from
+#' \code{bodc/6900388/6900388_meta.nc,846,BO,20120225005617}, from
 #' which the dac is seen to be the British Oceanographic Data Centre
 #' (\code{bodc}). Armed with that information, visit
 #' \url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}
@@ -1264,9 +1263,9 @@ as.argo <- function(time, longitude, latitude,
 #' of two projections is used: stereopolar (i.e. \code{"+proj=stere +lon_0=X"}
 #' where \code{X} is the mean longitude), or Mercator (i.e. \code{"+proj=merc"})
 #' otherwise.  Otherwise, \code{projection} must be a character string specifying
-#' a projection in the notation used by \link[rgdal]{project} in the \CRANpkg{rgdal};
-#' this will be familiar to many readers as the PROJ.4 notation;
-#' see \code{\link{mapPlot}}.
+#' a projection in the notation used by the \code{link[rgdal]{project}} function
+#' in the \CRANpkg{rgdal} package; this will be familiar to many readers as
+#' the PROJ.4 notation; see \code{\link{mapPlot}}.
 #'
 #' @param mar value to be used with \code{\link{par}}("mar").
 #'

@@ -42,7 +42,7 @@ setClass("odf", contains="oce")
 ## [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
 ##
 ## [2] An older document is: \url{https://slgo.ca/app-sgdo/en/pdf/docs_reference/Format_ODF.pdf} (checked 2018-02-11)
-## [3] List of variable codes: \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}} (checked 2018-02-11); only
+## [3] List of variable codes: \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html} (checked 2018-02-11); only
 ## a subset are handled.
 
 setMethod(f="initialize",

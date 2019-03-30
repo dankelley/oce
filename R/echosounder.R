@@ -480,11 +480,11 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' @author Dan Kelley, with extensive help from Clark Richards
 #' @examples
 #'
-#' \dontrun{
+#'\donttest{
 #' library(oce)
 #' data(echosounder)
 #' plot(echosounder, which=c(1,2), drawBottom=TRUE)
-#' }
+#'}
 #' @family things related to \code{echosounder} data
 #' @aliases plot.echosounder
 setMethod(f="plot",
@@ -738,7 +738,7 @@ setMethod(f="plot",
 #' structure of \code{ctd} objects, and also outlines the other functions
 #' dealing with them.
 #' @references Various echosounder instruments provided by BioSonics are
-#' described at the company website, \url{http://www.biosonicsinc.com/}.  The
+#' described at the company website, \url{https://www.biosonicsinc.com/}.  The
 #' document listed as [1] below was provided to the author of this function in
 #' November 2011, which suggests that the data format was not changed since
 #' July 2010.

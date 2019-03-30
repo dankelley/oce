@@ -124,9 +124,14 @@ test_that("freezing temperature", {
           ## 5.1 UNESCO freezing temperature [1 p29]
           Tf <- swTFreeze(40, 500, eos="unesco")
           expect_equal(Tf, T90fromT68(-2.588567), scale=1, tolerance=1e-6)
-          ## 5.2 GSW freezing temperature
+          ## 5.2 GSW freezing temperature. This is actually just a test that
+          ## the GSW functions are called correctly -- it is *not* using
+          ## check values. However, we don't have to worry about check
+          ## values, because in the gsw package test suite, there are multiple
+          ## tests that check values against those published on the GSW/TEOS10
+          ## website.
           SA <- gsw::gsw_SA_from_SP(SP=40, p=500, longitude=300, latitude=30)
-          TfGSW <- gsw::gsw_t_freezing(SA=SA, p=0, saturation_fraction=1)
+          TfGSW <- gsw::gsw_t_freezing(SA=SA, p=500, saturation_fraction=1)
           Tf <- swTFreeze(40, 500, longitude=300, latitude=30, eos="gsw")
           expect_equal(TfGSW, Tf)
 })
@@ -257,6 +262,13 @@ test_that("electrical conductivity: definitional check values", {
           expect_equal(swCSTp(35, T90fromT68(15), 0, eos="gsw"), 1)
           expect_equal(swSCTp( 1, T90fromT68(15), 0, eos="unesco"), 35)
           expect_equal(swSCTp( 1, T90fromT68(15), 0, eos="gsw"), 35)
+          expect_equal(swSCTp(0.5, 10, 100, eos="unesco"),
+                       swSCTp(0.5, 10, 100, eos="gsw"))
+          ## These test values are not against a known standard; rather, they simply
+          ## assure that there has been no change since a test done on 2019 Mar 23
+          ## whilst working on issue https://github.com/dankelley/oce/issues/1514
+          expect_equal(swSCTp(0.02, 10, 100, eos="gsw"), 0.601398102117915)
+          expect_equal(swSCTp(0.02, 10, 100, eos="unesco"), 0.601172086373874)
 })
 
 test_that("electrical conductivity: semi-definitional check values (AUTHOR IS CONFUSED ON THESE)", {
@@ -300,6 +312,56 @@ test_that("depth and pressure", {
 })
 
 test_that("spiciness", {
-          sp <- swSpice(35, T90fromT68(10), 100)
+          expect_error(swSpice(35, T90fromT68(10), 100, eos="gsw"), "must supply longitude")
+          ## Q: is this test value from Flament's paper, or is it just a consistency check?
+          sp <- swSpice(35, T90fromT68(10), 100, eos="unesco")
           expect_equal(sp, 1.131195, tolerance=0.0000015)
+          ## compare against direct gsw:: computation
+          data(ctd)
+          S <- ctd[["salinity"]]
+          T <- ctd[["temperature"]]
+          p <- ctd[["pressure"]]
+          lon <- rep(ctd[["longitude"]], length(S))
+          lat <- rep(ctd[["latitude"]], length(S))
+          piOce <- swSpice(S, T, p, longitude=lon, latitude=lat, eos="gsw")
+          piGsw <- gsw::gsw_spiciness0(ctd[["SA"]], ctd[["CT"]])
+          expect_equal(piOce, piGsw)
+
 })
+
+test_that("CTD object accessors for derived properties", {
+          data(ctd)
+          sigma0 <- swSigma0(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]],
+                             longitude=ctd[["longitude"]], latitude=ctd[["latitude"]])
+          sigmaTheta <- swSigmaTheta(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]],
+                                     longitude=ctd[["longitude"]], latitude=ctd[["latitude"]])
+          spice <- swSpice(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]],
+                           longitude=ctd[["longitude"]], latitude=ctd[["latitude"]])
+          sigmaTheta <- swSigmaTheta(ctd)
+          expect_equal(sigma0, ctd[["sigma0"]])
+          expect_equal(sigmaTheta, ctd[["sigmaTheta"]])
+          expect_equal(spice, ctd[["spice"]])
+          expect_equal(sigma0, swSigma0(ctd))
+          expect_equal(sigmaTheta, swSigmaTheta(ctd))
+          expect_equal(spice, swSpice(ctd))
+})
+
+test_that("non-CTD object accessors for derived properties", {
+          data(ctd)
+          sigma0 <- swSigma0(ctd)
+          sigmaTheta <- swSigmaTheta(ctd)
+          spice <- swSpice(ctd)
+          general <- new("oce")
+          general <- oceSetData(general, "temperature", ctd[["temperature"]])
+          general <- oceSetData(general, "salinity", ctd[["salinity"]])
+          general <- oceSetData(general, "pressure", ctd[["pressure"]])
+          general <- oceSetMetadata(general, "longitude", ctd[["longitude"]])
+          general <- oceSetMetadata(general, "latitude", ctd[["latitude"]])
+          expect_equal(sigma0, general[["sigma0"]])
+          expect_equal(sigmaTheta, general[["sigmaTheta"]])
+          expect_equal(spice, general[["spice"]])
+          expect_equal(sigma0, swSigma0(general))
+          expect_equal(sigmaTheta, swSigmaTheta(general))
+          expect_equal(spice, swSpice(general))
+})
+

@@ -41,7 +41,7 @@
 #' for a list of indices.
 #' @examples
 #'
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' par(mfrow=c(2, 1))
 #' # 1. AO, Arctic oscillation
@@ -52,7 +52,7 @@
 #' soi <- read.index("https://www.cgd.ucar.edu/cas/catalog/climind/SOI.signal.ascii")
 #' soirecent <- subset(soi, t > as.POSIXct("2000-01-01"))
 #' oce.plot.ts(soirecent$t, soirecent$index)
-#' }
+#'}
 read.index <- function(file, format, missingValue, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
     if (is.character(file)) {

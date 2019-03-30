@@ -72,7 +72,7 @@ NULL
 #' file format, and then the \code{sealevelTuktoyaktuk} object was created
 #' using \code{\link{as.sealevel}}.
 #' @examples
-#' \dontrun{
+#'\donttest{
 #' library(oce)
 #' data(sealevelTuktoyaktuk)
 #' time <- sealevelTuktoyaktuk[["time"]]
@@ -83,7 +83,7 @@ NULL
 #' tide <- tidem(sealevelTuktoyaktuk)
 #' detided <- elevation - predict(tide)
 #' lines(time, detided, col="red")
-#' }
+#'}
 #'
 #' @section Historical note:
 #' Until Jan 6, 2018, the time in this dataset had been increased
@@ -605,7 +605,7 @@ setMethod(f="plot",
 #' repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
 #' provides Type 2 data.
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' # this yields the sealevel dataset
 #' sl <- read.oce("h275a96.dat")
@@ -613,7 +613,7 @@ setMethod(f="plot",
 #' plot(sl)
 #' m <- tidem(sl)
 #' plot(m)
-#' }
+#'}
 #'
 #' @family things related to \code{sealevel} data
 read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getOption("oceDebug"))

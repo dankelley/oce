@@ -18,9 +18,7 @@ vignette: >
 ---
 
 <!-- HOW TO BUILD THE VIGNETTE. -->
-<!-- 1. edit this file in vignettes/flags.Rmd -->
-<!-- 2. run devtools::build_vignettes() -->
-<!-- 3. build oce -->
+<!-- Look in oce.Rmd for instructions. -->
 
 
 ```{r, echo = FALSE}

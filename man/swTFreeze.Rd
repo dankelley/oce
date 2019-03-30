@@ -4,56 +4,78 @@
 \alias{swTFreeze}
 \title{Seawater freezing temperature}
 \usage{
-swTFreeze(salinity, pressure = 0, longitude = NULL, latitude = NULL,
-  saturation_fraction = 1, eos = getOption("oceEOS", default = "gsw"))
+swTFreeze(salinity, pressure = NULL, longitude = NULL,
+  latitude = NULL, saturation_fraction = 1, eos = getOption("oceEOS",
+  default = "gsw"))
 }
 \arguments{
-\item{salinity}{either salinity [PSU] or a \code{ctd} object from which
-salinity will be inferred.}
+\item{salinity}{Either practical salinity [PSU] or a \code{ctd} object from which
+practical salinity and pressure (plus in the \code{eos="gsw"} case,
+longitude and latitude) are inferred, using \code{\link{lookWithin}}.}
 
-\item{pressure}{seawater pressure [dbar]}
+\item{pressure}{Seawater pressure [dbar].}
 
-\item{longitude}{longitude of observation (only used if \code{eos="gsw"};
+\item{longitude}{Longitude of observation (only used if \code{eos="gsw"};
 see \sQuote{Details}).}
 
-\item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
+\item{latitude}{Latitude of observation (only used if \code{eos="gsw"}; see
 \sQuote{Details}).}
 
-\item{saturation_fraction}{saturation fraction of dissolved air in seawater
-(used only if \code{eos="gsw"}).}
+\item{saturation_fraction}{The saturation fraction of dissolved air in seawater,
+ignored if \code{eos="unesco"}).}
 
-\item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
+\item{eos}{The equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}.
 [3,4].}
 }
 \value{
 Temperature [\eqn{^\circ}{deg}C], defined on the ITS-90 scale.
 }
 \description{
-Compute freezing temperature of seawater.
+Compute in-situ freezing temperature of seawater, using either the UNESCO formulation
+(computed as in Section 5 of reference [1]) or the GSW formulation (computed
+by using \code{\link[gsw]{gsw_SA_from_SP}} to get Absolute Salinity, and
+then \code{\link[gsw]{gsw_t_freezing}} to get the freezing temperature).
 }
 \details{
-In the first form, the argument is a \code{ctd} object, from which the
-salinity and pressure values are extracted and used to for the calculation.
+If the first argument is an \code{oce} object, and if the \code{pressure}
+argument is \code{NULL}, then the pressure is sought within the first
+argument. In the case of \code{eos="gsw"}, then a similar procedure
+also applies to the \code{longitude} and \code{latitude} arguments.
 }
 \examples{
-swTFreeze(salinity=40, pressure=500, eos="unesco") # -2.588567 degC
+# 1. Test for a check-value given in [1]. This value, -2.588567 degC,
+# is in the 1968 temperature scale (IPTS-68), but swTFreeze reports
+# in the newer ITS-90 scale, so we must convert before checking.
+Tcheck <- -2.588567 # IPTS-68
+T <- swTFreeze(salinity=40, pressure=500, eos="unesco")
+expect_equal(Tcheck, T68fromT90(T), tolerance=1e-6)
+
+# 2. Compare unesco and gsw formulations.
+data(ctd)
+p <- ctd[["pressure"]]
+par(mfrow=c(1, 2), mar=c(3, 3, 1, 2), mgp=c(2, 0.7, 0))
+plot(swTFreeze(ctd, eos="unesco"),
+     p, xlab="unesco", ylim=rev(range(p)))
+plot(swTFreeze(ctd, eos="unesco") - swTFreeze(ctd, eos="gsw"),
+     p, xlab="unesco-gsw", ylim=rev(range(p)))
 
 }
 \references{
-[1] Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
-computation of fundamental properties of seawater. \emph{Unesco Technical
-Papers in Marine Science}, \bold{44}, 53 pp
+1. Fofonoff, N. P., and R. C. Millard. \dQuote{Algorithms for Computation of
+Fundamental Properties of Seawater.} UNESCO Technical Papers in Marine
+Research. SCOR working group on Evaluation of CTD data; UNESCO/ICES/SCOR/IAPSO
+Joint Panel on Oceanographic Tables and Standards, 1983.
+https://unesdoc.unesco.org/ark:/48223/pf0000059832.
 
-[2] Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
-York, 662 pp.
+2. Gill, A E. Atmosphere-Ocean Dynamics. New York, NY, USA: Academic Press,
+1982.
 
-[3] IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
+3. IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
 seawater-2010: Calculation and use of thermodynamic properties.  Technical
-Report 56, Intergovernmental Oceanographic Commission, Manuals and Guide.
+Report 56, Intergovernmental Oceanographic Commission, Manuals and Guide, 2010.
 
-[4] McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
-the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
-ISBN 978-0-646-55621-5.
+4. McDougall, Trevor J., and Paul M. Barker. Getting Started with TEOS-10 and
+the Gibbs Seawater (GSW) Oceanographic Toolbox. SCOR/IAPSO WG127, 2011.
 }
 \seealso{
 Other functions that calculate seawater properties: \code{\link{T68fromT90}},

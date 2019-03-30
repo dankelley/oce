@@ -4,7 +4,7 @@
 \alias{map2lonlat}
 \title{Convert X and Y to Longitude and Latitude}
 \usage{
-map2lonlat(x, y, init = c(0, 0))
+map2lonlat(x, y, init = NULL)
 }
 \arguments{
 \item{x}{vector containing the x component of points in the projected space, or
@@ -32,19 +32,22 @@ handled well; see \sQuote{Bugs}.
 }
 \section{Bugs}{
 
-\code{oce} uses \link[rgdal]{project} in the \CRANpkg{rgdal}
+\code{oce} uses \code{\link[rgdal]{project}} in the \CRANpkg{rgdal}
 package to handle projections. Only those projections that have inverses are
 permitted within \code{oce}, and even those can sometimes yield errors, owing
-to limitations in \CRANpkg{rgdal}.
+to limitations in \CRANpkg{rgdal}. On i386/windows machines, the version
+of \CRANpkg{rgdal} must be 1.3-9 or higher, to prevent an error with
+\code{map2lonlat}.
 }
 
 \examples{
-\dontrun{
-library(oce)
-## Cape Split, in the Minas Basin of the Bay of Fundy
-cs <- list(longitude=-64.49657, latitude=45.33462)
-xy <- lonlat2map(cs, projection="+proj=merc")
-map2lonlat(xy)
+canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
+if (canProject) {
+    library(oce)
+    ## Cape Split, in the Minas Basin of the Bay of Fundy
+    cs <- list(longitude=-64.49657, latitude=45.33462)
+    xy <- lonlat2map(cs, projection="+proj=merc")
+    map2lonlat(xy)
 }
 
 }

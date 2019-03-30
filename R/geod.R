@@ -45,7 +45,7 @@
 #' @author Dan Kelley
 #' @seealso \code{\link{geodDist}}
 #' @examples
-#' \dontrun{
+#'\donttest{
 #' # Develop a transect-based axis system for final data(section) stations
 #' library(oce)
 #' data(section)
@@ -66,7 +66,7 @@
 #' mapCoordinateSystem(lonR, latR, 500, angleUTM, col=3)
 #' legend("topright", lwd=1, col=2:3, bg="white", title="Axis Rotation Angle",
 #'        legend=c(sprintf("geod: %.1f deg", angle), sprintf("utm: %.1f deg",angleUTM)))
-#' }
+#'}
 #' @family functions relating to geodesy
 geodXy <- function(longitude, latitude, longitudeRef, latitudeRef, debug=getOption("oceDebug"))
 {
@@ -180,8 +180,8 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
 #' @seealso \code{\link{geodXy}}
 #' @references T. Vincenty, "Direct and Inverse Solutions of Ellipsoid on the
 #' Ellipsoid with Application of Nested Equations", \emph{Survey Review}, April
-#' 1975.  (As of early 2009, this document is available at
-#' \url{http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf}.)
+#' 1975.
+#'
 #' @examples
 #' library(oce)
 #' km <- geodDist(100, 45, 100, 46)
@@ -251,7 +251,7 @@ geodDist <- function (longitude1, latitude1=NULL, longitude2=NULL, latitude2=NUL
 #' @references 1. \code{http://williams.best.vwh.net/avform.htm#Intermediate}
 #' (link worked for years but failed 2017-01-16).
 #' @examples
-#' \dontrun{
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' mapPlot(coastlineWorld, type='l',
@@ -260,7 +260,7 @@ geodDist <- function (longitude1, latitude1=NULL, longitude2=NULL, latitude2=NUL
 #' ## Great circle from New York to Paris (Lindberg's flight)
 #' l <- geodGc(c(-73.94,2.35), c(40.67,48.86), 1)
 #' mapLines(l$longitude, l$latitude, col='red', lwd=2)
-#' }
+#'}
 #'
 #' @family functions relating to geodesy
 geodGc <- function(longitude, latitude, dmax)

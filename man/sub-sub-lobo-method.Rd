@@ -98,11 +98,11 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{lobo} data: \code{\link{[[<-,lobo-method}},
+Other things related to code{lobo} data: \code{\link{[[<-,lobo-method}},
   \code{\link{as.lobo}}, \code{\link{lobo-class}},
-  \code{\link{lobo}}, \code{\link{plot,lobo-method}},
+  \code{\link{lobo}}, \code{\link{read.lobo}},
   \code{\link{subset,lobo-method}},
   \code{\link{summary,lobo-method}}
 }
 \concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{lobo} data}
+\concept{things related to code{lobo} data}

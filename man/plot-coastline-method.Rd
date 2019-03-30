@@ -179,7 +179,7 @@ the \code{rgdal} package to carry out map projections.
 }
 
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 par(mar=c(2, 2, 1, 1))
 data(coastlineWorld)

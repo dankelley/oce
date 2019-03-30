@@ -22,12 +22,18 @@ by specifying higher \code{debug} values.}
 }
 \value{
 An object with \code{data$v[,,1:3]} altered appropriately, and
-\code{metadata$oce.orientation} changed from \code{xyz} to \code{enu}.
+\code{x[["oceCoordinate"]]} changed from \code{xyz} to \code{enu}.
 }
 \description{
 Convert ADP velocity components from a xyz-based coordinate system to
 an enu-based coordinate system, by using the instrument's recording of
-heading, pitch, and roll.
+information relating to heading, pitch, and roll. The action is based
+on what is stored in the data, and so it depends greatly on instrument type
+and the style of original data format. This function handles data from
+RDI Teledyne, Sontek, and some Nortek instruments directly. However, Nortek
+data stored in in the AD2CP format are handled by the specialized
+function \code{\link{xyzToEnuAdpAD2CP}}, the documentation for which
+should be consulted, rather than the material given blow.
 }
 \details{
 The first step is to convert the (x,y,z) velocity components (stored in the
@@ -81,23 +87,26 @@ bottom a vector of "mast" values.  Finally, the columns of
 multiplication.
 }
 \references{
-1. RD Instruments, 1998.  \emph{ADCP Coordinate
-Transformation, formulas and calculations.} P/N 951-6079-00 (July 1998).
+1. Teledyne RD Instruments. \dQuote{ADCP Coordinate Transformation: Formulas and Calculations,}
+January 2010. P/N 951-6079-00.
 
 2. Clark Richards, 2012, PhD Dalhousie University Department of
 Oceanography.
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+  \code{\link{[[<-,adp-method}},
+  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdpAD2CP}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
   \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
   \code{\link{enuToOther}},
   \code{\link{handleFlags,adp-method}},
-  \code{\link{plot,adp-method}}, \code{\link{read.ad2cp}},
+  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
+  \code{\link{read.adp.ad2cp}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
@@ -109,7 +118,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnu}}
+  \code{\link{xyzToEnuAdpAD2CP}}, \code{\link{xyzToEnu}}
 }
 \author{
 Dan Kelley and Clark Richards
