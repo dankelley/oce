@@ -86,7 +86,7 @@ oceSetData <- function(object, name, value, unit, originalName, note="")
     if (!inherits(object, "oce"))
         stop("oceSetData() only works for oce objects")
     object@data[[name]] <- value
-    if (!missing(unit)) {
+    if (!missing(unit) && !is.null(unit)) {
         if  (!("units" %in% names(object@metadata))) # some objects might not have units yet
             object@metadata$units <- list()
         if (is.list(unit)) {
