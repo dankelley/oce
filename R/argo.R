@@ -969,18 +969,20 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PLATFORM_NUMBER", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "PLATFORM_NUMBER")
 
-    if (FALSE) {
-        ## DEK 2019-04-08 note:
-        ## What is the FLOAT_SERIAL_NUMBER? For the sample file in this package,
-        ## the first 210 values are "APEX-SBE 1882", and after that we have 211
-        ## to 223 equal to "1882".  Since I do not know what it means, or
-        ## whether to prefer one of these names to another, I propose we
-        ## just don't bother trying to decode this item.
-        res@metadata$floatSerialNumber <- if (maybeLC("FLOAT_SERIAL_NO", lc) %in% varNames)
-            as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("FLOAT_SERIAL_NO", lc)))) else NULL
-        varNames <- varNamesOmit(varNames, "FLOAT_SERIAL_NO")
-        oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
-    }
+    ### if (FALSE) {
+    ###     ## DEK 2019-04-08 note:
+    ###     ## What is the FLOAT_SERIAL_NUMBER? For the sample file in this package,
+    ###     ## the first 210 values are "APEX-SBE 1882", and after that we have 211
+    ###     ## to 223 equal to "1882".  Since I do not know what it means, or
+    ###     ## whether to prefer one of these names to another, I propose we
+    ###     ## just don't bother trying to decode this item into a full-fledged
+    ###     ## (camelCase namd) metadata item, but rather just let it gt stored
+    ###     ## as a plain-copy (SNAKE_CASE named) metadata item.
+    ###     res@metadata$floatSerialNumber <- if (maybeLC("FLOAT_SERIAL_NO", lc) %in% varNames)
+    ###         as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("FLOAT_SERIAL_NO", lc)))) else NULL
+    ###     varNames <- varNamesOmit(varNames, "FLOAT_SERIAL_NO")
+    ###     oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
+    ### }
 
     res@metadata$projectName <- if (maybeLC("PROJECT_NAME", lc) %in% varNames)
         as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PROJECT_NAME", lc)))) else NULL
@@ -1106,6 +1108,73 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
 
     stationParameters <- unique(as.vector(res@metadata$stationParameters)) # will be PRES, TEMP etc
+
+    ## Handle units before getting the data. (We must do it here, because when
+    ## we read the data, we remove entries from varNames ... that is how
+    ## we know what is left over at the end, to be shoved into metadata.)
+    if (maybeLC("TEMP", lc) %in% varNames) {
+        ## leave some code in case we get a newer scale
+        if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, maybeLC("TEMP", lc), "long_name")$value, ignore.case=TRUE)))
+            res@metadata$units$temperature <- list(unit=expression(degree *C), scale="ITS-90")
+        else res@metadata$units$temperature <- list(unit=expression(degree *C), scale="ITS-90")
+    }
+    if (maybeLC("TEMP_ADJUSTED", lc) %in% varNames) {
+        ## leave some code in case we get a newer scale
+        if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, maybeLC("TEMP_ADJUSTED", lc), "long_name")$value, ignore.case=TRUE)))
+            res@metadata$units$temperatureAdjusted <- list(unit=expression(degree *C), scale="ITS-90")
+        else res@metadata$units$temperatureAdjusted <- list(unit=expression(degree *C), scale="ITS-90")
+    }
+    if (maybeLC("TEMP_ADJUSTED_ERROR", lc) %in% varNames) {
+        ## leave some code in case we get a newer scale
+        if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, maybeLC("TEMP_ADJUSTED_ERROR", lc), "long_name")$value, ignore.case=TRUE)))
+            res@metadata$units$temperatureAdjustedError <- list(unit=expression(degree *C), scale="ITS-90")
+        else res@metadata$units$temperatureAdjustedError <- list(unit=expression(degree *C), scale="ITS-90")
+    }
+    if (maybeLC("PSAL", lc) %in% varNames) {
+        ## leave some code in case we get a newer scale
+        if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, maybeLC("PSAL", lc), "long_name")$value, ignore.case=TRUE)))
+            res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+        else
+            res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+    }
+    if (maybeLC("PSAL_ADJUSTED", lc) %in% varNames) {
+        ## leave some code in case we get a newer scale
+        if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, maybeLC("PSAL_ADJUSTED", lc), "long_name")$value, ignore.case=TRUE)))
+            res@metadata$units$salinityAdjusted <- list(unit=expression(), scale="PSS-78")
+        else
+            res@metadata$units$salinityAdjusted <- list(unit=expression(), scale="PSS-78")
+    }
+    if (maybeLC("PSAL_ADJUSTED_ERROR", lc) %in% varNames) {
+        ## leave some code in case we get a newer scale
+        if (1 == length(grep(maybeLC("PRACTICAL", lc), ncdf4::ncatt_get(file, maybeLC("PSAL_ADJUSTED_ERROR", lc), "long_name")$value, ignore.case=TRUE)))
+            res@metadata$units$salinityAdjustedError <- list(unit=expression(), scale="PSS-78")
+        else
+            res@metadata$units$salinityAdjustedError <- list(unit=expression(), scale="PSS-78")
+    }
+    if (maybeLC("PRES", lc) %in% varNames) {
+        if (1 == length(grep("decibar", ncdf4::ncatt_get(file, maybeLC("PRES", lc), "units")$value, ignore.case=TRUE)))
+            res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+        else
+            res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    }
+    if (maybeLC("PRES_ADJUSTED", lc) %in% varNames) {
+        if (1 == length(grep("decibar", ncdf4::ncatt_get(file, maybeLC("PRES_ADJUSTED", lc), "units")$value, ignore.case=TRUE)))
+            res@metadata$units$pressureAdjusted <- list(unit=expression(dbar), scale="")
+        else
+            res@metadata$units$pressureAdjusted <- list(unit=expression(dbar), scale="")
+    }
+    if (maybeLC("PRES_ADJUSTED_ERROR", lc) %in% varNames) {
+        if (1 == length(grep("decibar", ncdf4::ncatt_get(file, maybeLC("PRES_ADJUSTED_ERROR", lc), "units")$value, ignore.case=TRUE)))
+            res@metadata$units$pressureAdjustedError <- list(unit=expression(dbar), scale="")
+        else
+            res@metadata$units$pressureAdjustedError<- list(unit=expression(dbar), scale="")
+    }
+    ## Fix up names of flags. This became required with changes made to argoNames2oceNames() in Dec 17-18, 2016. Arguably, I
+    ## should find out why the change occurred, but fixing the names now is just as easy, and might be clearer to the reader.
+    names(res@metadata$flags) <- gsub("QC$", "", names(res@metadata$flags))
+
+    ## Now, work through the columnar data. Note how we remove entries from varNames again,
+    ## after having interrupted that practice whilst finding units and flags.
     for (item in stationParameters) {
         if (!nchar(item)) ## some files have unnamed variables, so we skip them
             next
@@ -1163,101 +1232,6 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         }
     }
     res@metadata$filename <- filename
-    if (maybeLC("TEMP", lc) %in% varNames) {
-        ## leave some code in case we get a newer scale
-        if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, maybeLC("TEMP", lc), "long_name")$value, ignore.case=TRUE)))
-            res@metadata$units$temperature <- list(unit=expression(degree *C), scale="ITS-90")
-        else res@metadata$units$temperature <- list(unit=expression(degree *C), scale="ITS-90")
-    }
-    varNames <- varNamesOmit(varNames, "TEMP")
-    oceDebug(debug, "TEMP")
-    oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
-
-    if (maybeLC("TEMP_ADJUSTED", lc) %in% varNames) {
-        ## leave some code in case we get a newer scale
-        if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, maybeLC("TEMP_ADJUSTED", lc), "long_name")$value, ignore.case=TRUE)))
-            res@metadata$units$temperatureAdjusted <- list(unit=expression(degree *C), scale="ITS-90")
-        else res@metadata$units$temperatureAdjusted <- list(unit=expression(degree *C), scale="ITS-90")
-    }
-    varNames <- varNamesOmit(varNames, "TEMP_ADJUSTED")
-    oceDebug(debug, "TEMP_ADJUSTED\n")
-    oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
-
-    if (maybeLC("TEMP_ADJUSTED_ERROR", lc) %in% varNames) {
-        ## leave some code in case we get a newer scale
-        if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, maybeLC("TEMP_ADJUSTED_ERROR", lc), "long_name")$value, ignore.case=TRUE)))
-            res@metadata$units$temperatureAdjustedError <- list(unit=expression(degree *C), scale="ITS-90")
-        else res@metadata$units$temperatureAdjustedError <- list(unit=expression(degree *C), scale="ITS-90")
-    }
-    varNames <- varNamesOmit(varNames, "TEMP_ADJUSTED_ERROR")
-    oceDebug(debug, "TEMP_ADJUSTED_ERROR\n")
-    oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
-
-    if (maybeLC("PSAL", lc) %in% varNames) {
-        ## leave some code in case we get a newer scale
-        if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, maybeLC("PSAL", lc), "long_name")$value, ignore.case=TRUE)))
-            res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
-        else
-            res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
-    }
-    varNames <- varNamesOmit(varNames, "PSAL")
-    oceDebug(debug, "PSAL\n")
-    oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
-    if (maybeLC("PSAL_ADJUSTED", lc) %in% varNames) {
-        ## leave some code in case we get a newer scale
-        if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, maybeLC("PSAL_ADJUSTED", lc), "long_name")$value, ignore.case=TRUE)))
-            res@metadata$units$salinityAdjusted <- list(unit=expression(), scale="PSS-78")
-        else
-            res@metadata$units$salinityAdjusted <- list(unit=expression(), scale="PSS-78")
-    }
-    varNames <- varNamesOmit(varNames, "PSAL_ADJUSTED")
-    oceDebug(debug, "PSAL_ADJUSTED\n")
-    oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
-
-    if (maybeLC("PSAL_ADJUSTED_ERROR", lc) %in% varNames) {
-        ## leave some code in case we get a newer scale
-        if (1 == length(grep(maybeLC("PRACTICAL", lc), ncdf4::ncatt_get(file, maybeLC("PSAL_ADJUSTED_ERROR", lc), "long_name")$value, ignore.case=TRUE)))
-            res@metadata$units$salinityAdjustedError <- list(unit=expression(), scale="PSS-78")
-        else
-            res@metadata$units$salinityAdjustedError <- list(unit=expression(), scale="PSS-78")
-    }
-    varNames <- varNamesOmit(varNames, "PSAL_ADJUSTED_ERROR")
-    oceDebug(debug, "PSAL_ADJUSTED_ERROR\n")
-    oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
-
-    if (maybeLC("PRES", lc) %in% varNames) {
-        if (1 == length(grep("decibar", ncdf4::ncatt_get(file, maybeLC("PRES", lc), "units")$value, ignore.case=TRUE)))
-            res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-        else
-            res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-    }
-    varNames <- varNamesOmit(varNames, "PRES")
-    oceDebug(debug, "PRES\n")
-    oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
-
-    if (maybeLC("PRES_ADJUSTED", lc) %in% varNames) {
-        if (1 == length(grep("decibar", ncdf4::ncatt_get(file, maybeLC("PRES_ADJUSTED", lc), "units")$value, ignore.case=TRUE)))
-            res@metadata$units$pressureAdjusted <- list(unit=expression(dbar), scale="")
-        else
-            res@metadata$units$pressureAdjusted <- list(unit=expression(dbar), scale="")
-    }
-    varNames <- varNamesOmit(varNames, "PRES_ADJUSTED")
-    oceDebug(debug, "PRES_ADJUSTED\n")
-    oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
-
-    if (maybeLC("PRES_ADJUSTED_ERROR", lc) %in% varNames) {
-        if (1 == length(grep("decibar", ncdf4::ncatt_get(file, maybeLC("PRES_ADJUSTED_ERROR", lc), "units")$value, ignore.case=TRUE)))
-            res@metadata$units$pressureAdjustedError <- list(unit=expression(dbar), scale="")
-        else
-            res@metadata$units$pressureAdjustedError<- list(unit=expression(dbar), scale="")
-    }
-    varNames <- varNamesOmit(varNames, "PRES_ADJUSTED_ERRRO")
-    oceDebug(debug, "PRES_ADJUSTED_ERROR\n")
-    oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
-
-    ## Fix up names of flags. This became required with changes made to argoNames2oceNames() in Dec 17-18, 2016. Arguably, I
-    ## should find out why the change occurred, but fixing the names now is just as easy, and might be clearer to the reader.
-    names(res@metadata$flags) <- gsub("QC$", "", names(res@metadata$flags))
 
     ## Now, insert any unprocessed items from varNames into metadata. We
     ## need to check for access failures because we get the error
