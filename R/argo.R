@@ -78,16 +78,39 @@ NULL
 #' @section Details of the specialized \code{argo} method:
 #'
 #' There are several possibilities, depending on the nature of \code{i}.
+#' Note that all of these calculations are done with
+#' \code{salinityAdjusted}, if that is present, or with \code{salinity}
+#' otherwise, and similar for temperature and pressure.
+#'
 #'\itemize{
+#'
+#' \item If \code{i} is the string \code{"CT"}, then
+#' Conservative Temperature is returned, as computed with
+#' \code{\link[gsw]{gsw_CT_from_t}(SA, t, p)}, where
+#' first \code{SA} is computed as explained
+#' in the next item, \code{t} is in-situ temperature,
+#' and \code{p} is pressure.
+#'
 #' \item If \code{i} is the string \code{"SA"}, then
-#' Absolute Salinity is computed using \code{\link[gsw]{gsw_SA_from_SP}},
-#' with \code{salinityAdjusted} (etc) if available in the \code{data}
-#' slot of \code{x}, otherwise using \code{salinity} (etc).
-#' \item For \code{"CT"}, Conservative Temperature is returned.
+#' Absolute Salinity is returned, as computed with
+#' \code{\link[gsw]{gsw_SA_from_SP}}.
+#'
+#' \item For \code{"sigmaTheta"}, potential density anomaly (referenced to zero
+#' pressure) is computed, with \code{\link{swSigmaTheta}}, where the
+#' equation of state is taken to be
+#' \code{\link{getOption}("oceEOS", default="gsw")}.
+#'
+#' \item For \code{"theta"}, potential temperature (referenced to zero
+#' pressure) is computed, with \code{\link{swTheta}}, where the
+#' equation of state is taken to be
+#' \code{\link{getOption}("oceEOS", default="gsw")}.
+#'
 #' \item For \code{"depth"},  matrix of depths is returned.
+#'
 #' \item If \code{i} is in the \code{data} slot of \code{x},
 #' then it is returned, otherwise if it is in the \code{metadata} slot,
 #' then that is returned, otherwise \code{NULL} is returned.
+#'
 #'}
 #'
 #' @template sub_subTemplate
@@ -146,6 +169,25 @@ setMethod(f="[[",
                   } else {
                       res <- swDepth(x@data$pressure, x@data$latitude)
                   }
+              } else if (i == "sigmaTheta" || i == "theta") {
+                  ## FIXME: should we prefer e.g. salinityAdjusted or salinity?
+                  names <- names(x@data)
+                  salinity <- x@data[[if ("salinityAdjusted" %in% names) "salinityAdjusted" else "salinity"]]
+                  pressure <- x@data[[if ("pressureAdjusted" %in% names) "pressureAdjusted" else "pressure"]]
+                  temperature <- x@data[[if ("temperatureAdjusted" %in% names) "temperatureAdjusted" else "temperature"]]
+                  dim <- dim(salinity)
+                  longitude <- rep(x@data$longitude, each=dim[1]) # won't need this if eos="unesco" but retain for code clarity
+                  latitude <- rep(x@data$latitude, each=dim[1])
+                  res <- if (i == "theta") {
+                      swTheta(salinity, temperature=temperature, pressure=pressure,
+                              referencePressure=0, longitude=longitude, latitude=latitude,
+                              eos=getOption("oceEOS", default="gsw"))
+                  } else if (i == "sigmaTheta") {
+                      swSigmaTheta(salinity, temperature=temperature, pressure=pressure,
+                                   referencePressure=0, longitude=longitude, latitude=latitude,
+                                   eos=getOption("oceEOS", default="gsw"))
+                  }
+                  dim(res) <- dim
               } else {
                   res <- callNextMethod()         # [[
               }
