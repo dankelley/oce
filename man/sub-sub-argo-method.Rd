@@ -44,28 +44,35 @@ otherwise, and similar for temperature and pressure.
 
 \itemize{
 
-\item If \code{i} is the string \code{"CT"}, then
+\item If \code{i} is \code{"CT"}, then
 Conservative Temperature is returned, as computed with
 \code{\link[gsw]{gsw_CT_from_t}(SA, t, p)}, where
 first \code{SA} is computed as explained
 in the next item, \code{t} is in-situ temperature,
 and \code{p} is pressure.
 
-\item If \code{i} is the string \code{"SA"}, then
+\item If \code{i} is \code{"N2"}, then
+the square of buoyancy is returned, as computed with
+\code{\link{swN2}}.
+
+\item If \code{i} is \code{"SA"}, then
 Absolute Salinity is returned, as computed with
 \code{\link[gsw]{gsw_SA_from_SP}}.
 
-\item For \code{"sigmaTheta"}, potential density anomaly (referenced to zero
+\item If \code{i} is \code{"sigmaTheta"}, then
+potential density anomaly (referenced to zero
 pressure) is computed, with \code{\link{swSigmaTheta}}, where the
 equation of state is taken to be
 \code{\link{getOption}("oceEOS", default="gsw")}.
 
-\item For \code{"theta"}, potential temperature (referenced to zero
+\item If \code{i} is \code{"theta"}, then
+potential temperature (referenced to zero
 pressure) is computed, with \code{\link{swTheta}}, where the
 equation of state is taken to be
 \code{\link{getOption}("oceEOS", default="gsw")}.
 
-\item For \code{"depth"},  matrix of depths is returned.
+\item If \code{i} is \code{"depth"}, then
+a matrix of depths is returned.
 
 \item If \code{i} is in the \code{data} slot of \code{x},
 then it is returned, otherwise if it is in the \code{metadata} slot,

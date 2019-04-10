@@ -84,28 +84,35 @@ NULL
 #'
 #'\itemize{
 #'
-#' \item If \code{i} is the string \code{"CT"}, then
+#' \item If \code{i} is \code{"CT"}, then
 #' Conservative Temperature is returned, as computed with
 #' \code{\link[gsw]{gsw_CT_from_t}(SA, t, p)}, where
 #' first \code{SA} is computed as explained
 #' in the next item, \code{t} is in-situ temperature,
 #' and \code{p} is pressure.
 #'
-#' \item If \code{i} is the string \code{"SA"}, then
+#' \item If \code{i} is \code{"N2"}, then
+#' the square of buoyancy is returned, as computed with
+#' \code{\link{swN2}}.
+#'
+#' \item If \code{i} is \code{"SA"}, then
 #' Absolute Salinity is returned, as computed with
 #' \code{\link[gsw]{gsw_SA_from_SP}}.
 #'
-#' \item For \code{"sigmaTheta"}, potential density anomaly (referenced to zero
+#' \item If \code{i} is \code{"sigmaTheta"}, then
+#' potential density anomaly (referenced to zero
 #' pressure) is computed, with \code{\link{swSigmaTheta}}, where the
 #' equation of state is taken to be
 #' \code{\link{getOption}("oceEOS", default="gsw")}.
 #'
-#' \item For \code{"theta"}, potential temperature (referenced to zero
+#' \item If \code{i} is \code{"theta"}, then
+#' potential temperature (referenced to zero
 #' pressure) is computed, with \code{\link{swTheta}}, where the
 #' equation of state is taken to be
 #' \code{\link{getOption}("oceEOS", default="gsw")}.
 #'
-#' \item For \code{"depth"},  matrix of depths is returned.
+#' \item If \code{i} is \code{"depth"}, then
+#' a matrix of depths is returned.
 #'
 #' \item If \code{i} is in the \code{data} slot of \code{x},
 #' then it is returned, otherwise if it is in the \code{metadata} slot,
@@ -130,23 +137,47 @@ setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
               res <- NULL
-              if (i == "SA" || i == "CT") {
+              if (i %in% c("CT", "N2", "SA", "sigmaTheta", "theta")) {
                   ## FIXME: should we prefer e.g. salinityAdjusted or salinity?
                   names <- names(x@data)
-                  SAname <- if ("salinityAdjusted" %in% names) "salinityAdjusted" else "salinity"
-                  SP <- x@data[[SAname]]
-                  pname <- if ("pressureAdjusted" %in% names) "pressureAdjusted" else "pressure"
-                  p <- x@data[[pname]]
-                  dim <- dim(SP)
-                  lon <- rep(x@data$longitude, each=dim[1])
-                  lat <- rep(x@data$latitude, each=dim[1])
-                  SA <- gsw_SA_from_SP(SP, p, longitude=lon, latitude=lat)
-                  if (i == "SA") {
-                      res <- SA
+                  salinity <- x@data[[if ("salinityAdjusted" %in% names) "salinityAdjusted" else "salinity"]]
+                  pressure <- x@data[[if ("pressureAdjusted" %in% names) "pressureAdjusted" else "pressure"]]
+                  temperature <- x@data[[if ("temperatureAdjusted" %in% names) "temperatureAdjusted" else "temperature"]]
+                  dim <- dim(salinity)
+                  ## won't need this if eos="unesco" but retain for code clarity
+                  longitude <- rep(x@data$longitude, each=dim[1])
+                  latitude <- rep(x@data$latitude, each=dim[1])
+                  if (i == "CT") {
+                      res <- gsw_CT_from_t(x[["SA"]], temperature, pressure)
+                  } else if (i == "N2") {
+                      nprofile <- dim[2]
+                      res <- array(NA_real_,  dim=dim)
+                      for (i in seq_len(dim[2])) {
+                          ##message("i=",i, ", nprofile=", nprofile)
+                          ##if (i == 14) browser()
+                          if (sum(!is.na(pressure[,i])) > 2) {
+                              ctd <- as.ctd(salinity=salinity[,i],
+                                            temperature=temperature[,i],
+                                            pressure=pressure[,i],
+                                            longitude=x@data$longitude[i],
+                                            latitude=x@data$latitude[i])
+                              res[,i] <- swN2(ctd, eos=getOption("oceEOS", default="gsw"))
+                          } else {
+                              res[,i] <- rep(NA, length(salinity[,i]))
+                          }
+                      }
+                  } else if (i == "SA") {
+                      res <- gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
+                  } else if (i == "sigmaTheta") {
+                      res <- swSigmaTheta(salinity, temperature=temperature, pressure=pressure,
+                                          referencePressure=0, longitude=longitude, latitude=latitude,
+                                          eos=getOption("oceEOS", default="gsw"))
+                  } else if (i == "theta") {
+                      res <- swTheta(salinity, temperature=temperature, pressure=pressure,
+                                     referencePressure=0, longitude=longitude, latitude=latitude,
+                                     eos=getOption("oceEOS", default="gsw"))
                   } else {
-                      tname <- if ("temperatureAdjusted" %in% names) "temperatureAdjusted" else "temperature"
-                      t <- x@data[[tname]]
-                      res <- gsw_CT_from_t(SA, t, p)
+                      stop("coding error: unknown item '", i, "'")
                   }
                   dim(res) <- dim
               } else if (i == "depth") {
@@ -169,25 +200,6 @@ setMethod(f="[[",
                   } else {
                       res <- swDepth(x@data$pressure, x@data$latitude)
                   }
-              } else if (i == "sigmaTheta" || i == "theta") {
-                  ## FIXME: should we prefer e.g. salinityAdjusted or salinity?
-                  names <- names(x@data)
-                  salinity <- x@data[[if ("salinityAdjusted" %in% names) "salinityAdjusted" else "salinity"]]
-                  pressure <- x@data[[if ("pressureAdjusted" %in% names) "pressureAdjusted" else "pressure"]]
-                  temperature <- x@data[[if ("temperatureAdjusted" %in% names) "temperatureAdjusted" else "temperature"]]
-                  dim <- dim(salinity)
-                  longitude <- rep(x@data$longitude, each=dim[1]) # won't need this if eos="unesco" but retain for code clarity
-                  latitude <- rep(x@data$latitude, each=dim[1])
-                  res <- if (i == "theta") {
-                      swTheta(salinity, temperature=temperature, pressure=pressure,
-                              referencePressure=0, longitude=longitude, latitude=latitude,
-                              eos=getOption("oceEOS", default="gsw"))
-                  } else if (i == "sigmaTheta") {
-                      swSigmaTheta(salinity, temperature=temperature, pressure=pressure,
-                                   referencePressure=0, longitude=longitude, latitude=latitude,
-                                   eos=getOption("oceEOS", default="gsw"))
-                  }
-                  dim(res) <- dim
               } else {
                   res <- callNextMethod()         # [[
               }
