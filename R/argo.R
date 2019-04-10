@@ -575,13 +575,13 @@ setMethod(f="subset",
                       res@data[[adjustedError]] <- NULL
                   }
                   flagNames <- names(x@metadata$flags)
-                  adjustedIndices <- grep(".*Adjusted$", flagNames)
+                  adjustedIndices <- grep("Adjusted", flagNames)
                   ##> message("FLAGS")
                   ##> message("flagNames...");print(flagNames)
                   ##> message("adjustedIndices");print(adjustedIndices)
                   for (i in adjustedIndices) {
                       adjusted <- flagNames[i]
-                      base <- gsub("Adjusted$", "", adjusted)
+                      base <- gsub("Adjusted", "", adjusted)
                       adjustedError <- paste(adjusted, "Error", sep="")
                       ##> message("    base:          ", base)
                       ##> message("    adjusted:      ", adjusted)

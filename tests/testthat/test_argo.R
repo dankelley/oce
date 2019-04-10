@@ -7,16 +7,16 @@ context("Argo")
 test_that("[[,argo-method", {
           options(oceEOS="gsw")
           expect_equal(argo[["SA"]][1:2,1:2],
-                       structure(c(35.3509423279029, 35.3529478543978, 35.3600216239489, 
+                       structure(c(35.3509423279029, 35.3529478543978, 35.3600216239489,
                                    35.3600133661509), .Dim=c(2L, 2L)))
           expect_equal(argo[["CT"]][1:2,1:2],
-                       structure(c(9.69604608349391, 9.69651156306521, 9.58902309316286, 
+                       structure(c(9.69604608349391, 9.69651156306521, 9.58902309316286,
                                    9.58644078639155), .Dim=c(2L, 2L)))
           expect_equal(argo[["sigmaTheta"]][1:2,1:2],
-                       structure(c(27.1479134860076, 27.1493888071818, 27.172918709517, 
+                       structure(c(27.1479134860076, 27.1493888071818, 27.172918709517,
                                    27.173344472757), .Dim=c(2L, 2L)))
           expect_equal(argo[["theta"]][1:2,1:2],
-                       structure(c(9.70945684069746, 9.70995897509861, 9.60251640507005, 
+                       structure(c(9.70945684069746, 9.70995897509861, 9.60251640507005,
                                    9.59993195546977), .Dim=c(2L, 2L)))
 })
 
@@ -37,9 +37,9 @@ test_that("subset(argo, within=(POLYGON))", {
 
 test_that("subset.argo(argo, \"adjusted\") correctly alters metadata and data", {
           a <- subset(argo, "adjusted")
-          expect_equal(a@metadata$flags$pressureQc, argo@metadata$flags$pressureAdjustedQc)
-          expect_equal(a@metadata$flags$temperatureQc, argo@metadata$flags$temperatureAdjustedQc)
-          expect_equal(a@metadata$flags$salinityQc, argo@metadata$flags$salinityAdjustedQc)
+          expect_equal(a@metadata$flags$pressureQC, argo@metadata$flags$pressureAdjustedQC)
+          expect_equal(a@metadata$flags$temperatureQC, argo@metadata$flags$temperatureAdjustedQC)
+          expect_equal(a@metadata$flags$salinityQC, argo@metadata$flags$salinityAdjustedQC)
           expect_equal(a@metadata$flags$pressure, argo@metadata$flags$pressureAdjusted)
           expect_equal(a@metadata$flags$salinity, argo@metadata$flags$salinityAdjusted)
           expect_equal(a@metadata$flags$temperature, argo@metadata$flags$temperatureAdjusted)

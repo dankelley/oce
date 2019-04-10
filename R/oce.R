@@ -626,8 +626,8 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
             } else if (is.matrix(x@metadata[[name]])) {
                 look <- headTail(seq_len(dim(x@metadata[[name]])[2]), n)
                 res@metadata[[name]] <- x@metadata[[name]][, look]
-            } else {
-                warning("ignoring metadata item: '", name, "'")
+            ##} else {
+            ##    warning("ignoring metadata item: '", name, "'")
             }
         }
         for (name in names(x@data)) {
