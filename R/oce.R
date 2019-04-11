@@ -120,6 +120,10 @@ NULL
 #' of general interest are also listed below.
 #'
 #' \itemize{
+
+#' \item The \code{eos} argument of \code{\link{swN2}} was removed on 2019
+#' April 11; for details, see the \dQuote{Deprecation Notation} section
+#' of the documentation for \code{\link{swN2}}.
 #'
 #' \item The \code{endian} argument of \code{\link{byteToBinary}} will be removed sometime
 #' in the year 2017, and should be set to \code{"big"} in the meantime.

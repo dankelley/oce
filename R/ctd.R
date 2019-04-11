@@ -5470,7 +5470,7 @@ plotProfile <- function (x,
             lines(sig0, y, col=col.rho, lwd=lwd, lty=lty)
         }
         par(new=TRUE)
-        N2 <- swN2(x, df=df, eos=eos)
+        N2 <- swN2(x, df=df)
         N2[!is.finite(N2)] <- NA
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
@@ -5503,7 +5503,7 @@ plotProfile <- function (x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "N2") {
-        N2 <- swN2(x, df=df, eos=eos)
+        N2 <- swN2(x, df=df)
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
         look <- if (keepNA) seq_along(y) else !is.na(N2) & !is.na(y)

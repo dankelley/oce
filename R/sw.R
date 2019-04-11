@@ -196,12 +196,7 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
 #' provided, a possibly reasonable value computed from an analysis of the
 #' profile, based on the number of pressure levels.
 #'
-#' If \code{eos="gsw"}, then the first argument must be a \code{ctd} object,
-#' and processing is done with \code{\link[gsw]{gsw_Nsquared}}, based on
-#' extracted values of Absolute Salinity and Conservative Temperature (possibly
-#' smoothed, depending on \code{df}).
-#'
-#' If \code{eos="unesco"}, then the processing is as follows.  The core of the
+#' The core of the
 #' method involves differentiating potential density (referenced to median
 #' pressure) with respect to pressure, and the \code{derivs} argument is used
 #' to control how this is done, as follows.
@@ -229,10 +224,6 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
 #' then density) then that function is called directly to calculate the
 #' derivative, and no smoothing is done before or after that call.  }
 #'
-#' For deep-sea work, the \code{eos="gsw"} option is the best scheme, because
-#' it uses derivatives of density computed with \emph{local} reference
-#' pressure.
-#'
 #' For precise work, it makes sense to skip \code{swN2} entirely, choosing
 #' whether, what, and how to smooth based on an understanding of fundamental
 #' principles as well as data practicalities.
@@ -247,115 +238,91 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
 #' be a character string or a function of two arguments.  See \dQuote{Details}.
 #' @param df argument passed to \code{\link{smooth.spline}} if this function is
 #' used for smoothing; set to \code{NA} to prevent smoothing.
-#' @param eos equation of state, either \code{"unesco"} or \code{"gsw"}.
 #' @param \dots additional argument, passed to \code{\link{smooth.spline}}, in
 #' the case that \code{derivs="smoothing"}.  See \dQuote{Details}.
 #' @template debugTemplate
+#'
+#' @seealso The \code{\link[gsw]{gsw_Nsquared}} function of the \CRANpkg{gsw}
+#' provides an alternative to this, as formulated in the GSW system. It
+#' has a more sophisticated treatment of potential density, but it is based
+#' on simple first-difference derivatives, so its results may require
+#' smoothing, depending on the dataset and purpose of the analysis.
+#'
 #' @return Square of buoyancy frequency [\eqn{radian^2/s^2}{radian^2/s^2}].
 #' @author Dan Kelley
 #' @examples
 #'
 #' library(oce)
 #' data(ctd)
-#' # Illustrate difference between UNESCO and GSW
+#' # Left panel: density
 #' p <- ctd[["pressure"]]
 #' ylim <- rev(range(p))
-#' par(mfrow=c(1,3), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+#' par(mfrow=c(1, 2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 #' plot(ctd[["sigmaTheta"]], p, ylim=ylim, type='l', xlab=expression(sigma[theta]))
-#' N2u <- swN2(ctd, eos="unesco")
-#' N2g <- swN2(ctd, eos="gsw")
-#' plot(N2u, p, ylim=ylim, xlab="N2 Unesco", ylab="p", type="l")
-#' d <- 100 * (N2u - N2g) / N2g
-#' plot(d, p, ylim=ylim, xlab="N2 UNESCO-GSW diff. [%]", ylab="p", type="l")
-#' abline(v=0)
+#' # Right panel: N2, with default settings (black) and with df=2 (red)
+#' N2 <- swN2(ctd)
+#' plot(N2, p, ylim=ylim, xlab="N2 [1/s^2]", ylab="p", type="l")
+#' lines(swN2(ctd, df=3), p, col=2)
+#'
+#' @section Deprecation Notice:
+#' Until 2019 April 11, \code{swN2} had an argument named \code{eos}. However,
+#' this did not work as stated, unless the first argument was a \code{ctd}
+#' object. Besides, the argument name was inherently deceptive, because the UNESCO
+#' scheme does not specify how N2 is to be calculated.
+#' Nothing is really lost by making this change, because the new default is the
+#' same as was previously available with the \code{eos="unesco"}
+#' setup, and the gsw-formulated estimate of N2 is still available, as
+#' \code{\link[gsw]{gsw_Nsquared}} in the \CRANpkg{gsw}
+#' package.
+#'
 #' @family functions that calculate seawater properties
 swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
-                 eos=getOption("oceEOS", default="gsw"),
                  debug=getOption("oceDebug"),  ...)
 {
     oceDebug(debug, "swN2(...) {\n", sep="", unindent=1)
     ##cat("swN2(..., df=", df, ")\n",sep="")
-    eos <- match.arg(eos, c("unesco", "gsw"))
     ##useSmoothing <- !missing(df) && is.finite(df)
-    if (eos == "unesco") {
-        if (inherits(pressure, "ctd")) {
-            pref <- median(pressure[["pressure"]], na.rm=TRUE)
-            sigmaTheta <- swSigmaTheta(pressure, referencePressure=pref)
-            pressure <- pressure[['pressure']] # over-writes pressure
-        }
-        if (missing(derivs))
-            derivs <- "smoothing"
-        ok <- !is.na(pressure) & !is.na(sigmaTheta)
-        if (is.character(derivs)) {
-            if (derivs == "simple") {
-                sigmaThetaDeriv <- c(0, diff(sigmaTheta) / diff(pressure))
-            } else if (derivs == "smoothing") {
-                depths <- sum(!is.na(pressure))
-                if (missing(df)) {
-                    df <- if (depths > 100) f <- floor(depths / 10) # at least 10
-                        else if (depths > 20) f <- floor(depths / 3) # at least 7
-                        else if (depths > 10) f <- floor(depths / 2) # at least 5
-                        else depths
+    if (inherits(pressure, "ctd")) {
+        pref <- median(pressure[["pressure"]], na.rm=TRUE)
+        sigmaTheta <- swSigmaTheta(pressure, referencePressure=pref)
+        pressure <- pressure[['pressure']] # over-writes pressure
+    }
+    if (missing(derivs))
+        derivs <- "smoothing"
+    ok <- !is.na(pressure) & !is.na(sigmaTheta)
+    if (is.character(derivs)) {
+        if (derivs == "simple") {
+            sigmaThetaDeriv <- c(0, diff(sigmaTheta) / diff(pressure))
+        } else if (derivs == "smoothing") {
+            depths <- sum(!is.na(pressure))
+            if (missing(df)) {
+                df <- if (depths > 100) f <- floor(depths / 10) # at least 10
+                    else if (depths > 20) f <- floor(depths / 3) # at least 7
+                    else if (depths > 10) f <- floor(depths / 2) # at least 5
+                    else depths
                     oceDebug(getOption("oceDebug"), "df not supplied, so set to ", df, "(note: #depths=", depths, ")\n")
-                }
-                if (depths > 4 && df > 5) {
-                    sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
-                    sigmaThetaDeriv <- rep(NA, length(pressure))
-                    sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv = 1)$y
-                } else {
-                    sigmaThetaSmooth <- as.numeric(smooth(sigmaTheta[ok]))
-                    sigmaThetaDeriv <- rep(NA, length(pressure))
-                    sigmaThetaDeriv[ok] <- c(0, diff(sigmaThetaSmooth) / diff(pressure[ok]))
-                }
+            }
+            if (depths > 4 && df > 5) {
+                sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
+                sigmaThetaDeriv <- rep(NA, length(pressure))
+                sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv = 1)$y
             } else {
-                stop("derivs must be 'simple', 'smoothing', or a function")
+                sigmaThetaSmooth <- as.numeric(smooth(sigmaTheta[ok]))
+                sigmaThetaDeriv <- rep(NA, length(pressure))
+                sigmaThetaDeriv[ok] <- c(0, diff(sigmaThetaSmooth) / diff(pressure[ok]))
             }
         } else {
-            if (!is.function(derivs))
-                stop("derivs must be 'smoothing', 'simple', or a function")
-            sigmaThetaDeriv <- derivs(pressure, sigmaTheta)
+            stop("derivs must be 'simple', 'smoothing', or a function")
         }
-        ## FIXME (DK 2016-05-04) I am not sure I like the following since it
-        ## uses a standardized rho_0. But it's from some official source I think.
-        ## Must check this. (UNESCO book?)
-        res <- ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
-    } else if (eos == "gsw") {
-        if (!inherits(pressure, "ctd"))
-            stop("first argument must be a CTD object if eos=\"gsw\"")
-        ctd <- pressure
-        SA <- ctd[["SA"]]
-        CT <- ctd[["CT"]]
-        p <- ctd[["pressure"]]
-        ok <- is.finite(p) & is.finite(SA) & is.finite(CT)
-        nok <- sum(ok)
-        if (missing(df)) {
-            df <- if (nok > 100) floor(nok / 10) # at least 10
-                else if (nok > 20) floor(nok / 3) # at least 7
-                else if (nok > 10) floor(nok / 2) # at least 5
-                else nok
-            oceDebug(debug, "df=", df, " (calculated using nok=", nok, ")\n", sep="")
-        } else {
-            oceDebug(debug, "df=", df, " (given as an argument to swNw())\n", sep="")
-        }
-        ## Focus on non-NA values
-        pok <- p[ok]
-        SAok <- SA[ok]
-        CTok <- CT[ok]
-        ## Smooth with a spline, but only if have enough data
-        if (nok > 4 && is.finite(df)) {
-            SAok <- predict(smooth.spline(pok, SAok, df=df), pok)$y
-            CTok <- predict(smooth.spline(pok, CTok, df=df), pok)$y
-        }
-        latitude <- ctd[["latitude"]]
-        if (is.null(latitude))
-            stop("cannot compute N2 without latitude, for eos=\"gsw\"")
-        if (is.na(latitude[1]))
-            latitude <- 0
-        l <- gsw::gsw_Nsquared(SA=SAok, CT=CTok, p=pok, latitude=latitude[1])
-        ## approx back to the given pressures
-        good <- is.finite(l$p_mid) & is.finite(l$N2)
-        res <- approx(x=l$p_mid[good], y=l$N2[good], p, rule=2)$y
+    } else {
+        if (!is.function(derivs))
+            stop("derivs must be 'smoothing', 'simple', or a function")
+        sigmaThetaDeriv <- derivs(pressure, sigmaTheta)
     }
+    ## FIXME (DK 2016-05-04) I am not sure I like the following since it
+    ## uses a standardized rho_0. But it's from some official source I think.
+    ## Must check this. (UNESCO book?)
+    res <- ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
     oceDebug(debug, "} # swN2()\n", sep="", unindent=1)
     res
 }

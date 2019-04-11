@@ -144,7 +144,7 @@ setMethod(f="[[",
                   pressure <- x@data[[if ("pressureAdjusted" %in% names) "pressureAdjusted" else "pressure"]]
                   temperature <- x@data[[if ("temperatureAdjusted" %in% names) "temperatureAdjusted" else "temperature"]]
                   dim <- dim(salinity)
-                  ## won't need this if eos="unesco" but retain for code clarity
+                  ## Do not need longitude and latitude if eos="unesco", but retain for code clarity
                   longitude <- rep(x@data$longitude, each=dim[1])
                   latitude <- rep(x@data$latitude, each=dim[1])
                   if (i == "CT") {
@@ -161,7 +161,7 @@ setMethod(f="[[",
                                             pressure=pressure[,i],
                                             longitude=x@data$longitude[i],
                                             latitude=x@data$latitude[i])
-                              res[,i] <- swN2(ctd, eos=getOption("oceEOS", default="gsw"))
+                              res[,i] <- swN2(ctd)
                           } else {
                               res[,i] <- rep(NA, length(salinity[,i]))
                           }
