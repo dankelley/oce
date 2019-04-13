@@ -46,6 +46,14 @@ file and stored in the \code{metadata} slot, with the exception of
 \code{longitude} and \code{latitude}, which are stored in the
 \code{data} slot, alongside hydrographic information.
 
+The following global attributes stored within the netcdf file are stored in the
+\code{metadata} slot: \code{title}, \code{institution}, \code{source},
+\code{history}, \code{references}, \code{userManualVersion}, \code{conventions},
+and \code{featureType}. These names are identical to those in the netcdf
+file, except that \code{userManualVersion} is named
+\code{user_manual_version} in the file, and \code{conventions} is
+named \code{Conventions} in the file.
+
 It is assumed that the profile data are as listed in the NetCDF variable
 called \code{STATION_PARAMETERS}. Each item can have variants, as
 described in Sections 2.3.4 of [3].

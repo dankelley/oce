@@ -4,6 +4,17 @@ data(argo)
 
 context("Argo")
 
+test_that("global attributes in metadata", {
+          expect_equal(argo[["title"]], "Argo float vertical profile")
+          expect_equal(argo[["institution"]], "FR GDAC")
+          expect_equal(argo[["source"]], "Argo float")
+          expect_equal(argo[["history"]], "2017-07-07T15:50:34Z creation")
+          expect_equal(argo[["references"]], "http://www.argodatamgt.org/Documentation")
+          expect_equal(argo[["userManualVersion"]], "3.1")
+          expect_equal(argo[["conventions"]], "Argo-3.1 CF-1.6")
+          expect_equal(argo[["featureType"]], "trajectoryProfile")
+})
+
 test_that("[[,argo-method", {
           options(oceEOS="gsw")
           expect_equal(argo[["SA"]][1:2,1:2],

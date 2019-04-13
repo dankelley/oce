@@ -859,6 +859,14 @@ argoDecodeFlags <- function(f) # local function
 #' \code{longitude} and \code{latitude}, which are stored in the
 #' \code{data} slot, alongside hydrographic information.
 #'
+#' The following global attributes stored within the netcdf file are stored in the
+#' \code{metadata} slot: \code{title}, \code{institution}, \code{source},
+#' \code{history}, \code{references}, \code{userManualVersion}, \code{conventions},
+#' and \code{featureType}. These names are identical to those in the netcdf
+#' file, except that \code{userManualVersion} is named
+#' \code{user_manual_version} in the file, and \code{conventions} is
+#' named \code{Conventions} in the file.
+#'
 #' It is assumed that the profile data are as listed in the NetCDF variable
 #' called \code{STATION_PARAMETERS}. Each item can have variants, as
 #' described in Sections 2.3.4 of [3].
@@ -1004,11 +1012,22 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     ## columnNames <- gsub(" *$", "", gsub("^ *", "", unique(as.vector(ncvar_get(f, maybeLC("STATION_PARAMETERS", lc))))))
     ## QCNames <- paste(columnNames, "_QC",  sep="")
 
-    ## Grab all information listed in table 2.2.3 of [3], with exceptions as listed in the
-    ## docs, e.g. STATION_PARAMETERS is really of no use.
-    ## Must check against varNames to avoid errors if files lack some items ... e.g.
-    ## 6900388_prof.nc lacked FIRMWARE_VERSION, even though table 2.2.3 of [3] indicates
-    ## that it should be present.
+    ## global attributes (see https://github.com/dankelley/oce/issues/1528)
+    getGlobalAttribute <- function(file, attname)
+    {
+        a <- ncdf4::ncatt_get(nc=file, varid=0, attname=attname)
+        res <- if (a$hasatt) a$value else NULL
+        ## message("'", attname, "' value='", res, "'")
+        res
+    }
+    res@metadata$title <- getGlobalAttribute(file, "title")
+    res@metadata$institution <- getGlobalAttribute(file, "institution")
+    res@metadata$source <- getGlobalAttribute(file, "source")
+    res@metadata$history <- getGlobalAttribute(file, "history")
+    res@metadata$references <- getGlobalAttribute(file, "references")
+    res@metadata$userManualVersion <- getGlobalAttribute(file, "user_manual_version")
+    res@metadata$conventions <- getGlobalAttribute(file, "Conventions")
+    res@metadata$featureType <- getGlobalAttribute(file, "featureType")
 
     varNamesOmit <- function(v, o)
     {
