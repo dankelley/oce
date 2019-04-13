@@ -884,9 +884,11 @@ argoDecodeFlags <- function(f) # local function
 #'
 #' Once a predefined series of items are inferred and stored in either the
 #' \code{metadata} or \code{data} slot, \code{read.argo} then reads all
-#' the variables that remain in the file, and stores them in the \code{metadata}
+#' non-empty variables in the file, storing them in the \code{metadata}
 #' slot, using with the original ('snake case') name that is used in
-#' the data file.
+#' the data file. (Note that the sample dataset accessed with \code{data(argo)}
+#' lacks metadata items with names starting with \code{HISTORY_}, because
+#' those are zero-length in the source file.)
 #'
 #' @param file a character string giving the name of the file to load.
 #'
@@ -1321,13 +1323,22 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     ## "HISTORY_START_PRES", "HISTORY_STOP_PRES",
     ## "HISTORY_PREVIOUS_VALUE", "HISTORY_QCTEST"
     for (name in varNames) {
-        oceDebug(debug, "insert \"", name, "\" into metadata\n", sep="")
+        oceDebug(debug, "about to try to insert \"", name, "\" into metadata\n", sep="")
         o <- capture.output(value <- try(ncdf4::ncvar_get(file, name), silent=TRUE))
         if (inherits(value, "try-error")) {
-            if (length(grep("Index exceeds dimension", o)))
-                warning("ncvar_get() failed for \"", name, "\" (Index exceeds dimension), so it isn't stored in metadata\n")
-            else
+            ## see https://github.com/dankelley/oce/issues/1522 for a discussion of the fact
+            ## that the file used for data(argo) has zero-length HISTORY_* items.
+            if (length(grep("Index exceeds dimension", o))) {
+                ## FIXME: this code is brittle, being dependent on the layout of
+                ## FIXME: the output from nc_open(), which might be subject to change.
+                ## FIXME: The code worked on 2019-04-13.
+                oceDebug(debug, "ncdf4::ncvar_get() error diagnosis ... name=", name, " len=",file$var[[name]]$dim[[file$var[[name]]$ndim]]$len, " (if this is 0, will not save '", name, "' to metadata)\n")
+                if (0 != file$var[[name]]$dim[[file$var[[name]]$ndim]]$len) {
+                    warning("ncvar_get() failed for \"", name, "\" (Index exceeds dimension), so it isn't stored in metadata\n")
+                }
+            } else {
                 warning("ncvar_get() failed for \"", name, "\", so it isn't stored in metadata\n")
+            }
         } else{
             ## Make a vector, if it is a single-column matrix
             if (1 == length(dim(value)))

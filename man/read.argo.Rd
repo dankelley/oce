@@ -71,9 +71,11 @@ and \code{pressureAdjusted} in the \code{metadata$flags} slot.
 
 Once a predefined series of items are inferred and stored in either the
 \code{metadata} or \code{data} slot, \code{read.argo} then reads all
-the variables that remain in the file, and stores them in the \code{metadata}
+non-empty variables in the file, storing them in the \code{metadata}
 slot, using with the original ('snake case') name that is used in
-the data file.
+the data file. (Note that the sample dataset accessed with \code{data(argo)}
+lacks metadata items with names starting with \code{HISTORY_}, because
+those are zero-length in the source file.)
 }
 \section{Data sources}{
 
