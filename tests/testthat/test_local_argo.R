@@ -17,7 +17,7 @@ test_that("the data(argo) dataset", {
 
 test_that("the data from which data(argo) was constructed", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
-              expect_warning(a <- read.oce("local_data/6900388_prof.nc"), "HISTORY_")
+              a <- read.oce("local_data/6900388_prof.nc")
               expect_equal(a[["id"]][1], "6900388")
               expect_equal(dim(a[["pressure"]]), c(56,223))
               expect_equal(sort(names(a[["data"]])),
