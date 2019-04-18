@@ -683,9 +683,9 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
 
 #' Suggest a default flag for good data
 #'
-#' \code{defaultFlag} tries to suggest a reasonable default \code{flag} scheme
+#' \code{defaultFlags} tries to suggest a reasonable default \code{flag} scheme
 #' for use by \code{\link{handleFlags}}. It does this by looking for an item
-#' named \code{flagScheme} in the \code{metdata} slot of \code{object}.
+#' named \code{flagScheme} in the \code{metadata} slot of \code{object}.
 #' If that is found, and if the scheme is recognized, then a numeric
 #' vector is returned that indicates bad or questionable data. The recognized
 #' schemes, and their defaults are as below; note that this is a very conservative
