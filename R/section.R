@@ -159,11 +159,11 @@ setMethod("handleFlags",
 #' str(station1[["flagScheme"]])
 #'}
 setMethod("initializeFlagScheme",
-          c(object="section", name="ANY", mapping="ANY", debug="ANY"),
-          function(object, name=NULL, mapping=NULL, debug=getOption("oceDebug")) {
+          c(object="section", name="ANY", mapping="ANY", default="ANY", debug="ANY"),
+          function(object, name=NULL, mapping=NULL, default=NULL, debug=getOption("oceDebug")) {
               res <- object
               for (i in seq_along(object@data$station)) {
-                  res@data$station[[i]] <- initializeFlagScheme(object@data$station[[i]], name, mapping, debug=debug-1)
+                  res@data$station[[i]] <- initializeFlagScheme(object@data$station[[i]], name, mapping, default, debug=debug-1)
               }
               res@processingLog <-
                   processingLogAppend(res@processingLog,
