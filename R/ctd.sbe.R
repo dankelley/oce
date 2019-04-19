@@ -1149,7 +1149,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploym
             ## I am taking the wikipedia value.
             ## 0.6894757293168  https://en.wikipedia.org/wiki/Pounds_per_square_inch
             ## 0.689475728      http://www.convertunits.com/from/psi/to/decibar
-            res <- oceSetData(res, name="pressure", value=res@data$pressurePSI/0.6894757293168,
+            res <- oceSetData(res, name="pressure", value=res@data$pressurePSI*0.6894757293168,
                               unit=list(unit=expression("dbar"), scale=""))
             warning("created 'pressure' from 'pressurePSI'")
         } else if (foundDepth && !foundPressure) {
