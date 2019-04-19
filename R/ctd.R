@@ -282,8 +282,8 @@ setMethod("setFlags",
 #' @templateVar details {NA}
 #' @template initializeFlagSchemeTemplate
 setMethod("initializeFlagScheme",
-          signature=c(object="ctd", name="ANY", mapping="ANY", debug="ANY"),
-          definition=function(object, name=NULL, mapping=NULL, debug=getOption("oceDebug")) {
+          signature=c(object="ctd", name="ANY", mapping="ANY", default="ANY", debug="ANY"),
+          definition=function(object, name=NULL, mapping=NULL, default=NULL, debug=0) {
               if (is.null(name))
                   stop("must supply 'name'")
               invisible(callNextMethod())

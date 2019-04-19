@@ -82,7 +82,7 @@ test_that("handleFLags with ctd data", {
           data(section)
           ctd <- section[["station", 100]]
           ## this stn has a few points with salinityFlag==3
-          ctdNew <- handleFlags(ctd, flags=list(salinity=c(1, 3:9)))
+          ctdNew <- handleFlags(ctd, flags=list(salinity=c(1, 2, 3, 4, 5, 6, 7, 9)))
           ##cat("ctd salinity: orig had", sum(is.na(ctd[['salinity']])), "NA values; new has",
           ##    sum(is.na(ctdNew[['salinity']])), "\n")
           expect_equal(sum(is.na(ctd[["salinity"]])), 0)
@@ -236,7 +236,7 @@ test_that("handleFlags default flags (section)", {
           S1 <- handleFlags(section)
           S2 <- handleFlags(section, flags=c(1, 3:9))
           for (i in seq_along(S1[["station"]])) {
-              expect_equal(S1[["station", i]], S1[["station", i]]) 
+              expect_equal(S1[["station", i]], S1[["station", i]])
           }
 })
 
@@ -246,9 +246,9 @@ test_that("alter flag scheme", {
           expect_equal(c(1, 3:9), defaultFlags(ctd))
           expect_warning(ctd <- initializeFlagScheme(ctd, "will give error"),
                          "cannot alter a flagScheme that is already is place")
-          ctd[["flagScheme"]] <- NULL 
+          ctd[["flagScheme"]] <- NULL
           ctd <- initializeFlagScheme(ctd, "argo")
-          expect_equal(c(0, 2:9), defaultFlags(ctd))
+          expect_equal(c(0, 2, 3, 4, 7, 8, 9), defaultFlags(ctd))
 })
 
 test_that("handleFlags default flags (ctd)", {
