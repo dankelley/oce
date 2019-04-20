@@ -3936,6 +3936,10 @@ setMethod(f="subset",
 #' if necessary. In the latter case, an error results if the \code{data}
 #' slot of \code{x} lacks a variable called \code{time}.
 #'
+#' @param flipy Logical value, ignored unless \code{which} is 1. If \code{flipy}
+#' is \code{TRUE}, then a pressure plot will have high pressures at the bottom
+#' of the axis.
+#'
 #' @param type Character indicating the line type, as for \code{\link{plot.default}}. The default
 #' is \code{"l"}, meaning to connect data with line segments. Another good choice is
 #' \code{"o"}, to add points at the data.
@@ -3960,7 +3964,7 @@ setMethod(f="subset",
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{ctd} data
-plotScan <- function(x, which=1, xtype="scan",
+plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
                      type='l', mgp=getOption("oceMgp"),
                      mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]), ..., debug=getOption("oceDebug"))
 {
@@ -3976,8 +3980,11 @@ plotScan <- function(x, which=1, xtype="scan",
         if (xtype == "scan") {
             xvar <- if ("scan" %in% names(x@data)) x[["scan"]] else seq_along(x[["pressure"]])
             if (w == 1) {
+                ylim <- range(x[["pressure"]], na.rm=TRUE)
+                if (flipy)
+                    ylim <- rev(ylim)
                 plot(xvar, x[["pressure"]], xlab="Scan", ylab=resizableLabel("p", "y", debug=debug-1),
-                     yaxs='r', type=type, ...)
+                     yaxs='r', type=type, ylim=ylim, ...)
             } else if (w == 2) {
                 plot(xvar[-1], diff(x[["pressure"]]), xlab="Scan", ylab="diff(pressure)",
                      yaxs='r', type=type, ...)
@@ -3996,16 +4003,16 @@ plotScan <- function(x, which=1, xtype="scan",
                 stop("there is no 'time' in this ctd object")
             if (w == 1) {
                 oce.plot.ts(time, x[["pressure"]], ylab=resizableLabel("p", "y", debug=debug-1),
-                            yaxs='r', type=type, ...)
+                            yaxs='r', type=type, flipy=flipy, ...)
             } else if (w == 2) {
                 oce.plot.ts(time[-1], diff(x[["pressure"]]), ylab="diff(pressure)",
-                            yaxs='r', type=type, ...)
+                            yaxs='r', type=type, flipy=flipy, ...)
             } else if (w == 3) {
                 oce.plot.ts(time, x[["temperature"]], ylab=resizableLabel("T", "y", debug=debug-1),
-                            yaxs='r', type=type, ...)
+                            yaxs='r', type=type, flipy=flipy, ...)
             } else if (w == 4) {
                 oce.plot.ts(time, x[["salinity"]], ylab=resizableLabel("S", "y", debug=debug-1),
-                            yaxs='r', type=type, ...)
+                            yaxs='r', type=type, flipy=flipy, ...)
             } else {
                 stop("unknown 'which'; must be in 1:4")
             }
