@@ -30,7 +30,7 @@
 #' IPTS-68 scale, but e.g. \code{ctd[["temperature"]]} returns a value on the ITS-90
 #' scale. (The conversion is done with \code{\link{T90fromT68}}.)  Similarly,
 #' pressure may be stored in either dbars or PSI, but e.g. \code{ctd[["pressure"]]}
-#' returns a value in dbars, after multiplying by 0.689476 if the value is
+#' returns a value in dbars, after dividing by 0.689476 if the value is
 #' stored in PSI. Luckily, there is (as of early 2016) only one salinity scale in
 #' common use in data files, namely PSS-78.
 #'
@@ -503,8 +503,7 @@ setMethod(f="summary",
 #' used on a \code{.cnv} file that stores pressure in psi, it will
 #' be stored in the same unit within the \code{ctd} object, but
 #' \code{x[["pressure"]]} will return a value that has been converted
-#' to decibars.  (Users who need the pressure in PSI can
-#' use \code{x@@data$pressure}.)
+#' to decibars.  (To get pressure in PSI, use \code{x[["pressurePSI"]]}.)
 #' Similarly, temperature is
 #' returned in the ITS-90 scale, with a conversion having been performed with
 #' \code{\link{T90fromT68}}, if the object holds temperature in
@@ -711,6 +710,10 @@ setMethod(f="[[",
                   if ("pressure" %in% dataNames) {
                       pressure <- data$pressure
                       unit <- metadata$units[["pressure"]]$unit
+                      ## NOTE: 2019-04-29: The next will always return pressure, from the
+                      ## else part of the conditional. This is because oce
+                      ## stores pressure as dbar, and copies any original PSI data
+                      ## into data$pressurePSI.
                       if (!is.null(unit) && "psi" == as.character(unit))
                           pressure * 0.6894757 # 1 psi=6894.757 Pa
                       else pressure
