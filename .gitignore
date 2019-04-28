@@ -21,7 +21,6 @@ man/figures/*png
 !man/figures/starCoords.png
 .DS_Store
 .Rproj.user
-*.Rproj
 .RData
 autom4te.cache
 *.nc
