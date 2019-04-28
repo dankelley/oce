@@ -1247,7 +1247,7 @@ setMethod(f="plot",
                        "\", ztype=\"", ztype, "\", ...) {\n", sep="", unindent=1)
               ## Ensure data on levels, for plots requiring pressure (e.g. sections). Note
               ## that we break out of the loop, once we grid the section.
-              if (is.na(which[1]) || which != "data" || which != 'map') {
+              if (is.na(which[1]) || which[1] != "data" || which[1] != 'map') {
                   p1 <- x[["station", 1]][["pressure"]]
                   numStations <- length(x@data$station)
                   for (ix in 2:numStations) {

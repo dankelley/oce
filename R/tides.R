@@ -130,7 +130,7 @@ setMethod(f="summary",
               version <- object@metadata$version
               if (missing(p))
                   p <- 1
-              ok <- object@data$p <= p || version == "3"
+              ok <- object@data$p <= p | version == "3"
               haveP <- any(!is.na(object@data$p))
               if (missing(constituent)) {
                   fit <- data.frame(Const=object@data$const[ok],
