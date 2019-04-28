@@ -34,7 +34,7 @@ form. For example, a \code{ctd} object might hold temperature defined on the
 IPTS-68 scale, but e.g. \code{ctd[["temperature"]]} returns a value on the ITS-90
 scale. (The conversion is done with \code{\link{T90fromT68}}.)  Similarly,
 pressure may be stored in either dbars or PSI, but e.g. \code{ctd[["pressure"]]}
-returns a value in dbars, after multiplying by 0.689476 if the value is
+returns a value in dbars, after dividing by 0.689476 if the value is
 stored in PSI. Luckily, there is (as of early 2016) only one salinity scale in
 common use in data files, namely PSS-78.
 }
