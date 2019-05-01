@@ -1547,39 +1547,49 @@ setMethod(f="plot",
                       ## For ztype == "points", plot the points.  Otherwise, collect them in zz
                       ## for the contour or image plot.
                       for (i in 1:numStations) {
-                          ##oceDebug(debug, "filling matrix for station", i, "\n")
+                          thisStation <- x[["station", i]]
+                          oceDebug(debug, "filling matrix with \"", variable, "\" data at station", i, "\n", sep="")
                           if (variable != "data") {
                               if (drawPoints) {
-                                  p <- x@data$station[[stationIndices[i]]]@data$pressure
+                                  p <- thisStation[["pressure"]]
                                   if (eos == "gsw" && variable == "temperature")
-                                      v <- swConservativeTemperature(x@data$station[[stationIndices[i]]])
+                                      v <- thisStation[["CT"]]
                                   else if (eos == "gsw" && variable == "salinity")
-                                      v <- swAbsoluteSalinity(x@data$station[[stationIndices[i]]])
+                                      v <- thisStation[["SA"]]
                                   else if (eos == "gsw" && variable == "sigmaTheta")
-                                      v <- swSigma0(x@data$station[[stationIndices[i]]], eos=eos)
+                                      v <- swSigma0(thisStation, eos=eos)
                                   else if (eos == "unesco" && variable == "potential temperature")
-                                      v <- x@data$station[["theta"]]
+                                      v <- thisStation[["theta"]]
+                                  else if (variable %in% names(thisStation[["data"]]))
+                                      v <- thisStation[[variable]]
                                   else
-                                      v <- x@data$station[[stationIndices[i]]][[variable]]
+                                      v <- rep(NA, length(thisStation[["data"]][["pressure"]]))
                                   points(rep(xx[i], length(p)), -p,
                                          pch=pch, cex=cex,
                                          col=zcol[rescale(v, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=nbreaks)])
                               } else {
                                   if (eos == "gsw" && variable == "temperature") {
-                                      zz[i, ] <- rev(swConservativeTemperature(x@data$station[[stationIndices[i]]]))
+                                      zz[i, ] <- rev(thisStation[["CT"]])
                                   } else if (eos == "gsw" && variable == "salinity") {
-                                      zz[i, ] <- rev(swAbsoluteSalinity(x@data$station[[stationIndices[i]]]))
+                                      zz[i, ] <- rev(thisStation[["SA"]])
                                   } else if (eos == "gsw" && variable == "sigmaTheta") {
                                       ## The contour will probably look very much like for the "unesco" case,
                                       ## apart from the different legend. I say this because I used station 10
                                       ## of data(section) as a test case, and found that the RMS difference
                                       ## between results computed with the two formulations to be 0.005kg/m^3,
                                       ## or just 0.02% of the mean value.
-                                      zz[i, ] <- rev(swSigma0(x@data$station[[stationIndices[i]]], eos=eos))
+                                      zz[i, ] <- rev(swSigma0(thisStation, eos=eos))
                                   } else if (eos == "unesco" && variable == "potential temperature") {
-                                      zz[i, ] <- rev(x@data$station[[stationIndices[i]]][["theta"]])
+                                      zz[i, ] <- rev(thisStation[["theta"]])
                                   } else {
-                                      zz[i, ] <- rev(x@data$station[[stationIndices[i]]][[variable]])
+                                      ##. message("variable=",variable)
+                                      ##. message("names=", paste(names(thisStation@data), collapse=","))
+                                      zz[i, ] <- if (variable %in% names(thisStation[["data"]])) {
+                                          rev(thisStation[[variable]])
+                                      } else {
+                                          rep(NA, length(thisStation[["pressure"]]))
+                                      }
+                                      ##. message("zz[",i,",]:", paste(head(zz[i,]), collapse=" "))
                                   }
                               }
                           }
