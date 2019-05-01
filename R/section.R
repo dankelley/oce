@@ -2654,6 +2654,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
         options(warn=-1)
         gaveDF <- "df" %in% names(list(...))
         for (p in 1:npressure) {
+            oceDebug(debug, "interpolating at pressure=", p)
             ok <- !is.na(temperatureMat[p, ]) ## FIXME: ok to infer missingness from temperature alone?
             nok <- sum(ok)
             ##iok <- (1:nstn)[ok]
