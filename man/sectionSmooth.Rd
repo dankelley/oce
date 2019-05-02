@@ -68,16 +68,20 @@ The stations are changed to lie on the grid supplied defined \code{xg} and
 \code{yg}, or by \code{xgl} and \code{ygl} (see those arguments)
 }
 \examples{
+# Gulf Stream
 library(oce)
 data(section)
 gs <- subset(section, 109<=stationId&stationId<=129)
+par(mfrow=c(1, 3))
+plot(gs, which="temperature")
+mtext("gs: original")
 gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
-gss1 <- sectionSmooth(gsg, "spline", df=16)
-plot(gss1)
-\dontrun{
-gss2 <- sectionSmooth(gsg, "barnes", xr=24, yr=100)
-plot(gss2)
-}
+gsSpline <- sectionSmooth(gsg, "spline", df=16)
+plot(gsSpline, which="temperature")
+mtext("spline-smoothed")
+gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=250)
+plot(gsBarnes, which="temperature")
+mtext("Barnes-smoothed")
 
 }
 \seealso{

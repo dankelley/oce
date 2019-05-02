@@ -3205,11 +3205,11 @@ interpBarnes <- function(x, y, z, w,
 
     ok <- !is.na(x) & !is.na(y) & !is.na(z) & !is.na(w)
     g <- do_interp_barnes(x[ok], y[ok], z[ok], w[ok], xg, yg, xr, yr, gamma, iterations)
-    oceDebug(debug, "} # interpBarnes(...)\n", unindent=1)
     if (trim >= 0 && trim <= 1) {
         bad <- g$wg < quantile(g$wg, trim, na.rm=TRUE)
         g$zg[bad] <- NA
     }
+    oceDebug(debug, "} # interpBarnes(...)\n", unindent=1)
     list(xg=xg, yg=yg, zg=g$zg, wg=g$wg, zd=g$zd)
 }
 

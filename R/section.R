@@ -2602,16 +2602,20 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' @return An object of \code{\link{section-class}} that ordered in some way.
 #'
 #' @examples
+#' # Gulf Stream
 #' library(oce)
 #' data(section)
 #' gs <- subset(section, 109<=stationId&stationId<=129)
+#' par(mfrow=c(1, 3))
+#' plot(gs, which="temperature")
+#' mtext("gs: original")
 #' gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
-#' gss1 <- sectionSmooth(gsg, "spline", df=16)
-#' plot(gss1)
-#'\dontrun{
-#' gss2 <- sectionSmooth(gsg, "barnes", xr=24, yr=100)
-#' plot(gss2)
-#'}
+#' gsSpline <- sectionSmooth(gsg, "spline", df=16)
+#' plot(gsSpline, which="temperature")
+#' mtext("spline-smoothed")
+#' gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=250)
+#' plot(gsBarnes, which="temperature")
+#' mtext("Barnes-smoothed")
 #'
 #' @author Dan Kelley
 #'
@@ -2699,20 +2703,23 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
         ##message("names(vars)= '", paste(vars, collapse=' '), "'")
         res <- section
         x <- geodDist(section)
-        stn1pressure <- section[["station", 1]][["pressure"]]
-        npressure <- length(stn1pressure)
-        maxPressure <- 0
-        for (istn in 1:nstn) {
-            stn <- section[["station", istn]]
-            stnPressure <- stn[["pressure"]]
-            if (length(stnPressure) != npressure)
-                stop("pressure mismatch between station 1 and station", istn)
-            if (any(stnPressure != stn1pressure))
-                stop("pressure mismatch between station 1 and station.", istn)
-            maxPressure <- max(maxPressure, max(stnPressure, na.rm=TRUE))
-        }
-        P <- rep(stn1pressure, nstn) # FIXME: p or P?
-        X <- rep(x, each=npressure)
+        ##OLD stn1pressure <- section[["station", 1]][["pressure"]]
+        ##OLD npressure <- length(stn1pressure)
+        ##OLD maxPressure <- 0
+        ##OLD for (istn in 1:nstn) {
+        ##OLD     stn <- section[["station", istn]]
+        ##OLD     stnPressure <- stn[["pressure"]]
+        ##OLD     if (length(stnPressure) != npressure)
+        ##OLD         stop("pressure mismatch between station 1 and station", istn)
+        ##OLD     if (any(stnPressure != stn1pressure))
+        ##OLD         stop("pressure mismatch between station 1 and station.", istn)
+        ##OLD     maxPressure <- max(maxPressure, max(stnPressure, na.rm=TRUE))
+        ##OLD }
+        P <- unlist(lapply(section[["station"]], function(ctd) ctd[["pressure"]]))
+        XI <- geodDist(section)
+        X <- unlist(lapply(seq_along(XI), function(i) rep(XI[i], length(section[["station", i]][["pressure"]]))))
+        maxPressure <- max(P, na.rm=TRUE)
+        #P <- rep(stn1pressure, nstn) # FIXME: p or P?
         if (missing(xg))
             xg <- if (missing(xgl)) x else pretty(x, xgl)
         if (missing(yg))
@@ -2725,12 +2732,11 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
         latitudeNew <- approx(x, latitudeOriginal, xg, rule=2)$y
         for (istn in seq_along(xg)) {
             ## message("istn=", istn, " whilst making up long and lat")
-            res@data$station[[istn]] <- new('oce')
+            res@data$station[[istn]] <- new('ctd')
             res@data$station[[istn]]@metadata$longitude <- longitudeNew[istn]
             res@data$station[[istn]]@metadata$latitude <- latitudeNew[istn]
         }
         for (var in vars) {
-            ##message("var='", var, "'")
             if (var == "scan" || var == "time" || var == "pressure"
                 || var == "depth" || var == "flag" || var == "quality")
                 next
