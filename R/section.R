@@ -2701,7 +2701,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
         ##message("barnes method")
         ## Find names of all variables in all stations; previous to 2019 May 2,
         ## we only got names from the first station.
-        vars <- unique(unlist(lapply(s[["station"]], function(ctd) names(ctd[["data"]]))))
+        vars <- unique(unlist(lapply(section[["station"]], function(ctd) names(ctd[["data"]]))))
         oceDebug(debug, "data names: '", paste(vars, collapse="' '"), "'\n", sep="")
         res <- section
         x <- geodDist(section)
