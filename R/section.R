@@ -2699,8 +2699,10 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
         }
     } else if (method == "barnes") {
         ##message("barnes method")
-        vars <- names(section[["station", 1]]@data)
-        ##message("names(vars)= '", paste(vars, collapse=' '), "'")
+        ## Find names of all variables in all stations; previous to 2019 May 2,
+        ## we only got names from the first station.
+        vars <- unique(unlist(lapply(s[["station"]], function(ctd) names(ctd[["data"]]))))
+        oceDebug(debug, "data names: '", paste(vars, collapse="' '"), "'\n", sep="")
         res <- section
         x <- geodDist(section)
         ##OLD stn1pressure <- section[["station", 1]][["pressure"]]
@@ -2737,8 +2739,9 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
             res@data$station[[istn]]@metadata$latitude <- latitudeNew[istn]
         }
         for (var in vars) {
-            if (var == "scan" || var == "time" || var == "pressure"
-                || var == "depth" || var == "flag" || var == "quality")
+            if (var %in% c("scan", "time", "pressure", "depth",
+                           "flag", "quality",
+                           "latitude", "longitude"))
                 next
             v <- NULL
             oceDebug(debug, "smoothing", var, "\n")
@@ -2750,9 +2753,16 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
                     v <- c(v, stn[[var]])
                 }
             }
-            ## grid overall, then deposit into stations (trimming for NA)
-            v <- section[[var]]
-            smu <- interpBarnes(X, P, v,
+            ## v <- section[[var]]
+            v <- unlist(lapply(section[["station"]],
+                               function(CTD)
+                                   if (var %in% names(CTD[["data"]])) CTD[[var]] else
+                                       rep(NA, length(CTD[["pressure"]]))))
+            ## ignore NA values (for e.g. a station that lacks a particular variable)
+            ok <- is.finite(X) & is.finite(P) & is.finite(v)
+            ## grid overall, deposit into stations (trimming for NA)
+            ## FIXME: copy units over
+            smu <- interpBarnes(X[ok], P[ok], v[ok],
                                 xg=xg, yg=yg, xgl=xgl, ygl=ygl, xr=xr, yr=yr, gamma=gamma, iterations=iterations, trim=trim,
                                 debug=debug-1)
             for (istn in seq_along(xg)) {
