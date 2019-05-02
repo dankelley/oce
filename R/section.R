@@ -1548,37 +1548,48 @@ setMethod(f="plot",
                       ## for the contour or image plot.
                       for (i in 1:numStations) {
                           thisStation <- x[["station", i]]
-                          oceDebug(debug, "filling matrix with \"", variable, "\" data at station", i, "\n", sep="")
+                          ##oceDebug(debug, "filling matrix with \"", variable, "\" data at station", i, "\n", sep="")
                           if (variable != "data") {
+                              ## CAUTION: the assignment to 'v' and 'zz' is tricky:
+                              ## 1. not all datasets will have computed items (e.g. density and potential
+                              ## temperature) so we compute them, discarding any data. (Is that sensible?)
+                              ## 2. things are different in gsw and unesco, and someone might say
+                              ## "potential temperature" in either system, so which do we compute??
+                              ## 3. there was some code reworking in early May 2019, relating to issues:
+                              ## https://github.com/dankelley/oce/issues/1539
+                              ## and
+                              ## https://github.com/dankelley/oce/issues/1540
+                              ## and there is a chance of breakage starting at that time.
                               if (drawPoints) {
                                   p <- thisStation[["pressure"]]
-                                  if (eos == "gsw" && variable == "temperature")
+                                  ## Compute sigma0 and sigmaTheta, whether they are in the dataset or not
+                                  if (variable == "sigma0") {
+                                      v <- swSigma0(thisStation, eos=eos)
+                                  } else if (variable == "sigmaTheta") {
+                                      v <- swSigmaTheta(thisStation, eos=eos)
+                                  } else if (eos == "gsw" && variable == "temperature")
                                       v <- thisStation[["CT"]]
                                   else if (eos == "gsw" && variable == "salinity")
                                       v <- thisStation[["SA"]]
-                                  else if (eos == "gsw" && variable == "sigmaTheta")
-                                      v <- swSigma0(thisStation, eos=eos)
                                   else if (eos == "unesco" && variable == "potential temperature")
                                       v <- thisStation[["theta"]]
                                   else if (variable %in% names(thisStation[["data"]]))
                                       v <- thisStation[[variable]]
                                   else
-                                      v <- rep(NA, length(thisStation[["data"]][["pressure"]]))
+                                      v <- rep(NA, length(p))
                                   points(rep(xx[i], length(p)), -p,
                                          pch=pch, cex=cex,
                                          col=zcol[rescale(v, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=nbreaks)])
                               } else {
-                                  if (eos == "gsw" && variable == "temperature") {
+                                  ## Compute sigma0 and sigmaTheta, whether they are in the dataset or not
+                                  if (variable == "sigma0") {
+                                      zz[i, ] <- rev(swSigma0(thisStation, eos=eos))
+                                  } else if (variable == "sigmaTheta") {
+                                      zz[i, ] <- rev(swSigmaTheta(thisStation, eos=eos))
+                                  } else if (eos == "gsw" && variable == "temperature") {
                                       zz[i, ] <- rev(thisStation[["CT"]])
                                   } else if (eos == "gsw" && variable == "salinity") {
                                       zz[i, ] <- rev(thisStation[["SA"]])
-                                  } else if (eos == "gsw" && variable == "sigmaTheta") {
-                                      ## The contour will probably look very much like for the "unesco" case,
-                                      ## apart from the different legend. I say this because I used station 10
-                                      ## of data(section) as a test case, and found that the RMS difference
-                                      ## between results computed with the two formulations to be 0.005kg/m^3,
-                                      ## or just 0.02% of the mean value.
-                                      zz[i, ] <- rev(swSigma0(thisStation, eos=eos))
                                   } else if (eos == "unesco" && variable == "potential temperature") {
                                       zz[i, ] <- rev(thisStation[["theta"]])
                                   } else {
