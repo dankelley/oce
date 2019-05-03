@@ -2548,37 +2548,74 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' Smooth a section in the lateral (alpha version that may change).
 #'
 #' @details
-#' This function should be used with caution, as should any operation that changes
-#' data.  Although smoothing may be desirable to produce aesthetically-pleasing
-#' plots, it can also introduce artifacts that can lead to erroneous conclusions.
-#' The prudent analyst starts by comparing plots of the raw data with plots of the
-#' smoothed data.
+#' This function produces smoothed fields that might be useful in
+#' simplifying graphical elements created with \code{\link{plot,section-method}}.
+#' It ought to be used with great caution, to avoid deceiving the viewer
+#' with made-up "data". (As an analogy, consider the relative merits of drawing
+#' a simple scatterplot of x-y data, as opposed to drawing only a regression
+#' line or a spline.) The problem is of particular concern with sections that
+#' contain a ridge, because of the deceptive effects that can arise from
+#' averaging across the ridge, even though water masses might be quite
+#' different on either side.  Prudent analysts start by comparing plots of
+#' the raw data with plots of the smoothed data.
 #'
-#' For \code{method="spline"}, the section is smoothed using
+#' The \code{method} argument selects between three possible methods.
+#'
+#' \itemize{
+#'
+#' \item For \code{method="spline"}, i.e. the default, the section is smoothed using
 #' \code{\link{smooth.spline}} on individual pressure levels, with any parameters
 #' listed in \code{parameters} being passed to that function.  If \code{df} is not
 #' present in \code{parameters}, then this function sets it to the number of
-#' stations divided by 5.  Smoothing is done separately for temperature, salinity,
-#' and sigma-theta.
+#' stations divided by 5.  Smoothing is done station by station, i.e. it
+#' smooths vertically on a resultant plot, not horizontally.
 #'
-#' For the (much slower) \code{method="barnes"} method, smoothing is done across
+#' \item For the (much slower) \code{method="barnes"} method, smoothing is done across
 #' both horizontal and vertical coordinates, using \code{\link{interpBarnes}}.
-#' The stations are changed to lie on the grid supplied defined \code{xg} and
-#' \code{yg}, or by \code{xgl} and \code{ygl} (see those arguments)
+#' The output station locations are computed by linear interpolation of
+#' input locations, using \code{\link{approx}} on the original
+#' longitudes and longitudes of stations, with the independent variable
+#' being the distance along the track, computed with \code{\link{geodDist}}.
+#' The values of \code{xg}, \code{yg}, \code{xgl} and \code{ygl} control
+#' the smoothing.
+#'
+#' \item If \code{method} is a function, then that function is applied to
+#' the (distance, pressure) data for each variable at a grid defined by
+#' \code{xg}, \code{xgl}, \code{yg} and \code{ygl}. The function must
+#' be of the form \code{function(X, P, v, xg, yg)}, and must
+#' return a matrix with first index indicating "grid" station number and second
+#' index indicating "grid" pressure. (If the function does not follow these rules,
+#' all sorts of bad results can occur, and this is just one of several reasons
+#" why supplying a function for \code{method} is for advanced analysts.)
+#' The value supplied to the user's function as \code{X} is
+#' calculated from \code{\link{geodDist}} (repeated appropriately
+#' at each station) and \code{P} is created by concatenating
+#' the pressures for the each stations, in turn. The value \code{v}
+#' will holds the field in question, e.g. \code{temperature}, etc.
+#' The grid is defined by \code{xg} for the lateral direction (in km)
+#' and \code{yg} for the pressure (in dbar).  A Kriging application
+#' is given in the examples.
+#'
+#'}
 #'
 #' @param section A \code{section} object containing the section to be smoothed.
 #' For \code{method="spline"}, the pressure levels must match for each station in
 #' the section.
 #'
-#' @param method Specifies the method to use; see \sQuote{Details}.
+#' @param method A string or a function that specifies the method to use; see \sQuote{Details}.
 #'
-#' @param xg,xgl passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.
-#' If \code{xg} is supplied, it defines the x component of the grid, i.e. the resultant "stations".
+#' @param xg,xgl passed to \code{\link{interpBarnes}}, if \code{method="barnes"},
+#' but ignored otherwise.
+#' If \code{xg} is supplied, it defines the x component of the grid, i.e. the resultant station
+#' distances, x, along the track of the section.
 #' Alternatively, if \code{xgl} is supplied, the x grid is established using \code{\link{seq}},
 #' to span the data with \code{xgl} elements. If neither of these is supplied, the output
 #' x grid will equal the input x grid.
 #'
-#' @param yg,ygl similar to \code{xg} and \code{xgl}.
+#' @param yg,ygl similar to \code{xg} and \code{xgl}, but for pressure. If \code{yg}
+#' is not given, then a grid is constructed from the surface pressure (zero)
+#' to the highest pressure in the section. If \code{ygl} is given, then it sets
+#' the number of elements in the grid, but if not, that number defaults to 50.
 #'
 #' @param xr,yr influence ranges in x and y, passed to \code{\link{interpBarnes}} if
 #' \code{method="barnes"}; ignored otherwise.
@@ -2602,36 +2639,66 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' @return An object of \code{\link{section-class}} that ordered in some way.
 #'
 #' @examples
-#' # Gulf Stream
+#' # Unsmoothed (Gulf Stream)
 #' library(oce)
 #' data(section)
 #' gs <- subset(section, 109<=stationId&stationId<=129)
-#' par(mfrow=c(1, 3))
+#' par(mfrow=c(2, 2))
+#'
 #' plot(gs, which="temperature")
-#' mtext("gs: original")
+#' mtext("unsmoothed")
+#'
+#' # Spline
 #' gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
 #' gsSpline <- sectionSmooth(gsg, "spline", df=16)
 #' plot(gsSpline, which="temperature")
 #' mtext("spline-smoothed")
-#' gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=250)
+#'
+#' # Barnes
+#' gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=200)
 #' plot(gsBarnes, which="temperature")
 #' mtext("Barnes-smoothed")
+#'
+#' # Kriging
+#'\dontrun{ # requires a library
+#' library(spatial)
+#' krig <- function(X, P, v, xg, yg) {
+#'     n <- length(xg)
+#'     if (n != length(yg))
+#'         stop("lengths of xg and yg must agree for this method of Kriging")
+#'     ## Scale x and y to be max of 1, and use jitter() to prevent surf.gls errors
+#'     ## from repeated pressures. Smoothness is controlled by 'd'.
+#'     x <- jitter(X / max(X))
+#'     y <- jitter(P / max(P))
+#'     obj <- spatial::surf.gls(np=2, covmod=spatial::expcov, x=x, y=y, z=v, d=0.5)
+#'     kpred <- spatial::prmat(obj=obj, xl=0, xu=1, yl=0, yu=1, n)
+#'     ## Scale x and y back to original values
+#'     kpred$x <- kpred$x * max(X)
+#'     kpred$y <- kpred$y * max(P)
+#'     kpred
+#' }
+#' gsKrig <- sectionSmooth(gs, krig,
+#'                         xg=seq(0,400,length.out=50), yg=seq(0,4000/10,length.out=50))
+#' plot(gsKrig, which="temperature")
+#' mtext("Kriging-smoothed")
+#' }
 #'
 #' @author Dan Kelley
 #'
 #' @family things related to \code{section} data
-sectionSmooth <- function(section, method=c("spline", "barnes"),
+sectionSmooth <- function(section, method="spline",
                           xg, yg, xgl, ygl, xr, yr, gamma=0.5, iterations=2, trim=0, pregrid=FALSE,
                           debug=getOption("oceDebug"), ...)
 {
-    method <- match.arg(method)
+    if (!is.function(method) && !(is.character(method) && (method=="spline" || method == "barnes")))
+        stop('"method" must be "spline", "barnes", or an R function')
     ## bugs: should ensure that every station has identical pressures
     ## FIXME: should have smoothing in the vertical also ... and is spline what I want??
     oceDebug(debug, "sectionSmooth(section,method=\"", method, "\", ...) {\n", sep="", unindent=1)
     if (!inherits(section, "section"))
         stop("method is only for objects of class '", "section", "'")
     nstn <- length(section@data$station)
-    if (method == "spline") {
+    if (is.character(method) && method == "spline") {
         stn1pressure <- section[["station", 1]][["pressure"]]
         npressure <- length(stn1pressure)
         for (istn in 1:nstn) {
@@ -2647,7 +2714,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
         ## is crucial if the files have been ordered by a
         ## directory listing, and they are not named e.g. 01
         ## to 10 etc but 1 to 10 etc.
-        x <- geodDist(section)
+        x <- geodDist(section) # FIXME let this be an argument?
         o <- order(x)
         res@metadata$longitude <- section@metadata$longitude[o]
         res@metadata$latitude <- section@metadata$latitude[o]
@@ -2697,31 +2764,17 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
             res@data$station[[s]]@data$salinity <- salinityMat[, s]
             res@data$station[[s]]@data$sigmaTheta <- sigmaThetaMat[, s]
         }
-    } else if (method == "barnes") {
-        ##message("barnes method")
+    } else { # either "barnes" or a function
         ## Find names of all variables in all stations; previous to 2019 May 2,
         ## we only got names from the first station.
         vars <- unique(unlist(lapply(section[["station"]], function(ctd) names(ctd[["data"]]))))
         oceDebug(debug, "data names: '", paste(vars, collapse="' '"), "'\n", sep="")
         res <- section
-        x <- geodDist(section)
-        ##OLD stn1pressure <- section[["station", 1]][["pressure"]]
-        ##OLD npressure <- length(stn1pressure)
-        ##OLD maxPressure <- 0
-        ##OLD for (istn in 1:nstn) {
-        ##OLD     stn <- section[["station", istn]]
-        ##OLD     stnPressure <- stn[["pressure"]]
-        ##OLD     if (length(stnPressure) != npressure)
-        ##OLD         stop("pressure mismatch between station 1 and station", istn)
-        ##OLD     if (any(stnPressure != stn1pressure))
-        ##OLD         stop("pressure mismatch between station 1 and station.", istn)
-        ##OLD     maxPressure <- max(maxPressure, max(stnPressure, na.rm=TRUE))
-        ##OLD }
+        x <- geodDist(section) # FIXME let this be an argument?
         P <- unlist(lapply(section[["station"]], function(ctd) ctd[["pressure"]]))
         XI <- geodDist(section)
         X <- unlist(lapply(seq_along(XI), function(i) rep(XI[i], length(section[["station", i]][["pressure"]]))))
         maxPressure <- max(P, na.rm=TRUE)
-        #P <- rep(stn1pressure, nstn) # FIXME: p or P?
         if (missing(xg))
             xg <- if (missing(xgl)) x else pretty(x, xgl)
         if (missing(yg))
@@ -2746,14 +2799,6 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
             v <- NULL
             oceDebug(debug, "smoothing", var, "\n")
             ## collect data
-            if (FALSE) {
-                for (istn in 1:nstn) {
-                    oceDebug(debug, "station", istn, "\n")
-                    stn <- section[["station", istn]]
-                    v <- c(v, stn[[var]])
-                }
-            }
-            ## v <- section[[var]]
             v <- unlist(lapply(section[["station"]],
                                function(CTD)
                                    if (var %in% names(CTD[["data"]])) CTD[[var]] else
@@ -2762,24 +2807,35 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
             ok <- is.finite(X) & is.finite(P) & is.finite(v)
             ## grid overall, deposit into stations (trimming for NA)
             ## FIXME: copy units over
-            smu <- interpBarnes(X[ok], P[ok], v[ok],
-                                xg=xg, yg=yg, xgl=xgl, ygl=ygl, xr=xr, yr=yr, gamma=gamma, iterations=iterations, trim=trim,
-                                debug=debug-1)
-            for (istn in seq_along(xg)) {
-                res@data$station[[istn]]@data[[var]] <- smu$zg[istn, ]
-                res@data$station[[istn]]@data[["pressure"]] <- yg
-                ## na <- is.na(section@data$station[[istn]][[var]])
-                ## message("A/3")
-                ## res@data$station[[istn]]@data[[var]][na] <- NA
+            if (is.character(method)) {
+                if (method != "barnes")
+                    stop('method must be "spline", "barnes", or a function')
+                smu <- interpBarnes(X[ok], P[ok], v[ok], xg=xg, yg=yg, xgl=xgl, ygl=ygl,
+                                    xr=xr, yr=yr, gamma=gamma, iterations=iterations, trim=trim,
+                                    debug=debug-1)
+                ## rename to match names if method is a function.
+                smu$z <- smu$zg
+                smu$x <- smu$xg
+                smu$y <- smu$yg
+            } else {
+                ## if (var == "temperature") d <<- list(X=X[ok],P=P[ok],v=v[ok],xg=xg,yg=yg,var=var)
+                smu <- method(X[ok], P[ok], v[ok], xg=xg, yg=yg)
             }
-            res@metadata$stationId <- paste("interpolated_", seq_along(xg), sep="")
-            res@metadata$longitude <- longitudeNew
-            res@metadata$latitude <- latitudeNew
+            ## cat("smu$y:\n");print(smu$y)
+            for (istn in seq_along(xg)) {
+                ##cat("istn=", istn, "\n", sep="")
+                res@data$station[[istn]]@data[[var]] <- smu$z[istn, ]
+                ##cat("  set '", var, "'\n", sep="")
+                res@data$station[[istn]]@data[["pressure"]] <- smu$y
+                ##cat("  set pressure\n", sep="")
+                longitudeNew[istn] <- approx(x, longitudeOriginal, xg[istn], rule=2)$y
+                latitudeNew[istn] <- approx(x, latitudeOriginal, xg[istn], rule=2)$y
+            }
         }
-    } else {
-        stop("unknown method \"", method, "\"") # cannot reach here
+        res@metadata$stationId <- paste("interpolated_", seq_along(xg), sep="")
+        res@metadata$longitude <- longitudeNew
+        res@metadata$latitude <- latitudeNew
     }
-
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # sectionSmooth()\n", unindent=1)
     res
