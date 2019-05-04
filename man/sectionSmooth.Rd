@@ -29,7 +29,8 @@ to the highest pressure in the section. If \code{ygl} is given, then it sets
 the number of elements in the grid, but if not, that number defaults to 50.}
 
 \item{xr, yr}{influence ranges in x and y, passed to \code{\link{interpBarnes}} if
-\code{method="barnes"}; ignored otherwise.}
+\code{method="barnes"} or to \code{method}, if the latter is a function. If missing,
+these default to half the spans of lateral distance and pressure, respectively.}
 
 \item{gamma}{scale-reduction parameter, passed to \code{\link{interpBarnes}},
 if \code{method="barnes"}; ignored otherwise.}
@@ -88,18 +89,18 @@ the smoothing.
 \item If \code{method} is a function, then that function is applied to
 the (distance, pressure) data for each variable at a grid defined by
 \code{xg}, \code{xgl}, \code{yg} and \code{ygl}. The function must
-be of the form \code{function(X, P, v, xg, yg)}, and must
-return a matrix with first index indicating "grid" station number and second
-index indicating "grid" pressure. (If the function does not follow these rules,
-all sorts of bad results can occur, and this is just one of several reasons
-The value supplied to the user's function as \code{X} is
-calculated from \code{\link{geodDist}} (repeated appropriately
-at each station) and \code{P} is created by concatenating
-the pressures for the each stations, in turn. The value \code{v}
-will holds the field in question, e.g. \code{temperature}, etc.
-The grid is defined by \code{xg} for the lateral direction (in km)
-and \code{yg} for the pressure (in dbar).  A Kriging application
-is given in the examples.
+be of the form \code{function(x,y,F,xg,xr,yg,yr)}, and must
+return a matrix of the gridded result, with first index indicating
+the "grid" station number and second index indicating "grid" pressure.
+The \code{x} value that is supplied to this function is set as
+the distance along the section, as computed with \code{\link{geodDist}},
+and repeated for each of the points at each station.  The corresponding
+pressures are provided in \code{y}, and the value to be gridded is
+in \code{v}, which will be \code{temperture} on one call to the function,
+\code{salinity} on another call, etc. The other quantities
+have the meanings as described below.  See the \dQuote{Examples}
+for a description of how to set up and use a function for the gridding
+method known as Kriging.
 
 }
 }
@@ -124,28 +125,21 @@ gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=200)
 plot(gsBarnes, which="temperature")
 mtext("Barnes-smoothed")
 
-# Kriging
-\dontrun{ # requires a library
-library(spatial)
-krig <- function(X, P, v, xg, yg) {
-    n <- length(xg)
-    if (n != length(yg))
-        stop("lengths of xg and yg must agree for this method of Kriging")
-    ## Scale x and y to be max of 1, and use jitter() to prevent surf.gls errors
-    ## from repeated pressures. Smoothness is controlled by 'd'.
-    x <- jitter(X / max(X))
-    y <- jitter(P / max(P))
-    obj <- spatial::surf.gls(np=2, covmod=spatial::expcov, x=x, y=y, z=v, d=0.5)
-    kpred <- spatial::prmat(obj=obj, xl=0, xu=1, yl=0, yu=1, n)
-    ## Scale x and y back to original values
-    kpred$x <- kpred$x * max(X)
-    kpred$y <- kpred$y * max(P)
-    kpred
+# Kriging -- requires a library, so skipped by examples().
+\dontrun{
+if (require("automap")) {
+    krig <- function(x, y, F, xg, xr, yg, yr)
+    {
+        grid <- data.frame(x=x/xr, y=y/yr)
+        K <- autoKrige(F~1, remove_duplicates=TRUE,
+                       input_data=SpatialPointsDataFrame(grid, data.frame(F)),
+                       new_data=SpatialPoints(expand.grid(xg/xr, yg/yr)))
+        matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
+    }
+    gsKrig <- sectionSmooth(gs, krig)
+    plot(gsKrig, which="temperature")
+    mtext("Kriging-smoothed")
 }
-gsKrig <- sectionSmooth(gs, krig,
-                        xg=seq(0,400,length.out=50), yg=seq(0,4000/10,length.out=50))
-plot(gsKrig, which="temperature")
-mtext("Kriging-smoothed")
 }
 
 }
