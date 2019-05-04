@@ -2691,6 +2691,10 @@ sectionSmooth <- function(section, method="spline",
     if (!inherits(section, "section"))
         stop("method is only for objects of class '", "section", "'")
     nstn <- length(section@data$station)
+    x <- geodDist(section) # FIXME let this be an argument?
+    o <- order(x)
+    x <- x[o]
+    ##message("x=",paste(x,collapse=" "), " line 2717")
     if (is.character(method) && method == "spline") {
         stn1pressure <- section[["station", 1]][["pressure"]]
         npressure <- length(stn1pressure)
@@ -2707,13 +2711,10 @@ sectionSmooth <- function(section, method="spline",
         ## is crucial if the files have been ordered by a
         ## directory listing, and they are not named e.g. 01
         ## to 10 etc but 1 to 10 etc.
-        x <- geodDist(section) # FIXME let this be an argument?
-        o <- order(x)
         res@metadata$longitude <- section@metadata$longitude[o]
         res@metadata$latitude <- section@metadata$latitude[o]
         res@metadata$stationId <- section@metadata$stationId[o]
         res@data$station <- section@data$station[o]
-        x <- geodDist(res)
         ## FIXME 20160905 DEK: allow general sections here
         temperatureMat <- array(double(), dim=c(npressure, nstn))
         salinityMat <- array(double(), dim=c(npressure, nstn))
@@ -2832,6 +2833,14 @@ sectionSmooth <- function(section, method="spline",
         res@metadata$stationId <- paste("interpolated_", seq_along(xg), sep="")
         res@metadata$longitude <- longitudeNew
         res@metadata$latitude <- latitudeNew
+    }
+    waterDepthOriginal <- unlist(lapply(section[["station"]], function(STN) STN[["waterDepth"]]))
+    if (length(waterDepthOriginal) > 0) {
+        waterDepthNew <- approx(geodDist(section), waterDepthOriginal, geodDist(res), rule=2)$y
+        for (i in seq_along(res[["station"]])) {
+            res@data$station[[i]]@metadata$waterDepth <- waterDepthNew[i]
+        }
+        ## message("waterDepthNew=",paste(waterDepthNew, collapse=" "))
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # sectionSmooth()\n", unindent=1)
