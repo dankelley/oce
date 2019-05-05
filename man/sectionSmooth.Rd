@@ -4,7 +4,7 @@
 \alias{sectionSmooth}
 \title{Smooth a Section}
 \usage{
-sectionSmooth(section, method = "spline", xg, yg, xgl, ygl, xr, yr,
+sectionSmooth(section, method = "spline", x, xg, yg, xgl, ygl, xr, yr,
   gamma = 0.5, iterations = 2, trim = 0, pregrid = FALSE,
   debug = getOption("oceDebug"), ...)
 }
@@ -15,8 +15,13 @@ the section.}
 
 \item{method}{A string or a function that specifies the method to use; see \sQuote{Details}.}
 
-\item{xg, xgl}{passed to \code{\link{interpBarnes}}, if \code{method="barnes"},
-but ignored otherwise.
+\item{x}{Optional numerical vector, of the same length as the number of stations in \code{section},
+which will be used in gridding in the lateral direction. If not provided, this
+defaults to \code{\link{geodDist}(section)}.}
+
+\item{xg, xgl}{ignored in the \code{method="spline"} case, but passed to
+\code{\link{interpBarnes}} if \code{method="barnes"} or
+to \code{method} if it is a function.
 If \code{xg} is supplied, it defines the x component of the grid, i.e. the resultant station
 distances, x, along the track of the section.
 Alternatively, if \code{xgl} is supplied, the x grid is established using \code{\link{seq}},
@@ -28,28 +33,34 @@ is not given, then a grid is constructed from the surface pressure (zero)
 to the highest pressure in the section. If \code{ygl} is given, then it sets
 the number of elements in the grid, but if not, that number defaults to 50.}
 
-\item{xr, yr}{influence ranges in x and y, passed to \code{\link{interpBarnes}} if
-\code{method="barnes"} or to \code{method}, if the latter is a function. If missing,
-these default to half the spans of lateral distance and pressure, respectively.}
+\item{xr, yr}{influence ranges in x (along-section distance) and y (pressure),
+passed to \code{\link{interpBarnes}} if \code{method="barnes"} or to
+\code{method}, if the latter is a function. If missing, \code{xr} defaults to
+1.5X the median inter-station distance and \code{yr} defaults to 0.2X
+the pressure range. Since these defaults have changed over the evolution
+of \code{sectionSmooth}, analysts ought to supply \code{xr} and \code{yr}
+in the function call, tailoring them to particular applications, and
+making the code more resistant to changes in \code{sectionSmooth}.}
 
-\item{gamma}{scale-reduction parameter, passed to \code{\link{interpBarnes}},
-if \code{method="barnes"}; ignored otherwise.}
-
-\item{iterations}{number of iterations of Barnes algorithm, passed to
-\code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.}
-
-\item{trim}{passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise}
-
-\item{pregrid}{passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise}
+\item{gamma, iterations, trim, pregrid}{Values passed to
+\code{\link{interpBarnes}}, if \code{method="barnes"}, and
+ignored otherwise. \code{gamma} is the factor by which
+\code{xr} and \code{yr} are reduced on each of succeeding iterations.
+\code{iterations} is the number of iterations to do.
+\code{trim} controls whether the gridded data are set to
+\code{NA} in regions with sparse data
+coverage. \code{pregrid} controls whether data are to be
+pre-gridded with \code{\link{binMean2D}} before being passed to
+\code{\link{interpBarnes}}.}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate amount
 of debugging information, or to 2 to get more.}
 
 \item{...}{Optional extra arguments, passed to either
-\code{\link{smooth.spline}} or \code{\link{interpBarnes}}.}
+\code{\link{smooth.spline}}, if \code{method="spline"}, and ignored otherwise.}
 }
 \value{
-An object of \code{\link{section-class}} that ordered in some way.
+An object of \code{\link{section-class}} that has been smoothed in some way.
 }
 \description{
 Smooth a section in the lateral (alpha version that may change).

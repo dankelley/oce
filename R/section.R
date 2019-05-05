@@ -2603,8 +2603,13 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #'
 #' @param method A string or a function that specifies the method to use; see \sQuote{Details}.
 #'
-#' @param xg,xgl passed to \code{\link{interpBarnes}}, if \code{method="barnes"},
-#' but ignored otherwise.
+#' @param x Optional numerical vector, of the same length as the number of stations in \code{section},
+#' which will be used in gridding in the lateral direction. If not provided, this
+#' defaults to \code{\link{geodDist}(section)}.
+#'
+#' @param xg,xgl ignored in the \code{method="spline"} case, but passed to
+#' \code{\link{interpBarnes}} if \code{method="barnes"} or
+#' to \code{method} if it is a function.
 #' If \code{xg} is supplied, it defines the x component of the grid, i.e. the resultant station
 #' distances, x, along the track of the section.
 #' Alternatively, if \code{xgl} is supplied, the x grid is established using \code{\link{seq}},
@@ -2616,27 +2621,33 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' to the highest pressure in the section. If \code{ygl} is given, then it sets
 #' the number of elements in the grid, but if not, that number defaults to 50.
 #'
-#' @param xr,yr influence ranges in x and y, passed to \code{\link{interpBarnes}} if
-#' \code{method="barnes"} or to \code{method}, if the latter is a function. If missing,
-#' these default to half the spans of lateral distance and pressure, respectively.
+#' @param xr,yr influence ranges in x (along-section distance) and y (pressure),
+#' passed to \code{\link{interpBarnes}} if \code{method="barnes"} or to
+#' \code{method}, if the latter is a function. If missing, \code{xr} defaults to
+#' 1.5X the median inter-station distance and \code{yr} defaults to 0.2X
+#' the pressure range. Since these defaults have changed over the evolution
+#' of \code{sectionSmooth}, analysts ought to supply \code{xr} and \code{yr}
+#' in the function call, tailoring them to particular applications, and
+#' making the code more resistant to changes in \code{sectionSmooth}.
 #'
-#' @param gamma scale-reduction parameter, passed to \code{\link{interpBarnes}},
-#' if \code{method="barnes"}; ignored otherwise.
-#'
-#' @param iterations number of iterations of Barnes algorithm, passed to
-#' \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.
-#'
-#' @param trim passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
-#'
-#' @param pregrid passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
+#' @param gamma,iterations,trim,pregrid Values passed to
+#' \code{\link{interpBarnes}}, if \code{method="barnes"}, and
+#' ignored otherwise. \code{gamma} is the factor by which
+#' \code{xr} and \code{yr} are reduced on each of succeeding iterations.
+#' \code{iterations} is the number of iterations to do.
+#' \code{trim} controls whether the gridded data are set to
+#' \code{NA} in regions with sparse data
+#' coverage. \code{pregrid} controls whether data are to be
+#' pre-gridded with \code{\link{binMean2D}} before being passed to
+#' \code{\link{interpBarnes}}.
 #'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
 #'
 #' @param ... Optional extra arguments, passed to either
-#' \code{\link{smooth.spline}} or \code{\link{interpBarnes}}.
+#' \code{\link{smooth.spline}}, if \code{method="spline"}, and ignored otherwise.
 #'
-#' @return An object of \code{\link{section-class}} that ordered in some way.
+#' @return An object of \code{\link{section-class}} that has been smoothed in some way.
 #'
 #' @examples
 #' # Unsmoothed (Gulf Stream)
@@ -2680,18 +2691,22 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #'
 #' @family things related to \code{section} data
 sectionSmooth <- function(section, method="spline",
+                          x,
                           xg, yg, xgl, ygl, xr, yr, gamma=0.5, iterations=2, trim=0, pregrid=FALSE,
                           debug=getOption("oceDebug"), ...)
 {
     if (!is.function(method) && !(is.character(method) && (method=="spline" || method == "barnes")))
         stop('"method" must be "spline", "barnes", or an R function')
-    ## bugs: should ensure that every station has identical pressures
-    ## FIXME: should have smoothing in the vertical also ... and is spline what I want??
-    oceDebug(debug, "sectionSmooth(section,method=\"", method, "\", ...) {\n", sep="", unindent=1)
+    xrGiven <- !missing(xr)
+    yrGiven <- !missing(yr)
+    oceDebug(debug, "sectionSmooth(section,method=\"",
+             if (is.character(method)) method else "(function)", "\", ...) {\n", sep="", unindent=1)
     if (!inherits(section, "section"))
         stop("method is only for objects of class '", "section", "'")
     nstn <- length(section@data$station)
-    x <- geodDist(section) # FIXME let this be an argument?
+    if (missing(x)) {
+        x <- geodDist(section)
+    }
     o <- order(x)
     x <- x[o]
     ##message("x=",paste(x,collapse=" "), " line 2717")
@@ -2799,23 +2814,33 @@ sectionSmooth <- function(section, method="spline",
                                        rep(NA, length(CTD[["pressure"]]))))
             ## ignore NA values (for e.g. a station that lacks a particular variable)
             ok <- is.finite(X) & is.finite(P) & is.finite(v)
-            ## grid overall, deposit into stations (trimming for NA)
-            ## FIXME: copy units over
+            if (!xrGiven) {
+                uX <- unique(X[ok])
+                if (length(uX) > 1) {
+                    xr <- 1.5 * median(diff(sort(unique(X[ok]))))
+                    oceDebug(debug, "xr defaulting to", xr, "(1.5X the median distance for stations with", var, "data)\n")
+                } else {
+                    xr <- 10
+                    oceDebug(debug, "xr defaulting to", xr, "(since only have 1 station with", var, "data)\n")
+                }
+            }
+            if (!yrGiven) {
+                yr <- 0.2 * diff(range(P[ok], na.rm=TRUE))
+                oceDebug(debug, "yr defaulting to", yr, "(0.2X the pressure range for stations with", var, "data)\n")
+            }
             if (is.character(method)) {
-                if (method != "barnes")
+                if (method == "barnes") {
+                   smu <- interpBarnes(X[ok], P[ok], v[ok], xg=xg, yg=yg, xgl=xgl, ygl=ygl,
+                                        xr=xr, yr=yr, gamma=gamma, iterations=iterations, trim=trim,
+                                        debug=debug-1)
+                    ## rename to match names if method is a function.
+                    smu$z <- smu$zg
+                    smu$x <- smu$xg
+                    smu$y <- smu$yg
+                } else {
                     stop('method must be "spline", "barnes", or a function')
-                smu <- interpBarnes(X[ok], P[ok], v[ok], xg=xg, yg=yg, xgl=xgl, ygl=ygl,
-                                    xr=xr, yr=yr, gamma=gamma, iterations=iterations, trim=trim,
-                                    debug=debug-1)
-                ## rename to match names if method is a function.
-                smu$z <- smu$zg
-                smu$x <- smu$xg
-                smu$y <- smu$yg
+                }
             } else {
-                if (missing(xr))
-                    xr <- diff(range(X[ok]))/2
-                if (missing(yr))
-                    yr <- diff(range(P[ok]))/2
                 smu <- list(z=method(X[ok], P[ok], v[ok], xg=xg, xr=xr, yg=yg, yr=yr),
                             x=xg, y=yg)
             }
@@ -2842,6 +2867,7 @@ sectionSmooth <- function(section, method="spline",
         }
         ## message("waterDepthNew=",paste(waterDepthNew, collapse=" "))
     }
+    ## FIXME: insert units into res.
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # sectionSmooth()\n", unindent=1)
     res
