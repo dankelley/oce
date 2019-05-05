@@ -549,7 +549,28 @@ setMethod("handleFlags",
               stop("handleFlags() can only be applied to objects inheriting from \"oce\"")
           })
 
-handleFlagsInternal <- function(object, flags, actions, debug) {
+#' Low-level function for handling data-quality flags
+#'
+#' This function carries out low-level processing relating to data-quality flags,
+#' as a support for higher-level functions such \code{\link{handleFlags,ctd-method}} for
+#' \code{ctd} objects. In most cases, users will not call \code{handleFlagsInternal}
+#' directly.
+#'
+#' @param object An \code{oce} object, i.e. an object that inherits from \code{\link{oce-class}}.
+#'
+#' @param flags A named \code{\link{list}} of numeric values, e.g. \code{list(good=1,bad=2)}.
+#'
+#' @param actions A character vector indicating actions to be carried out for the corresponding
+#' \code{flags} values. This will be lengthened with \code{\link{rep}} if necessary, to be
+#' of the same length as \code{flags}. A common value for \code{actions} is \code{"NA"}, which
+#' means that data values that are flagged are replaced by \code{NA} in the returned result.
+#'
+#' @param debug An integer indicating the degree of debugging requested, with value \code{0}
+#' meaning to act silently, and value \code{1} meaning to print some information about the
+#' steps in processing.
+#'
+#' @return A copy of \code{object}, modified as indicated by \code{flags} and \code{actions}.
+handleFlagsInternal <- function(object, flags, actions, debug=0) {
     oceDebug(debug, "handleFlagsInternal() {\n", sep="", unindent=1)
     if (missing(flags)) {
         warning("no flags supplied (internal error; report to developer)")
@@ -562,8 +583,6 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
         warning("no actions supplied (internal error; report to developer)")
         return(object)
     }
-    if (missing(debug))
-        debug <- 0
     if (any(names(flags) != names(actions)))
         stop("names of flags must match those of actions")
     ##> schemeMappingNames <- names(object@metadata$flagScheme$mapping)
@@ -681,23 +700,35 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
 }
 
 
-#' Suggest a default flag for good data
+#' Suggest a default flag vector for bad or suspicious data
 #'
-#' \code{defaultFlag} tries to suggest a reasonable default \code{flag} scheme
+#' \code{defaultFlags} tries to suggest a reasonable default \code{flag} scheme
 #' for use by \code{\link{handleFlags}}. It does this by looking for an item
-#' named \code{flagScheme} in the \code{metdata} slot of \code{object}.
-#' If that is found, and if the scheme is recognized, then a numeric
-#' vector is returned that indicates bad or questionable data. The recognized
-#' schemes, and their defaults are as below; note that this is a very conservative
-#' setup, retaining only data that are flagged as being good, while discarding
-#' not just data that are marked as bad, but also data that are marked as
-#' questionable.
+#' named \code{flagScheme} in the \code{metadata} slot of \code{object}.
+#' If \code{flagScheme} is found, and if the scheme is recognized, then a numeric
+#' vector is returned that indicates bad or questionable data. If
+#' \code{flagScheme$default} exists, then that scheme is returned. However,
+#' if that does not exist, and if \code{flagScheme$name} is recognized,
+#' then a pre-defined (very conservative) scheme is used,
+#' as listed below.
+#'
 #'\itemize{
-#' \item for \code{argo}, the default is \code{flag=c(0, 2:9)}, i.e. retain only data flagged as 'passed_all_tests'
-#' \item for \code{BODC}, the default is \code{flag=c(0, 2:9)}, i.e. retain only data flagged as 'good'
-#' \item for \code{DFO}, the default is \code{flag=c(0, 2:9)}, i.e. retain only data flagged as 'appears_correct'
-#' \item for \code{WHP bottle}, the default is \code{flag=c(1, 3:9)}, i.e. retain only data flagged as 'no_problems_noted'
-#' \item for \code{WHP ctd}, the default is \code{flag=c(1, 3:9)}, i.e. retain only data flagged as 'acceptable'
+#'
+#' \item for \code{argo}, the default is
+#' \code{c(0,2,3,4,7,8,9)}, i.e. all flags except \code{passed_all_tests}.
+#'
+#' \item for \code{BODC}, the default is
+#' \code{c(0,2,3,4,5,6,7,8,9)}, i.e. all flags except \code{good}.
+#'
+#' \item for \code{DFO}, the default is
+#' \code{c(0,2,3,4,5,8,9)}, i.e. all flags except \code{appears_correct}.
+#'
+#' \item for \code{WHP bottle}, the default is
+#' \code{c(1,3,4,5,6,7,8,9)}, i.e. all flags except \code{no_problems_noted}.
+#'
+#' \item for \code{WHP ctd}, the default is
+#' \code{c(1,3,4,5,6,7,9)}, i.e. all flags except \code{acceptable}.
+#'
 #'}
 #'
 #' @param object An oce object
@@ -709,25 +740,26 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
 #' @family functions relating to data-quality flags
 defaultFlags <- function(object)
 {
+    if (is.null(object@metadata$flagScheme))
+        return(NULL)
+    default <- object@metadata$flagScheme$default
+    if (!is.null(default))
+        return(default)
     scheme <- object@metadata$flagScheme$name
-    if (is.null(scheme)) {
-        res <- NULL
-    } else {
-        if (scheme == "argo") {
-            res <- c(0, 2:9) # retain passed_all_tests
-        } else if (scheme == "BODC") {
-            res <- c(0, 2:9) # retain good
-        } else if (scheme == "DFO") {
-            res <- c(0, 2:9) # retain appears_correct
-        } else if (scheme == "WHP bottle") {
-            res <- c(1, 3:9) # retain no_problems_noted
-        } else if (scheme == "WHP ctd") {
-            res <- c(1, 3:9) # retain acceptable
-        } else {
-            res <- NULL
-        }
-    }
-    res
+    if (is.null(scheme))
+        return(NULL)
+    if (scheme == "argo")
+        return(c(0, 2, 3, 4, 7, 8, 9)) # retain passed_all_tests
+    if (scheme == "BODC")
+        return(c(0, 2, 3, 4, 5, 6, 7, 8, 9)) # retain good
+    if (scheme == "DFO")
+        return(c(0, 2, 3, 4, 5, 8, 9)) # retain appears_correct
+    if (scheme == "WHP bottle")
+        return(c(1, 3, 4, 5, 6, 7, 8, 9)) # retain no_problems_noted
+    if (scheme == "WHP ctd")
+        return(c(1, 3, 4, 5, 6, 7, 9)) # retain acceptable
+    warning("unable to determine default flags from 'flagScheme' in the object 'metadata' slot\n")
+    return(NULL)
 }
 
 
@@ -826,6 +858,9 @@ setMethod("initializeFlags",
               initializeFlagsInternal(object, name, value, debug)
           })
 
+#' @templateVar class oce 
+#' @templateVar details This is a low-level internal function used by user-accessible functions.
+#' @template initializeFlagsTemplate
 initializeFlagsInternal <- function(object, name=NULL, value=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "initializeFlagsInternal(object, name=\"", name, "\", value, debug=", debug, ") {", sep="", unindent=1)
@@ -872,7 +907,7 @@ initializeFlagsInternal <- function(object, name=NULL, value=NULL, debug=getOpti
 #' @templateVar class oce
 #' @templateVar details There are no pre-defined \code{scheme}s for this object class.
 #' @template initializeFlagSchemeTemplate
-setGeneric("initializeFlagScheme", function(object, name=NULL, mapping=NULL, debug=0) {
+setGeneric("initializeFlagScheme", function(object, name=NULL, mapping=NULL, default=NULL, debug=0) {
            standardGeneric("initializeFlagScheme")
          })
 
@@ -880,12 +915,15 @@ setGeneric("initializeFlagScheme", function(object, name=NULL, mapping=NULL, deb
 #' @templateVar details There are no pre-defined \code{scheme}s for this object class.
 #' @template initializeFlagSchemeTemplate
 setMethod("initializeFlagScheme",
-          signature=c(object="oce", name="ANY", mapping="ANY", debug="ANY"),
-          definition=function(object, name, mapping, debug=getOption("oceDebug")) {
-              initializeFlagSchemeInternal(object, name, mapping, debug)
+          signature=c(object="oce", name="ANY", mapping="ANY", default="ANY", debug="ANY"),
+          definition=function(object, name, mapping, default, debug) {
+              initializeFlagSchemeInternal(object, name, mapping, default, debug)
           })
 
-initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, debug=getOption("oceDebug"))
+#' @templateVar class oce 
+#' @templateVar details This is a low-level internal function used by user-accessible functions.
+#' @template initializeFlagSchemeTemplate
+initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, default=NULL, debug=0)
 {
     oceDebug(debug, "initializeFlagSchemeInternal(object, name=\"", name, "\", debug=", debug, ") {", sep="", unindent=1)
     if (is.null(name))
@@ -903,22 +941,32 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, debug=
                 mapping <- list(not_assessed=0, passed_all_tests=1, probably_good=2,
                                 probably_bad=3, bad=4, averaged=7,
                                 interpolated=8, missing=9)
+                if (is.null(default))
+                    default <- c(0, 2, 3, 4, 7, 8, 9) # retain passed_all_tests
             } else  if (name == "BODC") {
                 mapping <- list(no_quality_control=0, good=1, probably_good=2,
                                 probably_bad=3, bad=4, changed=5, below_detection=6,
                                 in_excess=7, interpolated=8, missing=9)
+                if (is.null(default))
+                    default <- c(0, 2, 3, 4, 5, 6, 7, 8, 9) # retain good
             } else  if (name == "DFO") {
                 mapping <- list(no_quality_control=0, appears_correct=1, appears_inconsistent=2,
                                 doubtful=3, erroneous=4, changed=5,
                                 qc_by_originator=8, missing=9)
+                if (is.null(default))
+                    default <- c(0, 2, 3, 4, 5, 8, 9) # retain appears_correct
             } else if (name == "WHP bottle") {
                 mapping <- list(no_information=1, no_problems_noted=2, leaking=3,
                                 did_not_trip=4, not_reported=5, discrepency=6,
                                 unknown_problem=7, did_not_trip=8, no_sample=9)
+                if (is.null(default))
+                    default <- c(1, 3, 4, 5, 6, 7, 8, 9) # retain no_problems_noted
             } else if (name == "WHP CTD") {
                 mapping <- list(not_calibrated=1, acceptable=2, questionable=3,
                                 bad=4, not_reported=5, interpolated=6,
                                 despiked=7, missing=9)
+                if (is.null(default))
+                    default <- c(1, 3, 4, 5, 6, 7, 9) # retain acceptable
             } else {
                 stop("internal coding error in initializeFlagSchemeInternal(); please report to developer")
             }
@@ -933,7 +981,9 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, debug=
                                                    "\", mapping=",
                                                    gsub(" ", "", paste(as.character(deparse(mapping)),
                                                                                      sep="", collapse="")),
-                                                   ")", sep=""))
+                                                   ")",
+                                                   ", default=c(", paste(default, collapse=","), ")",
+                                                   sep=""))
     oceDebug(debug, "} # initializeFlagSchemeInternal", sep="", unindent=1)
     res
 }

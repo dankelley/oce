@@ -120,6 +120,10 @@ NULL
 #' of general interest are also listed below.
 #'
 #' \itemize{
+
+#' \item The \code{eos} argument of \code{\link{swN2}} was removed on 2019
+#' April 11; for details, see the \dQuote{Deprecation Notation} section
+#' of the documentation for \code{\link{swN2}}.
 #'
 #' \item The \code{endian} argument of \code{\link{byteToBinary}} will be removed sometime
 #' in the year 2017, and should be set to \code{"big"} in the meantime.
@@ -626,8 +630,8 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
             } else if (is.matrix(x@metadata[[name]])) {
                 look <- headTail(seq_len(dim(x@metadata[[name]])[2]), n)
                 res@metadata[[name]] <- x@metadata[[name]][, look]
-            } else {
-                warning("ignoring metadata item: '", name, "'")
+            ##} else {
+            ##    warning("ignoring metadata item: '", name, "'")
             }
         }
         for (name in names(x@data)) {

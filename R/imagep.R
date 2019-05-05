@@ -1059,7 +1059,7 @@ imagep <- function(x, y, z,
         }
     }
 
-    zlimHistogram <- zlimGiven && zlim == "histogram"
+    zlimHistogram <- zlimGiven && length(zlim) == 1 && zlim == "histogram"
     breaksGiven <- !missing(breaks)
     colormapGiven <- !missing(colormap)
     if (colormapGiven && missing(missingColor))

@@ -4,8 +4,8 @@
 \alias{sectionSmooth}
 \title{Smooth a Section}
 \usage{
-sectionSmooth(section, method = c("spline", "barnes"), xg, yg, xgl, ygl,
-  xr, yr, gamma = 0.5, iterations = 2, trim = 0, pregrid = FALSE,
+sectionSmooth(section, method = "spline", x, xg, yg, xgl, ygl, xr, yr,
+  gamma = 0.5, iterations = 2, trim = 0, pregrid = FALSE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -13,70 +13,144 @@ sectionSmooth(section, method = c("spline", "barnes"), xg, yg, xgl, ygl,
 For \code{method="spline"}, the pressure levels must match for each station in
 the section.}
 
-\item{method}{Specifies the method to use; see \sQuote{Details}.}
+\item{method}{A string or a function that specifies the method to use; see \sQuote{Details}.}
 
-\item{xg, xgl}{passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.
-If \code{xg} is supplied, it defines the x component of the grid, i.e. the resultant "stations".
+\item{x}{Optional numerical vector, of the same length as the number of stations in \code{section},
+which will be used in gridding in the lateral direction. If not provided, this
+defaults to \code{\link{geodDist}(section)}.}
+
+\item{xg, xgl}{ignored in the \code{method="spline"} case, but passed to
+\code{\link{interpBarnes}} if \code{method="barnes"} or
+to \code{method} if it is a function.
+If \code{xg} is supplied, it defines the x component of the grid, i.e. the resultant station
+distances, x, along the track of the section.
 Alternatively, if \code{xgl} is supplied, the x grid is established using \code{\link{seq}},
 to span the data with \code{xgl} elements. If neither of these is supplied, the output
 x grid will equal the input x grid.}
 
-\item{yg, ygl}{similar to \code{xg} and \code{xgl}.}
+\item{yg, ygl}{similar to \code{xg} and \code{xgl}, but for pressure. If \code{yg}
+is not given, then a grid is constructed from the surface pressure (zero)
+to the highest pressure in the section. If \code{ygl} is given, then it sets
+the number of elements in the grid, but if not, that number defaults to 50.}
 
-\item{xr, yr}{influence ranges in x and y, passed to \code{\link{interpBarnes}} if
-\code{method="barnes"}; ignored otherwise.}
+\item{xr, yr}{influence ranges in x (along-section distance) and y (pressure),
+passed to \code{\link{interpBarnes}} if \code{method="barnes"} or to
+\code{method}, if the latter is a function. If missing, \code{xr} defaults to
+1.5X the median inter-station distance and \code{yr} defaults to 0.2X
+the pressure range. Since these defaults have changed over the evolution
+of \code{sectionSmooth}, analysts ought to supply \code{xr} and \code{yr}
+in the function call, tailoring them to particular applications, and
+making the code more resistant to changes in \code{sectionSmooth}.}
 
-\item{gamma}{scale-reduction parameter, passed to \code{\link{interpBarnes}},
-if \code{method="barnes"}; ignored otherwise.}
-
-\item{iterations}{number of iterations of Barnes algorithm, passed to
-\code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.}
-
-\item{trim}{passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise}
-
-\item{pregrid}{passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise}
+\item{gamma, iterations, trim, pregrid}{Values passed to
+\code{\link{interpBarnes}}, if \code{method="barnes"}, and
+ignored otherwise. \code{gamma} is the factor by which
+\code{xr} and \code{yr} are reduced on each of succeeding iterations.
+\code{iterations} is the number of iterations to do.
+\code{trim} controls whether the gridded data are set to
+\code{NA} in regions with sparse data
+coverage. \code{pregrid} controls whether data are to be
+pre-gridded with \code{\link{binMean2D}} before being passed to
+\code{\link{interpBarnes}}.}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate amount
 of debugging information, or to 2 to get more.}
 
 \item{...}{Optional extra arguments, passed to either
-\code{\link{smooth.spline}} or \code{\link{interpBarnes}}.}
+\code{\link{smooth.spline}}, if \code{method="spline"}, and ignored otherwise.}
 }
 \value{
-An object of \code{\link{section-class}} that ordered in some way.
+An object of \code{\link{section-class}} that has been smoothed in some way.
 }
 \description{
 Smooth a section in the lateral (alpha version that may change).
 }
 \details{
-This function should be used with caution, as should any operation that changes
-data.  Although smoothing may be desirable to produce aesthetically-pleasing
-plots, it can also introduce artifacts that can lead to erroneous conclusions.
-The prudent analyst starts by comparing plots of the raw data with plots of the
-smoothed data.
+This function produces smoothed fields that might be useful in
+simplifying graphical elements created with \code{\link{plot,section-method}}.
+It ought to be used with great caution, to avoid deceiving the viewer
+with made-up "data". (As an analogy, consider the relative merits of drawing
+a simple scatterplot of x-y data, as opposed to drawing only a regression
+line or a spline.) The problem is of particular concern with sections that
+contain a ridge, because of the deceptive effects that can arise from
+averaging across the ridge, even though water masses might be quite
+different on either side.  Prudent analysts start by comparing plots of
+the raw data with plots of the smoothed data.
 
-For \code{method="spline"}, the section is smoothed using
+The \code{method} argument selects between three possible methods.
+
+\itemize{
+
+\item For \code{method="spline"}, i.e. the default, the section is smoothed using
 \code{\link{smooth.spline}} on individual pressure levels, with any parameters
 listed in \code{parameters} being passed to that function.  If \code{df} is not
 present in \code{parameters}, then this function sets it to the number of
-stations divided by 5.  Smoothing is done separately for temperature, salinity,
-and sigma-theta.
+stations divided by 5.  Smoothing is done station by station, i.e. it
+smooths vertically on a resultant plot, not horizontally.
 
-For the (much slower) \code{method="barnes"} method, smoothing is done across
+\item For the (much slower) \code{method="barnes"} method, smoothing is done across
 both horizontal and vertical coordinates, using \code{\link{interpBarnes}}.
-The stations are changed to lie on the grid supplied defined \code{xg} and
-\code{yg}, or by \code{xgl} and \code{ygl} (see those arguments)
+The output station locations are computed by linear interpolation of
+input locations, using \code{\link{approx}} on the original
+longitudes and longitudes of stations, with the independent variable
+being the distance along the track, computed with \code{\link{geodDist}}.
+The values of \code{xg}, \code{yg}, \code{xgl} and \code{ygl} control
+the smoothing.
+
+\item If \code{method} is a function, then that function is applied to
+the (distance, pressure) data for each variable at a grid defined by
+\code{xg}, \code{xgl}, \code{yg} and \code{ygl}. The function must
+be of the form \code{function(x,y,F,xg,xr,yg,yr)}, and must
+return a matrix of the gridded result, with first index indicating
+the "grid" station number and second index indicating "grid" pressure.
+The \code{x} value that is supplied to this function is set as
+the distance along the section, as computed with \code{\link{geodDist}},
+and repeated for each of the points at each station.  The corresponding
+pressures are provided in \code{y}, and the value to be gridded is
+in \code{v}, which will be \code{temperture} on one call to the function,
+\code{salinity} on another call, etc. The other quantities
+have the meanings as described below.  See the \dQuote{Examples}
+for a description of how to set up and use a function for the gridding
+method known as Kriging.
+
+}
 }
 \examples{
+# Unsmoothed (Gulf Stream)
 library(oce)
 data(section)
 gs <- subset(section, 109<=stationId&stationId<=129)
+par(mfrow=c(2, 2))
+
+plot(gs, which="temperature")
+mtext("unsmoothed")
+
+# Spline
 gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
-gss1 <- sectionSmooth(gsg, "spline", df=16)
-plot(gss1)
+gsSpline <- sectionSmooth(gsg, "spline", df=16)
+plot(gsSpline, which="temperature")
+mtext("spline-smoothed")
+
+# Barnes
+gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=200)
+plot(gsBarnes, which="temperature")
+mtext("Barnes-smoothed")
+
+# Kriging -- requires a library, so skipped by examples().
 \dontrun{
-gss2 <- sectionSmooth(gsg, "barnes", xr=24, yr=100)
-plot(gss2)
+if (require("automap")) {
+    krig <- function(x, y, F, xg, xr, yg, yr)
+    {
+        grid <- data.frame(x=x/xr, y=y/yr)
+        K <- autoKrige(F~1, remove_duplicates=TRUE,
+                       input_data=SpatialPointsDataFrame(grid, data.frame(F)),
+                       new_data=SpatialPoints(expand.grid(xg/xr, yg/yr)))
+        matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
+    }
+    gsKrig <- sectionSmooth(gs, krig)
+    plot(gsKrig, which="temperature")
+    mtext("Kriging-smoothed")
+}
 }
 
 }

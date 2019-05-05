@@ -99,8 +99,7 @@ in conventional units. For example, \code{\link{read.ctd.sbe}} is
 used on a \code{.cnv} file that stores pressure in psi, it will
 be stored in the same unit within the \code{ctd} object, but
 \code{x[["pressure"]]} will return a value that has been converted
-to decibars.  (Users who need the pressure in PSI can
-use \code{x@data$pressure}.)
+to decibars.  (To get pressure in PSI, use \code{x[["pressurePSI"]]}.)
 Similarly, temperature is
 returned in the ITS-90 scale, with a conversion having been performed with
 \code{\link{T90fromT68}}, if the object holds temperature in

@@ -1812,7 +1812,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                oceDebug(debug, "creating data slot for a file with bFound&&isVMDAS\n")
                br[br == 0.0] <- NA    # clean up (not sure if needed)
                res@data <- list(v=v, q=q, a=a, g=g,
-                                br=br, bv=bv,
+                                br=br, bv=bv, bc=bc, ba=ba, bg=bg,
                                 distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
                                 time=time,
                                 pressure=pressure,

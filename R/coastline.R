@@ -1324,10 +1324,13 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90
 #' @family things related to \code{coastline} data
 coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "coastlineBest(lonRange=c(", paste(round(lonRange, 2), collapse=","),
-             "), latRange=c(", paste(round(latRange, 2), collapse=","),
-             "), span=", if (missing(span)) "(missing)" else span,
-             ", debug=", debug, ") {\n", sep="", unindent=1)
+    oceDebug(debug, "coastlineBest(",
+             "lonRange=c(", 
+             if (missing(lonRange)) "missing" else paste(round(lonRange, 2), collapse=","), "), ",
+             "latRange=c(",
+             if (missing(latRange)) "missing" else paste(round(latRange, 2), collapse=","), "), ",
+             "span=", if (missing(span)) "(missing)" else span, ", ",
+             "debug=", debug, ") {\n", sep="", unindent=1)
     if (missing(span)) {
         if (missing(lonRange) || missing(latRange))
             return("coastlineWorld")

@@ -4,7 +4,7 @@
 \alias{plotScan}
 \title{Plot CTD data in a Low-Level Fashion}
 \usage{
-plotScan(x, which = 1, xtype = "scan", type = "l",
+plotScan(x, which = 1, xtype = "scan", flipy = FALSE, type = "l",
   mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5, mgp[1] + 1.5,
   mgp[1], mgp[1]), ..., debug = getOption("oceDebug"))
 }
@@ -20,6 +20,10 @@ scan, and 4 for salinity vs scan.}
 \code{scan} variable will be created using \code{\link{seq_along}},
 if necessary. In the latter case, an error results if the \code{data}
 slot of \code{x} lacks a variable called \code{time}.}
+
+\item{flipy}{Logical value, ignored unless \code{which} is 1. If \code{flipy}
+is \code{TRUE}, then a pressure plot will have high pressures at the bottom
+of the axis.}
 
 \item{type}{Character indicating the line type, as for \code{\link{plot.default}}. The default
 is \code{"l"}, meaning to connect data with line segments. Another good choice is

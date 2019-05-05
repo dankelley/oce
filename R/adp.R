@@ -1829,7 +1829,7 @@ setMethod(f="plot",
                       oceDebug(debug, "calling par(mfrow=c(", nw, ", 1)\n")
                   }
               }
-              flipy <- ytype == "profile" && x@metadata$orientation == "downward"
+              flipy <- ytype == "profile" && x@metadata$orientation[1] == "downward"
               ##message("numberOfBeams=", numberOfBeams)
               ##message("numberOfCells=", numberOfCells)
               haveTimeImages <- any(which %in% images) && 1 < numberOfCells
@@ -2532,7 +2532,7 @@ setMethod(f="plot",
                           } else {
                               value <- apply(x[["v", j]][, , which[w]-23], 2, mean, na.rm=TRUE)
                               yy <- x[["distance", j]]
-                              if (ytype == "profile" && x@metadata$orientation == "downward" && !ylimGiven) {
+                              if (ytype == "profile" && x@metadata$orientation[1] == "downward" && !ylimGiven) {
                                   plot(value, yy, xlab=beamName(x, which[w]-23),
                                        ylab=resizableLabel("distance"), type='l', ylim=rev(range(yy)), ...)
                               } else {
@@ -2701,7 +2701,7 @@ setMethod(f="plot",
                   } else {
                       stop("unknown value of which (", which[w], ")")
                   }
-                  if (grid)
+                  if (is.logical(grid[1]) && grid[1])
                       grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
               }
               par(cex=opar$cex)

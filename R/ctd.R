@@ -30,7 +30,7 @@
 #' IPTS-68 scale, but e.g. \code{ctd[["temperature"]]} returns a value on the ITS-90
 #' scale. (The conversion is done with \code{\link{T90fromT68}}.)  Similarly,
 #' pressure may be stored in either dbars or PSI, but e.g. \code{ctd[["pressure"]]}
-#' returns a value in dbars, after multiplying by 0.689476 if the value is
+#' returns a value in dbars, after dividing by 0.689476 if the value is
 #' stored in PSI. Luckily, there is (as of early 2016) only one salinity scale in
 #' common use in data files, namely PSS-78.
 #'
@@ -282,8 +282,8 @@ setMethod("setFlags",
 #' @templateVar details {NA}
 #' @template initializeFlagSchemeTemplate
 setMethod("initializeFlagScheme",
-          signature=c(object="ctd", name="ANY", mapping="ANY", debug="ANY"),
-          definition=function(object, name=NULL, mapping=NULL, debug=getOption("oceDebug")) {
+          signature=c(object="ctd", name="ANY", mapping="ANY", default="ANY", debug="ANY"),
+          definition=function(object, name=NULL, mapping=NULL, default=NULL, debug=0) {
               if (is.null(name))
                   stop("must supply 'name'")
               invisible(callNextMethod())
@@ -503,8 +503,7 @@ setMethod(f="summary",
 #' used on a \code{.cnv} file that stores pressure in psi, it will
 #' be stored in the same unit within the \code{ctd} object, but
 #' \code{x[["pressure"]]} will return a value that has been converted
-#' to decibars.  (Users who need the pressure in PSI can
-#' use \code{x@@data$pressure}.)
+#' to decibars.  (To get pressure in PSI, use \code{x[["pressurePSI"]]}.)
 #' Similarly, temperature is
 #' returned in the ITS-90 scale, with a conversion having been performed with
 #' \code{\link{T90fromT68}}, if the object holds temperature in
@@ -711,6 +710,10 @@ setMethod(f="[[",
                   if ("pressure" %in% dataNames) {
                       pressure <- data$pressure
                       unit <- metadata$units[["pressure"]]$unit
+                      ## NOTE: 2019-04-29: The next will always return pressure, from the
+                      ## else part of the conditional. This is because oce
+                      ## stores pressure as dbar, and copies any original PSI data
+                      ## into data$pressurePSI.
                       if (!is.null(unit) && "psi" == as.character(unit))
                           pressure * 0.6894757 # 1 psi=6894.757 Pa
                       else pressure
@@ -3936,6 +3939,10 @@ setMethod(f="subset",
 #' if necessary. In the latter case, an error results if the \code{data}
 #' slot of \code{x} lacks a variable called \code{time}.
 #'
+#' @param flipy Logical value, ignored unless \code{which} is 1. If \code{flipy}
+#' is \code{TRUE}, then a pressure plot will have high pressures at the bottom
+#' of the axis.
+#'
 #' @param type Character indicating the line type, as for \code{\link{plot.default}}. The default
 #' is \code{"l"}, meaning to connect data with line segments. Another good choice is
 #' \code{"o"}, to add points at the data.
@@ -3960,7 +3967,7 @@ setMethod(f="subset",
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{ctd} data
-plotScan <- function(x, which=1, xtype="scan",
+plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
                      type='l', mgp=getOption("oceMgp"),
                      mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]), ..., debug=getOption("oceDebug"))
 {
@@ -3976,8 +3983,11 @@ plotScan <- function(x, which=1, xtype="scan",
         if (xtype == "scan") {
             xvar <- if ("scan" %in% names(x@data)) x[["scan"]] else seq_along(x[["pressure"]])
             if (w == 1) {
+                ylim <- range(x[["pressure"]], na.rm=TRUE)
+                if (flipy)
+                    ylim <- rev(ylim)
                 plot(xvar, x[["pressure"]], xlab="Scan", ylab=resizableLabel("p", "y", debug=debug-1),
-                     yaxs='r', type=type, ...)
+                     yaxs='r', type=type, ylim=ylim, ...)
             } else if (w == 2) {
                 plot(xvar[-1], diff(x[["pressure"]]), xlab="Scan", ylab="diff(pressure)",
                      yaxs='r', type=type, ...)
@@ -3996,16 +4006,16 @@ plotScan <- function(x, which=1, xtype="scan",
                 stop("there is no 'time' in this ctd object")
             if (w == 1) {
                 oce.plot.ts(time, x[["pressure"]], ylab=resizableLabel("p", "y", debug=debug-1),
-                            yaxs='r', type=type, ...)
+                            yaxs='r', type=type, flipy=flipy, ...)
             } else if (w == 2) {
                 oce.plot.ts(time[-1], diff(x[["pressure"]]), ylab="diff(pressure)",
-                            yaxs='r', type=type, ...)
+                            yaxs='r', type=type, flipy=flipy, ...)
             } else if (w == 3) {
                 oce.plot.ts(time, x[["temperature"]], ylab=resizableLabel("T", "y", debug=debug-1),
-                            yaxs='r', type=type, ...)
+                            yaxs='r', type=type, flipy=flipy, ...)
             } else if (w == 4) {
                 oce.plot.ts(time, x[["salinity"]], ylab=resizableLabel("S", "y", debug=debug-1),
-                            yaxs='r', type=type, ...)
+                            yaxs='r', type=type, flipy=flipy, ...)
             } else {
                 stop("unknown 'which'; must be in 1:4")
             }
@@ -5470,7 +5480,7 @@ plotProfile <- function (x,
             lines(sig0, y, col=col.rho, lwd=lwd, lty=lty)
         }
         par(new=TRUE)
-        N2 <- swN2(x, df=df, eos=eos)
+        N2 <- swN2(x, df=df)
         N2[!is.finite(N2)] <- NA
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
@@ -5503,7 +5513,7 @@ plotProfile <- function (x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "N2") {
-        N2 <- swN2(x, df=df, eos=eos)
+        N2 <- swN2(x, df=df)
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
         look <- if (keepNA) seq_along(y) else !is.na(N2) & !is.na(y)

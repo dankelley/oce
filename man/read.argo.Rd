@@ -27,24 +27,32 @@ An object of \code{\link{argo-class}}.
 in the Argo documentation [2,3].
 }
 \details{
-Metadata items such as \code{time}, \code{longitude} and \code{latitude}
-are inferred from the data file in a straightforward way, using
-\code{\link[ncdf4]{ncvar_get}} and data-variable names as listed in
-the Argo documentation [2,3]. The items listed in section 2.2.3
-of [3] is read from the file and stored in the \code{metadata} slot,
-with the exception of \code{longitude} and \code{latitude},
-which are stored in the \code{data} slot.
+Items are inferred from the data file in a straightforward way, using
+\code{\link[ncdf4]{ncvar_get}}, converting from one-column matrices
+to vectors, and trimming leading and trailing blank space in character
+values, using \code{\link{trimString}}.
 
-String data that contain trailing blanks in the argo NetCDF
-are trimmed using \code{\link{trimString}}.  One-dimensional
-matrices are converted to vectors using \code{\link{as.vector}}.
-Items listed in section 2.2.3 of [3] are meant to be present
-in all files, but tests showed that this is not the case, and so
-\code{read.argo} sets such items to \code{NULL} before saving
-them in returned object.
+Items are renamed from the argo ('snake case') forms to oce ('camel
+case') forms with \code{\link{argoNames2oceNames}}. For example,
+\code{FIRMWARE_VERSION} in the data file is renamed as
+\code{firmwareVersion} in the return value.
+Note that some files use upper-case for items, while other files
+use lower-case for the same things; \code{read.argo} attempts
+to ignore this variation.
 
-Items are translated from upper-case Argo names to \code{oce} names
-using \code{\link{argoNames2oceNames}}.
+See the Argo documentation [2,3] for some details on what files contain.
+Many items listed in section 2.2.3 of [3] are read from the
+file and stored in the \code{metadata} slot, with the exception of
+\code{longitude} and \code{latitude}, which are stored in the
+\code{data} slot, alongside hydrographic information.
+
+The following global attributes stored within the netcdf file are stored in the
+\code{metadata} slot: \code{title}, \code{institution}, \code{source},
+\code{history}, \code{references}, \code{userManualVersion}, \code{conventions},
+and \code{featureType}. These names are identical to those in the netcdf
+file, except that \code{userManualVersion} is named
+\code{user_manual_version} in the file, and \code{conventions} is
+named \code{Conventions} in the file.
 
 It is assumed that the profile data are as listed in the NetCDF variable
 called \code{STATION_PARAMETERS}. Each item can have variants, as
@@ -60,6 +68,14 @@ and \code{PRES_ERROR} gets renamed \code{pressureError}; all of these are
 stored in the \code{data} slot. Meanwhile, the quality-control flags
 \code{PRES_QC} and \code{PRES_ADJUSTED_QC} are stored as \code{pressure}
 and \code{pressureAdjusted} in the \code{metadata$flags} slot.
+
+Once a predefined series of items are inferred and stored in either the
+\code{metadata} or \code{data} slot, \code{read.argo} then reads all
+non-empty variables in the file, storing them in the \code{metadata}
+slot, using with the original ('snake case') name that is used in
+the data file. (Note that the sample dataset accessed with \code{data(argo)}
+lacks metadata items with names starting with \code{HISTORY_}, because
+those are zero-length in the source file.)
 }
 \section{Data sources}{
 

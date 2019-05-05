@@ -63,8 +63,6 @@ test_that("head_argo", {
               } else if (is.matrix(argo@metadata[[name]])) {
                 j <- head(seq_len(dim(argo@metadata[[name]])[2]), n)
                 expect_equal(h@metadata[[name]], argo@metadata[[name]][, j])
-              } else {
-                warning("ignoring metadata item: '", name, "'")
               }
             }
             for (name in names(argo@data)) {
@@ -269,8 +267,6 @@ test_that("tail_argo", {
               } else if (is.matrix(argo@metadata[[name]])) {
                 j <- tail(seq_len(dim(argo@metadata[[name]])[2]), n)
                 expect_equal(t@metadata[[name]], argo@metadata[[name]][, j])
-              } else {
-                warning("ignoring metadata item: '", name, "'")
               }
             }
             for (name in names(argo@data)) {

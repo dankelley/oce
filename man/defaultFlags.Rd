@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{defaultFlags}
 \alias{defaultFlags}
-\title{Suggest a default flag for good data}
+\title{Suggest a default flag vector for bad or suspicious data}
 \usage{
 defaultFlags(object)
 }
@@ -15,21 +15,34 @@ A vector of one or more flag values, or \code{NULL} if \code{object}
 or if it has a scheme that is not in the list provide in \dQuote{Description}.
 }
 \description{
-\code{defaultFlag} tries to suggest a reasonable default \code{flag} scheme
+\code{defaultFlags} tries to suggest a reasonable default \code{flag} scheme
 for use by \code{\link{handleFlags}}. It does this by looking for an item
-named \code{flagScheme} in the \code{metdata} slot of \code{object}.
-If that is found, and if the scheme is recognized, then a numeric
-vector is returned that indicates bad or questionable data. The recognized
-schemes, and their defaults are as below; note that this is a very conservative
-setup, retaining only data that are flagged as being good, while discarding
-not just data that are marked as bad, but also data that are marked as
-questionable.
+named \code{flagScheme} in the \code{metadata} slot of \code{object}.
+If \code{flagScheme} is found, and if the scheme is recognized, then a numeric
+vector is returned that indicates bad or questionable data. If
+\code{flagScheme$default} exists, then that scheme is returned. However,
+if that does not exist, and if \code{flagScheme$name} is recognized,
+then a pre-defined (very conservative) scheme is used,
+as listed below.
+}
+\details{
 \itemize{
-\item for \code{argo}, the default is \code{flag=c(0, 2:9)}, i.e. retain only data flagged as 'passed_all_tests'
-\item for \code{BODC}, the default is \code{flag=c(0, 2:9)}, i.e. retain only data flagged as 'good'
-\item for \code{DFO}, the default is \code{flag=c(0, 2:9)}, i.e. retain only data flagged as 'appears_correct'
-\item for \code{WHP bottle}, the default is \code{flag=c(1, 3:9)}, i.e. retain only data flagged as 'no_problems_noted'
-\item for \code{WHP ctd}, the default is \code{flag=c(1, 3:9)}, i.e. retain only data flagged as 'acceptable'
+
+\item for \code{argo}, the default is
+\code{c(0,2,3,4,7,8,9)}, i.e. all flags except \code{passed_all_tests}.
+
+\item for \code{BODC}, the default is
+\code{c(0,2,3,4,5,6,7,8,9)}, i.e. all flags except \code{good}.
+
+\item for \code{DFO}, the default is
+\code{c(0,2,3,4,5,8,9)}, i.e. all flags except \code{appears_correct}.
+
+\item for \code{WHP bottle}, the default is
+\code{c(1,3,4,5,6,7,8,9)}, i.e. all flags except \code{no_problems_noted}.
+
+\item for \code{WHP ctd}, the default is
+\code{c(1,3,4,5,6,7,9)}, i.e. all flags except \code{acceptable}.
+
 }
 }
 \seealso{
@@ -41,9 +54,11 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,adp-meth
   \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{initializeFlagScheme,oce-method}},
   \code{\link{initializeFlagScheme,section-method}},
+  \code{\link{initializeFlagSchemeInternal}},
   \code{\link{initializeFlagScheme}},
   \code{\link{initializeFlags,adp-method}},
   \code{\link{initializeFlags,oce-method}},
+  \code{\link{initializeFlagsInternal}},
   \code{\link{initializeFlags}},
   \code{\link{setFlags,adp-method}},
   \code{\link{setFlags,ctd-method}},
