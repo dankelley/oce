@@ -29,9 +29,11 @@ to span the data with \code{xgl} elements. If neither of these is supplied, the 
 x grid will equal the input x grid.}
 
 \item{yg, ygl}{similar to \code{xg} and \code{xgl}, but for pressure. If \code{yg}
-is not given, then a grid is constructed from the surface pressure (zero)
-to the highest pressure in the section. If \code{ygl} is given, then it sets
-the number of elements in the grid, but if not, that number defaults to 50.}
+is not given, it is determined from the deepest station in the section. If
+\code{ygl} was not given, then a grid is constructed to span the pressures
+of that deepest station with \code{ygl} elements. On the other hand,
+if \code{ygl} was not given, then the y grid will constructed from the
+pressure levels in the deepest station.}
 
 \item{xr, yr}{influence ranges in x (along-section distance) and y (pressure),
 passed to \code{\link{interpBarnes}} if \code{method="barnes"} or to
@@ -130,7 +132,7 @@ mtext("unsmoothed")
 
 # Spline
 gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
-gsSpline <- sectionSmooth(gsg, "spline", df=16)
+gsSpline <- sectionSmooth(gsg, "spline")
 plot(gsSpline, which="temperature")
 mtext("spline-smoothed")
 
@@ -139,21 +141,18 @@ gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=200)
 plot(gsBarnes, which="temperature")
 mtext("Barnes-smoothed")
 
-# Kriging -- requires a library, so skipped by examples().
-\dontrun{
-if (require("automap")) {
-    krig <- function(x, y, F, xg, xr, yg, yr)
-    {
-        grid <- data.frame(x=x/xr, y=y/yr)
-        K <- autoKrige(F~1, remove_duplicates=TRUE,
-                       input_data=SpatialPointsDataFrame(grid, data.frame(F)),
-                       new_data=SpatialPoints(expand.grid(xg/xr, yg/yr)))
-        matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
-    }
-    gsKrig <- sectionSmooth(gs, krig)
-    plot(gsKrig, which="temperature")
-    mtext("Kriging-smoothed")
-}
+# Kriging
+if (requireNamespace("automap",quietly=TRUE)&&requireNamespace("sp",quietly=TRUE)) {
+ krig <- function(x, y, F, xg, xr, yg, yr) {
+   xy <- data.frame(x=x/xr, y=y/yr)
+   K <- automap::autoKrige(F~1, remove_duplicates=TRUE,
+                           input_data=sp::SpatialPointsDataFrame(xy, data.frame(F)),
+                           new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
+   matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
+ }
+ gsKrig <- sectionSmooth(gs, krig)
+ plot(gsKrig, which="temperature")
+ mtext("Kriging-smoothed")
 }
 
 }
