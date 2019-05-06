@@ -2781,7 +2781,7 @@ sectionSmooth <- function(section, method="spline",
                               if (df > 1) {
                                   ##message("xok:", paste(xok, collapse=" "))
                                   ##message("varjok:", paste(varjok, collapse=" "))
-                                  predict(smooth.spline(xok, varjok, df=df), xg)$y
+                                  predict(smooth.spline(xok, varjok, df=df), x)$y
                               } else {
                                   varj
                               }
