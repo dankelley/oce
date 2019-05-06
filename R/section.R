@@ -2711,6 +2711,8 @@ sectionSmooth <- function(section, method="spline",
         warning("station has <2 stations, so sectionSmooth() is returning it, unaltered")
         return(x)
     }
+    xgGiven <- !missing(xg)
+    ygGiven <- !missing(yg)
     xrGiven <- !missing(xr)
     yrGiven <- !missing(yr)
     dfGiven <- !missing(df)
@@ -2721,12 +2723,6 @@ sectionSmooth <- function(section, method="spline",
     o <- order(x)
     x <- x[o]
     section@data$station <- section@data$station[o]
-
-    if (missing(xg))
-        xg <- if (missing(xgl)) x else pretty(x, xgl)
-    if (missing(yg))
-        yg <- seq(0, maxPressure, length.out=if (missing(ygl)) 50 else ygl)
-    nxg <- length(xg)
     res <- section
     ##? res@data$station <- vector("list", length(xg))
     ##? res@metadata$flags <- NULL # FIXME: should we insert something ... if so, WHAT?
@@ -2735,6 +2731,14 @@ sectionSmooth <- function(section, method="spline",
     ## other res@metadata things inserted later -- the main ones to check are longitude and latitude
     ##message("x=",paste(x,collapse=" "), " line 2717")
     if (is.character(method) && method == "spline") {
+        if (xgGiven)
+            warning("NOTE: xg is ignored for method=\"spline\"")
+        if (xrGiven)
+            warning("NOTE: xr is ignored for method=\"spline\"")
+        if (ygGiven)
+            warning("NOTE: yg is ignored for method=\"spline\"")
+        if (yrGiven)
+            warning("NOTE: yr is ignored for method=\"spline\"")
         stn1pressure <- stations[[1]][["pressure"]]
         npressure <- length(stn1pressure)
         for (istn in 2:nstn) {
@@ -2754,79 +2758,50 @@ sectionSmooth <- function(section, method="spline",
         ##. res@data$station <- section@data$station[o]
         ##. stations <- stations[o]
         vars <- unique(unlist(lapply(stations, function(ctd) names(ctd[["data"]]))))
-        vars <- vars[!(vars %in% c("scan", "time", "pressure"))]
-        VAR <- array(double(), dim=c(nstn, npressure)) # storage reused for each var
+        ## The work will be done in matrices, for code clarity and speed.
+        VAR <- array(double(), dim=c(nstn, npressure))
         for (var in vars) {
+            if (var %in% c("scan", "time", "pressure", "longitude", "latitude"))
+                next # it makes no sense to smooth these things
             res@data$station[[istn]][[var]] <- rep(NA, npressure)
-            ## message("var=", var)
+            oceDebug(debug, "smoothing", var, "\n")
             for (istn in seq_len(nstn))
                 VAR[istn, ] <- if (var %in% names(stations[[istn]][["data"]])) stations[[istn]][[var]] else rep(NA, npressure)
             ## imagep(VAR, zlab=var)
-            for (ipressure in seq_len(npressure)) {
-                varp <- VAR[, ipressure]
-                ok <- is.finite(varp)
-                varpok <- varp[ok]
-                xok <- x[ok]
-                nok <- length(varpok)
-                if (nok > 4) {
-                    if (!dfGiven)
-                        df <- nok / 5
-                    for (istn in seq_len(nstn)) {
-                        res@data$station[[istn]][[var]][ipressure] <- predict(smooth.spline(xok, varpok, df=df), x)$y
-                    }
-                } else {
-                    res@data$station[[istn]][[var]][ipressure] <- varp
-                }
+            ## Smooth at each pressure value
+            VARS <- apply(VAR, 2,
+                          function(varj)
+                          {
+                              ok <- is.finite(varj)
+                              varjok <- varj[ok]
+                              xok <- x[ok]
+                              nok <- sum(ok)
+                              df <- floor(nok / 3)
+                              ##message("in fcn, nok=", nok, ", df=", df)
+                              if (df > 1) {
+                                  ##message("xok:", paste(xok, collapse=" "))
+                                  ##message("varjok:", paste(varjok, collapse=" "))
+                                  predict(smooth.spline(xok, varjok, df=df), xg)$y
+                              } else {
+                                  varj
+                              }
+                          })
+            for (istn in seq_len(nstn)) {
+                res@data$station[[istn]][[var]] <- VARS[istn, ]
             }
         }
         ## res@metadata$longitude <- unlist(lapply(stations, function(ctd) ctd[["longitude"]][1]))
         ## res@metadata$latitude <- unlist(lapply(stations, function(ctd) ctd[["latitude"]][1]))
         ## warning("FIXME: do water depth")
-        if (FALSE) {
-        ## FIXME 20160905 DEK: allow general sections here
-        temperatureMat <- array(double(), dim=c(npressure, nstn))
-        salinityMat <- array(double(), dim=c(npressure, nstn))
-        sigmaThetaMat <- array(double(), dim=c(npressure, nstn))
-        for (s in 1:nstn) {
-            thisStation <- res@data$station[[s]]
-            temperatureMat[, s] <- thisStation@data$temperature
-            salinityMat[, s] <- thisStation[["salinity"]]
-            sigmaThetaMat[, s] <- thisStation[["sigmaTheta"]]
-        }
-        ## turn off warnings about df being too small
-        o <- options('warn')
-        options(warn=-1)
-        for (p in 1:npressure) {
-            oceDebug(debug, "interpolating at pressure=", p)
-            ok <- !is.na(temperatureMat[p, ]) ## FIXME: ok to infer missingness from temperature alone?
-            nok <- sum(ok)
-            ##iok <- (1:nstn)[ok]
-            if (nok > 4) {
-                ## Only fit spline if have 4 or more values; ignore bad values in fitting.
-                if (dfGiven) {
-                    temperatureMat[p, ] <- predict(smooth.spline(x[ok], temperatureMat[p, ok], ...), x)$y
-                    salinityMat[p, ]    <- predict(smooth.spline(x[ok],    salinityMat[p, ok], ...), x)$y
-                    sigmaThetaMat[p, ]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p, ok], ...), x)$y
-                    oceDebug(debug, stn1pressure[p], "dbar: smoothing with supplied df=", list(...)$df, " (have", nok, "good values)\n")
-                } else {
-                    usedf <- nok / 5
-                    temperatureMat[p, ] <- predict(smooth.spline(x[ok], temperatureMat[p, ok], df=usedf), x)$y
-                    salinityMat[p, ]    <- predict(smooth.spline(x[ok],    salinityMat[p, ok], df=usedf), x)$y
-                    sigmaThetaMat[p, ]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p, ok], df=usedf), x)$y
-                    oceDebug(debug, stn1pressure[p], "dbar: smoothing with df=", usedf, " (have", nok, "good values)\n")
-                }
-            } else {
-                oceDebug(debug, stn1pressure[p], "dbar: not smoothing, since have only", nok, "good values\n")
-            }
-        }
-        options(warn=o$warn)
-        for (s in 1:nstn) {
-            res@data$station[[s]]@data$temperature <- temperatureMat[, s]
-            res@data$station[[s]]@data$salinity <- salinityMat[, s]
-            res@data$station[[s]]@data$sigmaTheta <- sigmaThetaMat[, s]
-        }
-        }
-    } else { # either "barnes" or a function
+    } else {
+        ## either "barnes" or a function
+        maxPressure <- max(section[["pressure"]], na.rm=TRUE)
+        if (!xgGiven)
+            xg <- if (missing(xgl)) x else pretty(x, xgl)
+        if (!ygGiven)
+            yg <- seq(0, maxPressure, length.out=if (missing(ygl)) 50 else ygl)
+        nxg <- length(xg)
+
         ## Find names of all variables in all stations; previous to 2019 May 2,
         ## we only got names from the first station.
         oceDebug(debug, "xg=", paste(round(xg, 0), collapse=" "), "\n")
@@ -2836,11 +2811,9 @@ sectionSmooth <- function(section, method="spline",
         vars <- unique(unlist(lapply(section[["station"]], function(ctd) names(ctd[["data"]]))))
         oceDebug(debug, "data names: '", paste(vars, collapse="' '"), "'\n", sep="")
         res <- section
-        x <- geodDist(section) # FIXME let this be an argument?
         P <- unlist(lapply(section[["station"]], function(ctd) ctd[["pressure"]]))
         XI <- geodDist(section)
         X <- unlist(lapply(seq_along(XI), function(i) rep(XI[i], length(section[["station", i]][["pressure"]]))))
-        maxPressure <- max(P, na.rm=TRUE)
         ## "stations" will go to new places
         res@data$station <- vector("list", length(xg))
         longitudeOriginal <- section[["longitude", "byStation"]]
@@ -2920,7 +2893,7 @@ sectionSmooth <- function(section, method="spline",
         }
         ## message("waterDepthNew=",paste(waterDepthNew, collapse=" "))
     }
-    ## FIXME: insert units into res.
+    ## FIXME: insert units into res, but not flags, since smoothing them makes no sense
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # sectionSmooth()\n", unindent=1)
     res

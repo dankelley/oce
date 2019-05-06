@@ -5,7 +5,7 @@
 \title{Smooth a Section}
 \usage{
 sectionSmooth(section, method = "spline", x, xg, yg, xgl, ygl, xr, yr,
-  gamma = 0.5, iterations = 2, trim = 0, pregrid = FALSE,
+  df, gamma = 0.5, iterations = 2, trim = 0, pregrid = FALSE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -42,6 +42,12 @@ of \code{sectionSmooth}, analysts ought to supply \code{xr} and \code{yr}
 in the function call, tailoring them to particular applications, and
 making the code more resistant to changes in \code{sectionSmooth}.}
 
+\item{df}{Degree-of-freedom parameter, passed to \code{\link{smooth.spline}}
+if \code{method="spline"}, and ignored otherwise. If \code{df} is not provided,
+it defaults to 1/5-th of the number of stations containing non-\code{NA}
+data at the particular pressure level being processed, as \code{sectionSmooth}
+works its way through the water column.}
+
 \item{gamma, iterations, trim, pregrid}{Values passed to
 \code{\link{interpBarnes}}, if \code{method="barnes"}, and
 ignored otherwise. \code{gamma} is the factor by which
@@ -68,25 +74,22 @@ Smooth a section in the lateral (alpha version that may change).
 \details{
 This function produces smoothed fields that might be useful in
 simplifying graphical elements created with \code{\link{plot,section-method}}.
-It ought to be used with great caution, to avoid deceiving the viewer
-with made-up "data". (As an analogy, consider the relative merits of drawing
-a simple scatterplot of x-y data, as opposed to drawing only a regression
-line or a spline.) The problem is of particular concern with sections that
-contain a ridge, because of the deceptive effects that can arise from
-averaging across the ridge, even though water masses might be quite
-different on either side.  Prudent analysts start by comparing plots of
-the raw data with plots of the smoothed data.
+As with any smoothing method, a careful analyst will compare the results
+against the raw data, e.g. using \code{\link{plot,section-method}}.
+In addition the problem of falsely widening narrow features such as
+fronts, there is also the potential to get unphysical results with
+spars sampling near topographic features such as bottom slopes and ridges.
 
 The \code{method} argument selects between three possible methods.
 
 \itemize{
 
-\item For \code{method="spline"}, i.e. the default, the section is smoothed using
-\code{\link{smooth.spline}} on individual pressure levels, with any parameters
-listed in \code{parameters} being passed to that function.  If \code{df} is not
-present in \code{parameters}, then this function sets it to the number of
-stations divided by 5.  Smoothing is done station by station, i.e. it
-smooths vertically on a resultant plot, not horizontally.
+\item For \code{method="spline"}, i.e. the default, the section is smoothed
+laterally, using \code{\link{smooth.spline}} on individual pressure levels.
+(If the pressure levels do not match up, \code{\link{sectionGrid}} should
+be used first to create a \code{section} object that can be used here.)
+The \code{df} argument sets the degree of freedom of the spline, with
+larger values indicating less smoothing.
 
 \item For the (much slower) \code{method="barnes"} method, smoothing is done across
 both horizontal and vertical coordinates, using \code{\link{interpBarnes}}.
