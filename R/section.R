@@ -2881,7 +2881,13 @@ sectionSmooth <- function(section, method="spline",
                 latitudeNew[istn] <- approx(x, latitudeOriginal, xg[istn], rule=2)$y
             }
         }
-        res@metadata$stationId <- paste("interpolated_", seq_along(xg), sep="")
+        for (istn in seq_along(xg)) {
+            res@data$station[[istn]]@metadata$stationId <- if (nxg < 10) sprintf("x%d", istn)
+                else if (nxg < 100) sprintf("x%02d", istn)
+                else if (nxg < 1000) sprintf("x%03d", istn)
+                else if (nxg < 10000) sprintf("x%04d", istn)
+                else sprintf("x%d", istn) # Just give up on fanciness
+        }
         res@metadata$longitude <- longitudeNew
         res@metadata$latitude <- latitudeNew
     }
