@@ -209,13 +209,19 @@ test_that("sectionSmooth", {
           data(section)
           s <- subset(section, 115<=stationId&stationId<=121)
           sg <- sectionGrid(s, p=seq(0, 5000, 500))
+          ## Check flag names
+          if (FALSE) {
+            ## FIXME: reactivate this (maybe move it to another section) when I
+            ## fix https://github.com/dankelley/oce/issues/1546
+            expect_equal(sort(names(section[["station",1]][["flags"]]), method="radix"),
+                         sort(names(sg[["station",1]][["flags"]]), method="radix"))
+          }
           sspline <- sectionSmooth(sg, "spline")
           expect_equal(length(s[["station"]]), length(sspline[["station"]]))
-          ## Are the flag names correct?
-          expect_equal(sort(names(sspline[["station",1]][["flags"]])),
-                       c("nitrite", "NO2+NO3", "oxygen", "phosphate",
-                         "salinity", "salinityBottle", "silicate",
-                         "temperature"))
+          ## Check flag names
+          expect_equal(sort(names(sspline[["station",1]][["flags"]]), method="radix"),
+                       sort(names(section[["station",1]][["flags"]]), method="radix"))
+          ## Check dimensionality when xg is given
           sspline2 <- sectionSmooth(sg, "spline", xg=seq(0,200,50))
           expect_equal(length(sspline2[["station"]]), 5)
           sbarnes <- sectionSmooth(s, "barnes", xr=50, yr=200)
