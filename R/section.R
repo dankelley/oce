@@ -2700,8 +2700,8 @@ sectionSmooth <- function(section, method="spline",
 {
     if (!inherits(section, "section"))
         stop("method is only for objects of class '", "section", "'")
-    if (!is.function(method) && !(is.character(method) && (method=="spline" || method == "barnes")))
-        stop('"method" must be "spline", "barnes", or an R function')
+    if (!is.function(method) && !(is.character(method) && (method %in% c("barnes", "kriging", "spline"))))
+        stop('method must be "barnes", "kriging", "spline", or an R function')
     oceDebug(debug, "sectionSmooth(section,method=\"",
              if (is.character(method)) method else "(function)", "\", ...) {\n", sep="", unindent=1)
     stations <- section[["station"]]
@@ -2716,14 +2716,20 @@ sectionSmooth <- function(section, method="spline",
     if (missing(x))
         x <- geodDist(section)
     nx <- length(x)
+    if (nx != length(section@data$station))
+        stop("length(x)=", nx, " does not match number of stations=", length(section@data$station))
     ## Rearange the input stations into order set by x.
     o <- order(x)
     x <- x[o]
     section@data$station <- section@data$station[o]
     P <- section[["pressure"]]
     maxPressure <- max(P, na.rm=TRUE)
-    if (missing(xg))
+    if (missing(xg)) {
         xg <- if (missing(xgl)) x else seq(min(x), max(x), length.out=xgl)
+        oceDebug(debug, "defaulted xg=", paste(xg, collapse=" "), "\n")
+    } else {
+        oceDebug(debug, "user-supplied xg=", paste(xg, collapse=" "), "\n")
+    }
     if (missing(yg)) {
         deepest <- which.max(unlist(lapply(section[["station"]], function(ctd) max(ctd[["pressure"]], na.rm=TRUE))))
         yg <- if (missing(ygl)) section[["station", deepest]][["pressure"]] else seq(0, maxPressure, length.out=ygl)
@@ -2738,7 +2744,7 @@ sectionSmooth <- function(section, method="spline",
     ## recreate @data$station
     res <- section
     res@data$station <- list("vector", nxg)
-    for (istn in seq_along(xg)) {
+    for (istn in seq_len(nxg)) {
         res@data$station[[istn]] <- new('ctd')
         res@data$station[[istn]][["pressure"]] <- yg
     }
@@ -2755,16 +2761,18 @@ sectionSmooth <- function(section, method="spline",
         vars <- unique(unlist(lapply(stations, function(ctd) names(ctd[["data"]]))))
         ## The work will be done in matrices, for code clarity and speed.
         VAR <- array(double(), dim=c(nstn, npressure))
+        oceDebug(debug, "dim matrix for input grid=", paste(dim(VAR), collapse="X"), "\n")
         for (var in vars) {
             if (var %in% c("scan", "time", "pressure", "depth",
                            "flag", "quality", "latitude", "longitude"))
                 next # it makes no sense to smooth these things
-            res@data$station[[istn]][[var]] <- rep(NA, npressure)
+            ##? res@data$station[[istn]][[var]] <- rep(NA, npressure)
             oceDebug(debug, "  smoothing", var, "\n")
-            for (istn in seq_len(nstn))
+            for (istn in seq_len(nx))
                 VAR[istn, ] <- if (var %in% names(stations[[istn]][["data"]])) stations[[istn]][[var]] else rep(NA, npressure)
-            ## imagep(VAR, zlab=var)
-            ## Smooth at each pressure value
+            ## Smooth at each pressure value (turn off warnings because smooth.spline is confusingly chatty)
+            owarn <- options('warn')$warn
+            options(warn=-1)
             VARS <- apply(VAR, 2,
                           function(varj)
                           {
@@ -2784,7 +2792,9 @@ sectionSmooth <- function(section, method="spline",
                                   if (nok > 2) approx(xok, varjok, xout=xg, rule=1)$y else rep(NA, nxg)
                               }
                           })
-            for (istn in seq_len(nstn)) {
+            options(warn=owarn)
+            oceDebug(debug, "dim matrix for output grid=", paste(dim(VARS), collapse="X"), "\n")
+            for (istn in seq_len(nxg)) {
                 res@data$station[[istn]][[var]] <- VARS[istn, ]
             }
         }
@@ -2794,7 +2804,6 @@ sectionSmooth <- function(section, method="spline",
         ## Find names of all variables in all stations; previous to 2019 May 2,
         ## we only got names from the first station.
         vars <- unique(unlist(lapply(section[["station"]], function(ctd) names(ctd[["data"]]))))
-        res <- section
         XI <- geodDist(section)
         X <- unlist(lapply(seq_along(XI), function(i) rep(XI[i], length(section[["station", i]][["pressure"]]))))
         ## Set up defaults for xr and yr, if not specified in function call.
@@ -2829,15 +2838,37 @@ sectionSmooth <- function(section, method="spline",
                     smu$z <- smu$zg
                     smu$x <- smu$xg
                     smu$y <- smu$yg
+                } else if (method == "kriging") {
+                    if (requireNamespace("automap", quietly=TRUE) &&
+                        requireNamespace("sp", quietly=TRUE)) {
+                        krigFunction <- function(x, y, F, xg, xr, yg, yr) {
+                            xy <- data.frame(x=x/xr, y=y/yr)
+                            K <- automap::autoKrige(F~1, remove_duplicates=TRUE,
+                                                    input_data=sp::SpatialPointsDataFrame(xy, data.frame(F)),
+                                                    new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
+                            matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
+                        }
+                        owarn <- options('warn')$warn
+                        options(warn=-1) # silence autoKrige chattiness on e.g. method selection
+                        capture.output(smu <- list(z=krigFunction(X[ok], P[ok], v[ok], xg=xg, xr=xr, yg=yg, yr=yr)))
+                        options(warn=owarn)
+                    } else {
+                        stop('method="kriging" requires packages "automap" and "sp" to be installed\n')
+                    }
                 } else {
-                    stop('method must be "spline", "barnes", or a function')
+                    stop('method must be "barnes", "kriging", "spline", "barnes" or a function')
                 }
             } else {
-                smu <- list(z=method(X[ok], P[ok], v[ok], xg=xg, xr=xr, yg=yg, yr=yr),
-                            x=xg, y=yg)
+                ## method is not a character. It must be a function, but let's check again, anyway.
+                if (is.function(method)) {
+                    smu <- list(z=method(X[ok], P[ok], v[ok], xg=xg, xr=xr, yg=yg, yr=yr),
+                                x=xg, y=yg)
+                } else {
+                    stop('method must be "barnes", "kriging", "spline", "barnes" or a function')
+                }
             }
             ## cat("smu$y:\n");print(smu$y)
-            for (istn in seq_along(xg)) {
+            for (istn in seq_len(nxg)) {
                 ##cat("istn=", istn, "\n", sep="")
                 res@data$station[[istn]]@data[[var]] <- smu$z[istn, ]
                 ##cat("  set '", var, "'\n", sep="")

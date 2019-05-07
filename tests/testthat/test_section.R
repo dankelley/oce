@@ -205,3 +205,33 @@ test_that("stationReplaceAllStations", {
           expect_true("N2" %in% names(section[["station",1]][["data"]]))
 })
 
+test_that("sectionSmooth", {
+          data(section)
+          s <- subset(section, 115<=stationId&stationId<=121)
+          sg <- sectionGrid(s, p=seq(0, 5000, 500))
+          sspline <- sectionSmooth(sg, "spline")
+          expect_equal(length(s[["station"]]), length(sspline[["station"]]))
+          sspline2 <- sectionSmooth(sg, "spline", xg=seq(0,200,50))
+          expect_equal(length(sspline2[["station"]]), 5)
+          sbarnes <- sectionSmooth(s, "barnes", xr=50, yr=200)
+          expect_equal(length(s[["station"]]), length(sbarnes[["station"]]))
+          if (requireNamespace("automap", quietly=TRUE) &&
+              requireNamespace("sp", quietly=TRUE)) {
+            skrigingInternal <- sectionSmooth(s, "kriging")
+            expect_equal(length(s[["station"]]), length(skrigingInternal[["station"]]))
+            skrigingInternal2 <- sectionSmooth(s, "kriging", xg=seq(0,200,50))
+            expect_equal(length(skrigingInternal2[["station"]]), 5)
+            krigFunction <- function(x, y, F, xg, xr, yg, yr) {
+              xy <- data.frame(x=x/xr, y=y/yr)
+              K <- automap::autoKrige(F~1, remove_duplicates=TRUE,
+                                      input_data=sp::SpatialPointsDataFrame(xy, data.frame(F)),
+                                      new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
+              matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
+            }
+            skrigingUser <- sectionSmooth(s, krigFunction)
+            expect_equal(length(skrigingUser[["station"]]), length(s[["station"]]))
+            skrigingUser2 <- sectionSmooth(s, krigFunction, xg=seq(0,200,50))
+            expect_equal(length(skrigingUser2[["station"]]), 5)
+          }
+})
+

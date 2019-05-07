@@ -2,6 +2,7 @@
 * Development version, which will eventually yield 1.0-2. Exploratory work
   is done in the "develop" git branch, or of branches that feed into "develop".
   The rightmost fractional number is not always increased with updates to "develop".
+* sectionSmooth() handles output grid better, and offers 2 new methods
 * read.ctd.sbe() handles more column names
 * i386/windows gets map projections
 * imagep() handles combined flipy and ylim arguments differently
