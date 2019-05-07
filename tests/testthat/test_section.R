@@ -217,9 +217,9 @@ test_that("sectionSmooth", {
           expect_equal(length(s[["station"]]), length(sbarnes[["station"]]))
           if (requireNamespace("automap", quietly=TRUE) &&
               requireNamespace("sp", quietly=TRUE)) {
-            skrigingInternal <- sectionSmooth(s, "kriging")
+            expect_warning(skrigingInternal <- sectionSmooth(s, "kriging"), "NaNs produced")
             expect_equal(length(s[["station"]]), length(skrigingInternal[["station"]]))
-            skrigingInternal2 <- sectionSmooth(s, "kriging", xg=seq(0,200,50))
+            expect_warning(skrigingInternal2 <- sectionSmooth(s, "kriging", xg=seq(0,200,50)), "NaNs produced")
             expect_equal(length(skrigingInternal2[["station"]]), 5)
             krigFunction <- function(x, y, F, xg, xr, yg, yr) {
               xy <- data.frame(x=x/xr, y=y/yr)
@@ -228,9 +228,9 @@ test_that("sectionSmooth", {
                                       new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
               matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
             }
-            skrigingUser <- sectionSmooth(s, krigFunction)
+            expect_warning(skrigingUser <- sectionSmooth(s, krigFunction), "NaNs produced")
             expect_equal(length(skrigingUser[["station"]]), length(s[["station"]]))
-            skrigingUser2 <- sectionSmooth(s, krigFunction, xg=seq(0,200,50))
+            expect_warning(skrigingUser2 <- sectionSmooth(s, krigFunction, xg=seq(0,200,50)), "NaNs produced")
             expect_equal(length(skrigingUser2[["station"]]), 5)
           }
 })
