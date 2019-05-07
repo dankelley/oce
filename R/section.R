@@ -2740,13 +2740,27 @@ sectionSmooth <- function(section, method="spline",
     if (identical(method, "spline") && !identical(yg, stn1pressure))
         stop("for method=\"spline\", yg must match the pressure vector in first station")
     nxg <- length(xg)
+    nyg <- length(yg)
+
+    ## varsAll holds the names of all variables in the section.
+    res <- section
+    varsAll <- unique(unlist(lapply(stations, function(ctd) names(ctd[["data"]]))))
+    ## vars holds just the names of variables that get smoothed. First, we remove
+    ## things that simply cannot be smoothed...
+    vars <- varsAll[!varsAll %in% c("flag", "quality", "scan", "time")]
+    ## ..., second, we remove things that will be computed from 'x' and 'xg'.
+    vars <- vars[!vars %in% c("latitude", "longitude", "pressure")]
+    ## ... finally, remove 'depth', which is kind of a surrogate for pressure, I think.
+    vars <- vars[!vars %in% c("depth")]
+
     ## start with existing station, to get processing log, section ID, etc., but
     ## recreate @data$station
-    res <- section
     res@data$station <- list("vector", nxg)
     for (istn in seq_len(nxg)) {
         res@data$station[[istn]] <- new('ctd')
         res@data$station[[istn]][["pressure"]] <- yg
+        for (var in vars)
+            res@data$station[[istn]]@metadata$flags[[var]] <- rep(NA, nyg)
     }
     if (is.character(method) && method == "spline") {
         oceDebug(debug, "using spline method\n")
@@ -2758,14 +2772,10 @@ sectionSmooth <- function(section, method="spline",
             if (length(thisp) != npressure || any(thisp != stn1pressure))
                 stop("pressure mismatch between station 1 and station", istn, "; try using sectionGrid() first")
         }
-        vars <- unique(unlist(lapply(stations, function(ctd) names(ctd[["data"]]))))
         ## The work will be done in matrices, for code clarity and speed.
         VAR <- array(double(), dim=c(nstn, npressure))
         oceDebug(debug, "dim matrix for input grid=", paste(dim(VAR), collapse="X"), "\n")
         for (var in vars) {
-            if (var %in% c("scan", "time", "pressure", "depth",
-                           "flag", "quality", "latitude", "longitude"))
-                next # it makes no sense to smooth these things
             ##? res@data$station[[istn]][[var]] <- rep(NA, npressure)
             oceDebug(debug, "  smoothing", var, "\n")
             for (istn in seq_len(nx))
@@ -2803,7 +2813,6 @@ sectionSmooth <- function(section, method="spline",
         ## either "barnes" or a function
         ## Find names of all variables in all stations; previous to 2019 May 2,
         ## we only got names from the first station.
-        vars <- unique(unlist(lapply(section[["station"]], function(ctd) names(ctd[["data"]]))))
         XI <- geodDist(section)
         X <- unlist(lapply(seq_along(XI), function(i) rep(XI[i], length(section[["station", i]][["pressure"]]))))
         ## Set up defaults for xr and yr, if not specified in function call.
@@ -2817,9 +2826,6 @@ sectionSmooth <- function(section, method="spline",
         }
         ## Smooth each variable separately
         for (var in vars) {
-            if (var %in% c("scan", "time", "pressure", "depth",
-                           "flag", "quality", "latitude", "longitude"))
-                next
             v <- NULL
             oceDebug(debug, "  smoothing", var, "\n")
             ## collect data

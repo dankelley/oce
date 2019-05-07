@@ -211,6 +211,11 @@ test_that("sectionSmooth", {
           sg <- sectionGrid(s, p=seq(0, 5000, 500))
           sspline <- sectionSmooth(sg, "spline")
           expect_equal(length(s[["station"]]), length(sspline[["station"]]))
+          ## Are the flag names correct?
+          expect_equal(sort(names(sspline[["station",1]][["flags"]])),
+                       c("nitrite", "NO2+NO3", "oxygen", "phosphate",
+                         "salinity", "salinityBottle", "silicate",
+                         "temperature"))
           sspline2 <- sectionSmooth(sg, "spline", xg=seq(0,200,50))
           expect_equal(length(sspline2[["station"]]), 5)
           sbarnes <- sectionSmooth(s, "barnes", xr=50, yr=200)
