@@ -2412,18 +2412,23 @@ read.section <- function(file, directory, sectionId="", flags,
     res
 }
 
-#' @title Grid a Section
+#' Grid a Section in Pressure Space
 #'
-#' @description
 #' Grid a section, by interpolating to fixed pressure levels.  The
 #' \code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are described in the
 #' documentation for \code{\link{ctdDecimate}}, which is used to do this
-#' processing.  The default \code{"approx"} method is best for bottle data, the
+#' processing.
+#'
+#' The default \code{"approx"} method is best for bottle data, the
 #' \code{"boxcar"} is best for ctd data, and the \code{"lm"} method is probably
 #' too slow to recommend for exploratory work, in which it is common to do trials
 #' with a variety of \code{"p"} values.
 #'
-#' @template flagDeletionTemplate
+#' The stations in the returned value have flags with names that match those
+#' of the corresponding stations in the original \code{section}, but the values
+#' of these flags are all set to \code{NA}. This recognizes that it makes
+#' no sense to grid flag values, but that there is merit in initializing
+#' a flag system, for possible use in later processing steps.
 #'
 #' @param section A \code{section} object containing the section to be gridded.
 #'
