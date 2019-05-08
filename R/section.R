@@ -2534,29 +2534,29 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
     npt <- length(pt)
+    nstation <- length(res[["station"]])
+
+    ## The core of the work -- use ctdDecimate() on each station
+    for (i in seq_len(nstation)) {
+        suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]],
+                                                              p=pt, method=method, debug=debug-1, ...))
+    }
+    ## Find all units in *any* station, and then insert them into *all* stations.
     units <- list()
-    for (i in 1:n) {
-        ##message("i: ", i, ", p before decimation: ", paste(section@data$station[[i]]@data$pressure, " "))
-        suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method,
-                                                              debug=debug-1, ...))
-        ## insert flags, as all NA values. Note that we have to pattern each station's flags
-        ## on the original station, because a section object is permitted to contain data that
-        ## do not match up in either data names or flag names.
-        res@data$station[[i]]@metadata$flags <- list()
-        for (flagname in names(section@data$station[[i]]@metadata$flags)) {
-            res@data$station[[i]]@metadata$flags[[flagname]] <- rep(NA, npt)
-        }
+    for (i in seq_len(nstation)) {
         for (unitName in names(section@data$station[[i]]@metadata$units)) {
-            ## if (i < 10) message("i=", i, " unitname='", unitName, "'")
             if (!(unitName %in% names(units))) {
                 units[unitName] <- section@data$station[[i]]@metadata$units[unitName]
-                ## message("  added new unit")
             }
         }
-        ##message("i: ", i, ", p after decimation: ", paste(res@data$station[[i]]@data$pressure, " "))
+    }
+    for (i in seq_len(nstation)) {
+        res@data$station[[i]]@metadata$units <- units
+        for (flagname in names(section@data$station[[i]]@metadata$flags)) {
+            res@data$station[[i]]@metadata$flags[flagname] <- rep(NA, nstation)
+        }
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    res@metadata$units <- units
     for (w in warningMessages)
         res@processingLog <- processingLogAppend(res@processingLog, w)
     oceDebug(debug, "} # sectionGrid\n", unindent=1)
@@ -2926,15 +2926,29 @@ sectionSmooth <- function(section, method="spline",
             else if (nxg < 10000) sprintf("x%04d", istn)
             else sprintf("x%d", istn) # Just give up on fanciness
     }
+    nstation <- length(res[["station"]])
     waterDepthOriginal <- unlist(lapply(section[["station"]], function(STN) STN[["waterDepth"]]))
     if (length(waterDepthOriginal) > 0) {
         waterDepthNew <- approx(x, waterDepthOriginal, xg, rule=2)$y
-        for (i in seq_along(res[["station"]])) {
+        for (i in seq_len(nstation)) {
             res@data$station[[i]]@metadata$waterDepth <- waterDepthNew[i]
         }
-        ## message("waterDepthNew=",paste(waterDepthNew, collapse=" "))
     }
-    ## FIXME: insert units into res, but not flags, since smoothing them makes no sense
+    ## Insert uniform units and flags into each station.
+    units <- list()
+    for (i in seq_len(nstation)) {
+        for (unitName in names(section@data$station[[i]]@metadata$units)) {
+            if (!(unitName %in% names(units))) {
+                units[unitName] <- section@data$station[[i]]@metadata$units[unitName]
+            }
+        }
+    }
+    for (i in seq_len(nstation)) {
+        res@data$station[[i]]@metadata$units <- units
+        for (flagname in names(section@data$station[[i]]@metadata$flags)) {
+            res@data$station[[i]]@metadata$flags[flagname] <- rep(NA, nstation)
+        }
+    }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # sectionSmooth()\n", unindent=1)
     res

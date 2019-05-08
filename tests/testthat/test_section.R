@@ -205,26 +205,39 @@ test_that("stationReplaceAllStations", {
           expect_true("N2" %in% names(section[["station",1]][["data"]]))
 })
 
-test_that("sectionGrid", {
+test_that("sectionGrid units and flags", {
           data(section)
+          ## Work with a subset for speed of test.
           s <- subset(section, 115<=stationId&stationId<=121)
           sg <- sectionGrid(s, p=seq(0, 5000, 500))
-          ## Check flag names
+          ## Check flag names (in this dataset, all stations have same flags)
           expect_equal(sort(names(section[["station",1]][["flags"]]), method="radix"),
                          sort(names(sg[["station",1]][["flags"]]), method="radix"))
-          ## Check units
+          ## Check units (in this dataset, all stations have same units)
           expect_equal(section[["station",1]][["units"]], sg[["station",1]][["units"]])
 })
 
-test_that("sectionSmooth", {
+test_that("sectionSmooth units and flags", {
+          data(section)
+          ## Work with a subset for speed of test.
+          s <- subset(section, 115<=stationId&stationId<=121)
+          ## NOTE: there's no need to check other methods besides "spline",
+          ## because units and flags are handled in code that applies to all
+          ## methods.
+          sspline <- sectionSmooth(sectionGrid(s, p=seq(0, 5000, 500)), "spline")
+          ## Check flag names (in this dataset, all stations have same flags)
+          expect_equal(sort(names(sspline[["station",1]][["flags"]]), method="radix"),
+                       sort(names(section[["station",1]][["flags"]]), method="radix"))
+          ## Check units (in this dataset, all stations have same units)
+          expect_equal(section[["station",1]][["units"]], sspline[["station",1]][["units"]])
+})
+
+test_that("sectionSmooth profile count", {
           data(section)
           s <- subset(section, 115<=stationId&stationId<=121)
           sg <- sectionGrid(s, p=seq(0, 5000, 500))
           sspline <- sectionSmooth(sg, "spline")
           expect_equal(length(s[["station"]]), length(sspline[["station"]]))
-          ## Check flag names
-          expect_equal(sort(names(sspline[["station",1]][["flags"]]), method="radix"),
-                       sort(names(section[["station",1]][["flags"]]), method="radix"))
           ## Check dimensionality when xg is given
           sspline2 <- sectionSmooth(sg, "spline", xg=seq(0,200,50))
           expect_equal(length(sspline2[["station"]]), 5)
