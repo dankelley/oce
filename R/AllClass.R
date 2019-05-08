@@ -204,8 +204,10 @@ setMethod(f="summary",
                   width <- 1 + max(nchar(names(flags)))
                   for (name in names(flags)) {
                       padding <- rep(" ", width - nchar(name))
-                      if (!all(is.na(flags[[name]]))) {
-                          cat("    ", name, ":", padding, sep="")
+                      cat("    ", name, ":", padding, sep="")
+                      if (all(is.na(flags[[name]]))) {
+                          cat("NA", length(flags[[name]]), "\n")
+                      } else {
                           flagTable <- table(flags[[name]])
                           flagTableLength <- length(flagTable)
                           if (flagTableLength) {

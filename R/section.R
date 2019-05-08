@@ -2534,6 +2534,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
     npt <- length(pt)
+    units <- list()
     for (i in 1:n) {
         ##message("i: ", i, ", p before decimation: ", paste(section@data$station[[i]]@data$pressure, " "))
         suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method,
@@ -2545,9 +2546,17 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
         for (flagname in names(section@data$station[[i]]@metadata$flags)) {
             res@data$station[[i]]@metadata$flags[[flagname]] <- rep(NA, npt)
         }
+        for (unitName in names(section@data$station[[i]]@metadata$units)) {
+            ## if (i < 10) message("i=", i, " unitname='", unitName, "'")
+            if (!(unitName %in% names(units))) {
+                units[unitName] <- section@data$station[[i]]@metadata$units[unitName]
+                ## message("  added new unit")
+            }
+        }
         ##message("i: ", i, ", p after decimation: ", paste(res@data$station[[i]]@data$pressure, " "))
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@metadata$units <- units
     for (w in warningMessages)
         res@processingLog <- processingLogAppend(res@processingLog, w)
     oceDebug(debug, "} # sectionGrid\n", unindent=1)
@@ -2555,12 +2564,11 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 }
 
 
-#' @title Smooth a Section
+#' Smooth a Section
 #'
-#' @description
-#' Smooth a section in the lateral (alpha version that may change).
+#' Smooth a section, in any of several ways, working either in the vertical
+#' direction or in both the vertical and lateral directions.
 #'
-#' @details
 #' This function produces smoothed fields that might be useful in
 #' simplifying graphical elements created with \code{\link{plot,section-method}}.
 #' As with any smoothing method, a careful analyst will compare the results
@@ -2666,6 +2674,10 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' \code{\link{smooth.spline}}, if \code{method="spline"}, and ignored otherwise.
 #'
 #' @return An object of \code{\link{section-class}} that has been smoothed in some way.
+#' Every data field that is in even a single station of the input object
+#' is inserted into every station in the returned value, and therefore
+#' the units represent all the units in any of the stations, as do the
+#' flag names. However, the flags are all set to \code{NA} values.
 #'
 #' @examples
 #' # Unsmoothed (Gulf Stream)

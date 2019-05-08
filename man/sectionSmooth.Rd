@@ -69,9 +69,14 @@ of debugging information, or to 2 to get more.}
 }
 \value{
 An object of \code{\link{section-class}} that has been smoothed in some way.
+Every data field that is in even a single station of the input object
+is inserted into every station in the returned value, and therefore
+the units represent all the units in any of the stations, as do the
+flag names. However, the flags are all set to \code{NA} values.
 }
 \description{
-Smooth a section in the lateral (alpha version that may change).
+Smooth a section, in any of several ways, working either in the vertical
+direction or in both the vertical and lateral directions.
 }
 \details{
 This function produces smoothed fields that might be useful in
