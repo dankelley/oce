@@ -2453,7 +2453,7 @@ read.section <- function(file, directory, sectionId="", flags,
 #' in the case where \code{method} equals \code{"approx"}.
 #'
 #' @return An object of \code{\link{section-class}} that contains stations whose
-#' pressure values match identically.
+#' pressure values match identically, and that has all flags set to \code{NA}.
 #'
 #' @examples
 #' # Gulf Stream
@@ -2479,14 +2479,17 @@ read.section <- function(file, directory, sectionId="", flags,
 #' @family things related to \code{section} data
 sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "sectionGrid(section, p, method=\"", if (is.function(method)) "(function)" else method, "\", ...) {\n", sep="", unindent=1)
+    oceDebug(debug, "sectionGrid(section, p, ",
+             "method=\"", if (is.function(method)) "(function)" else method, "\", ",
+             "p=", if (missing(p)) "(missing)" else paste("c(",paste(p, collapse=","),")", sep=""), ", ",
+             "trim=", trim, ", ...) {\n",
+             sep="", unindent=1)
     warningMessages <- NULL
     n <- length(section@data$station)
     oceDebug(debug, "have", n, "stations in this section\n")
     dp.list <- NULL
     pMax <- max(section[["pressure"]], na.rm=TRUE)
     if (missing(p)) {
-        oceDebug(debug, "argument 'p' not given\n")
         ## p.max <- 0
         for (i in 1:n) {
             p <- section@data$station[[i]]@data$pressure
@@ -2494,9 +2497,9 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
         }
         dp <- mean(dp.list, na.rm=TRUE) / 5 # make it a little smaller
         pt <- pretty(c(0, pMax), n=min(200, floor(abs(pMax / dp))))
-        oceDebug(debug, "pMax=", pMax, "; dp=", dp, "\n")
-        oceDebug(debug, "pt=", pt, "\n")
-        oceDebug(debug, "length(pt)=", length(pt), "\n")
+        ## oceDebug(debug, "pMax=", pMax, "; dp=", dp, "\n")
+        ## oceDebug(debug, "pt=", pt, "\n")
+        ## oceDebug(debug, "length(pt)=", length(pt), "\n")
     } else {
         if (length(p) == 1) {
             if (p=="levitus") {
@@ -2525,13 +2528,18 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
     }
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
-    warningMessages <- c(warningMessages,
-                         "Removed flags from gridded section object. Use handleFlags() first to remove bad data.")
+    npt <- length(pt)
     for (i in 1:n) {
         ##message("i: ", i, ", p before decimation: ", paste(section@data$station[[i]]@data$pressure, " "))
         suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method,
                                                               debug=debug-1, ...))
-        res@data$station[[i]]@metadata$flags <- NULL
+        ## insert flags, as all NA values. Note that we have to pattern each station's flags
+        ## on the original station, because a section object is permitted to contain data that
+        ## do not match up in either data names or flag names.
+        res@data$station[[i]]@metadata$flags <- list()
+        for (flagname in names(section@data$station[[i]]@metadata$flags)) {
+            res@data$station[[i]]@metadata$flags[[flagname]] <- rep(NA, npt)
+        }
         ##message("i: ", i, ", p after decimation: ", paste(res@data$station[[i]]@data$pressure, " "))
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
@@ -2752,6 +2760,7 @@ sectionSmooth <- function(section, method="spline",
     vars <- vars[!vars %in% c("latitude", "longitude", "pressure")]
     ## ... finally, remove 'depth', which is kind of a surrogate for pressure, I think.
     vars <- vars[!vars %in% c("depth")]
+    flagnames <- unique(unlist(lapply(stations, function(ctd) names(ctd@metadata$flags))))
 
     ## start with existing station, to get processing log, section ID, etc., but
     ## recreate @data$station
@@ -2759,8 +2768,13 @@ sectionSmooth <- function(section, method="spline",
     for (istn in seq_len(nxg)) {
         res@data$station[[istn]] <- new('ctd')
         res@data$station[[istn]][["pressure"]] <- yg
-        for (var in vars)
-            res@data$station[[istn]]@metadata$flags[[var]] <- rep(NA, nyg)
+        ## Note that we put in flags for *all* variables in the output file. This
+        ## is different from the action in sectionGrid(), which inserts flags that
+        ## are tailored to each individual station, because smoothing creates stations
+        ## that all have the same data names, and therefore that should have the same
+        ## flag names.
+        for (flagname in flagnames)
+            res@data$station[[istn]]@metadata$flags[[flagname]] <- rep(NA, nyg)
     }
     if (is.character(method) && method == "spline") {
         oceDebug(debug, "using spline method\n")

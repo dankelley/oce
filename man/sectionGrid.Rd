@@ -43,7 +43,7 @@ in the case where \code{method} equals \code{"approx"}.}
 }
 \value{
 An object of \code{\link{section-class}} that contains stations whose
-pressure values match identically.
+pressure values match identically, and that has all flags set to \code{NA}.
 }
 \description{
 Grid a section, by interpolating to fixed pressure levels.  The

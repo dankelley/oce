@@ -210,12 +210,9 @@ test_that("sectionSmooth", {
           s <- subset(section, 115<=stationId&stationId<=121)
           sg <- sectionGrid(s, p=seq(0, 5000, 500))
           ## Check flag names
-          if (FALSE) {
-            ## FIXME: reactivate this (maybe move it to another section) when I
-            ## fix https://github.com/dankelley/oce/issues/1546
-            expect_equal(sort(names(section[["station",1]][["flags"]]), method="radix"),
+          ## fix https://github.com/dankelley/oce/issues/1546
+          expect_equal(sort(names(section[["station",1]][["flags"]]), method="radix"),
                          sort(names(sg[["station",1]][["flags"]]), method="radix"))
-          }
           sspline <- sectionSmooth(sg, "spline")
           expect_equal(length(s[["station"]]), length(sspline[["station"]]))
           ## Check flag names
