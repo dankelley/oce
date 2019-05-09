@@ -227,9 +227,9 @@ test_that("sectionSmooth units and flags", {
           sspline <- sectionSmooth(sectionGrid(s, p=seq(0, 5000, 500)), "spline")
           ## Check flag names (in this dataset, all stations have same flags)
           expect_equal(sort(names(sspline[["station",1]][["flags"]]), method="radix"),
-                       sort(names(section[["station",1]][["flags"]]), method="radix"))
+                       sort(names(s[["station",1]][["flags"]]), method="radix"))
           ## Check units (in this dataset, all stations have same units)
-          expect_equal(section[["station",1]][["units"]], sspline[["station",1]][["units"]])
+          expect_equal(sspline[["station",1]][["units"]], s[["station",1]][["units"]])
 })
 
 test_that("sectionSmooth profile count", {
