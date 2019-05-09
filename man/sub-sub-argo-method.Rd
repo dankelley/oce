@@ -44,6 +44,11 @@ otherwise, and similar for temperature and pressure.
 
 \itemize{
 
+\item If \code{i} is \code{"profile"} and \code{j} is an integer vector,
+then an argo object is returned, as specified by \code{j}. For example,
+\code{argo[["profile", 2:5]]} is equivalent to
+\code{subset(argo, profile \%in\% 2:5)}.
+
 \item If \code{i} is \code{"CT"}, then
 Conservative Temperature is returned, as computed with
 \code{\link[gsw]{gsw_CT_from_t}(SA, t, p)}, where

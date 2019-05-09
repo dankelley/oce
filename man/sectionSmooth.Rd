@@ -5,7 +5,7 @@
 \title{Smooth a Section}
 \usage{
 sectionSmooth(section, method = "spline", x, xg, yg, xgl, ygl, xr, yr,
-  gamma = 0.5, iterations = 2, trim = 0, pregrid = FALSE,
+  df, gamma = 0.5, iterations = 2, trim = 0, pregrid = FALSE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -29,9 +29,11 @@ to span the data with \code{xgl} elements. If neither of these is supplied, the 
 x grid will equal the input x grid.}
 
 \item{yg, ygl}{similar to \code{xg} and \code{xgl}, but for pressure. If \code{yg}
-is not given, then a grid is constructed from the surface pressure (zero)
-to the highest pressure in the section. If \code{ygl} is given, then it sets
-the number of elements in the grid, but if not, that number defaults to 50.}
+is not given, it is determined from the deepest station in the section. If
+\code{ygl} was not given, then a grid is constructed to span the pressures
+of that deepest station with \code{ygl} elements. On the other hand,
+if \code{ygl} was not given, then the y grid will constructed from the
+pressure levels in the deepest station.}
 
 \item{xr, yr}{influence ranges in x (along-section distance) and y (pressure),
 passed to \code{\link{interpBarnes}} if \code{method="barnes"} or to
@@ -41,6 +43,12 @@ the pressure range. Since these defaults have changed over the evolution
 of \code{sectionSmooth}, analysts ought to supply \code{xr} and \code{yr}
 in the function call, tailoring them to particular applications, and
 making the code more resistant to changes in \code{sectionSmooth}.}
+
+\item{df}{Degree-of-freedom parameter, passed to \code{\link{smooth.spline}}
+if \code{method="spline"}, and ignored otherwise. If \code{df} is not provided,
+it defaults to 1/5-th of the number of stations containing non-\code{NA}
+data at the particular pressure level being processed, as \code{sectionSmooth}
+works its way through the water column.}
 
 \item{gamma, iterations, trim, pregrid}{Values passed to
 \code{\link{interpBarnes}}, if \code{method="barnes"}, and
@@ -61,32 +69,34 @@ of debugging information, or to 2 to get more.}
 }
 \value{
 An object of \code{\link{section-class}} that has been smoothed in some way.
+Every data field that is in even a single station of the input object
+is inserted into every station in the returned value, and therefore
+the units represent all the units in any of the stations, as do the
+flag names. However, the flags are all set to \code{NA} values.
 }
 \description{
-Smooth a section in the lateral (alpha version that may change).
+Smooth a section, in any of several ways, working either in the vertical
+direction or in both the vertical and lateral directions.
 }
 \details{
 This function produces smoothed fields that might be useful in
 simplifying graphical elements created with \code{\link{plot,section-method}}.
-It ought to be used with great caution, to avoid deceiving the viewer
-with made-up "data". (As an analogy, consider the relative merits of drawing
-a simple scatterplot of x-y data, as opposed to drawing only a regression
-line or a spline.) The problem is of particular concern with sections that
-contain a ridge, because of the deceptive effects that can arise from
-averaging across the ridge, even though water masses might be quite
-different on either side.  Prudent analysts start by comparing plots of
-the raw data with plots of the smoothed data.
+As with any smoothing method, a careful analyst will compare the results
+against the raw data, e.g. using \code{\link{plot,section-method}}.
+In addition the problem of falsely widening narrow features such as
+fronts, there is also the potential to get unphysical results with
+spars sampling near topographic features such as bottom slopes and ridges.
 
 The \code{method} argument selects between three possible methods.
 
 \itemize{
 
-\item For \code{method="spline"}, i.e. the default, the section is smoothed using
-\code{\link{smooth.spline}} on individual pressure levels, with any parameters
-listed in \code{parameters} being passed to that function.  If \code{df} is not
-present in \code{parameters}, then this function sets it to the number of
-stations divided by 5.  Smoothing is done station by station, i.e. it
-smooths vertically on a resultant plot, not horizontally.
+\item For \code{method="spline"}, i.e. the default, the section is smoothed
+laterally, using \code{\link{smooth.spline}} on individual pressure levels.
+(If the pressure levels do not match up, \code{\link{sectionGrid}} should
+be used first to create a \code{section} object that can be used here.)
+The \code{df} argument sets the degree of freedom of the spline, with
+larger values indicating less smoothing.
 
 \item For the (much slower) \code{method="barnes"} method, smoothing is done across
 both horizontal and vertical coordinates, using \code{\link{interpBarnes}}.
@@ -127,7 +137,7 @@ mtext("unsmoothed")
 
 # Spline
 gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
-gsSpline <- sectionSmooth(gsg, "spline", df=16)
+gsSpline <- sectionSmooth(gsg, "spline")
 plot(gsSpline, which="temperature")
 mtext("spline-smoothed")
 
@@ -136,21 +146,18 @@ gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=200)
 plot(gsBarnes, which="temperature")
 mtext("Barnes-smoothed")
 
-# Kriging -- requires a library, so skipped by examples().
-\dontrun{
-if (require("automap")) {
-    krig <- function(x, y, F, xg, xr, yg, yr)
-    {
-        grid <- data.frame(x=x/xr, y=y/yr)
-        K <- autoKrige(F~1, remove_duplicates=TRUE,
-                       input_data=SpatialPointsDataFrame(grid, data.frame(F)),
-                       new_data=SpatialPoints(expand.grid(xg/xr, yg/yr)))
-        matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
-    }
-    gsKrig <- sectionSmooth(gs, krig)
-    plot(gsKrig, which="temperature")
-    mtext("Kriging-smoothed")
-}
+# Kriging
+if (requireNamespace("automap",quietly=TRUE)&&requireNamespace("sp",quietly=TRUE)) {
+ krig <- function(x, y, F, xg, xr, yg, yr) {
+   xy <- data.frame(x=x/xr, y=y/yr)
+   K <- automap::autoKrige(F~1, remove_duplicates=TRUE,
+                           input_data=sp::SpatialPointsDataFrame(xy, data.frame(F)),
+                           new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
+   matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
+ }
+ gsKrig <- sectionSmooth(gs, krig)
+ plot(gsKrig, which="temperature")
+ mtext("Kriging-smoothed")
 }
 
 }

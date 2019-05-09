@@ -84,6 +84,11 @@ NULL
 #'
 #'\itemize{
 #'
+#' \item If \code{i} is \code{"profile"} and \code{j} is an integer vector,
+#' then an argo object is returned, as specified by \code{j}. For example,
+#' \code{argo[["profile", 2:5]]} is equivalent to
+#' \code{subset(argo, profile \%in\% 2:5)}.
+#'
 #' \item If \code{i} is \code{"CT"}, then
 #' Conservative Temperature is returned, as computed with
 #' \code{\link[gsw]{gsw_CT_from_t}(SA, t, p)}, where
@@ -137,6 +142,18 @@ setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
               res <- NULL
+              if (i == "profile") {
+                  ## This assignment to profile is merely to prevent a NOTE from
+                  ## the syntax checker. It is needed because of issues with non-standard
+                  ## evaluation in subset() calls. This is a problem that many
+                  ## package authors have encountered; see e.g.
+                  ## https://stackoverflow.com/questions/23475309/in-r-is-it-possible-to-suppress-note-no-visible-binding-for-global-variable?noredirect=1&lq=1
+                  ## https://stackoverflow.com/questions/9439256/how-can-i-handle-r-cmd-check-no-visible-binding-for-global-variable-notes-when
+                  profile <- NULL # does *not* affect the subset() call that follows
+                  if (missing(j))
+                      stop("must provide an integer vector to access, e.g. argo[[\"profile\", 1:3]]")
+                  return(subset(x, profile %in% j))
+              }
               if (i %in% c("CT", "N2", "SA", "sigmaTheta", "theta")) {
                   ## FIXME: should we prefer e.g. salinityAdjusted or salinity?
                   names <- names(x@data)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/section.R
 \name{sectionGrid}
 \alias{sectionGrid}
-\title{Grid a Section}
+\title{Grid a Section in Pressure Space}
 \usage{
 sectionGrid(section, p, method = "approx", trim = TRUE,
   debug = getOption("oceDebug"), ...)
@@ -43,27 +43,26 @@ in the case where \code{method} equals \code{"approx"}.}
 }
 \value{
 An object of \code{\link{section-class}} that contains stations whose
-pressure values match identically.
+pressure values match identically, and that has all flags set to \code{NA}.
 }
 \description{
 Grid a section, by interpolating to fixed pressure levels.  The
 \code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are described in the
 documentation for \code{\link{ctdDecimate}}, which is used to do this
-processing.  The default \code{"approx"} method is best for bottle data, the
+processing.
+}
+\details{
+The default \code{"approx"} method is best for bottle data, the
 \code{"boxcar"} is best for ctd data, and the \code{"lm"} method is probably
 too slow to recommend for exploratory work, in which it is common to do trials
 with a variety of \code{"p"} values.
-}
-\section{A note about flags}{
 
-Data-quality flags contained within the original object are ignored by this
-function, and the returned value contains no such flags.  This is because such
-flags represent an assessment of the original data, not of quantities derived
-from those data.  This function produces a warning to this effect. The
-recommended practice is to use \code{\link{handleFlags}} or some other means to
-deal with flags before calling the present function.
+The stations in the returned value have flags with names that match those
+of the corresponding stations in the original \code{section}, but the values
+of these flags are all set to \code{NA}. This recognizes that it makes
+no sense to grid flag values, but that there is merit in initializing
+a flag system, for possible use in later processing steps.
 }
-
 \examples{
 # Gulf Stream
 library(oce)
