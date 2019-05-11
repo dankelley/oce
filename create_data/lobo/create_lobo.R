@@ -9,8 +9,10 @@ end <- as.POSIXct("2009-04-01 23:00:00", tz="UTC")
 lobo <- subset(lobo, start <= time & time <= end)
 ## lots of NA in there because the sampling rate is 1/hour in this time interval
 lobo <- subset(lobo, !is.na(temperature))
-str(lobo)
 save(lobo, file="lobo.rda")
-library(tools)
-tools::resaveRdaFiles("lobo.rda")
-str(lobo@metadata)
+if (utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
+    tools::resaveRdaFiles("lobo.rda", version=2)
+} else {
+    tools::resaveRdaFiles("lobo.rda")
+}
+
