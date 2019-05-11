@@ -36,4 +36,10 @@ summary(lisst)
 library(tools)
 save(lisst, file="lisst.rda")
 tools::resaveRdaFiles("lisst.rda", compress="auto")
+save(lisst, file="lisst.rda")
+if (utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
+    tools::resaveRdaFiles("lisst.rda", version=2)
+} else {
+    tools::resaveRdaFiles("lisst.rda")
+}
 
