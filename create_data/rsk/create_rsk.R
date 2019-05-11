@@ -1,4 +1,3 @@
-rm(list=ls())
 library(oce)
 raw <- read.oce('060130_20150904_1159.rsk')
 raw <- oceSetMetadata(raw, 'longitude', -(56 + 26.232/60))
@@ -9,5 +8,10 @@ raw <- oceSetMetadata(raw, 'institute', 'Ocean Research Project')
 focus <- structure(c(1441381041, 1441381483), class = c("POSIXct", 
 "POSIXt"), tzone = "UTC")
 rsk <- subset(raw, focus[1] <= time & time <= focus[2])
-save(file='rsk.rda', rsk)
-tools::resaveRdaFiles("rsk.rda")
+save(rsk, file="rsk.rda")
+if (utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
+    tools::resaveRdaFiles("rsk.rda", version=2)
+} else {
+    tools::resaveRdaFiles("rsk.rda")
+}
+
