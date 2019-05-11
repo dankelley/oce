@@ -8,4 +8,9 @@ ctdRaw <- oce.edit(ctdRaw, "startTime",
 ## ctdRaw@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
 ## ctdRaw <- oce.edit(ctdRaw, reason="set metadata$units$temperature to ITS-90", person="Dan Kelley")
 save(ctdRaw, file="ctdRaw.rda")
-tools::resaveRdaFiles("ctdRaw.rda")
+if (utils::compareVersion(R.Version()$minor, '3.6') >= 0) {
+    tools::resaveRdaFiles('ctdRaw.rda', version=2)
+} else {
+    tools::resaveRdaFiles('ctdRaw.rda')
+}
+
