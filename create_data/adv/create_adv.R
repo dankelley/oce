@@ -15,6 +15,10 @@ adv@metadata$units$pitchSlow=list(unit=expression(degree), scale="")
 adv@metadata$units$rollSlow=list(unit=expression(degree), scale="")
 adv@metadata$units$temperatureSlow=list(unit=expression(degree*C), scale="")
 adv@metadata$numberOfCells <- NULL # issue 1381
-save(adv, file='adv.rda')
-library(tools)
-tools::resaveRdaFiles("adv.rda", compress="auto")
+save(adv, file="adv.rda")
+if (utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
+    tools::resaveRdaFiles("adv.rda", version=2)
+} else {
+    tools::resaveRdaFiles("adv.rda")
+}
+
