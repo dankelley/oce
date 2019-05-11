@@ -820,9 +820,11 @@ setMethod(f="plot",
 #' @family things related to \code{topo} data
 read.topo <- function(file, debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "read.topo(file=\"", file, "\") {\n", sep="", unindent=1)
     ## handle GEBCO netcdf files or an ascii format
     dataNamesOriginal <- list()
     if (is.character(file) && length(grep(".nc$", file))) {
+        oceDebug(debug, "this is a netcdf file\n")
         if (!requireNamespace("ncdf4", quietly=TRUE)) {
             stop('must install.packages("ncdf4") to read topo data from a NetCDF file')
         } else {
@@ -833,8 +835,8 @@ read.topo <- function(file, debug=getOption("oceDebug"))
             dataNamesOriginal <- list()
             if ("Band1" %in% names(ncdf$var)) {
                 z <- ncdf4::ncvar_get(ncdf, "Band1")
-                longitude <- ncdf4::ncvar_get(ncdf, "lon")
-                latitude <- ncdf4::ncvar_get(ncdf, "lat")
+                longitude <- as.vector(ncdf4::ncvar_get(ncdf, "lon"))
+                latitude <- as.vector(ncdf4::ncvar_get(ncdf, "lat"))
                 dataNamesOriginal <- list(longitude="lon", latitude="lat", z="Band1")
                 ##cat(vectorShow(longitude, "longitude in reading Band1"))
             } else {
@@ -863,6 +865,7 @@ read.topo <- function(file, debug=getOption("oceDebug"))
             res <- as.topo(longitude, latitude, z, filename=file)
         }
     } else {
+        oceDebug(debug, "this is an ASCII (text) file\n")
         ## ASCII
         ## NOTE: on 2014-11-13 it came to light that the old dataset website
         ##          http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html
@@ -899,6 +902,7 @@ read.topo <- function(file, debug=getOption("oceDebug"))
     res@metadata$dataNamesOriginal <- dataNamesOriginal
     res@processingLog <- processingLogAppend(res@processingLog,
                                               paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # read.topo\n", sep="", unindent=1)
     res
 }
 
