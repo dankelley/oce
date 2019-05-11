@@ -29,7 +29,10 @@ for (cmoceanFile in cmoceanFiles) {
 }
 
 ## Put other colormaps above, and add to the list below.
-
 save(ocecolors, file="ocecolors.rda")
-tools::resaveRdaFiles("ocecolors.rda")
+if (utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
+    tools::resaveRdaFiles("ocecolors.rda", version=2)
+} else {
+    tools::resaveRdaFiles("ocecolors.rda")
+}
 
