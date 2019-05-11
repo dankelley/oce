@@ -834,12 +834,14 @@ read.topo <- function(file, debug=getOption("oceDebug"))
             ncdf <- ncdf4::nc_open(file)
             dataNamesOriginal <- list()
             if ("Band1" %in% names(ncdf$var)) {
+                oceDebug(debug, "file has a variable named 'Band1', so reading longitude as 'lon', latitude as 'lat', and z as 'Band1'\n")
                 z <- ncdf4::ncvar_get(ncdf, "Band1")
                 longitude <- as.vector(ncdf4::ncvar_get(ncdf, "lon"))
                 latitude <- as.vector(ncdf4::ncvar_get(ncdf, "lat"))
                 dataNamesOriginal <- list(longitude="lon", latitude="lat", z="Band1")
                 ##cat(vectorShow(longitude, "longitude in reading Band1"))
             } else {
+                oceDebug(debug, "file has no variable named 'Band1', so computing longitude and latitude from 'x_range' and 'y_range' together with 'spacing', and reading z as 'z'\n")
                 xrange <- ncdf4::ncvar_get(ncdf, "x_range")
                 yrange <- ncdf4::ncvar_get(ncdf, "y_range")
                 ##zrange <- ncdf4::ncvar_get(ncdf, "z_range")
@@ -855,10 +857,12 @@ read.topo <- function(file, debug=getOption("oceDebug"))
             ## FIXME(DK 2016-08-20): Sometimes length is off by 1. I'm not sure why, and
             ## FIXME(DK 2016-08-20): this should be figured out by inspection of files.
             if (length(longitude) == dim(z)[1]+1) {
+                oceDebug(debug, "offsetting longitude of a netcdf topo file by half a step\n")
                 warning("offsetting longitude of a netcdf topo file by half a step")
                 longitude <- longitude[-1] - diff(longitude[1:2])/2
             }
             if (length(latitude) == dim(z)[2]+1) {
+                oceDebug(debug, "offsetting latitude of a netcdf topo file by half a step")
                 warning("offsetting latitude of a netcdf topo file by half a step")
                 latitude <- latitude[-1] - diff(latitude[1:2])/2
             }

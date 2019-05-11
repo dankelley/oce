@@ -1,5 +1,3 @@
-rm(list=ls())
-plot <- FALSE
 ## Read world topo dataset at 1/12 deg res, then subsample to 1/12 deg.
 ## File format described at
 ## http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5/ETOPO5.txt
@@ -12,6 +10,8 @@ nlat <- 180*12
 n <- fileSize / 2
 expect_equal(n, nlon*nlat)
 z <- readBin(f, integer(), size=2, endian="big", n=n)
+close(f)
+
 z <- t(matrix(z, nrow=nlat, byrow=TRUE)) # the nlat vs nlon is confusing
 expect_equal(nlon, dim(z)[1])
 expect_equal(nlat, dim(z)[2])
@@ -33,23 +33,13 @@ nlat <- length(ilat)
 nlon <- length(ilon)
 latitude <- latitude[seq.int(nlat,1)]
 z <- z[, seq.int(nlat, 1)]
-if (plot) {
-    par(mfrow=c(2,1))
-    imagep(longitude, latitude, z)
-}
-t <- matrixShiftLongitude(z, longitude)
-if (plot) {
-    imagep(t$longitude, latitude, t$m)
-}
 
-## Plot to check
-cut <- which(longitude==180)
-ilon2 <- c(seq(cut+1, nlon), seq.int(1,cut))
-z <- z[ilon2, ]
-longitude <- c(longitude[seq.int(cut+1, nlon)]-360, longitude[seq.int(1, cut)])
 topoWorld <- as.topo(longitude, latitude, z, filename="etopo5.dat")
-close(f)
 
 save(topoWorld, file="topoWorld.rda")
-tools::resaveRdaFiles("topoWorld.rda")
+if (utils::compareVersion(R.Version()$minor, '3.6') >= 0) {
+    tools::resaveRdaFiles('topoWorld.rda', version=2)
+} else {
+    tools::resaveRdaFiles('topoWorld.rda')
+}
 
