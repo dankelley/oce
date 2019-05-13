@@ -1179,7 +1179,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
              argShow(log),
              argShow(mar), #",mar=c(", paste(mar, collapse=","), ")",
              argShow(mgp), #",mgp=c(", paste(mgp, collapse=","), ")",
-             argShow(cex), #",cex=", cex,
+             argShow(cex[1]), #", cex[1]=", cex[1], "(length "), length(cex), "),"
              "...) {\n", sep="", unindent=1)
     if (!is.logical(flipy))
         stop("flipy must be TRUE or FALSE")
@@ -1277,7 +1277,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
                 xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
                                           mgp=mgp,
                                           xlim=if (missing(xlim)) range(x) else xlim,
-                                          cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                          cex.axis=cex.axis, cex.main=cex.main,
                                           tformat=tformat,
                                           debug=debug-1)
                 xat <- xlabs
@@ -2613,7 +2613,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     oceDebug(debug, "oce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="", unindent=1)
     oceDebug(debug, "mar=", mar, "\n")
     oceDebug(debug, "mgp=", mgp, "\n")
-    oceDebug(debug, "cex=", cex, " cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
+    oceDebug(debug, "cex[1]=", cex[1], " cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oceDebug(debug, vectorShow(x, "x"))
     tformatGiven <- !missing(tformat)
     if (missing(drawTimeRange))
