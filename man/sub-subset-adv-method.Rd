@@ -23,9 +23,10 @@ The \code{[[} method works for all \code{oce} objects, i.e.
 objects inheriting from \code{\link{oce-class}}.  The purpose
 is to insulate users from the internal details of \code{oce}
 objects, by looking for items within the various storage
-slots of the object. Items not actually stored can also be
-extracted, including derived data, units of measurement,
-and data-quality flags.
+slots of the object. Items that are not actually stored in
+the object can also be extracted, including derived data such
+as potential temperature, the units of measurement for
+the data, data-quality flags, etc.
 }
 \details{
 If the \code{adv} object holds slow variables (i.e. if \code{timeSlow} is
@@ -48,39 +49,55 @@ fail, \code{NULL} is returned.
 
 If the specialized method produces no matches, the following generalized
 method is applied. As with the specialized method, the procedure hinges
-first on the value of \code{i}.
+first on the values of \code{i} and, optionally, \code{j}. The work
+proceeds in steps, by testing a sequence of possible conditions
+in sequence.
 
-First, a check is made as to whether \code{i} names one of the standard
-\code{oce} slots, and returns the slot contents if so. Thus,
-\code{x[["metadata"]]} will retrieve the \code{metadata} slot,
+\enumerate{
+
+\item A check is made as to whether \code{i} names one of the standard
+\code{oce} slots. If so, \code{[[} returns the slot contents of that slot.
+Thus, \code{x[["metadata"]]} will retrieve the \code{metadata} slot,
 while \code{x[["data"]]} and \code{x[["processingLog"]]} return
 those slots.
 
-Next, if \code{i} is a string ending in the
+\item If \code{i} is a string ending in the
 \code{"Unit"}, then the characters preceding that string
 are taken to be the name of an item in the data object, and a list
 containing the unit is returned. This list consists of an item
 named \code{unit}, which is an \code{\link{expression}}, and
 an item named \code{scale}, which is a string describing the
 measurement scale.  If the string ends in \code{" unit"}, e.g.
-\code{x[["temperature unit"]]}, then just the expression is returned,
-and if it ends in \code{" scale"}, then just the scale is returned.
+\code{x[["temperature unit"]]} (note the space),
+then just the expression is returned, and if it ends in
+\code{" scale"}, then just the scale is returned.
 
-Next, if \code{i} is a string ending in \code{"Flag"}, then the corresponding
+\item If \code{i} is a string ending in \code{"Flag"}, then the corresponding
 data-quality flag is returned (or \code{NULL} if there is no such flag).
 For example, \code{x[["salinityFlag"]]} returns a vector of salinity
 flags if \code{x} is a ctd object.
 
-If none of the preceding conditions are met, a check is done
-to see if the \code{metadata} slot contains an item with
-the provided name, and that is returned, if so. A direct match
-is required for this condition.
+\item If \code{i} is \code{"sigmaTheta"}, then the value of
+\code{\link{swSigmaTheta}(x)} is returned. Similarly,
+\code{"sigma0"} returns \code{\link{swSigma0}(x)} and
+\code{"spice"} returns \code{\link{swSpice}(x)}. Note that
+these relate to seawater properties and only make sense for
+certain object types.
 
-Finally, the \code{data} slot is checked to see if it contains
-an item with the name indicated by \code{i}. In this case, a partial
-match will work; this is accomplished by using \code{\link{pmatch}}.
+\item After these possibilities are eliminated,
+the action depends on whether \code{j} has been provided.
+If \code{j} is not provided, then \code{i} is sought
+in the \code{metadata} slot, and then in the \code{data} slot,
+returning whichever is found first.  In other words, if \code{j}
+is not provided, the \code{metadata} slot takes preference over
+the \code{data} slot. However, if \code{j} is provided, then
+it must be either the string \code{"metadata"} or \code{"data"},
+and it directs where to look.
+}
 
-If none of the above-listed conditions holds, then \code{NULL} is returned.
+If none of the above-listed conditions holds, then \code{NULL} is returned,
+without the issuance of a warning or error message. (This silent operation
+is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \seealso{

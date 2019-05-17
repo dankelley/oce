@@ -217,6 +217,10 @@ setMethod(f="[[",
                   } else {
                       res <- swDepth(x@data$pressure, x@data$latitude)
                   }
+              } else if (i == "latitude") {
+                  res <- x@data$latitude
+              } else if (i == "longitude") {
+                  res <- x@data$longitude
               } else {
                   res <- callNextMethod()         # [[
               }

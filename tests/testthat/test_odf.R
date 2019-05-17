@@ -39,15 +39,15 @@ test_that("ODF CTD file", {
           ## conductivityFlag   -996   7
           ## oxygenVoltage      -997   8
           ## oxygenVoltageFlag  -998   9
-          ## fluorescence       -999  10 
+          ## fluorescence       -999  10
           ## fluorescenceFlag  -1000  11
-          ## par               -1001  12 
+          ## par               -1001  12
           ## parFlag           -1002  13
-          ## salinity          -1003  14 
+          ## salinity          -1003  14
           ## salinityFlag      -1004  15
-          ## oxygen            -1005  16 
+          ## oxygen            -1005  16
           ## oxygenFlag        -1006  17
-          ## sigmaTheta        -1007  18 
+          ## sigmaTheta        -1007  18
           ## sigmaThetaFlag    -1008  19
           expect_equal( 1, which(is.na(d[["scan"]])))
           expect_equal( 2, which(is.na(d[["pressure"]])))
@@ -97,11 +97,17 @@ test_that("ODF CTD file (not as CTD)", {
           expect_equal(15, which(is.na(d[["salinityFlag"]])))
           expect_equal(16, which(is.na(d[["oxygen"]])))
           expect_equal(17, which(is.na(d[["oxygenFlag"]])))
-          ## Now, for the part that's different: in the present case,
-          ## the sigmaTheta value will be AS READ IN, not calculated.
-          ## That calculation only works when it knows it is a CTD. Therefore,
-          ## the next tests are different from in the previous block.
-          expect_equal(18, which(is.na(d[["sigmaTheta"]]))) # computed
+          ## Test sigmaTheta in two ways. Using [["sigmaTheta"]] will *compute*
+          ## the value (so it will be NA when S, T or p is NA), but
+          ## [["SIGP_01"]] access the *supplied* value, so it is NA at line 18.
+          ## NOTE: the behaviour for the [["sigmaTheta"]] case was to return the
+          ## same as the [["SIGP_01"]] case until 2019 May 17, when some changes
+          ## got made for issue 1554 (see
+          ## https://github.com/dankelley/oce/issues/1554), whereupon I realized
+          ## that the old behaviour made ODF different from other oce data
+          ## types, which is not sensible.
+          badSTp <- which(is.na(d@data$salinity)|is.na(d@data$temperature)|is.na(d@data$pressure))
+          expect_equal(badSTp, which(is.na(d[["sigmaTheta"]]))) # computed
           expect_equal(18, which(is.na(d[["SIGP_01"]]))) # original data
           expect_equal(19, which(is.na(d[["sigmaThetaFlag"]])))
 
