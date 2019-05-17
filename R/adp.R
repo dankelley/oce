@@ -3211,7 +3211,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     if (1 == length(agrep("rdi", manufacturer, ignore.case=TRUE))) {
         ## "teledyne rdi"
         ## h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14, revised 2011-03-15
-        if (oceCoordinate == "sfm") {
+        if (oceCoordinate == "sfm" & !res@metadata$tiltUsed) {
             oceDebug(debug, "Case 1: RDI ADCP in SFM coordinates.\n")
             oceDebug(debug, "        No coordinate changes required prior to ENU.\n")
             starboard <- res@data$v[, , 1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
