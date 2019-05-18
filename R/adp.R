@@ -1214,11 +1214,22 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
                      debug=getOption("oceDebug"),
                      ...)
 {
-    oceDebug(debug, "read.adp(...,from=", from,
-             ",to=", if (missing(to)) "(missing)" else to,
-             ",by=", by,
-             ",manufacturer=", if (missing(manufacturer)) "(missing)" else manufacturer, ",...) {\n",
+    fromGiven <- !missing(from) # FIXME document THIS
+    toGiven <- !missing(to) # FIXME document THIS
+    byGiven <- !missing(by) # FIXME document THIS
+    oceDebug(debug, "read.adp(\"", file, "\"",
+             ", from=", if (fromGiven) format(from) else "(missing)",
+             ", to=", if (toGiven) format(to) else "(missing)",
+             ", by=", if (byGiven) format(by) else "(missing)",
+             ", manufacturer=\"", if (missing(manufacturer)) "(missing)" else manufacturer, "\", ...) {\n",
              sep="", unindent=1)
+    if (!fromGiven)
+        from <- 1
+    if (!byGiven)
+        by <- 1
+    if (!toGiven)
+        to <- 0
+
     if (missing(manufacturer)) {
         oceDebug(debug, "using read.oce() since 'manufacturer' argument is missing\n")
         res <- read.oce(file=file, from=from, to=to, by=by, tz=tz,
@@ -2730,6 +2741,7 @@ setMethod(f="plot",
 #' @family things related to \code{adp} data
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
+    debug <- if (debug > 0) 1 else 0
     oceDebug(debug, "toEnuAdp() {\n", unindent=1)
     coord <- x[["oceCoordinate"]]
     if (coord == "beam") {
@@ -2914,7 +2926,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
     if (is.null(manufacturer))
         stop("cannot rotate the data, since there is no 'manufacturer' entry in the metadata slot")
     oceDebug(debug, "transformation matrix follows\n")
-    if (debug)
+    if (debug > 0)
         print(tm)
     res <- x
     V <- x[["v"]]

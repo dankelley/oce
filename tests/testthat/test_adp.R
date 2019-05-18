@@ -200,8 +200,59 @@ test_that("details of a local RDI", {
                            -0.026, -0.032, -0.048, -0.01, -0.162, -0.043, 0.13, -0.089,
                            -0.02, 0.063, -0.107, -0.018, 0.018, -0.136, 0.041, 0.1, -0.139,
                            -0.002, 0.02, -0.171, -0.042, 0.104), dim=c(3, 84, 4))
-
               expect_equal(d[["v"]], v)
-
           }
 })
+
+test_that("three RDI reading methods (from, to, by not given)", {
+          ## https://github.com/dankelley/oce/issues/1557
+          adp1 <- read.oce(system.file("extdata", "adp_rdi.000", package="oce"))
+          adp2 <- read.adp(system.file("extdata", "adp_rdi.000", package="oce"))
+          adp3 <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"))
+          ## Do arrays match?
+          for (item in c("v", "a", "g", "q")) {
+              expect_equal(dim(adp1[[item]]), c(9, 84, 4))
+              expect_equal(adp1[[item]], adp2[[item]])
+              expect_equal(adp1[[item]], adp3[[item]])
+          }
+})
+
+test_that("three RDI reading methods (from given)", {
+          ## https://github.com/dankelley/oce/issues/1557
+          adp1 <- read.oce(system.file("extdata", "adp_rdi.000", package="oce"), from=2)
+          adp2 <- read.adp(system.file("extdata", "adp_rdi.000", package="oce"), from=2)
+          adp3 <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"), from=2)
+          ## Do arrays match?
+          for (item in c("v", "a", "g", "q")) {
+              expect_equal(dim(adp1[[item]]), c(8, 84, 4))
+              expect_equal(adp1[[item]], adp2[[item]])
+              expect_equal(adp1[[item]], adp3[[item]])
+          }
+})
+
+test_that("three RDI reading methods (from and by given)", {
+          ## https://github.com/dankelley/oce/issues/1557
+          adp1 <- read.oce(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2)
+          adp2 <- read.adp(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2)
+          adp3 <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2)
+          ## Do arrays match?
+          for (item in c("v", "a", "g", "q")) {
+              expect_equal(dim(adp1[[item]]), c(4, 84, 4))
+              expect_equal(adp1[[item]], adp2[[item]])
+              expect_equal(adp1[[item]], adp3[[item]])
+          }
+})
+
+test_that("three RDI reading methods (from, by and to given)", {
+          ## https://github.com/dankelley/oce/issues/1557
+          adp1 <- read.oce(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2, to=4)
+          adp2 <- read.adp(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2, to=4)
+          adp3 <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2, to=4)
+          ## Do arrays match?
+          for (item in c("v", "a", "g", "q")) {
+              expect_equal(dim(adp1[[item]]), c(2, 84, 4))
+              expect_equal(adp1[[item]], adp2[[item]])
+              expect_equal(adp1[[item]], adp3[[item]])
+          }
+})
+
