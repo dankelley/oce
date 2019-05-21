@@ -13,11 +13,12 @@ adp@metadata$serialNumber <- "(redacted)"
 adp@metadata$headSerialNumber <- "(redacted)"
 adp@metadata$deploymentName <- "(redacted)"
 adp@metadata$comments <- "sample ADP file"
-save(adp, file='adp.rda')
-save(adp, file="adp.rda", version=2)
+
 if (utils::compareVersion(R.Version()$minor, '3.6') >= 0) {
+    save(adp, file="adp.rda", version=2)
     tools::resaveRdaFiles('adp.rda', version=2)
 } else {
+    save(adp, file="adp.rda")
     tools::resaveRdaFiles('adp.rda')
 }
 

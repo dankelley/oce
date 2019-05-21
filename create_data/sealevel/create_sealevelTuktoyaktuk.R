@@ -12,10 +12,12 @@ sealevelTuktoyaktuk <- as.sealevel(elevation=elevation, time=time,
                                    stationName="Tuktoyaktuk", region="NWT", stationNumber=6485,
                                    longitude=133.0292, latitude=69.43889,
                                    year=1975, GMTOffset=0)
-save(sealevelTuktoyaktuk, file="sealevelTuktoyaktuk.rda")
+
 if (utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
+    save(sealevelTuktoyaktuk, file="sealevelTuktoyaktuk.rda", version=2)
     tools::resaveRdaFiles("sealevelTuktoyaktuk.rda", version=2)
 } else {
+    save(sealevelTuktoyaktuk, file="sealevelTuktoyaktuk.rda")
     tools::resaveRdaFiles("sealevelTuktoyaktuk.rda")
 }
 

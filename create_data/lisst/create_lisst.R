@@ -33,13 +33,12 @@ lisst <- as.lisst(data, filename="(constructed)", year=2012, "UTC")
 #plot(lisst, which=c(1, 10, 30))
 #plot(lisst)
 summary(lisst)
-library(tools)
-save(lisst, file="lisst.rda")
-tools::resaveRdaFiles("lisst.rda", compress="auto")
-save(lisst, file="lisst.rda")
+
 if (utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
+    save(lisst, file="lisst.rda", version=2)
     tools::resaveRdaFiles("lisst.rda", version=2)
 } else {
+    save(lisst, file="lisst.rda")
     tools::resaveRdaFiles("lisst.rda")
 }
 

@@ -8,10 +8,12 @@ raw <- oceSetMetadata(raw, 'institute', 'Ocean Research Project')
 focus <- structure(c(1441381041, 1441381483), class = c("POSIXct", 
 "POSIXt"), tzone = "UTC")
 rsk <- subset(raw, focus[1] <= time & time <= focus[2])
-save(rsk, file="rsk.rda")
+
 if (utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
+    save(rsk, file="rsk.rda", version=2)
     tools::resaveRdaFiles("rsk.rda", version=2)
 } else {
+    save(rsk, file="rsk.rda")
     tools::resaveRdaFiles("rsk.rda")
 }
 

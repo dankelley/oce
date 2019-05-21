@@ -38,10 +38,11 @@ summary(topoWorldOld)
 
 summary(topoWorld)
 
-save(topoWorld, file="topoWorld.rda")
 if (utils::compareVersion(R.Version()$minor, '3.6') >= 0) {
+    save(topoWorld, file="topoWorld.rda", version=2)
     tools::resaveRdaFiles('topoWorld.rda', version=2)
 } else {
+    save(topoWorld, file="topoWorld.rda")
     tools::resaveRdaFiles('topoWorld.rda')
 }
 
