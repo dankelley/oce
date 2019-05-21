@@ -8,6 +8,8 @@
 \S4method{[[}{oce}(x, i, j, ...)
 }
 \arguments{
+\item{x}{An oce object}
+
 \item{i}{Character string indicating the name of item to extract.}
 
 \item{j}{Optional additional information on the \code{i} item.}

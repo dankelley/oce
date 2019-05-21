@@ -330,7 +330,7 @@ setMethod(f="subset",
 #'
 #' @template sub_subTemplate
 #'
-## @param x An oce object
+#' @param x An oce object
 ## @param i The item to extract.
 ## @param j Optional additional information on the \code{i} item.
 ## @param ... Optional additional information (ignored).
