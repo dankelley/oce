@@ -306,39 +306,38 @@ setMethod(f="subset",
 
 #' Extract Something From an oce Object
 #'
-#' @description
-#' The named item is sought first in
-#' \code{metadata}, where an exact match to the name is required. If
-#' it is not present in the \code{metadata} slot, then a partial-name
-#' match is sought in the \code{data} slot. Failing both
-#' tests, an exact-name match is sought in a field named
-#' \code{dataNamesOriginal} in the object's \code{metadata}
-#' slot, if that field exists. Failing that, \code{NULL} is returned.
+## @description
+## The named item is sought first in
+## \code{metadata}, where an exact match to the name is required. If
+## it is not present in the \code{metadata} slot, then a partial-name
+## match is sought in the \code{data} slot. Failing both
+## tests, an exact-name match is sought in a field named
+## \code{dataNamesOriginal} in the object's \code{metadata}
+## slot, if that field exists. Failing that, \code{NULL} is returned.
+##
+## The full contents of the \code{metadata} slot of an object named
+## \code{x} are returned with \code{x[["metadata"]]}, and
+## \code{x[["data"]]} does the same thing for the data slot.
+## Even if the full contents are not needed, this
+## scheme can be useful in circumventing the searching scheme described
+## in the previous paragraph, e.g. \code{x[["data"]]$longitude}
+## might be used to select longitude from the data slot of \code{x},
+## as an alternative to \code{\link{oceGetData}(x,"longitude")}.
+##
+## To get information on the specialized variants of this function,
+## type e.g. \code{?"[[,adv-method"} for information on extracting
+## data from an object of \code{\link{adv-class}}.
 #'
-#' The full contents of the \code{metadata} slot of an object named
-#' \code{x} are returned with \code{x[["metadata"]]}, and
-#' \code{x[["data"]]} does the same thing for the data slot.
-#' Even if the full contents are not needed, this
-#' scheme can be useful in circumventing the searching scheme described
-#' in the previous paragraph, e.g. \code{x[["data"]]$longitude}
-#' might be used to select longitude from the data slot of \code{x},
-#' as an alternative to \code{\link{oceGetData}(x,"longitude")}.
+#' @template sub_subTemplate
 #'
-#' To get information on the specialized variants of this function,
-#' type e.g. \code{?"[[,adv-method"} for information on extracting
-#' data from an object of \code{\link{adv-class}}.
+## @param x An oce object
+## @param i The item to extract.
+## @param j Optional additional information on the \code{i} item.
+## @param ... Optional additional information (ignored).
 #'
-#' @param x An oce object
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
-#'
-#' @examples
-#' data(ctd)
-#' ctd[["longitude"]] # in metadata
-#' head(ctd[["salinity"]]) # in data
-#' data(section)
-#' summary(section[["station", 1]])
+#' @seealso
+#' Many \code{oce} object classes have specialized versions
+#' of \code{[[} that handle the details in specialized way.
 setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {

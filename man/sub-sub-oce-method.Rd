@@ -8,40 +8,111 @@
 \S4method{[[}{oce}(x, i, j, ...)
 }
 \arguments{
-\item{x}{An oce object}
-
-\item{i}{The item to extract.}
+\item{i}{Character string indicating the name of item to extract.}
 
 \item{j}{Optional additional information on the \code{i} item.}
 
 \item{...}{Optional additional information (ignored).}
 }
 \description{
-The named item is sought first in
-\code{metadata}, where an exact match to the name is required. If
-it is not present in the \code{metadata} slot, then a partial-name
-match is sought in the \code{data} slot. Failing both
-tests, an exact-name match is sought in a field named
-\code{dataNamesOriginal} in the object's \code{metadata}
-slot, if that field exists. Failing that, \code{NULL} is returned.
-
-The full contents of the \code{metadata} slot of an object named
-\code{x} are returned with \code{x[["metadata"]]}, and
-\code{x[["data"]]} does the same thing for the data slot.
-Even if the full contents are not needed, this
-scheme can be useful in circumventing the searching scheme described
-in the previous paragraph, e.g. \code{x[["data"]]$longitude}
-might be used to select longitude from the data slot of \code{x},
-as an alternative to \code{\link{oceGetData}(x,"longitude")}.
-
-To get information on the specialized variants of this function,
-type e.g. \code{?"[[,adv-method"} for information on extracting
-data from an object of \code{\link{adv-class}}.
+The \code{[[} method works for all \code{oce} objects, i.e.
+objects inheriting from \code{\link{oce-class}}.  The purpose
+is to insulate users from the internal details of \code{oce}
+objects, by looking for items within the various storage
+slots of the object. Items that are not actually stored in
+the object can also be extracted, including derived data such
+as potential temperature, the units of measurement for
+the data, data-quality flags, etc.
 }
-\examples{
-data(ctd)
-ctd[["longitude"]] # in metadata
-head(ctd[["salinity"]]) # in data
-data(section)
-summary(section[["station", 1]])
+\details{
+A two-step process is used to try to find the
+requested information. First, a class-specific function
+tries to find it, but
+if that fails, then a general function is used
+(see next section).
 }
+\section{Details of the general method}{
+
+
+If the specialized method produces no matches, the following generalized
+method is applied. As with the specialized method, the procedure hinges
+first on the values of \code{i} and, optionally, \code{j}. The work
+proceeds in steps, by testing a sequence of possible conditions
+in sequence.
+
+\enumerate{
+
+\item A check is made as to whether \code{i} names one of the standard
+\code{oce} slots. If so, \code{[[} returns the slot contents of that slot.
+Thus, \code{x[["metadata"]]} will retrieve the \code{metadata} slot,
+while \code{x[["data"]]} and \code{x[["processingLog"]]} return
+those slots.
+
+\item If \code{i} is a string ending in the
+\code{"Unit"}, then the characters preceding that string
+are taken to be the name of an item in the data object, and a list
+containing the unit is returned. This list consists of an item
+named \code{unit}, which is an \code{\link{expression}}, and
+an item named \code{scale}, which is a string describing the
+measurement scale.  If the string ends in \code{" unit"}, e.g.
+\code{x[["temperature unit"]]} (note the space),
+then just the expression is returned, and if it ends in
+\code{" scale"}, then just the scale is returned.
+
+\item If \code{i} is a string ending in \code{"Flag"}, then the corresponding
+data-quality flag is returned (or \code{NULL} if there is no such flag).
+For example, \code{x[["salinityFlag"]]} returns a vector of salinity
+flags if \code{x} is a ctd object.
+
+\item If \code{i} is \code{"sigmaTheta"}, then the value of
+\code{\link{swSigmaTheta}(x)} is returned. Similarly,
+\code{"sigma0"} returns \code{\link{swSigma0}(x)} and
+\code{"spice"} returns \code{\link{swSpice}(x)}. Note that
+these relate to seawater properties and only make sense for
+certain object types.
+
+\item After these possibilities are eliminated,
+the action depends on whether \code{j} has been provided.
+If \code{j} is not provided, then \code{i} is sought
+in the \code{metadata} slot, and then in the \code{data} slot,
+returning whichever is found first.  In other words, if \code{j}
+is not provided, the \code{metadata} slot takes preference over
+the \code{data} slot. However, if \code{j} is provided, then
+it must be either the string \code{"metadata"} or \code{"data"},
+and it directs where to look.
+}
+
+If none of the above-listed conditions holds, then \code{NULL} is returned,
+without the issuance of a warning or error message. (This silent operation
+is employed so that \code{[[} will behave like the normal R version.)
+}
+
+\seealso{
+Many \code{oce} object classes have specialized versions
+of \code{[[} that handle the details in specialized way.
+
+Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+  \code{\link{[[,adv-method}},
+  \code{\link{[[,amsr-method}},
+  \code{\link{[[,argo-method}},
+  \code{\link{[[,bremen-method}},
+  \code{\link{[[,cm-method}},
+  \code{\link{[[,coastline-method}},
+  \code{\link{[[,ctd-method}},
+  \code{\link{[[,echosounder-method}},
+  \code{\link{[[,g1sst-method}},
+  \code{\link{[[,gps-method}},
+  \code{\link{[[,ladp-method}},
+  \code{\link{[[,landsat-method}},
+  \code{\link{[[,lisst-method}},
+  \code{\link{[[,lobo-method}},
+  \code{\link{[[,met-method}}, \code{\link{[[,odf-method}},
+  \code{\link{[[,rsk-method}},
+  \code{\link{[[,sealevel-method}},
+  \code{\link{[[,section-method}},
+  \code{\link{[[,tidem-method}},
+  \code{\link{[[,topo-method}},
+  \code{\link{[[,windrose-method}},
+  \code{\link{[[<-,adv-method}}
+}
+\concept{functions that extract parts of \code{oce} objects}

@@ -16,11 +16,9 @@
 #'
 #' A two-step process is used to try to find the
 #' requested information. First, a class-specific function
-#' tries to find it (see
-#' \dQuote{Details of the specialized ... method}), but
+#' tries to find it, but
 #' if that fails, then a general function is used
-#' (see \sQuote{Details of the general method}). If both
-#' fail, \code{NULL} is returned.
+#' (see next section).
 #'
 #' @section Details of the general method:
 #'
