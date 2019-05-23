@@ -19,6 +19,29 @@ test_that("various plots", {
           expect_silent(plot(adp, which="progressiveVector"))
 })
 
+test_that("all plot types as of 2019 May 23", {
+          ## The lists were developed by editing the output from
+          ## ?"plot,adp-method". Note that there are many repeats of equivalent
+          ## numerical and character codes.
+          for (which in c(1:4, 5:8, 9:12, 60, 70:73, 80:83, 13, 14, 15:18,
+                          19:22, 23, 24:28, 29, 30, 40, 41:44, 50, 51:54, 55,
+                          100)) {
+              plot(adp, which=which)
+          }
+          for (which in c("u1", "u2", "u3", "u4", "a1", "a2", "a3", "a4", "q1",
+                          "q2", "q3", "q4", "map", "g1", "g2", "g3", "g4", "vv",
+                          "va", "vq", "vg", "vertical", "salinity",
+                          "temperature", "pressure", "heading", "pitch", "roll",
+                          "progressiveVector", "uv", "uv+ellipse",
+                          "uv+ellipse+arrow", "bottomRange", "bottomRange1",
+                          "bottomRange2", "bottomRange3", "bottomRange4",
+                          "bottomVelocity1", "bottomVelocity2",
+                          "bottomVelocity3", "bottomVelocity4",
+                          "bottomVelocity", "heaving", "soundSpeed", "velocity",
+                          "amplitude", "quality", "hydrography", "angles")) {
+              plot(adp, which=which)
+          }
+})
 
 test_that("as.adp() inserts data properly", {
           data(adp)
