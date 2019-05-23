@@ -1,0 +1,264 @@
+---
+title: "Subclassing oce objects"
+author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911)"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    number_sections: true
+    fig_caption: yes
+    fig_width: 5
+    fig_height: 5
+    dpi: 72
+    dev.args: list(pointsize=11)
+vignette: >
+  %\VignetteIndexEntry{Subclassing oce objects}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+<!-- HOW TO BUILD THE VIGNETTE. -->
+<!-- 1. edit this file in vignettes/oce.Rmd -->
+<!-- 2. in an R console, use setwd() or otherwise move to the oce -->
+<!--    directory, and then execute -->
+<!--      devtools::build_vignettes() -->
+<!-- 3. build oce. In the shell, you might use -->
+<!--      cd oce ; echo "devtools::document(roclets=c('rd','collate','vignette'))" | R --no-save -->
+<!--      CMD build --compact-vignettes="qpdf" oce -->
+<!--      R CMD check oce_1.0-2.1.tar.gz -->
+<!--      R CMD INSTALL oce_1.0-2.1.tar.gz -->
+<!--    where the version number might need updating, or in an R console you might use -->
+<!--      devtools::install(build_vignettes=TRUE) -->
+
+
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+**Abstract.** This vignette explains how new classes of objects can be created,
+using oce objects as a base class. The advantage of this is that the
+newly-formed objects will automatically have important properties of oce
+objects, in terms of operators such as `[[` and `[[<-`, functions
+such as `subset()`  and `summary()`, schemes for handling units, etc.  The
+treatment centres on the creation of a hypothetical class called `wave`, which
+will hold time-series of elevation data.
+
+# Tutorial
+
+## Defining a class
+
+The `setClass` function is the key to defining a new class. Entering
+`?setClass` in an R console reveals the details of this function, including
+some notes on how it has evolved since R version 3.0.
+
+We need only a simple form here, with
+```{r}
+library(oce)
+wave <- setClass(Class="wave", contains="oce")
+```
+being enough to create a new class called `wave` that inherits the base
+features of the `oce` class.
+
+To create a new object that inherits from the `wave` class, use e.g.
+```{r}
+w <- new("wave")
+```
+
+## Examining an object
+
+We can see that `w` inherits from the `oce` class with
+```{r}
+class(w)
+```
+and a check that is common to see in code is
+```{r}
+inherits(w, "wave")
+```
+
+The contents of the object are revealed with
+```{r}
+str(w)
+```
+
+Notice that `w` three `oce` "slots", named `metadata`, `data` and
+`processingLog`. These are inherited from `oce`.  The first is meant to hold
+information about the data, such as a file-name, an instrument number, a
+location of sampling, etc. The second is meant to hold actual data or
+measurements.  And the third, not normally accessed by the user directly, holds
+information about the object's evolution (note that the object considers itself
+an `oce` object). The names of these three slots are usually enough to keep
+them straight in the analyst's head, although it can sometimes be difficult
+deciding whether something belongs in `metadata` or `data`.
+
+The `oce` system also provides its objects with certain operators and
+functions. For example, `[[` can be used to retrieve the slots, items within
+the slots, and (in some cases) values that may be calculated from the contents
+of the slots (e.g. `ctd` and similar objects related to hydrography can return
+calculated potential temperature or Conservative Temperature, even though
+neither is typically stored in such datasets).
+
+That's not the only thing. All `oce` objects give special powers to the `[[`
+operator, e.g. we can retrieve the `metadata` slot with
+```{r}
+w[["metadata"]]
+```
+and the same for the data slot
+```{r}
+w[["data"]]
+```
+
+## Adding data to objects
+
+The `[[<-` operator can be used to fill the slots with information, e.g.  we
+could insert a station location of `"STN01"` with
+```{r}
+w[["metadata"]]$station <- "STN01"
+```
+and verify that this worked with
+```{r}
+str(w)
+```
+
+However, there is a better way to insert metadata, with the `oceSetMetadata`
+function, e.g.
+```{r}
+w <- oceSetMetadata(w, "serialNumber", 1234)
+```
+sets the serial number to 1234, and
+```{r}
+str(w[["metadata"]])
+```
+verifies that this worked.
+
+Now, let's insert some data.  Imagine a half-minute dataset with 10Hz sampling,
+for a signal with a $1$m elevation wave with period $10$s, plus some noise
+of order $1$cm.
+```{r}
+t <- as.POSIXct("2019-01-01 00:00:00", tz="UTC") + seq(0, 30, length.out=100)
+tau <- 10
+e <- sin(as.numeric(2 * pi * as.numeric(t) / tau)) + rnorm(t, sd=0.01)
+```
+(Notice that we are not using the R `ts` form to make this time-series.  This
+is because oceanographic data are commonly acquired on an irregular time
+interval, so it makes sense to store observation time explicitly, instead of
+using the start/step/stop approach of the `ts` scheme.)
+
+These data may be inserted into our object with
+```{r}
+w <- oceSetData(w, "time", t)
+w <- oceSetData(w, "elevation", e)
+```
+
+At this point the reader is likely to use `str` to see if this worked, but
+since the object is starting to fill up, it might make sense to use the
+`summary` function, which is inherited from `oce`.
+
+```{r}
+summary(w)
+```
+
+This produces a useful summary not just of the data, but also of how the object
+was constructed. But we can do better. In some crazy world, someone might
+consider measuring elevation in feet, not metres, and so we ought to specify
+the unit. The way to do this is with the `unit` argument of `oceSetData`. This
+is a somewhat tricky argument, as a study of the result of `?oceSetData` will
+reveal. For now, we just show a common way, without explanation, writing
+```{r}
+w <- oceSetData(w, "elevation", e, unit=list(unit=expression(m),scale=""))
+```
+
+This over-rides the existing definition. Now, let's look at the summary:
+```{r}
+summary(w)
+```
+Notice that we now have a unit on the elevation, but we \emph{also} have an
+indication that the value of that quantity was defined twice. This
+processing-log feature is one of the big advantages of using `oceSetData`
+over direct insertion into an object.
+
+## Adding specialized functions
+
+The most common function to add is a plot function. Since `plot` is a built-in
+function, we are subclassing it.  The details of doing this are provided by
+`?setMethod`. Again, studying the documentation for that function would be
+worthwhile, but the gist is provided by a simple example, e.g.
+```{r}
+setMethod(f="plot",
+    signature=signature("wave"),
+    definition=function(x, which=1, ...) {
+        if (which == 1) {
+            plot(x[["time"]], x[["elevation"]], ...)
+        } else if (which == 2) {
+            hist(x[["elevation"]], ...)
+        } else {
+            stop("which must be 1 or 2")
+        }
+    })
+```
+Here, the `signature` argument tells R that `plot()` called with a `wave`
+object as its first argument ought to use the indicated function.  That
+function takes just two arguments: the object to be plotted, and `which`, an
+indication of the desired plot type.
+
+For example, since `which` defaults to 1, we can get a popular plot with
+```{r}
+plot(w)
+```
+
+Note the simplicity of this action. The user has no reason to state what kind
+of object this is, because R detects the type and dispatches to the specialized
+`wave`-plotting function. This may seem like a small thing in the present
+context, but imagine an analyst writing code to analyse a wide variety of data
+types: it is very convenient to have a simple function call that works for
+each.
+
+Since the `...` argument is passed into both the plotting methods. Thus, for
+example, a cleaner time-series plot might be created with
+```{r}
+plot(w, type="l", xlab="Time [s]", ylab="Elevation [m]")
+```
+
+# Advanced methods
+
+## Initializing objects with data
+
+The following lets the user specify `time` and `elevation` when the object is
+created. It also permits a specification of units, with a default being to us
+metres.
+
+```{r}
+setMethod(f="initialize",
+    signature="wave",
+    definition=function(.Object, time, elevation, units) {
+        if (missing(units)) {
+            .Object@metadata$units <- list()
+            if (missing(units))
+                .Object@metadata$units$elevation <- list(unit=expression(m), scale="")
+        }
+        .Object@data$time <- if (missing(time)) NULL else time
+        .Object@data$elevation <- if (missing(elevation)) NULL else elevation
+        .Object@processingLog$time <- as.POSIXct(Sys.time(), tz="UTC")
+        .Object@processingLog$value <- "create 'wave' object"
+        return(.Object)
+    })
+```
+
+
+A test proves that this works as hoped for.
+```{r}
+ww <- new("wave", time=t, elevation=e)
+summary(ww)
+```
+Notice that the units now appear, without complication to the user. Oh, and
+this object now knows that it is a `wave` object, not an `oce` object \ldots
+our little class is getting smarter by the minute!
+
+## Specializing the `[[` operator
+
+**FIXME**: write something here, e.g. for max value
+
+## OTHER\ldots
+
+Any other ideas for subsections?
+
