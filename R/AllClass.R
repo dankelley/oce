@@ -306,39 +306,38 @@ setMethod(f="subset",
 
 #' Extract Something From an oce Object
 #'
-#' @description
-#' The named item is sought first in
-#' \code{metadata}, where an exact match to the name is required. If
-#' it is not present in the \code{metadata} slot, then a partial-name
-#' match is sought in the \code{data} slot. Failing both
-#' tests, an exact-name match is sought in a field named
-#' \code{dataNamesOriginal} in the object's \code{metadata}
-#' slot, if that field exists. Failing that, \code{NULL} is returned.
+## @description
+## The named item is sought first in
+## \code{metadata}, where an exact match to the name is required. If
+## it is not present in the \code{metadata} slot, then a partial-name
+## match is sought in the \code{data} slot. Failing both
+## tests, an exact-name match is sought in a field named
+## \code{dataNamesOriginal} in the object's \code{metadata}
+## slot, if that field exists. Failing that, \code{NULL} is returned.
+##
+## The full contents of the \code{metadata} slot of an object named
+## \code{x} are returned with \code{x[["metadata"]]}, and
+## \code{x[["data"]]} does the same thing for the data slot.
+## Even if the full contents are not needed, this
+## scheme can be useful in circumventing the searching scheme described
+## in the previous paragraph, e.g. \code{x[["data"]]$longitude}
+## might be used to select longitude from the data slot of \code{x},
+## as an alternative to \code{\link{oceGetData}(x,"longitude")}.
+##
+## To get information on the specialized variants of this function,
+## type e.g. \code{?"[[,adv-method"} for information on extracting
+## data from an object of \code{\link{adv-class}}.
 #'
-#' The full contents of the \code{metadata} slot of an object named
-#' \code{x} are returned with \code{x[["metadata"]]}, and
-#' \code{x[["data"]]} does the same thing for the data slot.
-#' Even if the full contents are not needed, this
-#' scheme can be useful in circumventing the searching scheme described
-#' in the previous paragraph, e.g. \code{x[["data"]]$longitude}
-#' might be used to select longitude from the data slot of \code{x},
-#' as an alternative to \code{\link{oceGetData}(x,"longitude")}.
-#'
-#' To get information on the specialized variants of this function,
-#' type e.g. \code{?"[[,adv-method"} for information on extracting
-#' data from an object of \code{\link{adv-class}}.
+#' @template sub_subTemplate
 #'
 #' @param x An oce object
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
+## @param i The item to extract.
+## @param j Optional additional information on the \code{i} item.
+## @param ... Optional additional information (ignored).
 #'
-#' @examples
-#' data(ctd)
-#' ctd[["longitude"]] # in metadata
-#' head(ctd[["salinity"]]) # in data
-#' data(section)
-#' summary(section[["station", 1]])
+#' @seealso
+#' Many \code{oce} object classes have specialized versions
+#' of \code{[[} that handle the details in specialized way.
 setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -348,9 +347,9 @@ setMethod(f="[[",
                   return(x@data)
               } else if (i == "processingLog") {
                   return(x@processingLog)
-               } else if (length(grep("Unit$", i))) {
-                   ## returns a list
-                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$", "", i)]] else x@metadata[[i]])
+              } else if (length(grep("Unit$", i))) {
+                  ## returns a list
+                  return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$", "", i)]] else x@metadata[[i]])
               } else if (length(grep(" unit$", i))) {
                   ## returns just the unit, an expression
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub(" unit$", "", i)]][[1]] else "")
@@ -360,33 +359,52 @@ setMethod(f="[[",
               } else if (length(grep("Flag$", i))) {
                   ## returns a list
                   return(if ("flags" %in% names(x@metadata)) x@metadata$flags[[gsub("Flag$", "", i)]] else NULL)
+              } else if (i == "sigmaTheta") {
+                  return(swSigmaTheta(x))
+              } else if (i == "sigma0") {
+                  return(swSigma0(x))
+              } else if (i == "spice") {
+                  return(swSpice(x))
               } else {
-                  ## Check metadata
-                  if (i %in% names(x@metadata))
-                      return(x@metadata[[i]])
-                  index <- pmatch(i, names(x@data))
-                  if (!is.na(index[1])) {
-                      return(x@data[[index]])
-                  } else {
-                      ## some special cases
-                      if (i == "sigmaTheta") {
-                          return(swSigmaTheta(x))
-                      } else if (i == "sigma0") {
-                          return(swSigma0(x))
-                      } else if (i == "spice") {
-                          return(swSpice(x))
+                  if (missing(j)) {
+                      ## Since 'j' is not provided, we must search for 'i'. We look first
+                      ## in the metadata slot, but if it's not there, we look in the
+                      ## data slot. In the 'data' case, we also permit partial-match names,
+                      ## as well as non-partial matching to the original names, as
+                      ## contained in a data file.
+                      if (i %in% names(x@metadata))
+                          return(x@metadata[[i]])
+                      ## partial match allowed in data, but not in original-name of data
+                      index <- pmatch(i, names(x@data))
+                      if (!is.na(index[1])) {
+                          return(x@data[[index]])
+                      } else if (i %in% x@metadata$dataNamesOriginal) {
+                          return(x@data[[which(i==x@metadata$dataNamesOriginal)[1]]])
                       } else {
-                          ## Check original data names
-                          if (i %in% x@metadata$dataNamesOriginal)
-                              return(x@data[[which(i==x@metadata$dataNamesOriginal)[1]]])
-                          ## Give up
                           return(NULL)
                       }
+                  } else {
+                      ## New in 2019-May-17: 'j' can be "data" or "metadata"
+                      ## https://github.com/dankelley/oce/issues/1554
+                      if (j == "metadata") {
+                          return(x@metadata[[i]])
+                      } else if (j == "data") {
+                          ## partial match allowed in data, but not in original-name of data
+                          index <- pmatch(i, names(x@data))
+                          if (!is.na(index[1])) {
+                              return(x@data[[i]])
+                          } else if (i %in% x@metadata$dataNamesOriginal) {
+                              return(x@data[[which(i==x@metadata$dataNamesOriginal)[1]]])
+                          } else {
+                              return(NULL)
+                          }
+                      } else {
+                          stop("object[[\"", i, "\", \"", j, "\"]]: second arg must be \"data\" or \"metadata\"", call.=FALSE)
+                      }
                   }
-                  ## if (missing(j) || j != "nowarn")
-                  ##     warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
               }
           })
+
 
 #' @title Replace Parts of an Oce Object
 #' @param x An \code{oce} object, i.e. inheriting from \code{\link{oce-class}}.
@@ -485,6 +503,12 @@ setMethod(f="show",
                                   " at [1,1,1] position\n", sep="")
                           } else {
                               cat("   ", dataNames[i], ", an array of more than 3 dimensions\n")
+                          }
+                      } else if (is.data.frame(d)) {
+                          cat("  ", dataNames[i], ", a data frame with contents:\n", sep="")
+                          for (n in names(d)) {
+                              #cat("    ", n, " (with ", length(d[[n]]), " elements)\n", sep="")
+                              cat("    ", vectorShow(d[[n]], n), sep="")
                           }
                       }
                   }

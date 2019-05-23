@@ -64,7 +64,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     } else {
         isSentinel <- FALSE
     }
-    oceDebug(debug, "isSentinel=", isSentinel, "*as inferred from whether have 0x00 0x70 ID)")
+    oceDebug(debug, "isSentinel=", isSentinel, " as inferred from whether we have 0x00 0x70 ID\n")
     ##
     ## Fixed Leader Data, abbreviated FLD, pointed to by the dataOffset
     FLD <- buf[dataOffset[1]+1:(dataOffset[2] - dataOffset[1])]
@@ -222,7 +222,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ## "WorkHorse Commands and Output Data Format_Mar05.pdf" p130: bytes 55:58 = serialNumber only for REMUS, else spare
     ## "WorkHorse Commands and Output Data Format_Nov07.pdf" p127: bytes 55:58 = serialNumber
     serialNumber <- readBin(FLD[55:58], "integer", n=1, size=4, endian="little")
-    oceDebug(debug, "serialNumber", serialNumber, "from bytes (", FLD[55:58], ")\n")
+    oceDebug(debug, "serialNumber=", serialNumber, ", based on bytes 55:58 of the Fixed Leader Header, which are: 0x", FLD[55], " 0x", FLD[56], " 0x", FLD[57], " 0x", FLD[58], "\n", sep="")
     if (serialNumber == 0)
         serialNumber <- "unknown"
     ##beamAngle <- readBin(FLD[59], "integer", n=1, size=1) # NB 0 in first test case
@@ -529,6 +529,10 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'
 #' @author Dan Kelley and Clark Richards
 #'
+#' @examples
+#' adp <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"))
+#' summary(adp)
+#'
 #' @references
 #' 1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
 #' format.} P/N 957-6156-00 (November 2007).  (Section 5.3 h details the binary
@@ -679,7 +683,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     fromGiven <- !missing(from) # FIXME document THIS
     toGiven <- !missing(to) # FIXME document THIS
     byGiven <- !missing(by) # FIXME document THIS
-    oceDebug(debug, "read.adp.rdi(...",
+    oceDebug(debug, "read.adp.rdi(\"", file, "\"",
              ", from=", if (fromGiven) format(from) else "(missing)",
              ", to=", if (toGiven) format(to) else "(missing)",
              ", by=", if (byGiven) format(by) else "(missing)",
@@ -899,7 +903,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         if (any(profileStart < 1))
             stop("difficulty detecting ensemble (profile) start indices")
         # offset for data type 1 (velocity)
-        oceDebug(debug, vectorShow(profileStart, "profileStart before trimming:"))
+        oceDebug(debug, vectorShow(profileStart, "profileStart before trimming"))
         profilesInFile <- length(profileStart)
         oceDebug(debug, "profilesInFile=", profilesInFile, "\n")
         if (profilesInFile > 0)  {

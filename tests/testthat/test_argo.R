@@ -29,6 +29,14 @@ test_that("[[,argo-method", {
           expect_equal(argo[["theta"]][1:2,1:2],
                        structure(c(9.70945684069746, 9.70995897509861, 9.60251640507005,
                                    9.59993195546977), .Dim=c(2L, 2L)))
+          ## test two ways of selecting by profile sequence number. We do not
+          ## test for equality of the whole objects, because the processingLog
+          ## slots are different.
+          sub1 <- argo[["profile", 2:3]]
+          sub2 <- subset(argo, profile %in% 2:3)
+
+          expect_equal(sub1[["metadata"]], sub2[["metadata"]])
+          expect_equal(sub1[["data"]], sub2[["data"]])
 })
 
 test_that("subset(argo, within=(POLYGON))", {

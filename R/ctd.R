@@ -722,10 +722,10 @@ setMethod(f="[[",
                           swPressure(data$depth)
                       else stop("object's data slot does not contain 'pressure' or 'depth'")
                   }
-              } else if (i == "longitude") {
-                  if ("longitude" %in% metadataNames) metadata$longitude else data$longitude
-              } else if (i == "latitude") {
-                  if ("latitude" %in% metadataNames) metadata$latitude else data$latitude
+              ## } else if (i == "longitude") {
+              ##     if ("longitude" %in% metadataNames) metadata$longitude else data$longitude
+              ## } else if (i == "latitude") {
+              ##     if ("latitude" %in% metadataNames) metadata$latitude else data$latitude
               } else if (i == "time") {
                   ## After checking for 'time' literally in the metadata
                   ## and data slots, we turn to the 10 time variants

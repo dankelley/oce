@@ -357,11 +357,14 @@ test_that("non-CTD object accessors for derived properties", {
           general <- oceSetData(general, "pressure", ctd[["pressure"]])
           general <- oceSetMetadata(general, "longitude", ctd[["longitude"]])
           general <- oceSetMetadata(general, "latitude", ctd[["latitude"]])
+          ## Test whether [[ works on the three special-case derived quantities (see
+          ## R/sw.R near line 363 for how '[[' intercepts these three things at the
+          ## deep level for oce objects, as opposed to CTD objects).
           expect_equal(sigma0, general[["sigma0"]])
-          expect_equal(sigmaTheta, general[["sigmaTheta"]])
-          expect_equal(spice, general[["spice"]])
           expect_equal(sigma0, swSigma0(general))
+          expect_equal(sigmaTheta, general[["sigmaTheta"]])
           expect_equal(sigmaTheta, swSigmaTheta(general))
+          expect_equal(spice, general[["spice"]])
           expect_equal(spice, swSpice(general))
 })
 

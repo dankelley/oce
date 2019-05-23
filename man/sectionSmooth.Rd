@@ -129,14 +129,14 @@ method known as Kriging.
 # Unsmoothed (Gulf Stream)
 library(oce)
 data(section)
-gs <- subset(section, 109<=stationId&stationId<=129)
+gs <- subset(section, 115<=stationId&stationId<=125)
 par(mfrow=c(2, 2))
 
 plot(gs, which="temperature")
 mtext("unsmoothed")
 
 # Spline
-gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
+gsg <- sectionGrid(gs, p=seq(0, 5000, 100))
 gsSpline <- sectionSmooth(gsg, "spline")
 plot(gsSpline, which="temperature")
 mtext("spline-smoothed")

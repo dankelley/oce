@@ -89,6 +89,8 @@ NULL
 setMethod(f="initialize",
           signature="section",
           definition=function(.Object, filename="", sectionId="") {
+              .Object@metadata$units <- NULL # senseless keeping these from oce()
+              .Object@metadata$flags <- NULL # senseless keeping these from oce()
               .Object@metadata$filename <- filename
               .Object@metadata$sectionId <- sectionId
               .Object@processingLog$time <- as.POSIXct(Sys.time())
@@ -2491,6 +2493,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
              sep="", unindent=1)
     warningMessages <- NULL
     n <- length(section@data$station)
+    nxg <- n
     oceDebug(debug, "have", n, "stations in this section\n")
     dp.list <- NULL
     pMax <- max(section[["pressure"]], na.rm=TRUE)
@@ -2535,6 +2538,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
     res <- section
     npt <- length(pt)
     nstation <- length(res[["station"]])
+    nyg <- length(pt)
 
     ## The core of the work -- use ctdDecimate() on each station
     for (i in seq_len(nstation)) {
@@ -2550,15 +2554,19 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
             }
         }
     }
-    for (i in seq_len(nstation)) {
+    for (i in seq_len(nxg)) {
         res@data$station[[i]]@metadata$units <- units
+        res@data$station[[i]]@metadata$flags <- list()
         for (flagname in names(section@data$station[[i]]@metadata$flags)) {
-            res@data$station[[i]]@metadata$flags[flagname] <- rep(NA, nstation)
+            ## Note that the flags are named after those of the flags for *that particular*
+            ## station in the input object. This is different from sectionSmooth().
+            ##> message("sectionGrid ... i ", i, " (nxg=", nxg, "), flagname '", flagname, "'")
+            res@data$station[[i]]@metadata$flags[[flagname]] <- rep(NA, nyg)
         }
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    for (w in warningMessages)
-        res@processingLog <- processingLogAppend(res@processingLog, w)
+    ##for (w in warningMessages)
+    ##    res@processingLog <- processingLogAppend(res@processingLog, w)
     oceDebug(debug, "} # sectionGrid\n", unindent=1)
     res
 }
@@ -2683,14 +2691,14 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' # Unsmoothed (Gulf Stream)
 #' library(oce)
 #' data(section)
-#' gs <- subset(section, 109<=stationId&stationId<=129)
+#' gs <- subset(section, 115<=stationId&stationId<=125)
 #' par(mfrow=c(2, 2))
 #'
 #' plot(gs, which="temperature")
 #' mtext("unsmoothed")
 #'
 #' # Spline
-#' gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
+#' gsg <- sectionGrid(gs, p=seq(0, 5000, 100))
 #' gsSpline <- sectionSmooth(gsg, "spline")
 #' plot(gsSpline, which="temperature")
 #' mtext("spline-smoothed")
@@ -2785,13 +2793,6 @@ sectionSmooth <- function(section, method="spline",
     for (istn in seq_len(nxg)) {
         res@data$station[[istn]] <- new('ctd')
         res@data$station[[istn]][["pressure"]] <- yg
-        ## Note that we put in flags for *all* variables in the output file. This
-        ## is different from the action in sectionGrid(), which inserts flags that
-        ## are tailored to each individual station, because smoothing creates stations
-        ## that all have the same data names, and therefore that should have the same
-        ## flag names.
-        for (flagname in flagnames)
-            res@data$station[[istn]]@metadata$flags[[flagname]] <- rep(NA, nyg)
     }
     if (is.character(method) && method == "spline") {
         oceDebug(debug, "using spline method\n")
@@ -2943,10 +2944,16 @@ sectionSmooth <- function(section, method="spline",
             }
         }
     }
-    for (i in seq_len(nstation)) {
+    for (i in seq_len(nxg)) {
         res@data$station[[i]]@metadata$units <- units
-        for (flagname in names(section@data$station[[i]]@metadata$flags)) {
-            res@data$station[[i]]@metadata$flags[flagname] <- rep(NA, nstation)
+        ## Note that we put in flags for *all* variables in the output file. This
+        ## is different from the action in sectionGrid(), which inserts flags
+        ## tailored to individual stations. However, smoothing creates new stations,
+        ## and puts *all* variables in *each* station, so we need flags for everything.
+        res@data$station[[i]]@metadata$flags <- list()
+        for (flagname in flagnames) {
+            ##> message("sectionSmooth ... i ", i, " (nxg=", nxg, "), flagname '", flagname, "'")
+            res@data$station[[i]]@metadata$flags[[flagname]] <- rep(NA, nyg)
         }
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))

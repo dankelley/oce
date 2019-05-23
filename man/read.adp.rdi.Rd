@@ -337,6 +337,11 @@ plot(d[["time"]][-1], diff(d[["ensembleInFile"]]))
 can be a good way to narrow in on problems.
 }
 
+\examples{
+adp <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"))
+summary(adp)
+
+}
 \references{
 1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
 format.} P/N 957-6156-00 (November 2007).  (Section 5.3 h details the binary

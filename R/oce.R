@@ -650,6 +650,8 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
     } else if (inherits(x, "ctd")) {
         for (name in names(x@data))
             res@data[[name]] <- headTail(x@data[[name]], n)
+        for (fname in names(x@metadata$flags))
+            res@metadata$flags[[fname]] <- headTail(x@metadata$flags[[fname]], n)
     } else if (inherits(x, "coastline")) {
         for (name in c("longitude", "latitude"))
             res@data[[name]] <- headTail(x@data[[name]], n)
@@ -705,9 +707,20 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
             ## For reasons I don't understand, the 'time' items are not vectors.
             if ((is.vector(x@data[[name]]) && !is.list(x@data[[name]])) || name=="time") {
                 res@data[[name]] <- headTail(x@data[[name]], n)
+            } else if (is.data.frame(x@data[[name]])) {
+                res@data[[name]] <- headTail(x@data[[name]], n)
             } else if (is.null(x@data[[name]])) {
             } else {
                 warning("ignoring '", name, "' because it is not a vector\n")
+            }
+        }
+        for (fname in names(x@metadata$flags)) {
+            if (is.list(x@metadata$flags[[fname]])) {
+                ##> message("x@metadata$flags$", fname, " is a list")
+                for (fname2 in names(x@metadata$flags[[fname]]))
+                    res@metadata$flags[[fname]][[fname2]] <- headTail(x@metadata$flags[[fname]][[fname2]], n)
+            } else {
+                res@metadata$flags[[fname]] <- headTail(x@metadata$flags[[fname]], n)
             }
         }
     }
@@ -1179,7 +1192,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
              argShow(log),
              argShow(mar), #",mar=c(", paste(mar, collapse=","), ")",
              argShow(mgp), #",mgp=c(", paste(mgp, collapse=","), ")",
-             argShow(cex), #",cex=", cex,
+             argShow(cex[1]), #", cex[1]=", cex[1], "(length "), length(cex), "),"
              "...) {\n", sep="", unindent=1)
     if (!is.logical(flipy))
         stop("flipy must be TRUE or FALSE")
@@ -1277,7 +1290,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
                 xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
                                           mgp=mgp,
                                           xlim=if (missing(xlim)) range(x) else xlim,
-                                          cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                          cex.axis=cex.axis, cex.main=cex.main,
                                           tformat=tformat,
                                           debug=debug-1)
                 xat <- xlabs
@@ -2613,7 +2626,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     oceDebug(debug, "oce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="", unindent=1)
     oceDebug(debug, "mar=", mar, "\n")
     oceDebug(debug, "mgp=", mgp, "\n")
-    oceDebug(debug, "cex=", cex, " cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
+    oceDebug(debug, "cex[1]=", cex[1], " cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oceDebug(debug, vectorShow(x, "x"))
     tformatGiven <- !missing(tformat)
     if (missing(drawTimeRange))

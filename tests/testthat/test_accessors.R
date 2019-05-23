@@ -105,6 +105,25 @@ test_that("accessor operations (ctd)", {
           expect_equal(head(ctd[["SS"]]), 0.01 + c(29.9210, 29.9205, 29.9206, 29.9219, 29.9206, 29.9164))
 })
 
+## accessors to metadata or data
+## https://github.com/dankelley/oce/issues/1554
+test_that("accessor operations, specifying data or metadata", {
+          data(ctd)
+          expect_equal(ctd[["longitude"]], ctd[["longitude", "metadata"]])
+          expect_null(ctd[["longitude", "data"]])
+          expect_equal(ctd[["temperature"]], ctd[["temperature", "data"]])
+          expect_equal(ctd[["salinity"]], ctd[["salinity", "data"]])
+          expect_equal(ctd[["salinity"]], ctd[["sal00", "data"]]) # originalName
+          ## Now, create something with conflicts
+          o <- new("oce")
+          o <- oceSetMetadata(o, "foo", "metadataBar")
+          o <- oceSetData(o, "foo", "dataBar")
+          expect_equal(o[["foo"]], "metadataBar")
+          expect_equal(o[["foo", "metadata"]], "metadataBar")
+          expect_equal(o[["foo", "data"]], "dataBar")
+          expect_error(o[["foo","unknown"]], "second arg must be")
+})
+
 test_that("derived quantities handled properly (ctd)", {
           ## do we get the same theta by both methods, if the object lacks
           ## theta at the start?
