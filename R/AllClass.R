@@ -25,7 +25,7 @@ setClass("oce",
          prototype=list(metadata=list(units=list(),
                                       flags=list()),
                         data=list(),
-                        processingLog=list(time=as.POSIXct(Sys.time()),
+                        processingLog=list(time=`attr<-`(Sys.time(),"tzone","UTC"),
                                            value="Create oce object")
                         )
          )

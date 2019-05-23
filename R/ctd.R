@@ -391,7 +391,9 @@ setMethod(f="initialize",
               #.Object@metadata$latitude <- NA
               #.Object@metadata$longitude <- NA
               #.Object@metadata$waterDepth <- NA
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              timestamp <- Sys.time()
+              attr(timestamp, "tzone") <- "UTC"
+              .Object@processingLog$time <- timestamp
               .Object@processingLog$value <- "create 'ctd' object"
               return(.Object)
           })
