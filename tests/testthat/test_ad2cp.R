@@ -331,7 +331,7 @@ test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burs
             expect_silent(plot(d1, which="uv"))
             expect_silent(plot(d1, which="uv+ellipse"))
             expect_silent(plot(d1, which="uv+ellipse+arrow"))
-            expect_warning(plot(d1, which="bottomRange"), "cannot handle which= 40 because this instrument lacked bottom tracking")
+            expect_error(plot(d1, which="bottomRange"), "ADP object lacks bottom-tracking data")
             expect_silent(plot(d1, which="progressiveVector"))
           }
 })

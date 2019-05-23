@@ -366,7 +366,7 @@ setMethod(f="[[",
               } else if (i == "spice") {
                   return(swSpice(x))
               } else {
-                  if (missing(j)) {
+                  if (missing(j) || j == "") {
                       ## Since 'j' is not provided, we must search for 'i'. We look first
                       ## in the metadata slot, but if it's not there, we look in the
                       ## data slot. In the 'data' case, we also permit partial-match names,

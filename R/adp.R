@@ -782,38 +782,65 @@ setMethod(f="[[",
                   res
               } else if (i == "va") {
                   ##>message("asking for 'va'")
-                  if (!missing(j) && 1 == length(grep("numeric", j))) {
-                      res <- x@data$va
-                      dim <- dim(res)
-                      res <- as.numeric(res)
-                      dim(res) <- dim
+                  if (!"va" %in% names(x@data)) {
+                      res <- NULL
                   } else {
-                      res <- x@data$va
+                      if (!missing(j) && 1 == length(grep("numeric", j))) {
+                          res <- x@data$va
+                          dim <- dim(res)
+                          res <- as.numeric(res)
+                          dim(res) <- dim
+                      } else {
+                          res <- x@data$va
+                      }
                   }
                   res
               } else if (i == "vq") {
                   ##>message("asking for 'vq'")
-                  if (!missing(j) && 1 == length(grep("numeric", j))) {
-                      res <- x@data$vq
-                      dim <- dim(res)
-                      res <- as.numeric(res)
-                      dim(res) <- dim
+                  if (!"vq" %in% names(x@data)) {
+                      res <- NULL
                   } else {
-                      res <- x@data$vq
+                      if (!missing(j) && 1 == length(grep("numeric", j))) {
+                          res <- x@data$vq
+                          dim <- dim(res)
+                          res <- as.numeric(res)
+                          dim(res) <- dim
+                      } else {
+                          res <- x@data$vq
+                      }
                   }
                   res
               } else if (i == "vg") {
                   ##>message("asking for 'vg'")
-                  if (!missing(j) && 1 == length(grep("numeric", j))) {
-                      res <- x@data$vg
-                      dim <- dim(res)
-                      res <- as.numeric(res)
-                      dim(res) <- dim
+                  if (!"vg" %in% names(x@data)) {
+                      res <- NULL
                   } else {
-                      res <- x@data$vg
+                      if (!missing(j) && 1 == length(grep("numeric", j))) {
+                          res <- x@data$vg
+                          dim <- dim(res)
+                          res <- as.numeric(res)
+                          dim(res) <- dim
+                      } else {
+                          res <- x@data$vg
+                      }
                   }
                   res
-              } else {
+              } else if (i == "vv") {
+                  ##>message("asking for 'vv'")
+                  if (!"vv" %in% names(x@data)) {
+                      res <- NULL
+                  } else {
+                      if (!missing(j) && 1 == length(grep("numeric", j))) {
+                          res <- x@data$vv
+                          dim <- dim(res)
+                          res <- as.numeric(res)
+                          dim(res) <- dim
+                      } else {
+                          res <- x@data$vv
+                      }
+                  }
+                  res
+               } else {
                   callNextMethod()     # [[
               }
           })
@@ -1548,6 +1575,7 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{adp} data
 #' @aliases plot.adp
+## DEVELOPER NOTE: update first test in tests/testthat/test_adp.R if a new 'which' is handled
 setMethod(f="plot",
           signature=signature("adp"),
           definition=function(x, which, j,
@@ -1629,11 +1657,8 @@ setMethod(f="plot",
                   oceDebug(debug, "ylim=c(", paste(ylim, collapse=", "), ")\n")
               if (!inherits(x, "adp"))
                   stop("method is only for objects of class '", "adp", "'")
-
-              if (!(is.null(x@metadata$haveActualData) || x@metadata$haveActualData)) {
-                  warning("In plot,adp-method() : there are no profiles in this dataset", call.=FALSE)
-                  return(invisible())
-              }
+              if (!(is.null(x@metadata$haveActualData) || x@metadata$haveActualData))
+                  stop("In plot,adp-method() : there are no profiles in this dataset", call.=FALSE)
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
               numberOfBeams <- x[["numberOfBeams", j]]
@@ -1819,7 +1844,7 @@ setMethod(f="plot",
               ##oceDebug(debug, "useLayout=", useLayout, "\n")
               showBottom <- ("bottomRange" %in% names(x@data)) && !missing(control) && !is.null(control["drawBottom"])
               if (showBottom)
-                  bottom <- apply(x@data$bottomRange, 1, mean)
+                  bottom <- apply(x@data$bottomRange, 1, mean, na.rm=TRUE)
               oceDebug(debug, "showBottom=", showBottom, "\n")
               if (useLayout) {
                   if (any(which %in% images) || marginsAsImage) {
@@ -1934,7 +1959,7 @@ setMethod(f="plot",
                                   zlim <- c(0, max(z, na.rm=TRUE))
                                   zlab <- c(expression(amp[1]), expression(amp[2]), expression(amp[3]))[which[w]-8]
                               } else {
-                                  stop('cannot plot quality/correlation because both x[["q"]] and x[["amp"]] return NULL')
+                                  stop("In plot,adp-method() : ADP object lacks both 'q' and 'amp' data items", call.=FALSE)
                               }
                           }
                       } else if (which[w] %in% 70:(69+x[["numberOfBeams"]])) {
@@ -1947,7 +1972,7 @@ setMethod(f="plot",
                               zlim <- c(0, 100)
                               zlab <- c(expression(g[1]), expression(g[2]), expression(g[3]))[which[w]-8]
                           } else {
-                              warning("ADP object lacks a 'g' data item")
+                              stop("In plot,adp-method() : ADP object lacks a 'g' data item", call.=FALSE)
                           }
                       } else if (which[w] == 80) {
                           ## vertical beam velocity
@@ -1963,7 +1988,7 @@ setMethod(f="plot",
                                   if (breaksGiven) NULL else c(-1, 1)
                               }
                           } else {
-                              warning("ADP object lacks a 'vv' data item")
+                              stop("In plot,adp-method() : ADP object lacks a 'vv' data item, so which=80 and which=\"vv\" cannot work", call.=FALSE)
                           }
                       } else if (which[w] == 81) {
                           ## vertical beam amplitude
@@ -1977,7 +2002,7 @@ setMethod(f="plot",
                               }
                               zlab <- expression(a[vert])
                           } else {
-                              warning("ADP object lacks a 'va' data item")
+                              stop("In plot,adp-method() : ADP object lacks a 'va' data item, so which=81 and which=\"va\" cannot work", call.=FALSE)
                           }
                       } else if (which[w] == 82) {
                           ## vertical beam correlation
@@ -1991,7 +2016,7 @@ setMethod(f="plot",
                               }
                               zlab <- expression(q[vert])
                           } else {
-                              warning("ADP object lacks a 'vq' data item")
+                              stop("In plot,adp-method() : ADP object lacks a 'vq' data item, so which=82 and which=\"vq\" cannot work", call.=FALSE)
                           }
                       } else if (which[w] == 83) {
                           ## vertical beam percent good
@@ -2005,7 +2030,7 @@ setMethod(f="plot",
                               }
                               zlab <- expression(g[vert])
                           } else {
-                              warning("ADP object lacks a 'vq' data item")
+                              stop("In plot,adp-method() : ADP object lacks a 'vg' data item, so which=83 and which=\"vg\" cannot work", call.=FALSE)
                           }
                       } else {
                           skip <- TRUE
@@ -2314,7 +2339,7 @@ setMethod(f="plot",
                                                  tformat=tformat,
                                                  debug=debug-1)
                           } else {
-                              warning("cannot plot beam/velo 1 because the device no beams")
+                              stop("In plot,adp-method() : cannot plot beam/velo 1 because the device no beams", call.=FALSE)
                           }
                       } else if (which[w] == 20) {
                           if (x[["numberOfBeams"]] > 1) {
@@ -2337,7 +2362,7 @@ setMethod(f="plot",
                                                  tformat=tformat,
                                                  debug=debug-1)
                           } else {
-                              warning("cannot plot beam/velo 2 because the device has only ", x[["numberOfBeams"]], " beams")
+                              stop("In plot,adp-method() : cannot plot beam/velo 2 because the device has only ", x[["numberOfBeams"]], " beams", call.=FALSE)
                           }
                       } else if (which[w] == 21) {
                           if (x[["numberOfBeams"]] > 2) {
@@ -2360,7 +2385,7 @@ setMethod(f="plot",
                                                  tformat=tformat,
                                                  debug=debug-1)
                           } else {
-                              warning("cannot plot beam/velo 3 because the device has only", x[["numberOfBeams"]], "beams")
+                              stop("In plot,adp-method() : cannot plot beam/velo 3 because the device has only", x[["numberOfBeams"]], "beams", call.=FALSE)
                           }
                       } else if (which[w] == 22) {
                           if (x[["numberOfBeams"]] > 3) {
@@ -2383,13 +2408,13 @@ setMethod(f="plot",
                                                  tformat=tformat,
                                                  debug=debug-1)
                           } else {
-                              warning("cannot plot beam/velo 4 because the device has only", x[["numberOfBeams"]], "beams")
+                              stop("In plot,adp-method() : cannot plot beam/velo 4 because the device has only", x[["numberOfBeams"]], "beams", call.=FALSE)
                           }
                       } else  if (which[w] == 55) {
-                                       ## heaving
+                          ## heaving
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           dt <- as.numeric(x[["time"]][2]) - as.numeric(x[["time"]][1])
-                          ats <- oce.plot.ts(x[["time", j]], dt * cumsum(apply(x[["v", j]][, , 3], 1, mean)),
+                          ats <- oce.plot.ts(x[["time", j]], dt * cumsum(apply(x[["v", j]][, , 3], 1, mean, na.rm=TRUE)),
                                              xlim=if (xlimGiven) xlim[w, ] else tlim,
                                              ylim=if (ylimGiven) ylim[w, ],
                                              xaxs="i",
@@ -2450,7 +2475,7 @@ setMethod(f="plot",
                                                      debug=debug-1)
                               }
                           } else {
-                              warning("cannot handle which= ", which[w], " because this instrument lacked bottom tracking")
+                              stop("In plot,adp-method() : ADP object lacks bottom-tracking data, so which=40:44 and which=\"bottomRange[*]\" cannot work", call.=FALSE)
                           }
                       } else if (which[w] %in% 50:54) {
                           ## bottom velocity
@@ -2477,7 +2502,7 @@ setMethod(f="plot",
                                                      debug=debug-1)
                               }
                           } else {
-                              warning("cannot handle which= ", which[w], " because this instrument lacked bottom tracking")
+                              stop("In plot,adp-method() : ADP object lacks bottom-tracking data, so which=50:54 and which=\"bottomVelocity[*]\" cannot work", call.=FALSE)
                           }
                       }
 
@@ -2511,10 +2536,10 @@ setMethod(f="plot",
                           }
                           if (!missing(control) && !is.null(control$bin)) {
                               if (control$bin < 1)
-                                  stop("cannot have control$bin less than 1, but got ", control$bin)
+                                  stop("In plot,adp-method() : cannot have control$bin less than 1, but got ", control$bin, call.=FALSE)
                               max.bin <- dim(x[["v"]])[2]
                               if (control$bin > max.bin)
-                                  stop("cannot have control$bin larger than ", max.bin, " but got ", control$bin)
+                                  stop("In plot,adp-method() : cannot have control$bin larger than ", max.bin, " but got ", control$bin, call.=FALSE)
                               u <- U[, control$bin] #EAC: bug fix, attempt to subset 2D matrix by 3 dimensions
                               v <- V[, control$bin]
                           } else {
@@ -2539,7 +2564,7 @@ setMethod(f="plot",
                       } else if (which[w] %in% 24:27) {
                           par(mar=c(mgp[1]+1, mgp[1]+1, 1, 1))
                           if (which[w] == 27 && x[["numberOfBeams"]] < 4) {
-                              warning("cannot use which=27 for a 3-beam instrument")
+                              stop("In plot,adp-method() : cannot use which=27 for a 3-beam instrument", call.=FALSE)
                           } else {
                               value <- apply(x[["v", j]][, , which[w]-23], 2, mean, na.rm=TRUE)
                               yy <- x[["distance", j]]
@@ -2563,10 +2588,10 @@ setMethod(f="plot",
                       n <- dim(x[["v", j]])[1]
                       if (!missing(control) && !is.null(control$bin)) {
                           if (control$bin < 1)
-                              stop("cannot have control$bin less than 1, but got ", control$bin)
+                              stop("In plot,adp-method() : cannot have control$bin less than 1, but got ", control$bin, call.=FALSE)
                           max.bin <- dim(x[["v"]])[2]
                           if (control$bin > max.bin)
-                              stop("cannot have control$bin larger than ", max.bin, " but got ", control$bin)
+                              stop("In plot,adp-method() : cannot have control$bin larger than ", max.bin, " but got ", control$bin, call.=FALSE)
                           u <- x[["v", j]][, control$bin, 1]
                           v <- x[["v", j]][, control$bin, 2]
                       } else {
@@ -2637,10 +2662,10 @@ setMethod(f="plot",
                           if (which[w] >= 30) {
                               if (!missing(control) && !is.null(control$bin)) {
                                   if (control$bin < 1)
-                                      stop("cannot have control$bin less than 1, but got ", control$bin)
+                                      stop("In plot,adp-method() : cannot have control$bin less than 1, but got ", control$bin, call.=FALSE)
                                   max.bin <- dim(x[["v"]])[2]
                                   if (control$bin > max.bin)
-                                      stop("cannot have control$bin larger than ", max.bin, " but got ", control$bin)
+                                      stop("In plot,adp-method() : cannot have control$bin larger than ", max.bin, " but got ", control$bin, call.=FALSE)
                                   umean <- mean(x[["v", j]][, control$bin, 2], na.rm=TRUE)
                                   vmean <- mean(x[["v", j]][, control$bin, 2], na.rm=TRUE)
                               } else {
@@ -2661,7 +2686,7 @@ setMethod(f="plot",
                               if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
                                   plot(x@metadata$longitude, x@metadata$latitude, xlab="", ylab="")
                               } else {
-                                  warning("no latitude or longitude in object's metadata, so cannot draw map")
+                                  stop("In plot,adp-method() : no latitude or longitude in object's metadata, so cannot draw map", call.=FALSE)
                               }
                           } else {
                               ## named coastline
@@ -2703,10 +2728,10 @@ setMethod(f="plot",
                                   plot(coastline, clatitude=lat, clongitude=lon, span=50)
                                   points(x[["longitude"]], x[["latitude"]], cex=2*par('cex'))
                               } else {
-                                  warning("nothing to map")
+                                  stop("In plot,adp-method() : nothing to map", call.=FALSE)
                               }
                           } else {
-                              warning("nothing to map")
+                              stop("In plot,adp-method() : nothing to map", call.=FALSE)
                           }
                       }
                   } else {

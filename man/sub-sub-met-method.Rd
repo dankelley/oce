@@ -75,7 +75,8 @@ certain object types.
 
 \item After these possibilities are eliminated,
 the action depends on whether \code{j} has been provided.
-If \code{j} is not provided, then \code{i} is sought
+If \code{j} is not provided, or is the string \code{""},
+then \code{i} is sought
 in the \code{metadata} slot, and then in the \code{data} slot,
 returning whichever is found first.  In other words, if \code{j}
 is not provided, the \code{metadata} slot takes preference over
