@@ -85,7 +85,7 @@ setMethod(f="initialize",
               if (!missing(a)) .Object@data$a <- a
               if (!missing(q)) .Object@data$q <- q
               .Object@metadata$filename <- if (missing(filename)) "" else filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'adv' object"
               return(.Object)
           })

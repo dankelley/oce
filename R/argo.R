@@ -249,7 +249,7 @@ setMethod(f="initialize",
               if (!missing(pressure)) .Object@data$pressure <- pressure
               .Object@metadata$filename <- if (missing(filename)) "" else filename
               .Object@metadata$dataMode <- if (missing(dataMode)) "" else dataMode
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'argo' object"
               return(.Object)
           })

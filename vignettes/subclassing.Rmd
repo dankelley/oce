@@ -238,10 +238,11 @@ setMethod(f="initialize",
         }
         .Object@data$time <- if (missing(time)) NULL else time
         .Object@data$elevation <- if (missing(elevation)) NULL else elevation
-        .Object@processingLog$time <- as.POSIXct(Sys.time(), tz="UTC")
+        .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'wave' object"
         return(.Object)
-    })
+    }
+)
 ```
 
 
@@ -256,9 +257,42 @@ our little class is getting smarter by the minute!
 
 ## Specializing the `[[` operator
 
-**FIXME**: write something here, e.g. for max value
+As in the previous section, the key of specializing how `[[` works is to use
+`setMethod()`, but this time the function is named `"[["`. Suppose we want to
+permit e.g. `w[["peak"]]` as a way to find the maximum value of wave height.
+This becomes a call to the `"[["` function, with first argument as `w`, and
+second argument as `"peak"`. We can handle this with:
+```{r}
+setMethod(f="[[",
+    signature(x="wave", i="ANY", j="ANY"),
+    definition=function(x, i, j, ...) {
+        if (i == "peak") {
+           return(max(x[["elevation"]], na.rm=TRUE))
+        } else {
+           callNextMethod()
+        }
+    }
+)
+```
 
-## OTHER\ldots
+(The details of the `signature` definition are explained in the documentation
+provided by `?setMethod`, and readers ought to study that material before
+changing the `signature` definition.)
 
-Any other ideas for subsections?
+The important thing to focus on is the `if` block in the function definition.
+Called as e.g. `w[["peak"]]` causes `i` to equal `"peak"`, and so the return
+value will be the maximum elevation. However, in all other instances, the
+return values is provided by `callNextMethod()`, and what that does is to dig
+one level deeper for a way to handle `[[`. At that deeper level, it finds the
+`oce` definition, the details of which can be found with `?"[[,oce-method"`.
+
+The test
+```{r}
+w[["peak"]]
+str(w[["elevation"]])
+```
+verifies that our new code works for getting the peak value, and that it falls
+back to the `oce` code for other calls.
+
+
 

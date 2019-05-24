@@ -62,7 +62,7 @@ setMethod(f="initialize",
                   .Object@metadata$units$fluorescence <- list(unit=expression(mu * g / l), scale="")
               }
               .Object@metadata$filename <- if (missing(filename)) "" else filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'lobo' object"
               return(.Object)
           })

@@ -391,9 +391,7 @@ setMethod(f="initialize",
               #.Object@metadata$latitude <- NA
               #.Object@metadata$longitude <- NA
               #.Object@metadata$waterDepth <- NA
-              timestamp <- Sys.time()
-              attr(timestamp, "tzone") <- "UTC"
-              .Object@processingLog$time <- timestamp
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'ctd' object"
               return(.Object)
           })
@@ -2797,7 +2795,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 
     if (metadata) {
         if (format == "csv") {
-            cat(paste("R/oce file exported at time ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n", sep=""), file=con)
+            cat(paste("R/oce file exported at time ", format(presentTime(), "%Y-%m-%d %H:%M:%S %Z"), "\n", sep=""), file=con)
             cat(paste("Source file = \"", object[["filename"]], "\"\n", sep=""), file=con)
             cat(paste("Ship = ", object[["ship"]], "\n", sep=""), file=con)
             cat(paste("Cruise = ", object[["cruise"]], "\n", sep=""), file=con)

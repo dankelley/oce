@@ -52,7 +52,7 @@ setMethod(f="initialize",
               .Object@data$time <- if (missing(time)) NULL else time
               .Object@metadata$filename <- filename
               .Object@metadata$deploymentType <- "" # see ctd
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'odf' object"
               return(.Object)
           })

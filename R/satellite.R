@@ -14,7 +14,7 @@ setMethod(f="initialize",
           definition=function(.Object, filename, subclass) {
               if (!missing(filename))
                   .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- if (missing(subclass))
                   "create 'satellite' object" else paste("create '", subclass, "' object")
               return(.Object)

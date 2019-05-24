@@ -85,7 +85,7 @@ setMethod(f="initialize",
               if (!missing(u)) .Object@data$u <- u
               if (!missing(v)) .Object@data$v <- v
               .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'met' object"
               return(.Object)
           })
@@ -336,7 +336,7 @@ download.met <- function(id, year, month, deltat, destdir=".", destfile,
         stop("deltat=\"", deltat, "\" is not supported; try \"hour\" or \"month\"")
     deltat <- deltatChoices[deltatIndex]
     if (deltat == "hour") {
-        today <- as.POSIXlt(Sys.time())
+        today <- as.POSIXlt(presentTime())
         if (missing(year))
             year <- today$year + 1900
         if (missing(month)) {

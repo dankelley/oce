@@ -27,7 +27,7 @@ setMethod(f="initialize",
           signature="tidem",
           definition=function(.Object) {
               .Object@metadata$version <- ""
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'tidem' object"
               return(.Object)
           })
@@ -1663,7 +1663,7 @@ webtide <- function(action=c("map", "predict"),
         }
     } else if (action == "predict") {
         if (missing(time))
-            time <- seq.POSIXt(from=Sys.time(), by="15 min", length.out=7*4*24)
+            time <- seq.POSIXt(from=presentTime(), by="15 min", length.out=7*4*24) # Q: what about timezone?
         if (missing(node)) {
             if (missing(longitude) || missing(latitude))
                 stop("'longitude' and 'latitude' must be given unless 'node' is given")

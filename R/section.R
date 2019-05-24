@@ -93,7 +93,7 @@ setMethod(f="initialize",
               .Object@metadata$flags <- NULL # senseless keeping these from oce()
               .Object@metadata$filename <- filename
               .Object@metadata$sectionId <- sectionId
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'section' object"
               return(.Object)
           })

@@ -44,7 +44,7 @@ setMethod(f="initialize",
                   ##message("extra column named: ", dotsNames[i])
                   .Object@data[dotsNames[i]] <- dots[i]
               }
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'ladp' object"
               return(.Object)
           })

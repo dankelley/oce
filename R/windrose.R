@@ -30,7 +30,7 @@ setClass("windrose", contains="oce")
 setMethod(f="initialize",
           signature="windrose",
           definition=function(.Object) {
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'windrose' object"
               return(.Object)
           })

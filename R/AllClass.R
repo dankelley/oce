@@ -1,3 +1,26 @@
+#' Get the present time, in a stated timezone
+#'
+#' @param tz String indicating the desired timezone. The default is
+#' to use UTC, which is used very commonly in oceanographic work. To
+#' get the local time, use \code{tz=""} or \code{tz=NULL},
+#'
+#' @examples
+#' presentTime() # UTC
+#' presentTime("") # the local timezone
+#'
+#' @return A \code{\link{POSIXct}} object holding the present time, in the
+#' indicated timezone.
+## NOTE: we need to define this here so setClass() knows about it;
+## NOTE: having it in NAMESPACE is not sufficient.
+presentTime <- function(tz="UTC")
+{
+    t <- Sys.time()
+    if (!is.null(tz) && nchar(tz) > 0)
+        attr(t, "tzone") <- tz
+    t
+}
+
+
 #' Base Class for oce Objects
 #'
 #' This is mainly used within oce to create sub-classes, although
@@ -22,12 +45,9 @@ setClass("oce",
          representation(metadata="list",
                         data="list",
                         processingLog="list"),
-         prototype=list(metadata=list(units=list(),
-                                      flags=list()),
+         prototype=list(metadata=list(units=list(), flags=list()),
                         data=list(),
-                        processingLog=list(time=`attr<-`(Sys.time(),"tzone","UTC"),
-                                           value="Create oce object")
-                        )
+                        processingLog=list(time=presentTime(), value="Create oce object"))
          )
 
 #' Summarize an oce Object
@@ -884,7 +904,7 @@ setMethod("initializeFlags",
               initializeFlagsInternal(object, name, value, debug)
           })
 
-#' @templateVar class oce 
+#' @templateVar class oce
 #' @templateVar details This is a low-level internal function used by user-accessible functions.
 #' @template initializeFlagsTemplate
 initializeFlagsInternal <- function(object, name=NULL, value=NULL, debug=getOption("oceDebug"))
@@ -946,7 +966,7 @@ setMethod("initializeFlagScheme",
               initializeFlagSchemeInternal(object, name, mapping, default, debug)
           })
 
-#' @templateVar class oce 
+#' @templateVar class oce
 #' @templateVar details This is a low-level internal function used by user-accessible functions.
 #' @template initializeFlagSchemeTemplate
 initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, default=NULL, debug=0)

@@ -101,7 +101,7 @@ setMethod(f="initialize",
               ## .Object@data$salinity <- if (missing(salinity)) NULL else salinity
               ## .Object@data$temperature <- if (missing(temperature)) NULL else temperature
               ## .Object@data$pressure <- if (missing(pressure)) NULL else pressure
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'cm' object"
               return(.Object)
           })

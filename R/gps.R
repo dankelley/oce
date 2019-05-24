@@ -30,7 +30,7 @@ setMethod(f="initialize",
               if (!missing(longitude)) .Object@data$longitude <- as.numeric(longitude)
               if (!missing(latitude)) .Object@data$latitude <- as.numeric(latitude)
               .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'gps' object"
               return(.Object)
           })

@@ -11,7 +11,7 @@ using namespace Rcpp;
    library(oce)
    library(Rcpp)
    sourceCpp("src/time.cpp")
-   now <- Sys.time()
+   now <- presentTime()
    julianDay <- as.integer(julianDay(now))     # julian day
    sec <- 3600                            # seconds (made into milliseconds below)
    sec <- seq(0, 86400, 3600/2)
@@ -83,7 +83,7 @@ library(oce)
   dyn.load("ep.so")
 
 ## construct fake data, half-hourly on the present
-now <- Sys.time()
+now <- presentTime()
   jday <- as.integer(julianDay(now))     # julian day 
   sec <- 3600                            # seconds (made into milliseconds below)
   sec <- seq(0, 86400, 3600/2)

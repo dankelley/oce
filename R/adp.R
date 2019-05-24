@@ -281,7 +281,7 @@ setMethod(f="initialize",
               .Object@metadata$units$distance <- list(unit=expression(m), scale="")
               .Object@metadata$oceCoordinate <- oceCoordinate # FIXME: should check that it is allowed
               .Object@metadata$orientation  <- orientation # FIXME: should check that it is allowed
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'adp' object"
               return(.Object)
           })

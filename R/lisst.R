@@ -71,7 +71,7 @@ setMethod(f="initialize",
               .Object@metadata$filename <- filename
               .Object@metadata$longitude <- longitude
               .Object@metadata$latitude <- latitude
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- paste("create 'lisst' object with",
                                                    " filename=\"", filename, "\"",
                                                    ", longitude=", longitude,

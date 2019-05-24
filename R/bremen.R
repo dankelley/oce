@@ -33,7 +33,7 @@ setMethod(f="initialize",
           definition=function(.Object, filename="") {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'bremen' object"
               return(.Object)
           })

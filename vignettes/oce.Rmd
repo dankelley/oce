@@ -693,7 +693,7 @@ setMethod(f="initialize",
               .Object@data$time <- time
               .Object@data$u <- u
               .Object@data$v <- v
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'uv' object"
               return(.Object)
           })

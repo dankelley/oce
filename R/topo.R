@@ -92,7 +92,7 @@ setMethod(f="initialize",
               if (!missing(z)) .Object@data$z <- z
               if (!missing(units)) .Object@metadata$units <- units
               .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'topo' object"
               return(.Object)
           })

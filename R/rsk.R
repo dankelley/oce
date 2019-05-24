@@ -74,7 +74,7 @@ setMethod(f="initialize",
               ## 20160515 ## .Object@metadata$units$pressure <- list(unit=expression(dbar), scale="")
               .Object@metadata$pressureType <- "absolute"
               .Object@metadata$pressureAtmospheric <- 10.1325
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'rsk' object"
               return(.Object)
           })

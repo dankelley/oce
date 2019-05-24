@@ -55,7 +55,7 @@ setMethod(f="initialize",
           definition=function(.Object, filename) {
               if (!missing(filename))
                   .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'amsr' object"
               return(.Object)
           })

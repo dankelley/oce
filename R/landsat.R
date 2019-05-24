@@ -207,7 +207,7 @@ setMethod(f="initialize",
           definition=function(.Object, filename) {
               if (!missing(filename))
                   .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'landsat' object"
               return(.Object)
           })
@@ -1120,7 +1120,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
     options <- options('warn') # avoid readTIFF() warnings about geo tags
     options(warn=-1)
     ##> cat("BEFORE\n")
-    ##> print(Sys.time())
+    ##> print(presentTime())
     for (b in seq_along(band)) {
         ## 'band' is numeric
         ## message("b:", b, " band: ", header$bandnames[b], " suffix: ", header$filesuffices[b])
@@ -1158,7 +1158,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
         ##> print("--DONE assembling bytes")
     }
     ##> cat("AFTER\n")
-    ##> print(Sys.time())
+    ##> print(presentTime())
     options(warn=options$warn)
     res@metadata$satellite <- "landsat"
     res@processingLog <- processingLogAppend(res@processingLog,

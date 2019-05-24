@@ -61,7 +61,7 @@ setMethod(f="initialize",
               .Object@data$latitude <- latitude
               .Object@metadata$filename <- filename
               .Object@metadata$fillable <- fillable
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'coastline' object"
               return(.Object)
           })

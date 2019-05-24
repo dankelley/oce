@@ -102,7 +102,7 @@ setMethod(f="initialize",
                   .Object@data$elevation <- elevation
               if (!missing(time))
                   .Object@data$time <- time
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'sealevel' object"
               return(.Object)
           })
