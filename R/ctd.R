@@ -5115,7 +5115,10 @@ plotProfile <- function (x,
                           side=3, line=axisNameLoc, cex=par("cex"))
                 } else {
                     unitChar <- as.character(unit$unit)
-                    if (0 == length(unitChar) | unitChar == "ratio") {
+                    if (0 == length(unitChar)) {
+                        mtext(resizableLabel("C", "x", debug=debug-1),
+                              side=3, line=axisNameLoc, cex=par("cex"))
+                    } else if (unitChar == "ratio") {
                         mtext(resizableLabel("C", "x", debug=debug-1),
                               side=3, line=axisNameLoc, cex=par("cex"))
                     } else if (unitChar == "mS/cm") {
@@ -5145,7 +5148,10 @@ plotProfile <- function (x,
                               side=3, line=axisNameLoc, cex=par("cex"))
                     } else {
                         unitChar <- as.character(unit$unit)
-                        if (0 == length(unitChar) | unitChar == "ratio") {
+                        if (0 == length(unitChar)) {
+                            mtext(resizableLabel("C", "x", debug=debug-1),
+                                  side=3, line=axisNameLoc, cex=par("cex"))
+                        } else if (unitChar == "ratio") {
                             mtext(resizableLabel("C", "x", debug=debug-1),
                                   side=3, line=axisNameLoc, cex=par("cex"))
                         } else if (unitChar == "mS/cm") {
