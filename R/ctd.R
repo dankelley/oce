@@ -1866,7 +1866,8 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
                 } else {
                     if (datumName != "pressure" && datumName != "flag") {
                         if (all(is.na(x@data[[datumName]]))) {
-                            dataNew[[datumName]] <- rep(NA, pt)
+                            cat('shit')
+                            dataNew[[datumName]] <- rep(NA, npt)
                         } else {
                             dataNew[[datumName]] <- binMean1D(p, x@data[[datumName]], xbreaks=pbreaks)$result
                         }
