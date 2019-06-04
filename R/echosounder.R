@@ -1130,6 +1130,6 @@ read.echosounder <- function(file, channel=1, soundSpeed,
     res@processingLog <- processingLogAppend(res@processingLog,
                                              paste("read.echosounder(\"", filename, "\", channel=", channel, ", soundSpeed=",
                                                    if (missing(soundSpeed)) "(missing)" else soundSpeed, ", tz=\"", tz, "\", debug=", debug, ", processingLog)", sep=""))
-    .C("biosonics_free_storage", package="oce") # clear temporary storage space
+    .C("biosonics_free_storage", PACKAGE="oce") # clear temporary storage space
     res
 }
