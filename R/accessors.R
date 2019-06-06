@@ -31,6 +31,10 @@ oceDeleteData <- function(object, name)
         stop("oceDeleteData() only works for oce objects")
     if (name %in% names(object@data))
         object@data[[name]] <- NULL
+    if (name %in% names(object@metadata$units))
+        object@metadata$units[[name]] <- NULL
+    if (name %in% names(object@metadata$flags))
+        object@metadata$flags[[name]] <- NULL
     object@processingLog <- processingLogAppend(object@processingLog, paste("oceDeleteData() removed data$", name, sep="", collapse=""))
     object
 }
