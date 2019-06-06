@@ -871,6 +871,11 @@ ODFListFromHeader <- function(header)
 #' key-value pairs.) The naming of list entries is patterned on
 #' that in the ODF header, except that \code{\link{unduplicateNames}}
 #' is used to transform repeated names by adding numerical suffices.
+#' Note: on June 6, 2019, the default value of \code{header} was
+#' changed from \code{NULL} to \code{"list"}; in addition, the resultant
+#' list was made to contain every single item in the ODF header, with
+#' \code{\link{unduplicateNames}} being used to append integers to
+#' distinguish between repeated names in the ODF format.
 #'
 #' @template debugTemplate
 #'
@@ -900,7 +905,7 @@ ODFListFromHeader <- function(header)
 #'}
 #'
 #' @family things related to \code{odf} data
-read.odf <- function(file, columns=NULL, header=NULL, debug=getOption("oceDebug"))
+read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.odf(\"", file, "\", ...) {\n", unindent=1, sep="")
     if (!is.null(header)) {
@@ -937,7 +942,55 @@ read.odf <- function(file, columns=NULL, header=NULL, debug=getOption("oceDebug"
         }
         pushBack(lines, file)
     }
+    if (length(dataStart) < 1)
+        stop("ODF files must contain a line with \"-- DATA --\"")
+    res <- new("odf")
     nlines <- length(lines)
+    ## Make a list holding all the information in the header. Note that this is entirely
+    ## separate from e.g. inference of longitude and latitude from a header.
+    h <- gsub(",[ ]*$", "", lines[seq(1L, dataStart - 1)]) # note trimming trailing comma and maybe whitespace
+    ## Handle the case where there is a blank at the start of each line. (We only check
+    ## the first line, actually.) I have no idea whether this start-with-blank is part of the
+    ## ODF format, but I *can* say that quite a few of the ODF files on my computer have
+    ## this property.
+    if (length(grep("^ ", h)))
+        h <- gsub("^ ", "", h)
+
+    categoryIndex <- grep("^[a-zA-Z]", h)
+    categoryNames <- h[categoryIndex]
+    headerlist <- list()
+    if (length(categoryIndex > 0))
+        headerlist <- vector("list", length(categoryIndex))
+    oceDebug(debug > 2, "headerlist will have", length(headerlist), "items\n")
+    names(headerlist) <- categoryNames
+    indexCategory <- 0
+    for (i in seq_along(h)) {
+        if (length(grep("^[a-zA-Z]", h[i]))) {
+            indexCategory <- indexCategory + 1
+            headerlist[[indexCategory]] <- list()
+            ##> message("* '", h[i], "' is indexCategory ", indexCategory)
+        } else {
+            if (0 == indexCategory) {
+                warning("cannot parse ODF header, a header line started with a space, but no previous line started with non-space")
+                header <- NULL
+                break
+            }
+            exp <- strsplit(h[i], "=")[[1]]
+            lhs <- trimString(exp[1])
+            rhs <- trimString(exp[2])
+            oceDebug(debug > 2, "h[", i, "]='", h[i], "'\n", sep="")
+            #lhs <- gsub("^[ ]*([^ ]*)[ ].*$", "\\1", h[i])
+            oceDebug(debug > 2, "lhs='", lhs, "'\n", sep="")
+            #rhs <- gsub("^.*=[ ]*(.*)$", "\\1", h[i])
+            oceDebug(debug > 2, "rhs='", rhs, "'\n", sep="")
+            headerlist[[indexCategory]][[lhs]] <- rhs
+        }
+    }
+    if (length(headerlist)) {
+        names(headerlist) <- unduplicateNames(names(headerlist))
+    }
+    res@metadata$header <- headerlist
+    ## browser()
 
     ## Learn about each parameter from its own header block
     linePARAMETER_HEADER <- grep("^\\s*PARAMETER_HEADER,\\s*$", lines)
@@ -1109,7 +1162,6 @@ read.odf <- function(file, columns=NULL, header=NULL, debug=getOption("oceDebug"
     ##names <- ODFName2oceName(ODFnames, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
     oceDebug(debug, "oce names:", paste(namesUnits$names, collapse=" "), "\n")
 
-    res <- new("odf")
     res@metadata$depthOffBottom <- findInHeader("DEPTH_OFF_BOTTOM", lines, returnOnlyFirst=TRUE, numeric=TRUE)
     res@metadata$initialLatitude <- findInHeader("INITIAL_LATITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
     res@metadata$initialLongitude <- findInHeader("INITIAL_LONGITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
@@ -1207,7 +1259,7 @@ read.odf <- function(file, columns=NULL, header=NULL, debug=getOption("oceDebug"
     } else if (header == "character") {
         res@metadata$header <- lines[seq(1L, dataStart-1L)]
     } else if (header == "list") {
-        res@metadata$header <- ODFListFromHeader(lines[seq(1L, dataStart-1L)])
+        res@metadata$header <- headerlist # ODFListFromHeader(lines[seq(1L, dataStart-1L)])
     } else {
         stop("problem decoding header argument; please report an error")
     }

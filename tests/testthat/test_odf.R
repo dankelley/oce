@@ -117,7 +117,9 @@ test_that("ODF header", {
           f <- system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce")
           expect_warning(d <- read.odf(f),
                          "\"CRAT_01\" should be unitless")
-          expect_null(d[["header"]])
+          expect_true(is.list((d[["header"]])))
+          expect_equal(length(d[["header"]]), 32)
+
           expect_warning(d <- read.odf(f, header="character"),
                          "\"CRAT_01\" should be unitless")
           expect_true(is.vector(d[["header"]]))

@@ -4,7 +4,7 @@
 \alias{read.odf}
 \title{Read an ODF file}
 \usage{
-read.odf(file, columns = NULL, header = NULL,
+read.odf(file, columns = NULL, header = "list",
   debug = getOption("oceDebug"))
 }
 \arguments{
@@ -30,7 +30,12 @@ returned object will contain a \code{list} named \code{header} that
 has lists as its entries. (The sub-lists are in the form of
 key-value pairs.) The naming of list entries is patterned on
 that in the ODF header, except that \code{\link{unduplicateNames}}
-is used to transform repeated names by adding numerical suffices.}
+is used to transform repeated names by adding numerical suffices.
+Note: on June 6, 2019, the default value of \code{header} was
+changed from \code{NULL} to \code{"list"}; in addition, the resultant
+list was made to contain every single item in the ODF header, with
+\code{\link{unduplicateNames}} being used to append integers to
+distinguish between repeated names in the ODF format.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
