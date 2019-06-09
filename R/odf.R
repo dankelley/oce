@@ -969,6 +969,7 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
             indexCategory <- indexCategory + 1
             headerlist[[indexCategory]] <- list()
             ##> message("* '", h[i], "' is indexCategory ", indexCategory)
+            lhsUsed <- NULL
         } else {
             if (0 == indexCategory) {
                 warning("cannot parse ODF header, a header line started with a space, but no previous line started with non-space")
@@ -980,10 +981,22 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
             rhs <- trimString(exp[2])
             oceDebug(debug > 2, "h[", i, "]='", h[i], "'\n", sep="")
             #lhs <- gsub("^[ ]*([^ ]*)[ ].*$", "\\1", h[i])
-            oceDebug(debug > 2, "lhs='", lhs, "'\n", sep="")
+            oceDebug(debug > 2, "  lhs='", lhs, "' (before renaming to remove duplicates)\n", sep="")
+            if (lhs %in% lhsUsed) {
+                ok <- FALSE
+                for (i in 2:1000) {
+                    if (!(paste(lhs, i, sep="") %in% lhsUsed)) {
+                        lhs <- paste(lhs, i, sep="")
+                        ok <- TRUE
+                        break
+                    }
+                }
+            }
+            oceDebug(debug > 2, "  lhs='", lhs, "' (after renaming to remove duplicates)\n", sep="")
             #rhs <- gsub("^.*=[ ]*(.*)$", "\\1", h[i])
-            oceDebug(debug > 2, "rhs='", rhs, "'\n", sep="")
+            oceDebug(debug > 2, "  rhs='", rhs, "'\n", sep="")
             headerlist[[indexCategory]][[lhs]] <- rhs
+            lhsUsed <- c(lhsUsed, lhs)
         }
     }
     if (length(headerlist)) {
