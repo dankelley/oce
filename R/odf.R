@@ -976,24 +976,26 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
                 header <- NULL
                 break
             }
-            exp <- strsplit(h[i], "=")[[1]]
-            lhs <- trimString(exp[1])
-            rhs <- trimString(exp[2])
+            ## Use regexp to find lhs and rhs. This is better than using strsplit on '=' because some
+            ## rhs have '=' in them.
             oceDebug(debug > 2, "h[", i, "]='", h[i], "'\n", sep="")
-            #lhs <- gsub("^[ ]*([^ ]*)[ ].*$", "\\1", h[i])
+            lhs <- gsub("^[ ]*([^=]*)=(.*)$","\\1", h[i])
             oceDebug(debug > 2, "  lhs='", lhs, "' (before renaming to remove duplicates)\n", sep="")
+            ok <- TRUE
             if (lhs %in% lhsUsed) {
                 ok <- FALSE
-                for (i in 2:1000) {
-                    if (!(paste(lhs, i, sep="") %in% lhsUsed)) {
-                        lhs <- paste(lhs, i, sep="")
+                for (trial in 2:10000) {
+                    if (!(paste(lhs, trial, sep="") %in% lhsUsed)) {
+                        lhs <- paste(lhs, trial, sep="")
                         ok <- TRUE
                         break
                     }
                 }
             }
+            if (!ok)
+                stop("cannot have more than 10000 items of the same name in ODF metadata; rerun with debug=5 to diagnose")
             oceDebug(debug > 2, "  lhs='", lhs, "' (after renaming to remove duplicates)\n", sep="")
-            #rhs <- gsub("^.*=[ ]*(.*)$", "\\1", h[i])
+            rhs <- gsub("^[^=]*=[ ]*(.*)[,]*$","\\1", h[i])
             oceDebug(debug > 2, "  rhs='", rhs, "'\n", sep="")
             headerlist[[indexCategory]][[lhs]] <- rhs
             lhsUsed <- c(lhsUsed, lhs)
