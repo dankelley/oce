@@ -71,7 +71,7 @@ Read a Sontek acoustic-Doppler profiler file [1].
 \references{
 1. Information about Sontek profilers is available at
 
-\url{https://www.sontek.com}.
+\code{https://www.sontek.com}.
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
