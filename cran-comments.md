@@ -1,9 +1,8 @@
 ## Test environments
 
-* local R-3.5.1 MacOS install OK
-* local R-3.4.4 ubuntu (on MacOS via virtual-box) install OK
-* devtools::build_win(version="R-release")
-* devtools::build_win(version="R-devel")
+* local R-3.6.0 MacOS install OK
+* devtools::check_win_devel()
+* devtools::check_win_release()
 
 ## R CMD check results
 
@@ -20,11 +19,11 @@ Fortran rules on automatic integer/real type conversion.
 There was 1 NOTE, as follows.
 
 * checking installed package size ... NOTE
-  installed size is  9.0Mb
+  installed size is  9.4Mb
   sub-directories of 1Mb or more:
-    R      3.0Mb
-    doc    1.6Mb
+    doc    2.5Mb
     help   2.6Mb
+    R      2.3Mb
 
 
 
