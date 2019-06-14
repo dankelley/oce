@@ -1175,7 +1175,6 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
     ##> oceDebug(debug, "nullValue=", nullValue, "; it's class is ", class(nullValue), "\n")
 
     message("DEBUG: l1177")
-    browser()
 
     ODFunits <- lines[grep("^\\s*UNITS\\s*=", lines)]
     ODFunits <- gsub("^[^']*'(.*)'.*$", "\\1", ODFunits) # e.g.  "  UNITS= 'none',"
