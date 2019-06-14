@@ -1,7 +1,7 @@
 ## Test environments
 
 * local R-3.6.0 MacOS install OK
-* win-builder R-release -
+* win-builder R-release 3.6.0 (2019-04-26) OK
 * win-builder R-devel -
 * win-builder R-oldrelease -
 
