@@ -19,7 +19,7 @@ NumericMatrix do_ad2cp_ahrs(NumericMatrix v, NumericMatrix ahrs)
     if (ahrs.nrow() != nrow)
       Rf_error("nrow(v) and nrow(ahrs) must agree, but they are %d and %d", nrow, ahrs.nrow());
     NumericMatrix enu(nrow, ncol);
-    for (unsigned int i = 0; i < nrow; i++) {
+    for (int i = 0; i < nrow; i++) {
       // e <- V[,,1]*rep(AHRS[,1], each=nc) + V[,,2]*rep(AHRS[,2], each=nc) + V[,,3]*rep(AHRS[,3], each=nc)
       enu(i, 0) = v(i, 0)*ahrs(i, 0) + v(i, 1)*ahrs(i, 1) + v(i, 2)*ahrs(i, 2);
       enu(i, 1) = v(i, 0)*ahrs(i, 3) + v(i, 1)*ahrs(i, 4) + v(i, 2)*ahrs(i, 5);

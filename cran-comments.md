@@ -1,9 +1,9 @@
 ## Test environments
 
 * local R-3.6.0 MacOS install OK
-* win-builder R-release
-* win-builder R-devel
-* win-builder R-oldrelease
+* win-builder R-release -
+* win-builder R-devel -
+* win-builder R-oldrelease -
 
 ## R CMD check results
 
