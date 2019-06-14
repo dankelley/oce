@@ -317,7 +317,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #'     \code{FFFF_*.*} \tab \code{flagArchaic}        \tab Old flag name, replaced by \code{QCFF}                     \cr
 #'     \code{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                                 \cr
-#'     \code{GEOP}     \tab \code{geopotential}       \tab
+#'     \code{GEOP}     \tab \code{geopotential}       \tab                                                            \cr
 #'     \code{HCDM}     \tab \code{directionMagnetic}  \tab                                                            \cr
 #'     \code{HCDT}     \tab \code{directionTrue}      \tab                                                            \cr
 #'     \code{HCSP}     \tab \code{speedHorizontal}    \tab                                                            \cr
