@@ -1201,7 +1201,6 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
     ##> ODFnames <- gsub("_1$", "", ODFnames)
     ##> oceDebug(debug, "ODFnames: ", paste(ODFnames, collapse=" "), "\n")
 
-    message("DEBUG: about to call ODFNames2oceNames")
     namesUnits <- ODFNames2oceNames(ODFnames, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
     ## check for missing units, and warn if pressure and/or temperature lack units
     w <- which(namesUnits[[1]]=="pressure")
