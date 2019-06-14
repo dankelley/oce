@@ -525,6 +525,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         } else if (ODFunits[i] == "degrees C") {
             ## guess on scale
             list(unit=expression(degree*C), scale="ITS-90")
+        } else if (1 == length(grep("^FTU$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(FTU), scale="")
         } else if (ODFunits[i] == "ITS-90, deg C") {
             list(unit=expression(degree*C), scale="ITS-90")
         } else if (1 == length(grep("^hertz", ODFunits[i], ignore.case=TRUE))) {
@@ -564,6 +566,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         } else if (1 == length(grep("^[(]*none[)]*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(), scale="")
         ##} else if (ODFunits[i] == "PSU") {
+        } else if (1 == length(grep("^NTU$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(NTU), scale="")
         } else if (1 == length(grep("^psu$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(), scale="PSS-78")
         } else if (1 == length(grep("^\\s*kg/m\\^3$", ODFunits[i], ignore.case=TRUE))) {
@@ -1037,7 +1041,6 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
         names(headerlist) <- unduplicateNames(names(headerlist))
     }
     res@metadata$header <- headerlist
-    ## browser()
 
     ## Learn about each parameter from its own header block
     linePARAMETER_HEADER <- grep("^\\s*PARAMETER_HEADER,\\s*$", lines)
@@ -1174,10 +1177,8 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
     options(warn=options$warn)
     ##> oceDebug(debug, "nullValue=", nullValue, "; it's class is ", class(nullValue), "\n")
 
-    message("DEBUG: l1177")
-
-    ODFunits <- lines[grep("^\\s*UNITS\\s*=", lines)]
-    ODFunits <- gsub("^[^']*'(.*)'.*$", "\\1", ODFunits) # e.g.  "  UNITS= 'none',"
+    ##OLD ODFunits <- lines[grep("^\\s*UNITS\\s*=", lines)]
+    ##OLD ODFunits <- gsub("^[^']*'(.*)'.*$", "\\1", ODFunits) # e.g.  "  UNITS= 'none',"
     ODFunits <- trimws(ODFunits)
     ##message("below is ODFunits...")
     ##print(ODFunits)
