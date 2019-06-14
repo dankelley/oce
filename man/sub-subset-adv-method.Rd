@@ -100,7 +100,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -123,7 +123,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}}
 
-Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+Other things related to adv data: \code{\link{[[,adv-method}},
   \code{\link{adv-class}}, \code{\link{adv}},
   \code{\link{beamName}}, \code{\link{beamToXyz}},
   \code{\link{enuToOtherAdv}}, \code{\link{enuToOther}},
@@ -141,5 +141,5 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{adv} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to adv data}

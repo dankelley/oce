@@ -33,7 +33,7 @@ for (a in seq(-20, 20, by=1))
 
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
@@ -44,7 +44,7 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 
-Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+Other things related to adv data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
   \code{\link{beamName}}, \code{\link{beamToXyz}},
   \code{\link{enuToOtherAdv}}, \code{\link{enuToOther}},
@@ -59,5 +59,5 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{adv} data}
+\concept{datasets provided with oce}
+\concept{things related to adv data}

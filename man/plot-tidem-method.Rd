@@ -64,7 +64,7 @@ plot(tide)
 
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -99,5 +99,5 @@ Other things related to tides: \code{\link{[[,tidem-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
+\concept{functions that plot oce data}
 \concept{things related to tides}

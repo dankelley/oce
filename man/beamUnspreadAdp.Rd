@@ -63,7 +63,7 @@ communication.  The logarithmic term is explained in textbooks on acoustics,
 optics, etc.
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -92,4 +92,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

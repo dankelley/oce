@@ -42,7 +42,7 @@ mapPlot(coastlineCut(coastlineWorld, lon_0=100),
 
 }
 \seealso{
-Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+Other things related to coastline data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
   \code{\link{as.coastline}},
   \code{\link{coastline-class}},
@@ -55,4 +55,4 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
 }
-\concept{things related to \code{coastline} data}
+\concept{things related to coastline data}

@@ -47,7 +47,7 @@ frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ", default=NA)
 
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
@@ -73,4 +73,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

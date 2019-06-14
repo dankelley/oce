@@ -122,7 +122,7 @@ plot(echosounder, which=c(1,2), drawBottom=TRUE)
 }
 }
 \seealso{
-Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
+Other things related to echosounder data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},
   \code{\link{as.echosounder}},
   \code{\link{echosounder-class}},
@@ -134,4 +134,4 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
 \author{
 Dan Kelley, with extensive help from Clark Richards
 }
-\concept{things related to \code{echosounder} data}
+\concept{things related to echosounder data}

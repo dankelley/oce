@@ -197,7 +197,7 @@ The documentation for \code{\link{coastline-class}} explains the
 structure of coastline objects, and also outlines the other functions
 dealing with them.
 
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -221,7 +221,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+Other things related to coastline data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
   \code{\link{as.coastline}},
   \code{\link{coastline-class}},
@@ -236,5 +236,5 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{coastline} data}
+\concept{functions that plot oce data}
+\concept{things related to coastline data}

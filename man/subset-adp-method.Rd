@@ -37,7 +37,7 @@ plot(subset(adp, time < mean(range(adp[['time']]))))
 
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -63,7 +63,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 
-Other functions that subset \code{oce} objects: \code{\link{subset,adv-method}},
+Other functions that subset oce objects: \code{\link{subset,adv-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,argo-method}},
   \code{\link{subset,cm-method}},
@@ -82,5 +82,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adv-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that subset \code{oce} objects}
-\concept{things related to \code{adp} data}
+\concept{functions that subset oce objects}
+\concept{things related to adp data}

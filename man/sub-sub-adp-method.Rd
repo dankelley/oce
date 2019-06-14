@@ -111,7 +111,7 @@ as.numeric(adp[["a"]][1:5,1,1]) # same as above
 
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
   \code{\link{[[,bremen-method}},
@@ -134,7 +134,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{adp} data: \code{\link{[[<-,adp-method}},
+Other things related to adp data: \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
@@ -163,5 +163,5 @@ Other things related to \code{adp} data: \code{\link{[[<-,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{adp} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to adp data}

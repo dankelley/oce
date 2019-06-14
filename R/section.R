@@ -45,8 +45,8 @@
 #'
 #' @author Dan Kelley
 #'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{section} data
+#' @family classes provided by oce
+#' @family things related to section data
 setClass("section", contains="oce")
 
 
@@ -82,8 +82,8 @@ setClass("section", contains="oce")
 #' @source This is based on the WOCE file named \code{a03_hy1.csv}, downloaded
 #' from \url{https://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{section} data
+#' @family datasets provided with oce
+#' @family things related to section data
 NULL
 
 setMethod(f="initialize",
@@ -124,7 +124,7 @@ setMethod(f="initialize",
 #' plotTS(section)
 #' plotTS(section2)
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 setMethod("handleFlags",
           c(object="section", flags="ANY", actions="ANY", debug="ANY"),
           function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
@@ -195,7 +195,7 @@ setMethod("initializeFlagScheme",
 #' data(section)
 #' summary(section)
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 #'
 #' @author Dan Kelley
 setMethod(f="summary",
@@ -318,7 +318,7 @@ setMethod(f="summary",
 #' # First station salinities
 #' Sl[[1]]
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 #' @author Dan Kelley
 setMethod(f="[[",
           signature(x="section", i="ANY", j="ANY"),
@@ -461,7 +461,6 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a Section Object
 #' @param x A \code{section} object, i.e. inheriting from \code{\link{section-class}}
-#' @family things related to \code{section} data
 #' @template sub_subsetTemplate
 #' @examples
 #' # 1. Change section ID from a03 to A03
@@ -473,6 +472,7 @@ setMethod(f="[[",
 #' section[["station", 10]][["temperature"]] <-
 #'     1e-3 + section[["station", 10]][["temperature"]]
 #' @author Dan Kelley
+#' @family things related to section data
 setMethod(f="[[<-",
           signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -605,8 +605,8 @@ setMethod(f="show",
 #' plot(GS, which="map")
 #'}
 #'
-#' @family functions that subset \code{oce} objects
-#' @family things related to \code{section} data
+#' @family functions that subset oce objects
+#' @family things related to section data
 #'
 #' @author Dan Kelley
 setMethod(f="subset",
@@ -832,7 +832,7 @@ setMethod(f="subset",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 sectionSort <- function(section, by)
 {
     if (missing(by)) {
@@ -902,7 +902,7 @@ sectionSort <- function(section, by)
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 sectionAddStation <- function(section, station)
 {
     if (missing(section)) stop("must provide a section to which the ctd is to be added")
@@ -1161,8 +1161,8 @@ sectionAddCtd <- sectionAddStation
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{section} data
+#' @family functions that plot oce data
+#' @family things related to section data
 #' @aliases plot.section
 setMethod(f="plot",
           signature=signature("section"),
@@ -2056,7 +2056,7 @@ setMethod(f="plot",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 read.section <- function(file, directory, sectionId="", flags,
                          ship="", scientist="", institute="",
                          missingValue=-999,
@@ -2483,7 +2483,7 @@ read.section <- function(file, directory, sectionId="", flags,
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "sectionGrid(section, p, ",
@@ -2724,7 +2724,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 sectionSmooth <- function(section, method="spline",
                           x,
                           xg, yg, xgl, ygl, xr, yr,
@@ -3032,7 +3032,7 @@ sectionSmooth <- function(section, method="spline",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 as.section <- function(salinity, temperature, pressure, longitude, latitude, station, sectionId="")
 {
     if (missing(salinity))

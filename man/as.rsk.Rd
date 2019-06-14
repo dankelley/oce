@@ -47,7 +47,7 @@ these rules, but if they are broken, you may expect problems with any further
 processing.
 }
 \seealso{
-Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
+Other things related to rsk data: \code{\link{[[,rsk-method}},
   \code{\link{[[<-,rsk-method}},
   \code{\link{plot,rsk-method}}, \code{\link{read.rsk}},
   \code{\link{rsk-class}}, \code{\link{rskPatm}},
@@ -58,4 +58,4 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{rsk} data}
+\concept{things related to rsk data}

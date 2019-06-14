@@ -95,7 +95,7 @@ data(ctd)
 head(ctd[["temperature"]])
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -118,7 +118,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{ladp} data: \code{\link{[[<-,ladp-method}},
+Other things related to ladp data: \code{\link{[[<-,ladp-method}},
   \code{\link{as.ladp}}, \code{\link{ladp-class}},
   \code{\link{plot,ladp-method}},
   \code{\link{summary,ladp-method}}
@@ -126,5 +126,5 @@ Other things related to \code{ladp} data: \code{\link{[[<-,ladp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{ladp} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to ladp data}

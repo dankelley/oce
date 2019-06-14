@@ -93,7 +93,7 @@ downloading data.  Note that the present version only handles data in
 profiler-mode, not fixed-depth mode.
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
@@ -117,4 +117,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{ctd} data}
+\concept{things related to ctd data}

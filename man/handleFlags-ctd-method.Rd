@@ -111,7 +111,7 @@ Other functions relating to data-quality flags: \code{\link{defaultFlags}},
   \code{\link{setFlags,ctd-method}},
   \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
 
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
@@ -133,4 +133,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }
 \concept{functions relating to data-quality flags}
-\concept{things related to \code{ctd} data}
+\concept{things related to ctd data}

@@ -84,8 +84,8 @@
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ctd} data
-#' @family classes provided by \code{oce}
+#' @family things related to ctd data
+#' @family classes provided by oce
 setClass("ctd", contains="oce")
 
 setAs("list", "ctd", function(from) {
@@ -123,8 +123,8 @@ setAs("list", "ctd", function(from) {
 #' @seealso The full profile (not trimmed to the downcast) is available as
 #' \code{data(\link{ctdRaw})}.
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{ctd} data
+#' @family datasets provided with oce
+#' @family things related to ctd data
 NULL
 
 #' Seawater CTD Profile, Without Trimming of Extraneous Data
@@ -152,8 +152,8 @@ NULL
 #' @seealso A similar dataset (trimmed to the downcast) is available as
 #' \code{data(\link{ctd})}.
 #'
-#' @family things related to \code{ctd} data
-#' @family datasets provided with \code{oce}
+#' @family things related to ctd data
+#' @family datasets provided with oce
 NULL
 
 
@@ -194,7 +194,7 @@ NULL
 #' par(mar=c(3, 3, 3, 1))
 #' plot(STN3[["salinity"]] - stn[["salinity"]], p, ylim=rev(range(p)))
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 setMethod("handleFlags",
           c(object="ctd", flags="ANY", actions="ANY", debug="ANY"),
           function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
@@ -265,7 +265,7 @@ setMethod("handleFlags",
 #' }
 #'}
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 setMethod("setFlags",
           c(object="ctd", name="ANY", i="ANY", value="ANY", debug="ANY"),
           function(object, name=NULL, i=NULL, value=NULL, debug=getOption("oceDebug")) {
@@ -337,7 +337,7 @@ setMethod("initializeFlagScheme",
 #' be \code{"unknown"}, \code{"profile"}, \code{"towyo"}, or \code{"thermosalinograph"}.
 #' If this is not set, the value defaults to \code{"unknown"}.
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 #'
 #' @examples
 #'
@@ -416,7 +416,7 @@ setMethod(f="initialize",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 setMethod(f="summary",
           signature="ctd",
           definition=function(object, ...) {
@@ -616,7 +616,7 @@ setMethod(f="summary",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -907,7 +907,7 @@ setMethod(f="[[",
 #' ctd[["salinity"]] <- 0.01 + ctd[["salinity"]] # acts in data
 #' summary(ctd)
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 setMethod(f="[[<-",
           signature(x="ctd", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -1128,7 +1128,7 @@ setMethod(f="[[<-",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    ##1108 SA=NULL, CT=NULL, oxygen=NULL, nitrate=NULL, nitrite=NULL, phosphate=NULL, silicate=NULL,
                    scan=NULL,
@@ -1736,7 +1736,7 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption("oceDebug"))
 {
     methodFunction <- is.function(method)
@@ -2060,7 +2060,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #'
 #' @author Dan Kelley and Clark Richards
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
                             smoother=smooth.spline,
                             direction=c("descending", "ascending"),
@@ -2337,7 +2337,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'
 #' @author Dan Kelley and Clark Richards
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                     indices=FALSE, debug=getOption("oceDebug"))
 {
@@ -2773,7 +2773,7 @@ ctdUpdateHeader <- function (x, debug=FALSE)
 #'
 #' 2. https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 {
     if (!inherits(object, "ctd"))
@@ -3121,8 +3121,8 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{ctd} data
+#' @family functions that plot oce data
+#' @family things related to ctd data
 #' @aliases plot.ctd
 setMethod(f="plot",
           signature=signature("ctd"),
@@ -3877,8 +3877,8 @@ setMethod(f="plot",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ctd} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to ctd data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {
@@ -3965,8 +3965,8 @@ setMethod(f="subset",
 #' abline(v=c(130, 350), col='red') # useful for ctdTrim()
 #'
 #' @author Dan Kelley
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{ctd} data
+#' @family functions that plot oce data
+#' @family things related to ctd data
 plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
                      type='l', mgp=getOption("oceMgp"),
                      mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]), ..., debug=getOption("oceDebug"))
@@ -4262,8 +4262,8 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' data(ctd)
 #' plotTS(ctd)
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{ctd} data
+#' @family functions that plot oce data
+#' @family things related to ctd data
 plotTS <- function (x,
                     inSitu=FALSE,
                     type='p',
@@ -4701,8 +4701,8 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' data(ctd)
 #' plotProfile(ctd, xtype="temperature")
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{ctd} data
+#' @family functions that plot oce data
+#' @family things related to ctd data
 plotProfile <- function (x,
                          xtype="salinity+temperature", ytype="pressure",
                          eos=getOption("oceEOS", default="gsw"),

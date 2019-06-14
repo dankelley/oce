@@ -91,7 +91,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -114,7 +114,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{sealevel} data: \code{\link{[[<-,sealevel-method}},
+Other things related to sealevel data: \code{\link{[[<-,sealevel-method}},
   \code{\link{as.sealevel}},
   \code{\link{plot,sealevel-method}},
   \code{\link{read.sealevel}},
@@ -124,5 +124,5 @@ Other things related to \code{sealevel} data: \code{\link{[[<-,sealevel-method}}
   \code{\link{subset,sealevel-method}},
   \code{\link{summary,sealevel-method}}
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{sealevel} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to sealevel data}

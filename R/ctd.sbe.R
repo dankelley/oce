@@ -209,7 +209,7 @@
 #' \code{SBEDataProcessing_7.26.4.pdf} and had release date 12/08/2017,
 #' and this was the reference version used in coding \code{oce}.
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers
 cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 {

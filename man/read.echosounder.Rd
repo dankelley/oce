@@ -65,7 +65,7 @@ The documentation for \code{\link{echosounder-class}} explains the
 structure of \code{ctd} objects, and also outlines the other functions
 dealing with them.
 
-Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
+Other things related to echosounder data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},
   \code{\link{as.echosounder}},
   \code{\link{echosounder-class}},
@@ -77,4 +77,4 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
 \author{
 Dan Kelley, with help from Clark Richards
 }
-\concept{things related to \code{echosounder} data}
+\concept{things related to echosounder data}

@@ -71,7 +71,7 @@ The documentation for \code{\link{lisst-class}} explains the
 structure of lisst objects, and also outlines the other functions dealing
 with them.
 
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -95,7 +95,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
+Other things related to lisst data: \code{\link{[[,lisst-method}},
   \code{\link{[[<-,lisst-method}}, \code{\link{as.lisst}},
   \code{\link{lisst-class}}, \code{\link{read.lisst}},
   \code{\link{summary,lisst-method}}
@@ -103,5 +103,5 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{lisst} data}
+\concept{functions that plot oce data}
+\concept{things related to lisst data}

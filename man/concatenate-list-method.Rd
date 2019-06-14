@@ -17,8 +17,6 @@ An object of class corresponding to that in \code{object}.
 Concatenate a list of oce objects
 }
 \seealso{
-Other functions that concatenate \code{oce} objects.: \code{\link{concatenate,adp-method}},
-  \code{\link{concatenate,oce-method}},
-  \code{\link{concatenate}}
+Other functions that concatenate oce objects.: \code{\link{concatenate}}
 }
-\concept{functions that concatenate \code{oce} objects.}
+\concept{functions that concatenate oce objects.}

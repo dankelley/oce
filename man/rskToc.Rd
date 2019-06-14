@@ -52,7 +52,7 @@ print(table)
 
 }
 \seealso{
-Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
+Other things related to rsk data: \code{\link{[[,rsk-method}},
   \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
   \code{\link{plot,rsk-method}}, \code{\link{read.rsk}},
   \code{\link{rsk-class}}, \code{\link{rskPatm}},
@@ -62,4 +62,4 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{rsk} data}
+\concept{things related to rsk data}

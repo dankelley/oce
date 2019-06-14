@@ -21,7 +21,7 @@ website, the record ends on the 8th of October.
 1. Fisheries and Oceans Canada \url{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/index-eng.html}
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
@@ -31,7 +31,7 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevelTuktoyaktuk}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 
-Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
+Other things related to sealevel data: \code{\link{[[,sealevel-method}},
   \code{\link{[[<-,sealevel-method}},
   \code{\link{as.sealevel}},
   \code{\link{plot,sealevel-method}},
@@ -44,5 +44,5 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
 \author{
 Dan Kelley
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{sealevel} data}
+\concept{datasets provided with oce}
+\concept{things related to sealevel data}

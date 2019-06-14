@@ -94,7 +94,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 Many \code{oce} object classes have specialized versions
 of \code{[[} that handle the details in specialized way.
 
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -118,4 +118,4 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 }
-\concept{functions that extract parts of \code{oce} objects}
+\concept{functions that extract parts of oce objects}

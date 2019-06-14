@@ -88,7 +88,7 @@ The documentation for \code{\link{sealevel-class}} explains the
 structure of sealevel objects, and also outlines the other functions dealing
 with them.
 
-Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
+Other things related to sealevel data: \code{\link{[[,sealevel-method}},
   \code{\link{[[<-,sealevel-method}},
   \code{\link{plot,sealevel-method}},
   \code{\link{read.sealevel}},
@@ -101,4 +101,4 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{sealevel} data}
+\concept{things related to sealevel data}

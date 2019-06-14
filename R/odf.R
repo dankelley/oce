@@ -35,8 +35,8 @@
 #'
 #'
 #' @author Dan Kelley
-#' @family things related to \code{odf} data
-#' @family classes provided by \code{oce}
+#' @family things related to odf data
+#' @family classes provided by oce
 setClass("odf", contains="oce")
 
 ## [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
@@ -60,7 +60,7 @@ setMethod(f="initialize",
 #' @title Extract Something From an ODF Object
 #' @param x an odf object, i.e. one inheriting from \code{\link{odf-class}}.
 #' @template sub_subTemplate
-#' @family things related to \code{odf} data
+#' @family things related to odf data
 setMethod(f="[[",
           signature(x="odf", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -70,7 +70,7 @@ setMethod(f="[[",
 #' @title Replace Parts of an ODF Object
 #' @param x an \code{odf} object, i.e. inheriting from \code{\link{odf-class}}
 #' @template sub_subsetTemplate
-#' @family things related to \code{odf} data
+#' @family things related to odf data
 setMethod(f="[[<-",
           signature(x="odf", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -93,8 +93,8 @@ setMethod(f="[[<-",
 #' @param \dots ignored.
 #' @return A new \code{odf} object.
 #' @author Dan Kelley
-#' @family things related to \code{odf} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to odf data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="odf",
           definition=function(x, subset, ...) {
@@ -143,8 +143,8 @@ setMethod(f="subset",
 #' @template debugTemplate
 #'
 #' @author Dan Kelley
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{odf} data
+#' @family functions that plot oce data
+#' @family things related to odf data
 #' @aliases plot.odf
 setMethod(f="plot",
           signature=signature("odf"),
@@ -217,7 +217,7 @@ setMethod(f="plot",
 #' @return A matrix containing statistics of the elements of the \code{data}
 #' slot.
 #' @author Dan Kelley
-#' @family things related to \code{odf} data
+#' @family things related to odf data
 setMethod(f="summary",
           signature="odf",
           definition=function(object, ...) {
@@ -381,7 +381,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' although that link seems to be unreliable. As of September 2017, the
 #' link \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
 #' seems to be a good place to start.
-#' @family things related to \code{odf} data
+#' @family things related to odf data
 ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
                               columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
 {
@@ -668,7 +668,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
 #' any users except those involved in the development of \code{oce} and
 #' \code{ODF}.
 #' @author Dan Kelley
-#' @family things related to \code{odf} data
+#' @family things related to odf data
 ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 {
     ## Stage 1. insert metadata (with odfHeader holding entire ODF header info)
@@ -762,7 +762,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' those in the ODF header, except that duplicates are transformed
 #' through the use of \code{\link{unduplicateNames}}.
 #'
-#' @family things related to \code{odf} data
+#' @family things related to odf data
 ODFListFromHeader <- function(header)
 {
     ## remove trailing blanks
@@ -940,7 +940,7 @@ ODFListFromHeader <- function(header)
 #'
 #'}
 #'
-#' @family things related to \code{odf} data
+#' @family things related to odf data
 read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.odf(\"", file, "\", ...) {\n", unindent=1, sep="")

@@ -62,7 +62,7 @@ to find items more directly, using \code{\link{oceGetData}} and
 }
 
 \seealso{
-Other classes provided by \code{oce}: \code{\link{adp-class}},
+Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
@@ -72,7 +72,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
-Other things related to \code{met} data: \code{\link{[[,met-method}},
+Other things related to met data: \code{\link{[[,met-method}},
   \code{\link{[[<-,met-method}}, \code{\link{as.met}},
   \code{\link{download.met}}, \code{\link{met}},
   \code{\link{plot,met-method}}, \code{\link{read.met}},
@@ -82,5 +82,5 @@ Other things related to \code{met} data: \code{\link{[[,met-method}},
 \author{
 Dan Kelley
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{met} data}
+\concept{classes provided by oce}
+\concept{things related to met data}

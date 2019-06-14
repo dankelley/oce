@@ -99,7 +99,7 @@ Other functions relating to data-quality flags: \code{\link{defaultFlags}},
   \code{\link{setFlags,ctd-method}},
   \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
 
-Other things related to \code{section} data: \code{\link{[[,section-method}},
+Other things related to section data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{initializeFlagScheme,section-method}},
@@ -112,4 +112,4 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{summary,section-method}}
 }
 \concept{functions relating to data-quality flags}
-\concept{things related to \code{section} data}
+\concept{things related to section data}

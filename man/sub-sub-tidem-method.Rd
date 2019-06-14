@@ -101,7 +101,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -132,5 +132,5 @@ Other things related to tides: \code{\link{[[<-,tidem-method}},
   \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
   \code{\link{tidem}}, \code{\link{webtide}}
 }
-\concept{functions that extract parts of \code{oce} objects}
+\concept{functions that extract parts of oce objects}
 \concept{things related to tides}

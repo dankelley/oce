@@ -91,7 +91,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -115,7 +115,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{odf} data: \code{\link{ODF2oce}},
+Other things related to odf data: \code{\link{ODF2oce}},
   \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
@@ -124,5 +124,5 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{odf} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to odf data}

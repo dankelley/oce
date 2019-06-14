@@ -23,8 +23,8 @@
 #'
 #' @template slot_get
 ##'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{windrose} data
+#' @family classes provided by oce
+#' @family things related to windrose data
 setClass("windrose", contains="oce")
 
 setMethod(f="initialize",
@@ -48,7 +48,7 @@ setMethod(f="initialize",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{windrose} data
+#' @family things related to windrose data
 setMethod(f="summary",
           signature="windrose",
           definition=function(object, ...) {
@@ -66,7 +66,7 @@ setMethod(f="summary",
 #' There are no special features for \code{\link{windrose-class}} data;
 #' the general method is used directly.
 #' @template sub_subTemplate
-#' @family things related to \code{windrose} data
+#' @family things related to windrose data
 setMethod(f="[[",
           signature(x="windrose", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -76,7 +76,7 @@ setMethod(f="[[",
 #' @title Replace Parts of a Windrose Object
 #' @param x An \code{windrose} object, i.e. inheriting from \code{\link{windrose-class}}
 #' @template sub_subsetTemplate
-#' @family things related to \code{windrose} data
+#' @family things related to windrose data
 setMethod(f="[[<-",
           signature(x="windrose", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -127,7 +127,7 @@ setMethod(f="[[<-",
 #'
 #' @author Dan Kelley, with considerable help from Alex Deckmyn.
 #'
-#' @family things related to \code{windrose} data
+#' @family things related to windrose data
 as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "as.windrose(x, y, dtheta=", dtheta, ", debug=", debug, ") {\n", sep="", unindent=1)
@@ -227,8 +227,8 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{windrose} data
+#' @family functions that plot oce data
+#' @family things related to windrose data
 #' @aliases plot.windrose
 setMethod(f="plot",
           signature=signature("windrose"),

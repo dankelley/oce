@@ -34,14 +34,14 @@ plot(fc)
 }
 }
 \seealso{
-Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
+Other things related to amsr data: \code{\link{[[<-,amsr-method}},
   \code{\link{amsr-class}},
   \code{\link{composite,amsr-method}},
   \code{\link{download.amsr}},
   \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
   \code{\link{summary,amsr-method}}
 
-Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,adv-method}},
   \code{\link{subset,argo-method}},
   \code{\link{subset,cm-method}},
@@ -60,5 +60,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that subset \code{oce} objects}
-\concept{things related to \code{amsr} data}
+\concept{functions that subset oce objects}
+\concept{things related to amsr data}

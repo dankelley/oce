@@ -40,7 +40,7 @@ presentTime <- function(tz="UTC")
 #' @examples
 #' str(new("oce"))
 #'
-#' @family classes provided by \code{oce}
+#' @family classes provided by oce
 setClass("oce",
          representation(metadata="list",
                         data="list",
@@ -305,7 +305,7 @@ setMethod(f="plot",
 #' par(mfrow=c(1, 2))
 #' plotProfile(ctd)
 #' plotProfile(top10)
-#' @family functions that subset \code{oce} objects
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="oce",
           definition=function(x, subset, ...) {
@@ -1038,7 +1038,7 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, defaul
 #' @param object An object of \code{\link{oce-class}}.
 #' @param ... Optional additional objects of \code{\link{oce-class}}.
 #' @return An object of class corresponding to that of \code{object}.
-#' @family functions that concatenate \code{oce} objects.
+#' @family functions that concatenate oce objects.
 setGeneric("concatenate",
            function(object, ...) {
                standardGeneric("concatenate")
@@ -1129,7 +1129,7 @@ setMethod("concatenate",
 #' Concatenate a list of oce objects
 #' @param object A list holding objects of \code{\link{oce-class}}.
 #' @return An object of class corresponding to that in \code{object}.
-#' @family functions that concatenate \code{oce} objects.
+#' @family functions that concatenate oce objects.
 setMethod("concatenate",
           c(object="list"),
           function(object) {

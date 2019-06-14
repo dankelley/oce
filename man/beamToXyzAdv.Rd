@@ -37,7 +37,7 @@ x[["transformation.matrix"]] <- rbind(c(11100, -5771, -5321),
 See \code{\link{read.adv}} for notes on functions relating to
 \code{"adv"} objects.
 
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -66,4 +66,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

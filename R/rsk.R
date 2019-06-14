@@ -28,8 +28,8 @@
 #'
 #' @author Dan Kelley and Clark Richards
 #'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{rsk} data
+#' @family classes provided by oce
+#' @family things related to rsk data
 setClass("rsk", contains="oce")
 
 #' @title Sample Rsk Dataset
@@ -52,8 +52,8 @@ setClass("rsk", contains="oce")
 #' plot(rsk)
 #' plot(as.ctd(rsk))
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{rsk} data
+#' @family datasets provided with oce
+#' @family things related to rsk data
 NULL
 
 
@@ -100,7 +100,7 @@ setMethod(f="initialize",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{rsk} data
+#' @family things related to rsk data
 setMethod(f="summary",
           signature="rsk",
           definition=function(object, ...) {
@@ -121,7 +121,7 @@ setMethod(f="summary",
 #' @param x A rsk object, i.e. one inheriting from \code{\link{rsk-class}}.
 #' @template sub_subTemplate
 #' @author Dan Kelley
-#' @family things related to \code{rsk} data
+#' @family things related to rsk data
 setMethod(f="[[",
           signature(x="rsk", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -131,7 +131,7 @@ setMethod(f="[[",
 #' @title Replace Parts of a Rsk Object
 #' @param x An \code{rsk} object, i.e. inheriting from \code{\link{rsk-class}}
 #' @template sub_subsetTemplate
-#' @family things related to \code{rsk} data
+#' @family things related to rsk data
 setMethod(f="[[<-",
           signature(x="rsk", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -164,8 +164,8 @@ setMethod(f="[[<-",
 #' plot(subset(rsk, time < mean(range(rsk[['time']]))))
 #'
 #' @author Dan Kelley
-#' @family things related to \code{rsk} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to rsk data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="rsk",
           definition=function(x, subset, ...) {
@@ -300,7 +300,7 @@ unitFromStringRsk <- function(s)
 #' An object of \code{\link{rsk-class}} \code{"rsk"}.
 #'
 #' @author Dan Kelley
-#' @family things related to \code{rsk} data
+#' @family things related to rsk data
 as.rsk <- function(time, columns,
                    filename="", instrumentType="rbr", serialNumber="", model="",
                    sampleInterval=NA,
@@ -428,8 +428,8 @@ as.rsk <- function(time, columns,
 #'
 #' @author Dan Kelley and Clark Richards
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{rsk} data
+#' @family functions that plot oce data
+#' @family things related to rsk data
 #' @aliases plot.rsk
 setMethod(f="plot",
           signature=signature("rsk"),
@@ -624,7 +624,7 @@ setMethod(f="plot",
 #'
 #' @author Dan Kelley and Clark Richards
 #'
-#' @family things related to \code{rsk} data
+#' @family things related to rsk data
 read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default="UTC"),
                         patm=FALSE, processingLog, debug=getOption("oceDebug"))
 {
@@ -1364,7 +1364,7 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{rsk} data
+#' @family things related to rsk data
 rskPatm <- function(x, dp=0.5)
 {
     p <- if (inherits(x, "rsk")) x@data$pressure else x
@@ -1427,7 +1427,7 @@ rskPatm <- function(x, dp=0.5)
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{rsk} data
+#' @family things related to rsk data
 rskToc <- function(dir, from, to, debug=getOption("oceDebug"))
 {
     if (missing(dir))

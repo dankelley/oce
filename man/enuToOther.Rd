@@ -21,7 +21,7 @@ in the rotated coordinate system
 Rotate acoustic-Doppler data to a new coordinate system
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -47,7 +47,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 
-Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+Other things related to adv data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
   \code{\link{adv}}, \code{\link{beamName}},
   \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
@@ -62,5 +62,5 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-\concept{things related to \code{adp} data}
-\concept{things related to \code{adv} data}
+\concept{things related to adp data}
+\concept{things related to adv data}

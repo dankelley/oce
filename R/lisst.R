@@ -24,14 +24,14 @@
 #' @author Dan Kelley
 #' @references A users's manual for the LISST-100 instrument is available at
 #' the manufacturer's website \url{http://www.sequoiasci.com}.
-#' @family classes provided by \code{oce}
-#' @family things related to \code{lisst} data
+#' @family classes provided by oce
+#' @family things related to lisst data
 setClass("lisst", contains="oce")
 
 #' @title Extract Something From a LISST Object
 #' @param x A lisst object, i.e. one inheriting from \code{\link{lisst-class}}.
 #' @template sub_subTemplate
-#' @family things related to \code{lisst} data
+#' @family things related to lisst data
 setMethod(f="[[",
           signature(x="lisst", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -41,7 +41,7 @@ setMethod(f="[[",
 #' Replace Parts of a LISST Object
 #' @param x An \code{lisst} object, i.e. inheriting from \code{\link{lisst-class}}
 #' @template sub_subsetTemplate
-#' @family things related to \code{lisst} data
+#' @family things related to lisst data
 setMethod(f="[[<-",
           signature(x="lisst", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -62,7 +62,7 @@ setMethod(f="[[<-",
 #' @author Dan Kelley
 #' @source This was constructed artificially using \code{\link{as.lisst}},
 #' to approximately match values that might be measured in the field.
-#' @family datasets provided with \code{oce}
+#' @family datasets provided with oce
 NULL
 
 setMethod(f="initialize",
@@ -98,7 +98,7 @@ setMethod(f="initialize",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{lisst} data
+#' @family things related to lisst data
 setMethod(f="summary",
           signature="lisst",
           definition=function(object, ...) {
@@ -165,8 +165,8 @@ setMethod(f="summary",
 #' data(lisst)
 #' plot(lisst)
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{lisst} data
+#' @family functions that plot oce data
+#' @family things related to lisst data
 #' @aliases plot.lisst
 setMethod(f="plot",
           signature="lisst",
@@ -241,7 +241,7 @@ setMethod(f="plot",
 #' @param latitude Latitude of observation.
 #' @return An object of \code{\link{lisst-class}}.
 #' @author Dan Kelley
-#' @family things related to \code{lisst} data
+#' @family things related to lisst data
 as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude=NA)
 {
     res <- new("lisst", filename=filename, latitude=latitude, longitude=longitude)
@@ -304,7 +304,7 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
 #' @param latitude latitude of observation (stored in metadata)
 #' @return An object of \code{\link{lisst-class}}.
 #' @author Dan Kelley
-#' @family things related to \code{lisst} data
+#' @family things related to lisst data
 read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
 {
     filename <- NULL

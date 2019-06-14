@@ -91,7 +91,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -114,12 +114,12 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{cm} data: \code{\link{[[<-,cm-method}},
+Other things related to cm data: \code{\link{[[<-,cm-method}},
   \code{\link{as.cm}}, \code{\link{cm-class}},
   \code{\link{cm}}, \code{\link{plot,cm-method}},
   \code{\link{read.cm}}, \code{\link{rotateAboutZ}},
   \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{cm} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to cm data}

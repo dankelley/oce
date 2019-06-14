@@ -21,8 +21,8 @@
 #' @template slot_get
 #'
 #' @author Dan Kelley
-#' @family classes provided by \code{oce}
-#' @family things related to code{lobo} data
+#' @family classes provided by oce
+#' @family things related to lobo data
 setClass("lobo", contains="oce")
 
 setMethod(f="initialize",
@@ -88,14 +88,14 @@ setMethod(f="initialize",
 #' plot(lobo)
 #'}
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to code{lobo} data
+#' @family datasets provided with oce
+#' @family things related to lobo data
 NULL
 
 #' @title Extract Something From a LOBO Object
 #' @param x A lobo object, i.e. one inheriting from \code{\link{lobo-class}}.
 #' @template sub_subTemplate
-#' @family things related to code{lobo} data
+#' @family things related to lobo data
 setMethod(f="[[",
           signature(x="lobo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -105,7 +105,7 @@ setMethod(f="[[",
 #' @title Replace Parts of a LOBO Object
 #' @param x An \code{lobo} object, i.e. inheriting from \code{\link{lobo-class}}
 #' @template sub_subsetTemplate
-#' @family things related to code{lobo} data
+#' @family things related to lobo data
 setMethod(f="[[<-",
           signature(x="lobo", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -133,7 +133,7 @@ setMethod(f="[[<-",
 #' library(oce)
 #' data(lobo)
 #' summary(lobo)
-#' @family things related to code{lobo} data
+#' @family things related to lobo data
 setMethod(f="summary",
           signature="lobo",
           definition=function(object, ...) {
@@ -156,8 +156,8 @@ setMethod(f="summary",
 #' @param \dots ignored.
 #' @return A new \code{lobo} object.
 #' @author Dan Kelley
-#' @family things related to code{lobo} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to lobo data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="lobo",
           definition=function(x, subset, ...) {
@@ -176,7 +176,7 @@ setMethod(f="subset",
           })
 
 
-#' @family things related to code{lobo} data
+#' @family things related to lobo data
 plot.lobo.timeseries.TS <- function(lobo,
                                     S.col = "blue", T.col = "darkgreen", draw.legend=FALSE, ...)
 {
@@ -206,7 +206,7 @@ plot.lobo.timeseries.TS <- function(lobo,
     invisible(lobo)
 }
 
-#' @family things related to code{lobo} data
+#' @family things related to lobo data
 plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", draw.legend=FALSE, ...)
 {
     peak <- max(range(c(lobo@data$u, lobo@data$v), na.rm=TRUE))
@@ -225,7 +225,7 @@ plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", d
     invisible(lobo)
 }
 
-#' @family things related to code{lobo} data
+#' @family things related to lobo data
 plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.nitrate = "darkgreen", draw.legend=FALSE, ...)
 {
     plot(lobo@data$time, lobo@data$fluorescence, type='l', ylab="", axes=FALSE, ...)
@@ -248,7 +248,7 @@ plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.ni
         legend("top", c("nitrate", "fluorescence"), col=c(col.nitrate, col.fluorescence), lwd=2, ...)
 }
 
-#' @family things related to code{lobo} data
+#' @family things related to lobo data
 plot.lobo.TS <- function(lobo, ...)
 {
     plotTS(as.ctd(lobo[["salinity"]], lobo[["temperature"]], 0), ...)
@@ -279,8 +279,8 @@ plot.lobo.TS <- function(lobo, ...)
 #' @param \dots optional arguments passed to plotting functions.
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{lobo} data
+#' @family functions that plot oce data
+#' @family things related to lobo data
 #' @aliases plot.lobo
 setMethod(f="plot",
           signature=signature("lobo"),
@@ -375,7 +375,7 @@ setMethod(f="plot",
 #'   "data_format=text",sep="")
 #' lobo <- read.lobo(uri)
 #'}
-#' @family things related to code{lobo} data
+#' @family things related to lobo data
 read.lobo <- function(file, cols=7, processingLog)
 {
     ## header <- scan(file, what=character(), sep="\t", nlines=1, quiet=TRUE)
@@ -445,7 +445,7 @@ read.lobo <- function(file, cols=7, processingLog)
 #' @param filename source filename
 #' @return An object of \code{\link{lobo-class}}.
 #' @author Dan Kelley
-#' @family things related to code{lobo} data
+#' @family things related to lobo data
 as.lobo <- function(time, u, v, salinity, temperature, pressure, nitrate, fluorescence, filename="")
 {
     if (missing(u) || missing(v) || missing(salinity) || missing(temperature) || missing(pressure))

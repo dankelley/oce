@@ -22,7 +22,7 @@ Pertinent summary information is presented, including the station name,
 sampling location, data ranges, etc.
 }
 \seealso{
-Other things related to \code{odf} data: \code{\link{ODF2oce}},
+Other things related to odf data: \code{\link{ODF2oce}},
   \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
@@ -34,4 +34,4 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{odf} data}
+\concept{things related to odf data}

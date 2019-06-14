@@ -116,7 +116,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -139,7 +139,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{echosounder} data: \code{\link{[[<-,echosounder-method}},
+Other things related to echosounder data: \code{\link{[[<-,echosounder-method}},
   \code{\link{as.echosounder}},
   \code{\link{echosounder-class}},
   \code{\link{echosounder}}, \code{\link{findBottom}},
@@ -148,5 +148,5 @@ Other things related to \code{echosounder} data: \code{\link{[[<-,echosounder-me
   \code{\link{subset,echosounder-method}},
   \code{\link{summary,echosounder-method}}
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{echosounder} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to echosounder data}

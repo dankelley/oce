@@ -16,8 +16,8 @@
 #' is not clear that ODF format is handled correctly in \code{read.ctd.odf}, or
 #' the more general function \code{\link{read.odf}}, because the format
 #' varies between some sample files the author has encountered in his research.
-#' @family things related to \code{ctd} data
-#' @family things related to \code{odf} data
+#' @family things related to ctd data
+#' @family things related to odf data
 read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {

@@ -52,7 +52,7 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
+Other functions that replace parts of oce objects: \code{\link{[[<-,adp-method}},
   \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -75,12 +75,12 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
 
-Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
+Other things related to rsk data: \code{\link{[[,rsk-method}},
   \code{\link{as.rsk}}, \code{\link{plot,rsk-method}},
   \code{\link{read.rsk}}, \code{\link{rsk-class}},
   \code{\link{rskPatm}}, \code{\link{rskToc}},
   \code{\link{rsk}}, \code{\link{subset,rsk-method}},
   \code{\link{summary,rsk-method}}
 }
-\concept{functions that replace parts of \code{oce} objects}
-\concept{things related to \code{rsk} data}
+\concept{functions that replace parts of oce objects}
+\concept{things related to rsk data}

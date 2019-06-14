@@ -34,7 +34,7 @@ plot(ctd)
 The full profile (not trimmed to the downcast) is available as
 \code{data(\link{ctdRaw})}.
 
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{echosounder}}, \code{\link{landsat}},
@@ -44,7 +44,7 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
@@ -66,5 +66,5 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{ctd} data}
+\concept{datasets provided with oce}
+\concept{things related to ctd data}

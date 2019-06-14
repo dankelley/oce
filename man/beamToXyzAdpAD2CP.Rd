@@ -47,7 +47,7 @@ where \eqn{\theta}{theta} is the angle the beams make to the axial direction
 January 2010. P/N 951-6079-00.
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -73,4 +73,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

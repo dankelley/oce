@@ -50,7 +50,7 @@ plot(wr)
 
 }
 \seealso{
-Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
+Other things related to windrose data: \code{\link{[[,windrose-method}},
   \code{\link{[[<-,windrose-method}},
   \code{\link{plot,windrose-method}},
   \code{\link{summary,windrose-method}},
@@ -59,4 +59,4 @@ Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
 \author{
 Dan Kelley, with considerable help from Alex Deckmyn.
 }
-\concept{things related to \code{windrose} data}
+\concept{things related to windrose data}

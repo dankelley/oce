@@ -91,7 +91,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -115,12 +115,12 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{met} data: \code{\link{[[<-,met-method}},
+Other things related to met data: \code{\link{[[<-,met-method}},
   \code{\link{as.met}}, \code{\link{download.met}},
   \code{\link{met-class}}, \code{\link{met}},
   \code{\link{plot,met-method}}, \code{\link{read.met}},
   \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{met} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to met data}

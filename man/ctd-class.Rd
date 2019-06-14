@@ -126,7 +126,7 @@ ctd <- oceSetMetadata(ctd, "latitude", ctd[["latitude"]]-0.001,
 
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctdDecimate}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
@@ -148,7 +148,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 
-Other classes provided by \code{oce}: \code{\link{adp-class}},
+Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{lisst-class}},
@@ -161,5 +161,5 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
 \author{
 Dan Kelley
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{ctd} data}
+\concept{classes provided by oce}
+\concept{things related to ctd data}

@@ -229,7 +229,7 @@ As of 2018-07-05, the latest version was named
 and this was the reference version used in coding \code{oce}.
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{ctd-class}}, \code{\link{ctdDecimate}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
@@ -263,4 +263,4 @@ Other functions that interpret variable names and units from headers: \code{\lin
 Dan Kelley
 }
 \concept{functions that interpret variable names and units from headers}
-\concept{things related to \code{ctd} data}
+\concept{things related to ctd data}

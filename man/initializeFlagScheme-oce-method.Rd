@@ -128,8 +128,8 @@ Other functions relating to data-quality flags: \code{\link{defaultFlags}},
   \code{\link{setFlags,ctd-method}},
   \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
 
-Other things related to \code{oce} data: \code{\link{initializeFlagSchemeInternal}},
+Other things related to oce data: \code{\link{initializeFlagSchemeInternal}},
   \code{\link{initializeFlagScheme}}
 }
 \concept{functions relating to data-quality flags}
-\concept{things related to \code{oce} data}
+\concept{things related to oce data}

@@ -68,7 +68,7 @@ setMethod(f="summary",
 #' @concept satellite
 #' @author Dan Kelley
 #' @family things related to satellite data
-#' @family functions that plot \code{oce} data
+#' @family functions that plot oce data
 #' @aliases plot.satellite
 setMethod(f="plot",
           signature=signature("satellite"),

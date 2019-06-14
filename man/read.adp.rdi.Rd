@@ -361,7 +361,7 @@ P/N 95A-6012-00 (April 2014). \code{OS_TM_Apr14.pdf}
 P/N 957-6171-00 (June 2001) \code{WinRiver User Guide International Version.pdf.pdf}
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -390,4 +390,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

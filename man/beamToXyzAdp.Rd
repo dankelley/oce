@@ -71,7 +71,7 @@ Calculations,} January 2010. P/N 951-6079-00.
 See \code{\link{read.adp}} for other functions that relate to
 objects of class \code{"adp"}.
 
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -100,4 +100,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

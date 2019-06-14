@@ -102,7 +102,7 @@ dim(topoWorld[['z']])
 
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -125,7 +125,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{topo} data: \code{\link{[[<-,topo-method}},
+Other things related to topo data: \code{\link{[[<-,topo-method}},
   \code{\link{as.topo}}, \code{\link{download.topo}},
   \code{\link{plot,topo-method}}, \code{\link{read.topo}},
   \code{\link{subset,topo-method}},
@@ -133,5 +133,5 @@ Other things related to \code{topo} data: \code{\link{[[<-,topo-method}},
   \code{\link{topo-class}}, \code{\link{topoInterpolate}},
   \code{\link{topoWorld}}
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{topo} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to topo data}

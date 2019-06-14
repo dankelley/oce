@@ -47,7 +47,7 @@
 #'
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 #'
-#' @family things related to \code{amsr} data
+#' @family things related to amsr data
 setClass("amsr", contains="satellite")
 
 setMethod(f="initialize",
@@ -81,7 +81,7 @@ setMethod(f="show",
 #' @param ... Ignored.
 #' @author Dan Kelley
 #' @concept satellite
-#' @family things related to \code{amsr} data
+#' @family things related to amsr data
 setMethod(f="summary",
           signature="amsr",
           definition=function(object, ...) {
@@ -160,7 +160,7 @@ setMethod(f="summary",
 #' imagep(lon, lat, rainy, asp=asp)
 #' mtext("red: too rainy to sense SSTDay")
 #'}
-#' @family things related to \code{amsr} data
+#' @family things related to amsr data
 setMethod(f="[[",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -247,7 +247,7 @@ setMethod(f="[[",
 
 #' @title Replace Parts of an AMSR Object
 #' @param x An \code{amsr} object, i.e. inheriting from \code{\link{amsr-class}}
-#' @family things related to \code{amsr} data
+#' @family things related to amsr data
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="amsr", i="ANY", j="ANY"),
@@ -278,8 +278,8 @@ setMethod(f="[[<-",
 #'}
 #' @author Dan Kelley
 #'
-#' @family things related to \code{amsr} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to amsr data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="amsr",
           definition=function(x, subset, ...) {
@@ -339,8 +339,8 @@ setMethod(f="subset",
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{amsr} data
+#' @family functions that plot oce data
+#' @family things related to amsr data
 #' @aliases plot.amsr
 setMethod(f="plot",
           signature=signature("amsr"),
@@ -454,7 +454,7 @@ setMethod(f="plot",
 #' mtext(d[["filename"]], side=3, line=0, adj=0)
 #'}
 #' @family functions that download files
-#' @family things related to \code{amsr} data
+#' @family things related to amsr data
 #' @references
 #' \code{http://images.remss.com/amsr/amsr2_data_daily.html}
 #' provides daily images going back to 2012. Three-day,
@@ -522,7 +522,7 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
 #' @seealso \code{\link{plot,amsr-method}} for an example.
 #' @author Dan Kelley and Chantelle Layton
 #'
-#' @family things related to \code{amsr} data
+#' @family things related to amsr data
 read.amsr <- function(file, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.amsr(file=\"", file, "\",",
@@ -630,7 +630,7 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
 #' @param object An object inheriting from \link{amsr-class}.
 #' @param ... Other amsr objects.
 #'
-#' @family things related to \code{amsr} data
+#' @family things related to amsr data
 #' @template compositeTemplate
 setMethod("composite",
           c(object="amsr"),

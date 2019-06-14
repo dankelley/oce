@@ -18,8 +18,6 @@ An object of class corresponding to that of \code{object}.
 Concatenate oce objects
 }
 \seealso{
-Other functions that concatenate \code{oce} objects.: \code{\link{concatenate,adp-method}},
-  \code{\link{concatenate,list-method}},
-  \code{\link{concatenate,oce-method}}
+Other functions that concatenate oce objects.: \code{\link{concatenate,list-method}}
 }
-\concept{functions that concatenate \code{oce} objects.}
+\concept{functions that concatenate oce objects.}

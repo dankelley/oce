@@ -98,7 +98,7 @@ Other functions relating to data-quality flags: \code{\link{defaultFlags}},
   \code{\link{setFlags,ctd-method}},
   \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
 
-Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+Other things related to argo data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
   \code{\link{argo}}, \code{\link{as.argo}},
@@ -110,4 +110,4 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
 Dan Kelley
 }
 \concept{functions relating to data-quality flags}
-\concept{things related to \code{argo} data}
+\concept{things related to argo data}

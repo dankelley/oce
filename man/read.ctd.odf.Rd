@@ -91,7 +91,7 @@ the more general function \code{\link{read.odf}}, because the format
 varies between some sample files the author has encountered in his research.
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
@@ -112,7 +112,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
@@ -133,7 +133,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 
-Other things related to \code{odf} data: \code{\link{ODF2oce}},
+Other things related to odf data: \code{\link{ODF2oce}},
   \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
@@ -145,5 +145,5 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{ctd} data}
-\concept{things related to \code{odf} data}
+\concept{things related to ctd data}
+\concept{things related to odf data}

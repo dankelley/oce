@@ -153,7 +153,7 @@ fivenum(argo[["salinity"]][argo[["salinityFlag"]]==1],na.rm=TRUE)
 
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,bremen-method}},
@@ -176,7 +176,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{argo} data: \code{\link{[[<-,argo-method}},
+Other things related to argo data: \code{\link{[[<-,argo-method}},
   \code{\link{argo-class}}, \code{\link{argoGrid}},
   \code{\link{argoNames2oceNames}}, \code{\link{argo}},
   \code{\link{as.argo}},
@@ -188,5 +188,5 @@ Other things related to \code{argo} data: \code{\link{[[<-,argo-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{argo} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to argo data}

@@ -109,7 +109,7 @@ legend("bottomleft", pch=seq_along(year), legend=year, bg="white", cex=3/4)
 \url{http://www.argo.ucsd.edu/}
 }
 \seealso{
-Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+Other things related to argo data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
   \code{\link{argo}}, \code{\link{as.argo}},
@@ -118,7 +118,7 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,bremen-method}},
@@ -145,5 +145,5 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{argo} data}
+\concept{functions that plot oce data}
+\concept{things related to argo data}

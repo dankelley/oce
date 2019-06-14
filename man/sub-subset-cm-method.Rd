@@ -52,7 +52,7 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
+Other functions that replace parts of oce objects: \code{\link{[[<-,adp-method}},
   \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -75,12 +75,12 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
 
-Other things related to \code{cm} data: \code{\link{[[,cm-method}},
+Other things related to cm data: \code{\link{[[,cm-method}},
   \code{\link{as.cm}}, \code{\link{cm-class}},
   \code{\link{cm}}, \code{\link{plot,cm-method}},
   \code{\link{read.cm}}, \code{\link{rotateAboutZ}},
   \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }
-\concept{functions that replace parts of \code{oce} objects}
-\concept{things related to \code{cm} data}
+\concept{functions that replace parts of oce objects}
+\concept{things related to cm data}

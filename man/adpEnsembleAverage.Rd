@@ -45,7 +45,7 @@ plot(adpAvg)
 
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adp}}, \code{\link{as.adp}},
@@ -74,4 +74,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Clark Richards and Dan Kelley
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

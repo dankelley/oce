@@ -85,7 +85,7 @@ for (stn in section[["station", 1:9]])
 
 }
 \seealso{
-Other classes provided by \code{oce}: \code{\link{adp-class}},
+Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
@@ -95,7 +95,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{sealevel-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
-Other things related to \code{section} data: \code{\link{[[,section-method}},
+Other things related to section data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{handleFlags,section-method}},
@@ -111,5 +111,5 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
 \author{
 Dan Kelley
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{section} data}
+\concept{classes provided by oce}
+\concept{things related to section data}

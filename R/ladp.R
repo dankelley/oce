@@ -20,7 +20,7 @@
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ladp} data
+#' @family things related to ladp data
 setClass("ladp", contains="oce")
 
 setMethod(f="initialize",
@@ -64,7 +64,7 @@ setMethod(f="initialize",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ladp} data
+#' @family things related to ladp data
 setMethod(f="summary",
           signature="ladp",
           definition=function(object, ...) {
@@ -80,7 +80,7 @@ setMethod(f="summary",
 #' data(ctd)
 #' head(ctd[["temperature"]])
 #' @author Dan Kelley
-#' @family things related to \code{ladp} data
+#' @family things related to ladp data
 setMethod(f="[[",
           signature(x="ladp", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -109,7 +109,7 @@ setMethod(f="[[",
 #' @param x A \code{ladp} object, i.e. one inheriting from \code{\link{ladp-class}}.
 #' @template sub_subsetTemplate
 #'
-#' @family things related to \code{ladp} data
+#' @family things related to ladp data
 setMethod(f="[[<-",
           signature(x="ladp", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -127,8 +127,8 @@ setMethod(f="[[<-",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ladp} data
-#' @family functions that plot \code{oce} data
+#' @family things related to ladp data
+#' @family functions that plot oce data
 #' @aliases plot.ladp
 setMethod(f="plot",
           signature=signature("ladp"),
@@ -169,7 +169,7 @@ fixColumn <- function(x) {
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ladp} data
+#' @family things related to ladp data
 as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, salinity, temperature, ...)
 {
     if (inherits(longitude, "oce")) {

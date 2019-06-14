@@ -34,7 +34,7 @@ gives the opportunity to specify the year and timezone, so that times can be
 calculated properly.
 }
 \seealso{
-Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
+Other things related to lisst data: \code{\link{[[,lisst-method}},
   \code{\link{[[<-,lisst-method}}, \code{\link{as.lisst}},
   \code{\link{lisst-class}},
   \code{\link{plot,lisst-method}},
@@ -43,4 +43,4 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{lisst} data}
+\concept{things related to lisst data}

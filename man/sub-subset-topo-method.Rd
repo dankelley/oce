@@ -52,7 +52,7 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other things related to \code{topo} data: \code{\link{[[,topo-method}},
+Other things related to topo data: \code{\link{[[,topo-method}},
   \code{\link{as.topo}}, \code{\link{download.topo}},
   \code{\link{plot,topo-method}}, \code{\link{read.topo}},
   \code{\link{subset,topo-method}},
@@ -60,7 +60,7 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{topo-class}}, \code{\link{topoInterpolate}},
   \code{\link{topoWorld}}
 
-Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
+Other functions that replace parts of oce objects: \code{\link{[[<-,adp-method}},
   \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -83,5 +83,5 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,windrose-method}}
 }
-\concept{functions that replace parts of \code{oce} objects}
-\concept{things related to \code{topo} data}
+\concept{functions that replace parts of oce objects}
+\concept{things related to topo data}

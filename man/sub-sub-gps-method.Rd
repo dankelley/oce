@@ -91,7 +91,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -114,10 +114,10 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{gps} data: \code{\link{[[<-,gps-method}},
+Other things related to gps data: \code{\link{[[<-,gps-method}},
   \code{\link{as.gps}}, \code{\link{gps-class}},
   \code{\link{plot,gps-method}}, \code{\link{read.gps}},
   \code{\link{summary,gps-method}}
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{gps} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to gps data}

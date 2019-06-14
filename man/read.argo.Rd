@@ -161,7 +161,7 @@ which is the main document describing argo data.
 The documentation for \code{\link{argo-class}} explains the structure of argo
 objects, and also outlines the other functions dealing with them.
 
-Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+Other things related to argo data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
   \code{\link{argo}}, \code{\link{as.argo}},
@@ -173,4 +173,4 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{argo} data}
+\concept{things related to argo data}

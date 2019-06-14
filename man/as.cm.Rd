@@ -52,11 +52,11 @@ by specifying higher \code{debug} values.}
 Coerce data into a CM object
 }
 \seealso{
-Other things related to \code{cm} data: \code{\link{[[,cm-method}},
+Other things related to cm data: \code{\link{[[,cm-method}},
   \code{\link{[[<-,cm-method}}, \code{\link{cm-class}},
   \code{\link{cm}}, \code{\link{plot,cm-method}},
   \code{\link{read.cm}}, \code{\link{rotateAboutZ}},
   \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }
-\concept{things related to \code{cm} data}
+\concept{things related to cm data}

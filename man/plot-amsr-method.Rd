@@ -44,7 +44,7 @@ lines(coastlineWorldMedium[['longitude']], coastlineWorldMedium[['latitude']])
 
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,argo-method}},
   \code{\link{plot,bremen-method}},
@@ -68,7 +68,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
+Other things related to amsr data: \code{\link{[[<-,amsr-method}},
   \code{\link{amsr-class}},
   \code{\link{composite,amsr-method}},
   \code{\link{download.amsr}}, \code{\link{read.amsr}},
@@ -78,6 +78,6 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
+\concept{functions that plot oce data}
 \concept{satellite}
-\concept{things related to \code{amsr} data}
+\concept{things related to amsr data}

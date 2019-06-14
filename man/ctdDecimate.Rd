@@ -123,7 +123,7 @@ with a Complex Hydrographical Structure.} Journal of Atmospheric and Oceanic Tec
 The documentation for \code{\link{ctd-class}} explains the structure of
 CTD objects, and also outlines the other functions dealing with them.
 
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
@@ -148,4 +148,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{ctd} data}
+\concept{things related to ctd data}

@@ -19,7 +19,7 @@ Summarizes some of the data in a \code{windrose} object.
 The documentation for \code{\link{windrose-class}} explains the structure
 of \code{windrose} objects, and also outlines the other functions dealing with them.
 
-Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
+Other things related to windrose data: \code{\link{[[,windrose-method}},
   \code{\link{[[<-,windrose-method}},
   \code{\link{as.windrose}},
   \code{\link{plot,windrose-method}},
@@ -28,4 +28,4 @@ Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{windrose} data}
+\concept{things related to windrose data}

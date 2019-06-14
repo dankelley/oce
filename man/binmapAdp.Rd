@@ -54,7 +54,7 @@ at Department of Oceanography at Dalhousie University.
 See \code{\link{adp-class}} for a discussion of \code{adp} objects
 and notes on the many functions dealing with them.
 
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -83,4 +83,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

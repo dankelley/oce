@@ -14,7 +14,7 @@
 #'
 #' @source The data come from the matplotlib site
 #' \url{https://github.com/matplotlib/matplotlib}.
-#' @family datasets provided with \code{oce}
+#' @family datasets provided with oce
 #' @family things related to colors
 NULL
 

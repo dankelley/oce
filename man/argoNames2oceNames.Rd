@@ -109,7 +109,7 @@ replaced this by now).
 \url{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
 }
 \seealso{
-Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+Other things related to argo data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argoGrid}}, \code{\link{argo}},
   \code{\link{as.argo}},
@@ -118,4 +118,4 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }
-\concept{things related to \code{argo} data}
+\concept{things related to argo data}

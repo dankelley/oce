@@ -276,7 +276,7 @@ with \code{\link{xyzToEnuAdp}}.  \code{\link{toEnuAdp}} may be used to
 transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
 
-Other classes provided by \code{oce}: \code{\link{adv-class}},
+Other classes provided by oce: \code{\link{adv-class}},
   \code{\link{argo-class}}, \code{\link{bremen-class}},
   \code{\link{cm-class}}, \code{\link{coastline-class}},
   \code{\link{ctd-class}}, \code{\link{lisst-class}},
@@ -286,7 +286,7 @@ Other classes provided by \code{oce}: \code{\link{adv-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -313,5 +313,5 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{adp} data}
+\concept{classes provided by oce}
+\concept{things related to adp data}

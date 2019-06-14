@@ -400,7 +400,7 @@ ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst", "interle
 #' frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ", default=NA)
 #'}
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 ad2cpHeaderValue <- function(x, key, item, numeric=TRUE, default)
 {
     if (missing(x))
@@ -446,7 +446,7 @@ ad2cpHeaderValue <- function(x, key, item, numeric=TRUE, default)
 #' \code{\link{adp-class}} and has \code{fileType} in its
 #' \code{metadata} slot equal to \code{"AD2CP"}.
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 is.ad2cp <- function(x)
 {
     if (!inherits(x, "adp")) {
@@ -550,7 +550,7 @@ is.ad2cp <- function(x)
 #' most of the comments within the \code{read.adp.ad2cp} code refer to [1], which has different
 #' page numbers than [3].)
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
                            longitude=NA, latitude=NA,
                            orientation, distance, plan, type,
@@ -2175,7 +2175,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                           longitude=NA, latitude=NA,
                           orientation, distance,
@@ -2228,7 +2228,7 @@ read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=NA, latitude=NA,
                             orientation=orientation, distance,
@@ -2282,7 +2282,7 @@ read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                   longitude=NA, latitude=NA,
                                   orientation, distance,
@@ -2327,7 +2327,7 @@ read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=NA, latitude=NA,
                             type=c("aquadoppHR", "aquadoppProfiler", "aquadopp"),

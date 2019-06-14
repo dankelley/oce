@@ -30,7 +30,7 @@ plot(adp, which=15:18)
 
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adv}},
+Other datasets provided with oce: \code{\link{adv}},
   \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
@@ -41,7 +41,7 @@ Other datasets provided with \code{oce}: \code{\link{adv}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{as.adp}},
@@ -67,5 +67,5 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{adp} data}
+\concept{datasets provided with oce}
+\concept{things related to adp data}

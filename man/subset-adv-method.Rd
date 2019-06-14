@@ -31,7 +31,7 @@ plot(subset(adv, time < mean(range(adv[['time']]))))
 
 }
 \seealso{
-Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+Other things related to adv data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
   \code{\link{adv}}, \code{\link{beamName}},
   \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
@@ -45,7 +45,7 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 
-Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,argo-method}},
   \code{\link{subset,cm-method}},
@@ -64,5 +64,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that subset \code{oce} objects}
-\concept{things related to \code{adv} data}
+\concept{functions that subset oce objects}
+\concept{things related to adv data}

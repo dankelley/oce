@@ -2554,9 +2554,9 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
 #' plot(cmRotated, which="uv")
 #' mtext("cm rotated 30 deg", side=3, line=0, adj=1, cex=0.7)
 #'
-#' @family things related to \code{adp} data
-#' @family things related to \code{adv} data
-#' @family things related to \code{cm} data
+#' @family things related to adp data
+#' @family things related to adv data
+#' @family things related to cm data
 rotateAboutZ <- function(x, angle)
 {
     if (missing(angle))

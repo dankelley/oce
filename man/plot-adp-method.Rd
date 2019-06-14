@@ -349,7 +349,7 @@ plot(adp, which='temperature', tformat='\%H:\%M')
 
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
+Other functions that plot oce data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
   \code{\link{plot,bremen-method}},
@@ -373,7 +373,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -402,5 +402,5 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{adp} data}
+\concept{functions that plot oce data}
+\concept{things related to adp data}

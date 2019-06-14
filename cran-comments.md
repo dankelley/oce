@@ -2,20 +2,16 @@
 
 * local R-3.6.0 MacOS install OK
 * win-builder R-release 3.6.0 (2019-04-26) OK
-* win-builder R-devel -
-* win-builder R-oldrelease -
+* win-builder R-devel (unstable) (2019-06-11 r76694)
+* win-builder R-oldrelease R 3.5.3 (2019-03-11) 1 NOTE (large subdirs)
 
 ## R CMD check results
 
-There were no ERRORs or WARNINGs.  (There were many warnings from the Fortran
+There were no ERRORs or WARNINGs.  (There were warnings from the Fortran
 compiler, owing to the existence of comments beyond the 72nd column in
-src/magdec.f (which is code derived from IAGA, the Int'l Asoc. of Geomagnetism
-and aeronomy.) Although deleting the comments would be easy, doing so would
-make the code more difficult to understand, and remove its similarity to the
-original IAGA source. Therefore, those compiler messages were ignored. However,
-src/magdec.f *does* differ in two ways from the original IAGA code, both
-relating to making a specific type conversion, instead of relying on the
-Fortran rules on automatic integer/real type conversion.
+src/magdec.f, which derives from code provided by IAGA, the Int'l Asoc. of
+Geomagnetism and Aeronomy and that is kept in the original form for easier
+tracing of its provenance.)
 
 There was 1 NOTE, as follows.
 

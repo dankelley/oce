@@ -55,7 +55,7 @@ In addition to the usual insertion of elements by name, note
 that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 }
 \seealso{
-Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
+Other functions that replace parts of oce objects: \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
   \code{\link{[[<-,cm-method}},
@@ -78,7 +78,7 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,amsr-
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
 
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
@@ -107,5 +107,5 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that replace parts of \code{oce} objects}
-\concept{things related to \code{adp} data}
+\concept{functions that replace parts of oce objects}
+\concept{things related to adp data}

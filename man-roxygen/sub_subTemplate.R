@@ -76,6 +76,6 @@
 #' is employed so that \code{[[} will behave like the normal R version.)
 #'
 #'
-#' @family functions that extract parts of \code{oce} objects
+#' @family functions that extract parts of oce objects
 
 

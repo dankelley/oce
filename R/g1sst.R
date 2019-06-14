@@ -46,7 +46,7 @@ setClass("g1sst", contains="satellite")
 #' @title Extract Something From a G1SST Object
 #' @param x A \code{g1sst} object, i.e. one inheriting from \code{\link{g1sst-class}}.
 #' @template sub_subTemplate
-#' @family things related to \code{g1sst} data
+#' @family things related to g1sst data
 setMethod(f="[[",
           signature(x="g1sst", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -56,7 +56,7 @@ setMethod(f="[[",
 #' @title Replace Parts of a G1SST Object
 #' @param x An \code{g1sst} object, i.e. one inheriting from \code{\link{g1sst-class}}
 #' @template sub_subsetTemplate
-#' @family things related to \code{g1sst} data
+#' @family things related to g1sst data
 setMethod(f="[[<-",
           signature(x="g1sst", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {

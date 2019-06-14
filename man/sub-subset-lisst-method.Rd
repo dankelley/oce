@@ -52,7 +52,7 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
+Other functions that replace parts of oce objects: \code{\link{[[<-,adp-method}},
   \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -75,11 +75,11 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
 
-Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
+Other things related to lisst data: \code{\link{[[,lisst-method}},
   \code{\link{as.lisst}}, \code{\link{lisst-class}},
   \code{\link{plot,lisst-method}},
   \code{\link{read.lisst}},
   \code{\link{summary,lisst-method}}
 }
-\concept{functions that replace parts of \code{oce} objects}
-\concept{things related to \code{lisst} data}
+\concept{functions that replace parts of oce objects}
+\concept{things related to lisst data}

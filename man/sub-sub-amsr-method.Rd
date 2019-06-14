@@ -151,7 +151,7 @@ mtext("red: too rainy to sense SSTDay")
 }
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,argo-method}},
   \code{\link{[[,bremen-method}},
@@ -177,6 +177,6 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
 \author{
 Dan Kelley
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{amsr} data
+\concept{functions that extract parts of oce objects}
+\concept{things related to amsr data
 get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA}

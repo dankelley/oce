@@ -98,7 +98,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -120,7 +120,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{coastline} data: \code{\link{[[<-,coastline-method}},
+Other things related to coastline data: \code{\link{[[<-,coastline-method}},
   \code{\link{as.coastline}},
   \code{\link{coastline-class}},
   \code{\link{coastlineBest}}, \code{\link{coastlineCut}},
@@ -132,5 +132,5 @@ Other things related to \code{coastline} data: \code{\link{[[<-,coastline-method
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{coastline} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to coastline data}

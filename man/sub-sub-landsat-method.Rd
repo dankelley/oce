@@ -147,7 +147,7 @@ decimation.  An exception is the lat-lon box, which is altered by
 }
 
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -170,7 +170,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{landsat} data: \code{\link{[[<-,landsat-method}},
+Other things related to landsat data: \code{\link{[[<-,landsat-method}},
   \code{\link{landsat-class}}, \code{\link{landsatAdd}},
   \code{\link{landsatTrim}}, \code{\link{landsat}},
   \code{\link{plot,landsat-method}},
@@ -180,6 +180,6 @@ Other things related to \code{landsat} data: \code{\link{[[<-,landsat-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that extract parts of \code{oce} objects}
+\concept{functions that extract parts of oce objects}
 \concept{satellite}
-\concept{things related to \code{landsat} data}
+\concept{things related to landsat data}

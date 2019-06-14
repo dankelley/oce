@@ -15,7 +15,7 @@
 #' Several online sources list WHP names. An example is
 #' \url{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers
 oceNames2whpNames <- function(names)
 {
@@ -67,7 +67,7 @@ oceNames2whpNames <- function(names)
 #' Several online sources list WOCE names. An example is
 #' \url{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers
 oceUnits2whpUnits <- function(units, scales)
 {
@@ -147,7 +147,7 @@ oceUnits2whpUnits <- function(units, scales)
 #' Several online sources list WOCE names. An example is
 #' \url{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers
 woceNames2oceNames <- function(names)
 {
@@ -195,7 +195,7 @@ woceNames2oceNames <- function(names)
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers
 woceUnit2oceUnit <- function(woceUnit)
 {

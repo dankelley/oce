@@ -104,7 +104,7 @@ accessor operator (\code{[[}) is used to access band information, full or
 decimated, and to access certain derived quantities.  A sample dataset named
 \code{\link{landsat}} is provided by the \CRANpkg{oce} package.
 
-Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
+Other things related to landsat data: \code{\link{[[,landsat-method}},
   \code{\link{[[<-,landsat-method}},
   \code{\link{landsat-class}}, \code{\link{landsatAdd}},
   \code{\link{landsatTrim}}, \code{\link{landsat}},
@@ -115,4 +115,4 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
 Dan Kelley
 }
 \concept{satellite}
-\concept{things related to \code{landsat} data}
+\concept{things related to landsat data}

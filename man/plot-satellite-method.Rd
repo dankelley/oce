@@ -28,7 +28,7 @@ Other things related to satellite data: \code{\link{g1sst-class}},
   \code{\link{read.g1sst}}, \code{\link{satellite-class}},
   \code{\link{summary,satellite-method}}
 
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -55,6 +55,6 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
+\concept{functions that plot oce data}
 \concept{satellite}
 \concept{things related to satellite data}

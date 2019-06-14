@@ -233,7 +233,7 @@ head(ctd[["temperature"]])
 
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -256,7 +256,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{ctd} data: \code{\link{[[<-,ctd-method}},
+Other things related to ctd data: \code{\link{[[<-,ctd-method}},
   \code{\link{as.ctd}}, \code{\link{cnvName2oceName}},
   \code{\link{ctd-class}}, \code{\link{ctdDecimate}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
@@ -281,5 +281,5 @@ Other things related to \code{ctd} data: \code{\link{[[<-,ctd-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{ctd} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to ctd data}

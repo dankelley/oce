@@ -97,7 +97,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -120,11 +120,11 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,topo-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{windrose} data: \code{\link{[[<-,windrose-method}},
+Other things related to windrose data: \code{\link{[[<-,windrose-method}},
   \code{\link{as.windrose}},
   \code{\link{plot,windrose-method}},
   \code{\link{summary,windrose-method}},
   \code{\link{windrose-class}}
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{windrose} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to windrose data}

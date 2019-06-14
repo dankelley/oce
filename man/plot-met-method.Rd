@@ -78,7 +78,7 @@ abline(v=t0)
 
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -102,7 +102,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{met} data: \code{\link{[[,met-method}},
+Other things related to met data: \code{\link{[[,met-method}},
   \code{\link{[[<-,met-method}}, \code{\link{as.met}},
   \code{\link{download.met}}, \code{\link{met-class}},
   \code{\link{met}}, \code{\link{read.met}},
@@ -112,5 +112,5 @@ Other things related to \code{met} data: \code{\link{[[,met-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{met} data}
+\concept{functions that plot oce data}
+\concept{things related to met data}

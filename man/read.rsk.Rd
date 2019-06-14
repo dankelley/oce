@@ -105,7 +105,7 @@ and it is common to coerce \code{rsk} objects to other forms for specialized
 work, e.g. \code{\link{as.ctd}} can be used to create CTD object, so that the
 generic plot obeys the CTD format.
 
-Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
+Other things related to rsk data: \code{\link{[[,rsk-method}},
   \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
   \code{\link{plot,rsk-method}}, \code{\link{rsk-class}},
   \code{\link{rskPatm}}, \code{\link{rskToc}},
@@ -115,4 +115,4 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{things related to \code{rsk} data}
+\concept{things related to rsk data}

@@ -29,8 +29,8 @@
 #' lines(x, y, col='blue', lty="dashed", lwd=5)
 #' arrows(0, 0, a$uMean, a$vMean, lwd=5, length=1/10, col='blue', lty="dashed")
 #'
-#' @family things related to \code{adp} data
-#' @family things related to \code{adv} data
+#' @family things related to adp data
+#' @family things related to adv data
 velocityStatistics <- function(x, control, ...)
 {
     if (inherits(x, "adp")) {
@@ -77,8 +77,8 @@ velocityStatistics <- function(x, control, ...)
 #' in xyz coordinates instead of beam coordinates.
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adp} data
-#' @family things related to \code{adv} data
+#' @family things related to adp data
+#' @family things related to adv data
 beamToXyz <- function(x, ...)
 {
     if (inherits(x, "adp"))
@@ -101,8 +101,8 @@ beamToXyz <- function(x, ...)
 #' @return An object of the same type as \code{x}, but with velocities
 #' in east-north-up coordinates instead of xyz coordinates.
 #'
-#' @family things related to \code{adp} data
-#' @family things related to \code{adv} data
+#' @family things related to adp data
+#' @family things related to adv data
 xyzToEnu <- function(x, ...)
 {
     if (inherits(x, "adp"))
@@ -122,8 +122,8 @@ xyzToEnu <- function(x, ...)
 #' @return An object of the same type as \code{x}, but with velocities
 #' in the rotated coordinate system
 #'
-#' @family things related to \code{adp} data
-#' @family things related to \code{adv} data
+#' @family things related to adp data
+#' @family things related to adv data
 enuToOther <- function(x, ...)
 {
     if (inherits(x, "adp"))
@@ -142,8 +142,8 @@ enuToOther <- function(x, ...)
 #' @return An object of the same type as \code{x}, but with velocities
 #' in the enu coordinate system
 #'
-#' @family things related to \code{adp} data
-#' @family things related to \code{adv} data
+#' @family things related to adp data
+#' @family things related to adv data
 toEnu <- function(x, ...)
 {
     if (inherits(x, "adp"))

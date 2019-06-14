@@ -62,14 +62,14 @@ to find items more directly, using \code{\link{oceGetData}} and
 }
 
 \seealso{
-Other things related to \code{cm} data: \code{\link{[[,cm-method}},
+Other things related to cm data: \code{\link{[[,cm-method}},
   \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
   \code{\link{cm}}, \code{\link{plot,cm-method}},
   \code{\link{read.cm}}, \code{\link{rotateAboutZ}},
   \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 
-Other classes provided by \code{oce}: \code{\link{adp-class}},
+Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
@@ -83,5 +83,5 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
 \author{
 Dan Kelley
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{cm} data}
+\concept{classes provided by oce}
+\concept{things related to cm data}

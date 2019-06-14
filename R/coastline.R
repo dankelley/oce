@@ -21,8 +21,8 @@
 ##'
 #' @author Dan Kelley
 #'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{coastline} data
+#' @family classes provided by oce
+#' @family things related to coastline data
 setClass("coastline", contains="oce")
 
 
@@ -50,8 +50,8 @@ setClass("coastline", contains="oce")
 #' @source Downloaded from \url{https://www.naturalearthdata.com}, in
 #' \code{ne_110m_admin_0_countries.shp} in July 2015, with an
 #' update on December 16, 2017.
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{coastline} data
+#' @family datasets provided with oce
+#' @family things related to coastline data
 NULL
 
 setMethod(f="initialize",
@@ -77,7 +77,7 @@ setMethod(f="initialize",
 #' probably account for the vast majority of use cases.
 #'
 #' @template sub_subTemplate
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 setMethod(f="[[",
           signature(x="coastline", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -86,7 +86,7 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a Coastline Object
 #' @param x An \code{coastline} object, i.e. inheriting from \code{\link{coastline-class}}
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="coastline", i="ANY", j="ANY"),
@@ -139,8 +139,8 @@ setMethod(f="[[<-",
 #' plot(cl, clon=-65, clat=45, span=6000)
 #' rect(-80, 30, -50, 60, bg="transparent", border="red")
 #'}
-#' @family things related to \code{coastline} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to coastline data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="coastline",
           definition=function(x, subset, ...) {
@@ -265,7 +265,7 @@ setMethod(f="subset",
 #' call to \code{\link{read.coastline}} or \code{\link{read.oce}}.
 #' @param \dots further arguments passed to or from other methods.
 #' @author Dan Kelley
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 setMethod(f="summary",
           signature="coastline",
           definition=function(object, ...) {
@@ -294,7 +294,7 @@ setMethod(f="summary",
 #' @return An object of \code{\link[base]{class}} \code{"coastline"} (for
 #' details, see \code{\link{read.coastline}}).
 #' @author Dan Kelley
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 as.coastline <- function(longitude, latitude, fillable=FALSE)
 {
     if (missing(longitude)) stop("must provide longitude")
@@ -492,8 +492,8 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #'      grid=10, projection='+proj=laea +lon_0=-100 +lat_0=55')
 #'}
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{coastline} data
+#' @family functions that plot oce data
+#' @family things related to coastline data
 #' @aliases plot.coastline
 setMethod(f="plot",
           signature=signature("coastline"),
@@ -876,7 +876,7 @@ setMethod(f="plot",
 #' 1. The NaturalEarth server is at \url{https://www.naturalearthdata.com}
 #'
 #' @family functions that download files
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 download.coastline <- function(resolution, item="coastline",
                            destdir=".", destfile,
                            server="naturalearth",
@@ -1039,7 +1039,7 @@ read.coastline <- function(file,
 #' provides coastline datasets in three resolutions, along with similar files
 #' lakes and rivers, for borders, etc. It is highly recommended.
 #'}
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90),
                                      debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
@@ -1244,7 +1244,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
 #' @inheritParams read.coastline.shapefile
 #' @return An object of \code{\link{coastline-class}}
 #' @author Dan Kelley
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90),
                                      debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
@@ -1321,7 +1321,7 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90
 #' processing.
 #' @return The name of a coastline that can be loaded with \code{data()}.
 #' @author Dan Kelley
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "coastlineBest(",
@@ -1392,7 +1392,7 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #'}
 #'
 #' @return a new coastline object
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 coastlineCut <- function(coastline, lon_0=0)
 {
     if (lon_0 == 0)

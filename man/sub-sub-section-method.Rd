@@ -148,7 +148,7 @@ Sl[[1]]
 
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -171,7 +171,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{section} data: \code{\link{[[<-,section-method}},
+Other things related to section data: \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{handleFlags,section-method}},
   \code{\link{initializeFlagScheme,section-method}},
@@ -186,5 +186,5 @@ Other things related to \code{section} data: \code{\link{[[<-,section-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{section} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to section data}

@@ -91,7 +91,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -115,7 +115,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{rsk} data: \code{\link{[[<-,rsk-method}},
+Other things related to rsk data: \code{\link{[[<-,rsk-method}},
   \code{\link{as.rsk}}, \code{\link{plot,rsk-method}},
   \code{\link{read.rsk}}, \code{\link{rsk-class}},
   \code{\link{rskPatm}}, \code{\link{rskToc}},
@@ -125,5 +125,5 @@ Other things related to \code{rsk} data: \code{\link{[[<-,rsk-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{rsk} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to rsk data}

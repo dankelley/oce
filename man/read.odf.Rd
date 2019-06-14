@@ -146,7 +146,7 @@ in June 2011.)
 \code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
 package is released by the Canadian Department of Fisheries and Oceans.
 
-Other things related to \code{odf} data: \code{\link{ODF2oce}},
+Other things related to odf data: \code{\link{ODF2oce}},
   \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
@@ -156,4 +156,4 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }
-\concept{things related to \code{odf} data}
+\concept{things related to odf data}

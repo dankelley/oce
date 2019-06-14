@@ -44,7 +44,7 @@ by specifying higher \code{debug} values.}
 Plot a summary diagram for lobo data.
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -67,9 +67,16 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,windrose-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
+
+Other things related to lobo data: \code{\link{[[,lobo-method}},
+  \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},
+  \code{\link{lobo-class}}, \code{\link{lobo}},
+  \code{\link{read.lobo}},
+  \code{\link{subset,lobo-method}},
+  \code{\link{summary,lobo-method}}
 }
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{lobo} data}
+\concept{functions that plot oce data}
+\concept{things related to lobo data}

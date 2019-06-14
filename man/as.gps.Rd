@@ -26,7 +26,7 @@ This may be used when \code{\link{read.gps}} cannot read a file, or when the
 data have been manipulated.
 }
 \seealso{
-Other things related to \code{gps} data: \code{\link{[[,gps-method}},
+Other things related to gps data: \code{\link{[[,gps-method}},
   \code{\link{[[<-,gps-method}}, \code{\link{gps-class}},
   \code{\link{plot,gps-method}}, \code{\link{read.gps}},
   \code{\link{summary,gps-method}}
@@ -34,4 +34,4 @@ Other things related to \code{gps} data: \code{\link{[[,gps-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{gps} data}
+\concept{things related to gps data}

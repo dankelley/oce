@@ -30,7 +30,7 @@ plot(subset(sealevel, time < mean(range(sealevel[['time']]))))
 
 }
 \seealso{
-Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
+Other things related to sealevel data: \code{\link{[[,sealevel-method}},
   \code{\link{[[<-,sealevel-method}},
   \code{\link{as.sealevel}},
   \code{\link{plot,sealevel-method}},
@@ -40,7 +40,7 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{sealevel}},
   \code{\link{summary,sealevel-method}}
 
-Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,adv-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,argo-method}},
@@ -59,5 +59,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that subset \code{oce} objects}
-\concept{things related to \code{sealevel} data}
+\concept{functions that subset oce objects}
+\concept{things related to sealevel data}

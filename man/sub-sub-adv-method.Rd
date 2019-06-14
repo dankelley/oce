@@ -114,7 +114,7 @@ head(adv[["q", "numeric"]]) # in numeric form
 
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
   \code{\link{[[,bremen-method}},
@@ -137,7 +137,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{adv} data: \code{\link{[[<-,adv-method}},
+Other things related to adv data: \code{\link{[[<-,adv-method}},
   \code{\link{adv-class}}, \code{\link{adv}},
   \code{\link{beamName}}, \code{\link{beamToXyz}},
   \code{\link{enuToOtherAdv}}, \code{\link{enuToOther}},
@@ -155,5 +155,5 @@ Other things related to \code{adv} data: \code{\link{[[<-,adv-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{adv} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to adv data}

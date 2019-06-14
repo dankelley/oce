@@ -67,7 +67,7 @@ to find items more directly, using \code{\link{oceGetData}} and
 }
 
 \seealso{
-Other classes provided by \code{oce}: \code{\link{adp-class}},
+Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{bremen-class}},
   \code{\link{cm-class}}, \code{\link{coastline-class}},
   \code{\link{ctd-class}}, \code{\link{lisst-class}},
@@ -77,7 +77,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
-Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+Other things related to argo data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argoGrid}},
   \code{\link{argoNames2oceNames}}, \code{\link{argo}},
   \code{\link{as.argo}},
@@ -89,5 +89,5 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{argo} data}
+\concept{classes provided by oce}
+\concept{things related to argo data}

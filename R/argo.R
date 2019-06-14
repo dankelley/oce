@@ -28,8 +28,8 @@
 #'
 #' @author Dan Kelley and Clark Richards
 #'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{argo} data
+#' @family classes provided by oce
+#' @family things related to argo data
 setClass("argo", contains="oce")
 
 #' ARGO float dataset
@@ -65,8 +65,8 @@ setClass("argo", contains="oce")
 #' ftp ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc
 #'} issued on 2017 July 7.
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{argo} data
+#' @family datasets provided with oce
+#' @family things related to argo data
 NULL
 
 
@@ -136,7 +136,7 @@ NULL
 #' fivenum(argo[["salinity"]],na.rm=TRUE)
 #' fivenum(argo[["salinity"]][argo[["salinityFlag"]]==1],na.rm=TRUE)
 #'
-#' @family things related to \code{argo} data
+#' @family things related to argo data
 #' @author Dan Kelley
 setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
@@ -230,7 +230,7 @@ setMethod(f="[[",
 #' @title Replace Parts of an Argo Object
 #' @param x An \code{argo} object, i.e. inheriting from \code{\link{argo-class}}
 #' @template sub_subsetTemplate
-#' @family things related to \code{argo} data
+#' @family things related to argo data
 setMethod(f="[[<-",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -366,7 +366,7 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 #' 2. Argo list of parameters in an excel spreadsheet, available at
 #' \url{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
 #'
-#' @family things related to \code{argo} data
+#' @family things related to argo data
 argoNames2oceNames <- function(names, ignore.case=TRUE)
 {
     ## do NOT change the order below, because we are working with partial strings.
@@ -487,8 +487,8 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{argo} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to argo data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
@@ -723,7 +723,7 @@ setMethod(f="subset",
 #' summary(argo)
 #'
 #' @author Dan Kelley
-#' @family things related to \code{argo} data
+#' @family things related to argo data
 setMethod(f="summary",
           signature="argo",
           definition=function(object, ...) {
@@ -788,7 +788,7 @@ ncdfFixMatrix <- function(x)
 #' imagep(t, z, t(g[['temperature']]), ylim=c(-100,0), zlim=c(0,20))
 #' imagep(t, z, t(g[['salinity']]), ylim=c(-100,0))
 #'
-#' @family things related to \code{argo} data
+#' @family things related to argo data
 #' @author Dan Kelley and Clark Richards
 argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
 {
@@ -1007,7 +1007,7 @@ argoDecodeFlags <- function(f) # local function
 #' Similar steps can be followed on other servers.
 #'
 #' @author Dan Kelley
-#' @family things related to \code{argo} data
+#' @family things related to argo data
 read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!requireNamespace("ncdf4", quietly=TRUE))
@@ -1411,7 +1411,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 #' objects, and also outlines the other functions dealing with them.
 #'
 #' @author Dan Kelley
-#' @family things related to \code{argo} data
+#' @family things related to argo data
 as.argo <- function(time, longitude, latitude,
                        salinity, temperature, pressure,
                        units=NULL,
@@ -1546,8 +1546,8 @@ as.argo <- function(time, longitude, latitude,
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{argo} data
-#' @family functions that plot \code{oce} data
+#' @family things related to argo data
+#' @family functions that plot oce data
 #' @aliases plot.argo
 setMethod(f="plot",
           signature=signature("argo"),
@@ -1785,7 +1785,7 @@ setMethod(f="plot",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{argo} data
+#' @family things related to argo data
 setMethod("handleFlags",
           c(object="argo", flags="ANY", actions="ANY", debug="ANY"),
           function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {

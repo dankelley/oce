@@ -17,7 +17,7 @@ call to \code{\link{read.coastline}} or \code{\link{read.oce}}.}
 Summarizes coastline length, bounding box, etc.
 }
 \seealso{
-Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+Other things related to coastline data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
   \code{\link{as.coastline}},
   \code{\link{coastline-class}},
@@ -32,4 +32,4 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
 \author{
 Dan Kelley
 }
-\concept{things related to \code{coastline} data}
+\concept{things related to coastline data}

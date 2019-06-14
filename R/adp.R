@@ -227,8 +227,8 @@
 #' transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 #' (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
 #'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{adp} data
+#' @family classes provided by oce
+#' @family things related to adp data
 setClass("adp", contains="oce")
 
 #' ADP (acoustic-doppler profiler) dataset
@@ -258,8 +258,8 @@ setClass("adp", contains="oce")
 #'
 #' @source This file came from the SLEIWEX-2008 experiment.
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{adp} data
+#' @family datasets provided with oce
+#' @family things related to adp data
 NULL
 
 setMethod(f="initialize",
@@ -321,7 +321,7 @@ setMethod(f="initialize",
 #' plot(adp, which="u1")
 #' plot(adpClean, which="u1")
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 setMethod("handleFlags",
           c(object="adp", flags="ANY", actions="ANY", debug="ANY"),
           function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
@@ -390,7 +390,7 @@ setMethod("initializeFlags",
 #' plot(adp, which="u1")
 #' plot(adpClean2, which="u1") # differs at 8h and 20h
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 setMethod("setFlags",
           c(object="adp", name="ANY", i="ANY", value="ANY", debug="ANY"),
           function(object, name=NULL, i=NULL, value=NULL, debug=getOption("oceDebug")) {
@@ -417,7 +417,7 @@ setMethod("setFlags",
 #' slot.
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 setMethod(f="summary",
           signature="adp",
           definition=function(object, ...) {
@@ -613,7 +613,7 @@ setMethod(f="concatenate",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 setMethod(f="[[",
           signature(x="adp", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -855,7 +855,7 @@ setMethod(f="[[",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 setMethod(f="[[<-",
           signature="adp",
           definition=function(x, i, j, ..., value) {
@@ -938,8 +938,8 @@ setValidity("adp",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adp} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to adp data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="adp",
           definition=function(x, subset, ...) {
@@ -1108,7 +1108,7 @@ setMethod(f="subset",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coordinate="enu")
 {
     res <- new("adp", time=time, distance=distance, v=v, a=a, q=q)
@@ -1185,8 +1185,8 @@ as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coor
 #' with \code{x[["coordinate"]]}.
 #' @author Dan Kelley
 #' @seealso This is used by \code{\link{read.oce}}.
-#' @family things related to \code{adp} data
-#' @family things related to \code{adv} data
+#' @family things related to adp data
+#' @family things related to adv data
 beamName <- function(x, which)
 {
 
@@ -1233,7 +1233,7 @@ beamName <- function(x, which)
 #'
 #' @author Dan Kelley and Clark Richards
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
                      longitude=NA, latitude=NA,
                      manufacturer,
@@ -1572,8 +1572,8 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' plot(adp, which='temperature', tformat='%H:%M')
 #'
 #' @author Dan Kelley
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{adp} data
+#' @family functions that plot oce data
+#' @family things related to adp data
 #' @aliases plot.adp
 ## DEVELOPER NOTE: update first test in tests/testthat/test_adp.R if a new 'which' is handled
 setMethod(f="plot",
@@ -2763,7 +2763,7 @@ setMethod(f="plot",
 #' \code{\link{xyzToEnuAdp}}.
 #' @references
 #' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     debug <- if (debug > 0) 1 else 0
@@ -2825,7 +2825,7 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 #' ## Image
 #' plot(adp.att, which="amplitude",col=oce.colorsJet(100))
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALSE, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "beamUnspreadAdp(...) {\n", unindent=1)
@@ -2925,7 +2925,7 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #' 2. WHOI/USGS-provided Matlab code for beam-enu transformation
 #' \samp{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "adp"))
@@ -3043,7 +3043,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 #' \dQuote{ADCP Coordinate Transformation: Formulas and Calculations,}
 #' January 2010. P/N 951-6079-00.
 #
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
 {
     debug <- if (debug > 0) 1 else 0
@@ -3215,7 +3215,7 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
 #' 2. Clark Richards, 2012, PhD Dalhousie University Department of
 #' Oceanography.
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     debug <- if (debug > 0) 1 else 0
@@ -3439,7 +3439,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 #' 2. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018.
 #' https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     debug <- if (debug > 0) 1 else 0
@@ -3560,7 +3560,7 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
 #' o <- enuToOtherAdp(adp, heading=-31.5)
 #' plot(o, which=1:3)
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
 {
     if (!inherits(x, "adp"))
@@ -3625,7 +3625,7 @@ display.bytes <- function(b, label="", ...)
 #' @seealso See \code{\link{read.adp}} for notes on functions relating to
 #' \code{"adp"} objects, and \code{\link{adp-class}} for notes on the ADP
 #' object class.
-## @family things related to \code{adp} data
+## @family things related to adp data
 subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "subtractBottomVelocity(x) {\n", unindent=1)
@@ -3676,7 +3676,7 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 #' plot(beam2, which=5:8)
 #'}
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 binmapAdp <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "binmap(x, debug) {\n", unindent=1)
@@ -3796,7 +3796,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 #' adpAvg <- adpEnsembleAverage(adp, n=2)
 #' plot(adpAvg)
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 adpEnsembleAverage <- function(x, n=5, leftover=FALSE, na.rm=TRUE, ...)
 {
     if (!inherits(x, 'adp')) stop('Must be an object of class adp')

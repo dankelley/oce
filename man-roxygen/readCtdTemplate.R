@@ -64,4 +64,4 @@
 #'
 #' @param ... additional arguments, passed to called routines.
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data

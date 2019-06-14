@@ -22,8 +22,8 @@
 #'
 #' @author Dan Kelley
 #'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{topo} data
+#' @family classes provided by oce
+#' @family things related to topo data
 setClass("topo", contains="oce")
 
 #' @title Global Topographic Dataset at Half-degree Resolution
@@ -80,8 +80,8 @@ setClass("topo", contains="oce")
 #' imagep(topoWorld)
 #'}
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{topo} data
+#' @family datasets provided with oce
+#' @family things related to topo data
 NULL
 
 setMethod(f="initialize",
@@ -117,7 +117,7 @@ setMethod(f="initialize",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 setMethod(f="summary",
           signature="topo",
           definition=function(object, ...) {
@@ -136,7 +136,7 @@ setMethod(f="summary",
 #' There are no special features for \code{\link{topo-class}} data;
 #' the general method is used directly.
 #' @template sub_subTemplate
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 setMethod(f="[[",
           signature(x="topo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -145,7 +145,7 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a Topo Object
 #' @param x An \code{topo} object, i.e. inheriting from \code{\link{topo-class}}
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="topo", i="ANY", j="ANY"),
@@ -177,8 +177,8 @@ setMethod(f="[[<-",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{topo} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to topo data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="topo",
           definition=function(x, subset, ...) {
@@ -313,7 +313,7 @@ setMethod(f="subset",
 #' [access date: Aug 30, 2017].
 #'
 #' @family functions that download files
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 download.topo <- function(west, east, south, north, resolution,
                            destdir, destfile, format,
                            server, debug=getOption("oceDebug"))
@@ -411,7 +411,7 @@ download.topo <- function(west, east, south, north, resolution,
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 topoInterpolate <- function(longitude, latitude, topo)
 {
     if (missing(longitude)) stop("must supply longitude")
@@ -509,8 +509,8 @@ topoInterpolate <- function(longitude, latitude, topo)
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{topo} data
+#' @family functions that plot oce data
+#' @family things related to topo data
 #' @aliases plot.topo
 setMethod(f="plot",
           signature=signature("topo"),
@@ -836,7 +836,7 @@ setMethod(f="plot",
 #'}
 #'
 #' @author Dan Kelley
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 read.topo <- function(file, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.topo(file=\"", file, "\") {\n", sep="", unindent=1)
@@ -946,7 +946,7 @@ read.topo <- function(file, debug=getOption("oceDebug"))
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 as.topo <- function(longitude, latitude, z, filename="")
 {
     if (inherits(longitude, "bathy")) {

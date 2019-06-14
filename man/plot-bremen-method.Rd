@@ -24,7 +24,7 @@ plot is created with \code{\link{plot,ladp-method}} to show velocity variation w
 pressure.
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -48,7 +48,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
+Other things related to bremen data: \code{\link{[[,bremen-method}},
   \code{\link{[[<-,bremen-method}},
   \code{\link{bremen-class}}, \code{\link{read.bremen}},
   \code{\link{summary,bremen-method}}
@@ -56,5 +56,5 @@ Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{bremen} data}
+\concept{functions that plot oce data}
+\concept{things related to bremen data}
