@@ -28,17 +28,28 @@ There was 1 NOTE, as follows.
 
 ## Reverse dependencies
 
-devtools::revdep_check() reports as follows
-
-✔ seacarb 3.2.12                         ── E: 0     | W: 0     | N: 0                                    
-✔ ocedata 0.1.5                          ── E: 0     | W: 0     | N: 0                                    
-✔ graticule 0.1.2                        ── E: 0     | W: 0     | N: 0                                    
-✔ skyscapeR 0.2.2                        ── E: 0     | W: 0     | N: 1                                    
-✔ dendroTools 1.0.5                      ── E: 0     | W: 0     | N: 0                                    
-✔ soundecology 1.3.3                     ── E: 0     | W: 0     | N: 0                                    
-✔ SWMPr 2.3.1                            ── E: 0     | W: 0     | N: 0                                    
-OK: 7                                                                                                   
+> revdepcheck::revdep_check()
+── INIT ────────────────────────────────────────────── Computing revdeps ──
+── INSTALL ────────────────────────────────────────────────── 2 versions ──
+Installing CRAN version of oce
+Installing DEV version of oce
+── CHECK ──────────────────────────────────────────────────── 7 packages ──
+✔ dendroTools 1.0.5                      ── E: 0     | W: 0     | N: 0     
+✔ graticule 0.1.2                        ── E: 0     | W: 0     | N: 0     
+✔ ocedata 0.1.5                          ── E: 0     | W: 0     | N: 0     
+✔ seacarb 3.2.12                         ── E: 0     | W: 0     | N: 0     
+✔ skyscapeR 0.2.2                        ── E: 0     | W: 0     | N: 1     
+✔ soundecology 1.3.3                     ── E: 0     | W: 0     | N: 0     
+✔ SWMPr 2.3.1                            ── E: 0     | W: 0     | N: 0     
+OK: 7                                                                    
 BROKEN: 0
+Total time: 19 min
+── REPORT ─────────────────────────────────────────────────────────────────
+Writing summary to 'revdep/README.md'
+Writing problems to 'revdep/problems.md'
+Writing failures to 'revdep/failures.md'
+Warning message:
+call dbDisconnect() when finished working with a connection 
 
 ---
 
