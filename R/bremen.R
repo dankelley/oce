@@ -24,8 +24,8 @@
 #' @template slot_get
 #'
 #' @author Dan Kelley
-#' @family classes provided by \code{oce}
-#' @family things related to \code{bremen} data
+#' @family classes provided by oce
+#' @family things related to bremen data
 setClass("bremen", contains="oce") # 20150528 may be called "geomar" or something later
 
 setMethod(f="initialize",
@@ -33,7 +33,7 @@ setMethod(f="initialize",
           definition=function(.Object, filename="") {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'bremen' object"
               return(.Object)
           })
@@ -41,7 +41,7 @@ setMethod(f="initialize",
 #' @title Extract Something From a Bremen Object
 #' @param x A bremen object, i.e. one inheriting from \code{\link{bremen-class}}.
 #' @template sub_subTemplate
-#' @family things related to \code{bremen} data
+#' @family things related to bremen data
 setMethod(f="[[",
           signature(x="bremen", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -51,7 +51,7 @@ setMethod(f="[[",
 #' @title Replace Parts of a Bremen Object
 #' @param x An \code{bremen} object, i.e. inheriting from \code{\link{bremen-class}}
 #' @template sub_subsetTemplate
-#' @family things related to \code{bremen} data
+#' @family things related to bremen data
 setMethod(f="[[<-",
           signature(x="bremen", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -72,8 +72,8 @@ setMethod(f="[[<-",
 #' coerced before plotting. The choices are \code{ctd} and \code{ladp}.
 #' @param ... Other arguments, passed to plotting functions.
 #' @author Dan Kelley
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{bremen} data
+#' @family functions that plot oce data
+#' @family things related to bremen data
 #' @aliases plot.bremen
 setMethod(f="plot",
           signature=signature("bremen"),
@@ -100,7 +100,7 @@ setMethod(f="plot",
 #' call to \code{\link{read.bremen}}.
 #' @param ... Further arguments passed to or from other methods.
 #' @author Dan Kelley
-#' @family things related to \code{bremen} data
+#' @family things related to bremen data
 setMethod(f="summary",
           signature="bremen",
           definition=function(object, ...) {
@@ -164,7 +164,7 @@ findInHeaderBremen <- function(key, lines)
 #' It was created to read some data being used in a particular research
 #' project, and will be rendered useless if Bremen changes this data format.
 #' @author Dan Kelley
-#' @family things related to \code{bremen} data
+#' @family things related to bremen data
 read.bremen <- function(file)
 {
     if (is.character(file)) {

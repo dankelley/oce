@@ -1,5 +1,8 @@
 #' Read an ITP-type CTD File
+#'
 #' @template readCtdTemplate
+#'
+#' @author Dan Kelley
 #'
 #' @details
 #' \code{read.ctd.itp()} reads ice-tethered-profiler data that are stored
@@ -13,8 +16,8 @@
 #' \url{http://www.whoi.edu/page.do?pid=23096}, which also provides a link for
 #' downloading data.  Note that the present version only handles data in
 #' profiler-mode, not fixed-depth mode.
-read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor=FALSE,
-                         debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
+                         monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     oceDebug(debug, "read.ctd.itp() {\n", unindent=1)
     if (is.character(file)) {
@@ -113,6 +116,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
         res <- as.ctd(salinity, temperature, pressure,
                       longitude=longitude, latitude=latitude,
                       startTime=ISOdate(year, 1, 1) + yearday * 3600 * 24,
+                      deploymentType=deploymentType,
                       station=station)
         res <- oceSetData(res, name="oxygen", value=oxygen, unit=units$oxygen, originalName="oxygen")
         res <- oceSetMetadata(res, "filename", filename)

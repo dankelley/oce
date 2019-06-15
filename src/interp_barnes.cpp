@@ -126,8 +126,8 @@ List do_interp_barnes(NumericVector x, NumericVector y, NumericVector z, Numeric
             nx, &x[0], &y[0], &z[0], &w[0],
             &z_last(0),
             xr2, yr2, i==(nxg-1)&&j==(nyg-1));
-        R_CheckUserInterrupt();
       }
+      R_CheckUserInterrupt();
     }
     /* interpolate grid back to data locations */
     for (int k = 0; k < nx; k++) {

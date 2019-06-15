@@ -32,7 +32,7 @@ plotProfile(ctd)
 plotProfile(top10)
 }
 \seealso{
-Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,adv-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,argo-method}},
@@ -48,4 +48,4 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
   \code{\link{subset,section-method}},
   \code{\link{subset,topo-method}}
 }
-\concept{functions that subset \code{oce} objects}
+\concept{functions that subset oce objects}

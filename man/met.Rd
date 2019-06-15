@@ -26,7 +26,7 @@ of having to know the station number. See the documentation for
 \code{\link{download.met}} for more details on station numbers.
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
@@ -36,12 +36,12 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 
-Other things related to \code{met} data: \code{\link{[[,met-method}},
+Other things related to met data: \code{\link{[[,met-method}},
   \code{\link{[[<-,met-method}}, \code{\link{as.met}},
   \code{\link{download.met}}, \code{\link{met-class}},
   \code{\link{plot,met-method}}, \code{\link{read.met}},
   \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{met} data}
+\concept{datasets provided with oce}
+\concept{things related to met data}

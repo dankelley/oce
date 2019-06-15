@@ -17,8 +17,8 @@ Although the data are stored in \code{\link{raw}} form, the summary
 presents results in physical units.
 }
 \seealso{
-Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
-  \code{\link{amsr-class}},
+Other things related to amsr data: \code{\link{[[,amsr-method}},
+  \code{\link{[[<-,amsr-method}}, \code{\link{amsr-class}},
   \code{\link{composite,amsr-method}},
   \code{\link{download.amsr}},
   \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
@@ -28,4 +28,4 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
 Dan Kelley
 }
 \concept{satellite}
-\concept{things related to \code{amsr} data}
+\concept{things related to amsr data}

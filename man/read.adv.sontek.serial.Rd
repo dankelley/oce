@@ -298,7 +298,7 @@ in [1B,C] as being an adjunct to Nortek Vector systems is at
 \code{http://files.microstrain.com/3DM-GX3-35-Data-Communications-Protocol.pdf}
 }
 \seealso{
-Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+Other things related to adv data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
   \code{\link{adv}}, \code{\link{beamName}},
   \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
@@ -315,4 +315,4 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{adv} data}
+\concept{things related to adv data}

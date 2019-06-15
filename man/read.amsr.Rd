@@ -36,8 +36,8 @@ about inability to read a 6-chunk file, but
 \seealso{
 \code{\link{plot,amsr-method}} for an example.
 
-Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
-  \code{\link{amsr-class}},
+Other things related to amsr data: \code{\link{[[,amsr-method}},
+  \code{\link{[[<-,amsr-method}}, \code{\link{amsr-class}},
   \code{\link{composite,amsr-method}},
   \code{\link{download.amsr}},
   \code{\link{plot,amsr-method}},
@@ -48,4 +48,4 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
 Dan Kelley and Chantelle Layton
 }
 \concept{satellite}
-\concept{things related to \code{amsr} data}
+\concept{things related to amsr data}

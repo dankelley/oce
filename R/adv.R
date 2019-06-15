@@ -38,8 +38,8 @@
 #' data(adv)
 #' adv[["v"]] <- 0.001 + adv[["v"]] # add 1mm/s to all velocity components
 #'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{adv} data
+#' @family classes provided by oce
+#' @family things related to adv data
 setClass("adv", contains="oce")
 
 #' ADV (acoustic-doppler velocimeter) dataset
@@ -56,7 +56,7 @@ setClass("adv", contains="oce")
 #' @usage data(adv)
 #'
 #' @examples
-#' \dontrun{
+#'\donttest{
 #' library(oce)
 #' data(adv)
 #'
@@ -68,12 +68,12 @@ setClass("adv", contains="oce")
 #' plot(log10(s$freq), log10(s$spec), type='l')
 #' for (a in seq(-20, 20, by=1))
 #'     abline(a=a, b=-5/3, col='gray', lty='dotted')
-#' }
+#'}
 #'
 #' @source This file came from the SLEIWEX-2008 experiment.
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{adv} data
+#' @family datasets provided with oce
+#' @family things related to adv data
 NULL
 
 
@@ -85,7 +85,7 @@ setMethod(f="initialize",
               if (!missing(a)) .Object@data$a <- a
               if (!missing(q)) .Object@data$q <- q
               .Object@metadata$filename <- if (missing(filename)) "" else filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'adv' object"
               return(.Object)
           })
@@ -108,7 +108,7 @@ setMethod(f="initialize",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adv} data
+#' @family things related to adv data
 setMethod(f="summary",
           signature="adv",
           definition=function(object, ...) {
@@ -152,7 +152,7 @@ setMethod(f="summary",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adv} data
+#' @family things related to adv data
 setMethod(f="[[",
           signature(x="adv", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -214,7 +214,7 @@ setMethod(f="[[",
 #' @author Dan Kelley
 #'
 #' @template sub_subTemplate
-#' @family things related to \code{adv} data
+#' @family things related to adv data
 setMethod(f="[[<-",
           signature="adv",
           definition=function(x, i, j, ..., value) {
@@ -269,8 +269,8 @@ setMethod(f="[[<-",
 #' plot(subset(adv, time < mean(range(adv[['time']]))))
 #'
 #' @author Dan Kelley
-#' @family things related to \code{adv} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to adv data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="adv",
           definition=function(x, subset, ...) {
@@ -549,8 +549,8 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{adv} data
+#' @family functions that plot oce data
+#' @family things related to adv data
 #' @aliases plot.adv
 setMethod(f="plot",
           signature=signature("adv"),
@@ -1145,7 +1145,7 @@ setMethod(f="plot",
 #' \code{\link{xyzToEnuAdv}}.
 #' @references
 #' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
-#' @family things related to \code{adv} data
+#' @family things related to adv data
 toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "adv.2enu() {\n", unindent=1)
@@ -1188,7 +1188,7 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 #' \code{"adv"} objects.
 #' @references
 #' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "beamToXyzAdv() {\n", unindent=1)
@@ -1315,7 +1315,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' 2. Clark Richards, 2012, PhD Dalhousie University Department of
 #' Oceanography.
 #'
-#' @family things related to \code{adv} data
+#' @family things related to adv data
 xyzToEnuAdv <- function(x, declination=0,
                         cabled=FALSE, horizontalCase, sensorOrientation,
                         debug=getOption("oceDebug"))
@@ -1490,7 +1490,7 @@ xyzToEnuAdv <- function(x, declination=0,
 #' @param roll as \code{heading} but for roll.
 #' @template debugTemplate
 #' @author Dan Kelley
-#' @family things related to \code{adv} data
+#' @family things related to adv data
 enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "adv"))

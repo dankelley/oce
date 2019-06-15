@@ -47,13 +47,13 @@ constructed, of which coastlines could be a subset.
 Technical Description}, March 1998, available at
 \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
 
-\item 2. The NaturalEarth website \url{http://www.naturalearthdata.com/downloads}
+\item 2. The NaturalEarth website \url{https://www.naturalearthdata.com/downloads}
 provides coastline datasets in three resolutions, along with similar files
 lakes and rivers, for borders, etc. It is highly recommended.
 }
 }
 \seealso{
-Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+Other things related to coastline data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
   \code{\link{as.coastline}},
   \code{\link{coastline-class}},
@@ -68,4 +68,4 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
 \author{
 Dan Kelley
 }
-\concept{things related to \code{coastline} data}
+\concept{things related to coastline data}

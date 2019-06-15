@@ -57,7 +57,7 @@ to find items more directly, using \code{\link{oceGetData}} and
 }
 
 \seealso{
-Other things related to \code{gps} data: \code{\link{[[,gps-method}},
+Other things related to gps data: \code{\link{[[,gps-method}},
   \code{\link{[[<-,gps-method}}, \code{\link{as.gps}},
   \code{\link{plot,gps-method}}, \code{\link{read.gps}},
   \code{\link{summary,gps-method}}
@@ -65,4 +65,4 @@ Other things related to \code{gps} data: \code{\link{[[,gps-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{gps} data}
+\concept{things related to gps data}

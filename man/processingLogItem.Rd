@@ -11,7 +11,8 @@ processingLogItem(value = "")
 }
 \value{
 A \code{\link{list}} containing \code{time}, which is
-the \code{\link{Sys.time}} at the moment the function is called and
+the time in UTC (calculated with \code{\link{presentTime}})
+at the moment the function is called and
 \code{value}, a string that is set to the argument of the same name.
 }
 \description{

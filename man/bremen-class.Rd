@@ -63,7 +63,7 @@ to find items more directly, using \code{\link{oceGetData}} and
 }
 
 \seealso{
-Other classes provided by \code{oce}: \code{\link{adp-class}},
+Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{cm-class}}, \code{\link{coastline-class}},
   \code{\link{ctd-class}}, \code{\link{lisst-class}},
@@ -73,7 +73,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
-Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
+Other things related to bremen data: \code{\link{[[,bremen-method}},
   \code{\link{[[<-,bremen-method}},
   \code{\link{plot,bremen-method}},
   \code{\link{read.bremen}},
@@ -82,5 +82,5 @@ Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
 \author{
 Dan Kelley
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{bremen} data}
+\concept{classes provided by oce}
+\concept{things related to bremen data}

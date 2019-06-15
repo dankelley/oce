@@ -587,9 +587,15 @@ drawPalette <- function(zlim, zlab="",
 #'         Thus, clipping an image is somewhat analogous to clipping in an xy
 #'         plot, with clipped data being ignored, which in an image means to be be
 #'         colored with \code{missingColor}.
-#' @param  flipy Logical, with \code{TRUE} indicating that the image
-#'         should be flipped top to bottom (e.g. to produce a profile image
-#'         for a downward-looking acoustic-doppler profile).
+#'
+#' @param  flipy Logical, with \code{TRUE} indicating that the graph
+#' should have the y axis reversed, i.e. with smaller values at
+#' the bottom of the page. (\emph{Historical note:} until 2019 March 26,
+#' the meaning of \code{flipy} was different; it meant to reverse the
+#' range of the y axis, so that if \code{ylim} were given as a reversed
+#' range, then setting \code{flipy=TRUE} would reverse the flip, yielding
+#' a conventional axis with smaller values at the bottom.)
+#'
 #' @param  xlab,ylab,zlab Names for x axis, y axis, and the image values.
 #' @param  zlabPosition String indicating where to put the label for the z axis,
 #'         either at the top-right of the main image, or on the side, in the axis
@@ -749,7 +755,23 @@ drawPalette <- function(zlim, zlab="",
 #'        at=c(0, pi/4, pi/2),
 #'        labels=c(0, expression(pi/4), expression(pi/2)))
 #'
-#' # 4. a colormap case
+#' # 5. y-axis flipping
+#' par(mfrow=c(2,2))
+#' data(adp)
+#' d <- adp[["distance"]]
+#' t <- adp[["time"]]
+#' u <- adp[["v"]][ , ,1]
+#' imagep(t, d, u, drawTimeRange=FALSE)
+#' mtext("normal")
+#' imagep(t, d, u, flipy=TRUE, drawTimeRange=FALSE)
+#' mtext("flipy")
+#' imagep(t, d, u, ylim=rev(range(d)), drawTimeRange=FALSE)
+#' mtext("ylim")
+#' imagep(t, d, u, ylim=rev(range(d)), flipy=TRUE, drawTimeRange=FALSE)
+#' mtext("flipy and ylim")
+#' par(mfrow=c(1,1))
+#'
+#' # 6. a colormap case
 #' data(topoWorld)
 #' cm <- colormap(name="gmt_globe")
 #' imagep(topoWorld, colormap=cm)
@@ -803,6 +825,8 @@ imagep <- function(x, y, z,
              "...) {\n", sep="", unindent=1)
     oceDebug(debug, "par('mai'):", paste(format(par('mai'), digits=2)), "\n")
     oceDebug(debug, "par('mar'):", paste(format(par('mar'), digits=2)), "\n")
+    if (!is.logical(flipy))
+        stop("flipy must be TRUE or FALSE")
 
     if (is.logical(add)) {
         if (add) {
@@ -1035,7 +1059,7 @@ imagep <- function(x, y, z,
         }
     }
 
-    zlimHistogram <- zlimGiven && zlim == "histogram"
+    zlimHistogram <- zlimGiven && length(zlim) == 1 && zlim == "histogram"
     breaksGiven <- !missing(breaks)
     colormapGiven <- !missing(colormap)
     if (colormapGiven && missing(missingColor))
@@ -1213,7 +1237,9 @@ imagep <- function(x, y, z,
     if (flipy) {
         ## nc <- ncol(z)
         ## z[, seq.int(nc, 1L)] <- z[, seq.int(1L, nc)]
-        ylim <- rev(ylim)
+        ylim <- rev(sort(ylim))
+        if (ylimGiven)
+           warning("The interaction of ylim and flipy changed on 2018 Mar 26.")
     }
     if (zclip && !zlimHistogram) {
         oceDebug(debug, "using missingColor for out-of-range values")

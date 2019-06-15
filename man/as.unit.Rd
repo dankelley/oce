@@ -27,3 +27,10 @@ Convert a String to a Unit
 This function is not presently used by any \code{oce} functions, and is
 provided as a convenience function for users.
 }
+\examples{
+as.unit("DBAR")
+as.unit("IPTS-68")
+as.unit("ITS-90")
+as.unit("PSS-78")
+as.unit("UMOL/KG")
+}

@@ -16,7 +16,7 @@ This holds data from ARGO 6900388 in the North Atlantic.
 \details{
 To quote Argo's website: "These data were collected and made freely
 available by the International Argo Program and the national programs
-that contribute to it.  (http://www.argo.ucsd.edu,
+that contribute to it.  (http//www.argo.ucsd.edu,
 http://argo.jcommops.org).  The Argo Program is part of the
 Global Ocean Observing System."
 
@@ -27,17 +27,17 @@ Argo (2017). Argo float data and metadata from Global Data Assembly Centre
 \url{http://doi.org/10.17882/42182#50865}
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(argo)
 summary(argo)
 data(coastlineWorld)
-plot(argo, which="trajectory", coastline=coastlineWorld)
+plot(argo, which="trajectory")
 }
 
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
@@ -48,7 +48,7 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 
-Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+Other things related to argo data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
   \code{\link{as.argo}},
@@ -57,5 +57,5 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{argo} data}
+\concept{datasets provided with oce}
+\concept{things related to argo data}

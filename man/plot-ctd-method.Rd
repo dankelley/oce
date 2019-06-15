@@ -16,9 +16,9 @@
   projection = NULL, parameters = NULL, orientation = NULL,
   latlon.pch = 20, latlon.cex = 1.5, latlon.col = "red", cex = 1,
   cex.axis = par("cex.axis"), pch = 1, useSmoothScatter = FALSE, df,
-  keepNA = FALSE, type = "l", mgp = getOption("oceMgp"),
-  mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1),
-  inset = FALSE, add = FALSE, debug = getOption("oceDebug"), ...)
+  keepNA = FALSE, type, mgp = getOption("oceMgp"), mar = c(mgp[1] +
+  1.5, mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1), inset = FALSE,
+  add = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -204,7 +204,12 @@ named \code{df}.}
 which will yield breaks in the lines.}
 
 \item{type}{The type of plot to draw, using the same scheme as
-\code{\link{plot}}.}
+\code{\link{plot}}. If supplied, this is increased to be the
+same length as \code{which}, if necessary, and then supplied to
+each of the individual plot calls. If it is not supplied,
+then those plot calls use defaults (e.g. using a line for
+\code{\link{plotProfile}}, using dots for \code{\link{plotTS}},
+etc).}
 
 \item{mgp}{Three-element numerical vector specifying axis-label geometry,
 passed to \code{\link{par}}.
@@ -212,7 +217,12 @@ The default establishes tighter margins than in the usual R setup.}
 
 \item{mar}{Four-element numerical vector specifying margin geometry,
 passed to \code{\link{par}}.
-The default establishes tighter margins than in the usual R setup.}
+The default establishes tighter margins than in the usual R setup.
+Note that the value of \code{mar} is ignored for the map panel
+of multi-panel maps; instead, the present value of
+\code{\link{par}("mar")} is used, which in the default call will
+make the map plot region equal that of the previously-drawn
+profiles and TS plot.}
 
 \item{inset}{Set to \code{TRUE} for use within \code{\link{plotInset}}.  The
 effect is to prevent the present function from adjusting margins, which is
@@ -291,7 +301,7 @@ contour(tlon, tlat, tdep, vfont=c("sans serif", "bold"),
 The documentation for \code{\link{ctd-class}} explains the structure of CTD
 objects, and also outlines the other functions dealing with them.
 
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -315,7 +325,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
@@ -339,5 +349,5 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{ctd} data}
+\concept{functions that plot oce data}
+\concept{things related to ctd data}

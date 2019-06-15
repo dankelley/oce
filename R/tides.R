@@ -19,15 +19,15 @@
 #' @template slot_get
 #'
 #' @author Dan Kelley
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{tidem} data
+#' @family functions that plot oce data
+#' @family things related to tides
 setClass("tidem", contains="oce")
 
 setMethod(f="initialize",
           signature="tidem",
           definition=function(.Object) {
               .Object@metadata$version <- ""
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'tidem' object"
               return(.Object)
           })
@@ -94,7 +94,7 @@ setMethod(f="initialize",
 #' Foreman (1977).  The data are scanned using \file{tests/tide.R} in this
 #' package, which also performs some tests using \code{T_TIDE} values as a
 #' reference.
-#' @family things related to \code{tidem} data
+#' @family things related to tides
 NULL
 
 
@@ -116,21 +116,21 @@ NULL
 #' @return \code{NULL}
 #' @author Dan Kelley
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' data(sealevel)
 #' tide <- tidem(sealevel)
 #' summary(tide)
-#' }
+#'}
 #'
-#' @family things related to \code{tidem} data
+#' @family things related to tides
 setMethod(f="summary",
           signature="tidem",
           definition=function(object, p, constituent, ...) {
               version <- object@metadata$version
               if (missing(p))
                   p <- 1
-              ok <- object@data$p <= p || version == "3"
+              ok <- object@data$p <= p | version == "3"
               haveP <- any(!is.na(object@data$p))
               if (missing(constituent)) {
                   fit <- data.frame(Const=object@data$const[ok],
@@ -190,7 +190,7 @@ setMethod(f="summary",
 #' the underlying accessor \code{\link{[[,oce-method}}) is used.
 #'
 #' @template sub_subTemplate
-#' @family things related to \code{tidem} data
+#' @family things related to tides
 setMethod(f="[[",
           signature(x="tidem", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -208,7 +208,8 @@ setMethod(f="[[",
 #' @title Replace Parts of a Tidem Object
 #' @param x An \code{tidem} object, i.e. inheriting from \code{\link{tidem-class}}
 #' @template sub_subsetTemplate
-#' @family things related to \code{tidem} data
+#'
+#' @family things related to tides
 setMethod(f="[[<-",
           signature(x="tidem", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -250,12 +251,12 @@ setMethod(f="[[<-",
 #' @param mar value to be used with \code{\link{par}("mar")}.
 #' @param \dots optional arguments passed to plotting functions.
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' data(sealevel)
 #' tide <- tidem(sealevel)
 #' plot(tide)
-#' }
+#'}
 #'
 #' @section Historical note:
 #' An argument named \code{labelIf} was removed in July 2016,
@@ -264,9 +265,10 @@ setMethod(f="[[<-",
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{tidem} data
+#' @family functions that plot oce data
 #' @aliases plot.tidem
+#'
+#' @family things related to tides
 setMethod(f="plot",
           signature=signature("tidem"),
           definition=function(x,
@@ -394,6 +396,8 @@ setMethod(f="plot",
 #' ylim <- par("usr")[3:4] # to match scales in other panels
 #' oce.plot.ts(sealevelTuktoyaktuk[["time"]], p1, ylim=ylim)
 #' oce.plot.ts(sealevelTuktoyaktuk[["time"]], p2, ylim=ylim)
+#'
+#' @family things related to tides
 as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "as.tidem() {\n", sep="", unindent=1)
@@ -456,20 +460,27 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 #'
 #' @param t The time in \code{POSIXct} format.  (It is \strong{very} important to
 #' use \code{tz="GMT"} in constructing \code{t}.)
+#'
 #' @param j Indices of tidal constituents to use.
+#'
 #' @param latitude Optional numerical value containing the latitude in degrees North.
+#'
 #' @return A \code{\link[base]{list}} containing
 #' items named \code{v}, \code{u} and \code{f} (see the \code{T_TIDE}
 #' documentation).
+#'
 #' @author Dan Kelley translated this from \code{t_astron} from the \code{T_TIDE}
 #' package.
+#'
 #' @examples
 #' tidemVuf(as.POSIXct("2008-01-22 18:50:24"), 43, 45.0)
-#' @family things related to \code{tidem} data
+#'
 #' @references
 #' 1. Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
 #' harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 #' Computers and Geosciences, 28, 929-937.
+#'
+#' @family things related to tides
 tidemVuf <- function(t, j, latitude=NULL)
 {
     debug <- 0
@@ -573,17 +584,22 @@ tidemVuf <- function(t, j, latitude=NULL)
 #' or an integer. In the second case, it is converted to a time with
 #' \code{\link{numberAsPOSIXct}(t,tz="UTC")}.
 #' If \code{t} (It is \strong{very} important to use \code{tz="GMT"} in constructing \code{t}.)
+#'
 #' @return A \code{\link[base]{list}} containing items named
 #' \code{astro} and \code{ader} (see \code{T_TIDE} documentation).
+#'
 #' @author Dan Kelley translated this from \code{t_astron} in the \code{T_TIDE}
 #' package.
+#'
 #' @examples
 #' tidemAstron(as.POSIXct("2008-01-22 18:50:24"))
-#' @family things related to \code{tidem} data
+#'
 #' @references
 #' 1. Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002. Classical tidal
 #' harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 #' Computers and Geosciences, 28, 929-937.
+#'
+#' @family things related to tides
 tidemAstron <- function(t)
 {
     debug <- FALSE
@@ -852,7 +868,7 @@ tidemAstron <- function(t)
 #' m <- tidem(sl)
 #' summary(m)
 #'
-#' @family things related to \code{tidem} data
+#' @family things related to tides
 tidem <- function(t, x, constituents, infer=NULL,
                   latitude=NULL, rc=1, regress=lm,
                   debug=getOption("oceDebug"))
@@ -1396,7 +1412,7 @@ tidem <- function(t, x, constituents, infer=NULL,
 #'
 #' @examples
 #'
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' # 1. tidal anomaly
 #' data(sealevelTuktoyaktuk)
@@ -1420,10 +1436,11 @@ tidem <- function(t, x, constituents, infer=NULL,
 #' lines(t, predict(m, newdata=t), col='red')
 #' legend("topright", col=c("black","red"),
 #' legend=c("data","model"),lwd=1)
-#' }
+#'}
 #'
 #' @author Dan Kelley
-#' @family things related to \code{tidem} data
+#'
+#' @family things related to tides
 predict.tidem <- function(object, newdata, ...)
 {
     if (!missing(newdata) && !inherits(newdata, "POSIXt"))
@@ -1531,34 +1548,34 @@ predict.tidem <- function(object, newdata, ...)
 #' @template debugTemplate
 #' @param \dots optional arguments passed to plotting functions. A common
 #' example is to set \code{xlim} and \code{ylim}, to focus a map region.
-#' @return If \code{action="map"} the return value is a
+#'
+#' @return The value depends on \code{action}:
+#'\itemize{
+#'\item If \code{action="map"} the return value is a
 #' list containing the index of the nearest node, along with the
 #' \code{latitude} and \code{longitude} of that node.  If
 #' \code{plot} is \code{FALSE}, this value is returned invisibly.
 #'
-#' If \code{action="predict"}, the return value is a list containing a vector
+#'\item If \code{action="predict"}, the return value is a list containing a vector
 #' of times (\code{time}), as well as vectors of the predicted \code{elevation}
 #' in metres and the predicted horizontal components of velocity, \code{u} and
 #' \code{v}, along with the \code{node} number, and the \code{basedir} and
 #' \code{region} as supplied to this function.
 #' If \code{plot} is \code{FALSE}, this value is returned invisibly.
+#'}
 #'
 #' @source The WebTide software may be downloaded for free at the
 #' Department of Fisheries and Oceans (Canada) website at
 #' \code{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php}
 #' (checked February 2016 and May 2017).
 #'
-#' @return a list containing \code{node}, \code{longitude} and \code{latitude}. If
-#' no node was provided to \code{webtide} then this list will cover the whole
-#' set of nodes in the WebTide model; otherwise, it will be just the node that
-#' was requested.
-#'
 #' @section Caution:
 #' WebTide is not an open-source application, so the present function was
 #' designed based on little more than guesses about the WebTide file structure.
 #' Users should be on the lookout for odd results.
+#'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' ## needs WebTide at the system level
 #' library(oce)
 #' ## 1. prediction at Halifax NS
@@ -1568,8 +1585,11 @@ predict.tidem <- function(object, newdata, ...)
 #' mtext(sprintf("prediction at %fN %fE", latitude, longitude), line=0.75, side=3)
 #' ## 2. map
 #' webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
-#' }
+#'}
+#'
 #' @author Dan Kelley
+#'
+#' @family things related to tides
 webtide <- function(action=c("map", "predict"),
                     longitude, latitude, node, time,
                     basedir=getOption("webtide"),
@@ -1643,7 +1663,7 @@ webtide <- function(action=c("map", "predict"),
         }
     } else if (action == "predict") {
         if (missing(time))
-            time <- seq.POSIXt(from=Sys.time(), by="15 min", length.out=7*4*24)
+            time <- seq.POSIXt(from=presentTime(), by="15 min", length.out=7*4*24) # Q: what about timezone?
         if (missing(node)) {
             if (missing(longitude) || missing(latitude))
                 stop("'longitude' and 'latitude' must be given unless 'node' is given")

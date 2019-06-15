@@ -73,7 +73,7 @@ to find items more directly, using \code{\link{oceGetData}} and
 }
 
 \references{
-1. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
+1. JPO OurOcean Portal \code{https://ourocean.jpl.nasa.gov/SST/}
 (link worked in 2016 but was seen to fail 2017 Feb 2).
 }
 \seealso{

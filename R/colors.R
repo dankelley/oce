@@ -14,7 +14,7 @@
 #'
 #' @source The data come from the matplotlib site
 #' \url{https://github.com/matplotlib/matplotlib}.
-#' @family datasets provided with \code{oce}
+#' @family datasets provided with oce
 #' @family things related to colors
 NULL
 
@@ -71,12 +71,16 @@ colormap_colorize <- function(z=NULL,
             col <- col
         }
         if (is.null(z)) {
+            oceDebug(debug, "z is NULL\n")
             if (missing(zlim) || is.null(zlim))
                 zlim <- range(breaks)
             zcol <- "black"
         } else {
-            if (missing(zlim) || is.null(zlim))
+            oceDebug(debug, "z is not NULL\n")
+            if (missing(zlim) || is.null(zlim)) {
                 zlim <- rangeExtended(z) # note the extended range
+                oceDebug(debug, "zlim not given; calculated as:", paste(zlim, collapse=" "), "\n")
+            }
             i <- findInterval(z, breaks)
             tooLow <- i == 0
             tooHigh <- i == length(breaks)
@@ -564,7 +568,7 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #' grid()
 #' par(mar=mar)
 #'
-#' \dontrun{
+#'\dontrun{
 #' ## Example 2. topographic image with a standard color scheme
 #' par(mfrow=c(1,1))
 #' data(topoWorld)
@@ -609,7 +613,7 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #' z <- seq(0, 1, length.out=length(x))
 #' drawPalette(colormap=cm)
 #' plot(x, y, pch=21, bg=cm$colfunction(z), cex=3)
-#' }
+#'}
 #' @family things related to colors
 colormap <- function(z=NULL,
                      zlim, zclip=FALSE,
@@ -702,6 +706,8 @@ colormap <- function(z=NULL,
             zlimKnown <- TRUE
         } else if (zKnown) {
             oceDebug(debug, "zlimKnown=", zlimKnown, ", so inferring zlim from z\n", sep="")
+            if (!any(is.finite(z)))
+                stop("cannot infer zlim, since z has no finite values, and breaks was not given")
             zlim <- rangeExtended(z[is.finite(z)])
             zlimKnown <- TRUE
         ##} else if (x0Known) {
@@ -730,13 +736,15 @@ colormap <- function(z=NULL,
         ##     breaks <- cm$breaks
         ##     col <- cm$col
         ## } else {
-        oceDebug(debug, "processing case A (zlimKnown && !breaksKnown)\n")
+        oceDebug(debug, "processing case A.1 (zlimKnown && !breaksKnown)\n")
         breaks <- seq(min(zlim, na.rm=TRUE), max(zlim, na.rm=TRUE), length.out=200)
         ##}
         breaksKnown <- TRUE            # this makes next block execute also
     } else {
         if (zKnown && !breaksKnown && !nameKnown) {
-            oceDebug(debug, "processing case A (z given, breaks not given, name not given, x0 not given)\n")
+            oceDebug(debug, "processing case A.2 (z given, breaks not given, name not given, x0 not given)\n")
+            if (!any(is.finite(z)))
+                stop("z does not contain any finite data")
             breaks <- seq(min(z, na.rm=TRUE), max(z, na.rm=TRUE), length.out=200)
             breaksKnown <- TRUE            # this makes next block execute also
         }

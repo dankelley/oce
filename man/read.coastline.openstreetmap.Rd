@@ -42,7 +42,7 @@ An object of \code{\link{coastline-class}}
 Read coastline data stored in the openstreetmap format [1].
 }
 \seealso{
-Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+Other things related to coastline data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
   \code{\link{as.coastline}},
   \code{\link{coastline-class}},
@@ -57,4 +57,4 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
 \author{
 Dan Kelley
 }
-\concept{things related to \code{coastline} data}
+\concept{things related to coastline data}

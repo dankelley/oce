@@ -14,7 +14,7 @@ scientific echosounder, as part of the St Lawrence Internal Wave Experiment
 (SLEIWEX).
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{landsat}},
@@ -24,7 +24,7 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 
-Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
+Other things related to echosounder data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},
   \code{\link{as.echosounder}},
   \code{\link{echosounder-class}},
@@ -37,5 +37,5 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
 \author{
 Dan Kelley
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{echosounder} data}
+\concept{datasets provided with oce}
+\concept{things related to echosounder data}

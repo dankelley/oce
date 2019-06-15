@@ -13,6 +13,13 @@
 #' is not a recognized string.
 #' @return A list with elements \code{unit}, an \code{\link{expression}},
 #' and \code{scale}, a string.
+#'
+#' @examples
+#' as.unit("DBAR")
+#' as.unit("IPTS-68")
+#' as.unit("ITS-90")
+#' as.unit("PSS-78")
+#' as.unit("UMOL/KG")
 as.unit <- function(u, default=list(unit=expression(), scale=""))
 {
     if (missing(u) || !is.character(u))

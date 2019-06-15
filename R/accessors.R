@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Get data from an \code{oce} object
+#' Get Something from the data Slot of an oce Object
 #'
 #' In contrast to the various \code{[[} functions, this is
 #' guaranteed to look only within the \code{data} slot. If
@@ -17,8 +17,7 @@ oceGetData <- function(object, name)
     object@data[[name]]
 }
 
-
-#' Delete data from an \code{oce} object
+#' Delete Something in the data Slot of an oce Object
 #'
 #' Return a copy of the supplied object that lacks the named
 #' element in its \code{data} slot, and that has a note
@@ -32,11 +31,15 @@ oceDeleteData <- function(object, name)
         stop("oceDeleteData() only works for oce objects")
     if (name %in% names(object@data))
         object@data[[name]] <- NULL
+    if (name %in% names(object@metadata$units))
+        object@metadata$units[[name]] <- NULL
+    if (name %in% names(object@metadata$flags))
+        object@metadata$flags[[name]] <- NULL
     object@processingLog <- processingLogAppend(object@processingLog, paste("oceDeleteData() removed data$", name, sep="", collapse=""))
     object
 }
 
-#' Set something in the \code{data} slot of an \code{oce} object
+#' Set Something in the data Slot of an oce Object
 #'
 #' @details
 #' There are three possibilities for \code{unit}:
@@ -87,7 +90,7 @@ oceSetData <- function(object, name, value, unit, originalName, note="")
     if (!inherits(object, "oce"))
         stop("oceSetData() only works for oce objects")
     object@data[[name]] <- value
-    if (!missing(unit)) {
+    if (!missing(unit) && !is.null(unit)) {
         if  (!("units" %in% names(object@metadata))) # some objects might not have units yet
             object@metadata$units <- list()
         if (is.list(unit)) {
@@ -147,7 +150,7 @@ oceSetData <- function(object, name, value, unit, originalName, note="")
     object
 }
 
-#' Get metadata element from an \code{oce} object
+#' Get Something From the metadata Slot in an oce Object
 #'
 #' In contrast to the various \code{[[} functions, this is
 #' guaranteed to look only within the \code{metadata} slot. If
@@ -164,8 +167,7 @@ oceGetMetadata <- function(object, name)
     object@metadata[[name]]
 }
 
-
-#' Delete metadata from an \code{oce} object
+#' Delete Something in the metadata Slot of an oce Object
 #'
 #' Return a copy of the supplied object that lacks the named
 #' element in its \code{metadata} slot, and that has a note
@@ -183,7 +185,7 @@ oceDeleteMetadata <- function(object, name)
     object
 }
 
-#' Set something in the \code{metadata} slot of an \code{oce} object
+#' Set Something in the metadata Slot of an oce Object
 #' @param object an \code{oce} object
 #' @param name String indicating the name of the item to be set.
 #' @param value Value for the item.

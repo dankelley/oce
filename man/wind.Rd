@@ -16,7 +16,7 @@ interactive Barnes objective map analysis scheme for use with satellite and
 conventional data,'' \emph{J.  Climate Appl.  Met.}, vol 22, p. 1487-1503.
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
@@ -27,4 +27,4 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}
 }
-\concept{datasets provided with \code{oce}}
+\concept{datasets provided with oce}

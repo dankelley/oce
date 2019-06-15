@@ -522,7 +522,8 @@ c     1        ' to 2020.0.'/' values for',f9.3,' will be computed',
 c     2        ' but may be of reduced accuracy'/)
       if (date.ge.2015.0) go to 1
       t     = 0.2*(date - 1900.0)                                             
-      ll    = t
+c *** oce change: next line gets an int() to silence gfortran warning
+      ll    = int(t)
       one   = ll
       t     = t - one
 c
@@ -536,7 +537,8 @@ c
       else
        nmx   = 13
        nc    = nmx*(nmx+2)
-       ll    = 0.2*(date - 1995.0)
+c *** oce change: next line gets an int() to silence gfortran warning
+       ll    = int(0.2*(date - 1995.0))
 c
 c     19 is the number of SH models that extend to degree 10
 c

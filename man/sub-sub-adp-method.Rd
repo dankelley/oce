@@ -21,57 +21,73 @@ The \code{[[} method works for all \code{oce} objects, i.e.
 objects inheriting from \code{\link{oce-class}}.  The purpose
 is to insulate users from the internal details of \code{oce}
 objects, by looking for items within the various storage
-slots of the object. Items not actually stored can also be
-extracted, including derived data, units of measurement,
-and data-quality flags.
+slots of the object. Items that are not actually stored in
+the object can also be extracted, including derived data such
+as potential temperature, the units of measurement for
+the data, data-quality flags, etc.
 }
 \details{
 A two-step process is used to try to find the
 requested information. First, a class-specific function
-tries to find it (see
-\dQuote{Details of the specialized ... method}), but
+tries to find it, but
 if that fails, then a general function is used
-(see \sQuote{Details of the general method}). If both
-fail, \code{NULL} is returned.
+(see next section).
 }
 \section{Details of the general method}{
 
 
 If the specialized method produces no matches, the following generalized
 method is applied. As with the specialized method, the procedure hinges
-first on the value of \code{i}.
+first on the values of \code{i} and, optionally, \code{j}. The work
+proceeds in steps, by testing a sequence of possible conditions
+in sequence.
 
-First, a check is made as to whether \code{i} names one of the standard
-\code{oce} slots, and returns the slot contents if so. Thus,
-\code{x[["metadata"]]} will retrieve the \code{metadata} slot,
+\enumerate{
+
+\item A check is made as to whether \code{i} names one of the standard
+\code{oce} slots. If so, \code{[[} returns the slot contents of that slot.
+Thus, \code{x[["metadata"]]} will retrieve the \code{metadata} slot,
 while \code{x[["data"]]} and \code{x[["processingLog"]]} return
 those slots.
 
-Next, if \code{i} is a string ending in the
+\item If \code{i} is a string ending in the
 \code{"Unit"}, then the characters preceding that string
 are taken to be the name of an item in the data object, and a list
 containing the unit is returned. This list consists of an item
 named \code{unit}, which is an \code{\link{expression}}, and
 an item named \code{scale}, which is a string describing the
 measurement scale.  If the string ends in \code{" unit"}, e.g.
-\code{x[["temperature unit"]]}, then just the expression is returned,
-and if it ends in \code{" scale"}, then just the scale is returned.
+\code{x[["temperature unit"]]} (note the space),
+then just the expression is returned, and if it ends in
+\code{" scale"}, then just the scale is returned.
 
-Next, if \code{i} is a string ending in \code{"Flag"}, then the corresponding
+\item If \code{i} is a string ending in \code{"Flag"}, then the corresponding
 data-quality flag is returned (or \code{NULL} if there is no such flag).
 For example, \code{x[["salinityFlag"]]} returns a vector of salinity
 flags if \code{x} is a ctd object.
 
-If none of the preceding conditions are met, a check is done
-to see if the \code{metadata} slot contains an item with
-the provided name, and that is returned, if so. A direct match
-is required for this condition.
+\item If \code{i} is \code{"sigmaTheta"}, then the value of
+\code{\link{swSigmaTheta}(x)} is returned. Similarly,
+\code{"sigma0"} returns \code{\link{swSigma0}(x)} and
+\code{"spice"} returns \code{\link{swSpice}(x)}. Note that
+these relate to seawater properties and only make sense for
+certain object types.
 
-Finally, the \code{data} slot is checked to see if it contains
-an item with the name indicated by \code{i}. In this case, a partial
-match will work; this is accomplished by using \code{\link{pmatch}}.
+\item After these possibilities are eliminated,
+the action depends on whether \code{j} has been provided.
+If \code{j} is not provided, or is the string \code{""},
+then \code{i} is sought
+in the \code{metadata} slot, and then in the \code{data} slot,
+returning whichever is found first.  In other words, if \code{j}
+is not provided, the \code{metadata} slot takes preference over
+the \code{data} slot. However, if \code{j} is provided, then
+it must be either the string \code{"metadata"} or \code{"data"},
+and it directs where to look.
+}
 
-If none of the above-listed conditions holds, then \code{NULL} is returned.
+If none of the above-listed conditions holds, then \code{NULL} is returned,
+without the issuance of a warning or error message. (This silent operation
+is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \section{Details of the specialized \code{adp} method}{
@@ -95,7 +111,7 @@ as.numeric(adp[["a"]][1:5,1,1]) # same as above
 
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
   \code{\link{[[,bremen-method}},
@@ -109,8 +125,8 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,landsat-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
-  \code{\link{[[,met-method}}, \code{\link{[[,odf-method}},
-  \code{\link{[[,rsk-method}},
+  \code{\link{[[,met-method}}, \code{\link{[[,oce-method}},
+  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
   \code{\link{[[,sealevel-method}},
   \code{\link{[[,section-method}},
   \code{\link{[[,tidem-method}},
@@ -118,16 +134,18 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{adp} data: \code{\link{[[<-,adp-method}},
-  \code{\link{adp-class}},
+Other things related to adp data: \code{\link{[[<-,adp-method}},
+  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdpAD2CP}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
   \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
   \code{\link{enuToOther}},
   \code{\link{handleFlags,adp-method}},
-  \code{\link{plot,adp-method}}, \code{\link{read.ad2cp}},
+  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
+  \code{\link{read.adp.ad2cp}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
@@ -139,10 +157,11 @@ Other things related to \code{adp} data: \code{\link{[[<-,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
 \author{
 Dan Kelley
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{adp} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to adp data}

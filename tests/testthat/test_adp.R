@@ -2,10 +2,50 @@
 library(oce)
 data(adp)
 
-context("ADP")
+context("ADP (not AD2CP)")
 
-test_that("plot(adp,which=23,control=list('bin'=1)) works", {
+test_that("test all 'which' values listed in ?'plot,adp-method' on 2019 May 23", {
+          ## Most of the numerical tests have character equivalents, but we
+          ## test both. All this test really does is to ensure that the plots
+          ## do not produce warnings, apart from known things, e.g. a warning
+          ## if trying to plot bottom-tracking items, because data(adp) has
+          ## no bottom-tracking data.
+          for (which in c(1:4, 5:8, 9:12, 60, 70:73, 80:83, 13, 14, 15:18,
+                          19:22, 23, 24:28, 29, 30, 40, 41:44, 50, 51:54, 55,
+                          100)) {
+              ## cat(file=stderr(), "plot(adp, which=", which, ")\n", sep="")
+              if (which %in% c(40:44,50:54)) expect_error(plot(adp, which=which), "ADP object lacks bottom-tracking data")
+              else if (which == 80)          expect_error(plot(adp, which=which), "ADP object lacks a 'vv' data item")
+              else if (which == 81)          expect_error(plot(adp, which=which), "ADP object lacks a 'va' data item")
+              else if (which == 82)          expect_error(plot(adp, which=which), "ADP object lacks a 'vq' data item")
+              else if (which == 83)          expect_error(plot(adp, which=which), "ADP object lacks a 'vg' data item")
+              else                           expect_silent( plot(adp, which=which))
+          }
+          for (which in c("u1", "u2", "u3", "u4", "a1", "a2", "a3", "a4", "q1",
+                          "q2", "q3", "q4", "map", "g1", "g2", "g3", "g4", "vv",
+                          "va", "vq", "vg", "vertical", "salinity",
+                          "temperature", "pressure", "heading", "pitch", "roll",
+                          "progressiveVector", "uv", "uv+ellipse",
+                          "uv+ellipse+arrow", "bottomRange", "bottomRange1",
+                          "bottomRange2", "bottomRange3", "bottomRange4",
+                          "bottomVelocity1", "bottomVelocity2",
+                          "bottomVelocity3", "bottomVelocity4",
+                          "bottomVelocity", "heaving", "soundSpeed", "velocity",
+                          "amplitude", "quality", "hydrography", "angles")) {
+              ## cat(file=stderr(), "plot(adp, which=\"", which, "\")\n", sep="")
+              if (length(grep("bottom", which))) expect_error(plot(adp, which=which), "ADP object lacks bottom-tracking data")
+              else if (which == "vertical")      expect_error(plot(adp, which=which), "ADP object lacks a 'vv' data item")
+              else if (which == "vv")            expect_error(plot(adp, which=which), "ADP object lacks a 'vv' data item")
+              else if (which == "va")            expect_error(plot(adp, which=which), "ADP object lacks a 'va' data item")
+              else if (which == "vq")            expect_error(plot(adp, which=which), "ADP object lacks a 'vq' data item")
+              else if (which == "vg")            expect_error(plot(adp, which=which), "ADP object lacks a 'vg' data item")
+              else                               expect_silent( plot(adp, which=which))
+          }
+})
+
+test_that("some specialized plot types", {
           expect_silent(plot(adp, which=23, control=list('bin'=1)))
+          expect_silent(plot(adp))
 })
 
 test_that("as.adp() inserts data properly", {
@@ -188,8 +228,59 @@ test_that("details of a local RDI", {
                            -0.026, -0.032, -0.048, -0.01, -0.162, -0.043, 0.13, -0.089,
                            -0.02, 0.063, -0.107, -0.018, 0.018, -0.136, 0.041, 0.1, -0.139,
                            -0.002, 0.02, -0.171, -0.042, 0.104), dim=c(3, 84, 4))
-
               expect_equal(d[["v"]], v)
-
           }
 })
+
+test_that("three RDI reading methods (from, to, by not given)", {
+          ## https://github.com/dankelley/oce/issues/1557
+          adp1 <- read.oce(system.file("extdata", "adp_rdi.000", package="oce"))
+          adp2 <- read.adp(system.file("extdata", "adp_rdi.000", package="oce"))
+          adp3 <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"))
+          ## Do arrays match?
+          for (item in c("v", "a", "g", "q")) {
+              expect_equal(dim(adp1[[item]]), c(9, 84, 4))
+              expect_equal(adp1[[item]], adp2[[item]])
+              expect_equal(adp1[[item]], adp3[[item]])
+          }
+})
+
+test_that("three RDI reading methods (from given)", {
+          ## https://github.com/dankelley/oce/issues/1557
+          adp1 <- read.oce(system.file("extdata", "adp_rdi.000", package="oce"), from=2)
+          adp2 <- read.adp(system.file("extdata", "adp_rdi.000", package="oce"), from=2)
+          adp3 <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"), from=2)
+          ## Do arrays match?
+          for (item in c("v", "a", "g", "q")) {
+              expect_equal(dim(adp1[[item]]), c(8, 84, 4))
+              expect_equal(adp1[[item]], adp2[[item]])
+              expect_equal(adp1[[item]], adp3[[item]])
+          }
+})
+
+test_that("three RDI reading methods (from and by given)", {
+          ## https://github.com/dankelley/oce/issues/1557
+          adp1 <- read.oce(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2)
+          adp2 <- read.adp(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2)
+          adp3 <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2)
+          ## Do arrays match?
+          for (item in c("v", "a", "g", "q")) {
+              expect_equal(dim(adp1[[item]]), c(4, 84, 4))
+              expect_equal(adp1[[item]], adp2[[item]])
+              expect_equal(adp1[[item]], adp3[[item]])
+          }
+})
+
+test_that("three RDI reading methods (from, by and to given)", {
+          ## https://github.com/dankelley/oce/issues/1557
+          adp1 <- read.oce(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2, to=4)
+          adp2 <- read.adp(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2, to=4)
+          adp3 <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"), from=2, by=2, to=4)
+          ## Do arrays match?
+          for (item in c("v", "a", "g", "q")) {
+              expect_equal(dim(adp1[[item]]), c(2, 84, 4))
+              expect_equal(adp1[[item]], adp2[[item]])
+              expect_equal(adp1[[item]], adp3[[item]])
+          }
+})
+

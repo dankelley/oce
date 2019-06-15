@@ -26,7 +26,7 @@ Plot points on an existing map.
 Adds points to an existing map, by analogy to \code{\link{points}}.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, longitudelim=c(-80, 0), latitudelim=c(20, 50),

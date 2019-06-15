@@ -67,7 +67,7 @@ action taken are both subject to change, hence the brevity of this help page.
 Note that if a grid line crosses the axis twice, only one label will be drawn.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 par(mar=c(2, 2, 3, 1))

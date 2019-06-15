@@ -242,7 +242,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
     c = fgetc(fp);
     cindex++;
     if (c == EOF) {
-      Rprintf("Got to end of data while trying to read the first header byte of an RDI file (cindex=%d)\n", cindex);
+      Rprintf("Got to end of data while trying to read the first header byte of an RDI file (cindex=%d; last7f7f=%d)\n", cindex, last7f7f);
       break;
     }
     // Locate "ensemble starts", spots where a 0x7f is followed by a second 0x7f,
@@ -260,14 +260,14 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
       b1 = fgetc(fp);
       cindex++;
       if (b1 == EOF) {
-        Rprintf("Got to end of data while trying to read the 'b1' byte of an RDI file (cindex=%d)\n", cindex);
+        Rprintf("Got to end of data while trying to read the 'b1' byte of an RDI file (cindex=%d; last7f7f=%d)\n", cindex, last7f7f);
         break;
       }
       check_sum += (unsigned short int)b1;
       b2 = fgetc(fp);
       cindex++;
       if (b2 == EOF) {
-        Rprintf("Got to end of data while trying to read the 'b2' byte of an RDI file (cindex=%d)\n", cindex);
+        Rprintf("Got to end of data while trying to read the 'b2' byte of an RDI file (cindex=%d; last7f7f=%d)\n", cindex, last7f7f);
         break;
       }
       check_sum += (unsigned short int)b2;
@@ -300,7 +300,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
       unsigned int bytesRead;
       bytesRead = fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
       if (feof(fp) || bytesRead == 0) {
-        Rprintf("Got to end of data while trying to read an RDI file (cindex=%d)\n", cindex);
+        Rprintf("Got to end of data while trying to read an RDI file (cindex=%d; last7f7f=%d)\n", cindex, last7f7f);
         break;
       }
       cindex += bytes_to_read;
@@ -311,13 +311,13 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
       cs1 = fgetc(fp);
       cindex++;
       if (cs1 == EOF) {
-        Rprintf("Got to end of data while trying to get the first checksum byte in an RDI file (cindex=%d)\n", cindex);
+        Rprintf("Got to end of data while trying to get the first checksum byte in an RDI file (cindex=%d; last7f7f=%d)\n", cindex, last7f7f);
         break;
       }
       cs2 = fgetc(fp);
       cindex++;
       if (cs2 == EOF) {
-        Rprintf("Got to end of data while trying to get second checksum byte in an RDI file (cindex=%d)\n", cindex);
+        Rprintf("Got to end of data while trying to get second checksum byte in an RDI file (cindex=%d; last7f7f=%d)\n", cindex, last7f7f);
         break;
       }
       desired_check_sum = ((unsigned short int)cs1) | ((unsigned short int)(cs2 << 8));

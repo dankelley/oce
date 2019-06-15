@@ -27,7 +27,7 @@ another class (e.g. ctd) and use the subset method of that class;
 note that some of those methods interpret the \dots argument.
 }
 \seealso{
-Other things related to \code{odf} data: \code{\link{ODF2oce}},
+Other things related to odf data: \code{\link{ODF2oce}},
   \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
@@ -36,7 +36,7 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
   \code{\link{summary,odf-method}}
 
-Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,adv-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,argo-method}},
@@ -55,5 +55,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that subset \code{oce} objects}
-\concept{things related to \code{odf} data}
+\concept{functions that subset oce objects}
+\concept{things related to odf data}

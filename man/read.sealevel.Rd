@@ -67,7 +67,7 @@ repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
 provides Type 2 data.
 }
 \seealso{
-Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
+Other things related to sealevel data: \code{\link{[[,sealevel-method}},
   \code{\link{[[<-,sealevel-method}},
   \code{\link{as.sealevel}},
   \code{\link{plot,sealevel-method}},
@@ -80,4 +80,4 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{sealevel} data}
+\concept{things related to sealevel data}

@@ -18,7 +18,7 @@ through the use of \code{\link{unduplicateNames}}.
 Create a list of ODF header metadata
 }
 \seealso{
-Other things related to \code{odf} data: \code{\link{ODF2oce}},
+Other things related to odf data: \code{\link{ODF2oce}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
@@ -27,4 +27,4 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }
-\concept{things related to \code{odf} data}
+\concept{things related to odf data}

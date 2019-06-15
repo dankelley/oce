@@ -64,7 +64,7 @@ plot(tide)
 
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -88,16 +88,16 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
-  \code{\link{[[<-,tidem-method}},
+Other things related to tides: \code{\link{[[,tidem-method}},
+  \code{\link{[[<-,tidem-method}}, \code{\link{as.tidem}},
   \code{\link{predict.tidem}},
   \code{\link{summary,tidem-method}},
   \code{\link{tidedata}}, \code{\link{tidem-class}},
   \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
-  \code{\link{tidem}}
+  \code{\link{tidem}}, \code{\link{webtide}}
 }
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{tidem} data}
+\concept{functions that plot oce data}
+\concept{things related to tides}

@@ -20,7 +20,7 @@ as the station name, sampling location, data ranges, etc.
 The documentation for \code{\link{cm-class}} explains the structure
 of \code{cm} objects, and also outlines the other functions dealing with them.
 
-Other things related to \code{cm} data: \code{\link{[[,cm-method}},
+Other things related to cm data: \code{\link{[[,cm-method}},
   \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
   \code{\link{cm-class}}, \code{\link{cm}},
   \code{\link{plot,cm-method}}, \code{\link{read.cm}},
@@ -30,4 +30,4 @@ Other things related to \code{cm} data: \code{\link{[[,cm-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{cm} data}
+\concept{things related to cm data}

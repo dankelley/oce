@@ -14,8 +14,8 @@
 #'
 #' @template slot_get
 #' @author Dan Kelley
-#' @family classes provided by \code{oce}
-#' @family things related to \code{sealevel} data
+#' @family classes provided by oce
+#' @family things related to sealevel data
 setClass("sealevel", contains="oce")
 
 
@@ -39,8 +39,8 @@ setClass("sealevel", contains="oce")
 #' @references
 #' 1. Fisheries and Oceans Canada \url{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/index-eng.html}
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{sealevel} data
+#' @family datasets provided with oce
+#' @family things related to sealevel data
 NULL
 
 #' Sea-level data set acquired in 1975 at Tuktoyaktuk
@@ -72,7 +72,7 @@ NULL
 #' file format, and then the \code{sealevelTuktoyaktuk} object was created
 #' using \code{\link{as.sealevel}}.
 #' @examples
-#' \dontrun{
+#'\donttest{
 #' library(oce)
 #' data(sealevelTuktoyaktuk)
 #' time <- sealevelTuktoyaktuk[["time"]]
@@ -83,7 +83,7 @@ NULL
 #' tide <- tidem(sealevelTuktoyaktuk)
 #' detided <- elevation - predict(tide)
 #' lines(time, detided, col="red")
-#' }
+#'}
 #'
 #' @section Historical note:
 #' Until Jan 6, 2018, the time in this dataset had been increased
@@ -91,8 +91,8 @@ NULL
 #' to make for simpler comparison of amplitude and phase output with
 #' the results obtained by Foreman (1977) and Pawlowicz et al. (2002).
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{sealevel} data
+#' @family datasets provided with oce
+#' @family things related to sealevel data
 NULL
 
 setMethod(f="initialize",
@@ -102,7 +102,7 @@ setMethod(f="initialize",
                   .Object@data$elevation <- elevation
               if (!missing(time))
                   .Object@data$time <- time
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'sealevel' object"
               return(.Object)
           })
@@ -124,7 +124,7 @@ setMethod(f="initialize",
 #' data(sealevel)
 #' summary(sealevel)
 #'
-#' @family things related to \code{sealevel} data
+#' @family things related to sealevel data
 setMethod(f="summary",
           signature="sealevel",
           definition=function(object, ...) {
@@ -164,8 +164,8 @@ setMethod(f="summary",
 #' plot(sealevel)
 #' plot(subset(sealevel, time < mean(range(sealevel[['time']]))))
 #'
-#' @family things related to \code{sealevel} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to sealevel data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="sealevel",
           definition=function(x, subset, ...) {
@@ -188,7 +188,7 @@ setMethod(f="subset",
 #' @title Extract Something From a Sealevel Object
 #' @param x A sealevel object, i.e. one inheriting from \code{\link{sealevel-class}}.
 #' @template sub_subTemplate
-#' @family things related to \code{sealevel} data
+#' @family things related to sealevel data
 setMethod(f="[[",
           signature(x="sealevel", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -198,7 +198,7 @@ setMethod(f="[[",
 #' @title Replace Parts of a Sealevel Object
 #' @param x An \code{sealevel} object, i.e. inheriting from \code{\link{sealevel-class}}
 #' @template sub_subsetTemplate
-#' @family things related to \code{sealevel} data
+#' @family things related to sealevel data
 setMethod(f="[[<-",
           signature(x="sealevel", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -278,7 +278,7 @@ setValidity("sealevel",
 #' time <- as.POSIXct("2000-01-01") + h * 3600
 #' sl <- as.sealevel(elevation, time)
 #' summary(sl)
-#' @family things related to \code{sealevel} data
+#' @family things related to sealevel data
 as.sealevel <- function(elevation,
                         time,
                         header=NULL,
@@ -387,8 +387,8 @@ as.sealevel <- function(elevation,
 #' plot(sealevel, which=1, xlim=juan+86400*c(-7, 7))
 #' abline(v=juan, col='red')
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{sealevel} data
+#' @family functions that plot oce data
+#' @family things related to sealevel data
 #' @aliases plot.sealevel
 setMethod(f="plot",
           signature=signature("sealevel"),
@@ -605,7 +605,7 @@ setMethod(f="plot",
 #' repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
 #' provides Type 2 data.
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' # this yields the sealevel dataset
 #' sl <- read.oce("h275a96.dat")
@@ -613,9 +613,9 @@ setMethod(f="plot",
 #' plot(sl)
 #' m <- tidem(sl)
 #' plot(m)
-#' }
+#'}
 #'
-#' @family things related to \code{sealevel} data
+#' @family things related to sealevel data
 read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getOption("oceDebug"))
 {
     if (!is.character(file))

@@ -2,7 +2,7 @@
 % Please edit documentation in R/accessors.R
 \name{oceGetMetadata}
 \alias{oceGetMetadata}
-\title{Get metadata element from an \code{oce} object}
+\title{Get Something From the metadata Slot in an oce Object}
 \usage{
 oceGetMetadata(object, name)
 }

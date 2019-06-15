@@ -36,10 +36,16 @@ expect_equal(head(echosounder[["longitude"]]),
 plot(echosounder, drawBottom=TRUE, despike=TRUE, which="zx image")
 ##plot(echosounder2, drawBottom=TRUE)
 
-save(echosounder, file="echosounder.rda")
-tools::resaveRdaFiles("echosounder.rda")
-
 e <- echosounder
 par(mfrow=c(1, 2), mar=c(3, 3, 1, 1))
 plot(echosounder, drawBottom=TRUE, despike=TRUE, which="zx image")
 plot(echosounderOLD, drawBottom=TRUE, despike=TRUE, which="zx image")
+
+if (utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
+    save(echosounder, file="echosounder.rda", version=2)
+    tools::resaveRdaFiles("echosounder.rda", version=2)
+} else {
+    save(echosounder, file="echosounder.rda")
+    tools::resaveRdaFiles("echosounder.rda")
+}
+

@@ -24,7 +24,7 @@ if (requireNamespace("rgdal", quietly=TRUE)) {
             expect_equal(utm$zone, zone, tolerance=1e-5)
 })
 
-  test_that("lonlat2map() on image for issue 707 (corners cross zones)", {
+  test_that("lonlat2utm() on image for issue 707 (corners cross zones)", {
             ## CORNER_UL_LAT_PRODUCT = 70.68271
             ## CORNER_UL_LON_PRODUCT = -54.28961
             ## CORNER_UR_LAT_PRODUCT = 70.67792
@@ -57,11 +57,17 @@ if (requireNamespace("rgdal", quietly=TRUE)) {
 })
 
   test_that("lonlat2map() near Cape Split", {
-            ## "cs" is near Cape Split, in the Bay of Fundy
-            cs <- list(longitude=-64.4966,latitude=45.3346)
-            xy <- lonlat2map(cs$longitude, cs$latitude, "+proj=merc")
-            cs2 <- map2lonlat(xy$x, xy$y)
-            expect_equal(cs, cs2, tolerance=1e-6)
+            ## We cannot test this on i386/windows for a while in early 2019,
+            ## because rgdal on test machine is version 1.3-9, which has a
+            ## coding error (relating to using an undefined variable named
+            ## "nas") that will cause a failure to build.
+            if (!(.Platform$OS.type == "windows" && .Platform$r_arch == "i386")) {
+              ## "cs" is near Cape Split, in the Bay of Fundy
+              cs <- list(longitude=-64.4966,latitude=45.3346)
+              xy <- lonlat2map(cs$longitude, cs$latitude, "+proj=merc")
+              cs2 <- map2lonlat(xy$x, xy$y)
+              expect_equal(cs, cs2)
+            }
 })
 }
 

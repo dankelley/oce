@@ -6,7 +6,7 @@
 \title{Establish a data-quality scheme for a section object}
 \usage{
 \S4method{initializeFlagScheme}{section}(object, name = NULL,
-  mapping = NULL, debug = getOption("oceDebug"))
+  mapping = NULL, default = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An oce object.}
@@ -17,6 +17,17 @@ to a pre-defined scheme, then \code{mapping} must not be provided.}
 \item{mapping}{A list of named items describing the mapping from
 flag meaning to flag numerical value, e.g \code{list(good=1, bad=2)}
 might be used for a hypothetical class.}
+
+\item{default}{Integer vector of flag values that are not considered
+to be good. If this is not provided, but if \code{name} is \code{"argo"},
+\code{"BODC"},
+\code{"DFO"},
+\code{"WHP bottle"}, or
+\code{"WHP CTD"}, then a conservative value will be set automatically,
+equal to the list of flag values that designate bad or questionable data.
+For example, for \code{name="WHP CTD"}, the setting will be
+\code{c(1,3,4,5,6,7,9)}, leaving only value \code{2} ("acceptable"
+in the notation used for that flag scheme).}
 
 \item{debug}{Integer set to 0 for quiet action or to 1 for some debugging.}
 }
@@ -86,10 +97,14 @@ changes until the autumn of that year.  Use with caution.
 }
 
 \examples{
+\dontrun{
 data(section)
+section <- read.section("a03_hy1.csv", sectionId="a03", institute="SIO",
+                        ship="R/V Professor Multanovskiy", scientist="Vladimir Tereschenkov")
 sectionWithFlags <- initializeFlagScheme(section, "WHP bottle")
 station1 <- sectionWithFlags[["station", 1]]
 str(station1[["flagScheme"]])
+}
 }
 \references{
 1. The codes for \code{"Argo"} are defined at
@@ -113,15 +128,17 @@ Other functions relating to data-quality flags: \code{\link{defaultFlags}},
   \code{\link{handleFlags}},
   \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{initializeFlagScheme,oce-method}},
+  \code{\link{initializeFlagSchemeInternal}},
   \code{\link{initializeFlagScheme}},
   \code{\link{initializeFlags,adp-method}},
   \code{\link{initializeFlags,oce-method}},
+  \code{\link{initializeFlagsInternal}},
   \code{\link{initializeFlags}},
   \code{\link{setFlags,adp-method}},
   \code{\link{setFlags,ctd-method}},
   \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
 
-Other things related to \code{section} data: \code{\link{[[,section-method}},
+Other things related to section data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{handleFlags,section-method}},
@@ -134,4 +151,4 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{summary,section-method}}
 }
 \concept{functions relating to data-quality flags}
-\concept{things related to \code{section} data}
+\concept{things related to section data}

@@ -1,6 +1,6 @@
 ---
-title: "Oce"
-author: "Dan Kelley and Clark Richards"
+title: "Introduction to Oce"
+author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911) and Clark Richards (https://orcid.org/0000-0002-7833-206X)"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
@@ -12,15 +12,23 @@ output:
     dpi: 72
     dev.args: list(pointsize=11)
 vignette: >
-  %\VignetteIndexEntry{Oce}
+  %\VignetteIndexEntry{Introduction to Oce}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 <!-- HOW TO BUILD THE VIGNETTE. -->
 <!-- 1. edit this file in vignettes/oce.Rmd -->
-<!-- 2. run devtools::build_vignettes() -->
-<!-- 3. build oce -->
+<!-- 2. in an R console, use setwd() or otherwise move to the oce -->
+<!--    directory, and then execute -->
+<!--      devtools::build_vignettes() -->
+<!-- 3. build oce. In the shell, you might use -->
+<!--      cd oce ; echo "devtools::document(roclets=c('rd','collate','vignette'))" | R --no-save -->
+<!--      CMD build --compact-vignettes="qpdf" oce -->
+<!--      R CMD check oce_1.1-0.tar.gz -->
+<!--      R CMD INSTALL oce_1.1-0.tar.gz -->
+<!--    where the version number might need updating, or in an R console you might use -->
+<!--      devtools::install(build_vignettes=TRUE) -->
 
 
 ```{r, echo = FALSE}
@@ -83,12 +91,12 @@ S <- d[['salinity']]
 ```
 will extract the salinity.
 
-The `[[` method first looks in the `metadata` slot, but if the item is not found there, it proceeds to look in the `data` slot. This two-step scheme is helpful because it frees the user from having to know where data are stored, e.g. in a `ctd` object it might be stored in the `metadata` (for a conventional CTD cast) or in the `data` slot (for the slantwise sampling of a glider).
+The `[[` method first looks in the `metadata` slot, but if the item is not found there, it proceeds to look in the `data` slot. This two-step scheme is helpful because it frees the user from having to know where data are stored, e.g. in a `ctd` object, `latitude` might be stored in the `metadata` (for a conventional CTD cast) or in the `data` slot (for the slantwise sampling of a glider).
 
 In addition to accessing data within an object, the `[[` notation also permits the extraction of *derived* information. There are two reasons for this.
 
 1. It can give valuable performance enhancements in some cases, e.g. the data in the `landsat` class are stored in two byte-level arrays, which yields a marked improvement over the 8-byte arrays that R generally uses on a 64-bit machine. The `[[` assembles these byte-scale chunks into a conventional R numerical matrix, which can be quite convenient for users who wish to operate on the data without learning how to assemble the bytes.
-2. It provides a uniformity of notation that can be helpful to users. In `oce`, objects derived from data files tend to hold just the information in those files, not derived information. For example, For example, CTD datasets often provide in-situ temperature but not potential temperature (since the latter is not measured). The in-situ temperature is found with e.g. `d[["temperature"]]`, and so it seems natural to write `d[["theta"]]` to get the potential temperature. If this is done, then the `ctd` version of `[[`` first looks in the data slot, and returns `theta` if it is found there, as may sometimes be the case (depending on the choice of the person who created the dataset). However, if it is not found, then `[[` calls `swTheta()` to calculate the value, and returns the result.
+2. It provides a uniformity of notation that can be helpful to users. In `oce`, objects derived from data files tend to hold just the information in those files, not derived information. For example, For example, CTD datasets often provide in-situ temperature but not potential temperature (since the latter is not measured). The in-situ temperature is found with e.g. `d[["temperature"]]`, and so it seems natural to write `d[["theta"]]` to get the potential temperature. If this is done, then the `ctd` version of `[[` first looks in the data slot, and returns `theta` if it is found there, as may sometimes be the case (depending on the choice of the person who created the dataset). However, if it is not found, then `[[` calls `swTheta()` to calculate the value, and returns the result.
 
 Finally, it is also possible to extract the entirety of either the `metadata` or `data` slot, e.g.
 ```{r eval=FALSE}
@@ -685,7 +693,7 @@ setMethod(f="initialize",
               .Object@data$time <- time
               .Object@data$u <- u
               .Object@data$v <- v
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'uv' object"
               return(.Object)
           })

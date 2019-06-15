@@ -4,7 +4,7 @@
 \alias{read.odf}
 \title{Read an ODF file}
 \usage{
-read.odf(file, columns = NULL, header = NULL,
+read.odf(file, columns = NULL, header = "list",
   debug = getOption("oceDebug"))
 }
 \arguments{
@@ -30,7 +30,12 @@ returned object will contain a \code{list} named \code{header} that
 has lists as its entries. (The sub-lists are in the form of
 key-value pairs.) The naming of list entries is patterned on
 that in the ODF header, except that \code{\link{unduplicateNames}}
-is used to transform repeated names by adding numerical suffices.}
+is used to transform repeated names by adding numerical suffices.
+Note: on June 6, 2019, the default value of \code{header} was
+changed from \code{NULL} to \code{"list"}; in addition, the resultant
+list was made to contain every single item in the ODF header, with
+\code{\link{unduplicateNames}} being used to append integers to
+distinguish between repeated names in the ODF format.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -103,6 +108,7 @@ a fraction of a millidegree, which probably exceeds reasonable confidence in old
 
 \examples{
 library(oce)
+#
 # 1. Read a CTD cast made on the Scotian Shelf. Note that the file's metadata
 # states that conductivity is in S/m, but it is really conductivity ratio,
 # so we must alter the unit before converting to a CTD object. Note that
@@ -140,7 +146,7 @@ in June 2011.)
 \code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
 package is released by the Canadian Department of Fisheries and Oceans.
 
-Other things related to \code{odf} data: \code{\link{ODF2oce}},
+Other things related to odf data: \code{\link{ODF2oce}},
   \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
@@ -150,4 +156,4 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }
-\concept{things related to \code{odf} data}
+\concept{things related to odf data}

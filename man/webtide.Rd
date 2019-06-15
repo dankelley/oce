@@ -57,22 +57,20 @@ by specifying higher \code{debug} values.}
 example is to set \code{xlim} and \code{ylim}, to focus a map region.}
 }
 \value{
-If \code{action="map"} the return value is a
+The value depends on \code{action}:
+\itemize{
+\item If \code{action="map"} the return value is a
 list containing the index of the nearest node, along with the
 \code{latitude} and \code{longitude} of that node.  If
 \code{plot} is \code{FALSE}, this value is returned invisibly.
 
-If \code{action="predict"}, the return value is a list containing a vector
+\item If \code{action="predict"}, the return value is a list containing a vector
 of times (\code{time}), as well as vectors of the predicted \code{elevation}
 in metres and the predicted horizontal components of velocity, \code{u} and
 \code{v}, along with the \code{node} number, and the \code{basedir} and
 \code{region} as supplied to this function.
 If \code{plot} is \code{FALSE}, this value is returned invisibly.
-
-a list containing \code{node}, \code{longitude} and \code{latitude}. If
-no node was provided to \code{webtide} then this list will cover the whole
-set of nodes in the WebTide model; otherwise, it will be just the node that
-was requested.
+}
 }
 \description{
 Get a tidal prediction from a WebTide database. There are two distinct cases.
@@ -120,7 +118,19 @@ mtext(sprintf("prediction at \%fN \%fE", latitude, longitude), line=0.75, side=3
 ## 2. map
 webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
 }
+
+}
+\seealso{
+Other things related to tides: \code{\link{[[,tidem-method}},
+  \code{\link{[[<-,tidem-method}}, \code{\link{as.tidem}},
+  \code{\link{plot,tidem-method}},
+  \code{\link{predict.tidem}},
+  \code{\link{summary,tidem-method}},
+  \code{\link{tidedata}}, \code{\link{tidem-class}},
+  \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
+  \code{\link{tidem}}
 }
 \author{
 Dan Kelley
 }
+\concept{things related to tides}

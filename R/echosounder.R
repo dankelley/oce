@@ -65,7 +65,7 @@
 #' @docType class
 #'
 #' @author Dan Kelley
-#' @family things related to \code{echosounder} data
+#' @family things related to echosounder data
 setClass("echosounder", contains="oce")
 
 
@@ -82,15 +82,15 @@ setClass("echosounder", contains="oce")
 #' @author Dan Kelley
 #' @source This file came from the SLEIWEX-2008 experiment, and was decimated
 #' using \code{\link{decimate}} with \code{by=c()}.
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{echosounder} data
+#' @family datasets provided with oce
+#' @family things related to echosounder data
 NULL
 
 setMethod(f="initialize",
           signature="echosounder",
           definition=function(.Object, filename="") {
               .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'echosounder' object"
               return(.Object)
           })
@@ -108,7 +108,7 @@ setMethod(f="initialize",
 #' \code{\link{as.echosounder}}.
 #' @param \dots further arguments passed to or from other methods.
 #' @author Dan Kelley
-#' @family things related to \code{echosounder} data
+#' @family things related to echosounder data
 setMethod(f="summary",
           signature="echosounder",
           definition=function(object, ...) {
@@ -163,7 +163,7 @@ setMethod(f="summary",
 #'
 #' Otherwise, the generic \code{[[} is used.
 #' @template sub_subTemplate
-#' @family things related to \code{echosounder} data
+#' @family things related to echosounder data
 setMethod(f="[[",
           signature(x="echosounder", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -201,7 +201,7 @@ setMethod(f="[[",
 #' @title Replace Parts of an Echosounder Object
 #' @param x An \code{echosounder} object, i.e. inheriting from \code{\link{echosounder-class}}
 #' @template sub_subsetTemplate
-#' @family things related to \code{echosounder} data
+#' @family things related to echosounder data
 setMethod(f="[[<-",
           signature(x="echosounder", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -229,8 +229,8 @@ setMethod(f="[[<-",
 #' plot(subset(echosounder, depth < 10))
 #' plot(subset(echosounder, time < mean(range(echosounder[['time']]))))
 #'
-#' @family things related to \code{echosounder} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to echosounder data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="echosounder",
           definition=function(x, subset, ...) {
@@ -331,7 +331,7 @@ setMethod(f="subset",
 #' @return An object of \code{\link[base]{class}} \code{"echosounder"}; for
 #' details of this data type, see \code{\link{echosounder-class}}).
 #' @author Dan Kelley
-#' @family things related to \code{echosounder} data
+#' @family things related to echosounder data
 as.echosounder <- function(time, depth, a, src="",
                            sourceLevel=220,
                            receiverSensitivity=-55.4,
@@ -391,7 +391,7 @@ as.echosounder <- function(time, depth, a, src="",
 #' @seealso The documentation for \code{\link{echosounder-class}} explains the
 #' structure of \code{echosounder} objects, and also outlines the other
 #' functions dealing with them.
-#' @family things related to \code{echosounder} data
+#' @family things related to echosounder data
 findBottom <- function(x, ignore=5, clean=despike)
 {
     a <- x[["a"]]
@@ -480,12 +480,12 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' @author Dan Kelley, with extensive help from Clark Richards
 #' @examples
 #'
-#' \dontrun{
+#'\donttest{
 #' library(oce)
 #' data(echosounder)
 #' plot(echosounder, which=c(1,2), drawBottom=TRUE)
-#' }
-#' @family things related to \code{echosounder} data
+#'}
+#' @family things related to echosounder data
 #' @aliases plot.echosounder
 setMethod(f="plot",
           signature=signature("echosounder"),
@@ -738,7 +738,7 @@ setMethod(f="plot",
 #' structure of \code{ctd} objects, and also outlines the other functions
 #' dealing with them.
 #' @references Various echosounder instruments provided by BioSonics are
-#' described at the company website, \url{http://www.biosonicsinc.com/}.  The
+#' described at the company website, \url{https://www.biosonicsinc.com/}.  The
 #' document listed as [1] below was provided to the author of this function in
 #' November 2011, which suggests that the data format was not changed since
 #' July 2010.
@@ -746,7 +746,7 @@ setMethod(f="plot",
 #' [1] Biosonics, 2010.  DT4 Data File Format Specification.  BioSonics
 #' Advanced Digital Hydroacoustics. July, 2010.  SOFTWARE AND ENGINEERING
 #' LIBRARY REPORT BS&E-2004-07-0009-2.0.
-#' @family things related to \code{echosounder} data
+#' @family things related to echosounder data
 read.echosounder <- function(file, channel=1, soundSpeed,
                              tz=getOption("oceTz"), debug=getOption("oceDebug"),
                              processingLog)
@@ -1130,6 +1130,6 @@ read.echosounder <- function(file, channel=1, soundSpeed,
     res@processingLog <- processingLogAppend(res@processingLog,
                                              paste("read.echosounder(\"", filename, "\", channel=", channel, ", soundSpeed=",
                                                    if (missing(soundSpeed)) "(missing)" else soundSpeed, ", tz=\"", tz, "\", debug=", debug, ", processingLog)", sep=""))
-    .C("biosonics_free_storage", package="oce") # clear temporary storage space
+    .C("biosonics_free_storage", PACKAGE="oce") # clear temporary storage space
     res
 }

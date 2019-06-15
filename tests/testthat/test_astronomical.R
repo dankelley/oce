@@ -52,12 +52,19 @@ test_that("Moon", {
           expect_identical(m, mlocal)
           ## Numerical time
           expect_identical(m, moonAngle(as.numeric(t), 0, 0))
+          ## time as a Sys.Date value
+          moonAngle(Sys.Date(), -63.5744, 44.6479)
+          ## time as a character value
+          moonAngle("2019-01-20", -63.5744, 44.6479)
+          ## How close to "total full" was the time of the lunar eclipse for the
+          ## "super Blood full moon" of 2019, in Halifax, NA?
+          expect_gt(moonAngle("2019-01-21 00:12:00", -63.5744, 44.6479)$illuminatedFraction, 0.999)
 })
 
 test_that("Sun", {
           ## Testing against values that worked on 2016-12-06;
           ## FIXME: replace by numbers from [2] if they can be found.
-          t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
+          t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC")
           s <- sunAngle(t, 0, 0) # lat and lon arbitrary
           expect_equal(s$azimuth, 358.624168865654)
           expect_equal(s$altitude, -81.3030909018573)
@@ -70,4 +77,6 @@ test_that("Sun", {
           expect_identical(s, slocal)
           ## Numerical time
           expect_identical(s, sunAngle(as.numeric(t), 0, 0))
+          ## Character time
+          expect_identical(s, sunAngle("1992-04-12 00:00:00", 0, 0))
 })

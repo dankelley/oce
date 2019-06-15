@@ -5,7 +5,8 @@
 \title{Read a Seabird CTD File}
 \usage{
 read.ctd.sbe(file, columns = NULL, station = NULL, missingValue,
-  monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
+  deploymentType = "unknown", monitor = FALSE,
+  debug = getOption("oceDebug"), processingLog, ...)
 }
 \arguments{
 \item{file}{A connection or a character string giving the name of the file to
@@ -17,8 +18,16 @@ pattern.}
 
 \item{columns}{An optional \code{\link{list}} that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
-\code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}; see
-\dQuote{Examples}.}
+\code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}. For example,
+if a data file named salinity as \code{"SAL"}, then using
+\preformatted{
+d <- read.ctd(f, columns=list(
+    salinity=list(name="SAL",
+                  unit=list(unit=expression(),
+                  scale="PSS-78"))))
+}
+would assign the \code{"SAL"} column to the \code{salinity} entry in the data
+slot of the CTD object returned by the \code{read.*} function.}
 
 \item{station}{Optional character string containing an identifying name or
 number for the station. This can be useful if the routine cannot determine the
@@ -36,6 +45,15 @@ whether salinity and/or temperature has a minimum that is under -8 in value;
 this should catch common values in files, without false positives. A warning
 will be issued in this case, and a note inserted in the processing log of
 the return value.}
+
+\item{deploymentType}{character string indicating the type of deployment. Use
+\code{"unknown"} if this is not known, \code{"profile"} for a profile (in
+which the data were acquired during a downcast, while the device was lowered
+into the water column, perhaps also including an upcast; \code{"moored"} if
+the device is installed on a fixed mooring, \code{"thermosalinograph"} (or
+\code{"tsg"}) if the device is mounted on a moving vessel, to record
+near-surface properties, or \code{"towyo"} if the device is repeatedly
+lowered and raised.}
 
 \item{monitor}{Boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}
@@ -81,26 +99,32 @@ names (in the "Short Name" column of the table spanning pages 161 through 172).
 }
 \section{A note on sampling times}{
 
-SBE files can be somewhat confusing as regards the time of measurement. If
-the data file contains metadata item called \code{start_time}, then
-it is converted to a POSIX time object by \code{read.ctd.sbe} and stored
-within the \code{metadata} slot as \code{"startTime"}. Until 2018-07-05, that
-value was also stored in a \code{metadata} item named \code{"time"}, but this
-caused confusion for data files that also have an elapsed-time column, and so
-an entry named \code{"time"} is no longer stored in the \code{metadata} slot,
-for those cases in which an elapsed-time column exists in the data file.
-Importantly, there is a possibility for confusion in the storage
-of that elapsed-time entry within the \code{data} slot, because \code{read.ctd.sbe}
-renames all of the ten variants of elapsed time (see [2] for a list)
-as, simply, \code{"time"} in the \code{data} slot of the returned value.
-(Numerical suffices will be used if the file contains multiple elapsed-time
-columns.) This imposes upon the user the burden of using \code{summary()} on
-the return value, to discover the original name of the elapsed time column,
-because \code{read.ctd.sbe} does not convert the 10 possible units to
-a standard, but rather simply records the numerical values that are in
-the data file. The most common column name is likely \code{timeS}, for
-elapsed time in seconds; see [2] for the meanings of the other 9
-schemes.
+Until November of 2018,
+there was a possibility for great confusion in the storage
+of the time entries within the \code{data} slot, because \code{read.ctd.sbe}
+renamed each of the ten variants of time (see [2] for a list)
+as \code{"time"} in the \code{data} slot of the returned value.
+For CTD profiles, this was perhaps not a great problem, but it could
+lead to great confusion for moored data. Therefore, a change to \code{read.ctd.sbe} was
+made, so that it would Seabird times, using the \code{start_time} entry in
+the CNV file header (which is stored as \code{startTime} in the object
+\code{metadata} slot), along with specific time columns as follows
+(and as documented, with uneven clarity, in the
+SBE Seasoft data processing manual, revision 7.26.8, Appendix VI):
+\code{timeS} (seconds elapsed since \code{start_time}),
+\code{timeM} (minutes elapsed since \code{start_time}),
+\code{timeH} (hours elapsed since \code{start_time}),
+\code{timeJ} (Julian days since the start of the year of the first observation),
+\code{timeN} (NMEA-based time, in seconds past Jan 1, 1970),
+\code{timeQ} (NMEA-based time, in seconds past Jan 1, 2000),
+\code{timeK} (NMEA-based time, in seconds past Jan 1, 2000),
+\code{timeJV2} (as \code{timeJ}),
+\code{timeSCP} (as \code{timeJ}),
+and
+\code{timeY} (computer time, in seconds past Jan 1, 1970).
+NOTE: not all of these times have been tested properly, and so users
+are asked to report incorrect times, so that \code{read.ctd.sbe} can
+be improved.
 }
 
 \section{A note on scales}{
@@ -129,7 +153,7 @@ f <- system.file("extdata", "ctd.cnv", package="oce")
 d <- read.ctd(f)
 ## Read an imaginary file, in which salinity is named 'salt'
 d <- read.ctd(f, columns=list(
-  salinity=list(name="salt", unit=list(expression(), scale="PSS-78"))))
+  salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))))
 
 }
 \references{
@@ -148,7 +172,7 @@ As of 2018-07-05, the latest version was named
 and this was the reference version used in coding \code{oce}.
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
@@ -170,6 +194,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }
 \author{
-Dan Kelley
+Dan Kelley and Clark Richards
 }
-\concept{things related to \code{ctd} data}
+\concept{things related to ctd data}

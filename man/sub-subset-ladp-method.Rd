@@ -52,7 +52,7 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
+Other functions that replace parts of oce objects: \code{\link{[[<-,adp-method}},
   \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -75,10 +75,10 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
 
-Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
+Other things related to ladp data: \code{\link{[[,ladp-method}},
   \code{\link{as.ladp}}, \code{\link{ladp-class}},
   \code{\link{plot,ladp-method}},
   \code{\link{summary,ladp-method}}
 }
-\concept{functions that replace parts of \code{oce} objects}
-\concept{things related to \code{ladp} data}
+\concept{functions that replace parts of oce objects}
+\concept{things related to ladp data}

@@ -67,7 +67,7 @@ to find items more directly, using \code{\link{oceGetData}} and
 1. \href{https://www.rbr-global.com/products}{RBR website: www.rbr-global.com/products}
 }
 \seealso{
-Other classes provided by \code{oce}: \code{\link{adp-class}},
+Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
@@ -77,7 +77,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
-Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
+Other things related to rsk data: \code{\link{[[,rsk-method}},
   \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
   \code{\link{plot,rsk-method}}, \code{\link{read.rsk}},
   \code{\link{rskPatm}}, \code{\link{rskToc}},
@@ -87,5 +87,5 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{rsk} data}
+\concept{classes provided by oce}
+\concept{things related to rsk data}

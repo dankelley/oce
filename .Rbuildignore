@@ -1,3 +1,7 @@
+^sandbox$
+^R/check_urls\.R$
+^doc$
+^Meta$
 ^revdep$
 ^cran-comments.md$
 ^CONTRIBUTING.md$
@@ -10,9 +14,9 @@
 .travis.yml
 ^.*.nc$
 ^.*.csv$
-create_data
-README_developers.md
-R/.*.swo
+^create_data$
+^README_developers.md$
+^.*.swo$
 css
 _layouts
 _site
@@ -35,6 +39,6 @@ tests/testthat/Rplots.pdf
 tests/testthat/test_local_*.R
 tests/testthat/local_data
 tests/testthat/valgrind_tests.*
+R/check_urls.R
 .lintr
 ^cran-comments\.md$
-

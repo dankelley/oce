@@ -270,5 +270,5 @@
 #'               to=as.POSIXct("2008-06-26 00:00:10", tz="UTC"))
 #' plot(d, which=c(1:3,15))
 #' }
-#' @family things related to \code{adv} data
+#' @family things related to adv data
 

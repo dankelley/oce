@@ -14,7 +14,7 @@ by \code{\link{oceColorsClosure}} to create functions such as
 \code{\link{oceColorsViridis}}.
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
@@ -46,5 +46,5 @@ Other things related to colors: \code{\link{colormap}},
 \author{
 Authored by matplotlib contributers, packaged (with license permission) in oce by Dan Kelley
 }
-\concept{datasets provided with \code{oce}}
+\concept{datasets provided with oce}
 \concept{things related to colors}

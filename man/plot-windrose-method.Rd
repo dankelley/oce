@@ -56,7 +56,7 @@ par(opar)
 
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -80,7 +80,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
+Other things related to windrose data: \code{\link{[[,windrose-method}},
   \code{\link{[[<-,windrose-method}},
   \code{\link{as.windrose}},
   \code{\link{summary,windrose-method}},
@@ -89,5 +89,5 @@ Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{windrose} data}
+\concept{functions that plot oce data}
+\concept{things related to windrose data}

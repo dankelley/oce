@@ -6,7 +6,7 @@
 #' the code) based on "The Astronomical Almanac".
 #'
 #' @param t time, a POSIXt object (converted to timezone \code{"UTC"},
-#' if it is not already in that timezone), or a numeric value that
+#' if it is not already in that timezone), a character or numeric value that
 #' corresponds to such a time.
 #' @param longitude observer longitude in degrees east
 #' @param latitude observer latitude in degrees north
@@ -62,6 +62,10 @@
 sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
 {
     if (missing(t)) stop("must provide t")
+    if (is.character(t))
+        t <- as.POSIXct(t, tz="UTC")
+    else if (inherits(t, "Date"))
+        t <- as.POSIXct(t)
     if (!inherits(t, "POSIXt")) {
         if (is.numeric(t)) {
             tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC") # arbitrary
@@ -71,7 +75,9 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
         }
     }
     t <- as.POSIXct(t) # so we can get length ... FIXME: silly, I know
-    if ("UTC" != attr(as.POSIXct(t[1]), "tzone"))
+    ## Ensure that the timezone is UTC. Note that Sys.Date() gives a NULL tzone.
+    tzone <- attr(as.POSIXct(t[1]), "tzone")
+    if (is.null(tzone) || "UTC" != tzone)
         attributes(t)$tzone <- "UTC"
     tOrig <- t
     ok <- !is.na(t)

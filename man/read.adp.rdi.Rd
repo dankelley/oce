@@ -92,6 +92,75 @@ two facts control the maximum recordable velocity and the velocity
 resolution, values that may be retrieved for an ADP object name \code{d}
 with \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
 }
+\section{Names of items in data slot}{
+
+
+The names of items in the \code{data} slot are below. Not all items are present
+for ll file varieties; use \code{\link{names}(d[["data"]])} to determine the
+names used in an object named \code{d}. In this list, items are either
+a vector (with one sample per time of measurement), a 
+``matrix'' with first index for time and second for bin number,
+or an ``array'' with first index for time, second for bin number,
+and third for beam number. (Items are of vector type, unless
+otherwise indicated.)
+
+\strong{\code{a}}=signal amplitude array [units?];
+\strong{\code{ambientTemp}}=ambient temperature [degC];
+\strong{\code{attitude}}=attitude [deg];
+\strong{\code{attitudeTemp}}=XXX;
+\strong{\code{avgMagnitudeVelocityEast}}=XXX;
+\strong{\code{avgMagnitudeVelocityNorth}}=XXX;
+\strong{\code{avgSpeed}}=XXX;
+\strong{\code{avgTrackMagnetic}}=XXX;
+\strong{\code{avgTrackTrue}}=XXX;
+\strong{\code{avgTrueVelocityEast}}=XXX;
+\strong{\code{avgTrueVelocityNorth}}=XXX;
+\strong{\code{br}}=bottom range matrix [m];
+\strong{\code{bv}}=bottom velocity matrix [m/s];
+\strong{\code{contaminationSensor}}=XXX;
+\strong{\code{depth}}=depth [m];
+\strong{\code{directionMadeGood}}=XXX;
+\strong{\code{distance}}=XXX;
+\strong{\code{firstLatitude}}=latitude at start of profile [deg];
+\strong{\code{firstLongitude}}=longitude at start of profile [deg];
+\strong{\code{firstTime}}=XXX;
+\strong{\code{g}}=data goodness matrix [units?];
+\strong{\code{heading}}=instrument heading [degrees];
+\strong{\code{headingStd}}=instrument heading std-dev [deg];
+\strong{\code{lastLatitude}}=latitude at end of profile [deg];
+\strong{\code{lastLongitude}}=longitude at end of profile [deg];
+\strong{\code{lastTime}}=XXX;
+\strong{\code{numberOfHeadingSamplesAveraged}}=XXX;
+\strong{\code{numberOfMagneticTrackSamplesAveraged}}=XXX;
+\strong{\code{numberOfPitchRollSamplesAveraged}}=XXX;
+\strong{\code{numberOfSpeedSamplesAveraged}}=XXX;
+\strong{\code{numberOfTrueTrackSamplesAveraged}}=XXX;
+\strong{\code{pitch}}=instrument pitch [deg];
+\strong{\code{pitchStd}}=instrument pitch std-dev [deg];
+\strong{\code{pressure}}=pressure [dbar];
+\strong{\code{pressureMinus}}=XXX;
+\strong{\code{pressurePlus}}=XXX;
+\strong{\code{pressureStd}}=pressure std-dev [dbar];
+\strong{\code{primaryFlags}}=XXX;
+\strong{\code{q}}=data quality array;
+\strong{\code{roll}}=instrument roll [deg];
+\strong{\code{rollStd}}=instrument roll std-dev [deg];
+\strong{\code{salinity}}=salinity;
+\strong{\code{shipHeading}}=ship heading [deg];
+\strong{\code{shipPitch}}=ship pitch [deg];
+\strong{\code{shipRoll}}=ship roll [deg];
+\strong{\code{soundSpeed}}=sound speed [m/s];
+\strong{\code{speedMadeGood}}=speed over ground (?) [m/s];
+\strong{\code{speedMadeGoodEast}}=XXX;
+\strong{\code{speedMadeGoodNorth}}=XXX;
+\strong{\code{temperature}}=temperature [degC];
+\strong{\code{time}}=profile time [POSIXct];
+\strong{\code{v}}=velocity array [m/s];
+\strong{\code{xmitCurrent}}=transmit current [unit?];
+and
+\strong{\code{xmitVoltage}}=transmit voltage.
+}
+
 \section{Memory considerations}{
 
 
@@ -203,7 +272,7 @@ Standard ID    Standard plus 1D    DESCRIPTION
   06     00           06     01    Bottom Track Data
   20     00           20     00    Navigation
   30     00           30     00    Binary Fixed Attitude
-  30  40-F0           30  40–F0    Binary Variable Attitude
+  30  40-F0           30  40-F0    Binary Variable Attitude
 }
 \item
 Table 6 on p90 of [4] lists "Fixed Leader Navigation" ID
@@ -268,6 +337,11 @@ plot(d[["time"]][-1], diff(d[["ensembleInFile"]]))
 can be a good way to narrow in on problems.
 }
 
+\examples{
+adp <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"))
+summary(adp)
+
+}
 \references{
 1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
 format.} P/N 957-6156-00 (November 2007).  (Section 5.3 h details the binary
@@ -287,16 +361,19 @@ P/N 95A-6012-00 (April 2014). \code{OS_TM_Apr14.pdf}
 P/N 957-6171-00 (June 2001) \code{WinRiver User Guide International Version.pdf.pdf}
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+Other things related to adp data: \code{\link{[[,adp-method}},
+  \code{\link{[[<-,adp-method}},
+  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdpAD2CP}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
   \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
   \code{\link{enuToOther}},
   \code{\link{handleFlags,adp-method}},
-  \code{\link{plot,adp-method}}, \code{\link{read.ad2cp}},
+  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
+  \code{\link{read.adp.ad2cp}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.sontek.serial}},
   \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
@@ -307,9 +384,10 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

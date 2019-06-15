@@ -160,8 +160,7 @@
 #' @concept satellite
 #' @author Dan Kelley and Clark Richards
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
-#' @family things related to \code{landsat} data
-#' @family things related to \code{landsat} data
+#' @family things related to landsat data
 setClass("landsat", contains="satellite")
 
 
@@ -181,8 +180,8 @@ setClass("landsat", contains="satellite")
 #' @name landsat
 #' @docType data
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{landsat} data
+#' @family datasets provided with oce
+#' @family things related to landsat data
 NULL
 
 
@@ -207,7 +206,7 @@ setMethod(f="initialize",
           definition=function(.Object, filename) {
               if (!missing(filename))
                   .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'landsat' object"
               return(.Object)
           })
@@ -225,7 +224,7 @@ setMethod(f="initialize",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{landsat} data
+#' @family things related to landsat data
 setMethod(f="summary",
           signature="landsat",
           definition=function(object, ...) {
@@ -318,7 +317,7 @@ setMethod(f="summary",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{landsat} data
+#' @family things related to landsat data
 setMethod(f="[[",
           signature(x="landsat", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -528,7 +527,7 @@ setMethod(f="[[",
 #' @param x A \code{landsat} object, i.e. one inheriting from \code{\link{landsat-class}}.
 #' @template sub_subsetTemplate
 #'
-#' @family things related to \code{landsat} data
+#' @family things related to landsat data
 setMethod(f="[[<-",
           signature(x="landsat", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -664,8 +663,8 @@ setMethod(f="[[<-",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{landsat} data
-#' @family functions that plot \code{oce} data
+#' @family things related to landsat data
+#' @family functions that plot oce data
 #' @aliases plot.landsat
 setMethod(f="plot",
           signature=signature("landsat"),
@@ -1063,7 +1062,7 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #'
 #' @author Dan Kelley
 #' @concept satellite
-#' @family things related to \code{landsat} data
+#' @family things related to landsat data
 read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.landsat(file=\"", file, "\",",
@@ -1120,7 +1119,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
     options <- options('warn') # avoid readTIFF() warnings about geo tags
     options(warn=-1)
     ##> cat("BEFORE\n")
-    ##> print(Sys.time())
+    ##> print(presentTime())
     for (b in seq_along(band)) {
         ## 'band' is numeric
         ## message("b:", b, " band: ", header$bandnames[b], " suffix: ", header$filesuffices[b])
@@ -1158,7 +1157,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
         ##> print("--DONE assembling bytes")
     }
     ##> cat("AFTER\n")
-    ##> print(Sys.time())
+    ##> print(presentTime())
     options(warn=options$warn)
     res@metadata$satellite <- "landsat"
     res@processingLog <- processingLogAppend(res@processingLog,
@@ -1192,7 +1191,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
 #'
 #' @author Dan Kelley
 #' @concept satellite
-#' @family things related to \code{landsat} data
+#' @family things related to landsat data
 landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 {
     if (!is.matrix(data))
@@ -1251,7 +1250,7 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 #' with them.
 #' @author Dan Kelley and Clark Richards
 #' @concept satellite
-#' @family things related to \code{landsat} data
+#' @family things related to landsat data
 landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "landsat"))

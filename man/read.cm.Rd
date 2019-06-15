@@ -126,7 +126,7 @@ return value, but it is no longer stored, since it can be derived from the
 
 }
 \seealso{
-Other things related to \code{cm} data: \code{\link{[[,cm-method}},
+Other things related to cm data: \code{\link{[[,cm-method}},
   \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
   \code{\link{cm-class}}, \code{\link{cm}},
   \code{\link{plot,cm-method}}, \code{\link{rotateAboutZ}},
@@ -136,4 +136,4 @@ Other things related to \code{cm} data: \code{\link{[[,cm-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{cm} data}
+\concept{things related to cm data}

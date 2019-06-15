@@ -22,6 +22,7 @@ on \code{t_astron} in the \code{T_TIDE} Matlab package [1].
 }
 \examples{
 tidemAstron(as.POSIXct("2008-01-22 18:50:24"))
+
 }
 \references{
 1. Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002. Classical tidal
@@ -29,16 +30,17 @@ harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 Computers and Geosciences, 28, 929-937.
 }
 \seealso{
-Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
-  \code{\link{[[<-,tidem-method}},
+Other things related to tides: \code{\link{[[,tidem-method}},
+  \code{\link{[[<-,tidem-method}}, \code{\link{as.tidem}},
   \code{\link{plot,tidem-method}},
   \code{\link{predict.tidem}},
   \code{\link{summary,tidem-method}},
   \code{\link{tidedata}}, \code{\link{tidem-class}},
-  \code{\link{tidemVuf}}, \code{\link{tidem}}
+  \code{\link{tidemVuf}}, \code{\link{tidem}},
+  \code{\link{webtide}}
 }
 \author{
 Dan Kelley translated this from \code{t_astron} in the \code{T_TIDE}
 package.
 }
-\concept{things related to \code{tidem} data}
+\concept{things related to tides}

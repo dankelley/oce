@@ -82,7 +82,7 @@ adv[["v"]] <- 0.001 + adv[["v"]] # add 1mm/s to all velocity components
 
 }
 \seealso{
-Other classes provided by \code{oce}: \code{\link{adp-class}},
+Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{argo-class}}, \code{\link{bremen-class}},
   \code{\link{cm-class}}, \code{\link{coastline-class}},
   \code{\link{ctd-class}}, \code{\link{lisst-class}},
@@ -92,7 +92,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
-Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+Other things related to adv data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv}},
   \code{\link{beamName}}, \code{\link{beamToXyz}},
   \code{\link{enuToOtherAdv}}, \code{\link{enuToOther}},
@@ -107,5 +107,5 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{adv} data}
+\concept{classes provided by oce}
+\concept{things related to adv data}

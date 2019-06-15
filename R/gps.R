@@ -21,7 +21,7 @@
 #' @docType class
 #' @author Dan Kelley
 #'
-#' @family things related to \code{gps} data
+#' @family things related to gps data
 setClass("gps", contains="oce")
 
 setMethod(f="initialize",
@@ -30,7 +30,7 @@ setMethod(f="initialize",
               if (!missing(longitude)) .Object@data$longitude <- as.numeric(longitude)
               if (!missing(latitude)) .Object@data$latitude <- as.numeric(latitude)
               .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'gps' object"
               return(.Object)
           })
@@ -44,7 +44,7 @@ setMethod(f="initialize",
 #' @param object an object of class \code{"gps"}
 #' @param \dots further arguments passed to or from other methods.
 #' @author Dan Kelley
-#' @family things related to \code{gps} data
+#' @family things related to gps data
 setMethod(f="summary",
           signature="gps",
           definition=function(object, ...) {
@@ -56,7 +56,7 @@ setMethod(f="summary",
 #' @title Extract Something From a GPS Object
 #' @param x A gps object, i.e. one inheriting from \code{\link{gps-class}}.
 #' @template sub_subTemplate
-#' @family things related to \code{gps} data
+#' @family things related to gps data
 setMethod(f="[[",
           signature(x="gps", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -66,7 +66,7 @@ setMethod(f="[[",
 #' @title Replace Parts of a GPS Object
 #' @param x An \code{gps} object, i.e. inheriting from \code{\link{gps-class}}
 #' @template sub_subsetTemplate
-#' @family things related to \code{gps} data
+#' @family things related to gps data
 setMethod(f="[[<-",
           signature(x="gps", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -151,8 +151,8 @@ setMethod(f="[[<-",
 #' @param \dots optional arguments passed to plotting functions.  For example,
 #' set \code{yaxp=c(-90,90,4)} for a plot extending from pole to pole.
 #' @author Dan Kelley
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{gps} data
+#' @family functions that plot oce data
+#' @family things related to gps data
 #' @aliases plot.gps
 setMethod(f="plot",
           signature=signature("gps"),
@@ -392,7 +392,7 @@ setMethod(f="plot",
 #' @param filename name of file containing data (if applicable).
 #' @return An object of \code{\link{gps-class}}.
 #' @author Dan Kelley
-#' @family things related to \code{gps} data
+#' @family things related to gps data
 as.gps <- function(longitude, latitude, filename="")
 {
     names <- names(longitude)
@@ -420,7 +420,7 @@ as.gps <- function(longitude, latitude, filename="")
 #' better for normal calls by a user.)
 #' @return An object of \code{\link[base]{class}} \code{"gps"}.
 #' @author Dan Kelley
-#' @family things related to \code{gps} data
+#' @family things related to gps data
 read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog)
 {
     oceDebug(debug, "read.gps(...) {\n", sep="", unindent=1)

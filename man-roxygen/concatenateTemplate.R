@@ -43,4 +43,4 @@
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that concatenate \code{oce} objects.
+#' @family functions that concatenate oce objects

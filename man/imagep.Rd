@@ -61,9 +61,13 @@ Thus, clipping an image is somewhat analogous to clipping in an xy
 plot, with clipped data being ignored, which in an image means to be be
 colored with \code{missingColor}.}
 
-\item{flipy}{Logical, with \code{TRUE} indicating that the image
-should be flipped top to bottom (e.g. to produce a profile image
-for a downward-looking acoustic-doppler profile).}
+\item{flipy}{Logical, with \code{TRUE} indicating that the graph
+should have the y axis reversed, i.e. with smaller values at
+the bottom of the page. (\emph{Historical note:} until 2019 March 26,
+the meaning of \code{flipy} was different; it meant to reverse the
+range of the y axis, so that if \code{ylim} were given as a reversed
+range, then setting \code{flipy=TRUE} would reverse the flip, yielding
+a conventional axis with smaller values at the bottom.)}
 
 \item{xlab, ylab, zlab}{Names for x axis, y axis, and the image values.}
 
@@ -247,7 +251,23 @@ imagep(x, y, angle, filledContour=TRUE, breaks=c(0, pi/4, pi/2),
        at=c(0, pi/4, pi/2),
        labels=c(0, expression(pi/4), expression(pi/2)))
 
-# 4. a colormap case
+# 5. y-axis flipping
+par(mfrow=c(2,2))
+data(adp)
+d <- adp[["distance"]]
+t <- adp[["time"]]
+u <- adp[["v"]][ , ,1]
+imagep(t, d, u, drawTimeRange=FALSE)
+mtext("normal")
+imagep(t, d, u, flipy=TRUE, drawTimeRange=FALSE)
+mtext("flipy")
+imagep(t, d, u, ylim=rev(range(d)), drawTimeRange=FALSE)
+mtext("ylim")
+imagep(t, d, u, ylim=rev(range(d)), flipy=TRUE, drawTimeRange=FALSE)
+mtext("flipy and ylim")
+par(mfrow=c(1,1))
+
+# 6. a colormap case
 data(topoWorld)
 cm <- colormap(name="gmt_globe")
 imagep(topoWorld, colormap=cm)

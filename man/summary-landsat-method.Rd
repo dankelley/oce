@@ -18,7 +18,7 @@ Provides a summary of a some information about an object of
 \code{\link{landsat-class}}.
 }
 \seealso{
-Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
+Other things related to landsat data: \code{\link{[[,landsat-method}},
   \code{\link{[[<-,landsat-method}},
   \code{\link{landsat-class}}, \code{\link{landsatAdd}},
   \code{\link{landsatTrim}}, \code{\link{landsat}},
@@ -29,4 +29,4 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
 Dan Kelley
 }
 \concept{satellite}
-\concept{things related to \code{landsat} data}
+\concept{things related to landsat data}

@@ -25,8 +25,8 @@
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{cm} data
-#' @family classes provided by \code{oce}
+#' @family things related to cm data
+#' @family classes provided by oce
 setClass("cm", contains="oce")
 
 #' @title A CM Record
@@ -41,14 +41,14 @@ setClass("cm", contains="oce")
 #' @docType data
 #' @usage data(cm)
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' data(cm)
 #' summary(cm)
 #' plot(cm)
-#' }
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{cm} data
+#'}
+#' @family datasets provided with oce
+#' @family things related to cm data
 NULL
 
 #' @title Extract Something From a CM Object
@@ -56,7 +56,7 @@ NULL
 #'
 #' @template sub_subTemplate
 #'
-#' @family things related to \code{cm} data
+#' @family things related to cm data
 setMethod(f="[[",
           signature(x="cm", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -66,7 +66,7 @@ setMethod(f="[[",
 #' @title Replace Parts of a CM Object
 #' @param x An \code{cm} object, i.e. inheriting from \code{\link{cm-class}}
 #' @template sub_subsetTemplate
-#' @family things related to \code{cm} data
+#' @family things related to cm data
 setMethod(f="[[<-",
           signature(x="cm", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -101,7 +101,7 @@ setMethod(f="initialize",
               ## .Object@data$salinity <- if (missing(salinity)) NULL else salinity
               ## .Object@data$temperature <- if (missing(temperature)) NULL else temperature
               ## .Object@data$pressure <- if (missing(pressure)) NULL else pressure
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'cm' object"
               return(.Object)
           })
@@ -121,7 +121,7 @@ setMethod(f="initialize",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{cm} data
+#' @family things related to cm data
 setMethod(f="summary",
           signature="cm",
           definition=function(object, ...) {
@@ -156,8 +156,8 @@ setMethod(f="summary",
 #' plot(subset(cm, time < mean(range(cm[['time']]))))
 #'
 #' @author Dan Kelley
-#' @family things related to \code{cm} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to cm data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="cm",
           definition=function(x, subset, ...) {
@@ -219,7 +219,7 @@ setMethod(f="subset",
 #' Ignored if the first argument contains an \code{oce} object holding latitude.
 #' @param filename Optional source file name
 #' @template debugTemplate
-#' @family things related to \code{cm} data
+#' @family things related to cm data
 as.cm <- function(time, u=NULL, v=NULL,
                   pressure=NULL, conductivity=NULL, temperature=NULL, salinity=NULL,
                   longitude=NA, latitude=NA, filename="", debug=getOption("oceDebug"))
@@ -432,16 +432,16 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' \code{u} and \code{v} values.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #'   library(oce)
 #'   cm <- read.oce("cm_interocean_0811786.s4a.tab")
 #'   summary(cm)
 #'   plot(cm)
-#' }
+#'}
 #'
 #'
 #' @author Dan Kelley
-#' @family things related to \code{cm} data
+#' @family things related to cm data
 ##
 ## @references
 ## Culkin, F., and Norman D. Smith, 1980. Determination of the concentration of
@@ -724,8 +724,8 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{cm} data
+#' @family functions that plot oce data
+#' @family things related to cm data
 #' @aliases plot.cm
 setMethod(f="plot",
           signature=signature("cm"),

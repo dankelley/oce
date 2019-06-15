@@ -12,9 +12,9 @@
 {
     if (inherits(x, "oce")) {
         if (0 == length(x@processingLog)) {
-            x@processingLog <- list(time=as.POSIXct(Sys.time(), tz="UTC"), value=value)
+            x@processingLog <- list(time=presentTime(), value=value)
         } else {
-            x@processingLog$time <- c(x@processingLog$time, as.POSIXct(Sys.time(), tz="UTC"))
+            x@processingLog$time <- c(x@processingLog$time, presentTime())
             x@processingLog$value <- c(x@processingLog$value, value)
         }
     } else {
@@ -39,10 +39,10 @@ processingLogAppend <- function(h, value="")
         h <- h@processingLog
     res <- if (is.null(h)) list(time=NULL, value=NULL) else h
     if (is.null(h$time[1])) {
-        res$time <- as.POSIXct(Sys.time(), tz="UTC")
+        res$time <- presentTime()
         res$value <- value
     } else {
-        res$time <- c(res$time, as.POSIXct(Sys.time(), tz="UTC"))
+        res$time <- c(res$time, presentTime())
         res$value <- c(res$value, value)
     }
     res
@@ -56,12 +56,13 @@ processingLogAppend <- function(h, value="")
 #'
 #' @param value A string that will be used for the item.k
 #' @return A \code{\link{list}} containing \code{time}, which is
-#' the \code{\link{Sys.time}} at the moment the function is called and
+#' the time in UTC (calculated with \code{\link{presentTime}})
+#' at the moment the function is called and
 #' \code{value}, a string that is set to the argument of the same name.
 #' @family things related to processing logs
 processingLogItem <- function(value="")
 {
-    list(time=c(Sys.time()), value=value)
+    list(time=c(presentTime()), value=value)
 }
 
 #' Show the processing log of an \code{oce} object
