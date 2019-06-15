@@ -488,7 +488,7 @@ is.ad2cp <- function(x)
 #' @param to An integer indicating the final record to read.
 #' (If not provided, \code{by} defaults to 1e9.)
 #'
-#' @param tz Character alue indicating time zone. This is used in interpreting
+#' @param tz Character value indicating time zone. This is used in interpreting
 #' times stored in the file.
 #'
 #' @param longitude Numerical value indicating the longitude of observation.

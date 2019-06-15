@@ -185,7 +185,7 @@ Each of these requires a map to have been drawn first with
 enough to base-R functions that readers can decide how to accomplish
 common tasks.
 
-**Exercise 5.** Plot the world in Molleweide projection, superimposing sea
+**Exercise 5.** Plot the world in Mollweide projection, superimposing sea
 surface temperature as contours.
 
 
@@ -239,7 +239,7 @@ mapPlot(coastlineWorldFine, col="lightgray",
         longitudelim=c(-80, -40), latitudelim=c(20, 60))
 ```
 
-**Exercise 5.** Plot the world in Molleweide projection, superimposing sea
+**Exercise 5.** Plot the world in Mollweide projection, superimposing sea
 surface temperature as contours.
 
 ```{r fig.height=3}

@@ -81,7 +81,7 @@ For detailed analysis, users may want to access data *within* oce objects. While
 ```{r eval=FALSE}
 ?`[[,oce-method`
 ```
-and detaile are provided for individual object classes with e.g.
+and details are provided for individual object classes with e.g.
 ```{r eval=FALSE}
 ?`[[,ctd-method`
 ```

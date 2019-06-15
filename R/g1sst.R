@@ -69,7 +69,7 @@ setMethod(f="[[<-",
 #' @title Read a G1SST file
 #'
 #' @description
-#' Read a G1SST file in the netcdf format provided by the ERDAPP server [1].
+#' Read a G1SST file in the netcdf format provided by the ERDDAP server [1].
 #'
 #' @details
 #' As noted in the documentation for \code{\link{g1sst-class}}, one

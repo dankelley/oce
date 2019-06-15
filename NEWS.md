@@ -365,7 +365,7 @@
 * add 'met' class
 * subset.oce() handles section objects
 * draw.section(): permit xtype="latitude" or "longitude"
-* imagpe() has drawPalette="space" option
+* imagep() has drawPalette="space" option
 
 0.8-2
 * fix bug in read.coastline(), reversing lon and lat [issue162]
@@ -464,7 +464,7 @@
 * speed up conversion of ADP and ADV to enu by more than a factor of 10
 * change RDI coordinate handling
 * rename match.bytes() as matchBytes()
-* add drawpalette()
+* add drawPalette()
 * remove matlab2POSIXt(), now a sub-case of number.as.POSIXct()
 * number.as.POSIXct(): added
 * oceBiset(): added

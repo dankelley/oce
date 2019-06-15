@@ -36,7 +36,7 @@ with only the values from 1945 to 2010 being considered definitive.
 
 Reference [2] suggest that a new version to the underlying source
 code might be expected in 2019 or 2020, but a check on January 31,
-2019, showed that version 12, as incoporated in oce since
+2019, showed that version 12, as incorporated in oce since
 2015, remains the active version.
 }
 \examples{

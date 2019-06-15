@@ -9,7 +9,7 @@
 \S4method{plot}{satellite}(x, y, asp, debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{An object inherting from \code{\link{satellite-class}}.}
+\item{x}{An object inheriting from \code{\link{satellite-class}}.}
 
 \item{y}{String indicating the quantity to be plotted.}
 
