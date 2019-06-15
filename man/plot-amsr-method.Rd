@@ -68,8 +68,8 @@ Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to amsr data: \code{\link{[[<-,amsr-method}},
-  \code{\link{amsr-class}},
+Other things related to amsr data: \code{\link{[[,amsr-method}},
+  \code{\link{[[<-,amsr-method}}, \code{\link{amsr-class}},
   \code{\link{composite,amsr-method}},
   \code{\link{download.amsr}}, \code{\link{read.amsr}},
   \code{\link{subset,amsr-method}},

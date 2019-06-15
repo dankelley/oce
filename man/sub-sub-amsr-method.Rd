@@ -173,10 +173,17 @@ Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
+
+Other things related to amsr data: \code{\link{[[<-,amsr-method}},
+  \code{\link{amsr-class}},
+  \code{\link{composite,amsr-method}},
+  \code{\link{download.amsr}},
+  \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
+  \code{\link{subset,amsr-method}},
+  \code{\link{summary,amsr-method}}
 }
 \author{
 Dan Kelley
 }
 \concept{functions that extract parts of oce objects}
-\concept{things related to amsr data
-get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA}
+\concept{things related to amsr data}

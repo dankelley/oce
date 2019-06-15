@@ -29,8 +29,9 @@ final argument, except that the filename is set to a comma-separated list
 of the component filenames.
 }
 \seealso{
-Other things related to amsr data: \code{\link{[[<-,amsr-method}},
-  \code{\link{amsr-class}}, \code{\link{download.amsr}},
+Other things related to amsr data: \code{\link{[[,amsr-method}},
+  \code{\link{[[<-,amsr-method}}, \code{\link{amsr-class}},
+  \code{\link{download.amsr}},
   \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
   \code{\link{subset,amsr-method}},
   \code{\link{summary,amsr-method}}

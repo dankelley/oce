@@ -47,7 +47,7 @@ PROJ.4, which has interfaces in python and other programming languages (PROJ.4,
 PROJ.4 projections that have inverses are incorporated into oce.  Furthermore,
 some projections are omitted from oce because they have been witnessed to cause
 problems on the oce developer's computers, including infinite loops and core
-dumps. See the help for the oce function [`mapPlot`](../help/mapPlot) for a
+dumps. See the help for the oce function `mapPlot` for a
 list of the available projections, and some advice on choosing them.
 
 # Avoiding projections for limited-area plots
@@ -113,7 +113,7 @@ data(coastlineWorld)
 ```
 
 The function used to produce maps with projections is
-[`mapPlot`](../help/mapPlot), and with default arguments it produces
+`mapPlot`, and with default arguments it produces
 
 ```{r fig.height=3}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
@@ -122,7 +122,7 @@ mapPlot(coastlineWorld)
 
 This default plot uses the Mollweide projection (see any of the Snyder
 references in the bibliography), which is set by the default value
-`"+proj=moll"` for [`mapPlot`](../help/mapPlot). Another popular world view is
+`"+proj=moll"` for `mapPlot`. Another popular world view is
 the Robinson projection, which has been used by Rand McNally, the National
 Geographic Society, and other groups.
 
@@ -145,7 +145,7 @@ mapPlot(coastlineWorld, longitudelim=c(-130, 50), latitudelim=c(60, 120),
 
 This Arctic example also illustrates the specification of extra arguments in
 the `projection` value, in this case the base latitude being set to the north
-pole. See the table in the documentation for [`mapPlot`](../help/mapPlot) for a
+pole. See the table in the documentation for `mapPlot` for a
 listing of arguments, and for citations to external resources that explain what
 they mean.
 
@@ -175,14 +175,14 @@ Conic projection.
 
 Several functions are provided by oce to draw additional features on maps.
 These include
-[`mapText`](../help/mapText) for adding text,
-[`mapPoints`](../help/mapPoints) for adding points,
-[`mapLines`](../help/mapLines) for adding lines,
-[`mapContour`](../help/mapContour) for adding contours, and
-[`mapImage`](../help/mapImage) for adding images.
+`mapText` for adding text,
+`mapPoints` for adding points,
+`mapLines` for adding lines,
+`mapContour` for adding contours, and
+`mapImage` for adding images.
 Each of these requires a map to have been drawn first with
-[`mapPlot`](../help/mapPlot). The interfaces ought to be similar
-enough to base-R functions that readers can decide how to accomplish 
+`mapPlot`. The interfaces ought to be similar
+enough to base-R functions that readers can decide how to accomplish
 common tasks.
 
 **Exercise 5.** Plot the world in Molleweide projection, superimposing sea

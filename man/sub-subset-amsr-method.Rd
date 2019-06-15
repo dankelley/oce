@@ -52,7 +52,8 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other things related to amsr data: \code{\link{amsr-class}},
+Other things related to amsr data: \code{\link{[[,amsr-method}},
+  \code{\link{amsr-class}},
   \code{\link{composite,amsr-method}},
   \code{\link{download.amsr}},
   \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},

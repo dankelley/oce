@@ -179,7 +179,7 @@ setMethod(f="[[",
               if (!(i %in% namesAllowed))
                   stop("band '", i, "' is not available in this object; try one of: ",
                        paste(namesAllowed, collapse=" "))
-              #' get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA
+              # get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA
               getBand<-function(b) {
                   bad <- b == as.raw(0xff)| # land mass
                   b == as.raw(0xfe)| # no observations

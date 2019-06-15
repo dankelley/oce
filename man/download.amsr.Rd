@@ -75,8 +75,8 @@ monthly, and monthly composites are also provided on that site.
 Other functions that download files: \code{\link{download.coastline}},
   \code{\link{download.met}}, \code{\link{download.topo}}
 
-Other things related to amsr data: \code{\link{[[<-,amsr-method}},
-  \code{\link{amsr-class}},
+Other things related to amsr data: \code{\link{[[,amsr-method}},
+  \code{\link{[[<-,amsr-method}}, \code{\link{amsr-class}},
   \code{\link{composite,amsr-method}},
   \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
   \code{\link{subset,amsr-method}},

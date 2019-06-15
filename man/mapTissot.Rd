@@ -48,7 +48,7 @@ mapTissot(c(15, 15), col='red')
 \references{
 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 Professional Paper: 1395 (available at
-\url{pubs.usgs.gov/pp/1395/report.pdf}).
+\url{https://pubs.er.usgs.gov/publication/pp1395}).
 }
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.

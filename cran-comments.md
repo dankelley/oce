@@ -2,7 +2,7 @@
 
 * local R-3.6.0 MacOS install OK
 * win-builder R-release 3.6.0 (2019-04-26) OK
-* win-builder R-devel (unstable) (2019-06-11 r76694)
+* win-builder R-devel (unstable) (2019-06-11 r76701) OK
 * win-builder R-oldrelease R 3.5.3 (2019-03-11) 1 NOTE (large subdirs)
 
 ## R CMD check results
