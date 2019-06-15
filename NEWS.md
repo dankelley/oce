@@ -1,4 +1,4 @@
-1.0-2
+1.1-0
 * fix argument error in a .C() call
 * read.odf() stores ODF header as a list in metadata
 * presentTime() added

@@ -18,18 +18,7 @@ vignette: >
 ---
 
 <!-- HOW TO BUILD THE VIGNETTE. -->
-<!-- 1. edit this file in vignettes/oce.Rmd -->
-<!-- 2. in an R console, use setwd() or otherwise move to the oce -->
-<!--    directory, and then execute -->
-<!--      devtools::build_vignettes() -->
-<!-- 3. build oce. In the shell, you might use -->
-<!--      cd oce ; echo "devtools::document(roclets=c('rd','collate','vignette'))" | R --no-save -->
-<!--      CMD build --compact-vignettes="qpdf" oce -->
-<!--      R CMD check oce_1.0-2.1.tar.gz -->
-<!--      R CMD INSTALL oce_1.0-2.1.tar.gz -->
-<!--    where the version number might need updating, or in an R console you might use -->
-<!--      devtools::install(build_vignettes=TRUE) -->
-
+<!-- Look in oce.Rmd for instructions. -->
 
 
 ```{r, echo = FALSE}
