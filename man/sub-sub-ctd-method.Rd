@@ -21,57 +21,73 @@ The \code{[[} method works for all \code{oce} objects, i.e.
 objects inheriting from \code{\link{oce-class}}.  The purpose
 is to insulate users from the internal details of \code{oce}
 objects, by looking for items within the various storage
-slots of the object. Items not actually stored can also be
-extracted, including derived data, units of measurement,
-and data-quality flags.
+slots of the object. Items that are not actually stored in
+the object can also be extracted, including derived data such
+as potential temperature, the units of measurement for
+the data, data-quality flags, etc.
 }
 \details{
 A two-step process is used to try to find the
 requested information. First, a class-specific function
-tries to find it (see
-\dQuote{Details of the specialized ... method}), but
+tries to find it, but
 if that fails, then a general function is used
-(see \sQuote{Details of the general method}). If both
-fail, \code{NULL} is returned.
+(see next section).
 }
 \section{Details of the general method}{
 
 
 If the specialized method produces no matches, the following generalized
 method is applied. As with the specialized method, the procedure hinges
-first on the value of \code{i}.
+first on the values of \code{i} and, optionally, \code{j}. The work
+proceeds in steps, by testing a sequence of possible conditions
+in sequence.
 
-First, a check is made as to whether \code{i} names one of the standard
-\code{oce} slots, and returns the slot contents if so. Thus,
-\code{x[["metadata"]]} will retrieve the \code{metadata} slot,
+\enumerate{
+
+\item A check is made as to whether \code{i} names one of the standard
+\code{oce} slots. If so, \code{[[} returns the slot contents of that slot.
+Thus, \code{x[["metadata"]]} will retrieve the \code{metadata} slot,
 while \code{x[["data"]]} and \code{x[["processingLog"]]} return
 those slots.
 
-Next, if \code{i} is a string ending in the
+\item If \code{i} is a string ending in the
 \code{"Unit"}, then the characters preceding that string
 are taken to be the name of an item in the data object, and a list
 containing the unit is returned. This list consists of an item
 named \code{unit}, which is an \code{\link{expression}}, and
 an item named \code{scale}, which is a string describing the
 measurement scale.  If the string ends in \code{" unit"}, e.g.
-\code{x[["temperature unit"]]}, then just the expression is returned,
-and if it ends in \code{" scale"}, then just the scale is returned.
+\code{x[["temperature unit"]]} (note the space),
+then just the expression is returned, and if it ends in
+\code{" scale"}, then just the scale is returned.
 
-Next, if \code{i} is a string ending in \code{"Flag"}, then the corresponding
+\item If \code{i} is a string ending in \code{"Flag"}, then the corresponding
 data-quality flag is returned (or \code{NULL} if there is no such flag).
 For example, \code{x[["salinityFlag"]]} returns a vector of salinity
 flags if \code{x} is a ctd object.
 
-If none of the preceding conditions are met, a check is done
-to see if the \code{metadata} slot contains an item with
-the provided name, and that is returned, if so. A direct match
-is required for this condition.
+\item If \code{i} is \code{"sigmaTheta"}, then the value of
+\code{\link{swSigmaTheta}(x)} is returned. Similarly,
+\code{"sigma0"} returns \code{\link{swSigma0}(x)} and
+\code{"spice"} returns \code{\link{swSpice}(x)}. Note that
+these relate to seawater properties and only make sense for
+certain object types.
 
-Finally, the \code{data} slot is checked to see if it contains
-an item with the name indicated by \code{i}. In this case, a partial
-match will work; this is accomplished by using \code{\link{pmatch}}.
+\item After these possibilities are eliminated,
+the action depends on whether \code{j} has been provided.
+If \code{j} is not provided, or is the string \code{""},
+then \code{i} is sought
+in the \code{metadata} slot, and then in the \code{data} slot,
+returning whichever is found first.  In other words, if \code{j}
+is not provided, the \code{metadata} slot takes preference over
+the \code{data} slot. However, if \code{j} is provided, then
+it must be either the string \code{"metadata"} or \code{"data"},
+and it directs where to look.
+}
 
-If none of the above-listed conditions holds, then \code{NULL} is returned.
+If none of the above-listed conditions holds, then \code{NULL} is returned,
+without the issuance of a warning or error message. (This silent operation
+is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \section{Details of the specialized \code{ctd} method}{
@@ -99,8 +115,7 @@ in conventional units. For example, \code{\link{read.ctd.sbe}} is
 used on a \code{.cnv} file that stores pressure in psi, it will
 be stored in the same unit within the \code{ctd} object, but
 \code{x[["pressure"]]} will return a value that has been converted
-to decibars.  (Users who need the pressure in PSI can
-use \code{x@data$pressure}.)
+to decibars.  (To get pressure in PSI, use \code{x[["pressurePSI"]]}.)
 Similarly, temperature is
 returned in the ITS-90 scale, with a conversion having been performed with
 \code{\link{T90fromT68}}, if the object holds temperature in
@@ -118,7 +133,8 @@ latter with name \code{`NO2+NO3`}. In this case, e.g. \code{x[["nitrate"]]}
 will detect the setup, and subtract nitrite from the sum to yield
 nitrate.
 
-The list given below provides notes on some quantities that are computed.
+The list given below provides notes on some quantities that are,
+or may be, computed.
 
 \itemize{
 
@@ -176,8 +192,10 @@ referenced to a pressure of 4000dbar, computed with \code{\link{swSigma4}(x)}.
 \item \code{SP}: Salinity on the Practical Salinity Scale, which is
 \code{salinity} in the \code{data} slot.
 
-\item \code{spice}: a variable that is in some sense orthogonal to density,
-calculated with \code{\link{swSpice}(x)}.
+\item \code{spice} or \code{spiciness0}: a variable that is in some sense
+orthogonal to density, calculated with \code{\link{swSpice}(x)}.
+Note that this is defined differently for \code{eos="unesco"} and
+\code{eos="gsw"}.
 
 \item \code{SR}: Reference Salinity computed with
 \code{\link[gsw]{gsw_SR_from_SP}} in the \code{gsw} package.
@@ -189,6 +207,19 @@ See \code{SA} for a note on longitude and latitude.
 \item \code{theta}: potential temperature in the UNESCO formulation,
 computed with \code{\link{swTheta}(x)}. This is a synonym for
 \code{potential temperature}.
+
+\item \code{time}: returns either a vector of times, a single
+time, or \code{NULL}. A vector is returned if \code{time}
+is present in the \code{data} slot, or if a time can be
+inferred from other entries in the \code{data} slot (some of which,
+such as the common \code{timeS}, also employ
+\code{startTime} within the \code{metadata} slot). A single
+value is returned if the dataset only has information on the start
+time (which is stored as \code{startTime} within the \code{metadata}
+slot. If it is impossible to determine the sampling time, then
+\code{NULL} is returned. These time variants occur, in the
+present version of oce, only for data read by \code{\link{read.ctd.sbe}},
+the documention of which explains how times are computed.
 
 \item \code{z}: Vertical coordinate in metres above the surface, computed with
 \code{\link{swZ}(x)}.
@@ -202,7 +233,7 @@ head(ctd[["temperature"]])
 
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -216,8 +247,8 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,landsat-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
-  \code{\link{[[,met-method}}, \code{\link{[[,odf-method}},
-  \code{\link{[[,rsk-method}},
+  \code{\link{[[,met-method}}, \code{\link{[[,oce-method}},
+  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
   \code{\link{[[,sealevel-method}},
   \code{\link{[[,section-method}},
   \code{\link{[[,tidem-method}},
@@ -225,7 +256,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{ctd} data: \code{\link{[[<-,ctd-method}},
+Other things related to ctd data: \code{\link{[[<-,ctd-method}},
   \code{\link{as.ctd}}, \code{\link{cnvName2oceName}},
   \code{\link{ctd-class}}, \code{\link{ctdDecimate}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
@@ -250,5 +281,5 @@ Other things related to \code{ctd} data: \code{\link{[[<-,ctd-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{ctd} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to ctd data}

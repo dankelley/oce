@@ -21,8 +21,8 @@
 ##'
 #' @author Dan Kelley
 #'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{coastline} data
+#' @family classes provided by oce
+#' @family things related to coastline data
 setClass("coastline", contains="oce")
 
 
@@ -47,11 +47,11 @@ setClass("coastline", contains="oce")
 #' users find it convenient to do the loading in an \code{\link{Rprofile}}
 #' startup file.
 #' @author Dan Kelley
-#' @source Downloaded from \url{http://www.naturalearthdata.com}, in
+#' @source Downloaded from \url{https://www.naturalearthdata.com}, in
 #' \code{ne_110m_admin_0_countries.shp} in July 2015, with an
 #' update on December 16, 2017.
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{coastline} data
+#' @family datasets provided with oce
+#' @family things related to coastline data
 NULL
 
 setMethod(f="initialize",
@@ -61,7 +61,7 @@ setMethod(f="initialize",
               .Object@data$latitude <- latitude
               .Object@metadata$filename <- filename
               .Object@metadata$fillable <- fillable
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'coastline' object"
               return(.Object)
           })
@@ -77,7 +77,7 @@ setMethod(f="initialize",
 #' probably account for the vast majority of use cases.
 #'
 #' @template sub_subTemplate
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 setMethod(f="[[",
           signature(x="coastline", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -86,7 +86,7 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a Coastline Object
 #' @param x An \code{coastline} object, i.e. inheriting from \code{\link{coastline-class}}
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="coastline", i="ANY", j="ANY"),
@@ -94,31 +94,164 @@ setMethod(f="[[<-",
               callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
-#' @title Subset a Coastline Object
+#' Subset a Coastline Object
 #'
-#' @description
-#' Summarizes coastline length, bounding box, etc.
+#' Subsets a coastline object according to limiting values for longitude
+#' and latitude. The \CRANpkg{raster} package must be installed for this
+#' to work, because it relies on the \code{\link[raster]{intersect}} function
+#' from that package.
+#'
+#' As illustrated in the \dQuote{Examples}, \code{subset} must be an
+#' expression that indicates limits on \code{latitude} and
+#' \code{longitude}. The individual elements are provided in R notation,
+#' not mathematical notation (i.e. \code{30<latitude<60} would not work).
+#' Ampersands must be used to combine the limits.  The simplest way
+#' to understand this is to copy the example directly, and then modify
+#' the stated limits. Note that \code{>} comparison is not permitted,
+#' and that \code{<} is converted to \code{<=} in the calculation.
+#' Similarly, \code{&&} is converted to \code{&}. Spaces in the
+#' expression are ignored. For convenience, \code{longitude} and
+#' and \code{latitude} may be abbreviated as \code{lon} and \code{lat},
+#' as in the \dQuote{Examples}.
+#'
 #' @param x A \code{coastline} object, i.e. one inheriting from \code{\link{coastline-class}}.
-#' @param subset An expression indicating how to subset \code{x}.
-#' @param ... Ignored.
+#'
+#' @param subset An expression indicating how to subset \code{x}. See \dQuote{Details}.
+#'
+#' @param ... optional additional arguments, the only one of which is considered
+#' is one named \code{debug}, an integer that controlls the level of debugging. If
+#' this is not supplied, \code{debug} is assumed to be 0, meaning no debugging. If
+#' it is 1, the steps of determining the bounding box are shown. If it is 2 or larger,
+#' then additional processing steps are shown, including the extraction of every
+#' polygon involved in the final result.
+#'
 #' @return A \code{coastline} object.
+#'
 #' @author Dan Kelley
-#' @family things related to \code{coastline} data
-#' @family functions that subset \code{oce} objects
+#'
+#' @examples
+#'\donttest{
+#' library(oce)
+#' data(coastlineWorld)
+#' ## Eastern Canada
+#' cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
+#' ## The plot demonstrates that the trimming is as requested.
+#' plot(cl, clon=-65, clat=45, span=6000)
+#' rect(-80, 30, -50, 60, bg="transparent", border="red")
+#'}
+#' @family things related to coastline data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="coastline",
           definition=function(x, subset, ...) {
               if (missing(subset))
                   stop("must give 'subset'")
-              ## FIXME: need the stuff that's below??
-              ###   subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              ###   if (!length(grep("latitude", subsetString)) && !length(grep("longitude", subsetString)))
-              ###       stop("can only subset a coastline by 'latitude' or 'longitude'")
-              keep <- eval(substitute(subset), x@data, parent.frame(2))
+              if (!requireNamespace("raster"))
+                  stop("must install.packages(\"raster\") for coastline subset to work")
+              dots <- list(...)
+              debug <- dots$debug
+              if (is.null(debug))
+                  debug <- options("oceDebug")$debug
+              if (is.null(debug))
+                  debug <- 0
+              ## 's0' is a character string that we decompose to find W, E, S
+              ## and N.  This is done in small steps because that might help in
+              ## locating any bugs that might crop up. Note that the elements
+              ## of the string are broken down to get W, E, S and N, and so
+              ## we must start with some cleanup (e.g. removal of spaces,
+              ## conversion of && to & and <= to <) for the pattern matching
+              ## to work simply.
+              s0 <- deparse(substitute(subset), width.cutoff=500)
+              if (length(grep(">", s0)))
+                  stop("the 'subset' may not contain the character '>'")
+              oceDebug(debug, "s0='", s0, "'\n", sep="")
+              s1 <- gsub(" ", "", s0) # remove all spaces
+              oceDebug(debug, "s1='", s1, "'\n", sep="")
+              s2 <- gsub("&&", "&", gsub("=", "", gsub("[ ]*", "", s1))) # && becomes &
+              oceDebug(debug, "s2='", s2, "'\n", sep="")
+              s3 <- gsub("<=", "<", s2) # <= becomes <
+              oceDebug(debug, "s3='", s3, "'\n", sep="")
+              s4 <- strsplit(s3, "&")[[1]]
+              oceDebug(debug, "s4='", paste(s4, collapse="' '"), "'\n", sep="")
+              E <- W <- S <- N <- NA
+              for (ss in s4) {
+                  s4 <- gsub("<=", "<", ss)
+                  oceDebug(debug, "ss='", ss, "'\n", sep="")
+                  if (length(grep("<lon", s4))) {
+                      oceDebug(debug, "looking for W in '", s4, "'\n", sep="")
+                      W <- as.numeric(strsplit(s4, "<")[[1]][1])
+                  } else if (length(grep("lon[a-z]*<", s4))) {
+                      oceDebug(debug, "looking for E in '", s4, "'\n", sep="")
+                      E <- as.numeric(strsplit(s4, "<")[[1]][2])
+                  } else if (length(grep("<lat", s4))) {
+                      oceDebug(debug, "looking for S in '", s4, "'\n", sep="")
+                      S <- as.numeric(strsplit(s4, "<")[[1]][1])
+                  } else if (length(grep("lat[a-z]*<", s4))) {
+                      oceDebug(debug, "looking for N in '", s4, "'\n", sep="")
+                      N <- as.numeric(strsplit(s4, "<")[[1]][2])
+                  }
+              }
+              if (is.na(W)) stop("could not determine western longitude limit")
+              if (is.na(E)) stop("could not determine eastern longitude limit")
+              if (is.na(S)) stop("could not determine southern latitude limit")
+              if (is.na(N)) stop("could not determine northern latitude limit")
+              oceDebug(debug, "W=", W, ", E=", E, ", S=", S, ", N=", N)
               res <- x
-              res@data$latitude[!keep] <- NA
-              res@data$longitude[!keep] <- NA
-              res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+              ##OLD ## FIXME: this is terrible. We gain nothing i.t.o. speed by merely setting to NA.
+              ##OLD keep <- W<=x@data$longitude & x@data$longitude<=E & S<=x@data$latitude & x@data$latitude<=N
+              ##OLD res@data$latitude[!keep] <- NA
+              ##OLD res@data$longitude[!keep] <- NA
+              NAendpoints <- function(x) {
+                  if (!is.na(x[1]))
+                      x <- c(NA, x)
+                  if (!is.na(x[length(x)]))
+                      x <- c(x, NA)
+                  x
+              }
+              cllon <- x[["longitude"]]
+              cllat <- x[["latitude"]]
+              norig <- length(cllon)
+              box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
+              owarn <- options("warn")$warn
+              options(warn=-1)
+              na <- which(is.na(cllon))
+              nseg <- length(na)
+              nnew <- 0
+              outlon <- NULL
+              outlat <- NULL
+              for (iseg in 2:nseg) {
+                  look <- seq.int(na[iseg-1]+1, na[iseg]-1)
+                  lon <- cllon[look]
+                  if (any(is.na(lon))) stop("step 1: double lon NA at iseg=", iseg) # checks ok on coastlineWorld
+                  lat <- cllat[look]
+                  if (any(is.na(lat))) stop("step 1: double lat NA at iseg=", iseg) # checks ok on coastlineWorld
+                  n <- length(lon)
+                  if (n < 1) stop("how can we have no data?")
+                  if (length(lon) > 1) {
+                      A <- sp::Polygon(cbind(lon, lat))
+                      B <- sp::Polygons(list(A), "A")
+                      C <- sp::SpatialPolygons(list(B))
+                      i <- raster::intersect(box, C)
+                      if (!is.null(i)) {
+                          for (j in seq_along(i@polygons)) {
+                              for (k in seq_along(i@polygons[[1]]@Polygons)) {
+                                  xy <- i@polygons[[j]]@Polygons[[k]]@coords
+                                  seglon <- xy[, 1]
+                                  seglat <- xy[, 2]
+                                  nnew <- nnew + length(seglon)
+                                  outlon <- c(outlon, NA, seglon)
+                                  outlat <- c(outlat, NA, seglat)
+                                  oceDebug(debug > 1, "iseg=", iseg, ", j=", j, ", k=", k, "\n", sep="")
+                              }
+                          }
+                      }
+                  }
+              }
+              res@data$longitude <- outlon
+              res@data$latitude <- outlat
+              options(warn=owarn)
+              res@processingLog <- processingLogAppend(res@processingLog,
+                                                       paste("subset(x, ", s0, ")", sep=""))
               res
           })
 
@@ -132,7 +265,7 @@ setMethod(f="subset",
 #' call to \code{\link{read.coastline}} or \code{\link{read.oce}}.
 #' @param \dots further arguments passed to or from other methods.
 #' @author Dan Kelley
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 setMethod(f="summary",
           signature="coastline",
           definition=function(object, ...) {
@@ -161,7 +294,7 @@ setMethod(f="summary",
 #' @return An object of \code{\link[base]{class}} \code{"coastline"} (for
 #' details, see \code{\link{read.coastline}}).
 #' @author Dan Kelley
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 as.coastline <- function(longitude, latitude, fillable=FALSE)
 {
     if (missing(longitude)) stop("must provide longitude")
@@ -347,7 +480,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' dealing with them.
 #'
 #' @examples
-#' \dontrun{
+#'\donttest{
 #' library(oce)
 #' par(mar=c(2, 2, 1, 1))
 #' data(coastlineWorld)
@@ -357,10 +490,10 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' ## Canada in Lambert projection
 #' plot(coastlineWorld, clongitude=-95, clatitude=65, span=5500,
 #'      grid=10, projection='+proj=laea +lon_0=-100 +lat_0=55')
-#' }
+#'}
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{coastline} data
+#' @family functions that plot oce data
+#' @family things related to coastline data
 #' @aliases plot.coastline
 setMethod(f="plot",
           signature=signature("coastline"),
@@ -432,7 +565,7 @@ setMethod(f="plot",
                   oceDebug(debug, "plot,coastline-method calling mapPlot (code location 1)\n")
                   mapPlot(x[["longitude"]], x[["latitude"]], projection=projection,
                           longitudelim=longitudelim, latitudelim=latitudelim,
-                          bg=col, fill=fill, border=border, debug=debug-1)
+                          bg=col, col=if (missing(fill)) "lightgray" else fill, border=border, debug=debug-1)
                   return(invisible())
               }
               if (!missing(clongitude))
@@ -740,10 +873,10 @@ setMethod(f="plot",
 #'}
 #'
 #' @references
-#' 1. The NaturalEarth server is at \url{http://www.naturalearthdata.com}
+#' 1. The NaturalEarth server is at \url{https://www.naturalearthdata.com}
 #'
 #' @family functions that download files
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 download.coastline <- function(resolution, item="coastline",
                            destdir=".", destfile,
                            server="naturalearth",
@@ -755,7 +888,7 @@ download.coastline <- function(resolution, item="coastline",
     if (!(resolution %in% resolutionChoices))
         stop("'resolution' must be one of: '", paste(resolutionChoices, collapse="' '"), "'")
     if (server == "naturalearth")
-        urlBase <- "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download"
+        urlBase <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download"
     else
         stop("the only server that works is naturalearth")
     filename <- paste("ne_", resolution, "_", item, ".zip", sep="")
@@ -770,7 +903,7 @@ download.coastline <- function(resolution, item="coastline",
         oceDebug(debug, "Downloaded file stored as '", destination, "'\n", sep="")
     }
     ## The following is a sample URL, from which I reverse-engineered the URL construction.
-    ##    http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/50m/physical/ne_50m_lakes.zip
+    ##    https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/50m/physical/ne_50m_lakes.zip
     destination
 }
 
@@ -902,11 +1035,11 @@ read.coastline <- function(file,
 #' Technical Description}, March 1998, available at
 #' \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
 #'
-#' \item 2. The NaturalEarth website \url{http://www.naturalearthdata.com/downloads}
+#' \item 2. The NaturalEarth website \url{https://www.naturalearthdata.com/downloads}
 #' provides coastline datasets in three resolutions, along with similar files
 #' lakes and rivers, for borders, etc. It is highly recommended.
 #'}
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90),
                                      debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
@@ -1111,7 +1244,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
 #' @inheritParams read.coastline.shapefile
 #' @return An object of \code{\link{coastline-class}}
 #' @author Dan Kelley
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90),
                                      debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
@@ -1188,13 +1321,16 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90
 #' processing.
 #' @return The name of a coastline that can be loaded with \code{data()}.
 #' @author Dan Kelley
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "coastlineBest(lonRange=c(", paste(round(lonRange, 2), collapse=","),
-             "), latRange=c(", paste(round(latRange, 2), collapse=","),
-             "), span=", if (missing(span)) "(missing)" else span,
-             ", debug=", debug, ") {\n", sep="", unindent=1)
+    oceDebug(debug, "coastlineBest(",
+             "lonRange=c(", 
+             if (missing(lonRange)) "missing" else paste(round(lonRange, 2), collapse=","), "), ",
+             "latRange=c(",
+             if (missing(latRange)) "missing" else paste(round(latRange, 2), collapse=","), "), ",
+             "span=", if (missing(span)) "(missing)" else span, ", ",
+             "debug=", debug, ") {\n", sep="", unindent=1)
     if (missing(span)) {
         if (missing(lonRange) || missing(latRange))
             return("coastlineWorld")
@@ -1244,17 +1380,19 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #'
 #' @param coastline original coastline object
 #' @param lon_0 longitude as would be given in a \code{+lon_0=} item in a
-#' call to \link[rgdal]{project} in the \CRANpkg{rgdal} package.
+#' call to the \code{\link[rgdal]{project}} function in the
+#' \CRANpkg{rgdal} package.
 #'
 #' @examples
+#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
-#' \dontrun{
-#' mapPlot(coastlineCut(coastlineWorld, lon_0=100), proj="+proj=robin +lon_0=100")#, col='gray')
-#' }
+#' mapPlot(coastlineCut(coastlineWorld, lon_0=100),
+#'         proj="+proj=moll +lon_0=100", col='gray')
+#'}
 #'
 #' @return a new coastline object
-#' @family things related to \code{coastline} data
+#' @family things related to coastline data
 coastlineCut <- function(coastline, lon_0=0)
 {
     if (lon_0 == 0)

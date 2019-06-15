@@ -52,7 +52,7 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
+Other functions that replace parts of oce objects: \code{\link{[[<-,adp-method}},
   \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -75,11 +75,12 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
 
-Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
+Other things related to lobo data: \code{\link{[[,lobo-method}},
   \code{\link{as.lobo}}, \code{\link{lobo-class}},
   \code{\link{lobo}}, \code{\link{plot,lobo-method}},
+  \code{\link{read.lobo}},
   \code{\link{subset,lobo-method}},
   \code{\link{summary,lobo-method}}
 }
-\concept{functions that replace parts of \code{oce} objects}
-\concept{things related to \code{lobo} data}
+\concept{functions that replace parts of oce objects}
+\concept{things related to lobo data}

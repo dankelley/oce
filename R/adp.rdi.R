@@ -64,7 +64,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     } else {
         isSentinel <- FALSE
     }
-    oceDebug(debug, "isSentinel=", isSentinel, "*as inferred from whether have 0x00 0x70 ID)")
+    oceDebug(debug, "isSentinel=", isSentinel, " as inferred from whether we have 0x00 0x70 ID\n")
     ##
     ## Fixed Leader Data, abbreviated FLD, pointed to by the dataOffset
     FLD <- buf[dataOffset[1]+1:(dataOffset[2] - dataOffset[1])]
@@ -222,7 +222,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ## "WorkHorse Commands and Output Data Format_Mar05.pdf" p130: bytes 55:58 = serialNumber only for REMUS, else spare
     ## "WorkHorse Commands and Output Data Format_Nov07.pdf" p127: bytes 55:58 = serialNumber
     serialNumber <- readBin(FLD[55:58], "integer", n=1, size=4, endian="little")
-    oceDebug(debug, "serialNumber", serialNumber, "from bytes (", FLD[55:58], ")\n")
+    oceDebug(debug, "serialNumber=", serialNumber, ", based on bytes 55:58 of the Fixed Leader Header, which are: 0x", FLD[55], " 0x", FLD[56], " 0x", FLD[57], " 0x", FLD[58], "\n", sep="")
     if (serialNumber == 0)
         serialNumber <- "unknown"
     ##beamAngle <- readBin(FLD[59], "integer", n=1, size=1) # NB 0 in first test case
@@ -407,6 +407,73 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
 #' anomalous spikes in heading, etc.
 #'
+#' @section Names of items in data slot:
+#'
+#' The names of items in the \code{data} slot are below. Not all items are present
+#' for ll file varieties; use \code{\link{names}(d[["data"]])} to determine the
+#' names used in an object named \code{d}. In this list, items are either
+#' a vector (with one sample per time of measurement), a 
+#' ``matrix'' with first index for time and second for bin number,
+#' or an ``array'' with first index for time, second for bin number,
+#' and third for beam number. (Items are of vector type, unless
+#' otherwise indicated.)
+#'
+#' \strong{\code{a}}=signal amplitude array [units?];
+#' \strong{\code{ambientTemp}}=ambient temperature [degC];
+#' \strong{\code{attitude}}=attitude [deg];
+#' \strong{\code{attitudeTemp}}=XXX;
+#' \strong{\code{avgMagnitudeVelocityEast}}=XXX;
+#' \strong{\code{avgMagnitudeVelocityNorth}}=XXX;
+#' \strong{\code{avgSpeed}}=XXX;
+#' \strong{\code{avgTrackMagnetic}}=XXX;
+#' \strong{\code{avgTrackTrue}}=XXX;
+#' \strong{\code{avgTrueVelocityEast}}=XXX;
+#' \strong{\code{avgTrueVelocityNorth}}=XXX;
+#' \strong{\code{br}}=bottom range matrix [m];
+#' \strong{\code{bv}}=bottom velocity matrix [m/s];
+#' \strong{\code{contaminationSensor}}=XXX;
+#' \strong{\code{depth}}=depth [m];
+#' \strong{\code{directionMadeGood}}=XXX;
+#' \strong{\code{distance}}=XXX;
+#' \strong{\code{firstLatitude}}=latitude at start of profile [deg];
+#' \strong{\code{firstLongitude}}=longitude at start of profile [deg];
+#' \strong{\code{firstTime}}=XXX;
+#' \strong{\code{g}}=data goodness matrix [units?];
+#' \strong{\code{heading}}=instrument heading [degrees];
+#' \strong{\code{headingStd}}=instrument heading std-dev [deg];
+#' \strong{\code{lastLatitude}}=latitude at end of profile [deg];
+#' \strong{\code{lastLongitude}}=longitude at end of profile [deg];
+#' \strong{\code{lastTime}}=XXX;
+#' \strong{\code{numberOfHeadingSamplesAveraged}}=XXX;
+#' \strong{\code{numberOfMagneticTrackSamplesAveraged}}=XXX;
+#' \strong{\code{numberOfPitchRollSamplesAveraged}}=XXX;
+#' \strong{\code{numberOfSpeedSamplesAveraged}}=XXX;
+#' \strong{\code{numberOfTrueTrackSamplesAveraged}}=XXX;
+#' \strong{\code{pitch}}=instrument pitch [deg];
+#' \strong{\code{pitchStd}}=instrument pitch std-dev [deg];
+#' \strong{\code{pressure}}=pressure [dbar];
+#' \strong{\code{pressureMinus}}=XXX;
+#' \strong{\code{pressurePlus}}=XXX;
+#' \strong{\code{pressureStd}}=pressure std-dev [dbar];
+#' \strong{\code{primaryFlags}}=XXX;
+#' \strong{\code{q}}=data quality array;
+#' \strong{\code{roll}}=instrument roll [deg];
+#' \strong{\code{rollStd}}=instrument roll std-dev [deg];
+#' \strong{\code{salinity}}=salinity;
+#' \strong{\code{shipHeading}}=ship heading [deg];
+#' \strong{\code{shipPitch}}=ship pitch [deg];
+#' \strong{\code{shipRoll}}=ship roll [deg];
+#' \strong{\code{soundSpeed}}=sound speed [m/s];
+#' \strong{\code{speedMadeGood}}=speed over ground (?) [m/s];
+#' \strong{\code{speedMadeGoodEast}}=XXX;
+#' \strong{\code{speedMadeGoodNorth}}=XXX;
+#' \strong{\code{temperature}}=temperature [degC];
+#' \strong{\code{time}}=profile time [POSIXct];
+#' \strong{\code{v}}=velocity array [m/s];
+#' \strong{\code{xmitCurrent}}=transmit current [unit?];
+#' and
+#' \strong{\code{xmitVoltage}}=transmit voltage.
+#'
 #' @section Memory considerations:
 #'
 #' For \code{RDI} files only, and only in the case where \code{by} is not specified,
@@ -461,6 +528,10 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' is shown.
 #'
 #' @author Dan Kelley and Clark Richards
+#'
+#' @examples
+#' adp <- read.adp.rdi(system.file("extdata", "adp_rdi.000", package="oce"))
+#' summary(adp)
 #'
 #' @references
 #' 1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
@@ -535,7 +606,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'   06     00           06     01    Bottom Track Data
 #'   20     00           20     00    Navigation
 #'   30     00           30     00    Binary Fixed Attitude
-#'   30  40-F0           30  40–F0    Binary Variable Attitude
+#'   30  40-F0           30  40-F0    Binary Variable Attitude
 #' }
 #' \item
 #' Table 6 on p90 of [4] lists "Fixed Leader Navigation" ID
@@ -598,7 +669,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'}
 #' can be a good way to narrow in on problems.
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          longitude=NA, latitude=NA,
                          type=c("workhorse"),
@@ -607,12 +678,12 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          debug=getOption("oceDebug"),
                          ...)
 {
-    warningBinaryFixedAttitudeCount <- 0
+    ##. warningBinaryFixedAttitudeCount <- 0
     warningUnknownCode <- list()
     fromGiven <- !missing(from) # FIXME document THIS
     toGiven <- !missing(to) # FIXME document THIS
     byGiven <- !missing(by) # FIXME document THIS
-    oceDebug(debug, "read.adp.rdi(...",
+    oceDebug(debug, "read.adp.rdi(\"", file, "\"",
              ", from=", if (fromGiven) format(from) else "(missing)",
              ", to=", if (toGiven) format(to) else "(missing)",
              ", by=", if (byGiven) format(by) else "(missing)",
@@ -832,7 +903,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         if (any(profileStart < 1))
             stop("difficulty detecting ensemble (profile) start indices")
         # offset for data type 1 (velocity)
-        oceDebug(debug, vectorShow(profileStart, "profileStart before trimming:"))
+        oceDebug(debug, vectorShow(profileStart, "profileStart before trimming"))
         profilesInFile <- length(profileStart)
         oceDebug(debug, "profilesInFile=", profilesInFile, "\n")
         if (profilesInFile > 0)  {
@@ -1124,7 +1195,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
 
             oceDebug(debug, "profilesToRead=", profilesToRead, "\n")
             unhandled <- list(xxGGA=0, xxVTA=0, xxGSA=0)
-            unknownWarningCount <- 0
+            ##. unknownWarningCount <- 0
             nmea <- NULL
             nmeaLen <- 0
             for (i in 1:profilesToRead) {
@@ -1745,7 +1816,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                oceDebug(debug, "creating data slot for a file with bFound&&isVMDAS\n")
                br[br == 0.0] <- NA    # clean up (not sure if needed)
                res@data <- list(v=v, q=q, a=a, g=g,
-                                br=br, bv=bv,
+                                br=br, bv=bv, bc=bc, ba=ba, bg=bg,
                                 distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
                                 time=time,
                                 pressure=pressure,

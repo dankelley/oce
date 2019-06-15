@@ -202,14 +202,7 @@ function \code{\link{decimate}}.  Images may be subsetted with
 
 \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 
-Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
-  \code{\link{[[<-,landsat-method}},
-  \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
-  \code{\link{landsat}}, \code{\link{plot,landsat-method}},
-  \code{\link{read.landsat}},
-  \code{\link{summary,landsat-method}}
-
-Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
+Other things related to landsat data: \code{\link{[[,landsat-method}},
   \code{\link{[[<-,landsat-method}},
   \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
   \code{\link{landsat}}, \code{\link{plot,landsat-method}},
@@ -220,4 +213,4 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
 Dan Kelley and Clark Richards
 }
 \concept{satellite}
-\concept{things related to \code{landsat} data}
+\concept{things related to landsat data}

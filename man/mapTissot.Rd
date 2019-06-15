@@ -34,7 +34,7 @@ The purpose and interpretation are outlined in [1], but should also be
 self-explanatory.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 par(mfrow=c(1, 1), mar=c(2, 2, 1, 1))
@@ -43,11 +43,12 @@ mapPlot(coastlineWorld, projection=p, col="gray",
 longitudelim=c(-90,0), latitudelim=c(0, 50))
 mapTissot(c(15, 15), col='red')
 }
+
 }
 \references{
 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 Professional Paper: 1395 (available at
-\url{pubs.usgs.gov/pp/1395/report.pdf}).
+\url{https://pubs.er.usgs.gov/publication/pp1395}).
 }
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.

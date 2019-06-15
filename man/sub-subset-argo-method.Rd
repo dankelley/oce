@@ -52,7 +52,7 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
+Other functions that replace parts of oce objects: \code{\link{[[<-,adp-method}},
   \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,bremen-method}},
   \code{\link{[[<-,cm-method}},
@@ -75,7 +75,7 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
 
-Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+Other things related to argo data: \code{\link{[[,argo-method}},
   \code{\link{argo-class}}, \code{\link{argoGrid}},
   \code{\link{argoNames2oceNames}}, \code{\link{argo}},
   \code{\link{as.argo}},
@@ -84,5 +84,5 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }
-\concept{functions that replace parts of \code{oce} objects}
-\concept{things related to \code{argo} data}
+\concept{functions that replace parts of oce objects}
+\concept{things related to argo data}

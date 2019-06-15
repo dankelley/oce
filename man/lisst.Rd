@@ -16,7 +16,7 @@ LISST (Laser in-situ scattering and transmissometry) dataset, constructed
 artificially.
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
@@ -29,4 +29,4 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
 \author{
 Dan Kelley
 }
-\concept{datasets provided with \code{oce}}
+\concept{datasets provided with oce}

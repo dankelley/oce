@@ -72,7 +72,9 @@ test_that("three methods for specifying units", {
 
 test_that("can use original names", {
           data("ctd")
-          expect_equal(ctd[["time"]], as.POSIXct("2003-10-15 11:38:38", tz="UTC"))
+          ## next two tests relate to issues 1460 and 1547
+          expect_equal(diff(ctd[["timeS"]]), diff(as.numeric(ctd[["time"]])))
+          expect_equal(length(ctd[["time"]]), length(ctd[["pressure"]])) # 1460,1547
           expect_equal(ctd[["pressure"]], ctd[["pr"]])
           expect_equal(ctd[["depth"]], ctd[["depS"]])
           expect_equal(ctd[["temperature"]], T90fromT68(ctd[["t068"]]))
@@ -101,6 +103,25 @@ test_that("accessor operations (ctd)", {
           expect_equal(head(SS), 0.01 + c(29.9210, 29.9205, 29.9206, 29.9219, 29.9206, 29.9164))
           ctd[["SS"]] <- SS
           expect_equal(head(ctd[["SS"]]), 0.01 + c(29.9210, 29.9205, 29.9206, 29.9219, 29.9206, 29.9164))
+})
+
+## accessors to metadata or data
+## https://github.com/dankelley/oce/issues/1554
+test_that("accessor operations, specifying data or metadata", {
+          data(ctd)
+          expect_equal(ctd[["longitude"]], ctd[["longitude", "metadata"]])
+          expect_null(ctd[["longitude", "data"]])
+          expect_equal(ctd[["temperature"]], ctd[["temperature", "data"]])
+          expect_equal(ctd[["salinity"]], ctd[["salinity", "data"]])
+          expect_equal(ctd[["salinity"]], ctd[["sal00", "data"]]) # originalName
+          ## Now, create something with conflicts
+          o <- new("oce")
+          o <- oceSetMetadata(o, "foo", "metadataBar")
+          o <- oceSetData(o, "foo", "dataBar")
+          expect_equal(o[["foo"]], "metadataBar")
+          expect_equal(o[["foo", "metadata"]], "metadataBar")
+          expect_equal(o[["foo", "data"]], "dataBar")
+          expect_error(o[["foo","unknown"]], "second arg must be")
 })
 
 test_that("derived quantities handled properly (ctd)", {

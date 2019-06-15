@@ -26,7 +26,7 @@ Plot lines on an existing map
 Adds lines to an existing map, by analogy to \code{\link{lines}}.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',

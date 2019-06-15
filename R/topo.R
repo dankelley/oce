@@ -22,23 +22,42 @@
 #'
 #' @author Dan Kelley
 #'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{topo} data
+#' @family classes provided by oce
+#' @family things related to topo data
 setClass("topo", contains="oce")
 
 #' @title Global Topographic Dataset at Half-degree Resolution
 #'
 #' @description
-#' Global topographic dataset at half-degree resolution, created by decimating the
-#' ETOPO5 dataset.  Its longitude ranges from -179.5 to 180, and its latitude
-#' ranges from -89.5 to 90.  Height is measured in metres above nominal sea level.
+#' Global topographic dataset at half-degree resolution, downloaded from
+#' a NOAA server on May 18, 2019.  Longitude, accessible as
+#' \code{topoWorld[["longitude"]]}, ranges from -179.75 to 129.75 degrees north.
+#' Latitude (\code{topoWorld[["latitude"]]}) ranges from -89.75 to 89.75 degrees east.
+#' Height (\code{topoWorld[["z"]]}) is measured in metres above nominal sea level.
 #'
 #' The coarse resolution can be a problem in plotting depth contours along with
 #' coastlines in regions of steep topography. For example, near the southeast
 #' corner of Newfoundland, a 200m contour will overlap a coastline drawn with
 #' \code{\link[ocedata]{coastlineWorldFine}}. The solution in such cases is to
-#' download a higher-resolution topography file and create a \code{topo} object
-#' with \code{\link{read.topo}} or \code{\link{as.topo}}.
+#' download a higher-resolution topography file, perhaps using
+#' \code{\link{download.topo}}, and then use \code{\link{read.topo}}
+#' to create another \code{topo} object.  (With other data
+#' sources, \code{\link{as.topo}} may be helpful.)
+#'
+#' @section Historical note:
+#' From late 2009 until May 18, 2019, the \code{topoWorld} dataset was created
+#' with a fairly complicated code that read a binary file downloaded from NOAA
+#' (\samp{http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5}),
+#' decoded, decimated from 1/12th degree resolution to 1/2 degree resolution, and
+#' passed through \code{\link{matrixShiftLongitude}} to put longitude
+#' between -180 and 180 degrees. The new scheme for creating the dataset,
+#' (see \dQuote{Source}) is much simpler, and also a much better model
+#' of how users are likely to deal with topography files in the more
+#' modern netCDF format. Note that the new version differs from the old one
+#' in longitude and latitude being shifted by 1/4 degree,
+#' and by a mean  elevation difference of under 10m. The old and new
+#' versions appear identical when plotted at the global scale that is
+#' the recommended for such a coarse topographic file.
 #'
 #' @name topoWorld
 #' @docType data
@@ -46,23 +65,23 @@ setClass("topo", contains="oce")
 #' @usage data(topoWorld)
 #'
 #' @source
-#' The binary ETOPO5 dataset was downloaded in late 2009 from the NOAA website,
-#' \samp{http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5},
-#' decoded, decimated from 1/12th degree resolution to 1/2 degree resolution, and
-#' passed through \code{\link{matrixShiftLongitude}} so that longitude is
-#' between -180 and 180 degrees.
+#' This is created with \code{\link{read.topo}}, using a file downloaded with
+#'\preformatted{
+#'topoFile <- download.topo(west=-180, east=180, south=-90, north=90,
+#'                          resolution=30, format="netcdf", destdir=".")
+#'}
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' data(topoWorld)
 #' par(mfrow=c(2, 1))
 #' plot(topoWorld, location=NULL)
 #' imagep(topoWorld)
-#' }
+#'}
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{topo} data
+#' @family datasets provided with oce
+#' @family things related to topo data
 NULL
 
 setMethod(f="initialize",
@@ -73,7 +92,7 @@ setMethod(f="initialize",
               if (!missing(z)) .Object@data$z <- z
               if (!missing(units)) .Object@metadata$units <- units
               .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'topo' object"
               return(.Object)
           })
@@ -98,7 +117,7 @@ setMethod(f="initialize",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 setMethod(f="summary",
           signature="topo",
           definition=function(object, ...) {
@@ -117,7 +136,7 @@ setMethod(f="summary",
 #' There are no special features for \code{\link{topo-class}} data;
 #' the general method is used directly.
 #' @template sub_subTemplate
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 setMethod(f="[[",
           signature(x="topo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -126,7 +145,7 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a Topo Object
 #' @param x An \code{topo} object, i.e. inheriting from \code{\link{topo-class}}
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="topo", i="ANY", j="ANY"),
@@ -158,8 +177,8 @@ setMethod(f="[[<-",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{topo} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to topo data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="topo",
           definition=function(x, subset, ...) {
@@ -294,7 +313,7 @@ setMethod(f="subset",
 #' [access date: Aug 30, 2017].
 #'
 #' @family functions that download files
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 download.topo <- function(west, east, south, north, resolution,
                            destdir, destfile, format,
                            server, debug=getOption("oceDebug"))
@@ -392,7 +411,7 @@ download.topo <- function(west, east, south, north, resolution,
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 topoInterpolate <- function(longitude, latitude, topo)
 {
     if (missing(longitude)) stop("must supply longitude")
@@ -490,8 +509,8 @@ topoInterpolate <- function(longitude, latitude, topo)
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{topo} data
+#' @family functions that plot oce data
+#' @family things related to topo data
 #' @aliases plot.topo
 setMethod(f="plot",
           signature=signature("topo"),
@@ -810,19 +829,21 @@ setMethod(f="plot",
 #'
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' topoMaritimes <- read.topo("topoMaritimes.asc")
 #' plot(topographyMaritimes)
-#' }
+#'}
 #'
 #' @author Dan Kelley
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 read.topo <- function(file, debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "read.topo(file=\"", file, "\") {\n", sep="", unindent=1)
     ## handle GEBCO netcdf files or an ascii format
     dataNamesOriginal <- list()
     if (is.character(file) && length(grep(".nc$", file))) {
+        oceDebug(debug, "this is a netcdf file\n")
         if (!requireNamespace("ncdf4", quietly=TRUE)) {
             stop('must install.packages("ncdf4") to read topo data from a NetCDF file')
         } else {
@@ -832,12 +853,14 @@ read.topo <- function(file, debug=getOption("oceDebug"))
             ncdf <- ncdf4::nc_open(file)
             dataNamesOriginal <- list()
             if ("Band1" %in% names(ncdf$var)) {
+                oceDebug(debug, "file has a variable named 'Band1', so reading longitude as 'lon', latitude as 'lat', and z as 'Band1'\n")
                 z <- ncdf4::ncvar_get(ncdf, "Band1")
-                longitude <- ncdf4::ncvar_get(ncdf, "lon")
-                latitude <- ncdf4::ncvar_get(ncdf, "lat")
+                longitude <- as.vector(ncdf4::ncvar_get(ncdf, "lon"))
+                latitude <- as.vector(ncdf4::ncvar_get(ncdf, "lat"))
                 dataNamesOriginal <- list(longitude="lon", latitude="lat", z="Band1")
                 ##cat(vectorShow(longitude, "longitude in reading Band1"))
             } else {
+                oceDebug(debug, "file has no variable named 'Band1', so computing longitude and latitude from 'x_range' and 'y_range' together with 'spacing', and reading z as 'z'\n")
                 xrange <- ncdf4::ncvar_get(ncdf, "x_range")
                 yrange <- ncdf4::ncvar_get(ncdf, "y_range")
                 ##zrange <- ncdf4::ncvar_get(ncdf, "z_range")
@@ -853,16 +876,19 @@ read.topo <- function(file, debug=getOption("oceDebug"))
             ## FIXME(DK 2016-08-20): Sometimes length is off by 1. I'm not sure why, and
             ## FIXME(DK 2016-08-20): this should be figured out by inspection of files.
             if (length(longitude) == dim(z)[1]+1) {
+                oceDebug(debug, "offsetting longitude of a netcdf topo file by half a step\n")
                 warning("offsetting longitude of a netcdf topo file by half a step")
                 longitude <- longitude[-1] - diff(longitude[1:2])/2
             }
             if (length(latitude) == dim(z)[2]+1) {
+                oceDebug(debug, "offsetting latitude of a netcdf topo file by half a step")
                 warning("offsetting latitude of a netcdf topo file by half a step")
                 latitude <- latitude[-1] - diff(latitude[1:2])/2
             }
             res <- as.topo(longitude, latitude, z, filename=file)
         }
     } else {
+        oceDebug(debug, "this is an ASCII (text) file\n")
         ## ASCII
         ## NOTE: on 2014-11-13 it came to light that the old dataset website
         ##          http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html
@@ -899,6 +925,7 @@ read.topo <- function(file, debug=getOption("oceDebug"))
     res@metadata$dataNamesOriginal <- dataNamesOriginal
     res@processingLog <- processingLogAppend(res@processingLog,
                                               paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # read.topo\n", sep="", unindent=1)
     res
 }
 
@@ -919,7 +946,7 @@ read.topo <- function(file, debug=getOption("oceDebug"))
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{topo} data
+#' @family things related to topo data
 as.topo <- function(longitude, latitude, z, filename="")
 {
     if (inherits(longitude, "bathy")) {

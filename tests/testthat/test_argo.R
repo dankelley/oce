@@ -4,6 +4,41 @@ data(argo)
 
 context("Argo")
 
+test_that("global attributes in metadata", {
+          expect_equal(argo[["title"]], "Argo float vertical profile")
+          expect_equal(argo[["institution"]], "FR GDAC")
+          expect_equal(argo[["source"]], "Argo float")
+          expect_equal(argo[["history"]], "2017-07-07T15:50:34Z creation")
+          expect_equal(argo[["references"]], "http://www.argodatamgt.org/Documentation")
+          expect_equal(argo[["userManualVersion"]], "3.1")
+          expect_equal(argo[["conventions"]], "Argo-3.1 CF-1.6")
+          expect_equal(argo[["featureType"]], "trajectoryProfile")
+})
+
+test_that("[[,argo-method", {
+          options(oceEOS="gsw")
+          expect_equal(argo[["SA"]][1:2,1:2],
+                       structure(c(35.3509423279029, 35.3529478543978, 35.3600216239489,
+                                   35.3600133661509), .Dim=c(2L, 2L)))
+          expect_equal(argo[["CT"]][1:2,1:2],
+                       structure(c(9.69604608349391, 9.69651156306521, 9.58902309316286,
+                                   9.58644078639155), .Dim=c(2L, 2L)))
+          expect_equal(argo[["sigmaTheta"]][1:2,1:2],
+                       structure(c(27.1479134860076, 27.1493888071818, 27.172918709517,
+                                   27.173344472757), .Dim=c(2L, 2L)))
+          expect_equal(argo[["theta"]][1:2,1:2],
+                       structure(c(9.70945684069746, 9.70995897509861, 9.60251640507005,
+                                   9.59993195546977), .Dim=c(2L, 2L)))
+          ## test two ways of selecting by profile sequence number. We do not
+          ## test for equality of the whole objects, because the processingLog
+          ## slots are different.
+          sub1 <- argo[["profile", 2:3]]
+          sub2 <- subset(argo, profile %in% 2:3)
+
+          expect_equal(sub1[["metadata"]], sub2[["metadata"]])
+          expect_equal(sub1[["data"]], sub2[["data"]])
+})
+
 test_that("subset(argo, within=(POLYGON))", {
           ## Labrador Sea (this test will fail if data(argo) is changed)
           nold <- 223
@@ -21,9 +56,9 @@ test_that("subset(argo, within=(POLYGON))", {
 
 test_that("subset.argo(argo, \"adjusted\") correctly alters metadata and data", {
           a <- subset(argo, "adjusted")
-          expect_equal(a@metadata$flags$pressureQc, argo@metadata$flags$pressureAdjustedQc)
-          expect_equal(a@metadata$flags$temperatureQc, argo@metadata$flags$temperatureAdjustedQc)
-          expect_equal(a@metadata$flags$salinityQc, argo@metadata$flags$salinityAdjustedQc)
+          expect_equal(a@metadata$flags$pressureQC, argo@metadata$flags$pressureAdjustedQC)
+          expect_equal(a@metadata$flags$temperatureQC, argo@metadata$flags$temperatureAdjustedQC)
+          expect_equal(a@metadata$flags$salinityQC, argo@metadata$flags$salinityAdjustedQC)
           expect_equal(a@metadata$flags$pressure, argo@metadata$flags$pressureAdjusted)
           expect_equal(a@metadata$flags$salinity, argo@metadata$flags$salinityAdjusted)
           expect_equal(a@metadata$flags$temperature, argo@metadata$flags$temperatureAdjusted)

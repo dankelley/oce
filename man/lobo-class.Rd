@@ -63,7 +63,7 @@ to find items more directly, using \code{\link{oceGetData}} and
 }
 
 \seealso{
-Other classes provided by \code{oce}: \code{\link{adp-class}},
+Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
@@ -73,14 +73,15 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
-Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
+Other things related to lobo data: \code{\link{[[,lobo-method}},
   \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},
   \code{\link{lobo}}, \code{\link{plot,lobo-method}},
+  \code{\link{read.lobo}},
   \code{\link{subset,lobo-method}},
   \code{\link{summary,lobo-method}}
 }
 \author{
 Dan Kelley
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{lobo} data}
+\concept{classes provided by oce}
+\concept{things related to lobo data}

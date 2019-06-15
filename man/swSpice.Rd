@@ -4,7 +4,9 @@
 \alias{swSpice}
 \title{Seawater spiciness}
 \usage{
-swSpice(salinity, temperature = NULL, pressure = NULL)
+swSpice(salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS",
+  default = "gsw"))
 }
 \arguments{
 \item{salinity}{either salinity [PSU] (in which case \code{temperature} and
@@ -16,30 +18,69 @@ from the object, and must not be provided in the argument list).}
 ITS-90 scale; see \dQuote{Temperature units} in the documentation for
 \code{\link{swRho}}.}
 
-\item{pressure}{seawater pressure [dbar]}
+\item{pressure}{Seawater pressure [dbar] (only used if \code{eos} is
+\code{"gsw"}); see \sQuote{Details}..}
+
+\item{longitude}{longitude of observation (only used if \code{eos} is
+\code{"gsw"}; see \sQuote{Details}).}
+
+\item{latitude}{latitude of observation (only used if \code{eos} is
+\code{"gsw"}; see \sQuote{Details}).}
+
+\item{eos}{Character value specifying the equation of state,
+either \code{"unesco"} (for the Flament formulation, although this
+is not actually part of UNESCO)
+or \code{"gsw"} for the Gibbs SeaWater formulation.}
 }
 \value{
-Spice [kg/m\eqn{^3}{^3}].
+Flament-formulated spice \eqn{kg/m^3} if \code{eos} is \code{"unesco"}
+or surface-referenced GSW spiciness0 \eqn{kg/m^3} if \code{eos} is \code{"gsw"},
+the latter provided by \code{\link[gsw]{gsw_spiciness0}}, and hence aimed
+at application within the top half-kilometre of the ocean.
 }
 \description{
-Compute seawater "spice" (a variable orthogonal to density in TS space).
+Compute seawater "spice", also called "spiciness" (a variable orthogonal
+to density in TS space), in either of two formulations, depending on
+the value of the \code{eos} argument. If \code{eos="unesco"} then
+Flament's [reference 1] formulation is used. If \code{eos="gsw"}
+then the Gibbs SeaWater formulation for "spiciness0" is used
+[reference 2].
 }
 \details{
 If the first argument is a \code{ctd} object, then salinity, temperature and
-pressure values are extracted from it, and used for the calculation.
+pressure values are extracted from it, and used for the calculation. (For
+the \code{eos="gsw"} case, longitude and latitude are also extacted, because
+these are required for the formulation of spiciness0.
 
 Roughly speaking, seawater with a high spiciness is relatively warm and
 salty compared with less spicy water. Another interpretation is that spice
 is a variable measuring distance orthogonal to isopycnal lines on TS
 diagrams (if the diagrams are scaled to make the isopycnals run at 45
-degrees). The definition used here is that of Pierre Flament. (Other
-formulations exist.)  Note that pressure is ignored in the definition.
-Spiciness is sometimes denoted \eqn{\pi(S,t,p)}{pi(S,t,p)}.
+degrees). Note that pressure, longitude and latitude are all
+ignored in the Flament definition.
+}
+\examples{
+## Contrast the two formulations.
+library(oce)
+data(ctd)
+p <- ctd[["pressure"]]
+plot(swSpice(ctd, eos="unesco"), p,
+     xlim=c(-2.7, -1.5), ylim=rev(range(p)),
+     xlab="Spice", ylab="Pressure [dbar]")
+points(swSpice(ctd, eos="gsw"), p,col=2)
+mtext("black=unesco, red=gsw")
+
 }
 \references{
-P. Flament, 2002. A state variable for characterizing water
-masses and their diffusive stability: spiciness.  \emph{Progr. Oceanog.},
-\bold{54}, 493-501.
+1. Flament, P. \dQuote{A State Variable for Characterizing Water Masses and Their
+Diffusive Stability: Spiciness.} Progress in Oceanography, Observations of the
+1997-98 El Nino along the West Coast of North America, 54, no. 1
+(July 1, 2002):493–501.
+\url{https://doi.org/10.1016/S0079-6611(02)00065-4}
+
+2.McDougall, Trevor J., and Oliver A. Krzysik. \dQuote{Spiciness.}
+Journal of Marine Research 73, no. 5 (September 1, 2015): 141–52.
+\url{https://doi.org/10.1357/002224015816665589}
 }
 \seealso{
 Other functions that calculate seawater properties: \code{\link{T68fromT90}},
@@ -64,6 +105,7 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swZ}}
 }
 \author{
-Dan Kelley
+Dan Kelley coded this, merely an interface to the code describd
+by [1] and [2].
 }
 \concept{functions that calculate seawater properties}

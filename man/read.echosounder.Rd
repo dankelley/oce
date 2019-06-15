@@ -51,7 +51,7 @@ angle data being ignored.
 
 \references{
 Various echosounder instruments provided by BioSonics are
-described at the company website, \url{http://www.biosonicsinc.com/}.  The
+described at the company website, \url{https://www.biosonicsinc.com/}.  The
 document listed as [1] below was provided to the author of this function in
 November 2011, which suggests that the data format was not changed since
 July 2010.
@@ -65,7 +65,7 @@ The documentation for \code{\link{echosounder-class}} explains the
 structure of \code{ctd} objects, and also outlines the other functions
 dealing with them.
 
-Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
+Other things related to echosounder data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},
   \code{\link{as.echosounder}},
   \code{\link{echosounder-class}},
@@ -77,4 +77,4 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
 \author{
 Dan Kelley, with help from Clark Richards
 }
-\concept{things related to \code{echosounder} data}
+\concept{things related to echosounder data}

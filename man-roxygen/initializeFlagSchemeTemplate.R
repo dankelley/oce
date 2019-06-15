@@ -71,6 +71,17 @@
 #' flag meaning to flag numerical value, e.g \code{list(good=1, bad=2)}
 #' might be used for a hypothetical class.
 #'
+#' @param default Integer vector of flag values that are not considered
+#' to be good. If this is not provided, but if \code{name} is \code{"argo"},
+#' \code{"BODC"},
+#' \code{"DFO"},
+#' \code{"WHP bottle"}, or
+#' \code{"WHP CTD"}, then a conservative value will be set automatically,
+#' equal to the list of flag values that designate bad or questionable data.
+#' For example, for \code{name="WHP CTD"}, the setting will be
+#' \code{c(1,3,4,5,6,7,9)}, leaving only value \code{2} ("acceptable"
+#' in the notation used for that flag scheme).
+#'
 #' @param debug Integer set to 0 for quiet action or to 1 for some debugging.
 #'
 #' @return An object with the \code{metadata} slot containing \code{flagScheme}.
@@ -89,5 +100,5 @@
 #' \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 #'
 #' @family functions relating to data-quality flags
-#' @family things related to \code{<%=class%>} data
+#' @family things related to <%=class%> data
 

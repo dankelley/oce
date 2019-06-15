@@ -63,7 +63,7 @@ plot(met, which=3:4)
 \url{http://climate.weather.gc.ca/index_e.html}
 }
 \seealso{
-Other things related to \code{met} data: \code{\link{[[,met-method}},
+Other things related to met data: \code{\link{[[,met-method}},
   \code{\link{[[<-,met-method}}, \code{\link{as.met}},
   \code{\link{download.met}}, \code{\link{met-class}},
   \code{\link{met}}, \code{\link{plot,met-method}},
@@ -73,4 +73,4 @@ Other things related to \code{met} data: \code{\link{[[,met-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{met} data}
+\concept{things related to met data}

@@ -34,7 +34,7 @@ plot(GSg, map.xlim=c(-80,-60))
 
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
@@ -45,7 +45,7 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{topoWorld}},
   \code{\link{wind}}
 
-Other things related to \code{section} data: \code{\link{[[,section-method}},
+Other things related to section data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{handleFlags,section-method}},
@@ -58,5 +58,5 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{section} data}
+\concept{datasets provided with oce}
+\concept{things related to section data}

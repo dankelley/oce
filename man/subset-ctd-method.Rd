@@ -42,7 +42,7 @@ plot(subset(ctd, indices=1:10))
 
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
@@ -63,7 +63,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 
-Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,adv-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,argo-method}},
@@ -82,5 +82,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that subset \code{oce} objects}
-\concept{things related to \code{ctd} data}
+\concept{functions that subset oce objects}
+\concept{things related to ctd data}

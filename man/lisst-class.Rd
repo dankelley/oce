@@ -68,7 +68,7 @@ A users's manual for the LISST-100 instrument is available at
 the manufacturer's website \url{http://www.sequoiasci.com}.
 }
 \seealso{
-Other classes provided by \code{oce}: \code{\link{adp-class}},
+Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
@@ -78,7 +78,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
-Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
+Other things related to lisst data: \code{\link{[[,lisst-method}},
   \code{\link{[[<-,lisst-method}}, \code{\link{as.lisst}},
   \code{\link{plot,lisst-method}},
   \code{\link{read.lisst}},
@@ -87,5 +87,5 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
 \author{
 Dan Kelley
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{lisst} data}
+\concept{classes provided by oce}
+\concept{things related to lisst data}

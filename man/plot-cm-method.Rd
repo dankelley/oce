@@ -100,7 +100,7 @@ The panels are controlled by the \code{which} argument, as follows.
 
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -124,7 +124,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{cm} data: \code{\link{[[,cm-method}},
+Other things related to cm data: \code{\link{[[,cm-method}},
   \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
   \code{\link{cm-class}}, \code{\link{cm}},
   \code{\link{read.cm}}, \code{\link{rotateAboutZ}},
@@ -134,5 +134,5 @@ Other things related to \code{cm} data: \code{\link{[[,cm-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{cm} data}
+\concept{functions that plot oce data}
+\concept{things related to cm data}

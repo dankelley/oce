@@ -130,7 +130,7 @@ Other functions that download files: \code{\link{download.amsr}},
   \code{\link{download.coastline}},
   \code{\link{download.met}}
 
-Other things related to \code{topo} data: \code{\link{[[,topo-method}},
+Other things related to topo data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
   \code{\link{plot,topo-method}}, \code{\link{read.topo}},
   \code{\link{subset,topo-method}},
@@ -142,4 +142,4 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
 Dan Kelley
 }
 \concept{functions that download files}
-\concept{things related to \code{topo} data}
+\concept{things related to topo data}

@@ -202,7 +202,7 @@ plotProfile(ctd, xtype="temperature")
 \code{\link{plot,ctd-method}} is a general plotting function for \code{ctd}
 objects, and \code{\link{plotTS}} plots a temperature-salinity diagrams.
 
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -227,7 +227,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotScan}}, \code{\link{plotTS}},
   \code{\link{tidem-class}}
 
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
@@ -251,5 +251,5 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{ctd} data}
+\concept{functions that plot oce data}
+\concept{things related to ctd data}

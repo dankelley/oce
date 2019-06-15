@@ -2,7 +2,7 @@
 % Please edit documentation in R/accessors.R
 \name{oceGetData}
 \alias{oceGetData}
-\title{Get data from an \code{oce} object}
+\title{Get Something from the data Slot of an oce Object}
 \usage{
 oceGetData(object, name)
 }

@@ -4,8 +4,8 @@
 \alias{swN2}
 \title{Squared buoyancy frequency for seawater}
 \usage{
-swN2(pressure, sigmaTheta = NULL, derivs, df, eos = getOption("oceEOS",
-  default = "gsw"), debug = getOption("oceDebug"), ...)
+swN2(pressure, sigmaTheta = NULL, derivs, df,
+  debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{pressure}{either pressure [dbar] (in which case \code{sigmaTheta} must
@@ -21,8 +21,6 @@ be a character string or a function of two arguments.  See \dQuote{Details}.}
 
 \item{df}{argument passed to \code{\link{smooth.spline}} if this function is
 used for smoothing; set to \code{NA} to prevent smoothing.}
-
-\item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -49,12 +47,7 @@ may optionally be done with \code{\link{smooth.spline}}, unless
 provided, a possibly reasonable value computed from an analysis of the
 profile, based on the number of pressure levels.
 
-If \code{eos="gsw"}, then the first argument must be a \code{ctd} object,
-and processing is done with \code{\link[gsw]{gsw_Nsquared}}, based on
-extracted values of Absolute Salinity and Conservative Temperature (possibly
-smoothed, depending on \code{df}).
-
-If \code{eos="unesco"}, then the processing is as follows.  The core of the
+The core of the
 method involves differentiating potential density (referenced to median
 pressure) with respect to pressure, and the \code{derivs} argument is used
 to control how this is done, as follows.
@@ -82,31 +75,45 @@ and derivatives are calculated as with the \code{"simple"} method.
 then density) then that function is called directly to calculate the
 derivative, and no smoothing is done before or after that call.  }
 
-For deep-sea work, the \code{eos="gsw"} option is the best scheme, because
-it uses derivatives of density computed with \emph{local} reference
-pressure.
-
 For precise work, it makes sense to skip \code{swN2} entirely, choosing
 whether, what, and how to smooth based on an understanding of fundamental
 principles as well as data practicalities.
 }
+\section{Deprecation Notice}{
+
+Until 2019 April 11, \code{swN2} had an argument named \code{eos}. However,
+this did not work as stated, unless the first argument was a \code{ctd}
+object. Besides, the argument name was inherently deceptive, because the UNESCO
+scheme does not specify how N2 is to be calculated.
+Nothing is really lost by making this change, because the new default is the
+same as was previously available with the \code{eos="unesco"}
+setup, and the gsw-formulated estimate of N2 is still available, as
+\code{\link[gsw]{gsw_Nsquared}} in the \CRANpkg{gsw}
+package.
+}
+
 \examples{
 
 library(oce)
 data(ctd)
-# Illustrate difference between UNESCO and GSW
+# Left panel: density
 p <- ctd[["pressure"]]
 ylim <- rev(range(p))
-par(mfrow=c(1,3), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+par(mfrow=c(1, 2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 plot(ctd[["sigmaTheta"]], p, ylim=ylim, type='l', xlab=expression(sigma[theta]))
-N2u <- swN2(ctd, eos="unesco")
-N2g <- swN2(ctd, eos="gsw")
-plot(N2u, p, ylim=ylim, xlab="N2 Unesco", ylab="p", type="l")
-d <- 100 * (N2u - N2g) / N2g
-plot(d, p, ylim=ylim, xlab="N2 UNESCO-GSW diff. [\%]", ylab="p", type="l")
-abline(v=0)
+# Right panel: N2, with default settings (black) and with df=2 (red)
+N2 <- swN2(ctd)
+plot(N2, p, ylim=ylim, xlab="N2 [1/s^2]", ylab="p", type="l")
+lines(swN2(ctd, df=3), p, col=2)
+
 }
 \seealso{
+The \code{\link[gsw]{gsw_Nsquared}} function of the \CRANpkg{gsw}
+provides an alternative to this, as formulated in the GSW system. It
+has a more sophisticated treatment of potential density, but it is based
+on simple first-difference derivatives, so its results may require
+smoothing, depending on the dataset and purpose of the analysis.
+
 Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
   \code{\link{swAbsoluteSalinity}},

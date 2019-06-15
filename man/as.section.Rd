@@ -77,7 +77,7 @@ summary(sec3)
 
 }
 \seealso{
-Other things related to \code{section} data: \code{\link{[[,section-method}},
+Other things related to section data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{handleFlags,section-method}},
   \code{\link{initializeFlagScheme,section-method}},
@@ -92,4 +92,4 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{section} data}
+\concept{things related to section data}

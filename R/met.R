@@ -23,14 +23,14 @@
 #' @template slot_get
 #'
 #' @author Dan Kelley
-#' @family classes provided by \code{oce}
-#' @family things related to \code{met} data
+#' @family classes provided by oce
+#' @family things related to met data
 setClass("met", contains="oce")
 
 #' @title Extract Something From a met Object
 #' @param x A met object, i.e. one inheriting from \code{\link{met-class}}.
 #' @template sub_subTemplate
-#' @family things related to \code{met} data
+#' @family things related to met data
 setMethod(f="[[",
           signature(x="met", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -40,7 +40,7 @@ setMethod(f="[[",
 #' @title Replace Parts of a met Object
 #' @param x An \code{met} object, i.e. inheriting from \code{\link{met-class}}
 #' @template sub_subsetTemplate
-#' @family things related to \code{met} data
+#' @family things related to met data
 setMethod(f="[[<-",
           signature(x="met", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -72,8 +72,8 @@ setMethod(f="[[<-",
 #' @docType data
 #' @source Environment Canada website on February 1, 2017
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{met} data
+#' @family datasets provided with oce
+#' @family things related to met data
 NULL
 
 setMethod(f="initialize",
@@ -85,7 +85,7 @@ setMethod(f="initialize",
               if (!missing(u)) .Object@data$u <- u
               if (!missing(v)) .Object@data$v <- v
               .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'met' object"
               return(.Object)
           })
@@ -100,7 +100,7 @@ setMethod(f="initialize",
 #' @param object A \code{met} object, i.e. one inheriting from \code{\link{met-class}}.
 #' @param \dots further arguments passed to or from other methods.
 #' @author Dan Kelley
-#' @family things related to \code{met} data
+#' @family things related to met data
 setMethod(f="summary",
           signature="met",
           definition=function(object, ...) {
@@ -132,8 +132,8 @@ setMethod(f="summary",
 #' # Few days surrounding Hurricane Juan
 #' plot(subset(met, time > as.POSIXct("2003-09-27", tz="UTC")))
 #'
-#' @family things related to \code{met} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to met data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="met",
           definition=function(x, subset, ...) {
@@ -182,7 +182,7 @@ setMethod(f="subset",
 #' 2. Environment Canada website for Historical Climate Data
 #' \url{http://climate.weather.gc.ca/index_e.html}
 #'
-#' @family things related to \code{met} data
+#' @family things related to met data
 as.met <- function(time, temperature, pressure, u, v, filename="(constructed from data)")
 {
     if (missing(time)) stop("must provide time")
@@ -321,7 +321,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' \url{https://github.com/gavinsimpson/canadaHCD}
 #'
 #' @family functions that download files
-#' @family things related to \code{met} data
+#' @family things related to met data
 download.met <- function(id, year, month, deltat, destdir=".", destfile,
                          debug=getOption("oceDebug"))
 {
@@ -336,7 +336,7 @@ download.met <- function(id, year, month, deltat, destdir=".", destfile,
         stop("deltat=\"", deltat, "\" is not supported; try \"hour\" or \"month\"")
     deltat <- deltatChoices[deltatIndex]
     if (deltat == "hour") {
-        today <- as.POSIXlt(Sys.time())
+        today <- as.POSIXlt(presentTime())
         if (missing(year))
             year <- today$year + 1900
         if (missing(month)) {
@@ -518,7 +518,7 @@ metNames2oceNames <- function(names, scheme)
 #' 1. Environment Canada website for Historical Climate Data
 #' \url{http://climate.weather.gc.ca/index_e.html}
 #'
-#' @family things related to \code{met} data
+#' @family things related to met data
 read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.met() {\n", unindent=1)
@@ -805,8 +805,8 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
 #' plot(juan, which=6)
 #' abline(v=t0)
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{met} data
+#' @family functions that plot oce data
+#' @family things related to met data
 #' @aliases plot.met
 setMethod(f="plot",
            signature=signature("met"),

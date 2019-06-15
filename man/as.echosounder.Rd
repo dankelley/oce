@@ -54,7 +54,7 @@ are taken from the \code{echosounder} dataset, and they are unlikely to make
 sense generally.
 }
 \seealso{
-Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
+Other things related to echosounder data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},
   \code{\link{echosounder-class}},
   \code{\link{echosounder}}, \code{\link{findBottom}},
@@ -66,4 +66,4 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
 \author{
 Dan Kelley
 }
-\concept{things related to \code{echosounder} data}
+\concept{things related to echosounder data}

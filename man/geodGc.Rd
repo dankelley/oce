@@ -22,7 +22,7 @@ Each pair in the \code{longitude} and \code{latitude} vectors is considered
 in turn.  For long vectors, this may be slow.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',

@@ -1,6 +1,6 @@
 ---
 title: "Using data-quality flags"
-author: "Dan Kelley"
+author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911)"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
@@ -18,9 +18,7 @@ vignette: >
 ---
 
 <!-- HOW TO BUILD THE VIGNETTE. -->
-<!-- 1. edit this file in vignettes/flags.Rmd -->
-<!-- 2. run devtools::build_vignettes() -->
-<!-- 3. build oce -->
+<!-- Look in oce.Rmd for instructions. -->
 
 
 ```{r, echo = FALSE}
@@ -29,8 +27,8 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 
 **Abstract.** This vignette explains the basics of working with data-quality
 flags in oce. As in the vignette about working with [adp data](adp.html), the
-material is organized to reflect typical workflow.  See [the main oce
-vignette](oce.html) for general information about oce.  The sample code
+material is organized to reflect typical workflow.  See the main oce
+[vignette](oce.html) for general information about oce.  The sample code
 provided here relies on the oce package, loaded as follows.
 ```{r}
 library(oce)
@@ -67,7 +65,7 @@ Hydrographic
 Programme](https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm)
 designates good bottle/CTD data with a flag value of 2, whereas the [World
 Ocean
-Database](http://data.nodc.noaa.gov/woa/WOD/CODES/TXT/Definition_of_Quality_Flags.txt)
+Database](https://data.nodc.noaa.gov/woa/WOD/CODES/TXT/Definition_of_Quality_Flags.txt)
 uses 0 for good data.
 
 Analysts must be aware of the scheme used for a particular dataset.  It is also
@@ -103,26 +101,26 @@ name conflicts with the data and (b) they record their actions in the object's
 
 Creating flags is usually a three-step process:
 
-1. Use [`initializeFlagScheme`](../help/initializeFlagScheme) to establish a
+1. Use `initializeFlagScheme` to establish a
    mapping between flag numerical value and flag meaning.  This step is not
    strictly necessary, but it is useful because it stores the flag scheme
    within the object's `metadata` slot, as a form of documentation. This step
    may be done only once for a given object, because changing a flag scheme in
    the middle of processing invites errors.
 
-2. Use [`initializeFlags`](../help/initializeFlags) to set up space for flag
+2. Use `initializeFlags` to set up space for flag
    storage, and to initialize values (normally to a code indicating either
    unchecked data or acceptable data). This may be done only once per data
    item.
 
-3. Use [`setFlags`](../help/setFlags) to assign individual flag values to
+3. Use `setFlags` to assign individual flag values to
    individual data. This may be used repeatedly for a given object. Indeed, as
    illustrated later in this document, it is common to call this function
    within a loop that displays a graph, invites the user to click on points to
    be flagged, then displays the new graph, etc.
 
 Note that some reading operations set up flags automatically, if the data file
-already holds flags. For example, [`read.argo`](../help/read.argo) can do this,
+already holds flags. For example, `read.argo` can do this,
 because Argo data have a fixed flag scheme, and archived Argo data often come
 with flag values already inserted.
 
@@ -130,10 +128,10 @@ with flag values already inserted.
 
 As with setting flags, analysts are free to extract flag values and use them
 for any purpose that comes to mind. Simple cases may be handled with the oce
-function named [`handleFlags`](../help/handleFlags), which is set up to respond
+function named `handleFlags`, which is set up to respond
 to particular flag values with particular actions.  It has reasonable defaults
 for different data types, and it can detect a flag scheme that has been set up
-with [`setFlagScheme`](../help/initializeFlagScheme). The default action of
+with `setFlagScheme`. The default action of
 setting the data that have been flagged as bad to the `NA` value may suffice in
 many plotting or analysis situations.
 
@@ -141,8 +139,7 @@ many plotting or analysis situations.
 
 ## CTD range checks
 
-(This section is an expansion of Example 1 in the
-[`setFlags,ctd-method`](../help/setFlags,ctd-method) documentation.)
+(This section is an expansion of Example 1 shown by `?"setFlags,ctd-method"`.)
 
 The oce package provides a dataset
 ```{r}
@@ -156,7 +153,7 @@ in a summary plot (Figure 1):
 plot(ctdRaw)
 ```
 
-As Figure 1 shows, [`ctdTrim`](../help/ctdTrim) removes most of the anomolous
+As Figure 1 shows, `ctdTrim` removes most of the anomolous
 data by examining the variation of the pressure signal over time, it may also
 be of interest to see how well simple range checks can perform in cleaning up
 the data. Salinity certainly cannot be negative, but in an oceanographic
@@ -166,7 +163,7 @@ situations as well, and the same could be said of an upper limit of $40$g/kg.
 Similarly, it might make sense to bound temperature between, say, $-2^\circ$C
 and $40^\circ$C for application throughout much of the world ocean.
 
-These criteria can be supplied to [`setFlags`](../help/setFlags) in various
+These criteria can be supplied to `setFlags` in various
 ways, but the simplest is to create logical vectors, e.g.
 ```{r}
 badS <- with(ctdRaw[["data"]], salinity < 25 | 40 < salinity)
@@ -206,13 +203,13 @@ qc <- initializeFlags(qc, "temperature", 2)
 to create storage, and initialize all entries to the `"acceptable"` value
 (which, for this flag scheme, is the number `2`).  Once storage has been
 initialized for a given variable, further calls to
-[`initializeFlags`](../help/initializeFlags) will have no effect, apart from a
+`initializeFlags` will have no effect, apart from a
 warning.
 
 Note that it is entirely possible to use
-[`initializeFlags`](../help/initializeFlags) with a numerical value for its
+`initializeFlags` with a numerical value for its
 third argument.  One advantage of using
-[`initializeFlagScheme`](../help/initializeFlagScheme) is that it clarifies
+`initializeFlagScheme` is that it clarifies
 code, but the bigger advantage is that it embeds the scheme within the object,
 so that a second analyst could examine it later and be clear on the meanings of
 the numerical codes. This is very important, because there is not much
@@ -220,7 +217,7 @@ agreement within the oceanographic community on which flag scheme to use, for
 many data types (Argo being an exception).
 
 At this stage, individidual data can be flagged with
-[`setFlags`](../help/setFlags). This function can be called any number of
+`setFlags`. This function can be called any number of
 times. Continuing along with our example, we may mark bad salinities with
 ```{r}
 qc <- setFlags(qc, "salinity", badS, value="bad")
@@ -260,13 +257,12 @@ turnaround point.  Setting a flag for pressure increase with time will isolate
 the downcast somewhat, although some smoothing will be required.  Another issue
 related to the path of the instrument is that it may have been held below the
 surface for a while to equilibrate. Again, a flag could be set up to remove
-such data. However, it ought to be noted that [`ctdTrim`](../help/ctrTrim) can
+such data. However, it ought to be noted that `ctdTrim` can
 be used to address issues relating to instrument movement.
 
 ## Interactive editing of CTD profiles
 
-(This section is an expansion of Example 2 in the
-[`setFlags,ctd-method`](../help/setFlags,ctd-method) documentation.)
+(This section is an expansion of Example 2 shown by `?"setFlags,ctd-method"`.)
 
 The `ctd` dataset provided by the `oce` package is similar to `ctdRaw`, except
 that only downcast data are provided. Even so, there are still some points that
@@ -366,7 +362,7 @@ plot(adp, which="u1")                  # original
 plot(adpClean2, which="u1")            # altered
 ```
 
-Note, in the above, that [`initializeFlagScheme`](../help/initializeFlagScheme)
+Note, in the above, that `initializeFlagScheme`
 has not been used, because the author is unaware of any common notation for
 such data. The values used for `G` and `V4` were provided by colleagues at the
 Bedford Institute of Oceanography.

@@ -99,7 +99,7 @@ Other functions that download files: \code{\link{download.amsr}},
   \code{\link{download.coastline}},
   \code{\link{download.topo}}
 
-Other things related to \code{met} data: \code{\link{[[,met-method}},
+Other things related to met data: \code{\link{[[,met-method}},
   \code{\link{[[<-,met-method}}, \code{\link{as.met}},
   \code{\link{met-class}}, \code{\link{met}},
   \code{\link{plot,met-method}}, \code{\link{read.met}},
@@ -110,4 +110,4 @@ Other things related to \code{met} data: \code{\link{[[,met-method}},
 Dan Kelley
 }
 \concept{functions that download files}
-\concept{things related to \code{met} data}
+\concept{things related to met data}

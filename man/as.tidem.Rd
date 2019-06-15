@@ -77,4 +77,16 @@ oce.plot.ts(sealevelTuktoyaktuk[["time"]], p0)
 ylim <- par("usr")[3:4] # to match scales in other panels
 oce.plot.ts(sealevelTuktoyaktuk[["time"]], p1, ylim=ylim)
 oce.plot.ts(sealevelTuktoyaktuk[["time"]], p2, ylim=ylim)
+
 }
+\seealso{
+Other things related to tides: \code{\link{[[,tidem-method}},
+  \code{\link{[[<-,tidem-method}},
+  \code{\link{plot,tidem-method}},
+  \code{\link{predict.tidem}},
+  \code{\link{summary,tidem-method}},
+  \code{\link{tidedata}}, \code{\link{tidem-class}},
+  \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
+  \code{\link{tidem}}, \code{\link{webtide}}
+}
+\concept{things related to tides}

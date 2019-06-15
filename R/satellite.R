@@ -14,7 +14,7 @@ setMethod(f="initialize",
           definition=function(.Object, filename, subclass) {
               if (!missing(filename))
                   .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- if (missing(subclass))
                   "create 'satellite' object" else paste("create '", subclass, "' object")
               return(.Object)
@@ -68,7 +68,7 @@ setMethod(f="summary",
 #' @concept satellite
 #' @author Dan Kelley
 #' @family things related to satellite data
-#' @family functions that plot \code{oce} data
+#' @family functions that plot oce data
 #' @aliases plot.satellite
 setMethod(f="plot",
           signature=signature("satellite"),

@@ -28,7 +28,7 @@ This is a preliminary version of this function. It only
 works if the lines of constant latitude are horizontal on the plot.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorldFine, package='ocedata')
 HfxLon <- -63.5752
@@ -38,6 +38,7 @@ mapPlot(coastlineWorldFine, proj='+proj=merc',
         col='lightgrey')
 mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
 }
+
 }
 \author{
 Chantelle Layton

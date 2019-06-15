@@ -52,7 +52,7 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
+Other functions that replace parts of oce objects: \code{\link{[[<-,adp-method}},
   \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -75,11 +75,11 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,topo-method}}
 
-Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
+Other things related to windrose data: \code{\link{[[,windrose-method}},
   \code{\link{as.windrose}},
   \code{\link{plot,windrose-method}},
   \code{\link{summary,windrose-method}},
   \code{\link{windrose-class}}
 }
-\concept{functions that replace parts of \code{oce} objects}
-\concept{things related to \code{windrose} data}
+\concept{functions that replace parts of oce objects}
+\concept{things related to windrose data}

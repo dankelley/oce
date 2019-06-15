@@ -55,11 +55,9 @@ MET <- concatenate(met1, met2)
 
 }
 \seealso{
-Other functions that concatenate \code{oce} objects.: \code{\link{concatenate,adp-method}},
-  \code{\link{concatenate,list-method}},
-  \code{\link{concatenate}}
+Other functions that concatenate oce objects: \code{\link{concatenate,adp-method}}
 }
 \author{
 Dan Kelley
 }
-\concept{functions that concatenate \code{oce} objects.}
+\concept{functions that concatenate oce objects}

@@ -47,7 +47,7 @@
 #'
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 #'
-#' @family things related to \code{amsr} data
+#' @family things related to amsr data
 setClass("amsr", contains="satellite")
 
 setMethod(f="initialize",
@@ -55,7 +55,7 @@ setMethod(f="initialize",
           definition=function(.Object, filename) {
               if (!missing(filename))
                   .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'amsr' object"
               return(.Object)
           })
@@ -81,7 +81,7 @@ setMethod(f="show",
 #' @param ... Ignored.
 #' @author Dan Kelley
 #' @concept satellite
-#' @family things related to \code{amsr} data
+#' @family things related to amsr data
 setMethod(f="summary",
           signature="amsr",
           definition=function(object, ...) {
@@ -144,7 +144,7 @@ setMethod(f="summary",
 #' @author Dan Kelley
 #' @template sub_subTemplate
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' # Show a daytime SST image, along with an indication of whether
 #' # the NA values are from rain.
 #' library(oce)
@@ -159,8 +159,8 @@ setMethod(f="summary",
 #' asp <- 1 / cos(pi*mean(lat)/180)
 #' imagep(lon, lat, rainy, asp=asp)
 #' mtext("red: too rainy to sense SSTDay")
-#' }
-#' @family things related to \code{amsr} data
+#'}
+#' @family things related to amsr data
 setMethod(f="[[",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -179,7 +179,7 @@ setMethod(f="[[",
               if (!(i %in% namesAllowed))
                   stop("band '", i, "' is not available in this object; try one of: ",
                        paste(namesAllowed, collapse=" "))
-              #' get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA
+              # get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA
               getBand<-function(b) {
                   bad <- b == as.raw(0xff)| # land mass
                   b == as.raw(0xfe)| # no observations
@@ -247,7 +247,7 @@ setMethod(f="[[",
 
 #' @title Replace Parts of an AMSR Object
 #' @param x An \code{amsr} object, i.e. inheriting from \code{\link{amsr-class}}
-#' @family things related to \code{amsr} data
+#' @family things related to amsr data
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="amsr", i="ANY", j="ANY"),
@@ -269,17 +269,17 @@ setMethod(f="[[<-",
 #' @param ... Ignored.
 #' @return An \code{amsr} object.
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' earth <- read.amsr("f34_20160102v7.2.gz") # not provided with oce
 #' fclat <- subset(earth , 45<=latitude & latitude <= 49)
 #' fc <- subset(fclat , longitude <= -47 & longitude <= -43)
 #' plot(fc)
-#' }
+#'}
 #' @author Dan Kelley
 #'
-#' @family things related to \code{amsr} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to amsr data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="amsr",
           definition=function(x, subset, ...) {
@@ -329,18 +329,18 @@ setMethod(f="subset",
 #' @concept satellite
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' d <- read.amsr("f34_20160102v7.2.gz")
 #' asp <- 1/cos(pi*40/180)
 #' plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
 #' data(coastlineWorldMedium, package="ocedata")
 #' lines(coastlineWorldMedium[['longitude']], coastlineWorldMedium[['latitude']])
-#' }
+#'}
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{amsr} data
+#' @family functions that plot oce data
+#' @family things related to amsr data
 #' @aliases plot.amsr
 setMethod(f="plot",
           signature=signature("amsr"),
@@ -454,7 +454,7 @@ setMethod(f="plot",
 #' mtext(d[["filename"]], side=3, line=0, adj=0)
 #'}
 #' @family functions that download files
-#' @family things related to \code{amsr} data
+#' @family things related to amsr data
 #' @references
 #' \code{http://images.remss.com/amsr/amsr2_data_daily.html}
 #' provides daily images going back to 2012. Three-day,
@@ -522,7 +522,7 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
 #' @seealso \code{\link{plot,amsr-method}} for an example.
 #' @author Dan Kelley and Chantelle Layton
 #'
-#' @family things related to \code{amsr} data
+#' @family things related to amsr data
 read.amsr <- function(file, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.amsr(file=\"", file, "\",",
@@ -630,7 +630,7 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
 #' @param object An object inheriting from \link{amsr-class}.
 #' @param ... Other amsr objects.
 #'
-#' @family things related to \code{amsr} data
+#' @family things related to amsr data
 #' @template compositeTemplate
 setMethod("composite",
           c(object="amsr"),

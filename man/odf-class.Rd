@@ -71,7 +71,7 @@ in June 2011.)
 (checked 2018-02-11); only a subset are handled.
 }
 \seealso{
-Other things related to \code{odf} data: \code{\link{ODF2oce}},
+Other things related to odf data: \code{\link{ODF2oce}},
   \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
@@ -81,7 +81,7 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 
-Other classes provided by \code{oce}: \code{\link{adp-class}},
+Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
@@ -94,5 +94,5 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
 \author{
 Dan Kelley
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{odf} data}
+\concept{classes provided by oce}
+\concept{things related to odf data}

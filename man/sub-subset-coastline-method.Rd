@@ -52,7 +52,7 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+Other things related to coastline data: \code{\link{[[,coastline-method}},
   \code{\link{as.coastline}},
   \code{\link{coastline-class}},
   \code{\link{coastlineBest}}, \code{\link{coastlineCut}},
@@ -64,7 +64,7 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
 
-Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
+Other functions that replace parts of oce objects: \code{\link{[[<-,adp-method}},
   \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -87,5 +87,5 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
 }
-\concept{functions that replace parts of \code{oce} objects}
-\concept{things related to \code{coastline} data}
+\concept{functions that replace parts of oce objects}
+\concept{things related to coastline data}

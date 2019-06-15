@@ -34,7 +34,7 @@ form. For example, a \code{ctd} object might hold temperature defined on the
 IPTS-68 scale, but e.g. \code{ctd[["temperature"]]} returns a value on the ITS-90
 scale. (The conversion is done with \code{\link{T90fromT68}}.)  Similarly,
 pressure may be stored in either dbars or PSI, but e.g. \code{ctd[["pressure"]]}
-returns a value in dbars, after multiplying by 0.689476 if the value is
+returns a value in dbars, after dividing by 0.689476 if the value is
 stored in PSI. Luckily, there is (as of early 2016) only one salinity scale in
 common use in data files, namely PSS-78.
 }
@@ -126,7 +126,7 @@ ctd <- oceSetMetadata(ctd, "latitude", ctd[["latitude"]]-0.001,
 
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctdDecimate}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
@@ -148,7 +148,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 
-Other classes provided by \code{oce}: \code{\link{adp-class}},
+Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{lisst-class}},
@@ -161,5 +161,5 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
 \author{
 Dan Kelley
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{ctd} data}
+\concept{classes provided by oce}
+\concept{things related to ctd data}

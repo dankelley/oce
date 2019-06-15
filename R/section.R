@@ -45,8 +45,8 @@
 #'
 #' @author Dan Kelley
 #'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{section} data
+#' @family classes provided by oce
+#' @family things related to section data
 setClass("section", contains="oce")
 
 
@@ -64,14 +64,14 @@ setClass("section", contains="oce")
 #' for more information on World Hydrographic Program flag conventions.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' library(oce)
 #' # Gulf Stream
 #' data(section)
 #' GS <- subset(section, 109<=stationId&stationId<=129)
 #' GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 #' plot(GSg, map.xlim=c(-80,-60))
-#' }
+#'}
 #'
 #' @name section
 #'
@@ -82,16 +82,18 @@ setClass("section", contains="oce")
 #' @source This is based on the WOCE file named \code{a03_hy1.csv}, downloaded
 #' from \url{https://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{section} data
+#' @family datasets provided with oce
+#' @family things related to section data
 NULL
 
 setMethod(f="initialize",
           signature="section",
           definition=function(.Object, filename="", sectionId="") {
+              .Object@metadata$units <- NULL # senseless keeping these from oce()
+              .Object@metadata$flags <- NULL # senseless keeping these from oce()
               .Object@metadata$filename <- filename
               .Object@metadata$sectionId <- sectionId
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'section' object"
               return(.Object)
           })
@@ -122,7 +124,7 @@ setMethod(f="initialize",
 #' plotTS(section)
 #' plotTS(section2)
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 setMethod("handleFlags",
           c(object="section", flags="ANY", actions="ANY", debug="ANY"),
           function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
@@ -150,16 +152,20 @@ setMethod("handleFlags",
 #' @template initializeFlagSchemeTemplate
 #'
 #' @examples
+#'\dontrun{
 #' data(section)
+#' section <- read.section("a03_hy1.csv", sectionId="a03", institute="SIO",
+#'                         ship="R/V Professor Multanovskiy", scientist="Vladimir Tereschenkov")
 #' sectionWithFlags <- initializeFlagScheme(section, "WHP bottle")
 #' station1 <- sectionWithFlags[["station", 1]]
 #' str(station1[["flagScheme"]])
+#'}
 setMethod("initializeFlagScheme",
-          c(object="section", name="ANY", mapping="ANY", debug="ANY"),
-          function(object, name=NULL, mapping=NULL, debug=getOption("oceDebug")) {
+          c(object="section", name="ANY", mapping="ANY", default="ANY", debug="ANY"),
+          function(object, name=NULL, mapping=NULL, default=NULL, debug=getOption("oceDebug")) {
               res <- object
               for (i in seq_along(object@data$station)) {
-                  res@data$station[[i]] <- initializeFlagScheme(object@data$station[[i]], name, mapping, debug=debug-1)
+                  res@data$station[[i]] <- initializeFlagScheme(object@data$station[[i]], name, mapping, default, debug=debug-1)
               }
               res@processingLog <-
                   processingLogAppend(res@processingLog,
@@ -189,7 +195,7 @@ setMethod("initializeFlagScheme",
 #' data(section)
 #' summary(section)
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 #'
 #' @author Dan Kelley
 setMethod(f="summary",
@@ -312,7 +318,7 @@ setMethod(f="summary",
 #' # First station salinities
 #' Sl[[1]]
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 #' @author Dan Kelley
 setMethod(f="[[",
           signature(x="section", i="ANY", j="ANY"),
@@ -455,7 +461,6 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a Section Object
 #' @param x A \code{section} object, i.e. inheriting from \code{\link{section-class}}
-#' @family things related to \code{section} data
 #' @template sub_subsetTemplate
 #' @examples
 #' # 1. Change section ID from a03 to A03
@@ -467,6 +472,7 @@ setMethod(f="[[",
 #' section[["station", 10]][["temperature"]] <-
 #'     1e-3 + section[["station", 10]][["temperature"]]
 #' @author Dan Kelley
+#' @family things related to section data
 setMethod(f="[[<-",
           signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -591,7 +597,7 @@ setMethod(f="show",
 #'                     5 < length(s[["pressure"]]))))
 #'
 #' # Example 7. Subset by a polygon determined with locator()
-#' \dontrun{
+#'\dontrun{
 #' par(mfrow=c(2, 1))
 #' plot(section, which="map")
 #' bdy <- locator(4) # choose a polygon near N. America
@@ -599,8 +605,8 @@ setMethod(f="show",
 #' plot(GS, which="map")
 #'}
 #'
-#' @family functions that subset \code{oce} objects
-#' @family things related to \code{section} data
+#' @family functions that subset oce objects
+#' @family things related to section data
 #'
 #' @author Dan Kelley
 setMethod(f="subset",
@@ -813,7 +819,7 @@ setMethod(f="subset",
 #' variation than the input section.
 #'
 #' @examples
-#' \dontrun{
+#'\dontrun{
 #' # Eastern North Atlantic, showing Mediterranean water;
 #' # sorting by longitude makes it easier to compare
 #' # the map and the section.
@@ -822,11 +828,11 @@ setMethod(f="subset",
 #' s <- sectionGrid(subset(section, -30 <= longitude))
 #' ss <- sectionSort(ss, by="longitude")
 #' plot(ss)
-#' }
+#'}
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 sectionSort <- function(section, by)
 {
     if (missing(by)) {
@@ -896,7 +902,7 @@ sectionSort <- function(section, by)
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 sectionAddStation <- function(section, station)
 {
     if (missing(section)) stop("must provide a section to which the ctd is to be added")
@@ -1134,7 +1140,7 @@ sectionAddCtd <- sectionAddStation
 ## #' look <- spice > 1.8 & depth > 500
 ## #' points(distance[look], depth[look], col='red')
 #'
-#' \dontrun{
+#'\dontrun{
 #' ## 4. Image of Absolute Salinity, with 4-minute bathymetry
 #' ## It's easy to calculate the desired area for the bathymetry,
 #' ## but for brevity we'll hard-code it. Note that download.topo()
@@ -1144,7 +1150,7 @@ sectionAddCtd <- sectionAddStation
 #' plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
 #'}
 #'
-#' \dontrun{
+#'\dontrun{
 #' ## 5. Temperature with salinity added in red
 #' s <- plot(section, which="temperature")
 #' distance <- s[["distance", "byStation"]]
@@ -1155,8 +1161,8 @@ sectionAddCtd <- sectionAddStation
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{section} data
+#' @family functions that plot oce data
+#' @family things related to section data
 #' @aliases plot.section
 setMethod(f="plot",
           signature=signature("section"),
@@ -1243,7 +1249,7 @@ setMethod(f="plot",
                        "\", ztype=\"", ztype, "\", ...) {\n", sep="", unindent=1)
               ## Ensure data on levels, for plots requiring pressure (e.g. sections). Note
               ## that we break out of the loop, once we grid the section.
-              if (is.na(which[1]) || which != "data" || which != 'map') {
+              if (is.na(which[1]) || which[1] != "data" || which[1] != 'map') {
                   p1 <- x[["station", 1]][["pressure"]]
                   numStations <- length(x@data$station)
                   for (ix in 2:numStations) {
@@ -1543,39 +1549,60 @@ setMethod(f="plot",
                       ## For ztype == "points", plot the points.  Otherwise, collect them in zz
                       ## for the contour or image plot.
                       for (i in 1:numStations) {
-                          ##oceDebug(debug, "filling matrix for station", i, "\n")
+                          thisStation <- x[["station", i]]
+                          ##oceDebug(debug, "filling matrix with \"", variable, "\" data at station", i, "\n", sep="")
                           if (variable != "data") {
+                              ## CAUTION: the assignment to 'v' and 'zz' is tricky:
+                              ## 1. not all datasets will have computed items (e.g. density and potential
+                              ## temperature) so we compute them, discarding any data. (Is that sensible?)
+                              ## 2. things are different in gsw and unesco, and someone might say
+                              ## "potential temperature" in either system, so which do we compute??
+                              ## 3. there was some code reworking in early May 2019, relating to issues:
+                              ## https://github.com/dankelley/oce/issues/1539
+                              ## and
+                              ## https://github.com/dankelley/oce/issues/1540
+                              ## and there is a chance of breakage starting at that time.
                               if (drawPoints) {
-                                  p <- x@data$station[[stationIndices[i]]]@data$pressure
-                                  if (eos == "gsw" && variable == "temperature")
-                                      v <- swConservativeTemperature(x@data$station[[stationIndices[i]]])
+                                  p <- thisStation[["pressure"]]
+                                  ## Compute sigma0 and sigmaTheta, whether they are in the dataset or not
+                                  if (variable == "sigma0") {
+                                      v <- swSigma0(thisStation, eos=eos)
+                                  } else if (variable == "sigmaTheta") {
+                                      v <- swSigmaTheta(thisStation, eos=eos)
+                                  } else if (eos == "gsw" && variable == "temperature")
+                                      v <- thisStation[["CT"]]
                                   else if (eos == "gsw" && variable == "salinity")
-                                      v <- swAbsoluteSalinity(x@data$station[[stationIndices[i]]])
-                                  else if (eos == "gsw" && variable == "sigmaTheta")
-                                      v <- swSigma0(x@data$station[[stationIndices[i]]], eos=eos)
+                                      v <- thisStation[["SA"]]
                                   else if (eos == "unesco" && variable == "potential temperature")
-                                      v <- x@data$station[["theta"]]
+                                      v <- thisStation[["theta"]]
+                                  else if (variable %in% names(thisStation[["data"]]))
+                                      v <- thisStation[[variable]]
                                   else
-                                      v <- x@data$station[[stationIndices[i]]][[variable]]
+                                      v <- rep(NA, length(p))
                                   points(rep(xx[i], length(p)), -p,
                                          pch=pch, cex=cex,
                                          col=zcol[rescale(v, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=nbreaks)])
                               } else {
-                                  if (eos == "gsw" && variable == "temperature") {
-                                      zz[i, ] <- rev(swConservativeTemperature(x@data$station[[stationIndices[i]]]))
+                                  ## Compute sigma0 and sigmaTheta, whether they are in the dataset or not
+                                  if (variable == "sigma0") {
+                                      zz[i, ] <- rev(swSigma0(thisStation, eos=eos))
+                                  } else if (variable == "sigmaTheta") {
+                                      zz[i, ] <- rev(swSigmaTheta(thisStation, eos=eos))
+                                  } else if (eos == "gsw" && variable == "temperature") {
+                                      zz[i, ] <- rev(thisStation[["CT"]])
                                   } else if (eos == "gsw" && variable == "salinity") {
-                                      zz[i, ] <- rev(swAbsoluteSalinity(x@data$station[[stationIndices[i]]]))
-                                  } else if (eos == "gsw" && variable == "sigmaTheta") {
-                                      ## The contour will probably look very much like for the "unesco" case,
-                                      ## apart from the different legend. I say this because I used station 10
-                                      ## of data(section) as a test case, and found that the RMS difference
-                                      ## between results computed with the two formulations to be 0.005kg/m^3,
-                                      ## or just 0.02% of the mean value.
-                                      zz[i, ] <- rev(swSigma0(x@data$station[[stationIndices[i]]], eos=eos))
+                                      zz[i, ] <- rev(thisStation[["SA"]])
                                   } else if (eos == "unesco" && variable == "potential temperature") {
-                                      zz[i, ] <- rev(x@data$station[[stationIndices[i]]][["theta"]])
+                                      zz[i, ] <- rev(thisStation[["theta"]])
                                   } else {
-                                      zz[i, ] <- rev(x@data$station[[stationIndices[i]]][[variable]])
+                                      ##. message("variable=",variable)
+                                      ##. message("names=", paste(names(thisStation@data), collapse=","))
+                                      zz[i, ] <- if (variable %in% names(thisStation[["data"]])) {
+                                          rev(thisStation[[variable]])
+                                      } else {
+                                          rep(NA, length(thisStation[["pressure"]]))
+                                      }
+                                      ##. message("zz[",i,",]:", paste(head(zz[i,]), collapse=" "))
                                   }
                               }
                           }
@@ -2029,7 +2056,7 @@ setMethod(f="plot",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 read.section <- function(file, directory, sectionId="", flags,
                          ship="", scientist="", institute="",
                          missingValue=-999,
@@ -2387,18 +2414,23 @@ read.section <- function(file, directory, sectionId="", flags,
     res
 }
 
-#' @title Grid a Section
+#' Grid a Section in Pressure Space
 #'
-#' @description
 #' Grid a section, by interpolating to fixed pressure levels.  The
 #' \code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are described in the
 #' documentation for \code{\link{ctdDecimate}}, which is used to do this
-#' processing.  The default \code{"approx"} method is best for bottle data, the
+#' processing.
+#'
+#' The default \code{"approx"} method is best for bottle data, the
 #' \code{"boxcar"} is best for ctd data, and the \code{"lm"} method is probably
 #' too slow to recommend for exploratory work, in which it is common to do trials
 #' with a variety of \code{"p"} values.
 #'
-#' @template flagDeletionTemplate
+#' The stations in the returned value have flags with names that match those
+#' of the corresponding stations in the original \code{section}, but the values
+#' of these flags are all set to \code{NA}. This recognizes that it makes
+#' no sense to grid flag values, but that there is merit in initializing
+#' a flag system, for possible use in later processing steps.
 #'
 #' @param section A \code{section} object containing the section to be gridded.
 #'
@@ -2406,14 +2438,20 @@ read.section <- function(file, directory, sectionId="", flags,
 #' should be done.  If this is not supplied, the pressure levels will be
 #' calculated based on the typical spacing in the ctd profiles stored within
 #' \code{section}.  If \code{p="levitus"}, then pressures will be set to be those
-#' of the Levitus atlas, given by \code{\link{standardDepths}}, trimmed to the
-#' maximum pressure in \code{section}.  If \code{p} is a single numerical value,
+#' of the Levitus atlas, given by \code{\link{standardDepths}}.
+#' If \code{p} is a single numerical value,
 #' it is taken as the number of subdivisions to use in a call to \code{\link{seq}}
 #' that has range from 0 to the maximum pressure in \code{section}.  Finally, if a
-#' vector numerical values is provided, then it is used as is.
+#' vector numerical values is provided, perhaps. constructed with \code{\link{seq}}
+#' or \code{\link{standardDepths}(5)} (as in the examples),
+#' then it is used as is, after trimming any values that exceed the maximum
+#' pressure in the station data stored within \code{section}.
 #'
 #' @param method The method to use to decimate data within the stations; see
 #' \code{\link{ctdDecimate}}, which is used for the decimation.
+#'
+#' @param trim Logical value indicating whether to trim gridded pressures
+#' to the range of the data in \code{section}.
 #'
 #' @template debugTemplate
 #'
@@ -2422,7 +2460,7 @@ read.section <- function(file, directory, sectionId="", flags,
 #' in the case where \code{method} equals \code{"approx"}.
 #'
 #' @return An object of \code{\link{section-class}} that contains stations whose
-#' pressure values match identically.
+#' pressure values match identically, and that has all flags set to \code{NA}.
 #'
 #' @examples
 #' # Gulf Stream
@@ -2431,285 +2469,493 @@ read.section <- function(file, directory, sectionId="", flags,
 #' GS <- subset(section, 109<=stationId&stationId<=129)
 #' GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 #' plot(GSg, map.xlim=c(-80,-60))
+#' # Show effects of various depth schemes
+#' par(mfrow=c(3, 1))
+#' default <- sectionGrid(GS)
+#' approxML <- sectionGrid(GS, method="approxML")
+#' standardDepths5 <- sectionGrid(GS, p=standardDepths(5))
+#' plot(default, which="temperature", ztype="image", ylim=c(200,0))
+#' mtext("default sectionGrid()")
+#' plot(approxML, which="temperature", ztype="image", ylim=c(200,0))
+#' mtext("sectionGrid(..., method=\"approxML\")")
+#' plot(standardDepths5, which="temperature", ztype="image", ylim=c(200,0))
+#' mtext("sectionGrid(..., p=standardDepths(5))")
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
-sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug"), ...)
+#' @family things related to section data
+sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "sectionGrid(section, p, method=\"", if (is.function(method)) "(function)" else method, "\", ...) {\n", sep="", unindent=1)
+    oceDebug(debug, "sectionGrid(section, p, ",
+             "method=\"", if (is.function(method)) "(function)" else method, "\", ",
+             "p=", if (missing(p)) "(missing)" else paste("c(",paste(p, collapse=","),")", sep=""), ", ",
+             "trim=", trim, ", ...) {\n",
+             sep="", unindent=1)
     warningMessages <- NULL
     n <- length(section@data$station)
+    nxg <- n
     oceDebug(debug, "have", n, "stations in this section\n")
     dp.list <- NULL
+    pMax <- max(section[["pressure"]], na.rm=TRUE)
     if (missing(p)) {
-        oceDebug(debug, "argument 'p' not given\n")
-        p.max <- 0
+        ## p.max <- 0
         for (i in 1:n) {
             p <- section@data$station[[i]]@data$pressure
             dp.list <- c(dp.list, mean(diff(p), na.rm=TRUE))
-            p.max <- max(c(p.max, p), na.rm=TRUE)
-            ## message("i: ", i, ", p.max: ", p.max)
         }
-        dp <- mean(dp.list, na.rm=TRUE) / 1.5 # make it a little smaller
-        pt <- pretty(c(0, p.max), n=min(200, floor(abs(p.max / dp))))
-        oceDebug(debug, "p.max=", p.max, "; dp=", dp, "\n")
-        oceDebug(debug, "pt=", pt, "\n")
+        dp <- mean(dp.list, na.rm=TRUE) / 5 # make it a little smaller
+        pt <- pretty(c(0, pMax), n=min(200, floor(abs(pMax / dp))))
+        ## oceDebug(debug, "pMax=", pMax, "; dp=", dp, "\n")
+        ## oceDebug(debug, "pt=", pt, "\n")
+        ## oceDebug(debug, "length(pt)=", length(pt), "\n")
     } else {
         if (length(p) == 1) {
             if (p=="levitus") {
                 pt <- standardDepths()
-                pt <- pt[pt < max(section[["pressure"]], na.rm=TRUE)]
             } else {
                 if (!is.numeric(p))
                     stop("p must be numeric")
-                pMax <- max(section[["pressure"]], na.rm=TRUE)
+                if (p <= 0)
+                    stop("p must be a positive number")
                 pt <- seq(0, pMax, p)
             }
         } else {
             pt <- p
         }
     }
+    if (trim) {
+        ## allow one extra level, for bracketing
+        ##. message("pMax=", pMax)
+        w <- which(pt > pMax)
+        ##. message("w=", paste(w, collapse=" "))
+        ##. message("pt=", paste(pt, collapse=" "))
+        if (length(w)) {
+            pt <- pt[1:w[1]]
+            ##> message("pt=", paste(pt, collapse=" "))
+        }
+    }
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
-    warningMessages <- c(warningMessages,
-                         "Removed flags from gridded section object. Use handleFlags() first to remove bad data.")
-    for (i in 1:n) {
-        ##message("i: ", i, ", p before decimation: ", paste(section@data$station[[i]]@data$pressure, " "))
-        suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method,
-                                                              debug=debug-1, ...))
-        res@data$station[[i]]@metadata$flags <- NULL
-        ##message("i: ", i, ", p after decimation: ", paste(res@data$station[[i]]@data$pressure, " "))
+    npt <- length(pt)
+    nstation <- length(res[["station"]])
+    nyg <- length(pt)
+
+    ## The core of the work -- use ctdDecimate() on each station
+    for (i in seq_len(nstation)) {
+        suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]],
+                                                              p=pt, method=method, debug=debug-1, ...))
+    }
+    ## Find all units in *any* station, and then insert them into *all* stations.
+    units <- list()
+    for (i in seq_len(nstation)) {
+        for (unitName in names(section@data$station[[i]]@metadata$units)) {
+            if (!(unitName %in% names(units))) {
+                units[unitName] <- section@data$station[[i]]@metadata$units[unitName]
+            }
+        }
+    }
+    for (i in seq_len(nxg)) {
+        res@data$station[[i]]@metadata$units <- units
+        res@data$station[[i]]@metadata$flags <- list()
+        for (flagname in names(section@data$station[[i]]@metadata$flags)) {
+            ## Note that the flags are named after those of the flags for *that particular*
+            ## station in the input object. This is different from sectionSmooth().
+            ##> message("sectionGrid ... i ", i, " (nxg=", nxg, "), flagname '", flagname, "'")
+            res@data$station[[i]]@metadata$flags[[flagname]] <- rep(NA, nyg)
+        }
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    for (w in warningMessages)
-        res@processingLog <- processingLogAppend(res@processingLog, w)
+    ##for (w in warningMessages)
+    ##    res@processingLog <- processingLogAppend(res@processingLog, w)
     oceDebug(debug, "} # sectionGrid\n", unindent=1)
     res
 }
 
 
-#' @title Smooth a Section
+#' Smooth a Section
 #'
-#' @description
-#' Smooth a section in the lateral (alpha version that may change).
+#' Smooth a section, in any of several ways, working either in the vertical
+#' direction or in both the vertical and lateral directions.
 #'
-#' @details
-#' This function should be used with caution, as should any operation that changes
-#' data.  Although smoothing may be desirable to produce aesthetically-pleasing
-#' plots, it can also introduce artifacts that can lead to erroneous conclusions.
-#' The prudent analyst starts by comparing plots of the raw data with plots of the
-#' smoothed data.
+#' This function produces smoothed fields that might be useful in
+#' simplifying graphical elements created with \code{\link{plot,section-method}}.
+#' As with any smoothing method, a careful analyst will compare the results
+#' against the raw data, e.g. using \code{\link{plot,section-method}}.
+#' In addition the problem of falsely widening narrow features such as
+#' fronts, there is also the potential to get unphysical results with
+#' spars sampling near topographic features such as bottom slopes and ridges.
 #'
-#' For \code{method="spline"}, the section is smoothed using
-#' \code{\link{smooth.spline}} on individual pressure levels, with any parameters
-#' listed in \code{parameters} being passed to that function.  If \code{df} is not
-#' present in \code{parameters}, then this function sets it to the number of
-#' stations divided by 5.  Smoothing is done separately for temperature, salinity,
-#' and sigma-theta.
+#' The \code{method} argument selects between three possible methods.
 #'
-#' For the (much slower) \code{method="barnes"} method, smoothing is done across
+#' \itemize{
+#'
+#' \item For \code{method="spline"}, i.e. the default, the section is smoothed
+#' laterally, using \code{\link{smooth.spline}} on individual pressure levels.
+#' (If the pressure levels do not match up, \code{\link{sectionGrid}} should
+#' be used first to create a \code{section} object that can be used here.)
+#' The \code{df} argument sets the degree of freedom of the spline, with
+#' larger values indicating less smoothing.
+#'
+#' \item For the (much slower) \code{method="barnes"} method, smoothing is done across
 #' both horizontal and vertical coordinates, using \code{\link{interpBarnes}}.
-#' The stations are changed to lie on the grid supplied defined \code{xg} and
-#' \code{yg}, or by \code{xgl} and \code{ygl} (see those arguments)
+#' The output station locations are computed by linear interpolation of
+#' input locations, using \code{\link{approx}} on the original
+#' longitudes and longitudes of stations, with the independent variable
+#' being the distance along the track, computed with \code{\link{geodDist}}.
+#' The values of \code{xg}, \code{yg}, \code{xgl} and \code{ygl} control
+#' the smoothing.
+#'
+#' \item If \code{method} is a function, then that function is applied to
+#' the (distance, pressure) data for each variable at a grid defined by
+#' \code{xg}, \code{xgl}, \code{yg} and \code{ygl}. The function must
+#' be of the form \code{function(x,y,F,xg,xr,yg,yr)}, and must
+#' return a matrix of the gridded result, with first index indicating
+#' the "grid" station number and second index indicating "grid" pressure.
+#' The \code{x} value that is supplied to this function is set as
+#' the distance along the section, as computed with \code{\link{geodDist}},
+#' and repeated for each of the points at each station.  The corresponding
+#' pressures are provided in \code{y}, and the value to be gridded is
+#' in \code{v}, which will be \code{temperture} on one call to the function,
+#' \code{salinity} on another call, etc. The other quantities
+#' have the meanings as described below.  See the \dQuote{Examples}
+#' for a description of how to set up and use a function for the gridding
+#' method known as Kriging.
+#'
+#'}
 #'
 #' @param section A \code{section} object containing the section to be smoothed.
 #' For \code{method="spline"}, the pressure levels must match for each station in
 #' the section.
 #'
-#' @param method Specifies the method to use; see \sQuote{Details}.
+#' @param method A string or a function that specifies the method to use; see \sQuote{Details}.
 #'
-#' @param xg,xgl passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.
-#' If \code{xg} is supplied, it defines the x component of the grid, i.e. the resultant "stations".
+#' @param x Optional numerical vector, of the same length as the number of stations in \code{section},
+#' which will be used in gridding in the lateral direction. If not provided, this
+#' defaults to \code{\link{geodDist}(section)}.
+#'
+#' @param xg,xgl ignored in the \code{method="spline"} case, but passed to
+#' \code{\link{interpBarnes}} if \code{method="barnes"} or
+#' to \code{method} if it is a function.
+#' If \code{xg} is supplied, it defines the x component of the grid, i.e. the resultant station
+#' distances, x, along the track of the section.
 #' Alternatively, if \code{xgl} is supplied, the x grid is established using \code{\link{seq}},
 #' to span the data with \code{xgl} elements. If neither of these is supplied, the output
 #' x grid will equal the input x grid.
 #'
-#' @param yg,ygl similar to \code{xg} and \code{xgl}.
+#' @param yg,ygl similar to \code{xg} and \code{xgl}, but for pressure. If \code{yg}
+#' is not given, it is determined from the deepest station in the section. If
+#' \code{ygl} was not given, then a grid is constructed to span the pressures
+#' of that deepest station with \code{ygl} elements. On the other hand,
+#' if \code{ygl} was not given, then the y grid will constructed from the
+#' pressure levels in the deepest station.
 #'
-#' @param xr,yr influence ranges in x and y, passed to \code{\link{interpBarnes}} if
-#' \code{method="barnes"}; ignored otherwise.
+#' @param xr,yr influence ranges in x (along-section distance) and y (pressure),
+#' passed to \code{\link{interpBarnes}} if \code{method="barnes"} or to
+#' \code{method}, if the latter is a function. If missing, \code{xr} defaults to
+#' 1.5X the median inter-station distance and \code{yr} defaults to 0.2X
+#' the pressure range. Since these defaults have changed over the evolution
+#' of \code{sectionSmooth}, analysts ought to supply \code{xr} and \code{yr}
+#' in the function call, tailoring them to particular applications, and
+#' making the code more resistant to changes in \code{sectionSmooth}.
 #'
-#' @param gamma scale-reduction parameter, passed to \code{\link{interpBarnes}},
-#' if \code{method="barnes"}; ignored otherwise.
+#' @param df Degree-of-freedom parameter, passed to \code{\link{smooth.spline}}
+#' if \code{method="spline"}, and ignored otherwise. If \code{df} is not provided,
+#' it defaults to 1/5-th of the number of stations containing non-\code{NA}
+#' data at the particular pressure level being processed, as \code{sectionSmooth}
+#' works its way through the water column.
 #'
-#' @param iterations number of iterations of Barnes algorithm, passed to
-#' \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.
-#'
-#' @param trim passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
-#'
-#' @param pregrid passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
+#' @param gamma,iterations,trim,pregrid Values passed to
+#' \code{\link{interpBarnes}}, if \code{method="barnes"}, and
+#' ignored otherwise. \code{gamma} is the factor by which
+#' \code{xr} and \code{yr} are reduced on each of succeeding iterations.
+#' \code{iterations} is the number of iterations to do.
+#' \code{trim} controls whether the gridded data are set to
+#' \code{NA} in regions with sparse data
+#' coverage. \code{pregrid} controls whether data are to be
+#' pre-gridded with \code{\link{binMean2D}} before being passed to
+#' \code{\link{interpBarnes}}.
 #'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
 #'
 #' @param ... Optional extra arguments, passed to either
-#' \code{\link{smooth.spline}} or \code{\link{interpBarnes}}.
+#' \code{\link{smooth.spline}}, if \code{method="spline"}, and ignored otherwise.
 #'
-#' @return An object of \code{\link{section-class}} that ordered in some way.
+#' @return An object of \code{\link{section-class}} that has been smoothed in some way.
+#' Every data field that is in even a single station of the input object
+#' is inserted into every station in the returned value, and therefore
+#' the units represent all the units in any of the stations, as do the
+#' flag names. However, the flags are all set to \code{NA} values.
 #'
 #' @examples
+#' # Unsmoothed (Gulf Stream)
 #' library(oce)
 #' data(section)
-#' gs <- subset(section, 109<=stationId&stationId<=129)
-#' gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
-#' gss1 <- sectionSmooth(gsg, "spline", df=16)
-#' plot(gss1)
-#' \dontrun{
-#' gss2 <- sectionSmooth(gsg, "barnes", xr=24, yr=100)
-#' plot(gss2)
-#' }
+#' gs <- subset(section, 115<=stationId&stationId<=125)
+#' par(mfrow=c(2, 2))
+#'
+#' plot(gs, which="temperature")
+#' mtext("unsmoothed")
+#'
+#' # Spline
+#' gsg <- sectionGrid(gs, p=seq(0, 5000, 100))
+#' gsSpline <- sectionSmooth(gsg, "spline")
+#' plot(gsSpline, which="temperature")
+#' mtext("spline-smoothed")
+#'
+#' # Barnes
+#' gsBarnes <- sectionSmooth(gs, "barnes", xr=50, yr=200)
+#' plot(gsBarnes, which="temperature")
+#' mtext("Barnes-smoothed")
+#'
+#' # Kriging
+#'if (requireNamespace("automap",quietly=TRUE)&&requireNamespace("sp",quietly=TRUE)) {
+#'  krig <- function(x, y, F, xg, xr, yg, yr) {
+#'    xy <- data.frame(x=x/xr, y=y/yr)
+#'    K <- automap::autoKrige(F~1, remove_duplicates=TRUE,
+#'                            input_data=sp::SpatialPointsDataFrame(xy, data.frame(F)),
+#'                            new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
+#'    matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
+#'  }
+#'  gsKrig <- sectionSmooth(gs, krig)
+#'  plot(gsKrig, which="temperature")
+#'  mtext("Kriging-smoothed")
+#'}
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
-sectionSmooth <- function(section, method=c("spline", "barnes"),
-                          xg, yg, xgl, ygl, xr, yr, gamma=0.5, iterations=2, trim=0, pregrid=FALSE,
+#' @family things related to section data
+sectionSmooth <- function(section, method="spline",
+                          x,
+                          xg, yg, xgl, ygl, xr, yr,
+                          df, gamma=0.5, iterations=2, trim=0, pregrid=FALSE,
                           debug=getOption("oceDebug"), ...)
 {
-    method <- match.arg(method)
-    ## bugs: should ensure that every station has identical pressures
-    ## FIXME: should have smoothing in the vertical also ... and is spline what I want??
-    oceDebug(debug, "sectionSmooth(section,method=\"", method, "\", ...) {\n", sep="", unindent=1)
     if (!inherits(section, "section"))
         stop("method is only for objects of class '", "section", "'")
-    nstn <- length(section@data$station)
-    if (method == "spline") {
-        stn1pressure <- section[["station", 1]][["pressure"]]
-        npressure <- length(stn1pressure)
-        for (istn in 1:nstn) {
-            thisp <- section[["station", istn]][["pressure"]]
-            if (length(thisp) != npressure)
-                stop("pressure mismatch between station 1 and station", istn)
-            if (any(thisp != stn1pressure))
-                stop("pressure mismatch between station 1 and station", istn)
-        }
-        oceDebug(debug, "nstn=", nstn, "npressure=", npressure, "\n")
-        res <- section
-        ## reorder stations by distance from first (this
-        ## is crucial if the files have been ordered by a
-        ## directory listing, and they are not named e.g. 01
-        ## to 10 etc but 1 to 10 etc.
+    if (!is.function(method) && !(is.character(method) && (method %in% c("barnes", "kriging", "spline"))))
+        stop('method must be "barnes", "kriging", "spline", or an R function')
+    oceDebug(debug, "sectionSmooth(section,method=\"",
+             if (is.character(method)) method else "(function)", "\", ...) {\n", sep="", unindent=1)
+    stations <- section[["station"]]
+    nstn <- length(stations)
+    if (nstn < 2) {
+        warning("station has <2 stations, so sectionSmooth() is returning it, unaltered")
+        return(x)
+    }
+    xrGiven <- !missing(xr)
+    yrGiven <- !missing(yr)
+    dfGiven <- !missing(df)
+    if (missing(x))
         x <- geodDist(section)
-        o <- order(x)
-        res@metadata$longitude <- section@metadata$longitude[o]
-        res@metadata$latitude <- section@metadata$latitude[o]
-        res@metadata$stationId <- section@metadata$stationId[o]
-        res@data$station <- section@data$station[o]
-        x <- geodDist(res)
-        ## FIXME 20160905 DEK: allow general sections here
-        temperatureMat <- array(double(), dim=c(npressure, nstn))
-        salinityMat <- array(double(), dim=c(npressure, nstn))
-        sigmaThetaMat <- array(double(), dim=c(npressure, nstn))
-        for (s in 1:nstn) {
-            thisStation <- res@data$station[[s]]
-            temperatureMat[, s] <- thisStation@data$temperature
-            salinityMat[, s] <- thisStation[["salinity"]]
-            sigmaThetaMat[, s] <- thisStation[["sigmaTheta"]]
-        }
-        ## turn off warnings about df being too small
-        o <- options('warn')
-        options(warn=-1)
-        gaveDF <- "df" %in% names(list(...))
-        for (p in 1:npressure) {
-            ok <- !is.na(temperatureMat[p, ]) ## FIXME: ok to infer missingness from temperature alone?
-            nok <- sum(ok)
-            ##iok <- (1:nstn)[ok]
-            if (nok > 4) {
-                ## Only fit spline if have 4 or more values; ignore bad values in fitting.
-                if (gaveDF) {
-                    temperatureMat[p, ] <- predict(smooth.spline(x[ok], temperatureMat[p, ok], ...), x)$y
-                    salinityMat[p, ]    <- predict(smooth.spline(x[ok],    salinityMat[p, ok], ...), x)$y
-                    sigmaThetaMat[p, ]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p, ok], ...), x)$y
-                    oceDebug(debug, stn1pressure[p], "dbar: smoothing with supplied df=", list(...)$df, " (have", nok, "good values)\n")
-                } else {
-                    usedf <- nok / 5
-                    temperatureMat[p, ] <- predict(smooth.spline(x[ok], temperatureMat[p, ok], df=usedf), x)$y
-                    salinityMat[p, ]    <- predict(smooth.spline(x[ok],    salinityMat[p, ok], df=usedf), x)$y
-                    sigmaThetaMat[p, ]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p, ok], df=usedf), x)$y
-                    oceDebug(debug, stn1pressure[p], "dbar: smoothing with df=", usedf, " (have", nok, "good values)\n")
-                }
-            } else {
-                oceDebug(debug, stn1pressure[p], "dbar: not smoothing, since have only", nok, "good values\n")
-            }
-        }
-        options(warn=o$warn)
-        for (s in 1:nstn) {
-            res@data$station[[s]]@data$temperature <- temperatureMat[, s]
-            res@data$station[[s]]@data$salinity <- salinityMat[, s]
-            res@data$station[[s]]@data$sigmaTheta <- sigmaThetaMat[, s]
-        }
-    } else if (method == "barnes") {
-        ##message("barnes method")
-        vars <- names(section[["station", 1]]@data)
-        ##message("names(vars)= '", paste(vars, collapse=' '), "'")
-        res <- section
-        x <- geodDist(section)
-        stn1pressure <- section[["station", 1]][["pressure"]]
+    nx <- length(x)
+    if (nx != length(section@data$station))
+        stop("length(x)=", nx, " does not match number of stations=", length(section@data$station))
+    ## Rearange the input stations into order set by x.
+    o <- order(x)
+    x <- x[o]
+    section@data$station <- section@data$station[o]
+    P <- section[["pressure"]]
+    maxPressure <- max(P, na.rm=TRUE)
+    if (missing(xg)) {
+        xg <- if (missing(xgl)) x else seq(min(x), max(x), length.out=xgl)
+        oceDebug(debug, "defaulted xg=", paste(xg, collapse=" "), "\n")
+    } else {
+        oceDebug(debug, "user-supplied xg=", paste(xg, collapse=" "), "\n")
+    }
+    if (missing(yg)) {
+        deepest <- which.max(unlist(lapply(section[["station"]], function(ctd) max(ctd[["pressure"]], na.rm=TRUE))))
+        yg <- if (missing(ygl)) section[["station", deepest]][["pressure"]] else seq(0, maxPressure, length.out=ygl)
+    }
+    oceDebug(debug, vectorShow(xg))
+    oceDebug(debug, vectorShow(yg))
+    stn1pressure <- stations[[1]][["pressure"]]
+    if (identical(method, "spline") && !identical(yg, stn1pressure))
+        stop("for method=\"spline\", yg must match the pressure vector in first station")
+    nxg <- length(xg)
+    nyg <- length(yg)
+
+    ## varsAll holds the names of all variables in the section.
+    res <- section
+    varsAll <- unique(unlist(lapply(stations, function(ctd) names(ctd[["data"]]))))
+    ## vars holds just the names of variables that get smoothed. First, we remove
+    ## things that simply cannot be smoothed...
+    vars <- varsAll[!varsAll %in% c("flag", "quality", "scan", "time")]
+    ## ..., second, we remove things that will be computed from 'x' and 'xg'.
+    vars <- vars[!vars %in% c("latitude", "longitude", "pressure")]
+    ## ... finally, remove 'depth', which is kind of a surrogate for pressure, I think.
+    vars <- vars[!vars %in% c("depth")]
+    flagnames <- unique(unlist(lapply(stations, function(ctd) names(ctd@metadata$flags))))
+
+    ## start with existing station, to get processing log, section ID, etc., but
+    ## recreate @data$station
+    res@data$station <- list("vector", nxg)
+    for (istn in seq_len(nxg)) {
+        res@data$station[[istn]] <- new('ctd')
+        res@data$station[[istn]][["pressure"]] <- yg
+    }
+    if (is.character(method) && method == "spline") {
+        oceDebug(debug, "using spline method\n")
+        ## Since we are smoothing along lines of constant pressure, we must
+        ## first ensure that the stations have identical pressures.
         npressure <- length(stn1pressure)
-        maxPressure <- 0
-        for (istn in 1:nstn) {
-            stn <- section[["station", istn]]
-            stnPressure <- stn[["pressure"]]
-            if (length(stnPressure) != npressure)
-                stop("pressure mismatch between station 1 and station", istn)
-            if (any(stnPressure != stn1pressure))
-                stop("pressure mismatch between station 1 and station.", istn)
-            maxPressure <- max(maxPressure, max(stnPressure, na.rm=TRUE))
+        for (istn in 2:nstn) {
+            thisp <- stations[[istn]][["pressure"]]
+            if (length(thisp) != npressure || any(thisp != stn1pressure))
+                stop("pressure mismatch between station 1 and station", istn, "; try using sectionGrid() first")
         }
-        P <- rep(stn1pressure, nstn) # FIXME: p or P?
-        X <- rep(x, each=npressure)
-        if (missing(xg))
-            xg <- if (missing(xgl)) x else pretty(x, xgl)
-        if (missing(yg))
-            yg <- seq(0, maxPressure, length.out=if (missing(ygl)) 50 else ygl)
-        ## "stations" will go to new places
-        res@data$station <- vector("list", length(xg))
-        longitudeOriginal <- section[["longitude", "byStation"]]
-        latitudeOriginal <- section[["latitude", "byStation"]]
-        longitudeNew <- approx(x, longitudeOriginal, xg, rule=2)$y
-        latitudeNew <- approx(x, latitudeOriginal, xg, rule=2)$y
-        for (istn in seq_along(xg)) {
-            ## message("istn=", istn, " whilst making up long and lat")
-            res@data$station[[istn]] <- new('oce')
-            res@data$station[[istn]]@metadata$longitude <- longitudeNew[istn]
-            res@data$station[[istn]]@metadata$latitude <- latitudeNew[istn]
-        }
+        ## The work will be done in matrices, for code clarity and speed.
+        VAR <- array(double(), dim=c(nstn, npressure))
+        oceDebug(debug, "dim matrix for input grid=", paste(dim(VAR), collapse="X"), "\n")
         for (var in vars) {
-            ##message("var='", var, "'")
-            if (var == "scan" || var == "time" || var == "pressure"
-                || var == "depth" || var == "flag" || var == "quality")
-                next
-            v <- NULL
-            oceDebug(debug, "smoothing", var, "\n")
-            ## collect data
-            if (FALSE) {
-                for (istn in 1:nstn) {
-                    oceDebug(debug, "station", istn, "\n")
-                    stn <- section[["station", istn]]
-                    v <- c(v, stn[[var]])
-                }
+            ##? res@data$station[[istn]][[var]] <- rep(NA, npressure)
+            oceDebug(debug, "  smoothing", var, "\n")
+            for (istn in seq_len(nx))
+                VAR[istn, ] <- if (var %in% names(stations[[istn]][["data"]])) stations[[istn]][[var]] else rep(NA, npressure)
+            ## Smooth at each pressure value (turn off warnings because smooth.spline is confusingly chatty)
+            owarn <- options('warn')$warn
+            options(warn=-1)
+            VARS <- apply(VAR, 2,
+                          function(varj)
+                          {
+                              ok <- is.finite(varj)
+                              varjok <- varj[ok]
+                              xok <- x[ok]
+                              nok <- sum(ok)
+                              if (!dfGiven) {
+                                  df <- floor(nok / 3)
+                              }
+                              ##message("in fcn, df=", df)
+                              if (df > 1) {
+                                  ##message("xok:", paste(xok, collapse=" "))
+                                  ##message("varjok:", paste(varjok, collapse=" "))
+                                  predict(smooth.spline(xok, varjok, df=df), xg)$y
+                              } else {
+                                  if (nok > 2) approx(xok, varjok, xout=xg, rule=1)$y else rep(NA, nxg)
+                              }
+                          })
+            options(warn=owarn)
+            oceDebug(debug, "dim matrix for output grid=", paste(dim(VARS), collapse="X"), "\n")
+            for (istn in seq_len(nxg)) {
+                res@data$station[[istn]][[var]] <- VARS[istn, ]
             }
-            ## grid overall, then deposit into stations (trimming for NA)
-            v <- section[[var]]
-            smu <- interpBarnes(X, P, v,
-                                xg=xg, yg=yg, xgl=xgl, ygl=ygl, xr=xr, yr=yr, gamma=gamma, iterations=iterations, trim=trim,
-                                debug=debug-1)
-            for (istn in seq_along(xg)) {
-                res@data$station[[istn]]@data[[var]] <- smu$zg[istn, ]
-                res@data$station[[istn]]@data[["pressure"]] <- yg
-                ## na <- is.na(section@data$station[[istn]][[var]])
-                ## message("A/3")
-                ## res@data$station[[istn]]@data[[var]][na] <- NA
-            }
-            res@metadata$stationId <- paste("interpolated_", seq_along(xg), sep="")
-            res@metadata$longitude <- longitudeNew
-            res@metadata$latitude <- latitudeNew
         }
     } else {
-        stop("unknown method \"", method, "\"") # cannot reach here
+        oceDebug(debug, "using barnes or function method\n")
+        ## either "barnes" or a function
+        ## Find names of all variables in all stations; previous to 2019 May 2,
+        ## we only got names from the first station.
+        XI <- geodDist(section)
+        X <- unlist(lapply(seq_along(XI), function(i) rep(XI[i], length(section[["station", i]][["pressure"]]))))
+        ## Set up defaults for xr and yr, if not specified in function call.
+        if (!xrGiven) {
+            xr <- 1.5 * median(diff(sort(x)))
+            oceDebug(debug, "xr defaulting to", xr, "(1.5X the median distance between stations)\n")
+        }
+        if (!yrGiven) {
+            yr <- 0.2 * diff(range(P, na.rm=TRUE))
+            oceDebug(debug, "yr defaulting to", yr, "(0.2X the pressure range across all stations)\n")
+        }
+        ## Smooth each variable separately
+        for (var in vars) {
+            v <- NULL
+            oceDebug(debug, "  smoothing", var, "\n")
+            ## collect data
+            v <- unlist(lapply(section[["station"]],
+                               function(CTD)
+                                   if (var %in% names(CTD[["data"]])) CTD[[var]] else
+                                       rep(NA, length(CTD[["pressure"]]))))
+            ## ignore NA values (for e.g. a station that lacks a particular variable)
+            ok <- is.finite(X) & is.finite(P) & is.finite(v)
+            if (is.character(method)) {
+                if (method == "barnes") {
+                    smu <- interpBarnes(X[ok], P[ok], v[ok], xg=xg, yg=yg, xgl=length(xg), ygl=length(yg),
+                                        xr=xr, yr=yr, gamma=gamma, iterations=iterations, trim=trim,
+                                        debug=debug-1)
+                    ## rename to match names if method is a function.
+                    smu$z <- smu$zg
+                    smu$x <- smu$xg
+                    smu$y <- smu$yg
+                } else if (method == "kriging") {
+                    if (requireNamespace("automap", quietly=TRUE) &&
+                        requireNamespace("sp", quietly=TRUE)) {
+                        krigFunction <- function(x, y, F, xg, xr, yg, yr) {
+                            xy <- data.frame(x=x/xr, y=y/yr)
+                            K <- automap::autoKrige(F~1, remove_duplicates=TRUE,
+                                                    input_data=sp::SpatialPointsDataFrame(xy, data.frame(F)),
+                                                    new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
+                            matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
+                        }
+                        owarn <- options('warn')$warn
+                        options(warn=-1) # silence autoKrige chattiness on e.g. method selection
+                        capture.output(smu <- list(z=krigFunction(X[ok], P[ok], v[ok], xg=xg, xr=xr, yg=yg, yr=yr)))
+                        options(warn=owarn)
+                    } else {
+                        stop('method="kriging" requires packages "automap" and "sp" to be installed\n')
+                    }
+                } else {
+                    stop('method must be "barnes", "kriging", "spline", "barnes" or a function')
+                }
+            } else {
+                ## method is not a character. It must be a function, but let's check again, anyway.
+                if (is.function(method)) {
+                    smu <- list(z=method(X[ok], P[ok], v[ok], xg=xg, xr=xr, yg=yg, yr=yr),
+                                x=xg, y=yg)
+                } else {
+                    stop('method must be "barnes", "kriging", "spline", "barnes" or a function')
+                }
+            }
+            ## cat("smu$y:\n");print(smu$y)
+            for (istn in seq_len(nxg)) {
+                ##cat("istn=", istn, "\n", sep="")
+                res@data$station[[istn]]@data[[var]] <- smu$z[istn, ]
+                ##cat("  set '", var, "'\n", sep="")
+                res@data$station[[istn]]@data[["pressure"]] <- smu$y
+                ##cat("  set pressure\n", sep="")
+            }
+        }
     }
-
+    ## Set up section-level and station-level metadata
+    res@metadata$longitude <- approx(x, section[["longitude", "byStation"]], xg)$y
+    res@metadata$latitude <- approx(x, section[["latitude", "byStation"]], xg)$y
+    for (i in seq_along(xg)) {
+        res@data$station[[i]]@metadata$longitude <- res@metadata$longitude[i]
+        res@data$station[[i]]@metadata$latitude <- res@metadata$latitude[i]
+        res@data$station[[istn]]@metadata$stationId <- if (nxg < 10) sprintf("x%d", istn)
+            else if (nxg < 100) sprintf("x%02d", istn)
+            else if (nxg < 1000) sprintf("x%03d", istn)
+            else if (nxg < 10000) sprintf("x%04d", istn)
+            else sprintf("x%d", istn) # Just give up on fanciness
+    }
+    nstation <- length(res[["station"]])
+    waterDepthOriginal <- unlist(lapply(section[["station"]], function(STN) STN[["waterDepth"]]))
+    if (length(waterDepthOriginal) > 0) {
+        waterDepthNew <- approx(x, waterDepthOriginal, xg, rule=2)$y
+        for (i in seq_len(nstation)) {
+            res@data$station[[i]]@metadata$waterDepth <- waterDepthNew[i]
+        }
+    }
+    ## Insert uniform units and flags into each station.
+    units <- list()
+    for (i in seq_len(nstation)) {
+        for (unitName in names(section@data$station[[i]]@metadata$units)) {
+            if (!(unitName %in% names(units))) {
+                units[unitName] <- section@data$station[[i]]@metadata$units[unitName]
+            }
+        }
+    }
+    for (i in seq_len(nxg)) {
+        res@data$station[[i]]@metadata$units <- units
+        ## Note that we put in flags for *all* variables in the output file. This
+        ## is different from the action in sectionGrid(), which inserts flags
+        ## tailored to individual stations. However, smoothing creates new stations,
+        ## and puts *all* variables in *each* station, so we need flags for everything.
+        res@data$station[[i]]@metadata$flags <- list()
+        for (flagname in flagnames) {
+            ##> message("sectionSmooth ... i ", i, " (nxg=", nxg, "), flagname '", flagname, "'")
+            res@data$station[[i]]@metadata$flags[[flagname]] <- rep(NA, nyg)
+        }
+    }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # sectionSmooth()\n", unindent=1)
     res
@@ -2786,7 +3032,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 as.section <- function(salinity, temperature, pressure, longitude, latitude, station, sectionId="")
 {
     if (missing(salinity))

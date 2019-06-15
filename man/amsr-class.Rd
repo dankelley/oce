@@ -85,7 +85,8 @@ provided at \code{http://www.remss.com/missions/amsr/}.
 \seealso{
 \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 
-Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
+Other things related to amsr data: \code{\link{[[,amsr-method}},
+  \code{\link{[[<-,amsr-method}},
   \code{\link{composite,amsr-method}},
   \code{\link{download.amsr}},
   \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
@@ -96,4 +97,4 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
 Dan Kelley and Chantelle Layton
 }
 \concept{satellite}
-\concept{things related to \code{amsr} data}
+\concept{things related to amsr data}

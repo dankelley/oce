@@ -22,7 +22,7 @@ plot(cm)
 }
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
@@ -33,12 +33,12 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 
-Other things related to \code{cm} data: \code{\link{[[,cm-method}},
+Other things related to cm data: \code{\link{[[,cm-method}},
   \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
   \code{\link{cm-class}}, \code{\link{plot,cm-method}},
   \code{\link{read.cm}}, \code{\link{rotateAboutZ}},
   \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{cm} data}
+\concept{datasets provided with oce}
+\concept{things related to cm data}

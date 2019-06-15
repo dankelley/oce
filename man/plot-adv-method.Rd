@@ -186,7 +186,7 @@ plot(adv)
 The documentation for \code{\link{adv-class}} explains the structure
 of ADV objects, and also outlines the other functions dealing with them.
 
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
   \code{\link{plot,bremen-method}},
@@ -210,7 +210,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+Other things related to adv data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
   \code{\link{adv}}, \code{\link{beamName}},
   \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
@@ -227,5 +227,5 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{adv} data}
+\concept{functions that plot oce data}
+\concept{things related to adv data}

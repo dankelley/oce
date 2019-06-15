@@ -63,7 +63,7 @@ sense if the mean resultant x and y were zero.
 }
 
 \examples{
-\dontrun{
+\donttest{
 # Develop a transect-based axis system for final data(section) stations
 library(oce)
 data(section)

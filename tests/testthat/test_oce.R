@@ -63,8 +63,6 @@ test_that("head_argo", {
               } else if (is.matrix(argo@metadata[[name]])) {
                 j <- head(seq_len(dim(argo@metadata[[name]])[2]), n)
                 expect_equal(h@metadata[[name]], argo@metadata[[name]][, j])
-              } else {
-                warning("ignoring metadata item: '", name, "'")
               }
             }
             for (name in names(argo@data)) {
@@ -104,11 +102,13 @@ test_that("head_coastline", {
 })
 
 test_that("head_ctd", {
-          data(ctd)
+          data(section)
+          ctd <- section[["station", 100]]
           for (n in c(-10, 10)) {
             h <- head(ctd, n)
             for (name in names(ctd@data)) {
               expect_equal(h@data[[name]], head(ctd@data[[name]], n))
+              expect_equal(h@metadata$flags[[name]], head(ctd@metadata$flags[[name]], n))
             }
           }
 })
@@ -133,20 +133,20 @@ Start_Lat   = 48°N 58.4580'
 Start_Lon   =  45°W 52.3932'
 Deviation   = -17.791079
 Columns     = z:u:v:ev
-   9.9  0.266  0.034  0.050 
-  19.8  0.266  0.034  0.050 
-  29.6  0.266  0.034  0.049 
-  39.5  0.240  0.056  0.032 
-  49.4  0.222  0.063  0.027 
-  59.3  0.218  0.068  0.025 
-  69.2  0.227  0.079  0.025 
-  79.0  0.217  0.092  0.023 
-  88.9  0.204  0.098  0.023 
-  98.8  0.198  0.103  0.021 
- 108.7  0.182  0.103  0.020 
- 118.6  0.172  0.083  0.020 
- 128.5  0.174  0.089  0.019 
- 138.3  0.172  0.093  0.020 
+   9.9  0.266  0.034  0.050
+  19.8  0.266  0.034  0.050
+  29.6  0.266  0.034  0.049
+  39.5  0.240  0.056  0.032
+  49.4  0.222  0.063  0.027
+  59.3  0.218  0.068  0.025
+  69.2  0.227  0.079  0.025
+  79.0  0.217  0.092  0.023
+  88.9  0.204  0.098  0.023
+  98.8  0.198  0.103  0.021
+ 108.7  0.182  0.103  0.020
+ 118.6  0.172  0.083  0.020
+ 128.5  0.174  0.089  0.019
+ 138.3  0.172  0.093  0.020
  148.2  0.165  0.098  0.019"
 test_that("head_ladcp", {
           dat <- read.table(text=ladpText, skip=7, header=FALSE, col.names=c("z","u","v","ev"))
@@ -269,8 +269,6 @@ test_that("tail_argo", {
               } else if (is.matrix(argo@metadata[[name]])) {
                 j <- tail(seq_len(dim(argo@metadata[[name]])[2]), n)
                 expect_equal(t@metadata[[name]], argo@metadata[[name]][, j])
-              } else {
-                warning("ignoring metadata item: '", name, "'")
               }
             }
             for (name in names(argo@data)) {
@@ -310,11 +308,13 @@ test_that("tail_coastline", {
 })
 
 test_that("tail_ctd", {
-          data(ctd)
+          data(section)
+          ctd <- section[["station", 100]]
           for (n in c(-10, 10)) {
-            t <- head(ctd, n)
+            t <- tail(ctd, n)
             for (name in names(ctd@data)) {
-              expect_equal(t@data[[name]], head(ctd@data[[name]], n))
+              expect_equal(t@data[[name]], tail(ctd@data[[name]], n))
+              expect_equal(t@metadata$flags[[name]], tail(ctd@metadata$flags[[name]], n))
             }
           }
 })

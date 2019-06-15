@@ -2,7 +2,7 @@
 % Please edit documentation in R/accessors.R
 \name{oceDeleteMetadata}
 \alias{oceDeleteMetadata}
-\title{Delete metadata from an \code{oce} object}
+\title{Delete Something in the metadata Slot of an oce Object}
 \usage{
 oceDeleteMetadata(object, name)
 }

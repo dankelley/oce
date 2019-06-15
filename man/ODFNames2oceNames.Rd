@@ -42,6 +42,7 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
 \tabular{lll}{
     \strong{Regexp} \tab \strong{Result}           \tab \strong{Notes}                                             \cr
     \code{ALTB_*.*} \tab \code{altimeter}          \tab                                                            \cr
+    \code{ATTU_*.*} \tab \code{attenuation}        \tab                                                            \cr
     \code{BATH_*.*} \tab \code{barometricDepth}    \tab Barometric depth (of sensor? of water column?)             \cr
     \code{BEAM_*.*} \tab \code{a}                  \tab Used in \code{adp} objects                                 \cr
     \code{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                                 \cr
@@ -56,12 +57,14 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{FFFF_*.*} \tab \code{flagArchaic}        \tab Old flag name, replaced by \code{QCFF}                     \cr
     \code{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                          \cr
     \code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                                 \cr
+    \code{GEOP}     \tab \code{geopotential}       \tab                                                            \cr
     \code{HCDM}     \tab \code{directionMagnetic}  \tab                                                            \cr
     \code{HCDT}     \tab \code{directionTrue}      \tab                                                            \cr
     \code{HCSP}     \tab \code{speedHorizontal}    \tab                                                            \cr
     \code{LATD_*.*} \tab \code{latitude}           \tab                                                            \cr
     \code{LOND_*.*} \tab \code{longitude}          \tab                                                            \cr
     \code{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                                 \cr
+    \code{NONE_*.*} \tab \code{noWMOcode}          \tab                                                            \cr
     \code{OCUR_*.*} \tab \code{oxygenCurrent}      \tab Used mainly in \code{ctd} objects                          \cr
     \code{OSAT_*.*} \tab \code{oxygenSaturation}   \tab Used mainly in \code{ctd} objects                          \cr
     \code{OTMP_*.*} \tab \code{oxygenTemperature}  \tab Used mainly in \code{ctd} objects                          \cr
@@ -72,14 +75,18 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{PSAL_*.*} \tab \code{salinity}           \tab Used mainly in \code{ctd} objects                          \cr
     \code{PSAR_*.*} \tab \code{par}                \tab Used mainly in \code{ctd} objects                          \cr
     \code{QCFF_*.*} \tab \code{flag}               \tab Overall flag                                               \cr
-    \code{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objects                           \cr
+    \code{REFR_*.*} \tab \code{reference}          \tab                                                            \cr
+    \code{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objects                          \cr
     \code{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                          \cr
     \code{SNCN_*.*} \tab \code{scanCounter}        \tab Used mainly in \code{ctd} objects                          \cr
+    \code{SPAR_*.*} \tab \code{SPAR}               \tab                                                            \cr
+    \code{SPVA_*.*} \tab \code{specificVolumeAnomaly} \tab                                                         \cr
     \code{SYTM_*.*} \tab \code{time}               \tab Used in many objects                                       \cr
     \code{TE90_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
     \code{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
     \code{TOTP_*.*} \tab \code{pressureAbsolute}   \tab Used mainly in \code{ctd} objects                          \cr
     \code{UNKN_*.*} \tab \code{-}                  \tab The result is context-dependent                            \cr
+    \code{VAIS_*.*} \tab \code{BVFrequency}        \tab                                                            \cr
     \code{VCSP_*.*} \tab \code{w}                  \tab Used in \code{adp} objects                                 \cr
 }
 Any code not shown in the list is transferred to the oce object without renaming, apart from
@@ -118,7 +125,7 @@ Other functions that interpret variable names and units from headers: \code{\lin
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}
 
-Other things related to \code{odf} data: \code{\link{ODF2oce}},
+Other things related to odf data: \code{\link{ODF2oce}},
   \code{\link{ODFListFromHeader}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
@@ -131,4 +138,4 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
 Dan Kelley
 }
 \concept{functions that interpret variable names and units from headers}
-\concept{things related to \code{odf} data}
+\concept{things related to odf data}

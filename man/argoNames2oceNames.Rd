@@ -101,17 +101,15 @@ are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 }
 \references{
 1. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-\url{https://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+\url{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
 (but note that this is a draft; newer versions may have
 replaced this by now).
 
 2. Argo list of parameters in an excel spreadsheet, available at
-\code{https://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
-(but note that the certificate at this website was noticed to be invalid on December 17, 2016,
-so exercise caution in downloading the file).
+\url{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
 }
 \seealso{
-Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+Other things related to argo data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argoGrid}}, \code{\link{argo}},
   \code{\link{as.argo}},
@@ -120,4 +118,4 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }
-\concept{things related to \code{argo} data}
+\concept{things related to argo data}

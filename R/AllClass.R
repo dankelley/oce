@@ -1,3 +1,26 @@
+#' Get the present time, in a stated timezone
+#'
+#' @param tz String indicating the desired timezone. The default is
+#' to use UTC, which is used very commonly in oceanographic work. To
+#' get the local time, use \code{tz=""} or \code{tz=NULL},
+#'
+#' @examples
+#' presentTime() # UTC
+#' presentTime("") # the local timezone
+#'
+#' @return A \code{\link{POSIXct}} object holding the present time, in the
+#' indicated timezone.
+## NOTE: we need to define this here so setClass() knows about it;
+## NOTE: having it in NAMESPACE is not sufficient.
+presentTime <- function(tz="UTC")
+{
+    t <- Sys.time()
+    if (!is.null(tz) && nchar(tz) > 0)
+        attr(t, "tzone") <- tz
+    t
+}
+
+
 #' Base Class for oce Objects
 #'
 #' This is mainly used within oce to create sub-classes, although
@@ -17,17 +40,14 @@
 #' @examples
 #' str(new("oce"))
 #'
-#' @family classes provided by \code{oce}
+#' @family classes provided by oce
 setClass("oce",
          representation(metadata="list",
                         data="list",
                         processingLog="list"),
-         prototype=list(metadata=list(units=list(),
-                                      flags=list()),
+         prototype=list(metadata=list(units=list(), flags=list()),
                         data=list(),
-                        processingLog=list(time=as.POSIXct(Sys.time()),
-                                           value="Create oce object")
-                        )
+                        processingLog=list(time=presentTime(), value="Create oce object"))
          )
 
 #' Summarize an oce Object
@@ -55,8 +75,9 @@ setClass("oce",
 setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {
-              names <- names(object@data)
-              isTime <- grepl("^time", names, ignore.case=TRUE) # pass timestampIMU
+              metadataNames <- names(object@metadata)
+              dataNames <- names(object@data)
+              isTime <- grepl("^time$", dataNames) # OLD: more permissive name, but that breaks on some data
               if (any(isTime)) {
                   time <- object@data[[which(isTime)[1]]]
                   ## Times are always in POSIXct, so the length() does something useful
@@ -83,12 +104,20 @@ setMethod(f="summary",
               ndata <- length(object@data)
               threes <- NULL
               if (ndata > 0) {
-                  threes <- matrix(nrow=ndata, ncol=4)
-                  for (i in 1:ndata) {
-                      threes[i, ] <- threenum(object@data[[i]])
+                  if (is.ad2cp(object)) {
+                      threes <- matrix(nrow=3, ncol=4)
+                      ## FIXME get burst and average separately
+                      threes[1, ] <- threenum(object[["v"]])
+                      threes[2, ] <- threenum(object[["a"]])
+                      threes[3, ] <- threenum(object[["q"]])
+                  } else {
+                      threes <- matrix(nrow=ndata, ncol=4)
+                      for (i in 1:ndata) {
+                          threes[i, ] <- threenum(object@data[[i]])
+                      }
                   }
-                  ##rownames(threes) <- paste("   ", names[!isTime])
-                  units <- if ("units" %in% names(object@metadata)) object@metadata$units else NULL
+                  ##rownames(threes) <- paste("   ", dataNames[!isTime])
+                  units <- if ("units" %in% metadataNames) object@metadata$units else NULL
                   ## paste the scale after the unit
                   unitsNames <- names(object@metadata$units)
                   units <- unlist(lapply(seq_along(object@metadata$units),
@@ -138,12 +167,16 @@ setMethod(f="summary",
                   names(units) <- unitsNames
                   ##> message("units:");str(units)
                   if (!is.null(threes)) {
-                      rownames(threes) <- paste("    ", dataLabel(names, units), sep="")
+                      if (is.ad2cp(object)) {
+                          rownames(threes) <- c("v", "a", "q")
+                      } else {
+                          rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
+                      }
                       colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.")
                       cat("* Data\n\n")
-                      if ("dataNamesOriginal" %in% names(object@metadata)) {
+                      if ("dataNamesOriginal" %in% metadataNames) {
                           if (is.list(object@metadata$dataNamesOriginal)) {
-                              OriginalName <- unlist(lapply(names, function(n)
+                              OriginalName <- unlist(lapply(dataNames, function(n)
                                                             if (n %in% names(object@metadata$dataNamesOriginal))
                                                                 object@metadata$dataNamesOriginal[[n]] else "-"))
                           } else {
@@ -154,17 +187,21 @@ setMethod(f="summary",
                       }
                       ##print(OriginalName)
                       ## I'm not sure the following will ever happen, if we always remember
-                      ## to use ctdAddColumn(), but I don't want names getting recycled, so
+                      ## to use ctdAddColumn(), but I don't want dataNames getting recycled, so
                       ## the next if-block prevents that.
-                      if (length(OriginalName) < length(names))
-                          OriginalName <- c(OriginalName, rep("-", length(names)-length(OriginalName)))
+                      if (length(OriginalName) < length(dataNames))
+                          OriginalName <- c(OriginalName, rep("-", length(dataNames)-length(OriginalName)))
                       ##print(OriginalName)
                       OriginalName[0==nchar(OriginalName, "bytes")] <- "-"
                       if (!is.null(OriginalName)) {
-                          threes <- cbind(threes, OriginalName)
+                          if (is.ad2cp(object)) {
+                              threes <- cbind(threes, "-")
+                          } else {
+                              threes <- cbind(threes, OriginalName)
+                          }
                       }
-                      if ("time" %in% names)
-                          threes <- threes[-which("time"==names), , drop=FALSE]
+                      if ("time" %in% dataNames)
+                          threes <- threes[-which("time" == dataNames), , drop=FALSE]
                       owidth <- options('width')
                       options(width=150) # make wide to avoid line breaks
                       print(threes, quote=FALSE)
@@ -187,8 +224,10 @@ setMethod(f="summary",
                   width <- 1 + max(nchar(names(flags)))
                   for (name in names(flags)) {
                       padding <- rep(" ", width - nchar(name))
-                      if (!all(is.na(flags[[name]]))) {
-                          cat("    ", name, ":", padding, sep="")
+                      cat("    ", name, ":", padding, sep="")
+                      if (all(is.na(flags[[name]]))) {
+                          cat("NA", length(flags[[name]]), "\n")
+                      } else {
                           flagTable <- table(flags[[name]])
                           flagTableLength <- length(flagTable)
                           if (flagTableLength) {
@@ -266,7 +305,7 @@ setMethod(f="plot",
 #' par(mfrow=c(1, 2))
 #' plotProfile(ctd)
 #' plotProfile(top10)
-#' @family functions that subset \code{oce} objects
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="oce",
           definition=function(x, subset, ...) {
@@ -287,39 +326,38 @@ setMethod(f="subset",
 
 #' Extract Something From an oce Object
 #'
-#' @description
-#' The named item is sought first in
-#' \code{metadata}, where an exact match to the name is required. If
-#' it is not present in the \code{metadata} slot, then a partial-name
-#' match is sought in the \code{data} slot. Failing both
-#' tests, an exact-name match is sought in a field named
-#' \code{dataNamesOriginal} in the object's \code{metadata}
-#' slot, if that field exists. Failing that, \code{NULL} is returned.
+## @description
+## The named item is sought first in
+## \code{metadata}, where an exact match to the name is required. If
+## it is not present in the \code{metadata} slot, then a partial-name
+## match is sought in the \code{data} slot. Failing both
+## tests, an exact-name match is sought in a field named
+## \code{dataNamesOriginal} in the object's \code{metadata}
+## slot, if that field exists. Failing that, \code{NULL} is returned.
+##
+## The full contents of the \code{metadata} slot of an object named
+## \code{x} are returned with \code{x[["metadata"]]}, and
+## \code{x[["data"]]} does the same thing for the data slot.
+## Even if the full contents are not needed, this
+## scheme can be useful in circumventing the searching scheme described
+## in the previous paragraph, e.g. \code{x[["data"]]$longitude}
+## might be used to select longitude from the data slot of \code{x},
+## as an alternative to \code{\link{oceGetData}(x,"longitude")}.
+##
+## To get information on the specialized variants of this function,
+## type e.g. \code{?"[[,adv-method"} for information on extracting
+## data from an object of \code{\link{adv-class}}.
 #'
-#' The full contents of the \code{metadata} slot of an object named
-#' \code{x} are returned with \code{x[["metadata"]]}, and
-#' \code{x[["data"]]} does the same thing for the data slot.
-#' Even if the full contents are not needed, this
-#' scheme can be useful in circumventing the searching scheme described
-#' in the previous paragraph, e.g. \code{x[["data"]]$longitude}
-#' might be used to select longitude from the data slot of \code{x},
-#' as an alternative to \code{\link{oceGetData}(x,"longitude")}.
-#'
-#' To get information on the specialized variants of this function,
-#' type e.g. \code{?"[[,adv-method"} for information on extracting
-#' data from an object of \code{\link{adv-class}}.
+#' @template sub_subTemplate
 #'
 #' @param x An oce object
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
+## @param i The item to extract.
+## @param j Optional additional information on the \code{i} item.
+## @param ... Optional additional information (ignored).
 #'
-#' @examples
-#' data(ctd)
-#' ctd[["longitude"]] # in metadata
-#' head(ctd[["salinity"]]) # in data
-#' data(section)
-#' summary(section[["station", 1]])
+#' @seealso
+#' Many \code{oce} object classes have specialized versions
+#' of \code{[[} that handle the details in specialized way.
 setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -329,9 +367,9 @@ setMethod(f="[[",
                   return(x@data)
               } else if (i == "processingLog") {
                   return(x@processingLog)
-               } else if (length(grep("Unit$", i))) {
-                   ## returns a list
-                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$", "", i)]] else x@metadata[[i]])
+              } else if (length(grep("Unit$", i))) {
+                  ## returns a list
+                  return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$", "", i)]] else x@metadata[[i]])
               } else if (length(grep(" unit$", i))) {
                   ## returns just the unit, an expression
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub(" unit$", "", i)]][[1]] else "")
@@ -341,29 +379,52 @@ setMethod(f="[[",
               } else if (length(grep("Flag$", i))) {
                   ## returns a list
                   return(if ("flags" %in% names(x@metadata)) x@metadata$flags[[gsub("Flag$", "", i)]] else NULL)
+              } else if (i == "sigmaTheta") {
+                  return(swSigmaTheta(x))
+              } else if (i == "sigma0") {
+                  return(swSigma0(x))
+              } else if (i == "spice") {
+                  return(swSpice(x))
               } else {
-                  ## Check metadata
-                  if (i %in% names(x@metadata))
-                      return(x@metadata[[i]])
-                  index <- pmatch(i, names(x@data))
-                  if (!is.na(index[1])) {
-                      return(x@data[[index]])
-                  } else {
-                      ## some special cases
-                      if (i == "sigmaTheta") {
-                          return(swSigmaTheta(x))
+                  if (missing(j) || j == "") {
+                      ## Since 'j' is not provided, we must search for 'i'. We look first
+                      ## in the metadata slot, but if it's not there, we look in the
+                      ## data slot. In the 'data' case, we also permit partial-match names,
+                      ## as well as non-partial matching to the original names, as
+                      ## contained in a data file.
+                      if (i %in% names(x@metadata))
+                          return(x@metadata[[i]])
+                      ## partial match allowed in data, but not in original-name of data
+                      index <- pmatch(i, names(x@data))
+                      if (!is.na(index[1])) {
+                          return(x@data[[index]])
+                      } else if (i %in% x@metadata$dataNamesOriginal) {
+                          return(x@data[[which(i==x@metadata$dataNamesOriginal)[1]]])
                       } else {
-                          ## Check original data names
-                          if (i %in% x@metadata$dataNamesOriginal)
-                              return(x@data[[which(i==x@metadata$dataNamesOriginal)[1]]])
-                          ## Give up
                           return(NULL)
                       }
+                  } else {
+                      ## New in 2019-May-17: 'j' can be "data" or "metadata"
+                      ## https://github.com/dankelley/oce/issues/1554
+                      if (j == "metadata") {
+                          return(x@metadata[[i]])
+                      } else if (j == "data") {
+                          ## partial match allowed in data, but not in original-name of data
+                          index <- pmatch(i, names(x@data))
+                          if (!is.na(index[1])) {
+                              return(x@data[[i]])
+                          } else if (i %in% x@metadata$dataNamesOriginal) {
+                              return(x@data[[which(i==x@metadata$dataNamesOriginal)[1]]])
+                          } else {
+                              return(NULL)
+                          }
+                      } else {
+                          stop("object[[\"", i, "\", \"", j, "\"]]: second arg must be \"data\" or \"metadata\"", call.=FALSE)
+                      }
                   }
-                  ## if (missing(j) || j != "nowarn")
-                  ##     warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
               }
           })
+
 
 #' @title Replace Parts of an Oce Object
 #' @param x An \code{oce} object, i.e. inheriting from \code{\link{oce-class}}.
@@ -427,8 +488,8 @@ setMethod(f="show",
                   filename <- object[["filename"]]
               else
                   filename <- "(filename unknown)"
-              names <- names(object@data)
-              ncol <- length(names)
+              dataNames <- names(object@data)
+              ncol <- length(dataNames)
               if (is.null(filename) || filename == "" || is.na(filename) || filename=="(filename unknown)") {
                   if (ncol > 0) {
                       cat(class(object)[1], " object has data as follows.\n", sep="")
@@ -442,26 +503,32 @@ setMethod(f="show",
                       cat(class(object)[1], " object, from file '", filename, "', has nothing in its data slot.\n", sep="")
                   }
               }
-              for (i in seq_along(names)) {
+              for (i in seq_along(dataNames)) {
                   d <- object@data[[i]]
                   if (0 == length(d)) {
-                      cat("  ", names[i], ": empty\n")
+                      cat("  ", dataNames[i], ": empty\n")
                   } else {
                       if (inherits(d, "POSIXt")) {
-                          cat(vectorShow(d, paste("  ", names[i])))
+                          cat(vectorShow(d, paste("  ", dataNames[i])))
                       } else if (is.vector(d)) {
-                          cat(vectorShow(d, paste("  ", names[i])))
+                          cat(vectorShow(d, paste("  ", dataNames[i])))
                       } else if (is.array(d)) {
                           dim <- dim(object@data[[i]])
                           if (length(dim) == 1) {
-                              cat(vectorShow(d, paste("  ", names[i])))
+                              cat(vectorShow(d, paste("  ", dataNames[i])))
                           } else if (length(dim) == 2) {
-                              cat("   ", names[i], ", a ", dim[1], "x", dim[2], " array with value ", d[1, 1], " at [1,1] position\n", sep="")
+                              cat("   ", dataNames[i], ", a ", dim[1], "x", dim[2], " array with value ", d[1, 1], " at [1,1] position\n", sep="")
                           } else if (length(dim) == 3) {
-                              cat("   ", names[i], ", a ", dim[1], "x", dim[2], "x", dim[3], " array with value ", d[1, 1, 1],
+                              cat("   ", dataNames[i], ", a ", dim[1], "x", dim[2], "x", dim[3], " array with value ", d[1, 1, 1],
                                   " at [1,1,1] position\n", sep="")
                           } else {
-                              cat("   ", names[i], ", an array of more than 3 dimensions\n")
+                              cat("   ", dataNames[i], ", an array of more than 3 dimensions\n")
+                          }
+                      } else if (is.data.frame(d)) {
+                          cat("  ", dataNames[i], ", a data frame with contents:\n", sep="")
+                          for (n in names(d)) {
+                              #cat("    ", n, " (with ", length(d[[n]]), " elements)\n", sep="")
+                              cat("    ", vectorShow(d[[n]], n), sep="")
                           }
                       }
                   }
@@ -528,7 +595,28 @@ setMethod("handleFlags",
               stop("handleFlags() can only be applied to objects inheriting from \"oce\"")
           })
 
-handleFlagsInternal <- function(object, flags, actions, debug) {
+#' Low-level function for handling data-quality flags
+#'
+#' This function carries out low-level processing relating to data-quality flags,
+#' as a support for higher-level functions such \code{\link{handleFlags,ctd-method}} for
+#' \code{ctd} objects. In most cases, users will not call \code{handleFlagsInternal}
+#' directly.
+#'
+#' @param object An \code{oce} object, i.e. an object that inherits from \code{\link{oce-class}}.
+#'
+#' @param flags A named \code{\link{list}} of numeric values, e.g. \code{list(good=1,bad=2)}.
+#'
+#' @param actions A character vector indicating actions to be carried out for the corresponding
+#' \code{flags} values. This will be lengthened with \code{\link{rep}} if necessary, to be
+#' of the same length as \code{flags}. A common value for \code{actions} is \code{"NA"}, which
+#' means that data values that are flagged are replaced by \code{NA} in the returned result.
+#'
+#' @param debug An integer indicating the degree of debugging requested, with value \code{0}
+#' meaning to act silently, and value \code{1} meaning to print some information about the
+#' steps in processing.
+#'
+#' @return A copy of \code{object}, modified as indicated by \code{flags} and \code{actions}.
+handleFlagsInternal <- function(object, flags, actions, debug=0) {
     oceDebug(debug, "handleFlagsInternal() {\n", sep="", unindent=1)
     if (missing(flags)) {
         warning("no flags supplied (internal error; report to developer)")
@@ -541,11 +629,9 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
         warning("no actions supplied (internal error; report to developer)")
         return(object)
     }
-    if (missing(debug))
-        debug <- 0
-    if (any(names(flags)!=names(actions)))
+    if (any(names(flags) != names(actions)))
         stop("names of flags must match those of actions")
-    schemeMappingNames <- names(object@metadata$flagScheme$mapping)
+    ##> schemeMappingNames <- names(object@metadata$flagScheme$mapping)
     ##> if (is.character(flags[[1]])) {
     ##>     for (f in flags[[1]]) {
     ##>         if (!(f %in% schemeMappingNames))
@@ -660,23 +746,35 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
 }
 
 
-#' Suggest a default flag for good data
+#' Suggest a default flag vector for bad or suspicious data
 #'
-#' \code{defaultFlag} tries to suggest a reasonable default \code{flag} scheme
+#' \code{defaultFlags} tries to suggest a reasonable default \code{flag} scheme
 #' for use by \code{\link{handleFlags}}. It does this by looking for an item
-#' named \code{flagScheme} in the \code{metdata} slot of \code{object}.
-#' If that is found, and if the scheme is recognized, then a numeric
-#' vector is returned that indicates bad or questionable data. The recognized
-#' schemes, and their defaults are as below; note that this is a very conservative
-#' setup, retaining only data that are flagged as being good, while discarding
-#' not just data that are marked as bad, but also data that are marked as
-#' questionable.
+#' named \code{flagScheme} in the \code{metadata} slot of \code{object}.
+#' If \code{flagScheme} is found, and if the scheme is recognized, then a numeric
+#' vector is returned that indicates bad or questionable data. If
+#' \code{flagScheme$default} exists, then that scheme is returned. However,
+#' if that does not exist, and if \code{flagScheme$name} is recognized,
+#' then a pre-defined (very conservative) scheme is used,
+#' as listed below.
+#'
 #'\itemize{
-#' \item for \code{argo}, the default is \code{flag=c(0, 2:9)}, i.e. retain only data flagged as 'passed_all_tests'
-#' \item for \code{BODC}, the default is \code{flag=c(0, 2:9)}, i.e. retain only data flagged as 'good'
-#' \item for \code{DFO}, the default is \code{flag=c(0, 2:9)}, i.e. retain only data flagged as 'appears_correct'
-#' \item for \code{WHP bottle}, the default is \code{flag=c(1, 3:9)}, i.e. retain only data flagged as 'no_problems_noted'
-#' \item for \code{WHP ctd}, the default is \code{flag=c(1, 3:9)}, i.e. retain only data flagged as 'acceptable'
+#'
+#' \item for \code{argo}, the default is
+#' \code{c(0,2,3,4,7,8,9)}, i.e. all flags except \code{passed_all_tests}.
+#'
+#' \item for \code{BODC}, the default is
+#' \code{c(0,2,3,4,5,6,7,8,9)}, i.e. all flags except \code{good}.
+#'
+#' \item for \code{DFO}, the default is
+#' \code{c(0,2,3,4,5,8,9)}, i.e. all flags except \code{appears_correct}.
+#'
+#' \item for \code{WHP bottle}, the default is
+#' \code{c(1,3,4,5,6,7,8,9)}, i.e. all flags except \code{no_problems_noted}.
+#'
+#' \item for \code{WHP ctd}, the default is
+#' \code{c(1,3,4,5,6,7,9)}, i.e. all flags except \code{acceptable}.
+#'
 #'}
 #'
 #' @param object An oce object
@@ -688,25 +786,26 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
 #' @family functions relating to data-quality flags
 defaultFlags <- function(object)
 {
+    if (is.null(object@metadata$flagScheme))
+        return(NULL)
+    default <- object@metadata$flagScheme$default
+    if (!is.null(default))
+        return(default)
     scheme <- object@metadata$flagScheme$name
-    if (is.null(scheme)) {
-        res <- NULL
-    } else {
-        if (scheme == "argo") {
-            res <- c(0, 2:9) # retain passed_all_tests
-        } else if (scheme == "BODC") {
-            res <- c(0, 2:9) # retain good
-        } else if (scheme == "DFO") {
-            res <- c(0, 2:9) # retain appears_correct
-        } else if (scheme == "WHP bottle") {
-            res <- c(1, 3:9) # retain no_problems_noted
-        } else if (scheme == "WHP ctd") {
-            res <- c(1, 3:9) # retain acceptable
-        } else {
-            res <- NULL
-        }
-    }
-    res
+    if (is.null(scheme))
+        return(NULL)
+    if (scheme == "argo")
+        return(c(0, 2, 3, 4, 7, 8, 9)) # retain passed_all_tests
+    if (scheme == "BODC")
+        return(c(0, 2, 3, 4, 5, 6, 7, 8, 9)) # retain good
+    if (scheme == "DFO")
+        return(c(0, 2, 3, 4, 5, 8, 9)) # retain appears_correct
+    if (scheme == "WHP bottle")
+        return(c(1, 3, 4, 5, 6, 7, 8, 9)) # retain no_problems_noted
+    if (scheme == "WHP ctd")
+        return(c(1, 3, 4, 5, 6, 7, 9)) # retain acceptable
+    warning("unable to determine default flags from 'flagScheme' in the object 'metadata' slot\n")
+    return(NULL)
 }
 
 
@@ -805,6 +904,9 @@ setMethod("initializeFlags",
               initializeFlagsInternal(object, name, value, debug)
           })
 
+#' @templateVar class oce
+#' @templateVar details This is a low-level internal function used by user-accessible functions.
+#' @template initializeFlagsTemplate
 initializeFlagsInternal <- function(object, name=NULL, value=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "initializeFlagsInternal(object, name=\"", name, "\", value, debug=", debug, ") {", sep="", unindent=1)
@@ -851,7 +953,7 @@ initializeFlagsInternal <- function(object, name=NULL, value=NULL, debug=getOpti
 #' @templateVar class oce
 #' @templateVar details There are no pre-defined \code{scheme}s for this object class.
 #' @template initializeFlagSchemeTemplate
-setGeneric("initializeFlagScheme", function(object, name=NULL, mapping=NULL, debug=0) {
+setGeneric("initializeFlagScheme", function(object, name=NULL, mapping=NULL, default=NULL, debug=0) {
            standardGeneric("initializeFlagScheme")
          })
 
@@ -859,12 +961,15 @@ setGeneric("initializeFlagScheme", function(object, name=NULL, mapping=NULL, deb
 #' @templateVar details There are no pre-defined \code{scheme}s for this object class.
 #' @template initializeFlagSchemeTemplate
 setMethod("initializeFlagScheme",
-          signature=c(object="oce", name="ANY", mapping="ANY", debug="ANY"),
-          definition=function(object, name, mapping, debug=getOption("oceDebug")) {
-              initializeFlagSchemeInternal(object, name, mapping, debug)
+          signature=c(object="oce", name="ANY", mapping="ANY", default="ANY", debug="ANY"),
+          definition=function(object, name, mapping, default, debug) {
+              initializeFlagSchemeInternal(object, name, mapping, default, debug)
           })
 
-initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, debug=getOption("oceDebug"))
+#' @templateVar class oce
+#' @templateVar details This is a low-level internal function used by user-accessible functions.
+#' @template initializeFlagSchemeTemplate
+initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, default=NULL, debug=0)
 {
     oceDebug(debug, "initializeFlagSchemeInternal(object, name=\"", name, "\", debug=", debug, ") {", sep="", unindent=1)
     if (is.null(name))
@@ -882,22 +987,32 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, debug=
                 mapping <- list(not_assessed=0, passed_all_tests=1, probably_good=2,
                                 probably_bad=3, bad=4, averaged=7,
                                 interpolated=8, missing=9)
+                if (is.null(default))
+                    default <- c(0, 2, 3, 4, 7, 8, 9) # retain passed_all_tests
             } else  if (name == "BODC") {
                 mapping <- list(no_quality_control=0, good=1, probably_good=2,
                                 probably_bad=3, bad=4, changed=5, below_detection=6,
                                 in_excess=7, interpolated=8, missing=9)
+                if (is.null(default))
+                    default <- c(0, 2, 3, 4, 5, 6, 7, 8, 9) # retain good
             } else  if (name == "DFO") {
                 mapping <- list(no_quality_control=0, appears_correct=1, appears_inconsistent=2,
                                 doubtful=3, erroneous=4, changed=5,
                                 qc_by_originator=8, missing=9)
+                if (is.null(default))
+                    default <- c(0, 2, 3, 4, 5, 8, 9) # retain appears_correct
             } else if (name == "WHP bottle") {
                 mapping <- list(no_information=1, no_problems_noted=2, leaking=3,
                                 did_not_trip=4, not_reported=5, discrepency=6,
                                 unknown_problem=7, did_not_trip=8, no_sample=9)
+                if (is.null(default))
+                    default <- c(1, 3, 4, 5, 6, 7, 8, 9) # retain no_problems_noted
             } else if (name == "WHP CTD") {
                 mapping <- list(not_calibrated=1, acceptable=2, questionable=3,
                                 bad=4, not_reported=5, interpolated=6,
                                 despiked=7, missing=9)
+                if (is.null(default))
+                    default <- c(1, 3, 4, 5, 6, 7, 9) # retain acceptable
             } else {
                 stop("internal coding error in initializeFlagSchemeInternal(); please report to developer")
             }
@@ -912,7 +1027,9 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, debug=
                                                    "\", mapping=",
                                                    gsub(" ", "", paste(as.character(deparse(mapping)),
                                                                                      sep="", collapse="")),
-                                                   ")", sep=""))
+                                                   ")",
+                                                   ", default=c(", paste(default, collapse=","), ")",
+                                                   sep=""))
     oceDebug(debug, "} # initializeFlagSchemeInternal", sep="", unindent=1)
     res
 }
@@ -921,7 +1038,7 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, debug=
 #' @param object An object of \code{\link{oce-class}}.
 #' @param ... Optional additional objects of \code{\link{oce-class}}.
 #' @return An object of class corresponding to that of \code{object}.
-#' @family functions that concatenate \code{oce} objects.
+#' @family functions that concatenate oce objects.
 setGeneric("concatenate",
            function(object, ...) {
                standardGeneric("concatenate")
@@ -1012,7 +1129,7 @@ setMethod("concatenate",
 #' Concatenate a list of oce objects
 #' @param object A list holding objects of \code{\link{oce-class}}.
 #' @return An object of class corresponding to that in \code{object}.
-#' @family functions that concatenate \code{oce} objects.
+#' @family functions that concatenate oce objects.
 setMethod("concatenate",
           c(object="list"),
           function(object) {

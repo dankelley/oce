@@ -35,7 +35,7 @@ contains more than 42 columns, only the first 42 are used.  This is used by
 of the columns.
 }
 \seealso{
-Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
+Other things related to lisst data: \code{\link{[[,lisst-method}},
   \code{\link{[[<-,lisst-method}},
   \code{\link{lisst-class}},
   \code{\link{plot,lisst-method}},
@@ -45,4 +45,4 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{lisst} data}
+\concept{things related to lisst data}

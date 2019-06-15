@@ -1,3 +1,5 @@
+Meta
+doc
 ^vignettes/figure$
 ^build$
 _site
@@ -19,7 +21,6 @@ man/figures/*png
 !man/figures/starCoords.png
 .DS_Store
 .Rproj.user
-*.Rproj
 .RData
 autom4te.cache
 *.nc
@@ -30,3 +31,5 @@ oce_[a-zA-Z]*.Rproj
 
 revdep
 f34*gz
+*.o.tmp
+*.tmp.R

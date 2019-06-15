@@ -24,7 +24,7 @@ Several online sources list WOCE names. An example is
 \url{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
@@ -57,4 +57,4 @@ Other functions that interpret variable names and units from headers: \code{\lin
 Dan Kelley
 }
 \concept{functions that interpret variable names and units from headers}
-\concept{things related to \code{ctd} data}
+\concept{things related to ctd data}

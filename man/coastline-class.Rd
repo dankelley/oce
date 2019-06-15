@@ -61,7 +61,7 @@ to find items more directly, using \code{\link{oceGetData}} and
 }
 
 \seealso{
-Other classes provided by \code{oce}: \code{\link{adp-class}},
+Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{ctd-class}}, \code{\link{lisst-class}},
@@ -71,7 +71,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
-Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+Other things related to coastline data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
   \code{\link{as.coastline}}, \code{\link{coastlineBest}},
   \code{\link{coastlineCut}}, \code{\link{coastlineWorld}},
@@ -85,5 +85,5 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
 \author{
 Dan Kelley
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{coastline} data}
+\concept{classes provided by oce}
+\concept{things related to coastline data}

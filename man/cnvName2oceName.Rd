@@ -76,8 +76,11 @@ variants.)
   \code{C2-C1mS/cm}  \tab \code{conductivityDifference}       \tab mS/cm               \tab    \cr
   \code{C2-C1uS/cm}  \tab \code{conductivityDifference}       \tab uS/cm               \tab    \cr
   \code{c~mS/cm}     \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
+  \code{cond~mS/cm}  \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
   \code{c~S/m}       \tab \code{conductivity}                 \tab S/m                 \tab    \cr
+  \code{cond~S/m}    \tab \code{conductivity}                 \tab S/m                 \tab    \cr
   \code{c~uS/cm}     \tab \code{conductivity}                 \tab uS/cm               \tab    \cr
+  \code{cond~uS/cm}  \tab \code{conductivity}                 \tab uS/cm               \tab    \cr
   \code{CStarAt~}    \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
   \code{CStarTr~}    \tab \code{beamTransmission}             \tab percent             \tab    \cr
   \code{density~~}   \tab \code{density}                      \tab kg/m^3              \tab    \cr
@@ -176,13 +179,14 @@ variants.)
   \code{t38~90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{t3868C~}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{t38~38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-  \code{timeH}       \tab \code{time}                         \tab hour; elapsed        \tab   \cr
-  \code{timeJ}       \tab \code{time}                         \tab day; elapsed         \tab   \cr
-  \code{timeK}       \tab \code{time}                         \tab s; since Jan 1, 2000 \tab\cr
-  \code{timeM}       \tab \code{time}                         \tab minute; elapsed      \tab   \cr
-  \code{timeN}       \tab \code{time}                         \tab s; NMEA since Jan 1, 1970\tab\cr
-  \code{timeQ}       \tab \code{time}                         \tab s; NMEA since Jan 1, 2000\tab\cr
-  \code{timeS}       \tab \code{time}                         \tab s; elapsed           \tab   \cr
+  \code{timeH}       \tab \code{timeH}                        \tab hour; elapsed        \tab   \cr
+  \code{timeJ}       \tab \code{timeJ}                        \tab julian day           \tab   \cr
+  \code{timeJV2}     \tab \code{timeJV2}                      \tab julian day           \tab   \cr
+  \code{timeK}       \tab \code{timeK}                        \tab s; since Jan 1, 2000 \tab   \cr
+  \code{timeM}       \tab \code{timeM}                        \tab minute; elapsed      \tab   \cr
+  \code{timeN}       \tab \code{timeN}                        \tab s; NMEA since Jan 1, 1970\tab\cr
+  \code{timeQ}       \tab \code{timeQ}                        \tab s; NMEA since Jan 1, 2000\tab\cr
+  \code{timeS}       \tab \code{timeS}                        \tab s; elapsed           \tab   \cr
   \code{turbflTC~}   \tab \code{turbidity}                    \tab NTU; Turner Cyclops  \tab   \cr
   \code{turbflTCdiff}\tab \code{turbidityDifference}          \tab NTU; Turner Cyclops  \tab   \cr
   \code{turbWETbb~}  \tab \code{turbidity}                    \tab 1/(m*sr); WET Labs ECO\tab   \cr
@@ -225,7 +229,7 @@ As of 2018-07-05, the latest version was named
 and this was the reference version used in coding \code{oce}.
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{ctd-class}}, \code{\link{ctdDecimate}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
@@ -259,4 +263,4 @@ Other functions that interpret variable names and units from headers: \code{\lin
 Dan Kelley
 }
 \concept{functions that interpret variable names and units from headers}
-\concept{things related to \code{ctd} data}
+\concept{things related to ctd data}

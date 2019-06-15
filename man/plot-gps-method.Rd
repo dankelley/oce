@@ -109,7 +109,7 @@ To get an inset map inside another map, draw the first map, do
 plot, and with \code{bg="white"}.
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -133,7 +133,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{gps} data: \code{\link{[[,gps-method}},
+Other things related to gps data: \code{\link{[[,gps-method}},
   \code{\link{[[<-,gps-method}}, \code{\link{as.gps}},
   \code{\link{gps-class}}, \code{\link{read.gps}},
   \code{\link{summary,gps-method}}
@@ -141,5 +141,5 @@ Other things related to \code{gps} data: \code{\link{[[,gps-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{gps} data}
+\concept{functions that plot oce data}
+\concept{things related to gps data}

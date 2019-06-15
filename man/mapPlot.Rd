@@ -101,7 +101,7 @@ will be used.}
 
 \item{projection}{optional indication of projection, in one of two
 forms. First, it may be a character string in the "CRS" format that is
-used by the \code{rgdal} package (and in much of modern computer-based
+used by the \CRANpkg{rgdal} package (and in much of modern computer-based
 cartography). For example, \code{projection="+proj=merc"} specifies a
 Mercator projection. The second format is the output from
 \code{\link[sp]{CRS}} in the \CRANpkg{sp} package, which is an object
@@ -130,17 +130,14 @@ reproduce a scale exactly between two plots.}
 Plot coordinates as a map, using one of the subset of projections
 provided by the \CRANpkg{rgdal} package.  The projection information specified
 with the \code{mapPlot} call is stored so that can be retrieved by related
-functions, making it easy to add more items so the map, including points,
-lines, text, images and contours.
+functions, making it easy to add points, lines, text, images
+or contours to an existing map.
 }
 \details{
 Creates a map using the indicated projection.  As noted in the
 information on the \code{projection} argument, projections are specified in
-the notation used by \code{project()} in the \code{rgdal} package; see
+the notation used by \code{project()} in the \CRANpkg{rgdal} package; see
 \dQuote{Available Projections} for a list of possibilities.
-
-Once a projection is set, other \code{map*} functions may be used to add to
-the map.
 
 Further details on map projections are provided by [1,11], an exhaustive
 treatment that includes many illustrations, an overview of the history of the
@@ -153,14 +150,14 @@ See [8] for a gallery of projections.
 \section{Available Projections}{
 
 Map projections are provided by the
-\code{rgdal} package, but not all projections in that package are
+\CRANpkg{rgdal} package, but not all projections in that package are
 available. The available list is given in the table
 below. The cartographic community has set up a naming scheme in a coded
 scheme, e.g. \code{projection="+proj=aea"} selects the Albers equal area
 projection.
 
 The allowed projections include those PROJ.4 projections provided by
-\code{rgdal} that have inverses, minus a few that cause problems:
+\CRANpkg{rgdal} that have inverses, minus a few that cause problems:
 \code{alsk} overdraws \code{coastlineWorld}, and is a niche projection for Alaska;
 \code{calcofi} is not a real projection, but rather a coordinate system;
 \code{gs48} overdraws \code{coastlineWorld}, and is a niche projection for the USA;
@@ -183,7 +180,7 @@ shifting the longitude can yield poor filling of coastlines.
 
 Further details of the projections and the controlling arguments are
 provided at several websites, because PROJ.4 has been incorporated into
-\code{rgdal} and other R packages, plus many other software systems; a good
+\CRANpkg{rgdal} and other R packages, plus many other software systems; a good
 starting point for learning is [6].
 
 See \dQuote{Examples} for suggested projections for some common
@@ -343,7 +340,7 @@ and \code{merc} in limited-area cases where angle preservation is
 important.
 }
 
-\section{Issues}{
+\section{Problems}{
 
 Map projection is a complicated matter that is addressed here
 in a limited and pragmatic way.  For example, \code{mapPlot} tries to draw
@@ -356,11 +353,24 @@ the occurrence of horizontal lines in maps that have prime meridians
 meridians and (c) inaccurate filling of Antarctica in some projections.
 Generally, issues are tackled first for commonly used projections, such as
 those used in the examples.
+
+There are also systematic problems on i386/windows machines, owing to
+problems with \CRANpkg{rgdal} on such systems. This explains why
+\code{\link{example}("mapPlot")} does not try to create maps on such
+machines. However, \CRANpkg{rgdal} is in continue development, so it
+is reasonable to hope that \code{oce} map projections may start working
+at some time. As of \CRANpkg{rgdal} version 1.4-3 (in March 2019),
+however, \code{mapPlot} does not work on i386/windows
+machines.
 }
 
 \section{Changes}{
 
 \itemize{
+
+\item 2019-03-20: the test code provided the \dQuote{Examples} section
+is disabled on i386/windows machines, on which the requisite
+\CRANpkg{rgdal} package continues to fail on common projections.
 
 \item 2017-11-19: \code{imw_p} removed, because it has problems doing
 inverse calculations.
@@ -369,7 +379,7 @@ This is a also problem in the standalone PROJ.4 application version
 See \url{https://github.com/dankelley/oce/issues/1319} for details.
 
 \item 2017-11-17: \code{lsat} removed, because it does not work in
-\code{rgdal} or in the latest standalone PROJ.4 application.
+\CRANpkg{rgdal} or in the latest standalone PROJ.4 application.
 This is a also problem in the standalone PROJ.4 application version
 4.9.3, downloaded and built on OSX.
 See \url{https://github.com/dankelley/oce/issues/1337} for details.
@@ -382,85 +392,88 @@ wildly inaccurate in a Pacific Antarctic-Alaska application
 }
 
 \examples{
+canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
+if (canProject) {
+    library(oce)
+    data(coastlineWorld)
+
+    # Example 1.
+    # Mollweide ([1] page 54) is an equal-area projection that works well
+    # for whole-globe views.
+    mapPlot(coastlineWorld, projection="+proj=moll", col='gray')
+    mtext("Mollweide", adj=1)
+
+    # Example 2.
+    # Note that filling is not employed (\\code{col} is not
+    # given) when the prime meridian is shifted, because
+    # this causes a problem with Antarctica
+    cl180 <- coastlineCut(coastlineWorld, lon_0=-180)
+    mapPlot(cl180, projection="+proj=moll +lon_0=-180")
+    mtext("Mollweide with coastlineCut", adj=1)
+
+    # Example 3.
+    # Orthographic projections resemble a globe, making them attractive for
+    # non-technical use, but they are neither conformal nor equal-area, so they
+    # are somewhat limited for serious use on large scales.  See Section 20 of
+    # [1]. Note that filling is not employed because it causes a problem with
+    # Antarctica.
+    par(mar=c(3, 3, 1, 1))
+    mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
+    mtext("Orthographic", adj=1)
+
+    # Example 4.
+    # The Lambert conformal conic projection is an equal-area projection
+    # recommended by [1], page 95, for regions of large east-west extent
+    # away from the equator, here illustrated for the USA and Canada.
+    par(mar=c(3, 3, 1, 1))
+    mapPlot(coastlineCut(coastlineWorld, -100),
+            longitudelim=c(-130,-55), latitudelim=c(35, 60),
+            projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
+    mtext("Lambert conformal", adj=1)
+
+    # Example 5.
+    # The stereographic projection [1], page 120, is conformal, used
+    # below for an Arctic view with a Canadian focus.  Note the trick of going
+    # past the pole: the second latitudelim value is 180 minus the first, and the
+    # second longitudelim is 180 plus the first; this uses image points "over"
+    # the pole.
+    par(mar=c(3, 3, 1, 1))
+    mapPlot(coastlineCut(coastlineWorld, -135),
+            longitudelim=c(-130, 50), latitudelim=c(70, 110),
+            proj="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
+    mtext("Stereographic", adj=1)
+
+    # Example 6.
+    # Spinning globe: create PNG files that can be assembled into a movie
 \dontrun{
-library(oce)
-data(coastlineWorld)
-
-# Example 1.
-# Mollweide ([1] page 54) is an equal-area projection that works well
-# for whole-globe views, below shown in a Pacific-focus view.
-# Note that filling is not employed when the prime meridian
-# is shifted, because this causes a problem with Antarctica
-par(mfrow=c(2, 1), mar=c(3, 3, 1, 1))
-mapPlot(coastlineWorld, projection="+proj=moll", col='gray')
-mtext("Mollweide", adj=1)
-cl180 <- coastlineCut(coastlineWorld, lon_0=-180)
-mapPlot(cl180, projection="+proj=moll +lon_0=-180")
-mtext("Mollweide", adj=1)
-par(mfrow=c(1, 1))
-
-# Example 2.
-# Orthographic projections resemble a globe, making them attractive for
-# non-technical use, but they are neither conformal nor equal-area, so they
-# are somewhat limited for serious use on large scales.  See Section 20 of
-# [1]. Note that filling is not employed because it causes a problem with
-# Antarctica.
-par(mar=c(3, 3, 1, 1))
-mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
-mtext("Orthographic", adj=1)
-
-# Example 3.
-# The Lambert conformal conic projection is an equal-area projection
-# recommended by [1], page 95, for regions of large east-west extent
-# away from the equator, here illustrated for the USA and Canada.
-par(mar=c(3, 3, 1, 1))
-mapPlot(coastlineCut(coastlineWorld, -100),
-        longitudelim=c(-130,-55), latitudelim=c(35, 60),
-        projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
-mtext("Lambert conformal", adj=1)
-
-# Example 4.
-# The stereographic projection [1], page 120, is conformal, used
-# below for an Arctic view with a Canadian focus.  Note the trick of going
-# past the pole: the second latitudelim value is 180 minus the first, and the
-# second longitudelim is 180 plus the first; this uses image points "over"
-# the pole.
-par(mar=c(3, 3, 1, 1))
-mapPlot(coastlineCut(coastlineWorld, -135),
-        longitudelim=c(-130, 50), latitudelim=c(70, 110),
-        proj="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
-mtext("Stereographic", adj=1)
-
-# Example 5.
-# Spinning globe: create PNG files that can be assembled into a movie
-png("globe-\%03d.png")
-lons <- seq(360, 0, -15)
-par(mar=rep(0, 4))
-for (i in seq_along(lons)) {
-    p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
-    if (i == 1) {
-        mapPlot(coastlineCut(coastlineWorld, lons[i]),
-                projection=p, col="lightgray")
-        xlim <- par("usr")[1:2]
-        ylim <- par("usr")[3:4]
-    } else {
-        mapPlot(coastlineCut(coastlineWorld, lons[i]),
-                projection=p, col="lightgray",
-                xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
+    png("globe-\%03d.png")
+    lons <- seq(360, 0, -15)
+    par(mar=rep(0, 4))
+    for (i in seq_along(lons)) {
+        p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
+        if (i == 1) {
+            mapPlot(coastlineCut(coastlineWorld, lons[i]),
+                    projection=p, col="lightgray")
+            xlim <- par("usr")[1:2]
+            ylim <- par("usr")[3:4]
+        } else {
+            mapPlot(coastlineCut(coastlineWorld, lons[i]),
+                    projection=p, col="lightgray",
+                    xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
+        }
     }
 }
-dev.off()
 }
 }
 \references{
 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 Professional Paper: 1395 (available at
-\url{pubs.usgs.gov/pp/1395/report.pdf}).
+\url{https://pubs.er.usgs.gov/publication/pp1395}).
 
 2. Natural Resources Canada
-\url{http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
+\url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
 
-3. Wikipedia page \url{http://en.wikipedia.org/wiki/List_of_map_projections}
+3. Wikipedia page \url{https://en.wikipedia.org/wiki/List_of_map_projections}
 
 4. Radical Cartography website
 \code{http://www.radicalcartography.net/?projectionref} (This URL worked
