@@ -1,3 +1,6 @@
+1.1-1
+* fix "link-time-optimization" issues for CRAN submission
+
 1.1-0
 * fix argument error in a .C() call
 * read.odf() stores ODF header as a list in metadata
