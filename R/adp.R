@@ -1313,7 +1313,7 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #'
 #' \item \code{which=5:8} (or \code{which="a1"} to \code{"a4"}) yield
 #' distance-time images of backscatter intensity of the respective beams.  (For
-#' data derived from Teledyn-RDI instruments, this is the item called ``echo
+#' data derived from Teledyne-RDI instruments, this is the item called ``echo
 #' intensity.'')
 #'
 #' \item \code{which=9:12} (or \code{which="q1"} to \code{"q4"}) yield

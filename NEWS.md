@@ -1,3 +1,6 @@
+1.1-1
+* fix "link-time-optimization" issues for CRAN submission
+
 1.1-0
 * fix argument error in a .C() call
 * read.odf() stores ODF header as a list in metadata
@@ -365,7 +368,7 @@
 * add 'met' class
 * subset.oce() handles section objects
 * draw.section(): permit xtype="latitude" or "longitude"
-* imagpe() has drawPalette="space" option
+* imagep() has drawPalette="space" option
 
 0.8-2
 * fix bug in read.coastline(), reversing lon and lat [issue162]
@@ -464,7 +467,7 @@
 * speed up conversion of ADP and ADV to enu by more than a factor of 10
 * change RDI coordinate handling
 * rename match.bytes() as matchBytes()
-* add drawpalette()
+* add drawPalette()
 * remove matlab2POSIXt(), now a sub-case of number.as.POSIXct()
 * number.as.POSIXct(): added
 * oceBiset(): added

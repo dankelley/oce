@@ -51,7 +51,7 @@ Suppose `f` is a character string naming a data file. In many cases,
 d <- read.oce(f)
 ```
 will read the file, because `read.oce` will look inside the file to try to
-guess the format. If this doesnt work, one ought to try e.g.
+guess the format. If this does not work, one ought to try e.g.
 ```{r eval=FALSE}
 d <- read.adp(f)
 ```

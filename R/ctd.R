@@ -4491,8 +4491,8 @@ plotTS <- function (x,
 #' \code{"gsw"}.
 #' @param cex size for labels.
 #' @param col color for lines and labels.
-#' @param lwd line width for isopcynal curves
-#' @param lty line type for isopcynal curves
+#' @param lwd line width for isopycnal curves
+#' @param lty line type for isopycnal curves
 #' @return None.
 #' @author Dan Kelley
 #' @seealso \code{\link{plotTS}}, which calls this.

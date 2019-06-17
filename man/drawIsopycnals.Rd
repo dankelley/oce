@@ -30,9 +30,9 @@ horizontally.}
 
 \item{col}{color for lines and labels.}
 
-\item{lwd}{line width for isopcynal curves}
+\item{lwd}{line width for isopycnal curves}
 
-\item{lty}{line type for isopcynal curves}
+\item{lty}{line type for isopycnal curves}
 }
 \value{
 None.

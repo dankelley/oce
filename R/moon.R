@@ -180,8 +180,8 @@ julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz=
 #'
 #' Convert a Julian-Day number to a time in julian centuries since noon on
 #' January 1, 1900.
-#' The method follows Meese (1982 equation 15.1).  The example reproduces the
-#' example provided by Meeuse (1982 example 15.a), with fractional error 3e-8.
+#' The method follows Meeus (1982 equation 15.1).  The example reproduces the
+#' example provided by Meeus (1982 example 15.a), with fractional error 3e-8.
 #'
 #' @param jd a julian day number, e.g. as given by \code{\link{julianDay}}.
 #' @return Julian century since noon on January 1, 1900.

@@ -58,7 +58,7 @@ setMethod(f="summary",
 #'
 #' For an example using \code{g1sst} data, see \code{\link{read.g1sst}}.
 #'
-#' @param x An object inherting from \code{\link{satellite-class}}.
+#' @param x An object inheriting from \code{\link{satellite-class}}.
 #' @param y String indicating the quantity to be plotted.
 #' @param asp Optional aspect ratio for plot.
 #' @param debug A debugging flag, integer.

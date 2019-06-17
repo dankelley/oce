@@ -33,7 +33,7 @@ setClass("cm", contains="oce")
 #'
 #' @description
 #' The result of using \code{\link{read.cm}} on a current meter file holding measurements made with an
-#' InterOcean S4 device.  See \code{\link{read.cm}} for some general cautionary notes on reading such
+#' Interocean S4 device.  See \code{\link{read.cm}} for some general cautionary notes on reading such
 #' files. Note that the salinities in this sample dataset are known to be incorrect, perhaps
 #' owing to a lack of calibration of an old instrument that had not been used in a long time.
 #'

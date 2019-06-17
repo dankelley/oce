@@ -1691,7 +1691,7 @@ standardDepths <- function(n=0)
 #' the general type, the second element being the manufacturer, and the third
 #' element being the manufacturer's name for the instrument. For example,
 #' \code{"adp/nortek/aquadopp"} indicates a acoustic-doppler profiler made by
-#' NorTek, of the model type called AquaDopp.
+#' NorTek, of the model type called Aquadopp.
 #' @author Dan Kelley
 #' @seealso This is used mainly by \code{\link{read.oce}}.
 oceMagic <- function(file, debug=getOption("oceDebug"))
@@ -3577,7 +3577,7 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, skip, length=0.05, ad
 
 #' Oce Variant of contour
 #'
-#' This provides something analagous to \code{\link{contour}}, but with the
+#' This provides something analogous to \code{\link{contour}}, but with the
 #' ability to flip x and y.
 #' Setting \code{revy=TRUE} can be helpful if the \code{y} data represent
 #' pressure or depth below the surface.
