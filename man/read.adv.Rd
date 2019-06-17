@@ -183,7 +183,7 @@ bursts.
 Taking these things together, we come upon the issue of how to infer
 sampling times for Nortek instruments.  There do not seem to be definitive
 documents on this, and so \code{read.adv.nortek} is based partly on
-information (of unknown quality) found on Nortek discusson boards.  The
+information (of unknown quality) found on Nortek discussion boards.  The
 present version of \code{read.adv.nortek} infers the times of velocity
 observations differently, depending on whether the instrument was set to
 record in burst mode or continuous mode.  For burst mode, times stated in

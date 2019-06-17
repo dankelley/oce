@@ -23,7 +23,7 @@ read. This must equal 1, for this version of \code{read.adp.ad2cp}.
 must equal 1, for this version of \code{read.adp.ad2cp}.
 (If not provided, \code{by} defaults to 1.)}
 
-\item{tz}{Character alue indicating time zone. This is used in interpreting
+\item{tz}{Character value indicating time zone. This is used in interpreting
 times stored in the file.}
 
 \item{longitude}{Numerical value indicating the longitude of observation.}
