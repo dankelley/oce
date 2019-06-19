@@ -1,5 +1,5 @@
 ---
-title: "Acoustic Doppler profilers"
+title: "3. Analysis of acoustic-Doppler data"
 author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911)"
 date: "`r Sys.Date()`"
 output:
@@ -12,7 +12,7 @@ output:
     dpi: 72
     dev.args: list(pointsize=11)
 vignette: >
-  %\VignetteIndexEntry{Acoustic Doppler profilers}
+  %\VignetteIndexEntry{3. Analysis of acoustic-Doppler data}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---

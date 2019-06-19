@@ -1,5 +1,5 @@
 ---
-title: "Using data-quality flags"
+title: "5. Dealing with data-quality flags"
 author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911)"
 date: "`r Sys.Date()`"
 output:
@@ -12,7 +12,7 @@ output:
     dpi: 72
     dev.args: list(pointsize=11)
 vignette: >
-  %\VignetteIndexEntry{Using data-quality flags}
+  %\VignetteIndexEntry{5. Dealing with data-quality flags}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -366,4 +366,5 @@ Note, in the above, that `initializeFlagScheme`
 has not been used, because the author is unaware of any common notation for
 such data. The values used for `G` and `V4` were provided by colleagues at the
 Bedford Institute of Oceanography.
+
 
