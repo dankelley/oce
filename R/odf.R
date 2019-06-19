@@ -935,8 +935,8 @@ ODFListFromHeader <- function(header)
 #' in June 2011.)
 #'
 #' \item The St Lawrence Global Observatory website has information on ODF format at
-#' \url{https://slgo.ca/app-sgdo/en/docs_reference/documents.html} (link checked
-#' 2018-06-06) and this is perhaps the best resource to learn more.
+#' \url{https://slgo.ca/app-sgdo/en/docs_reference/documents.html}
+#' and this is perhaps the best resource to learn more.
 #'
 #'}
 #'
