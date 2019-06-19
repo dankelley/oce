@@ -1,5 +1,5 @@
 ---
-title: "Introduction to Oce"
+title: "1. Introduction to Oce"
 author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911) and Clark Richards (https://orcid.org/0000-0002-7833-206X)"
 date: "`r Sys.Date()`"
 output:
@@ -12,7 +12,7 @@ output:
     dpi: 72
     dev.args: list(pointsize=11)
 vignette: >
-  %\VignetteIndexEntry{Introduction to Oce}
+  %\VignetteIndexEntry{1. Introduction to Oce}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
