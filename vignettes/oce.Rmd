@@ -418,7 +418,7 @@ being changed on a given day.  Official CRAN releases derive from the `master`
 branch, and are done when the code is considered to be of reasonable stability
 and quality.  This is all in a common pattern for open-source software.
 
-# Answers to exercises
+# Solutions to exercises
 
 **Exercise 1.** Seawater properties. In the UNESCO system we
 may write
