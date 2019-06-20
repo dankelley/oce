@@ -220,8 +220,6 @@ height.
 
 # Solutions to exercises
 
-## Solution 1
-
 **Exercise 1.** Determine the name of the `metadata` item that holds the
 coordinate system of an adp object.
 
@@ -245,7 +243,6 @@ processingLogShow(adp)
 ```
 reveals the steps in the data transformation.
 
-## Solution 2
 
 **Exercise 2.** Create a u-v scatterplot.
 
@@ -255,7 +252,6 @@ reveals the steps in the data transformation.
 plot(adp, which="uv")
 ```
 
-## Solution 3
 
 **Exercise 3.** Plot the adp data for the first half of the sampling interval.
 
@@ -265,7 +261,6 @@ plot(adp, which="uv")
 plot(subset(adp, time < median(adp[["time"]])))
 ```
 
-## Solution 4
 
 **Exercise 4.** Plot a time series of mid-depth and depth-averaged eastward velocities.
 
@@ -288,7 +283,6 @@ legend("top", lwd=1, col=1:2,
 Here, `oce.plot.ts()` is used instead of the basic R function `plot()`, because
 it provides a margin note on the detailed time interval.
 
-## Solution 5
 
 **Exercise 5.** Perform an eigen analysis of eastward and northward velocity.
 
@@ -316,7 +310,6 @@ pr
 but has the advantage of having associated methods, including for plotting.
 
 
-## Solution 6
 
 **Exercise 6.** Plot a time series of pressure variations, to reveal tidal
 height.
