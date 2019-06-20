@@ -111,7 +111,7 @@ retrieves the temperature. For obvious reasons, the method of derived-quantity a
 
 # Modifying data in oce objects
 
-There are several schemes for modifying the data within `oce` objects. By analogy with the `[[` notation of the previous section, e.g. the following 
+There are several schemes for modifying the data within `oce` objects. By analogy with the `[[` notation of the previous section, e.g. the following
 ```{r eval=FALSE}
 data(ctd)
 ctd[["temperatureAboveFreezing"]] <- ctd[["temperature"]] - swTFreeze(ctd)
@@ -481,7 +481,6 @@ example, the accessing operator `[[` and `summary` function will work as
 expected, and so will such aspects as the handling of data-quality flags and
 units.  More details on setting up classes that inherit from oce are provided
 in [the subclassing vignette](6.  Subclassing oce objects).
-
 
 
 # The future of oce
