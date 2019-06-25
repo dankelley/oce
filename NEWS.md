@@ -1,3 +1,8 @@
+1.1-2
+* geodDist() defaults 2nd location correctly when alongPath=FALSE
+* improvements to vignettes
+* fix itemized-list documentation problem pointed out by Kurt Hornik
+
 1.1-1
 * fix "link-time-optimization" issues for CRAN submission
 
