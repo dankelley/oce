@@ -58,6 +58,7 @@ lines(t, v, col=2)
 
 These may be inserted into an `oce` object as follows. First, create the object.
 ```{R}
+library(oce)
 o <- new("oce")
 ```
 This contains slots without data:
