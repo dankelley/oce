@@ -687,7 +687,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
              ", from=", if (fromGiven) format(from) else "(missing)",
              ", to=", if (toGiven) format(to) else "(missing)",
              ", by=", if (byGiven) format(by) else "(missing)",
-             "...) {\n", unindent=1)
+             "...) {\n", unindent=1, sep="")
     if (!fromGiven)
         from <- 1
     if (!byGiven)
@@ -1622,6 +1622,13 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             ##                     as.integer(buf[profileStart+9])+0.01*as.integer(buf[profileStart+10]), # decimal second
             ##                     tz=tz)
             time <- as.POSIXct(ldc$time + 0.01 * as.numeric(ldc$sec100), origin="1970-01-01")
+            oceDebug(debug, "length(time)=", length(time), "\n")
+            if (length(time) > length(profileStart)) {
+                warning("length(time)=", length(time), " exceeds length(profileStart)=", length(profileStart), " so trimming time\n")
+                message("length(time)=", length(time), " exceeds length(profileStart)=", length(profileStart), " so trimming time")
+                time <- time[seq_len(length(profileStart))]
+            }
+            oceDebug(debug, "length(time)=", length(time), " after possible shortening to match length(profileStart)\n")
 
             ## Identify "junk" profiles by NA times
             junkProfiles <- which(is.na(time))
@@ -1647,6 +1654,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
 
             profileStart2 <- sort(c(profileStart, profileStart + 1)) # lets us index two-byte chunks
             profileStart4 <- sort(c(profileStart, profileStart + 1, profileStart + 2, profileStart + 3)) # lets us index four-byte chunks
+            oceDebug(debug, "length(profileStart)=", length(profileStart), " after checking for bad profiles)\n")
+
 
             ## cat("profileStart=", paste(profileStart, collapse=" "), "\n")
             ## cat("profileStart2=", paste(profileStart2, collapse=" "), "\n")
