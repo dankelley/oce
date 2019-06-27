@@ -1,4 +1,5 @@
 1.1-2
+- read.adp.rdi() trims time vector if it exceeds other data lengths
 * geodDist() defaults 2nd location correctly when alongPath=FALSE
 * improvements to vignettes
 * fix itemized-list documentation problem pointed out by Kurt Hornik
