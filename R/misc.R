@@ -3125,7 +3125,7 @@ interpBarnes <- function(x, y, z, w,
                          debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
-    oceDebug(debug, "interpBarnes(x, ...) {\n", unindent=1)
+    oceDebug(debug, "interpBarnes(x, ...) {\n", unindent=1, sep="")
     if (!is.vector(x))
         stop("x must be a vector")
     n <- length(x)
@@ -3198,10 +3198,9 @@ interpBarnes <- function(x, y, z, w,
         z <- pg$f
     }
 
-    oceDebug(debug, "xg:", xg, "\n")
-    oceDebug(debug, "yg:", yg, "\n")
-    oceDebug(debug, "xr:", xr, "yr:", yr, "\n")
-    oceDebug(debug, "gamma:", gamma, "iterations:", iterations, "\n")
+    oceDebug(debug, vectorShow(xg))
+    oceDebug(debug, vectorShow(yg))
+    oceDebug(debug, "xr=", xr, ", yr=", yr, ", gamma=", gamma, ", iterations=", iterations, "\n")
 
     ok <- !is.na(x) & !is.na(y) & !is.na(z) & !is.na(w)
     g <- do_interp_barnes(x[ok], y[ok], z[ok], w[ok], xg, yg, xr, yr, gamma, iterations)
@@ -3209,7 +3208,7 @@ interpBarnes <- function(x, y, z, w,
         bad <- g$wg < quantile(g$wg, trim, na.rm=TRUE)
         g$zg[bad] <- NA
     }
-    oceDebug(debug, "} # interpBarnes(...)\n", unindent=1)
+    oceDebug(debug, "} # interpBarnes(...)\n", unindent=1, sep="")
     list(xg=xg, yg=yg, zg=g$zg, wg=g$wg, zd=g$zd)
 }
 

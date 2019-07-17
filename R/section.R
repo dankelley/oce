@@ -1822,9 +1822,9 @@ setMethod(f="plot",
                        call.=FALSE)
               firstStation <- x@data$station[[stationIndices[1]]]
               num.depths <- length(firstStation@data$pressure)
-              zz <- matrix(nrow=numStations, ncol=num.depths)
-              xx <- array(NA_real_, numStations)
-              yy <- array(NA_real_, num.depths)
+              zz <- array(NA_real_, dim=c(numStations, num.depths))
+              xx <- rep(NA, numStations)
+              yy <- rep(NA, num.depths)
               if (is.null(at)) {
                   lon0 <- mean(firstStation[["longitude"]], na.rm=TRUE)
                   lat0 <- mean(firstStation[["latitude"]], na.rm=TRUE)
@@ -1947,6 +1947,7 @@ setMethod(f="plot",
                    } else {
                       if (which[w] == "temperature") {
                           oceDebug(debug, "plotting temperature with contourLevels not provided\n")
+                          ##if (!sum(is.finite(zz))) browser() ### FIXME:1583
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          "temperature",
                                          if (eos == "unesco") "T" else expression(Theta),
@@ -2869,15 +2870,15 @@ sectionSmooth <- function(section, method="spline",
             ok <- is.finite(X) & is.finite(P) & is.finite(v)
             if (is.character(method)) {
                 if (method == "barnes") {
-                    oceDebug(debug, "about to call interpBarnes() with var='", var, "'\n", sep="")
                     smu <- interpBarnes(X[ok], P[ok], v[ok], xg=xg, yg=yg, xgl=length(xg), ygl=length(yg),
                                         xr=xr, yr=yr, gamma=gamma, iterations=iterations, trim=trim,
                                         debug=debug-1)
                     ## rename to match names if method is a function.
-                    oceDebug(debug, "interpBarnes() call succeeded\n")
                     smu$z <- smu$zg
                     smu$x <- smu$xg
                     smu$y <- smu$yg
+                    oceDebug(debug, sprintf("interpBarnes() call succeeded, with %.3f%% of z matrix filled\n",
+                                            100*sum(is.finite(smu$z))/prod(dim(smu$z))))
                 } else if (method == "kriging") {
                     if (requireNamespace("automap", quietly=TRUE) &&
                         requireNamespace("sp", quietly=TRUE)) {
@@ -2938,23 +2939,23 @@ sectionSmooth <- function(section, method="spline",
             res@data$station[[i]]@metadata$waterDepth <- waterDepthNew[i]
         }
     }
-    oceDebug(debug, "about to create units\n")
+    oceDebug(debug > 3, "about to create units\n")
     ## Insert uniform units and flags into each station.
     units <- list()
-    for (i in seq_len(nstation)) {
-        oceDebug(debug, "station i=", i, " (nstation=", nstation, ")\n", sep="")
+    for (i in seq_along(section[["station"]])) {
+        oceDebug(debug > 3, "station i=", i, ", nstation=", nstation, ", length(section@data$section)=", length(section@data$station), "\n", sep="")
         for (unitName in names(section@data$station[[i]]@metadata$units)) {
-            oceDebug(debug, "unitName='", unitName, "'\n", sep="")
+            oceDebug(debug > 3, "unitName='", unitName, "'\n", sep="")
             if (!(unitName %in% names(units))) {
-                oceDebug(debug, " ... installing unitName='", unitName, "'\n", sep="")
+                oceDebug(debug > 3, " ... installing unitName='", unitName, "'\n", sep="")
                 units[unitName] <- section@data$station[[i]]@metadata$units[unitName]
-                oceDebug(debug, " ... installation was ok\n")
+                oceDebug(debug > 3, " ... installation was ok\n")
             }
         }
     }
-    oceDebug(debug, "installing units\n")
-    oceDebug(debug, "length(res@data$station)=", length(res@data$station), "\n")
-    oceDebug(debug, "nxg=", nxg, "\n")
+    oceDebug(debug > 3, "installing units\n")
+    oceDebug(debug > 3, "length(res@data$station)=", length(res@data$station), "\n")
+    oceDebug(debug > 3, "nxg=", nxg, "\n")
     for (i in seq_len(nxg)) {
         res@data$station[[i]]@metadata$units <- units
         ## Note that we put in flags for *all* variables in the output file. This
