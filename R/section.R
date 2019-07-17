@@ -2869,10 +2869,12 @@ sectionSmooth <- function(section, method="spline",
             ok <- is.finite(X) & is.finite(P) & is.finite(v)
             if (is.character(method)) {
                 if (method == "barnes") {
+                    oceDebug(debug, "about to call interpBarnes() with var='", var, "'\n", sep="")
                     smu <- interpBarnes(X[ok], P[ok], v[ok], xg=xg, yg=yg, xgl=length(xg), ygl=length(yg),
                                         xr=xr, yr=yr, gamma=gamma, iterations=iterations, trim=trim,
                                         debug=debug-1)
                     ## rename to match names if method is a function.
+                    oceDebug(debug, "interpBarnes() call succeeded\n")
                     smu$z <- smu$zg
                     smu$x <- smu$xg
                     smu$y <- smu$yg
@@ -2915,6 +2917,7 @@ sectionSmooth <- function(section, method="spline",
             }
         }
     }
+    oceDebug(debug, "smoothing portion completed (near section.R line 2920)\n")
     ## Set up section-level and station-level metadata
     res@metadata$longitude <- approx(x, section[["longitude", "byStation"]], xg)$y
     res@metadata$latitude <- approx(x, section[["latitude", "byStation"]], xg)$y
@@ -2935,15 +2938,23 @@ sectionSmooth <- function(section, method="spline",
             res@data$station[[i]]@metadata$waterDepth <- waterDepthNew[i]
         }
     }
+    oceDebug(debug, "about to create units\n")
     ## Insert uniform units and flags into each station.
     units <- list()
     for (i in seq_len(nstation)) {
+        oceDebug(debug, "station i=", i, " (nstation=", nstation, ")\n", sep="")
         for (unitName in names(section@data$station[[i]]@metadata$units)) {
+            oceDebug(debug, "unitName='", unitName, "'\n", sep="")
             if (!(unitName %in% names(units))) {
+                oceDebug(debug, " ... installing unitName='", unitName, "'\n", sep="")
                 units[unitName] <- section@data$station[[i]]@metadata$units[unitName]
+                oceDebug(debug, " ... installation was ok\n")
             }
         }
     }
+    oceDebug(debug, "installing units\n")
+    oceDebug(debug, "length(res@data$station)=", length(res@data$station), "\n")
+    oceDebug(debug, "nxg=", nxg, "\n")
     for (i in seq_len(nxg)) {
         res@data$station[[i]]@metadata$units <- units
         ## Note that we put in flags for *all* variables in the output file. This
