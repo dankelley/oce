@@ -217,6 +217,16 @@ test_that("sectionGrid units and flags", {
           expect_equal(section[["station",1]][["units"]], sg[["station",1]][["units"]])
 })
 
+test_that("sectionSmooth grid extends past data (issue 1583)", {
+          data(section)
+          gs <- subset(section, 115 <= stationId&stationId <= 125)
+          ## xgrid extends past data, owing to the ceiling(). This caused
+          ## an error (reported as issue 1583) prior to 2019 July 19.
+          expect_silent(sectionSmooth(gs, "barnes",
+                                      xg=seq(0, ceiling(max(gs[['distance', 'byStation']])), by=1),
+                                      yg=seq(5, ceiling(max(gs[['pressure']])), by=25)))
+})
+
 test_that("sectionSmooth units and flags", {
           data(section)
           ## Work with a subset for speed of test.

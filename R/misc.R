@@ -3124,7 +3124,7 @@ interpBarnes <- function(x, y, z, w,
                          pregrid=FALSE,
                          debug=getOption("oceDebug"))
 {
-    debug <- max(0, min(debug, 2))
+    debug <- max(0, debug)
     oceDebug(debug, "interpBarnes(x, ...) {\n", unindent=1, sep="")
     if (!is.vector(x))
         stop("x must be a vector")
@@ -3208,6 +3208,7 @@ interpBarnes <- function(x, y, z, w,
         bad <- g$wg < quantile(g$wg, trim, na.rm=TRUE)
         g$zg[bad] <- NA
     }
+    oceDebug(debug, sprintf("filled %.3f%% of z matrix\n", 100*sum(is.finite(g$zg))/prod(dim(g$zg))))
     oceDebug(debug, "} # interpBarnes(...)\n", unindent=1, sep="")
     list(xg=xg, yg=yg, zg=g$zg, wg=g$wg, zd=g$zd)
 }

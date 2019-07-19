@@ -92,10 +92,9 @@ test_that("adpEnsembleAverage() produces correctly-dimensioned results", {
           expect_equal(dim(adpAvg[["v"]]), dim(adpAvg[["g"]]))
 })
 
-
-test_that("details of a local RDI", {
-          f <- "/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
-          if (file.exists(f)) {
+f <- "/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
+if (file.exists(f)) {
+    test_that("details of a local RDI", {
               d <- read.oce(f, 1, 3, 1, 0)
               expect_equal(d[["time"]], as.POSIXct(c("2008-06-25 10:00:00",
                                                      "2008-06-25 10:00:10",
@@ -229,8 +228,8 @@ test_that("details of a local RDI", {
                            -0.02, 0.063, -0.107, -0.018, 0.018, -0.136, 0.041, 0.1, -0.139,
                            -0.002, 0.02, -0.171, -0.042, 0.104), dim=c(3, 84, 4))
               expect_equal(d[["v"]], v)
-          }
 })
+}
 
 test_that("three RDI reading methods (from, to, by not given)", {
           ## https://github.com/dankelley/oce/issues/1557

@@ -1510,7 +1510,7 @@ setMethod(f="plot",
                                ylab=ylab,
                                axes=FALSE)
                           if (axes) {
-                              oceDebug(debug, "drawing axes\n")
+                              ## oceDebug(debug, "drawing axes\n")
                               axis(4, labels=FALSE)
                               ytics <- axis(2, labels=FALSE)
                               axis(2, at=ytics, labels=-ytics)
@@ -1526,6 +1526,7 @@ setMethod(f="plot",
                               } else {
                                   axis(1)
                               }
+                              ## oceDebug(debug, "finished drawing axes\n")
                           }
                           box()
                       } else {
@@ -1602,8 +1603,13 @@ setMethod(f="plot",
                                       } else {
                                           rep(NA, length(thisStation[["pressure"]]))
                                       }
-                                      ##. message("zz[",i,",]:", paste(head(zz[i,]), collapse=" "))
+                                      ## message("zz[",i,",]:", paste(head(zz[i,]), collapse=" "))
                                   }
+                                  ## if (all(dim(zz) > 2)) {
+                                  ##     oceDebug(debug, "zz[1,1:3]=", paste(zz[1,1:3], collapse=" "), "\n")
+                                  ##     oceDebug(debug, "zz[2,1:3]=", paste(zz[2,1:3], collapse=" "), "\n")
+                                  ##     oceDebug(debug, "zz[3,1:3]=", paste(zz[3,1:3], collapse=" "), "\n")
+                                  ## }
                               }
                           }
                           if (grid && !drawPoints)
@@ -1648,10 +1654,11 @@ setMethod(f="plot",
                       ##par(xaxs="i", yaxs="i")
 
                       ## Put x in order, if it's not already
+                      xx[!is.finite(xx)] <- NA # for issue 1583: grid larger than data range can get NaN values
                       ox <- order(xx)
                       xxOrig <- xx
                       ii <- seq_along(xxOrig) # so we can use it later for drawing bottoms
-                      if (any(xx[ox] != xx)) {
+                      if (any(xx[ox] != xx, na.rm=TRUE)) { # for issue 1583: handle the NA just inserted
                           xx <- xx[ox]
                           zz <- zz[ox, ] ## FIXME keep this???
                           ii <- ii[ox]
@@ -1890,7 +1897,7 @@ setMethod(f="plot",
               } else {
                   stop("unknown ytype")
               }
-              oceDebug(debug, "yy starts:", paste(head(yy), collapse=" "))
+              oceDebug(debug, vectorShow(yy))
               ##> message("CHECK(section.R:1034) yy: ", paste(round(yy), " "))
               ##> message("station 1 pressure: ", paste(x@data$station[[1]]@data$pressure, collapse=" "))
               par(mgp=mgp, mar=mar)
@@ -2736,6 +2743,8 @@ sectionSmooth <- function(section, method="spline",
         stop("method is only for objects of class '", "section", "'")
     if (!is.function(method) && !(is.character(method) && (method %in% c("barnes", "kriging", "spline"))))
         stop('method must be "barnes", "kriging", "spline", or an R function')
+    ## pin debug, since we only call one function, interpBarnes() that uses debug
+    debug <- if (debug > 2) 2 else if (debug < 0) 0 else debug
     oceDebug(debug, "sectionSmooth(section,method=\"",
              if (is.character(method)) method else "(function)", "\", ...) {\n", sep="", unindent=1)
     stations <- section[["station"]]
@@ -2760,16 +2769,17 @@ sectionSmooth <- function(section, method="spline",
     maxPressure <- max(P, na.rm=TRUE)
     if (missing(xg)) {
         xg <- if (missing(xgl)) x else seq(min(x), max(x), length.out=xgl)
-        oceDebug(debug, "defaulted xg=", paste(xg, collapse=" "), "\n")
+        oceDebug(debug, "defaulted xg=", vectorShow(xg))
     } else {
-        oceDebug(debug, "user-supplied xg=", paste(xg, collapse=" "), "\n")
+        oceDebug(debug, "user-supplied xg=", vectorShow(xg))
     }
     if (missing(yg)) {
         deepest <- which.max(unlist(lapply(section[["station"]], function(ctd) max(ctd[["pressure"]], na.rm=TRUE))))
         yg <- if (missing(ygl)) section[["station", deepest]][["pressure"]] else seq(0, maxPressure, length.out=ygl)
+        oceDebug(debug, "defaulted yg=", vectorShow(yg))
+    } else {
+        oceDebug(debug, "user-supplied yg=", vectorShow(yg))
     }
-    oceDebug(debug, vectorShow(xg))
-    oceDebug(debug, vectorShow(yg))
     stn1pressure <- stations[[1]][["pressure"]]
     if (identical(method, "spline") && !identical(yg, stn1pressure))
         stop("for method=\"spline\", yg must match the pressure vector in first station")
@@ -2810,7 +2820,7 @@ sectionSmooth <- function(section, method="spline",
         oceDebug(debug, "dim matrix for input grid=", paste(dim(VAR), collapse="X"), "\n")
         for (var in vars) {
             ##? res@data$station[[istn]][[var]] <- rep(NA, npressure)
-            oceDebug(debug, "  smoothing", var, "\n")
+            oceDebug(debug, "smoothing", var, "\n")
             for (istn in seq_len(nx))
                 VAR[istn, ] <- if (var %in% names(stations[[istn]][["data"]])) stations[[istn]][[var]] else rep(NA, npressure)
             ## Smooth at each pressure value (turn off warnings because smooth.spline is confusingly chatty)
@@ -2842,7 +2852,18 @@ sectionSmooth <- function(section, method="spline",
             }
         }
     } else {
-        oceDebug(debug, "using barnes or function method\n")
+        if (is.character(method)) {
+            if (method == "barnes")
+                oceDebug(debug, "using method\n")
+            else if (method == "kriging")
+                oceDebug(debug, "using kriging method\n")
+            else
+                stop("unknown method=\"", method, "\"")
+        } else if (is.function(method)) {
+            oceDebug(debug, "using function method\n")
+        } else {
+            stop("unknown method")
+        }
         ## either "barnes" or a function
         ## Find names of all variables in all stations; previous to 2019 May 2,
         ## we only got names from the first station.
@@ -2860,7 +2881,7 @@ sectionSmooth <- function(section, method="spline",
         ## Smooth each variable separately
         for (var in vars) {
             v <- NULL
-            oceDebug(debug, "  smoothing", var, "\n")
+            oceDebug(debug, "smoothing", var, "\n")
             ## collect data
             v <- unlist(lapply(section[["station"]],
                                function(CTD)
@@ -2877,8 +2898,6 @@ sectionSmooth <- function(section, method="spline",
                     smu$z <- smu$zg
                     smu$x <- smu$xg
                     smu$y <- smu$yg
-                    oceDebug(debug, sprintf("interpBarnes() call succeeded, with %.3f%% of z matrix filled\n",
-                                            100*sum(is.finite(smu$z))/prod(dim(smu$z))))
                 } else if (method == "kriging") {
                     if (requireNamespace("automap", quietly=TRUE) &&
                         requireNamespace("sp", quietly=TRUE)) {
@@ -2920,8 +2939,12 @@ sectionSmooth <- function(section, method="spline",
     }
     oceDebug(debug, "smoothing portion completed (near section.R line 2920)\n")
     ## Set up section-level and station-level metadata
-    res@metadata$longitude <- approx(x, section[["longitude", "byStation"]], xg)$y
-    res@metadata$latitude <- approx(x, section[["latitude", "byStation"]], xg)$y
+    res@metadata$longitude <- approx(x, section[["longitude", "byStation"]], xg, rule=2)$y
+    res@metadata$latitude <- approx(x, section[["latitude", "byStation"]], xg, rule=2)$y
+    if (any(!is.finite(res@metadata$longitude)))
+        warning("some gridded longitudes are NA\n")
+    if (any(!is.finite(res@metadata$latitude)))
+        warning("some gridded latitudes are NA\n")
     for (i in seq_along(xg)) {
         res@data$station[[i]]@metadata$longitude <- res@metadata$longitude[i]
         res@data$station[[i]]@metadata$latitude <- res@metadata$latitude[i]
