@@ -23,7 +23,7 @@ test_that("enuToOther(adv) test of rotation", {
           expect_equal(VR[1:5, 2], adv3[["v"]][1:5, 2])
 })
 
-f <- "/data/archive/sleiwex/2008/moorings/m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr"
+f <- "~/Dropbox/data/archive/sleiwex/2008/moorings/m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr"
 if (file.exists(f)) {
   test_that("read private Sontek file, with numeric 'to' and 'from'", {
             n <- 500000
@@ -46,7 +46,7 @@ if (file.exists(f)) {
 })
 }
 
-f <- "/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec"
+f <- "~/Dropbox/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec"
 if (file.exists(f)) {
   test_that("read private Nortek file, with numeric 'to' and 'from'", {
             d <- read.oce(f, from=1, to=100)

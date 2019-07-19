@@ -1,7 +1,7 @@
 library(oce)
 context("landsat")
 
-f <- "/data/archive/landsat/LC80080292014065LGN00"
+f <- "~/Dropbox/data/archive/landsat/LC80080292014065LGN00"
 if (file.exists(f)) {
     test_that("read landsat (private file)", {
               expect_warning(l <- read.landsat(f, band="tirs1"))

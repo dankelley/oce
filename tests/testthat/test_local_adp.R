@@ -1,7 +1,7 @@
 library(oce)
 context("read adp data")
 
-f <- "/data/archive/sleiwex/2008/moorings/m07/adp/sontek_h53/raw/adp_sontek_h53.adp"
+f <- "~/Dropbox/data/archive/sleiwex/2008/moorings/m07/adp/sontek_h53/raw/adp_sontek_h53.adp"
 if (file.exists(f)) {
     test_that("Sontek adp", {
               n <- 5000

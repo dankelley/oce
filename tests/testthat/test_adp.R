@@ -92,7 +92,7 @@ test_that("adpEnsembleAverage() produces correctly-dimensioned results", {
           expect_equal(dim(adpAvg[["v"]]), dim(adpAvg[["g"]]))
 })
 
-f <- "/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
+f <- "~/Dropbox/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
 if (file.exists(f)) {
     test_that("details of a local RDI", {
               d <- read.oce(f, 1, 3, 1, 0)

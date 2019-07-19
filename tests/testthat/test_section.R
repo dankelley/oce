@@ -266,9 +266,11 @@ test_that("sectionSmooth profile count", {
                                       new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
               matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
             }
-            expect_warning(skrigingUser <- sectionSmooth(s, krigFunction), "NaNs produced")
+            expect_output(expect_warning(skrigingUser <- sectionSmooth(s, krigFunction), "NaNs produced"),
+                          "using ordinary kriging")
             expect_equal(length(skrigingUser[["station"]]), length(s[["station"]]))
-            expect_warning(skrigingUser2 <- sectionSmooth(s, krigFunction, xg=seq(0,200,50)), "NaNs produced")
+            expect_output(expect_warning(skrigingUser2 <- sectionSmooth(s, krigFunction, xg=seq(0,200,50)), "NaNs produced"),
+                          "using ordinary kriging")
             expect_equal(length(skrigingUser2[["station"]]), 5)
           }
 })
