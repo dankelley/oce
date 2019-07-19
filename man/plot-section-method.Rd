@@ -11,8 +11,8 @@
   contourLabels = NULL, stationIndices, coastline = "best",
   xlim = NULL, ylim = NULL, zlim = NULL, map.xlim = NULL,
   map.ylim = NULL, clongitude, clatitude, span, projection = NULL,
-  xtype = "distance", ytype = "depth", ztype = "contour",
-  zbreaks = NULL, zcol = NULL, legend.loc = "bottomright",
+  xtype = "distance", ytype = "depth", ztype = "contour", longitude0,
+  latitude0, zbreaks = NULL, zcol = NULL, legend.loc = "bottomright",
   showStations = FALSE, showStart = TRUE, showBottom = TRUE,
   axes = TRUE, mgp, mar, col, cex, pch, labcex = 1, debug, ...)
 }
@@ -93,6 +93,9 @@ contours, \code{"image"} for an image (drawn with \code{\link{imagep}} with
 \code{filledContours=TRUE}), or \code{"points"} to draw points.
 In the first two cases, the data must be gridded, with identical pressures at
 each station.}
+
+\item{longitude0, latitude0}{Location of the point from which distance is measured.
+These values are ignored unless \code{xtype} is \code{"distance"}.}
 
 \item{zbreaks, zcol}{Indication of breaks and colors to be used if \code{ztype="points"} or
 \code{"image"}. If not provided, reasonable default are used. If \code{zlim}

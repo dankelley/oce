@@ -1026,6 +1026,9 @@ sectionAddCtd <- sectionAddStation
 #' \code{"time"}.  Note that if the x values are not in order, they will be put in
 #' order (which may make no sense) and a warning will be printed.
 #'
+#' @param longitude0,latitude0 Location of the point from which distance is measured.
+#' These values are ignored unless \code{xtype} is \code{"distance"}.
+#'
 #' @param ytype Type of y axis for contour plots, either \code{"pressure"} for
 #' pressure (in dbar, with zero at the surface) or \code{"depth"} for depth (in m
 #' below the surface, calculated from pressure with \code{\link{swDepth}}).
@@ -1181,6 +1184,7 @@ setMethod(f="plot",
                               clongitude, clatitude, span,
                               projection=NULL,
                               xtype="distance", ytype="depth", ztype="contour",
+                              longitude0, latitude0,
                               zbreaks=NULL, zcol=NULL,
                               legend.loc="bottomright",
                               showStations=FALSE,
@@ -1833,8 +1837,10 @@ setMethod(f="plot",
               xx <- rep(NA, numStations)
               yy <- rep(NA, num.depths)
               if (is.null(at)) {
-                  lon0 <- mean(firstStation[["longitude"]], na.rm=TRUE)
-                  lat0 <- mean(firstStation[["latitude"]], na.rm=TRUE)
+                  lon0 <- if (missing(longitude0)) mean(firstStation[["longitude"]], na.rm=TRUE) else longitude0
+                  lat0 <- if (missing(latitude0)) mean(firstStation[["latitude"]], na.rm=TRUE) else latitude0
+                  oceDebug(debug, lon0)
+                  oceDebug(debug, lat0)
                   for (ix in 1:numStations) {
                       j <- stationIndices[ix]
                       if (which.xtype == 1) { # distance from first station
