@@ -2157,20 +2157,20 @@ vectorShow <- function(v, msg, digits=5, n=2L)
         if (is.numeric(v)) {
             if (showAll) {
                 paste(msg, ": ", paste(format(v, digits=digits), collapse=", "),
-                      " (length ", nv, ")\n", sep="")
+                      if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
             } else {
                 paste(msg, ": ", paste(format(v[1:n], digits=digits), collapse=", "),
                       ", ..., ", paste(format(v[nv-seq.int(n-1, 0)], digits=digits), collapse=", "),
-                      " (length ", nv, ")\n", sep="")
+                      if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
             }
         } else {
             if (showAll) {
                 paste(msg, ": ", paste(v, collapse=", "),
-                      " (length ", nv, ")\n", sep="")
+                      if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
             } else {
                 paste(msg, ": ", paste(v[1:n], collapse=", "),
                       ", ..., ", paste(v[nv-seq.int(n-1, 0)], collapse=", "),
-                      " (length ", nv, ")\n", sep="")
+                      if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
             }
         }
     }

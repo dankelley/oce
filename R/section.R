@@ -1839,8 +1839,8 @@ setMethod(f="plot",
               if (is.null(at)) {
                   lon0 <- if (missing(longitude0)) mean(firstStation[["longitude"]], na.rm=TRUE) else longitude0
                   lat0 <- if (missing(latitude0)) mean(firstStation[["latitude"]], na.rm=TRUE) else latitude0
-                  oceDebug(debug, lon0)
-                  oceDebug(debug, lat0)
+                  oceDebug(debug, vectorShow(lon0))
+                  oceDebug(debug, vectorShow(lat0))
                   for (ix in 1:numStations) {
                       j <- stationIndices[ix]
                       if (which.xtype == 1) { # distance from first station
@@ -2650,15 +2650,19 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' @param xg,xgl ignored in the \code{method="spline"} case, but passed to
 #' \code{\link{interpBarnes}} if \code{method="barnes"} or
 #' to \code{method} if it is a function.
-#' If \code{xg} is supplied, it defines the x component of the grid, i.e. the resultant station
-#' distances, x, along the track of the section.
+#' If \code{xg} is supplied, it defines the x component of the grid, which by
+#' default is the terms of station distances, x, along the track of the section. (Note
+#' that the grid \code{xg} is trimmed to the range of the data \code{x}, because otherwise
+#' it would be impossible to infer longitudes and latitudes for the stations in the
+#' returned \code{section} object.)
 #' Alternatively, if \code{xgl} is supplied, the x grid is established using \code{\link{seq}},
 #' to span the data with \code{xgl} elements. If neither of these is supplied, the output
 #' x grid will equal the input x grid.
 #'
-#' @param yg,ygl similar to \code{xg} and \code{xgl}, but for pressure. If \code{yg}
-#' is not given, it is determined from the deepest station in the section. If
-#' \code{ygl} was not given, then a grid is constructed to span the pressures
+#' @param yg,ygl similar to \code{xg} and \code{xgl}, but for pressure. (Note that
+#' trimming to the input \code{y} is not done, as it is for \code{xg} and \code{x}.)
+#" If \code{yg} is not given, it is determined from the deepest station in the section.
+#' If \code{ygl} was not given, then a grid is constructed to span the pressures
 #' of that deepest station with \code{ygl} elements. On the other hand,
 #' if \code{ygl} was not given, then the y grid will constructed from the
 #' pressure levels in the deepest station.
@@ -2775,17 +2779,23 @@ sectionSmooth <- function(section, method="spline",
     maxPressure <- max(P, na.rm=TRUE)
     if (missing(xg)) {
         xg <- if (missing(xgl)) x else seq(min(x), max(x), length.out=xgl)
-        oceDebug(debug, "defaulted xg=", vectorShow(xg))
+        oceDebug(debug, "defaulted", vectorShow(xg))
     } else {
-        oceDebug(debug, "user-supplied xg=", vectorShow(xg))
+        oceDebug(debug, "user-supplied", vectorShow(xg))
     }
     if (missing(yg)) {
         deepest <- which.max(unlist(lapply(section[["station"]], function(ctd) max(ctd[["pressure"]], na.rm=TRUE))))
         yg <- if (missing(ygl)) section[["station", deepest]][["pressure"]] else seq(0, maxPressure, length.out=ygl)
-        oceDebug(debug, "defaulted yg=", vectorShow(yg))
+        oceDebug(debug, "defaulted", vectorShow(yg))
     } else {
-        oceDebug(debug, "user-supplied yg=", vectorShow(yg))
+        oceDebug(debug, "user-supplied", vectorShow(yg))
     }
+    ## Trim xg to the data range in x (issue 1583)
+    oceDebug(debug, "original data", vectorShow(x))
+    keep <- min(x) <= xg & xg <= max(x)
+    oceDebug(debug, "before trimming", vectorShow(xg))
+    xg <- xg[keep]
+    oceDebug(debug, "after trimming", vectorShow(xg))
     stn1pressure <- stations[[1]][["pressure"]]
     if (identical(method, "spline") && !identical(yg, stn1pressure))
         stop("for method=\"spline\", yg must match the pressure vector in first station")
@@ -2860,15 +2870,15 @@ sectionSmooth <- function(section, method="spline",
     } else {
         if (is.character(method)) {
             if (method == "barnes")
-                oceDebug(debug, "using method\n")
+                oceDebug(debug, "using method=\"barnes\"\n")
             else if (method == "kriging")
-                oceDebug(debug, "using kriging method\n")
+                oceDebug(debug, "using method=\"kriging\"\n")
             else
-                stop("unknown method=\"", method, "\"")
+                stop("unknown string method=\"", method, "\"; it must be \"barnes\" or \"kriging\"")
         } else if (is.function(method)) {
-            oceDebug(debug, "using function method\n")
+            oceDebug(debug, "using method=(function)\n")
         } else {
-            stop("unknown method")
+            stop("method must be a string or a function")
         }
         ## either "barnes" or a function
         ## Find names of all variables in all stations; previous to 2019 May 2,
@@ -2945,8 +2955,10 @@ sectionSmooth <- function(section, method="spline",
     }
     oceDebug(debug, "smoothing portion completed (near section.R line 2920)\n")
     ## Set up section-level and station-level metadata
-    res@metadata$longitude <- approx(x, section[["longitude", "byStation"]], xg, rule=2)$y
-    res@metadata$latitude <- approx(x, section[["latitude", "byStation"]], xg, rule=2)$y
+    longitudeNew <- approx(x, section[["longitude", "byStation"]], xg)$y # FIXME
+    latitudeNew <- approx(x, section[["latitude", "byStation"]], xg)$y
+    res@metadata$longitude <- approx(x, section[["longitude", "byStation"]], xg)$y
+    res@metadata$latitude <- approx(x, section[["latitude", "byStation"]], xg)$y
     if (any(!is.finite(res@metadata$longitude)))
         warning("some gridded longitudes are NA\n")
     if (any(!is.finite(res@metadata$latitude)))
@@ -2954,7 +2966,7 @@ sectionSmooth <- function(section, method="spline",
     for (i in seq_along(xg)) {
         res@data$station[[i]]@metadata$longitude <- res@metadata$longitude[i]
         res@data$station[[i]]@metadata$latitude <- res@metadata$latitude[i]
-        res@data$station[[istn]]@metadata$stationId <- if (nxg < 10) sprintf("x%d", istn)
+        res@data$station[[i]]@metadata$stationId <- if (nxg < 10) sprintf("x%d", istn)
             else if (nxg < 100) sprintf("x%02d", istn)
             else if (nxg < 1000) sprintf("x%03d", istn)
             else if (nxg < 10000) sprintf("x%04d", istn)

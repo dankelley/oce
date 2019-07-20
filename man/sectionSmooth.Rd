@@ -22,15 +22,18 @@ defaults to \code{\link{geodDist}(section)}.}
 \item{xg, xgl}{ignored in the \code{method="spline"} case, but passed to
 \code{\link{interpBarnes}} if \code{method="barnes"} or
 to \code{method} if it is a function.
-If \code{xg} is supplied, it defines the x component of the grid, i.e. the resultant station
-distances, x, along the track of the section.
+If \code{xg} is supplied, it defines the x component of the grid, which by
+default is the terms of station distances, x, along the track of the section. (Note
+that the grid \code{xg} is trimmed to the range of the data \code{x}, because otherwise
+it would be impossible to infer longitudes and latitudes for the stations in the
+returned \code{section} object.)
 Alternatively, if \code{xgl} is supplied, the x grid is established using \code{\link{seq}},
 to span the data with \code{xgl} elements. If neither of these is supplied, the output
 x grid will equal the input x grid.}
 
-\item{yg, ygl}{similar to \code{xg} and \code{xgl}, but for pressure. If \code{yg}
-is not given, it is determined from the deepest station in the section. If
-\code{ygl} was not given, then a grid is constructed to span the pressures
+\item{yg, ygl}{similar to \code{xg} and \code{xgl}, but for pressure. (Note that
+trimming to the input \code{y} is not done, as it is for \code{xg} and \code{x}.)
+If \code{ygl} was not given, then a grid is constructed to span the pressures
 of that deepest station with \code{ygl} elements. On the other hand,
 if \code{ygl} was not given, then the y grid will constructed from the
 pressure levels in the deepest station.}

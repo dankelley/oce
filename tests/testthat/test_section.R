@@ -250,7 +250,7 @@ test_that("sectionSmooth profile count", {
           expect_equal(length(s[["station"]]), length(sspline[["station"]]))
           ## Check dimensionality when xg is given
           sspline2 <- sectionSmooth(sg, "spline", xg=seq(0,200,50))
-          expect_equal(length(sspline2[["station"]]), 5)
+          expect_equal(length(sspline2[["station"]]), 3)
           sbarnes <- sectionSmooth(s, "barnes", xr=50, yr=200)
           expect_equal(length(s[["station"]]), length(sbarnes[["station"]]))
           if (requireNamespace("automap", quietly=TRUE) &&
@@ -258,7 +258,7 @@ test_that("sectionSmooth profile count", {
             expect_warning(skrigingInternal <- sectionSmooth(s, "kriging"), "NaNs produced")
             expect_equal(length(s[["station"]]), length(skrigingInternal[["station"]]))
             expect_warning(skrigingInternal2 <- sectionSmooth(s, "kriging", xg=seq(0,200,50)), "NaNs produced")
-            expect_equal(length(skrigingInternal2[["station"]]), 5)
+            expect_equal(length(skrigingInternal2[["station"]]), 3)
             krigFunction <- function(x, y, F, xg, xr, yg, yr) {
               xy <- data.frame(x=x/xr, y=y/yr)
               K <- automap::autoKrige(F~1, remove_duplicates=TRUE,
@@ -271,7 +271,7 @@ test_that("sectionSmooth profile count", {
             expect_equal(length(skrigingUser[["station"]]), length(s[["station"]]))
             expect_output(expect_warning(skrigingUser2 <- sectionSmooth(s, krigFunction, xg=seq(0,200,50)), "NaNs produced"),
                           "using ordinary kriging")
-            expect_equal(length(skrigingUser2[["station"]]), 5)
+            expect_equal(length(skrigingUser2[["station"]]), 3)
           }
 })
 
