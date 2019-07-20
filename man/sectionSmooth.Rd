@@ -20,12 +20,14 @@ which will be used in gridding in the lateral direction. If not provided, this
 defaults to \code{\link{geodDist}(section)}.}
 
 \item{xg, xgl}{ignored in the \code{method="spline"} case, but passed to
-\code{\link{interpBarnes}} if \code{method="barnes"} or
-to \code{method} if it is a function.
+\code{\link{interpBarnes}} if \code{method="barnes"}, to kriging
+functions if \code{method="kriging"}, or to \code{method} itself, if it
+is a function.
 If \code{xg} is supplied, it defines the x component of the grid, which by
 default is the terms of station distances, x, along the track of the section. (Note
 that the grid \code{xg} is trimmed to the range of the data \code{x}, because otherwise
-it would be impossible to infer longitudes and latitudes for the stations in the
+it would be impossible to interpolate between stations to infer water depth,
+longitude, and latitude, which are all stored within the stations in the
 returned \code{section} object.)
 Alternatively, if \code{xgl} is supplied, the x grid is established using \code{\link{seq}},
 to span the data with \code{xgl} elements. If neither of these is supplied, the output
