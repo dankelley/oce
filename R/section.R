@@ -1054,7 +1054,11 @@ sectionAddCtd <- sectionAddStation
 #' @param showStations Logical indicating whether to draw station numbers on maps.
 #'
 #' @param showStart Logical indicating whether to indicate the first station with
-#' a different symbol than the others.
+#'
+#' @param stationTicks A logical value indicating whether to indicate station
+#' locations with ticks at the top margin of cross-section plots. Setting this
+#' parameter to \code{FALSE} frees the user up to do their own labelling
+#' at this spot.
 #'
 #' @param showBottom An indication of whether (and how) to indicate the ocean bottom.
 #' If \code{FALSE}, then the bottom is not rendered. If \code{TRUE}, then it
@@ -1189,6 +1193,7 @@ setMethod(f="plot",
                               legend.loc="bottomright",
                               showStations=FALSE,
                               showStart=TRUE,
+                              stationTicks=TRUE,
                               showBottom=TRUE,
                               axes=TRUE, mgp, mar,
                               col, cex, pch,
@@ -1280,6 +1285,7 @@ setMethod(f="plot",
                                          variable="temperature", vtitle="T", unit=NULL,
                                          eos=getOption("oceEOS", default="gsw"),
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
+                                         showStations=FALSE,
                                          xlim=NULL, ylim=NULL,
                                          clongitude, clatitude, span,
                                          projection=NULL,
@@ -1296,6 +1302,7 @@ setMethod(f="plot",
                            "\", ztype=\"", ztype,
                            "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
                            "\", span=", if (missing(span)) "(missing)" else span,
+                           ", showStations=", showStations,
                            ", axes=", axes, ", ...) {\n", sep="", unindent=1)
                   ## L and R are used much later, for constructing labels
                   L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
@@ -1647,7 +1654,7 @@ setMethod(f="plot",
 
                       ##oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
                       ##waterDepth <- -waterDepth
-                      if (!grid && axes)
+                      if (!grid && axes && stationTicks)
                           Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
                       bottom.x <- c(xx[1], xx, xx[length(xx)])
                       bottom.y <- if (any(is.finite(waterDepth))) c(graph.bottom, -waterDepth, graph.bottom)
