@@ -1,4 +1,4 @@
-detectProfiles <- function(x, dp=3, Cmin=0.05) {
+detectProfiles <- function(x, dp=3, Cmin=0.05, monitor=TRUE, ...) {
     p <- x[['pressure']]
     t <- x[['time']]
     C <- x[['conductivity']]
@@ -15,12 +15,13 @@ detectProfiles <- function(x, dp=3, Cmin=0.05) {
     klast <- k
     maxp <- p[1]
     minp <- p[1]
-    
-    for (k in index) {
 
+    if (monitor) pb <- txtProgressBar(1, max(index), initial=1, style=3)
+    for (k in index) {
         event <- 0
-        if (C[k] < Cmin) {
-            cat('OUT OF WATER!\n')
+
+        if (monitor) setTxtProgressBar(pb, k)
+        if (!is.na(C[k]) & C[k] < Cmin) {
             event <- 3
             minp <- p[k]
         } else {
@@ -83,14 +84,14 @@ detectProfiles <- function(x, dp=3, Cmin=0.05) {
     return(res)
 }
 
-library(oce)
-d <- as.ctd(read.oce('066015_20181024_1010.rsk'))
+## library(oce)
+## d <- as.ctd(read.oce('066015_20181024_1010.rsk'))
 
-prof <- detectProfiles(d)
+## prof <- detectProfiles(d)
 
-## Now use ctdFindProfiles with the `breaks` argument to split the up/down casts
-dd <- ctdFindProfiles(d, breaks=prof$index)[-1]
+## ## Now use ctdFindProfiles with the `breaks` argument to split the up/down casts
+## dd <- ctdFindProfiles(d, breaks=prof$index)[-1]
 
-## If we want only up/down:
-down <- dd[prof$event == 1]
-up <- dd[prof$event == 2]
+## ## If we want only up/down:
+## down <- dd[prof$event == 1]
+## up <- dd[prof$event == 2]
