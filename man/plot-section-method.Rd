@@ -13,8 +13,9 @@
   map.ylim = NULL, clongitude, clatitude, span, projection = NULL,
   xtype = "distance", ytype = "depth", ztype = "contour", longitude0,
   latitude0, zbreaks = NULL, zcol = NULL, legend.loc = "bottomright",
-  showStations = FALSE, showStart = TRUE, showBottom = TRUE,
-  axes = TRUE, mgp, mar, col, cex, pch, labcex = 1, debug, ...)
+  showStations = FALSE, showStart = TRUE, stationTicks = TRUE,
+  showBottom = TRUE, axes = TRUE, mgp, mar, col, cex, pch,
+  labcex = 1, debug, ...)
 }
 \arguments{
 \item{x}{a \code{section} object, e.g. as created by \code{\link{as.section}}
@@ -109,8 +110,12 @@ set to the empty string to avoid plotting a legend.}
 
 \item{showStations}{Logical indicating whether to draw station numbers on maps.}
 
-\item{showStart}{Logical indicating whether to indicate the first station with
-a different symbol than the others.}
+\item{showStart}{Logical indicating whether to indicate the first station with}
+
+\item{stationTicks}{A logical value indicating whether to indicate station
+locations with ticks at the top margin of cross-section plots. Setting this
+parameter to \code{FALSE} frees the user up to do their own labelling
+at this spot.}
 
 \item{showBottom}{An indication of whether (and how) to indicate the ocean bottom.
 If \code{FALSE}, then the bottom is not rendered. If \code{TRUE}, then it
