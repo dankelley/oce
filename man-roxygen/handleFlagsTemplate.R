@@ -38,6 +38,14 @@
 #' replacement for the data item in question.
 #' See \dQuote{Details} for the default that is used if \code{actions} is not supplied.
 #'
+#' @param where An optional string that permits the function to work with
+#' objects that store flags in e.g. \code{object@metadata$flags$where}
+#' instead of in \code{object@metadata$flags}, and data within
+#' \code{object@data$where} instead of within \code{object@data}. The
+#' appropriate value for \code{where} within the oce package is
+#' the default, \code{NULL}, which means that this extra subdirectory
+#' is not being used.
+#'
 #' @param debug An optional integer specifying the degree of debugging, with
 #' value 0 meaning to skip debugging and 1 or higher meaning to print some
 #' information about the arguments and the data. It is usually a good idea to set

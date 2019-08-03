@@ -322,9 +322,8 @@ setMethod(f="initialize",
 #' plot(adpClean, which="u1")
 #'
 #' @family things related to adp data
-setMethod("handleFlags",
-          c(object="adp", flags="ANY", actions="ANY", debug="ANY"),
-          function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
+setMethod("handleFlags", signature=c(object="adp", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
+          definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               ## Flag=1 means bad velocity; 0 means good
               if (is.null(flags)) {
@@ -338,7 +337,7 @@ setMethod("handleFlags",
               }
               if (any(names(actions)!=names(flags)))
                   stop("names of flags and actions must match")
-              handleFlagsInternal(object, flags, actions, debug)
+              handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug)
           })
 
 #' @templateVar class adp

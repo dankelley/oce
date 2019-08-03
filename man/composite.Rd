@@ -13,7 +13,7 @@ in which case at least one other argument (an object of the same size)
 must be supplied.}
 
 \item{...}{Ignored, if \code{object} is a list. Otherwise, one or more
-\code{oce-class} objects of the same sub-class as the first argument.}
+\link{oce-class} objects of the same sub-class as the first argument.}
 }
 \description{
 Items within the \code{data} slots of the

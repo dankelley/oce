@@ -49,6 +49,7 @@ as listed below.
 Other functions relating to data-quality flags: \code{\link{handleFlags,adp-method}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{handleFlags,oce-method}},
   \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}},
   \code{\link{initializeFlagScheme,ctd-method}},

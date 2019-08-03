@@ -4,11 +4,11 @@
 \alias{handleFlags}
 \title{Handle flags in oce objects}
 \usage{
-handleFlags(object, flags = NULL, actions = NULL,
+handleFlags(object, flags = NULL, actions = NULL, where = NULL,
   debug = getOption("oceDebug"))
 }
 \arguments{
-\item{object}{An object of \code{\link{oce}}.}
+\item{object}{An object of \link{oce-class}.}
 
 \item{flags}{A \code{\link{list}} specifying flag values upon which
 actions will be taken. This can take two forms. In the first, the
@@ -33,6 +33,14 @@ functions that calculate replacement values. These are provided
 with \code{object} as the single argument, and must return a
 replacement for the data item in question.
 See \dQuote{Details} for the default that is used if \code{actions} is not supplied.}
+
+\item{where}{An optional string that permits the function to work with
+objects that store flags in e.g. \code{object@metadata$flags$where}
+instead of in \code{object@metadata$flags}, and data within
+\code{object@data$where} instead of within \code{object@data}. The
+appropriate value for \code{where} within the oce package is
+the default, \code{NULL}, which means that this extra subdirectory
+is not being used.}
 
 \item{debug}{An optional integer specifying the degree of debugging, with
 value 0 meaning to skip debugging and 1 or higher meaning to print some
@@ -67,6 +75,7 @@ Other functions relating to data-quality flags: \code{\link{defaultFlags}},
   \code{\link{handleFlags,adp-method}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{handleFlags,oce-method}},
   \code{\link{handleFlags,section-method}},
   \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{initializeFlagScheme,oce-method}},

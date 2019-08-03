@@ -9,7 +9,7 @@
 \S4method{plot}{oce}(x, y, ...)
 }
 \arguments{
-\item{x}{A basic \code{oce} object, i.e. one inheriting from \code{\link{oce-class}},
+\item{x}{An object of \link{oce-class},
 but not from any subclass of that (because these subclasses go to the subclass
 plot methods, e.g. a \code{\link{ctd-class}} object would go to
 \code{\link{plot,ctd-method}}.}

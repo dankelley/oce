@@ -7,9 +7,9 @@
 concatenate(object, ...)
 }
 \arguments{
-\item{object}{An object of \code{\link{oce-class}}.}
+\item{object}{An object of \link{oce-class}.}
 
-\item{...}{Optional additional objects of \code{\link{oce-class}}.}
+\item{...}{Optional additional objects of \link{oce-class}.}
 }
 \value{
 An object of class corresponding to that of \code{object}.

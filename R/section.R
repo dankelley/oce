@@ -125,9 +125,8 @@ setMethod(f="initialize",
 #' plotTS(section2)
 #'
 #' @family things related to section data
-setMethod("handleFlags",
-          c(object="section", flags="ANY", actions="ANY", debug="ANY"),
-          function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
+setMethod("handleFlags", signature=c(object="section", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
+          definition=function(object, flags=NULL, actions=NULL, where=where, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               if (is.null(flags)) {
                   flags <- defaultFlags(object[["station", 1]])
@@ -142,7 +141,7 @@ setMethod("handleFlags",
                   stop("names of flags and actions must match")
               res <- object
               for (i in seq_along(res@data$station)) {
-                  res@data$station[[i]] <- handleFlags(res@data$station[[i]], flags, actions, debug)
+                  res@data$station[[i]] <- handleFlags(res@data$station[[i]], flags, actions, where=where, debug)
               }
               res
           })

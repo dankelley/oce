@@ -8,7 +8,7 @@
 \S4method{concatenate}{list}(object)
 }
 \arguments{
-\item{object}{A list holding objects of \code{\link{oce-class}}.}
+\item{object}{A list holding objects of \link{oce-class}.}
 }
 \value{
 An object of class corresponding to that in \code{object}.

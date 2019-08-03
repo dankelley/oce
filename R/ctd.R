@@ -195,9 +195,8 @@ NULL
 #' plot(STN3[["salinity"]] - stn[["salinity"]], p, ylim=rev(range(p)))
 #'
 #' @family things related to ctd data
-setMethod("handleFlags",
-          c(object="ctd", flags="ANY", actions="ANY", debug="ANY"),
-          function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
+setMethod("handleFlags", signature=c(object="ctd", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
+          definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               if (is.null(flags)) {
                   flags <- defaultFlags(object)
@@ -210,7 +209,7 @@ setMethod("handleFlags",
               }
               if (any(names(actions)!=names(flags)))
                   stop("names of flags and actions must match")
-              handleFlagsInternal(object, flags, actions, debug)
+              handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug)
           })
 
 #' @templateVar class ctd

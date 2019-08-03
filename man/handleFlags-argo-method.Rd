@@ -6,7 +6,7 @@
 \title{Handle Flags in ARGO Objects}
 \usage{
 \S4method{handleFlags}{argo}(object, flags = NULL, actions = NULL,
-  debug = getOption("oceDebug"))
+  where = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An object of \code{\link{argo-class}}.}
@@ -34,6 +34,14 @@ functions that calculate replacement values. These are provided
 with \code{object} as the single argument, and must return a
 replacement for the data item in question.
 See \dQuote{Details} for the default that is used if \code{actions} is not supplied.}
+
+\item{where}{An optional string that permits the function to work with
+objects that store flags in e.g. \code{object@metadata$flags$where}
+instead of in \code{object@metadata$flags}, and data within
+\code{object@data$where} instead of within \code{object@data}. The
+appropriate value for \code{where} within the oce package is
+the default, \code{NULL}, which means that this extra subdirectory
+is not being used.}
 
 \item{debug}{An optional integer specifying the degree of debugging, with
 value 0 meaning to skip debugging and 1 or higher meaning to print some
@@ -83,6 +91,7 @@ argoNew <- handleFlags(argo, flags=list(salinity=c(0, 3:9)))
 Other functions relating to data-quality flags: \code{\link{defaultFlags}},
   \code{\link{handleFlags,adp-method}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{handleFlags,oce-method}},
   \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}},
   \code{\link{initializeFlagScheme,ctd-method}},

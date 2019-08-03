@@ -1634,16 +1634,23 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 
 #' Calculate min, mean, and max values
 #'
-#' This is a faster cousin of the standard \code{\link{fivenum}} function,
-#' used in generic \code{summary} functions for \code{oce} objects.
+#' This is a simpler cousin of the standard [fivenum()] function,
+#' used in [summary()] functions for `oce` objects.
 #'
 #' @param x a vector or matrix of numerical values.
-#' @return A character vector of four values: the minimum, the mean, the
-#' maximum, and an indication of the number of data.
+#' @return A character vector of thre values: the minimum, the mean, the
+#' maximum.
 #' @author Dan Kelley
 #' @examples
 #' library(oce)
 #' threenum(1:10)
+#' @section Historical note:
+#' On Aug 5, 2019, the dimension was dropped as the fourth column, and
+#' this function returned to the original intention (revealed by its
+#' name).  Another change is that the function now returns numerical
+#' results, leaving the task of setting the number of digits to
+#' [summary()].
+#' @md
 threenum <- function(x)
 {
     dim <- dim(x)
@@ -1671,18 +1678,17 @@ threenum <- function(x)
     }
     ## 20160314: tack on dimensions, neccessitating conversion to character
     ##res <- format(res, digits=4)
-    r1 <- format(res[1], digits=5)
-    r2 <- format(res[2], digits=5)
-    r3 <- format(res[3], digits=5)
-    res <- c(r1, r2, r3)
+    ##r1 <- format(res[1], digits=5)
+    ##r2 <- format(res[2], digits=5)
+    ##r3 <- format(res[3], digits=5)
     ## res[1] <- format(res[1], digits=4) # do these independently
     ## res[2] <- format(res[2], digits=4)
     ## res[3] <- format(res[3], digits=4)
-    if (is.array(x)) {
-        res <- c(res, paste(dim(x), collapse="x"))
-    } else {
-        res <- c(res, format(length(x)))
-    }
+    ## if (is.array(x)) {
+    ##     res <- c(res, paste(dim(x), collapse="x"))
+    ## } else {
+    ##     res <- c(res, format(length(x)))
+    ## }
     res
 }
 

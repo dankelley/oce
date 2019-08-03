@@ -6,7 +6,7 @@
 \title{Signal erroneous application to non-oce objects}
 \usage{
 \S4method{handleFlags}{vector}(object, flags = list(),
-  actions = list(), debug = getOption("oceDebug"))
+  actions = list(), where = list(), debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{A vector, which cannot be the case for \code{oce} objects.}
@@ -14,6 +14,8 @@
 \item{flags}{Ignored.}
 
 \item{actions}{Ignored.}
+
+\item{where}{Ignored.}
 
 \item{debug}{Ignored.}
 }

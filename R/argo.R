@@ -1786,9 +1786,8 @@ setMethod(f="plot",
 #' @author Dan Kelley
 #'
 #' @family things related to argo data
-setMethod("handleFlags",
-          c(object="argo", flags="ANY", actions="ANY", debug="ANY"),
-          function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
+setMethod("handleFlags", signature=c(object="argo", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
+          definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               if (is.null(flags)) {
                   flags <- defaultFlags(object)
@@ -1801,5 +1800,5 @@ setMethod("handleFlags",
               }
               if (any(names(actions)!=names(flags)))
                   stop("names of flags and actions must match")
-              handleFlagsInternal(object, flags, actions, debug)
+              handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug)
           })
