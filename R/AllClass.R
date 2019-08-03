@@ -113,7 +113,7 @@ setMethod(f="summary",
                   } else {
                       threes <- matrix(nrow=ndata, ncol=4)
                       for (i in 1:ndata) {
-                          threes[i, ] <- threenum(object@data[[i]])
+                          threes[i, ] <- as.numeric(threenum(object@data[[i]]))
                       }
                   }
                   ##rownames(threes) <- paste("   ", dataNames[!isTime])
@@ -172,7 +172,8 @@ setMethod(f="summary",
                       } else {
                           rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
                       }
-                      colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.")
+                      threes <- cbind(threes, as.vector(lapply(object@data, function(x) sum(is.na(x)))))
+                      colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.", "NAs")
                       cat("* Data\n\n")
                       if ("dataNamesOriginal" %in% metadataNames) {
                           if (is.list(object@metadata$dataNamesOriginal)) {
@@ -221,16 +222,30 @@ setMethod(f="summary",
                                                                                    width.cutoff=400))), "\n\n", sep="")
                   }
                   cat("* Data-quality Flags\n\n")
-                  width <- 1 + max(nchar(names(flags)))
-                  for (name in names(flags)) {
-                      padding <- rep(" ", width - nchar(name))
-                      cat("    ", name, ":", padding, sep="")
-                      if (all(is.na(flags[[name]]))) {
-                          cat("NA", length(flags[[name]]), "\n")
-                      } else {
-                          flagTable <- table(flags[[name]])
-                          flagTableLength <- length(flagTable)
+                  if (length(names(flags))) {
+                      width <- 1 + max(nchar(names(flags)))
+                      for (name in names(flags)) {
+                          padding <- rep(" ", width - nchar(name))
+                          cat("    ", name, ":", padding, sep="")
+                          if (all(is.na(flags[[name]]))) {
+                              cat("NA", length(flags[[name]]), "\n")
+                          } else {
+                              flagTable <- table(flags[[name]])
+                              flagTableLength <- length(flagTable)
+                              if (flagTableLength) {
+                                  for (i in seq_len(flagTableLength)) {
+                                      cat("\"", names(flagTable)[i], "\"", " ", flagTable[i], "", sep="")
+                                      if (i != flagTableLength) cat(", ") else cat("\n")
+                                  }
+                              }
+                          }
+                      }
+                  } else {
+                      flagTable <- table(flags)
+                      flagTableLength <- length(flagTable)
+                      if (flagTableLength > 0) {
                           if (flagTableLength) {
+                              cat("    ")
                               for (i in seq_len(flagTableLength)) {
                                   cat("\"", names(flagTable)[i], "\"", " ", flagTable[i], "", sep="")
                                   if (i != flagTableLength) cat(", ") else cat("\n")
@@ -599,8 +614,8 @@ setMethod("handleFlags",
 #'
 #' This function carries out low-level processing relating to data-quality flags,
 #' as a support for higher-level functions such \code{\link{handleFlags,ctd-method}} for
-#' \code{ctd} objects. In most cases, users will not call \code{handleFlagsInternal}
-#' directly.
+#' \code{ctd} objects, \code{\link{handleFlags,adp-method}} for \code{adp} objects,
+#' etc. It is not expected that users will use \code{handleFlagsInternal} directly.
 #'
 #' @param object An \code{oce} object, i.e. an object that inherits from \code{\link{oce-class}}.
 #'
@@ -618,6 +633,12 @@ setMethod("handleFlags",
 #' @return A copy of \code{object}, modified as indicated by \code{flags} and \code{actions}.
 handleFlagsInternal <- function(object, flags, actions, debug=0) {
     oceDebug(debug, "handleFlagsInternal() {\n", sep="", unindent=1)
+    if (debug > 2) {
+        cat("next is flags:\n")
+        print(flags)
+        cat("next is actions:\n")
+        print(actions)
+    }
     if (missing(flags)) {
         warning("no flags supplied (internal error; report to developer)")
         return(object)
@@ -631,116 +652,99 @@ handleFlagsInternal <- function(object, flags, actions, debug=0) {
     }
     if (any(names(flags) != names(actions)))
         stop("names of flags must match those of actions")
-    ##> schemeMappingNames <- names(object@metadata$flagScheme$mapping)
-    ##> if (is.character(flags[[1]])) {
-    ##>     for (f in flags[[1]]) {
-    ##>         if (!(f %in% schemeMappingNames))
-    ##>             stop("flag \"", f, "\" is not part of the flagScheme mapping; try one of: \"",
-    ##>                  paste(schemeMappingNames, collapse="\", \""), "\"")
-    ##>     }
-    ##>     flags <- as.numeric(object@metadata$flagScheme$mapping[flags[[1]]])
-    ##>     browser()
-    ##> }
-    oceDebug(debug, "flags=", paste(as.vector(flags), collapse=","), "\n")
+    oceDebug(debug, "flags=", paste(as.vector(flags), collapse=","), "\n", sep="")
     if (length(object@metadata$flags)) {
-        all <- is.null(names(flags[1])) # "ALL" %in% names(flags)
-        oceDebug(debug, "all=", all, "\n")
-        ## if (all && length(flags) > 1)
-        ##    stop("if first flag is unnamed, no other flags can be specified")
-        if (all && (length(actions) > 1 || !is.null(names(actions)))) {
+        singleFlag <- is.null(names(object@metadata$flags))   # TRUE if there is just one flag for all data fields
+        oceDebug(debug, "singleFlag=", singleFlag, "\n", sep="")
+        if (singleFlag && (length(actions) > 1 || !is.null(names(actions))))
             stop("if flags is a list of a single unnamed item, actions must be similar")
-        }
-        for (name in names(object@data)) {
-            flagsObject <- object@metadata$flags[[name]]
-            oceDebug(debug, "unique(flagsObject) for ", name, ":\n")
-            if (debug > 0)
-                print(table(flagsObject))
-            if (!is.null(flagsObject)) {
+        oceDebug(debug, "names(object@data)=c(\"", paste(names(object@data),collapse="\", \""), "\")\n", sep="")
+        if (singleFlag) {
+            ## apply the same flag to *all* data.
+            actionsThis <- actions[[1]] # FIXME: this seems wrong
+            flagsThis <- object@metadata$flags # FIXME: should we make this a list?
+            oceDebug(debug, "singleFlag==TRUE case ... flagsThis=c(", paste(flagsThis, collapse=","), ") (will be used for *all* data types)\n", sep="")
+            for (name in names(object@data)) {
+                oceDebug(debug, "handling flags for '", name, "'\n", sep="")
+                oceDebug(debug, "  initially, ", sum(is.na(object@data[[name]])),
+                         " out of ", length(object@data[[name]]), " are NA\n", sep="")
                 dataItemLength <- length(object@data[[name]])
-                ##> message("name: ", name, ", flags: ", paste(object@metadata$flags[[name]], collapse=" "))
-                flagsThis <- if (all) flags[[1]] else flags[[name]]
-                oceDebug(debug, "before converting to numbers, flagsThis=", paste(flagsThis, collapse=","), "\n")
-                ##. ## Convert flags to numerical values
-                ##. if (is.character(flagsThis)) {
-                ##.     oceDebug(debug, "flags are character strings\n")
-                ##.     sign <- rep(1, length(flagsThis))
-                ##.     for (iflag in seq_along(flagsThis)) {
-                ##.         f <- flagsThis[iflag]
-                ##.         oceDebug(debug, "f=\"", f, "\"\n", sep="")
-                ##.         if ("-" == substr(f, 1, 1)) {
-                ##.             sign[iflag] <- -1
-                ##.             flagsThis[iflag] <- substr(f, 2, nchar(f))
-                ##.         }
-                ##.         if (!(flagsThis[iflag] %in% schemeMappingNames))
-                ##.             stop("flag \"", flagsThis[iflag], "\" is not part of the flagScheme mapping; try one of: \"",
-                ##.                  paste(schemeMappingNames, collapse="\", \""), "\"")
-                ##.     }
-                ##.     oceDebug(debug, "flagsThis before sign adjustment: ", paste(flagsThis, collapse=" "), "\n")
-                ##.     flagsThis <- sign * as.numeric(object@metadata$flagScheme$mapping[flagsThis])
-                ##.     oceDebug(debug, "sign: ", paste(sign, collapse=" "), "\n")
-                ##.     oceDebug(debug, "flagsThis after sign adjustment: ", paste(flagsThis, collapse=" "), "\n")
-                ##. }
-                ##. if (debug > 1) {
-                ##.     message("before any() for neg, flagsThis:")
-                ##.     print(flagsThis)
-                ##. }
-                ##.
-                ##. ## Handle negative flags (only works if flagScheme exists)
-                ##. if (any(flagsThis < 0)) {
-                ##.     if (!all(flagsThis < 0))
-                ##.         stop("cannot mix positive and negative flag values")
-                ##.     if (is.null(object@metadata$flagScheme))
-                ##.         stop("must use initializeFlagScheme() before using negative flags")
-                ##.     flagsOrig <- flags
-                ##.     knownFlags <- as.numeric(object@metadata$flagScheme$mapping)
-                ##.     which((-knownFlags) %in% knownFlags)
-                ##.     flagsThis <- knownFlags[-intersect(-flagsThis, knownFlags)]
-                ##.     if (debug > 1) {
-                ##.         message("flags:     ", paste(flagsThis, collapse=" "))
-                ##.         message("flagsOrig: ", paste(flagsOrig, collapse=" "))
-                ##.     }
-                ##. }
-                ##. oceDebug(debug, "after converting to numbers, flagsThis= ", paste(flagsThis, collapse=","), "\n")
-                actionsThis <- if (all) actions[[1]] else actions[[name]]
-                ##> message("flagsThis:");print(flagsThis)
-                if (name %in% names(object@metadata$flags)) {
-                    oceDebug(debug, "name: \"", name, "\"\n", sep="")
-                    actionNeeded <- object@metadata$flags[[name]] %in% flagsThis
-                    ##> if (name == "salinity") browser()
-                    ##oceDebug(debug, "actionNeeded: ", paste(actionNeeded, collapse=" "))
-                    if (any(actionNeeded)) {
-                        oceDebug(debug, "  \"", name, "\" has ", dataItemLength, " data, of which ",
-                                 sum(actionNeeded), " are flagged\n", sep="")
-                        if (debug > 1) {
-                            message("\nactionsThis follows...")
-                            print(actionsThis)
-                        }
-                        if (is.function(actionsThis)) {
-                            object@data[[name]][actionNeeded] <- actionsThis(object)[actionNeeded]
-                        } else if (is.character(actionsThis)) {
-                            if (actionsThis == "NA") {
-                                object@data[[name]][actionNeeded] <- NA
+                actionNeeded <- object@metadata$flags %in% if (length(names(flags))) flags[[name]] else flags[[1]]
+                ## if (name == "salinity") browser()
+                if (is.function(actionsThis)) {
+                    oceDebug(debug>1, "  actionsThis is a function\n")
+                    object@data[[name]][actionNeeded] <- actionsThis(object)[actionNeeded]
+                } else if (is.character(actionsThis)) {
+                    oceDebug(debug>1, "  actionsThis is a string, '", actionsThis, "'\n", sep="")
+                    oceDebug(debug>1, "  actionNeeded=c(", paste(actionNeeded, collapse=","), ")\n", sep="")
+                    if (actionsThis == "NA") {
+                        object@data[[name]][actionNeeded] <- NA
+                    } else {
+                        stop("the only permitted character action is 'NA'")
+                    }
+                } else {
+                    stop("action must be a character string or a function")
+                }
+                oceDebug(debug, "  finally, ", sum(is.na(object@data[[name]])),
+                         " out of ", length(object@data[[name]]), " are NA\n", sep="")
+            }
+            oceDebug(debug, "done handling flags for all data in object\n")
+        } else {
+            ## apply individual flags, and only to corresponding data fields
+            for (name in names(object@data)) {
+                oceDebug(debug, "handling flags for '", name, "'\n", sep="")
+                oceDebug(debug, "  initially, ", sum(is.na(object@data[[name]])),
+                         " out of ", length(object@data[[name]]), " are NA\n", sep="")
+                flagsObject <- object@metadata$flags[[name]]
+                if (debug > 1) {
+                    cat("  unique(flagsObject) for ", name, ":\n")
+                    print(table(flagsObject))
+                }
+                if (!is.null(flagsObject)) {
+                    dataItemLength <- length(object@data[[name]])
+                    flagsThis <- object@metadata$flags[[name]]
+                    ##oceDebug(debug, "before converting to numbers, flagsThis=", paste(flagsThis, collapse=","), "\n")
+                    if (name %in% names(object@metadata$flags)) {
+                        actionsThis <- if (length(names(actions))) actions[[name]] else actions[[1]]
+                        oceDebug(debug>1, "  actionsThis: \"", paste(actionsThis, collapse=","), "\"\n", sep="")
+                        actionNeeded <- object@metadata$flags[[name]] %in% if (length(names(flags))) flags[[name]] else flags[[1]]
+                        oceDebug(debug>1, "  actionNeeded=c(", paste(actionNeeded, collapse=","), ")\n", sep="")
+                        if (any(actionNeeded)) {
+                            ## oceDebug(debug, "\"", name, "\" has ", dataItemLength, " data, of which ",
+                            ##          sum(actionNeeded), " are flagged\n", sep="")
+                            if (debug > 1) {
+                                cat("  actionsThis follows...\n")
+                                print(actionsThis)
+                            }
+                            if (is.function(actionsThis)) {
+                                object@data[[name]][actionNeeded] <- actionsThis(object)[actionNeeded]
+                            } else if (is.character(actionsThis)) {
+                                if (actionsThis == "NA") {
+                                    object@data[[name]][actionNeeded] <- NA
+                                } else {
+                                    stop("the only permitted character action is 'NA'")
+                                }
                             } else {
-                                stop("the only permitted character action is 'NA'")
+                                stop("action must be a character string or a function")
                             }
                         } else {
-                            stop("action must be a character string or a function")
+                            oceDebug(debug, "  no action needed, since no \"", name, "\" data are flagged as stated\n", sep="")
                         }
-                    } else {
-                        oceDebug(debug, "  no action needed, since no \"", name, "\" data are flagged as stated\n", sep="")
                     }
                 }
-            } else {
-                oceDebug(debug, "\"", name, "\" is not the subject of flags\n", sep="")
+                oceDebug(debug, "  finally, ", sum(is.na(object@data[[name]])),
+                         " out of ", length(object@data[[name]]), " are NA\n", sep="")
             }
         }
+    } else {
+        oceDebug(debug, "object has no flags in metadata\n")
     }
     object@processingLog <- processingLogAppend(object@processingLog,
-                                                paste("handleFlags(flags=",
-                                                      substitute(flags, parent.frame()),
-                                                      ", actions=",
-                                                      substitute(actions, parent.frame()),
-                                                      ")", collapse=" ", sep=""))
+                                                paste("handleFlagsInternal(flags=c(",
+                                                      paste(substitute(flags, parent.frame()), collapse=","),
+                                                      "), actions=c(",
+                                                      paste(substitute(actions, parent.frame()), collapse=","),
+                                                      "))", collapse=" ", sep=""))
     oceDebug(debug, "} # handleFlagsInternal()\n", sep="", unindent=1)
     object
 }

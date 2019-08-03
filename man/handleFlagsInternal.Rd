@@ -26,6 +26,6 @@ A copy of \code{object}, modified as indicated by \code{flags} and \code{actions
 \description{
 This function carries out low-level processing relating to data-quality flags,
 as a support for higher-level functions such \code{\link{handleFlags,ctd-method}} for
-\code{ctd} objects. In most cases, users will not call \code{handleFlagsInternal}
-directly.
+\code{ctd} objects, \code{\link{handleFlags,adp-method}} for \code{adp} objects,
+etc. It is not expected that users will use \code{handleFlagsInternal} directly.
 }
