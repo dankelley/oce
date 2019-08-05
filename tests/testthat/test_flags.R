@@ -9,7 +9,7 @@ test_that("argument existence", {
                        "must supply 'mapping' for new scheme named \"unknown\"")
 })
 
-test_that("handleFlags() with flags/data in subdirectory", {
+test_that("handleFlags() with flags/data in sublist", {
           o <- new("oce")
           o@data[["A"]] <- list(x=1:3, y=11:13)
           o@metadata$flags[["A"]] <- list(x=c(2,4,2), y=c(2,4,2))

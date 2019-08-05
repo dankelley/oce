@@ -113,7 +113,7 @@ setMethod(f="summary",
                   } else {
                       threes <- matrix(nrow=ndata, ncol=3)
                       for (i in 1:ndata) {
-                          threes[i, ] <- threenum(object@data[[i]])
+                          threes[i, ] <- as.numeric(threenum(object@data[[i]]))
                       }
                   }
                   ##rownames(threes) <- paste("   ", dataNames[!isTime])
