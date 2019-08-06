@@ -72,7 +72,7 @@ processingLogShow <- function(x)
 {
     cat("* Processing Log\n")
     for (i in seq_along(x@processingLog$value)) {
-        cat("    - ", format(x@processingLog$time[i]), " UTC: `",
+        cat("    - ", format(x@processingLog$time[i], tz="UTC"), " UTC: `",
             x@processingLog$value[i], "`\n", sep="")
     }
 }
