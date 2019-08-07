@@ -707,8 +707,8 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
         if (singleFlag) {
             ## apply the same flag to *all* data.
             actionsThis <- actions[[1]] # FIXME: this seems wrong
-            oflags <- as.vector(oflags) # FIXME: should we make this a list?
-            oceDebug(debug, "singleFlag==TRUE case ... head(oflags)=c(", paste(head(oflags), collapse=","), ") (will be used for *all* data types)\n", sep="")
+            oflags <- unlist(oflags)
+            oceDebug(debug, "singleFlag==TRUE case ... head(oflags)=c(", paste(head(oflags), collapse=","), "), to be used for *all* data types.\n", sep="")
             for (name in names(odata)) {
                 oceDebug(debug, "handling flags for '", name, "'\n", sep="")
                 dataItemLength <- length(odata[[name]])

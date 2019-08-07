@@ -194,6 +194,23 @@ NULL
 #' par(mar=c(3, 3, 3, 1))
 #' plot(STN3[["salinity"]] - stn[["salinity"]], p, ylim=rev(range(p)))
 #'
+#' # 4. Single-variable flags (vector specification)
+#' data(section)
+#' # Multiple-flag scheme: one per data item
+#' A <- section[["station", 100]]
+#' deep <- A[["pressure"]] > 1500
+#' flag <- ifelse(deep, 7, 2)
+#' for (flagName in names(A[["flags"]]))
+#'     A[[paste(flagName, "Flag", sep="")]] <- flag
+#' Af <- handleFlags(A)
+#' expect_equal(is.na(Af[["salinity"]]), deep)
+#' 
+#' # 5. Single-variable flags (list specification)
+#' B <- section[["station", 100]]
+#' B[["flags"]] <- list(flag)
+#' Bf <- handleFlags(B)
+#' expect_equal(is.na(Bf[["salinity"]]), deep)
+#'
 #' @family things related to ctd data
 setMethod("handleFlags", signature=c(object="ctd", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
           definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {

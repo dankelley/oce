@@ -96,6 +96,23 @@ p <- stn[["pressure"]]
 par(mar=c(3, 3, 3, 1))
 plot(STN3[["salinity"]] - stn[["salinity"]], p, ylim=rev(range(p)))
 
+# 4. Single-variable flags (vector specification)
+data(section)
+# Multiple-flag scheme: one per data item
+A <- section[["station", 100]]
+deep <- A[["pressure"]] > 1500
+flag <- ifelse(deep, 7, 2)
+for (flagName in names(A[["flags"]]))
+    A[[paste(flagName, "Flag", sep="")]] <- flag
+Af <- handleFlags(A)
+expect_equal(is.na(Af[["salinity"]]), deep)
+
+# 5. Single-variable flags (list specification)
+B <- section[["station", 100]]
+B[["flags"]] <- list(flag)
+Bf <- handleFlags(B)
+expect_equal(is.na(Bf[["salinity"]]), deep)
+
 }
 \references{
 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
