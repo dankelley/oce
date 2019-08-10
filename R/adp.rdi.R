@@ -1213,27 +1213,33 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
 
                 for (chunk in 1:header$numberOfDataTypes) {
                     o <- ensembleStart[i] + header$dataOffset[chunk]
-                    if (buf[o] == 0x00 & buf[1+o] == 0x00) {
-                        ##slow if (i <= profilesToShow) oceDebug(debug, "  fixed leader skipped\n")
-                    } else if (buf[o] == 0x80 & buf[1+o] == 0x00) {
+                    if (buf[o] == 0x00 && buf[1+o] == 0x00) {
+                        testConfiguration <- paste(byteToBinary(buf[o+4], endian="big"), byteToBinary(buf[o+5], endian="big"), sep="-")
+                        if (testConfiguration != header$systemConfiguration) {
+                            warning("(test for issue 1588) systemConfiguration mismatch at profile i=", i, "; header$configuration='",
+                                    header$systemConfiguration, "' but testConfiguration='", testConfiguration, "'\n", sep="")
+                            if (debug)
+                                browser()
+                        }
+                    } else if (buf[o] == 0x80 && buf[1+o] == 0x00) {
                         ##slow if (i <= profilesToShow) oceDebug(debug, "  variable leader skipped\n")
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x01) {
+                    } else if (buf[o] == 0x00 && buf[1+o] == 0x01) {
                         vtmp <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
                         vtmp[-32768 == vtmp] <- NA       # blank out bad data
                         v[i, , ] <- matrix(velocityScale * vtmp, ncol=numberOfBeams, byrow=TRUE)
                         ##slow if (debug && i <= profilesToShow) oceDebug(debug, vectorShow(v[i, , 1], paste("  v[", i, ",,1]", sep="")))
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x02) {
+                    } else if (buf[o] == 0x00 && buf[1+o] == 0x02) {
                         q[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
                         ##slow if (debug && i <= profilesToShow) oceDebug(debug, vectorShow(q[i, , 1], paste("  q[", i, ",,1]", sep="")))
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x03) {
+                    } else if (buf[o] == 0x00 && buf[1+o] == 0x03) {
                         a[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
                         ##slow if (debug && i <= profilesToShow) oceDebug(debug, vectorShow(a[i, , 1], paste("  a[", i, ",,1]", sep="")))
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x04) {
+                    } else if (buf[o] == 0x00 && buf[1+o] == 0x04) {
                         g[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
                         ##slow if (debug && i <= profilesToShow) oceDebug(debug, vectorShow(g[i, , 1], paste("  g[", i, ",,1]", sep="")))
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x05) {
+                    } else if (buf[o] == 0x00 && buf[1+o] == 0x05) {
                         ##slow if (i <= profilesToShow) oceDebug(debug, "  status profile ignored\n")
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x06) {
+                    } else if (buf[o] == 0x00 && buf[1+o] == 0x06) {
                         rangeLSB <- readBin(buf[o+c(16:23)], "integer", n=4, size=2, signed=FALSE, endian="little")
                         rangeMSB <- readBin(buf[o+77:80], "integer", n=4, size=1, signed=FALSE, endian="little")
                         if (is.null(br)) {
