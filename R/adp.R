@@ -527,16 +527,15 @@ setMethod(f="summary",
                       if (is.null(oceCoordinate)) "?" else oceCoordinate, "[presently]\n", ...)
                   numberOfBeams <- object[["numberOfBeams"]]
                   beamAngle <- object[["beamAngle"]]
-                  ## As of Aug 10, 2019, orientation may be a vector. If so, we summarize
-                  ## by value. (NOTE: I am 
+                  ## As of Aug 10, 2019, orientation may be a vector, so we summarize
+                  ## a table of values, if so.
                   orientation <- object[["orientation"]]
                   if (length(orientation) > 1) {
                       torientation <- table(orientation)
-                      sum  <- ""
-                      for (n in names(torientation)) {
-                          sum <- paste(sum, n, ":", torientation[n], " ", sep="")
-                      }
-                      orientation <- sum
+                      orientation <- paste(unlist(lapply(names(torientation),
+                                                         function(x)
+                                                           paste(x, torientation[[x]], sep=":"))),
+                                           collapse=", ")
                   }
                   beamUnspreaded <- object[["oceBeamUnspreaded"]]
                   cat("* Beams::\n")
