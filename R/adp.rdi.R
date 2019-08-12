@@ -1224,6 +1224,10 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         ## }
                     } else if (buf[o] == 0x80 && buf[1+o] == 0x00) {
                         ##slow if (i <= profilesToShow) oceDebug(debug, "  variable leader skipped\n")
+                        if (debug==99) {
+                            en <- readBin(buf[o + 2:3], "integer", n=1, size=2, endian="little", signed=TRUE)
+                            cat("ensemble number... 0x",buf[o+2]," 0x",buf[o+3]," ",en,"\n",sep="")
+                        }
                     } else if (buf[o] == 0x00 && buf[1+o] == 0x01) {
                         vtmp <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
                         vtmp[-32768 == vtmp] <- NA       # blank out bad data
