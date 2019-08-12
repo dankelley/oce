@@ -2137,7 +2137,9 @@ oce.spectrum <- oceSpectrum
 #'
 #' @param v the vector.
 #' @param msg a message to show, introducing the vector.  If not provided, then
-#' a message is created from \code{v}.
+#' a message is created from \code{v}. If \code{msg} is a non-empty string,
+#' then that string is pasted together with a colon (unless \code{msg} already
+#' contains a colon), before pasting a summary of data values.
 #' @param digits for numerical values of \code{v}, this is the number of digits
 #' to use, in formatting the numbers with \code{\link{format}}; otherwise,
 #' \code{digits} is ignored.
@@ -2151,6 +2153,11 @@ vectorShow <- function(v, msg, digits=5, n=2L)
     nv <- length(v)
     if (missing(msg))
         msg <- deparse(substitute(v))
+    if (is.null(msg))
+        msg <- ""
+    if (nchar(msg) && !grepl(":", msg)) {
+        msg <- paste0(msg, ": ")
+    }
     if (nv == 0) {
         paste(msg, "(empty vector)\n")
     } else {
@@ -2162,19 +2169,19 @@ vectorShow <- function(v, msg, digits=5, n=2L)
         }
         if (is.numeric(v)) {
             if (showAll) {
-                paste(msg, ": ", paste(format(v, digits=digits), collapse=", "),
+                paste(msg, paste(format(v, digits=digits), collapse=", "),
                       if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
             } else {
-                paste(msg, ": ", paste(format(v[1:n], digits=digits), collapse=", "),
+                paste(msg, paste(format(v[1:n], digits=digits), collapse=", "),
                       ", ..., ", paste(format(v[nv-seq.int(n-1, 0)], digits=digits), collapse=", "),
                       if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
             }
         } else {
             if (showAll) {
-                paste(msg, ": ", paste(v, collapse=", "),
+                paste(msg, paste(v, collapse=", "),
                       if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
             } else {
-                paste(msg, ": ", paste(v[1:n], collapse=", "),
+                paste(msg, paste(v[1:n], collapse=", "),
                       ", ..., ", paste(v[nv-seq.int(n-1, 0)], collapse=", "),
                       if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
             }

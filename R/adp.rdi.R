@@ -1198,6 +1198,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             nmea <- NULL
             nmeaLen <- 0
             orientation <- vector("character", profilesToRead)
+            ensembleNumber <- vector("numeric", profilesToRead)
             ##cat("** got space for orientation\n")
             for (i in 1:profilesToRead) {
                 ## update the data descriptions, after realizing, while working on
@@ -1224,10 +1225,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         ## }
                     } else if (buf[o] == 0x80 && buf[1+o] == 0x00) {
                         ##slow if (i <= profilesToShow) oceDebug(debug, "  variable leader skipped\n")
-                        if (debug==99) {
-                            en <- readBin(buf[o + 2:3], "integer", n=1, size=2, endian="little", signed=TRUE)
-                            cat("ensemble number... 0x",buf[o+2]," 0x",buf[o+3]," ",en,"\n",sep="")
-                        }
+                        ensembleNumber[i] <- readBin(buf[o + 2:3], "integer", n=1, size=2, endian="little", signed=TRUE) + as.integer(buf[o + 11]) * 65535L
                     } else if (buf[o] == 0x00 && buf[1+o] == 0x01) {
                         vtmp <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
                         vtmp[-32768 == vtmp] <- NA       # blank out bad data
@@ -1547,6 +1545,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             for (name in names(header))
                 res@metadata[[name]] <- header[[name]]
             res@metadata$orientation <- orientation # overrides a single value fromd decodeHeader()
+            res@metadata$ensembleNumber <- ensembleNumber
             res@metadata$manufacturer <- "rdi"
             res@metadata$instrumentType <- "adcp"
             res@metadata$filename <- filename

@@ -10,7 +10,9 @@ vectorShow(v, msg, digits = 5, n = 2L)
 \item{v}{the vector.}
 
 \item{msg}{a message to show, introducing the vector.  If not provided, then
-a message is created from \code{v}.}
+a message is created from \code{v}. If \code{msg} is a non-empty string,
+then that string is pasted together with a colon (unless \code{msg} already
+contains a colon), before pasting a summary of data values.}
 
 \item{digits}{for numerical values of \code{v}, this is the number of digits
 to use, in formatting the numbers with \code{\link{format}}; otherwise,

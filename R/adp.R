@@ -509,6 +509,9 @@ setMethod(f="summary",
               ##             1 / subsampleDeltat))
               metadataNames <- names(object@metadata)
               cat("* Frequency:         ", object[["frequency"]], "kHz\n", ...)
+              if ("ensembleNumber" %in% names(object@metadata)) {
+                  cat(paste("* Ensemble Numbers:  ", vectorShow(object@metadata$ensembleNumber, msg="")))
+              }
               isAD2CP <- is.ad2cp(object)
               if (!isAD2CP) {
                   if ("numberOfCells" %in% metadataNames) {
