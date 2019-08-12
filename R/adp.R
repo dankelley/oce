@@ -923,9 +923,15 @@ setValidity("adp",
 #' Subset an ADP Object
 #'
 #' Subset an adp (acoustic Doppler profile) object, in a manner that is function
-#' is somewhat analogous to \code{\link{subset.data.frame}}. For any data type,
-#' subsetting can be by \code{time} or \code{distance}, but these may not be
-#' combined; use a sequence of calls to subset by both. For the special
+#' is somewhat analogous to \code{\link{subset.data.frame}}.
+#'
+#' For any data type,
+#' subsetting can be by \code{time}, \code{ensembleNumber}, or \code{distance}.
+#' These may not be combined, but it is easy to use a string of calls to
+#' carry out combined operations, e.g.
+#' \code{subset(subset(adp,distance<d0), time<t0)}
+#'
+#' For the special
 #' case of AD2CP data (see \code{\link{read.adp.ad2cp}}), it is possible to subset
 #' to the "average" data records with \code{subset="average"}, to the
 #' "burst" records with \code{subset="burst"}, or to the "interleavedBurst"
@@ -944,8 +950,14 @@ setValidity("adp",
 #' @examples
 #' library(oce)
 #' data(adp)
-#' # First part of time series
-#' plot(subset(adp, time < mean(range(adp[['time']]))))
+#' # 1. Look at first part of time series, organized by time
+#' earlyTime <- subset(adp, time < mean(range(adp[['time']])))
+#' plot(earlyTime)
+#'
+#' # 2. Look at first ten ensembles (AKA profiles)
+#' en <- adp[["ensembleNumber"]]
+#' firstTen <- subset(adp, ensembleNumber < en[11])
+#' plot(firstTen)
 #'
 #' @author Dan Kelley
 #'
@@ -962,11 +974,22 @@ setMethod(f="subset",
                   debug <- dots$debug
               if (missing(subset))
                   stop("must give 'subset'")
-              if (length(grep("time", subsetString))) {
-                  oceDebug(debug, "subsetting an adp by time\n")
-                  if (length(grep("distance", subsetString)))
-                      stop("cannot subset by both time and distance; split into multiple calls")
-                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+              if (grepl("time", subsetString) || grepl("ensembleNumber", subsetString)) {
+                  if (grepl("time", subsetString)) {
+                      oceDebug(debug, "subsetting an adp by time\n")
+                      if (length(grep("distance", subsetString)))
+                          stop("cannot subset by both time and distance; split into multiple calls")
+                      keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  } else if (grepl("ensembleNumber", subsetString)) {
+                      oceDebug(debug, "subsetting an adp by ensembleNumber\n")
+                      if (length(grep("distance", subsetString)))
+                          stop("cannot subset by both ensembleNumber and distance; split into multiple calls")
+                      if (!"ensembleNumber" %in% names(x@metadata))
+                          stop("cannot subset by ensembleNumber because this adp object lacks that information")
+                      keep <- eval(substitute(subset), x@metadata, parent.frame(2))
+                  } else {
+                      stop("internal coding error -- please report to developers")
+                  }
                   names <- names(x@data)
                   haveDia <- "timeDia" %in% names
                   if (haveDia) {
@@ -979,7 +1002,13 @@ setMethod(f="subset",
                   if (sum(keep) < 2)
                       stop("must keep at least 2 profiles")
                   res <- x
-                  ## FIXME: are we handling slow timescale data?
+                  ## Update those metadata that have one value per ensemble
+                  mnames <- names(x@metadata)
+                  for (name in c("ensembleNumber", "orientation")) {
+                      if (name %in% mnames)
+                          res@metadata[[name]] <- x@metadata[[name]][keep]
+                  }
+                  ## FIXME: check to see if we handling slow timescale data properly
                   for (name in names(x@data)) {
                       if (length(grep("Dia$", name))) {
                           if ("distance" == name)

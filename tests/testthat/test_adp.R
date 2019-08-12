@@ -283,3 +283,21 @@ test_that("three RDI reading methods (from, by and to given)", {
           }
 })
 
+test_that("subset by time", {
+          tmean <- mean(adp[["time"]])
+          n <- sum(adp[["time"]] < tmean)
+          earlyTime <- subset(adp, time < tmean)
+          expect_equal(length(earlyTime[["orientation"]]), n)
+          expect_equal(length(earlyTime[["ensembleNumber"]]), n)
+          expect_equal(dim(earlyTime[["v"]])[1], n)
+})
+
+test_that("subset by ensembleNumber", {
+          en <- adp[["ensembleNumber"]]
+          n <- 10
+          firstTen <- subset(adp, ensembleNumber < en[n+1])
+          expect_equal(length(firstTen[["orientation"]]), n)
+          expect_equal(length(firstTen[["ensembleNumber"]]), n)
+          expect_equal(dim(firstTen[["v"]])[1], n)
+})
+
