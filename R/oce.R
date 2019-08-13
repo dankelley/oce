@@ -3036,42 +3036,45 @@ numberAsHMS <- function(t, default=0)
 #'
 #' \itemize{
 #'
-#' \item \code{"unix"} employs Unix times, measured in seconds since the start
+#' \item \code{"unix"} handles Unix times, measured in seconds since the start
 #' of the year 1970.
 #'
-#' \item \code{"matlab"} employs Matlab times, measured in days since what
+#' \item \code{"matlab"} handles Matlab times, measured in days since what
 #' MathWorks [1] calls ``January 0, 0000'' (i.e.  \code{ISOdatetime(0, 1, 1, 0,
 #' 0, 0)} in R notation).
 #'
-#' \item \code{"gps"} employs the GPS convention. For this, \code{t} is a
+#' \item \code{"gps"} handles the GPS convention. For this, \code{t} is a
 #' two-column matrix, with the first column being the the GPS "week"
 #' (referenced to 1999-08-22) and the second being the GPS "second" (i.e. the
 #' second within the week). Since the GPS satellites do not handle leap
 #' seconds, the R-defined \code{.leap.seconds} is used for corrections.
 #'
-#' \item \code{"argo"} employs Argo times, measured in days since the start of
+#' \item \code{"argo"} handles Argo times, measured in days since the start of
 #' the year 1900.
 #'
-#' \item \code{"ncep1"} employs NCEP times, measured in hours since the start
+#' \item \code{"excel"} handles Excel times, measured in days since the start of
+#' the year 1900.
+#'
+#' \item \code{"ncep1"} handles NCEP times, measured in hours since the start
 #' of the year 1800.
 #'
-#' \item \code{"ncep2"} employs NCEP times, measured in days since the start of
+#' \item \code{"ncep2"} handles NCEP times, measured in days since the start of
 #' the year 1. (Note that, for reasons that are unknown at this time, a simple
 #' R expression of this definition is out by two days compared with the UDUNITS
 #' library, which is used by NCEP. Therefore, a two-day offset is applied. See
 #' [2, 3].)
 #'
-#' \item \code{"sas"} employs SAS times, indicated by \code{type="sas"}, have
+#' \item \code{"sas"} handles SAS times, indicated by \code{type="sas"}, have
 #' origin at the start of 1960.
 #'
-#' \item \code{"spss"} employs SPSS times, in seconds after 1582-10-14.
+#' \item \code{"spss"} handles SPSS times, in seconds after 1582-10-14.
 #'
-#' \item \code{"yearday"} employs a convention in which \code{t} is a
+#' \item \code{"yearday"} handles a convention in which \code{t} is a
 #' two-column matrix, with the first column being the year, and the second the
 #' yearday (starting at 1 for the first second of January 1, to match the
 #' convention used by Sea-Bird CTD software).
 #'
-#' \item \code{"epic"} employs a convention used in the EPIC software library,
+#' \item \code{"epic"} handles a convention used in the EPIC software library,
 #' from the Pacific Marine Environmental Laboratory, in which \code{t} is a
 #' two-column matrix, with the first column being the julian Day (as defined in
 #' \code{\link{julianDay}}, for example), and with the second column being the
@@ -3112,11 +3115,15 @@ numberAsHMS <- function(t, default=0)
 #' numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
 #'
 #' @family things related to time
-numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
-                                      "ncep1", "ncep2",
-                                      "sas", "spss", "yearday", "epic"), tz="UTC")
+numberAsPOSIXct <- function(t, type, tz="UTC")
 {
-    type <- match.arg(type)
+    typeAllowed <- c("unix", "matlab", "gps", "argo", "excel", "ncep1", "ncep2", "sas", "spss", "yearday", "epic")
+    if (missing(type))
+        stop("give a type, one of: \"", paste(typeAllowed, collapse="\", \""), "\".", sep="")
+    type <- pmatch(type, typeAllowed, nomatch=NA)
+    if (is.na(type))
+        stop("only permitted type values are: \"", paste(typeAllowed, collapse="\", \""), "\".", sep="")
+    type <- typeAllowed[type]
     if (type == "unix") {
         tref <- as.POSIXct("2000-01-01", tz=tz) # arbitrary
         return(tref + as.numeric(t) - as.numeric(tref))
@@ -3129,6 +3136,8 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
         return(ISOdatetime(t[, 1], 1, 1, 0, 0, 0, tz=tz) + 1 + t[, 2] * 24 * 3600)
     } else if (type == "argo") {
         return(t * 86400 + as.POSIXct("1900-01-01 00:00:00", tz="UTC"))
+    } else if (type == "excel") {
+        return(86400 * (t - 1) + as.POSIXct("1900-01-01 00:00:00", tz="UTC"))
     } else if (type == "ncep1") {
         ## hours since the start of 1800
         return(t * 3600 + as.POSIXct("1800-01-01 00:00:00", tz="UTC"))

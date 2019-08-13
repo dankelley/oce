@@ -374,6 +374,11 @@ test_that("times", {
           mt <- 7.362007209411687e5
           expect_equal(as.numeric(numberAsPOSIXct(mt, "matlab", tz="UTC")),
                        as.numeric(as.POSIXct("2015-08-24 17:18:09", tz="UTC")), tolerance=1)
+          ## Excel tiem July 1, 2019.
+          te <- 43647.0 # "Jul 1, 2019" entered into excel, then copied to a new cell as numeric
+          numberAsPOSIXct(te, "excel")
+
+          expect_equal(numberAsPOSIXct(texcel-as.POSI, "matlab"), ISOdatetime(1970,1,1,0,0,0,tz="UTC"))
           ## NCEP1 times; test value from
           ## http://coastwatch.pfeg.noaa.gov/erddap/convert/time.html?isoTime=2015-09-04T12%3A00%3A00Z&units=hours+since+1800-01-01
           expect_equal(as.numeric(numberAsPOSIXct(1890564, "ncep1")),

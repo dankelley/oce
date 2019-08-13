@@ -4,8 +4,7 @@
 \alias{numberAsPOSIXct}
 \title{Convert a Numeric Time to a POSIXct Time}
 \usage{
-numberAsPOSIXct(t, type = c("unix", "matlab", "gps", "argo", "ncep1",
-  "ncep2", "sas", "spss", "yearday", "epic"), tz = "UTC")
+numberAsPOSIXct(t, type, tz = "UTC")
 }
 \arguments{
 \item{t}{an integer corresponding to a time, in a way that depends on
@@ -26,42 +25,45 @@ in \sQuote{Details}.
 \details{
 \itemize{
 
-\item \code{"unix"} employs Unix times, measured in seconds since the start
+\item \code{"unix"} handles Unix times, measured in seconds since the start
 of the year 1970.
 
-\item \code{"matlab"} employs Matlab times, measured in days since what
+\item \code{"matlab"} handles Matlab times, measured in days since what
 MathWorks [1] calls ``January 0, 0000'' (i.e.  \code{ISOdatetime(0, 1, 1, 0,
 0, 0)} in R notation).
 
-\item \code{"gps"} employs the GPS convention. For this, \code{t} is a
+\item \code{"gps"} handles the GPS convention. For this, \code{t} is a
 two-column matrix, with the first column being the the GPS "week"
 (referenced to 1999-08-22) and the second being the GPS "second" (i.e. the
 second within the week). Since the GPS satellites do not handle leap
 seconds, the R-defined \code{.leap.seconds} is used for corrections.
 
-\item \code{"argo"} employs Argo times, measured in days since the start of
+\item \code{"argo"} handles Argo times, measured in days since the start of
 the year 1900.
 
-\item \code{"ncep1"} employs NCEP times, measured in hours since the start
+\item \code{"excel"} handles Excel times, measured in days since the start of
+the year 1900.
+
+\item \code{"ncep1"} handles NCEP times, measured in hours since the start
 of the year 1800.
 
-\item \code{"ncep2"} employs NCEP times, measured in days since the start of
+\item \code{"ncep2"} handles NCEP times, measured in days since the start of
 the year 1. (Note that, for reasons that are unknown at this time, a simple
 R expression of this definition is out by two days compared with the UDUNITS
 library, which is used by NCEP. Therefore, a two-day offset is applied. See
 [2, 3].)
 
-\item \code{"sas"} employs SAS times, indicated by \code{type="sas"}, have
+\item \code{"sas"} handles SAS times, indicated by \code{type="sas"}, have
 origin at the start of 1960.
 
-\item \code{"spss"} employs SPSS times, in seconds after 1582-10-14.
+\item \code{"spss"} handles SPSS times, in seconds after 1582-10-14.
 
-\item \code{"yearday"} employs a convention in which \code{t} is a
+\item \code{"yearday"} handles a convention in which \code{t} is a
 two-column matrix, with the first column being the year, and the second the
 yearday (starting at 1 for the first second of January 1, to match the
 convention used by Sea-Bird CTD software).
 
-\item \code{"epic"} employs a convention used in the EPIC software library,
+\item \code{"epic"} handles a convention used in the EPIC software library,
 from the Pacific Marine Environmental Laboratory, in which \code{t} is a
 two-column matrix, with the first column being the julian Day (as defined in
 \code{\link{julianDay}}, for example), and with the second column being the
