@@ -42,7 +42,11 @@ seconds, the R-defined \code{.leap.seconds} is used for corrections.
 the year 1900.
 
 \item \code{"excel"} handles Excel times, measured in days since the start of
-the year 1900.
+the year 1900. (Note that excel incorrectly regards 1900 as a leap year,
+so 1 day is subtracted from \code{t} unless the time is less than or equal
+to 1900 Feb 28.  Note that NA is returned for the day 60, which is
+what excel codes for "Feb 29, 1900", the non-existing day that excel
+accepts.
 
 \item \code{"ncep1"} handles NCEP times, measured in hours since the start
 of the year 1800.

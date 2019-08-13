@@ -3053,7 +3053,11 @@ numberAsHMS <- function(t, default=0)
 #' the year 1900.
 #'
 #' \item \code{"excel"} handles Excel times, measured in days since the start of
-#' the year 1900.
+#' the year 1900. (Note that excel incorrectly regards 1900 as a leap year,
+#' so 1 day is subtracted from \code{t} unless the time is less than or equal
+#' to 1900 Feb 28.  Note that NA is returned for the day 60, which is
+#' what excel codes for "Feb 29, 1900", the non-existing day that excel
+#' accepts.
 #'
 #' \item \code{"ncep1"} handles NCEP times, measured in hours since the start
 #' of the year 1800.
@@ -3117,13 +3121,15 @@ numberAsHMS <- function(t, default=0)
 #' @family things related to time
 numberAsPOSIXct <- function(t, type, tz="UTC")
 {
-    typeAllowed <- c("unix", "matlab", "gps", "argo", "excel", "ncep1", "ncep2", "sas", "spss", "yearday", "epic")
-    if (missing(type))
-        stop("give a type, one of: \"", paste(typeAllowed, collapse="\", \""), "\".", sep="")
-    type <- pmatch(type, typeAllowed, nomatch=NA)
-    if (is.na(type))
-        stop("only permitted type values are: \"", paste(typeAllowed, collapse="\", \""), "\".", sep="")
-    type <- typeAllowed[type]
+    if (missing(type)) {
+        type <- "unix"
+    } else {
+        typeAllowed <- c("unix", "matlab", "gps", "argo", "excel", "ncep1", "ncep2", "sas", "spss", "yearday", "epic")
+        type <- pmatch(type, typeAllowed, nomatch=NA)
+        if (is.na(type))
+            stop("only permitted type values are: \"", paste(typeAllowed, collapse="\", \""), "\".", sep="")
+        type <- typeAllowed[type]
+    }
     if (type == "unix") {
         tref <- as.POSIXct("2000-01-01", tz=tz) # arbitrary
         return(tref + as.numeric(t) - as.numeric(tref))
@@ -3137,7 +3143,17 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
     } else if (type == "argo") {
         return(t * 86400 + as.POSIXct("1900-01-01 00:00:00", tz="UTC"))
     } else if (type == "excel") {
-        return(86400 * (t - 1) + as.POSIXct("1900-01-01 00:00:00", tz="UTC"))
+        ## We need a one-day offset if time is after Feb 28, 1900,
+        ## because Excel thinks 1900 was a leap year. We can check for
+        ## this by day count. See https://github.com/dankelley/oce/issues/1591
+        ## for a discussion. Note that we return NA for day 60, because
+        ## that is what excel produces for "Feb 29, 1900", which is in
+        ## fact a non-existent day so I think we ought to inform oce users
+        ## of that fact, with a NA.
+        offset <- ifelse(t < 61, 0, 1) # excel thinks 1900 is a leap year
+        rval <- 86400 * (t - 1 - offset) + as.POSIXct("1900-01-01 00:00:00", tz="UTC")
+        rval[t == 60] <- NA
+        return(rval)
     } else if (type == "ncep1") {
         ## hours since the start of 1800
         return(t * 3600 + as.POSIXct("1800-01-01 00:00:00", tz="UTC"))
