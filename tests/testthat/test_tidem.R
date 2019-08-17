@@ -15,7 +15,23 @@ standard <- c("Z0", "SA", "SSA", "MSM", "MM", "MSF", "MF", "ALP1", "2Q1", "SIG1"
 unresolvable <- c("SA", "PI1", "S1", "PSI1", "GAM2", "H1", "H2", "T2", "R2")
 resolvable <- standard[!(standard %in% unresolvable)]
 
-test_that("tidemAstron() agrees with T_TIDE", {
+test_that("invalid constituent name is detected",
+          {
+            m <- expect_error(tidem(sealevel, constituents="unknown"),
+                                "'unknown' is not a known tidal constituent")
+            m <- expect_silent(tidem(sealevel, constituents=c("M2", "S2")))
+            expect_output(summary(m, constituent="M2"), "Call:")
+            expect_output(expect_warning(summary(m, constituent=c("M2", "unknown")),
+                                         "the following constituents are not handled: 'unknown'"),
+                          "Call:")
+            expect_warning(expect_error(summary(m, constituent="unknown"),
+                                        "no known constituents were provided"),
+                           "the following constituents are not handled: 'unknown'")
+          }
+)
+
+test_that("tidemAstron() agrees with T_TIDE",
+          {
           ## a test value from tidem with data(sealevelTuktoyaktuk)
           ctime <- numberAsPOSIXct(721574.000000, "matlab")
           a <- tidemAstron(ctime)
@@ -23,9 +39,11 @@ test_that("tidemAstron() agrees with T_TIDE", {
                                   0.47352449224491977020, 0.34168253766652512127, 0.78477994483145496751))
           expect_equal(a$ader, c(0.96613680796658762961, 0.03660110133318876524, 0.00273790929977641003,
                                  0.00030945458977503856, 0.00014709398916752078, 0.00000013079800385981))
-})
+          }
+)
 
-test_that("tidemVuf() agrees with T_TIDE", {
+test_that("tidemVuf() agrees with T_TIDE",
+          {
           ## a test value from tidem with data(sealevelTuktoyaktuk)
           t <- numberAsPOSIXct(721574, "matlab")
           latitude <- 69.45
@@ -71,9 +89,11 @@ test_that("tidemVuf() agrees with T_TIDE", {
                               1.06440598041227074688, 1.04138175242110064822, 1.01885556285168443758,
                               1.00831312849471199655, 1.08678359633272991758, 1.10963166967591941869,
                               1.00475518907274086189, 0.86273520229848033036))
-})
+          }
+)
 
-test_that("tidem constituents match previous versions", {
+test_that("tidem constituents match previous versions",
+          {
           m <- expect_output(tidem(sealevel),
                              "the tidal record is too short to fit for constituents")
           expect_equal(m[["name"]],
@@ -89,9 +109,21 @@ test_that("tidem constituents match previous versions", {
                        c(0.3759657495, 0.6840384853, 1.0624378422, 1.3928432064, 1.5948142147, 1.6367626002))
           expect_equal(fivenum(pred),
                        c(0.02920363602, 0.59938759547, 0.97986651174, 1.38237184987, 1.93382321126))
-})
+          }
+)
 
-test_that("tailoring of constituents", {
+test_that("prediction works with newdata and without newdata",
+          {
+          m <- expect_output(tidem(sealevel),
+                             "the tidal record is too short to fit for constituents")
+          p1 <- predict(m)
+          p2 <- predict(m, newdata=sealevel[["time"]])
+          expect_equal(p1, p2)
+          }
+)
+
+test_that("tailoring of constituents",
+          {
           ## check names; note that "Z0" goes in by default
           tide3 <- tidem(sealevel, constituents = c("M2", "K2"))
           expect_equal(tide3[["data"]]$name, c("Z0", "M2", "K2"))
@@ -99,9 +131,11 @@ test_that("tailoring of constituents", {
           tide5 <- expect_output(tidem(sealevel, constituents = c("standard", "-M2")),
                                  "the tidal record is too short to fit for constituents")
           expect_equal(tide5[["data"]]$name, resolvable[resolvable != "M2"])
-})
+          }
+)
 
-test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
+test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test",
+          {
           foreman <- read.table("tide_foreman.dat.gz", header=TRUE, stringsAsFactors=FALSE)
           ttide <- read.table("tide_ttide.dat.gz", skip=9, header=TRUE, stringsAsFactors=FALSE)
           ## switch T_TIDE to Foreman names (which tidem() also uses)
@@ -153,5 +187,6 @@ test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
           ## for one thing.
           expect_lt(max(abs(foreman$A - ttide$amplitude)), 0.000201)
           expect_lt(max(abs(foreman$G - ttide$phase)), 0.121)
-})
+          }
+)
 

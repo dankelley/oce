@@ -8,7 +8,8 @@
 \S4method{[[}{tidem}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A tidem object, i.e. one inheriting from \code{\link{tidem-class}}.}
+\item{x}{A tidem object, i.e. one inheriting from \linkS4class{tidem},
+as created by \code{\link[=as.tidem]{as.tidem()}} or \code{\link[=tidem]{tidem()}}.}
 
 \item{i}{Character string indicating the name of item to extract.}
 

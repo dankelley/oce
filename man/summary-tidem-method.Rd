@@ -8,13 +8,14 @@
 \S4method{summary}{tidem}(object, p, constituent, ...)
 }
 \arguments{
-\item{object}{an object of class \code{"tidem"}, usually, a result of a call
-to \code{tidem}.}
+\item{object}{an object of class \link{tidem}, as created by
+\code{\link[=as.tidem]{as.tidem()}} or \code{\link[=tidem]{tidem()}}.}
 
 \item{p}{optional value of the maximum p value for the display of an
 individual coefficient.  If not given, all coefficients are shown.}
 
-\item{constituent}{optional name of constituent on which to focus.}
+\item{constituent}{optional character vector holding the names
+of constituents on which to focus.}
 
 \item{\dots}{further arguments passed to or from other methods.}
 }

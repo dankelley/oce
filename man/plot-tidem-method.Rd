@@ -13,15 +13,13 @@
 }
 \arguments{
 \item{x}{A \code{tidem} object, i.e. one inheriting from
-\code{\link{tidem-class}}.}
+\linkS4class{tidem}.}
 
 \item{which}{integer flag indicating plot type, 1 for stair-case spectral, 2
 for spike spectral.}
 
-\item{constituents}{a character vector of constituents that are
-to be drawn and label. If \code{NULL}, then no constituents will be shown.
-Consult the built-in dataset \code{\link{tidedata}} for the permissible
-constituent names and their frequencies.}
+\item{constituents}{character vector holding the names of constituents that are
+to be drawn and labelled. If \code{NULL}, then no constituents will be shown.}
 
 \item{sides}{an integer vector of length equal to that of \code{constituents},
 designating the side on which the constituent labels are to be drawn. As in
@@ -40,7 +38,7 @@ Ignored if \code{sides=3}. Repeated to be of the same length as
 for \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{\link{par}("mar")}.}
+\item{mar}{value to be used with \code{[par]("mar")}.}
 
 \item{\dots}{optional arguments passed to plotting functions.}
 }
