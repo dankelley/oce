@@ -10,9 +10,9 @@ plotting as "wind rose" plots (see \code{\link[=plot,windrose-method]{plot,windr
 There is no reading method, because there is no standard way to store
 wind data in files; instead, \code{\link[=as.windrose]{as.windrose()}} is provided
 to construct \code{windrose} objects.  Data elements may be retrieved
-with [[\code{\link[=,windrose-method]{,windrose-method()}} or replaced with
-[[\code{\link[=<-,windrose-method]{<-,windrose-method()}}. Data summaries are provided with
-\code{\link[=summary,windrose-method]{summary,windrose-method()}}.
+with \code{\link{[[,windrose-method}} or replaced with
+\code{\link{[[<-,windrose-method}}. Data summaries are provided with
+\code{\link{summary,windrose-method()}}.
 }
 \section{Slots}{
 

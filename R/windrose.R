@@ -7,9 +7,9 @@
 #' There is no reading method, because there is no standard way to store
 #' wind data in files; instead, [as.windrose()] is provided
 #' to construct `windrose` objects.  Data elements may be retrieved
-#' with [[[,windrose-method()] or replaced with
-#' [[[<-,windrose-method()]. Data summaries are provided with
-#' [summary,windrose-method()].
+#' with \code{\link{[[,windrose-method}} or replaced with
+#' \code{\link{[[<-,windrose-method}}. Data summaries are provided with
+#' \code{\link{summary,windrose-method()}}.
 #'
 #' @templateVar class windrose
 #'
