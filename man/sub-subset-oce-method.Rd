@@ -8,7 +8,7 @@
 \S4method{[[}{oce}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An object of the \linkS4class{oce} class.}
+\item{x}{an \linkS4class{oce} object.}
 
 \item{i}{The item to replace.}
 

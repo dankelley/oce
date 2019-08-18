@@ -2,12 +2,15 @@
 
 #' Get Something from the data Slot of an oce Object
 #'
-#' In contrast to the various \code{[[} functions, this is
-#' guaranteed to look only within the \code{data} slot. If
-#' the named item is not found, \code{NULL} is returned.
+#' In contrast to the various `[[` functions, this is
+#' guaranteed to look only within the `data` slot. If
+#' the named item is not found, `NULL` is returned.
 #'
-#' @param object an \code{oce} object
+#' @param object an [oce-class] object.
+#'
 #' @param name String indicating the name of the item to be found.
+#'
+#' @md
 oceGetData <- function(object, name)
 {
     if (!inherits(object, "oce"))
@@ -20,11 +23,13 @@ oceGetData <- function(object, name)
 #' Delete Something in the data Slot of an oce Object
 #'
 #' Return a copy of the supplied object that lacks the named
-#' element in its \code{data} slot, and that has a note
+#' element in its `data` slot, and that has a note
 #' about the deletion in its processing log.
 #'
-#' @param object an \code{oce} object
+#' @param object an `oce` object
 #' @param name String indicating the name of the item to be deleted.
+#'
+#' @md
 oceDeleteData <- function(object, name)
 {
     if (!inherits(object, "oce"))
@@ -42,40 +47,42 @@ oceDeleteData <- function(object, name)
 #' Set Something in the data Slot of an oce Object
 #'
 #' @details
-#' There are three possibilities for \code{unit}:
-#' \itemize{
-#' \item \emph{Case 1.} \code{unit} is a named or unnamed \code{\link{list}}
-#' that contains two items.
+#' There are three possibilities for `unit`:
+#' 1. `unit` is a named or unnamed [list()] that contains two items.
 #' If the list is named, the names must be
-#' \code{unit} and \code{scale}. If the list is unnamed, the stated names are assigned
-#' to the items, in the stated order. Either way, the \code{unit}
-#' item must be an \code{\link{expression}} that specifies the unit,
-#' and the \code{scale} item must be a string that describes the scale. For
+#' `unit` and `scale`. If the list is unnamed, the stated names are assigned
+#' to the items, in the stated order. Either way, the `unit`
+#' item must be an [expression()] that specifies the unit,
+#' and the `scale` item must be a string that describes the scale. For
 #' example, modern temperatures have
-#' \code{unit=list(unit=expression(degree*C), scale="ITS-90")}.
-#' \item \emph{Case 2.} \code{unit} is an \code{\link{expression}} giving the unit as above. In this
-#' case, the scale will be set to \code{""}.
-#' \item \emph{Case 3.} \code{unit} is a character string that is converted
-#' into an expression with \code{\link{parse}(text=unit)},
-#' and the scale set to \code{""}.
-#' }
+#' `unit=list(unit=expression(degree*C), scale="ITS-90")`.
+#' 2. `unit` is an [expression()] giving the unit as above. In this
+#' case, the scale will be set to `""`.
+#' 3. `unit` is a character string that is converted
+#' into an expression with [parse]`(text=unit)`,
+#' and the scale set to `""`.
 #'
-#' @param object an \code{oce} object
+#' @param object an `oce` object
+#'
 #' @param name String indicating the name of the item to be set.
+#'
 #' @param value Value for the item.
+#'
 #' @param unit An optional indication of the units for the item. This has
 #' three possible forms (see \dQuote{Details}).
+#'
 #' @param originalName Optional character string giving an 'original' name (e.g.
 #' as stored in the header of a data file).
-#' @param note Either empty (the default), a character string, or \code{NULL},
+#'
+#' @param note Either empty (the default), a character string, or `NULL`,
 #' to control additions made to the processing log of the return value. If
-#' \code{note=""} then the an entry is created based on deparsing the function call.
-#' If \code{note} is a non-empty string, then that string gets added added
-#' to the processing log. Finally, if \code{note=NULL}, then nothing is
+#' `note=""` then the an entry is created based on deparsing the function call.
+#' If `note` is a non-empty string, then that string gets added added
+#' to the processing log. Finally, if `note=NULL`, then nothing is
 #' added to the processing log. This last form is useful in cases where
-#' \code{oceSetData} is to be called many times in succession, resulting
+#' `oceSetData` is to be called many times in succession, resulting
 #' in an overly verbose processing log; in such cases, it might help
-#' to add a note by e.g. \code{processingLog(a) <- "QC (memo dek-2018-01/31)"}
+#' to add a note by e.g. `processingLog(a) <- "QC (memo dek-2018-01/31)"`
 #'
 #' @examples
 #' data(ctd)
@@ -85,6 +92,8 @@ oceDeleteData <- function(object, name)
 #' ctd <- oceSetData(ctd, name="depthInFeet", value=feet, expression("feet"))
 #' fathoms <- feet / 6
 #' ctd <- oceSetData(ctd, "depthInFathoms", fathoms, "fathoms")
+#'
+#' @md
 oceSetData <- function(object, name, value, unit, originalName, note="")
 {
     if (!inherits(object, "oce"))
@@ -152,12 +161,15 @@ oceSetData <- function(object, name, value, unit, originalName, note="")
 
 #' Get Something From the metadata Slot in an oce Object
 #'
-#' In contrast to the various \code{[[} functions, this is
-#' guaranteed to look only within the \code{metadata} slot. If
-#' the named item is not found, \code{NULL} is returned.
+#' In contrast to the various `[[` functions, this is
+#' guaranteed to look only within the `metadata` slot. If
+#' the named item is not found, `NULL` is returned.
 #'
-#' @param object an \code{oce} object
+#' @param object an `oce` object
+#'
 #' @param name String indicating the name of the item to be found.
+#'
+#' @md
 oceGetMetadata <- function(object, name)
 {
     if (!inherits(object, "oce"))
@@ -170,11 +182,14 @@ oceGetMetadata <- function(object, name)
 #' Delete Something in the metadata Slot of an oce Object
 #'
 #' Return a copy of the supplied object that lacks the named
-#' element in its \code{metadata} slot, and that has a note
+#' element in its `metadata` slot, and that has a note
 #' about the deletion in its processing log.
 #'
-#' @param object an \code{oce} object
+#' @param object an `oce` object
+#'
 #' @param name String indicating the name of the item to be deleted.
+#'
+#' @md
 oceDeleteMetadata <- function(object, name)
 {
     if (!inherits(object, "oce"))
@@ -186,19 +201,24 @@ oceDeleteMetadata <- function(object, name)
 }
 
 #' Set Something in the metadata Slot of an oce Object
-#' @param object an \code{oce} object
-#' @param name String indicating the name of the item to be set.
-#' @param value Value for the item.
-#' @param note Either empty (the default), a character string, or \code{NULL},
-#' to control additions made to the processing log of the return value. If
-#' \code{note=""} then the an entry is created based on deparsing the function call.
-#' If \code{note} is a non-empty string, then that string gets added added
-#' to the processing log. Finally, if \code{note=NULL}, then nothing is
-#' added to the processing log.  This last form is useful in cases where
-#' \code{oceSetData} is to be called many times in succession, resulting
-#' in an overly verbose processing log; in such cases, it might help
-#' to add a note by e.g. \code{processingLog(a) <- "QC (memo dek-2018-01/31)"}
 #'
+#' @param object an `oce` object
+#'
+#' @param name String indicating the name of the item to be set.
+#'
+#' @param value Value for the item.
+#'
+#' @param note Either empty (the default), a character string, or `NULL`,
+#' to control additions made to the processing log of the return value. If
+#' `note=""` then the an entry is created based on deparsing the function call.
+#' If `note` is a non-empty string, then that string gets added added
+#' to the processing log. Finally, if `note=NULL`, then nothing is
+#' added to the processing log.  This last form is useful in cases where
+#' `oceSetData` is to be called many times in succession, resulting
+#' in an overly verbose processing log; in such cases, it might help
+#' to add a note by e.g. `processingLog(a) <- "QC (memo dek-2018-01/31)"`
+#'
+#' @md
 oceSetMetadata <- function(object, name, value, note="")
 {
     if (!inherits(object, "oce"))

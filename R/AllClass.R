@@ -469,7 +469,7 @@ setMethod(f="[[",
 
 #' @title Replace Parts of an Oce Object
 #'
-#' @param x An object of the [oce-class] class.
+#' @param x an [oce-class] object.
 #'
 #' @template sub_subsetTemplate
 #'

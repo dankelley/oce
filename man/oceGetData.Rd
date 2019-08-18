@@ -7,7 +7,7 @@
 oceGetData(object, name)
 }
 \arguments{
-\item{object}{an \code{oce} object}
+\item{object}{an \linkS4class{oce} object.}
 
 \item{name}{String indicating the name of the item to be found.}
 }
