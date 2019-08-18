@@ -38,7 +38,7 @@ If the file is already present in \code{destdir}, then it is not
 downloaded again. The default \code{destdir} is the present directory,
 but it probably makes more sense to use something like \code{"~/data/amsr"}
 to make it easy for scripts in other directories to use the cached data.
-The file is downloaded with \code{\link{download.file}}.
+The file is downloaded with \code{\link[=download.file]{download.file()}}.
 }
 \section{History}{
 
@@ -65,6 +65,7 @@ d <- read.amsr(f)
 plot(d)
 mtext(d[["filename"]], side=3, line=0, adj=0)
 }
+
 }
 \references{
 \code{http://images.remss.com/amsr/amsr2_data_daily.html}

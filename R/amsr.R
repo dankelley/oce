@@ -9,45 +9,48 @@
 #' May 2012. Data are processed by Remote Sensing Systems. The satellite
 #' completes an ascending and descending pass during local daytime and nighttime
 #' hours respectively. Each daily file contains 7 daytime and 7 nighttime
-#' maps of variables named as follows within the \code{data}
-#' slot of amsr objects: \code{timeDay},
-#' \code{SSTDay}, \code{LFwindDay} (wind at 10m sensed in
-#' the 10.7GHz band), \code{MFwindDay} (wind at 10m sensed at 18.7GHz),
-#' \code{vaporDay}, \code{cloudDay}, and \code{rainDay}, along with
-#' similarly-named items that end in \code{Night}.
+#' maps of variables named as follows within the `data`
+#' slot of amsr objects: `timeDay`,
+#' `SSTDay`, `LFwindDay` (wind at 10m sensed in
+#' the 10.7GHz band), `MFwindDay` (wind at 10m sensed at 18.7GHz),
+#' `vaporDay`, `cloudDay`, and `rainDay`, along with
+#' similarly-named items that end in `Night`.
 #' See [1] for additional information on the instrument, how
 #' to cite the data source in a paper, etc.
 #'
-#' The bands are stored in \code{\link{raw}} form, to save storage. The accessor
-#' function \code{\link{[[,amsr-method}} can provide these values in \code{raw}
-#' form or in physical units; \code{\link{plot,amsr-method}}, and
-#' \code{\link{summary,amsr-method}} work with physical units.
+#' The bands are stored in [raw()] form, to save storage. The accessor
+#' function [[[,amsr-method()] can provide these values in `raw`
+#' form or in physical units; [plot,amsr-method()], and
+#' [summary,amsr-method()] work with physical units.
 #'
 #' @templateVar class amsr
 #'
 #' @templateVar dataExample {}
 #'
-#' @templateVar metadataExample Examples that are of common interest include  \code{longitude} and \code{latitude}, which define the grid.
+#' @templateVar metadataExample Examples that are of common interest include  `longitude` and `latitude`, which define the grid.
 #'
 #' @template slot_summary
 #'
 #' @template slot_put
 #'
 #' @template slot_get
-#
 #'
 #' @author Dan Kelley and Chantelle Layton
+#'
 #' @concept satellite
+#'
 #' @references
 #' 1. Information on the satellite, how to cite the data, etc. is
-#' provided at \code{http://www.remss.com/missions/amsr/}.
+#' provided at `http://www.remss.com/missions/amsr/`.
 #'
 #' 2. A simple interface for viewing and downloading data is at
-#' \code{http://images.remss.com/amsr/amsr2_data_daily.html}.
+#' `http://images.remss.com/amsr/amsr2_data_daily.html`.
 #'
-#' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
+#' @seealso [landsat-class()] for handling data from the Landsat-8 satellite.
 #'
 #' @family things related to amsr data
+#'
+#' @md
 setClass("amsr", contains="satellite")
 
 setMethod(f="initialize",
@@ -74,14 +77,20 @@ setMethod(f="show",
 
 #' Summarize an AMSR Object
 #'
-#' Although the data are stored in \code{\link{raw}} form, the summary
+#' Although the data are stored in [raw()] form, the summary
 #' presents results in physical units.
 #'
-#' @param object The object to be summarized.
+#' @param object An [amsr-class] object.
+#'
 #' @param ... Ignored.
+#'
 #' @author Dan Kelley
+#'
 #' @concept satellite
+#'
 #' @family things related to amsr data
+#'
+#' @md
 setMethod(f="summary",
           signature="amsr",
           definition=function(object, ...) {
@@ -97,34 +106,34 @@ setMethod(f="summary",
 
 #' Extract Something From an amsr Object
 #'
-#' Extract something from the \code{metadata} or \code{data} slot of an
-#' \code{\link{amsr-class}} object.
+#' Extract something from the `metadata` or `data` slot of an
+#' [amsr-class()] object.
 #'
 #' @details
-#' Partial matches for \code{i}
-#' are permitted for \code{metadata}, and \code{j} is ignored for
-#' \code{metadata}.
+#' Partial matches for `i`
+#' are permitted for `metadata`, and `j` is ignored for
+#' `metadata`.
 #'
-#' Data within the \code{data} slot may be found directly, e.g.
-#' \code{j="SSTDay"} will yield sea-surface temperature in the daytime
-#' satellite, and \code{j="SSTNight"} is used to access the nighttime data. In
-#' addition, \code{j="SST"} yields an average of the night and day values
+#' Data within the `data` slot may be found directly, e.g.
+#' `j="SSTDay"` will yield sea-surface temperature in the daytime
+#' satellite, and `j="SSTNight"` is used to access the nighttime data. In
+#' addition, `j="SST"` yields an average of the night and day values
 #' (using just one of these, if the other is missing). This scheme works for
-#' all the data stored in \code{amsr} objects, namely:
-#' \code{time}, \code{SST}, \code{LFwind}, \code{MFwind},
-#' \code{vapor}, \code{cloud} and \code{rain}.  In each case, the default
-#' is to calculate values in scientific units, unless \code{j="raw"}, in
+#' all the data stored in `amsr` objects, namely:
+#' `time`, `SST`, `LFwind`, `MFwind`,
+#' `vapor`, `cloud` and `rain`.  In each case, the default
+#' is to calculate values in scientific units, unless `j="raw"`, in
 #' which case the raw data are returned.
 #'
-#' The \code{"raw"} mode can be useful
-#' in decoding the various types of missing value that are used by \code{amsr}
-#' data, namely \code{as.raw(255)} for land, \code{as.raw(254)} for
-#' a missing observation, \code{as.raw(253)} for a bad observation,
-#' \code{as.raw(252)} for sea ice, or \code{as.raw(251)} for missing SST
+#' The `"raw"` mode can be useful
+#' in decoding the various types of missing value that are used by `amsr`
+#' data, namely `as.raw(255)` for land, `as.raw(254)` for
+#' a missing observation, `as.raw(253)` for a bad observation,
+#' `as.raw(252)` for sea ice, or `as.raw(251)` for missing SST
 #' due to rain or missing water vapour due to heavy rain. Note that
-#' something special has to be done for e.g. \code{d[["SST", "raw"]]}
+#' something special has to be done for e.g. `d[["SST","raw"]]`
 #' because the idea is that this syntax (as opposed to specifying
-#' \code{"SSTDay"}) is a request to try to find good
+#' `"SSTDay"`) is a request to try to find good
 #' data by looking at both the Day and Night measurements. The scheme
 #' employed is quite detailed. Denote by "A" the raw value of the desired field
 #' in the daytime pass, and by "B" the corresponding value in the
@@ -136,13 +145,16 @@ setMethod(f="summary",
 #'
 #' @return
 #' In all cases, the returned value is a matrix with
-#' with \code{NA} values inserted at locations where
-#' the raw data equal \code{as.raw(251:255)}, as explained
+#' with `NA` values inserted at locations where
+#' the raw data equal `as.raw(251:255)`, as explained
 #' in \dQuote{Details}.
 #'
-#' @param x An \code{amsr} object, i.e. one inheriting from \code{\link{amsr-class}}.
+#' @param x An [amsr-class] object.
+#'
 #' @author Dan Kelley
+#'
 #' @template sub_subTemplate
+#'
 #' @examples
 #'\dontrun{
 #' # Show a daytime SST image, along with an indication of whether
@@ -161,6 +173,8 @@ setMethod(f="summary",
 #' mtext("red: too rainy to sense SSTDay")
 #'}
 #' @family things related to amsr data
+#'
+#' @md
 setMethod(f="[[",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -246,9 +260,14 @@ setMethod(f="[[",
           })
 
 #' @title Replace Parts of an AMSR Object
-#' @param x An \code{amsr} object, i.e. inheriting from \code{\link{amsr-class}}
+#'
+#' @param x An [amsr-class] object.
+#'
 #' @family things related to amsr data
+#'
 #' @template sub_subsetTemplate
+#'
+#' @md
 setMethod(f="[[<-",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -259,15 +278,19 @@ setMethod(f="[[<-",
 #'
 #' @description
 #' This function is somewhat analogous to
-#' \code{\link{subset.data.frame}}, but only one independent variable may be
-#' used in \code{subset} in any call to the function, which means that
+#' [subset.data.frame()], but only one independent variable may be
+#' used in `subset` in any call to the function, which means that
 #' repeated calls will be necessary to subset based on more than one
 #' independent variable (e.g. latitude and longitude).
 #'
-#' @param x A \code{amsr} object, i.e. one inheriting from \code{\link{amsr-class}}.
-#' @param subset An expression indicating how to subset \code{x}.
+#' @param x An [amsr=class] object.
+#'
+#' @param subset An expression indicating how to subset `x`.
+#'
 #' @param ... Ignored.
-#' @return An \code{amsr} object.
+#'
+#' @return An [amsr-class] object.
+#'
 #' @examples
 #'\dontrun{
 #' library(oce)
@@ -280,6 +303,8 @@ setMethod(f="[[<-",
 #'
 #' @family things related to amsr data
 #' @family functions that subset oce objects
+#'
+#' @md
 setMethod(f="subset",
           signature="amsr",
           definition=function(x, subset, ...) {
@@ -309,9 +334,11 @@ setMethod(f="subset",
 
 #' Plot an amsr Object
 #'
-#' @param x An object inheriting from \code{\link{amsr-class}}.
+#' @param x An [amsr-class] object.
+#'
 #' @param y String indicating the name of the band to plot; if not provided,
-#' \code{SST} is used; see \code{\link{amsr-class}} for a list of bands.
+#' `SST` is used; see [amsr-class()] for a list of bands.
+#'
 #' @param asp Optional aspect ratio for plot.
 #'
 #' @param missingColor List of colors for problem cases. The names of the
@@ -319,12 +346,12 @@ setMethod(f="subset",
 #' be changed to any desired values. These default values work reasonably
 #' well for SST images, which are the default image, and which employ a
 #' blue-white-red blend of colors, no mixture of which matches the
-#' default values in \code{missingColor}.
+#' default values in `missingColor`.
 #'
 #' @param debug A debugging flag, integer.
 #'
-#' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
-#' \code{col} to control colors.
+#' @param ... extra arguments passed to [imagep()], e.g. set
+#' `col` to control colors.
 #'
 #' @concept satellite
 #'
@@ -341,7 +368,10 @@ setMethod(f="subset",
 #'
 #' @family functions that plot oce data
 #' @family things related to amsr data
+#'
 #' @aliases plot.amsr
+#'
+#' @md
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
@@ -401,45 +431,45 @@ setMethod(f="plot",
 
 #' Download and Cache an amsr File
 #'
-#' If the file is already present in \code{destdir}, then it is not
-#' downloaded again. The default \code{destdir} is the present directory,
-#' but it probably makes more sense to use something like \code{"~/data/amsr"}
+#' If the file is already present in `destdir`, then it is not
+#' downloaded again. The default `destdir` is the present directory,
+#' but it probably makes more sense to use something like `"~/data/amsr"`
 #' to make it easy for scripts in other directories to use the cached data.
-#' The file is downloaded with \code{\link{download.file}}.
+#' The file is downloaded with [download.file()].
 #'
 #' @param year,month,day Numerical values of the year, month, and day
 #' of the desired dataset. Note that one file is archived per day,
 #' so these three values uniquely identify a dataset.
-#' If \code{day} and \code{month} are not provided but \code{day} is,
+#' If `day` and `month` are not provided but `day` is,
 #' then the time is provided in a relative sense, based on the present
-#' date, with \code{day} indicating the number of days in the past.
+#' date, with `day` indicating the number of days in the past.
 #' Owing to issues with timezones and the time when the data
-#' are uploaded to the server, \code{day=3} may yield the
+#' are uploaded to the server, `day=3` may yield the
 #' most recent available data. For this reason, there is a
-#' third option, which is to leave \code{day} unspecified, which
-#' works as though \code{day=3} had been given.
+#' third option, which is to leave `day` unspecified, which
+#' works as though `day=3` had been given.
 #'
 #' @param destdir A string naming the directory in which to cache the downloaded file.
 #' The default is to store in the present directory, but many users find it more
-#' helpful to use something like \code{"~/data/amsr"} for this, to collect all
+#' helpful to use something like `"~/data/amsr"` for this, to collect all
 #' downloaded amsr files in one place.
 #' @param server A string naming the server from which data
 #' are to be acquired. See \dQuote{History}.
 #'
 #' @section History:
 #' Until 25 March 2017, the default server was
-#' \code{"ftp.ssmi.com/amsr2/bmaps_v07.2"}, but this was changed when the author
+#' `"ftp.ssmi.com/amsr2/bmaps_v07.2"`, but this was changed when the author
 #' discovered that this FTP site had been changed to require users to create
 #' accounts to register for downloads.  The default was changed to
-#' \code{"http://data.remss.com/amsr2/bmaps_v07.2"} on the named date.
+#' `"http://data.remss.com/amsr2/bmaps_v07.2"` on the named date.
 #' This site was found by a web search, but it seems to provide proper data.
 #' It is assumed that users will do some checking on the best source.
 #'
 #' On 23 January 2018, it was noticed that the server-url naming convention
 #' had changed, e.g.
-#' \code{http://data.remss.com/amsr2/bmaps_v07.2/y2017/m01/f34_20170114v7.2.gz}
+#' `http://data.remss.com/amsr2/bmaps_v07.2/y2017/m01/f34_20170114v7.2.gz`
 #' becoming
-#' \code{http://data.remss.com/amsr2/bmaps_v08/y2017/m01/f34_20170114v8.gz}
+#' `http://data.remss.com/amsr2/bmaps_v08/y2017/m01/f34_20170114v8.gz`
 #'
 #' @return A character value indicating the filename of the result; if
 #' there is a problem of any kind, the result will be the empty
@@ -453,12 +483,16 @@ setMethod(f="plot",
 #' plot(d)
 #' mtext(d[["filename"]], side=3, line=0, adj=0)
 #'}
+#'
 #' @family functions that download files
 #' @family things related to amsr data
+#'
 #' @references
-#' \code{http://images.remss.com/amsr/amsr2_data_daily.html}
+#' `http://images.remss.com/amsr/amsr2_data_daily.html`
 #' provides daily images going back to 2012. Three-day,
 #' monthly, and monthly composites are also provided on that site.
+#'
+#' @md
 download.amsr <- function(year, month, day, destdir=".", server="http://data.remss.com/amsr2/bmaps_v08")
 {
     ## ftp ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/y2016/m08/f34_20160804v7.2.gz
@@ -496,22 +530,22 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
 #' Read an amsr File
 #'
 #' Read a compressed amsr file, generating an object that inherits from
-#' \code{\link{amsr-class}}.  Note that only compressed files are read in
+#' [amsr-class()].  Note that only compressed files are read in
 #' this version.
 #'
 #' @section File sources:
 #' AMSR files are provided at the FTP site
-#' \code{ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/} and login as "guest",
-#' enter a year-based directory (e.g. \code{y2016} for the year 2016),
-#' then enter a month-based directory (e.g. \code{m08} for August, the 8th
+#' `ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/` and login as "guest",
+#' enter a year-based directory (e.g. `y2016` for the year 2016),
+#' then enter a month-based directory (e.g. `m08` for August, the 8th
 #' month), and then download a file for the present date, e.g.
-#' \code{f34_20160803v7.2.gz} for August 3rd, 2016. Do not uncompress
-#' this file, since \code{read.amsr} can only read uncompressed files.
-#' If \code{read.amsr} reports an error on the number of chunks, try
+#' `f34_20160803v7.2.gz` for August 3rd, 2016. Do not uncompress
+#' this file, since `read.amsr` can only read uncompressed files.
+#' If `read.amsr` reports an error on the number of chunks, try
 #' downloading a similarly-named file (e.g. in the present example,
-#' \code{read.amsr("f34_20160803v7.2_d3d.gz")} will report an error
+#' `read.amsr("f34_20160803v7.2_d3d.gz")` will report an error
 #' about inability to read a 6-chunk file, but
-#' \code{read.amsr("f34_20160803v7.2.gz")} will work properly.
+#' `read.amsr("f34_20160803v7.2.gz")` will work properly.
 #'
 #' @param file String indicating the name of a compressed file. See
 #' \dQuote{File sources}.
@@ -519,10 +553,14 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
 #' @param debug A debugging flag, integer.
 #'
 #' @concept satellite
-#' @seealso \code{\link{plot,amsr-method}} for an example.
+#'
+#' @seealso [plot,amsr-method()] for an example.
+#'
 #' @author Dan Kelley and Chantelle Layton
 #'
 #' @family things related to amsr data
+#'
+#' @md
 read.amsr <- function(file, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.amsr(file=\"", file, "\",",
@@ -617,8 +655,9 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
 }
 
 #' @title Create a composite of amsr satellite data
+#'
 #' @details
-#' Form averages for each item in the \code{data} slot of the supplied objects,
+#' Form averages for each item in the `data` slot of the supplied objects,
 #' taking into account the bad-data codes. If none of the objects has good
 #' data at any particular pixel (i.e. particular latitude and longitude),
 #' the resultant will have the bad-data code of the last item in the argument
@@ -627,11 +666,15 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
 #' final argument, except that the filename is set to a comma-separated list
 #' of the component filenames.
 #'
-#' @param object An object inheriting from \link{amsr-class}.
+#' @param object An [amsr-class] object.
+#'
 #' @param ... Other amsr objects.
 #'
 #' @family things related to amsr data
+#'
 #' @template compositeTemplate
+#'
+#' @md
 setMethod("composite",
           c(object="amsr"),
           function(object, ...) {

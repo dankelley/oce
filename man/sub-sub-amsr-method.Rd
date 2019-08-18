@@ -8,7 +8,7 @@
 \S4method{[[}{amsr}(x, i, j, ...)
 }
 \arguments{
-\item{x}{An \code{amsr} object, i.e. one inheriting from \code{\link{amsr-class}}.}
+\item{x}{An \linkS4class{amsr} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
@@ -24,7 +24,7 @@ in \dQuote{Details}.
 }
 \description{
 Extract something from the \code{metadata} or \code{data} slot of an
-\code{\link{amsr-class}} object.
+\code{\link[=amsr-class]{amsr-class()}} object.
 
 The \code{[[} method works for all \code{oce} objects, i.e.
 objects inheriting from \code{\link{oce-class}}.  The purpose
@@ -57,7 +57,7 @@ data, namely \code{as.raw(255)} for land, \code{as.raw(254)} for
 a missing observation, \code{as.raw(253)} for a bad observation,
 \code{as.raw(252)} for sea ice, or \code{as.raw(251)} for missing SST
 due to rain or missing water vapour due to heavy rain. Note that
-something special has to be done for e.g. \code{d[["SST", "raw"]]}
+something special has to be done for e.g. \code{d[["SST","raw"]]}
 because the idea is that this syntax (as opposed to specifying
 \code{"SSTDay"}) is a request to try to find good
 data by looking at both the Day and Night measurements. The scheme

@@ -19,13 +19,13 @@ slot of amsr objects: \code{timeDay},
 the 10.7GHz band), \code{MFwindDay} (wind at 10m sensed at 18.7GHz),
 \code{vaporDay}, \code{cloudDay}, and \code{rainDay}, along with
 similarly-named items that end in \code{Night}.
-See [1] for additional information on the instrument, how
+See \link{1} for additional information on the instrument, how
 to cite the data source in a paper, etc.
 
-The bands are stored in \code{\link{raw}} form, to save storage. The accessor
-function \code{\link{[[,amsr-method}} can provide these values in \code{raw}
-form or in physical units; \code{\link{plot,amsr-method}}, and
-\code{\link{summary,amsr-method}} work with physical units.
+The bands are stored in \code{\link[=raw]{raw()}} form, to save storage. The accessor
+function [[\code{\link[=,amsr-method]{,amsr-method()}} can provide these values in \code{raw}
+form or in physical units; \code{\link[=plot,amsr-method]{plot,amsr-method()}}, and
+\code{\link[=summary,amsr-method]{summary,amsr-method()}} work with physical units.
 }
 \section{Slots}{
 
@@ -76,14 +76,15 @@ to find items more directly, using \code{\link{oceGetData}} and
 }
 
 \references{
-1. Information on the satellite, how to cite the data, etc. is
+\enumerate{
+\item Information on the satellite, how to cite the data, etc. is
 provided at \code{http://www.remss.com/missions/amsr/}.
-
-2. A simple interface for viewing and downloading data is at
+\item A simple interface for viewing and downloading data is at
 \code{http://images.remss.com/amsr/amsr2_data_daily.html}.
 }
+}
 \seealso{
-\code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
+\code{\link[=landsat-class]{landsat-class()}} for handling data from the Landsat-8 satellite.
 
 Other things related to amsr data: \code{\link{[[,amsr-method}},
   \code{\link{[[<-,amsr-method}},

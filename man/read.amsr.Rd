@@ -14,7 +14,7 @@ read.amsr(file, debug = getOption("oceDebug"))
 }
 \description{
 Read a compressed amsr file, generating an object that inherits from
-\code{\link{amsr-class}}.  Note that only compressed files are read in
+\code{\link[=amsr-class]{amsr-class()}}.  Note that only compressed files are read in
 this version.
 }
 \section{File sources}{
@@ -34,7 +34,7 @@ about inability to read a 6-chunk file, but
 }
 
 \seealso{
-\code{\link{plot,amsr-method}} for an example.
+\code{\link[=plot,amsr-method]{plot,amsr-method()}} for an example.
 
 Other things related to amsr data: \code{\link{[[,amsr-method}},
   \code{\link{[[<-,amsr-method}}, \code{\link{amsr-class}},

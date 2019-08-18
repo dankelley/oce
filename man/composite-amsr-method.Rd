@@ -8,7 +8,7 @@
 \S4method{composite}{amsr}(object, ...)
 }
 \arguments{
-\item{object}{An object inheriting from \link{amsr-class}.}
+\item{object}{An \linkS4class{amsr} object.}
 
 \item{...}{Other amsr objects.}
 }

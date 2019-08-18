@@ -8,12 +8,12 @@
 \S4method{summary}{amsr}(object, ...)
 }
 \arguments{
-\item{object}{The object to be summarized.}
+\item{object}{An \linkS4class{amsr} object.}
 
 \item{...}{Ignored.}
 }
 \description{
-Although the data are stored in \code{\link{raw}} form, the summary
+Although the data are stored in \code{\link[=raw]{raw()}} form, the summary
 presents results in physical units.
 }
 \seealso{

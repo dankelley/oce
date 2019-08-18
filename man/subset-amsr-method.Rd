@@ -8,18 +8,18 @@
 \S4method{subset}{amsr}(x, subset, ...)
 }
 \arguments{
-\item{x}{A \code{amsr} object, i.e. one inheriting from \code{\link{amsr-class}}.}
+\item{x}{An \link{amsr=class} object.}
 
 \item{subset}{An expression indicating how to subset \code{x}.}
 
 \item{...}{Ignored.}
 }
 \value{
-An \code{amsr} object.
+An \linkS4class{amsr} object.
 }
 \description{
 This function is somewhat analogous to
-\code{\link{subset.data.frame}}, but only one independent variable may be
+\code{\link[=subset.data.frame]{subset.data.frame()}}, but only one independent variable may be
 used in \code{subset} in any call to the function, which means that
 repeated calls will be necessary to subset based on more than one
 independent variable (e.g. latitude and longitude).
