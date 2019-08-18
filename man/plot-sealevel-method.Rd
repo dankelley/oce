@@ -27,11 +27,11 @@ integral of the power spectrum.}
 horizontal axis, indicating whether to draw the time range in the top-left
 margin of the plot.}
 
-\item{mgp}{3-element numerical vector to use for \link{par}\code{("mgp")}, and also
-for \link{par}\code{("mar")}, computed from this.  The default is tighter than the R
+\item{mgp}{3-element numerical vector to use for \code{\link{par}}\code{("mgp")}, and also
+for \code{\link{par}}\code{("mar")}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \link{par}\code{("mar")}.}
+\item{mar}{value to be used with \code{\link{par}}\code{("mar")}.}
 
 \item{marginsAsImage}{boolean, \code{TRUE} to put a wide margin to the right
 of time-series plots, matching the space used up by a palette in an

@@ -208,11 +208,11 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 #' the diagram if the wind is from the east; in oceanographic convention, such an
 #' arrow indicates flow *to* the east.
 #'
-#' @param mgp Three-element numerical vector to use for [par]`(mgp)`, and also
-#' for [par]`(mar)`, computed from this.  The default is tighter than the R
+#' @param mgp Three-element numerical vector to use for [`par`]`(mgp)`, and also
+#' for [`par`]`(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #'
-#' @param mar Four-element numerical vector to be used with [par]`("mar")`.
+#' @param mar Four-element numerical vector to be used with [`par`]`("mar")`.
 #'
 #' @param col Optional list of colors to use.  If not set, the colors will be
 #' `c("red", "pink", "blue", "lightgray")`.  For the first three types of

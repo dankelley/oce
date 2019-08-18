@@ -76,7 +76,7 @@ longitudes without minus signs.}
 default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{Four-element numerical vector to be used with
-\link{par}\code{("mar")}.}
+\code{\link{par}}\code{("mar")}.}
 
 \item{debug}{Numerical value, with positive values indicating higher levels of
 debugging.}

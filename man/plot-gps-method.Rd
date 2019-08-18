@@ -65,7 +65,7 @@ ignored if either \code{xlim} or \code{ylim} is given.}
 for \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \link{par}\code{("mar")}.}
+\item{mar}{value to be used with \code{\link{par}}\code{("mar")}.}
 
 \item{bg}{optional color to be used for the background of the map.  This
 comes in handy for drawing insets (see \dQuote{details}).}

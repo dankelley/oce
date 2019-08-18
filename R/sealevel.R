@@ -412,11 +412,11 @@ as.sealevel <- function(elevation,
 #' horizontal axis, indicating whether to draw the time range in the top-left
 #' margin of the plot.
 #'
-#' @param mgp 3-element numerical vector to use for [par]`("mgp")`, and also
-#' for [par]`("mar")`, computed from this.  The default is tighter than the R
+#' @param mgp 3-element numerical vector to use for [`par`]`("mgp")`, and also
+#' for [`par`]`("mar")`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #'
-#' @param mar value to be used with [par]`("mar")`.
+#' @param mar value to be used with [`par`]`("mar")`.
 #'
 #' @param marginsAsImage boolean, `TRUE` to put a wide margin to the right
 #' of time-series plots, matching the space used up by a palette in an

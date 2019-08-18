@@ -38,7 +38,7 @@ Ignored if \code{sides=3}. Repeated to be of the same length as
 for \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{[par]("mar")}.}
+\item{mar}{value to be used with \code{[}par\code{]("mar")}.}
 
 \item{\dots}{optional arguments passed to plotting functions.}
 }

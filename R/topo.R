@@ -513,7 +513,7 @@ topoInterpolate <- function(longitude, latitude, topo)
 #' default, in order to use more space for the data and less for the axes.
 #'
 #' @param mar Four-element numerical vector to be used with
-#' [par]`("mar")`.
+#' [`par`]`("mar")`.
 #'
 #' @param debug Numerical value, with positive values indicating higher levels of
 #' debugging.

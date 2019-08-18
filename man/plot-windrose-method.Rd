@@ -24,11 +24,11 @@ rose.  In meteorological convection, an arrow emanates towards the right on
 the diagram if the wind is from the east; in oceanographic convention, such an
 arrow indicates flow \emph{to} the east.}
 
-\item{mgp}{Three-element numerical vector to use for \link{par}\code{(mgp)}, and also
-for \link{par}\code{(mar)}, computed from this.  The default is tighter than the R
+\item{mgp}{Three-element numerical vector to use for \code{\link{par}}\code{(mgp)}, and also
+for \code{\link{par}}\code{(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{Four-element numerical vector to be used with \link{par}\code{("mar")}.}
+\item{mar}{Four-element numerical vector to be used with \code{\link{par}}\code{("mar")}.}
 
 \item{col}{Optional list of colors to use.  If not set, the colors will be
 \code{c("red", "pink", "blue", "lightgray")}.  For the first three types of

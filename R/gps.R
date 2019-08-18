@@ -153,7 +153,7 @@ setMethod(f="[[<-",
 #' for `par(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #'
-#' @param mar value to be used with [par]`("mar")`.
+#' @param mar value to be used with [`par`]`("mar")`.
 #'
 #' @param bg optional color to be used for the background of the map.  This
 #' comes in handy for drawing insets (see \dQuote{details}).
