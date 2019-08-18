@@ -1,13 +1,18 @@
 #' Add an item to a processing log (in place)
 #'
-#' @param x An \code{oce} object.
+#' @param x An [oce-class] object.
+#'
 #' @param value A character string with the description of the logged activity.
+#'
 #' @examples
 #' data(ctd)
 #' processingLogShow(ctd)
 #' processingLog(ctd) <- "test"
 #' processingLogShow(ctd)
+#'
 #' @family things related to processing logs
+#'
+#' @md
 "processingLog<-" <- function(x, value)
 {
     if (inherits(x, "oce")) {
@@ -24,15 +29,20 @@
 }
 
 
-
 #' Append an item to a processing log
-#' @return An \code{\link{list}} containing items named
-#' \code{time} and \code{value}, i.e. the times of entries
+#'
+#' @return An [list()] containing items named
+#' `time` and `value`, i.e. the times of entries
 #' and the text notations of those entries..
-#' @param h either the \code{processingLog} slot of an object, or
-#' an \code{oce} object from which the processingLog will be extracted
+#'
+#' @param h either the `processingLog` slot of an object, or
+#' an `oce` object from which the processingLog will be extracted
+#'
 #' @param value A string indicating the text of the log entry.
+#'
 #' @family things related to processing logs
+#'
+#' @md
 processingLogAppend <- function(h, value="")
 {
     if (inherits(h, "oce"))
@@ -51,23 +61,31 @@ processingLogAppend <- function(h, value="")
 #' Create an item that can be inserted into a processing log
 #'
 #' A function is used internally to initialize processing logs.
-#' Users will probably prefer to use \code{\link{processingLogAppend}}
+#' Users will probably prefer to use [processingLogAppend()]
 #' instead.
 #'
-#' @param value A string that will be used for the item.k
-#' @return A \code{\link{list}} containing \code{time}, which is
-#' the time in UTC (calculated with \code{\link{presentTime}})
+#' @param value A string that will be used for the item.
+#'
+#' @return A [list()] containing `time`, which is
+#' the time in UTC (calculated with [presentTime()])
 #' at the moment the function is called and
-#' \code{value}, a string that is set to the argument of the same name.
+#' `value`, a string that is set to the argument of the same name.
+#'
 #' @family things related to processing logs
+#'
+#' @md
 processingLogItem <- function(value="")
 {
     list(time=c(presentTime()), value=value)
 }
 
-#' Show the processing log of an \code{oce} object
-#' @param x An \code{oce} object.
+#' Show the processing log of an oce object
+#'
+#' @param x An [oce-class] object.
+#'
 #' @family things related to processing logs
+#'
+#' @md
 processingLogShow <- function(x)
 {
     cat("* Processing Log\n")

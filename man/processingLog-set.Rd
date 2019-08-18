@@ -7,7 +7,7 @@
 processingLog(x) <- value
 }
 \arguments{
-\item{x}{An \code{oce} object.}
+\item{x}{An \linkS4class{oce} object.}
 
 \item{value}{A character string with the description of the logged activity.}
 }
@@ -19,6 +19,7 @@ data(ctd)
 processingLogShow(ctd)
 processingLog(ctd) <- "test"
 processingLogShow(ctd)
+
 }
 \seealso{
 Other things related to processing logs: \code{\link{processingLogAppend}},
