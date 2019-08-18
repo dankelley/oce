@@ -11,12 +11,12 @@ defaultFlags(object)
 }
 \value{
 A vector of one or more flag values, or \code{NULL} if \code{object}
-\code{metadata} slot lacks a \code{flagScheme} (as set by \code{\link{initializeFlagScheme}}),
+\code{metadata} slot lacks a \code{flagScheme} as set by \code{\link[=initializeFlagScheme]{initializeFlagScheme()}},
 or if it has a scheme that is not in the list provide in \dQuote{Description}.
 }
 \description{
 \code{defaultFlags} tries to suggest a reasonable default \code{flag} scheme
-for use by \code{\link{handleFlags}}. It does this by looking for an item
+for use by \code{\link[=handleFlags]{handleFlags()}}. It does this by looking for an item
 named \code{flagScheme} in the \code{metadata} slot of \code{object}.
 If \code{flagScheme} is found, and if the scheme is recognized, then a numeric
 vector is returned that indicates bad or questionable data. If

@@ -8,7 +8,7 @@
 \S4method{summary}{ctd}(object, ...)
 }
 \arguments{
-\item{object}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{object}{A \code{ctd} object, i.e. one inheriting from the \linkS4class{ctd} class.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }

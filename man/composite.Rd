@@ -7,13 +7,13 @@
 composite(object, ...)
 }
 \arguments{
-\item{object}{Either a \code{\link{list}} of \link{oce-class} objects, in
-which case this is the only argument, or a single \link{oce-class} object,
+\item{object}{Either a \link{list} of \linkS4class{oce}-class objects, in
+which case this is the only argument, or a single \linkS4class{oce}-class object,
 in which case at least one other argument (an object of the same size)
 must be supplied.}
 
 \item{...}{Ignored, if \code{object} is a list. Otherwise, one or more
-\link{oce-class} objects of the same sub-class as the first argument.}
+\linkS4class{oce} objects of the same sub-class as the first argument.}
 }
 \description{
 Items within the \code{data} slots of the

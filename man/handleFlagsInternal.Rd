@@ -7,7 +7,7 @@
 handleFlagsInternal(object, flags, actions, where, debug = 0)
 }
 \arguments{
-\item{object}{An object of \linkS4class{oce}.}
+\item{object}{An object of \linkS4class{oce} class.}
 
 \item{flags}{A named \link{list} of numeric values.}
 

@@ -13,9 +13,9 @@ object, if desired.
 
 \describe{
 \item{\code{metadata}}{A list containing information about the data. The
-contents vary across sub-classes, e.g. an \code{\link{adp-class}}
+contents vary across sub-classes, e.g. an \linkS4class{adp}
 object has information about beam patterns, which obviously would
-not make sense for a \code{\link{ctd-class}} object In addition,
+not make sense for a \linkS4class{ctd} object In addition,
 all classes have items named \code{units} and \code{flags}, used
 to store information on the units of the data, and the data quality.}
 

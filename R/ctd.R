@@ -415,13 +415,13 @@ setMethod(f="initialize",
 
 #' Summarize a CTD Object
 #'
-#' Summarizes some of the data in a \code{ctd} object, presenting such information
+#' Summarizes some of the data in a `ctd` object, presenting such information
 #' as the station name, sampling location, data ranges, etc. If the object was read
-#' from a \code{.cnv} file or a \code{.rsk} file, then the \code{OriginalName}
+#' from a `.cnv` file or a `.rsk` file, then the `OriginalName`
 #' column for the data summary will contain the original names of data within
 #' the source file.
 #'
-#' @param object A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#' @param object A `ctd` object, i.e. one inheriting from the [ctd-class] class.
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
@@ -433,6 +433,8 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to ctd data
+#'
+#' @md
 setMethod(f="summary",
           signature="ctd",
           definition=function(object, ...) {

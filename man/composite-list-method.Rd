@@ -8,15 +8,15 @@
 \S4method{composite}{list}(object)
 }
 \arguments{
-\item{object}{A \code{\link{list}} of \link{oce-class} objects.}
+\item{object}{A \link{list} of \linkS4class{oce}-class objects.}
 }
 \description{
 This is done
 by calling a specialized version of the function defined in the given
 class. In the present
-version, the objects must inherit from \link{amsr-class}, so the
+version, the objects must inherit from \linkS4class{amsr}, so the
 action is to call
-\code{\link{composite,amsr-method}}.
+\code{\link[=composite,amsr-method]{composite,amsr-method()}}.
 
 Items within the \code{data} slots of the
 objects that are supplied as arguments are averaged in a way that

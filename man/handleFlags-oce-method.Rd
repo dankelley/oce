@@ -9,7 +9,7 @@
   where = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{object}{An object of \link{oce-class}.}
+\item{object}{An object of \linkS4class{oce} class.}
 
 \item{flags}{A \code{\link{list}} specifying flag values upon which
 actions will be taken. This can take two forms. In the first, the

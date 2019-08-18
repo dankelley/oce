@@ -2,14 +2,16 @@
 #'
 #' @param tz String indicating the desired timezone. The default is
 #' to use UTC, which is used very commonly in oceanographic work. To
-#' get the local time, use \code{tz=""} or \code{tz=NULL},
+#' get the local time, use `tz=""` or `tz=NULL`,
 #'
 #' @examples
 #' presentTime() # UTC
 #' presentTime("") # the local timezone
 #'
-#' @return A \code{\link{POSIXct}} object holding the present time, in the
+#' @return A [POSIXct()]-style object holding the present time, in the
 #' indicated timezone.
+#'
+#' @md
 ## NOTE: we need to define this here so setClass() knows about it;
 ## NOTE: having it in NAMESPACE is not sufficient.
 presentTime <- function(tz="UTC")
@@ -24,16 +26,18 @@ presentTime <- function(tz="UTC")
 #' Base Class for oce Objects
 #'
 #' This is mainly used within oce to create sub-classes, although
-#' users can use \code{new("oce")} to create a blank \code{oce}
+#' users can use `new("oce")` to create a blank `oce`
 #' object, if desired.
 #'
 #' @slot metadata A list containing information about the data. The
-#' contents vary across sub-classes, e.g. an \code{\link{adp-class}}
+#' contents vary across sub-classes, e.g. an [adp-class]
 #' object has information about beam patterns, which obviously would
-#' not make sense for a \code{\link{ctd-class}} object In addition,
-#' all classes have items named \code{units} and \code{flags}, used
+#' not make sense for a [ctd-class] object In addition,
+#' all classes have items named `units` and `flags`, used
 #' to store information on the units of the data, and the data quality.
+#'
 #' @slot data A list containing the data.
+#'
 #' @slot processingLog A list containing time-stamped processing steps,
 #' typically stored in the object by oce functions.
 #'
@@ -41,6 +45,8 @@ presentTime <- function(tz="UTC")
 #' str(new("oce"))
 #'
 #' @family classes provided by oce
+#'
+#' @md
 setClass("oce",
          representation(metadata="list",
                         data="list",
@@ -53,25 +59,28 @@ setClass("oce",
 #' Summarize an oce Object
 #'
 #' Provide a textual summary of some pertinent aspects of the object, including
-#' selected components of its \code{metadata} slot, statistical and
-#' dimensional information on the entries in the \code{data} slot,
-#' and a listing of the contents of its \code{processingLog} slot.
+#' selected components of its `metadata` slot, statistical and
+#' dimensional information on the entries in the `data` slot,
+#' and a listing of the contents of its `processingLog` slot.
 #' The details depend on the class of the object, especially for
-#' the \code{metadata} slot, so it can help to consult the specialized
-#' documentation, e.g. \code{\link{summary,ctd-method}} for CTD objects
-#' (i.e. objects inheriting from \code{\link{ctd-class}}.)
+#' the `metadata` slot, so it can help to consult the specialized
+#' documentation, e.g. [summary,ctd-method] for CTD objects
+#' (i.e. objects inheriting from the [ctd-class] class.)
 #' It is important to note that this is not
 #' a good way to learn the details of the object contents. Instead,
-#' for an object named \code{object}, say, one might use \code{\link{str}(object)}
-#' to learn about all the contents, or \code{\link{str}(object[["metadata"]])}
-#' to learn about the \code{metadata}, etc.
+#' for an object named `object`, say, one might use `str(object)`
+#' to learn about all the contents, or `str(object[["metadata"]])`
+#' to learn about the `metadata`, etc.
 #'
 #' @param object The object to be summarized.
+#'
 #' @param ... Extra arguments (ignored)
 #'
 #' @examples
 #' o <- new("oce")
 #' summary(o)
+#'
+#' @md
 setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {
@@ -271,18 +280,21 @@ setClass("satellite", contains="oce") # both amsr and landsat stem from this
 #' Plot an oce Object
 #'
 #' @description
-#' This creates a \code{\link{pairs}} plot of the elements in the \code{data}
+#' This creates a [pairs()] plot of the elements in the `data`
 #' slot, if there are more than 2 elements there, or a simple xy plot if 2
 #' elements, or a histogram if 1 element.
 #'
-#' @param x An object of \link{oce-class},
+#' @param x An object of the [oce-class] class,
 #' but not from any subclass of that (because these subclasses go to the subclass
-#' plot methods, e.g. a \code{\link{ctd-class}} object would go to
-#' \code{\link{plot,ctd-method}}.
-#' @param y Ignored; only present here because S4 object for generic \code{plot}
-#' need to have a second parameter before the \code{...} parameter.
-#' @param ... Passed to \code{\link{hist}}, \code{\link{plot}}, or to
-#' \code{\link{pairs}}, according to whichever does the plotting.
+#' plot methods, e.g. a [ctd-class]-class object would go to
+#' [plot,ctd-method].
+#'
+#' @param y Ignored; only present here because S4 object for generic `plot`
+#' need to have a second parameter before the `...` parameter.
+#'
+#' @param ... Passed to [hist()], [plot()], or to
+#' [pairs()], according to whichever does the plotting.
+#'
 #' @examples
 #' library(oce)
 #' o <- new("oce")
@@ -291,6 +303,8 @@ setClass("satellite", contains="oce") # both amsr and landsat stem from this
 #' o <- oceSetData(o, 'z', rnorm(10))
 #' plot(o)
 #' @aliases plot.oce
+#'
+#' @md
 setMethod(f="plot",
           signature="oce",
           definition=function(x, y, ...) {
@@ -309,13 +323,17 @@ setMethod(f="plot",
 #'
 #' @description
 #' This is a basic class for general oce objects.  It has specialised
-#' versions for most sub-classes, e.g. \code{\link{subset,ctd-method}}
-#' for \code{ctd} objects.
+#' versions for most sub-classes, e.g. [subset,ctd-method()]
+#' for `ctd` objects.
 #'
 #' @param x an oce object
+#'
 #' @param subset a logical expression indicating how to take the subset; the form depends on the sub-class.
-#' @param ... optional arguments, used in some specialized methods (e.g. \code{\link{subset,section-method}}).
+#'
+#' @param ... optional arguments, used in some specialized methods, e.g. [subset,section-method()].
+#'
 #' @return An oce object.
+#'
 #' @examples
 #' library(oce)
 #' data(ctd)
@@ -325,6 +343,8 @@ setMethod(f="plot",
 #' plotProfile(ctd)
 #' plotProfile(top10)
 #' @family functions that subset oce objects
+#'
+#' @md
 setMethod(f="subset",
           signature="oce",
           definition=function(x, subset, ...) {
@@ -347,36 +367,38 @@ setMethod(f="subset",
 #'
 ## @description
 ## The named item is sought first in
-## \code{metadata}, where an exact match to the name is required. If
-## it is not present in the \code{metadata} slot, then a partial-name
-## match is sought in the \code{data} slot. Failing both
+## `metadata`, where an exact match to the name is required. If
+## it is not present in the `metadata` slot, then a partial-name
+## match is sought in the `data` slot. Failing both
 ## tests, an exact-name match is sought in a field named
-## \code{dataNamesOriginal} in the object's \code{metadata}
-## slot, if that field exists. Failing that, \code{NULL} is returned.
+## `dataNamesOriginal` in the object's `metadata`
+## slot, if that field exists. Failing that, `NULL` is returned.
 ##
-## The full contents of the \code{metadata} slot of an object named
-## \code{x} are returned with \code{x[["metadata"]]}, and
-## \code{x[["data"]]} does the same thing for the data slot.
+## The full contents of the `metadata` slot of an object named
+## `x` are returned with `x[["metadata"]]`, and
+## `x[["data"]]` does the same thing for the data slot.
 ## Even if the full contents are not needed, this
 ## scheme can be useful in circumventing the searching scheme described
-## in the previous paragraph, e.g. \code{x[["data"]]$longitude}
-## might be used to select longitude from the data slot of \code{x},
-## as an alternative to \code{\link{oceGetData}(x,"longitude")}.
+## in the previous paragraph, e.g. `x[["data"]]$longitude`
+## might be used to select longitude from the data slot of `x`,
+## as an alternative to `oceGetData`(x,"longitude")`.
 ##
 ## To get information on the specialized variants of this function,
-## type e.g. \code{?"[[,adv-method"} for information on extracting
-## data from an object of \code{\link{adv-class}}.
+## type e.g. `?"[[,adv-method"` for information on extracting
+## data from an object of [adv-class].
 #'
 #' @template sub_subTemplate
 #'
 #' @param x An oce object
 ## @param i The item to extract.
-## @param j Optional additional information on the \code{i} item.
+## @param j Optional additional information on the `i` item.
 ## @param ... Optional additional information (ignored).
 #'
 #' @seealso
-#' Many \code{oce} object classes have specialized versions
-#' of \code{[[} that handle the details in specialized way.
+#' Many `oce` object classes have specialized versions
+#' of `[[` that handle the details in specialized way.
+#'
+#' @md
 setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -446,8 +468,12 @@ setMethod(f="[[",
 
 
 #' @title Replace Parts of an Oce Object
-#' @param x An object of \link{oce-class}.
+#'
+#' @param x An object of the [oce-class] class.
+#'
 #' @template sub_subsetTemplate
+#'
+#' @md
 setMethod(f="[[<-",
           signature(x="oce", i="ANY", j="ANY"),
           function(x, i, j, ..., value) {
@@ -555,13 +581,17 @@ setMethod(f="show",
           })
 
 #' @title Create a composite object by averaging across good data
-#' @param object Either a \code{\link{list}} of \link{oce-class} objects, in
-#' which case this is the only argument, or a single \link{oce-class} object,
+#'
+#' @param object Either a [list] of [oce-class]-class objects, in
+#' which case this is the only argument, or a single [oce-class]-class object,
 #' in which case at least one other argument (an object of the same size)
 #' must be supplied.
-#' @param ... Ignored, if \code{object} is a list. Otherwise, one or more
-#' \link{oce-class} objects of the same sub-class as the first argument.
+#'
+#' @param ... Ignored, if `object` is a list. Otherwise, one or more
+#' [oce-class] objects of the same sub-class as the first argument.
+#'
 #' @template compositeTemplate
+#' @md
 setGeneric("composite",
            function(object, ...) {
                standardGeneric("composite")
@@ -573,11 +603,15 @@ setGeneric("composite",
 #' This is done
 #' by calling a specialized version of the function defined in the given
 #' class. In the present
-#' version, the objects must inherit from \link{amsr-class}, so the
+#' version, the objects must inherit from [amsr-class], so the
 #' action is to call
-#' \code{\link{composite,amsr-method}}.
-#' @param object A \code{\link{list}} of \link{oce-class} objects.
+#' [composite,amsr-method()].
+#'
+#' @param object A [list] of [oce-class]-class objects.
+#'
 #' @template compositeTemplate
+#'
+#' @md
 setMethod("composite",
           c(object="list"),
           function(object) {
@@ -596,19 +630,25 @@ setMethod("composite",
 #'
 #' @details
 #' Each specialized variant of this function has its own defaults
-#' for \code{flags} and \code{actions}.
-#' @param object An object of \link{oce-class}.
+#' for `flags` and `actions`.
+#'
+#' @param object An object of [oce-class] class.
+#'
 #' @template handleFlagsTemplate
+#'
+#' @md
 setGeneric("handleFlags", function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
            standardGeneric("handleFlags")
          })
 
 #' Signal erroneous application to non-oce objects
-#' @param object A vector, which cannot be the case for \code{oce} objects.
+#' @param object A vector, which cannot be the case for `oce` objects.
 #' @param flags Ignored.
 #' @param actions Ignored.
 #' @param where Ignored.
 #' @param debug Ignored.
+#'
+#' @md
 setMethod("handleFlags", signature=c(object="vector", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
           definition=function(object, flags=list(), actions=list(), where=list(), debug=getOption("oceDebug")) {
               stop("handleFlags() can only be applied to objects inheriting from \"oce\"")
@@ -617,10 +657,14 @@ setMethod("handleFlags", signature=c(object="vector", flags="ANY", actions="ANY"
 #' Handle flags in oce objects
 #'
 #' @details
+#
 #' Base-level handling of flags.
-#' @param object An object of \link{oce-class}.
+#
+#' @param object An object of [oce-class] class.
 #
 #' @template handleFlagsTemplate
+#'
+#' @md
 setMethod("handleFlags", signature=c(object="oce", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
           definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
@@ -648,7 +692,7 @@ setMethod("handleFlags", signature=c(object="oce", flags="ANY", actions="ANY", w
 #' `ctd` objects, [handleFlags,adp-method] for `adp` objects,
 #' etc.
 #'
-#' @param object An object of [oce-class].
+#' @param object An object of [oce-class] class.
 #'
 #' @param flags A named [list] of numeric values.
 #'
@@ -670,8 +714,9 @@ setMethod("handleFlags", signature=c(object="oce", flags="ANY", actions="ANY", w
 #' steps in processing.
 #'
 #' @return A copy of `object`, possibly with modifications to its
-#' \code{data} slot, if `object` contains flag values that have
+#' `data` slot, if `object` contains flag values that have
 #' actions that alter the data.
+#'
 #' @md
 handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
     oceDebug(debug, "handleFlagsInternal() {\n", sep="", unindent=1)
@@ -800,42 +845,44 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
 
 #' Suggest a default flag vector for bad or suspicious data
 #'
-#' \code{defaultFlags} tries to suggest a reasonable default \code{flag} scheme
-#' for use by \code{\link{handleFlags}}. It does this by looking for an item
-#' named \code{flagScheme} in the \code{metadata} slot of \code{object}.
-#' If \code{flagScheme} is found, and if the scheme is recognized, then a numeric
+#' `defaultFlags` tries to suggest a reasonable default `flag` scheme
+#' for use by [handleFlags()]. It does this by looking for an item
+#' named `flagScheme` in the `metadata` slot of `object`.
+#' If `flagScheme` is found, and if the scheme is recognized, then a numeric
 #' vector is returned that indicates bad or questionable data. If
-#' \code{flagScheme$default} exists, then that scheme is returned. However,
-#' if that does not exist, and if \code{flagScheme$name} is recognized,
+#' `flagScheme$default` exists, then that scheme is returned. However,
+#' if that does not exist, and if `flagScheme$name` is recognized,
 #' then a pre-defined (very conservative) scheme is used,
 #' as listed below.
 #'
 #'\itemize{
 #'
-#' \item for \code{argo}, the default is
-#' \code{c(0,2,3,4,7,8,9)}, i.e. all flags except \code{passed_all_tests}.
+#' \item for `argo`, the default is
+#' `c(0,2,3,4,7,8,9)`, i.e. all flags except `passed_all_tests`.
 #'
-#' \item for \code{BODC}, the default is
-#' \code{c(0,2,3,4,5,6,7,8,9)}, i.e. all flags except \code{good}.
+#' \item for `BODC`, the default is
+#' `c(0,2,3,4,5,6,7,8,9)`, i.e. all flags except `good`.
 #'
-#' \item for \code{DFO}, the default is
-#' \code{c(0,2,3,4,5,8,9)}, i.e. all flags except \code{appears_correct}.
+#' \item for `DFO`, the default is
+#' `c(0,2,3,4,5,8,9)`, i.e. all flags except `appears_correct`.
 #'
-#' \item for \code{WHP bottle}, the default is
-#' \code{c(1,3,4,5,6,7,8,9)}, i.e. all flags except \code{no_problems_noted}.
+#' \item for `WHP bottle`, the default is
+#' `c(1,3,4,5,6,7,8,9)`, i.e. all flags except `no_problems_noted`.
 #'
-#' \item for \code{WHP ctd}, the default is
-#' \code{c(1,3,4,5,6,7,9)}, i.e. all flags except \code{acceptable}.
+#' \item for `WHP ctd`, the default is
+#' `c(1,3,4,5,6,7,9)`, i.e. all flags except `acceptable`.
 #'
 #'}
 #'
 #' @param object An oce object
 #'
-#' @return A vector of one or more flag values, or \code{NULL} if \code{object}
-#' \code{metadata} slot lacks a \code{flagScheme} (as set by \code{\link{initializeFlagScheme}}),
+#' @return A vector of one or more flag values, or `NULL` if `object`
+#' `metadata` slot lacks a `flagScheme` as set by [initializeFlagScheme()],
 #' or if it has a scheme that is not in the list provide in \dQuote{Description}.
 #'
 #' @family functions relating to data-quality flags
+#'
+#' @md
 defaultFlags <- function(object)
 {
     if (is.null(object@metadata$flagScheme))
@@ -864,6 +911,8 @@ defaultFlags <- function(object)
 #' @templateVar class oce
 #' @templateVar note This generic function is overridden by specialized functions for some object classes.
 #' @template setFlagsTemplate
+#'
+#' @md
 setGeneric("setFlags", function(object, name=NULL, i=NULL, value=NULL, debug=0) {
            standardGeneric("setFlags")
          })
@@ -872,6 +921,8 @@ setGeneric("setFlags", function(object, name=NULL, i=NULL, value=NULL, debug=0) 
 #' @templateVar class oce
 #' @templateVar note This generic function is overridden by specialized functions for some object classes.
 #' @template setFlagsTemplate
+#'
+#' @md
 setMethod("setFlags",
           signature=c(object="oce", name="ANY", i="ANY", value="ANY", debug="ANY"),
           definition=function(object, name=NULL, i=NULL, value=NULL, debug=getOption("oceDebug")) {
@@ -944,12 +995,16 @@ setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, debug=getOpt
 
 #' @templateVar class oce
 #' @template initializeFlagsTemplate
+#'
+#' @md
 setGeneric("initializeFlags", function(object, name=NULL, value=NULL, debug=0) {
            standardGeneric("initializeFlags")
          })
 
 #' @templateVar class oce
 #' @template initializeFlagsTemplate
+#'
+#' @md
 setMethod("initializeFlags",
           signature=c(object="oce", name="ANY", value="ANY", debug="ANY"),
           definition=function(object, name, value, debug=getOption("oceDebug")) {
@@ -959,6 +1014,8 @@ setMethod("initializeFlags",
 #' @templateVar class oce
 #' @templateVar details This is a low-level internal function used by user-accessible functions.
 #' @template initializeFlagsTemplate
+#'
+#' @md
 initializeFlagsInternal <- function(object, name=NULL, value=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "initializeFlagsInternal(object, name=\"", name, "\", value, debug=", debug, ") {", sep="", unindent=1)
@@ -1003,15 +1060,23 @@ initializeFlagsInternal <- function(object, name=NULL, value=NULL, debug=getOpti
 
 
 #' @templateVar class oce
-#' @templateVar details There are no pre-defined \code{scheme}s for this object class.
+#'
+#' @templateVar details There are no pre-defined `scheme`s for this object class.
+#'
 #' @template initializeFlagSchemeTemplate
+#'
+#' @md
 setGeneric("initializeFlagScheme", function(object, name=NULL, mapping=NULL, default=NULL, debug=0) {
            standardGeneric("initializeFlagScheme")
          })
 
 #' @templateVar class oce
-#' @templateVar details There are no pre-defined \code{scheme}s for this object class.
+#'
+#' @templateVar details There are no pre-defined `scheme`s for this object class.
+#'
 #' @template initializeFlagSchemeTemplate
+#'
+#' @md
 setMethod("initializeFlagScheme",
           signature=c(object="oce", name="ANY", mapping="ANY", default="ANY", debug="ANY"),
           definition=function(object, name, mapping, default, debug) {
@@ -1021,6 +1086,8 @@ setMethod("initializeFlagScheme",
 #' @templateVar class oce
 #' @templateVar details This is a low-level internal function used by user-accessible functions.
 #' @template initializeFlagSchemeTemplate
+#'
+#' @md
 initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, default=NULL, debug=0)
 {
     oceDebug(debug, "initializeFlagSchemeInternal(object, name=\"", name, "\", debug=", debug, ") {", sep="", unindent=1)
@@ -1087,10 +1154,16 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, defaul
 }
 
 #' Concatenate oce objects
-#' @param object An object of \link{oce-class}.
-#' @param ... Optional additional objects of \link{oce-class}.
-#' @return An object of class corresponding to that of \code{object}.
+#'
+#' @param object An object of [oce-class] class.
+#'
+#' @param ... Optional additional objects of [oce-class] class.
+#'
+#' @return An object of class corresponding to that of `object`.
+#'
 #' @family functions that concatenate oce objects.
+#'
+#' @md
 setGeneric("concatenate",
            function(object, ...) {
                standardGeneric("concatenate")
@@ -1101,6 +1174,8 @@ setGeneric("concatenate",
 #' @templateVar class oce
 #'
 #' @template concatenateTemplate
+#'
+#' @md
 setMethod("concatenate",
           signature="oce",
           definition=function(object, ...) {
@@ -1179,9 +1254,14 @@ setMethod("concatenate",
           })
 
 #' Concatenate a list of oce objects
-#' @param object A list holding objects of \link{oce-class}.
-#' @return An object of class corresponding to that in \code{object}.
-#' @family functions that concatenate oce objects.
+#'
+#' @param object A list holding objects of the [oce-class] class.
+#'
+#' @return An object of class corresponding to that in `object`.
+#'
+#' @family functions that concatenate [oce] objects.
+#'
+#' @md
 setMethod("concatenate",
           c(object="list"),
           function(object) {
