@@ -8,14 +8,13 @@
 \S4method{summary}{landsat}(object, ...)
 }
 \arguments{
-\item{object}{An object of \code{\link{landsat-class}}, usually a result of a
-call to \code{\link{read.landsat}}.}
+\item{object}{A \linkS4class{landsat} object.}
 
 \item{...}{Ignored.}
 }
 \description{
 Provides a summary of a some information about an object of
-\code{\link{landsat-class}}.
+\code{\link[=landsat-class]{landsat-class()}}.
 }
 \seealso{
 Other things related to landsat data: \code{\link{[[,landsat-method}},

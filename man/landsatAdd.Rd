@@ -7,7 +7,7 @@
 landsatAdd(x, data, name, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.}
+\item{x}{A \linkS4class{landsat} object.}
 
 \item{data}{A matrix of data, with dimensions matching that of entries already in \code{x}.}
 
@@ -19,16 +19,16 @@ from the present function.}
 information, or a higher value for more debugging.}
 }
 \value{
-An object of \code{\link{landsat-class}}, with a new data band.
+A \linkS4class{landsat} object, with a new data band.
 }
 \description{
-Add a band to an object of \code{\link{landsat-class}}. Note that
+Add a band to an object of \code{\link[=landsat-class]{landsat-class()}}. Note that
 it will be stored in numeric form, not raw form, and therefore
 it will require much more storage than data read with
-\code{\link{read.landsat}}.
+\code{\link[=read.landsat]{read.landsat()}}.
 }
 \seealso{
-The documentation for \code{\link{landsat-class}} explains the
+The documentation for \code{\link[=landsat-class]{landsat-class()}} explains the
 structure of landsat objects, and also outlines the other functions dealing
 with them.
 

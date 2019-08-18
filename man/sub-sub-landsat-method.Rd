@@ -8,7 +8,7 @@
 \S4method{[[}{landsat}(x, i, j, ...)
 }
 \arguments{
-\item{x}{An landsat object, i.e. one inheriting from \code{\link{landsat-class}}.}
+\item{x}{A \linkS4class{landsat} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
@@ -98,26 +98,26 @@ by using the \code{[[} operator.
 
 \emph{Accessing band data.}  The data may be accessed with e.g.
 \code{landsat[["panchromatic"]]}, for the panchromatic band.  If a new
-``band'' is added with \code{\link{landsatAdd}}, it may be referred by
+``band'' is added with \code{\link[=landsatAdd]{landsatAdd()}}, it may be referred by
 name.  In all cases, a second argument can be provided, to govern
 decimation.  If this is missing, all the relevant data are returned.  If
 this is present and equal to \code{TRUE}, then the data will be
 automatically decimated (subsampled) to give approximately 800 elements in
 the longest side of the matrix.  If this is present and numerical, then its
 value governs decimation.  For example,
-\code{landsat[["panchromatic",TRUE]]} will auto-decimate, typically
+`landsat[\link{"panchromatic",TRUE}]` will auto-decimate, typically
 reducing the grid width and height from 16000 to about 800.  Similarly,
-\code{landsat[["panchromatic",10]]} will reduce width and height to about
+`landsat[\link{"panchromatic",10}]` will reduce width and height to about
 1600.  On machines with limited RAM (e.g. under about 6GB), decimation is a
 good idea in almost all processing steps.  It also makes sense for
-plotting, and in fact is done through the \code{decimate} argument of
-\code{\link{plot,landsat-method}}.
+plotting, and in fact is done through the `decimate` argument of
+\code{\link[=plot,landsat-method]{plot,landsat-method()}}.
 
 \emph{Accessing derived data.}  One may retrieve several derived quantities
 that are calculated from data stored in the object:
 \code{landsat[["longitude"]]} and \code{landsat[["latitude"]]} give pixel
 locations.  Accessing \code{landsat[["temperature"]]} creates an estimate
-of ground temperature as follows (see [4]).  First, the ``count value'' in
+of ground temperature as follows (see \link{4}).  First, the ``count value'' in
 band 10, denoted \eqn{b_{10}}{b_10} say, is scaled with coefficients stored
 in the image metadata using
 \eqn{\lambda_L=b_{10}M_L+A_L}{lambda_L=b_10*M_L+A_L} where \eqn{M_L}{M_L}
@@ -127,23 +127,23 @@ used, again with coefficients in the metadata, to compute Celcius
 temperature \eqn{T=K_2/ln(\epsilon
     K_1/\lambda_L+1)-273.15}{T=K_2/ln(epsilon*K_1/\lambda_L+1)-273.15}.
 The value of the emissivity \eqn{\epsilon}{epsilon} is set to unity by
-\code{\link{read.landsat}}, although it can be changed easily later, by
-assigning a new value to \code{landsat@metadata$emissivity}. The default
-emissivity value set by \code{\link{read.landsat}} is from [11], and is
-within the oceanic range suggested by [5]. Adjustment is as simple as
-altering \code{landsat@metadata$emissivity}. This value can be a single
+\code{\link[=read.landsat]{read.landsat()}}, although it can be changed easily later, by
+assigning a new value to `landsat@metadata$emissivity`. The default
+emissivity value set by \code{\link[=read.landsat]{read.landsat()}} is from \link{11}, and is
+within the oceanic range suggested by \link{5}. Adjustment is as simple as
+altering `landsat@metadata$emissivity`. This value can be a single
 number meant to apply for the whole image, or a matrix with dimensions
 matching those of band 10.  The matrix case is probably more useful for
 images of land, where one might wish to account for the different
-emissivities of soil and vegetation, etc.; for example, Table 4 of [9]
-lists 0.9668 for soil and 0.9863 for vegetation, while Table 5 of [10]
+emissivities of soil and vegetation, etc.; for example, Table 4 of \link{9}
+lists 0.9668 for soil and 0.9863 for vegetation, while Table 5 of \link{10}
 lists 0.971 and 0.987 for the same quantities.
 
 \emph{Accessing metadata.} Anything in the metadata can be accessed by
 name, e.g. \code{landsat[["time"]]}.  Note that some items are simply
 copied over from the source data file and are not altered by e.g.
 decimation.  An exception is the lat-lon box, which is altered by
-\code{\link{landsatTrim}}.
+\code{\link[=landsatTrim]{landsatTrim()}}.
 }
 
 \seealso{

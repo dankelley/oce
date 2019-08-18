@@ -8,7 +8,7 @@
 \S4method{[[}{landsat}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{A \code{landsat} object, i.e. one inheriting from \code{\link{landsat-class}}.}
+\item{x}{A \linkS4class{landsat} object.}
 
 \item{i}{The item to replace.}
 

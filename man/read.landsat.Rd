@@ -12,7 +12,7 @@ read.landsat(file, band = "all", emissivity = 0.984, decimate,
 load.  This is a directory name containing the data.}
 
 \item{band}{The bands to be read, by default all of the bands.  Use
-`band=NULL` to skip the reading of bands, instead reading only the
+\code{band=NULL} to skip the reading of bands, instead reading only the
 image metadata, which is often enough to check if the image is of
 interest in a given study. See \sQuote{Details} for the names of the
 bands, some of which are pseudo-bands, computed from the actual data.}
@@ -21,7 +21,7 @@ bands, some of which are pseudo-bands, computed from the actual data.}
 \code{emissivity} in the \code{metadata} slot of the
 resultant object. This is used in the
 calculation of surface temperature, as explained in the discussion of
-accessor functions for \code{\link{landsat-class}}. The default value is
+accessor functions for \code{\link[=landsat-class]{landsat-class()}}. The default value is
 from Konda et al.  (1994). These authors suggest an uncertainty of 0.04,
 but a wider range of values can be found in the literature.  The value of
 \code{metadata$emissivity} is easy to alter, either as a single value or
@@ -32,13 +32,13 @@ the data should be subsampled after reading and before storage. Setting
 this to 10 can speed up reading by a factor of 3 or more, but higher values
 have diminishing effect.  In exploratory work, it is useful to set
 \code{decimate=10}, to plot the image to determine a subregion
-of interest, and then to use \code{\link{landsatTrim}} to trim the image.}
+of interest, and then to use \code{\link[=landsatTrim]{landsatTrim()}} to trim the image.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
 }
 \value{
-An object of \code{\link{landsat-class}}, with the conventional Oce
+A \linkS4class{landsat} object, with the conventional Oce
 slots \code{metadata}, \code{data} and \code{processingLog}.  The
 \code{metadata} is mainly intended for use by Oce functions, but for generality
 it also contains an entry named \code{header} that represents the full image
@@ -47,8 +47,8 @@ matrices of the data in the requested bands, and users may add extra matrices
 if desired, e.g. to store calculated quantities.
 }
 \description{
-Read a landsat data file, producing an object of \code{\link{landsat-class}}.
-The actual reading is done with \link[tiff]{readTIFF} in the
+Read a landsat data file, producing an object of \linkS4class{landsat}.
+The actual reading is done with \code{\link[tiff:readTIFF]{tiff::readTIFF()}} in the
 \CRANpkg{tiff} package, so that package must be installed for
 \code{read.landsat} to work.
 }
@@ -81,28 +81,30 @@ For Landsat 4 and 5, the bands similar to Landsat 7 but without
 
 Landsat data files (directories, really) are large, accounting for
 approximately 1 gigabyte each.  The storage of the Oce object is
-similar (see \code{\link{landsat-class}}).  In R, many operations involving
+similar (see \code{\link[=landsat-class]{landsat-class()}}).  In R, many operations involving
 copying data, so that dealing with full-scale landsat images can overwhelm
 computers with storage under 8GB.  For this reason, it is typical to read just
 the bands that are of interest.  It is also helpful to use
-\code{\link{landsatTrim}} to trim the data to a geographical range, or
-to use \code{\link{decimate}} to get a coarse view of the domain, especially
+\code{\link[=landsatTrim]{landsatTrim()}} to trim the data to a geographical range, or
+to use \code{\link[=decimate]{decimate()}} to get a coarse view of the domain, especially
 early in an analysis.
 }
 
 \references{
-1. Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
+\enumerate{
+\item Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
 Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.  Available at
 \url{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf} as of
 February 2015.
 }
+}
 \seealso{
-\code{\link{landsat-class}} for more information on \code{landsat} objects,
-especially band information.  Use \code{\link{landsatTrim}} to trim Landsat
-objects geographically and \code{\link{landsatAdd}} to add new ``bands.''  The
+\code{\link[=landsat-class]{landsat-class()}} for more information on \code{landsat} objects,
+especially band information.  Use \code{\link[=landsatTrim]{landsatTrim()}} to trim Landsat
+objects geographically and \code{\link[=landsatAdd]{landsatAdd()}} to add new ``bands.''  The
 accessor operator (\code{[[}) is used to access band information, full or
 decimated, and to access certain derived quantities.  A sample dataset named
-\code{\link{landsat}} is provided by the \CRANpkg{oce} package.
+\code{\link[=landsat]{landsat()}} is provided by the \CRANpkg{oce} package.
 
 Other things related to landsat data: \code{\link{[[,landsat-method}},
   \code{\link{[[<-,landsat-method}},

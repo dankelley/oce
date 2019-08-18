@@ -7,7 +7,7 @@
 landsatTrim(x, ll, ur, box, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.}
+\item{x}{A \linkS4class{landsat} object.}
 
 \item{ll}{A list containing \code{longitude} and \code{latitude}, for the
 lower-left corner of the portion of the image to retain, or a vector
@@ -28,8 +28,8 @@ be produced by a call to \code{locator(2)}. If provided, neither
 amount of debugging information, or a higher value for more debugging.}
 }
 \value{
-An object of \code{\link{landsat-class}}, with data having
-been trimmed approximately as specified.
+A \linkS4class{landsat} object, with data having
+been trimmed as specified.
 }
 \description{
 Trim a landsat image to a latitude-longitude box. This is only an approximate
@@ -45,7 +45,7 @@ also, if a problem in lonlat/utm conversion is resolved.) An error results if
 there is no intersection between the trimming box and the image box.
 }
 \seealso{
-The documentation for \code{\link{landsat-class}} explains the
+The documentation for \code{\link[=landsat-class]{landsat-class()}} explains the
 structure of landsat objects, and also outlines the other functions dealing
 with them.
 
