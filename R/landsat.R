@@ -58,7 +58,7 @@
 #'
 #' @section Landsat 8:
 #'
-#' The Landsat 8 satellite has 11 frequency bands, listed below (see [2]).
+#' The Landsat 8 satellite has 11 frequency bands, listed below (see reference 2]).
 #' \preformatted{
 #' .------------------------------------------------------------------------------.
 #' | Band | Band                      | Band         | Wavelength    | Resolution |
@@ -83,12 +83,12 @@
 #' Band 8 is panchromatic, and has the highest resolution.  For convenience of
 #' programming, [read.landsat()] subsamples the `tirs1` and
 #' `tirs2` bands to the 30m resolution of the other bands.  See Reference
-#' [3] for information about the evolution of Landsat 8 calibration
+#' 3 for information about the evolution of Landsat 8 calibration
 #' coefficients, which as of summer 2014 are still subject to change.
 #'
 #' @section Landsat 7:
 #'
-#' Band information is as follows (from [8]).  The names are not official, but
+#' Band information is as follows (from reference 8).  The names are not official, but
 #' are set up to roughly correspond with Landsat-8 names, according to wavelength.
 #' An exception is the Landsat-7 bands named `tirs1` and `tirs2`, which
 #' are at two different gain settings, with identical wavelength span for
@@ -283,9 +283,9 @@ setMethod(f="summary",
 #' automatically decimated (subsampled) to give approximately 800 elements in
 #' the longest side of the matrix.  If this is present and numerical, then its
 #' value governs decimation.  For example,
-#' `landsat[["panchromatic",TRUE]]` will auto-decimate, typically
+#' \code{landsat[["panchromatic",TRUE]]} will auto-decimate, typically
 #' reducing the grid width and height from 16000 to about 800.  Similarly,
-#' `landsat[["panchromatic",10]]` will reduce width and height to about
+#' \code{landsat[["panchromatic",10]]} will reduce width and height to about
 #' 1600.  On machines with limited RAM (e.g. under about 6GB), decimation is a
 #' good idea in almost all processing steps.  It also makes sense for
 #' plotting, and in fact is done through the `decimate` argument of
@@ -295,7 +295,7 @@ setMethod(f="summary",
 #' that are calculated from data stored in the object:
 #' `landsat[["longitude"]]` and `landsat[["latitude"]]` give pixel
 #' locations.  Accessing `landsat[["temperature"]]` creates an estimate
-#' of ground temperature as follows (see [4]).  First, the ``count value'' in
+#' of ground temperature as follows (see reference 4).  First, the ``count value'' in
 #' band 10, denoted \eqn{b_{10}}{b_10} say, is scaled with coefficients stored
 #' in the image metadata using
 #' \eqn{\lambda_L=b_{10}M_L+A_L}{lambda_L=b_10*M_L+A_L} where \eqn{M_L}{M_L}
@@ -307,15 +307,15 @@ setMethod(f="summary",
 #' The value of the emissivity \eqn{\epsilon}{epsilon} is set to unity by
 #' [read.landsat()], although it can be changed easily later, by
 #' assigning a new value to `landsat@@metadata$emissivity`. The default
-#' emissivity value set by [read.landsat()] is from [11], and is
-#' within the oceanic range suggested by [5]. Adjustment is as simple as
+#' emissivity value set by [read.landsat()] is from reference 11, and is
+#' within the oceanic range suggested by reference 5. Adjustment is as simple as
 #' altering `landsat@@metadata$emissivity`. This value can be a single
 #' number meant to apply for the whole image, or a matrix with dimensions
 #' matching those of band 10.  The matrix case is probably more useful for
 #' images of land, where one might wish to account for the different
-#' emissivities of soil and vegetation, etc.; for example, Table 4 of [9]
-#' lists 0.9668 for soil and 0.9863 for vegetation, while Table 5 of [10]
-#' lists 0.971 and 0.987 for the same quantities.
+#' emissivities of soil and vegetation, etc.; for example, Table 4 of
+#' reference 9 lists 0.9668 for soil and 0.9863 for vegetation,
+#' while Table 5 of reference 10 lists 0.971 and 0.987 for the same quantities.
 #'
 #' \emph{Accessing metadata.} Anything in the metadata can be accessed by
 #' name, e.g. `landsat[["time"]]`.  Note that some items are simply

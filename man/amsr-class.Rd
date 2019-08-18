@@ -19,11 +19,11 @@ slot of amsr objects: \code{timeDay},
 the 10.7GHz band), \code{MFwindDay} (wind at 10m sensed at 18.7GHz),
 \code{vaporDay}, \code{cloudDay}, and \code{rainDay}, along with
 similarly-named items that end in \code{Night}.
-See \link{1} for additional information on the instrument, how
+See reference 1 for additional information on the instrument, how
 to cite the data source in a paper, etc.
 
 The bands are stored in \code{\link[=raw]{raw()}} form, to save storage. The accessor
-function [[\code{\link[=,amsr-method]{,amsr-method()}} can provide these values in \code{raw}
+function \code{\link{[[,amsr-method}} can provide these values in \code{raw}
 form or in physical units; \code{\link[=plot,amsr-method]{plot,amsr-method()}}, and
 \code{\link[=summary,amsr-method]{summary,amsr-method()}} work with physical units.
 }

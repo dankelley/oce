@@ -99,7 +99,7 @@ A computer needs at least 8GB of RAM to work with such data.
 \section{Landsat 8}{
 
 
-The Landsat 8 satellite has 11 frequency bands, listed below (see \link{2}).
+The Landsat 8 satellite has 11 frequency bands, listed below (see reference 2]).
 \preformatted{
 .------------------------------------------------------------------------------.
 | Band | Band                      | Band         | Wavelength    | Resolution |
@@ -124,14 +124,14 @@ an abbreviation for \code{band=c("red", "green", "nir")}.
 Band 8 is panchromatic, and has the highest resolution.  For convenience of
 programming, \code{\link[=read.landsat]{read.landsat()}} subsamples the \code{tirs1} and
 \code{tirs2} bands to the 30m resolution of the other bands.  See Reference
-\link{3} for information about the evolution of Landsat 8 calibration
+3 for information about the evolution of Landsat 8 calibration
 coefficients, which as of summer 2014 are still subject to change.
 }
 
 \section{Landsat 7}{
 
 
-Band information is as follows (from \link{8}).  The names are not official, but
+Band information is as follows (from reference 8).  The names are not official, but
 are set up to roughly correspond with Landsat-8 names, according to wavelength.
 An exception is the Landsat-7 bands named \code{tirs1} and \code{tirs2}, which
 are at two different gain settings, with identical wavelength span for

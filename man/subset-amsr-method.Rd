@@ -8,7 +8,7 @@
 \S4method{subset}{amsr}(x, subset, ...)
 }
 \arguments{
-\item{x}{An \link{amsr=class} object.}
+\item{x}{An \linkS4class{amsr} object.}
 
 \item{subset}{An expression indicating how to subset \code{x}.}
 

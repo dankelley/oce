@@ -15,11 +15,11 @@
 #' the 10.7GHz band), `MFwindDay` (wind at 10m sensed at 18.7GHz),
 #' `vaporDay`, `cloudDay`, and `rainDay`, along with
 #' similarly-named items that end in `Night`.
-#' See [1] for additional information on the instrument, how
+#' See reference 1 for additional information on the instrument, how
 #' to cite the data source in a paper, etc.
 #'
 #' The bands are stored in [raw()] form, to save storage. The accessor
-#' function [[[,amsr-method()] can provide these values in `raw`
+#' function \code{\link{[[,amsr-method}} can provide these values in `raw`
 #' form or in physical units; [plot,amsr-method()], and
 #' [summary,amsr-method()] work with physical units.
 #'
@@ -283,7 +283,7 @@ setMethod(f="[[<-",
 #' repeated calls will be necessary to subset based on more than one
 #' independent variable (e.g. latitude and longitude).
 #'
-#' @param x An [amsr=class] object.
+#' @param x An [amsr-class] object.
 #'
 #' @param subset An expression indicating how to subset `x`.
 #'
