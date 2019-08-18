@@ -2,14 +2,13 @@
 
 #' Class to Store Windrose Data
 #'
-#' Windrose objects store statistical information about winds, mainly for
-#' plotting as "wind rose" plots (see [plot,windrose-method()].
-#' There is no reading method, because there is no standard way to store
+#' This class stores `windrose` objects, which
+#' store statistical information about winds, mainly for
+#' plotting as "wind rose" plots with [plot,windrose-method()].
+#' Unlike most other [oce-class] objects, there is no reading
+#' method for `windrose` objects, because there is no standard way to store
 #' wind data in files; instead, [as.windrose()] is provided
-#' to construct `windrose` objects.  Data elements may be retrieved
-#' with \code{\link{[[,windrose-method}} or replaced with
-#' \code{\link{[[<-,windrose-method}}. Data summaries are provided with
-#' \code{\link{summary,windrose-method()}}.
+#' to construct `windrose` objects.
 #'
 #' @templateVar class windrose
 #'

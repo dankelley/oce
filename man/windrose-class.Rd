@@ -5,14 +5,13 @@
 \alias{windrose-class}
 \title{Class to Store Windrose Data}
 \description{
-Windrose objects store statistical information about winds, mainly for
-plotting as "wind rose" plots (see \code{\link[=plot,windrose-method]{plot,windrose-method()}}.
-There is no reading method, because there is no standard way to store
+This class stores \code{windrose} objects, which
+store statistical information about winds, mainly for
+plotting as "wind rose" plots with \code{\link[=plot,windrose-method]{plot,windrose-method()}}.
+Unlike most other \linkS4class{oce} objects, there is no reading
+method for \code{windrose} objects, because there is no standard way to store
 wind data in files; instead, \code{\link[=as.windrose]{as.windrose()}} is provided
-to construct \code{windrose} objects.  Data elements may be retrieved
-with \code{\link{[[,windrose-method}} or replaced with
-\code{\link{[[<-,windrose-method}}. Data summaries are provided with
-\code{\link{summary,windrose-method()}}.
+to construct \code{windrose} objects.
 }
 \section{Slots}{
 
