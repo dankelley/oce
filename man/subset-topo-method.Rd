@@ -8,7 +8,7 @@
 \S4method{subset}{topo}(x, subset, ...)
 }
 \arguments{
-\item{x}{A \code{topo} object, i.e. inheriting from \code{\link{topo-class}}.}
+\item{x}{A \linkS4class{topo} object.}
 
 \item{subset}{A condition to be applied to the \code{data} portion of \code{x}.
 See \sQuote{Details}.}
@@ -16,10 +16,10 @@ See \sQuote{Details}.}
 \item{...}{Ignored.}
 }
 \value{
-A new \code{\link{topo-class}} object.
+A new \linkS4class{topo} object.
 }
 \description{
-This function is somewhat analogous to \code{\link{subset.data.frame}}.
+This function is somewhat analogous to \code{\link[=subset.data.frame]{subset.data.frame()}}.
 Subsetting can be by \code{time} or \code{distance}, but these may not be
 combined; use a sequence of calls to subset by both.
 }

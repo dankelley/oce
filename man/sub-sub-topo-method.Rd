@@ -8,7 +8,7 @@
 \S4method{[[}{topo}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A topo object, i.e. one inheriting from \code{\link{topo-class}}.}
+\item{x}{A \linkS4class{topo} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
@@ -35,7 +35,7 @@ if that fails, then a general function is used
 }
 \section{Details of the specialized topo method}{
 
-There are no special features for \code{\link{topo-class}} data;
+There are no special features for \linkS4class{topo} data;
 the general method is used directly.
 }
 

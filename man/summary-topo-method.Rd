@@ -8,7 +8,7 @@
 \S4method{summary}{topo}(object, ...)
 }
 \arguments{
-\item{object}{A \code{topo} object, i.e. inheriting from \code{\link{topo-class}}.}
+\item{object}{A \linkS4class{topo} object.}
 
 \item{\dots}{Further arguments passed to or from other methods.}
 }

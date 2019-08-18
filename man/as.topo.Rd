@@ -15,10 +15,10 @@ the \code{marmap} package; in the second case, all other arguments are ignored.}
 
 \item{z}{A matrix of heights (positive over land).}
 
-\item{filename}{Name of data (used when called by \code{\link{read.topo}}.}
+\item{filename}{Name of data (used when called by \code{\link[=read.topo]{read.topo()}}.}
 }
 \value{
-An object of \code{\link{topo-class}}.
+A \code{\link[=topo-class]{topo-class()}} object.
 }
 \description{
 Coerce Data into Topo Object

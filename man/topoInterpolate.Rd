@@ -13,8 +13,7 @@ topoInterpolate(longitude, latitude, topo)
 \item{latitude}{Vector of latitudes (in the same sign convention as used in
 \code{topo}).}
 
-\item{topo}{A \code{topo} object, i.e. inheriting from
-\code{\link{topo-class}}.}
+\item{topo}{A \linkS4class{topo} object.}
 }
 \value{
 Vector of heights giving the elevation of the earth above means sea

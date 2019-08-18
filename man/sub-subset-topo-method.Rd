@@ -8,7 +8,7 @@
 \S4method{[[}{topo}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An \code{topo} object, i.e. inheriting from \code{\link{topo-class}}}
+\item{x}{A \linkS4class{topo} object.}
 
 \item{i}{The item to replace.}
 

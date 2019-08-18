@@ -6,9 +6,9 @@
 \title{Class to Store Topographic Data}
 \description{
 This class stores topographic data, as read with
-\code{\link{read.topo}} or assembled with \code{\link{as.topo}}.
-Plotting is handled with \code{\link{plot,topo-method}}
-and summaries with \code{\link{summary,topo-method}}.
+\code{\link[=read.topo]{read.topo()}} or assembled with \code{\link[=as.topo]{as.topo()}}.
+Plotting is handled with \code{\link[=plot,topo-method]{plot,topo-method()}}
+and summaries with \code{\link[=summary,topo-method]{summary,topo-method()}}.
 }
 \section{Slots}{
 
