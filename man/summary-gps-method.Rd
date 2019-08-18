@@ -13,7 +13,7 @@
 \item{\dots}{further arguments passed to or from other methods.}
 }
 \description{
-Summarize a \code{gps} object, i.e. one inheriting from \code{\link{gps-class}}.
+Summarize a \linkS4class{gps} object.
 }
 \seealso{
 Other things related to gps data: \code{\link{[[,gps-method}},

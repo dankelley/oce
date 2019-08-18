@@ -21,7 +21,7 @@ data if not supplied.  In the present version, the only choice for
 better for normal calls by a user.)}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"gps"}.
+A \linkS4class{gps} object.
 }
 \description{
 Reads GPX format files by simply finding all longitudes and latitudes; in

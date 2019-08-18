@@ -8,7 +8,7 @@
 \S4method{[[}{gps}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An \code{gps} object, i.e. inheriting from \code{\link{gps-class}}}
+\item{x}{A \linkS4class{gps} object.}
 
 \item{i}{The item to replace.}
 

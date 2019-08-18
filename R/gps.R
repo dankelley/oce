@@ -3,7 +3,7 @@
 #' Class to Store GPS Data
 #'
 #' This class stores GPS data. These objects may be read with
-#' \code{\link{read.gps}} or assembled with \code{\link{as.gps}}.
+#' [read.gps()] or assembled with [as.gps()].
 #'
 #' @templateVar class gps
 #'
@@ -22,6 +22,8 @@
 #' @author Dan Kelley
 #'
 #' @family things related to gps data
+#'
+#' @md
 setClass("gps", contains="oce")
 
 setMethod(f="initialize",
@@ -39,12 +41,17 @@ setMethod(f="initialize",
 #' @title Summarize a GPS Object
 #'
 #' @description
-#' Summarize a \code{gps} object, i.e. one inheriting from \code{\link{gps-class}}.
+#' Summarize a [gps-class] object.
 #'
-#' @param object an object of class \code{"gps"}
+#' @param object an object of class `"gps"`
+#'
 #' @param \dots further arguments passed to or from other methods.
+#'
 #' @author Dan Kelley
+#'
 #' @family things related to gps data
+#'
+#' @md
 setMethod(f="summary",
           signature="gps",
           definition=function(object, ...) {
@@ -53,20 +60,30 @@ setMethod(f="summary",
           })
 
 
-#' @title Extract Something From a GPS Object
-#' @param x A gps object, i.e. one inheriting from \code{\link{gps-class}}.
+#' Extract Something From a GPS Object
+#'
+#' @param x A [gps-class] object.
+#'
 #' @template sub_subTemplate
+#'
 #' @family things related to gps data
+#'
+#' @md
 setMethod(f="[[",
           signature(x="gps", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
               callNextMethod()         # [[
           })
 
-#' @title Replace Parts of a GPS Object
-#' @param x An \code{gps} object, i.e. inheriting from \code{\link{gps-class}}
+#' Replace Parts of a GPS Object
+#'
+#' @param x A [gps-class] object.
+#'
 #' @template sub_subsetTemplate
+#'
 #' @family things related to gps data
+#'
+#' @md
 setMethod(f="[[<-",
           signature(x="gps", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -74,86 +91,109 @@ setMethod(f="[[<-",
           })
 
 
-#' @title Plot a GPS Object
+#' Plot a GPS Object
 #'
-#' @description
 #' This function plots a gps object.  An attempt is made to use the whole space
 #' of the plot, and this is done by limiting either the longitude range or the
 #' latitude range, as appropriate, by modifying the eastern or northern limit,
 #' as appropriate.
 #' To get an inset map inside another map, draw the first map, do
-#' \code{par(new=TRUE)}, and then call \code{plot.gps} with a value of
-#' \code{mar} that moves the inset plot to a desired location on the existing
-#' plot, and with \code{bg="white"}.
+#' `par(new=TRUE)`, and then call `plot.gps` with a value of
+#' `mar` that moves the inset plot to a desired location on the existing
+#' plot, and with `bg="white"`.
 #'
-#' @param x A \code{gps} object, as read by \code{\link{read.gps}} or created
-#' by \code{\link{as.gps}}, or a list containing items named \code{longitude}
-#' and \code{latitude}.
+#' @param x A `gps` object, as read by [read.gps()] or created
+#' by [as.gps()], or a list containing items named `longitude`
+#' and `latitude`.
+#'
 #' @param xlab label for x axis
+#'
 #' @param ylab label for y axis
-#' @param asp Aspect ratio for plot.  The default is for \code{plot.gps} to set
+#'
+#' @param asp Aspect ratio for plot.  The default is for `plot.gps` to set
 #' the aspect ratio to give natural latitude-longitude scaling somewhere near
-#' the centre latitude on the plot. Often, it makes sense to set \code{asp}
+#' the centre latitude on the plot. Often, it makes sense to set `asp`
 #' yourself, e.g. to get correct shapes at 45N, use
-#' \code{asp=1/cos(45*pi/180)}.  Note that the land mass is not symmetric about
-#' the equator, so to get good world views you should set \code{asp=1} or set
-#' \code{ylim} to be symmetric about zero. Any given value of \code{asp} is
-#' ignored, if \code{clongitude} and \code{clatitude} are given.
+#' `asp=1/cos(45*pi/180)`.  Note that the land mass is not symmetric about
+#' the equator, so to get good world views you should set `asp=1` or set
+#' `ylim` to be symmetric about zero. Any given value of `asp` is
+#' ignored, if `clongitude` and `clatitude` are given.
+#'
 #' @param clongitude,clatitude optional center latitude of map, in decimal
-#' degrees.  If both \code{clongitude} and \code{clatitude} are provided, then
-#' any provided value of \code{asp} is ignored, and instead the plot aspect
-#' ratio is computed based on the center latitude.  If \code{clongitude} and
-#' \code{clatitude} are provided, then \code{span} must also be provided.
+#' degrees.  If both `clongitude` and `clatitude` are provided, then
+#' any provided value of `asp` is ignored, and instead the plot aspect
+#' ratio is computed based on the center latitude.  If `clongitude` and
+#' `clatitude` are provided, then `span` must also be provided.
+#'
 #' @param span optional suggested span of plot, in kilometers.  The suggestion
 #' is an upper limit on the scale; depending on the aspect ratio of the
-#' plotting device, the radius may be smaller than \code{span}.  A value for
-#' \code{span} must be supplied, if \code{clongitude} and \code{clatitude} are
+#' plotting device, the radius may be smaller than `span`.  A value for
+#' `span` must be supplied, if `clongitude` and `clatitude` are
 #' supplied.
+#'
 #' @param projection optional map projection to use (see
-#' \code{\link{mapPlot}}); if not given, a cartesian frame is used, scaled so
+#' [mapPlot()]); if not given, a cartesian frame is used, scaled so
 #' that gps shapes near the centre of the plot are preserved.  If a projection
 #' is provided, the coordinate system will bear an indirect relationship to
 #' longitude and longitude, and further adornment of the plot must be done with
-#' e.g.  \code{\link{mapPoints}} instead of \code{\link{points}}.
+#' e.g.  [mapPoints()] instead of [points()].
+#'
 #' @param parameters optional parameters to map projection (see
-#' \code{\link{mapPlot}}.
+#' [mapPlot()] for details).
+#'
 #' @param orientation optional orientation of map projection (see
-#' \code{\link{mapPlot}}.
+#' [mapPlot()] for details).
+#'
 #' @param expand numerical factor for the expansion of plot limits, showing
 #' area outside the plot, e.g. if showing a ship track as a gps, and then an
-#' actual gps to show the ocean boundary.  The value of \code{expand} is
-#' ignored if either \code{xlim} or \code{ylim} is given.
-#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
-#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' actual gps to show the ocean boundary.  The value of `expand` is
+#' ignored if either `xlim` or `ylim` is given.
+#'
+#' @param mgp 3-element numerical vector to use for `par(mgp)`, and also
+#' for `par(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
-#' @param mar value to be used with \code{\link{par}("mar")}.
+#'
+#' @param mar value to be used with [par]`("mar")`.
+#'
 #' @param bg optional color to be used for the background of the map.  This
 #' comes in handy for drawing insets (see \dQuote{details}).
-#' @param axes boolean, set to \code{TRUE} to plot axes.
+#'
+#' @param axes boolean, set to `TRUE` to plot axes.
+#'
 #' @param cex.axis value for axis font size factor.
-#' @param add boolean, set to \code{TRUE} to draw the gps on an existing plot.
+#'
+#' @param add boolean, set to `TRUE` to draw the gps on an existing plot.
 #' Note that this retains the aspect ratio of that existing plot, so it is
-#' important to set that correctly, e.g. with \code{asp=1/cos(lat * pi / 180)},
-#' where \code{clat} is the central latitude of the plot.
-#' @param inset set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+#' important to set that correctly, e.g. with `asp=1/cos(lat * pi / 180)`,
+#' where `clat` is the central latitude of the plot.
+#'
+#' @param inset set to `TRUE` for use within [plotInset()].  The
 #' effect is to prevent the present function from adjusting margins, which is
 #' necessary because margin adjustment is the basis for the method used by
-#' \code{\link{plotInset}}.
+#' [plotInset()].
+#'
 #' @param geographical flag indicating the style of axes.  If
-#' \code{geographical=0}, the axes are conventional, with decimal degrees as
+#' `geographical=0`, the axes are conventional, with decimal degrees as
 #' the unit, and negative signs indicating the southern and western
-#' hemispheres.  If \code{geographical=1}, the signs are dropped, with axis
+#' hemispheres.  If `geographical=1`, the signs are dropped, with axis
 #' values being in decreasing order within the southern and western
-#' hemispheres.  If \code{geographical=2}, the signs are dropped and the axes
+#' hemispheres.  If `geographical=2`, the signs are dropped and the axes
 #' are labelled with degrees, minutes and seconds, as appropriate.
-#' @param debug set to \code{TRUE} to get debugging information during
+#'
+#' @param debug set to `TRUE` to get debugging information during
 #' processing.
+#'
 #' @param \dots optional arguments passed to plotting functions.  For example,
-#' set \code{yaxp=c(-90,90,4)} for a plot extending from pole to pole.
+#' set `yaxp=c(-90,90,4)` for a plot extending from pole to pole.
+#'
 #' @author Dan Kelley
+#'
 #' @family functions that plot oce data
 #' @family things related to gps data
+#'
 #' @aliases plot.gps
+#'
+#' @md
 setMethod(f="plot",
           signature=signature("gps"),
           definition=function (x,
@@ -376,23 +416,29 @@ setMethod(f="plot",
           })
 
 
-#' @title Coerce data into a GPS dataset
+#' Coerce data into a GPS dataset
 #'
-#' @description
 #' Coerces a sequence of longitudes and latitudes into a GPS dataset.
-#' This may be used when \code{\link{read.gps}} cannot read a file, or when the
+#' This may be used when [read.gps()] cannot read a file, or when the
 #' data have been manipulated.
 #'
 #' @param longitude the longitude in decimal degrees, positive east of
-#' Greenwich, or a data frame with columns named \code{latitude} and
-#' \code{longitude}, in which case these values are extracted from the data
+#' Greenwich, or a data frame with columns named `latitude` and
+#' `longitude`, in which case these values are extracted from the data
 #' frame and the second argument is ignored.
+#'
 #' @param latitude the latitude in decimal degrees, positive north of the
 #' Equator.
+#'
 #' @param filename name of file containing data (if applicable).
-#' @return An object of \code{\link{gps-class}}.
+#'
+#' @return A [gps-class] object.
+#'
 #' @author Dan Kelley
+#'
 #' @family things related to gps data
+#'
+#' @md
 as.gps <- function(longitude, latitude, filename="")
 {
     names <- names(longitude)
@@ -404,23 +450,30 @@ as.gps <- function(longitude, latitude, filename="")
 }
 
 
-#' @title Read a GPS File
+#' Read a GPS File
 #'
-#' @description
 #' Reads GPX format files by simply finding all longitudes and latitudes; in
 #' other words, information on separate tracks, or waypoints, etc., is lost.
 #'
 #' @param file name of file containing gps data.
+#'
 #' @param type type of file, which will be inferred from examination of the
 #' data if not supplied.  In the present version, the only choice for
-#' \code{type} is \code{"gpx"}.
+#' `type` is `"gpx"`.
+#'
 #' @param debug set to TRUE to print information about the header, etc.
+#'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' (Typically only provided for internal calls; the default that it provides is
 #' better for normal calls by a user.)
-#' @return An object of \code{\link[base]{class}} \code{"gps"}.
+#'
+#' @return A [gps-class] object.
+#'
 #' @author Dan Kelley
+#'
 #' @family things related to gps data
+#'
+#' @md
 read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog)
 {
     oceDebug(debug, "read.gps(...) {\n", sep="", unindent=1)

@@ -8,7 +8,7 @@
 \S4method{[[}{gps}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A gps object, i.e. one inheriting from \code{\link{gps-class}}.}
+\item{x}{A \linkS4class{gps} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 

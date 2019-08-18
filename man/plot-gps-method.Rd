@@ -14,8 +14,8 @@
   ...)
 }
 \arguments{
-\item{x}{A \code{gps} object, as read by \code{\link{read.gps}} or created
-by \code{\link{as.gps}}, or a list containing items named \code{longitude}
+\item{x}{A \code{gps} object, as read by \code{\link[=read.gps]{read.gps()}} or created
+by \code{\link[=as.gps]{as.gps()}}, or a list containing items named \code{longitude}
 and \code{latitude}.}
 
 \item{xlab}{label for x axis}
@@ -44,17 +44,17 @@ plotting device, the radius may be smaller than \code{span}.  A value for
 supplied.}
 
 \item{projection}{optional map projection to use (see
-\code{\link{mapPlot}}); if not given, a cartesian frame is used, scaled so
+\code{\link[=mapPlot]{mapPlot()}}); if not given, a cartesian frame is used, scaled so
 that gps shapes near the centre of the plot are preserved.  If a projection
 is provided, the coordinate system will bear an indirect relationship to
 longitude and longitude, and further adornment of the plot must be done with
-e.g.  \code{\link{mapPoints}} instead of \code{\link{points}}.}
+e.g.  \code{\link[=mapPoints]{mapPoints()}} instead of \code{\link[=points]{points()}}.}
 
 \item{parameters}{optional parameters to map projection (see
-\code{\link{mapPlot}}.}
+\code{\link[=mapPlot]{mapPlot()}} for details).}
 
 \item{orientation}{optional orientation of map projection (see
-\code{\link{mapPlot}}.}
+\code{\link[=mapPlot]{mapPlot()}} for details).}
 
 \item{expand}{numerical factor for the expansion of plot limits, showing
 area outside the plot, e.g. if showing a ship track as a gps, and then an
@@ -65,7 +65,7 @@ ignored if either \code{xlim} or \code{ylim} is given.}
 for \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{\link{par}("mar")}.}
+\item{mar}{value to be used with \link{par}\code{("mar")}.}
 
 \item{bg}{optional color to be used for the background of the map.  This
 comes in handy for drawing insets (see \dQuote{details}).}
@@ -79,10 +79,10 @@ Note that this retains the aspect ratio of that existing plot, so it is
 important to set that correctly, e.g. with \code{asp=1/cos(lat * pi / 180)},
 where \code{clat} is the central latitude of the plot.}
 
-\item{inset}{set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+\item{inset}{set to \code{TRUE} for use within \code{\link[=plotInset]{plotInset()}}.  The
 effect is to prevent the present function from adjusting margins, which is
 necessary because margin adjustment is the basis for the method used by
-\code{\link{plotInset}}.}
+\code{\link[=plotInset]{plotInset()}}.}
 
 \item{geographical}{flag indicating the style of axes.  If
 \code{geographical=0}, the axes are conventional, with decimal degrees as

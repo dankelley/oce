@@ -6,7 +6,7 @@
 \title{Class to Store GPS Data}
 \description{
 This class stores GPS data. These objects may be read with
-\code{\link{read.gps}} or assembled with \code{\link{as.gps}}.
+\code{\link[=read.gps]{read.gps()}} or assembled with \code{\link[=as.gps]{as.gps()}}.
 }
 \section{Slots}{
 
