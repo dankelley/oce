@@ -6,7 +6,7 @@
 \title{Wind dataset}
 \description{
 Wind data inferred from Figure 5 of Koch et al. (1983), provided to
-illustrate the \code{\link{interpBarnes}} function.
+illustrate the \code{\link[=interpBarnes]{interpBarnes()}} function.
 Columns \code{wind$x} and \code{wind$y} are location, while \code{wind$z} is
 the wind speed, in m/s.
 }
