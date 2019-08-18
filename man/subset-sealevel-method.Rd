@@ -8,7 +8,7 @@
 \S4method{subset}{sealevel}(x, subset, ...)
 }
 \arguments{
-\item{x}{A \code{sealevel} object, i.e. one inheriting from \code{\link{sealevel-class}}.}
+\item{x}{A \code{sealevel} object, i.e. one inheriting from \code{\link[=sealevel-class]{sealevel-class()}}.}
 
 \item{subset}{a condition to be applied to the \code{data} portion of
 \code{x}.}
@@ -19,7 +19,7 @@
 A new \code{sealevel} object.
 }
 \description{
-This function is somewhat analogous to \code{\link{subset.data.frame}}, but
+This function is somewhat analogous to \code{\link[=subset.data.frame]{subset.data.frame()}}, but
 subsetting is only permitted by time.
 }
 \examples{

@@ -8,7 +8,7 @@
 The data were based on the \code{T_TIDE} dataset, which in turn
 seems to be based on Appendix 7.2 of Foreman (1977).  Minor editing was on
 file format, and then the \code{sealevelTuktoyaktuk} object was created
-using \code{\link{as.sealevel}}.
+using \code{\link[=as.sealevel]{as.sealevel()}}.
 }
 \description{
 This sea-level dataset is provided with in Appendix 7.2 of Foreman (1977)

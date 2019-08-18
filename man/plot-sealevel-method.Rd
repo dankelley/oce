@@ -14,7 +14,7 @@
 }
 \arguments{
 \item{x}{an object of class \code{"sealevel"}, e.g. as read by
-\code{\link{read.sealevel}}.}
+\code{\link[=read.sealevel]{read.sealevel()}}.}
 
 \item{which}{a numerical or string vector indicating desired plot types,
 with possibilities 1 or \code{"all"} for a time-series of all the data, 2 or
@@ -27,15 +27,15 @@ integral of the power spectrum.}
 horizontal axis, indicating whether to draw the time range in the top-left
 margin of the plot.}
 
-\item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also
-for \code{par(mar)}, computed from this.  The default is tighter than the R
+\item{mgp}{3-element numerical vector to use for \link{par}\code{("mgp")}, and also
+for \link{par}\code{("mar")}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{\link{par}("mar")}.}
+\item{mar}{value to be used with \link{par}\code{("mar")}.}
 
 \item{marginsAsImage}{boolean, \code{TRUE} to put a wide margin to the right
 of time-series plots, matching the space used up by a palette in an
-\code{\link{imagep}} plot.}
+\code{\link[=imagep]{imagep()}} plot.}
 
 \item{debug}{a flag that turns on debugging, if it exceeds 0.}
 
@@ -55,7 +55,7 @@ before the call.
 \examples{
 library(oce)
 data(sealevel)
-## local Halifax time is UTC + 4h; see [2] on timing
+## local Halifax time is UTC + 4h
 juan <- as.POSIXct("2003-09-29 00:15:00", tz="UTC")+4*3600
 plot(sealevel, which=1, xlim=juan+86400*c(-7, 7))
 abline(v=juan, col='red')
@@ -73,7 +73,7 @@ gauge, was between 00:10 and 00:20 Halifax local time on Monday, Sept 29,
 2003.
 }
 \seealso{
-The documentation for \code{\link{sealevel-class}} explains the
+The documentation for the \linkS4class{sealevel} class explains the
 structure of sealevel objects, and also outlines the other functions dealing
 with them.
 

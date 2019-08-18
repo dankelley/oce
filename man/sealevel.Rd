@@ -8,7 +8,7 @@
 The data were created as \preformatted{ sealevel <-
 read.oce("490-01-JAN-2003_slev.csv") sealevel <- oce.edit(sealevel,
 "longitude", -sealevel[["longitude"]], reason="Fix longitude hemisphere") }
-where the csv file was downloaded from [1]. Note the correction of longitude
+where the csv file was downloaded from reference 1. Note the correction of longitude
 sign, which is required because the data file has no indication that this is
 the western hemisphere.
 }
@@ -18,7 +18,9 @@ Nova Scotia, Canada.  For reasons that are not mentioned on the data archive
 website, the record ends on the 8th of October.
 }
 \references{
-1. Fisheries and Oceans Canada \url{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/index-eng.html}
+\enumerate{
+\item Fisheries and Oceans Canada \url{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/index-eng.html}
+}
 }
 \seealso{
 Other datasets provided with oce: \code{\link{adp}},

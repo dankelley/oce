@@ -8,7 +8,7 @@
 \S4method{[[}{sealevel}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An \code{sealevel} object, i.e. inheriting from \code{\link{sealevel-class}}}
+\item{x}{An \code{sealevel} object, i.e. inheriting from \code{\link[=sealevel-class]{sealevel-class()}}}
 
 \item{i}{The item to replace.}
 

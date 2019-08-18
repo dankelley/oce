@@ -8,7 +8,7 @@
 \S4method{summary}{sealevel}(object, ...)
 }
 \arguments{
-\item{object}{A \code{sealevel} object, i.e. one inheriting from \code{\link{sealevel-class}}.}
+\item{object}{A \linkS4class{sealevel} object.}
 
 \item{\dots}{further arguments passed to or from other methods.}
 }

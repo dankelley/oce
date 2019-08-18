@@ -28,7 +28,7 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-An object of \code{\link{sealevel-class}}.
+A \linkS4class{sealevel} object.
 }
 \description{
 Read a data file holding sea level data.  BUG: the time vector assumes GMT,
@@ -42,7 +42,7 @@ comma-separated-value format used by the Marine Environmental Data Service.
 (The file type is inferred by checking for the existence of the string
 \code{Station_Name} on the first line of the file, indicating type 2.) If
 the file is in neither of these formats, the user might wish to scan it
-directly, and then to use \code{\link{as.sealevel}} to create a
+directly, and then to use \code{\link[=as.sealevel]{as.sealevel()}} to create a
 \code{sealevel} object.
 }
 \examples{

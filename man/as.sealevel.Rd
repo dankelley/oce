@@ -49,20 +49,19 @@ other method.}
 \item{referenceCode}{?}
 
 \item{deltat}{optional interval between samples, in hours (as for the
-\code{\link{ts}} timeseries function). If this is not provided, and \code{t}
+\code{\link[=ts]{ts()}} timeseries function). If this is not provided, and \code{t}
 can be understood as a time, then the difference between the first two times
 is used.  If this is not provided, and \code{t} cannot be understood as a
 time, then 1 hour is assumed.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"sealevel"} (for
-details, see \code{\link{read.sealevel}}).
+A \linkS4class{sealevel} object (for details, see \code{\link[=read.sealevel]{read.sealevel()}}).
 }
 \description{
 Coerces a dataset (minimally, a sequence of times and heights) into a
 sealevel dataset.
 The arguments are based on the standard data format, as were described in a
-file formerly available at [1].
+file formerly available at reference 1.
 }
 \examples{
 library(oce)
@@ -84,7 +83,7 @@ summary(sl)
 worked for years but failed at least temporarily on December 4, 2016).
 }
 \seealso{
-The documentation for \code{\link{sealevel-class}} explains the
+The documentation for \code{\link[=sealevel-class]{sealevel-class()}} explains the
 structure of sealevel objects, and also outlines the other functions dealing
 with them.
 
