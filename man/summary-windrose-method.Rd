@@ -8,7 +8,7 @@
 \S4method{summary}{windrose}(object, ...)
 }
 \arguments{
-\item{object}{An \code{windrose} object, i.e. inheriting from \code{\link{windrose-class}}.}
+\item{object}{A \linkS4class{windrose} object.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
@@ -16,9 +16,6 @@
 Summarizes some of the data in a \code{windrose} object.
 }
 \seealso{
-The documentation for \code{\link{windrose-class}} explains the structure
-of \code{windrose} objects, and also outlines the other functions dealing with them.
-
 Other things related to windrose data: \code{\link{[[,windrose-method}},
   \code{\link{[[<-,windrose-method}},
   \code{\link{as.windrose}},

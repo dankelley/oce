@@ -8,7 +8,7 @@
 \S4method{[[}{windrose}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A windrose object, i.e. one inheriting from \code{\link{windrose-class}}.}
+\item{x}{A \linkS4class{windrose} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
@@ -35,7 +35,7 @@ if that fails, then a general function is used
 }
 \section{Details of the specialized windrose method}{
 
-There are no special features for \code{\link{windrose-class}} data;
+There are no special features for \linkS4class{windrose} data;
 the general method is used directly.
 }
 

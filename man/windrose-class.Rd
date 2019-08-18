@@ -6,13 +6,13 @@
 \title{Class to Store Windrose Data}
 \description{
 Windrose objects store statistical information about winds, mainly for
-plotting as "wind rose" plots (see \code{\link{plot,windrose-method}}.
+plotting as "wind rose" plots (see \code{\link[=plot,windrose-method]{plot,windrose-method()}}.
 There is no reading method, because there is no standard way to store
-wind data in files; instead, \code{\link{as.windrose}} is provided
+wind data in files; instead, \code{\link[=as.windrose]{as.windrose()}} is provided
 to construct \code{windrose} objects.  Data elements may be retrieved
-with \code{\link{[[,windrose-method}} or replaced with
-\code{\link{[[<-,windrose-method}}. Data summaries are provided with
-\code{\link{summary,windrose-method}}.
+with [[\code{\link[=,windrose-method]{,windrose-method()}} or replaced with
+[[\code{\link[=<-,windrose-method]{<-,windrose-method()}}. Data summaries are provided with
+\code{\link[=summary,windrose-method]{summary,windrose-method()}}.
 }
 \section{Slots}{
 

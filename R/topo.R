@@ -244,7 +244,7 @@ setMethod(f="subset",
 #' The data are downloaded with [utils::download.file()], using a URL
 #' devised from reverse engineering web-based queries constructed by
 #' the default `server` used here. Note that the data source is "etopo1",
-#' which is a 1 arc-second file [1,2].
+#' which is a 1 arc-second file (see references 1 and 2).
 #'
 #' Three values are permitted for `format`,
 #' each named after the
@@ -328,7 +328,6 @@ setMethod(f="subset",
 #' 2. Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
 #' Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum
 #' NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
-#' [access date: Aug 30, 2017].
 #'
 #' @family functions that download files
 #' @family things related to topo data

@@ -8,7 +8,7 @@
 \S4method{[[}{windrose}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An \code{windrose} object, i.e. inheriting from \code{\link{windrose-class}}}
+\item{x}{A \linkS4class{windrose} object.}
 
 \item{i}{The item to replace.}
 
