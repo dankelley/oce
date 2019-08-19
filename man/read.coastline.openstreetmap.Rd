@@ -12,7 +12,7 @@ read.coastline.openstreetmap(file, lonlim = c(-180, 180),
 \item{file}{name of file containing coastline data (a file ending in \code{.shp})
 or a zipfile that contains such a file, with a corresponding name.
 The second scheme is useful for files downloaded from the NaturalEarth
-website [2].}
+website (see reference 2).}
 
 \item{lonlim}{numerical vectors specifying the
 west and east edges (and south and north edges) of a focus window.
@@ -36,10 +36,10 @@ the file.}
 better for normal calls by a user.)}
 }
 \value{
-An object of \code{\link{coastline-class}}
+An object of \code{\link[=coastline-class]{coastline-class()}}
 }
 \description{
-Read coastline data stored in the openstreetmap format [1].
+Read coastline data stored in the openstreetmap format.
 }
 \seealso{
 Other things related to coastline data: \code{\link{[[,coastline-method}},

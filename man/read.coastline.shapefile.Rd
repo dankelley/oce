@@ -11,7 +11,7 @@ read.coastline.shapefile(file, lonlim = c(-180, 180), latlim = c(-90,
 \item{file}{name of file containing coastline data (a file ending in \code{.shp})
 or a zipfile that contains such a file, with a corresponding name.
 The second scheme is useful for files downloaded from the NaturalEarth
-website [2].}
+website (see reference 2).}
 
 \item{lonlim, latlim}{numerical vectors specifying the
 west and east edges (and south and north edges) of a focus window.
@@ -29,10 +29,10 @@ the file.}
 better for normal calls by a user.)}
 }
 \value{
-An object of \code{\link{coastline-class}}
+x A \linkS4class{coastline} object.
 }
 \description{
-Read coastline data stored in the shapefile format [1].
+Read coastline data stored in the shapefile format (see reference 1).
 }
 \section{A hack for depth contours}{
  The following demonstrates that this

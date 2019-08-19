@@ -8,8 +8,7 @@
 \S4method{summary}{coastline}(object, ...)
 }
 \arguments{
-\item{object}{an object of class \code{"coastline"}, usually, a result of a
-call to \code{\link{read.coastline}} or \code{\link{read.oce}}.}
+\item{object}{A \linkS4class{coastline} object.}
 
 \item{\dots}{further arguments passed to or from other methods.}
 }

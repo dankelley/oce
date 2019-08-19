@@ -8,7 +8,7 @@
 \S4method{subset}{coastline}(x, subset, ...)
 }
 \arguments{
-\item{x}{A \code{coastline} object, i.e. one inheriting from \code{\link{coastline-class}}.}
+\item{x}{A \linkS4class{coastline} object.}
 
 \item{subset}{An expression indicating how to subset \code{x}. See \dQuote{Details}.}
 
@@ -25,7 +25,7 @@ A \code{coastline} object.
 \description{
 Subsets a coastline object according to limiting values for longitude
 and latitude. The \CRANpkg{raster} package must be installed for this
-to work, because it relies on the \code{\link[raster]{intersect}} function
+to work, because it relies on the \code{\link[raster:intersect]{raster::intersect()}} function
 from that package.
 }
 \details{

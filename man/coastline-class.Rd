@@ -6,11 +6,11 @@
 \title{Class to Store Coastline Data}
 \description{
 This class stores coastline data, which may be read with
-\code{\link{read.coastline}} or constructed with \code{\link{as.coastline}},
-plotted with \code{\link{plot,coastline-method}} or summarized with
-\code{\link{summary,coastline-method}}. Data within \code{coastline}
-objects may be retrieved with \code{\link{[[,coastline-method}}
-or replaced with \code{\link{[[<-,coastline-method}}.
+\code{\link[=read.coastline]{read.coastline()}} or constructed with \code{\link[=as.coastline]{as.coastline()}},
+plotted with \code{\link[=plot,coastline-method]{plot,coastline-method()}} or summarized with
+\code{\link[=summary,coastline-method]{summary,coastline-method()}}. Data within \code{coastline}
+objects may be retrieved with [[\code{\link[=,coastline-method]{,coastline-method()}}
+or replaced with [[\code{\link[=<-,coastline-method]{<-,coastline-method()}}.
 }
 \section{Slots}{
 

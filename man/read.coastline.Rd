@@ -24,7 +24,7 @@ for reading "shapefile" type)}
 better for normal calls by a user.)}
 }
 \value{
-An object of \code{\link{coastline-class}}.
+An object of \code{\link[=coastline-class]{coastline-class()}}.
 }
 \description{
 Read a coastline file in R, Splus, mapgen, shapefile, or openstreetmap

@@ -49,7 +49,7 @@ there is a problem of any kind, the result will be the empty
 string.
 }
 \description{
-Constructs a query to the NaturalEarth server [1] to download coastline
+Constructs a query to the NaturalEarth server (see reference 1) to download coastline
 data (or lake data, river data, etc) in any of three resolutions.
 }
 \examples{
@@ -65,10 +65,12 @@ plot(coastline)
 
 }
 \references{
-1. The NaturalEarth server is at \url{https://www.naturalearthdata.com}
+\enumerate{
+\item The NaturalEarth server is at \url{https://www.naturalearthdata.com}
+}
 }
 \seealso{
-The work is done with \code{\link[utils]{download.file}}.
+The work is done with \code{\link[utils:download.file]{utils::download.file()}}.
 
 Other functions that download files: \code{\link{download.amsr}},
   \code{\link{download.met}}, \code{\link{download.topo}}
@@ -84,6 +86,9 @@ Other things related to coastline data: \code{\link{[[,coastline-method}},
   \code{\link{read.coastline.shapefile}},
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
+}
+\author{
+Dan Kelley
 }
 \concept{functions that download files}
 \concept{things related to coastline data}

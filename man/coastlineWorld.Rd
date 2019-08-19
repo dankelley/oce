@@ -22,8 +22,8 @@ Also, you should change the name of the coastline object from
 \code{coastlineWorld}, to avoid conflicts with the built-in dataset. Save
 the \code{.rda} file to some directory of your choosing, e.g. perhaps
 \code{/data/coastlines} or \code{~/data/coastlines} on a unix-type machine.
-Then, whenever you need the file, use \code{\link{load}} to load it.  Most
-users find it convenient to do the loading in an \code{\link{Rprofile}}
+Then, whenever you need the file, use \code{\link[=load]{load()}} to load it.  Most
+users find it convenient to do the loading in an \code{\link[=Rprofile]{Rprofile()}}
 startup file.
 }
 
@@ -49,9 +49,6 @@ Other things related to coastline data: \code{\link{[[,coastline-method}},
   \code{\link{read.coastline.shapefile}},
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
-}
-\author{
-Dan Kelley
 }
 \concept{datasets provided with oce}
 \concept{things related to coastline data}

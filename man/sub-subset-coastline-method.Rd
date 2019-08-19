@@ -8,7 +8,7 @@
 \S4method{[[}{coastline}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An \code{coastline} object, i.e. inheriting from \code{\link{coastline-class}}}
+\item{x}{A \linkS4class{coastline} object.}
 
 \item{i}{The item to replace.}
 
@@ -86,6 +86,9 @@ Other functions that replace parts of oce objects: \code{\link{[[<-,adp-method}}
   \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
+}
+\author{
+Dan Kelley
 }
 \concept{functions that replace parts of oce objects}
 \concept{things related to coastline data}

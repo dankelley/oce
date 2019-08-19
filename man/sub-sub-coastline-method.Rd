@@ -8,7 +8,7 @@
 \S4method{[[}{coastline}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A coastline object, i.e. one inheriting from \code{\link{coastline-class}}.}
+\item{x}{A \linkS4class{coastline} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
@@ -131,6 +131,9 @@ Other things related to coastline data: \code{\link{[[<-,coastline-method}},
   \code{\link{read.coastline.shapefile}},
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
+}
+\author{
+Dan Kelley
 }
 \concept{functions that extract parts of oce objects}
 \concept{things related to coastline data}
