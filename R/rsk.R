@@ -420,7 +420,7 @@ as.rsk <- function(time, columns,
 #' @param useSmoothScatter a boolean to cause [smoothScatter()] to be
 #' used for profile plots, instead of [plot()].
 #'
-#' @param mgp 3-element numerical vector to use for `par(mgp)`, and
+#' @param mgp 3-element numerical vector to use for [`par`]`("mgp")`, and
 #' also for `par(mar)`, computed from this.  The default is tighter than the
 #' R default, in order to use more space for the data and less for the axes.
 #'

@@ -48,8 +48,8 @@ String indicating the full pathname to the downloaded file.
 Data are downloaded from \url{http://climate.weather.gc.ca} and cached locally.
 }
 \details{
-The data are downloaded with \code{\link[utils]{download.file}}
-pointed to the Environment Canada website [1]
+The data are downloaded with \code{\link[utils:download.file]{utils::download.file()}}
+pointed to the Environment Canada website (reference 1)
 using queries that had to be devised by reverse-engineering, since the agency
 does not provide documentation about how to construct queries. Caution: the
 query format changes from time to time, so \code{download.met} may work one
@@ -63,16 +63,16 @@ Station ID is subject to change over time. (Whether this applies to existing
 data is unclear.)
 
 Given these difficulties with Station ID, users are advised to consult
-the Environment Canada website [1] before downloading any data,
+the Environment Canada website (reference 1) before downloading any data,
 and to check it from time to time
 during the course of a research project, to see if the Station ID has changed.
 Another approach would be to use Gavin Simpson's
-\code{canadaHCD} package [2] to look up Station IDs. This package maintains
+\code{canadaHCD} package \link{2} to look up Station IDs. This package maintains
 a copy of the Environment Canada listing of stations, and its
 \code{find_station} function provides an easy way to determine Station IDs.
 After that, its \code{hcd_hourly} function (and related functions) make
 it easy to read data. These data can then be converted to the
-\code{met} class with \code{\link{as.met}}, although doing so leaves
+\code{met} class with \code{\link[=as.met]{as.met()}}, although doing so leaves
 many important metadata blank.
 }
 \examples{
@@ -86,11 +86,12 @@ met <- read.met(metFile)
 
 }
 \references{
-1. Environment Canada website for Historical Climate Data
+\enumerate{
+\item Environment Canada website for Historical Climate Data
 \url{http://climate.weather.gc.ca/index_e.html}
-
-2. Gavin Simpon's \code{canadaHCD} package on GitHub
+\item Gavin Simpon's \code{canadaHCD} package on GitHub
 \url{https://github.com/gavinsimpson/canadaHCD}
+}
 }
 \seealso{
 The work is done with \code{\link[utils]{download.file}}.

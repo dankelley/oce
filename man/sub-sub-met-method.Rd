@@ -8,7 +8,7 @@
 \S4method{[[}{met}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A met object, i.e. one inheriting from \code{\link{met-class}}.}
+\item{x}{a \linkS4class{met} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 

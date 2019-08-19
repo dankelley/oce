@@ -8,17 +8,17 @@
 \S4method{subset}{met}(x, subset, ...)
 }
 \arguments{
-\item{x}{An object inheriting from \code{\link{met-class}}.}
+\item{x}{a \linkS4class{met} object.}
 
 \item{subset}{An expression indicating how to subset \code{x}.}
 
 \item{\dots}{ignored.}
 }
 \value{
-A new \code{met} object.
+A \linkS4class{met} object.
 }
 \description{
-This function is somewhat analogous to \code{\link{subset.data.frame}}.
+This function is somewhat analogous to \code{\link[=subset.data.frame]{subset.data.frame()}}.
 }
 \examples{
 library(oce)

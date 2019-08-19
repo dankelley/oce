@@ -6,7 +6,7 @@
 \title{Class to Store Meteorological Data}
 \description{
 This class stores meteorological data. For objects created with
-\code{\link{read.met}}, the \code{data} slot will contain all the columns
+\code{\link[=read.met]{read.met()}}, the \code{data} slot will contain all the columns
 within the original file (with some guesses as to units) in addition to
 several calculated quantities such as \code{u} and \code{v}, which are
 velocities in m/s (not the km/h stored in typical data files), and which

@@ -54,7 +54,7 @@ time).}
 \item{useSmoothScatter}{a boolean to cause \code{\link[=smoothScatter]{smoothScatter()}} to be
 used for profile plots, instead of \code{\link[=plot]{plot()}}.}
 
-\item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+\item{mgp}{3-element numerical vector to use for \code{\link{par}}\code{("mgp")}, and
 also for \code{par(mar)}, computed from this.  The default is tighter than the
 R default, in order to use more space for the data and less for the axes.}
 

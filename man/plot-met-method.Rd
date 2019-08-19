@@ -10,8 +10,7 @@
   debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \code{met} object, e.g. as read by \code{\link{read.met}}, or a
-list containing items named \code{salinity} and \code{temperature}.}
+\item{x}{a \linkS4class{met} object.}
 
 \item{which}{list of desired plot types.
 \itemize{
@@ -33,8 +32,8 @@ The default is tighter than the R default.}
 to control the plot margins.
 The default is tighter than the R default.}
 
-\item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
-plot types that call that function.  (See \code{\link{strptime}} for the
+\item{tformat}{optional argument passed to \code{\link[=oce.plot.ts]{oce.plot.ts()}}, for
+plot types that call that function.  (See \code{\link[=strptime]{strptime()}} for the
 format used.)}
 
 \item{debug}{an integer specifying whether debugging information is

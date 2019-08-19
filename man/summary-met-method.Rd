@@ -8,7 +8,7 @@
 \S4method{summary}{met}(object, ...)
 }
 \arguments{
-\item{object}{A \code{met} object, i.e. one inheriting from \code{\link{met-class}}.}
+\item{object}{a \linkS4class{met} object.}
 
 \item{\dots}{further arguments passed to or from other methods.}
 }

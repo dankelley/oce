@@ -9,7 +9,7 @@ as.met(time, temperature, pressure, u, v,
 }
 \arguments{
 \item{time}{Either a vector of observation times (or character strings that can be
-coerced into times) or the output from \code{canadaHCD::hcd_hourly} (see [1]).}
+coerced into times) or the output from \code{canadaHCD::hcd_hourly} (see reference 1).}
 
 \item{temperature}{vector of temperatures.}
 
@@ -22,24 +22,25 @@ coerced into times) or the output from \code{canadaHCD::hcd_hourly} (see [1]).}
 \item{filename}{optional string indicating data source}
 }
 \value{
-An object of \code{\link{met-class}}.
+A \linkS4class{met} object.
 }
 \description{
 Coerces a dataset into a met dataset. This fills in only a few of the typical
 data fields, so the returned object is much
-sparser than the output from \code{\link{read.met}}. Also, almost no
+sparser than the output from \code{\link[=read.met]{read.met()}}. Also, almost no
 metadata fields are filled in, so the resultant object does not store
 station location, units of the data, data-quality flags, etc. Anyone working
-with data from Environment Canada [2] is advised to use \code{\link{read.met}}
+with data from Environment Canada \link{2} is advised to use \code{\link[=read.met]{read.met()}}
 instead of the present function.
 }
 \references{
-1. The \code{canadaHCD} package is in development by Gavin Simpson; see
+\enumerate{
+\item The \code{canadaHCD} package is in development by Gavin Simpson; see
 \url{https://github.com/gavinsimpson/canadaHCD} for instructions on how
 to download and install from GitHub.
-
-2. Environment Canada website for Historical Climate Data
+\item Environment Canada website for Historical Climate Data
 \url{http://climate.weather.gc.ca/index_e.html}
+}
 }
 \seealso{
 Other things related to met data: \code{\link{[[,met-method}},
