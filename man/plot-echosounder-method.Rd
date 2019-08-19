@@ -14,14 +14,13 @@
   labelsTop, tformat, debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{An \code{echosounder} object, e.g. as read by
-\code{\link{read.echosounder}}, or created by \code{\link{as.echosounder}}.}
+\item{x}{an \linkS4class{echosounder} object.}
 
 \item{which}{list of desired plot types: \code{which=1} or \code{which="zt
 image"} gives a z-time image, \code{which=2} or \code{which="zx image"}
 gives a z-distance image, and \code{which=3} or \code{which="map"} gives a
 map showing the cruise track.  In the image plots, the display is of
-\code{\link{log10}} of amplitude, trimmed to zero for any amplitude values
+\code{\link[=log10]{log10()}} of amplitude, trimmed to zero for any amplitude values
 less than 1 (including missing values, which equal 0).  Add 10 to the
 numeric codes to get the secondary data (non-existent for single-beam files,}
 
@@ -34,7 +33,7 @@ signal.  For split-beam data, this may be \code{"a"} for amplitude,
 \item{newx}{optional vector of values to appear on the horizontal axis if
 \code{which=1}, instead of time.  This must be of the same length as the
 time vector, because the image is remapped from time to \code{newx} using
-\code{\link{approx}}.}
+\code{\link[=approx]{approx()}}.}
 
 \item{xlab, ylab}{optional labels for the horizontal and vertical axes; if
 not provided, the labels depend on the value of \code{which}.}
@@ -52,14 +51,14 @@ not provided, the labels depend on the value of \code{which}.}
 
 \item{lwd}{line width (ignored if \code{type="p"})}
 
-\item{despike}{remove vertical banding by using \code{\link{smooth}} to
+\item{despike}{remove vertical banding by using \code{\link[=smooth]{smooth()}} to
 smooth across image columns, row by row.}
 
 \item{drawBottom}{optional flag used for section images.  If \code{TRUE},
 then the bottom is inferred as a smoothed version of the ridge of highest
 image value, and data below that are grayed out after the image is drawn.
 If \code{drawBottom} is a color, then that color is used, instead of
-white.  The bottom is detected with \code{\link{findBottom}}, using the
+white.  The bottom is detected with \code{\link[=findBottom]{findBottom()}}, using the
 \code{ignore} value described next.}
 
 \item{ignore}{optional flag specifying the thickness in metres of a surface
@@ -77,23 +76,23 @@ top.  Ignored except for \code{which=2}, i.e. distance-depth plots.}
 \item{coastline}{coastline to use for maps; ignored unless \code{which=3} or
 \code{which="map"}.}
 
-\item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also
-for \code{par(mar)}, computed from this.  The default is tighter than the R
+\item{mgp}{3-element numerical vector to use for \code{\link{par}}\code{("mgp")}, and also
+for \code{\link{par}}\code{("mar")}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{\link{par}("mar")}.}
+\item{mar}{value to be used with \code{\link{par}}\code{("mar")}.}
 
 \item{atTop}{optional vector of time values, for labels at the top of the
 plot produced with \code{which=2}.  If \code{labelsTop} is provided, then it
 will hold the labels.  If \code{labelsTop} is not provided, the labels will
-be constructed with the \code{\link{format}} function, and these may be
-customized by supplying a \code{format} in the \dots{} arguments.}
+be constructed with the \code{\link[=format]{format()}} function, and these may be
+customized by supplying a \code{format} in the \code{...} arguments.}
 
 \item{labelsTop}{optional vector of character strings to be plotted above
 the \code{atTop} times.  Ignored unless \code{atTop} was provided.}
 
-\item{tformat}{optional argument passed to \code{\link{imagep}}, for plot
-types that call that function.  (See \code{\link{strptime}} for the format
+\item{tformat}{optional argument passed to \code{\link[=imagep]{imagep()}}, for plot
+types that call that function.  (See \code{\link[=strptime]{strptime()}} for the format
 used.)}
 
 \item{debug}{set to an integer exceeding zero, to get debugging information
@@ -105,7 +104,7 @@ with \code{radius}.}
 }
 \value{
 A list is silently returned, containing \code{xat} and \code{yat},
-values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
+values that can be used by \code{\link[=oce.grid]{oce.grid()}} to add a grid to the plot.
 }
 \description{
 Plot echosounder data.

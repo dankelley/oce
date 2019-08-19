@@ -9,13 +9,13 @@
 }
 \arguments{
 \item{object}{an object of class \code{"echosounder"}, usually, a result of
-a call to \code{\link{read.echosounder}}, \code{\link{read.oce}}, or
-\code{\link{as.echosounder}}.}
+a call to \code{\link[=read.echosounder]{read.echosounder()}}, \code{\link[=read.oce]{read.oce()}}, or
+\code{\link[=as.echosounder]{as.echosounder()}}.}
 
 \item{\dots}{further arguments passed to or from other methods.}
 }
 \description{
-Summarizes some of the data in an \code{echosounder} object.
+Summarizes some of the data in an \linkS4class{echosounder} object.
 }
 \seealso{
 Other things related to echosounder data: \code{\link{[[,echosounder-method}},

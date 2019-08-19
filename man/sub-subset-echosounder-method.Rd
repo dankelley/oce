@@ -8,7 +8,7 @@
 \S4method{[[}{echosounder}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An \code{echosounder} object, i.e. inheriting from \code{\link{echosounder-class}}}
+\item{x}{an \linkS4class{echosounder} object.}
 
 \item{i}{The item to replace.}
 

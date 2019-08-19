@@ -6,45 +6,37 @@
 \title{Class to Store Echosounder Data}
 \description{
 This class stores echosounder data. Echosounder objects may be
-read with \code{\link{read.echosounder}},
-summarized with \code{\link{summary,echosounder-method}},
-and plotted with \code{\link{plot,echosounder-method}}.
-The \code{\link{findBottom}}
+read with \code{\link[=read.echosounder]{read.echosounder()}},
+summarized with \code{\link[=summary,echosounder-method]{summary,echosounder-method()}},
+and plotted with \code{\link[=plot,echosounder-method]{plot,echosounder-method()}}.
+The \code{\link[=findBottom]{findBottom()}}
 function infers the ocean bottom from tracing the strongest reflector from
 ping to ping.
 }
 \details{
 \itemize{
-
 \item An infrequently updated record of the intrument position, in
 \code{timeSlow}, \code{longitudeSlow} and \code{latitudeSlow}.  These are
-used in plotting maps with \code{\link{plot,echosounder-method}}.
-
+used in plotting maps with \code{\link[=plot,echosounder-method]{plot,echosounder-method()}}.
 \item An interpolated record of the instrument position, in \code{time},
 \code{longitude}, and \code{latitude}.  Linear interpolation is used to
 infer the longitude and latitude from the variables listed above.
-
 \item \code{depth}, vector of depths of echo samples (measured positive
 downwards in the water column).  This is calculated from the inter-sample
 time interval and the sound speed provided as the \code{soundSpeed} argument
-to \code{\link{read.echosounder}}, so altering the value of the latter will
-alter the echosounder plots provided by \code{\link{plot,echosounder-method}}.
-
+to \code{\link[=read.echosounder]{read.echosounder()}}, so altering the value of the latter will
+alter the echosounder plots provided by \code{\link[=plot,echosounder-method]{plot,echosounder-method()}}.
 \item The echosounder signal amplitude \code{a}, a matrix whose number of
 rows matches the length of \code{time}, etc., and number of columns equal to
 the length of \code{depth}.  Thus, for example, \code{a[100,]} represents
 the depth-dependent amplitude at the time of the 100th ping.
-
 \item A matrix named \code{b} exists for dual-beam and split-beam cases.
 For dual-beam data, this is the wide-beam data, whereas \code{a} is the
 narrow-beam data.  For split-beam data, this is the x-angle data.
-
 \item A matrix named \code{c} exists for split-beam data, containing the
 y-angle data.
-
 \item In addition to these matrices, ad-hoc calculated matrices named
 \code{Sv} and \code{TS} may be accessed as explained in the next section.
-
 }
 }
 \section{Slots}{

@@ -7,11 +7,11 @@
 findBottom(x, ignore = 5, clean = despike)
 }
 \arguments{
-\item{x}{an object of class \code{echosounder}}
+\item{x}{an \linkS4class{echosounder} object.}
 
-\item{ignore}{number of metres of data to ignore, near the surface}
+\item{ignore}{number of metres of data to ignore, near the surface.}
 
-\item{clean}{a function to clean the inferred depth of spikes}
+\item{clean}{a function to clean the inferred depth of spikes.}
 }
 \value{
 A list with elements: the \code{time} of a ping, the \code{depth} of
@@ -23,7 +23,7 @@ Finds the depth in a Biosonics echosounder file, by finding the strongest
 reflector and smoothing its trace.
 }
 \seealso{
-The documentation for \code{\link{echosounder-class}} explains the
+The documentation for \linkS4class{echosounder} explains the
 structure of \code{echosounder} objects, and also outlines the other
 functions dealing with them.
 
