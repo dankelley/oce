@@ -8,7 +8,7 @@
 \S4method{[[}{odf}(x, i, j, ...)
 }
 \arguments{
-\item{x}{an odf object, i.e. one inheriting from \code{\link{odf-class}}.}
+\item{x}{an \linkS4class{odf} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 

@@ -16,7 +16,7 @@
 \item{\dots}{ignored.}
 }
 \value{
-A new \code{odf} object.
+An \code{odf} object.
 }
 \description{
 This function is somewhat analogous to \code{\link{subset.data.frame}}.

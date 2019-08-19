@@ -8,10 +8,9 @@
 \S4method{summary}{odf}(object, ...)
 }
 \arguments{
-\item{object}{an object of class \code{"odf"}, usually, a result of a call
-to \code{\link{read.odf}} or \code{\link{read.oce}}.}
-
 \item{\dots}{further arguments passed to or from other methods.}
+
+\item{x}{an \linkS4class{odf} object.}
 }
 \value{
 A matrix containing statistics of the elements of the \code{data}

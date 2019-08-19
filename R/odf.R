@@ -37,6 +37,8 @@
 #' @author Dan Kelley
 #' @family things related to odf data
 #' @family classes provided by oce
+#'
+#' @md
 setClass("odf", contains="oce")
 
 ## [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
@@ -57,10 +59,15 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-#' @title Extract Something From an ODF Object
-#' @param x an odf object, i.e. one inheriting from \code{\link{odf-class}}.
+#' Extract Something From an ODF Object
+#'
+#' @param x an [odf-class] object.
+#'
 #' @template sub_subTemplate
+#'
 #' @family things related to odf data
+#'
+#' @md
 setMethod(f="[[",
           signature(x="odf", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -68,33 +75,43 @@ setMethod(f="[[",
           })
 
 #' @title Replace Parts of an ODF Object
-#' @param x an \code{odf} object, i.e. inheriting from \code{\link{odf-class}}
+#'
+#' @param x an [odf-class] object.
+#'
 #' @template sub_subsetTemplate
+#'
 #' @family things related to odf data
+#'
+#' @md
 setMethod(f="[[<-",
           signature(x="odf", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
               callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
-#' @title Subset an ODF object
+#' Subset an ODF object
 #'
-#' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
 #'
-#' @details
 #' It seems likely that users will first convert the odf object into
 #' another class (e.g. ctd) and use the subset method of that class;
 #' note that some of those methods interpret the \dots argument.
 #'
 #' @param x an \code{odf} object.
+#'
 #' @param subset a condition to be applied to the \code{data} portion of
 #' \code{x}.  See \sQuote{Details}.
+#'
 #' @param \dots ignored.
-#' @return A new \code{odf} object.
+#'
+#' @return An \code{odf} object.
+#'
 #' @author Dan Kelley
+#'
 #' @family things related to odf data
 #' @family functions that subset oce objects
+#'
+#' @md
 setMethod(f="subset",
           signature="odf",
           definition=function(x, subset, ...) {
@@ -119,9 +136,8 @@ setMethod(f="subset",
           })
 
 
-#' @title Plot an ODF Object
+#' Plot an ODF Object
 #'
-#' @description
 #' Plot data contained within an ODF object,
 #' using \code{\link{oce.plot.ts}} to create panels of time-series plots for
 #' all the columns contained in the \code{odf} object (or just those that
@@ -135,7 +151,7 @@ setMethod(f="subset",
 #' \code{odf} objects are usually cast to other types, and those types
 #' tend to have more useful plots.
 #'
-#' @param x A \code{odf} object, e.g. one inheriting from \code{\link{odf-class}}.
+#' @param x an [odf-class] object.
 #'
 #' @param blanks A logical value that indicates whether to include dummy
 #' plots for data items that lack any finite values.
@@ -143,9 +159,13 @@ setMethod(f="subset",
 #' @template debugTemplate
 #'
 #' @author Dan Kelley
+#'
 #' @family functions that plot oce data
 #' @family things related to odf data
+#'
 #' @aliases plot.odf
+#'
+#' @md
 setMethod(f="plot",
           signature=signature("odf"),
           definition=function(x, blanks=TRUE,
@@ -205,19 +225,23 @@ setMethod(f="plot",
           })
 
 
-#' @title Summarize an ODF Object
+#' Summarize an ODF Object
 #'
-#' @description
 #' Pertinent summary information is presented, including the station name,
 #' sampling location, data ranges, etc.
 #'
-#' @param object an object of class \code{"odf"}, usually, a result of a call
-#' to \code{\link{read.odf}} or \code{\link{read.oce}}.
+#' @param x an [odf-class] object.
+#'
 #' @param \dots further arguments passed to or from other methods.
+#'
 #' @return A matrix containing statistics of the elements of the \code{data}
 #' slot.
+#'
 #' @author Dan Kelley
+#'
 #' @family things related to odf data
+#'
+#' @md
 setMethod(f="summary",
           signature="odf",
           definition=function(object, ...) {
@@ -286,12 +310,10 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
     }
 }
 
-#' @title Translate from ODF Names to Oce Names
+#' Translate from ODF Names to Oce Names
 #'
-#' @description
 #' Translate data names in the ODF convention to similar names in the Oce convention.
 #'
-#' @details
 #' The following table gives the regular expressions that define recognized
 #' ODF names, along with the translated names as used in oce objects.
 #' If an item is repeated, then the second one has a \code{2} appended
@@ -366,13 +388,19 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' has unit millmole/m^3 for NODC and MEDS, but it has unit mL/L for BIO and IML.
 #'
 #' @param ODFnames Vector of strings holding ODF names.
+#'
 #' @param ODFunits Vector of strings holding ODF units.
+#'
 #' @param columns Optional list containing name correspondances, as described for
 #' \code{\link{read.ctd.odf}}.
+#'
 #' @param PARAMETER_HEADER Optional list containing information on the data variables.
 #' @template debugTemplate
+#'
 #' @return A vector of strings.
+#'
 #' @author Dan Kelley
+#'
 #' @family functions that interpret variable names and units from headers
 #'
 #' @references
@@ -382,6 +410,8 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' link \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
 #' seems to be a good place to start.
 #' @family things related to odf data
+#'
+#' @md
 ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
                               columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
 {
@@ -640,9 +670,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
 }
 
 
-#' @title Create ODF object from the output of \code{ODF::read_ODF()}
+#' Create ODF object from the output of \code{ODF::read_ODF()}
 #'
-#' @description
 #' As of August 11, 2015, \code{ODF::read_ODF} returns a list with 9 elements,
 #' one named \code{DATA}, which is a \code{\link{data.frame}} containing the
 #' columnar data, the others being headers of various sorts.  The present
@@ -657,18 +686,25 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
 #' from ODF to oce convention using \code{\link{ODFNames2oceNames}}.
 #'
 #' @param ODF A list as returned by \code{read_ODF} in the \code{ODF} package
+#'
 #' @param coerce A logical value indicating whether to coerce the return value
 #' to an appropriate object type, if possible.
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
+#'
 #' @return An oce object, possibly coerced to a subtype.
 #'
 #' @section Caution: This function may change as the \code{ODF} package
 #' changes.  Since \code{ODF} has not been released yet, this should not affect
 #' any users except those involved in the development of \code{oce} and
 #' \code{ODF}.
+#'
 #' @author Dan Kelley
+#'
 #' @family things related to odf data
+#'
+#' @md
 ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 {
     ## Stage 1. insert metadata (with odfHeader holding entire ODF header info)
@@ -757,12 +793,16 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 }
 
 #' Create a list of ODF header metadata
+#'
 #' @param header Vector of character strings, holding the header
+#'
 #' @return A list holding the metadata, with item names matching
 #' those in the ODF header, except that duplicates are transformed
 #' through the use of \code{\link{unduplicateNames}}.
 #'
 #' @family things related to odf data
+#'
+#' @md
 ODFListFromHeader <- function(header)
 {
     ## remove trailing blanks
@@ -812,9 +852,8 @@ ODFListFromHeader <- function(header)
 }
 
 
-#' @title Read an ODF file
+#' Read an ODF file
 #'
-#' @description
 #' ODF (Ocean Data Format) is a
 #' format developed at the Bedford Institute of Oceanography and also used
 #' at other Canadian Department of Fisheries and Oceans (DFO) facilities
@@ -825,7 +864,6 @@ ODFListFromHeader <- function(header)
 #' \code{read.odf} is still in development, with features being added as a
 #' project with DFO makes available more files.
 #'
-#' @details
 #' Note that some elements of the metadata are particular to ODF objects,
 #' e.g. \code{depthMin}, \code{depthMax} and \code{sounding}, which
 #' are inferred from ODF items named \code{MIN_DEPTH}, \code{MAX_DEPTH}
@@ -928,19 +966,18 @@ ODFListFromHeader <- function(header)
 #' package is released by the Canadian Department of Fisheries and Oceans.
 #'
 #' @references
-#' \enumerate{
 #'
-#' \item Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
+#' 1. Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
 #' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
 #' in June 2011.)
 #'
-#' \item The St Lawrence Global Observatory website has information on ODF format at
+#' 2. The St Lawrence Global Observatory website has information on ODF format at
 #' \url{https://slgo.ca/app-sgdo/en/docs_reference/documents.html}
 #' and this is perhaps the best resource to learn more.
 #'
-#'}
-#'
 #' @family things related to odf data
+#'
+#' @md
 read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.odf(\"", file, "\", ...) {\n", unindent=1, sep="")

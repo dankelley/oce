@@ -9,7 +9,7 @@
 \S4method{plot}{odf}(x, blanks = TRUE, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \code{odf} object, e.g. one inheriting from \code{\link{odf-class}}.}
+\item{x}{an \linkS4class{odf} object.}
 
 \item{blanks}{A logical value that indicates whether to include dummy
 plots for data items that lack any finite values.}

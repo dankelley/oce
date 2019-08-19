@@ -8,7 +8,7 @@
 \S4method{[[}{odf}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{an \code{odf} object, i.e. inheriting from \code{\link{odf-class}}}
+\item{x}{an \linkS4class{odf} object.}
 
 \item{i}{The item to replace.}
 

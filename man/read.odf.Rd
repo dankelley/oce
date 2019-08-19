@@ -52,7 +52,7 @@ An object of class \code{oce}. It is up to a calling function to determine what 
 ODF (Ocean Data Format) is a
 format developed at the Bedford Institute of Oceanography and also used
 at other Canadian Department of Fisheries and Oceans (DFO) facilities
-(see [1] and [2]).
+(see \link{1} and \link{2}).
 It can hold various types of time-series data, which includes a variety
 of instrument types. Thus, \code{read.odf}
 is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2018,
@@ -131,15 +131,12 @@ points(ctd[['salinity']][bad],ctd[['theta']][bad],col='red',pch=20)
 }
 \references{
 \enumerate{
-
 \item Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
 Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
 in June 2011.)
-
 \item The St Lawrence Global Observatory website has information on ODF format at
 \url{https://slgo.ca/app-sgdo/en/docs_reference/documents.html}
 and this is perhaps the best resource to learn more.
-
 }
 }
 \seealso{
