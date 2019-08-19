@@ -8,7 +8,7 @@
 \S4method{[[}{bremen}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A bremen object, i.e. one inheriting from \code{\link{bremen-class}}.}
+\item{x}{a \linkS4class{bremen} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 

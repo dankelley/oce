@@ -37,7 +37,7 @@ ignored.  With a \code{boxcar} window, all data within the local domain are
 treated equally, while with a \code{hanning} window, a raised-cosine
 weighting function is used; the latter produces smoother derivatives, which
 can be useful for noisy data.  The function is based on internal
-calculation, not on \code{\link{lm}}.
+calculation, not on \code{\link[=lm]{lm()}}.
 }
 \examples{
 
@@ -65,6 +65,7 @@ lines(N2, -zz, col='red')
 legend("bottomright", lwd=2, bg="white",
        col=c("black", "red"),
        legend=c("swN2()", "using runlm()"))
+
 }
 \author{
 Dan Kelley

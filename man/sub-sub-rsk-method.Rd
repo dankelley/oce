@@ -8,7 +8,7 @@
 \S4method{[[}{rsk}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A rsk object, i.e. one inheriting from \code{\link{rsk-class}}.}
+\item{x}{an \linkS4class{rsk} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 

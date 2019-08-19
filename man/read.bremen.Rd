@@ -11,11 +11,10 @@ read.bremen(file)
 to load.}
 }
 \value{
-An object of \code{\link{bremen-class}}.
+A \linkS4class{bremen} object.
 }
 \description{
-Read a file in Bremen format, producing an object inheriting from
-\code{\link{bremen-class}}.
+Read a file in Bremen format.
 }
 \details{
 Velocities are assumed to be in
@@ -24,9 +23,7 @@ cm/s, and are converted to m/s to follow the oce convention. Shears
 to represent) are assumed to be in (cm/s)/m, although they could be in 1/s
 or something else; the lack of documentation is a problem here. Also,
 note that the assumed shears are not just first-difference estimates
-of velocity, given the results of a sample dataset:
-\preformatted{
-> head(data.frame(b[["data"]]))
+of velocity, given the results of a sample dataset:\preformatted{> head(data.frame(b[["data"]]))
   pressure      u      v       uz       vz
 1        0  0.092 -0.191  0.00000  0.00000
 2       10  0.092 -0.191  0.02183 -0.35412

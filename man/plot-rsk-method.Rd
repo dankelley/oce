@@ -14,7 +14,7 @@
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{\code{rsk} object, typically result of \code{\link{read.rsk}}.}
+\item{x}{an \linkS4class{rsk} object.}
 
 \item{which}{character indicating desired plot types.  These are
 graphed in panels running down from the top of the page.  See
@@ -38,8 +38,8 @@ Examples).}
 
 \item{ylab}{optional label for y axis.}
 
-\item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for plot
-types that call that function.  (See \code{\link{strptime}} for the format
+\item{tformat}{optional argument passed to \code{\link[=oce.plot.ts]{oce.plot.ts()}}, for plot
+types that call that function.  (See \code{\link[=strptime]{strptime()}} for the format
 used.)}
 
 \item{drawTimeRange}{boolean that applies to panels with time as the horizontal
@@ -51,14 +51,14 @@ horizontal axis, indicating whether to abbreviate the second time in the time
 range (e.g. skipping the year, month, day, etc. if it's the same as the start
 time).}
 
-\item{useSmoothScatter}{a boolean to cause \code{\link{smoothScatter}} to be
-used for profile plots, instead of \code{\link{plot}}.}
+\item{useSmoothScatter}{a boolean to cause \code{\link[=smoothScatter]{smoothScatter()}} to be
+used for profile plots, instead of \code{\link[=plot]{plot()}}.}
 
 \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
 also for \code{par(mar)}, computed from this.  The default is tighter than the
 R default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{\link{par}("mar")}.}
+\item{mar}{value to be used with `\link{par`("mar")}.}
 
 \item{main}{main title for plot, used just on the top panel, if there are several panels.}
 
@@ -82,11 +82,11 @@ time-series plots, because the one thing that is definitely known about
 }
 \details{
 Plots produced are time series plots of the data in the
-    object. The default, \code{which="timeseries"} plots all data
-    fields, and over-rides any other specification. Specific fields
-    can be plotted by naming the field,
-    e.g. \code{which="temperature"} to plot a time series of just
-    the temperature field.
+object. The default, \code{which="timeseries"} plots all data
+fields, and over-rides any other specification. Specific fields
+can be plotted by naming the field,
+e.g. \code{which="temperature"} to plot a time series of just
+the temperature field.
 }
 \examples{
 library(oce)
@@ -100,7 +100,7 @@ plot(rsk, which="temperature", ylim=c(2, 4))
 
 }
 \seealso{
-The documentation for \code{\link{rsk-class}} explains the structure of
+The documentation for \linkS4class{rsk} explains the structure of
 \code{rsk} objects, and also outlines the other functions dealing with them.
 
 Other functions that plot oce data: \code{\link{plot,adp-method}},

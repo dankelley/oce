@@ -8,7 +8,7 @@
 \S4method{[[}{rsk}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An \code{rsk} object, i.e. inheriting from \code{\link{rsk-class}}}
+\item{x}{an \linkS4class{rsk} object.}
 
 \item{i}{The item to replace.}
 

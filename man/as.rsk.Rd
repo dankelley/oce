@@ -28,7 +28,7 @@ estimated as the median difference in times.}
 \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 \value{
-An object of \code{\link{rsk-class}} \code{"rsk"}.
+An \linkS4class{rsk} object.
 }
 \description{
 Create a rsk object.
@@ -37,7 +37,7 @@ Create a rsk object.
 The contents of \code{columns} are be copied into the \code{data} slot
 of the returned object directly, so it is critical that the names and units
 correspond to those expected by other code dealing with
-\code{\link{rsk-class}} objects. If there is a conductivity, it must be called
+\linkS4class{rsk} objects. If there is a conductivity, it must be called
 \code{conductivity}, and it must be in units of mS/cm. If there is a
 temperature, it must be called \code{temperature}, and it must be an in-situ
 value recorded in ITS-90 units.  And if there is a pressure, it must be

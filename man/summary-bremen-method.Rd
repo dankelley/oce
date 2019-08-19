@@ -8,8 +8,7 @@
 \S4method{summary}{bremen}(object, ...)
 }
 \arguments{
-\item{object}{A \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
-call to \code{\link{read.bremen}}.}
+\item{object}{a \linkS4class{bremen} object.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }

@@ -5,14 +5,14 @@
 \alias{rsk-class}
 \title{Class to Store Rsk Data}
 \description{
-This class stores ``Ruskin'' data, from RBR [1].
+This class stores Ruskin data, from RBR (see reference 1).
 }
 \details{
-A \code{rsk} object may be read with \code{\link{read.rsk}} or created with
-\code{\link{as.rsk}}.  Plots can be made with \code{\link{plot,rsk-method}}, while
-\code{\link{summary,rsk-method}} produces statistical summaries and \code{show}
+A \linkS4class{rsk} object may be read with \code{\link[=read.rsk]{read.rsk()}} or created with
+\code{\link[=as.rsk]{as.rsk()}}.  Plots can be made with \code{\link[=plot,rsk-method]{plot,rsk-method()}}, while
+\code{\link[=summary,rsk-method]{summary,rsk-method()}} produces statistical summaries and \code{show}
 produces overviews.   If atmospheric pressure has not been removed from the
-data, the functions \code{\link{rskPatm}} may provide guidance as to its value;
+data, the functions \code{\link[=rskPatm]{rskPatm()}} may provide guidance as to its value;
 however, this last function is no equal to decent record-keeping at sea.
 }
 \section{Slots}{
@@ -64,7 +64,9 @@ to find items more directly, using \code{\link{oceGetData}} and
 }
 
 \references{
-1. \href{https://www.rbr-global.com/products}{RBR website: www.rbr-global.com/products}
+\enumerate{
+\item RBR website (https://www.rbr-global.com/products)
+}
 }
 \seealso{
 Other classes provided by oce: \code{\link{adp-class}},

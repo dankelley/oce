@@ -8,13 +8,12 @@
 \S4method{summary}{rsk}(object, ...)
 }
 \arguments{
-\item{object}{An object of class \code{"rsk"}, usually, a result of a call to
-\code{\link{read.rsk}}, \code{\link{read.oce}}, or \code{\link{as.rsk}}.}
+\item{object}{An \linkS4class{rsk} object.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Summarizes some of the data in a \code{rsk} object, presenting such information
+Summarizes some of the data in a \linkS4class{rsk} object, presenting such information
 as the station name, sampling location, data ranges, etc.
 }
 \examples{
@@ -24,7 +23,7 @@ summary(rsk)
 
 }
 \seealso{
-The documentation for \code{\link{rsk-class}} explains the structure
+The documentation for \linkS4class{rsk} explains the structure
 of CTD objects, and also outlines the other functions dealing with them.
 
 Other things related to rsk data: \code{\link{[[,rsk-method}},

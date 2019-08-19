@@ -9,7 +9,7 @@
 \S4method{plot}{bremen}(x, type, ...)
 }
 \arguments{
-\item{x}{A \code{bremen} object, e.g. as read by \code{\link{read.bremen}}.}
+\item{x}{a \linkS4class{bremen} object.}
 
 \item{type}{Optional string indicating the type to which \code{x} should be
 coerced before plotting. The choices are \code{ctd} and \code{ladp}.}
@@ -17,10 +17,10 @@ coerced before plotting. The choices are \code{ctd} and \code{ladp}.}
 \item{...}{Other arguments, passed to plotting functions.}
 }
 \description{
-Plot a \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
-If \code{x} seems to be a CTD dataset, uses \code{\link{plot,ctd-method}};
-otherwise, \code{x} is assumed to be a lowered-adp object, and a two-panel
-plot is created with \code{\link{plot,ladp-method}} to show velocity variation with
+Plot a \linkS4class{bremen} object.
+If the first argument seems to be a CTD dataset, this uses \code{\link[=plot,ctd-method]{plot,ctd-method()}};
+otherwise, that argument is assumed to be a \linkS4class{ladp} object, and a two-panel
+plot is created with \code{\link[=plot,ladp-method]{plot,ladp-method()}} to show velocity variation with
 pressure.
 }
 \seealso{

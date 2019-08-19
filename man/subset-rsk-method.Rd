@@ -8,7 +8,7 @@
 \S4method{subset}{rsk}(x, subset, ...)
 }
 \arguments{
-\item{x}{a \code{rsk} object, i.e. inheriting from \code{\link{rsk-class}}.}
+\item{x}{an \linkS4class{rsk} object.}
 
 \item{subset}{a condition to be applied to the \code{data} portion of \code{x}.
 See \sQuote{Details}.}
@@ -16,11 +16,11 @@ See \sQuote{Details}.}
 \item{\dots}{ignored.}
 }
 \value{
-A new \code{rsk} object.
+An \linkS4class{rsk} object.
 }
 \description{
 Subset a rsk object.  This function is somewhat analogous to
-\code{\link{subset.data.frame}}, but subsetting is only permitted by time.
+\code{\link[=subset.data.frame]{subset.data.frame()}}, but subsetting is only permitted by time.
 }
 \examples{
 library(oce)

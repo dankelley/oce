@@ -9,7 +9,7 @@ rsk2ctd(x, pressureAtmospheric = 0, longitude = NULL,
   deploymentType = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{An \code{rsk} object, i.e. one inheriting from \code{\link{rsk-class}}.}
+\item{x}{an \linkS4class{rsk} object.}
 
 \item{pressureAtmospheric}{A numerical value (a constant or a vector),
 that is subtracted from the pressure in \code{object} before storing it in the return value.}
@@ -25,7 +25,7 @@ that is subtracted from the pressure in \code{object} before storing it in the r
 \item{station}{optional string containing a station identifier.}
 
 \item{deploymentType}{character string indicating the type of deployment (see
-\code{\link{as.ctd}}).}
+\code{\link[=as.ctd]{as.ctd()}}).}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

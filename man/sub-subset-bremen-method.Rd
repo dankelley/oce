@@ -8,7 +8,7 @@
 \S4method{[[}{bremen}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An \code{bremen} object, i.e. inheriting from \code{\link{bremen-class}}}
+\item{x}{a \linkS4class{bremen} object.}
 
 \item{i}{The item to replace.}
 

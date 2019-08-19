@@ -7,14 +7,14 @@
 unitFromStringRsk(s)
 }
 \arguments{
-\item{s}{Vector of character strings, holding the `units` entry in the
+\item{s}{Vector of character strings, holding the \code{units} entry in the
 \code{channels} table of the \code{.rsk} database.}
 }
 \value{
 List of unit lists.
 }
 \description{
-This is used by \code{\link{read.rsk}} to infer the units of data, based
+This is used by \code{\link[=read.rsk]{read.rsk()}} to infer the units of data, based
 on strings stored in \code{.rsk} files. Lacking a definitive guide
 to the format of these file, this function was based on visual inspection
 of the data contained within a few sample files; unusual sensors may
