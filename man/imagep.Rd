@@ -26,20 +26,20 @@ ordered in a matching way).  \emph{Mode 2.}
 If \code{z} is provided but not \code{x} and \code{y}, then the latter
 are constructed to
 indicate the indices of the matrix, in contrast
-to the range of 0 to 1, as is the case for \code{\link{image}}.
+to the range of 0 to 1, as is the case for \code{\link[=image]{image()}}.
 \emph{Mode 3.} If
 \code{x} is a list, its components \code{x$x} and \code{x$y} are used
 for \code{x} and \code{y}, respectively. If the list has component
 \code{z} this is used for \code{z}. (NOTE: these arguments are meant to
-mimic those of \code{\link{image}}, which explains the same description
+mimic those of \code{\link[=image]{image()}}, which explains the same description
 here.)  \emph{Mode 4.} There are also some special cases, e.g. if \code{x} is a
-topographic object such as can be created with \code{\link{read.topo}}
-or \code{\link{as.topo}}, then longitude and latitude are used for
+topographic object such as can be created with \code{\link[=read.topo]{read.topo()}}
+or \code{\link[=as.topo]{as.topo()}}, then longitude and latitude are used for
 axes, and topographic height is drawn.}
 
 \item{z}{A matrix containing the values to be plotted (NAs are allowed). Note
 that x can be used instead of z for convenience. (NOTE: these arguments
-are meant to mimic those of \code{\link{image}}, which explains the same
+are meant to mimic those of \code{\link[=image]{image()}}, which explains the same
 description here.)}
 
 \item{xlim, ylim}{Limits on x and y axes.}
@@ -52,7 +52,7 @@ histogram (i.e. to increase contrast). Third, it could be the
 string \code{"symmetric"}, to yield limits that are symmetric
 about zero, which can be helpful in drawing velocity fields,
 for which a zero value has a particular meaning (in which case,
-a good color scheme might be \code{col=\link{oceColorsTwo}}).}
+a good color scheme might be \code{col=oceColorsTwo}).}
 
 \item{zclip}{Logical, indicating whether to clip the colors to those
 corresponding to \code{zlim}. This only works if \code{zlim} is
@@ -96,13 +96,13 @@ index.}
 
 \item{breaks}{The z values for breaks in the color scheme.  If this is of
 length 1, the value indicates the desired number of breaks, which is
-supplied to \code{\link{pretty}}, in determining clean break points.}
+supplied to \code{\link[=pretty]{pretty()}}, in determining clean break points.}
 
 \item{col}{Either a vector of colors corresponding to the breaks, of length
 1 plus the number of breaks, or a function specifying colors,
-e.g. \code{\link{oce.colorsJet}} for a rainbow.}
+e.g. \code{\link[=oce.colorsJet]{oce.colorsJet()}} for a rainbow.}
 
-\item{colormap}{A color map as created by \code{\link{colormap}}.  If
+\item{colormap}{A color map as created by \code{\link[=colormap]{colormap()}}.  If
 provided, then \code{colormap$breaks} and \code{colormap$col} take
 precedence over the present arguments \code{breaks} and \code{col}.
 (All of the other contents of \code{colormap} are ignored, though.)}
@@ -128,10 +128,10 @@ the images.}
 
 \item{drawTriangles}{Logical value indicating whether to draw
 triangles on the top and bottom of the palette.  This is passed to
-\code{\link{drawPalette}}.}
+\code{\link[=drawPalette]{drawPalette()}}.}
 
-\item{tformat}{Optional argument passed to \code{\link{oce.plot.ts}}, for
-plot types that call that function.  (See \code{\link{strptime}} for the
+\item{tformat}{Optional argument passed to \code{\link[=oce.plot.ts]{oce.plot.ts()}}, for
+plot types that call that function.  (See \code{\link[=strptime]{strptime()}} for the
 format used.)}
 
 \item{drawTimeRange}{Logical, only used if the \code{x} axis is a
@@ -147,17 +147,17 @@ contours to plot the image.}
 \code{NULL} for transparent (to see this, try setting
 \code{par("bg")<-"red"}).}
 
-\item{useRaster}{A logical value passed to \code{\link{image}}, in cases
+\item{useRaster}{A logical value passed to \code{\link[=image]{image()}}, in cases
 where \code{filledContour} is \code{FALSE}. Setting \code{useRaster=TRUE}
 can alleviate some anti-aliasing effects on some plot devices;
-see the documentation for \code{\link{image}}.}
+see the documentation for \code{\link[=image]{image()}}.}
 
 \item{mgp}{A 3-element numerical vector to use for \code{par(mgp)}, and
 also for \code{par(mar)}, computed from this.  The default is
 tighter than the R default, in order to use more space for the
 data and less for the axes.}
 
-\item{mar}{A 4-element Value to be used with \code{\link{par}("mar")}.  If not
+\item{mar}{A 4-element Value to be used with \code{\link{par}}\code{("mar")}.  If not
 given, a reasonable value is calculated based on whether \code{xlab} and
 \code{ylab} are empty strings.}
 
@@ -166,24 +166,24 @@ given, a reasonable value is calculated based on whether \code{xlab} and
 
 \item{xaxs}{Character indicating whether image should extend to edge
 of x axis (with value \code{"i"}) or not; see
-\code{\link[graphics]{par}}("xaxs").}
+\code{\link{par}}\code{("xaxs")}.}
 
 \item{yaxs}{As \code{xaxs} but for y axis.}
 
-\item{asp}{Aspect ratio of the plot, as for \code{\link{plot.default}}. If
-\code{x} inherits from \code{\link{topo-class}} and \code{asp=NA} (the
+\item{asp}{Aspect ratio of the plot, as for \code{\link[=plot.default]{plot.default()}}. If
+\code{x} inherits from \code{\link[=topo-class]{topo-class()}} and \code{asp=NA} (the
 default) then \code{asp} is redefined to be the reciprocal of the
 mean latitude in \code{x}, as a way to reduce geographical distortion.
 Otherwise, if \code{asp} is not \code{NA}, then it is used directly.}
 
-\item{cex}{Size of labels on axes and palette; see \code{\link[graphics]{par}}("cex").}
+\item{cex}{Size of labels on axes and palette; see \code{\link{par}}\code{("cex")}.}
 
 \item{axes}{Logical, set \code{TRUE} to get axes on the main image.}
 
 \item{main}{Title for plot.}
 
 \item{axisPalette}{Optional replacement function for \code{axis()}, passed to
-\code{\link{drawPalette}}.}
+\code{\link[=drawPalette]{drawPalette()}}.}
 
 \item{add}{Logical value indicating whether to add to an existing plot.
 The default value, \code{FALSE} indicates that a new plot is to be created.
@@ -202,29 +202,29 @@ moderate amount of debugging information, or to 2 to get more.}
 }
 \value{
 A list is silently returned, containing \code{xat} and \code{yat},
-    values that can be used by \code{\link{oce.grid}} to add a grid to the
-    plot.
+values that can be used by \code{\link[=oce.grid]{oce.grid()}} to add a grid to the
+plot.
 }
 \description{
 Plot an image with a color palette, in a way that does not conflict with
-\code{\link{par}(mfrow)} or \code{\link{layout}}.  To plot just a palette,
+\code{\link{par}}\code{("mfrow")} or \code{\link[=layout]{layout()}}.  To plot just a palette,
 e.g. to get an x-y plot with points colored according to a palette, use
-\code{\link{drawPalette}} and then draw the main diagram.
+\code{\link[=drawPalette]{drawPalette()}} and then draw the main diagram.
 }
 \details{
 By default, creates an image with a color palette to the right.  The effect is similar to
-\code{\link{filled.contour}} except that with \code{imagep} it is possible to
-set the \code{\link{layout}} outside the function, which enables the creation
+\code{\link[=filled.contour]{filled.contour()}} except that with \code{imagep} it is possible to
+set the \code{\link[=layout]{layout()}} outside the function, which enables the creation
 of plots with many image-palette panels.  Note that the contour lines may not
 coincide with the color transitions, in the case of coarse images.
 
-Note that this does not use \code{\link{layout}} or any of the other screen
+Note that this does not use \code{\link[=layout]{layout()}} or any of the other screen
 splitting methods.  It simply manipulates margins, and draws two plots
 together.  This lets users employ their favourite layout schemes.
 
-NOTE: \code{imagep} is an analogue of \code{\link{image}}, and from that
+NOTE: \code{imagep} is an analogue of \code{\link[=image]{image()}}, and from that
 it borrows a the convention that the number of rows in the matrix corresponds to
-to \code{x} axis, not the \code{y} axis.  (Actually, \code{\link{image}} permits
+to \code{x} axis, not the \code{y} axis.  (Actually, \code{\link[=image]{image()}} permits
 the length of \code{x} to match either \code{nrow(z)} or \code{1+nrow(z)}, but
 here only the first is permitted.)
 }
@@ -274,8 +274,8 @@ imagep(topoWorld, colormap=cm)
 
 }
 \seealso{
-This uses \code{\link{drawPalette}}, and is used by \code{\link{plot,adp-method}},
-\code{\link{plot,landsat-method}}, and other image-generating functions.
+This uses \code{\link[=drawPalette]{drawPalette()}}, and is used by \code{\link[=plot,adp-method]{plot,adp-method()}},
+\code{\link[=plot,landsat-method]{plot,landsat-method()}}, and other image-generating functions.
 }
 \author{
 Dan Kelley and Clark Richards
