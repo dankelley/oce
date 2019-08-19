@@ -186,7 +186,7 @@ setMethod(f="subset",
 #' sparser than the output from [read.met()]. Also, almost no
 #' metadata fields are filled in, so the resultant object does not store
 #' station location, units of the data, data-quality flags, etc. Anyone working
-#' with data from Environment Canada [2] is advised to use [read.met()]
+#' with data from Environment Canada (reference 2) is advised to use [read.met()]
 #' instead of the present function.
 #'
 #' @param time Either a vector of observation times (or character strings that can be
@@ -304,7 +304,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' and to check it from time to time
 #' during the course of a research project, to see if the Station ID has changed.
 #' Another approach would be to use Gavin Simpson's
-#' `canadaHCD` package [2] to look up Station IDs. This package maintains
+#' `canadaHCD` package (reference 2) to look up Station IDs. This package maintains
 #' a copy of the Environment Canada listing of stations, and its
 #' `find_station` function provides an easy way to determine Station IDs.
 #' After that, its `hcd_hourly` function (and related functions) make

@@ -8,7 +8,7 @@
 \S4method{[[}{ladp}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A \code{ladp} object, i.e. one inheriting from \code{\link{ladp-class}}.}
+\item{x}{an \linkS4class{ladp} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
@@ -93,6 +93,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 \examples{
 data(ctd)
 head(ctd[["temperature"]])
+
 }
 \seealso{
 Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},

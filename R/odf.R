@@ -22,14 +22,14 @@
 #'
 #' @references
 #'
-#' [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
+#' 1. Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
 #' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
 #' in June 2011.)
 #'
-#' [2] The St Lawrence Global Observatory website has information on ODF format at
+#' 2. The St Lawrence Global Observatory website has information on ODF format at
 #' \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
 #'
-#' [3] List of variable codes:
+#' 3. List of variable codes:
 #' \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}
 #' (checked 2018-02-11); only a subset are handled.
 #'
@@ -40,12 +40,6 @@
 #'
 #' @md
 setClass("odf", contains="oce")
-
-## [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
-##
-## [2] An older document is: \url{https://slgo.ca/app-sgdo/en/pdf/docs_reference/Format_ODF.pdf} (checked 2018-02-11)
-## [3] List of variable codes: \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html} (checked 2018-02-11); only
-## a subset are handled.
 
 setMethod(f="initialize",
           signature="odf",
@@ -384,7 +378,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #'
 #' @section Consistency warning:
 #' There are disagreements on variable names. For example, the ``DFO
-#' Common Data Dictionary'' [1]
+#' Common Data Dictionary'' (reference 1)
 #' has unit millmole/m^3 for NODC and MEDS, but it has unit mL/L for BIO and IML.
 #'
 #' @param ODFnames Vector of strings holding ODF names.

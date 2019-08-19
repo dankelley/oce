@@ -30,7 +30,7 @@ data fields, so the returned object is much
 sparser than the output from \code{\link[=read.met]{read.met()}}. Also, almost no
 metadata fields are filled in, so the resultant object does not store
 station location, units of the data, data-quality flags, etc. Anyone working
-with data from Environment Canada \link{2} is advised to use \code{\link[=read.met]{read.met()}}
+with data from Environment Canada (reference 2) is advised to use \code{\link[=read.met]{read.met()}}
 instead of the present function.
 }
 \references{

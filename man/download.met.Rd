@@ -67,7 +67,7 @@ the Environment Canada website (reference 1) before downloading any data,
 and to check it from time to time
 during the course of a research project, to see if the Station ID has changed.
 Another approach would be to use Gavin Simpson's
-\code{canadaHCD} package \link{2} to look up Station IDs. This package maintains
+\code{canadaHCD} package (reference 2) to look up Station IDs. This package maintains
 a copy of the Environment Canada listing of stations, and its
 \code{find_station} function provides an easy way to determine Station IDs.
 After that, its \code{hcd_hourly} function (and related functions) make

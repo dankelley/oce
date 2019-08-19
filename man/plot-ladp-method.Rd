@@ -9,14 +9,14 @@
 \S4method{plot}{ladp}(x, which = c("u", "v"), ...)
 }
 \arguments{
-\item{x}{A \code{ladp} object, e.g. as read by \code{\link{as.ladp}}.}
+\item{x}{an \linkS4class{ladp} object.}
 
-\item{which}{Vector of names of items to be plotted.}
+\item{which}{a character vector storing names of items to be plotted.}
 
 \item{...}{Other arguments, passed to plotting functions.}
 }
 \description{
-Uses \code{\link{plotProfile}} to create panels of depth variation of easterly
+Uses \code{\link[=plotProfile]{plotProfile()}} to create panels of depth variation of easterly
 and northerly velocity components.
 }
 \seealso{

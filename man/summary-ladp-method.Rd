@@ -8,8 +8,7 @@
 \S4method{summary}{ladp}(object, ...)
 }
 \arguments{
-\item{object}{An object of class \code{"ladp"}, usually, a result of a call to
-\code{\link{as.ladp}}.}
+\item{object}{an \linkS4class{ladp} object.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }

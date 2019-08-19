@@ -16,7 +16,7 @@ other arguments.}
 
 \item{station}{number or string indicating station ID.}
 
-\item{time}{time at the start of the profile, constructed by e.g. \code{\link{as.POSIXct}}.}
+\item{time}{time at the start of the profile, constructed by e.g. \code{\link[=as.POSIXct]{as.POSIXct()}}.}
 
 \item{pressure}{pressure in decibars, through the water column.}
 
@@ -35,7 +35,7 @@ other arguments.}
 \item{\dots}{optional additional data columns.}
 }
 \value{
-An object of \code{\link{ladp-class}}.
+An \linkS4class{ladp} object.
 }
 \description{
 This function assembles vectors of pressure and velocity, possibly also with

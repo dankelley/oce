@@ -3,12 +3,12 @@
 \docType{methods}
 \name{[[<-,ladp-method}
 \alias{[[<-,ladp-method}
-\title{Replace Parts of a ladp Object}
+\title{title Replace Parts of a ladp Object}
 \usage{
 \S4method{[[}{ladp}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{A \code{ladp} object, i.e. one inheriting from \code{\link{ladp-class}}.}
+\item{x}{an \linkS4class{ladp} object.}
 
 \item{i}{The item to replace.}
 
