@@ -3,27 +3,35 @@
 #' The linear model is calculated from the slope of a localized least-squares
 #' regression model y=y(x).  The localization is defined by the x difference
 #' from the point in question, with data at distance exceeding L/2 being
-#' ignored.  With a \code{boxcar} window, all data within the local domain are
-#' treated equally, while with a \code{hanning} window, a raised-cosine
+#' ignored.  With a `boxcar` window, all data within the local domain are
+#' treated equally, while with a `hanning` window, a raised-cosine
 #' weighting function is used; the latter produces smoother derivatives, which
 #' can be useful for noisy data.  The function is based on internal
-#' calculation, not on \code{\link{lm}}.
+#' calculation, not on [lm()].
 #'
 #' @param x a vector holding x values.
+#'
 #' @param y a vector holding y values.
+#'
 #' @param xout optional vector of x values at which the derivative is to be
-#' found.  If not provided, \code{x} is used.
+#' found.  If not provided, `x` is used.
+#'
 #' @param window type of weighting function used to weight data within the
 #' window; see \sQuote{Details}.
+#'
 #' @param L width of running window, in x units.  If not provided, a reasonable
 #' default will be used.
+#'
 #' @param deriv an optional indicator of the desired return value; see
 #' \sQuote{Examples}.
-#' @return If \code{deriv} is not specified, a list containing vectors of
-#' output values \code{y} and \code{y}, derivative (\code{dydx}), along with
-#' the scalar length scale \code{L}.  If \code{deriv=0}, a vector of values is
-#' returned, and if \code{deriv=1}, a vector of derivatives is returned.
+#'
+#' @return If `deriv` is not specified, a list containing vectors of
+#' output values `y` and `y`, derivative (`dydx`), along with
+#' the scalar length scale `L`.  If `deriv=0`, a vector of values is
+#' returned, and if `deriv=1`, a vector of derivatives is returned.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #'
 #' library(oce)
@@ -50,6 +58,8 @@
 #' legend("bottomright", lwd=2, bg="white",
 #'        col=c("black", "red"),
 #'        legend=c("swN2()", "using runlm()"))
+#'
+#' @md
 runlm <- function(x, y, xout, window=c("hanning", "boxcar"), L, deriv)
 {
     if (missing(x)) stop("must supply 'x'")
