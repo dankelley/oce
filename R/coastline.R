@@ -1,11 +1,6 @@
 #' Class to Store Coastline Data
 #'
-#' This class stores coastline data, which may be read with
-#' [read.coastline()] or constructed with [as.coastline()],
-#' plotted with [plot,coastline-method()] or summarized with
-#' [summary,coastline-method()]. Data within `coastline`
-#' objects may be retrieved with [[[,coastline-method()]
-#' or replaced with [[[<-,coastline-method()].
+#' This class stores coastline data.
 #'
 #' @templateVar class coastline
 #'
@@ -364,7 +359,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' to difficulties in inverting projection calculations.
 #'
 #' To get an inset map inside another map, draw the first map, do
-#' `par(new=TRUE)`, and then call `plot,coastline-method` with a value of
+#' [`par`]`(new=TRUE)`, and then call [plot,coastline-method()] with a value of
 #' `mar` that moves the inset plot to a desired location on the existing
 #' plot, and with `bg="white"`.
 #'
