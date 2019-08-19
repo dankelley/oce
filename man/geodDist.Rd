@@ -74,7 +74,7 @@ Ellipsoid with Application of Nested Equations", \emph{Survey Review}, April
 1975.
 }
 \seealso{
-\code{\link{geodXy}}
+\code{\link[=geodXy]{geodXy()}}
 
 Other functions relating to geodesy: \code{\link{geodGc}},
   \code{\link{geodXyInverse}}, \code{\link{geodXy}}
