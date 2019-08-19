@@ -21,8 +21,8 @@ A data frame containing columns \code{rightAscension} and
 }
 \description{
 Convert from ecliptical to equatorial coordinates, using
-equations 8.3 and 8.4 of \link{1}, or, equivalently,
-equations 12.3 and 12.4 of \link{2}.
+equations 8.3 and 8.4 of reference 1, or, equivalently,
+equations 12.3 and 12.4 of reference 2.
 }
 \details{
 The code is based on reference 1; see \code{\link[=moonAngle]{moonAngle()}} for comments on

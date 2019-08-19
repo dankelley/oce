@@ -386,7 +386,7 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' * The file contained several columns that were basically a mystery to the
 #' author, e.g. `"Hx"`, `"Hy"`, `"Vref"`, etc. These were ignored.
 #'
-#' Based on such considerations, [read.cm.s4()] reads only the columns that
+#' Based on such considerations, [read.cm()] reads only the columns that
 #' were reasonably well-understood based on the sample file. Users who need more
 #' columns should contact the author. And a user who could produce a document
 #' explaining the data format would be especially appreciated!
@@ -709,7 +709,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' `par(mar)`, computed from this.  The default is tighter than the R default,
 #' in order to use more space for the data and less for the axes.
 #'
-#' @param mar value to be used with `\link{par`("mar")}.
+#' @param mar value to be used with [`par`]`("mar")`.
 #'
 #' @param small an integer indicating the size of data set to be considered
 #' "small", to be plotted with points or lines using the standard

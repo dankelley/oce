@@ -94,7 +94,7 @@ etc. These are ignored.
 author, e.g. \code{"Hx"}, \code{"Hy"}, \code{"Vref"}, etc. These were ignored.
 }
 
-Based on such considerations, \code{\link[=read.cm.s4]{read.cm.s4()}} reads only the columns that
+Based on such considerations, \code{\link[=read.cm]{read.cm()}} reads only the columns that
 were reasonably well-understood based on the sample file. Users who need more
 columns should contact the author. And a user who could produce a document
 explaining the data format would be especially appreciated!

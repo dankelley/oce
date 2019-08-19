@@ -32,7 +32,7 @@ velocities.}
 \code{par(mar)}, computed from this.  The default is tighter than the R default,
 in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with `\link{par`("mar")}.}
+\item{mar}{value to be used with \code{\link{par}}\code{("mar")}.}
 
 \item{small}{an integer indicating the size of data set to be considered
 "small", to be plotted with points or lines using the standard

@@ -34,7 +34,7 @@ of oceanographers.
 \item \code{diameter} lunar diameter, in degrees.
 \item \code{distance} earth-moon distance, in kilometers.
 \item \code{illuminatedFraction} fraction of moon's visible disk that is illuminated.
-\item \code{phase} phase of the moon, defined in equation 32.3 of Meeus \link{1982}.
+\item \code{phase} phase of the moon, defined in equation 32.3 of Meeus (1982).
 The fractional part of which is 0 for new moon, 1/4 for first
 quarter, 1/2 for full moon, and 3/4 for last quarter.
 }
@@ -42,33 +42,33 @@ quarter, 1/2 for full moon, and 3/4 for last quarter.
 \if{html}{\figure{starCoords.png options:width=400px}{starCoords}}
 }
 \description{
-The calculations are based on formulae provided by Meeus \link{1982}, primarily
+The calculations are based on formulae provided by Meeus (1982), primarily
 in chapters 6, 18, and 30.  The first step is to compute sidereal time as
-formulated in Meeus \link{1982} chapter 7, which in turn uses Julian day computed
-according to as formulae in Meeus \link{1982} chapter 3.  Using these quantities,
-formulae in Meeus \link{1982} chapter 30 are then used to compute geocentric
+formulated in Meeus (1982) chapter 7, which in turn uses Julian day computed
+according to as formulae in Meeus (1982) chapter 3.  Using these quantities,
+formulae in Meeus (1982) chapter 30 are then used to compute geocentric
 longitude (\eqn{lambda}{lambda}, in the Meeus notation), geocentric latitude
 (\eqn{beta}{beta}), and parallax.  Then the \code{obliquity} of the ecliptic
-is computed with Meeus \link{1982} equation 18.4.  Equatorial coordinates (right
+is computed with Meeus (1982) equation 18.4.  Equatorial coordinates (right
 ascension and declination) are computed with equations 8.3 and 8.4 from
-Meeus \link{1982}, using \code{\link[=eclipticalToEquatorial]{eclipticalToEquatorial()}}.  The hour angle
+Meeus (1982), using \code{\link[=eclipticalToEquatorial]{eclipticalToEquatorial()}}.  The hour angle
 (\eqn{H}{H}) is computed using the unnumbered equation preceding Meeus's
-\link{1982} equation 8.1.  Finally, Meeus \link{1982} equations 8.5 and 8.6 are used
+(1982) equation 8.1.  Finally, Meeus (1982) equations 8.5 and 8.6 are used
 to calculate the local azimuth and altitude of the moon, using
 \code{\link[=equatorialToLocalHorizontal]{equatorialToLocalHorizontal()}}.
 }
 \section{Alternate formulations}{
 
-Formulae provide by Meeus \link{1982} are used
-for all calculations here.  Meeus \link{1991} provides formulae that are similar,
+Formulae provide by Meeus (1982) are used
+for all calculations here.  Meeus (1991) provides formulae that are similar,
 but that differ in the 5th or 6th digits.  For example, the formula for
-ephemeris time in Meeus \link{1991} differs from that in Meeus \link{1992} at the 5th
+ephemeris time in Meeus (1991) differs from that in Meeus (1992) at the 5th
 digit, and almost all of the approximately 200 coefficients in the relevant
 formulae also differ in the 5th and 6th digits.  Discussion of the changing
 formulations is best left to members of the astronomical community.  For the
 present purpose, it may be sufficient to note that \code{moonAngle}, based
-on Meeus \link{1982}, reproduces the values provided in example 45.a of Meeus
-\link{1991} to 4 significant digits, e.g. with all angles matching to under 2
+on Meeus (1982), reproduces the values provided in example 45.a of Meeus
+(1991) to 4 significant digits, e.g. with all angles matching to under 2
 minutes of arc.
 }
 
@@ -116,6 +116,6 @@ Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
   \code{\link{sunAngle}}
 }
 \author{
-Dan Kelley, based on formulae in Meeus \link{1982}.
+Dan Kelley, based on formulae in Meeus (1982).
 }
 \concept{things related to astronomy}
