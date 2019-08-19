@@ -8,7 +8,7 @@
 \S4method{summary}{satellite}(object, ...)
 }
 \arguments{
-\item{object}{The object to be summarized.}
+\item{object}{a \linkS4class{satellite} object.}
 
 \item{...}{Ignored.}
 }
