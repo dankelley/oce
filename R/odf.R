@@ -224,7 +224,7 @@ setMethod(f="plot",
 #' Pertinent summary information is presented, including the station name,
 #' sampling location, data ranges, etc.
 #'
-#' @param x an [odf-class] object.
+#' @param object an [odf-class] object.
 #'
 #' @param \dots further arguments passed to or from other methods.
 #'
@@ -851,7 +851,7 @@ ODFListFromHeader <- function(header)
 #' ODF (Ocean Data Format) is a
 #' format developed at the Bedford Institute of Oceanography and also used
 #' at other Canadian Department of Fisheries and Oceans (DFO) facilities
-#' (see [1] and [2]).
+#' (see references 1 and 2).
 #' It can hold various types of time-series data, which includes a variety
 #' of instrument types. Thus, \code{read.odf}
 #' is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2018,

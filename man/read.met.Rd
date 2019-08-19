@@ -30,7 +30,7 @@ A \linkS4class{met} object.
 }
 \description{
 Reads a comma-separated value file in the format used by the Environment
-Canada \link{1}.  The agency does not publish a format for these
+Canada (see reference 1).  The agency does not publish a format for these
 files, so this function was based on a study of a few sample files, and it
 may fail for other files, if Environment Canada changes the format.
 }

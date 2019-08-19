@@ -52,7 +52,7 @@ An object of class \code{oce}. It is up to a calling function to determine what 
 ODF (Ocean Data Format) is a
 format developed at the Bedford Institute of Oceanography and also used
 at other Canadian Department of Fisheries and Oceans (DFO) facilities
-(see \link{1} and \link{2}).
+(see references 1 and 2).
 It can hold various types of time-series data, which includes a variety
 of instrument types. Thus, \code{read.odf}
 is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2018,

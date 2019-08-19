@@ -8,7 +8,7 @@
 \S4method{[[}{lisst}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An \code{lisst} object, i.e. inheriting from \code{\link{lisst-class}}}
+\item{x}{a \linkS4class{lisst} object.}
 
 \item{i}{The item to replace.}
 

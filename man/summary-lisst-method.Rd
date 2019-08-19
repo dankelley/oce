@@ -8,8 +8,7 @@
 \S4method{summary}{lisst}(object, ...)
 }
 \arguments{
-\item{object}{An object of class \code{lisst}, usually, a result of a call to
-\code{\link{read.lisst}} or \code{\link{as.lisst}}.}
+\item{object}{a \linkS4class{lisst} object.}
 
 \item{...}{Ignored.}
 }

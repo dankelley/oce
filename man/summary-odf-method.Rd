@@ -8,9 +8,9 @@
 \S4method{summary}{odf}(object, ...)
 }
 \arguments{
-\item{\dots}{further arguments passed to or from other methods.}
+\item{object}{an \linkS4class{odf} object.}
 
-\item{x}{an \linkS4class{odf} object.}
+\item{\dots}{further arguments passed to or from other methods.}
 }
 \value{
 A matrix containing statistics of the elements of the \code{data}

@@ -7,14 +7,6 @@
 \description{
 This class stores LISST (Laser in-situ scattering and transmissometry) data.
 }
-\details{
-One may read \code{lisst} objects with \code{\link{read.lisst}},
-generate them with \code{\link{as.lisst}}, plot them
-with \code{\link{plot,lisst-method}}, and summarize them with
-\code{\link{summary,lisst-method}}. Elements may be extracted
-with \code{\link{[[,lisst-method}} or replaced with
-\code{\link{[[<-,lisst-method}}.
-}
 \section{Slots}{
 
 \describe{

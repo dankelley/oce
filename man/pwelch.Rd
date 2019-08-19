@@ -35,14 +35,14 @@ and the latter is a single integer.}
 amount of debugging information, or to 2 to get more.}
 
 \item{\dots}{optional extra arguments to be passed to
-\code{\link{spectrum}}. Unless specified in this list,
-\code{\link{spectrum}} is called with \code{plot=FALSE} to prevent plotting
+\code{\link[=spectrum]{spectrum()}}. Unless specified in this list,
+\code{\link[=spectrum]{spectrum()}} is called with \code{plot=FALSE} to prevent plotting
 the separate spectra, and with \code{taper=0}, which is not needed with the
 default Hanning window.  However, the other defaults of
-\code{\link{spectrum}} are used, e.g. \code{detrend=TRUE}.}
+\code{\link[=spectrum]{spectrum()}} are used, e.g. \code{detrend=TRUE}.}
 }
 \value{
-List mimicking the return value from \code{\link{spectrum}},
+List mimicking the return value from \code{\link[=spectrum]{spectrum()}},
 containing frequency \code{freq}, spectral power \code{spec}, degrees of
 freedom \code{df}, bandwidth \code{bandwidth}, etc.
 }
@@ -50,10 +50,10 @@ freedom \code{df}, bandwidth \code{bandwidth}, etc.
 Compute periodogram using the Welch (1967) method.
 First, \code{x} is broken up into chunks,
 overlapping as specified by \code{noverlap}.  These chunks are then
-detrended with \code{\link{detrend}}, multiplied by the window, and then
-passed to \code{\link{spectrum}}.  The resulting spectra are then averaged,
+detrended with \code{\link[=detrend]{detrend()}}, multiplied by the window, and then
+passed to \code{\link[=spectrum]{spectrum()}}.  The resulting spectra are then averaged,
 with the results being stored in \code{spec} of the return value.  Other
-entries of the return value mimic those returned by \code{\link{spectrum}}.
+entries of the return value mimic those returned by \code{\link[=spectrum]{spectrum()}}.
 }
 \section{Bugs}{
  Both bandwidth and degrees of freedom are just copied from
@@ -62,7 +62,6 @@ the cross indicated on the graph is also incorrect.
 }
 
 \examples{
-
 library(oce)
 Fs <- 1000
 t <- seq(0, 0.296, 1/Fs)
@@ -87,6 +86,7 @@ plot(log10(s$freq), s$spec * s$freq,
 title("Variance-preserving spectrum")
 pw <- pwelch(co2, nfft=256, plot=FALSE)
 lines(log10(pw$freq), pw$spec * pw$freq, col='red')
+
 }
 \references{
 Welch, P. D., 1967. The Use of Fast Fourier Transform for the
