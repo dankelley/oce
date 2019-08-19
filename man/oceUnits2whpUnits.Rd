@@ -16,8 +16,7 @@ vector of strings holding WOCE-style names.
 }
 \description{
 Translate oce units to WHP-style strings,
-to match patterns. For example, the pattern \code{"oxygen"}
-is taken to mean \code{"CTDOXY"}.
+to match patterns.
 }
 \references{
 Several online sources list WOCE names. An example is

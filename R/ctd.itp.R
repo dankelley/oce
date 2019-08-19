@@ -4,8 +4,7 @@
 #'
 #' @author Dan Kelley
 #'
-#' @details
-#' \code{read.ctd.itp()} reads ice-tethered-profiler data that are stored
+#' `read.ctd.itp` reads ice-tethered-profiler data that are stored
 #' in a format files used by WHOI servers as of 2016-2017. Lacking
 #' documentation on the format, the author constructed this function
 #' to work with some files that were on-hand. Whether the function will
@@ -16,6 +15,8 @@
 #' \url{http://www.whoi.edu/page.do?pid=23096}, which also provides a link for
 #' downloading data.  Note that the present version only handles data in
 #' profiler-mode, not fixed-depth mode.
+#'
+#' @md
 read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {

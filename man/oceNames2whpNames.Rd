@@ -13,7 +13,7 @@ oceNames2whpNames(names)
 vector of strings holding WHP-style names.
 }
 \description{
-Translate oce-style names to WOCE names, using \code{\link{gsub}}
+Translate oce-style names to WOCE names, using \code{\link[=gsub]{gsub()}}
 to match patterns. For example, the pattern \code{"oxygen"}
 is taken to mean \code{"CTDOXY"}.
 }

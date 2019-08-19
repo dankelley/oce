@@ -13,7 +13,7 @@ woceNames2oceNames(names)
 vector of strings holding \code{oce}-style names.
 }
 \description{
-Translate WOCE-style names to \code{oce} names, using \code{\link{gsub}}
+Translate WOCE-style names to \code{oce} names, using \code{\link[=gsub]{gsub()}}
 to match patterns. For example, the pattern \code{"CTDOXY.*"} is taken
 to mean \code{oxygen}.
 }
