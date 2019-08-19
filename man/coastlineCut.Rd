@@ -7,7 +7,7 @@
 coastlineCut(coastline, lon_0 = 0)
 }
 \arguments{
-\item{coastline}{A \linkS4class{coastline} object.}
+\item{coastline}{a \linkS4class{coastline} object.}
 
 \item{lon_0}{longitude as would be given in a \code{+lon_0=} item in a
 call to the \code{\link[rgdal:project]{rgdal::project()}} function in the \CRANpkg{rgdal} package.}

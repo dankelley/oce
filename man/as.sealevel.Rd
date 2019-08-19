@@ -83,7 +83,7 @@ summary(sl)
 worked for years but failed at least temporarily on December 4, 2016).
 }
 \seealso{
-The documentation for \code{\link[=sealevel-class]{sealevel-class()}} explains the
+The documentation for the \linkS4class{sealevel} class explains the
 structure of sealevel objects, and also outlines the other functions dealing
 with them.
 

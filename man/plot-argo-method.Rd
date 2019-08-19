@@ -13,7 +13,7 @@
   mgp[1] + 1.5, 1.5, 1.5), tformat, debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{object inheriting from \code{\link[=argo-class]{argo-class()}}.}
+\item{x}{an \linkS4class{argo} object.}
 
 \item{which}{list of desired plot types, one of the following. Note
 that \code{\link[=oce.pmatch]{oce.pmatch()}} is used to try to complete partial

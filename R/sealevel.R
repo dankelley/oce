@@ -169,7 +169,7 @@ setMethod(f="summary",
 #' This function is somewhat analogous to [subset.data.frame()], but
 #' subsetting is only permitted by time.
 #'
-#' @param x A `sealevel` object, i.e. one inheriting from [sealevel-class()].
+#' @param x a [sealevel-class] object.
 #'
 #' @param subset a condition to be applied to the `data` portion of
 #' `x`.
@@ -211,7 +211,7 @@ setMethod(f="subset",
 
 #' @title Extract Something From a Sealevel Object
 #'
-#' @param x A sealevel object, i.e. one inheriting from [sealevel-class()].
+#' @param x a [sealevel-class] object.
 #'
 #' @template sub_subTemplate
 #'
@@ -227,7 +227,7 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a Sealevel Object
 #'
-#' @param x An `sealevel` object, i.e. inheriting from [sealevel-class()]
+#' @param x a [sealevel-class] object.
 #'
 #' @template sub_subsetTemplate
 #'
@@ -309,7 +309,7 @@ setValidity("sealevel",
 #'
 #' @author Dan Kelley
 #'
-#' @seealso The documentation for [sealevel-class()] explains the
+#' @seealso The documentation for the [sealevel-class] class explains the
 #' structure of sealevel objects, and also outlines the other functions dealing
 #' with them.
 #'

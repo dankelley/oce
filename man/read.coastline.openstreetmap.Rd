@@ -36,7 +36,7 @@ the file.}
 better for normal calls by a user.)}
 }
 \value{
-An object of \code{\link[=coastline-class]{coastline-class()}}
+a \linkS4class{coastline} object.
 }
 \description{
 Read coastline data stored in the openstreetmap format.

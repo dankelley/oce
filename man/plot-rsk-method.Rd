@@ -58,7 +58,7 @@ used for profile plots, instead of \code{\link[=plot]{plot()}}.}
 also for \code{par(mar)}, computed from this.  The default is tighter than the
 R default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with `\link{par`("mar")}.}
+\item{mar}{value to be used with \code{\link{par}}\code{("mar")}.}
 
 \item{main}{main title for plot, used just on the top panel, if there are several panels.}
 

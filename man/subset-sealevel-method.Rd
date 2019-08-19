@@ -8,7 +8,7 @@
 \S4method{subset}{sealevel}(x, subset, ...)
 }
 \arguments{
-\item{x}{A \code{sealevel} object, i.e. one inheriting from \code{\link[=sealevel-class]{sealevel-class()}}.}
+\item{x}{a \linkS4class{sealevel} object.}
 
 \item{subset}{a condition to be applied to the \code{data} portion of
 \code{x}.}

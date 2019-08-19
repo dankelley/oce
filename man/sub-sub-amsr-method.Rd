@@ -23,8 +23,7 @@ the raw data equal \code{as.raw(251:255)}, as explained
 in \dQuote{Details}.
 }
 \description{
-Extract something from the \code{metadata} or \code{data} slot of an
-\code{\link[=amsr-class]{amsr-class()}} object.
+Extract something from the \code{metadata} or \code{data} slot of an \linkS4class{amsr} object.
 
 The \code{[[} method works for all \code{oce} objects, i.e.
 objects inheriting from \code{\link{oce-class}}.  The purpose

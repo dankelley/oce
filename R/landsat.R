@@ -115,7 +115,7 @@
 #'
 #' @seealso
 #'
-#' Data from AMSR satellites are handled with [amsr-class()].
+#' Data from AMSR satellites are handled with [amsr-class].
 #'
 #' A file containing Landsat data may be read with [read.landsat()] or
 #' [read.oce()], and one such file is provided by the \CRANpkg{ocedata}
@@ -160,8 +160,6 @@
 #' @concept satellite
 #'
 #' @author Dan Kelley and Clark Richards
-#'
-#' @seealso [landsat-class()] for handling data from the Landsat-8 satellite.
 #'
 #' @family things related to landsat data
 #'
@@ -221,8 +219,7 @@ setMethod(f="initialize",
 
 #' Summarize a landsat Object
 #'
-#' Provides a summary of a some information about an object of
-#' [landsat-class()].
+#' Provides a summary of a some information about a [landsat-class] object.
 #'
 #' @param object A [landsat-class] object.
 #'
@@ -1027,7 +1024,7 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' `emissivity` in the `metadata` slot of the
 #' resultant object. This is used in the
 #' calculation of surface temperature, as explained in the discussion of
-#' accessor functions for [landsat-class()]. The default value is
+#' accessor functions for [landsat-class]. The default value is
 #' from Konda et al.  (1994). These authors suggest an uncertainty of 0.04,
 #' but a wider range of values can be found in the literature.  The value of
 #' `metadata$emissivity` is easy to alter, either as a single value or
@@ -1047,7 +1044,7 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #'
 #' Landsat data files (directories, really) are large, accounting for
 #' approximately 1 gigabyte each.  The storage of the Oce object is
-#' similar (see [landsat-class()]).  In R, many operations involving
+#' similar (see [landsat-class]).  In R, many operations involving
 #' copying data, so that dealing with full-scale landsat images can overwhelm
 #' computers with storage under 8GB.  For this reason, it is typical to read just
 #' the bands that are of interest.  It is also helpful to use
@@ -1065,7 +1062,8 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #'
 #' @seealso
 #'
-#' [landsat-class()] for more information on `landsat` objects,
+#' See the documentation for the [landsat-class] class
+#' for more information on `landsat` objects,
 #' especially band information.  Use [landsatTrim()] to trim Landsat
 #' objects geographically and [landsatAdd()] to add new ``bands.''  The
 #' accessor operator (`[[`) is used to access band information, full or
@@ -1192,7 +1190,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
 
 #' Add a Band to a landsat Object
 #'
-#' Add a band to an object of [landsat-class()]. Note that
+#' Add a band to a [landsat-class] object. Note that
 #' it will be stored in numeric form, not raw form, and therefore
 #' it will require much more storage than data read with
 #' [read.landsat()].
@@ -1211,7 +1209,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
 #' @return A [landsat-class] object, with a new data band.
 #'
 #' @seealso
-#' The documentation for [landsat-class()] explains the
+#' The documentation for the [landsat-class] class explains the
 #' structure of landsat objects, and also outlines the other functions dealing
 #' with them.
 #'
@@ -1275,7 +1273,7 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 #' been trimmed as specified.
 #'
 #' @seealso
-#' The documentation for [landsat-class()] explains the
+#' The documentation for the [landsat-class] class explains the
 #' structure of landsat objects, and also outlines the other functions dealing
 #' with them.
 #'

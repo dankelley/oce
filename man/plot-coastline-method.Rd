@@ -16,7 +16,7 @@
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{A \linkS4class{coastline} object.}
+\item{x}{a \linkS4class{coastline} object.}
 
 \item{xlab}{label for x axis}
 
@@ -191,7 +191,7 @@ plot(coastlineWorld, clongitude=-95, clatitude=65, span=5500,
 
 }
 \seealso{
-The documentation for \code{\link[=coastline-class]{coastline-class()}} explains the
+The documentation for the \linkS4class{coastline} class explains the
 structure of coastline objects, and also outlines the other functions
 dealing with them.
 

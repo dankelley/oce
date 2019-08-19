@@ -8,7 +8,7 @@
 \S4method{[[}{argo}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An \code{argo} object, i.e. inheriting from \code{\link[=argo-class]{argo-class()}}}
+\item{x}{an \linkS4class{argo} object.}
 
 \item{i}{The item to replace.}
 

@@ -8,7 +8,7 @@
 \S4method{[[}{coastline}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{A \linkS4class{coastline} object.}
+\item{x}{a \linkS4class{coastline} object.}
 
 \item{i}{The item to replace.}
 

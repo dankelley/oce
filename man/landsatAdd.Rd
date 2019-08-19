@@ -22,13 +22,13 @@ information, or a higher value for more debugging.}
 A \linkS4class{landsat} object, with a new data band.
 }
 \description{
-Add a band to an object of \code{\link[=landsat-class]{landsat-class()}}. Note that
+Add a band to a \linkS4class{landsat} object. Note that
 it will be stored in numeric form, not raw form, and therefore
 it will require much more storage than data read with
 \code{\link[=read.landsat]{read.landsat()}}.
 }
 \seealso{
-The documentation for \code{\link[=landsat-class]{landsat-class()}} explains the
+The documentation for the \linkS4class{landsat} class explains the
 structure of landsat objects, and also outlines the other functions dealing
 with them.
 

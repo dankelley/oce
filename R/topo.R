@@ -959,7 +959,7 @@ read.topo <- function(file, debug=getOption("oceDebug"))
 #'
 #' @param filename Name of data (used when called by [read.topo()].
 #'
-#' @return A [topo-class()] object.
+#' @return A [topo-class] object.
 #'
 #' @author Dan Kelley
 #'

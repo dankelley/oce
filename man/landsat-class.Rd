@@ -181,7 +181,7 @@ Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.
 }
 }
 \seealso{
-Data from AMSR satellites are handled with \code{\link[=amsr-class]{amsr-class()}}.
+Data from AMSR satellites are handled with \linkS4class{amsr}.
 
 A file containing Landsat data may be read with \code{\link[=read.landsat]{read.landsat()}} or
 \code{\link[=read.oce]{read.oce()}}, and one such file is provided by the \CRANpkg{ocedata}
@@ -191,8 +191,6 @@ Plots may be made with \code{\link[=plot,landsat-method]{plot,landsat-method()}}
 slow, decimation is available both in the plotting function and as the separate
 function \code{\link[=decimate]{decimate()}}.  Images may be subsetted with
 \code{\link[=landsatTrim]{landsatTrim()}}.
-
-\code{\link[=landsat-class]{landsat-class()}} for handling data from the Landsat-8 satellite.
 
 Other things related to landsat data: \code{\link{[[,landsat-method}},
   \code{\link{[[<-,landsat-method}},

@@ -13,8 +13,7 @@
 \item{...}{Ignored.}
 }
 \description{
-Provides a summary of a some information about an object of
-\code{\link[=landsat-class]{landsat-class()}}.
+Provides a summary of a some information about a \linkS4class{landsat} object.
 }
 \seealso{
 Other things related to landsat data: \code{\link{[[,landsat-method}},

@@ -8,7 +8,7 @@
 \S4method{summary}{coastline}(object, ...)
 }
 \arguments{
-\item{object}{A \linkS4class{coastline} object.}
+\item{object}{a \linkS4class{coastline} object.}
 
 \item{\dots}{further arguments passed to or from other methods.}
 }

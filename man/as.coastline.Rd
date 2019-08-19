@@ -19,7 +19,7 @@ Equator.}
 filled polygon.}
 }
 \value{
-A \linkS4class{coastline} object.
+a \linkS4class{coastline} object.
 }
 \description{
 Coerces a sequence of longitudes and latitudes into a coastline dataset.

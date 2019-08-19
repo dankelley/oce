@@ -171,7 +171,7 @@ of x axis (with value \code{"i"}) or not; see
 \item{yaxs}{As \code{xaxs} but for y axis.}
 
 \item{asp}{Aspect ratio of the plot, as for \code{\link[=plot.default]{plot.default()}}. If
-\code{x} inherits from \code{\link[=topo-class]{topo-class()}} and \code{asp=NA} (the
+\code{x} inherits from \linkS4class{topo} and \code{asp=NA} (the
 default) then \code{asp} is redefined to be the reciprocal of the
 mean latitude in \code{x}, as a way to reduce geographical distortion.
 Otherwise, if \code{asp} is not \code{NA}, then it is used directly.}

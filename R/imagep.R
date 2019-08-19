@@ -711,7 +711,7 @@ drawPalette <- function(zlim, zlab="",
 #' @param  yaxs As `xaxs` but for y axis.
 #'
 #' @param asp Aspect ratio of the plot, as for [plot.default()]. If
-#'        `x` inherits from [topo-class()] and `asp=NA` (the
+#'        `x` inherits from [topo-class] and `asp=NA` (the
 #'        default) then `asp` is redefined to be the reciprocal of the
 #'        mean latitude in `x`, as a way to reduce geographical distortion.
 #'        Otherwise, if `asp` is not `NA`, then it is used directly.

@@ -18,7 +18,7 @@ the \code{marmap} package; in the second case, all other arguments are ignored.}
 \item{filename}{Name of data (used when called by \code{\link[=read.topo]{read.topo()}}.}
 }
 \value{
-A \code{\link[=topo-class]{topo-class()}} object.
+A \linkS4class{topo} object.
 }
 \description{
 Coerce Data into Topo Object

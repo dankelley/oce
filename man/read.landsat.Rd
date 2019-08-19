@@ -21,7 +21,7 @@ bands, some of which are pseudo-bands, computed from the actual data.}
 \code{emissivity} in the \code{metadata} slot of the
 resultant object. This is used in the
 calculation of surface temperature, as explained in the discussion of
-accessor functions for \code{\link[=landsat-class]{landsat-class()}}. The default value is
+accessor functions for \linkS4class{landsat}. The default value is
 from Konda et al.  (1994). These authors suggest an uncertainty of 0.04,
 but a wider range of values can be found in the literature.  The value of
 \code{metadata$emissivity} is easy to alter, either as a single value or
@@ -81,7 +81,7 @@ For Landsat 4 and 5, the bands similar to Landsat 7 but without
 
 Landsat data files (directories, really) are large, accounting for
 approximately 1 gigabyte each.  The storage of the Oce object is
-similar (see \code{\link[=landsat-class]{landsat-class()}}).  In R, many operations involving
+similar (see \linkS4class{landsat}).  In R, many operations involving
 copying data, so that dealing with full-scale landsat images can overwhelm
 computers with storage under 8GB.  For this reason, it is typical to read just
 the bands that are of interest.  It is also helpful to use
@@ -99,7 +99,8 @@ February 2015.
 }
 }
 \seealso{
-\code{\link[=landsat-class]{landsat-class()}} for more information on \code{landsat} objects,
+See the documentation for the \linkS4class{landsat} class
+for more information on \code{landsat} objects,
 especially band information.  Use \code{\link[=landsatTrim]{landsatTrim()}} to trim Landsat
 objects geographically and \code{\link[=landsatAdd]{landsatAdd()}} to add new ``bands.''  The
 accessor operator (\code{[[}) is used to access band information, full or

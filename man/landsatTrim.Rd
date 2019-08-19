@@ -45,7 +45,7 @@ also, if a problem in lonlat/utm conversion is resolved.) An error results if
 there is no intersection between the trimming box and the image box.
 }
 \seealso{
-The documentation for \code{\link[=landsat-class]{landsat-class()}} explains the
+The documentation for the \linkS4class{landsat} class explains the
 structure of landsat objects, and also outlines the other functions dealing
 with them.
 

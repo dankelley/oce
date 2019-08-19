@@ -8,7 +8,7 @@
 \S4method{subset}{coastline}(x, subset, ...)
 }
 \arguments{
-\item{x}{A \linkS4class{coastline} object.}
+\item{x}{a \linkS4class{coastline} object.}
 
 \item{subset}{An expression indicating how to subset \code{x}. See \dQuote{Details}.}
 

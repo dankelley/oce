@@ -424,7 +424,7 @@ as.rsk <- function(time, columns,
 #' also for `par(mar)`, computed from this.  The default is tighter than the
 #' R default, in order to use more space for the data and less for the axes.
 #'
-#' @param mar value to be used with `\link{par`("mar")}.
+#' @param mar value to be used with [`par`]`("mar")`.
 #'
 #' @param main main title for plot, used just on the top panel, if there are several panels.
 #'

@@ -67,7 +67,7 @@ setMethod(f="initialize",
 
 #' Extract Something From a Coastline Object
 #'
-#' @param x A [coastline-class] object.
+#' @param x a [coastline-class] object.
 #'
 #' @templateVar class coastline
 #'
@@ -91,7 +91,7 @@ setMethod(f="[[",
 
 #' Replace Parts of a Coastline Object
 #'
-#' @param x A [coastline-class] object.
+#' @param x a [coastline-class] object.
 #'
 #' @family things related to coastline data
 #'
@@ -126,7 +126,7 @@ setMethod(f="[[<-",
 #' and `latitude` may be abbreviated as `lon` and `lat`,
 #' as in the \dQuote{Examples}.
 #'
-#' @param x A [coastline-class] object.
+#' @param x a [coastline-class] object.
 #'
 #' @param subset An expression indicating how to subset `x`. See \dQuote{Details}.
 #'
@@ -274,7 +274,7 @@ setMethod(f="subset",
 #'
 #' Summarizes coastline length, bounding box, etc.
 #'
-#' @param object A [coastline-class] object.
+#' @param object a [coastline-class] object.
 #'
 #' @param \dots further arguments passed to or from other methods.
 #'
@@ -310,7 +310,7 @@ setMethod(f="summary",
 #' @param fillable boolean indicating whether the coastline can be drawn as a
 #' filled polygon.
 #'
-#' @return A [coastline-class] object.
+#' @return a [coastline-class] object.
 #'
 #' @family things related to coastline data
 #'
@@ -363,7 +363,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' `mar` that moves the inset plot to a desired location on the existing
 #' plot, and with `bg="white"`.
 #'
-#' @param x A [coastline-class] object.
+#' @param x a [coastline-class] object.
 #'
 #' @param xlab label for x axis
 #'
@@ -492,7 +492,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' become nonfunctional about a year previously, in the transition to using
 #' the `rgdal` package to carry out map projections.
 #'
-#' @seealso The documentation for [coastline-class()] explains the
+#' @seealso The documentation for the [coastline-class] class explains the
 #' structure of coastline objects, and also outlines the other functions
 #' dealing with them.
 #'
@@ -957,7 +957,7 @@ download.coastline <- function(resolution, item="coastline",
 #' (Typically only provided for internal calls; the default that it provides is
 #' better for normal calls by a user.)
 #'
-#' @return An object of [coastline-class()].
+#' @return a [coastline-class] object.
 #'
 #' @author Dan Kelley
 #'
@@ -1060,7 +1060,7 @@ read.coastline <- function(file,
 #' (Typically only provided for internal calls; the default that it provides is
 #' better for normal calls by a user.)
 #'
-#' @return x A [coastline-class] object.
+#' @return x a [coastline-class] object.
 #'
 #' @section A hack for depth contours: The following demonstrates that this
 #' code is getting close to working with depth contours.  This should be
@@ -1285,7 +1285,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
 #'
 #' @inheritParams read.coastline.shapefile
 #'
-#' @return An object of [coastline-class()]
+#' @return a [coastline-class] object.
 #'
 #' @family things related to coastline data
 #'
@@ -1431,7 +1431,7 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' ground between this and the `clipPolys` function in the
 #' \CRANpkg{PBSmapping} package.
 #'
-#' @param coastline A [coastline-class] object.
+#' @param coastline a [coastline-class] object.
 #'
 #' @param lon_0 longitude as would be given in a `+lon_0=` item in a
 #' call to the [rgdal::project()] function in the \CRANpkg{rgdal} package.

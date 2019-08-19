@@ -8,7 +8,7 @@
 \S4method{[[}{sealevel}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A sealevel object, i.e. one inheriting from \code{\link[=sealevel-class]{sealevel-class()}}.}
+\item{x}{a \linkS4class{sealevel} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 

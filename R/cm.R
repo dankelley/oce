@@ -124,7 +124,7 @@ setMethod(f="initialize",
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @seealso The documentation for [cm-class()] explains the structure
+#' @seealso The documentation for the [cm-class] class explains the structure
 #' of `cm` objects, and also outlines the other functions dealing with them.
 #'
 #' @family things related to cm data
@@ -354,7 +354,7 @@ as.cm <- function(time, u=NULL, v=NULL,
 
 #' Read a CM file
 #'
-#' Read a current-meter data file, producing an object of [cm-class()].
+#' Read a current-meter data file, producing a [cm-class] object.
 #'
 #' There function has been tested on only a single file, and the data-scanning
 #' algorithm was based on visual inspection of that file.  Whether it will work
@@ -429,7 +429,8 @@ as.cm <- function(time, u=NULL, v=NULL,
 #'
 #' @param ... Optional arguments passed to plotting functions.
 #'
-#' @return An object of [cm-class()].
+#' @return An [cm-class] object.
+#'
 #' The `data` slot will contain all the data in the file, with names
 #' determined from the tokens in line 3 in that file, passed through
 #' [make.names()], except that

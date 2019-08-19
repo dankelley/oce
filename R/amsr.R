@@ -46,7 +46,8 @@
 #' 2. A simple interface for viewing and downloading data is at
 #' `http://images.remss.com/amsr/amsr2_data_daily.html`.
 #'
-#' @seealso [landsat-class()] for handling data from the Landsat-8 satellite.
+#' @seealso The documenation for the [landsat-class] class has
+#' more informatoin on the handling data from the Landsat-8 satellite.
 #'
 #' @family things related to amsr data
 #'
@@ -106,8 +107,7 @@ setMethod(f="summary",
 
 #' Extract Something From an amsr Object
 #'
-#' Extract something from the `metadata` or `data` slot of an
-#' [amsr-class()] object.
+#' Extract something from the `metadata` or `data` slot of an [amsr-class] object.
 #'
 #' @details
 #' Partial matches for `i`
@@ -337,7 +337,7 @@ setMethod(f="subset",
 #' @param x An [amsr-class] object.
 #'
 #' @param y String indicating the name of the band to plot; if not provided,
-#' `SST` is used; see [amsr-class()] for a list of bands.
+#' `SST` is used; see the documenation for the [amsr-class] class for a list of bands.
 #'
 #' @param asp Optional aspect ratio for plot.
 #'
@@ -529,9 +529,8 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
 
 #' Read an amsr File
 #'
-#' Read a compressed amsr file, generating an object that inherits from
-#' [amsr-class()].  Note that only compressed files are read in
-#' this version.
+#' Read a compressed amsr file, generating an [amsr-class] object.
+#' Note that only compressed files are read in this version.
 #'
 #' @section File sources:
 #' AMSR files are provided at the FTP site

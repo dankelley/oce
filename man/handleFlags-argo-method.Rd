@@ -9,7 +9,7 @@
   where = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{object}{An object of \code{\link[=argo-class]{argo-class()}}.}
+\item{object}{an \linkS4class{argo} object.}
 
 \item{flags}{A \code{\link{list}} specifying flag values upon which
 actions will be taken. This can take two forms. In the first, the

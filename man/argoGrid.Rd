@@ -26,8 +26,7 @@ debugging.}
 gridding.}
 }
 \value{
-An object of \code{\link[=argo-class]{argo-class()}} that contains a pressure matrix
-with constant values along the first index.
+x an \linkS4class{argo} object.
 }
 \description{
 Grid an Argo float, by interpolating to fixed pressure levels.

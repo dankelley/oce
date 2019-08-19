@@ -74,8 +74,9 @@ setClass("argo", contains="oce")
 NULL
 
 
-#' @title Extract Something From an Argo Object
-#' @param x An `argo` object, i.e. one inheriting from [argo-class()].
+#' Extract Something From an Argo Object
+#'
+#' @param x an [argo-class] object.
 #'
 #' @templateVar class argo
 #'
@@ -228,9 +229,12 @@ setMethod(f="[[",
               res
           })
 
-#' @title Replace Parts of an Argo Object
-#' @param x An `argo` object, i.e. inheriting from [argo-class()]
+#' Replace Parts of an Argo Object
+#'
+#' @param x an [argo-class] object.
+#'
 #' @template sub_subsetTemplate
+#'
 #' @family things related to argo data
 #'
 #' @md
@@ -448,7 +452,7 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' or `pressure` or by `profile` (a made-up variable)
 #' or `id` (from the `metadata` slot).
 #'
-#' @param x An `argo` object, i.e. one inheriting from [argo-class()].
+#' @param x an [argo-class] object.
 #'
 #' @param subset An expression indicating how to subset `x`.
 #'
@@ -783,8 +787,7 @@ ncdfFixMatrix <- function(x)
 #' @param ... Optional arguments to [approx()], which is used to do the
 #' gridding.
 #'
-#' @return An object of [argo-class()] that contains a pressure matrix
-#' with constant values along the first index.
+#' @return x an [argo-class] object.
 #'
 #' @examples
 #' library(oce)
@@ -906,7 +909,7 @@ argoDecodeFlags <- function(f) # local function
 #' then `PRES` (pressure) data are sought in the file, along with
 #' `PRES_QC`, `PRES_ADJUSTED`, `PRES_ADJUSTED_QC`, and
 #' `PRES_ERROR`. The same pattern works for other profile data. The variables
-#' are stored with different names within the resultant [argo-class()]
+#' are stored with different names within the resultant [argo-class]
 #' object, to match with `oce` conventions. Thus, `PRES` gets renamed
 #' `pressure`, while `PRES_ADJUSTED` gets renamed `pressureAdjusted`,
 #' and `PRES_ERROR` gets renamed `pressureError`; all of these are
@@ -934,7 +937,7 @@ argoDecodeFlags <- function(f) # local function
 #' @param ... additional arguments, passed to called routines.
 #'
 #' @return
-#' An object of [argo-class()].
+#' An [argo-class] object.
 #'
 #' @examples
 #'\dontrun{
@@ -963,7 +966,7 @@ argoDecodeFlags <- function(f) # local function
 #'
 #'
 #' @seealso
-#' The documentation for [argo-class()] explains the structure of argo
+#' The documentation for the [argo-class] class explains the structure of argo
 #' objects, and also outlines the other functions dealing with them.
 #'
 #' @references
@@ -1417,10 +1420,10 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 #' taken as `NA`.
 #'
 #' @return
-#' An object of [argo-class()].
+#' An [argo-class] object.
 #'
 #' @seealso
-#' The documentation for [argo-class()] explains the structure of argo
+#' The documentation for the [argo-class] class explains the structure of argo
 #' objects, and also outlines the other functions dealing with them.
 #'
 #' @author Dan Kelley
@@ -1470,7 +1473,7 @@ as.argo <- function(time, longitude, latitude,
 #'
 #' Plot a summary diagram for argo data.
 #'
-#' @param x object inheriting from [argo-class()].
+#' @param x an [argo-class] object.
 #'
 #' @param which list of desired plot types, one of the following. Note
 #' that [oce.pmatch()] is used to try to complete partial
@@ -1778,7 +1781,9 @@ setMethod(f="plot",
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle Flags in ARGO Objects
-#' @param object An object of [argo-class()].
+#'
+#' @param object an [argo-class] object.
+#'
 #' @template handleFlagsTemplate
 #'
 #' @references

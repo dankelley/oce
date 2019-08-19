@@ -84,7 +84,8 @@ provided at \code{http://www.remss.com/missions/amsr/}.
 }
 }
 \seealso{
-\code{\link[=landsat-class]{landsat-class()}} for handling data from the Landsat-8 satellite.
+The documenation for the \linkS4class{landsat} class has
+more informatoin on the handling data from the Landsat-8 satellite.
 
 Other things related to amsr data: \code{\link{[[,amsr-method}},
   \code{\link{[[<-,amsr-method}},

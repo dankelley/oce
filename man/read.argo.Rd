@@ -19,7 +19,7 @@ better for normal calls by a user.)}
 \item{...}{additional arguments, passed to called routines.}
 }
 \value{
-An object of \code{\link[=argo-class]{argo-class()}}.
+An \linkS4class{argo} object.
 }
 \description{
 \code{read.argo} is used to read an Argo file, producing an object of type
@@ -61,7 +61,7 @@ For example, if \code{"PRES"} is found in \code{STATION_PARAMETERS},
 then \code{PRES} (pressure) data are sought in the file, along with
 \code{PRES_QC}, \code{PRES_ADJUSTED}, \code{PRES_ADJUSTED_QC}, and
 \code{PRES_ERROR}. The same pattern works for other profile data. The variables
-are stored with different names within the resultant \code{\link[=argo-class]{argo-class()}}
+are stored with different names within the resultant \linkS4class{argo}
 object, to match with \code{oce} conventions. Thus, \code{PRES} gets renamed
 \code{pressure}, while \code{PRES_ADJUSTED} gets renamed \code{pressureAdjusted},
 and \code{PRES_ERROR} gets renamed \code{pressureError}; all of these are
@@ -158,7 +158,7 @@ which is the main document describing argo data.
 }
 }
 \seealso{
-The documentation for \code{\link[=argo-class]{argo-class()}} explains the structure of argo
+The documentation for the \linkS4class{argo} class explains the structure of argo
 objects, and also outlines the other functions dealing with them.
 
 Other things related to argo data: \code{\link{[[,argo-method}},

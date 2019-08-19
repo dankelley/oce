@@ -8,7 +8,7 @@
 \S4method{[[}{argo}(x, i, j, ...)
 }
 \arguments{
-\item{x}{An \code{argo} object, i.e. one inheriting from \code{\link[=argo-class]{argo-class()}}.}
+\item{x}{an \linkS4class{argo} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 

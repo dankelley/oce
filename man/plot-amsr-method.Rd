@@ -14,7 +14,7 @@
 \item{x}{An \linkS4class{amsr} object.}
 
 \item{y}{String indicating the name of the band to plot; if not provided,
-\code{SST} is used; see \code{\link[=amsr-class]{amsr-class()}} for a list of bands.}
+\code{SST} is used; see the documenation for the \linkS4class{amsr} class for a list of bands.}
 
 \item{asp}{Optional aspect ratio for plot.}
 

@@ -13,9 +13,8 @@ read.amsr(file, debug = getOption("oceDebug"))
 \item{debug}{A debugging flag, integer.}
 }
 \description{
-Read a compressed amsr file, generating an object that inherits from
-\code{\link[=amsr-class]{amsr-class()}}.  Note that only compressed files are read in
-this version.
+Read a compressed amsr file, generating an \linkS4class{amsr} object.
+Note that only compressed files are read in this version.
 }
 \section{File sources}{
 

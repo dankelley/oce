@@ -29,7 +29,7 @@ the file.}
 better for normal calls by a user.)}
 }
 \value{
-x A \linkS4class{coastline} object.
+x a \linkS4class{coastline} object.
 }
 \description{
 Read coastline data stored in the shapefile format (see reference 1).

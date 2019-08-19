@@ -17,7 +17,7 @@ Summarizes some of the data in a \code{cm} object, presenting such information
 as the station name, sampling location, data ranges, etc.
 }
 \seealso{
-The documentation for \code{\link[=cm-class]{cm-class()}} explains the structure
+The documentation for the \linkS4class{cm} class explains the structure
 of \code{cm} objects, and also outlines the other functions dealing with them.
 
 Other things related to cm data: \code{\link{[[,cm-method}},

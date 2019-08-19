@@ -48,7 +48,8 @@ provides is better for normal calls by a user.}
 \item{...}{Optional arguments passed to plotting functions.}
 }
 \value{
-An object of \code{\link[=cm-class]{cm-class()}}.
+An \linkS4class{cm} object.
+
 The \code{data} slot will contain all the data in the file, with names
 determined from the tokens in line 3 in that file, passed through
 \code{\link[=make.names]{make.names()}}, except that
@@ -66,7 +67,7 @@ there are some columns that are unnamed in line 3 of the header;
 these yield data items with names \code{X}, \code{X.1}, etc.
 }
 \description{
-Read a current-meter data file, producing an object of \code{\link[=cm-class]{cm-class()}}.
+Read a current-meter data file, producing a \linkS4class{cm} object.
 }
 \details{
 There function has been tested on only a single file, and the data-scanning
