@@ -7,14 +7,13 @@
 enuToOther(x, ...)
 }
 \arguments{
-\item{x}{an \code{adp} or \code{adv} object, i.e. one inheriting from
-\code{\link{adp-class}} or \code{\link{adv-class}}.}
+\item{x}{an \linkS4class{adp} or \linkS4class{adv} object.}
 
-\item{\dots}{extra arguments that are passed on to \code{\link{enuToOtherAdp}}
-or \code{\link{enuToOtherAdv}}.}
+\item{\dots}{extra arguments that are passed on to \code{\link[=enuToOtherAdp]{enuToOtherAdp()}}
+or \code{\link[=enuToOtherAdv]{enuToOtherAdv()}}.}
 }
 \value{
-An object of the same type as \code{x}, but with velocities
+An object of the same class as \code{x}, but with velocities
 in the rotated coordinate system
 }
 \description{

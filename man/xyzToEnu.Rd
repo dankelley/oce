@@ -7,15 +7,14 @@
 xyzToEnu(x, ...)
 }
 \arguments{
-\item{x}{an \code{adp} or \code{adv} object, i.e. one inheriting from
-\code{\link{adp-class}} or \code{\link{adv-class}}.}
+\item{x}{an \linkS4class{adp} or \linkS4class{adv} object.}
 
-\item{\dots}{extra arguments that are passed on to \code{\link{xyzToEnuAdp}}
-or \code{\link{xyzToEnuAdv}}; see the documentation for those functions,
-for th details.}
+\item{\dots}{extra arguments that are passed on to \code{\link[=xyzToEnuAdp]{xyzToEnuAdp()}}
+or \code{\link[=xyzToEnuAdv]{xyzToEnuAdv()}}; see the documentation for those functions,
+for the details.}
 }
 \value{
-An object of the same type as \code{x}, but with velocities
+An object of the same class as \code{x}, but with velocities
 in east-north-up coordinates instead of xyz coordinates.
 }
 \description{

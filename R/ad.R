@@ -3,19 +3,23 @@
 #' Report statistics of ADP or ADV velocities, such as means and variance
 #' ellipses.
 #'
-#' @param x an \code{adp} or \code{adv} object, i.e. one inheriting from
-#' \code{\link{adp-class}} or \code{\link{adv-class}}.
-#' @param control An optional \code{\link{list}} used to specify more information.
-#' This is presently ignored for \code{adv} objects.  For \code{adp} objects, if
-#' \code{control$bin} is an integer, it is taken as the bin to be selected
+#' @param x an [adp-class] or [adv-class] object.
+#'
+#' @param control An optional [list] used to specify more information.
+#' This is presently ignored for `adv` objects.  For `adp` objects, if
+#' `control$bin` is an integer, it is taken as the bin to be selected
 #' (otherwise, an average across bins is used).
+#'
 #' @param \dots additional arguments that are used in the call to
-#' \code{\link{mean}}.
+#' [mean()].
+#'
 #' @return A list containing items the major and minor axes of the covariance
-#' ellipse (\code{ellipseMajor} and \code{ellipseMinor}), the angle of the
-#' major axis anticlockwise of the horizontal axis (\code{ellipseAngle}), and
-#' the x and y components of the mean velocity (\code{uMean} and \code{vMean}).
+#' ellipse (`ellipseMajor` and `ellipseMinor`), the angle of the
+#' major axis anticlockwise of the horizontal axis (`ellipseAngle`), and
+#' the x and y components of the mean velocity (`uMean` and `vMean`).
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' library(oce)
 #' data(adp)
@@ -31,6 +35,8 @@
 #'
 #' @family things related to adp data
 #' @family things related to adv data
+#'
+#' @md
 velocityStatistics <- function(x, control, ...)
 {
     if (inherits(x, "adp")) {
@@ -69,16 +75,20 @@ velocityStatistics <- function(x, control, ...)
 #' Convert velocity data from an acoustic-Doppler velocimeter or
 #' acoustic-Doppler profiler from one coordinate system to another.
 #'
-#' @param x an \code{adp} or \code{adv} object, i.e. one inheriting from
-#' \code{\link{adp-class}} or \code{\link{adv-class}}.
-#' @param \dots extra arguments that are passed on to \code{\link{beamToXyzAdp}}
-#' or \code{\link{beamToXyzAdv}}.
-#' @return An object of the same type as \code{x}, but with velocities
+#' @param x an [adp-class] or [adv-class] object.
+#'
+#' @param \dots extra arguments that are passed on to [beamToXyzAdp()]
+#' or [beamToXyzAdv()].
+#'
+#' @return An object of the same class as `x`, but with velocities
 #' in xyz coordinates instead of beam coordinates.
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
 #' @family things related to adv data
+#'
+#' @md
 beamToXyz <- function(x, ...)
 {
     if (inherits(x, "adp"))
@@ -91,18 +101,19 @@ beamToXyz <- function(x, ...)
 
 #' Convert Acoustic-Doppler Data From xyz to enu Coordinates
 #'
-#' @param x an \code{adp} or \code{adv} object, i.e. one inheriting from
-#' \code{\link{adp-class}} or \code{\link{adv-class}}.
+#' @param x an [adp-class] or [adv-class] object.
 #'
-#' @param \dots extra arguments that are passed on to \code{\link{xyzToEnuAdp}}
-#' or \code{\link{xyzToEnuAdv}}; see the documentation for those functions,
-#' for th details.
+#' @param \dots extra arguments that are passed on to [xyzToEnuAdp()]
+#' or [xyzToEnuAdv()]; see the documentation for those functions,
+#' for the details.
 #'
-#' @return An object of the same type as \code{x}, but with velocities
+#' @return An object of the same class as `x`, but with velocities
 #' in east-north-up coordinates instead of xyz coordinates.
 #'
 #' @family things related to adp data
 #' @family things related to adv data
+#'
+#' @md
 xyzToEnu <- function(x, ...)
 {
     if (inherits(x, "adp"))
@@ -115,15 +126,19 @@ xyzToEnu <- function(x, ...)
 
 
 #' Rotate acoustic-Doppler data to a new coordinate system
-#' @param x an \code{adp} or \code{adv} object, i.e. one inheriting from
-#' \code{\link{adp-class}} or \code{\link{adv-class}}.
-#' @param \dots extra arguments that are passed on to \code{\link{enuToOtherAdp}}
-#' or \code{\link{enuToOtherAdv}}.
-#' @return An object of the same type as \code{x}, but with velocities
+#'
+#' @param x an [adp-class] or [adv-class] object.
+#'
+#' @param \dots extra arguments that are passed on to [enuToOtherAdp()]
+#' or [enuToOtherAdv()].
+#'
+#' @return An object of the same class as `x`, but with velocities
 #' in the rotated coordinate system
 #'
 #' @family things related to adp data
 #' @family things related to adv data
+#'
+#' @md
 enuToOther <- function(x, ...)
 {
     if (inherits(x, "adp"))
@@ -135,15 +150,19 @@ enuToOther <- function(x, ...)
 }
 
 #' Rotate acoustic-Doppler data to the enu coordinate system
-#' @param x an \code{adp} or \code{adv} object, i.e. one inheriting from
-#' \code{\link{adp-class}} or \code{\link{adv-class}}.
-#' @param \dots extra arguments that are passed on to \code{\link{toEnuAdp}}
-#' or \code{\link{toEnuAdv}}.
-#' @return An object of the same type as \code{x}, but with velocities
+#'
+#' @param x an [adp-class] or [adv-class] object.
+#'
+#' @param \dots extra arguments that are passed on to [toEnuAdp()]
+#' or [toEnuAdv()].
+#'
+#' @return An object of the same class as `x`, but with velocities
 #' in the enu coordinate system
 #'
 #' @family things related to adp data
 #' @family things related to adv data
+#'
+#' @md
 toEnu <- function(x, ...)
 {
     if (inherits(x, "adp"))
