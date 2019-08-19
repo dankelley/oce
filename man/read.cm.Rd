@@ -13,7 +13,7 @@ read.cm(file, from = 1, to, by = 1, tz = getOption("oceTz"),
 load.}
 
 \item{from}{index number of the first measurement to be read, or the time of
-that measurement, as created with \code{\link{as.POSIXct}} (hint: use
+that measurement, as created with \code{\link[=as.POSIXct]{as.POSIXct()}} (hint: use
 \code{tz="UTC"}).}
 
 \item{to}{indication of the last measurement to read, in a format matching that
@@ -48,10 +48,10 @@ provides is better for normal calls by a user.}
 \item{...}{Optional arguments passed to plotting functions.}
 }
 \value{
-An object of \code{\link{cm-class}}.
+An object of \code{\link[=cm-class]{cm-class()}}.
 The \code{data} slot will contain all the data in the file, with names
 determined from the tokens in line 3 in that file, passed through
-\code{\link{make.names}}, except that
+\code{\link[=make.names]{make.names()}}, except that
 \code{Vnorth} is renamed \code{v} (after conversion from cm/s to m/s),
 \code{Veast} is renamed \code{u} (after conversion from cm/s to m/s),
 \code{Cond} is renamed \code{conductivity},
@@ -66,7 +66,7 @@ there are some columns that are unnamed in line 3 of the header;
 these yield data items with names \code{X}, \code{X.1}, etc.
 }
 \description{
-Read a current-meter data file, producing an object of \code{\link{cm-class}}.
+Read a current-meter data file, producing an object of \code{\link[=cm-class]{cm-class()}}.
 }
 \details{
 There function has been tested on only a single file, and the data-scanning
@@ -74,36 +74,27 @@ algorithm was based on visual inspection of that file.  Whether it will work
 generally is an open question. It should be noted that the sample file had
 several odd characteristics, some of which are listed below.
 \itemize{
-
-  \item  The file contained two columns named \code{"Cond"}, which was guessed
-  to stand for conductivity. Since only the first contained data, the second was
-  ignored, but this may not be the case for all files.
-
-  \item The unit for \code{"Cond"} was stated in the file to be \code{"mS"},
-  which makes no sense, so the unit was assumed to be mS/cm.
-
-  \item The file contained a column named \code{"T-Temp"}, which is not
-  something the author has seen in his career. It was assumed to stand for
-  in-situ temperature.
-
-  \item The file contained a column named \code{"Depth"}, which is not something
-  an instrument can measure. Presumably it was calculated from pressure (with
-  what atmospheric offset, though?) and so pressure was inferred from it using
-  \code{\link{swPressure}}.
-
-  \item The file contained several columns that lacked names. These were
-  ignored.
-
-  \item The file contained several columns that seem to be derived from the
-  actual measured data, such as \code{"Speed"}, \code{"Dir"}, \code{"N-S Dist"},
-  etc. These are ignored.
-
-  \item The file contained several columns that were basically a mystery to the
-  author, e.g. \code{"Hx"}, \code{"Hy"}, \code{"Vref"}, etc. These were ignored.
-
+\item file contained two columns named \code{"Cond"}, which was guessed
+to stand for conductivity. Since only the first contained data, the second was
+ignored, but this may not be the case for all files.
+\item The unit for \code{"Cond"} was stated in the file to be \code{"mS"},
+which makes no sense, so the unit was assumed to be mS/cm.
+\item The file contained a column named \code{"T-Temp"}, which is not
+something the author has seen in his career. It was assumed to stand for
+in-situ temperature.
+\item The file contained a column named \code{"Depth"}, which is not something
+an instrument can measure. Presumably it was calculated from pressure (with
+what atmospheric offset, though?) and so pressure was inferred from it using
+\code{\link[=swPressure]{swPressure()}}.
+\item The file contained several columns that lacked names. These were ignored.
+\item The file contained several columns that seem to be derived from the
+actual measured data, such as \code{"Speed"}, \code{"Dir"}, \code{"N-S Dist"},
+etc. These are ignored.
+\item The file contained several columns that were basically a mystery to the
+author, e.g. \code{"Hx"}, \code{"Hy"}, \code{"Vref"}, etc. These were ignored.
 }
 
-Based on such considerations, \code{read.cm.s4()} reads only the columns that
+Based on such considerations, \code{\link[=read.cm.s4]{read.cm.s4()}} reads only the columns that
 were reasonably well-understood based on the sample file. Users who need more
 columns should contact the author. And a user who could produce a document
 explaining the data format would be especially appreciated!
@@ -122,7 +113,6 @@ return value, but it is no longer stored, since it can be derived from the
   summary(cm)
   plot(cm)
 }
-
 
 }
 \seealso{

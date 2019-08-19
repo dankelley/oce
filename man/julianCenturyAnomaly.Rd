@@ -7,7 +7,7 @@
 julianCenturyAnomaly(jd)
 }
 \arguments{
-\item{jd}{a julian day number, e.g. as given by \code{\link{julianDay}}.}
+\item{jd}{a julian day number, e.g. as given by \code{\link[=julianDay]{julianDay()}}.}
 }
 \value{
 Julian century since noon on January 1, 1900.
@@ -15,8 +15,8 @@ Julian century since noon on January 1, 1900.
 \description{
 Convert a Julian-Day number to a time in julian centuries since noon on
 January 1, 1900.
-The method follows Meeus (1982 equation 15.1).  The example reproduces the
-example provided by Meeus (1982 example 15.a), with fractional error 3e-8.
+The method follows reference 1 equation 15.1.  The example reproduces the
+example provided by reference 1 example 15.a, with fractional error 3e-8.
 }
 \examples{
 
@@ -26,8 +26,10 @@ cat(format(t), "is Julian Century anomaly", format(jca, digits=8), "\\n")
 
 }
 \references{
-Meeus, Jean, 1982.  Astronomical formulae for Calculators.
+\enumerate{
+\item Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages
+}
 }
 \seealso{
 Other things related to astronomy: \code{\link{eclipticalToEquatorial}},

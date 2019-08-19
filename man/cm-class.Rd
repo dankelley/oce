@@ -6,12 +6,7 @@
 \title{Class to Store Current Meter Data}
 \description{
 This class stores current meter data, e.g. from an Interocean/S4 device
-or an Aanderaa/RCM device.  A file
-containing Interocean/S4 data may be read with \code{\link{read.cm}}.
-Alternatively, \code{\link{as.cm}} can be used to create \code{cm} objects.
-Objects of this class can be
-plotted with \code{\link{plot,cm-method}} or summarized with
-\code{\link{summary,cm-method}}.
+or an Aanderaa/RCM device.
 }
 \section{Slots}{
 

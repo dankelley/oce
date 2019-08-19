@@ -163,7 +163,7 @@ be said of true map projections, which can be problematic in various ways owing
 to difficulties in inverting projection calculations.
 
 To get an inset map inside another map, draw the first map, do
-\code{par(new=TRUE)}, and then call \code{plot,coastline-method} with a value of
+\code{\link{par}}\code{(new=TRUE)}, and then call \code{\link[=plot,coastline-method]{plot,coastline-method()}} with a value of
 \code{mar} that moves the inset plot to a desired location on the existing
 plot, and with \code{bg="white"}.
 }

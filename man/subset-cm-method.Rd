@@ -8,7 +8,7 @@
 \S4method{subset}{cm}(x, subset, ...)
 }
 \arguments{
-\item{x}{a \code{cm} object, i.e. inheriting from \code{\link{cm-class}}.}
+\item{x}{A \linkS4class{cm} object.}
 
 \item{subset}{a condition to be applied to the \code{data} portion of \code{x}.
 See \sQuote{Details}.}
@@ -19,7 +19,7 @@ See \sQuote{Details}.}
 A new \code{cm} object.
 }
 \description{
-This function is somewhat analogous to \code{\link{subset.data.frame}}.
+This function is somewhat analogous to \code{\link[=subset.data.frame]{subset.data.frame()}}.
 }
 \examples{
 library(oce)

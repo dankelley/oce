@@ -8,7 +8,7 @@
 \S4method{[[}{cm}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A cm object, i.e. one inheriting from \code{\link{cm-class}}.}
+\item{x}{A \linkS4class{cm} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 

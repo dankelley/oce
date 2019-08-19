@@ -8,7 +8,7 @@
 \S4method{[[}{cm}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An \code{cm} object, i.e. inheriting from \code{\link{cm-class}}}
+\item{x}{A \linkS4class{cm} object.}
 
 \item{i}{The item to replace.}
 

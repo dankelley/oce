@@ -8,9 +8,6 @@
 data(cm)
 }
 \description{
-A Current Meter (cm) Object
-}
-\details{
 The result of using [read.cm()] on a current meter file holding measurements made with an
 Interocean S4 device.  See [read.cm()] for some general cautionary notes on reading such
 files. Note that the salinities in this sample dataset are known to be incorrect, perhaps
