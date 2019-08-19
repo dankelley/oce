@@ -8,7 +8,7 @@
 \S4method{subset}{argo}(x, subset, ...)
 }
 \arguments{
-\item{x}{An \code{argo} object, i.e. one inheriting from \code{\link{argo-class}}.}
+\item{x}{An \code{argo} object, i.e. one inheriting from \code{\link[=argo-class]{argo-class()}}.}
 
 \item{subset}{An expression indicating how to subset \code{x}.}
 

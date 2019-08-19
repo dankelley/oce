@@ -13,33 +13,33 @@
   mgp[1] + 1.5, 1.5, 1.5), tformat, debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{object inheriting from \code{\link{argo-class}}.}
+\item{x}{object inheriting from \code{\link[=argo-class]{argo-class()}}.}
 
 \item{which}{list of desired plot types, one of the following. Note
-that \code{\link{oce.pmatch}} is used to try to complete partial
+that \code{\link[=oce.pmatch]{oce.pmatch()}} is used to try to complete partial
 character matches, and that an error will occur if the match is
 not complete (e.g. \code{"salinity"} matches to both
 \code{"salinity ts"} and \code{"salinity profile"}.).
 \itemize{
-    \item \code{which=1}, \code{which="trajectory"} or \code{which="map"} gives a
-    plot of the argo trajectory, with the coastline, if one is provided.
+\item \code{which=1}, \code{which="trajectory"} or \code{which="map"} gives a
+plot of the argo trajectory, with the coastline, if one is provided.\preformatted{\item `which=2` or `"salinity ts"` gives a time series of
+salinity at the indicated level(s)
 
-    \item \code{which=2} or \code{"salinity ts"} gives a time series of
-    salinity at the indicated level(s)
+\item `which=3` or `"temperature ts"` gives a time series
+of temperature at the indicated level(s)
 
-    \item \code{which=3} or \code{"temperature ts"} gives a time series
-    of temperature at the indicated level(s)
+\item `which=4` or `"TS"` gives a TS diagram at the
+indicated level(s)
 
-    \item \code{which=4} or \code{"TS"} gives a TS diagram at the
-    indicated level(s)
+\item `which=5` or `"salinity profile"` gives a salinity
+profile of all the data (with S and p trimmed to the 1 and 99
+percentiles)
 
-    \item \code{which=5} or \code{"salinity profile"} gives a salinity
-    profile of all the data (with S and p trimmed to the 1 and 99
-    percentiles)
+\item `which=6` or `"temperature profile"` gives a
+temperature profile (with T and p trimmed to the 1 and 99
+percentiles)
+}
 
-    \item \code{which=6} or \code{"temperature profile"} gives a
-    temperature profile (with T and p trimmed to the 1 and 99
-    percentiles)
 }}
 
 \item{level}{depth pseudo-level to plot, for \code{which=2} and higher.  May be an
@@ -69,18 +69,18 @@ mean float latitude.  If \code{projection="automatic"}, then one
 of two projections is used: stereopolar (i.e. \code{"+proj=stere +lon_0=X"}
 where \code{X} is the mean longitude), or Mercator (i.e. \code{"+proj=merc"})
 otherwise.  Otherwise, \code{projection} must be a character string specifying
-a projection in the notation used by the \code{link[rgdal]{project}} function
+a projection in the notation used by the \link[rgdal:project]{rgdal::project} function
 in the \CRANpkg{rgdal} package; this will be familiar to many readers as
-the PROJ.4 notation; see \code{\link{mapPlot}}.}
+the PROJ.4 notation; see \code{\link[=mapPlot]{mapPlot()}}.}
 
 \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also for
 \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{\link{par}}("mar").}
+\item{mar}{value to be used with \href{"mar"}{par()}.}
 
-\item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for plot
-types that call that function.  (See \code{\link{strptime}} for the format
+\item{tformat}{optional argument passed to \code{\link[=oce.plot.ts]{oce.plot.ts()}}, for plot
+types that call that function.  (See \code{\link[=strptime]{strptime()}} for the format
 used.)}
 
 \item{debug}{debugging flag.}

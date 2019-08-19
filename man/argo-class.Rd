@@ -8,11 +8,11 @@
 This class stores data from Argo floats.
 }
 \details{
-An \code{argo} object may be read with \code{\link{read.argo}} or
-created with \code{\link{as.argo}}.  Argo data can be gridded to constant
-pressures with \code{\link{argoGrid}} or subsetted with
-\code{\link{subset,argo-method}}.  Plots can be made with
-\code{\link{plot,argo-method}}, while \code{\link{summary,argo-method}}
+An \code{argo} object may be read with \code{\link[=read.argo]{read.argo()}} or
+created with \code{\link[=as.argo]{as.argo()}}.  Argo data can be gridded to constant
+pressures with \code{\link[=argoGrid]{argoGrid()}} or subsetted with
+\code{\link[=subset,argo-method]{subset,argo-method()}}.  Plots can be made with
+\code{\link[=plot,argo-method]{plot,argo-method()}}, while \code{\link[=summary,argo-method]{summary,argo-method()}}
 produces statistical summaries and \code{show} produces overviews.
 
 See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some

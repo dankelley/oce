@@ -11,7 +11,7 @@
 \item{...}{Further arguments passed to or from other methods.}
 
 \item{object}{an}{object of class \code{"argo"}, usually, a result of a
-call to \code{\link{read.argo}}.}
+call to \code{\link[=read.argo]{read.argo()}}.}
 }
 \value{
 A matrix containing statistics of the elements of the \code{data} slot.

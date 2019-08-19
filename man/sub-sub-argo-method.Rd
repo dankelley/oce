@@ -8,7 +8,7 @@
 \S4method{[[}{argo}(x, i, j, ...)
 }
 \arguments{
-\item{x}{An \code{argo} object, i.e. one inheriting from \code{\link{argo-class}}.}
+\item{x}{An \code{argo} object, i.e. one inheriting from \code{\link[=argo-class]{argo-class()}}.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
@@ -40,48 +40,37 @@ There are several possibilities, depending on the nature of \code{i}.
 Note that all of these calculations are done with
 \code{salinityAdjusted}, if that is present, or with \code{salinity}
 otherwise, and similar for temperature and pressure.
-
 \itemize{
-
 \item If \code{i} is \code{"profile"} and \code{j} is an integer vector,
 then an argo object is returned, as specified by \code{j}. For example,
 \code{argo[["profile", 2:5]]} is equivalent to
-\code{subset(argo, profile \%in\% 2:5)}.
-
+\code{subset(argo, profile \\\%in\\\% 2:5)}.
 \item If \code{i} is \code{"CT"}, then
 Conservative Temperature is returned, as computed with
-\code{\link[gsw]{gsw_CT_from_t}(SA, t, p)}, where
+\code{\link[gsw:gsw_CT_from_t]{gsw::gsw_CT_from_t}}\code{(SA,t,p)}, where
 first \code{SA} is computed as explained
 in the next item, \code{t} is in-situ temperature,
 and \code{p} is pressure.
-
-\item If \code{i} is \code{"N2"}, then
-the square of buoyancy is returned, as computed with
-\code{\link{swN2}}.
-
+\item If \code{i} is \code{"N2"}, then the square of buoyancy is returned,
+as computed with \code{\link[=swN2]{swN2()}}.
 \item If \code{i} is \code{"SA"}, then
 Absolute Salinity is returned, as computed with
-\code{\link[gsw]{gsw_SA_from_SP}}.
-
+\code{\link[gsw:gsw_SA_from_SP]{gsw::gsw_SA_from_SP()}}.
 \item If \code{i} is \code{"sigmaTheta"}, then
 potential density anomaly (referenced to zero
-pressure) is computed, with \code{\link{swSigmaTheta}}, where the
+pressure) is computed, with \code{\link[=swSigmaTheta]{swSigmaTheta()}}, where the
 equation of state is taken to be
-\code{\link{getOption}("oceEOS", default="gsw")}.
-
+\code{\link{getOption}}\code{("oceEOS",default="gsw")}.
 \item If \code{i} is \code{"theta"}, then
 potential temperature (referenced to zero
-pressure) is computed, with \code{\link{swTheta}}, where the
+pressure) is computed, with \code{\link[=swTheta]{swTheta()}}, where the
 equation of state is taken to be
-\code{\link{getOption}("oceEOS", default="gsw")}.
-
+\code{\link{getOption}}\code{("oceEOS",default="gsw")}.
 \item If \code{i} is \code{"depth"}, then
 a matrix of depths is returned.
-
 \item If \code{i} is in the \code{data} slot of \code{x},
 then it is returned, otherwise if it is in the \code{metadata} slot,
 then that is returned, otherwise \code{NULL} is returned.
-
 }
 }
 
