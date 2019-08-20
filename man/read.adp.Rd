@@ -63,11 +63,11 @@ amount of debugging information, or to 2 to get more.}
 \item{\dots}{additional arguments, passed to called routines.}
 }
 \value{
-An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
-The form of this object varies with instrument type. In some cases
-navigational data may be included, e.g. \code{read.adp.rdi} can
-read NMEA strings (which get stored in an item called \code{nmea}
-in the \code{data} slot).
+An \code{\link{adp-class}} object.
+The contents of that object make sense for the particular instrument
+type under study, e.g. if the data file contains
+NMEA strings, then navigational data will be stored in an item
+called \code{nmea} in the \code{data} slot).
 }
 \description{
 Read an ADP data file, producing an \code{adp} object, i.e. one inheriting
