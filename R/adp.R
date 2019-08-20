@@ -1296,6 +1296,8 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
         by <- 1
     if (!toGiven)
         to <- 0
+    if (is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
 
     if (missing(manufacturer)) {
         oceDebug(debug, "using read.oce() since 'manufacturer' argument is missing\n")

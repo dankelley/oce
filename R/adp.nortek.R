@@ -600,6 +600,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     if (to == 0)
         to <- 1e9                      # this should be enough to read any file
     if (is.character(file)) {
+        if (0 == file.info(file)$size)
+            stop("empty file")
         filename <- fullFilename(file)
         file <- file(file, "rb")
         on.exit(close(file))

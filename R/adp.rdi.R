@@ -155,8 +155,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         else beamConfig <- "unknown"
     }
     bits <- substr(systemConfiguration, 1, 1)
-    if (bits == "1") orientation <- "upward" else orientation <- "downward"
-    oceDebug(debug, "bits=", bits, "so that orientation=", orientation, "\n")
+    ###if (bits == "1") orientation <- "upward" else orientation <- "downward"
+    ###oceDebug(debug, "bits=", bits, "so that orientation=", orientation, "\n")
 
     ##real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
     ##lagLength <- readBin(FLD[8], "integer", n=1, size=1, signed=FALSE) # unused
@@ -320,7 +320,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
                 beamAngle=beamAngle,
                 beamPattern=beamPattern,
                 beamConfig=beamConfig,
-                orientation=orientation,
+                ###orientation=orientation,
                 numberOfDataTypes=numberOfDataTypes,
                 dataOffset=dataOffset,
                 codes=codes,
@@ -777,6 +777,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     ##     oceDebug(debug, "class(from)=", class(from), "; class(to)=", class(to), "\n")
     ## }
     if (is.character(file)) {
+        if (0 == file.info(file)$size)
+            stop("empty file")
         filename <- fullFilename(file)
         file <- file(file, "rb")
         on.exit(close(file))
@@ -795,6 +797,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     seek(file, where=0, origin="end")
     fileSize <- seek(file, where=0)
     oceDebug(debug, "fileSize=", fileSize, "\n")
+    if (fileSize < 1)
+        stop("empty data file")
 
     ## FIXME 20170107
     ## We process the header wholly in R, and we don't need more than probably 2000 bytes
@@ -1451,6 +1455,12 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                     msg <- paste(msg, "    Code ", name, " occurred ", warningUnknownCode[[name]], " times\n", sep="")
                 warning(msg)
             }
+            if (1 != length(unique(orientation)))
+                warning("the instrument orientation is not constant. The user is advised to determine
+the orientation during the relevant measurement phase, and to set this into the
+object with e.g.
+    adp<-oceSetMetadata(adp,'orientation','upward')
+in case conversion to ENU is to be done later.")
 
             ## time <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart+4])), # year
             ##                     as.integer(buf[profileStart+5]),      # month

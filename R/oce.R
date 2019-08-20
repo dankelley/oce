@@ -1996,6 +1996,8 @@ read.oce <- function(file, ...)
     oceDebug(debug,
              "read.oce(\"", as.character(file), "\", ...) inferred type=\"", type, "\"\n",
              sep="", unindent=1)
+    if (is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     ##> OLD: deparse is unhelpful if "file" is a variable in the calling code
     ##> OLD: processingLog <- paste(deparse(match.call()), sep="", collapse="")
     processingLog <- paste('read.oce("', file, '"', ifelse(length(dots), ", ...)", ")"), sep="")

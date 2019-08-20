@@ -78,6 +78,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "read.adp.sontek(...,from=", from, ",to=", if (missing.to) "(missing)" else to, ",by=", by, "type=", type, "...)\n")
     ##parameters <- list(profile.byte1 = 0xa5, profile.byte2=0x10, profile.headerLength=80)
     if (is.character(file)) {
+        if (0 == file.info(file)$size)
+            stop("empty file")
         filename <- fullFilename(file)
         file <- file(file, "rb")
         on.exit(close(file))
