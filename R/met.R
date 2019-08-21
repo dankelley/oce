@@ -557,6 +557,8 @@ metNames2oceNames <- function(names, scheme)
 #' @md
 read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     oceDebug(debug, "read.met() {\n", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)

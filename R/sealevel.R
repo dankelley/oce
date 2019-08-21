@@ -694,6 +694,8 @@ setMethod(f="plot",
 #' @md
 read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getOption("oceDebug"))
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     if (!is.character(file))
         stop("'file' must be a character string")
     fileOrig <- file

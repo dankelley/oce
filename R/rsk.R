@@ -650,6 +650,8 @@ setMethod(f="plot",
 read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default="UTC"),
                         patm=FALSE, processingLog, debug=getOption("oceDebug"))
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     debug <- max(0, min(debug, 2))
     oceDebug(debug, "read.rsk(file=\"", file, "\", from=", format(from),
              ", to=", if (missing(to))"(not given)" else format(to),

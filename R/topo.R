@@ -856,6 +856,8 @@ setMethod(f="plot",
 #' @md
 read.topo <- function(file, debug=getOption("oceDebug"))
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     oceDebug(debug, "read.topo(file=\"", file, "\") {\n", sep="", unindent=1)
     ## handle GEBCO netcdf files or an ascii format
     dataNamesOriginal <- list()

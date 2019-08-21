@@ -470,6 +470,8 @@ read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     longitude=NA, latitude=NA,
                     debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     oceDebug(debug, "read.cm(file=\"", file,
               "\", from=", format(from),
               ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, "type=", type, ", ...) {\n", sep="", unindent=1)

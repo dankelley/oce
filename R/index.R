@@ -64,6 +64,8 @@
 #' @md
 read.index <- function(file, format, missingValue, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     if (is.character(file)) {
         ##filename <- fullFilename(file)
         file <- file(file, "r")

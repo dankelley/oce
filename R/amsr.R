@@ -562,6 +562,8 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
 #' @md
 read.amsr <- function(file, debug=getOption("oceDebug"))
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     oceDebug(debug, "read.amsr(file=\"", file, "\",",
              #if (length(band) > 1) paste("band=c(\"", paste(band, collapse="\",\""), "\")", sep="") else
                  ", debug=", debug, ") {\n", sep="", unindent=1)

@@ -96,7 +96,7 @@ setMethod(f="[[<-",
 #' consulting reference 2 (clicking and unclicking the radio button to
 #' show just the data) that the field mostly derives from simulation.
 #'
-#' @param filename name of a netcdf file containing G1SST data.
+#' @param file character value containing the name of a netcdf file containing G1SST data.
 #'
 #' @return A [g1sst-class] object.
 #'
@@ -132,12 +132,16 @@ setMethod(f="[[<-",
 #' @family things related to satellite data
 #'
 #' @md
-read.g1sst <- function(filename)
+read.g1sst <- function(file)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     if (!requireNamespace("ncdf4", quietly=TRUE))
         stop('must install.packages("ncdf4") to read g1sst data')
-    f <- ncdf4::nc_open(filename)
-    res <- new("g1sst", filename=filename)
+    if (!is.character(file))
+        stop("file must be a character string")
+    f <- ncdf4::nc_open(file)
+    res <- new("g1sst", file=file)
     ## Change the 1-col ncdf4 output to a vector
     res@metadata$longitude <- as.vector(ncdf4::ncvar_get(f, "longitude"))
     res@metadata$latitude <- as.vector(ncdf4::ncvar_get(f, "latitude"))

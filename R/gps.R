@@ -476,6 +476,8 @@ as.gps <- function(longitude, latitude, filename="")
 #' @md
 read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     oceDebug(debug, "read.gps(...) {\n", sep="", unindent=1)
     filename <- NULL
     if (is.character(file)) {

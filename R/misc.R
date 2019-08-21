@@ -282,6 +282,8 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
 #'}
 read.woa <- function(file, name, positive=FALSE)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     if (!is.character(file))
         stop("'file' must be a character string")
     con <- ncdf4::nc_open(file)

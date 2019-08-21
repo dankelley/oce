@@ -830,6 +830,8 @@ read.echosounder <- function(file, channel=1, soundSpeed,
                              tz=getOption("oceTz"), debug=getOption("oceDebug"),
                              processingLog)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     oceDebug(debug, "read.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="", unindent=1)
     ##ofile <- file
     filename <- NULL

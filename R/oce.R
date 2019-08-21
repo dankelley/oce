@@ -1990,6 +1990,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
 #' plotTS(x) # just the TS
 read.oce <- function(file, ...)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     type <- oceMagic(file)
     dots <- list(...)
     debug <- if ("debug" %in% names(dots)) dots$debug else 0

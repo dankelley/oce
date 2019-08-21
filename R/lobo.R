@@ -378,6 +378,8 @@ setMethod(f="plot",
 #' @family things related to lobo data
 read.lobo <- function(file, cols=7, processingLog)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     ## header <- scan(file, what=character(), sep="\t", nlines=1, quiet=TRUE)
     ## d <- scan(file, what=character(), sep="\t", skip=1,  quiet=TRUE)
     filename <- ""

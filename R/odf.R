@@ -974,6 +974,8 @@ ODFListFromHeader <- function(header)
 #' @md
 read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebug"))
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     oceDebug(debug, "read.odf(\"", file, "\", ...) {\n", unindent=1, sep="")
     if (!is.null(header)) {
         if (!is.character(header))

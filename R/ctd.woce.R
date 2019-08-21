@@ -258,6 +258,8 @@ woceUnit2oceUnit <- function(woceUnit)
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                           monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     if (length(grep("\\*", file))) {
         oceDebug(debug, "read.ctd.woce(file=\"", file, "\") { # will read a series of files\n", unindent=1)
         files <- list.files(pattern=file)
@@ -668,6 +670,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, deploy
 read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                                 monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     ##EXPOCODE 06MT18/1      WHP-ID A1E    DATE 090591
     ##STNNBR    558 CASTNO   1 NO.RECORDS=   83
     ##INSTRUMENT NO. NB3 SAMPLING RATE  31.25 HZ

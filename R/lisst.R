@@ -340,6 +340,8 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
 #' @md
 read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)

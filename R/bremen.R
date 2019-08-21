@@ -192,6 +192,8 @@ findInHeaderBremen <- function(key, lines)
 #' @md
 read.bremen <- function(file)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
