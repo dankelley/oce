@@ -2,12 +2,6 @@
 #'
 #' This class stores LOBO data.
 #'
-#' A \code{lobo} object may be read with \code{\link{read.lobo}} or
-#' constructed with \code{\link{as.lobo}}.  Plots can be made with
-#' \code{\link{plot,lobo-method}}, while \code{\link{summary,lobo-method}} produces
-#' statistical summaries. Data within a \code{lobo} object may be retrieved with
-#' \code{\link{[[,lobo-method}} and altered with \code{\link{[[,lobo-method}}.
-#'
 #' @templateVar class lobo
 #'
 #' @templateVar dataExample {}
@@ -21,8 +15,11 @@
 #' @template slot_get
 #'
 #' @author Dan Kelley
+#'
 #' @family classes provided by oce
 #' @family things related to lobo data
+#'
+#' @md
 setClass("lobo", contains="oce")
 
 setMethod(f="initialize",
@@ -68,18 +65,20 @@ setMethod(f="initialize",
           })
 
 
-#' @title LOBO Dataset
+#' LOBO Dataset
 #'
-#' @description
 #' This is sample lobo dataset obtained in the Northwest Arm of Halifax by
 #' Satlantic.
 #'
 #' @name lobo
+#'
 #' @docType data
 #'
 #' @author Dan Kelley
+#'
 #' @source The data were downloaded from a web interface at Satlantic LOBO web
-#' server and then read with \code{\link{read.lobo}}.
+#' server and then read with [read.lobo()].
+#'
 #' @examples
 #'\donttest{
 #' library(oce)
@@ -90,50 +89,68 @@ setMethod(f="initialize",
 #'
 #' @family datasets provided with oce
 #' @family things related to lobo data
+#'
+#' @md
 NULL
 
 #' @title Extract Something From a LOBO Object
-#' @param x A lobo object, i.e. one inheriting from \code{\link{lobo-class}}.
+#'
+#' @param x a [lobo-class] object.
+#'
 #' @template sub_subTemplate
+#'
 #' @family things related to lobo data
+#'
+#' @md
 setMethod(f="[[",
           signature(x="lobo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
               callNextMethod() # [[
           })
 
-#' @title Replace Parts of a LOBO Object
-#' @param x An \code{lobo} object, i.e. inheriting from \code{\link{lobo-class}}
+#' Replace Parts of a LOBO Object
+#'
+#' @param x a [lobo-class] object.
+#'
 #' @template sub_subsetTemplate
+#'
 #' @family things related to lobo data
+#'
+#' @md
 setMethod(f="[[<-",
           signature(x="lobo", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
               callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
-#' @title Summarize a LOBO Object
+#' Summarize a LOBO Object
 #'
-#' @description
 #' Pertinent summary information is presented, including the sampling interval,
 #' data ranges, etc.
 #'
-#' @param object an object of class \code{"lobo"}, usually, a result of a call
-#' to \code{\link{read.lobo}} or \code{\link{read.oce}}.
+#' @param object a [lobo-class] object.
+#'
 #' @param \dots further arguments passed to or from other methods.
-#' @return A matrix containing statistics of the elements of the \code{data}
+#'
+#' @return A matrix containing statistics of the elements of the `data`
 #' slot.
+#'
 #' @author Dan Kelley
-#' @seealso The documentation for \code{\link{lobo-class}} explains the
+#'
+#' @seealso The documentation for [lobo-class] explains the
 #' structure of LOBO objects, and also outlines the other functions dealing
 #' with them.
+#'
 #' @references \url{http://lobo.satlantic.com} \url{http://www.mbari.org/lobo/}
+#'
 #' @examples
 #'
 #' library(oce)
 #' data(lobo)
 #' summary(lobo)
 #' @family things related to lobo data
+#'
+#' @md
 setMethod(f="summary",
           signature="lobo",
           definition=function(object, ...) {
@@ -144,20 +161,26 @@ setMethod(f="summary",
 
 
 
-#' @title Subset a LOBO Object
+#' Subset a LOBO Object
 #'
-#' @description
 #' Subset an lobo object, in a way that is somewhat
-#' analogous to \code{\link{subset.data.frame}}.
+#' analogous to [subset.data.frame()].
 #'
-#' @param x a \code{lobo} object.
-#' @param subset a condition to be applied to the \code{data} portion of
-#' \code{x}.  See \sQuote{Details}.
+#' @param x a `lobo` object.
+#'
+#' @param subset a condition to be applied to the `data` portion of
+#' `x`.  See \sQuote{Details}.
+#'
 #' @param \dots ignored.
-#' @return A new \code{lobo} object.
+#'
+#' @return A [lobo-class] object.
+#'
 #' @author Dan Kelley
+#'
 #' @family things related to lobo data
 #' @family functions that subset oce objects
+#'
+#' @md
 setMethod(f="subset",
           signature="lobo",
           definition=function(x, subset, ...) {
@@ -177,6 +200,8 @@ setMethod(f="subset",
 
 
 #' @family things related to lobo data
+#'
+#' @md
 plot.lobo.timeseries.TS <- function(lobo,
                                     S.col = "blue", T.col = "darkgreen", draw.legend=FALSE, ...)
 {
@@ -207,6 +232,8 @@ plot.lobo.timeseries.TS <- function(lobo,
 }
 
 #' @family things related to lobo data
+#'
+#' @md
 plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", draw.legend=FALSE, ...)
 {
     peak <- max(range(c(lobo@data$u, lobo@data$v), na.rm=TRUE))
@@ -226,6 +253,8 @@ plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", d
 }
 
 #' @family things related to lobo data
+#'
+#' @md
 plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.nitrate = "darkgreen", draw.legend=FALSE, ...)
 {
     plot(lobo@data$time, lobo@data$fluorescence, type='l', ylab="", axes=FALSE, ...)
@@ -249,39 +278,48 @@ plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.ni
 }
 
 #' @family things related to lobo data
+#'
+#' @md
 plot.lobo.TS <- function(lobo, ...)
 {
     plotTS(as.ctd(lobo[["salinity"]], lobo[["temperature"]], 0), ...)
 }
 
 
-#' @title Plot LOBO data
+#' Plot LOBO data
 #'
-#' @description
 #' Plot a summary diagram for lobo data.
 #'
-#' @param x A \code{lobo} object, e.g. as read by \code{\link{read.lobo}}.
+#' @param x a [lobo-class] object.
+#'
 #' @param which A vector of numbers or character strings, indicating the
 #' quantities to plot.  These are stacked in a single column.  The possible
-#' values for \code{which} are as follows: \code{1} or \code{"temperature"} for
-#' a time series of temperature; \code{2} or \code{"salinity"} for salinity;
-#' \code{3} or \code{"TS"} for a TS diagram (which uses \code{eos="unesco"}),
-#' \code{4} or \code{"u"} for a
-#' timeseries of the u component of velocity; \code{5} or \code{"v"} for a
-#' timeseries of the v component of velocity; \code{6} or \code{"nitrate"} for
-#' a timeseries of nitrate concentration; \code{7} or \code{"fluorescence"} for
+#' values for `which` are as follows: `1` or `"temperature"` for
+#' a time series of temperature; `2` or `"salinity"` for salinity;
+#' `3` or `"TS"` for a TS diagram (which uses `eos="unesco"`),
+#' `4` or `"u"` for a
+#' timeseries of the u component of velocity; `5` or `"v"` for a
+#' timeseries of the v component of velocity; `6` or `"nitrate"` for
+#' a timeseries of nitrate concentration; `7` or `"fluorescence"` for
 #' a timeseries of fluorescence value.
-#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
-#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#'
+#' @param mgp 3-element numerical vector to use for `par(mgp)`, and also
+#' for `par(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
-#' @param mar value to be used with \code{\link{par}("mar")}.
+#'
+#' @param mar value to be used with [`par`]`("mar")`.
 #' @template debugTemplate
+#'
 #' @param \dots optional arguments passed to plotting functions.
+#'
 #' @author Dan Kelley
 #'
 #' @family functions that plot oce data
 #' @family things related to lobo data
+#'
 #' @aliases plot.lobo
+#'
+#' @md
 setMethod(f="plot",
           signature=signature("lobo"),
           definition=function(x,
@@ -325,46 +363,36 @@ setMethod(f="plot",
                       oce.plot.ts(x[["time"]], x[["fluorescence"]], ylab=resizableLabel("fluorescence", axis="y"), debug=debug-1, ...)
                   }
               }
-
-#              if (any(!is.na(x@data$u) & !is.na(x@data$v))) {
-#                  par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
-#                  plot.lobo.timeseries.uv(x, ...)
-#              }
-#
-#              par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
-#              plot.lobo.timeseries.biology(x, ...)
-#
-#              par(mar=c(mgp[1]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
-#              plot.lobo.TS(x, ...)
           })
 
 
-
-
-#' @title Read a LOBO File
+#' Read a LOBO File
 #'
-#' @description
 #' Read a data file created by a LOBO instrument.
 #'
-#' @details
-#' This version of \code{read.lobo} is really quite crude, having been
+#' This version of `read.lobo` is really quite crude, having been
 #' developed mainly for a ``predict the Spring bloom'' contest at Dalhousie
 #' University.  In particular, the function assumes that the data columns are
 #' exactly as specified in the Examples section; if you reorder the columns or
 #' add new ones, this function is unlikely to work correctly. Furthermore, it
 #' should be noted that the file format was inferred simply by downloading
 #' files; the supplier makes no claims that the format will be fixed in time.
-#' It is also worth noting that there is no \code{\link{read.oce}} equivalent
-#' to \code{read.lobo}, because the file format has no recognizable header.
+#' It is also worth noting that there is no [read.oce()] equivalent
+#' to `read.lobo`, because the file format has no recognizable header.
 #'
 #' @param file a connection or a character string giving the name of the file
 #' to load.
+#'
 #' @param cols number of columns in dataset.
+#'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' (Typically only provided for internal calls; the default that it provides is
 #' better for normal calls by a user.)
-#' @return An object of \code{\link{lobo-class}}.
+#'
+#' @return A [lobo-class] object.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #'\dontrun{
 #' library(oce)
@@ -376,6 +404,8 @@ setMethod(f="plot",
 #' lobo <- read.lobo(uri)
 #'}
 #' @family things related to lobo data
+#'
+#' @md
 read.lobo <- function(file, cols=7, processingLog)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
@@ -431,23 +461,35 @@ read.lobo <- function(file, cols=7, processingLog)
 
 
 
-#' @title Coerce Data into a Lobo Object
+#' Coerce Data into a Lobo Object
 #'
-#' @description
 #' Coerce a dataset into a lobo dataset.
 #'
 #' @param time vector of times of observation
+#'
 #' @param u vector of x velocity component observations
+#'
 #' @param v vector of y velocity component observations
+#'
 #' @param salinity vector of salinity observations
+#'
 #' @param temperature vector of temperature observations
+#'
 #' @param pressure vector of pressure observations
+#'
 #' @param nitrate vector of nitrate observations
+#'
 #' @param fluorescence vector of fluoresence observations
+#'
 #' @param filename source filename
-#' @return An object of \code{\link{lobo-class}}.
+#'
+#' @return A [lobo-class] object.
+#'
 #' @author Dan Kelley
+#'
 #' @family things related to lobo data
+#'
+#' @md
 as.lobo <- function(time, u, v, salinity, temperature, pressure, nitrate, fluorescence, filename="")
 {
     if (missing(u) || missing(v) || missing(salinity) || missing(temperature) || missing(pressure))

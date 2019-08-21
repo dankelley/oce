@@ -11,7 +11,7 @@
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{A \code{lobo} object, e.g. as read by \code{\link{read.lobo}}.}
+\item{x}{a \linkS4class{lobo} object.}
 
 \item{which}{A vector of numbers or character strings, indicating the
 quantities to plot.  These are stacked in a single column.  The possible
@@ -28,7 +28,7 @@ a timeseries of fluorescence value.}
 for \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{\link{par}("mar")}.}
+\item{mar}{value to be used with \code{\link{par}}\code{("mar")}.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

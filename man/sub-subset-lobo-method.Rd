@@ -8,7 +8,7 @@
 \S4method{[[}{lobo}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An \code{lobo} object, i.e. inheriting from \code{\link{lobo-class}}}
+\item{x}{a \linkS4class{lobo} object.}
 
 \item{i}{The item to replace.}
 

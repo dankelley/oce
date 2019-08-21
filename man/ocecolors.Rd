@@ -10,8 +10,8 @@ The data come from the matplotlib site
 }
 \description{
 The \code{ocecolors} dataset is a list containing color-schemes, used
-by \code{\link{oceColorsClosure}} to create functions such as
-\code{\link{oceColorsViridis}}.
+by \code{\link[=oceColorsClosure]{oceColorsClosure()}} to create functions such as
+\code{\link[=oceColorsViridis]{oceColorsViridis()}}.
 }
 \seealso{
 Other datasets provided with oce: \code{\link{adp}},

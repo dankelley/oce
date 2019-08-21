@@ -16,11 +16,11 @@
 \item{\dots}{ignored.}
 }
 \value{
-A new \code{lobo} object.
+A \linkS4class{lobo} object.
 }
 \description{
 Subset an lobo object, in a way that is somewhat
-analogous to \code{\link{subset.data.frame}}.
+analogous to \code{\link[=subset.data.frame]{subset.data.frame()}}.
 }
 \seealso{
 Other things related to lobo data: \code{\link{[[,lobo-method}},

@@ -27,7 +27,7 @@ as.lobo(time, u, v, salinity, temperature, pressure, nitrate, fluorescence,
 \item{filename}{source filename}
 }
 \value{
-An object of \code{\link{lobo-class}}.
+A \linkS4class{lobo} object.
 }
 \description{
 Coerce a dataset into a lobo dataset.

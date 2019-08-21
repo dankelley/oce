@@ -17,7 +17,7 @@ to load.}
 better for normal calls by a user.)}
 }
 \value{
-An object of \code{\link{lobo-class}}.
+A \linkS4class{lobo} object.
 }
 \description{
 Read a data file created by a LOBO instrument.
@@ -30,7 +30,7 @@ exactly as specified in the Examples section; if you reorder the columns or
 add new ones, this function is unlikely to work correctly. Furthermore, it
 should be noted that the file format was inferred simply by downloading
 files; the supplier makes no claims that the format will be fixed in time.
-It is also worth noting that there is no \code{\link{read.oce}} equivalent
+It is also worth noting that there is no \code{\link[=read.oce]{read.oce()}} equivalent
 to \code{read.lobo}, because the file format has no recognizable header.
 }
 \examples{
