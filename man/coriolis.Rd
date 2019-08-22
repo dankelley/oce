@@ -13,7 +13,7 @@ coriolis(latitude, degrees = TRUE)
 to \code{FALSE}, radians are used.}
 }
 \value{
-Coriolis parameter \link{radian/s}.
+Coriolis parameter, in radian/s.
 }
 \description{
 Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude

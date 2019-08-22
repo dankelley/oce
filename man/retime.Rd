@@ -7,15 +7,15 @@
 retime(x, a, b, t0, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{an \code{oce} object (presently, this must be of class \code{adv})}
+\item{x}{an \linkS4class{oce} object.}
 
-\item{a}{intercept \link{in seconds} in linear model of time drift (see
+\item{a}{intercept (in seconds) in linear model of time drift (see
 \dQuote{Details}).}
 
-\item{b}{slope \link{unitless} in linear model of time drift \link{unitless} (see
+\item{b}{slope (unitless) in linear model of time drift (unitless) (see
 \dQuote{Details}).}
 
-\item{t0}{reference time \link{in POSIXct format} used in linear model of time
+\item{t0}{reference time (in \code{\link[=POSIXct]{POSIXct()}} format) used in linear model of time
 drift (see \dQuote{Details}).}
 
 \item{debug}{a flag that, if nonzero, turns on debugging.}

@@ -113,9 +113,12 @@ setMethod(f="initialize",
 #' on the stations, individually.
 #'
 #' @param object An object of \code{\link{section-class}}.
+#'
 #' @template handleFlagsTemplate
+#'
 #' @references
 #' 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+#'
 #' @examples
 #' library(oce)
 #' data(section)
@@ -459,7 +462,7 @@ setMethod(f="[[",
               res
           })
 
-#' @title Replace Parts of a Section Object
+#' Replace Parts of a Section Object
 #'
 #' @param x a [section-class] object.
 #'
@@ -1078,16 +1081,16 @@ sectionAddCtd <- sectionAddStation
 #'
 #' @param mgp A 3-element numerical vector to use for `par(mgp)`, and also for
 #' `par(mar)`, computed from this. If not provided, this defaults to
-#' `getOption("oceMgp")`.
+#' [`getOption`]`("oceMgp")`.
 #'
-#' @param mar Value to be used with `\link{par`("mar")}. If not provided,
+#' @param mar Value to be used with [`par`]`("mar")`. If not provided,
 #' a default is set up.
 #'
-#' @param col Color, which defaults to `\link{par`("col")}.
+#' @param col Color, which defaults to [`par`]`("col")`.
 #'
-#' @param cex Numerical character-expansion factor, which defaults to `\link{par`("cex")}.
+#' @param cex Numerical character-expansion factor, which defaults to [`par`]`("cex")`.
 #'
-#' @param pch Indication of symbol type; defaults to `\link{par`("pch")}.
+#' @param pch Indication of symbol type; defaults to [`par`]`("pch")`.
 #'
 #' @param labcex Size of characters in contour labels (passed to
 #' [contour()]).

@@ -14,7 +14,7 @@ equator.}
 to \code{FALSE}, radians are used.}
 }
 \value{
-Acceleration due to gravity \link{\eqn{m^2/s}{m^2/s}}.
+Acceleration due to gravity, in \eqn{m^2/s}{m^2/s}.
 }
 \description{
 Compute \eqn{g}{g}, the acceleration due to gravity, as a function of

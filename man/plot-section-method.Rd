@@ -134,16 +134,16 @@ See \dQuote{Examples}.}
 
 \item{mgp}{A 3-element numerical vector to use for \code{par(mgp)}, and also for
 \code{par(mar)}, computed from this. If not provided, this defaults to
-\code{getOption("oceMgp")}.}
+\code{\link{getOption}}\code{("oceMgp")}.}
 
-\item{mar}{Value to be used with `\link{par`("mar")}. If not provided,
+\item{mar}{Value to be used with \code{\link{par}}\code{("mar")}. If not provided,
 a default is set up.}
 
-\item{col}{Color, which defaults to `\link{par`("col")}.}
+\item{col}{Color, which defaults to \code{\link{par}}\code{("col")}.}
 
-\item{cex}{Numerical character-expansion factor, which defaults to `\link{par`("cex")}.}
+\item{cex}{Numerical character-expansion factor, which defaults to \code{\link{par}}\code{("cex")}.}
 
-\item{pch}{Indication of symbol type; defaults to `\link{par`("pch")}.}
+\item{pch}{Indication of symbol type; defaults to \code{\link{par}}\code{("pch")}.}
 
 \item{labcex}{Size of characters in contour labels (passed to
 \code{\link[=contour]{contour()}}).}

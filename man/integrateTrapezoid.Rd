@@ -11,7 +11,7 @@ integrateTrapezoid(x, y, type = c("A", "dA", "cA"), xmin, xmax)
 vectors are both supplied, and of equal length. There are also two
 special cases. First, if \code{y} is missing, then
 \code{x} is taken to be \code{y}, and a new \code{x} is constructed
-as \code{\link{seq_along`(y)}. Second, if }length(x)\code{is 1 and}length(y)\code{exceeds 1, then}x\code{is replaced by}x*seq_along(y)`.}
+as \code{\link{seq_along}}\code{(y)1. Second, if }length(x)\code{is 1 and}length(y)\code{exceeds 1, then}x\code{is replaced by}x*\code{[}seq_along\code{]}(y)`.}
 
 \item{type}{Flag indicating the desired return value (see \dQuote{Value}).}
 

@@ -1740,15 +1740,15 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 #' after this is called, [subset()] can be used to trim to a desired
 #' time range.
 #'
-#' @param x an `oce` object (presently, this must be of class `adv`)
+#' @param x an [oce-class] object.
 #'
-#' @param a intercept [in seconds] in linear model of time drift (see
+#' @param a intercept (in seconds) in linear model of time drift (see
 #' \dQuote{Details}).
 #'
-#' @param b slope [unitless] in linear model of time drift [unitless] (see
+#' @param b slope (unitless) in linear model of time drift (unitless) (see
 #' \dQuote{Details}).
 #'
-#' @param t0 reference time [in POSIXct format] used in linear model of time
+#' @param t0 reference time (in [POSIXct()] format) used in linear model of time
 #' drift (see \dQuote{Details}).
 #'
 #' @param debug a flag that, if nonzero, turns on debugging.
@@ -3074,7 +3074,7 @@ GMTOffsetFromTz <- function(tz)
 #' @param degrees Flag indicating whether degrees are used for latitude; if set
 #' to `FALSE`, radians are used.
 #'
-#' @return Acceleration due to gravity [\eqn{m^2/s}{m^2/s}].
+#' @return Acceleration due to gravity, in \eqn{m^2/s}{m^2/s}.
 #'
 #' @author Dan Kelley
 #'
@@ -3530,7 +3530,7 @@ interpBarnes <- function(x, y, z, w,
 #' @param degrees Flag indicating whether degrees are used for latitude; if set
 #' to `FALSE`, radians are used.
 #'
-#' @return Coriolis parameter [radian/s].
+#' @return Coriolis parameter, in radian/s.
 #'
 #' @author Dan Kelley
 #'
@@ -4128,7 +4128,7 @@ byteToBinary <- function(x, endian="big")
 #' `formatCI(ci=c(8,12), style="+/-")` yields `"10+-2"`, and
 #' `formatCI(ci=c(8,12), style="parentheses")` yields `"10(2)"`.
 #'
-#' \strong{Note:} if the confidence range exceeds the value, the
+#' **Note:** if the confidence range exceeds the value, the
 #' `parentheses` format reverts to `+/-` format.
 #'
 #' @param ci optional vector of length 2 or 3.
@@ -4139,7 +4139,7 @@ byteToBinary <- function(x, endian="big")
 #' [nls()].
 #'
 #' @param digits optional number of digits to use; if not supplied,
-#' `\link{getOption`("digits")} is used.
+#' [`getOption`[`("digits")` is used.
 #'
 #' @return If `ci` is given, the result is a character string with the
 #' estimate and its uncertainty, in plus/minus or parenthetic notation.  If
@@ -4150,10 +4150,10 @@ byteToBinary <- function(x, endian="big")
 #'
 #' @references JCGM, 2008.  \emph{Evaluation of measurement data - Guide to the
 #' expression of uncertainty in measurement (JCGM 100:2008)}, published by the
-#' Joint Committee for Guides in Metrology.
-#' [\url{http://www.bipm.org/en/publications/guides/gum.html}] (See section
+#' Joint Committee for Guides in Metrology,
+#' http://www.bipm.org/en/publications/guides/gum.html (see section
 #' 7.2.2 for a summary of notation, which shows equal values to the right of a
-#' `+-` sign and in parentheses.)
+#' `+-` sign and in parentheses.
 #'
 #' I. Mills, T. Cvitas, K. Homann, N. Kallay, and K. Kuchitsu, 1993.
 #' \emph{Quantities, Units and Symbols in Physical Chemistry}, published
@@ -4733,9 +4733,9 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 #' vectors are both supplied, and of equal length. There are also two
 #' special cases. First, if `y` is missing, then
 #' `x` is taken to be `y`, and a new `x` is constructed
-#' as `\link{seq_along`(y)}. Second, if `length(x)` is 1
+#' as [`seq_along`]`(y)1. Second, if `length(x)` is 1
 #' and `length(y)` exceeds 1, then `x` is replaced by
-#' `x*seq_along(y)`.
+#' `x*`[`seq_along`]`(y)`.
 #'
 #' @param type Flag indicating the desired return value (see \dQuote{Value}).
 #'
