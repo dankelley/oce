@@ -1476,7 +1476,7 @@ filterSomething <- function(x, filter)
 #' y.  The angle connecting a point on the graph to the focus provides an
 #' indication of correlation coefficient with respect to x.  The ``east'' side
 #' of the graph indicates \eqn{R=1}{R=1}, while \eqn{R=0}{R=0} is at the
-#' ``north edge'' and \eqn{R=-1}{R=-1} is at the ``west'' side.  The `x`
+#' "north" edge and \eqn{R=-1}{R=-1} is at the "west" side.  The `x`
 #' data are indicated with a bullet on the graph, appearing on the lower edge
 #' to the right of the focus at a distance indicating the standard deviation of
 #' `x`.  The other points on the graph represent the columns of `y`,
@@ -1512,8 +1512,7 @@ filterSomething <- function(x, filter)
 #' @author Dan Kelley
 #'
 #' @references Taylor, Karl E., 2001.  Summarizing multiple aspects of model
-#' performance in a single diagram, \emph{J. Geophys. Res.}, 106:D7,
-#' 7183--7192.
+#' performance in a single diagram, *J. Geophys. Res.*, 106:D7, 7183--7192.
 #'
 #' @examples
 #' library(oce)
