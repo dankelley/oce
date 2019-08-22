@@ -7,7 +7,7 @@
 beamToXyzAdv(x, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{an object of class \code{"adv"}.}
+\item{x}{an \linkS4class{adv} object.}
 
 \item{debug}{a flag that, if non-zero, turns on debugging.  Higher values
 yield more extensive debugging.}
@@ -23,9 +23,7 @@ contained in \code{transformation.matrix} in the
 inferred from the header in the binary file.  If there is no such matrix
 (e.g. if the data were streamed through a data logger that did not capture
 the header), \code{beamToXyzAdv} the user will need to store one in
-\code{x}, e.g. by doing something like the following:
-\preformatted{
-x[["transformation.matrix"]] <- rbind(c(11100, -5771, -5321),
+\code{x}, e.g. by doing something like the following:\preformatted{x[["transformation.matrix"]] <- rbind(c(11100, -5771, -5321),
                                       c( #' 291, 9716, -10002),
                                       c( 1409, 1409, 1409)) / 4096
 }
@@ -34,7 +32,7 @@ x[["transformation.matrix"]] <- rbind(c(11100, -5771, -5321),
 \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 }
 \seealso{
-See \code{\link{read.adv}} for notes on functions relating to
+See \code{\link[=read.adv]{read.adv()}} for notes on functions relating to
 \code{"adv"} objects.
 
 Other things related to adp data: \code{\link{[[,adp-method}},

@@ -46,7 +46,7 @@ North.}
 in reading the file, either by printing a dot for each profile or by writing
 a textual progress bar with \code{\link{txtProgressBar}}.}
 
-\item{despike}{if \code{TRUE}, \code{\link{despike}} will be used to clean
+\item{despike}{if \code{TRUE}, \code{\link[=despike]{despike()}} will be used to clean
 anomalous spikes in heading, etc.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
@@ -66,12 +66,12 @@ NMEA strings, then navigational data will be stored in an item
 called \code{nmea} in the \code{data} slot).
 }
 \description{
-Read a Sontek acoustic-Doppler profiler file [1].
+Read a Sontek acoustic-Doppler profiler file (see reference 1).
 }
 \references{
-1. Information about Sontek profilers is available at
-
-\code{https://www.sontek.com}.
+\enumerate{
+\item Information about Sontek profilers is available at https://www.sontek.com.
+}
 }
 \seealso{
 Other things related to adp data: \code{\link{[[,adp-method}},

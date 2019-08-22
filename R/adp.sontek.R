@@ -2,22 +2,23 @@
 
 #' Read a Sontek ADP File
 #'
-#' Read a Sontek acoustic-Doppler profiler file [1].
+#' Read a Sontek acoustic-Doppler profiler file (see reference 1).
 #'
-#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' @param despike if `TRUE`, [despike()] will be used to clean
 #' anomalous spikes in heading, etc.
+#'
 #' @param type A character string indicating the type of instrument.
 #'
 #' @template adpTemplate
 #'
 #' @references
-#' 1. Information about Sontek profilers is available at
-#'
-#' \code{https://www.sontek.com}.
+#' 1. Information about Sontek profilers is available at https://www.sontek.com.
 #'
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to adp data
+#'
+#' @md
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=NA, latitude=NA,
                             type=c("adp", "pcadp"),
@@ -423,17 +424,21 @@ sontek.time <- function(t, tz=getOption("oceTz"))
 #' is possibly unique to Dalhousie University.
 #'
 #' @param beamAngle angle between instrument axis and beams, in degrees.
+#'
 #' @param type a character string indicating the type of instrument.
+#'
 #' @param orientation optional character string specifying the orientation of the
 #' sensor, provided for those cases in which it cannot be inferred from the
-#' data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
-#' \code{"sideward"}.
+#' data file.  The valid choices are `"upward"`, `"downward"`, and
+#' `"sideward"`.
 #'
 #' @template adpTemplate
 #'
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to adp data
+#'
+#' @md
 read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                    longitude=NA, latitude=NA,
                                    type=c("adp", "pcadp"),

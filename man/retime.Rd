@@ -9,13 +9,13 @@ retime(x, a, b, t0, debug = getOption("oceDebug"))
 \arguments{
 \item{x}{an \code{oce} object (presently, this must be of class \code{adv})}
 
-\item{a}{intercept [in seconds] in linear model of time drift (see
+\item{a}{intercept \link{in seconds} in linear model of time drift (see
 \dQuote{Details}).}
 
-\item{b}{slope [unitless] in linear model of time drift [unitless] (see
+\item{b}{slope \link{unitless} in linear model of time drift \link{unitless} (see
 \dQuote{Details}).}
 
-\item{t0}{reference time [in POSIXct format] used in linear model of time
+\item{t0}{reference time \link{in POSIXct format} used in linear model of time
 drift (see \dQuote{Details}).}
 
 \item{debug}{a flag that, if nonzero, turns on debugging.}
@@ -38,11 +38,11 @@ the same timezone as the time within \code{x}.
 }
 \details{
 The returned object is computed by linear interpolation, using
-\code{\link{approx}} with \code{rule=2}, to avoid \code{NA} values at the
+\code{\link[=approx]{approx()}} with \code{rule=2}, to avoid \code{NA} values at the
 start or end.  The new time will be as given by the formula above. Note that
 if the drift is large enough, the sampling rate will be changed.  It is a
 good idea to start with an object that has an extended time range, so that,
-after this is called, \code{\link{subset}} can be used to trim to a desired
+after this is called, \code{\link[=subset]{subset()}} can be used to trim to a desired
 time range.
 }
 \examples{
@@ -50,6 +50,7 @@ library(oce)
 data(adv)
 adv2 <- retime(adv,0,1e-4,as.POSIXct("2008-07-01 00:00:00",tz="UTC"))
 plot(adv[["time"]], adv2[["time"]]-adv[["time"]], type='l')
+
 }
 \author{
 Dan Kelley

@@ -14,7 +14,7 @@ equator.}
 to \code{FALSE}, radians are used.}
 }
 \value{
-Acceleration due to gravity [\eqn{m^2/s}{m^2/s}].
+Acceleration due to gravity \link{\eqn{m^2/s}{m^2/s}}.
 }
 \description{
 Compute \eqn{g}{g}, the acceleration due to gravity, as a function of
@@ -25,6 +25,7 @@ Value not verified yet, except roughly.
 }
 \examples{
 g <- gravity(45) # 9.8
+
 }
 \references{
 Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic

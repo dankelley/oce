@@ -8,7 +8,7 @@
 \S4method{[[}{adv}(x, i, j, ...)
 }
 \arguments{
-\item{x}{An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.}
+\item{x}{an \linkS4class{adv} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
@@ -96,7 +96,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 In addition to the usual extraction of elements by name, some shortcuts
 are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
 for the other velocity components. The \code{a} and \code{q}
-data can be retrieved in \code{\link{raw}} form
+data can be retrieved in \code{\link[=raw]{raw()}} form
 or numeric form; see \dQuote{Examples}.
 
 It is also worth noting that heading, pitch, etc. may be stored in
@@ -104,7 +104,7 @@ It is also worth noting that heading, pitch, etc. may be stored in
 the \code{data} slot). In that case, accessing by full name, e.g.
 \code{x[["headingSlow"]]} retrieves the item as expected, but
 \code{x[["heading"]]} interpolates to the faster timescale, using
-\code{\link{approx}(timeSlow, headingSlow, time)}.
+\code{\link{approx}}\code{(timeSlow,headingSlow,time)}.
 }
 
 \examples{

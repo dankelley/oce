@@ -8,7 +8,7 @@
 \S4method{[[}{adv}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.}
+\item{x}{an \linkS4class{adv} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 

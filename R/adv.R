@@ -3,30 +3,30 @@
 #' This class holds data from acoustic-Doppler velocimeters.
 #'
 #' A file containing ADV data is usually recognized by Oce, and so
-#' \code{\link{read.oce}} will usually read the data.  If not, one may use the
-#' general ADV function \code{\link{read.adv}} or specialized variants
-#' \code{\link{read.adv.nortek}}, \code{\link{read.adv.sontek.adr}} or
-#' \code{\link{read.adv.sontek.text}}.
+#' [read.oce()] will usually read the data.  If not, one may use the
+#' general ADV function [read.adv()] or specialized variants
+#' [read.adv.nortek()], [read.adv.sontek.adr()] or
+#' [read.adv.sontek.text()].
 #'
-#' ADV data may be plotted with \code{\link{plot,adv-method}} function, which is a
-#' generic function so it may be called simply as \code{plot(x)}, where
-#' \code{x} is an object inheriting from \code{\link{adv-class}}.
+#' ADV data may be plotted with [plot,adv-method()] function, which is a
+#' generic function so it may be called simply as `plot(x)`, where
+#' `x` is an [adv-class] object.
 #'
 #' Statistical summaries of ADV data are provided by the generic function
-#' \code{\link{summary,adv-method}}.
+#' [summary,adv-method()].
 #'
 #' Conversion from beam to xyz coordinates may be done with
-#' \code{\link{beamToXyzAdv}}, and from xyz to enu (east north up) may be done
-#' with \code{\link{xyzToEnuAdv}}.  \code{\link{toEnuAdv}} may be used to
+#' [beamToXyzAdv()], and from xyz to enu (east north up) may be done
+#' with [xyzToEnuAdv()].  [toEnuAdv()] may be used to
 #' transfer either beam or xyz to enu.  Enu may be converted to other
 #' coordinates (e.g. aligned with a coastline) with
-#' \code{\link{enuToOtherAdv}}.
+#' [enuToOtherAdv()].
 #'
 #' @templateVar class adv
 #'
-#' @templateVar dataExample The key items stored in this slot include \code{time} and \code{v}.
+#' @templateVar dataExample The key items stored in this slot include `time` and `v`.
 #'
-#' @templateVar metadataExample Examples that are of common interest include \code{frequency}, \code{oceCordinate}, and \code{frequency}.
+#' @templateVar metadataExample Examples that are of common interest include `frequency`, `oceCordinate`, and `frequency`.
 #'
 #' @template slot_summary
 #'
@@ -40,11 +40,13 @@
 #'
 #' @family classes provided by oce
 #' @family things related to adv data
+#'
+#' @md
 setClass("adv", contains="oce")
 
 #' ADV (acoustic-doppler velocimeter) dataset
 #'
-#' This \code{\link{adv-class}} object is a sampling of measurements made with a
+#' This [adv-class] object is a sampling of measurements made with a
 #' Nortek Vector acoustic Doppler velocimeter deployed as part of the St Lawrence
 #' Internal Wave Experiment (SLEIWEX).  Various identifying features have been
 #' redacted.
@@ -74,6 +76,8 @@ setClass("adv", contains="oce")
 #'
 #' @family datasets provided with oce
 #' @family things related to adv data
+#'
+#' @md
 NULL
 
 
@@ -94,10 +98,10 @@ setMethod(f="initialize",
 
 #' Summarize an ADV object
 #'
-#' Summarize data in an \code{adv} object.
+#' Summarize data in an `adv` object.
 #'
-#' @param object an object of class \code{"adv"}, usually, a result of a call to
-#' \code{\link{read.adv}}.
+#' @param object an object of class `"adv"`, usually, a result of a call to
+#' [read.adv()].
 #'
 #' @param ... further arguments passed to or from other methods.
 #'
@@ -109,6 +113,8 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to adv data
+#'
+#' @md
 setMethod(f="summary",
           signature="adv",
           definition=function(object, ...) {
@@ -126,7 +132,7 @@ setMethod(f="summary",
 
 #' @title Extract Something from an adv Object
 #'
-#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
+#' @param x an [adv-class] object.
 #'
 #' @examples
 #' data(adv)
@@ -135,24 +141,26 @@ setMethod(f="summary",
 #'
 #' @template sub_subTemplate
 #'
-#' @section Details of the specialized \code{adv} method:
+#' @section Details of the specialized `adv` method:
 #'
 #' In addition to the usual extraction of elements by name, some shortcuts
-#' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
-#' for the other velocity components. The \code{a} and \code{q}
-#' data can be retrieved in \code{\link{raw}} form
+#' are also provided, e.g. `u1` retrieves `v[,1]`, and similarly
+#' for the other velocity components. The `a` and `q`
+#' data can be retrieved in [raw()] form
 #' or numeric form; see \dQuote{Examples}.
 #'
 #' It is also worth noting that heading, pitch, etc. may be stored in
-#' "slow" form in the object (e.g. in \code{headingSlow} within
-#' the \code{data} slot). In that case, accessing by full name, e.g.
-#' \code{x[["headingSlow"]]} retrieves the item as expected, but
-#' \code{x[["heading"]]} interpolates to the faster timescale, using
-#' \code{\link{approx}(timeSlow, headingSlow, time)}.
+#' "slow" form in the object (e.g. in `headingSlow` within
+#' the `data` slot). In that case, accessing by full name, e.g.
+#' `x[["headingSlow"]]` retrieves the item as expected, but
+#' `x[["heading"]]` interpolates to the faster timescale, using
+#' [`approx`]`(timeSlow,headingSlow,time)`.
 #'
 #' @author Dan Kelley
 #'
 #' @family things related to adv data
+#'
+#' @md
 setMethod(f="[[",
           signature(x="adv", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -201,20 +209,24 @@ setMethod(f="[[",
 #' Replace Parts of an ADV Object
 #'
 #' @details
-#' If the \code{adv} object holds slow variables (i.e. if \code{timeSlow} is
-#' in the \code{data} slot), then assigning to .e.g. \code{heading} will not
+#' If the `adv` object holds slow variables (i.e. if `timeSlow` is
+#' in the `data` slot), then assigning to .e.g. `heading` will not
 #' actually assign to a variable of that name, but instead assigns to
-#' \code{headingSlow}. To catch misapplication of this rule, an error
+#' `headingSlow`. To catch misapplication of this rule, an error
 #' message will be issued if the assigned value is not of the same length
-#' as \code{timeSlow}.
+#' as `timeSlow`.
 #'
-#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
-#' @param value The value to be inserted into \code{x}.
+#' @param x an [adv-class] object.
+#'
+#' @param value The value to be inserted into `x`.
 #'
 #' @author Dan Kelley
 #'
 #' @template sub_subTemplate
+#'
 #' @family things related to adv data
+#'
+#' @md
 setMethod(f="[[<-",
           signature="adv",
           definition=function(x, i, j, ..., value) {
@@ -249,18 +261,18 @@ setMethod(f="[[<-",
 #' Subset an ADV Object
 #'
 #' Subset an adv (acoustic Doppler profile) object.  This function is somewhat
-#' analogous to \code{\link{subset.data.frame}}, except that subsets can only be
-#' specified in terms of \code{time}.
+#' analogous to [subset.data.frame()], except that subsets can only be
+#' specified in terms of `time`.
 #'
-#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
+#' @param x an [adv-class] object.
 #'
-#' @param subset a condition to be applied to the \code{data} portion of \code{x}.
+#' @param subset a condition to be applied to the `data` portion of `x`.
 #' See \sQuote{Details}.
 #'
 #' @param \dots ignored.
 #'
 #' @return
-#' A new \code{\link{adv-class}} object.
+#' A new [adv-class] object.
 #'
 #' @examples
 #' library(oce)
@@ -269,8 +281,11 @@ setMethod(f="[[<-",
 #' plot(subset(adv, time < mean(range(adv[['time']]))))
 #'
 #' @author Dan Kelley
+#'
 #' @family things related to adv data
 #' @family functions that subset oce objects
+#'
+#' @md
 setMethod(f="subset",
           signature="adv",
           definition=function(x, subset, ...) {
@@ -334,16 +349,22 @@ setMethod(f="subset",
 
 
 #' @template readAdvTemplate
+#'
 #' @param type character string indicating type of file, and used by
-#' \code{read.adv} to dispatch to one of the speciality functions.
+#' `read.adv` to dispatch to one of the speciality functions.
+#'
 #' @param start the time of the first sample, typically created with
-#' \code{\link{as.POSIXct}}.  This may be a vector of times,
-#' if \code{filename} is a vector of file names.
+#' [as.POSIXct()].  This may be a vector of times,
+#' if `filename` is a vector of file names.
+#'
 #' @param deltat the time between samples. (This is mandatory if
-#' \code{header=FALSE}.)
+#' `header=FALSE`.)
+#'
 #' @param header A logical value indicating whether the file starts with a header.
 #' (This will not be the case for files that are created by data loggers that
 #' chop the raw data up into a series of sub-files, e.g. once per hour.)
+#'
+#' @md
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      header=TRUE,
@@ -381,111 +402,105 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
 #' Plot ADV data
 #'
-#' Plot ADV data, i.e. stored in an \code{\link{adv-class}} object.
+#' Plot [adv-class] data.
 #'
-#' @details
 #' Creates a multi-panel summary plot of data measured by an ADV.
-#' The panels are controlled by the \code{which} argument.  (Note the
+#' The panels are controlled by the `which` argument.  (Note the
 #' gaps in the sequence, e.g. 4 and 8 are not used.)
 #'
-#' \itemize{
-#'     \item \code{which=1} to \code{3} (or \code{"u1"} to \code{"u3"})
+#' * `which=1` to `3` (or `"u1"` to `"u3"`)
+#' yield timeseries of the first, second, and third components of
+#' velocity (in beam, xyz or enu coordinates).
 #'
-#'     yield timeseries of the first, second, and third components of
-#'     velocity (in beam, xyz or enu coordinates).
+#' * `which=4` is not permitted (since ADV are 3-beam devices)
 #'
-#'     \item \code{which=4} is not permitted (since ADV are 3-beam devices)
+#' * `which=5` to `7` (or `"a1"` to `"a3"`)
+#' yield timeseries of the amplitudes of beams 1 to 3.  (Note that
+#' the data are called `data$a[,1]`, `data$a[,2]` and
+#' `data$a[,3]`, for these three timeseries.)
 #'
-#'     \item \code{which=5} to \code{7} (or \code{"a1"} to \code{"a3"})
-#'     yield timeseries of the amplitudes of beams 1 to 3.  (Note that
-#'     the data are called \code{data$a[,1]}, \code{data$a[,2]} and
-#'     \code{data$a[,3]}, for these three timeseries.)
+#' * `which=8` is not permitted (since ADV are 3-beam devices)
 #'
-#'     \item \code{which=8} is not permitted (since ADV are 3-beam devices)
+#' * `which=9` to `11` (or `"q1"` to `"q3"`)
+#' yield timeseries of correlation for beams 1 to 3.  (Note that the
+#' data are called `data$c[,1]`, `data$c[,2]` and
+#' `data$c[,3]`, for these three timeseries.)
 #'
-#'     \item \code{which=9} to \code{11} (or \code{"q1"} to \code{"q3"})
-#'     yield timeseries of correlation for beams 1 to 3.  (Note that the
-#'     data are called \code{data$c[,1]}, \code{data$c[,2]} and
-#'     \code{data$c[,3]}, for these three timeseries.)
+#' * `which=12` is not permitted (since ADVs are 3-beam devices)
 #'
-#'     \item \code{which=12} is not permitted (since ADVs are 3-beam devices)
+#' * `which=13` is not permitted (since ADVs do not measure salinity)
 #'
-#'     \item \code{which=13} is not permitted (since ADVs do not measure salinity)
+#' * `which=14` or `which="temperature"` yields a timeseries of temperature.
 #'
-#'     \item \code{which=14} or \code{which="temperature"} yields a timeseries of temperature.
+#' * `which=15` or `which="pressure"` yields a timeseries of pressure.
 #'
-#'     \item \code{which=15} or \code{which="pressure"} yields a timeseries of pressure.
+#' * `which=16` or `which="heading"` yields a timeseries of heading.
 #'
-#'     \item \code{which=16} or \code{which="heading"} yields a timeseries of heading.
+#' * `which=17` or `which="pitch"`yields a timeseries of pitch.
 #'
-#'     \item \code{which=17} or \code{which="pitch"}yields a timeseries of pitch.
+#' * `which=18` or `which="roll"`yields a timeseries of roll.
 #'
-#'     \item \code{which=18} or \code{which="roll"}yields a timeseries of roll.
+#' * `which=19` to `21` yields plots of correlation versus
+#' amplitude, for beams 1 through 3, using [smoothScatter()].
 #'
-#'     \item \code{which=19} to \code{21} yields plots of correlation versus
-#'     amplitude, for beams 1 through 3, using \code{\link{smoothScatter}}.
+#' * `which=22` is not permitted (since ADVs are 3-beam devices)
 #'
-#'     \item \code{which=22} is not permitted (since ADVs are 3-beam devices)
+#' * `which=23` or `"progressive vector"` yields a
+#' progressive-vector diagram in the horizontal plane, plotted with
+#' `asp=1`, and taking beam1 and beam2 as the eastward and
+#' northward components of velocity, respectively.
 #'
-#'     \item \code{which=23} or \code{"progressive vector"} yields a
-#'     progressive-vector diagram in the horizontal plane, plotted with
-#'     \code{asp=1}, and taking beam1 and beam2 as the eastward and
-#'     northward components of velocity, respectively.
+#' * `which=28` or `"uv"` yields velocity plot in the
+#' horizontal plane, i.e. `u[2]` versus `u[1]`.  If the number of data
+#' points is small, a scattergraph is used, but if it is large,
+#' [smoothScatter()] is used.
 #'
-#'     \item \code{which=28} or \code{"uv"} yields velocity plot in the
-#'     horizontal plane, i.e. u[2] versus u[1].  If the number of data
-#'     points is small, a scattergraph is used, but if it is large,
-#'     \code{\link{smoothScatter}} is used.
+#' * `which=29` or `"uv+ellipse"` as the `"uv"`
+#' case, but with an added indication of the tidal ellipse,
+#' calculated from the eigen vectors of the covariance matrix.
 #'
-#'     \item \code{which=29} or \code{"uv+ellipse"} as the \code{"uv"}
-#'     case, but with an added indication of the tidal ellipse,
-#'     calculated from the eigen vectors of the covariance matrix.
+#' * `which=30` or `"uv+ellipse+arrow"` as the
+#' `"uv+ellipse"` case, but with an added arrow indicating the
+#' mean current.
 #'
-#'     \item \code{which=30} or \code{"uv+ellipse+arrow"} as the
-#'     \code{"uv+ellipse"} case, but with an added arrow indicating the
-#'     mean current.
+#' * `which=50` or `"analog1"` plots a time series of the
+#' analog1 signal, if there is one.
 #'
-#'     \item \code{which=50} or \code{"analog1"} plots a time series of the
-#'     analog1 signal, if there is one.
+#' * `which=51` or `"analog2"` plots a time series of the
+#' analog2 signal, if there is one.
 #'
-#'     \item \code{which=51} or \code{"analog2"} plots a time series of the
-#'     analog2 signal, if there is one.
+#' * `which=100` or `"voltage"` plots the voltage as a
+#' timeseries, if voltage exists in the dataset.
 #'
-#'     \item \code{which=100} or \code{"voltage"} plots the voltage as a
-#'     timeseries, if voltage exists in the dataset.
-#' }
 #' In addition to the above, there are some groupings defined:
-#' \itemize{
-#'     \item \code{which="velocity"} equivalent to \code{which=1:3} (three velocity components)
-#'     \item \code{which="amplitude"} equivalent to \code{which=5:7} (three amplitude components)
-#'     \item \code{which="backscatter"} equivalent to \code{which=9:11} (three backscatter components)
-#'     \item \code{which="hydrography"} equivalent to \code{which=14:15} (temperature and pressure)
-#'     \item \code{which="angles"} equivalent to \code{which=16:18} (heading, pitch and roll)
-#' }
+#' * `which="velocity"` equivalent to `which=1:3` (three velocity components)
+#' * `which="amplitude"` equivalent to `which=5:7` (three amplitude components)
+#' * `which="backscatter"` equivalent to `which=9:11` (three backscatter components)
+#' * `which="hydrography"` equivalent to `which=14:15` (temperature and pressure)
+#' * `which="angles"` equivalent to `which=16:18` (heading, pitch and roll)
 #'
-#'
-#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
+#' @param x an [adv-class] object.
 #'
 #' @param which List of desired plot types.  These are graphed in panels running
 #' down from the top of the page.  See \dQuote{Details} for the meanings of
-#' various values of \code{which}.
+#' various values of `which`.
 #'
 #' @param col Optional indication of color(s) to use.  If not provided, the
-#' default for images is \code{oce.colorsPalette(128,1)}, and for lines and points
+#' default for images is `oce.colorsPalette(128,1)`, and for lines and points
 #' is black.
 #'
 #' @param titles Optional vector of character strings to be used as labels for the
 #' plot panels.  For images, these strings will be placed in the right hand side
 #' of the top margin.  For timeseries, these strings are ignored.  If this is
-#' provided, its length must equal that of \code{which}.
+#' provided, its length must equal that of `which`.
 #'
 #' @param lwd If the plot is of a time-series or scattergraph format with lines,
 #' this is used in the usual way; otherwise, e.g. for image formats, this is
 #' ignored.
 #'
-#' @param type Type of plot, as for \code{\link{plot}}.
+#' @param type Type of plot, as for [plot()].
 #'
-#' @param drawTimeRange Boolean that applies to panels with time as the horizontal
+#' @param drawTimeRange Logical value that applies to panels with time as the horizontal
 #' axis, indicating whether to draw the time range in the top-left margin of the
 #' plot.
 #'
@@ -493,45 +508,45 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' velocities.
 #'
 #' @param useSmoothScatter Logical value indicating whether to use
-#' \code{\link{smoothScatter}} in various plots, such as \code{which="uv"}.  If
-#' not provided a default is used, with \code{\link{smoothScatter}} being used if
+#' [smoothScatter()] in various plots, such as `which="uv"`.  If
+#' not provided a default is used, with [smoothScatter()] being used if
 #' there are more than 2000 points to plot.
 #'
 #' @param mgp 3-element numerical
-#' vector to use for \code{par(mgp)}, and also for \code{par(mar)}, computed from
+#' vector to use for `par(mgp)`, and also for `par(mar)`, computed from
 #' this.  The default is tighter than the R default, in order to use more space
 #' for the data and less for the axes.
 #'
-#' @param mar Value to be used with \code{\link{par}("mar")}.
+#' @param mar Value to be used with [`par`]`("mar")`.
 #'
-#' @param tformat Optional argument passed to \code{\link{oce.plot.ts}}, for plot
-#' types that call that function.  (See \code{\link{strptime}} for the format
+#' @param tformat Optional argument passed to [oce.plot.ts()], for plot
+#' types that call that function.  (See [strptime()] for the format
 #' used.)
 #'
 #' @param marginsAsImage Logical value indicating whether to put a wide margin to
 #' the right of time-series plots, matching the space used up by a palette in an
-#' \code{\link{imagep}} plot.
+#' [imagep()] plot.
 #'
-#' @param cex Size of labels on axes; see \code{\link[graphics]{par}}("cex").
+#' @param cex Size of labels on axes; see [par()].
 #'
-#' @param cex.axis See \code{\link[graphics]{par}}("cex.axis").
+#' @param cex.axis See [par()].
 #'
-#' @param cex.main See \code{\link[graphics]{par}}("cex.main").
+#' @param cex.main See [par()].
 #'
-#' @param xlim Optional 2-element list for \code{xlim}, or 2-column matrix, in
+#' @param xlim Optional 2-element list for `xlim`, or 2-column matrix, in
 #' which case the rows are used, in order, for the panels of the graph.
 #'
-#' @param ylim Optional 2-element list for \code{ylim}, or 2-column matrix, in
+#' @param ylim Optional 2-element list for `ylim`, or 2-column matrix, in
 #' which case the rows are used, in order, for the panels of the graph.
 #'
 #' @param brushCorrelation Optional number between 0 and 100, indicating a
 #' per-beam correlation threshold below which data are to be considered suspect.
-#' If the plot type is \code{p}, the suspect points (velocity, backscatter
+#' If the plot type is `p`, the suspect points (velocity, backscatter
 #' amplitude, or correlation) will be colored red; otherwise, this argument is
 #' ignored.
 #'
 #' @param colBrush Color to use for brushed (bad) data, if
-#' \code{brushCorrelation} is active.
+#' `brushCorrelation` is active.
 #'
 #' @param main Main title for plot, used just on the top panel, if there are
 #' several panels.
@@ -541,7 +556,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @param ... Optional arguments passed to plotting functions.
 #'
-#' @seealso The documentation for \code{\link{adv-class}} explains the structure
+#' @seealso The documentation for [adv-class] explains the structure
 #' of ADV objects, and also outlines the other functions dealing with them.
 #'
 #' @examples
@@ -553,7 +568,10 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @family functions that plot oce data
 #' @family things related to adv data
+#'
 #' @aliases plot.adv
+#'
+#' @md
 setMethod(f="plot",
           signature=signature("adv"),
           definition=function(x, which=c(1:3, 14, 15),
@@ -1137,17 +1155,24 @@ setMethod(f="plot",
 
 #' Convert an ADV Object to ENU Coordinates
 #'
-#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
+#' @param x an [adv-class] object.
+#'
 #' @param declination magnetic declination to be added to the heading, to get
 #' ENU with N as "true" north.
 #' @template debugTemplate
+#'
 #' @author Dan Kelley
-#' @seealso See \code{\link{read.adv}} for notes on functions relating to
-#' \code{"adv"} objects.  Also, see \code{\link{beamToXyzAdv}} and
-#' \code{\link{xyzToEnuAdv}}.
+#'
+#' @seealso See [read.adv()] for notes on functions relating to
+#' `"adv"` objects.  Also, see [beamToXyzAdv()] and
+#' [xyzToEnuAdv()].
+#'
 #' @references
 #' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
+#'
 #' @family things related to adv data
+#'
+#' @md
 toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "adv.2enu() {\n", unindent=1)
@@ -1170,27 +1195,33 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 #' xyz-based coordinate system.
 #'
 #' The coordinate transformation is done using the transformation matrix
-#' contained in \code{transformation.matrix} in the
-#' \code{metadata} slot, which is normally
+#' contained in `transformation.matrix` in the
+#' `metadata` slot, which is normally
 #' inferred from the header in the binary file.  If there is no such matrix
 #' (e.g. if the data were streamed through a data logger that did not capture
-#' the header), \code{beamToXyzAdv} the user will need to store one in
-#' \code{x}, e.g. by doing something like the following:
-#' \preformatted{
+#' the header), `beamToXyzAdv` the user will need to store one in
+#' `x`, e.g. by doing something like the following:
+#'```
 #' x[["transformation.matrix"]] <- rbind(c(11100, -5771, -5321),
 #'                                       c( #' 291, 9716, -10002),
 #'                                       c( 1409, 1409, 1409)) / 4096
-#' }
+#'```
 #'
-#' @param x an object of class \code{"adv"}.
+#' @param x an [adv-class] object.
+#'
 #' @param debug a flag that, if non-zero, turns on debugging.  Higher values
 #' yield more extensive debugging.
+#'
 #' @author Dan Kelley
-#' @seealso See \code{\link{read.adv}} for notes on functions relating to
-#' \code{"adv"} objects.
+#'
+#' @seealso See [read.adv()] for notes on functions relating to
+#' `"adv"` objects.
+#'
 #' @references
 #' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 #' @family things related to adp data
+#'
+#' @md
 beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "beamToXyzAdv() {\n", unindent=1)
@@ -1232,7 +1263,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' an enu-based coordinate system.
 #'
 #' The coordinate transformation is done using the heading, pitch, and roll
-#' information contained within \code{x}.  The algorithm is similar to that
+#' information contained within `x`.  The algorithm is similar to that
 #' used for Teledyne/RDI ADCP units, taking into account the different
 #' definitions of heading, pitch, and roll as they are defined for the
 #' velocimeters.
@@ -1241,8 +1272,8 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' a slow operation.  However, this function checks whether the vectors for
 #' heading, pitch and roll, are all of unit length, and in that case, the
 #' calculation is altered, resulting in shorter execution times.  Note that
-#' the angles are held in (\code{data$timeSlow}, \code{data$headingSlow}, ...)
-#' for Nortek instruments and (\code{data$time}, \code{data$heading}, ...) for
+#' the angles are held in (`data$timeSlow`, `data$headingSlow`, ...)
+#' for Nortek instruments and (`data$time`, `data$heading`, ...) for
 #' Sontek instruments.
 #'
 #' Since the documentation provided by instrument manufacturers can be vague on
@@ -1251,14 +1282,14 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' there are clear instructions.)  documents that manufacturers provide.  If
 #' results seem incorrect (e.g. if currents go east instead of west), users
 #' should examine the code in detail for the case at hand.  The first step is
-#' to set \code{debug} to 1, so that the processing will print a trail of
+#' to set `debug` to 1, so that the processing will print a trail of
 #' processing steps.  The next step should be to consult the table below, to
 #' see if it matches the understanding (or empirical tests) of the user.  It
 #' should not be difficult to tailor the code, if needed.
 #'
 #' The code handles every case individually, based on the table given below.
 #' The table comes from Clark Richards, a former PhD student at Dalhousie
-#' University [2], who developed it based on instrument documentation,
+#' University (reference 2), who developed it based on instrument documentation,
 #' discussion on user groups, and analysis of measurements acquired with Nortek
 #' and Sontek velocimeters in the SLEIWEX experiment.
 #'
@@ -1266,8 +1297,8 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' case are connected with a flexible cable, and the column labelled ``H.case''
 #' indicates whether the pressure case is oriented horizontally.  These two
 #' properties are not discoverable in the headers of the data files, and so
-#' they must be supplied with the arguments \code{cabled} and
-#' \code{horizontalCase}.  The source code refers to the information in this
+#' they must be supplied with the arguments `cabled` and
+#' `horizontalCase`.  The source code refers to the information in this
 #' table by case numbers.  (Cases 5 and 6 are not handled.)  Angles are
 #' abbreviated as follows:: heading ``H,'' pitch ``P,'' and roll ``R''.
 #' Entries X, Y and Z refer to instrument coordinates of the same names.
@@ -1291,26 +1322,34 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' \tab adv \tab - \tab - \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab
 #' Z\cr }
 #'
-#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
+#' @param x an [adv-class] object.
+#'
 #' @param declination magnetic declination to be added to the heading, to get
 #' ENU with N as "true" north.
+#'
 #' @param cabled boolean value indicating whether the sensor head is connected
-#' to the pressure case with a cable.  If \code{cabled=FALSE}, then
-#' \code{horizontalCase} is ignored.  See \dQuote{Details}.
+#' to the pressure case with a cable.  If `cabled=FALSE`, then
+#' `horizontalCase` is ignored.  See \dQuote{Details}.
+#'
 #' @param horizontalCase optional boolean value indicating whether the sensor
-#' case is oriented horizontally.  Ignored unless \code{cabled} is \code{TRUE}.
+#' case is oriented horizontally.  Ignored unless `cabled` is `TRUE`.
 #' See \dQuote{Details}.
+#'
 #' @param sensorOrientation optional string indicating the direction in which
-#' the sensor points.  The value, which must be \code{"upward"} or
-#' \code{"downward"}, over-rides the value of \code{orientation},
-#' in the \code{metadata} slot,
-#' which will have been set by \code{\link{read.adv}}, \emph{provided} that the
+#' the sensor points.  The value, which must be `"upward"` or
+#' `"downward"`, over-rides the value of `orientation`,
+#' in the `metadata` slot,
+#' which will have been set by [read.adv()], \emph{provided} that the
 #' data file contained the full header.  See \dQuote{Details}.
+#'
 #' @param debug a flag that, if non-zero, turns on debugging.  Higher values
 #' yield more extensive debugging.
+#'
 #' @author Dan Kelley, in collaboration with Clark Richards
-#' @seealso See \code{\link{read.adv}} for notes on functions relating to
-#' \code{adv} objects.
+#'
+#' @seealso See [read.adv()] for notes on functions relating to
+#' `adv` objects.
+#'
 #' @references
 #' 1. \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 #'
@@ -1318,6 +1357,8 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' Oceanography.
 #'
 #' @family things related to adv data
+#'
+#' @md
 xyzToEnuAdv <- function(x, declination=0,
                         cabled=FALSE, horizontalCase, sensorOrientation,
                         debug=getOption("oceDebug"))
@@ -1475,24 +1516,32 @@ xyzToEnuAdv <- function(x, declination=0,
 #'
 #' The supplied angles specify rotations to be made around the axes for which
 #' heading, pitch, and roll are defined.  For example, an eastward current will
-#' point southeast if \code{heading=45} is used.
+#' point southeast if `heading=45` is used.
 #'
-#' The returned value has heading, pitch, and roll matching those of \code{x},
+#' The returned value has heading, pitch, and roll matching those of `x`,
 #' so these angles retain their meaning as the instrument orientation.
 #'
-#' NOTE: this function works similarly to \code{\link{xyzToEnuAdv}}, except
+#' NOTE: this function works similarly to [xyzToEnuAdv()], except
 #' that in the present function, it makes no difference whether the instrument
 #' points up or down, etc.
 #'
-#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
+#' @param x an [adv-class] object.
+#'
 #' @param heading number or vector of numbers, giving the angle, in degrees, to
 #' be added to the heading. If this has length less than the number of velocity
-#' sampling times, then it will be extended using \code{\link{rep}}.
-#' @param pitch as \code{heading} but for pitch.
-#' @param roll as \code{heading} but for roll.
+#' sampling times, then it will be extended using [rep()].
+#'
+#' @param pitch as `heading` but for pitch.
+#'
+#' @param roll as `heading` but for roll.
+#'
 #' @template debugTemplate
+#'
 #' @author Dan Kelley
+#'
 #' @family things related to adv data
+#'
+#' @md
 enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "adv"))

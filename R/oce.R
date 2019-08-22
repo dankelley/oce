@@ -216,7 +216,7 @@ NULL
 #' @param \dots optional extra arguments, passed to conversion functions
 #' \code{\link{as.coastline}} or \code{\link{ODF2oce}}, if these are used.
 #'
-#' @return \code{as.oce} returns an object inheriting from \code{\link{oce-class}}.
+#' @return an \code{\link{oce-class}} object.
 as.oce <- function(x, ...)
 {
     if (inherits(x, "oce")) {

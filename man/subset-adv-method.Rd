@@ -8,7 +8,7 @@
 \S4method{subset}{adv}(x, subset, ...)
 }
 \arguments{
-\item{x}{An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.}
+\item{x}{an \linkS4class{adv} object.}
 
 \item{subset}{a condition to be applied to the \code{data} portion of \code{x}.
 See \sQuote{Details}.}
@@ -16,11 +16,11 @@ See \sQuote{Details}.}
 \item{\dots}{ignored.}
 }
 \value{
-A new \code{\link{adv-class}} object.
+A new \linkS4class{adv} object.
 }
 \description{
 Subset an adv (acoustic Doppler profile) object.  This function is somewhat
-analogous to \code{\link{subset.data.frame}}, except that subsets can only be
+analogous to \code{\link[=subset.data.frame]{subset.data.frame()}}, except that subsets can only be
 specified in terms of \code{time}.
 }
 \examples{

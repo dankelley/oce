@@ -12,7 +12,7 @@ oceDebug(debug = 0, ..., unindent = 0)
 greater than zero for increasing levels of debugging.  Values greater than 4
 are treated like 4.}
 
-\item{\dots}{items to be supplied to \code{\link{cat}}, which does the
+\item{\dots}{items to be supplied to \code{\link[=cat]{cat()}}, which does the
 printing.  Almost always, this should include a trailing newline.}
 
 \item{unindent}{Number of levels to un-indent, e.g. for start and end lines
@@ -25,7 +25,6 @@ functions, so the effect is a nesting, with more space for deeper function
 level.
 }
 \examples{
-
 foo <- function(debug)
 {
    oceDebug(debug, "in function foo\\n")
@@ -33,6 +32,7 @@ foo <- function(debug)
 debug <- 1
 oceDebug(debug, "in main")
 foo(debug=debug-1)
+
 }
 \author{
 Dan Kelley

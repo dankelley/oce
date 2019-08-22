@@ -24,11 +24,10 @@ A vector of the convolution output.
 \description{
 Convolve two time series, using a backward-looking method.
 This function provides a straightforward convolution, which may be useful to
-those who prefer not to use \code{\link{convolve}} and \code{filter} in the
+those who prefer not to use \code{\link[=convolve]{convolve()}} and \code{filter} in the
 \code{stats} package.
 }
 \examples{
-
 library(oce)
 t <- 0:1027
 n <- length(t)

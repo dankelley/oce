@@ -7,7 +7,7 @@
 toEnuAdv(x, declination = 0, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.}
+\item{x}{an \linkS4class{adv} object.}
 
 \item{declination}{magnetic declination to be added to the heading, to get
 ENU with N as "true" north.}
@@ -27,9 +27,9 @@ Convert an ADV Object to ENU Coordinates
 \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 }
 \seealso{
-See \code{\link{read.adv}} for notes on functions relating to
-\code{"adv"} objects.  Also, see \code{\link{beamToXyzAdv}} and
-\code{\link{xyzToEnuAdv}}.
+See \code{\link[=read.adv]{read.adv()}} for notes on functions relating to
+\code{"adv"} objects.  Also, see \code{\link[=beamToXyzAdv]{beamToXyzAdv()}} and
+\code{\link[=xyzToEnuAdv]{xyzToEnuAdv()}}.
 
 Other things related to adv data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},

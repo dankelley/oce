@@ -8,11 +8,11 @@ enuToOtherAdv(x, heading = 0, pitch = 0, roll = 0,
   debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.}
+\item{x}{an \linkS4class{adv} object.}
 
 \item{heading}{number or vector of numbers, giving the angle, in degrees, to
 be added to the heading. If this has length less than the number of velocity
-sampling times, then it will be extended using \code{\link{rep}}.}
+sampling times, then it will be extended using \code{\link[=rep]{rep()}}.}
 
 \item{pitch}{as \code{heading} but for pitch.}
 
@@ -38,7 +38,7 @@ point southeast if \code{heading=45} is used.
 The returned value has heading, pitch, and roll matching those of \code{x},
 so these angles retain their meaning as the instrument orientation.
 
-NOTE: this function works similarly to \code{\link{xyzToEnuAdv}}, except
+NOTE: this function works similarly to \code{\link[=xyzToEnuAdv]{xyzToEnuAdv()}}, except
 that in the present function, it makes no difference whether the instrument
 points up or down, etc.
 }

@@ -1,7 +1,5 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-## alphabetized functions START
-
 abbreviateVector <- function(x)
 {
     if (1 >= length(x)) {
@@ -13,21 +11,27 @@ abbreviateVector <- function(x)
 }
 
 
-#' Add a Column to the data Slot of an oce object [defunct]
+#' Add a Column to the data Slot of an oce object (defunct)
 #'
-#' \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
+#' **WARNING:** This function will be removed soon; see [oce-defunct].
 #'
-#' Use \code{\link{oceSetData}} instead of the present function.
+#' Use [oceSetData()] instead of the present function.
 #'
-#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param x A `ctd` object, e.g. as read by [read.ctd()].
+#'
 #' @param data the data.  The length of this item must match that of the
-#' existing data entries in the \code{data} slot).
+#' existing data entries in the `data` slot).
+#'
 #' @param name the name of the column.
-#' @return An object of \code{\link[base]{class}} \code{oce}, with a new
-#' column.
+#'
+#' @return A [oce-class] object.
+#'
 #' @author Dan Kelley
-#' @seealso Please use \code{\link{oceSetData}} instead of the present function.
+#'
+#' @seealso Please use [oceSetData()] instead of the present function.
 #' @family functions that will be removed soon
+#'
+#' @md
 addColumn <- function (x, data, name)
 {
     .Defunct("oceSetData",
@@ -61,7 +65,7 @@ addColumn <- function (x, data, name)
 #' (e.g. due to mooring motion) can yield values that swing from small angles
 #' to large angles, because of the modulo-360 cut point.
 #' The method is to use the cosine and sine of the angle in order to find "x"
-#' and "y" values on a unit circle, and then to use \code{\link{atan2}} to
+#' and "y" values on a unit circle, and then to use [atan2()] to
 #' infer the angles.
 #'
 #' @param theta an angle (in degrees) that is in the range from 0 to 360
@@ -78,6 +82,8 @@ addColumn <- function (x, data, name)
 #' x <- 1:n
 #' plot(x, heading, ylim=c(-10, 360), type='l', col='lightgray', lwd=10)
 #' lines(x, angleRemap(heading))
+#'
+#' @md
 angleRemap <- function(theta)
 {
     toRad <- atan2(1, 1) / 45
@@ -100,12 +106,14 @@ angleRemap <- function(theta)
 #' @return Object, with velocity components adjusted to be aligned with
 #' geographic north and east.
 #' @author Dan Kelley
-#' @seealso Use \code{\link{magneticField}} to determine the declination,
+#' @seealso Use [magneticField()] to determine the declination,
 #' inclination and intensity at a given spot on the world, at a given time.
 #' @references
 #' 1. \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
 #'
 #' @family things related to magnetism
+#'
+#' @md
 applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "applyMagneticDeclination(x,declination=", declination, ") {\n", sep="", unindent=1)
@@ -135,24 +143,24 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
 #'
 #' Interpolate within a 3D array, using the trilinear approximation.
 #'
-#' Trilinear interpolation is used to interpolate within the \code{f} array,
-#' for those (\code{xout}, \code{yout} and \code{zout}) triplets that are
-#' inside the region specified by \code{x}, \code{y} and \code{z}.  Triplets
-#' that lie outside the range of \code{x}, \code{y} or \code{z} result in
-#' \code{NA} values.
+#' Trilinear interpolation is used to interpolate within the `f` array,
+#' for those (`xout`, `yout` and `zout`) triplets that are
+#' inside the region specified by `x`, `y` and `z`.  Triplets
+#' that lie outside the range of `x`, `y` or `z` result in
+#' `NA` values.
 #'
 #' @param x vector of x values for grid (must be equi-spaced)
 #' @param y vector of y values for grid (must be equi-spaced)
 #' @param z vector of z values for grid (must be equi-spaced)
-#' @param f matrix of rank 3, with the gridd values mapping to the \code{x}
-#' values (first index of \code{f}), etc.
+#' @param f matrix of rank 3, with the gridd values mapping to the `x`
+#' values (first index of `f`), etc.
 #' @param xout vector of x values for output.
 #' @param yout vector of y values for output (length must match that of
-#' \code{xout}).
+#' `xout`).
 #' @param zout vector of z values for output (length must match that of
-#' \code{xout}).
-#' @return A vector of interpolated values (or \code{NA} values), with length
-#' matching that of \code{xout}.
+#' `xout`).
+#' @return A vector of interpolated values (or `NA` values), with length
+#' matching that of `xout`.
 #' @author Dan Kelley and Clark Richards
 #'
 #' @examples
@@ -173,6 +181,8 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
 #' plot(xout, approx, type='l')
 #' points(xout[1], f[1, 1, 1])
 #' points(xout[m], f[n,n,n])
+#'
+#' @md
 approx3d <- function(x, y, z, f, xout, yout, zout)
 {
     ## Were all arguments given?
@@ -226,6 +236,8 @@ approx3d <- function(x, y, z, f, xout, yout, zout)
 #' @param nshow number of values to show at first (if length(x)> 1)
 #' @param last indicates whether this is the final argument to the function
 #' @param sep the separator between name and value
+#'
+#' @md
 argShow <- function(x, nshow=4, last=FALSE, sep="=")
 {
     if (missing(x))
@@ -263,15 +275,15 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
 #' @param file character string naming the file
 #' @param name of variable to extract. If not provided, an
 #' error message is issued that lists the names of data in the file.
-#' @param positive logical value indicating whether \code{longitude} should
-#' be converted to be in the range from 0 to 360, with \code{name}
-#' being shuffled accordingly. This is set to \code{FALSE} by default,
+#' @param positive logical value indicating whether `longitude` should
+#' be converted to be in the range from 0 to 360, with `name`
+#' being shuffled accordingly. This is set to `FALSE` by default,
 #' because the usual oce convention is for longitude to range between -180
 #' to +180.
 #'
-#' @return A list containing vectors \code{longitude}, \code{latitude},
-#' \code{depth}, and an array with the specified name. If \code{positive}
-#' is true, then \code{longitude} will be converted to range from 0
+#' @return A list containing vectors `longitude`, `latitude`,
+#' `depth`, and an array with the specified name. If `positive`
+#' is true, then `longitude` will be converted to range from 0
 #' to 360, and the array will be shuffled accordingly.
 #'
 #' @examples
@@ -280,6 +292,8 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
 #' tmn <- read.woa("/data/woa13/woa13_decav_t00_5dv2.nc", "t_mn")
 #' imagep(tmn$longitude, tmn$latitude, tmn$t_mn[,,1], zlab="SST")
 #'}
+#'
+#' @md
 read.woa <- function(file, name, positive=FALSE)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
@@ -353,6 +367,8 @@ shortenTimeString <- function(t, debug=getOption("oceDebug"))
 
 #' Get first finite value in a vector or array, or NULL if none
 #' @param v A numerical vector or array.
+#'
+#' @md
 firstFinite <- function(v)
 {
     if (!is.vector(v))
@@ -364,11 +380,15 @@ firstFinite <- function(v)
 #' Decode units, from strings
 #'
 #' @param s A string.
-#' @return A \code{\link{list}} of two items: \code{unit} which is an
-#' \code{\link{expression}}, and \code{scale}, which is a string.
+#'
+#' @return A [list()] of two items: `unit` which is an
+#' [expression()], and `scale`, which is a string.
+#'
 #' @examples
 #' unitFromString("DB") # dbar
 #' @family functions that interpret variable names and units from headers
+#'
+#' @md
 unitFromString <- function(s)
 {
     ## 1. Strings that have been encountered in WOCE secton (.csv) files
@@ -404,14 +424,14 @@ unitFromString <- function(s)
 ## #' Rename a duplicated item (used in reading CTD files)
 ## #'
 ## #' Determine a new name for an item that is already in a list of names. This is
-## #' done by e.g. appending a \code{2} to the second occurrence of a name, etc.
+## #' done by e.g. appending a `2` to the second occurrence of a name, etc.
 ## #' The purpose is to create distinct variable names for
-## #' \code{\link{read.ctd.sbe}}.
+## #' [read.ctd.sbe()].
 ## #'
 ## #' @param existingNames Vector of strings with names already processed.
 ## #' @param name String with a candidate name.
 ## #' @return names String with an unduplicated name.
-## #' @seealso \code{\link{unduplicateNames}} is similar, but considers
+## #' @seealso [unduplicateNames()] is similar, but considers
 ## #' a vector of names.
 ## #'
 ## #' @examples
@@ -438,22 +458,25 @@ unitFromString <- function(s)
 #' formats permit the reuse of variable names within a given file.
 #'
 #' @param strings Vector of character strings.
-#' @param style An integer giving the style. If \code{style}
-#' is \code{1}, then e.g. a triplicate of \code{"a"} yields
-#' \code{"a"}, \code{"a1"}, and \code{"a2"}.
-#' If \code{style} is \code{2}, then the same input yields
-#' \code{"a_001"}, \code{"a_002"}, and \code{"a_003"}.
+#'
+#' @param style An integer giving the style. If `style`
+#' is `1`, then e.g. a triplicate of `"a"` yields
+#' `"a"`, `"a1"`, and `"a2"`.
+#' If `style` is `2`, then the same input yields
+#' `"a_001"`, `"a_002"`, and `"a_003"`.
 #'
 #' @return Vector of strings with repeats distinguished by suffix.
 #'
-#' @seealso Used by \code{\link{read.ctd.sbe}} with \code{style=1} to
+#' @seealso Used by [read.ctd.sbe()] with `style=1` to
 #' rename repeated data elements (e.g. for multiple temperature sensors)
-#' in CTD data, and by \code{\link{read.odf}} with \code{style=2} on
+#' in CTD data, and by [read.odf()] with `style=2` on
 #' key-value pairs within ODF metadata.
 #'
 #' @examples
 #' unduplicateNames(c("a", "b", "a", "c", "b"))
 #' unduplicateNames(c("a", "b", "a", "c", "b"), style=2)
+#'
+#' @md
 unduplicateNames <- function(strings, style=1)
 {
     ## Handle duplicated names
@@ -485,13 +508,14 @@ unduplicateNames <- function(strings, style=1)
 #' Rename items in the data slot of an oce object
 #'
 #' This function may be used to rename elements within the
-#' \code{data} slot of \code{oce} objects. It also updates
+#' `data` slot of `oce` objects. It also updates
 #' the processing log of the returned object, indicating
 #' the changes.
 #'
-#' @param x An \code{oce} object, i.e. one inheriting from
-#' \code{\link{oce-class}}.
+#' @param x an [oce-class] object.
+#'
 #' @param old Vector of strings, containing old names.
+#'
 #' @param new Vector of strings, containing old names.
 #'
 #' @examples
@@ -500,6 +524,8 @@ unduplicateNames <- function(strings, style=1)
 #' new <- oceSetData(new, name="temperature",
 #'                   value=T90fromT68(new[["temperature68"]]),
 #'                   unit=list(unit=expression(degree*C),scale="ITS=90"))
+#'
+#' @md
 renameData <- function(x, old=NULL, new=NULL)
 {
     if (is.null(old)) stop("need to supply old")
@@ -525,7 +551,10 @@ renameData <- function(x, old=NULL, new=NULL)
 #' Calculate a rounded bound, rounded up to matissa 1, 2, or 5
 #'
 #' @param x a single positive number
+#'
 #' @return for positive x, a value exceeding x that has mantissa 1, 2, or 5; otherwise, x
+#'
+#' @md
 bound125 <- function(x)
 {
     x <- x[1] # ignore all but first element
@@ -547,10 +576,14 @@ bound125 <- function(x)
 #' Put longitude in the range from -180 to 180
 #'
 #' @param longitude in degrees East, possibly exceeding 180
+#'
 #' @return longitude in signed degrees East
+#'
 #' @seealso
-#' \code{\link{matrixShiftLongitude}} and \code{\link{shiftLongitude}} are more
-#' powerful relatives to \code{standardizeLongitude}.
+#' [matrixShiftLongitude()] and [shiftLongitude()] are more
+#' powerful relatives to `standardizeLongitude`.
+#'
+#' @md
 standardizeLongitude <- function(longitude) ifelse(longitude > 180, longitude-360, longitude)
 
 #' Try to associate data names with units, for use by summary()
@@ -559,12 +592,17 @@ standardizeLongitude <- function(longitude) ifelse(longitude > 180, longitude-36
 #' possibly this will reduce copying and thus storage impact.
 #'
 #' @param names the names of data within an object
+#'
 #' @param units the units from metadata
+#'
 #' @return a vector of strings, with blank entries for data with unknown units
+#'
 #' @examples
 #' library(oce)
 #' data(ctd)
 #' dataLabel(names(ctd@@data), ctd@@metadata$units)
+#'
+#' @md
 dataLabel <- function(names, units)
 {
     res <- names
@@ -605,9 +643,13 @@ dataLabel <- function(names, units)
 #' Capitalize first letter of each of a vector of words
 #'
 #' This is used in making labels for data names in some ctd functions
+#'
 #' @param w vector of character strings
-#' @return vector of strings patterned on \code{w} but with first letter
+#'
+#' @return vector of strings patterned on `w` but with first letter
 #' in upper case and others in lower case
+#'
+#' @md
 titleCase <- function(w)
 {
     unlist(lapply(seq_along(w),
@@ -623,53 +665,59 @@ titleCase <- function(w)
 #' The computed component of the curl is defined by \eqn{\partial }{dv/dx -
 #' du/dy}\eqn{ v/\partial x - \partial u/\partial y}{dv/dx - du/dy} and the
 #' estimate is made using first-difference approximations to the derivatives.
-#' Two methods are provided, selected by the value of \code{method}.
+#' Two methods are provided, selected by the value of `method`.
 #'
-#' \itemize{
-#'
-#' \item For \code{method=1}, a centred-difference, 5-point stencil is used in
+#' * For `method=1`, a centred-difference, 5-point stencil is used in
 #' the interior of the domain.  For example, \eqn{\partial v/\partial x}{dv/dx}
 #' is given by the ratio of \eqn{v_{i+1,j}-v_{i-1,j}}{v[i+1,j]-v[i-1,j]} to the
 #' x extent of the grid cell at index \eqn{j}{j}. (The cell extents depend on
-#' the value of \code{geographical}.)  Then, the edges are filled in with
+#' the value of `geographical`.)  Then, the edges are filled in with
 #' nearest-neighbour values. Finally, the corners are filled in with the
-#' adjacent value along a diagonal.  If \code{geographical=TRUE}, then \code{x}
-#' and \code{y} are taken to be longitude and latitude in degrees, and the
+#' adjacent value along a diagonal.  If `geographical=TRUE`, then `x`
+#' and `y` are taken to be longitude and latitude in degrees, and the
 #' earth shape is approximated as a sphere with radius 6371km.  The resultant
-#' \code{x} and \code{y} are identical to the provided values, and the
-#' resultant \code{curl} is a matrix with dimension identical to that of
-#' \code{u}.
+#' `x` and `y` are identical to the provided values, and the
+#' resultant `curl` is a matrix with dimension identical to that of
+#' `u`.
 #'
-#' \item For \code{method=2}, each interior cell in the grid is considered
+#' * For `method=2`, each interior cell in the grid is considered
 #' individually, with derivatives calculated at the cell center. For example,
 #' \eqn{\partial v/\partial x}{dv/dx} is given by the ratio of
 #' \eqn{0.5*(v_{i+1,j}+v_{i+1,j+1}) -
 #' 0.5*(v_{i,j}+v_{i,j+1})}{0.5*(v[i+1,j]+v[i+1,j+1]) - 0.5*(v[i,j]+v[i,j+1])}
 #' to the average of the x extent of the grid cell at indices \eqn{j}{j} and
 #' \eqn{j+1}{j+1}. (The cell extents depend on the value of
-#' \code{geographical}.)  The returned \code{x} and \code{y} values are the
-#' mid-points of the supplied values. Thus, the returned \code{x} and \code{y}
-#' are shorter than the supplied values by 1 item, and the returned \code{curl}
+#' `geographical`.)  The returned `x` and `y` values are the
+#' mid-points of the supplied values. Thus, the returned `x` and `y`
+#' are shorter than the supplied values by 1 item, and the returned `curl`
 #' matrix dimensions are similarly reduced compared with the dimensions of
-#' \code{u} and \code{v}.
-#' }
+#' `u` and `v`.
 #'
 #' @param u matrix containing the 'x' component of a vector field
+#'
 #' @param v matrix containing the 'y' component of a vector field
+#'
 #' @param x the x values for the matrices, a vector of length equal to the
-#' number of rows in \code{u} and \code{v}.
+#' number of rows in `u` and `v`.
+#'
 #' @param y the y values for the matrices, a vector of length equal to the
-#' number of cols in \code{u} and \code{v}.
-#' @param geographical logical value indicating whether \code{x} and \code{y}
+#' number of cols in `u` and `v`.
+#'
+#' @param geographical logical value indicating whether `x` and `y`
 #' are longitude and latitude, in which case spherical trigonometry is used.
+#'
 #' @param method A number indicating the method to be used to calculate the
 #' first-difference approximations to the derivatives.  See \dQuote{Details}.
-#' @return A list containing vectors \code{x} and \code{y}, along with matrix
-#' \code{curl}.  See \dQuote{Details} for the lengths and dimensions, for
-#' various values of \code{method}.
+#'
+#' @return A list containing vectors `x` and `y`, along with matrix
+#' `curl`.  See \dQuote{Details} for the lengths and dimensions, for
+#' various values of `method`.
+#'
 #' @section Development status.: This function is under active development as
 #' of December 2014 and is unlikely to be stabilized until February 2015.
+#'
 #' @author Dan Kelley and Chantelle Layton
+#'
 #' @examples
 #' library(oce)
 #' ## 1. Shear flow with uniform curl.
@@ -699,6 +747,8 @@ titleCase <- function(w)
 #' imagep(x, y, C$curl, zlab="curl", asp=1)
 #' hist(C$curl, breaks=100)
 #' @family functions relating to vector calculus
+#'
+#' @md
 curl <- function(u, v, x, y, geographical=FALSE, method=1)
 {
     if (missing(u)) stop("must supply u")
@@ -726,12 +776,17 @@ curl <- function(u, v, x, y, geographical=FALSE, method=1)
 #' Calculate Range, Extended a Little, as is Done for Axes
 #'
 #' This is analogous to what is done as part of the R axis range calculation,
-#' in the case where \code{xaxs="r"}.
+#' in the case where `xaxs="r"`.
 #'
 #' @param x a numeric vector.
+#'
 #' @param extend fraction to extend on either end
-#' @return A two-element vector with the extended range of \code{x}.
+#'
+#' @return A two-element vector with the extended range of `x`.
+#'
 #' @author Dan Kelley
+#'
+#' @md
 rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
 {
     if (length(x) == 1) {
@@ -746,22 +801,29 @@ rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
 
 #' Apply a function to vector data
 #'
-#' The function \code{FUN} is applied to \code{f} in bins specified by
-#' \code{xbreaks}.  (If \code{FUN} is \code{\link{mean}},
-#' consider using \code{\link{binMean2D}} instead, since it should be faster.)
+#' The function `FUN` is applied to `f` in bins specified by
+#' `xbreaks`.  (If `FUN` is [mean()],
+#' consider using [binMean2D()] instead, since it should be faster.)
 #'
 #' @param x a vector of numerical values.
-#' @param f a vector of data to which the elements of \code{FUN} may be
+#'
+#' @param f a vector of data to which the elements of `FUN` may be
 #' supplied
+#'
 #' @param xbreaks values of x at the boundaries between bins; calculated using
-#' \code{\link{pretty}} if not supplied.
+#' [pretty()] if not supplied.
+#'
 #' @param FUN function to apply to the data
-#' @param \dots arguments to pass to the function \code{FUN}
+#'
+#' @param \dots arguments to pass to the function `FUN`
+#'
 #' @return A list with the following elements: the breaks in x and y
-#' (\code{xbreaks} and \code{ybreaks}), the break mid-points (\code{xmids} and
-#' \code{ymids}), and a matrix containing the result of applying function
-#' \code{FUN} to \code{f} subsetted by these breaks.
+#' (`xbreaks` and `ybreaks`), the break mid-points (`xmids` and
+#' `ymids`), and a matrix containing the result of applying function
+#' `FUN` to `f` subsetted by these breaks.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' library(oce)
 #' ## salinity profile with median and quartile 1 and 3
@@ -774,7 +836,10 @@ rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
 #' polygon(c(q1$result, rev(q3$result)),
 #' c(q1$xmids, rev(q1$xmids)), col='gray')
 #' points(S, p, pch=20)
+#'
 #' @family bin-related functions
+#'
+#' @md
 binApply1D <- function(x, f, xbreaks, FUN, ...)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -812,35 +877,33 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=result)
 }
 
-
-
 #' Apply a function to matrix data
 #'
-#' The function \code{FUN} is applied to \code{f} in bins specified by
-#' \code{xbreaks} and \code{ybreaks}.  (If \code{FUN} is \code{\link{mean}},
-#' consider using \code{\link{binMean2D}} instead, since it should be faster.)
+#' The function `FUN` is applied to `f` in bins specified by
+#' `xbreaks` and `ybreaks`.  (If `FUN` is [mean()],
+#' consider using [binMean2D()] instead, since it should be faster.)
 #'
 #' @param x a vector of numerical values.
 #'
 #' @param y a vector of numerical values.
 #'
-#' @param f a vector of data to which the elements of \code{FUN} may be
+#' @param f a vector of data to which the elements of `FUN` may be
 #' supplied
 #'
-#' @param xbreaks values of \code{x} at the boundaries between the
-#' bins; calculated using \code{\link{pretty}} if not supplied.
+#' @param xbreaks values of `x` at the boundaries between the
+#' bins; calculated using [pretty()] if not supplied.
 #'
-#' @param ybreaks as \code{xbreaks}, but for \code{y}.
+#' @param ybreaks as `xbreaks`, but for `y`.
 #'
-#' @param FUN univariate function that is applied to the \code{f} data within
+#' @param FUN univariate function that is applied to the `f` data within
 #' any given bin
 #'
-#' @param \dots arguments to pass to the function \code{FUN}
+#' @param \dots arguments to pass to the function `FUN`
 #'
-#' @return A list with the following elements: the breaks in \code{x} and
-#' \code{y} (i.e. \code{xbreaks} and \code{ybreaks}), the break mid-points
-#' (i.e. \code{xmids} and \code{ymids}), and a matrix containing the
-#' result of applying \code{FUN()} to the \code{f} values, as
+#' @return A list with the following elements: the breaks in `x` and
+#' `y` (i.e. `xbreaks` and `ybreaks`), the break mid-points
+#' (i.e. `xmids` and `ymids`), and a matrix containing the
+#' result of applying `FUN()` to the `f` values, as
 #' subsetted by these breaks.
 #'
 #' @author Dan Kelley
@@ -869,6 +932,8 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
 #'}
 #'
 #' @family bin-related functions
+#'
+#' @md
 binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -919,13 +984,19 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 #' successive pairs of values within a second vector.
 #'
 #' @param x Vector of numerical values.
+#'
 #' @param xbreaks Vector of values of x at the boundaries between bins, calculated using
-#' \code{\link{pretty}} if not supplied.
-#' @return A list with the following elements: the breaks (\code{xbreaks},
-#' midpoints (\code{xmids}) between those breaks, and
-#' the count (\code{number}) of \code{x} values between successive breaks.
+#' [pretty()] if not supplied.
+#'
+#' @return A list with the following elements: the breaks (`xbreaks`,
+#' midpoints (`xmids`) between those breaks, and
+#' the count (`number`) of `x` values between successive breaks.
+#'
 #' @author Dan Kelley
+#'
 #' @family bin-related functions
+#'
+#' @md
 binCount1D <- function(x, xbreaks)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -947,19 +1018,22 @@ binCount1D <- function(x, xbreaks)
 
 #' Bin-average f=f(x)
 #'
-#' Average the values of a vector \code{f} in bins defined on another
-#' vector \code{x}. A common example might be averaging CTD profile
+#' Average the values of a vector `f` in bins defined on another
+#' vector `x`. A common example might be averaging CTD profile
 #' data into pressure bins (see \dQuote{Examples}).
 #'
 #' @param x Vector of numerical values.
+#'
 #' @param f Vector of numerical values.
+#'
 #' @param xbreaks Vector of values of x at the boundaries between bins, calculated using
-#' \code{\link{pretty}} if not supplied.
-#' @return A list with the following elements: the breaks (\code{xbreaks},
-#' midpoints (\code{xmids}) between those breaks,
-#' the count (\code{number}) of \code{x} values between successive breaks,
-#' and the resultant average (\code{result}) of \code{f}, classified by the
-#' \code{x} breaks.
+#' [pretty()] if not supplied.
+#'
+#' @return A list with the following elements: the breaks (`xbreaks`,
+#' midpoints (`xmids`) between those breaks,
+#' the count (`number`) of `x` values between successive breaks,
+#' and the resultant average (`result`) of `f`, classified by the
+#' `x` breaks.
 #'
 #' @examples
 #' library(oce)
@@ -971,7 +1045,10 @@ binCount1D <- function(x, xbreaks)
 #' lines(TT$result, TT$xmids, col='red')
 #'
 #' @author Dan Kelley
+#'
 #' @family bin-related functions
+#'
+#' @md
 binMean1D <- function(x, f, xbreaks)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -1003,23 +1080,32 @@ binMean1D <- function(x, f, xbreaks)
 #' successive pairs of breaks in x and y.
 #'
 #' @param x Vector of numerical values.
+#'
 #' @param y Vector of numerical values.
-#' @param xbreaks Vector of values of \code{x} at the boundaries between bins, calculated using
-#' \code{\link{pretty}(x)} if not supplied.
-#' @param ybreaks Vector of values of \code{y} at the boundaries between bins, calculated using
-#' \code{\link{pretty}(y)} if not supplied.
+#'
+#' @param xbreaks Vector of values of `x` at the boundaries between bins, calculated using
+#' [`pretty``]`(x)` if not supplied.
+#'
+#' @param ybreaks Vector of values of `y` at the boundaries between bins, calculated using
+#' [`pretty`]`(y)` if not supplied.
+#'
 #' @param flatten A logical value indicating whether
 #' the return value also contains equilength
-#' vectors \code{x}, \code{y}, \code{z} and \code{n}, a flattened
-#' representation of \code{xmids}, \code{ymids}, \code{result} and
-#' \code{number}.
-#' @return A list with the following elements: the breaks (\code{xbreaks}
-#' and \code{ybreaks}), the midpoints (\code{xmids} and \code{ymids})
+#' vectors `x`, `y`, `z` and `n`, a flattened
+#' representation of `xmids`, `ymids`, `result` and
+#' `number`.
+#'
+#' @return A list with the following elements: the breaks (`xbreaks`
+#' and `ybreaks`), the midpoints (`xmids` and `ymids`)
 #' between those breaks, and
-#' the count (\code{number}) of \code{f} values in the boxes defined
+#' the count (`number`) of `f` values in the boxes defined
 #' between successive breaks.
+#'
 #' @author Dan Kelley
+#'
 #' @family bin-related functions
+#'
+#' @md
 binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -1055,35 +1141,42 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 
 #' Bin-average f=f(x,y)
 #'
-#' Average the values of a vector \code{f(x,y)} in bins defined on
-#' vectors \code{x} and \code{y}. A common example might be averaging
+#' Average the values of a vector `f(x,y)` in bins defined on
+#' vectors `x` and `y`. A common example might be averaging
 #' spatial data into location bins.
 #'
 #' @param x Vector of numerical values.
+#'
 #' @param y Vector of numerical values.
+#'
 #' @param f Matrix of numerical values, a matrix f=f(x,y).
-#' @param xbreaks Vector of values of \code{x} at the boundaries between bins, calculated using
-#' \code{\link{pretty}(x)} if not supplied.
-#' @param ybreaks Vector of values of \code{y} at the boundaries between bins, calculated using
-#' \code{\link{pretty}(y)} if not supplied.
+#'
+#' @param xbreaks Vector of values of `x` at the boundaries between bins, calculated using
+#' [`pretty`]`(x)` if not supplied.
+#'
+#' @param ybreaks Vector of values of `y` at the boundaries between bins, calculated using
+#' [`pretty`]`(y)` if not supplied.
+#'
 #' @param flatten A logical value indicating whether
 #' the return value also contains equilength
-#' vectors \code{x}, \code{y}, \code{z} and \code{n}, a flattened
-#' representation of \code{xmids}, \code{ymids}, \code{result} and
-#' \code{number}.
-#' @param fill Logical value indicating whether to fill \code{NA}-value gaps in
+#' vectors `x`, `y`, `z` and `n`, a flattened
+#' representation of `xmids`, `ymids`, `result` and
+#' `number`.
+#'
+#' @param fill Logical value indicating whether to fill `NA`-value gaps in
 #' the matrix. Gaps will be filled as the average of linear interpolations
-#' across rows and columns. See \code{fillgap}, which works together with this.
+#' across rows and columns. See `fillgap`, which works together with this.
+#'
 #' @param fillgap Integer controlling the size of gap that can be filled
 #' across. If this is negative (as in the default), gaps will be filled
 #' regardless of their size. If it is positive, then gaps exceeding this
 #' number of indices will not be filled.
 #'
 #' @return A list with the following elements: the midpoints (renamed as
-#' \code{x} and \code{y}), the count (\code{number}) of \code{f(x,y)} values
-#' for \code{x} and \code{y} values that lie between corresponding breaks,
-#' and the resultant average (\code{f}) of \code{f(x,y)}, classified by the
-#' \code{x} and \code{y} breaks.
+#' `x` and `y`), the count (`number`) of `f(x,y)` values
+#' for `x` and `y` values that lie between corresponding breaks,
+#' and the resultant average (`f`) of `f(x,y)`, classified by the
+#' `x` and `y` breaks.
 #'
 #' @examples
 #' library(oce)
@@ -1097,7 +1190,10 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 #' contour(m$xmids, m$ymids, m$result, add=TRUE, levels=seq(0, 2, 0.5), labcex=1)
 #'
 #' @author Dan Kelley
+#'
 #' @family bin-related functions
+#'
+#' @md
 binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fillgap=-1)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -1138,22 +1234,27 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
     res
 }
 
-
 #' Bin-average a vector y, based on x values
 #'
-#' The \code{y} vector is averaged in bins defined for \code{x}.  Missing
-#' values in \code{y} are ignored.
+#' The `y` vector is averaged in bins defined for `x`.  Missing
+#' values in `y` are ignored.
 #'
 #' @param x a vector of numerical values.
+#'
 #' @param y a vector of numerical values.
-#' @param xmin x value at the lower limit of first bin; the minimum \code{x}
+#'
+#' @param xmin x value at the lower limit of first bin; the minimum `x`
 #' will be used if this is not provided.
-#' @param xmax x value at the upper limit of last bin; the maximum \code{x}
+#'
+#' @param xmax x value at the upper limit of last bin; the maximum `x`
 #' will be used if this is not provided.
-#' @param xinc width of bins, in terms of x value; 1/10th of \code{xmax-xmin}
+#'
+#' @param xinc width of bins, in terms of x value; 1/10th of `xmax-xmin`
 #' will be used if this is not provided.
-#' @return A list with two elements: \code{x}, the mid-points of the bins, and
-#' \code{y}, the average \code{y} value in the bins.
+#'
+#' @return A list with two elements: `x`, the mid-points of the bins, and
+#' `y`, the average `y` value in the bins.
+#'
 #' @author Dan Kelley
 #'
 #' @examples
@@ -1176,7 +1277,10 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
 #' plot(co2)
 #' avg <- binAverage(time(co2), co2, 1950, 2000, 2)
 #' points(avg$x, avg$y, col='red')
+#'
 #' @family bin-related functions
+#'
+#' @md
 binAverage <- function(x, y, xmin, xmax, xinc)
 {
     if (missing(y))
@@ -1203,28 +1307,33 @@ binAverage <- function(x, y, xmin, xmax, xinc)
 }
 
 
-
 #' Extract (x, y, z) from (x, y, grid)
 #'
 #' Extract the grid points from a grid, returning columns.
 #' This is useful for e.g. gridding large datasets, in which the first step
-#' might be to use \code{\link{binMean2D}}, followed by
-#' \code{\link{interpBarnes}}.
+#' might be to use [binMean2D()], followed by
+#' [interpBarnes()].
 #'
 #' @param x a vector holding the x coordinates of grid.
-#' @param y a vector holding the y coordinates of grid.
-#' @param grid a matrix holding the grid.
-#' @return A list containing three vectors: \code{x}, the grid x values,
-#' \code{y}, the grid y values, and \code{grid}, the grid values.
-#' @author Dan Kelley
-#' @examples
 #'
+#' @param y a vector holding the y coordinates of grid.
+#'
+#' @param grid a matrix holding the grid.
+#'
+#' @return A list containing three vectors: `x`, the grid x values,
+#' `y`, the grid y values, and `grid`, the grid values.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
 #' library(oce)
 #' data(wind)
 #' u <- interpBarnes(wind$x, wind$y, wind$z)
 #' contour(u$xg, u$yg, u$zg)
 #' U <- ungrid(u$xg, u$yg, u$zg)
 #' points(U$x, U$y, col=oce.colorsJet(100)[rescale(U$grid, rlow=1, rhigh=100)], pch=20)
+#'
+#' @md
 ungrid <- function(x, y, grid)
 {
     nrow <- nrow(grid)
@@ -1239,29 +1348,36 @@ ungrid <- function(x, y, grid)
 
 #' Draw error bars on an existing xy diagram
 #'
-#' @param x x coordinates of points on the existing plot.
-#' @param y y coordinates of points on the existing plot.
-#' @param xe error on x coordinates of points on the existing plot, either a
-#' single number or a vector of length identical to that of \code{y}.
-#' @param ye as \code{xe} but for y coordinate.
-#' @param percent boolean flag indicating whether \code{xe} and \code{ye} are
-#' in terms of percent of the corresponding \code{x} and \code{y} values.
-#' @param style indication of the style of error bar.  Using \code{style=0}
-#' yields simple line segments (drawn with \code{\link{segments}}) and
-#' \code{style=1} yields line segments with short perpendicular endcaps.
-#' @param length length of endcaps, for \code{style=1} only; it is passed to
-#' \code{\link{arrows}}, which is used to draw that style of error bars.
-#' @param \dots graphical parameters passed to the code that produces the error
-#' bars, e.g. to \code{\link{segments}} for \code{style=0}.
-#' @author Dan Kelley
-#' @examples
+#' @param x,y coordinates of points on the existing plot.
 #'
+#' @param xe,ye errors on x and y coordinates of points on the existing plot,
+#' each either a single number or a vector of length identical to that of
+#' the cooresponding coordinate.
+#'
+#' @param percent boolean flag indicating whether `xe` and `ye` are
+#' in terms of percent of the corresponding `x` and `y` values.
+#'
+#' @param style indication of the style of error bar.  Using `style=0`
+#' yields simple line segments (drawn with [segments()]) and
+#' `style=1` yields line segments with short perpendicular endcaps.
+#'
+#' @param length length of endcaps, for `style=1` only; it is passed to
+#' [arrows()], which is used to draw that style of error bars.
+#'
+#' @param \dots graphical parameters passed to the code that produces the error
+#' bars, e.g. to [segments()] for `style=0`.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
 #' library(oce)
 #' data(ctd)
 #' S <- ctd[["salinity"]]
 #' T <- ctd[["temperature"]]
 #' plot(S, T)
 #' errorbars(S, T, 0.05, 0.5)
+#'
+#' @md
 errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 {
     if (missing(x))
@@ -1312,14 +1428,19 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 }
 
 
-#' Find indices of times in an ordered vector [defunct]
+#' Find indices of times in an ordered vector (defunct)
 #'
-#' \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
+#' **WARNING:** This function will be removed soon; see [oce-defunct].
 #'
 #' @param x Ignored, since this function is defunct.
+#'
 #' @param f Ignored, since this function is defunct.
+#'
 #' @author Dan Kelley
+#'
 #' @family functions that will be removed soon
+#'
+#' @md
 findInOrdered <- function(x, f)
 {
     .Defunct("findInterval",
@@ -1355,43 +1476,54 @@ filterSomething <- function(x, filter)
 #' y.  The angle connecting a point on the graph to the focus provides an
 #' indication of correlation coefficient with respect to x.  The ``east'' side
 #' of the graph indicates \eqn{R=1}{R=1}, while \eqn{R=0}{R=0} is at the
-#' ``north edge'' and \eqn{R=-1}{R=-1} is at the ``west'' side.  The \code{x}
+#' ``north edge'' and \eqn{R=-1}{R=-1} is at the ``west'' side.  The `x`
 #' data are indicated with a bullet on the graph, appearing on the lower edge
 #' to the right of the focus at a distance indicating the standard deviation of
-#' \code{x}.  The other points on the graph represent the columns of \code{y},
-#' coded automatically or with the supplied values of \code{pch} and
-#' \code{col}.
+#' `x`.  The other points on the graph represent the columns of `y`,
+#' coded automatically or with the supplied values of `pch` and
+#' `col`.
 #' The example shows two tidal models of the Halifax sealevel data, computed
-#' with \code{\link{tidem}} with just the M2 component and the S2 component;
+#' with [tidem()] with just the M2 component and the S2 component;
 #' the graph indicates that the M2 model is much better than the S2 model.
 #'
 #' @param x a vector of reference values of some quantity, e.g. measured over
 #' time or space.
+#'
 #' @param y a matrix whose columns hold values of values to be compared with
-#' those in x.  (If \code{y} is a vector, it is converted first to a one-column
+#' those in x.  (If `y` is a vector, it is converted first to a one-column
 #' matrix).
+#'
 #' @param scale optional scale, interpreted as the maximum value of standard
 #' deviation.
-#' @param pch list of characters to plot, one for each column of \code{y}.
+#'
+#' @param pch list of characters to plot, one for each column of `y`.
+#'
 #' @param col list of colors for points on the plot, one for each column of
-#' \code{y}.
+#' `y`.
+#'
 #' @param labels optional vector of strings to use for labelling the points.
+#'
 #' @param pos optional vector of positions for labelling strings.  If not
 #' provided, labels will be to the left of the symbols.
-#' @param \dots optional arguments passed by \code{plotTaylor} to more child
+#'
+#' @param \dots optional arguments passed by `plotTaylor` to more child
 #' functions.
+#'
 #' @author Dan Kelley
+#'
 #' @references Taylor, Karl E., 2001.  Summarizing multiple aspects of model
 #' performance in a single diagram, \emph{J. Geophys. Res.}, 106:D7,
 #' 7183--7192.
-#' @examples
 #'
+#' @examples
 #' library(oce)
 #' data(sealevel)
 #' x <- sealevel[["elevation"]]
 #' M2 <- predict(tidem(sealevel, constituents="M2"))
 #' S2 <- predict(tidem(sealevel, constituents=c("S2")))
 #' plotTaylor(x, cbind(M2, S2))
+#'
+#' @md
 plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -1455,20 +1587,25 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
 #' Pretty lat/lon in deg, min, sec
 #'
 #' Round a geographical positions in degrees, minutes, and seconds
-#' Depending on the range of values in \code{x}, rounding is done to degrees,
+#' Depending on the range of values in `x`, rounding is done to degrees,
 #' half-degrees, minutes, etc.
 #'
 #' @param x a series of one or more values of a latitude or longitude, in
 #' decimal degrees
+#'
 #' @param debug set to a positive value to get debugging information during
 #' processing.
-#' @return A vector of numbers that will yield good axis labels if
-#' \code{\link{formatPosition}} is used.
-#' @author Dan Kelley
-#' @examples
 #'
+#' @return A vector of numbers that will yield good axis labels if
+#' [formatPosition()] is used.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
 #' library(oce)
 #' formatPosition(prettyPosition(10+1:10/60+2.8/3600))
+#'
+#' @md
 prettyPosition <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "prettyPosition(...) {\n", sep="", unindent=1)
@@ -1524,22 +1661,28 @@ smoothSomething <- function(x, ...)
 #' Rescale values to lie in a given range
 #'
 #' This is helpful in e.g. developing a color scale for an image plot.  It is
-#' not necessary that \code{rlow} be less than \code{rhigh}, and in fact
+#' not necessary that `rlow` be less than `rhigh`, and in fact
 #' reversing them is a good way to get a reversed color scale for a plot.
 #'
 #' @param x a numeric vector.
-#' @param xlow \code{x} value to correspond to \code{rlow}.  If not given, it
-#' will be calculated as the minimum value of \code{x}
-#' @param xhigh \code{x} value to correspond to \code{rhigh}.  If not given, it
-#' will be calculated as the maximum value of \code{x}
-#' @param rlow value of the result corresponding to \code{x} equal to
-#' \code{xlow}.
-#' @param rhigh value of the result corresponding to \code{x} equal to
-#' \code{xhigh}.
-#' @param clip logical, set to \code{TRUE} to clip the result to the range
-#' spanned by \code{rlow} and \code{rhigh}.
-#' @return A new vector, which has minimum \code{lim[1]} and maximum
-#' \code{lim[2]}.
+#'
+#' @param xlow `x` value to correspond to `rlow`.  If not given, it
+#' will be calculated as the minimum value of `x`
+#'
+#' @param xhigh `x` value to correspond to `rhigh`.  If not given, it
+#' will be calculated as the maximum value of `x`
+#'
+#' @param rlow value of the result corresponding to `x` equal to
+#' `xlow`.
+#'
+#' @param rhigh value of the result corresponding to `x` equal to
+#' `xhigh`.
+#'
+#' @param clip logical, set to `TRUE` to clip the result to the range
+#' spanned by `rlow` and `rhigh`.
+#'
+#' @return A new vector, which has minimum `lim[1]` and maximum `lim[2]`.
+#'
 #' @author Dan Kelley
 #'
 #' @examples
@@ -1554,6 +1697,8 @@ smoothSomething <- function(x, ...)
 #' drawPalette(zlim=zlim, col=palette)
 #' plot(x, z, type='p', pch=20, cex=3,
 #'      col=palette[rescale(T, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=100)])
+#'
+#' @md
 rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 {
     x <- as.numeric(x)
@@ -1579,37 +1724,46 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 #' \eqn{t'=t + a + b (t-t0)}{t'=t + a + b*(t-t0)}, where \eqn{t'}{t'} is the
 #' true time and \eqn{t}{t} is the time stored in the object.  A single check
 #' on time mismatch can be described by a simple time offset, with a non-zero
-#' value of \code{a}, a zero value of \code{b}, and an arbitrary value of
-#' \code{t0}.  Checking the mismatch before and after an experiment yields
-#' sufficient information to specify a linear drift, via \code{a}, \code{b},
-#' and \code{t0}.  Note that \code{t0} is just a convenience parameter, which
+#' value of `a`, a zero value of `b`, and an arbitrary value of
+#' `t0`.  Checking the mismatch before and after an experiment yields
+#' sufficient information to specify a linear drift, via `a`, `b`,
+#' and `t0`.  Note that `t0` is just a convenience parameter, which
 #' avoids the user having to know the "zero time" used in R and clarifies the
-#' values of the other two parameters.  It makes sense for \code{t0} to have
-#' the same timezone as the time within \code{x}.
+#' values of the other two parameters.  It makes sense for `t0` to have
+#' the same timezone as the time within `x`.
 #'
 #' The returned object is computed by linear interpolation, using
-#' \code{\link{approx}} with \code{rule=2}, to avoid \code{NA} values at the
+#' [approx()] with `rule=2`, to avoid `NA` values at the
 #' start or end.  The new time will be as given by the formula above. Note that
 #' if the drift is large enough, the sampling rate will be changed.  It is a
 #' good idea to start with an object that has an extended time range, so that,
-#' after this is called, \code{\link{subset}} can be used to trim to a desired
+#' after this is called, [subset()] can be used to trim to a desired
 #' time range.
 #'
-#' @param x an \code{oce} object (presently, this must be of class \code{adv})
+#' @param x an `oce` object (presently, this must be of class `adv`)
+#'
 #' @param a intercept [in seconds] in linear model of time drift (see
 #' \dQuote{Details}).
+#'
 #' @param b slope [unitless] in linear model of time drift [unitless] (see
 #' \dQuote{Details}).
+#'
 #' @param t0 reference time [in POSIXct format] used in linear model of time
 #' drift (see \dQuote{Details}).
+#'
 #' @param debug a flag that, if nonzero, turns on debugging.
+#'
 #' @return A new object, with time and other data adjusted.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' library(oce)
 #' data(adv)
 #' adv2 <- retime(adv,0,1e-4,as.POSIXct("2008-07-01 00:00:00",tz="UTC"))
 #' plot(adv[["time"]], adv2[["time"]]-adv[["time"]], type='l')
+#'
+#' @md
 retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 {
     if (missing(x))
@@ -1640,9 +1794,12 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 #' used in [summary()] functions for `oce` objects.
 #'
 #' @param x a vector or matrix of numerical values.
+#'
 #' @return A character vector of thre values: the minimum, the mean, the
 #' maximum.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' library(oce)
 #' threenum(1:10)
@@ -1652,6 +1809,7 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 #' name).  Another change is that the function now returns numerical
 #' results, leaving the task of setting the number of digits to
 #' [summary()].
+#'
 #' @md
 threenum <- function(x)
 {
@@ -1706,24 +1864,27 @@ normalize <- function(x)
 
 #' Detrend a set of observations
 #'
-#' Detrends \code{y} by subtracting a linear trend in \code{x}, to create
+#' Detrends `y` by subtracting a linear trend in `x`, to create
 #' a vector that is zero for its first and last finite value.
-#' If the second parameter (\code{y}) is missing, then \code{x} is
-#' taken to be \code{y}, and a new \code{x} is constructed with
-#' \code{\link{seq_along}}.  Any \code{NA} values are left as-is.
+#' If the second parameter (`y`) is missing, then `x` is
+#' taken to be `y`, and a new `x` is constructed with
+#' [seq_along()].  Any `NA` values are left as-is.
 #'
 #' A common application is to bring the end points of a time series
 #' down to zero, prior to applying a digital filter. (See examples.)
 #'
-#' @param x a vector of numerical values.  If \code{y} is not given, then
-#' \code{x} is taken for \code{y}.
-#' @param y an optional vector
-#' @return A list containing \code{Y}, the detrended version of \code{y}, and
-#' the intercept \code{a} and slope \code{b} of the linear function of \code{x}
-#' that is subtracted from \code{y} to yield \code{Y}.
-#' @author Dan Kelley
-#' @examples
+#' @param x a vector of numerical values.  If `y` is not given, then
+#' `x` is taken for `y`.
 #'
+#' @param y an optional vector
+#'
+#' @return A list containing `Y`, the detrended version of `y`, and
+#' the intercept `a` and slope `b` of the linear function of `x`
+#' that is subtracted from `y` to yield `Y`.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
 #' x <- seq(0, 0.9 * pi, length.out=50)
 #' y <- sin(x)
 #' y[1] <- NA
@@ -1734,6 +1895,8 @@ normalize <- function(x)
 #' abline(d$a, d$b, col='blue')
 #' abline(h=0)
 #' points(x, d$Y + d$a + d$b * x, col='blue', pch='+')
+#'
+#' @md
 detrend <- function(x, y)
 {
     if (missing(x))
@@ -1760,67 +1923,72 @@ detrend <- function(x, y)
 #' Remove spikes from a time series
 #'
 #' The method identifies spikes with respect to a "reference" time-series, and
-#' replaces these spikes with the reference value, or with \code{NA} according
-#' to the value of \code{action}; see \dQuote{Details}.
+#' replaces these spikes with the reference value, or with `NA` according
+#' to the value of `action`; see \dQuote{Details}.
 #'
-#' @details
 #' Three modes of operation are permitted, depending on the value of
-#' \code{reference}.
+#' `reference`.
 #'
-#'\itemize{
-#'
-#'\item For \code{reference="median"}, the first step is to linearly interpolate
-#' across any gaps (spots where \code{x==NA}), using \code{\link{approx}} with
-#' \code{rule=2}. The second step is to pass this through
-#' \code{\link{runmed}} to get a running median spanning \code{k}
+#' 1. For `reference="median"`, the first step is to linearly interpolate
+#' across any gaps (spots where `x==NA`), using [approx()] with
+#' `rule=2`. The second step is to pass this through
+#' [runmed()] to get a running median spanning `k`
 #' elements. The result of these two steps is the "reference" time-series.
-#' Then, the standard deviation of the difference between \code{x}
-#' and the reference is calculated.  Any \code{x} values that differ from
-#' the reference by more than \code{n} times this standard deviation are considered
-#' to be spikes.  If \code{replace="reference"}, the spike values are
+#' Then, the standard deviation of the difference between `x`
+#' and the reference is calculated.  Any `x` values that differ from
+#' the reference by more than `n` times this standard deviation are considered
+#' to be spikes.  If `replace="reference"`, the spike values are
 #' replaced with the reference, and the resultant time series is
-#' returned.  If \code{replace="NA"}, the spikes are replaced with \code{NA},
+#' returned.  If `replace="NA"`, the spikes are replaced with `NA`,
 #' and that result is returned.
 #'
-#'\item For \code{reference="smooth"}, the processing is the same as for
-#' \code{"median"}, except that \code{\link{smooth}} is used to calculate the
+#' 2. For `reference="smooth"`, the processing is the same as for
+#' `"median"`, except that [smooth()] is used to calculate the
 #' reference time series.
 #'
-#'\item For \code{reference="trim"}, the reference time series is constructed by
-#' linear interpolation across any regions in which \code{x<min} or
-#' \code{x>max}.  (Again, this is done with \code{\link{approx}} with
-#' \code{rule=2}.) In this case, the value of \code{n} is ignored, and the
-#' return value is the same as \code{x}, except that spikes are replaced
-#' with the reference series (if \code{replace="reference"} or with
-#' \code{NA}, if \code{replace="NA"}.
-#'}
+#' 3. For `reference="trim"`, the reference time series is constructed by
+#' linear interpolation across any regions in which `x<min` or
+#' `x>max`.  (Again, this is done with [approx()] with
+#' `rule=2`.) In this case, the value of `n` is ignored, and the
+#' return value is the same as `x`, except that spikes are replaced
+#' with the reference series (if `replace="reference"` or with
+#' `NA`, if `replace="NA"`.
 #'
 #' @param x a vector of (time-series) values, a list of vectors, a data frame,
-#' or an object that inherits from class \code{oce}.
+#' or an [oce-class] object.
+#'
 #' @param reference indication of the type of reference time series to be used
 #' in the detection of spikes; see \sQuote{Details}.
-#' @param n an indication of the limit to differences between \code{x} and the
-#' reference time series, used for \code{reference="median"} or
-#' \code{reference="smooth"}; see \sQuote{Details.}
-#' @param k length of running median used with \code{reference="median"}, and
-#' ignored for other values of \code{reference}.
-#' @param min minimum non-spike value of \code{x}, used with
-#' \code{reference="trim"}.
-#' @param max maximum non-spike value of \code{x}, used with
-#' \code{reference="trim"}.
-#' @param replace an indication of what to do with spike values, with
-#' \code{"reference"} indicating to replace them with the reference time
-#' series, and \code{"NA"} indicating to replace them with \code{NA}.
-#' @param skip optional vector naming columns to be skipped. This is ignored if
-#' \code{x} is a simple vector. Any items named in \code{skip} will be passed
-#' through to the return value without modification.  In some cases,
-#' \code{despike} will set up reasonable defaults for \code{skip}, e.g. for a
-#' \code{ctd} object, \code{skip} will be set to \code{c("time", "scan",
-#' "pressure")} if it is not supplied as an argument.
-#' @return A new vector in which spikes are replaced as described above.
-#' @author Dan Kelley
-#' @examples
 #'
+#' @param n an indication of the limit to differences between `x` and the
+#' reference time series, used for `reference="median"` or
+#' `reference="smooth"`; see \sQuote{Details.}
+#'
+#' @param k length of running median used with `reference="median"`, and
+#' ignored for other values of `reference`.
+#'
+#' @param min minimum non-spike value of `x`, used with
+#' `reference="trim"`.
+#'
+#' @param max maximum non-spike value of `x`, used with
+#' `reference="trim"`.
+#'
+#' @param replace an indication of what to do with spike values, with
+#' `"reference"` indicating to replace them with the reference time
+#' series, and `"NA"` indicating to replace them with `NA`.
+#'
+#' @param skip optional vector naming columns to be skipped. This is ignored if
+#' `x` is a simple vector. Any items named in `skip` will be passed
+#' through to the return value without modification.  In some cases,
+#' `despike` will set up reasonable defaults for `skip`, e.g. for a
+#' `ctd` object, `skip` will be set to \code{c("time", "scan",
+#' "pressure")} if it is not supplied as an argument.
+#'
+#' @return A new vector in which spikes are replaced as described above.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
 #' n <- 50
 #' x <- 1:n
 #' y <- rnorm(n=n)
@@ -1840,6 +2008,8 @@ detrend <- function(x, y)
 #' ctd[["temperature"]] <- T
 #' CTD <- despike(ctd)
 #' plot(CTD)
+#'
+#' @md
 despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min=NA, max=NA,
                     replace=c("reference", "NA"), skip)
 {
@@ -1940,14 +2110,20 @@ despikeColumn <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, 
 #' Substitute NA for data outside a range, e.g. to remove wild spikes in data.
 #'
 #' @param x vector of values
-#' @param min minimum acceptable value.  If not supplied, and if \code{max} is
-#' also not supplied, a \code{min} of the 0.5 percentile will be used.
-#' @param max maximum acceptable value.  If not supplied, and if \code{min} is
-#' also not supplied, a \code{min} of the 0.995 percentile will be used.
+#'
+#' @param min minimum acceptable value.  If not supplied, and if `max` is
+#' also not supplied, a `min` of the 0.5 percentile will be used.
+#'
+#' @param max maximum acceptable value.  If not supplied, and if `min` is
+#' also not supplied, a `min` of the 0.995 percentile will be used.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #'
 #' ten.to.twenty <- rangeLimit(1:100, 10, 20)
+#'
+#' @md
 rangeLimit <- function(x, min, max)
 {
     if (missing(min) && missing(max)) {
@@ -1968,11 +2144,14 @@ rangeLimit <- function(x, min, max)
 #' supplies 60, meaning year 2060 as opposed to 1960.
 #'
 #' @param year a year, or vector of years, possibly abbreviated
-#' @author Dan Kelley
-#' @examples
 #'
+#' @author Dan Kelley
+#'
+#' @examples
 #' fullYear <- unabbreviateYear(c(99, 8, 108))
 #' @family things related to time
+#'
+#' @md
 unabbreviateYear <- function(year)
 {
     ## handle e.g. 2008 as 2008 (full year), 8 (year-2000 offset), or 108 (year 1900 offset)
@@ -1993,16 +2172,18 @@ unabbreviateYear <- function(year)
 #' to large angles, because of the modulo-360 cut point.
 #' The method is to use the cosine and sine of the angle, to construct "x" and
 #' "y" values on a unit circle, then to find means and medians of x and y
-#' respectively, and finally to use \code{\link{atan2}} to infer the angles.
+#' respectively, and finally to use [atan2()] to infer the angles.
 #'
 #' @param angle an angle (in degrees) that is thought be near 360 degrees, with
 #' added noise
-#' @return A list with two estimates: \code{mean} is based on an arithmetic
-#' mean, and \code{median} is based on the median. Both are mapped to the range
-#' 0 to 360.
-#' @author Dan Kelley
-#' @examples
 #'
+#' @return A list with two estimates: `mean` is based on an arithmetic
+#' mean, and `median` is based on the median. Both are mapped to the range
+#' 0 to 360.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
 #' library(oce)
 #' true <- 355
 #' a <- true + rnorm(100, sd=10)
@@ -2015,6 +2196,8 @@ unabbreviateYear <- function(year)
 #' mtext("true (solid)\n estimate (dashed)", at=true, side=3, col="blue")
 #' abline(v=mean(a), col="red")
 #' mtext("mean", at=mean(a), side=3, col="red")
+#'
+#' @md
 unwrapAngle <- function(angle)
 {
     toRad <- atan2(1, 1) / 45
@@ -2035,35 +2218,44 @@ unwrapAngle <- function(angle)
 
 #' Partial matching of strings or numbers
 #'
-#' An extended version of \code{\link{pmatch}} that allows \code{x} to be
-#' numeric or string-based.  As with \code{\link{pmatch}}, partial string
+#' An extended version of [pmatch()] that allows `x` to be
+#' numeric or string-based.  As with [pmatch()], partial string
 #' matches are handled.
-#' This is a wrapper that is useful mainly for \code{which} arguments to
+#' This is a wrapper that is useful mainly for `which` arguments to
 #' plotting functions.
 #'
 #' @aliases oce.pmatch
+#'
 #' @param x a code, or vector of codes.  This may be numeric, in which case it
 #' is simply returned without further analysis of the other arguments, or it
-#' may be string-based, in which case \code{\link{pmatch}} is used to find
+#' may be string-based, in which case [pmatch()] is used to find
 #' numeric matches.
-#' @param table a list that maps strings to numbers; \code{\link{pmatch}} is
-#' used on \code{names(table)}.  If the name contains characters that are
-#' normally not permitted in a variable name, use quotes, e.g.
-#' \code{list(salinity=1, temperature=2, "salinity+temperature"=3)}.
-#' @param nomatch value to be returned for cases of no match (passed to
-#' \code{\link{pmatch}}.
-#' @param duplicates.ok code for the handling of duplicates (passed to
-#' \code{\link{pmatch}}).
-#' @return A number, or vector of numbers, corresponding to the matches.
-#' Non-matches are indicated with \code{NA} values, or whatever value is given
-#' by the \code{NA} argument.
-#' @author Dan Kelley
-#' @seealso Since \code{\link{pmatch}} is used for the actual matching, its
-#' documentation should be consulted.
-#' @examples
 #'
+#' @param table a list that maps strings to numbers; [pmatch()] is
+#' used on `names(table)`.  If the name contains characters that are
+#' normally not permitted in a variable name, use quotes, e.g.
+#' `list(salinity=1, temperature=2, "salinity+temperature"=3)`.
+#'
+#' @param nomatch value to be returned for cases of no match (passed to
+#' [pmatch()].
+#'
+#' @param duplicates.ok code for the handling of duplicates (passed to
+#' [pmatch()]).
+#'
+#' @return A number, or vector of numbers, corresponding to the matches.
+#' Non-matches are indicated with `NA` values, or whatever value is given
+#' by the `NA` argument.
+#'
+#' @author Dan Kelley
+#'
+#' @seealso Since [pmatch()] is used for the actual matching, its
+#' documentation should be consulted.
+#'
+#' @examples
 #' library(oce)
 #' oce.pmatch(c("s", "at", "te"), list(salinity=1, temperature=3.1))
+#'
+#' @md
 ocePmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
 {
     ## FIXME: do element by element, and extend as follows, to allow string numbers
@@ -2094,17 +2286,23 @@ oce.pmatch <- ocePmatch
 
 #' Wrapper to give normalized spectrum
 #'
-#' This is a wrapper around the R \code{\link{spectrum}} function, which
+#' This is a wrapper around the R [spectrum()] function, which
 #' returns spectral values that are adjusted so that the integral of those
-#' values equals the variance of the input \code{x}.
+#' values equals the variance of the input `x`.
 #'
 #' @aliases oce.spectrum oceSpectrum
-#' @param x As for \code{\link{spectrum}}, a univariate or multivariate time
+#'
+#' @param x As for [spectrum()], a univariate or multivariate time
 #' series.
-#' @param \dots extra arguments passed on to \code{\link{spectrum}}.
+#'
+#' @param \dots extra arguments passed on to [spectrum()].
+#'
 #' @return A spectrum that has values that integrate to the variance.
+#'
 #' @author Dan Kelley
-#' @seealso \code{\link{spectrum}}.
+#'
+#' @seealso [spectrum()].
+#'
 #' @examples
 #'   x <- rnorm(1e3)
 #'   s <- spectrum(x, plot=FALSE)
@@ -2112,6 +2310,8 @@ oce.pmatch <- ocePmatch
 #'   cat("variance of x=", var(x), "\n")
 #'   cat("integral of     spectrum=", sum(s$spec)*diff(s$freq[1:2]), "\n")
 #'   cat("integral of oce.spectrum=", sum(ss$spec)*diff(ss$freq[1:2]), "\n")
+#'
+#' @md
 oceSpectrum <- function(x, ...)
 {
     args <- list(...)
@@ -2134,22 +2334,29 @@ oce.spectrum <- oceSpectrum
 
 #' Show some values from a vector
 #'
-#' This is similar to \code{\link{str}}, but it shows data at the first and
+#' This is similar to [str()], but it shows data at the first and
 #' last of the vector, which can be quite helpful in debugging.
 #'
 #' @param v the vector.
+#'
 #' @param msg a message to show, introducing the vector.  If not provided, then
-#' a message is created from \code{v}. If \code{msg} is a non-empty string,
-#' then that string is pasted together with a colon (unless \code{msg} already
+#' a message is created from `v`. If `msg` is a non-empty string,
+#' then that string is pasted together with a colon (unless `msg` already
 #' contains a colon), before pasting a summary of data values.
-#' @param digits for numerical values of \code{v}, this is the number of digits
-#' to use, in formatting the numbers with \code{\link{format}}; otherwise,
-#' \code{digits} is ignored.
-#' @param n number of elements to at start and end. If \code{n}
+#'
+#' @param digits for numerical values of `v`, this is the number of digits
+#' to use, in formatting the numbers with [format()]; otherwise,
+#' `digits` is ignored.
+#'
+#' @param n number of elements to at start and end. If `n`
 #' is negative, then all the elements are shown.
-#' @return A string, suitable for using in \code{\link{cat}} or
-#' \code{\link{oceDebug}}.
+#'
+#' @return A string, suitable for using in [cat()] or
+#' [oceDebug()].
+#'
 #' @author Dan Kelley
+#'
+#' @md
 vectorShow <- function(v, msg, digits=5, n=2L)
 {
     nv <- length(v)
@@ -2195,13 +2402,17 @@ vectorShow <- function(v, msg, digits=5, n=2L)
 #' Full name of file, including path
 #'
 #' Determines the full name of a file, including the path.  Used by many
-#' \code{read.X} routines, where \code{X} is the name of a class of object.
-#' This is a wrapper around \code{\link{normalizePath}}, with warnings turned
+#' `read.X` routines, where `X` is the name of a class of object.
+#' This is a wrapper around [normalizePath()], with warnings turned
 #' off so that messages are not printed for unfound files (e.g. URLs).
 #'
 #' @param filename name of file
+#'
 #' @return Full file name
+#'
 #' @author Dan Kelley
+#'
+#' @md
 fullFilename <- function(filename)
 {
     warn <- options('warn')$warn
@@ -2216,40 +2427,48 @@ fullFilename <- function(filename)
 #'
 #' Provide axis names in adjustable sizes, e.g. using T instead of Temperature,
 #' and including units as appropriate.
-#' Used by e.g. \code{\link{plot,ctd-method}}.
+#' Used by e.g. [plot,ctd-method()].
 #'
 #' @param item code for the label.  This must be an element from the following
 #' list, or an abbreviation that uniquely identifies an element through its
-#' first letters: \code{"S"}, \code{"C"}, \code{"conductivity mS/cm"},
-#' \code{"conductivity S/m"}, \code{"T"}, \code{"theta"}, \code{"sigmaTheta"},
-#' \code{"conservative temperature"}, \code{"absolute salinity"},
-#' \code{"nitrate"}, \code{"nitrite"}, \code{"oxygen"}, \code{"oxygen
-#' saturation"}, \code{"oxygen mL/L"}, \code{"oxygen umol/L"}, \code{"oxygen
-#' umol/kg"}, \code{"phosphate"}, \code{"silicate"}, \code{"tritium"},
-#' \code{"spice"}, \code{"fluorescence"}, \code{"p"}, \code{"z"},
-#' \code{"distance"}, \code{"distance km"}, \code{"along-track distance km"},
-#' \code{"heading"}, \code{"pitch"}, \code{"roll"}, \code{"u"}, \code{"v"},
-#' \code{"w"}, \code{"speed"}, \code{"direction"}, \code{"eastward"},
-#' \code{"northward"}, \code{"depth"}, \code{"elevation"}, \code{"latitude"},
-#' \code{"longitude"}, \code{"frequency cph"}, or \code{"spectral density
+#' first letters: `"S"`, `"C"`, `"conductivity mS/cm"`,
+#' `"conductivity S/m"`, `"T"`, `"theta"`, `"sigmaTheta"`,
+#' `"conservative temperature"`, `"absolute salinity"`,
+#' `"nitrate"`, `"nitrite"`, `"oxygen"`, \code{"oxygen
+#' saturation"}, `"oxygen mL/L"`, `"oxygen umol/L"`, \code{"oxygen
+#' umol/kg"}, `"phosphate"`, `"silicate"`, `"tritium"`,
+#' `"spice"`, `"fluorescence"`, `"p"`, `"z"`,
+#' `"distance"`, `"distance km"`, `"along-track distance km"`,
+#' `"heading"`, `"pitch"`, `"roll"`, `"u"`, `"v"`,
+#' `"w"`, `"speed"`, `"direction"`, `"eastward"`,
+#' `"northward"`, `"depth"`, `"elevation"`, `"latitude"`,
+#' `"longitude"`, `"frequency cph"`, or \code{"spectral density
 #' m2/cph"}.
-#' @param axis a string indicating which axis to use; must be \code{x} or
-#' \code{y}.
+#'
+#' @param axis a string indicating which axis to use; must be `x` or
+#' `y`.
+#'
 #' @param sep optional character string inserted between the unit and the
 #' parentheses or brackets that enclose it. If not provided, then
-#' \code{\link{getOption}("oceUnitSep")} is checked. If that exists, then it is
+#' [`getOption`]`("oceUnitSep")` is checked. If that exists, then it is
 #' used as the separator; if not, no separator is used.
+#'
 #' @param unit optional unit to use, if the default is not satisfactory. This
 #' might be the case if for example temperature was not measured in Celcius.
+#'
 #' @param debug optional debugging flag. Setting to 0 turns off debugging,
 #' while setting to 1 causes some debugging information to be printed.
+#'
 #' @return A character string or expression, in either a long or a shorter
 #' format, for use in the indicated axis at the present plot size.  Whether the
 #' unit is enclosed in parentheses or square brackets is determined by the
-#' value of \code{getOption("oceUnitBracket")}, which may be \code{"["} or
-#' \code{"("}.  Whether spaces are used between the unit and these deliminators
-#' is set by \code{psep} or \code{\link{getOption}("oceUnitSep")}.
+#' value of `getOption("oceUnitBracket")`, which may be `"["` or
+#' `"("`.  Whether spaces are used between the unit and these deliminators
+#' is set by `psep` or [`getOption`]`("oceUnitSep")`.
+#'
 #' @author Dan Kelley
+#'
+#' @md
 resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "resizableLabel(item=\"", item,
@@ -2537,13 +2756,16 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
 
 #' Rotate velocity components within an oce object
 #'
-#' Alter the horizontal components of velocities in \code{adp},
-#' \code{adv} or \code{cm} objects, by applying a rotation about
+#' Alter the horizontal components of velocities in `adp`,
+#' `adv` or `cm` objects, by applying a rotation about
 #' the vertical axis.
 #'
-#' @param x An oce object of class \code{adp}, \code{adv} or \code{cm}.
+#' @param x An oce object of class `adp`, `adv` or `cm`.
+#'
 #' @param angle The rotation angle about the z axis, in degrees counterclockwise.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' library(oce)
 #' par(mfcol=c(2, 3))
@@ -2572,6 +2794,8 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
 #' @family things related to adp data
 #' @family things related to adv data
 #' @family things related to cm data
+#'
+#' @md
 rotateAboutZ <- function(x, angle)
 {
     if (missing(angle))
@@ -2625,11 +2849,18 @@ rotateAboutZ <- function(x, angle)
 #' Format a latitude-longitude pair, using "S" for negative latitudes, etc.
 #'
 #' @param lat latitude in \eqn{^\circ}{deg}N north of the equator.
+#'
 #' @param lon longitude in \eqn{^\circ}{deg}N east of Greenwich.
+#'
 #' @param digits the number of significant digits to use when printing.
+#'
 #' @return A character string.
+#'
 #' @author Dan Kelley
-#' @seealso \code{\link{latFormat}} and \code{\link{lonFormat}}.
+#'
+#' @seealso [latFormat()] and [lonFormat()].
+#'
+#' @md
 latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lon)
@@ -2653,10 +2884,16 @@ latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
 #' Format a latitude, using "S" for negative latitude.
 #'
 #' @param lat latitude in \eqn{^\circ}{deg}N north of the equator.
+#'
 #' @param digits the number of significant digits to use when printing.
+#'
 #' @return A character string.
+#'
 #' @author Dan Kelley
-#' @seealso \code{\link{lonFormat}} and \code{\link{latlonFormat}}.
+#'
+#' @seealso [lonFormat()] and [latlonFormat()].
+#'
+#' @md
 latFormat <- function(lat, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lat)
@@ -2678,10 +2915,16 @@ latFormat <- function(lat, digits=max(6, getOption("digits") - 1))
 #' Format a longitude, using "W" for west longitude.
 #'
 #' @param lon longitude in \eqn{^\circ}{deg}N east of Greenwich.
+#'
 #' @param digits the number of significant digits to use when printing.
+#'
 #' @return A character string.
+#'
 #' @author Dan Kelley
-#' @seealso \code{\link{latFormat}} and \code{\link{latlonFormat}}.
+#'
+#' @seealso [latFormat()] and [latlonFormat()].
+#'
+#' @md
 lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lon)
@@ -2707,13 +2950,18 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 #' commented-out portions that represent solving conflicting definitions by
 #' choosing the more common timezone abbreviation over a the less common one.
 #'
-#' @param tz a timezone, e.g. \code{UTC}.
-#' @return Number of hours in offset, e.g. \code{AST} yields 4.
+#' @param tz a timezone, e.g. `UTC`.
+#'
+#' @return Number of hours in offset, e.g. `AST` yields 4.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' library(oce)
 #' cat("Atlantic Standard Time is ", GMTOffsetFromTz("AST"), "hours after UTC")
 #' @family functions relating to time
+#'
+#' @md
 GMTOffsetFromTz <- function(tz)
 {
     ## Data are from
@@ -2822,17 +3070,24 @@ GMTOffsetFromTz <- function(tz)
 #'
 #' @param latitude Latitude in \eqn{^\circ}{deg}N or radians north of the
 #' equator.
+#'
 #' @param degrees Flag indicating whether degrees are used for latitude; if set
-#' to \code{FALSE}, radians are used.
+#' to `FALSE`, radians are used.
+#'
 #' @return Acceleration due to gravity [\eqn{m^2/s}{m^2/s}].
+#'
 #' @author Dan Kelley
+#'
 #' @references Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
 #' Press, New York, 662 pp.
 #'
 #' \strong{Caution:} Fofonoff and Millard (1983 UNESCO) use a different
 #' formula.
+#'
 #' @examples
 #' g <- gravity(45) # 9.8
+#'
+#' @md
 gravity <- function(latitude=45, degrees=TRUE)
 {
     if (degrees) latitude <- latitude * 0.0174532925199433
@@ -2842,18 +3097,19 @@ gravity <- function(latitude=45, degrees=TRUE)
 
 #' Make a digital filter
 #'
-#' The filter is suitable for use by \code{\link{filter}},
-#' \code{\link{convolve}} or (for the \code{asKernal=TRUE} case) with
-#' \code{\link{kernapply}}.  Note that \code{\link{convolve}} should be faster
-#' than \code{\link{filter}}, but it cannot be used if the time series has
+#' The filter is suitable for use by [filter()],
+#' [convolve()] or (for the `asKernal=TRUE` case) with
+#' [kernapply()].  Note that [convolve()] should be faster
+#' than [filter()], but it cannot be used if the time series has
 #' missing values.  For the Blackman-Harris filter, the half-power frequency is
-#' at \code{1/m} cycles per time unit, as shown in the \dQuote{Examples}
-#' section.  When using \code{\link{filter}} or \code{\link{kernapply}} with
-#' these filters, use \code{circular=TRUE}.
+#' at `1/m` cycles per time unit, as shown in the \dQuote{Examples}
+#' section.  When using [filter()] or [kernapply()] with
+#' these filters, use `circular=TRUE`.
 #'
 #' @param type a string indicating the type of filter to use.  (See Harris
-#' (1978) for a comparison of these and similar filters.)  \itemize{ \item
-#' \code{"blackman-harris"} yields a modified raised-cosine filter designated
+#' (1978) for a comparison of these and similar filters.)
+#'
+#' * `"blackman-harris"` yields a modified raised-cosine filter designated
 #' as "4-Term (-92 dB) Blackman-Harris" by Harris (1978; coefficients given in
 #' the table on page 65).  This is also called "minimum 4-sample Blackman
 #' Harris" by that author, in his Table 1, which lists figures of merit as
@@ -2863,30 +3119,37 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' bandwidth 2.72 bins; overlap correlation 46 percent for 75\% overlap and 3.8
 #' for 50\% overlap.  Note that the equivalent noise bandwidth is the width of
 #' a spectral peak, so that a value of 2 indicates a cutoff frequency of
-#' \code{1/m}, where \code{m} is as given below.  \item \code{"rectangular"}
-#' for a flat filter.  (This is just for convenience.  Note that
-#' \code{\link{kernel}("daniell",....)} gives the same result, in kernel form.)
-#' \code{"hamming"} for a Hamming filter (a raised-cosine that does not taper
-#' to zero at the ends) \item \code{"hann"} (a raised cosine that tapers to
-#' zero at the ends).  }
+#' `1/m`, where `m` is as given below.
+#'
+#' * `"rectangular"` for a flat filter.  (This is just for convenience.  Note that
+#' [`kernel`]`("daniell",....)` gives the same result, in kernel form.)
+#' `"hamming"` for a Hamming filter (a raised-cosine that does not taper
+#' to zero at the ends)
+#'
+#' * `"hann"` (a raised cosine that tapers to zero at the ends).
+#'
 #' @param m length of filter.  This should be an odd number, for any
 #' non-rectangular filter.
-#' @param asKernel boolean, set to \code{TRUE} to get a smoothing kernel for
+#'
+#' @param asKernel boolean, set to `TRUE` to get a smoothing kernel for
 #' the return value.
-#' @return If \code{asKernel} is \code{FALSE}, this returns a list of filter
+#'
+#' @return If `asKernel` is `FALSE`, this returns a list of filter
 #' coefficients, symmetric about the midpoint and summing to 1.  These may be
-#' used with \code{\link{filter}}, which should be provided with argument
-#' \code{circular=TRUE} to avoid phase offsets.  If \code{asKernel} is
-#' \code{TRUE}, the return value is a smoothing kernel, which can be applied to
-#' a timeseries with \code{\link{kernapply}}, whose bandwidth can be determined
-#' with \code{\link{bandwidth.kernel}}, and which has both print and plot
+#' used with [filter()], which should be provided with argument
+#' `circular=TRUE` to avoid phase offsets.  If `asKernel` is
+#' `TRUE`, the return value is a smoothing kernel, which can be applied to
+#' a timeseries with [kernapply()], whose bandwidth can be determined
+#' with [bandwidth.kernel()], and which has both print and plot
 #' methods.
+#'
 #' @author Dan Kelley
+#'
 #' @references F. J. Harris, 1978.  On the use of windows for harmonic analysis
 #' with the discrete Fourier Transform.  \emph{Proceedings of the IEEE}, 66(1),
 #' 51-83 (\url{http://web.mit.edu/xiphmont/Public/windows.pdf}.)
-#' @examples
 #'
+#' @examples
 #' library(oce)
 #'
 #' # 1. Demonstrate step-function response
@@ -2932,6 +3195,8 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
 #'        legend=c("Practical", "Theory"), bg="white")
 #'}
+#'
+#' @md
 makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=TRUE)
 {
     type <- match.arg(type)
@@ -2976,33 +3241,40 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
 #' a[3]*y[i-2] - a[4]*y[i-3] - ...}\eqn{ a[4]*y[i-3] - ...}{y[i]=b[1]*x[i] +
 #' b[2]*x[i-1] + b[3]*x[i-2] + ... - a[2]*y[i-1] - a[3]*y[i-2] - a[4]*y[i-3] -
 #' ...}, where some of the illustrated terms will be omitted if the lengths of
-#' \code{a} and \code{b} are too small, and terms are dropped at the start of
-#' the time series where the index on \code{x} would be less than 1.
+#' `a` and `b` are too small, and terms are dropped at the start of
+#' the time series where the index on `x` would be less than 1.
 #'
-#' By contrast with the \code{\link{filter}} function of R, \code{oce.filter}
+#' By contrast with the [filter()] function of R, `oce.filter`
 #' lacks the option to do a circular filter.  As a consequence,
-#' \code{oceFilter} introduces a phase lag.  One way to remove this lag is to
+#' `oceFilter` introduces a phase lag.  One way to remove this lag is to
 #' run the filter forwards and then backwards, as in the \dQuote{Examples}.
 #' However, the result is still problematic, in the sense that applying it in
-#' the reverse order would yield a different result.  (Matlab's \code{filtfilt}
+#' the reverse order would yield a different result.  (Matlab's `filtfilt`
 #' shares this problem.)
 #'
 #' @aliases oce.filter
+#'
 #' @param x a vector of numeric values, to be filtered as a time series.
+#'
 #' @param a a vector of numeric values, giving the \eqn{a}{a} coefficients (see
 #' \dQuote{Details}).
+#'
 #' @param b a vector of numeric values, giving the \eqn{b}{b} coefficients (see
 #' \dQuote{Details}).
-#' @param zero.phase boolean, set to \code{TRUE} to run the filter forwards,
+#'
+#' @param zero.phase boolean, set to `TRUE` to run the filter forwards,
 #' and then backwards, thus removing any phase shifts associated with the
 #' filter.
+#'
 #' @return A numeric vector of the filtered results, \eqn{y}{y}, as denoted in
 #' \dQuote{Details}.
-#' @note The first value in the \code{a} vector is ignored, and if
-#' \code{length(a)} equals 1, a non-recursive filter results.
-#' @author Dan Kelley
-#' @examples
 #'
+#' @note The first value in the `a` vector is ignored, and if
+#' `length(a)` equals 1, a non-recursive filter results.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
 #' library(oce)
 #' par(mar=c(4, 4, 1, 1))
 #' b <- rep(1, 5)/5
@@ -3021,7 +3293,7 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
 #'        legend=c("data","normal filter", "zero-phase filter"))
 #' mtext("note that normal filter rolls off at end")
 #'
-#'
+#' @md
 oceFilter <- function(x, a=1, b, zero.phase=FALSE)
 {
     if (missing(x))
@@ -3044,60 +3316,74 @@ oce.filter <- oceFilter
 #'
 #' The algorithm follows that described by Koch et al. (1983), with the
 #' addition of the ability to blank out the grid in spots where data are
-#' sparse, using the \code{trim} argument, and the ability to pre-grid, with
-#' the \code{pregrid} argument.
+#' sparse, using the `trim` argument, and the ability to pre-grid, with
+#' the `pregrid` argument.
 #'
 #' @param x,y a vector of x and ylocations.
+#'
 #' @param z a vector of z values, one at each (x,y) location.
+#'
 #' @param w a optional vector of weights at the (x,y) location.  If not
 #' supplied, then a weight of 1 is used for each point, which means equal
-#' weighting.  Higher weights give data points more influence. If \code{pregrid}
-#' is \code{TRUE}, then any supplied value of \code{w} is ignored, and instead
+#' weighting.  Higher weights give data points more influence. If `pregrid`
+#' is `TRUE`, then any supplied value of `w` is ignored, and instead
 #' each of the pregriddd points is given equal weight.
+#'
 #' @param xg,yg optional vectors defining the x and y grids.  If not supplied,
-#' these values are inferred from the data, using e.g. \code{pretty(x, n=50)}.
+#' these values are inferred from the data, using e.g. `pretty(x, n=50)`.
+#'
 #' @param xgl,ygl optional lengths of the x and y grids, to be constructed with
-#' \code{\link{seq}} spanning the data range.  These values \code{xgl} are only
-#' examined if \code{xg} and \code{yg} are not supplied.
+#' [seq()] spanning the data range.  These values `xgl` are only
+#' examined if `xg` and `yg` are not supplied.
+#'
 #' @param xr,yr optional values defining the width of the radius ellipse in the
 #' x and y directions.  If not supplied, these are calculated as the span of x
 #' and y over the square root of the number of data.
-#' @param gamma grid-focussing parameter.  At each iteration, \code{xr} and
-#' \code{yr} are reduced by a factor of \code{sqrt(gamma)}.
+#'
+#' @param gamma grid-focussing parameter.  At each iteration, `xr` and
+#' `yr` are reduced by a factor of `sqrt(gamma)`.
+#'
 #' @param iterations number of iterations.
+#'
 #' @param trim a number between 0 and 1, indicating the quantile of data weight
 #' to be used as a criterion for blanking out the gridded value (using
-#' \code{NA}).  If 0, the whole \code{zg} grid is returned.  If >0, any spots
-#' on the grid where the data weight is less than the \code{trim}-th
-#' \code{\link{quantile}} are set to \code{NA}.  See examples.
+#' `NA`).  If 0, the whole `zg` grid is returned.  If >0, any spots
+#' on the grid where the data weight is less than the `trim`-th
+#' [quantile()] are set to `NA`.  See examples.
+#'
 #' @param pregrid an indication of whether to pre-grid the data. If
-#' \code{FALSE}, this is not done, i.e. conventional Barnes interpolation is
+#' `FALSE`, this is not done, i.e. conventional Barnes interpolation is
 #' performed.  Otherwise, then the data are first averaged within grid cells
-#' using \code{\link{binMean2D}}.  If \code{pregrid} is \code{TRUE} or
-#' \code{4}, then this averaging is done within a grid that is 4 times finer
+#' using [binMean2D()].  If `pregrid` is `TRUE` or
+#' `4`, then this averaging is done within a grid that is 4 times finer
 #' than the grid that will be used for the Barnes interpolation. Otherwise,
-#' \code{pregrid} may be a single integer indicating the grid refinement (4
-#' being the result if \code{TRUE} had been supplied), or a vector of two
+#' `pregrid` may be a single integer indicating the grid refinement (4
+#' being the result if `TRUE` had been supplied), or a vector of two
 #' integers, for the grid refinement in x and y. The purpose of using
-#' \code{pregrid} is to speed processing on large datasets, and to remove
+#' `pregrid` is to speed processing on large datasets, and to remove
 #' spatial bias (e.g. with a single station that is repeated frequently in an
 #' otherwise seldom-sampled region).  A form of pregridding is done in the
 #' World Ocean Atlas, for example.
+#'
 #' @param debug a flag that turns on debugging.  Set to 0 for no debugging
 #' information, to 1 for more, etc; the value is reduced by 1 for each
 #' descendent function call.
-#' @return A list containing: \code{xg}, a vector holding the x-grid);
-#' \code{yg}, a vector holding the y-grid; \code{zg}, a matrix holding the
-#' gridded values; \code{wg}, a matrix holding the weights used in the
-#' interpolation at its final iteration; and \code{zd}, a vector of the same
-#' length as \code{x}, which holds the interpolated values at the data points.
+#'
+#' @return A list containing: `xg`, a vector holding the x-grid);
+#' `yg`, a vector holding the y-grid; `zg`, a matrix holding the
+#' gridded values; `wg`, a matrix holding the weights used in the
+#' interpolation at its final iteration; and `zd`, a vector of the same
+#' length as `x`, which holds the interpolated values at the data points.
+#'
 #' @author Dan Kelley
-#' @seealso See \code{\link{wind}}.
+#'
+#' @seealso See [wind()].
+#'
 #' @references S. E.  Koch and M.  DesJardins and P. J. Kocin, 1983.  ``An
 #' interactive Barnes objective map analysis scheme for use with satellite and
 #' conventional data,'' \emph{J.  Climate Appl.  Met.}, vol 22, p. 1487-1503.
-#' @examples
 #'
+#' @examples
 #' library(oce)
 #'
 #' # 1. contouring example, with wind-speed data from Koch et al. (1983)
@@ -3133,6 +3419,8 @@ oce.filter <- oceFilter
 #' g <- interpBarnes(p, y, S, xg=pg, xr=1)
 #' plot(S, p, cex=0.5, col="blue", ylim=rev(range(p)))
 #' lines(g$zg, g$xg, col="red")
+#'
+#' @md
 interpBarnes <- function(x, y, z, w,
                          xg, yg, xgl, ygl,
                          xr, yr, gamma=0.5, iterations=2, trim=0,
@@ -3230,17 +3518,22 @@ interpBarnes <- function(x, y, z, w,
 
 #' Coriolis parameter on rotating earth
 #'
-#' Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude [1],
+#' Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude
+#' (see reference 1),
 #' assuming earth siderial angular rotation rate
-#' \eqn{omega}{omega}=7292115e-11 rad/s. See [1] for general notes, and
-#' see [2] for comments on temporal variations
+#' \eqn{omega}{omega}=7292115e-11 rad/s. See reference 1 for general notes, and
+#' see reference 2 for comments on temporal variations
 #' of \eqn{omega}{omega}.
 #'
 #' @param latitude Vector of latitudes in \eqn{^\circ}{deg}N or radians north of the equator.
+#'
 #' @param degrees Flag indicating whether degrees are used for latitude; if set
-#' to \code{FALSE}, radians are used.
+#' to `FALSE`, radians are used.
+#'
 #' @return Coriolis parameter [radian/s].
+#'
 #' @author Dan Kelley
+#'
 #' @references
 #' 1. Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
 #' Press, New York, 662 pp.
@@ -3249,10 +3542,13 @@ interpBarnes <- function(x, y, z, w,
 #'  Estimates of the Parameters of Common Relevance to Astronomy, Geodesy,
 #'  and Geodynamics. Journal of Geodesy, 77:724-797.
 #'  (downloaded from
-#' \code{http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf}
+#' `http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf`
 #' March 11, 2017).
+#'
 #' @examples
 #' C <- coriolis(45) # 1e-4
+#'
+#' @md
 coriolis <- function(latitude, degrees=TRUE)
 {
     ## Siderial day 86164.1 s.
@@ -3268,20 +3564,25 @@ coriolis <- function(latitude, degrees=TRUE)
 #' It is assumed that the instrument clock matches the real time at the start
 #' of the sampling, and that the clock drifts linearly (i.e. is uniformly fast
 #' or slow) over the sampling interval.  Linear interpolation is used to infer
-#' the values of all variables in the \code{data} slot.  The data length is
+#' the values of all variables in the `data` slot.  The data length is
 #' altered in this process, e.g. a slow instrument clock (positive
-#' \code{slowEnd}) takes too few samples in a given time interval, so
-#' \code{undriftTime} will increase the number of data.
+#' `slowEnd`) takes too few samples in a given time interval, so
+#' `undriftTime` will increase the number of data.
 #'
-#' @param x an object of \code{\link{oce-class}}.
+#' @param x an object of [oce-class].
+#'
 #' @param slowEnd number of seconds to add to final instrument time, to get the
 #' correct time of the final sample.  This will be a positive number, for a
 #' "slow" instrument clock.
+#'
 #' @param tname Character string indicating the name of the time column in the
-#' \code{data} slot of \code{x}.
-#' @return An object of the same class as \code{x}, with the \code{data} slot
+#' `data` slot of `x`.
+#'
+#' @return An object of the same class as `x`, with the `data` slot
 #' adjusted appropriately.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #'\dontrun{
 #' library(oce)
@@ -3292,6 +3593,8 @@ coriolis <- function(latitude, degrees=TRUE)
 #' summary(d)
 #' summary(x)
 #'}
+#'
+#' @md
 undriftTime <- function(x, slowEnd = 0, tname="time")
 {
     if (!inherits(x, "oce"))
@@ -3330,25 +3633,28 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
 
 #' Fill a gap in an oce object
 #'
-#' Sequences of \code{NA} values, are filled by linear interpolation between
-#' the non-\code{NA} values that bound the gap.
+#' Sequences of `NA` values, are filled by linear interpolation between
+#' the non-`NA` values that bound the gap.
 #'
-#' @param x an \code{oce} object.
+#' @param x an `oce` object.
+#'
 #' @param method to use; see \dQuote{Details}.
-#' @param rule integer controlling behaviour at start and end of \code{x}.  If
-#' \code{rule=1}, \code{NA} values at the ends are left in the return value.
-#' If \code{rule=2}, they are replaced with the nearest non-NA point.
-#' @return A new \code{oce} object, with gaps removed.
+#'
+#' @param rule integer controlling behaviour at start and end of `x`.  If
+#' `rule=1`, `NA` values at the ends are left in the return value.
+#' If `rule=2`, they are replaced with the nearest non-NA point.
+#'
+#' @return A new `oce` object, with gaps removed.
 #'
 #' @section Bugs:
-#' \enumerate{
-#' \item Eventually, this will be expanded to work
-#' with any \code{oce} object.  But, for now, it only works for vectors that
+#' 1. Eventually, this will be expanded to work
+#' with any `oce` object.  But, for now, it only works for vectors that
 #' can be coerced to numeric.
-#' \item If the first or last point is \code{NA}, then \code{x} is returned unaltered.
-#' \item Only method \code{linear} is permitted now.
-#' }
+#' 2. If the first or last point is `NA`, then `x` is returned unaltered.
+#' 3. Only method `linear` is permitted now.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' library(oce)
 #' # Integers
@@ -3359,6 +3665,8 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
 #' x <- x + 0.1
 #' y <- fillGap(x)
 #' print(data.frame(x,y))
+#'
+#' @md
 fillGap <- function(x, method=c("linear"), rule=1)
 {
     if (!is.numeric(x))
@@ -3384,41 +3692,52 @@ fillGap <- function(x, method=c("linear"), rule=1)
 
 #' Smooth and Decimate, or Subsample, an Oce Object
 #'
-#' Later on, other methods will be added, and \code{\link{ctdDecimate}} will be
+#' Later on, other methods will be added, and [ctdDecimate()] will be
 #' retired in favour of this, a more general, function.  The filtering is done
-#' with the \code{\link{filter}} function of the stats package.
+#' with the [filter()] function of the stats package.
 #'
-#' @param x an \code{oce} object containing a \code{data} element.
+#' @param x an `oce` object containing a `data` element.
+#'
 #' @param by an indication of the subsampling.  If this is a single number,
-#' then it indicates the spacing between elements of \code{x} that are
-#' selected.  If it is two numbers (a condition only applicable if \code{x} is
-#' an \code{echosounder} object, at present), then the first number indicates
+#' then it indicates the spacing between elements of `x` that are
+#' selected.  If it is two numbers (a condition only applicable if `x` is
+#' an `echosounder` object, at present), then the first number indicates
 #' the time spacing and the second indicates the depth spacing.
+#'
 #' @param to Indices at which to subsample.  If given, this over-rides
-#' \code{by}.
+#' `by`.
+#'
 #' @param filter optional list of numbers representing a digital filter to be
-#' applied to each variable in the \code{data} slot of \code{x}, before
+#' applied to each variable in the `data` slot of `x`, before
 #' decimation is done. If not supplied, then the decimation is done strictly by
 #' sub-sampling.
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
-#' @return An object of \code{\link[base]{class}} \code{"oce"} that has been
+#'
+#' @return An object of `\link[base]{class`} `"oce"` that has been
 #' subsampled appropriately.
+#'
 #' @section Bugs: Only a preliminary version of this function is provided in
-#' the present package.  It only works for objects of class \code{echosounder},
+#' the present package.  It only works for objects of class `echosounder`,
 #' for which the decimation is done after applying a running median filter and
 #' then a boxcar filter, each of length equal to the corresponding component of
-#' \code{by}.
+#' `by`.
+#'
 #' @author Dan Kelley
+#'
 #' @seealso Filter coefficients may be calculated using
-#' \code{\link{makeFilter}}.  (Note that \code{\link{ctdDecimate}} will be
+#' [makeFilter()].  (Note that [ctdDecimate()] will be
 #' retired when the present function gains equivalent functionality.)
+#'
 #' @examples
 #' library(oce)
 #' data(adp)
 #' plot(adp)
 #' adpDec <- decimate(adp,by=2,filter=c(1/4, 1/2, 1/4))
 #' plot(adpDec)
+#'
+#' @md
 decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "oce"))
@@ -3604,22 +3923,30 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 #'
 #' Each data element is smoothed as a timeseries. For ADP data, this is done
 #' along time, not distance.  Time vectors, if any, are not smoothed.  A good
-#' use of \code{oce.smooth} is for despiking noisy data.
+#' use of `oce.smooth` is for despiking noisy data.
 #'
 #' @aliases oce.smooth
-#' @param x an \code{oce} object.
-#' @param \dots parameters to be supplied to \code{\link{smooth}}, which does
+#'
+#' @param x an `oce` object.
+#'
+#' @param \dots parameters to be supplied to [smooth()], which does
 #' the actual work.
-#' @return An object of \code{\link[base]{class}} \code{"oce"} that has been
+#'
+#' @return An object of `\link[base]{class`} `"oce"` that has been
 #' smoothed appropriately.
+#'
 #' @author Dan Kelley
-#' @seealso The work is done with \code{\link{smooth}}, and the \code{...}
-#' arguments are handed to it directly by \code{oce.smooth}.
+#'
+#' @seealso The work is done with [smooth()], and the `...`
+#' arguments are handed to it directly by `oce.smooth`.
+#'
 #' @examples
 #' library(oce)
 #' data(ctd)
 #' d <- oce.smooth(ctd)
 #' plot(d)
+#'
+#' @md
 oceSmooth <- function(x, ...)
 {
     if (!inherits(x, "oce"))
@@ -3668,16 +3995,21 @@ oce.smooth <- oceSmooth
 #'
 #' @param x a raw value, or vector of raw values, coded in binary-coded
 #' decimal.
+#'
 #' @param endian character string indicating the endian-ness ("big" or
 #' "little").  The PC/intel convention is to use "little", and so most data
 #' files are in that format.
-#' @return An integer, or list of integers.
-#' @author Dan Kelley
-#' @examples
 #'
+#' @return An integer, or list of integers.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
 #' library(oce)
 #' twenty.five <- bcdToInteger(as.raw(0x25))
 #' thirty.seven <- as.integer(as.raw(0x25))
+#'
+#' @md
 bcdToInteger <- function(x, endian=c("little", "big"))
 {
     endian <- match.arg(endian)
@@ -3690,29 +4022,35 @@ bcdToInteger <- function(x, endian=c("little", "big"))
 
 #' Format bytes as binary [defunct]
 #'
-#' \strong{WARNING:} The \code{endian} argument will soon be removed
+#' \strong{WARNING:} The `endian` argument will soon be removed
 #' from this function; see \link{oce-defunct}.
-#' This is because the actions for \code{endian="little"} made
-#' no sense in practical work. The default value for \code{endian}
-#' was changed to \code{"big"} on 2017 May 6.
+#' This is because the actions for `endian="little"` made
+#' no sense in practical work. The default value for `endian`
+#' was changed to `"big"` on 2017 May 6.
 #'
 #' @param x an integer to be interpreted as a byte.
+#'
 #' @param endian character string indicating the endian-ness ("big" or
 #' "little"). \strong{This argument will be removed in the upcoming CRAN
 #' release.}
+#'
 #' @return A character string representing the bit strings for the elements of
-#' \code{x}, in order of significance for the \code{endian="big"} case.
+#' `x`, in order of significance for the `endian="big"` case.
 #' (The nibbles, or 4-bit sequences, are interchanged in the now-deprecated
-#' \code{"little"} case.)
+#' `"little"` case.)
 #' See \dQuote{Examples} for how this relates to the output from
 #' \link{rawToBits}.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' library(oce)
 #' ## Note comparison with rawToBits():
 #' a <- as.raw(0x0a)
 #' byteToBinary(a, "big")        # "00001010"
 #' as.integer(rev(rawToBits(a))) # 0 0 0 0 1 0 1 0
+#'
+#' @md
 byteToBinary <- function(x, endian="big")
 {
     if (endian != "big")
@@ -3754,21 +4092,21 @@ byteToBinary <- function(x, endian="big")
 #'
 #' Format a confidence interval in parenthetic notation.
 #'
-#' If a \code{model} is given, then \code{ci} is ignored, and a confidence
-#' interval is calculated using \code{\link{confint}} with \code{level} set to
-#' 0.6914619.  This \code{level} corresponds to a range of plus or minus one
+#' If a `model` is given, then `ci` is ignored, and a confidence
+#' interval is calculated using [confint()] with `level` set to
+#' 0.6914619.  This `level` corresponds to a range of plus or minus one
 #' standard deviation, for the t distribution and a large number of degrees of
-#' freedom (since \code{qt(0.6914619, 100000)} is 0.5).
+#' freedom (since `qt(0.6914619, 100000)` is 0.5).
 #'
-#' If \code{model} is missing, \code{ci} must be provided.  If it contains 3
+#' If `model` is missing, `ci` must be provided.  If it contains 3
 #' elements, then first and third elements are taken as the range of the
-#' confidence interval (which by convention should use the \code{level} stated
+#' confidence interval (which by convention should use the `level` stated
 #' in the previous paragraph), and the second element is taken as the central
-#' value.  Alternatively, if \code{ci} has 2 elements, they are taken to be
+#' value.  Alternatively, if `ci` has 2 elements, they are taken to be
 #' bounds of the confidence interval and their mean is taken to be the central
 #' value.
 #'
-#' In the \code{+/-} notation, e.g. \eqn{a \pm b}{a +/- b} means that the true
+#' In the `+/-` notation, e.g. \eqn{a \pm b}{a +/- b} means that the true
 #' value lies between \eqn{a-b}{a-b} and \eqn{a+b}{a+b} with a high degree of
 #' certainty.  Mills et al. (1993, section 4.1 on page 83) suggest that
 #' \eqn{b}{b} should be set equal to 2 times the standard uncertainty or
@@ -3776,7 +4114,7 @@ byteToBinary <- function(x, endian="big")
 #' suggest that \eqn{b}{b} should be set to the standard uncertainty, while
 #' also recommending that the \eqn{\pm}{+/-} notation be avoided altogether.
 #'
-#' The \code{parentheses} notation is often called the compact notation.  In
+#' The `parentheses` notation is often called the compact notation.  In
 #' it, the digits in parentheses indicate the uncertainty in the corresponding
 #' digits to their left, e.g. 12.34(3) means that the last digit (4) has an
 #' uncertainty of 3.  However, as with the \eqn{\pm}{+/-} notation, different
@@ -3786,42 +4124,50 @@ byteToBinary <- function(x, endian="big")
 #' while JCM (2008, section 7.2.2 on pages 25 and 26) suggest halving the
 #' number put in parentheses.
 #'
-#' The \code{foramtci} function is based on the JCM (2008) notation, i.e.
-#' \code{formatCI(ci=c(8,12), style="+/-")} yields \code{"10+-2"}, and
-#' \code{formatCI(ci=c(8,12), style="parentheses")} yields \code{"10(2)"}.
+#' The `foramtci` function is based on the JCM (2008) notation, i.e.
+#' `formatCI(ci=c(8,12), style="+/-")` yields `"10+-2"`, and
+#' `formatCI(ci=c(8,12), style="parentheses")` yields `"10(2)"`.
 #'
 #' \strong{Note:} if the confidence range exceeds the value, the
-#' \code{parentheses} format reverts to \code{+/-} format.
+#' `parentheses` format reverts to `+/-` format.
 #'
 #' @param ci optional vector of length 2 or 3.
+#'
 #' @param style string indicating notation to be used.
-#' @param model optional regression model, e.g. returned by \code{\link{lm}} or
-#' \code{\link{nls}}.
+#'
+#' @param model optional regression model, e.g. returned by [lm()] or
+#' [nls()].
+#'
 #' @param digits optional number of digits to use; if not supplied,
-#' \code{\link{getOption}("digits")} is used.
-#' @return If \code{ci} is given, the result is a character string with the
+#' `\link{getOption`("digits")} is used.
+#'
+#' @return If `ci` is given, the result is a character string with the
 #' estimate and its uncertainty, in plus/minus or parenthetic notation.  If
-#' \code{model} is given, the result is a 1-column matrix holding character
+#' `model` is given, the result is a 1-column matrix holding character
 #' strings, with row names corresponding to the parameters of the model.
+#'
 #' @author Dan Kelley
+#'
 #' @references JCGM, 2008.  \emph{Evaluation of measurement data - Guide to the
 #' expression of uncertainty in measurement (JCGM 100:2008)}, published by the
 #' Joint Committee for Guides in Metrology.
 #' [\url{http://www.bipm.org/en/publications/guides/gum.html}] (See section
 #' 7.2.2 for a summary of notation, which shows equal values to the right of a
-#' \code{+-} sign and in parentheses.)
+#' `+-` sign and in parentheses.)
 #'
 #' I. Mills, T. Cvitas, K. Homann, N. Kallay, and K. Kuchitsu, 1993.
 #' \emph{Quantities, Units and Symbols in Physical Chemistry}, published
 #' Blackwell Science for the International Union of Pure and Applied Chemistry.
 #' (See section 4.1, page 83, for a summary of notation, which shows that a
-#' value to the right of a \code{+-} sign is to be halved if put in
+#' value to the right of a `+-` sign is to be halved if put in
 #'
 #' @examples
 #' x <- seq(0, 1, length.out=300)
 #' y <- rnorm(n=300, mean=10, sd=1) * x
 #' m <- lm(y~x)
 #' print(formatCI(model=m))
+#'
+#' @md
 formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
 {
     formatCI.one <- function(ci, style, digits=NULL)
@@ -3895,13 +4241,17 @@ formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
 #' Decode integer to corresponding ASCII code
 #'
 #' @param i an integer, or integer vector.
-#' @return A character, or character vector.
-#' @author Dan Kelley
-#' @examples
 #'
+#' @return A character, or character vector.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
 #' library(oce)
 #' A <- integerToAscii(65)
 #' cat("A=", A, "\n")
+#'
+#' @md
 integerToAscii <- function(i)
 {
     c("", "\001", "\002", "\003", "\004", "\005", "\006", "\a", "\b",
@@ -3939,42 +4289,46 @@ integerToAscii <- function(i)
 #'
 #' Implements the 12th generation International Geomagnetic Reference Field
 #' (IGRF), based on a reworked version of a Fortran program downloaded from a
-#' NOAA website [1].
+#' NOAA website (see reference 1).
 #'
-#' The code (subroutine \code{igrf12syn}) seems to have
+#' The code (subroutine `igrf12syn`) seems to have
 #' been written by Susan Macmillan of the British Geological Survey.  Comments
 #' in the source code indicate that it employs coefficients agreed to in
 #' December 2014 by the IAGA Working Group V-MOD.  Other comments in that code
 #' suggest that the valid time interval is from years 1900 to 2020,
 #' with only the values from 1945 to 2010 being considered definitive.
 #'
-#' Reference [2] suggest that a new version to the underlying source
+#' Reference 2 suggests that a new version to the underlying source
 #' code might be expected in 2019 or 2020, but a check on January 31,
 #' 2019, showed that version 12, as incorporated in oce since
 #' 2015, remains the active version.
 #'
 #' @param longitude longitude in degrees east (negative for degrees west).  The
 #' dimensions must conform to lat.
+#'
 #' @param latitude latitude in degrees north, a number, vector, or matrix.
+#'
 #' @param time The time at which the field is desired. This may be a
 #' single value or a vector or matrix that is structured to match
-#' \code{longitude} and \code{latitude}. The value may a decimal year,
+#' `longitude` and `latitude`. The value may a decimal year,
 #' a POSIXt time, or a Date time.
-#' @return A list containing \code{declination}, \code{inclination}, and
-#' \code{intensity}.
+#'
+#' @return A list containing `declination`, `inclination`, and
+#' `intensity`.
+#'
 #' @author Dan Kelley wrote the R code and a fortran wrapper to the
-#' \code{igrf12.f} subroutine, which was written by Susan Macmillan of the
+#' `igrf12.f` subroutine, which was written by Susan Macmillan of the
 #' British Geological Survey and distributed ``without limitation'' (email from
 #' SM to DK dated June 5, 2015).
+#'
 #' @references
-#' 1. The underlying Fortran code is from \code{igrf12.f}, downloaded the NOAA
+#' 1. The underlying Fortran code is from `igrf12.f`, downloaded the NOAA
 #' website (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
 #' 2015.
-#'
 #' 2. Witze, Alexandra. \dQuote{Earth’s Magnetic Field Is Acting up and Geologists Don’t Know Why.}
 #' Nature 565 (January 9, 2019): 143.
 #' \url{https://doi.org/10.1038/d41586-019-00007-1}.
-#"
+#'
 #' @examples
 #' library(oce)
 #' # 1. Today's value at Halifax NS
@@ -4004,6 +4358,8 @@ integerToAscii <- function(i)
 #'}
 #'
 #' @family things related to magnetism
+#'
+#' @md
 magneticField <- function(longitude, latitude, time)
 {
     if (missing(longitude) || missing(latitude) || missing(time))
@@ -4059,18 +4415,24 @@ magneticField <- function(longitude, latitude, time)
 #' Find spots in a raw vector that match a given byte sequence.
 #'
 #' @param input a vector of raw (byte) values.
-#' @param b1 a vector of bytes to match (must be of length 2 or 3 at present;
-#' for 1-byte, use \code{\link{which}}).
-#' @param \dots additional bytes to match for (up to 2 permitted)
-#' @return List of the indices of \code{input} that match the start of the
-#' \code{bytes} sequence (see example).
-#' @author Dan Kelley
-#' @examples
 #'
+#' @param b1 a vector of bytes to match (must be of length 2 or 3 at present;
+#' for 1-byte, use [which()]).
+#'
+#' @param \dots additional bytes to match for (up to 2 permitted)
+#'
+#' @return List of the indices of `input` that match the start of the
+#' `bytes` sequence (see example).
+#'
+#' @author Dan Kelley
+#'
+#' @examples
 #' buf <- as.raw(c(0xa5, 0x11, 0xaa, 0xa5, 0x11, 0x00))
 #' match <- matchBytes(buf, 0xa5, 0x11)
 #' print(buf)
 #' print(match)
+#'
+#' @md
 matchBytes <- function(input, b1, ...)
 {
     if (missing(input))
@@ -4093,15 +4455,19 @@ matchBytes <- function(input, b1, ...)
 #'
 #' Sometimes datasets are provided in matrix form, with first
 #' index corresponding to longitudes ranging from 0 to 360.
-#' \code{matrixShiftLongitude} cuts such matrices at
+#' `matrixShiftLongitude` cuts such matrices at
 #' longitude=180, and swaps the pieces so that the dateline
 #' is at the left of the matrix, not in the middle.
 #'
 #' @param m The matrix to be modified.
-#' @param longitude A vector containing the longitude in the 0-360 convention. If missing, this is constructed to range from 0 to 360, with as many elements as the first index of \code{m}.
 #'
-#' @return A list containing \code{m} and \code{longitude}, both rearranged as appropriate.
-#' @seealso \code{\link{shiftLongitude}} and \code{\link{standardizeLongitude}}.
+#' @param longitude A vector containing the longitude in the 0-360 convention. If missing, this is constructed to range from 0 to 360, with as many elements as the first index of `m`.
+#'
+#' @return A list containing `m` and `longitude`, both rearranged as appropriate.
+#'
+#' @seealso [shiftLongitude()] and [standardizeLongitude()].
+#'
+#' @md
 matrixShiftLongitude <- function(m, longitude)
 {
     if (missing(m))
@@ -4129,12 +4495,15 @@ matrixShiftLongitude <- function(m, longitude)
 #' m_[i,j+1])/6}.  Note that missing values propagate to neighbours.
 #'
 #' @param m a matrix to be smoothed.
+#'
 #' @param passes an integer specifying the number of times the smoothing is to
 #' be applied.
-#' @return A smoothed matrix.
-#' @author Dan Kelley
-#' @examples
 #'
+#' @return A smoothed matrix.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
 #' library(oce)
 #' opar <- par(no.readonly = TRUE)
 #' m <- matrix(rep(seq(0, 1, length.out=5), 5), nrow=5, byrow=TRUE)
@@ -4148,6 +4517,8 @@ matrixShiftLongitude <- function(m, longitude)
 #' image(m2, col=rainbow(100), zlim=c(0, 4), main="smoothed 2 times")
 #' image(m3, col=rainbow(100), zlim=c(0, 4), main="smoothed 3 times")
 #' par(opar)
+#'
+#' @md
 matrixSmooth <- function(m, passes=1)
 {
     if (missing(m))
@@ -4169,16 +4540,21 @@ matrixSmooth <- function(m, passes=1)
 #' Convert a time interval to a colon-separated string
 #'
 #' @param sec length of time interval in seconds.
-#' @return A string with a colon-separated time interval.
-#' @author Dan Kelley
-#' @seealso See \code{\link{ctimeToSeconds}}, the inverse of this.
-#' @examples
 #'
+#' @return A string with a colon-separated time interval.
+#'
+#' @author Dan Kelley
+#'
+#' @seealso See [ctimeToSeconds()], the inverse of this.
+#'
+#' @examples
 #' library(oce)
 #' cat("   10 s = ", secondsToCtime(10), "\n", sep="")
 #' cat("   61 s = ", secondsToCtime(61), "\n", sep="")
 #' cat("86400 s = ", secondsToCtime(86400), "\n", sep="")
 #' @family things related to time
+#'
+#' @md
 secondsToCtime <- function(sec)
 {
     if (sec < 60)
@@ -4202,16 +4578,21 @@ secondsToCtime <- function(sec)
 #' Strings are of the form MM:SS or HH:MM:SS.
 #'
 #' @param ctime a character string (see \sQuote{Details}.
-#' @return A numeric value, the number of seconds represented by the string.
-#' @author Dan Kelley
-#' @seealso See \code{\link{secondsToCtime}}, the inverse of this.
-#' @examples
 #'
+#' @return A numeric value, the number of seconds represented by the string.
+#'
+#' @author Dan Kelley
+#'
+#' @seealso See [secondsToCtime()], the inverse of this.
+#'
+#' @examples
 #' library(oce)
 #' cat("10      = ", ctimeToSeconds("10"), "s\n", sep="")
 #' cat("01:04   = ", ctimeToSeconds("01:04"), "s\n", sep="")
 #' cat("1:00:00 = ", ctimeToSeconds("1:00:00"), "s\n", sep="")
 #' @family things related to time
+#'
+#' @md
 ctimeToSeconds <- function(ctime)
 {
     if (length(grep(":", ctime)) > 0) {
@@ -4257,21 +4638,25 @@ ctimeToSeconds <- function(ctime)
 #' Print a debugging message
 #'
 #' Print an indented debugging message.
-#' Many oce functions decrease the \code{debug} level by 1 when they call other
+#' Many oce functions decrease the `debug` level by 1 when they call other
 #' functions, so the effect is a nesting, with more space for deeper function
 #' level.
 #'
 #' @aliases oce.debug
+#'
 #' @param debug an integer, less than or equal to zero for no message, and
 #' greater than zero for increasing levels of debugging.  Values greater than 4
 #' are treated like 4.
-#' @param \dots items to be supplied to \code{\link{cat}}, which does the
+#'
+#' @param \dots items to be supplied to [cat()], which does the
 #' printing.  Almost always, this should include a trailing newline.
+#'
 #' @param unindent Number of levels to un-indent, e.g. for start and end lines
 #' from a called function.
-#' @author Dan Kelley
-#' @examples
 #'
+#' @author Dan Kelley
+#'
+#' @examples
 #' foo <- function(debug)
 #' {
 #'    oceDebug(debug, "in function foo\n")
@@ -4279,6 +4664,8 @@ ctimeToSeconds <- function(ctime)
 #' debug <- 1
 #' oceDebug(debug, "in main")
 #' foo(debug=debug-1)
+#'
+#' @md
 oceDebug <- function(debug=0, ..., unindent=0)
 {
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
@@ -4296,20 +4683,28 @@ oce.debug <- oceDebug
 
 #' Show metadata item
 #'
-#' This is a helper function for various \code{summary} functions.
+#' This is a helper function for various `summary` functions.
 #'
-#' @param object an object inheriting from the base \code{oce} class.
+#' @param object an [oce-class] object.
+#'
 #' @param name name of item
-#' @param label label to print before item
-#' @param postlabel label to print after item
-#' @param isdate boolean indicating whether the item is a time
-#' @param quote boolean indicating whether to enclose the item in quotes
-#' @author Dan Kelley
-#' @examples
 #'
+#' @param label label to print before item
+#'
+#' @param postlabel label to print after item
+#'
+#' @param isdate boolean indicating whether the item is a time
+#'
+#' @param quote boolean indicating whether to enclose the item in quotes
+#'
+#' @author Dan Kelley
+#'
+#' @examples
 #' library(oce)
 #' data(ctd)
 #' showMetadataItem(ctd, "ship", "ship")
+#'
+#' @md
 showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE, quote=FALSE)
 {
     if (name %in% names(object@metadata)) {
@@ -4336,26 +4731,31 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 #'
 #' @param x,y vectors of x and y values. In the normal case, these
 #' vectors are both supplied, and of equal length. There are also two
-#' special cases. First, if \code{y} is missing, then
-#' \code{x} is taken to be \code{y}, and a new \code{x} is constructed
-#' as \code{\link{seq_along}(y)}. Second, if \code{length(x)} is 1
-#' and \code{length(y)} exceeds 1, then \code{x} is replaced by
-#' \code{x*seq_along(y)}.
+#' special cases. First, if `y` is missing, then
+#' `x` is taken to be `y`, and a new `x` is constructed
+#' as `\link{seq_along`(y)}. Second, if `length(x)` is 1
+#' and `length(y)` exceeds 1, then `x` is replaced by
+#' `x*seq_along(y)`.
+#'
 #' @param type Flag indicating the desired return value (see \dQuote{Value}).
+#'
 #' @param xmin,xmax Optional numbers indicating the range of the integration.
 #' These values may be used to restrict the range of integration, or to
-#' extend it; in either case, \code{\link{approx}} with \code{rule=2}
+#' extend it; in either case, [approx()] with `rule=2`
 #' is used to create new x and y vectors.
 #'
-#' @return If \code{type="A"} (the default), a single value is returned,
-#' containing the estimate of the integral of \code{y=y(x)}.  If
-#' \code{type="dA"}, a numeric vector of the same length as \code{x}, of which
+#' @return If `type="A"` (the default), a single value is returned,
+#' containing the estimate of the integral of `y=y(x)`.  If
+#' `type="dA"`, a numeric vector of the same length as `x`, of which
 #' the first element is zero, the second element is the integral between
-#' \code{x[1]} and \code{x[2]}, etc.  If \code{type="cA"}, the result is the
-#' cumulative sum (as in \code{\link{cumsum}}) of the values that would be
-#' returned for \code{type="dA"}.  See \dQuote{Examples}.
-#' @section Bugs: There is no handling of \code{NA} values.
+#' `x[1]` and `x[2]`, etc.  If `type="cA"`, the result is the
+#' cumulative sum (as in [cumsum()]) of the values that would be
+#' returned for `type="dA"`.  See \dQuote{Examples}.
+#'
+#' @section Bugs: There is no handling of `NA` values.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' x <- seq(0, 1, length.out=10) # try larger length.out to see if area approaches 2
 #' y <- 2*x + 3*x^2
@@ -4367,6 +4767,8 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 #' print(tail(cA, 1))
 #' print(integrateTrapezoid(diff(x[1:2]), y))
 #' print(integrateTrapezoid(y))
+#'
+#' @md
 integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 {
     type <- match.arg(type)
@@ -4437,13 +4839,18 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 #' are used.
 #'
 #' @param h a matrix of values
+#'
 #' @param x vector of coordinates along matrix columns (defaults to integers)
+#'
 #' @param y vector of coordinates along matrix rows (defaults to integers)
-#' @return A list containing \eqn{|\nabla h|}{abs(grad(h))} as \code{g},
-#' \eqn{\partial h/\partial x}{dh/dx} as \code{gx},
-#' and \eqn{\partial h/\partial y}{dh/dy} as \code{gy},
-#' each of which is a matrix of the same dimension as \code{h}.
+#'
+#' @return A list containing \eqn{|\nabla h|}{abs(grad(h))} as `g`,
+#' \eqn{\partial h/\partial x}{dh/dx} as `gx`,
+#' and \eqn{\partial h/\partial y}{dh/dy} as `gy`,
+#' each of which is a matrix of the same dimension as `h`.
+#'
 #' @author Dan Kelley, based on advice of Clark Richards, and mimicking a matlab function.
+#'
 #' @examples
 #' ## 1. Built-in volcano dataset
 #' g <- grad(volcano)
@@ -4472,7 +4879,10 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 #' contour(x, y, u, asp=1, main=expression(u))
 #' contour(x, y, v, asp=1, main=expression(v))
 #' contour(x, y, sqrt(u^2+v^2), asp=1, main=expression(speed))
+#'
 #' @family functions relating to vector calculus
+#'
+#' @md
 grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol(h)))
 {
     if (missing(h))
@@ -4498,15 +4908,19 @@ grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol
 #' A version of as.raw() that clips data to prevent warnings
 #'
 #' Negative values are clipped to 0, while values above 255 are clipped to 255;
-#' the result is passed to \code{\link{as.raw}} and returned.
+#' the result is passed to [as.raw()] and returned.
 #'
 #' @param x values to be converted to raw
-#' @return Raw values corresponding to \code{x}.
-#' @author Dan Kelley
-#' @examples
 #'
+#' @return Raw values corresponding to `x`.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
 #' x <- c(-0.1, 0, 1, 255, 255.1)
 #' data.frame(x, oce.as.raw(x))
+#'
+#' @md
 oce.as.raw <- function(x)
 {
     ## prevent warnings from out-of-range with as.raw()
@@ -4523,21 +4937,26 @@ oce.as.raw <- function(x)
 #'
 #' Convolve two time series, using a backward-looking method.
 #' This function provides a straightforward convolution, which may be useful to
-#' those who prefer not to use \code{\link{convolve}} and \code{filter} in the
-#' \code{stats} package.
+#' those who prefer not to use [convolve()] and `filter` in the
+#' `stats` package.
 #'
 #' @aliases oce.convolve
-#' @param x a numerical vector of observations.
-#' @param f a numerical vector of filter coefficients.
-#' @param end a flag that controls how to handle the points of the \code{x}
-#' series that have indices less than the length of \code{f}.  If \code{end=0},
-#' the values are set to 0.  If \code{end=1}, the original x values are used
-#' there.  If \code{end=2}, that fraction of the \code{f} values that overlap
-#' with \code{x} are used.
-#' @return A vector of the convolution output.
-#' @author Dan Kelley
-#' @examples
 #'
+#' @param x a numerical vector of observations.
+#'
+#' @param f a numerical vector of filter coefficients.
+#'
+#' @param end a flag that controls how to handle the points of the `x`
+#' series that have indices less than the length of `f`.  If `end=0`,
+#' the values are set to 0.  If `end=1`, the original x values are used
+#' there.  If `end=2`, that fraction of the `f` values that overlap
+#' with `x` are used.
+#'
+#' @return A vector of the convolution output.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
 #' library(oce)
 #' t <- 0:1027
 #' n <- length(t)
@@ -4549,6 +4968,7 @@ oce.as.raw <- function(x)
 #' plot(t, signal, type='l')
 #' lines(t, observation, lty='dotted')
 #'
+#' @md
 oceConvolve <- function(x, f, end=2)
 {
     do_oce_convolve(x, f, end)
@@ -4559,8 +4979,11 @@ oce.convolve <- oceConvolve
 #' Remove leading and trailing whitespace from strings
 #'
 #' @param s vector of character strings
+#'
 #' @return a new vector formed by trimming leading and trailing whitespace
-#' from the elements of \code{s}.
+#' from the elements of `s`.
+#'
+#' @md
 trimString <- function(s)
 {
     gsub("^ *", "", gsub(" *$", "", s))
@@ -4570,36 +4993,41 @@ trimString <- function(s)
 #'
 #' The filter coefficients are constructed using standard definitions,
 #' and then \link[stats]{filter} in the \pkg{stats} package is
-#' used to filter the data. This leaves \code{NA}
+#' used to filter the data. This leaves `NA`
 #' values within half the filter length of the ends of the time series, but
-#' these may be replaced with the original \code{x} values, if the argument
-#' \code{replace} is set to \code{TRUE}.
+#' these may be replaced with the original `x` values, if the argument
+#' `replace` is set to `TRUE`.
 #'
 #' @section Caution: This function was added in June of 2017,
 #' and it may be extended during the rest of 2017. New arguments
-#' may appear between \code{n} and \code{replace}, so users are
+#' may appear between `n` and `replace`, so users are
 #' advised to call this function with named arguments, not positional
 #' arguments.
 #'
 #' @param x a vector to be smoothed
-#' @param filter name of filter; at present, \code{"hamming"}, \code{"hanning"}, and \code{"boxcar"} are permitted.
+#'
+#' @param filter name of filter; at present, `"hamming"`, `"hanning"`, and `"boxcar"` are permitted.
+#'
 #' @param n length of filter (must be an odd integer exceeding 1)
+#'
 #' @param replace a logical value indicating whether points near the
-#' ends of \code{x} should be copied into the end regions, replacing
-#' the \code{NA} values that would otherwise be placed there by
-#' \link[stats]{filter}.
+#' ends of `x` should be copied into the end regions, replacing
+#' the `NA` values that would otherwise be placed there by
+#' [stats::filter()].
+#'
 #' @param coefficients logical value indicating whether to return
 #' the filter coefficients, instead of the filtered values. In accordance
 #' with conventions in the literature, the returned values are not
 #' normalized to sum to 1, although of course that normalization
 #' is done in the actual filtering.
 #'
-#' @return By default, \code{lowpass} returns a filtered version
-#' of \code{x}, but if \code{coefficients} is \code{TRUE} then it
+#' @return By default, `lowpass` returns a filtered version
+#' of `x`, but if `coefficients` is `TRUE` then it
 #' returns the filter coefficients.
-#' @author Dan Kelley
-#' @examples
 #'
+#' @author Dan Kelley
+#'
+#' @examples
 #' library(oce)
 #' par(mfrow=c(1, 2), mar=c(4, 4, 1, 1))
 #' coef <- lowpass(n=5, coefficients=TRUE)
@@ -4609,6 +5037,8 @@ trimString <- function(s)
 #' X <- lowpass(x, n=5)
 #' lines(1:11, X, col=2)
 #' points(1:11, X, col=2)
+#'
+#' @md
 lowpass <- function(x, filter="hamming", n, replace=TRUE, coefficients=FALSE)
 {
     # .Call("hammingFilter", x, n)
@@ -4647,4 +5077,3 @@ lowpass <- function(x, filter="hamming", n, replace=TRUE, coefficients=FALSE)
     rval
 }
 
-## unalphabetized functions END

@@ -9,7 +9,7 @@
 }
 \arguments{
 \item{object}{an object of class \code{"adv"}, usually, a result of a call to
-\code{\link{read.adv}}.}
+\code{\link[=read.adv]{read.adv()}}.}
 
 \item{...}{further arguments passed to or from other methods.}
 }

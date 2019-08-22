@@ -8,16 +8,16 @@
 oceSpectrum(x, ...)
 }
 \arguments{
-\item{x}{As for \code{\link{spectrum}}, a univariate or multivariate time
+\item{x}{As for \code{\link[=spectrum]{spectrum()}}, a univariate or multivariate time
 series.}
 
-\item{\dots}{extra arguments passed on to \code{\link{spectrum}}.}
+\item{\dots}{extra arguments passed on to \code{\link[=spectrum]{spectrum()}}.}
 }
 \value{
 A spectrum that has values that integrate to the variance.
 }
 \description{
-This is a wrapper around the R \code{\link{spectrum}} function, which
+This is a wrapper around the R \code{\link[=spectrum]{spectrum()}} function, which
 returns spectral values that are adjusted so that the integral of those
 values equals the variance of the input \code{x}.
 }
@@ -28,9 +28,10 @@ values equals the variance of the input \code{x}.
   cat("variance of x=", var(x), "\\n")
   cat("integral of     spectrum=", sum(s$spec)*diff(s$freq[1:2]), "\\n")
   cat("integral of oce.spectrum=", sum(ss$spec)*diff(ss$freq[1:2]), "\\n")
+
 }
 \seealso{
-\code{\link{spectrum}}.
+\code{\link[=spectrum]{spectrum()}}.
 }
 \author{
 Dan Kelley

@@ -48,6 +48,7 @@ data(co2)
 plot(co2)
 avg <- binAverage(time(co2), co2, 1950, 2000, 2)
 points(avg$x, avg$y, col='red')
+
 }
 \seealso{
 Other bin-related functions: \code{\link{binApply1D}},

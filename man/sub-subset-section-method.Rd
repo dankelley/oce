@@ -8,7 +8,7 @@
 \S4method{[[}{section}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{A \code{section} object, i.e. inheriting from \code{\link{section-class}}}
+\item{x}{a \linkS4class{section} object.}
 
 \item{i}{The item to replace.}
 
@@ -60,6 +60,7 @@ section[["sectionId"]]
 # 2. Add a millidegree to temperatures at station 10
 section[["station", 10]][["temperature"]] <-
     1e-3 + section[["station", 10]][["temperature"]]
+
 }
 \seealso{
 Other functions that replace parts of oce objects: \code{\link{[[<-,adp-method}},

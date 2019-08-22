@@ -8,7 +8,7 @@
 \S4method{subset}{section}(x, subset, ...)
 }
 \arguments{
-\item{x}{A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.}
+\item{x}{a \linkS4class{section} object.}
 
 \item{subset}{an optional indication of either the stations to be kept,
 or the data to be kept within the stations.  See \dQuote{Details}.}
@@ -21,7 +21,7 @@ or \code{longitude} and \code{latitude} (see Example 7). If \code{within}
 is given, then \code{subset} is ignored.}
 }
 \value{
-A \code{\link{section-class}} object.
+A \linkS4class{section} object.
 }
 \description{
 Return a subset of a section object.

@@ -11,7 +11,7 @@ mapContour(longitude, latitude, z, nlevels = 10,
 }
 \arguments{
 \item{longitude}{vector of longitudes of points to be plotted, or an object of
-class \code{topo} (see \code{\link[=topo-class]{topo-class()}}), in which case
+class \code{topo} (see \linkS4class{topo}), in which case
 \code{longitude}, \code{latitude} and \code{z} are inferred from that object.}
 
 \item{latitude}{vector of latitudes of points to be plotted.}

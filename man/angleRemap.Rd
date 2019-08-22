@@ -19,7 +19,7 @@ instrument is aligned nearly northward, so that small variations in heading
 (e.g. due to mooring motion) can yield values that swing from small angles
 to large angles, because of the modulo-360 cut point.
 The method is to use the cosine and sine of the angle in order to find "x"
-and "y" values on a unit circle, and then to use \code{\link{atan2}} to
+and "y" values on a unit circle, and then to use \code{\link[=atan2]{atan2()}} to
 infer the angles.
 }
 \examples{
@@ -32,6 +32,7 @@ heading <- ifelse(heading > 360, heading - 360, heading)
 x <- 1:n
 plot(x, heading, ylim=c(-10, 360), type='l', col='lightgray', lwd=10)
 lines(x, angleRemap(heading))
+
 }
 \author{
 Dan Kelley

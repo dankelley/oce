@@ -13,7 +13,7 @@ as.oce(x, ...)
 \code{\link{as.coastline}} or \code{\link{ODF2oce}}, if these are used.}
 }
 \value{
-\code{as.oce} returns an object inheriting from \code{\link{oce-class}}.
+an \code{\link{oce-class}} object.
 }
 \description{
 Coerce Something Into an Oce Object

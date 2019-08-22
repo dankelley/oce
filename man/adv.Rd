@@ -11,7 +11,7 @@ This file came from the SLEIWEX-2008 experiment.
 data(adv)
 }
 \description{
-This \code{\link{adv-class}} object is a sampling of measurements made with a
+This \linkS4class{adv} object is a sampling of measurements made with a
 Nortek Vector acoustic Doppler velocimeter deployed as part of the St Lawrence
 Internal Wave Experiment (SLEIWEX).  Various identifying features have been
 redacted.

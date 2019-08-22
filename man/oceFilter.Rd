@@ -38,7 +38,7 @@ b[2]*x[i-1] + b[3]*x[i-2] + ... - a[2]*y[i-1] - a[3]*y[i-2] - a[4]*y[i-3] -
 \code{a} and \code{b} are too small, and terms are dropped at the start of
 the time series where the index on \code{x} would be less than 1.
 
-By contrast with the \code{\link{filter}} function of R, \code{oce.filter}
+By contrast with the \code{\link[=filter]{filter()}} function of R, \code{oce.filter}
 lacks the option to do a circular filter.  As a consequence,
 \code{oceFilter} introduces a phase lag.  One way to remove this lag is to
 run the filter forwards and then backwards, as in the \dQuote{Examples}.
@@ -51,7 +51,6 @@ The first value in the \code{a} vector is ignored, and if
 \code{length(a)} equals 1, a non-recursive filter results.
 }
 \examples{
-
 library(oce)
 par(mar=c(4, 4, 1, 1))
 b <- rep(1, 5)/5
@@ -69,7 +68,6 @@ points(x, f2, pch="+", col="blue")
 legend("topleft", col=c("black","red","blue"), pch=c("o","x","+"),
        legend=c("data","normal filter", "zero-phase filter"))
 mtext("note that normal filter rolls off at end")
-
 
 }
 \author{

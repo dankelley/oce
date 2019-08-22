@@ -20,17 +20,17 @@ A list containing three vectors: \code{x}, the grid x values,
 \description{
 Extract the grid points from a grid, returning columns.
 This is useful for e.g. gridding large datasets, in which the first step
-might be to use \code{\link{binMean2D}}, followed by
-\code{\link{interpBarnes}}.
+might be to use \code{\link[=binMean2D]{binMean2D()}}, followed by
+\code{\link[=interpBarnes]{interpBarnes()}}.
 }
 \examples{
-
 library(oce)
 data(wind)
 u <- interpBarnes(wind$x, wind$y, wind$z)
 contour(u$xg, u$yg, u$zg)
 U <- ungrid(u$xg, u$yg, u$zg)
 points(U$x, U$y, col=oce.colorsJet(100)[rescale(U$grid, rlow=1, rhigh=100)], pch=20)
+
 }
 \author{
 Dan Kelley

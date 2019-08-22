@@ -9,24 +9,24 @@ This class holds data from acoustic-Doppler velocimeters.
 }
 \details{
 A file containing ADV data is usually recognized by Oce, and so
-\code{\link{read.oce}} will usually read the data.  If not, one may use the
-general ADV function \code{\link{read.adv}} or specialized variants
-\code{\link{read.adv.nortek}}, \code{\link{read.adv.sontek.adr}} or
-\code{\link{read.adv.sontek.text}}.
+\code{\link[=read.oce]{read.oce()}} will usually read the data.  If not, one may use the
+general ADV function \code{\link[=read.adv]{read.adv()}} or specialized variants
+\code{\link[=read.adv.nortek]{read.adv.nortek()}}, \code{\link[=read.adv.sontek.adr]{read.adv.sontek.adr()}} or
+\code{\link[=read.adv.sontek.text]{read.adv.sontek.text()}}.
 
-ADV data may be plotted with \code{\link{plot,adv-method}} function, which is a
+ADV data may be plotted with \code{\link[=plot,adv-method]{plot,adv-method()}} function, which is a
 generic function so it may be called simply as \code{plot(x)}, where
-\code{x} is an object inheriting from \code{\link{adv-class}}.
+\code{x} is an \linkS4class{adv} object.
 
 Statistical summaries of ADV data are provided by the generic function
-\code{\link{summary,adv-method}}.
+\code{\link[=summary,adv-method]{summary,adv-method()}}.
 
 Conversion from beam to xyz coordinates may be done with
-\code{\link{beamToXyzAdv}}, and from xyz to enu (east north up) may be done
-with \code{\link{xyzToEnuAdv}}.  \code{\link{toEnuAdv}} may be used to
+\code{\link[=beamToXyzAdv]{beamToXyzAdv()}}, and from xyz to enu (east north up) may be done
+with \code{\link[=xyzToEnuAdv]{xyzToEnuAdv()}}.  \code{\link[=toEnuAdv]{toEnuAdv()}} may be used to
 transfer either beam or xyz to enu.  Enu may be converted to other
 coordinates (e.g. aligned with a coastline) with
-\code{\link{enuToOtherAdv}}.
+\code{\link[=enuToOtherAdv]{enuToOtherAdv()}}.
 }
 \section{Slots}{
 

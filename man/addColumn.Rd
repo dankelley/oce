@@ -2,12 +2,12 @@
 % Please edit documentation in R/misc.R
 \name{addColumn}
 \alias{addColumn}
-\title{Add a Column to the data Slot of an oce object [defunct]}
+\title{Add a Column to the data Slot of an oce object (defunct)}
 \usage{
 addColumn(x, data, name)
 }
 \arguments{
-\item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
+\item{x}{A \code{ctd} object, e.g. as read by \code{\link[=read.ctd]{read.ctd()}}.}
 
 \item{data}{the data.  The length of this item must match that of the
 existing data entries in the \code{data} slot).}
@@ -15,17 +15,16 @@ existing data entries in the \code{data} slot).}
 \item{name}{the name of the column.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{oce}, with a new
-column.
+A \linkS4class{oce} object.
 }
 \description{
 \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
 }
 \details{
-Use \code{\link{oceSetData}} instead of the present function.
+Use \code{\link[=oceSetData]{oceSetData()}} instead of the present function.
 }
 \seealso{
-Please use \code{\link{oceSetData}} instead of the present function.
+Please use \code{\link[=oceSetData]{oceSetData()}} instead of the present function.
 
 Other functions that will be removed soon: \code{\link{ctdAddColumn}},
   \code{\link{ctdUpdateHeader}},

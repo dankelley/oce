@@ -31,9 +31,9 @@ An object of \code{\link[base]{class}} \code{"oce"} that has been
 subsampled appropriately.
 }
 \description{
-Later on, other methods will be added, and \code{\link{ctdDecimate}} will be
+Later on, other methods will be added, and \code{\link[=ctdDecimate]{ctdDecimate()}} will be
 retired in favour of this, a more general, function.  The filtering is done
-with the \code{\link{filter}} function of the stats package.
+with the \code{\link[=filter]{filter()}} function of the stats package.
 }
 \section{Bugs}{
  Only a preliminary version of this function is provided in
@@ -49,10 +49,11 @@ data(adp)
 plot(adp)
 adpDec <- decimate(adp,by=2,filter=c(1/4, 1/2, 1/4))
 plot(adpDec)
+
 }
 \seealso{
 Filter coefficients may be calculated using
-\code{\link{makeFilter}}.  (Note that \code{\link{ctdDecimate}} will be
+\code{\link[=makeFilter]{makeFilter()}}.  (Note that \code{\link[=ctdDecimate]{ctdDecimate()}} will be
 retired when the present function gains equivalent functionality.)
 }
 \author{

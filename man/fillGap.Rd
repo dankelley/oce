@@ -43,6 +43,7 @@ print(data.frame(x,y))
 x <- x + 0.1
 y <- fillGap(x)
 print(data.frame(x,y))
+
 }
 \author{
 Dan Kelley

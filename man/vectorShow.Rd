@@ -15,18 +15,18 @@ then that string is pasted together with a colon (unless \code{msg} already
 contains a colon), before pasting a summary of data values.}
 
 \item{digits}{for numerical values of \code{v}, this is the number of digits
-to use, in formatting the numbers with \code{\link{format}}; otherwise,
+to use, in formatting the numbers with \code{\link[=format]{format()}}; otherwise,
 \code{digits} is ignored.}
 
 \item{n}{number of elements to at start and end. If \code{n}
 is negative, then all the elements are shown.}
 }
 \value{
-A string, suitable for using in \code{\link{cat}} or
-\code{\link{oceDebug}}.
+A string, suitable for using in \code{\link[=cat]{cat()}} or
+\code{\link[=oceDebug]{oceDebug()}}.
 }
 \description{
-This is similar to \code{\link{str}}, but it shows data at the first and
+This is similar to \code{\link[=str]{str()}}, but it shows data at the first and
 last of the vector, which can be quite helpful in debugging.
 }
 \author{

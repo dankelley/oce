@@ -7,8 +7,7 @@
 renameData(x, old = NULL, new = NULL)
 }
 \arguments{
-\item{x}{An \code{oce} object, i.e. one inheriting from
-\code{\link{oce-class}}.}
+\item{x}{an \linkS4class{oce} object.}
 
 \item{old}{Vector of strings, containing old names.}
 
@@ -26,4 +25,5 @@ new <- renameData(ctd, "temperature", "temperature68")
 new <- oceSetData(new, name="temperature",
                   value=T90fromT68(new[["temperature68"]]),
                   unit=list(unit=expression(degree*C),scale="ITS=90"))
+
 }

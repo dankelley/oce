@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{findInOrdered}
 \alias{findInOrdered}
-\title{Find indices of times in an ordered vector [defunct]}
+\title{Find indices of times in an ordered vector (defunct)}
 \usage{
 findInOrdered(x, f)
 }

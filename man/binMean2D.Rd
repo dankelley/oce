@@ -15,10 +15,10 @@ binMean2D(x, y, f, xbreaks, ybreaks, flatten = FALSE, fill = FALSE,
 \item{f}{Matrix of numerical values, a matrix f=f(x,y).}
 
 \item{xbreaks}{Vector of values of \code{x} at the boundaries between bins, calculated using
-\code{\link{pretty}(x)} if not supplied.}
+\code{\link{pretty}}\code{(x)} if not supplied.}
 
 \item{ybreaks}{Vector of values of \code{y} at the boundaries between bins, calculated using
-\code{\link{pretty}(y)} if not supplied.}
+\code{\link{pretty}}\code{(y)} if not supplied.}
 
 \item{flatten}{A logical value indicating whether
 the return value also contains equilength

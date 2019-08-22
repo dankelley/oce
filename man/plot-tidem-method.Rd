@@ -12,8 +12,7 @@
   0.25, mgp[2] + 1), ...)
 }
 \arguments{
-\item{x}{A \code{tidem} object, i.e. one inheriting from
-\linkS4class{tidem}.}
+\item{x}{a \linkS4class{tidem} object.}
 
 \item{which}{integer flag indicating plot type, 1 for stair-case spectral, 2
 for spike spectral.}

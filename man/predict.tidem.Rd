@@ -7,7 +7,7 @@
 \method{predict}{tidem}(object, newdata, ...)
 }
 \arguments{
-\item{object}{A \code{tidem} object, i.e. one inheriting from \linkS4class{tidem}.}
+\item{object}{a \linkS4class{tidem} object.}
 
 \item{newdata}{vector of POSIXt times at which to make the
 prediction.  For models created with \code{\link[=tidem]{tidem()}},

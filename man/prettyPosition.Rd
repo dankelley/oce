@@ -15,7 +15,7 @@ processing.}
 }
 \value{
 A vector of numbers that will yield good axis labels if
-\code{\link{formatPosition}} is used.
+\code{\link[=formatPosition]{formatPosition()}} is used.
 }
 \description{
 Round a geographical positions in degrees, minutes, and seconds
@@ -23,9 +23,9 @@ Depending on the range of values in \code{x}, rounding is done to degrees,
 half-degrees, minutes, etc.
 }
 \examples{
-
 library(oce)
 formatPosition(prettyPosition(10+1:10/60+2.8/3600))
+
 }
 \author{
 Dan Kelley

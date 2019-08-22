@@ -574,7 +574,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
 #' Plot contours on an existing map.
 #'
 #' @param longitude vector of longitudes of points to be plotted, or an object of
-#' class `topo` (see [topo-class()]), in which case
+#' class `topo` (see [topo-class]), in which case
 #' `longitude`, `latitude` and `z` are inferred from that object.
 #'
 #' @param latitude vector of latitudes of points to be plotted.

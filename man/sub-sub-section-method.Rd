@@ -8,7 +8,7 @@
 \S4method{[[}{section}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.}
+\item{x}{a \code{\link{section-class}} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 

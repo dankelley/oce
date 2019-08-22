@@ -252,7 +252,8 @@ setMethod(f="summary",
 
 
 #' @title Extract Something From a Section Object
-#' @param x A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.
+#'
+#' @param x a \code{\link{section-class}} object.
 #'
 #' @templateVar class section
 #'
@@ -459,8 +460,11 @@ setMethod(f="[[",
           })
 
 #' @title Replace Parts of a Section Object
-#' @param x A \code{section} object, i.e. inheriting from \code{\link{section-class}}
+#'
+#' @param x a [section-class] object.
+#'
 #' @template sub_subsetTemplate
+#'
 #' @examples
 #' # 1. Change section ID from a03 to A03
 #' data(section)
@@ -470,8 +474,11 @@ setMethod(f="[[",
 #' # 2. Add a millidegree to temperatures at station 10
 #' section[["station", 10]][["temperature"]] <-
 #'     1e-3 + section[["station", 10]][["temperature"]]
+#'
 #' @author Dan Kelley
 #' @family things related to section data
+#'
+#' @md
 setMethod(f="[[<-",
           signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -522,53 +529,53 @@ setMethod(f="show",
 #'
 #' This function is used to subset data within the
 #' stations of a section, or to choose a subset of the stations
-#' themselves. The first case is handled with the \code{subset} argument,
-#' while the second is handled if \code{...} contains a vector named
-#' \code{indices}. Either \code{subset} or \code{indices} must be
+#' themselves. The first case is handled with the `subset` argument,
+#' while the second is handled if `...` contains a vector named
+#' `indices`. Either `subset` or `indices` must be
 #' provided, but not both.
 #'
-#' \strong{In the "subset" method}, \code{subset} indicates
+#' **In the "subset" method**, `subset` indicates
 #' either stations to be kept, or data to be kept within the stations.
 #'
 #' The first step in processing is to check for the presence of certain
-#' key words in the \code{subset} expression. If \code{distance}
+#' key words in the `subset` expression. If `distance`
 #' is present, then stations are selected according to a condition on the
 #' distance (in km) from the first station to the given station (Example 1).
-#' If either \code{longitude} or \code{latitude} is given, then
+#' If either `longitude` or `latitude` is given, then
 #' stations are selected according to the stated condition (Example 2).
-#' If \code{stationId} is present, then selection is in terms of the
+#' If `stationId` is present, then selection is in terms of the
 #' station ID (not the sequence number) is used (Example 3). In all of these
 #' cases, stations are either selected in their entirety or dropped
 #' in their entirety.
 #'
-#' If none of these keywords is present, then the \code{subset} expression is
-#' evaluated in the context of the \code{data} slot of each of the CTD stations
-#' stored within \code{x}. (Note that this slot does not normally
+#' If none of these keywords is present, then the `subset` expression is
+#' evaluated in the context of the `data` slot of each of the CTD stations
+#' stored within `x`. (Note that this slot does not normally
 #' contain any of the keywords that are listed in the previous
 #' paragraph; it does, then odd results may occur.) Each station is examined
-#' in turn, with \code{subset} being evaluated individually in each. The evaluation
+#' in turn, with `subset` being evaluated individually in each. The evaluation
 #' produces a logical vector. If that vector has length 1 (Examples 4 and 5)
 #' then the station is retained or discarded, accordingly. If the vector is longer,
 #' then the logical vector is used as a sieve to subsample that individual CTD
 #' profile.
 #'
-#' \strong{In the "indices" method}, stations are selected using
-#' \code{indices}, which may be a vector of integers that indicate sequence
+#' **In the "indices" method**, stations are selected using
+#' `indices`, which may be a vector of integers that indicate sequence
 #' number, or a logical vector, again indicating which stations to keep.
 #'
-#' @param x A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.
+#' @param x a [section-class] object.
 #'
 #' @param subset an optional indication of either the stations to be kept,
 #' or the data to be kept within the stations.  See \dQuote{Details}.
 #'
 #' @param ... optional arguments, of which only the first is examined. The
-#' possibilities for this argument are \code{indices}, which must be a
-#' vector of station indices (see Example 6), or \code{within}, which must be
-#' a list or data frame, contianing items named either \code{x} and \code{y}
-#' or \code{longitude} and \code{latitude} (see Example 7). If \code{within}
-#' is given, then \code{subset} is ignored.
+#' possibilities for this argument are `indices`, which must be a
+#' vector of station indices (see Example 6), or `within`, which must be
+#' a list or data frame, contianing items named either `x` and `y`
+#' or `longitude` and `latitude` (see Example 7). If `within`
+#' is given, then `subset` is ignored.
 #'
-#' @return A \code{\link{section-class}} object.
+#' @return A [section-class] object.
 #'
 #' @examples
 #' library(oce)
@@ -608,6 +615,8 @@ setMethod(f="show",
 #' @family things related to section data
 #'
 #' @author Dan Kelley
+#'
+#' @md
 setMethod(f="subset",
           signature="section",
           definition=function(x, subset, ...) {
@@ -794,9 +803,8 @@ setMethod(f="subset",
           })
 
 
-#' @title Sort a Section
+#' Sort a Section
 #'
-#' @description
 #' Sections created with \code{\link{as.section}} have "stations" that are in the
 #' order of the CTD objects (or filenames for such objects) provided.  Sometimes,
 #' this is not the desired order, e.g. if file names discovered with
@@ -924,66 +932,60 @@ sectionAddStation <- function(section, station)
 sectionAddCtd <- sectionAddStation
 
 
-#' @title Plot a Section
+#' Plot a Section
 #'
-#' @description
 #' Creates a summary plot for a CTD section, with one panel for each value of
-#' \code{which}.
+#' `which`.
 #'
-#' @details
-#' The type of plot is governed by \code{which}, as follows.
-#'
-#' \itemize{
-#'     \item \code{which=0} or \code{"potential temperature"} for temperature contours
-#'     \item \code{which=1} or \code{"temperature"} for temperature contours (the default)
-#'     \item \code{which=2} or \code{"salinity"} for salinity contours
-#'     \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
-#'     \item \code{which=4} or \code{"nitrate"} for nitrate concentration contours
-#'     \item \code{which=5} or \code{"nitrite"} for nitrite concentration contours
-#'     \item \code{which=6} or \code{"oxygen"} for oxygen concentration  contours
-#'     \item \code{which=7} or \code{"phosphate"} for phosphate concentration contours
-#'     \item \code{which=8} or \code{"silicate"} for silicate concentration contours
-#'     \item \code{which=9} or \code{"u"} for eastward velocity
-#'     \item \code{which=10} or \code{"uz"} for vertical derivative of eastward velocity
-#'     \item \code{which=11} or \code{"v"} for northward velocity
-#'     \item \code{which=12} or \code{"vz"} for vertical derivative of northward velocity
-#'     \item \code{which=20} or \code{"data"} for a dot for each data location
-#'     \item \code{which=99} or \code{"map"} for a location map
-#' }
+#' The type of plot is governed by `which`, as follows.
+#' * `which=0` or `"potential temperature"` for temperature contours
+#' * `which=1` or `"temperature"` for temperature contours (the default)
+#' * `which=2` or `"salinity"` for salinity contours
+#' * `which=3` or `"sigmaTheta"` for sigma-theta contours
+#' * `which=4` or `"nitrate"` for nitrate concentration contours
+#' * `which=5` or `"nitrite"` for nitrite concentration contours
+#' * `which=6` or `"oxygen"` for oxygen concentration  contours
+#' * `which=7` or `"phosphate"` for phosphate concentration contours
+#' * `which=8` or `"silicate"` for silicate concentration contours
+#' * `which=9` or `"u"` for eastward velocity
+#' * `which=10` or `"uz"` for vertical derivative of eastward velocity
+#' * `which=11` or `"v"` for northward velocity
+#' * `which=12` or `"vz"` for vertical derivative of northward velocity
+#' * `which=20` or `"data"` for a dot for each data location
+#' * `which=99` or `"map"` for a location map
 #'
 #' The y-axis for the contours is pressure, plotted in the conventional reversed
 #' form, so that the water surface appears at the top of the plot.  The x-axis is
-#' more complicated. If \code{at} is not supplied, then the routine calculates x
+#' more complicated. If `at` is not supplied, then the routine calculates x
 #' as the distance between the first station in the section and each of the other
 #' stations. (This will produce an error if the stations are not ordered
-#' geographically, because the \code{\link{contour}} routine cannot handle
-#' non-increasing axis coordinates.) If \code{at} is specified, then it is taken
+#' geographically, because the [contour()] routine cannot handle
+#' non-increasing axis coordinates.) If `at` is specified, then it is taken
 #' to be the location, in arbitrary units, along the x-axis of labels specified by
-#' \code{labels}; the way this works is designed to be the same as for
-#' \code{\link{axis}}.
+#' `labels`; the way this works is designed to be the same as for
+#' [axis()].
 #'
-#'
-#' @param x a \code{section} object, e.g. as created by \code{\link{as.section}}
-#' or \code{\link{read.section}}.
+#' @param x a `section` object, e.g. as created by [as.section()]
+#' or [read.section()].
 #'
 #' @param which a list of desired plot types, as explained in \dQuote{Details}.
 #' There may be up to four panels in total, and the desired plots are placed in
-#' these panels, in reading order.  If only one panel is plotted, \code{par} is
+#' these panels, in reading order.  If only one panel is plotted, `par` is
 #' not adjusted, which makes it easy to add to the plot with subsequent plotting
 #' commands.
 #'
 #' @template eosTemplate
 #'
-#' @param at If \code{NULL} (the default), the x axis will indicate the distance
+#' @param at If `NULL` (the default), the x axis will indicate the distance
 #' of the stations from the first in the section.  (This may give errors in the
 #' contouring routine, if the stations are not present in a geographical order.)
 #' If a list, then it indicates the values at which stations will be plotted.
 #'
 #' @param labels Either a logical, indicating whether to put labels on the x axis,
 #' or a vector that is a list of labels to be placed at the x positions indicated
-#' by \code{at}.
+#' by `at`.
 #'
-#' @param grid If \code{TRUE}, points are drawn at data locations.
+#' @param grid If `TRUE`, points are drawn at data locations.
 #'
 #' @param contourLevels Optional contour levels.
 #'
@@ -991,14 +993,14 @@ sectionAddCtd <- sectionAddStation
 #'
 #' @param stationIndices Optional list of the indices of stations to use.  Note
 #' that an index is \emph{not} a station number, e.g. to show the first 4
-#' stations, use \code{station.indices=1:4}.
+#' stations, use `station.indices=1:4`.
 #'
 #' @param coastline String giving the coastline to be used in a station map
-#' The permitted choices are \code{"best"} (the default) to pick
-#' a variant that suits the scale, \code{"coastlineWorld"} for the coarse
+#' The permitted choices are `"best"` (the default) to pick
+#' a variant that suits the scale, `"coastlineWorld"` for the coarse
 #' version that is provided by \CRANpkg{oce},
-#' \code{"coastlineWorldMedium"} or \code{"coastlineWorldFine"} for two
-#' coastlines provided by the \CRANpkg{ocedata} package, or \code{"none"}, to avoid
+#' `"coastlineWorldMedium"` or `"coastlineWorldFine"` for two
+#' coastlines provided by the \CRANpkg{ocedata} package, or `"none"`, to avoid
 #' drawing a coastline.
 #'
 #' @param xlim Optional limit for x axis (only in sections, not map).
@@ -1006,48 +1008,48 @@ sectionAddCtd <- sectionAddStation
 #' @param ylim Optional limit for y axis (only in sections, not map)
 #'
 #' @param zlim Optional two-element numerical vector specifying the
-#' limit on the plotted field. This is used only if \code{ztype="image"};
-#' see also \code{zbreaks} and \code{zcol}.
+#' limit on the plotted field. This is used only if `ztype="image"`;
+#' see also `zbreaks` and `zcol`.
 #'
-#' @param map.xlim,map.ylim Optional limits for station map; \code{map.ylim} is
-#' ignored if \code{map.xlim} is provided.
+#' @param map.xlim,map.ylim Optional limits for station map; `map.ylim` is
+#' ignored if `map.xlim` is provided.
 #'
 #' @param clongitude,clatitude,span Optional map centre position and span (km).
 #'
 #' @param projection Parameter specifying map
-#' projection; see \code{\link{mapPlot}}.  If \code{projection="automatic"},
-#' however, a projection is devised from the data, with \code{stereographic} if
-#' the mean latitude exceeds 70N and \code{mollweide} otherwise.
+#' projection; see [mapPlot()].  If `projection="automatic"`,
+#' however, a projection is devised from the data, with `stereographic` if
+#' the mean latitude exceeds 70N and `mollweide` otherwise.
 #'
-#' @param xtype Type of x axis, for contour plots, either \code{"distance"} for
-#' distance (in km) to the first point in the section, \code{"track"} for distance
-#' along the cruise track, \code{"longitude"}, \code{"latitude"}, or
-#' \code{"time"}.  Note that if the x values are not in order, they will be put in
+#' @param xtype Type of x axis, for contour plots, either `"distance"` for
+#' distance (in km) to the first point in the section, `"track"` for distance
+#' along the cruise track, `"longitude"`, `"latitude"`, or
+#' `"time"`.  Note that if the x values are not in order, they will be put in
 #' order (which may make no sense) and a warning will be printed.
 #'
 #' @param longitude0,latitude0 Location of the point from which distance is measured.
-#' These values are ignored unless \code{xtype} is \code{"distance"}.
+#' These values are ignored unless `xtype` is `"distance"`.
 #'
-#' @param ytype Type of y axis for contour plots, either \code{"pressure"} for
-#' pressure (in dbar, with zero at the surface) or \code{"depth"} for depth (in m
-#' below the surface, calculated from pressure with \code{\link{swDepth}}).
+#' @param ytype Type of y axis for contour plots, either `"pressure"` for
+#' pressure (in dbar, with zero at the surface) or `"depth"` for depth (in m
+#' below the surface, calculated from pressure with [swDepth()]).
 #'
 #' @param ztype String indicating whether to how to indicate the "z"
 #' data (in the R sense, i.e. this could be salinity, temperature, etc; it does
-#' not mean the vertical coordinate) The choices are: \code{"contour"} for
-#' contours, \code{"image"} for an image (drawn with \code{\link{imagep}} with
-#' \code{filledContours=TRUE}), or \code{"points"} to draw points.
+#' not mean the vertical coordinate) The choices are: `"contour"` for
+#' contours, `"image"` for an image (drawn with [imagep()] with
+#' `filledContours=TRUE`), or `"points"` to draw points.
 #' In the first two cases, the data must be gridded, with identical pressures at
 #' each station.
 #'
-#' @param zbreaks,zcol Indication of breaks and colors to be used if \code{ztype="points"} or
-#' \code{"image"}. If not provided, reasonable default are used. If \code{zlim}
-#' is given but \code{breaks} is not given, then \code{breaks} is computed to
-#' run from \code{zlim[1]} to \code{zlim[2]}. If \code{zcol} is a function,
+#' @param zbreaks,zcol Indication of breaks and colors to be used if `ztype="points"` or
+#' `"image"`. If not provided, reasonable default are used. If `zlim`
+#' is given but `breaks` is not given, then `breaks` is computed to
+#' run from `zlim[1]` to `zlim[2]`. If `zcol` is a function,
 #' it will be invoked with an argument equal to
-#' \code{1+length(zbreaks)}.
+#' `1+length(zbreaks)`.
 #'
-#' @param legend.loc Location of legend, as supplied to \code{\link{legend}}, or
+#' @param legend.loc Location of legend, as supplied to [legend()], or
 #' set to the empty string to avoid plotting a legend.
 #'
 #' @param showStations Logical indicating whether to draw station numbers on maps.
@@ -1056,38 +1058,39 @@ sectionAddCtd <- sectionAddStation
 #'
 #' @param stationTicks A logical value indicating whether to indicate station
 #' locations with ticks at the top margin of cross-section plots. Setting this
-#' parameter to \code{FALSE} frees the user up to do their own labelling
+#' parameter to `FALSE` frees the user up to do their own labelling
 #' at this spot.
 #'
 #' @param showBottom An indication of whether (and how) to indicate the ocean bottom.
-#' If \code{FALSE}, then the bottom is not rendered. If \code{TRUE}, then it
-#' is rendered with a gray polygon. If \code{showBottom} is a character string,
-#' then there are three possibilities: is the string is \code{"polygon"} then
-#' a polygon is drawn, if it is \code{"lines"} then a line is drawn, and if it
-#' is \code{"points"} then points are drawn. If \code{showBottom} is an object
-#' inheriting from \code{\link{topo-class}} then the station locations are
+#' If `FALSE`, then the bottom is not rendered. If `TRUE`, then it
+#' is rendered with a gray polygon. If `showBottom` is a character string,
+#' then there are three possibilities: is the string is `"polygon"` then
+#' a polygon is drawn, if it is `"lines"` then a line is drawn, and if it
+#' is `"points"` then points are drawn. If `showBottom` is
+#' a [topo-class] object,
+#' then the station locations are
 #' interpolated to that topography and the results are shown with a polygon.
 #' In this last case, the interpolation is set at a grid that is roughly
-#' in accordance with the resolution of the latitudes in the \code{topo} object.
+#' in accordance with the resolution of the latitudes in the `topo` object.
 #' See \dQuote{Examples}.
 #'
 #' @param axes Logical value indicating whether to draw axes.
 #'
-#' @param mgp A 3-element numerical vector to use for \code{par(mgp)}, and also for
-#' \code{par(mar)}, computed from this. If not provided, this defaults to
-#' \code{getOption("oceMgp")}.
+#' @param mgp A 3-element numerical vector to use for `par(mgp)`, and also for
+#' `par(mar)`, computed from this. If not provided, this defaults to
+#' `getOption("oceMgp")`.
 #'
-#' @param mar Value to be used with \code{\link{par}("mar")}. If not provided,
+#' @param mar Value to be used with `\link{par`("mar")}. If not provided,
 #' a default is set up.
 #'
-#' @param col Color, which defaults to \code{\link{par}("col")}.
+#' @param col Color, which defaults to `\link{par`("col")}.
 #'
-#' @param cex Numerical character-expansion factor, which defaults to \code{\link{par}("cex")}.
+#' @param cex Numerical character-expansion factor, which defaults to `\link{par`("cex")}.
 #'
-#' @param pch Indication of symbol type; defaults to \code{\link{par}("pch")}.
+#' @param pch Indication of symbol type; defaults to `\link{par`("pch")}.
 #'
 #' @param labcex Size of characters in contour labels (passed to
-#' \code{\link{contour}}).
+#' [contour()]).
 #'
 #' @template debugShortTemplate
 #'
@@ -1099,10 +1102,9 @@ sectionAddCtd <- sectionAddStation
 #' purpose of returning the section is to enable subsequent processing
 #' of the grid, including adding elements to the plot (see example 5).
 #'
-#' @seealso The documentation for \code{\link{section-class}} explains the
+#' @seealso The documentation for [section-class] explains the
 #' structure of section objects, and also outlines the other functions dealing
 #' with them.
-#'
 #'
 #' @examples
 #' library(oce)
@@ -1170,6 +1172,8 @@ sectionAddCtd <- sectionAddStation
 #' @family functions that plot oce data
 #' @family things related to section data
 #' @aliases plot.section
+#'
+#' @md
 setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,

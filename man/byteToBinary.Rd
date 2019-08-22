@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{byteToBinary}
 \alias{byteToBinary}
-\title{Format bytes as binary [defunct]}
+\title{Format bytes as binary \link{defunct}}
 \usage{
 byteToBinary(x, endian = "big")
 }
@@ -34,6 +34,7 @@ library(oce)
 a <- as.raw(0x0a)
 byteToBinary(a, "big")        # "00001010"
 as.integer(rev(rawToBits(a))) # 0 0 0 0 1 0 1 0
+
 }
 \author{
 Dan Kelley

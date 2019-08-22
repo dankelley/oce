@@ -27,10 +27,11 @@ formats permit the reuse of variable names within a given file.
 \examples{
 unduplicateNames(c("a", "b", "a", "c", "b"))
 unduplicateNames(c("a", "b", "a", "c", "b"), style=2)
+
 }
 \seealso{
-Used by \code{\link{read.ctd.sbe}} with \code{style=1} to
+Used by \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} with \code{style=1} to
 rename repeated data elements (e.g. for multiple temperature sensors)
-in CTD data, and by \code{\link{read.odf}} with \code{style=2} on
+in CTD data, and by \code{\link[=read.odf]{read.odf()}} with \code{style=2} on
 key-value pairs within ODF metadata.
 }

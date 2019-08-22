@@ -17,7 +17,6 @@ function deals with the three cases mentioned.  It will fail if someone
 supplies 60, meaning year 2060 as opposed to 1960.
 }
 \examples{
-
 fullYear <- unabbreviateYear(c(99, 8, 108))
 }
 \seealso{

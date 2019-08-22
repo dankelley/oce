@@ -42,7 +42,7 @@ East.}
 North.}
 
 \item{start}{the time of the first sample, typically created with
-\code{\link{as.POSIXct}}.  This may be a vector of times,
+\code{\link[=as.POSIXct]{as.POSIXct()}}.  This may be a vector of times,
 if \code{filename} is a vector of file names.}
 
 \item{deltat}{the time between samples.}

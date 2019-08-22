@@ -8,8 +8,7 @@
 \S4method{[[}{tidem}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{A tidem object, i.e. one inheriting from \linkS4class{tidem},
-as created by \code{\link[=as.tidem]{as.tidem()}} or \code{\link[=tidem]{tidem()}}.}
+\item{x}{a \linkS4class{tidem} object.}
 
 \item{i}{The item to replace.}
 

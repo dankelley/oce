@@ -207,8 +207,7 @@ setMethod(f="summary",
 
 #' Extract Something From a Tidem Object
 #'
-#' @param x A tidem object, i.e. one inheriting from [tidem-class],
-#' as created by [as.tidem()] or [tidem()].
+#' @param x a [tidem-class] object.
 #'
 #' @section Details of the specialized `tidem` method:
 #'
@@ -239,8 +238,7 @@ setMethod(f="[[",
 
 #' Replace Parts of a Tidem Object
 #'
-#' @param x A tidem object, i.e. one inheriting from [tidem-class],
-#' as created by [as.tidem()] or [tidem()].
+#' @param x a [tidem-class] object.
 #'
 #' @template sub_subsetTemplate
 #'
@@ -258,8 +256,7 @@ setMethod(f="[[<-",
 #'
 #' Plot a summary diagram for a tidal fit.
 #'
-#' @param x A `tidem` object, i.e. one inheriting from
-#' [tidem-class].
+#' @param x a [tidem-class] object.
 #'
 #' @param which integer flag indicating plot type, 1 for stair-case spectral, 2
 #' for spike spectral.
@@ -1501,7 +1498,7 @@ tidem <- function(t, x, constituents, infer=NULL,
 #' This creates a time-series of predicted tides, based on a
 #' tidal model object that was created by [as.tidem()] or [tidem()].
 #'
-#' @param object A `tidem` object, i.e. one inheriting from [tidem-class].
+#' @param object a [tidem-class] object.
 #'
 #' @param newdata vector of POSIXt times at which to make the
 #' prediction.  For models created with [tidem()],
