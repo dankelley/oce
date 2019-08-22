@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapZones}
 \alias{mapZones}
-\title{Add Zones to a Map [defunct]}
+\title{Add Zones to a Map (defunct)}
 \usage{
 mapZones(longitude, polarCircle = 0, lty = "solid", lwd = 0.5 *
   par("lwd"), col = "darkgray", ...)
@@ -20,19 +20,11 @@ extending from the poles, within which zones are not drawn.}
 
 \item{col}{line color.}
 
-\item{...}{optional arguments passed to \code{\link{lines}}.}
+\item{...}{optional arguments passed to \code{\link[=lines]{lines()}}.}
 }
 \description{
 \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
-}
-\details{
-Use \code{\link{mapGrid}} instead of the present function.
-
-Plot zones (lines of constant longitude) on a existing map.
-
-
-This function should not be used, since it will be removed soon.
-Please use mapGrid() instead.
+Use \code{\link[=mapGrid]{mapGrid()}} instead.
 }
 \seealso{
 Other functions that will be removed soon: \code{\link{addColumn}},

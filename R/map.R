@@ -13,41 +13,38 @@
 #' Wrapper to rgdal::project()
 #'
 #' This function is used to isolate other oce functions from
-#' changes to the \code{\link[rgdal]{project}} function in the \CRANpkg{rgdal}
+#' changes to the [rgdal::project()] function in the \CRANpkg{rgdal}
 #' package, which is used for calculations involved in both forward
 #' and inverse map projections.
 #'
 #' Some highlights of the evolving relationship with rgdal are:
-#'\enumerate{
-#' \item See https://github.com/dankelley/oce/issues/653#issuecomment-107040093
-#'    for the reason why oce switched from using \code{\link[rgdal]{rawTransform}},
-#'    to \code{\link[rgdal]{project}}, both functions provided by the
+#' 1. See https://github.com/dankelley/oce/issues/653#issuecomment-107040093
+#'    for the reason why oce switched from using [rgdal::rawTransform()],
+#'    to [rgdal::project()], both functions provided by the
 #'    \CRANpkg{rgdal} package.
-#' \item 2016 Apr: rgdal::project started returning named quantities
-#' \item 2019 Feb: allowNAs_if_not_legacy was added in rgdal 1.3-9 to prevent
+#' 2. 2016 Apr: rgdal::project started returning named quantities
+#' 3. 2019 Feb: allowNAs_if_not_legacy was added in rgdal 1.3-9 to prevent
 #'    an error on i386/windows. However, using this argument imposes a
 #'    burden on users to update \CRANpkg{rgdal}, so the approach taken
-#'    here (by default, i.e. with \code{passNA=FALSE}) is to
+#'    here (by default, i.e. with `passNA=FALSE`) is to
 #'    temporarily switch NA data to 0, and then switch
 #'    back to NA after the calculation.
-#'}
 #'
-#' @param xy As for the \code{\link[rgdal]{project}} function in the
+#' @param xy,proj,inv,use_ob_tran,legacy  As for the [rgdal::project()] function in the
 #' \CRANpkg{rgdal} package.
-#' @param proj "
-#' @param inv "
-#' @param use_ob_tran "
-#' @param legacy "
+#'
 #' @param passNA Logical value indicating whether to pass NA values into
-#' \CRANpkg{rgdal}.  The default is \code{FALSE}, meaning that any NA
+#' \CRANpkg{rgdal}.  The default is `FALSE`, meaning that any NA
 #' values are first converted to 0 before the calculation, and then
-#' converted to NA afterwards. Setting this to \code{TRUE} produces
+#' converted to NA afterwards. Setting this to `TRUE` produces
 #' errors on the i386/windows platform, but it seems likely that a version
 #' of \CRANpkg{rgdal} released after 1.3-9 may not have that error.
 #'
 #' @return A two-column matrix, with first column holding either
-#' \code{longitude} or \code{x}, and second column holding either
-#' \code{latitude} or \code{y}.
+#' `longitude` or `x`, and second column holding either
+#' `latitude` or `y`.
+#'
+#' @md
 oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, passNA=FALSE)
 {
     if (!requireNamespace("rgdal", quietly=TRUE))
@@ -83,26 +80,31 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
 #' Calculate lon-lat coordinates of plot-box trace
 #'
 #' Trace along the plot box, converting from xy coordinates to lonlat
-#' coordinates. The results are used by \code{\link{mapGrid}}
-#' and \code{\link{mapAxis}} to ignore out-of-frame grid
+#' coordinates. The results are used by [mapGrid()]
+#' and [mapAxis()] to ignore out-of-frame grid
 #' lines and axis labels.
 #'
 #' Note: this procedure does not work for projections that have trouble
 #' inverting points that are "off the globe". For this reason, this function
 #' examines .Projection()$projection and if it contains the string
-#' \code{"wintri"}, then the above-stated procedure is skipped, and
-#' the return value has each of the numerical quantities set to \code{NA},
-#' and \code{ok} set to \code{FALSE}.
+#' `"wintri"`, then the above-stated procedure is skipped, and
+#' the return value has each of the numerical quantities set to `NA`,
+#' and `ok` set to `FALSE`.
 #'
 #' @param n number of points to check along each side of the plot box
 #' @template debugTemplate
-#' @return a list containing \code{lonmin}, \code{lonmax},
-#' \code{latmin}, \code{latmax}, and \code{ok}; the last
+#'
+#' @return a list containing `lonmin`, `lonmax`,
+#' `latmin`, `latmax`, and `ok`; the last
 #' of which indicates whether at least one point on the plot box
 #' is invertible. Note that longitude are expressed in the
 #' range from -180 to 180 degrees.
+#'
 #' @author Dan Kelley
+#'
 #' @family functions related to maps
+#'
+#' @md
 usrLonLat <- function(n=25, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "usrLonLat(n=", n, ", debug=", debug, "\n", unindent=1, sep="")
@@ -172,8 +174,8 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
 #' Coordinate Reference System strings for some oceans
 #'
 #' Create a coordinate reference string (CRS), suitable for use as a
-#' \code{projection} argument to \code{\link{mapPlot}} or
-#' \code{\link{plot,coastline-method}}.
+#' `projection` argument to [mapPlot()] or
+#' [plot,coastline-method()].
 #'
 #' @section Caution: This is a preliminary version of this function,
 #' with the results being very likely to change through the autumn of 2016,
@@ -181,15 +183,18 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
 #'
 #' @param region character string indicating the region. This must be
 #' in the following list (or a string that matches to just one entry,
-#' with \code{\link{pmatch}}):
-#' \code{"North Atlantic"}, \code{"South Atlantic"}, \code{"Atlantic"},
-#' \code{"North Pacific"}, \code{"South Pacific"}, \code{"Pacific"},
-#' \code{"Arctic"},  and \code{"Antarctic"}.
+#' with [pmatch()]):
+#' `"North Atlantic"`, `"South Atlantic"`, `"Atlantic"`,
+#' `"North Pacific"`, `"South Pacific"`, `"Pacific"`,
+#' `"Arctic"`,  and `"Antarctic"`.
 #'
-#' @return string contain a CRS, which can be used as \code{projection}
-#' in \code{\link{mapPlot}}.
+#' @return string contain a CRS, which can be used as `projection`
+#' in [mapPlot()].
+#'
 #' @author Dan Kelley
+#'
 #' @family functions related to maps
+#'
 #' @examples
 #'\donttest{
 #' library(oce)
@@ -207,6 +212,8 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
 #' plot(pacific, proj=oceCRS("North Pacific"), span=12000, col=NULL)
 #' plot(pacific, proj=oceCRS("South Pacific"), span=12000, col=NULL)
 #'}
+#'
+#' @md
 oceCRS <- function(region)
 {
     regionChoices <- c("North Atlantic", "South Atlantic", "Atlantic", "Arctic", "Antarctic",
@@ -229,14 +236,19 @@ oceCRS <- function(region)
 
 #' Shift Longitude to Range -180 to 180
 #'
-#' This is a utility function used by \code{\link{mapGrid}}. It works
+#' This is a utility function used by [mapGrid()]. It works
 #' simply by subtracting 180 from each longitude, if any longitude
 #' in the vector exceeds 180.
 #'
 #' @param longitudes a numerical vector of longitudes
+#'
 #' @return vector of longitudes, shifted to the desired range.
-#' @seealso \code{\link{matrixShiftLongitude}} and \code{\link{standardizeLongitude}}.
+#'
+#' @seealso [matrixShiftLongitude()] and [standardizeLongitude()].
+#'
 #' @family functions related to maps
+#'
+#' @md
 shiftLongitude <- function(longitudes) {
     if (any(longitudes > 180)) longitudes-360 else longitudes
 }
@@ -330,36 +342,36 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' grid has already been drawn, then the labels will be at the
 #' interesections of the grid lines with the plotting box.
 #'
-#' @param tick parameter passed to \code{\link{axis}}.
+#' @param tick parameter passed to [axis()].
 #'
-#' @param line parameter passed to \code{\link{axis}}.
+#' @param line parameter passed to [axis()].
 #'
-#' @param pos parameter passed to \code{\link{axis}}.
+#' @param pos parameter passed to [axis()].
 #'
-#' @param outer parameter passed to \code{\link{axis}}.
+#' @param outer parameter passed to [axis()].
 #'
-#' @param font axis font, passed to \code{\link{axis}}.
+#' @param font axis font, passed to [axis()].
 #'
-#' @param lty axis line type, passed to \code{\link{axis}}.
+#' @param lty axis line type, passed to [axis()].
 #'
-#' @param lwd axis line width, passed to \code{\link{axis}}).
+#' @param lwd axis line width, passed to [axis()]).
 #'
-#' @param lwd.ticks tick line width, passed to \code{\link{axis}}.
+#' @param lwd.ticks tick line width, passed to [axis()].
 #'
-#' @param col axis color, passed to \code{\link{axis}}.
+#' @param col axis color, passed to [axis()].
 #'
-#' @param col.ticks axis tick color, passed to \code{\link{axis}}.
+#' @param col.ticks axis tick color, passed to [axis()].
 #'
-#' @param hadj an argument that is transmitted to \code{\link{axis}}.
+#' @param hadj an argument that is transmitted to [axis()].
 #'
-#' @param padj an argument that is transmitted to \code{\link{axis}}.
+#' @param padj an argument that is transmitted to [axis()].
 #'
-#' @param tcl axis-tick size (see \code{\link{par}}).
+#' @param tcl axis-tick size (see [par()]).
 #'
-#' @param cex.axis axis-label expansion factor (see \code{\link{par}}).
+#' @param cex.axis axis-label expansion factor (see [par()]).
 #'
 #' @param mgp three-element numerical vector describing axis-label
-#' placement (see \code{\link{par}}). It usually makes sense to set
+#' placement (see [par()]). It usually makes sense to set
 #' the first and third elements to zero.
 #'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
@@ -386,8 +398,12 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #'}
 #'
 #' @author Dan Kelley
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#'
+#' @seealso A map must first have been created with [mapPlot()].
+#'
 #' @family functions related to maps
+#'
+#' @md
 mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
                     tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
                     lty="solid", lwd=1, lwd.ticks=lwd, col=NULL, col.ticks=NULL,
@@ -558,61 +574,61 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
 #' Plot contours on an existing map.
 #'
 #' @param longitude vector of longitudes of points to be plotted, or an object of
-#' class \code{topo} (see \code{\link{topo-class}}), in which case
-#' \code{longitude}, \code{latitude} and \code{z} are inferred from that object.
+#' class `topo` (see [topo-class()]), in which case
+#' `longitude`, `latitude` and `z` are inferred from that object.
 #'
 #' @param latitude vector of latitudes of points to be plotted.
 #'
-#' @param z matrix to be contoured. The number of rows and columns in \code{z}
-#' must equal the lengths of \code{longitude} and \code{latitude}, respectively.
+#' @param z matrix to be contoured. The number of rows and columns in `z`
+#' must equal the lengths of `longitude` and `latitude`, respectively.
 #'
-#' @param nlevels number of contour levels, if and only if \code{levels} is not supplied.
+#' @param nlevels number of contour levels, if and only if `levels` is not supplied.
 #'
 #' @param levels vector of contour levels.
 #'
-#' @param labcex \code{cex} value used for contour labelling. As with
-#' \code{\link{contour}}, this is an absolute size, not a multiple of
-#' \code{\link{par}("cex")}.
+#' @param labcex `cex` value used for contour labelling. As with
+#' [contour()], this is an absolute size, not a multiple of
+#' [`par`]`("cex")`.
 #'
 #' @param drawlabels logical value or vector indicating whether to draw contour
-#' labels.  If the length of \code{drawlabels} is less than the number of
-#' levels specified, then \code{\link{rep}} is used to increase the length,
+#' labels.  If the length of `drawlabels` is less than the number of
+#' levels specified, then [rep()] is used to increase the length,
 #' providing a value for each contour line. For those levels that are thus
 #' indicated, labels are added, at a spot where the contour line is
 #' closest to horizontal on the page. First, though, the region underneath
-#' the label is filled with the colour given by \code{\link{par}("bg")}.
+#' the label is filled with the colour given by [`par`]`("bg")`.
 #' See \dQuote{Limitations} for notes on the status of contour
 #' labelling, and its limitations.
 #'
 #' @param underlay character value relating to handling labels. If
-#' this equals \code{"erase"} (which is the default), then the contour line
+#' this equals `"erase"` (which is the default), then the contour line
 #' is drawn  first, then the area under the label is erased (filled with
 #' white 'ink'), and then the label is drawn. This can be useful
 #' in drawing coarsely-spaced labelled contours on top of finely-spaced
-#' unlabelled contours. On the othr hand, if \code{underlay} equals
-#' \code{"interrupt"}, then the contour line is interrupted in the
+#' unlabelled contours. On the othr hand, if `underlay` equals
+#' `"interrupt"`, then the contour line is interrupted in the
 #' region of the label, which is closer to the scheme used by the
-#' base \code{\link{contour}} function.
+#' base [contour()] function.
 #'
-#' @param col colour of the contour line, as for \code{\link{par}("col")},
-#' except here \code{col} gets lengthened by calling \code{\link{rep}},
+#' @param col colour of the contour line, as for [`par`]`("col")`,
+#' except here `col` gets lengthened by calling [rep()],
 #' so that individual contours can be coloured distinctly.
 #'
-#' @param lty type of the contour line, as for \code{\link{par}("lty")},
-#' except for lengthening, as described for \code{col}.
+#' @param lty type of the contour line, as for [`par`]`("lty")`,
+#' except for lengthening, as described for `col`.
 #'
-#' @param lwd width of the contour line, as for \code{\link{par}("lwd")},
-#' except for lengthening, as described for \code{col} and \code{lty}.
+#' @param lwd width of the contour line, as for [`par`]`("lwd")`,
+#' except for lengthening, as described for `col` and `lty`.
 #'
 #' @template debugTemplate
 #'
 #' @details
-#' Adds contour lines to an existing map, using \code{\link{mapLines}}.
+#' Adds contour lines to an existing map, using [mapLines()].
 #'
 #' The ability to label the contours was added in February, 2019, and
 #' how this works may change through the summer months of that year.
-#' Note that label placement in \code{mapContour} is handled differently
-#' than in \code{\link{contour}}.
+#' Note that label placement in `mapContour` is handled differently
+#' than in [contour()].
 #'
 #' @examples
 #'\donttest{
@@ -628,8 +644,10 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
 #'
 #' @author Dan Kelley
 #'
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#' @seealso A map must first have been created with [mapPlot()].
 #' @family functions related to maps
+#'
+#' @md
 mapContour <- function(longitude, latitude, z,
                        nlevels=10, levels=pretty(range(z, na.rm=TRUE), nlevels),
                        ##labels=null,
@@ -786,14 +804,18 @@ mapContour <- function(longitude, latitude, z,
 #' to indicate a coordinate system set up so that one axis is parallel
 #' to a coastline.
 #'
-#' @details This is a preliminary version of this function. It only
+#' This is a preliminary version of this function. It only
 #' works if the lines of constant latitude are horizontal on the plot.
 #'
 #' @param latitude numeric value of latitude in degrees.
+#'
 #' @param longitude numeric value of longitude in degrees.
+#'
 #' @param L axis length in km.
+#'
 #' @param phi angle, in degrees counterclockwise, that the "x" axis makes to a line of latitude.
-#' @param ... plotting arguments, passed to \code{\link{mapArrows}};
+#'
+#' @param ... plotting arguments, passed to [mapArrows()];
 #' see \dQuote{Examples} for how to control the arrow-head size.
 #'
 #' @examples
@@ -809,6 +831,11 @@ mapContour <- function(longitude, latitude, z,
 #'}
 #'
 #' @author Chantelle Layton
+#'
+#' @family functions related to maps
+#'
+#'
+#' @md
 mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 {
     if (missing(longitude))
@@ -834,32 +861,30 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #'
 #' Plot a direction field on a existing map.
 #'
+#' Adds arrows for a direction field on an existing map.  There are different
+#' possibilities for how `longitude`, `latitude` and `u` and
+#' `v` match up.  In one common case, all four of these are matrices, e.g.
+#' output from a numerical model.  In another, `longitude` and
+#' `latitude` are the coordinates along the matrices, and are thus stored in
+#' vectors with lengths that match appropriately.
+#'
 #' @param longitude,latitude vectors of the starting points for arrows.
 #'
 #' @param u,v components of a vector to be shown as a direction
 #'     field.
 #'
-#' @param scale latitude degrees per unit of \code{u} or \code{v}.
+#' @param scale latitude degrees per unit of `u` or `v`.
 #'
-#' @param length length of arrow heads, passed to \code{\link{arrows}}.
+#' @param length length of arrow heads, passed to [arrows()].
 #'
-#' @param code code of arrows, passed to \code{\link{arrows}}.
+#' @param code code of arrows, passed to [arrows()].
 #'
 #' @param col color of arrows.  This may be a single color, or a matrix
-#'     of colors of the same dimension as \code{u}.
+#'     of colors of the same dimension as `u`.
 #'
-#' @param \dots optional arguments passed to \code{\link{arrows}}, e.g.
-#'     \code{angle} and \code{lwd} can be useful in differentiating different
+#' @param \dots optional arguments passed to [arrows()], e.g.
+#'     `angle` and `lwd` can be useful in differentiating different
 #'     fields.
-#'
-#'
-#' @details
-#' Adds arrows for a direction field on an existing map.  There are different
-#' possibilities for how \code{longitude}, \code{latitude} and \code{u} and
-#' \code{v} match up.  In one common case, all four of these are matrices, e.g.
-#' output from a numerical model.  In another, \code{longitude} and
-#' \code{latitude} are the coordinates along the matrices, and are thus stored in
-#' vectors with lengths that match appropriately.
 #'
 #' @examples
 #'\donttest{
@@ -884,9 +909,11 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #'
 #' @author Dan Kelley
 #'
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @md
 mapDirectionField <- function(longitude, latitude, u, v,
                               scale=1, length=0.05, code=2, col=par("fg"), ...)
 {
@@ -922,17 +949,17 @@ mapDirectionField <- function(longitude, latitude, u, v,
 #'
 #' @param longitude vector of the longitudes of points, or an object from which
 #' both latitude and longitude can be inferred (e.g. a coastline file, or the
-#' return value from \code{\link{mapLocator}}), in which case the following
+#' return value from [mapLocator()]), in which case the following
 #' two arguments are ignored.
 #'
 #' @param latitude vector of latitudes of points, needed only if they cannot
 #' be inferred from the first argument.
 #'
 #' @details
-#' This is mainly a wrapper around \code{\link{lonlat2map}}.
+#' This is mainly a wrapper around [lonlat2map()].
 #'
 #' @return
-#' A list containing \code{x} and \code{y}.
+#' A list containing `x` and `y`.
 #'
 #'
 #' @examples
@@ -947,9 +974,11 @@ mapDirectionField <- function(longitude, latitude, u, v,
 #'
 #' @author Dan Kelley
 #'
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @md
 mapLongitudeLatitudeXY <- function(longitude, latitude)
 {
     if ("none" == .Projection()$type)
@@ -971,18 +1000,30 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 
 #' Draw a Map
 #'
-#' @description
 #' Plot coordinates as a map, using one of the subset of projections
 #' provided by the \CRANpkg{rgdal} package.  The projection information specified
-#' with the \code{mapPlot} call is stored so that can be retrieved by related
+#' with the `mapPlot` call is stored so that can be retrieved by related
 #' functions, making it easy to add points, lines, text, images
 #' or contours to an existing map.
 #'
+#' Creates a map using the indicated projection.  As noted in the
+#' information on the `projection` argument, projections are specified in
+#' the notation used by `project()` in the \CRANpkg{rgdal} package; see
+#' \dQuote{Available Projections} for a list of possibilities.
+#'
+#' Further details on map projections are provided by references 1 and 11, an exhaustive
+#' treatment that includes many illustrations, an overview of the history of the
+#' topic, and some notes on the strengths and weaknesses of the various
+#' formulations.  See especially pages 2 through 7, which define terms and
+#' provide recommendations.  Reference 2 is also useful, especially regarding
+#' datum shifts; references 3 and 4 are less detailed and perhaps better for novices.
+#' See reference 8 for a gallery of projections.
+#'
 #' @param longitude either a vector of longitudes of points to be plotted, or
-#' something (an \code{oce} object, a list, or a data frame) from which both
-#' longitude and latitude may be inferred (in which case the \code{latitude}
-#' argument is ignored).  If \code{longitude} is missing, both it and
-#' \code{latitude} are taken from \code{\link{coastlineWorld}}.
+#' something (an `oce` object, a list, or a data frame) from which both
+#' longitude and latitude may be inferred (in which case the `latitude`
+#' argument is ignored).  If `longitude` is missing, both it and
+#' `latitude` are taken from [coastlineWorld()].
 #'
 #' @param latitude vector of latitudes of points to be plotted (ignored
 #' if the first argument contains both latitude and longitude).
@@ -992,49 +1033,48 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' longitude lines that are shown (and possibly
 #' labelled on the axes). In some cases, e.g. for polar views,
 #' this can lead to odd results, with some expected longitude lines
-#' being left out of the plot.  Altering \code{longitudelim} can
-#' often help in such cases, e.g. \code{longitudelim=c(-180, 180)} will
+#' being left out of the plot.  Altering `longitudelim` can
+#' often help in such cases, e.g. `longitudelim=c(-180, 180)` will
 #' force the drawing of lines all around the globe.
 #'
 #' @param latitudelim optional vector of length two, indicating
-#' the latitude limits of the plot. This, together with \code{longitudelim}
+#' the latitude limits of the plot. This, together with `longitudelim`
 #' (and, importantly, the geometry of the plot device) is used in the
 #' selection of map scale.
 #'
 #' @param grid either a number (or pair of numbers) indicating the spacing of
 #' longitude and latitude lines, in degrees, or a logical value (or pair of
 #' values) indicating whether to draw an auto-scaled grid, or whether to skip
-#' the grid drawing.  In the case of numerical values, \code{NA} can be used to
+#' the grid drawing.  In the case of numerical values, `NA` can be used to
 #' turn off the grid in longitude or latitude.  Grids are set up based on
 #' examination of the scale used in middle 10 percent of the plot area, and for
 #' most projections this works quite well.  If not, one may set
-#' \code{grid=FALSE} and add a grid later with \code{\link{mapGrid}}.
+#' `grid=FALSE` and add a grid later with [mapGrid()].
 #'
 #' @param bg color of the background (ignored).
 #'
-#' @param fill \strong{(deprecated)} is a deprecated argument; see
-#' \link{oce-deprecated}.
+#' @param fill is a deprecated argument; see [oce-deprecated].
 #'
 #' @param border color of coastlines and international borders (ignored unless
-#' \code{type="polygon"}.
+#' `type="polygon"`.
 #'
-#' @param col either the color for filling polygons (if \code{type="polygon"})
-#' or the color of the points and line segments (if \code{type="p"},
-#' \code{type="l"}, or \code{type="o"}). If \code{col=NULL} then a default
-#' will be set: no coastline filling for the \code{type="polygon"} case,
-#' or black coastlines, for \code{type="p"}, \code{type="l"}, or
-#' \code{type="o"}.
+#' @param col either the color for filling polygons (if `type="polygon"`)
+#' or the color of the points and line segments (if `type="p"`,
+#' `type="l"`, or `type="o"`). If `col=NULL` then a default
+#' will be set: no coastline filling for the `type="polygon"` case,
+#' or black coastlines, for `type="p"`, `type="l"`, or
+#' `type="o"`.
 #'
 #' @param clip logical value indicating whether to trim any coastline elements that lie wholly
 #' outside the plot region. This can prevent e.g. a problem of filling the whole plot area of
 #' an Arctic stereopolar view, because the projected trace for Antarctica lies outside all
-#' other regions so the whole of the world ends up being "land".  Setting \code{clip=FALSE}
+#' other regions so the whole of the world ends up being "land".  Setting `clip=FALSE`
 #' disables this action, which may be of benefit in rare instances in the line connecting
 #' two points on a coastline may cross the plot domain, even if those points are outside
 #' that domain.
 #'
-#' @param type indication of type; may be \code{"polygon"}, for a filled polygon,
-#' \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
+#' @param type indication of type; may be `"polygon"`, for a filled polygon,
+#' `"p"` for points, `"l"` for line segments, or `"o"` for points
 #' overlain with line segments.
 #'
 #' @param axes logical value indicating whether to draw longitude and latitude
@@ -1042,12 +1082,12 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' for some projections or scales.
 #'
 #' @param cex character expansion factor for plot symbols,
-#' used if \code{type='p'} or any other value that yields symbols.
+#' used if `type='p'` or any other value that yields symbols.
 #'
-#' @param cex.axis axis-label expansion factor (see \code{\link{par}}).
+#' @param cex.axis axis-label expansion factor (see [par()]).
 #'
 #' @param mgp three-element numerical vector describing axis-label
-#' placement, passed to \code{\link{mapAxis}}.
+#' placement, passed to [mapAxis()].
 #'
 #' @param drawBox logical value indicating whether to draw a box around the plot.
 #' This is helpful for many projections at sub-global scale.
@@ -1060,17 +1100,17 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @param lonlabel,latlabel,sides Optional vectors of longitude and latitude
 #' to label on the indicated sides of plot, passed to
-#' \code{\link{plot,coastline-method}}.  Using these arguments permits reasonably
+#' [plot,coastline-method()].  Using these arguments permits reasonably
 #' simple customization.  If they are are not provided, reasonable defaults
 #' will be used.
 #'
 #' @param projection optional indication of projection, in one of two
 #' forms. First, it may be a character string in the "CRS" format that is
 #' used by the \CRANpkg{rgdal} package (and in much of modern computer-based
-#' cartography). For example, \code{projection="+proj=merc"} specifies a
+#' cartography). For example, `projection="+proj=merc"` specifies a
 #' Mercator projection. The second format is the output from
-#' \code{\link[sp]{CRS}} in the \CRANpkg{sp} package, which is an object
-#' with a slot named \code{projarg} that gets used as a projection string.
+#' [sp::CRS()] in the \CRANpkg{sp} package, which is an object
+#' with a slot named `projarg` that gets used as a projection string.
 #' See \dQuote{Details}.
 #'
 #' @param trim logical value indicating whether to trim islands or lakes
@@ -1080,7 +1120,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' though, because the line segment joining two off-scale points might
 #' intersect the plotting box.
 #'
-#' @param tissot logical value indicating whether to use \code{\link{mapTissot}}
+#' @param tissot logical value indicating whether to use [mapTissot()]
 #' to plot Tissot indicatrices, i.e. ellipses at grid intersection points, which
 #' indicate map distortion.
 #'
@@ -1088,30 +1128,17 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' amount of debugging information, or to 2 to get more.
 #'
 #' @param ... optional arguments passed to some plotting functions.  This can
-#' be useful in many ways, e.g.  Example 5 shows how to use \code{xlim} etc to
+#' be useful in many ways, e.g.  Example 5 shows how to use `xlim` etc to
 #' reproduce a scale exactly between two plots.
 #'
-#' @details
-#' Creates a map using the indicated projection.  As noted in the
-#' information on the \code{projection} argument, projections are specified in
-#' the notation used by \code{project()} in the \CRANpkg{rgdal} package; see
-#' \dQuote{Available Projections} for a list of possibilities.
-#'
-#' Further details on map projections are provided by [1,11], an exhaustive
-#' treatment that includes many illustrations, an overview of the history of the
-#' topic, and some notes on the strengths and weaknesses of the various
-#' formulations.  See especially pages 2 through 7, which define terms and
-#' provide recommendations.  Reference [2] is also useful, especially regarding
-#' datum shifts; [3] and [4] are less detailed and perhaps better for novices.
-#' See [8] for a gallery of projections.
 #'
 #' @seealso
-#' Points may be added to a map with \code{\link{mapPoints}}, lines with
-#' \code{\link{mapLines}}, text with \code{\link{mapText}}, polygons with
-#' \code{\link{mapPolygon}}, images with \code{\link{mapImage}}, and scale bars
-#' with \code{\link{mapScalebar}}.  Points on a map may be determined with mouse
-#' clicks using \code{\link{mapLocator}}.  Great circle paths can be calculated
-#' with \code{\link{geodGc}}.  See [8] for a demonstration of the available map
+#' Points may be added to a map with [mapPoints()], lines with
+#' [mapLines()], text with [mapText()], polygons with
+#' [mapPolygon()], images with [mapImage()], and scale bars
+#' with [mapScalebar()].  Points on a map may be determined with mouse
+#' clicks using [mapLocator()].  Great circle paths can be calculated
+#' with [geodGc()].  See reference 8 for a demonstration of the available map
 #' projections (with graphs).
 #'
 #' @examples
@@ -1121,13 +1148,13 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'     data(coastlineWorld)
 #'
 #'     # Example 1.
-#'     # Mollweide ([1] page 54) is an equal-area projection that works well
+#'     # Mollweide (referenc 1 page 54) is an equal-area projection that works well
 #'     # for whole-globe views.
 #'     mapPlot(coastlineWorld, projection="+proj=moll", col='gray')
 #'     mtext("Mollweide", adj=1)
 #'
 #'     # Example 2.
-#'     # Note that filling is not employed (\code{col} is not
+#'     # Note that filling is not employed (`col` is not
 #'     # given) when the prime meridian is shifted, because
 #'     # this causes a problem with Antarctica
 #'     cl180 <- coastlineCut(coastlineWorld, lon_0=-180)
@@ -1138,7 +1165,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'     # Orthographic projections resemble a globe, making them attractive for
 #'     # non-technical use, but they are neither conformal nor equal-area, so they
 #'     # are somewhat limited for serious use on large scales.  See Section 20 of
-#'     # [1]. Note that filling is not employed because it causes a problem with
+#'     # reference 1. Note that filling is not employed because it causes a problem with
 #'     # Antarctica.
 #'     par(mar=c(3, 3, 1, 1))
 #'     mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
@@ -1146,7 +1173,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #'     # Example 4.
 #'     # The Lambert conformal conic projection is an equal-area projection
-#'     # recommended by [1], page 95, for regions of large east-west extent
+#'     # recommended by reference 1, page 95, for regions of large east-west extent
 #'     # away from the equator, here illustrated for the USA and Canada.
 #'     par(mar=c(3, 3, 1, 1))
 #'     mapPlot(coastlineCut(coastlineWorld, -100),
@@ -1155,7 +1182,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'     mtext("Lambert conformal", adj=1)
 #'
 #'     # Example 5.
-#'     # The stereographic projection [1], page 120, is conformal, used
+#'     # The stereographic projection (reference 1, page 120) is conformal, used
 #'     # below for an Arctic view with a Canadian focus.  Note the trick of going
 #'     # past the pole: the second latitudelim value is 180 minus the first, and the
 #'     # second longitudelim is 180 plus the first; this uses image points "over"
@@ -1193,167 +1220,167 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' \CRANpkg{rgdal} package, but not all projections in that package are
 #' available. The available list is given in the table
 #' below. The cartographic community has set up a naming scheme in a coded
-#' scheme, e.g. \code{projection="+proj=aea"} selects the Albers equal area
+#' scheme, e.g. `projection="+proj=aea"` selects the Albers equal area
 #' projection.
 #'
 #' The allowed projections include those PROJ.4 projections provided by
 #' \CRANpkg{rgdal} that have inverses, minus a few that cause problems:
-#' \code{alsk} overdraws \code{coastlineWorld}, and is a niche projection for Alaska;
-#' \code{calcofi} is not a real projection, but rather a coordinate system;
-#' \code{gs48} overdraws \code{coastlineWorld}, and is a niche projection for the USA;
-#' \code{gs50} overdraws \code{coastlineWorld}, and is a niche projection for the USA;
-#' \code{gstmerc} overdraws \code{coastlineWorld};
-#' \code{isea} causes segmentation faults on OSX systems;
-#' \code{krovak} overdraws \code{coastlineWorld}, and is a niche projection for the Czech Republic;
-#' \code{labrd} returns \code{NaN} for most of the world, and is a niche projection for Madagascar;
-#' \code{lee_os} overdraws \code{coastlineWorld};
+#' `alsk` overdraws `coastlineWorld`, and is a niche projection for Alaska;
+#' `calcofi` is not a real projection, but rather a coordinate system;
+#' `gs48` overdraws `coastlineWorld`, and is a niche projection for the USA;
+#' `gs50` overdraws `coastlineWorld`, and is a niche projection for the USA;
+#' `gstmerc` overdraws `coastlineWorld`;
+#' `isea` causes segmentation faults on OSX systems;
+#' `krovak` overdraws `coastlineWorld`, and is a niche projection for the Czech Republic;
+#' `labrd` returns `NaN` for most of the world, and is a niche projection for Madagascar;
+#' `lee_os` overdraws `coastlineWorld`;
 #' and
-#' \code{nzmg} overdraws \code{coastlineWorld}.
+#' `nzmg` overdraws `coastlineWorld`.
 #'
 #'
 #' The information in the table is reformatted from the output of the unix
-#' command \code{proj -lP}, where \code{proj} is provided by version 4.9.0 of
+#' command `proj -lP`, where `proj` is provided by version 4.9.0 of
 #' the PROJ.4 system. Most of the arguments listed have default values. In
-#' addition, most projections can handle arguments \code{lon_0} and
-#' \code{lat_0}, for shifting the reference point, although in some cases
+#' addition, most projections can handle arguments `lon_0` and
+#' `lat_0`, for shifting the reference point, although in some cases
 #' shifting the longitude can yield poor filling of coastlines.
 #'
 #' Further details of the projections and the controlling arguments are
 #' provided at several websites, because PROJ.4 has been incorporated into
 #' \CRANpkg{rgdal} and other R packages, plus many other software systems; a good
-#' starting point for learning is [6].
+#' starting point for learning is reference 6.
 #'
 #' See \dQuote{Examples} for suggested projections for some common
-#' applications, and [8] for a gallery indicating how to use every projection.
+#' applications, and reference 8 for a gallery indicating how to use every projection.
 #'
 #' \tabular{lll}{
 #' \strong{Projection}                       \tab \strong{Code}   \tab \strong{Arguments}\cr
-#' Albers equal area                         \tab \code{aea}      \tab \code{lat_1}, \code{lat_2}\cr
-#' Azimuthal equidistant                     \tab \code{aeqd}     \tab \code{lat_0}, \code{guam}\cr
-#' Aitoff                                    \tab \code{aitoff}   \tab - \cr
-#' Mod. stererographics of Alaska            \tab \code{alsk}     \tab - \cr
-#' Bipolar conic of western hemisphere       \tab \code{bipc}     \tab - \cr
-#' Bonne Werner                              \tab \code{bonne}    \tab \code{lat_1}\cr
-#' Cassini                                   \tab \code{cass}     \tab - \cr
-#' Central cylindrical                       \tab \code{cc}       \tab - \cr
-#' Equal area cylindrical                    \tab \code{cea}      \tab \code{lat_ts}\cr
-#' Collignon                                 \tab \code{collg}    \tab - \cr
-#' Craster parabolic Putnins P4              \tab \code{crast}    \tab - \cr
-#' Eckert I                                  \tab \code{eck1}     \tab - \cr
-#' Eckert II                                 \tab \code{eck2}     \tab - \cr
-#' Eckert III                                \tab \code{eck3}     \tab - \cr
-#' Eckert IV                                 \tab \code{eck4}     \tab - \cr
-#' Eckert V                                  \tab \code{eck5}     \tab - \cr
-#' Eckert VI                                 \tab \code{eck6}     \tab - \cr
-#' Equidistant cylindrical plate (Caree)     \tab \code{eqc}      \tab \code{lat_ts}, \code{lat_0}\cr
-#' Equidistant conic                         \tab \code{eqdc}     \tab \code{lat_1}, \code{lat_2}\cr
-#' Euler                                     \tab \code{euler}    \tab \code{lat_1}, \code{lat_2}\cr
-#' Extended transverse Mercator              \tab \code{etmerc}   \tab \code{lat_ts}, \code{lat_0}\cr
-#' Fahey                                     \tab \code{fahey}    \tab - \cr
-#' Foucaut                                   \tab \code{fouc}     \tab - \cr
-#' Foucaut sinusoidal                        \tab \code{fouc_s}   \tab - \cr
-#' Gall stereographic                        \tab \code{gall}     \tab - \cr
-#' Geostationary satellite view              \tab \code{geos}     \tab \code{h}\cr
-#' General sinusoidal series                 \tab \code{gn_sinu}  \tab \code{m}, \code{n}\cr
-#' Gnomonic                                  \tab \code{gnom}     \tab - \cr
-#' Goode homolosine                          \tab \code{goode}    \tab - \cr
-## Mod. stererographics of 48 U.S.           \tab \code{gs48}     \tab - \cr
-## Mod. stererographics of 50 U.S.           \tab \code{gs50}     \tab - \cr
-#' Hatano asymmetrical equal area            \tab \code{hatano}   \tab - \cr
-#' HEALPix                                   \tab \code{healpix}  \tab - \cr
-#' rHEALPix                                  \tab \code{rhealpix} \tab \code{north_square}, \code{south_square}\cr
-#' Interrupted Goode homolosine              \tab \code{igh}      \tab -\cr
-## Int'l map of the world polyconic          \tab \code{imw_p}    \tab \code{lat_1}, \code{lat_2}, \code{lon_1}\cr
-#' Kavraisky V                               \tab \code{kav5}     \tab - \cr
-#' Kavraisky VII                             \tab \code{kav7}     \tab - \cr
-## Krovak                                    \tab \code{krovak}   \tab - \cr
-#' Lambert azimuthal equal area              \tab \code{laea}     \tab - \cr
-#' Longitude and latitude                    \tab \code{lonlat}   \tab - \cr
-#' Longitude and latitude                    \tab \code{longlat}   \tab - \cr
-#' Longitude and latitude                    \tab \code{latlon}   \tab - \cr
-#' Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2}, \code{lat_0}\cr
-#' Lambert equal area conic                  \tab \code{leac}     \tab \code{lat_1}, \code{south}\cr
-## Lee oblated stereographic                 \tab \code{lee_os}   \tab\cr
-#' Loximuthal                                \tab \code{loxim}    \tab\cr
-#' Space oblique for Landsat                 \tab \code{lsat}     \tab \code{lsat}, \code{path}\cr
-#' McBryde-Thomas flat-polar sine, no. 1     \tab \code{mbt_s}    \tab\cr
-#' McBryde-Thomas flat-polar sine, no. 2     \tab \code{mbt_fps}  \tab\cr
-#' McBryde-Thomas flat-polar parabolic       \tab \code{mbtfpp}   \tab\cr
-#' McBryde-Thomas flat-polar quartic         \tab \code{mbtfpq}   \tab\cr
-#' McBryde-Thomas flat-polar sinusoidal      \tab \code{mbtfps}   \tab\cr
-#' Mercator                                  \tab \code{merc}     \tab \code{lat_ts}\cr
-#' Miller oblated stereographic              \tab \code{mil_os}   \tab\cr
-#' Miller cylindrical                        \tab \code{mill}     \tab\cr
-#' Mollweide                                 \tab \code{moll}     \tab\cr
-#' Murdoch I                                 \tab \code{murd1}    \tab \code{lat_1}, \code{lat_2}\cr
-#' Murdoch II                                \tab \code{murd2}    \tab \code{lat_1}, \code{lat_2}\cr
-#' murdoch III                               \tab \code{murd3}    \tab \code{lat_1}, \code{lat_2}\cr
-#' Natural earth                             \tab \code{natearth} \tab\cr
-#' Nell                                      \tab \code{nell}     \tab\cr
-#' Nell-Hammer                               \tab \code{nell_h}   \tab\cr
-#' Near-sided perspective                    \tab \code{nsper}    \tab \code{h}\cr
-#' New Zealand map grid                      \tab \code{nzmg}     \tab\cr
-#' General oblique transformation            \tab \code{ob_tran}  \tab \code{o_proj}, \code{o_lat_p}, \code{o_lon_p}, \code{o_alpha}, \code{o_lon_c}\cr
-#'                                           \tab                 \tab \code{o_lat_c}, \code{o_lon_1}, \code{o_lat_1}, \code{o_lon_2}, \code{o_lat_2}\cr
-#' Oblique cylindrical equal area            \tab \code{ocea}     \tab \code{lat_1}, \code{lat_2}, \code{lon_1}, \code{lon_2}\cr
-#' Oblated equal area                        \tab \code{oea}      \tab \code{n}, \code{m}, \code{theta}\cr
-#' Oblique Mercator                          \tab \code{omerc}    \tab \code{alpha}, \code{gamma}, \code{no_off}, \code{lonc}, \code{lon_1},\cr
-#'                                           \tab                 \tab \code{lat_1}, \code{lon_2}, \code{lat_2}\cr
-#' Orthographic                              \tab \code{ortho}    \tab - \cr
-#' Perspective conic                         \tab \code{pconic}   \tab \code{lat_1}, \code{lat_2}\cr
-#' Polyconic American                        \tab \code{poly}     \tab - \cr
-#' Putnins P1                                \tab \code{putp1}    \tab - \cr
-#' Putnins P2                                \tab \code{putp2}    \tab - \cr
-#' Putnins P3                                \tab \code{putp3}    \tab - \cr
-#' Putnins P3'                               \tab \code{putp3p}   \tab - \cr
-#' Putnins P4'                               \tab \code{putp4p}   \tab - \cr
-#' Putnins P5                                \tab \code{putp5}    \tab - \cr
-#' Putnins P5'                               \tab \code{putp5p}   \tab - \cr
-#' Putnins P6                                \tab \code{putp6}    \tab - \cr
-#' Putnins P6'                               \tab \code{putp6p}   \tab - \cr
-#' Quartic authalic                          \tab \code{qua_aut}  \tab - \cr
-#' Quadrilateralized spherical cube          \tab \code{qsc}      \tab - \cr
-#' Robinson                                  \tab \code{robin}    \tab - \cr
-#' Roussilhe stereographic                   \tab \code{rouss}    \tab - \cr
-#' Sinusoidal aka Sanson-Flamsteed           \tab \code{sinu}     \tab - \cr
-#' Swiss. oblique Mercator                   \tab \code{somerc}   \tab - \cr
-#' Stereographic                             \tab \code{stere}    \tab \code{lat_ts}\cr
-#' Oblique stereographic alternative         \tab \code{sterea}   \tab - \cr
-## Gauss-Schreiber transverse Mercator       \tab \code{gstmerc}  \tab \code{lat_0}, \code{lon_0}, \code{k_0}\cr
-#' Transverse cylindrical equal area         \tab \code{tcea}     \tab - \cr
-#' Tissot                                    \tab \code{tissot}   \tab \code{lat_1}, \code{lat_2}\cr
-#' Transverse Mercator                       \tab \code{tmerc}    \tab - \cr
-#' Two point equidistant                     \tab \code{tpeqd}    \tab \code{lat_1}, \code{lon_1}, \code{lat_2}, \code{lon_2}\cr
-#' Tilted perspective                        \tab \code{tpers}    \tab \code{tilt}, \code{azi}, \code{h}\cr
-#' Universal polar stereographic             \tab \code{ups}      \tab \code{south}\cr
-#' Urmaev flat-polar sinusoidal              \tab \code{urmfps}   \tab \code{n}\cr
-#' Universal transverse Mercator             \tab \code{utm}      \tab \code{zone}, \code{south}\cr
-#' van der Grinten I                         \tab \code{vandg}    \tab - \cr
-#' Vitkovsky I                               \tab \code{vitk1}    \tab \code{lat_1}, \code{lat_2}\cr
-#' Wagner I Kavraisky VI                     \tab \code{wag1}     \tab - \cr
-#' Wagner II                                 \tab \code{wag2}     \tab - \cr
-#' Wagner III                                \tab \code{wag3}     \tab \code{lat_ts}\cr
-#' Wagner IV                                 \tab \code{wag4}     \tab - \cr
-#' Wagner V                                  \tab \code{wag5}     \tab - \cr
-#' Wagner VI                                 \tab \code{wag6}     \tab - \cr
-#' Werenskiold I                             \tab \code{weren}    \tab - \cr
-#' Winkel I                                  \tab \code{wink1}    \tab \code{lat_ts}\cr
-#' Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts}\cr
+#' Albers equal area                         \tab `aea`      \tab `lat_1`, `lat_2`\cr
+#' Azimuthal equidistant                     \tab `aeqd`     \tab `lat_0`, `guam`\cr
+#' Aitoff                                    \tab `aitoff`   \tab - \cr
+#' Mod. stererographics of Alaska            \tab `alsk`     \tab - \cr
+#' Bipolar conic of western hemisphere       \tab `bipc`     \tab - \cr
+#' Bonne Werner                              \tab `bonne`    \tab `lat_1`\cr
+#' Cassini                                   \tab `cass`     \tab - \cr
+#' Central cylindrical                       \tab `cc`       \tab - \cr
+#' Equal area cylindrical                    \tab `cea`      \tab `lat_ts`\cr
+#' Collignon                                 \tab `collg`    \tab - \cr
+#' Craster parabolic Putnins P4              \tab `crast`    \tab - \cr
+#' Eckert I                                  \tab `eck1`     \tab - \cr
+#' Eckert II                                 \tab `eck2`     \tab - \cr
+#' Eckert III                                \tab `eck3`     \tab - \cr
+#' Eckert IV                                 \tab `eck4`     \tab - \cr
+#' Eckert V                                  \tab `eck5`     \tab - \cr
+#' Eckert VI                                 \tab `eck6`     \tab - \cr
+#' Equidistant cylindrical plate (Caree)     \tab `eqc`      \tab `lat_ts`, `lat_0`\cr
+#' Equidistant conic                         \tab `eqdc`     \tab `lat_1`, `lat_2`\cr
+#' Euler                                     \tab `euler`    \tab `lat_1`, `lat_2`\cr
+#' Extended transverse Mercator              \tab `etmerc`   \tab `lat_ts`, `lat_0`\cr
+#' Fahey                                     \tab `fahey`    \tab - \cr
+#' Foucaut                                   \tab `fouc`     \tab - \cr
+#' Foucaut sinusoidal                        \tab `fouc_s`   \tab - \cr
+#' Gall stereographic                        \tab `gall`     \tab - \cr
+#' Geostationary satellite view              \tab `geos`     \tab `h`\cr
+#' General sinusoidal series                 \tab `gn_sinu`  \tab `m`, `n`\cr
+#' Gnomonic                                  \tab `gnom`     \tab - \cr
+#' Goode homolosine                          \tab `goode`    \tab - \cr
+## Mod. stererographics of 48 U.S.           \tab `gs48`     \tab - \cr
+## Mod. stererographics of 50 U.S.           \tab `gs50`     \tab - \cr
+#' Hatano asymmetrical equal area            \tab `hatano`   \tab - \cr
+#' HEALPix                                   \tab `healpix`  \tab - \cr
+#' rHEALPix                                  \tab `rhealpix` \tab `north_square`, `south_square`\cr
+#' Interrupted Goode homolosine              \tab `igh`      \tab -\cr
+## Int'l map of the world polyconic          \tab `imw_p`    \tab `lat_1`, `lat_2`, `lon_1`\cr
+#' Kavraisky V                               \tab `kav5`     \tab - \cr
+#' Kavraisky VII                             \tab `kav7`     \tab - \cr
+## Krovak                                    \tab `krovak`   \tab - \cr
+#' Lambert azimuthal equal area              \tab `laea`     \tab - \cr
+#' Longitude and latitude                    \tab `lonlat`   \tab - \cr
+#' Longitude and latitude                    \tab `longlat`   \tab - \cr
+#' Longitude and latitude                    \tab `latlon`   \tab - \cr
+#' Lambert conformal conic                   \tab `lcc`      \tab `lat_1`, `lat_2`, `lat_0`\cr
+#' Lambert equal area conic                  \tab `leac`     \tab `lat_1`, `south`\cr
+## Lee oblated stereographic                 \tab `lee_os`   \tab\cr
+#' Loximuthal                                \tab `loxim`    \tab\cr
+#' Space oblique for Landsat                 \tab `lsat`     \tab `lsat`, `path`\cr
+#' McBryde-Thomas flat-polar sine, no. 1     \tab `mbt_s`    \tab\cr
+#' McBryde-Thomas flat-polar sine, no. 2     \tab `mbt_fps`  \tab\cr
+#' McBryde-Thomas flat-polar parabolic       \tab `mbtfpp`   \tab\cr
+#' McBryde-Thomas flat-polar quartic         \tab `mbtfpq`   \tab\cr
+#' McBryde-Thomas flat-polar sinusoidal      \tab `mbtfps`   \tab\cr
+#' Mercator                                  \tab `merc`     \tab `lat_ts`\cr
+#' Miller oblated stereographic              \tab `mil_os`   \tab\cr
+#' Miller cylindrical                        \tab `mill`     \tab\cr
+#' Mollweide                                 \tab `moll`     \tab\cr
+#' Murdoch I                                 \tab `murd1`    \tab `lat_1`, `lat_2`\cr
+#' Murdoch II                                \tab `murd2`    \tab `lat_1`, `lat_2`\cr
+#' murdoch III                               \tab `murd3`    \tab `lat_1`, `lat_2`\cr
+#' Natural earth                             \tab `natearth` \tab\cr
+#' Nell                                      \tab `nell`     \tab\cr
+#' Nell-Hammer                               \tab `nell_h`   \tab\cr
+#' Near-sided perspective                    \tab `nsper`    \tab `h`\cr
+#' New Zealand map grid                      \tab `nzmg`     \tab\cr
+#' General oblique transformation            \tab `ob_tran`  \tab `o_proj`, `o_lat_p`, `o_lon_p`, `o_alpha`, `o_lon_c`\cr
+#'                                           \tab                 \tab `o_lat_c`, `o_lon_1`, `o_lat_1`, `o_lon_2`, `o_lat_2`\cr
+#' Oblique cylindrical equal area            \tab `ocea`     \tab `lat_1`, `lat_2`, `lon_1`, `lon_2`\cr
+#' Oblated equal area                        \tab `oea`      \tab `n`, `m`, `theta`\cr
+#' Oblique Mercator                          \tab `omerc`    \tab `alpha`, `gamma`, `no_off`, `lonc`, `lon_1`,\cr
+#'                                           \tab                 \tab `lat_1`, `lon_2`, `lat_2`\cr
+#' Orthographic                              \tab `ortho`    \tab - \cr
+#' Perspective conic                         \tab `pconic`   \tab `lat_1`, `lat_2`\cr
+#' Polyconic American                        \tab `poly`     \tab - \cr
+#' Putnins P1                                \tab `putp1`    \tab - \cr
+#' Putnins P2                                \tab `putp2`    \tab - \cr
+#' Putnins P3                                \tab `putp3`    \tab - \cr
+#' Putnins P3'                               \tab `putp3p`   \tab - \cr
+#' Putnins P4'                               \tab `putp4p`   \tab - \cr
+#' Putnins P5                                \tab `putp5`    \tab - \cr
+#' Putnins P5'                               \tab `putp5p`   \tab - \cr
+#' Putnins P6                                \tab `putp6`    \tab - \cr
+#' Putnins P6'                               \tab `putp6p`   \tab - \cr
+#' Quartic authalic                          \tab `qua_aut`  \tab - \cr
+#' Quadrilateralized spherical cube          \tab `qsc`      \tab - \cr
+#' Robinson                                  \tab `robin`    \tab - \cr
+#' Roussilhe stereographic                   \tab `rouss`    \tab - \cr
+#' Sinusoidal aka Sanson-Flamsteed           \tab `sinu`     \tab - \cr
+#' Swiss. oblique Mercator                   \tab `somerc`   \tab - \cr
+#' Stereographic                             \tab `stere`    \tab `lat_ts`\cr
+#' Oblique stereographic alternative         \tab `sterea`   \tab - \cr
+## Gauss-Schreiber transverse Mercator       \tab `gstmerc`  \tab `lat_0`, `lon_0`, `k_0`\cr
+#' Transverse cylindrical equal area         \tab `tcea`     \tab - \cr
+#' Tissot                                    \tab `tissot`   \tab `lat_1`, `lat_2`\cr
+#' Transverse Mercator                       \tab `tmerc`    \tab - \cr
+#' Two point equidistant                     \tab `tpeqd`    \tab `lat_1`, `lon_1`, `lat_2`, `lon_2`\cr
+#' Tilted perspective                        \tab `tpers`    \tab `tilt`, `azi`, `h`\cr
+#' Universal polar stereographic             \tab `ups`      \tab `south`\cr
+#' Urmaev flat-polar sinusoidal              \tab `urmfps`   \tab `n`\cr
+#' Universal transverse Mercator             \tab `utm`      \tab `zone`, `south`\cr
+#' van der Grinten I                         \tab `vandg`    \tab - \cr
+#' Vitkovsky I                               \tab `vitk1`    \tab `lat_1`, `lat_2`\cr
+#' Wagner I Kavraisky VI                     \tab `wag1`     \tab - \cr
+#' Wagner II                                 \tab `wag2`     \tab - \cr
+#' Wagner III                                \tab `wag3`     \tab `lat_ts`\cr
+#' Wagner IV                                 \tab `wag4`     \tab - \cr
+#' Wagner V                                  \tab `wag5`     \tab - \cr
+#' Wagner VI                                 \tab `wag6`     \tab - \cr
+#' Werenskiold I                             \tab `weren`    \tab - \cr
+#' Winkel I                                  \tab `wink1`    \tab `lat_ts`\cr
+#' Winkel Tripel                             \tab `wintri`   \tab `lat_ts`\cr
 #' }
 #'
 #' @section Available ellipse formulations:
 #' In the PROJ.4 system of specifying projections, the following ellipse
-#' models are available: \code{MERIT},
-#' \code{SGS85}, \code{GRS80}, \code{IAU76}, \code{airy}, \code{APL4.9},
-#' \code{NWL9D}, \code{mod_airy}, \code{andrae}, \code{aust_SA}, \code{GRS67},
-#' \code{bessel}, \code{bess_nam}, \code{clrk66}, \code{clrk80},
-#' \code{clrk80ign}, \code{CPM}, \code{delmbr}, \code{engelis},
-#' \code{evrst30}, \code{evrst48}, \code{evrst56}, \code{evrst69},
-#' \code{evrstSS}, \code{fschr60}, \code{fschr60m}, \code{fschr68},
-#' \code{helmert}, \code{hough}, \code{intl}, \code{krass}, \code{kaula},
-#' \code{lerch}, \code{mprts}, \code{new_intl}, \code{plessis}, \code{SEasia},
-#' \code{walbeck}, \code{WGS60}, \code{WGS66}, \code{WGS72}, \code{WGS84}, and
-#' \code{sphere} (the default).  For example, use \code{projection="+proj=aea
+#' models are available: `MERIT`,
+#' `SGS85`, `GRS80`, `IAU76`, `airy`, `APL4.9`,
+#' `NWL9D`, `mod_airy`, `andrae`, `aust_SA`, `GRS67`,
+#' `bessel`, `bess_nam`, `clrk66`, `clrk80`,
+#' `clrk80ign`, `CPM`, `delmbr`, `engelis`,
+#' `evrst30`, `evrst48`, `evrst56`, `evrst69`,
+#' `evrstSS`, `fschr60`, `fschr60m`, `fschr68`,
+#' `helmert`, `hough`, `intl`, `krass`, `kaula`,
+#' `lerch`, `mprts`, `new_intl`, `plessis`, `SEasia`,
+#' `walbeck`, `WGS60`, `WGS66`, `WGS72`, `WGS84`, and
+#' `sphere` (the default).  For example, use \code{projection="+proj=aea
 #'     +ellps=WGS84"} for an Albers Equal Area projection using the most
 #' recent of the World Geodetic System model. It is unlikely that changing the
 #' ellipse will have a visible effect on plotted material at the plot scale
@@ -1361,27 +1388,27 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @section Available datum formulations:
 #' In the PROJ.4 system of specifying
-#' projections, the following datum formulations are available: \code{WGS84},
-#' \code{GGRS87}, \code{Greek_Geodetic_Reference_System_1987}, \code{NAD83},
-#' \code{North_American_Datum_1983}, \code{NAD27},
-#' \code{North_American_Datum_1927}, \code{potsdam}, \code{Potsdam},
-#' \code{carthage}, \code{Carthage}, \code{hermannskogel},
-#' \code{Hermannskogel}, \code{ire65}, \code{Ireland}, \code{nzgd49},
-#' \code{New}, \code{OSGB36}, and \code{Airy}. It is unlikely that changing
+#' projections, the following datum formulations are available: `WGS84`,
+#' `GGRS87`, `Greek_Geodetic_Reference_System_1987`, `NAD83`,
+#' `North_American_Datum_1983`, `NAD27`,
+#' `North_American_Datum_1927`, `potsdam`, `Potsdam`,
+#' `carthage`, `Carthage`, `hermannskogel`,
+#' `Hermannskogel`, `ire65`, `Ireland`, `nzgd49`,
+#' `New`, `OSGB36`, and `Airy`. It is unlikely that changing
 #' the datum will have a visible effect on plotted material at the plot scale
 #' appropriate to most oceanographic applications.
 #'
 #' @section Choosing a projection:
 #' The best choice of projection depends on the application.
-#' Readers may find \code{projection="+proj=moll"} useful for world-wide
-#' plots, \code{ortho} for hemispheres viewed from the equator, \code{stere}
-#' for polar views, \code{lcc} for wide meridional ranges in mid latitudes,
-#' and \code{merc} in limited-area cases where angle preservation is
+#' Readers may find `projection="+proj=moll"` useful for world-wide
+#' plots, `ortho` for hemispheres viewed from the equator, `stere`
+#' for polar views, `lcc` for wide meridional ranges in mid latitudes,
+#' and `merc` in limited-area cases where angle preservation is
 #' important.
 #'
 #' @section Problems:
 #' Map projection is a complicated matter that is addressed here
-#' in a limited and pragmatic way.  For example, \code{mapPlot} tries to draw
+#' in a limited and pragmatic way.  For example, `mapPlot` tries to draw
 #' axes along a box containing the map, instead of trying to find spots along
 #' the ``edge'' of the map at which to put longitude and latitude labels.
 #' This design choice greatly simplifies the coding effort, freeing up time to
@@ -1394,11 +1421,11 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' There are also systematic problems on i386/windows machines, owing to
 #' problems with \CRANpkg{rgdal} on such systems. This explains why
-#' \code{\link{example}("mapPlot")} does not try to create maps on such
+#' [`example`]`("mapPlot")` does not try to create maps on such
 #' machines. However, \CRANpkg{rgdal} is in continue development, so it
-#' is reasonable to hope that \code{oce} map projections may start working
+#' is reasonable to hope that `oce` map projections may start working
 #' at some time. As of \CRANpkg{rgdal} version 1.4-3 (in March 2019),
-#' however, \code{mapPlot} does not work on i386/windows
+#' however, `mapPlot` does not work on i386/windows
 #' machines.
 #'
 #' @section Changes:
@@ -1408,24 +1435,23 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' is disabled on i386/windows machines, on which the requisite
 #' \CRANpkg{rgdal} package continues to fail on common projections.
 #'
-#' \item 2017-11-19: \code{imw_p} removed, because it has problems doing
+#' \item 2017-11-19: `imw_p` removed, because it has problems doing
 #' inverse calculations.
 #' This is a also problem in the standalone PROJ.4 application version
 #' 4.9.3, downloaded and built on OSX.
 #' See \url{https://github.com/dankelley/oce/issues/1319} for details.
 #'
-#' \item 2017-11-17: \code{lsat} removed, because it does not work in
+#' \item 2017-11-17: `lsat` removed, because it does not work in
 #' \CRANpkg{rgdal} or in the latest standalone PROJ.4 application.
 #' This is a also problem in the standalone PROJ.4 application version
 #' 4.9.3, downloaded and built on OSX.
 #' See \url{https://github.com/dankelley/oce/issues/1337} for details.
 #'
-#' \item 2017-09-30: \code{lcca} removed, because its inverse was
+#' \item 2017-09-30: `lcca` removed, because its inverse was
 #' wildly inaccurate in a Pacific Antarctic-Alaska application
 #' (see \url{https://github.com/dankelley/oce/issues/1303}).
 #'
 #' }
-#'
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -1441,14 +1467,14 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' 3. Wikipedia page \url{https://en.wikipedia.org/wiki/List_of_map_projections}
 #'
 #' 4. Radical Cartography website
-#' \code{http://www.radicalcartography.net/?projectionref} (This URL worked
+#' `http://www.radicalcartography.net/?projectionref` (This URL worked
 #' prior to Nov 16, 2016, but was found to fail on that date.)
 #'
-#' 5. The \code{PROJ.4} website is \url{http://trac.osgeo.org/proj}, and it is
+#' 5. The `PROJ.4` website is \url{http://trac.osgeo.org/proj}, and it is
 #' the place to start to learn about the code.
 #'
-#' 6. \code{PROJ.4} projection details were once at
-#' \code{http://www.remotesensing.org/geotiff/proj_list/} but it was
+#' 6. `PROJ.4` projection details were once at
+#' `http://www.remotesensing.org/geotiff/proj_list/` but it was
 #' discovered on Dec 18, 2016, that this link no longer exists. Indeed, there
 #' seems to have been significant reorganization of websites related to this.
 #' The base website seems to be \url{https://trac.osgeo.org/geotiff/} and that
@@ -1462,6 +1488,8 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' (1993). Two thousand years of map projections. University of Chicago Press.
 #'
 #' @family functions related to maps
+#'
+#' @md
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     bg, fill,
                     border=NULL, col=NULL,
@@ -1812,19 +1840,22 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 
 #' Add a Longitude and Latitude Grid to a Map
 #'
-#' @description
 #' Plot longitude and latitude grid on an existing map.
 #'
-#' @param dlongitude increment in longitude, ignored if \code{longitude}
+#' This is somewhat analogous to [grid()], except that the
+#' first two arguments of the latter supply the number of lines in the grid,
+#' whereas the present function has increments for the first two arguments.
+#'
+#' @param dlongitude increment in longitude, ignored if `longitude`
 #' is supplied, but otherwise determines the longitude sequence.
 #'
-#' @param dlatitude increment in latitude, ignored if \code{latitude}
+#' @param dlatitude increment in latitude, ignored if `latitude`
 #' is supplied, but otherwise determines the latitude sequence.
 #'
-#' @param longitude vector of longitudes, or \code{NULL} to prevent drawing
+#' @param longitude vector of longitudes, or `NULL` to prevent drawing
 #' longitude lines.
 #'
-#' @param latitude vector of latitudes, or \code{NULL} to prevent drawing
+#' @param latitude vector of latitudes, or `NULL` to prevent drawing
 #' latitude lines.
 #'
 #' @param col color of lines
@@ -1839,25 +1870,19 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #' @param longitudelim optional argument specifying suggested longitude limits
 #' for the grid. If this is not supplied, grid lines are drawn for the
 #' whole globe, which can yield excessively slow drawing speeds for
-#' small-region plots. This, and \code{latitudelim}, are both set by
-#' \code{\link{mapPlot}} if the arguments of the same name are passed to
+#' small-region plots. This, and `latitudelim`, are both set by
+#' [mapPlot()] if the arguments of the same name are passed to
 #' that function.
 #'
-#' @param latitudelim similar to \code{longitudelim}.
+#' @param latitudelim similar to `longitudelim`.
 #'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #'
-#'
-#' @details
-#' This is somewhat analogous to \code{\link{grid}}, except that the
-#' first two arguments of the latter supply the number of lines in the grid,
-#' whereas the present function has increments for the first two arguments.
-#'
 #' @section Plans:
 #' At the moment, the function cannot determine which lines might
 #' work with labels on axes, but this could perhaps be added later, making
-#' this more analogous with \code{\link{grid}}.
+#' this more analogous with [grid()].
 #'
 #' @examples
 #'\donttest{
@@ -1871,9 +1896,11 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #'
 #' @author Dan Kelley
 #'
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @md
 mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
                     longitudelim, latitudelim,
@@ -2051,12 +2078,10 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 }
 
 
-#' Add Meridians on a Map [defunct]
+#' Add Meridians on a Map (defunct)
 #'
-#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
-#' Use \code{\link{mapGrid}} instead of the present function.
-#'
-#' Plot meridians (lines of constant latitude) on an existing map.
+#' **WARNING:** This function will be removed soon; see [oce-deprecated].
+#' Use [mapGrid()] instead.
 #'
 #' @param latitude either a logical value indicating whether to draw
 #' a meridian grid, or a vector of latitudes at which to draw meridians.
@@ -2067,14 +2092,13 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 #'
 #' @param col line color.
 #'
-#' @param ... optional arguments passed to \code{\link{lines}}.
-#'
-#' @details
-#' This function should not be used, since it will be removed soon.
-#' Please use mapGrid() instead.
+#' @param ... optional arguments passed to [lines()].
 #'
 #' @author Dan Kelley
+#'
 #' @family functions that will be removed soon
+#'
+#' @md
 mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
     .Defunct("mapGrid",
@@ -2132,9 +2156,13 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
 #'
 #' Draw a scalebar on an existing map.
 #'
+#' The scale is appropriate to the centre of the plot, and will become
+#' increasingly inaccurate away from that spot, with the error depending on
+#' the projection and the fraction of the earth that is shown.
+#'
 #' @param x,y position of the scalebar.  Eventually this may be similar to
-#'     the corresponding arguments in \code{\link{legend}}, but at the moment
-#'     \code{y} must be \code{NULL} and \code{x} must be \code{"topleft"}.
+#'     the corresponding arguments in [legend()], but at the moment
+#'     `y` must be `NULL` and `x` must be `"topleft"`.
 #'
 #' @param length the distance to indicate, in kilometres.  If not provided, a
 #'     reasonable choice is made, based on the underlying map.
@@ -2144,11 +2172,6 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
 #' @param col color of the scalebar.
 #'
 #' @param cex character expansion factor for the scalebar text.
-#'
-#' @details
-#' The scale is appropriate to the centre of the plot, and will become
-#' increasingly inaccurate away from that spot, with the error depending on
-#' the projection and the fraction of the earth that is shown.
 #'
 #' @examples
 #'\donttest{
@@ -2163,9 +2186,11 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
 #'
 #' @author Dan Kelley
 #'
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @md
 mapScalebar <- function(x, y=NULL, length,
                         lwd=1.5*par("lwd"), cex=par("cex"),
                         col="black")
@@ -2225,7 +2250,7 @@ mapScalebar <- function(x, y=NULL, length,
 
 #' Add Text to a Map
 #'
-#' Plot text on an existing map.
+#' Plot text on an existing map, by analogy to [text()].
 #'
 #' @param longitude vector of longitudes of text to be plotted.
 #'
@@ -2233,11 +2258,8 @@ mapScalebar <- function(x, y=NULL, length,
 #'
 #' @param labels vector of labels of text to be plotted.
 #'
-#' @param ... optional arguments passed to \code{\link{text}}, e.g. \code{adj},
-#'     \code{pos}, etc.
-#'
-#' @details
-#' Adds text to an existing map, by analogy to \code{\link{text}}.
+#' @param ... optional arguments passed to [text()], e.g. `adj`,
+#'     `pos`, etc.
 #'
 #' @examples
 #'\donttest{
@@ -2256,9 +2278,11 @@ mapScalebar <- function(x, y=NULL, length,
 #'
 #' @author Dan Kelley
 #'
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @md
 mapText <- function(longitude, latitude, labels, ...)
 {
     if ("none" == .Projection()$type)
@@ -2279,29 +2303,26 @@ mapText <- function(longitude, latitude, labels, ...)
 #' Add Tissot Indicatrices to a Map
 #'
 #' Plot ellipses at grid intersection points, as a method for
-#' indicating the distortion inherent in the projection [1].
+#' indicating the distortion inherent in the projection, somewhat
+#' analogous to the scheme used in reference 1.
 #' (Each ellipse is drawn with 64 segments.)
 #'
 #' @param grid numeric vector of length 2, specifying the increment in
 #' longitude and latitude for the grid. Indicatrices are drawn at e.g.
-#' longitudes \code{seq(-180, 180, grid[1])}.
+#' longitudes `seq(-180, 180, grid[1])`.
 #'
 #' @param scale numerical scale factor for ellipses. This is multiplied by
-#' \code{min(grid)} and the result is the radius of the circle on the
+#' `min(grid)` and the result is the radius of the circle on the
 #' earth, in latitude degrees.
 #'
 #' @param crosshairs logical value indicating whether to draw constant-latitude
 #' and constant-longitude crosshairs within the ellipses.  (These are drawn
 #' with 10 line segments each.) This can be helpful in cases where it is
-#' not desired to use \code{\link{mapGrid}} to draw the longitude/latitude
+#' not desired to use [mapGrid()] to draw the longitude/latitude
 #' grid.
 #'
 #' @param \dots extra arguments passed to plotting functions, e.g.
-#' \code{col="red"} yields red indicatrices.
-#'
-#' @details
-#' The purpose and interpretation are outlined in [1], but should also be
-#' self-explanatory.
+#' `col="red"` yields red indicatrices.
 #'
 #' @references
 #' 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
@@ -2321,9 +2342,11 @@ mapText <- function(longitude, latitude, labels, ...)
 #'
 #' @author Dan Kelley
 #'
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @md
 mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 {
     if ("none" == .Projection()$type)
@@ -2349,13 +2372,10 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 }
 
 
-#' Add Zones to a Map [defunct]
+#' Add Zones to a Map (defunct)
 #'
-#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
-#'
-#' Use \code{\link{mapGrid}} instead of the present function.
-#'
-#' Plot zones (lines of constant longitude) on a existing map.
+#' **WARNING:** This function will be removed soon; see [oce-deprecated].
+#' Use [mapGrid()] instead.
 #'
 #' @param longitude either a logical indicating whether to draw a zonal grid,
 #' or a vector of longitudes at which to draw zones.
@@ -2369,14 +2389,13 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 #'
 #' @param col line color.
 #'
-#' @param ... optional arguments passed to \code{\link{lines}}.
-#'
-#' @details
-#' This function should not be used, since it will be removed soon.
-#' Please use mapGrid() instead.
+#' @param ... optional arguments passed to [lines()].
 #'
 #' @author Dan Kelley
+#'
 #' @family functions that will be removed soon
+#'
+#' @md
 mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
     .Defunct("mapGrid",
@@ -2414,11 +2433,11 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
 
 #' Add Lines to a Map
 #'
-#' Plot lines on an existing map
+#' Plot lines on an existing map, by analogy to [lines()].
 #'
 #' @param longitude vector of longitudes of points to be plotted, or an
 #' object from which longitude and latitude can be inferred (e.g. a coastline
-#' file, or the return value from \code{\link{mapLocator}}), in which case the
+#' file, or the return value from [mapLocator()]), in which case the
 #' following two arguments are ignored.
 #'
 #' @param latitude vector of latitudes of points to be plotted.
@@ -2426,10 +2445,7 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
 #' @param greatCircle a logical value indicating whether to render line
 #' segments as great circles.  (Ignored.)
 #'
-#' @param \dots optional arguments passed to \code{\link{lines}}.
-#'
-#' @details
-#' Adds lines to an existing map, by analogy to \code{\link{lines}}.
+#' @param \dots optional arguments passed to [lines()].
 #'
 #' @examples
 #'\donttest{
@@ -2446,9 +2462,11 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
 #'
 #' @author Dan Kelley
 #'
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @md
 mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 {
     if ("none" == .Projection()$type)
@@ -2487,24 +2505,21 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 
 #' Add Points to a Map
 #'
-#' Plot points on an existing map.
+#' Plot points on an existing map, by analogy to [points()].
 #'
 #' @param longitude Longitudes of points to be plotted, or an object from which
 #' longitude and latitude can be inferred in which case the following two
 #' arguments are ignored.  This objects that are possible include those of type
-#' \code{coastline}.
+#' `coastline`.
 #'
 #' @param latitude Latitudes of points to be plotted.
 #'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
 #'
-#' @param ... Optional arguments passed to \code{\link{points}}.
+#' @param ... Optional arguments passed to [points()].
 #'
-#' @details
-#' Adds points to an existing map, by analogy to \code{\link{points}}.
-#'
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @examples
 #'\donttest{
@@ -2518,9 +2533,11 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 #'
 #' @author Dan Kelley
 #'
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @md
 mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "mapPoints() {\n", unindent=1, sep="")
@@ -2555,20 +2572,26 @@ mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 #'
 #' Plot arrows on an existing map, e.g. to indicate a place location.
 #' This is not well-suited for drawing direction fields, e.g. of
-#' velocities; for that, see \code{\link{mapDirectionField}}.
-#'
-#' @details
-#' Adds arrows to an existing map, by analogy to \code{\link{arrows}}.
+#' velocities; for that, see [mapDirectionField()].
+#' Adds arrows to an existing map, by analogy to [arrows()].
 #'
 #' @param longitude0,latitude0 starting points for arrows.
+#'
 #' @param longitude1,latitude1 ending points for arrows.
-#' @param length length of the arrow heads, passed to \code{\link{arrows}}.
-#' @param angle angle of the arrow heads, passed to \code{\link{arrows}}.
-#' @param code numerical code indicating the type of arrows, passed to \code{\link{arrows}}.
-#' @param col arrow color, passed to \code{\link{arrows}}.
-#' @param lty arrow line type, passed to \code{\link{arrows}}.
-#' @param lwd arrow line width, passed to \code{\link{arrows}}.
-#' @param ... optional arguments passed to \code{\link{arrows}}.
+#'
+#' @param length length of the arrow heads, passed to [arrows()].
+#'
+#' @param angle angle of the arrow heads, passed to [arrows()].
+#'
+#' @param code numerical code indicating the type of arrows, passed to [arrows()].
+#'
+#' @param col arrow color, passed to [arrows()].
+#'
+#' @param lty arrow line type, passed to [arrows()].
+#'
+#' @param lwd arrow line width, passed to [arrows()].
+#'
+#' @param ... optional arguments passed to [arrows()].
 #'
 #' @examples
 #'\donttest{
@@ -2585,9 +2608,11 @@ mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 #'
 #' @author Dan Kelley
 #'
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @md
 mapArrows <- function(longitude0, latitude0,
                       longitude1=longitude0, latitude1=latitude0,
                       length=0.25, angle=30,
@@ -2619,18 +2644,28 @@ mapArrows <- function(longitude0, latitude0,
 #' Format geographical positions to degrees, minutes, and hemispheres
 #'
 #' @param latlon a vector of latitudes or longitudes
+#'
 #' @param isLat a boolean that indicates whether the quantity is latitude or
 #' longitude
+#'
 #' @param type a string indicating the type of return value (see below)
+#'
 #' @param showHemi a boolean that indicates whether to indicate the hemisphere
-#' @return A list containing \code{degrees}, \code{minutes}, \code{seconds},
-#' and \code{hemispheres}, or a vector of strings or (broken) a vector of
+#'
+#' @return A list containing `degrees`, `minutes`, `seconds`,
+#' and `hemispheres`, or a vector of strings or (broken) a vector of
 #' expressions.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' library(oce)
 #' formatPosition(10+1:10/60+2.8/3600)
 #' formatPosition(10+1:10/60+2.8/3600, type="string")
+#'
+#' @family functions related to maps
+#'
+#' @md
 formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"), showHemi=TRUE)
 {
     type <- match.arg(type)
@@ -2705,24 +2740,25 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
 #' Locate Points on a Map
 #'
 #' Locate points on an existing map.
+#' This uses [map2lonlat()] to infer the location in
+#' geographical space, so it suffers the same
+#' limitations as that function.
 #'
+#' @param n number of points to locate; see [locator()].
 #'
-#' @param n number of points to locate; see \code{\link{locator}}.
+#' @param type type of connector for the points; see [locator()].
 #'
-#' @param type type of connector for the points; see \code{\link{locator}}.
-#'
-#' @param \dots extra arguments passed to \code{\link{locator}} (and either
-#'     \code{\link{mapPoints}} or \code{\link{mapLines}}, if appropriate) if
-#'     \code{type} is not \code{'n'}.
-#'
-#' @details
-#' This uses \code{\link{map2lonlat}} to infer the location in
-#' geographical space; see the documentation for that function on its
-#' limitations.
+#' @param \dots extra arguments passed to [locator()] (and either
+#'     [mapPoints()] or [mapLines()], if appropriate) if
+#'     `type` is not `'n'`.
 #'
 #' @author Dan Kelley
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#'
+#' @seealso A map must first have been created with [mapPlot()].
+#'
 #' @family functions related to maps
+#'
+#' @md
 mapLocator <- function(n=512, type='n', ...)
 {
     if ("none" == .Projection()$type)
@@ -2742,32 +2778,30 @@ mapLocator <- function(n=512, type='n', ...)
 #'
 #' Convert from x-y coordinates to longitude and latitude. This is normally called
 #' internally within oce; see \sQuote{Bugs}.
-#'
-#' @details
-#' A projection must already have been set up, by a call to \code{\link{mapPlot}}
-#' or \code{\link{lonlat2map}}. It should be noted that not all projections are
+#' A projection must already have been set up, by a call to [mapPlot()]
+#' or [lonlat2map()]. It should be noted that not all projections are
 #' handled well; see \sQuote{Bugs}.
 #'
 #' @param x vector containing the x component of points in the projected space, or
-#' a list containing items named \code{x} and \code{y}, in which case the next
+#' a list containing items named `x` and `y`, in which case the next
 #' argument is ignored.
 #'
 #' @param y vector containing the y coordinate of points in the projected space
-#' (ignored if \code{x} is a list, as described above).
+#' (ignored if `x` is a list, as described above).
 #'
 #' @param init vector containing the initial guesses for longitude and latitude,
 #' presently ignored.
 #'
 #' @section Bugs:
-#' \code{oce} uses \code{\link[rgdal]{project}} in the \CRANpkg{rgdal}
+#' `oce` uses [rgdal::project()] in the \CRANpkg{rgdal}
 #' package to handle projections. Only those projections that have inverses are
-#' permitted within \code{oce}, and even those can sometimes yield errors, owing
+#' permitted within `oce`, and even those can sometimes yield errors, owing
 #' to limitations in \CRANpkg{rgdal}. On i386/windows machines, the version
 #' of \CRANpkg{rgdal} must be 1.3-9 or higher, to prevent an error with
-#' \code{map2lonlat}.
+#' `map2lonlat`.
 #'
 #' @return
-#' A list containing \code{longitude} and \code{latitude}, with \code{NA}
+#' A list containing `longitude` and `latitude`, with `NA`
 #' values indicating points that are off the globe as displayed.
 #'
 #' @examples
@@ -2780,13 +2814,15 @@ mapLocator <- function(n=512, type='n', ...)
 #'     map2lonlat(xy)
 #' }
 #'
-#' @seealso \code{\link{lonlat2map}} does the inverse operation.
+#' @seealso [lonlat2map()] does the inverse operation.
 #'
 #' @author Dan Kelley
 #'
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @md
 map2lonlat <- function(x, y, init=NULL)
 {
     if (missing(x))
@@ -2808,37 +2844,37 @@ map2lonlat <- function(x, y, init=NULL)
 
 #' Add a Polygon to a Map
 #'
-#' Plot a polygon on an existing map.
+#' Adds a polygon to an existing map, by analogy to
+#' [polygon()].  Used by [mapImage()].
 #'
 #' @param longitude longitudes of points to be plotted, or an object from
 #' which longitude and latitude can be inferred (e.g. a coastline file, or
-#' the return value from \code{\link{mapLocator}}), in which case the
+#' the return value from [mapLocator()]), in which case the
 #' following two arguments are ignored.
 #'
 #' @param latitude latitudes of points to be plotted.
 #'
-#' @param density as for \code{\link{polygon}}.
+#' @param density as for [polygon()].
 #'
-#' @param angle as for \code{\link{polygon}}.
+#' @param angle as for [polygon()].
 #'
-#' @param border as for \code{\link{polygon}}.
+#' @param border as for [polygon()].
 #'
-#' @param col as for \code{\link{polygon}}.
+#' @param col as for [polygon()].
 #'
-#' @param lty as for \code{\link{polygon}}.
+#' @param lty as for [polygon()].
 #'
-#' @param ... as for \code{\link{polygon}}.
+#' @param ... as for [polygon()].
 #'
-#' @param fillOddEven as for \code{\link{polygon}}.
-#'
-#'
-#' @details
-#' Adds a polygon to an existing map, by analogy to
-#' \code{\link{polygon}}.  Used by \code{\link{mapImage}}.
+#' @param fillOddEven as for [polygon()].
 #'
 #' @author Dan Kelley
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#'
+#' @seealso A map must first have been created with [mapPlot()].
+#'
 #' @family functions related to maps
+#'
+#' @md
 mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
                        border=NULL, col=NA, lty=par('lty'), ..., fillOddEven=FALSE)
 {
@@ -2872,87 +2908,26 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 
 #' Add an Image to a Map
 #'
-#' Plot an image on an existing map that was created with \code{\link{mapPlot}}.
+#' Plot an image on an existing map that was created with [mapPlot()].
 #' (See example 4 for a way to start  with a blank map.)
 #'
-#' @param longitude vector of longitudes corresponding to \code{z} matrix.
-#'
-#' @param latitude vector of latitudes corresponding to \code{z} matrix.
-#'
-#' @param z matrix to be represented as an image.
-#'
-#' @param zlim limit for z (color).
-#'
-#' @param zclip A logical value, \code{TRUE} indicating that out-of-range
-#' \code{z} values should be painted with \code{missingColor} and \code{FALSE}
-#' indicating that these values should be painted with the nearest
-#' in-range color.  If \code{zlim} is given then its min and max set the
-#' range.  If \code{zlim} is not given but \code{breaks} is given, then
-#' the min and max of \code{breaks} sets the range used for z.  If neither
-#' \code{zlim} nor \code{breaks} is given, clipping is not done, i.e. the
-#' action is as if \code{zclip} were \code{FALSE}.
-#'
-#' @param breaks The z values for breaks in the color scheme.  If this is of
-#' length 1, the value indicates the desired number of breaks, which is
-#' supplied to \code{\link{pretty}}, in determining clean break points.
-#'
-#' @param col Either a vector of colors corresponding to the breaks, of length
-#' 1 plus the number of breaks, or a function specifying colors,
-#' e.g. \code{\link{oce.colorsJet}} for a rainbow.
-#'
-#' @param colormap optional colormap, as created by \code{\link{colormap}}.
-#' If a \code{colormap} is provided, then its properties takes precedence
-#' over \code{breaks}, \code{col}, \code{missingColor}, and \code{zclip}
-#' specified to \code{mapImage}.
-#'
-#' @param border Color used for borders of patches (passed to
-#' \code{\link{polygon}}); the default \code{NA} means no border.
-#'
-#' @param lwd line width, used if borders are drawn.
-#'
-#' @param lty line type, used if borders are drawn.
-#'
-#' @param missingColor a color to be used to indicate missing data, or
-#' \code{NA} to skip the drawing of such regions (which will retain
-#' whatever material has already been drawn at the regions).
-#'
-#' @param filledContour either a logical value indicating whether to use
-#' filled contours to plot the image, or a numerical value indicating the
-#' resampling rate to be used in interpolating from lon-lat coordinates to
-#' x-y coordinates.  See \dQuote{Details} for how this interacts with
-#' \code{gridder}.
-#'
-#' @param gridder Name of gridding function used if \code{filledContour} is
-#' \code{TRUE}.  This can be either \code{"binMean2D"} to select
-#' \code{\link{binMean2D}} or \code{"interp"} for
-#' \code{\link[akima]{interp}}. If not provided, then a selection is made
-#' automatically, with \code{\link{binMean2D}} being used if there are
-#' more than 10,000 data points in the present graphical view. This
-#' \code{"binMean2D"} method is much faster than \code{"interp"}.
-#'
-#' @param debug A flag that turns on debugging.  Set to 1 to get a
-#' moderate amount of debugging information, or to 2 to get more.
-#'
-#' @details
-#' Adds an image to an existing map, by analogy to \code{\link{image}}.
-#'
 #' The data are on a regular grid in lon-lat space, but not in the projected
-#' x-y space.  This means that \code{\link{image}} cannot be used.  Instead,
-#' there are two approaches, depending on the value of \code{filledContour}.
+#' x-y space.  This means that [image()] cannot be used.  Instead,
+#' there are two approaches, depending on the value of `filledContour`.
 #'
-#' If \code{filledContour} is \code{FALSE}, the image ``pixels'' are with
-#' \code{\link{polygon}}, which can be prohibitively slow for fine grids.
-#' However, if \code{filledContour} is \code{TRUE} or a numerical value, then the
+#' If `filledContour` is `FALSE`, the image ``pixels'' are with
+#' [polygon()], which can be prohibitively slow for fine grids.
+#' However, if `filledContour` is `TRUE` or a numerical value, then the
 #' ``pixels'' are remapped into a regular grid and then displayed with
-#' \code{\link{.filled.contour}}.  The remapping starts by converting the
+#' [.filled.contour()].  The remapping starts by converting the
 #' regular lon-lat grid to an irregular x-y grid using
-#' \code{\link{lonlat2map}}.  This irregular grid is then interpolated onto a
-#' regular x-y grid  with \code{\link{binMean2D}} or with
-#' \code{\link[akima]{interp}} from the \code{akima} package, as determined by
-#' the \code{gridder} argument.   If \code{filledContour} is \code{TRUE}, the
+#' [lonlat2map()].  This irregular grid is then interpolated onto a
+#' regular x-y grid  with [binMean2D()] or with
+#' [akima::interp()] from the `akima` package, as determined by
+#' the `gridder` argument.   If `filledContour` is `TRUE`, the
 #' dimensions of the regular x-y grid is the same as that of the original
 #' lon-lat grid; otherwise, the number of rows and columns are multiplied by
-#' the numerical value of \code{filledContour}, e.g. the value 2 means to make
+#' the numerical value of `filledContour`, e.g. the value 2 means to make
 #' the grid twice as fine.
 #'
 #' Filling contours can produce aesthetically-pleasing results, but the method
@@ -2960,8 +2935,66 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' analysts are advised to compare the results from the two methods (and
 #' perhaps various grid refinement values) to guard against misinterpretation.
 #'
-#' If a \code{\link{png}} device is to be used, it is advised to supply
-#' arguments \code{type="cairo"} and \code{antialias="none"}; see [1].
+#' If a [png()] device is to be used, it is advised to supply
+#' arguments `type="cairo"` and `antialias="none"`; see reference 1.
+#'
+#' @param longitude vector of longitudes corresponding to `z` matrix.
+#'
+#' @param latitude vector of latitudes corresponding to `z` matrix.
+#'
+#' @param z matrix to be represented as an image.
+#'
+#' @param zlim limit for z (color).
+#'
+#' @param zclip A logical value, `TRUE` indicating that out-of-range
+#' `z` values should be painted with `missingColor` and `FALSE`
+#' indicating that these values should be painted with the nearest
+#' in-range color.  If `zlim` is given then its min and max set the
+#' range.  If `zlim` is not given but `breaks` is given, then
+#' the min and max of `breaks` sets the range used for z.  If neither
+#' `zlim` nor `breaks` is given, clipping is not done, i.e. the
+#' action is as if `zclip` were `FALSE`.
+#'
+#' @param breaks The z values for breaks in the color scheme.  If this is of
+#' length 1, the value indicates the desired number of breaks, which is
+#' supplied to [pretty()], in determining clean break points.
+#'
+#' @param col Either a vector of colors corresponding to the breaks, of length
+#' 1 plus the number of breaks, or a function specifying colors,
+#' e.g. [oce.colorsJet()] for a rainbow.
+#'
+#' @param colormap optional colormap, as created by [colormap()].
+#' If a `colormap` is provided, then its properties takes precedence
+#' over `breaks`, `col`, `missingColor`, and `zclip`
+#' specified to `mapImage`.
+#'
+#' @param border Color used for borders of patches (passed to
+#' [polygon()]); the default `NA` means no border.
+#'
+#' @param lwd line width, used if borders are drawn.
+#'
+#' @param lty line type, used if borders are drawn.
+#'
+#' @param missingColor a color to be used to indicate missing data, or
+#' `NA` to skip the drawing of such regions (which will retain
+#' whatever material has already been drawn at the regions).
+#'
+#' @param filledContour either a logical value indicating whether to use
+#' filled contours to plot the image, or a numerical value indicating the
+#' resampling rate to be used in interpolating from lon-lat coordinates to
+#' x-y coordinates.  See \dQuote{Details} for how this interacts with
+#' `gridder`.
+#'
+#' @param gridder Name of gridding function used if `filledContour` is
+#' `TRUE`.  This can be either `"binMean2D"` to select
+#' [binMean2D()] or `"interp"` for
+#' [akima::interp()]. If not provided, then a selection is made
+#' automatically, with [binMean2D()] being used if there are
+#' more than 10,000 data points in the present graphical view. This
+#' `"binMean2D"` method is much faster than `"interp"`.
+#'
+#' @param debug A flag that turns on debugging.  Set to 1 to get a
+#' moderate amount of debugging information, or to 2 to get more.
 #'
 #' @references
 #' 1. \url{http://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
@@ -3024,9 +3057,11 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #'
 #' @author Dan Kelley
 #'
-#' @seealso A map must first have been created with \code{\link{mapPlot}}.
+#' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @md
 mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                      breaks, col, colormap, border=NA,
                      lwd=par("lwd"), lty=par("lty"), missingColor=NA,
@@ -3397,10 +3432,10 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
 #' Convert Longitude and Latitude to UTM
 #'
 #' @param longitude decimal longitude.  May also be a list containing items
-#' named \code{longitude} and \code{latitude}, in which case the indicated
+#' named `longitude` and `latitude`, in which case the indicated
 #' values are used, and next argument is ignored.
 #'
-#' @param latitude decimal latitude (ignored if \code{longitude} is a list
+#' @param latitude decimal latitude (ignored if `longitude` is a list
 #' containing both coordinates)
 #'
 #' @param zone optional indication of UTM zone.  Normally this is inferred from
@@ -3408,17 +3443,17 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
 #' images, which may cross zones and which therefore are described by a single
 #' zone.
 #'
-#' @param km logical value indicating whether \code{easting} and
-#' \code{northing} are in kilometers or meters.
+#' @param km logical value indicating whether `easting` and
+#' `northing` are in kilometers or meters.
 #'
-#' @return A list containing \code{easting}, \code{northing}, \code{zone} and
-#' \code{hemisphere}.
+#' @return A list containing `easting`, `northing`, `zone` and
+#' `hemisphere`.
 #'
 #' @author Dan Kelley
 #'
-#' @seealso \code{\link{utm2lonlat}} does the inverse operation.  For general
-#' projections and their inverses, use \code{\link{lonlat2map}} and
-#' \code{\link{map2lonlat}}.
+#' @seealso [utm2lonlat()] does the inverse operation.  For general
+#' projections and their inverses, use [lonlat2map()] and
+#' [map2lonlat()].
 #'
 #' @references
 #' \url{https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
@@ -3432,6 +3467,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
 #'}
 #'
 #' @family functions related to maps
+#'
+#' @md
 lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
 {
     names <- names(longitude)
@@ -3493,28 +3530,28 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
 #' Convert UTM to Longitude and Latitude
 #'
 #' @param easting easting coordinate (in km or m, depending on value of
-#' \code{km}).  Alternatively, a list containing items named \code{easting},
-#' \code{northing}, and \code{zone}, in which case these are taken from the
-#' list and the arguments named \code{northing}, \code{zone} and are ignored.
+#' `km`).  Alternatively, a list containing items named `easting`,
+#' `northing`, and `zone`, in which case these are taken from the
+#' list and the arguments named `northing`, `zone` and are ignored.
 #'
 #' @param northing northing coordinate (in km or m, depending on value of
-#' \code{km}).
+#' `km`).
 #'
 #' @param zone UTM zone
 #'
-#' @param hemisphere indication of hemisphere; \code{"N"} for North, anything
+#' @param hemisphere indication of hemisphere; `"N"` for North, anything
 #' else for South.
 #'
-#' @param km logical value indicating whether \code{easting} and
-#' \code{northing} are in kilometers or meters.
+#' @param km logical value indicating whether `easting` and
+#' `northing` are in kilometers or meters.
 #'
-#' @return A list containing \code{longitude} and \code{latitude}.
+#' @return A list containing `longitude` and `latitude`.
 #'
 #' @author Dan Kelley
 #'
-#' @seealso \code{\link{lonlat2utm}} does the inverse operation.  For general
-#' projections and their inverses, use \code{\link{lonlat2map}} and
-#' \code{\link{map2lonlat}}.
+#' @seealso [lonlat2utm()] does the inverse operation.  For general
+#' projections and their inverses, use [lonlat2map()] and
+#' [map2lonlat()].
 #'
 #' @references
 #' \url{https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
@@ -3528,6 +3565,8 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
 #'}
 #'
 #' @family functions related to maps
+#'
+#' @md
 utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
 {
     names <- names(easting)
@@ -3624,27 +3663,33 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 
 #' Convert Longitude and Latitude to X and Y
 #'
-#' If a projection is already being used (e.g. as set by \code{\link{mapPlot}})
-#' then only \code{longitude} and \code{latitude} should be given, and the
-#' other arguments will be inferred by \code{lonlat2map}.  This is important
+#' If a projection is already being used (e.g. as set by [mapPlot()])
+#' then only `longitude` and `latitude` should be given, and the
+#' other arguments will be inferred by `lonlat2map`.  This is important
 #' because otherwise, if a new projection is called for, it will ruin any
 #' additions to the existing plot.
 #'
 #' @param longitude a vector containing decimal longitudes, or a list
-#' containing items named \code{longitude} and \code{latitude}, in which case
+#' containing items named `longitude` and `latitude`, in which case
 #' the indicated values are used, and next argument is ignored.
+#'
 #' @param latitude a vector containing decimal latitude (ignored if
-#' \code{longitude} is a list, as described above).
+#' `longitude` is a list, as described above).
+#'
 #' @param projection optional indication of projection.  This must be character
 #' string in the format used by the \CRANpkg{rgdal} package;
-#' see \code{\link{mapPlot}}.)
+#' see [mapPlot()].)
+#'
 #' @template debugTemplate
-#' @return A list containing \code{x} and \code{y}.
+#'
+#' @return A list containing `x` and `y`.
+#'
 #' @author Dan Kelley
-#' @seealso \code{mapLongitudeLatitudeXY} is a safer alternative, if a map has
-#' already been drawn with \code{\link{mapPlot}}, because that function cannot
-#' alter an existing projection. \code{\link{map2lonlat}} is an inverse to
-#' \code{map2lonlat}.
+#'
+#' @seealso `mapLongitudeLatitudeXY` is a safer alternative, if a map has
+#' already been drawn with [mapPlot()], because that function cannot
+#' alter an existing projection. [map2lonlat()] is an inverse to
+#' `map2lonlat`.
 #'
 #' @section Bugs:
 #' This uses \CRANpkg{rgdal}, and will fail on i386/windows machines unless
@@ -3661,6 +3706,8 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 #' }
 #'
 #' @family functions related to maps
+#'
+#' @md
 lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceDebug"))
 {
     oceDebug(debug, "lonlat2map() {\n", unindent=1, sep="")

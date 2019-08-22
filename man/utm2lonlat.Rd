@@ -42,14 +42,15 @@ utm2lonlat(852863, 5029997, 19)
 downloaded May 31, 2014.
 }
 \seealso{
-\code{\link{lonlat2utm}} does the inverse operation.  For general
-projections and their inverses, use \code{\link{lonlat2map}} and
-\code{\link{map2lonlat}}.
+\code{\link[=lonlat2utm]{lonlat2utm()}} does the inverse operation.  For general
+projections and their inverses, use \code{\link[=lonlat2map]{lonlat2map()}} and
+\code{\link[=map2lonlat]{map2lonlat()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
+Other functions related to maps: \code{\link{formatPosition}},
+  \code{\link{lonlat2map}}, \code{\link{lonlat2utm}},
+  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
+  \code{\link{mapAxis}}, \code{\link{mapContour}},
+  \code{\link{mapCoordinateSystem}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
   \code{\link{mapImage}}, \code{\link{mapLines}},
   \code{\link{mapLocator}},
