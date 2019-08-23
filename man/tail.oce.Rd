@@ -7,9 +7,9 @@
 \method{tail}{oce}(x, n = 6L, ...)
 }
 \arguments{
-\item{x}{An \code{oce} object.}
+\item{x}{an \linkS4class{oce} object.}
 
-\item{n}{Number of elements to extract, as for \code{\link{tail}}.}
+\item{n}{Number of elements to extract, as for \code{\link[=tail]{tail()}}.}
 
 \item{...}{ignored}
 }
@@ -39,7 +39,7 @@ Please contact the author if there is a class you need handled
 before that date.
 }
 \seealso{
-\code{\link{head.oce}}, which yields the start of an \code{oce} object.
+\code{\link[=head.oce]{head.oce()}}, which yields the start of an \code{oce} object.
 }
 \author{
 Dan Kelley

@@ -9,7 +9,7 @@
   indexReturn = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{an \code{oce} object.}
+\item{x}{an \linkS4class{oce} object.}
 
 \item{start}{the start time (or distance) of the time (or space) region of
 interest.  This may be a single value or a vector.}
@@ -52,7 +52,7 @@ integers, to indicate a portion of the time or distance range.  If
 \code{which} is \code{"time"}, then the \code{start} and \code{end} values
 may also be provided as POSIX times, or character strings indicating times
 (in time zone given by the value of \code{getOption("oceTz")}).
-Note that \code{\link{subset}} may be more useful than this function.
+Note that \code{\link[=subset]{subset()}} may be more useful than this function.
 }
 \examples{
 library(oce)
@@ -62,9 +62,10 @@ early <- window(adp, start="2008-06-26 00:00:00", end="2008-06-26 12:00:00")
 plot(early)
 bottom <- window(adp, start=0, end=20, which="distance")
 plot(bottom)
+
 }
 \seealso{
-\code{\link{subset}} provides more flexible selection of subsets.
+\code{\link[=subset]{subset()}} provides more flexible selection of subsets.
 }
 \author{
 Dan Kelley

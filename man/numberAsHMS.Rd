@@ -22,7 +22,6 @@ last of which is always zero.
 Convert a Numeric Time to Hour, Minute, and Second
 }
 \examples{
-
 t <- c("0900", "1234")
 numberAsHMS(t)
 

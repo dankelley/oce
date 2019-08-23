@@ -9,72 +9,45 @@ decodeTime(time, timeFormats, tz = "UTC")
 \arguments{
 \item{time}{Character string with an indication of the time.}
 
-\item{timeFormats}{Optional vector of time formats to use, as for \code{\link{as.POSIXct}}.}
+\item{timeFormats}{Optional vector of time formats to use, as for \code{\link[=as.POSIXct]{as.POSIXct()}}.}
 
 \item{tz}{Time zone.}
 }
 \value{
-A time as returned by \code{\link{as.POSIXct}}.
+A time as returned by \code{\link[=as.POSIXct]{as.POSIXct()}}.
 }
 \description{
-Oce Version of as.POSIXct
-}
-\details{
 Each format in \code{timeFormats} is used in turn as the \code{format}
-argument to \code{\link{as.POSIXct}}, and the first that produces a
+argument to \code{\link[=as.POSIXct]{as.POSIXct()}}, and the first that produces a
 non-\code{NA} result is used.  If \code{timeFormats} is missing, the
 following formats are tried, in the stated order:
-
+}
+\details{
 \itemize{
-
-\item \code{"\%b \%d \%Y \%H:\%M:\%S"} (e.g. \code{"Jul 1 2013 01:02:03"})
-
-\item \code{"\%b \%d \%Y"} (e.g. \code{"Jul 1 2013"})
-
-\item \code{"\%B \%d \%Y \%H:\%M:\%S"} (e.g. \code{"July 1 2013 01:02:03"})
-
-\item \code{"\%B \%d \%Y"} (e.g. \code{"July 1 2013"})
-
-\item \code{"\%d \%b \%Y \%H:\%M:\%S"} (e.g. \code{"1 Jul 2013 01:02:03"})
-
-\item \code{"\%d \%b \%Y"} (e.g. \code{"1 Jul 2013"})
-
-\item \code{"\%d \%B \%Y \%H:\%M:\%S"} (e.g. \code{"1 July 2013 01:02:03"})
-
-\item \code{"\%d \%B \%Y"} (e.g. \code{"1 July 2013"})
-
-\item \code{"\%Y-\%m-\%d \%H:\%M:\%S"} (e.g.  \code{"2013-07-01 01:02:03"})
-
-\item \code{"\%Y-\%m-\%d"} (e.g. \code{"2013-07-01"})
-
-\item \code{"\%Y-\%b-\%d \%H:\%M:\%S"} (e.g.  \code{"2013-July-01 01:02:03"})
-
-\item \code{"\%Y-\%b-\%d"} (e.g.  \code{"2013-Jul-01"})
-
-\item \code{"\%Y-\%B-\%d \%H:\%M:\%S"} (e.g. \code{"2013-July-01 01:02:03"})
-
-\item \code{"\%Y-\%B-\%d"} (e.g. \code{"2013-July-01"})
-
-\item \code{"\%d-\%b-\%Y \%H:\%M:\%S"} (e.g.  \code{"01-Jul-2013 01:02:03"})
-
-\item \code{"\%d-\%b-\%Y"} (e.g. \code{"01-Jul-2013"})
-
-\item \code{"\%d-\%B-\%Y \%H:\%M:\%S"} (e.g. \code{"01-July-2013 01:02:03"})
-
-\item \code{"\%d-\%B-\%Y"} (e.g. \code{"01-July-2013"})
-
-\item \code{"\%Y/\%b/\%d \%H:\%M:\%S"} (e.g. \code{"2013/Jul/01 01:02:03"})
-
-\item \code{"\%Y/\%b/\%d"} (e.g. \code{"2013/Jul/01"})
-
-\item \code{"\%Y/\%B/\%d \%H:\%M:\%S"} (e.g. \code{"2013/July/01 01:02:03"})
-
-\item \code{"\%Y/\%B/\%d"} (e.g. \code{"2013/July/01"})
-
-\item \code{"\%Y/\%m/\%d \%H:\%M:\%S"} (e.g. \code{"2013/07/01 01:02:03"})
-
-\item \code{"\%Y/\%m/\%d"} (e.g. \code{"2013/07/01"})
-
+\item \code{"\\\%b \\\%d \\\%Y \\\%H:\\\%M:\\\%S"} (e.g. \code{"Jul 1 2013 01:02:03"})
+\item \code{"\\\%b \\\%d \\\%Y"} (e.g. \code{"Jul 1 2013"})
+\item \code{"\\\%B \\\%d \\\%Y \\\%H:\\\%M:\\\%S"} (e.g. \code{"July 1 2013 01:02:03"})
+\item \code{"\\\%B \\\%d \\\%Y"} (e.g. \code{"July 1 2013"})
+\item \code{"\\\%d \\\%b \\\%Y \\\%H:\\\%M:\\\%S"} (e.g. \code{"1 Jul 2013 01:02:03"})
+\item \code{"\\\%d \\\%b \\\%Y"} (e.g. \code{"1 Jul 2013"})
+\item \code{"\\\%d \\\%B \\\%Y \\\%H:\\\%M:\\\%S"} (e.g. \code{"1 July 2013 01:02:03"})
+\item \code{"\\\%d \\\%B \\\%Y"} (e.g. \code{"1 July 2013"})
+\item \code{"\\\%Y-\\\%m-\\\%d \\\%H:\\\%M:\\\%S"} (e.g.  \code{"2013-07-01 01:02:03"})
+\item \code{"\\\%Y-\\\%m-\\\%d"} (e.g. \code{"2013-07-01"})
+\item \code{"\\\%Y-\\\%b-\\\%d \\\%H:\\\%M:\\\%S"} (e.g.  \code{"2013-July-01 01:02:03"})
+\item \code{"\\\%Y-\\\%b-\\\%d"} (e.g.  \code{"2013-Jul-01"})
+\item \code{"\\\%Y-\\\%B-\\\%d \\\%H:\\\%M:\\\%S"} (e.g. \code{"2013-July-01 01:02:03"})
+\item \code{"\\\%Y-\\\%B-\\\%d"} (e.g. \code{"2013-July-01"})
+\item \code{"\\\%d-\\\%b-\\\%Y \\\%H:\\\%M:\\\%S"} (e.g.  \code{"01-Jul-2013 01:02:03"})
+\item \code{"\\\%d-\\\%b-\\\%Y"} (e.g. \code{"01-Jul-2013"})
+\item \code{"\\\%d-\\\%B-\\\%Y \\\%H:\\\%M:\\\%S"} (e.g. \code{"01-July-2013 01:02:03"})
+\item \code{"\\\%d-\\\%B-\\\%Y"} (e.g. \code{"01-July-2013"})
+\item \code{"\\\%Y/\\\%b/\\\%d \\\%H:\\\%M:\\\%S"} (e.g. \code{"2013/Jul/01 01:02:03"})
+\item \code{"\\\%Y/\\\%b/\\\%d"} (e.g. \code{"2013/Jul/01"})
+\item \code{"\\\%Y/\\\%B/\\\%d \\\%H:\\\%M:\\\%S"} (e.g. \code{"2013/July/01 01:02:03"})
+\item \code{"\\\%Y/\\\%B/\\\%d"} (e.g. \code{"2013/July/01"})
+\item \code{"\\\%Y/\\\%m/\\\%d \\\%H:\\\%M:\\\%S"} (e.g. \code{"2013/07/01 01:02:03"})
+\item \code{"\\\%Y/\\\%m/\\\%d"} (e.g. \code{"2013/07/01"})
 }
 }
 \examples{
@@ -85,6 +58,7 @@ decodeTime("1 Jul 2013 01:02:03")
 decodeTime("2013-07-01 01:02:03")
 decodeTime("2013/07/01 01:02:03")
 decodeTime("2013/07/01")
+
 }
 \seealso{
 Other functions relating to time: \code{\link{GMTOffsetFromTz}}

@@ -39,7 +39,6 @@ within the inset, so it is essential to finish a plot before drawing an
 inset.
 }
 \examples{
-
 library(oce)
 ## power law in linear and log form
 x <- 1:10
@@ -56,6 +55,7 @@ plotInset(29.9, 2.7, 31, 10,
           expr=plot(ctd, which='map',
           coastline="coastlineWorld",
           span=5000, mar=NULL, cex.axis=3/4))
+
 }
 \author{
 Dan Kelley

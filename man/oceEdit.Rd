@@ -10,7 +10,7 @@ oceEdit(x, item, value, action, reason = "", person = "",
 }
 \arguments{
 \item{x}{an \code{oce} object.  The exact action of \code{oceEdit} depends
-on the \code{\link{class}} of \code{x}.}
+on the \link{class} of \code{x}.}
 
 \item{item}{if supplied, a character string naming an item in the object's
 \code{metadata} or \code{data} slot, the former being checked first.
@@ -78,12 +78,12 @@ brief note on the \code{reason} for the change, and the name of the
 \code{person} doing the work.
 }
 \examples{
-
 library(oce)
 data(ctd)
 ctd2 <- oceEdit(ctd, item="latitude", value=47.8879,
                reason="illustration", person="Dan Kelley")
 ctd3 <- oceEdit(ctd,action="x@data$pressure<-x@data$pressure-1")
+
 }
 \author{
 Dan Kelley

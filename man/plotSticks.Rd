@@ -23,24 +23,25 @@ are ignored.}
 
 \item{add}{boolean, set \code{TRUE} to add to an existing plot.}
 
-\item{length}{value to be provided to \code{\link{arrows}}; here, we set a
+\item{length}{value to be provided to \code{\link[=arrows]{arrows()}}; here, we set a
 default that is smaller than normally used, because these plots tend to be
 crowded in oceanographic applications.}
 
-\item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also
-for \code{par(mar)}, computed from this.  The default is tighter than the R
+\item{mgp}{3-element numerical vector to use for \code{\link{par}}\code{("mgp")}. Note
+that the default \code{mar} is computed from the \code{mgp} value.
+The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{\link{par}("mar")}.}
+\item{mar}{value to be used with \code{\link{par}}\code{("mar")}.}
 
 \item{xlab, ylab}{labels for the plot axes. The default is not to label them.}
 
 \item{col}{color of sticks, in either numerical or character format. This is
-made to have length matching that of \code{x} by a call to \code{\link{rep}},
+made to have length matching that of \code{x} by a call to \code{\link[=rep]{rep()}},
 which can be handy in e.g. colorizing a velocity field by day.}
 
-\item{\dots}{graphical parameters passed down to \code{\link{arrows}}.  It
-is common, for example, to use smaller arrow heads than \code{\link{arrows}}
+\item{\dots}{graphical parameters passed down to \code{\link[=arrows]{arrows()}}.  It
+is common, for example, to use smaller arrow heads than \code{\link[=arrows]{arrows()}}
 uses; see \dQuote{Examples}.}
 }
 \description{
@@ -54,7 +55,6 @@ difficult, owing to overlap in the arrows.  For this reason, it is often
 a good idea to smooth \code{u} and \code{v} before using this function.
 }
 \examples{
-
 library(oce)
 
 # Flow from a point source
@@ -75,6 +75,7 @@ v <- met[["v"]]
 p <- met[["pressure"]]
 oce.plot.ts(t, p)
 plotSticks(t, 99, u, v, yscale=25, add=TRUE)
+
 }
 \author{
 Dan Kelley

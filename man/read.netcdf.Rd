@@ -12,27 +12,25 @@ read.netcdf(file, ...)
 \item{...}{unused}
 }
 \value{
-An object of \code{\link{oce-class}}.
+An \linkS4class{oce} object.
 }
 \description{
-Read a NetCDF File
+Read a netcdf file, trying to interpret its contents sensibly.
 }
 \details{
-Read a netcdf file, trying to interpret its contents sensibly.
-
 It is important to note that this is a preliminary version of
 this function, and much about it may change without notice.
 Indeed, it may be removed entirely.
 
 Below are some features that may be changed.
-
-1. The names of data items are not changed from those in the netcdf
+\enumerate{
+\item The names of data items are not changed from those in the netcdf
 file on the assumption that this will offer the least surprise to
 the user.
-
-2. An attempt is made to find some common metadata from global
+\item An attempt is made to find some common metadata from global
 attributes in the netcdf file. These attributes include
 \code{Longitude}, \code{Latitude}, \code{Ship} and \code{Cruise}.
 Before they are stored in the metadata, they are converted to
 lower case, since that is the oce convention.
+}
 }

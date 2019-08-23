@@ -31,7 +31,7 @@ within the file, the file name, or a combination of the two.
 alias was removed in version 0.9.24; see \link{oce-defunct}.
 }
 \seealso{
-This is used mainly by \code{\link{read.oce}}.
+This is used mainly by \code{\link[=read.oce]{read.oce()}}.
 }
 \author{
 Dan Kelley
