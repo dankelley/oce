@@ -7,12 +7,11 @@
 is.ad2cp(x)
 }
 \arguments{
-\item{x}{An item}
+\item{x}{character value naming an item.}
 }
 \value{
-Logical value indicating whether the object inherits from the
-\code{\link{adp-class}} and has \code{fileType} in its
-\code{metadata} slot equal to \code{"AD2CP"}.
+Logical value indicating whether \code{x} is an \linkS4class{adp} object,
+with \code{fileType} in its \code{metadata} slot equal to \code{"AD2CP"}.
 }
 \description{
 Test whether object is an AD2CP type

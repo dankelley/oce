@@ -7,8 +7,7 @@
 ad2cpHeaderValue(x, key, item, numeric = TRUE, default)
 }
 \arguments{
-\item{x}{Adp object of the ad2cp variety, i.e. an object created
-by \code{\link{read.adp.ad2cp}}.}
+\item{x}{an \linkS4class{adp} object that holds AD2CP data.}
 
 \item{key}{Character value that identifies a particular line in \code{x[["text"]]}.}
 

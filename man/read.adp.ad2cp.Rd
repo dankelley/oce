@@ -36,7 +36,7 @@ to other adp-reading functions.}
 \item{distance}{Ignored by \code{read.adp.ad2cp}, and provided only for similarity
 to other adp-reading functions.}
 
-\item{plan}{Optional integer specifying which 'plan' to focus on (see [1]
+\item{plan}{Optional integer specifying which 'plan' to focus on (see reference 1
 for the meaning of 'plan').  If this is not given, it defaults to the most
 common plan in the requested subset of the data.}
 
@@ -48,13 +48,13 @@ of knowing the type is for inferring the slantwise beam angle, which is usd in t
 conversion from beam coordinates to xyz coordinates. If \code{type} is
 provided, it must be one of \code{"Signature250"}, \code{"Signature500"},
 or \code{"Signature1000"}; the first of these has a 20 degree
-slant-beam angle, while the others each have 20 degrees (see [2],
-section 2 on page 6). Note that \code{\link{oceSetMetadata}}
+slant-beam angle, while the others each have 20 degrees (see reference 2,
+section 2 on page 6). Note that \code{\link[=oceSetMetadata]{oceSetMetadata()}}
 can be used to alter the slantwise beam angle of an existing object,
 and this will alter any later conversion from beam to xyz coordinates.}
 
 \item{monitor}{Logical value indicating whether the progress in reading
-the file is to be illustrated by calling \code{\link{txtProgressBar}}.}
+the file is to be illustrated by calling \code{\link[=txtProgressBar]{txtProgressBar()}}.}
 
 \item{despike}{Ignored by this function, and provided only for similarity
 to other adp-reading functions.}
@@ -71,7 +71,7 @@ or to 2 to get more.}
 \description{
 This function may be incomplete in some important ways,
 because AD2CP data formats are not described clearly enough
-in references [1], [2] and [3] to be certain of how to handle
+in references 1, 2 and 3 to be certain of how to handle
 the range of file configurations that may be possible. The code
 has been tested with a small number of files that are available
 to the author, but these do not cover some cases that users might
@@ -91,14 +91,14 @@ d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
 
 }
 \references{
-1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
-
-2. Nortek AS. \dQuote{Operations Manual - Signature250, 500 and 1000.} Nortek AS, September 21, 2018.
-
-3. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018. (This revision of
-[1] is useful in including new information about instrument orientation. Note that
-most of the comments within the \code{read.adp.ad2cp} code refer to [1], which has different
-page numbers than [3].)
+\enumerate{
+\item Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
+\item Nortek AS. \dQuote{Operations Manual - Signature250, 500 and 1000.} Nortek AS, September 21, 2018.
+\item Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018. (This revision of
+reference 1 is useful in including new information about instrument orientation. Note that
+most of the comments within the \code{read.adp.ad2cp} code refer to reference 1, which has different
+page numbers than reference 3.)
+}
 }
 \seealso{
 Other things related to adp data: \code{\link{[[,adp-method}},
