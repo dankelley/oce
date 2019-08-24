@@ -4,7 +4,7 @@
 \alias{vectorShow}
 \title{Show some values from a vector}
 \usage{
-vectorShow(v, msg, digits = 5, n = 2L)
+vectorShow(v, msg = NULL, digits = 5, n = 2L)
 }
 \arguments{
 \item{v}{the vector.}

@@ -163,7 +163,7 @@ setMethod(f="[[",
                   if (i == "CT") {
                       res <- gsw_CT_from_t(x[["SA"]], temperature, pressure)
                   } else if (i == "N2") {
-                      nprofile <- dim[2]
+                      ##nprofile <- dim[2]
                       res <- array(NA_real_,  dim=dim)
                       for (i in seq_len(dim[2])) {
                           ##message("i=",i, ", nprofile=", nprofile)

@@ -771,7 +771,7 @@ read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      pitch=pitch,
                      roll=roll,
                      temperature=temperature,
-                     pressure <- pressure)
+                     pressure=pressure)
     res@metadata$manufacturer <- "sontek"
     res@metadata$instrumentType <- "adv" # FIXME or "adr"?
     res@metadata$filename <- basefile

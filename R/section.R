@@ -2512,7 +2512,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
              "p=", if (missing(p)) "(missing)" else paste("c(",paste(p, collapse=","),")", sep=""), ", ",
              "trim=", trim, ", ...) {\n",
              sep="", unindent=1)
-    warningMessages <- NULL
+    ##warningMessages <- NULL
     n <- length(section@data$station)
     nxg <- n
     oceDebug(debug, "have", n, "stations in this section\n")
@@ -2557,7 +2557,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
     }
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
-    npt <- length(pt)
+    ##OLD npt <- length(pt)
     nstation <- length(res[["station"]])
     nyg <- length(pt)
 
@@ -2961,8 +2961,8 @@ sectionSmooth <- function(section, method="spline",
     }
     oceDebug(debug, "smoothing portion completed (near section.R line 2920)\n")
     ## Set up section-level and station-level metadata
-    longitudeNew <- approx(x, section[["longitude", "byStation"]], xg)$y # FIXME
-    latitudeNew <- approx(x, section[["latitude", "byStation"]], xg)$y
+    ##longitudeNew <- approx(x, section[["longitude", "byStation"]], xg)$y # FIXME
+    ##latitudeNew <- approx(x, section[["latitude", "byStation"]], xg)$y
     res@metadata$longitude <- approx(x, section[["longitude", "byStation"]], xg)$y
     res@metadata$latitude <- approx(x, section[["latitude", "byStation"]], xg)$y
     if (any(!is.finite(res@metadata$longitude)))

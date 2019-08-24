@@ -205,16 +205,16 @@ setMethod(f="subset",
               ##OLD keep <- W<=x@data$longitude & x@data$longitude<=E & S<=x@data$latitude & x@data$latitude<=N
               ##OLD res@data$latitude[!keep] <- NA
               ##OLD res@data$longitude[!keep] <- NA
-              NAendpoints <- function(x) {
-                  if (!is.na(x[1]))
-                      x <- c(NA, x)
-                  if (!is.na(x[length(x)]))
-                      x <- c(x, NA)
-                  x
-              }
+              ##old NAendpoints <- function(x) {
+              ##old     if (!is.na(x[1]))
+              ##old         x <- c(NA, x)
+              ##old     if (!is.na(x[length(x)]))
+              ##old         x <- c(x, NA)
+              ##old     x
+              ##old }
               cllon <- x[["longitude"]]
               cllat <- x[["latitude"]]
-              norig <- length(cllon)
+              ##old norig <- length(cllon)
               box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
               owarn <- options("warn")$warn
               options(warn=-1)

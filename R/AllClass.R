@@ -765,7 +765,7 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
                 }
                 if (!is.null(flagsObject)) {
                     dataItemLength <- length(odata[[name]])
-                    flagsThis <- oflags[[name]]
+                    ##flagsThis <- oflags[[name]]
                     ##oceDebug(debug, "before converting to numbers, flagsThis=", paste(flagsThis, collapse=","), "\n")
                     if (name %in% names(oflags)) {
                         actionsThis <- if (length(names(actions))) actions[[name]] else actions[[1]]

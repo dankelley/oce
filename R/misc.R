@@ -2286,10 +2286,10 @@ oce.spectrum <- oceSpectrum
 #' [oceDebug()].
 #'
 #' @author Dan Kelley
-vectorShow <- function(v, msg, digits=5, n=2L)
+vectorShow <- function(v, msg=NULL, digits=5, n=2L)
 {
     nv <- length(v)
-    if (missing(msg))
+    if (is.null(msg))
         msg <- deparse(substitute(v))
     if (is.null(msg))
         msg <- ""

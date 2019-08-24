@@ -7,7 +7,7 @@ test_that("as.met() works", {
           if (FALSE) {
               if (!require(canadaHCD))
                   devtools::install_github("gavinsimpson/canadaHCD")
-              a <- hcd_hourly(6358, 2003, 9)
+              a <- canadaHCD::hcd_hourly(6358, 2003, 9)
               MET <- as.met(a)
               MET[["time"]] <- MET[["time"]] + 4 * 3600 # get into UTC
               data(met)
