@@ -8,10 +8,10 @@ write.ctd(object, file, metadata = TRUE, flags = TRUE,
   format = "csv")
 }
 \arguments{
-\item{object}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{object}{a \linkS4class{ctd} object.}
 
 \item{file}{Either a character string (the file name) or a connection. If not
-provided, \code{file} defaults to \code{\link{stdout}()}.}
+provided, \code{file} defaults to \code{\link[=stdout]{stdout()}}.}
 
 \item{metadata}{a logical value indicating whether to put some selected
 metadata elements at the start of the output file.}
@@ -21,13 +21,13 @@ as well as data.}
 
 \item{format}{string indicating the format to use. This may be \code{"csv"}
 for a simple CSV format, or \code{"whp"} for the World Hydrographic
-Program format, described at [1] and exemplified at [2].}
+Program format, described in reference 1 and exemplified in reference 2.}
 }
 \description{
 Writes a comma-separated file containing the data frame stored in
 the \code{data} slot of the first argument.  The file is suitable
 for reading with a spreadsheet, or
-with \code{\link{read.csv}}.  This output file will contain
+with \code{\link[=read.csv]{read.csv()}}.  This output file will contain
 some of the metadata in \code{x}, if \code{metadata} is \code{TRUE}.
 }
 \examples{
@@ -41,12 +41,13 @@ plot(as.ctd(d$salinity, d$temperature, d$pressure))
 
 }
 \references{
-1. https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm
-
-2. https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv
+\enumerate{
+\item https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm
+\item https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv
+}
 }
 \seealso{
-The documentation for \code{\link{ctd-class}} explains the structure
+The documentation for \linkS4class{ctd} explains the structure
 of CTD objects.
 
 Other things related to ctd data: \code{\link{[[,ctd-method}},

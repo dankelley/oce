@@ -21,7 +21,7 @@ horizontally.}
 1024 instead of 24.}
 
 \item{digits}{number of decimal digits to use in label (supplied to
-\code{\link{round}}).}
+\code{\link[=round]{round()}}).}
 
 \item{eos}{equation of state to be used, either \code{"unesco"} or
 \code{"gsw"}.}
@@ -39,11 +39,11 @@ None.
 }
 \description{
 Adds isopycnal lines to an existing temperature-salinity plot.  This is
-called by \code{\link{plotTS}}, and may be called by the user also, e.g. if
+called by \code{\link[=plotTS]{plotTS()}}, and may be called by the user also, e.g. if
 an image plot is used to show TS data density.
 }
 \seealso{
-\code{\link{plotTS}}, which calls this.
+\code{\link[=plotTS]{plotTS()}}, which calls this.
 }
 \author{
 Dan Kelley

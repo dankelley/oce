@@ -9,9 +9,9 @@ data(ctd)
 }
 \description{
 This is a CTD profile measured in Halifax Harbour in 2003, based
-on \code{\link{ctdRaw}}, but trimmed to just the downcast with
-\code{\link{ctdTrim}}, using indices inferred by inspection of the
-results from \code{\link{plotScan}}.
+on \code{\link[=ctdRaw]{ctdRaw()}}, but trimmed to just the downcast with
+\code{\link[=ctdTrim]{ctdTrim()}}, using indices inferred by inspection of the
+results from \code{\link[=plotScan]{plotScan()}}.
 }
 \details{
 This station was sampled by students enrolled in the Dan Kelley's
@@ -20,7 +20,7 @@ The data were acquired near the centre of the Bedford Basin of the
 Halifax Harbour, during an October 2003 field trip of Dalhousie University's
 Oceanography 4120/5120 class. The original \code{.cnv} data file had
 temperature in the IPTS-68 scale, but this was converted to the more modern
-scale using \code{\link{T90fromT68}}.
+scale using \code{\link[=T90fromT68]{T90fromT68()}}.
 }
 \examples{
 \dontrun{
@@ -32,7 +32,7 @@ plot(ctd)
 }
 \seealso{
 The full profile (not trimmed to the downcast) is available as
-\code{data(\link{ctdRaw})}.
+\code{data(ctdRaw)}.
 
 Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},

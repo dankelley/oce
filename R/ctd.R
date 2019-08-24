@@ -7,38 +7,38 @@
 #' similar data.  Data repositories may store conductivity, temperature
 #' and depth, as in the instrument name, but it is also common to store
 #' salinity, temperature and pressure instead (or in addition). For this
-#' reason, \code{ctd} objects are required to hold \code{salinity},
-#' \code{temperature} and \code{pressure} in their \code{data} slot,
+#' reason, `ctd` objects are required to hold `salinity`,
+#' `temperature` and `pressure` in their `data` slot,
 #' with other data being optional. Formulae are available for converting
-#' between variants of these data triplets, e.g. \code{\link{swSCTp}}
-#' can calculate \code{salinity} given \code{conductivity}, \code{temperature}
-#' and \code{pressure}, and these are used by the main functions that
-#' create \code{ctd} objects. For example, if \code{\link{read.ctd.sbe}}
+#' between variants of these data triplets, e.g. [swSCTp()]
+#' can calculate `salinity` given `conductivity`, `temperature`
+#' and `pressure`, and these are used by the main functions that
+#' create `ctd` objects. For example, if [read.ctd.sbe()]
 #' is used to read a Seabird file that contains only conductivity, temperature
 #' and pressure, then that function will automatically append a data
-#' item to hold salinity.  \code{\link{as.ctd}} acts similarly. The result
-#' this is that all \code{ctd} objects hold \code{salinity},
-#' \code{temperature} and \code{pressure}, which are henceforth called
+#' item to hold salinity.  Since [as.ctd()] does the same with
+#' salinity, the result this is that all `ctd` objects hold `salinity`,
+#' `temperature` and `pressure`, which are henceforth called
 #' the three basic quantities.
 #'
 #' Different units and scales are permitted for the three basic quantities, and
-#' most \code{oce} functions check those units and scales before
+#' most `oce` functions check those units and scales before
 #' doing calculations (e.g. of seawater density), because those calculations
 #' demand certain units and scales. The way this is handled is that the
-#' accessor function \code{\link{[[,ctd-method}} returns values in standardized
-#' form. For example, a \code{ctd} object might hold temperature defined on the
-#' IPTS-68 scale, but e.g. \code{ctd[["temperature"]]} returns a value on the ITS-90
-#' scale. (The conversion is done with \code{\link{T90fromT68}}.)  Similarly,
-#' pressure may be stored in either dbars or PSI, but e.g. \code{ctd[["pressure"]]}
+#' accessor function \code{\link{[[,ctd-method}}] returns values in standardized
+#' form. For example, a `ctd` object might hold temperature defined on the
+#' IPTS-68 scale, but e.g. `ctd[["temperature"]]` returns a value on the ITS-90
+#' scale. (The conversion is done with [T90fromT68()].)  Similarly,
+#' pressure may be stored in either dbars or PSI, but e.g. `ctd[["pressure"]]`
 #' returns a value in dbars, after dividing by 0.689476 if the value is
 #' stored in PSI. Luckily, there is (as of early 2016) only one salinity scale in
 #' common use in data files, namely PSS-78.
 #'
 #' @templateVar class ctd
 #'
-#' @templateVar dataExample The key items stored in this slot are: \code{salinity}, \code{temperature}, and \code{pressure}, although in many instances there are quite a few additional items.
+#' @templateVar dataExample The key items stored in this slot are: `salinity`, `temperature`, and `pressure`, although in many instances there are quite a few additional items.
 #'
-#' @templateVar metadataExample An example of the former might be the location at which a \code{ctd} measurement was made, stored in \code{longitude} and \code{latitude}, and of the latter might be \code{filename}, the name of the data source.
+#' @templateVar metadataExample An example of the former might be the location at which a `ctd` measurement was made, stored in `longitude` and `latitude`, and of the latter might be `filename`, the name of the data source.
 #'
 #' @template slot_summary
 #'
@@ -46,30 +46,31 @@
 #'
 #' @template slot_get
 #'
-#' @section Reading/creating \code{ctd} objects:
+#' @section Reading/creating `ctd` objects:
 #' A file containing CTD profile data may be read with
-#' \code{\link{read.ctd}}, and a CTD object can also be created with
-#' \code{\link{as.ctd}}.  See \code{\link{read.ctd}} for references on data
+#' [read.ctd()], and a CTD object can also be created with
+#' [as.ctd()].  See [read.ctd()] for references on data
 #' formats used in CTD files. Data can also be assembled into
-#' \code{ctd} objects with \code{\link{as.ctd}}.
+#' `ctd` objects with [as.ctd()].
 #'
-#' Statistical summaries are provided by \code{\link{summary,ctd-method}}, while
-#' \code{\link{show}} displays an overview.
+#' Statistical summaries are provided by [summary,ctd-method()], while
+#' [show()] displays an overview.
 #'
-#' CTD objects may be plotted with \code{\link{plot,ctd-method}}, which does much of its
-#' work by calling \code{\link{plotProfile}} or \code{\link{plotTS}}, both of
+#' CTD objects may be plotted with [plot,ctd-method()], which does much of its
+#' work by calling [plotProfile()] or [plotTS()], both of
 #' which can also be called by the user, to get fine control over the plots.
 #'
-#' A CTD profile can be isolated from a larger record with \code{\link{ctdTrim}},
-#' a task made easier when \code{\link{plotScan}} is used to examine the results.
+#' A CTD profile can be isolated from a larger record with [ctdTrim()],
+#' a task made easier when [plotScan()] is used to examine the results.
 #' Towyow data can be split up into sets of profiles (ascending or descending)
-#' with \code{\link{ctdFindProfiles}}.  CTD data may be smoothed and/or cast onto
-#' specified pressure levels with \code{\link{ctdDecimate}}.
+#' with [ctdFindProfiles()].  CTD data may be smoothed and/or cast onto
+#' specified pressure levels with [ctdDecimate()].
 #'
 #' As with all oce objects, low-level manipulation may be done with
-#' \code{\link{oceSetData}} and \code{\link{oceSetMetadata}}. Additionally,
-#' many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-method}} scheme
-#' discussed above, and skilled users may also manipulate the contents directly.
+#' [oceSetData()] and [oceSetMetadata()]. Additionally,
+#' many of the contents of CTD objects may be altered with the
+#' \code{\link{[[<-,ctd-method}} scheme,
+#' and sufficiently skilled users may even manipulate the contents directly.
 #'
 #' @examples
 #'
@@ -86,6 +87,8 @@
 #'
 #' @family things related to ctd data
 #' @family classes provided by oce
+#'
+#' @md
 setClass("ctd", contains="oce")
 
 setAs("list", "ctd", function(from) {
@@ -96,17 +99,17 @@ setAs("list", "ctd", function(from) {
 #' A CTD profile in Halifax Harbour
 #'
 #' This is a CTD profile measured in Halifax Harbour in 2003, based
-#' on \code{\link{ctdRaw}}, but trimmed to just the downcast with
-#' \code{\link{ctdTrim}}, using indices inferred by inspection of the
-#' results from \code{\link{plotScan}}.
+#' on [ctdRaw()], but trimmed to just the downcast with
+#' [ctdTrim()], using indices inferred by inspection of the
+#' results from [plotScan()].
 #'
 #' This station was sampled by students enrolled in the Dan Kelley's
 #' Physical Oceanography class at Dalhousie University.
 #' The data were acquired near the centre of the Bedford Basin of the
 #' Halifax Harbour, during an October 2003 field trip of Dalhousie University's
-#' Oceanography 4120/5120 class. The original \code{.cnv} data file had
+#' Oceanography 4120/5120 class. The original `.cnv` data file had
 #' temperature in the IPTS-68 scale, but this was converted to the more modern
-#' scale using \code{\link{T90fromT68}}.
+#' scale using [T90fromT68()].
 #'
 #' @name ctd
 #' @docType data
@@ -121,10 +124,12 @@ setAs("list", "ctd", function(from) {
 #'}
 #'
 #' @seealso The full profile (not trimmed to the downcast) is available as
-#' \code{data(\link{ctdRaw})}.
+#' `data(ctdRaw)`.
 #'
 #' @family datasets provided with oce
 #' @family things related to ctd data
+#'
+#' @md
 NULL
 
 #' Seawater CTD Profile, Without Trimming of Extraneous Data
@@ -134,15 +139,15 @@ NULL
 #' but also data from the upcast and from time spent near the surface.  Spikes are
 #' also clearly evident in the pressure record.  With such real-world wrinkles,
 #' this dataset provides a good example of data that need trimming with
-#' \code{\link{ctdTrim}}.
+#' [ctdTrim()].
 #'
 #' This station was sampled by students enrolled in the Dan Kelley's
 #' Physical Oceanography class at Dalhousie University.
 #' The data were acquired near the centre of the Bedford Basin of the
 #' Halifax Harbour, during an October 2003 field trip of Dalhousie University's
-#' Oceanography 4120/5120 class. The original \code{.cnv} data file had
+#' Oceanography 4120/5120 class. The original `.cnv` data file had
 #' temperature in the IPTS-68 scale, but this was converted to the more modern
-#' scale using \code{\link{T90fromT68}}.
+#' scale using [T90fromT68()].
 #'
 #' @name ctdRaw
 #' @docType data
@@ -150,10 +155,12 @@ NULL
 #' @usage data(ctdRaw)
 #'
 #' @seealso A similar dataset (trimmed to the downcast) is available as
-#' \code{data(\link{ctd})}.
+#' `data(ctd)`.
 #'
 #' @family things related to ctd data
 #' @family datasets provided with oce
+#'
+#' @md
 NULL
 
 
@@ -161,10 +168,14 @@ NULL
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle Flags in CTD Objects
-#' @param object A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#'
+#' @param object a [ctd-class] object.
+#'
 #' @template handleFlagsTemplate
+#'
 #' @references
 #' 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+#'
 #' @examples
 #' library(oce)
 #' data(section)
@@ -204,7 +215,7 @@ NULL
 #'     A[[paste(flagName, "Flag", sep="")]] <- flag
 #' Af <- handleFlags(A)
 #' expect_equal(is.na(Af[["salinity"]]), deep)
-#' 
+#'
 #' # 5. Single-variable flags (list specification)
 #' B <- section[["station", 100]]
 #' B[["flags"]] <- list(flag)
@@ -212,6 +223,8 @@ NULL
 #' expect_equal(is.na(Bf[["salinity"]]), deep)
 #'
 #' @family things related to ctd data
+#'
+#' @md
 setMethod("handleFlags", signature=c(object="ctd", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
           definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
@@ -231,7 +244,7 @@ setMethod("handleFlags", signature=c(object="ctd", flags="ANY", actions="ANY", w
 
 #' @templateVar class ctd
 #'
-#' @templateVar note Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector (either logical as in Example 1 or integer as in Example 2), or a function taking a \code{ctd} object and returning such a vector (see \dQuote{Indexing rules}).
+#' @templateVar note Since all the entries in the `data` slot of ctd objects are vectors, `i` must be a vector (either logical as in Example 1 or integer as in Example 2), or a function taking a `ctd` object and returning such a vector (see \dQuote{Indexing rules}).
 #'
 #' @template setFlagsTemplate
 #'
@@ -282,6 +295,8 @@ setMethod("handleFlags", signature=c(object="ctd", flags="ANY", actions="ANY", w
 #'}
 #'
 #' @family things related to ctd data
+#'
+#' @md
 setMethod("setFlags",
           c(object="ctd", name="ANY", i="ANY", value="ANY", debug="ANY"),
           function(object, name=NULL, i=NULL, value=NULL, debug=getOption("oceDebug")) {
@@ -297,6 +312,8 @@ setMethod("setFlags",
 #' @templateVar class ctd
 #' @templateVar details {NA}
 #' @template initializeFlagSchemeTemplate
+#'
+#' @md
 setMethod("initializeFlagScheme",
           signature=c(object="ctd", name="ANY", mapping="ANY", default="ANY", debug="ANY"),
           definition=function(object, name=NULL, mapping=NULL, default=NULL, debug=0) {
@@ -307,25 +324,25 @@ setMethod("initializeFlagScheme",
 
 #' Initialize storage for a ctd object
 #'
-#' This function creates \code{oce} objects of \code{\link{ctd-class}}. It is mainly
-#' used by \code{oce} functions such as \code{\link{read.ctd}} and \code{\link{as.ctd}},
+#' This function creates [ctd-class] objects. It is mainly
+#' used by `oce` functions such as [read.ctd()] and [as.ctd()],
 #' and it is not intended for novice users, so it may change at any time, without
 #' following the usual rules for transitioning to deprecated and defunct status
-#' (see \link{oce-deprecated}).
+#' (see [oce-deprecated]).
 #'
 #' @details
 #' To save storage, this function has arguments only for quantities that are often present in data
 #' files all cases. For example, not
 #' all data files will have oxygen, so that's not present here.
 #' Extra data may be added after the object is created, using
-#' \code{\link{oceSetData}}.
-#' Similarly, \code{\link{oceSetMetadata}} may be used to add metadata (station ID, etc),
+#' [oceSetData()].
+#' Similarly, [oceSetMetadata()] may be used to add metadata (station ID, etc),
 #' while bearing in mind that other functions look for such information
-#' in very particular places (e.g. the station ID is a string named \code{station}
-#' within the \code{metadata} slot). See \code{\link{ctd-class}} for more information
-#' on elements stored in \code{ctd} objects.
+#' in very particular places (e.g. the station ID is a string named `station`
+#' within the `metadata` slot). See [ctd-class] for more information
+#' on elements stored in `ctd` objects.
 #'
-#' @param .Object the string \code{"ctd"}
+#' @param .Object the string `"ctd"`
 #' @param pressure optional numerical vector of pressures.
 #' @param salinity optional numerical vector of salinities.
 #' @param temperature optional numerical vector of temperatures.
@@ -333,8 +350,8 @@ setMethod("initializeFlagScheme",
 #' @param units optional list indicating units for the quantities specified
 #' in the previous arguments. If this
 #' is not supplied, a default is set up, based on which of the
-#' \code{pressure} to \code{conductivity} arguments were specified.
-#' If all of those 4 arguments were specified, then \code{units} is set
+#' `pressure` to `conductivity` arguments were specified.
+#' If all of those 4 arguments were specified, then `units` is set
 #' up as if the call included the following:
 #' \code{units=list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
 #'      salinity=list(unit=expression(), scale="PSS-78"),
@@ -342,16 +359,16 @@ setMethod("initializeFlagScheme",
 #'      pressure=list(unit=expression(dbar), scale=""),
 #'      depth=list(unit=expression(m), scale=""))}. This list is trimmed
 #' of any of the 4 items that were not specified in the previous
-#' arguments. Note that if \code{units} is specified, then it is just
-#' copied into the \code{metadata} slot of the returned object, so the user
-#' must be careful to set up values that will make sense to other \code{oce}
+#' arguments. Note that if `units` is specified, then it is just
+#' copied into the `metadata` slot of the returned object, so the user
+#' must be careful to set up values that will make sense to other `oce`
 #' functions.
 #' @param pressureType optional character string indicating the type of pressure;
-#' if not supplied, this defaults to \code{"sea"}, which indicates the excess of
+#' if not supplied, this defaults to `"sea"`, which indicates the excess of
 #' pressure over the atmospheric value, in dbar.
 #' @param deploymentType optional character string indicating the type of deployment, which may
-#' be \code{"unknown"}, \code{"profile"}, \code{"towyo"}, or \code{"thermosalinograph"}.
-#' If this is not set, the value defaults to \code{"unknown"}.
+#' be `"unknown"`, `"profile"`, `"towyo"`, or `"thermosalinograph"`.
+#' If this is not set, the value defaults to `"unknown"`.
 #'
 #' @family things related to ctd data
 #'
@@ -373,6 +390,8 @@ setMethod("initializeFlagScheme",
 #' plot(ctd, eos="gsw")
 #'
 #' @aliases initialize,ctd-method
+#'
+#' @md
 setMethod(f="initialize",
           signature="ctd",
           definition=function(.Object, pressure, salinity, temperature, conductivity,
@@ -421,7 +440,7 @@ setMethod(f="initialize",
 #' column for the data summary will contain the original names of data within
 #' the source file.
 #'
-#' @param object A `ctd` object, i.e. one inheriting from the [ctd-class] class.
+#' @param object a [ctd-class] object.
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
@@ -489,7 +508,7 @@ setMethod(f="summary",
 
 #' @title Extract Something From a CTD Object
 #'
-#' @param x An \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#' @param x a [ctd-class] object.
 #'
 #' @examples
 #' data(ctd)
@@ -497,144 +516,143 @@ setMethod(f="summary",
 #'
 #' @template sub_subTemplate
 #'
-#' @section Details of the specialized \code{ctd} method:
+#' @section Details of the specialized `ctd` method:
 #'
-#' Some uses of \code{[[,ctd-method} involve direct retrieval of
-#' items within the \code{data} slot of the \code{ctd} object,
+#' Some uses of \code{\link{[[,ctd-method}} involve direct retrieval of
+#' items within the `data` slot of the `ctd` object,
 #' while other uses involve calculations based on items in that
-#' \code{data} slot. For an example, all \code{ctd} objects
-#' should hold an item named \code{temperature} in the \code{data}
-#' slot, so for example \code{x[["temperature"]]} will retrieve that
-#' item. By contrast, \code{x[["sigmaTheta"]]} is taken to be a
+#' `data` slot. For an example, all `ctd` objects
+#' should hold an item named `temperature` in the `data`
+#' slot, so for example `x[["temperature"]]` will retrieve that
+#' item. By contrast, `x[["sigmaTheta"]]` is taken to be a
 #' request to compute \eqn{\sigma_\theta}{sigma[theta]}, and so
-#' it yields a call to \code{\link{swTheta}(x)} even if
-#' the \code{data} slot of \code{x} might happen to contain an item
-#' named \code{theta}. This can be confusing at first, but it tends
+#' it yields a call to [`swTheta`]`(x)` even if
+#' the `data` slot of `x` might happen to contain an item
+#' named `theta`. This can be confusing at first, but it tends
 #' to lead to fewer surprises in everyday work, for otherwise the
-#' user would be forced to check the contents of any \code{ctd}
+#' user would be forced to check the contents of any `ctd`
 #' object under analysis, to determine whether that item will be looked
 #' up or computed. Nothing is lost in this scheme, since the data
-#' within the object are always accessible with \code{\link{oceGetData}}.
+#' within the object are always accessible with [oceGetData()].
 #'
 #' It should be noted that the accessor is set up to retrieve quantities
-#' in conventional units. For example, \code{\link{read.ctd.sbe}} is
-#' used on a \code{.cnv} file that stores pressure in psi, it will
-#' be stored in the same unit within the \code{ctd} object, but
-#' \code{x[["pressure"]]} will return a value that has been converted
-#' to decibars.  (To get pressure in PSI, use \code{x[["pressurePSI"]]}.)
+#' in conventional units. For example, [read.ctd.sbe()] is
+#' used on a `.cnv` file that stores pressure in psi, it will
+#' be stored in the same unit within the `ctd` object, but
+#' `x[["pressure"]]` will return a value that has been converted
+#' to decibars.  (To get pressure in PSI, use `x[["pressurePSI"]]`.)
 #' Similarly, temperature is
 #' returned in the ITS-90 scale, with a conversion having been performed with
-#' \code{\link{T90fromT68}}, if the object holds temperature in
+#' [T90fromT68()], if the object holds temperature in
 #' IPTS-68.  Again, temperature on the IPTS-68
-#' scale is returned with \code{x@@data$temperature}.
+#' scale is returned with `x@@data$temperature`.
 #'
 #' This preference for computed over stored quantities is accomplished
 #' by first checking for computed quantities, and then falling
-#' back to the general \code{[[} method if no match is found.
+#' back to the general `[[` method if no match is found.
 #'
 #' Some quantities are optionally computed. For example, some data files
-#' (e.g. the one upon which the \code{\link{section}} dataset is based)
-#' store \code{nitrite} along with the sum of nitrite and nitrate, the
-#' latter with name \code{`NO2+NO3`}. In this case, e.g. \code{x[["nitrate"]]}
+#' (e.g. the one upon which the [section()] dataset is based)
+#' store `nitrite` along with the sum of nitrite and nitrate, the
+#' latter with name ``NO2+NO3``. In this case, e.g. `x[["nitrate"]]`
 #' will detect the setup, and subtract nitrite from the sum to yield
 #' nitrate.
 #'
 #' The list given below provides notes on some quantities that are,
 #' or may be, computed.
 #'
-#' \itemize{
-#'
-#' \item \code{conductivity} without a second argument (e.g. \code{a[["conductivity"]]})
+#' * `conductivity` without a second argument (e.g. `a[["conductivity"]]`)
 #' returns the value stored in the object. However, if a second argument is given,
 #' and it is string specifying a unit, then conversion is made to that unit. The
-#' permitted units are: either \code{""} or \code{"ratio"} (for ratio),
-#' \code{"uS/cm"}, \code{"mS/cm"} and \code{"S/m"}. The calculations are based on
+#' permitted units are: either `""` or `"ratio"` (for ratio),
+#' `"uS/cm"`, `"mS/cm"` and `"S/m"`. The calculations are based on
 #' the definition of conductivity ratio as the ratio between measured conductivity
 #' and the standard value 4.2914 S/m.
 #'
-#' \item \code{CT} or \code{Conservative Temperature}: Conservative Temperature,
-#' computed with \code{\link[gsw]{gsw_CT_from_t}} in the \code{gsw} package.
+#' * `CT` or `Conservative Temperature`: Conservative Temperature,
+#' computed with [gsw::gsw_CT_from_t()` in the `gsw` package.
 #'
-#' \item \code{density}: seawater density, computed with \code{\link{swRho}(x)}.
+#' * `density`: seawater density, computed with [`swRho`]`(x)`.
 #' (Note that it may be better to call that function directly, to gain
 #' control of the choice of equation of state, etc.)
 #'
-#' \item \code{depth}: Depth in metres below the surface, computed
-#' with \code{\link{swDepth}(x)}.
+#' * `depth`: Depth in metres below the surface, computed
+#' with [`swDepth`]`(x)`.
 #'
-#' \item \code{N2}: Square of Brunt-Vaisala frequency, computed  with
-#' \code{\link{swN2}(x)}.
+#' * `N2`: Square of Brunt-Vaisala frequency, computed  with
+#' [`swN2`]`(x)`.
 #'
-#' \item \code{potential temperature}: Potential temperature in the
-#' UNESCO formulation, computed with \code{\link{swTheta}(x)}.
-#' This is a synonym for \code{theta}.
+#' * `potential temperature`: Potential temperature in the
+#' UNESCO formulation, computed with [`swTheta`]`(x)`.
+#' This is a synonym for `theta`.
 #'
-#' \item \code{Rrho}: Density ratio, computed with \code{\link{swRrho}(x)}.
+#' * `Rrho`: Density ratio, computed with [`swRrho`]`(x)`.
 #'
-#' \item \code{SA} or \code{Absolute Salinity}: Absolute Salinity,
-#' computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package.
+#' * `SA` or `Absolute Salinity`: Absolute Salinity,
+#' computed with `\link[gsw]{gsw_SA_from_SP`} in the `gsw` package.
 #' The calculation involves location as well as measured water properties.
-#' If the object \code{x} does not containing information on the location,
+#' If the object `x` does not containing information on the location,
 #' then 30N and 60W is used for the calculation, and a warning is generated.
 #'
-#' \item \code{sigmaTheta}: A form of potential density anomaly, computed with
-#' \code{\link{swSigmaTheta}(x)}.
+#' * `sigmaTheta`: A form of potential density anomaly, computed with
+#' [`swSigmaTheta`]`(x)`.
 #'
-#' \item \code{sigma0} Equal to \code{sigmaTheta}, i.e. potential density anomaly
-#' referenced to a pressure of 0dbar, computed with \code{\link{swSigma0}(x)}.
+#' * `sigma0` Equal to `sigmaTheta`, i.e. potential density anomaly
+#' referenced to a pressure of 0dbar, computed with [`swSigma0`]`(x)`.
 #'
-#' \item \code{sigma1}: Potential density anomaly
-#' referenced to a pressure of 1000dbar, computed with \code{\link{swSigma1}(x)}.
+#' * `sigma1`: Potential density anomaly
+#' referenced to a pressure of 1000dbar, computed with [`swSigma1`]`(x)`.
 #'
-#' \item \code{sigma2}: Potential density anomaly
-#' referenced to a pressure of 2000dbar, computed with \code{\link{swSigma2}(x)}.
+#' * `sigma2`: Potential density anomaly
+#' referenced to a pressure of 2000dbar, computed with [`swSigma2`]`(x)`.
 #'
-#' \item \code{sigma3}: Potential density anomaly
-#' referenced to a pressure of 3000dbar, computed with \code{\link{swSigma3}(x)}.
+#' * `sigma3`: Potential density anomaly
+#' referenced to a pressure of 3000dbar, computed with [`swSigma3`]`(x)`.
 #'
-#' \item \code{sigma4}: potential density anomaly
-#' referenced to a pressure of 4000dbar, computed with \code{\link{swSigma4}(x)}.
+#' * `sigma4`: potential density anomaly
+#' referenced to a pressure of 4000dbar, computed with [`swSigma4`]`(x)`.
 #'
-#' \item \code{SP}: Salinity on the Practical Salinity Scale, which is
-#' \code{salinity} in the \code{data} slot.
+#' * `SP`: Salinity on the Practical Salinity Scale, which is
+#' `salinity` in the `data` slot.
 #'
-#' \item \code{spice} or \code{spiciness0}: a variable that is in some sense
-#' orthogonal to density, calculated with \code{\link{swSpice}(x)}.
-#' Note that this is defined differently for \code{eos="unesco"} and
-#' \code{eos="gsw"}.
+#' * `spice` or `spiciness0`: a variable that is in some sense
+#' orthogonal to density, calculated with [`swSpice`]`(x)`.
+#' Note that this is defined differently for `eos="unesco"` and
+#' `eos="gsw"`.
 #'
-#' \item \code{SR}: Reference Salinity computed with
-#' \code{\link[gsw]{gsw_SR_from_SP}} in the \code{gsw} package.
+#' * `SR`: Reference Salinity computed with
+#' `\link[gsw]{gsw_SR_from_SP`} in the `gsw` package.
 #'
-#' \item \code{Sstar}: Preformed Salinity computed with
-#' \code{\link[gsw]{gsw_SR_from_SP}} in the \code{gsw} package.
-#' See \code{SA} for a note on longitude and latitude.
+#' * `Sstar`: Preformed Salinity computed with
+#' `\link[gsw]{gsw_SR_from_SP`} in the `gsw` package.
+#' See `SA` for a note on longitude and latitude.
 #'
-#' \item \code{theta}: potential temperature in the UNESCO formulation,
-#' computed with \code{\link{swTheta}(x)}. This is a synonym for
-#' \code{potential temperature}.
+#' * `theta`: potential temperature in the UNESCO formulation,
+#' computed with [`swTheta`]`(x)`. This is a synonym for
+#' `potential temperature`.
 #'
-#' \item \code{time}: returns either a vector of times, a single
-#' time, or \code{NULL}. A vector is returned if \code{time}
-#' is present in the \code{data} slot, or if a time can be
-#' inferred from other entries in the \code{data} slot (some of which,
-#' such as the common \code{timeS}, also employ
-#' \code{startTime} within the \code{metadata} slot). A single
+#' * `time`: returns either a vector of times, a single
+#' time, or `NULL`. A vector is returned if `time`
+#' is present in the `data` slot, or if a time can be
+#' inferred from other entries in the `data` slot (some of which,
+#' such as the common `timeS`, also employ
+#' `startTime` within the `metadata` slot). A single
 #' value is returned if the dataset only has information on the start
-#' time (which is stored as \code{startTime} within the \code{metadata}
+#' time (which is stored as `startTime` within the `metadata`
 #' slot. If it is impossible to determine the sampling time, then
-#' \code{NULL} is returned. These time variants occur, in the
-#' present version of oce, only for data read by \code{\link{read.ctd.sbe}},
+#' `NULL` is returned. These time variants occur, in the
+#' present version of oce, only for data read by [read.ctd.sbe()],
 #' the documention of which explains how times are computed.
 #'
-#' \item \code{z}: Vertical coordinate in metres above the surface, computed with
-#' \code{\link{swZ}(x)}.
+#' * `z`: Vertical coordinate in metres above the surface, computed with
+#' [`swZ`]`(x)`.
 #'
-#'}
 #'
 #' @author Dan Kelley
 #'
 #' @family things related to ctd data
+#'
+#' @md
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -913,7 +931,9 @@ setMethod(f="[[",
           })
 
 #' @title Replace Parts of a CTD Object
-#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#'
+#' @param x a [ctd-class] object.
+#'
 #' @template sub_subsetTemplate
 #'
 #' @examples
@@ -926,6 +946,8 @@ setMethod(f="[[",
 #' summary(ctd)
 #'
 #' @family things related to ctd data
+#'
+#' @md
 setMethod(f="[[<-",
           signature(x="ctd", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -935,33 +957,40 @@ setMethod(f="[[<-",
 
 #' Coerce data into CTD object
 #'
-#' Assemble data into a \code{\link{ctd-class}} dataset.
+#' Assemble data into a [ctd-class] object.
 #'
-#' @param salinity There are several distinct choices for \code{salinity}.
-#' (1) It can be a
+#' @param salinity There are several distinct choices for `salinity`.
+#' * It can be an [rsk-class] object (see \dQuote{Converting rsk objects} for details).
+#'
+#' * It can be a
 #' vector indicating the practical salinity through the water column. In that case,
-#' \code{as.ctd} employs the other arguments listed below. (2)
-#' it can be something (a data frame, a list or an \code{oce} object)
+#' `as.ctd` employs the other arguments listed below.
+#' * It can be an [rsk-class] object (see \dQuote{Converting rsk objects} for details).
+#'
+#' * It can be something (a data frame, a list or an `oce` object)
 #' from which practical salinity, temperature, pressure, and conductivity
 #' can be inferred. In this case, the relevant information
-#' is extracted  and the other arguments to \code{as.ctd} are ignored, except for
-#' \code{pressureAtmospheric}. If the first argument has salinity, etc., in
-#' matrix form (as can happen with some objects of \code{\link{argo-class}}),
+#' is extracted  and the other arguments to `as.ctd` are ignored, except for
+#' `pressureAtmospheric`. If the first argument has salinity, etc., in
+#' matrix form (as can happen with some objects of [argo-class]),
 #' then only the first column is used, and a warning to that effect is given,
-#' unless the \code{profile} argument is specified and then that specific
-#' profile is extracted. (3) It can be an object of \code{\link{rsk-class}},
-#' (see \dQuote{Converting rsk objects} for details). (4)
-#' It can be unspecified, in which case \code{conductivity} becomes a mandatory
+#' unless the `profile` argument is specified and then that specific
+#' profile is extracted.
+#' * It can be an [rsk-class] object (see \dQuote{Converting rsk objects} for details).
+#'
+#' * It can be an [rsk-class] object (see \dQuote{Converting rsk objects} for details).
+#'
+#' * It can be unspecified, in which case `conductivity` becomes a mandatory
 #' argument, because it will be needed for computing actual salinity,
-#' using \code{\link{swSCTp}}.
+#' using [swSCTp()].
 #'
-#' @param temperature \emph{in-situ} temperature [\eqn{^\circ deg}C], defined on
+#' @param temperature *in-situ* temperature in \eqn{^\circ deg}C on
 #' the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
-#' \code{\link{swRho}}.
+#' [swRho()].
 #'
-#' @param pressure Vector of pressure values, one for each \code{salinity} and
-#' \code{temperature} pair, or just a single pressure, which is repeated to match
-#' the length of \code{salinity}.
+#' @param pressure Vector of pressure values, one for each `salinity` and
+#' `temperature` pair, or just a single pressure, which is repeated to match
+#' the length of `salinity`.
 #'
 #' @param conductivity electrical conductivity ratio through the water column
 #' (optional). To convert from raw conductivity in milliSeimens per centimeter
@@ -985,7 +1014,7 @@ setMethod(f="[[<-",
 ##1108 @param silicate optional silicate concentration
 ##1108
 #' @param scan optional scan number.  If not provided, this will be set to
-#' \code{seq_along(salinity)}.
+#' [`seq_along`]`(salinity)`.
 #'
 #' @param time optional vector of times of observation
 #'
@@ -993,16 +1022,16 @@ setMethod(f="[[<-",
 #' list
 #'
 #' @param units an optional list containing units.  If not supplied,
-#' defaults are set for \code{pressure}, \code{temperature}, \code{salinity},
-#' and \code{conductivity}. Since these are simply guesses, users
-#' are advised strongly to supply \code{units}. See \dQuote{Examples}.
+#' defaults are set for `pressure`, `temperature`, `salinity`,
+#' and `conductivity`. Since these are simply guesses, users
+#' are advised strongly to supply `units`. See \dQuote{Examples}.
 #'
-#' @param flags if supplied, this is a \code{\link{list}} containing data-quality
+#' @param flags if supplied, this is a [list] containing data-quality
 #' flags. The elements of this list must have names that match the data
 #' provided to the object.
 #'
 #' @param missingValue optional missing value, indicating data that should be
-#' taken as \code{NA}. Set to \code{NULL} to turn off this feature.
+#' taken as `NA`. Set to `NULL` to turn off this feature.
 #'
 #' @param type optional type of CTD, e.g. "SBE"
 #'
@@ -1022,102 +1051,102 @@ setMethod(f="[[<-",
 #'
 ##1108 @param date optional string indicating
 ##1108 the date at which the profile was started. This is copied verbatim into
-##1108 the result's \code{metadata} slot, and is not used in any processing. Since
+##1108 the result's `metadata` slot, and is not used in any processing. Since
 ##1108 it serves no purpose, this argument is deprecated as of April 2016,
 ##1108 and will be marked 'defunct' in an upcoming CRAN release;
-##1108 see \link{oce-deprecated}.
+##1108 see [oce-deprecated].
 #'
 #' @param startTime optional indication of the start time for the profile,
 #' which is used in some several plotting functions.  This is best given as a
-#' \code{\link{POSIXt}} time, but it may also be a character string
-#' that can be converted to a time with \code{\link{as.POSIXct}},
-#' using \code{UTC} as the timezone.
+#' [POSIXt] time, but it may also be a character string
+#' that can be converted to a time with [as.POSIXct()],
+#' using `UTC` as the timezone.
 #'
 ##1108 @param recovery optional indication of the recovery time, in the format
-##1108 described for \code{startTime}.  This is not presently used by \code{oce},
-##1108 and is stored in the result's \code{metadata} slot just in case the user
+##1108 described for `startTime`.  This is not presently used by `oce`,
+##1108 and is stored in the result's `metadata` slot just in case the user
 ##1108 requires it.
 #'
 #' @param longitude optional numerical value containing longitude in decimal
 #' degrees, positive in the eastern hemisphere. If this is a single number,
-#' then it is stored in the \code{metadata} slot of the returned value; if it
-#' is a vector of numbers, then they are stored in the \code{data} slot.
+#' then it is stored in the `metadata` slot of the returned value; if it
+#' is a vector of numbers, then they are stored in the `data` slot.
 #'
 #' @param latitude optional numerical value containing the latitude in decimal
 #' degrees, positive in the northern hemisphere. See the note on length, for
-#' the \code{longitude} argument.
+#' the `longitude` argument.
 #'
 #' @param deploymentType character string indicating the type of deployment. Use
-#' \code{"unknown"} if this is not known, \code{"profile"} for a profile (in
+#' `"unknown"` if this is not known, `"profile"` for a profile (in
 #' which the data were acquired during a downcast, while the device was lowered
-#' into the water column, perhaps also including an upcast; \code{"moored"} if
-#' the device is installed on a fixed mooring, \code{"thermosalinograph"} (or
-#' \code{"tsg"}) if the device is mounted on a moving vessel, to record
-#' near-surface properties, or \code{"towyo"} if the device is repeatedly
+#' into the water column, perhaps also including an upcast; `"moored"` if
+#' the device is installed on a fixed mooring, `"thermosalinograph"` (or
+#' `"tsg"`) if the device is mounted on a moving vessel, to record
+#' near-surface properties, or `"towyo"` if the device is repeatedly
 #' lowered and raised.
 #'
 #' @param pressureAtmospheric A numerical value (a constant or a vector),
 #' that is subtracted from pressure before storing it in the return value.
-#' (This altered pressure is also used in calculating \code{salinity}, if
-#' that is to be computed from \code{conductivity}, etc., using
-#' \code{\link{swSCTp}} (see \code{salinity} above).
+#' (This altered pressure is also used in calculating `salinity`, if
+#' that is to be computed from `conductivity`, etc., using
+#' [swSCTp()]; see `salinity` above.)
 ##
 ##1108 @param waterDepth optional numerical value indicating the water depth in
 ##1108 metres. This is different from the maximum recorded pressure, although
 ##1108 the latter is used by some oce functions as a guess on water depth, the
-##1108 most important example being \code{\link{plot,section-method}}.
+##1108 most important example being [plot,section-method()].
 #'
 #' @param sampleInterval optional numerical value indicating the time between
 #' samples in the profile.
 #'
 #' @param profile optional positive integer specifying the number of the profile
 #' to extract from an object that has data in matrices, such as for some
-#' \code{argo} objects. Currently the \code{profile} argument is only utilized for
-#' \code{\link{argo-class}} objects.
+#' `argo` objects. Currently the `profile` argument is only utilized for
+#' [argo-class] objects.
 #'
 ##1108 @param src optional string indicating data source.
 #'
 #' @template debugTemplate
 #'
 #' @section Converting rsk objects:
-#' If the \code{salinity} argument is an object of \code{\link{rsk-class}},
-#' then \code{as.ctd} passes it,
-#' \code{pressureAtmospheric},
-#' \code{longitude},
-#' \code{latitude}
-#' \code{ship},
-#' \code{cruise},
-#' \code{station} and
-#' \code{deploymentType}
-#' to \code{\link{rsk2ctd}}, which builds the ctd object that is
-#' returned by \code{as.ctd}. The other arguments to \code{as.ctd}
-#' are ignored in this instance, because \code{rsk} objects already
+#' If the `salinity` argument is an object of [rsk-class],
+#' then `as.ctd` passes it,
+#' `pressureAtmospheric`,
+#' `longitude`,
+#' `latitude`
+#' `ship`,
+#' `cruise`,
+#' `station` and
+#' `deploymentType`
+#' to [rsk2ctd()], which builds the ctd object that is
+#' returned by `as.ctd`. The other arguments to `as.ctd`
+#' are ignored in this instance, because `rsk` objects already
 #' contain their information. If required, any data or metadata
-#' element can be added to the value returned by \code{as.ctd}
-#' using \code{\link{oceSetData}} or \code{\link{oceSetMetadata}},
+#' element can be added to the value returned by `as.ctd`
+#' using [oceSetData()] or [oceSetMetadata()],
 #' respectively.
 #'
-#' The returned \code{\link{rsk-class}} object contains pressure in a form that
-#' may need to be adjusted, because \code{rsk} objects may contain
+#' The returned [rsk-class] object contains pressure in a form that
+#' may need to be adjusted, because `rsk` objects may contain
 #' either absolute pressure or sea pressure. This adjustment is handled
-#' automatically by \code{as.ctd}, by examination of the metadata item
-#' named \code{pressureType} (described in the documentation for
-#' \code{\link{read.rsk}}).  Once the sea pressure is determined,
-#' adjustments may be made with the \code{pressureAtmospheric} argument,
+#' automatically by `as.ctd`, by examination of the metadata item
+#' named `pressureType` (described in the documentation for
+#' [read.rsk()]).  Once the sea pressure is determined,
+#' adjustments may be made with the `pressureAtmospheric` argument,
 #' although in that case it is better considered a pressure adjustment
 #' than the atmospheric pressure.
 #'
-#' \code{\link{rsk-class}} objects may store sea pressure or absolute pressure (the
+#' [rsk-class] objects may store sea pressure or absolute pressure (the
 #' sum of sea pressure and atmospheric pressure), depending on how the object was
-#' created with \code{\link{as.rsk}} or \code{\link{read.rsk}}.  However,
-#' \code{\link{ctd-class}} objects store sea pressure, which is needed for
+#' created with [as.rsk()] or [read.rsk()].  However,
+#' [ctd-class] objects store sea pressure, which is needed for
 #' plotting, calculating density, etc. This poses no difficulties, however,
-#' because \code{as.ctd} automatically converts absolute pressure to sea pressure,
-#' if the metadata in the \code{\link{rsk-class}} object indicates that this is
+#' because `as.ctd` automatically converts absolute pressure to sea pressure,
+#' if the metadata in the [rsk-class] object indicates that this is
 #' appropriate. Further alteration of the pressure can be accomplished with the
-#' \code{pressureAtmospheric} argument, as noted above.
+#' `pressureAtmospheric` argument, as noted above.
 #'
-#' @return An object of \code{\link{ctd-class}}.
+#' @return A [ctd-class] object.
 #'
 #' @examples
 #' library(oce)
@@ -1141,12 +1170,14 @@ setMethod(f="[[<-",
 #' @references Culkin, F., and Norman D. Smith, 1980. Determination of the
 #' concentration of potassium chloride solution having the same electrical
 #' conductivity, at 15 C and infinite frequency, as standard seawater of salinity
-#' 35.0000 ppt (Chlorinity 19.37394 ppt). \emph{IEEE Journal of Oceanic
-#' Engineering}, \bold{5}, pp 22-23.
+#' 35.0000 ppt (Chlorinity 19.37394 ppt). *IEEE Journal of Oceanic
+#' Engineering*, volume **5**, pages 22-23.
 #'
 #' @author Dan Kelley
 #'
 #' @family things related to ctd data
+#'
+#' @md
 as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    ##1108 SA=NULL, CT=NULL, oxygen=NULL, nitrate=NULL, nitrite=NULL, phosphate=NULL, silicate=NULL,
                    scan=NULL,
@@ -1565,42 +1596,53 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 }
 
 
-#' Add a Column to the Data Slot of a CTD Object [defunct]
+#' Add a Column to the Data Slot of a CTD Object (defunct)
 #'
-#' \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
+#' \strong{WARNING:} This function will be removed soon; see [oce-defunct].
 #'
-#' Use \code{\link{oceSetData}} instead of the present function.
+#' Use [oceSetData()] instead of the present function.
 #'
-#' Add a column to the \code{data} slot of an object of
-#' \code{\link{ctd-class}}, also updating the \code{metadata}
+#' Add a column to the `data` slot of an object of
+#' [ctd-class], also updating the `metadata`
 #' slot as appropriate.
 #'
-#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#' @param x a [ctd-class] object.
+#'
 #' @param column A column of data to be inserted, in the form of a
 #'     numeric vector, whose length matches that of columns in the
 #'     object.
+#'
 #' @param name Character string indicating the name this column is to
-#'     have in the \code{data} slot of \code{x}.
+#'     have in the `data` slot of `x`.
+#'
 #' @param label Optional character string or expression indicating the
 #'     name of the column, as it will appear in plot labels.  (If not
-#'     given, \code{name} will be used.)
+#'     given, `name` will be used.)
+#'
 #' @param unit Optional indication of the unit, in the form of a list containing
-#'     items \code{unit}, which is an expression, and \code{scale}, which is a
+#'     items `unit`, which is an expression, and `scale`, which is a
 #'     character string. For example, modern measurements of temperature have
-#'     unit \code{list(name=expression(degree*C), scale="ITS-90")}.
+#'     unit `list(name=expression(degree*C), scale="ITS-90")`.
+#'
 #' @param log A logical value indicating whether to store an entry in the processing
 #' log that indicates this insertion.
+#'
 #' @param originalName string indicating the name of the data element as it was originally. This
 #' makes sense only for data being read from a file, where e.g. WOCE or SBE
 #' names might be used.
+#'
 #' @template debugTemplate
-#' @return A ctd object.
-#' @seealso The documentation for \code{\link{ctd-class}} explains the structure
+#'
+#' @return A [ctd-class] object.
+#'
+#' @seealso The documentation for [ctd-class] explains the structure
 #'    of CTD objects, and also outlines the other functions dealing with them.
 #'
 #' @author Dan Kelley
 #'
 #' @family functions that will be removed soon
+#'
+#' @md
 ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalName="",
                           debug=getOption("oceDebug"))
 {
@@ -1657,76 +1699,80 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
 #' Decimate a CTD profile
 #'
 #' Interpolate a CTD profile to specified pressure values.  This is used
-#' by \code{\link{sectionGrid}}, but is also useful for dealing with individual
+#' by [sectionGrid()], but is also useful for dealing with individual
 #' CTD/bottle profiles.
 #'
-#' The \code{"approx"} and \code{"approxML"} methods may be best for bottle data,
+#' The `"approx"` and `"approxML"` methods may be best for bottle data,
 #' in which the usual task is
 #' to interpolate from a coarse sampling grid to a finer one. The distinction
-#' is that \code{"approxML"} assumes a mixed-layer above the top sample value. For CTD data, the
-#' \code{"boxcar"} method may be the preferred choice, because the task is normally
+#' is that `"approxML"` assumes a mixed-layer above the top sample value. For CTD data, the
+#' `"boxcar"` method may be the preferred choice, because the task is normally
 #' to sub-sample, and some degree of smoothing is usually desired.  (The
-#' \code{"lm"} method can be quite slow, and its results may be quite similar to those of the
+#' `"lm"` method can be quite slow, and its results may be quite similar to those of the
 #' boxcar method.)
 #'
 #' For widely-spaced data, a sort of numerical cabeling effect can result when
 #' density is computed based on interpolated salinity and temperature.
-#' See reference [2] for a discussion of this issue and possible solutions.
+#' See reference 2 for a discussion of this issue and possible solutions.
 #'
 #' @template flagDeletionTemplate
 #'
-#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#' @param x a [ctd-class] object.
 #'
 #' @param p pressure increment, or vector of pressures.  In the first case,
 #' pressures from 0dbar to the rounded maximum pressure are used, incrementing by
-#' \code{p} dbars.  If a vector of pressures is given, interpolation is done to
+#' `p` dbars.  If a vector of pressures is given, interpolation is done to
 #' these pressures.
 #'
 #' @param method the method to be used for calculating decimated values.  This may
 #' be a function or a string naming a built-in method.  The built-in methods are
 #' as follows.
-#'\itemize{
-#' \item \code{"boxcar"} (based on a local average)
-#' \item \code{"approx"} (based on linear
-#' interpolation between neighboring points, using \code{\link{approx}}
-#' with the \code{rule} argument specified here)
-#' \item \code{"approxML"} as \code{"approx"},
+#'
+#' * `"boxcar"` (based on a local average)
+#'
+#' * `"approx"` (based on linear
+#' interpolation between neighboring points, using [approx()]
+#' with the `rule` argument specified here)
+#'
+#' * `"approxML"` as `"approx"`,
 #' except that a mixed layer is assumed to apply above the top data value; this
-#' is done by setting the \code{yleft} argument to \code{\link{approx}}, and
-#' by calling that function with \code{rule=c(2,1))}
-#' \item \code{"lm"} (based on local
-#' regression, with \code{e} setting the size of the local region);
-#' \item \code{"rr"} for the Reiniger and Ross method, carried out with \code{\link{oce.approx}};
-#' \item \code{"unesco"} (for the UNESCO method, carried out with.
-#' \code{\link{oce.approx}}.
-#' }
-#' On the other hand, if \code{method} is a function, then it must take
+#' is done by setting the `yleft` argument to [approx()], and
+#' by calling that function with `rule=c(2,1))`
+#'
+#' * `"lm"` (based on local
+#' regression, with `e` setting the size of the local region);
+#'
+#' * `"rr"` for the Reiniger and Ross method, carried out with [oce.approx()];
+#'
+#' * `"unesco"` (for the UNESCO method, carried out with [oce.approx()].
+#'
+#' On the other hand, if `method` is a function, then it must take
 #' three arguments, the first being pressure, the second being an arbitrary
 #' variable in another column of the data, and the third being a vector of target
 #' pressures at which the calculation is carried out, and the return value must be
 #' a vector.  See \dQuote{Examples}.
 #'
-#' @param rule an integer that is passed to \code{\link{approx}}, in the
-#' case where \code{method} is \code{"approx"}. Note that the default value
-#' for \code{rule} is 1, which will inhibit extrapolation beyond the observed
+#' @param rule an integer that is passed to [approx()], in the
+#' case where `method` is `"approx"`. Note that the default value
+#' for `rule` is 1, which will inhibit extrapolation beyond the observed
 #' pressure range. This is a change from the behaviour previous to May 8, 2017,
-#' when a \code{rule} of 2 was used (without stating so as an argument).
+#' when a `rule` of 2 was used (without stating so as an argument).
 #'
 #' @param e is an expansion coefficient used to calculate the local neighbourhoods
-#' for the \code{"boxcar"} and \code{"lm"} methods.  If \code{e=1}, then the
-#' neighbourhood for the i-th pressure extends from the (\code{i-1})-th pressure to
-#' the (\code{i+1})-th pressure.  At the endpoints it is assumed that the outside
+#' for the `"boxcar"` and `"lm"` methods.  If `e=1`, then the
+#' neighbourhood for the i-th pressure extends from the (`i-1`)-th pressure to
+#' the (`i+1`)-th pressure.  At the endpoints it is assumed that the outside
 #' bin is of the same pressure range as the first inside bin.  For other values of
-#' \code{e}, the neighbourhood is expanded linearly in each direction.  If the
-#' \code{"lm"} method produces warnings about "prediction from a rank-deficient
-#' fit", a larger value of \code{"e"} should be used.
+#' `e`, the neighbourhood is expanded linearly in each direction.  If the
+#' `"lm"` method produces warnings about "prediction from a rank-deficient
+#' fit", a larger value of `"e"` should be used.
 #'
 #' @template debugTemplate
 #'
-#' @return An object of \code{\link{ctd-class}}, with pressures that are as set by
-#' the \code{"p"} parameter and all other properties modified appropriately.
+#' @return A [ctd-class] object, with pressures that are as set by
+#' the `"p"` parameter and all other properties modified appropriately.
 #'
-#' @seealso The documentation for \code{\link{ctd-class}} explains the structure of
+#' @seealso The documentation for [ctd-class] explains the structure of
 #' CTD objects, and also outlines the other functions dealing with them.
 #'
 #' @examples
@@ -1755,6 +1801,8 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
 #' @author Dan Kelley
 #'
 #' @family things related to ctd data
+#'
+#' @md
 ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption("oceDebug"))
 {
     methodFunction <- is.function(method)
@@ -1977,23 +2025,23 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #' either indices to these events or a vector of CTD records containing the events.
 #'
 #' The method works by examining the pressure record.  First, this is smoothed using
-#' \code{smoother()} (see \dQuote{Arguments}), and then the result is first-differenced
-#' using \code{\link{diff}}.  Median values of the positive and
-#' negative first-difference values are then multiplied by \code{cutoff}.  This establishes criteria
+#' `smoother()` (see \dQuote{Arguments}), and then the result is first-differenced
+#' using [diff()].  Median values of the positive and
+#' negative first-difference values are then multiplied by `cutoff`.  This establishes criteria
 #' for any given point to be in an ascending profile, a descending profile, or a non-profile.
-#' Contiguous regions are then found, and those that have fewer than \code{minLength} points are
-#' discarded.  Then, those that have pressure ranges less than \code{minHeight} are discarded.
+#' Contiguous regions are then found, and those that have fewer than `minLength` points are
+#' discarded.  Then, those that have pressure ranges less than `minHeight` are discarded.
 #'
 #' Caution: this method is not well-suited to all datasets. For example, the default
-#' value of \code{smoother} is \code{\link{smooth.spline}}, and this works well for just a few
+#' value of `smoother` is [smooth.spline()], and this works well for just a few
 #' profiles, but poorly for a tow-yo with a long sequence of profiles; in the latter case,
 #' it can be preferable to use simpler smoothers (see \dQuote{Examples}). Also, depending
 #' on the sampling protocol, it is often necessary to pass the resultant profiles through
-#' \code{\link{ctdTrim}}, to remove artifacts such as an equilibration phase, etc.
+#' [ctdTrim()], to remove artifacts such as an equilibration phase, etc.
 #' Generally, one is well-advised to use the present function for a quick look at the data,
-#' relying on e.g. \code{\link{plotScan}} to identify profiles visually, for a final product.
+#' relying on e.g. [plotScan()] to identify profiles visually, for a final product.
 #'
-#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#' @param x a [ctd-class] object.
 #'
 #' @param cutoff criterion on pressure difference; see \dQuote{Details}.
 #'
@@ -2002,47 +2050,47 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #' @param minHeight lower limit on height of candidate profiles.
 #'
 #' @param smoother The smoothing function to use for identifying down/up
-#' casts. The default is \code{smooth.spline}, which performs well for
+#' casts. The default is `smooth.spline`, which performs well for
 #' a small number of cycles; see \dQuote{Examples} for a method that is
-#' better for a long tow-yo. The return value from \code{smoother} must
-#' be either a list containing an element named \code{y} or something
-#' that can be coerced to a vector with \code{\link{as.vector}}. To
+#' better for a long tow-yo. The return value from `smoother` must
+#' be either a list containing an element named `y` or something
+#' that can be coerced to a vector with [as.vector()]. To
 #' turn smoothing off, so that cycles in pressure are determined by
-#' simple first difference, set \code{smoother} to \code{NULL}.
+#' simple first difference, set `smoother` to `NULL`.
 #'
 #' @param direction String indicating the travel direction to be selected.
 #'
 #' @param breaks optional integer vector indicating the indices of last
-#' datum in each profile stored within \code{x}. Thus, the first profile
-#' in the return value will contain the \code{x} data from indices 1
-#' to \code{breaks[1]}.  If \code{breaks} is given, then all
-#' other arguments except \code{x} are ignored. Using \code{breaks}
+#' datum in each profile stored within `x`. Thus, the first profile
+#' in the return value will contain the `x` data from indices 1
+#' to `breaks[1]`.  If `breaks` is given, then all
+#' other arguments except `x` are ignored. Using `breaks`
 #' is handy in cases where other schemes fail, or when the author
 #' has independent knowledge of how the profiles are strung together
-#' in \code{x}; see example 3 for how \code{breaks} might be used
+#' in `x`; see example 3 for how `breaks` might be used
 #' for towyo data.
 #'
 #' @param arr.ind Logical indicating whether the array indices should be returned;
 #' the alternative is to return a vector of ctd objects.
 #'
 #' @param distinct An optional string indicating how to identify profiles
-#' by unique values. Use \code{"location"}
+#' by unique values. Use `"location"`
 #' to find profiles by a change in longitude and latitude, or use the name of any
-#' of item in the \code{data} slot in \code{x}. In these cases, all the
-#' other arguments except \code{x} are ignored. However, if \code{distinct}
+#' of item in the `data` slot in `x`. In these cases, all the
+#' other arguments except `x` are ignored. However, if `distinct`
 #' is not supplied, the other arguments are handled as described above.
 #'
 #' @template debugTemplate
 #'
-#' @param ... Optional extra arguments that are passed to the smoothing function, \code{smoother}.
+#' @param ... Optional extra arguments that are passed to the smoothing function, `smoother`.
 #'
-#' @return If \code{arr.ind=TRUE}, a data frame with columns \code{start} and \code{end}, the indices
-#' of the downcasts.  Otherwise, a vector of \code{ctd} objects. In this second case,
-#' the station names are set to a form like \code{"10/3"}, for the third profile within an
-#' original ctd object with station name \code{"10"}, or to \code{"3"}, if the original
+#' @return If `arr.ind=TRUE`, a data frame with columns `start` and `end`, the indices
+#' of the downcasts.  Otherwise, a vector of `ctd` objects. In this second case,
+#' the station names are set to a form like `"10/3"`, for the third profile within an
+#' original ctd object with station name `"10"`, or to `"3"`, if the original
 #' ctd object had no station name defined.
 #'
-#' @seealso The documentation for \code{\link{ctd-class}} explains the structure
+#' @seealso The documentation for [ctd-class] explains the structure
 #' of CTD objects, and also outlines the other functions dealing with them.
 #'
 #' @examples
@@ -2079,6 +2127,8 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to ctd data
+#'
+#' @md
 ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
                             smoother=smooth.spline,
                             direction=c("descending", "ascending"),
@@ -2225,45 +2275,53 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'
 #' Often in CTD profiling, the goal is to isolate only the downcast, discarding measurements made in
 #' the air, in an equilibration phase in which the device is held below the water surface, and then the
-#' upcast phase that follows the downcast.  This is handled reasonably well by \code{ctdTrim} with
-#' \code{method="downcast"}, although it is almost always best to use \code{\link{plotScan}} to
-#' investigate the data, and then use the \code{method="index"} or \code{method="scan"} method based on
+#' upcast phase that follows the downcast.  This is handled reasonably well by `ctdTrim` with
+#' `method="downcast"`, although it is almost always best to use [plotScan()] to
+#' investigate the data, and then use the `method="index"` or `method="scan"` method based on
 #' visual inspection of the data.
 #'
-#' \code{ctdTrim} begins by examining the pressure differences between subsequent samples. If
-#' these are all of the same value, then the input \code{ctd} object is returned, unaltered.
+#' `ctdTrim` begins by examining the pressure differences between subsequent samples. If
+#' these are all of the same value, then the input `ctd` object is returned, unaltered.
 #' This handles the case of pressure-binned data. However, if the pressure difference
 #' varies, a variety of approaches are taken to trimming the dataset.
 #'
-#' \itemize{
-#'   \item{If \code{method[1]} is \code{"downcast"} then an attempt is made to keep only data for
-#'   which the CTD is descending.  This is done in stages, with variants based on \code{method[2]}, if
-#'   supplied.  \emph{Step 1.} The pressure data are despiked with a smooth() filter with method "3R".
-#'   This removes wild spikes that arise from poor instrument connections, etc.  \emph{Step 2.} If no
-#'   \code{parameters} are given, then any data with negative pressures are deleted.  If there is a
-#'   parameter named \code{pmin}, then that pressure (in decibars) is used instead as the lower limit.
-#'   This is a commonly-used setup, e.g.  \code{ctdTrim(ctd, parameters=list(pmin=1))} removes the top
-#'   decibar (roughly 1m) from the data.  Specifying \code{pmin} is a simple way to remove near-surface
-#'   data, such as a shallow equilibration phase, and if specified will cause \code{ctdTrim} to skip
-#'   step 4 below.  \emph{Step 3.} The maximum pressure is determined, and data acquired subsequent to
-#'   that point are deleted.  This removes the upcast and any subsequent data.  \emph{Step 4.} If the
-#'   \code{pmin} parameter is not specified, an attempt is made to remove an initial equilibrium phase
-#'   by a regression of pressure on scan number.  There are three variants to this, depending on the
-#'   value of the second \code{method} element. If it is \code{"A"} (or not given), the procedure is to
-#'   call \code{\link{nls}} to fit a piecewise linear model of pressure as a function of scan,
-#'   in which pressure is
-#'   constant for scan less than a critical value, and then linearly varying for with scan. This is
-#'   meant to handle the common situation in which the CTD is held at roughly constant depth (typically
-#'   a metre or so) to equilibrate, before it is lowered through the water column.
-#'   Case \code{"B"} is the same,
-#'   except that the pressure in the surface region is taken to be zero (this does not make
-#'   much sense, but it might help in some cases). Note that, prior to early 2016, method \code{"B"} was
-#'   called method \code{"C"}; the old \code{"B"} method was judged useless and was removed.}
+#' * If `method[1]` is `"downcast"` then an attempt is made to keep only data for
+#' which the CTD is descending.  This is done in stages, with variants based on `method[2]`, if
+#' supplied.
 #'
-#'   \item{If \code{method="upcast"}, a sort of reverse of \code{"downcast"} is used. This
-#'   was added in late April 2017 and has not been well tested yet.}
+#'   1. The pressure data are despiked with a smooth() filter with method "3R".
+#'      This removes wild spikes that arise from poor instrument connections, etc.
 #'
-#'   \item{If \code{method="sbe"}, a method similar to that described
+#'   2. \emph{Step 2.} If no `parameters` are given, then any data with negative pressures
+#'      are deleted.  If there is a parameter named `pmin`, then that pressure (in decibars)
+#'      is used instead as the lower limit. This is a commonly-used setup, e.g.
+#'      `ctdTrim(ctd, parameters=list(pmin=1))` removes the top decibar (roughly 1m) from
+#'      the data.  Specifying `pmin` is a simple way to remove near-surface
+#'      data, such as a shallow equilibration phase, and if specified will cause `ctdTrim`
+#'      to skip step 4 below.
+#'
+#'   3. The maximum pressure is determined, and data acquired subsequent to
+#'      that point are deleted.  This removes the upcast and any subsequent data.
+#'
+#'   4. If the `pmin` parameter is not specified, an attempt is made to remove an initial
+#'      equilibrium phase by a regression of pressure on scan number.  There are three
+#'      variants to this, depending on the value of the second `method` element.
+#'      If `method` is `"A"` (or not given), the procedure is to
+#'      call [nls()] to fit a piecewise linear model of pressure as a function of scan,
+#'      in which pressure is constant for scan less than a critical value, and then
+#'      linearly varying for with scan. This is  meant to handle the common situation
+#'      in which the CTD is held at roughly constant depth (typically
+#'      a metre or so) to equilibrate, before it is lowered through the water column.
+#'      If `method` is `"B"`, the procedure is similar, except that the pressure
+#'      in the surface region is taken to be zero (this does not make
+#'      much sense, but it might help in some cases). Note that, prior to early 2016,
+#'      method `"B"` was called method `"C"`; the old `"B"` method was judged useless
+#'      and so it was removed.
+#'
+#' * If `method="upcast"`, a sort of reverse of `"downcast"` is used. This
+#'   was added in late April 2017 and has not been well tested yet.
+#'
+#' * If `method="sbe"`, a method similar to that described
 #'   in the SBE Data Processing manual is used to remove the "soak"
 #'   period at the beginning of a cast (see Section 6 under subsection
 #'   "Loop Edit"). The method is based on the soak procedure whereby
@@ -2271,64 +2329,63 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'   which it is raised toward the surface before beginning the actual
 #'   downcast. This enables equilibration of the sensors while still
 #'   permitting reasonably good near-surface data. Parameters for the
-#'   method can be passed using the \code{parameters} argument, which
-#'   include \code{minSoak} (the minimum depth for the soak) and
-#'   \code{maxSoak} the maximum depth of the soak. The method finds
-#'   the minimum pressure prior to the \code{maxSoak} value being
+#'   method can be passed using the `parameters` argument, which
+#'   include `minSoak` (the minimum depth for the soak) and
+#'   `maxSoak` the maximum depth of the soak. The method finds
+#'   the minimum pressure prior to the `maxSoak` value being
 #'   passed, each of which occurring after the scan in which the
-#'   \code{minSoak} value was reached. For the method to work, the
-#'   pre-cast pressure minimum must be less than the \code{minSoak}
-#'   value. The default values of \code{minSoak} and \code{maxSoak}
-#'   are 1 and 20 dbar, respectively.}
+#'   `minSoak` value was reached. For the method to work, the
+#'   pre-cast pressure minimum must be less than the `minSoak`
+#'   value. The default values of `minSoak` and `maxSoak`
+#'   are 1 and 20 dbar, respectively.
 #'
-#'   \item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
-#'   value of \code{parameters}. If the latter is a logical vector of length matching data column
-#'   length, then it is used directly for subsetting. If \code{parameters} is a numerical vector with
-#'   two elements, then the index or scan values that lie between \code{parameters[1]}
-#'   and \code{parameters[2]} (inclusive) are used for subsetting.  The
+#' * If `method="index"` or `"scan"`, then each column of data is subsetted according to the
+#'   value of `parameters`. If the latter is a logical vector of length matching data column
+#'   length, then it is used directly for subsetting. If `parameters` is a numerical vector with
+#'   two elements, then the index or scan values that lie between `parameters[1]`
+#'   and `parameters[2]` (inclusive) are used for subsetting.  The
 #'   two-element method is probably the most useful, with the values being determined by visual
-#'   inspection of the results of \code{\link{plotScan}}. While this may take a minute or two, the
+#'   inspection of the results of [plotScan()]. While this may take a minute or two, the
 #'   analyst should bear in mind that a deep-water CTD profile might take 6 hours, corresponding to
-#'   ship-time costs exceeding a week of salary.}
+#'   ship-time costs exceeding a week of salary.
 #'
-#'   \item{If \code{method="range"} then data are selected based on the value of the column named
-#'   \code{parameters$item}.  This may be by range or by critical value.  By range: select values
-#'   between \code{parameters$from} (the lower limit) and \code{parameters$to} (the upper limit) By
+#' * If `method="range"` then data are selected based on the value of the column named
+#'   `parameters$item`.  This may be by range or by critical value.  By range: select values
+#'   between `parameters$from` (the lower limit) and `parameters$to` (the upper limit) By
 #'   critical value: select if the named column exceeds the value.  For example, \code{ctd2 <-
 #'     ctdTrim(ctd, "range", parameters=list(item="scan", from=5))} starts at scan number 5 and
 #'   continues to the end, while
-#'   \code{ctdTrim(ctd,"range",parameters=list(item="scan",from=5,to=100))} also starts at scan 5,
-#'   but extends only to scan 100.}
+#'   `ctdTrim(ctd,"range",parameters=list(item="scan",from=5,to=100))` also starts at scan 5,
+#'   but extends only to scan 100.
 #'
-#'   \item{If \code{method} is a function, then it must return a vector of \code{\link{logical}}
-#'   values, computed based on two arguments: \code{data} (a
-#'   \code{\link{list}}), and \code{parameters} as supplied to \code{ctdTrim}.  Both
-#'   \code{inferWaterDepth} and \code{removeInversions} are ignored in the function case. See
-#'   \dQuote{Examples}.}
-#' }
+#' * If `method` is a function, then it must return a vector of [logical()]
+#'   values, computed based on two arguments: `data` (a
+#'   [list()]), and `parameters` as supplied to `ctdTrim`.  Both
+#'   `inferWaterDepth` and `removeInversions` are ignored in the function case. See
+#'   \dQuote{Examples}.
 #'
-#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#' @param x a [ctd-class] object.
 #'
 #' @param method A string (or a vector of two strings) specifying the trimming method, or a function to
-#' be used to determine data indices to keep.  If \code{method} is not provided, \code{"downcast"} is
+#' be used to determine data indices to keep.  If `method` is not provided, `"downcast"` is
 #' assumed. See \dQuote{Details}.
 #'
 #' @param removeDepthInversions Logical value indicating whether to remove any levels at which depth is
 #' less than, or equal to, a depth above.  (This is needed if the object is to be assembled into a
-#' section, unless \code{\link{ctdDecimate}} will be used, which will remove the inversions.
+#' section, unless [ctdDecimate()] will be used, which will remove the inversions.
 #'
 #' @param parameters A list whose elements depend on the method; see \dQuote{Details}.
 #'
-#' @param indices Logical value indicating what to return. If \code{indices=FALSE} (the default),
-#' then the return value is a subsetted \code{\link{ctd-class}} object. If \code{indices=TRUE},
+#' @param indices Logical value indicating what to return. If `indices=FALSE` (the default),
+#' then the return value is a subsetted [ctd-class] object. If `indices=TRUE`,
 #' then the return value is a logical vector that could be used to subset the data
-#' with \code{\link{subset,ctd-method}} or to set data-quality flags.
+#' with [subset,ctd-method()] or to set data-quality flags.
 #'
 #' @template debugTemplate
 #'
-#' @return Either an object of \code{\link{ctd-class}} or a logical vector of length
+#' @return Either a [ctd-class] object of or a logical vector of length
 #' matching the data. The first option is the default. The second option,
-#' achieved by setting \code{indices=FALSE}, may be useful in constructing
+#' achieved by setting `indices=FALSE`, may be useful in constructing
 #' data flags to be inserted into the object.
 #'
 #' @examples
@@ -2349,13 +2406,15 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'
 #' @references
 #' The Seabird CTD instrument is described at
-#' \code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
+#' `http://www.seabird.com/products/spec_sheets/19plusdata.htm`.
 #'
 #' Seasoft V2: SBE Data Processing, SeaBird Scientific, 05/26/2016
 #'
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to ctd data
+#'
+#' @md
 ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                     indices=FALSE, debug=getOption("oceDebug"))
 {
@@ -2694,27 +2753,29 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 }
 
 
-#' Update a CTD Header [defunct]
+#' Update a CTD Header (defunct)
 #'
-#' \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
+#' *W*ARNING:** This function will be removed soon; see [oce-defunct].
 #'
-#' Update the header of a \code{ctd} object, e.g. adjusting \code{nvalues} and the
-#' \code{span} of each column. This is done automatically by \code{ctdTrim}, for
+#' Update the header of a `ctd` object, e.g. adjusting `nvalues` and the
+#' `span` of each column. This is done automatically by `ctdTrim`, for
 #' example.
 #'
-#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#' @param x a [ctd-class] object.
 #'
 #' @template debugTemplate
 #'
-#' @return A new \code{\link{ctd-class}} object.
+#' @return A [ctd-class] object.
 #'
 #' @references
 #' The Seabird CTD instrument is described at
-#'   \code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
+#'   `http://www.seabird.com/products/spec_sheets/19plusdata.htm`.
 #'
 #' @author Dan Kelley
 #'
 #' @family functions that will be removed soon
+#'
+#' @md
 ctdUpdateHeader <- function (x, debug=FALSE)
 {
     .Defunct("oceSetMetadata",
@@ -2753,14 +2814,15 @@ ctdUpdateHeader <- function (x, debug=FALSE)
 #' Write a CTD Data Object as a CSV File
 #'
 #' Writes a comma-separated file containing the data frame stored in
-#' the \code{data} slot of the first argument.  The file is suitable
+#' the `data` slot of the first argument.  The file is suitable
 #' for reading with a spreadsheet, or
-#' with \code{\link{read.csv}}.  This output file will contain
-#' some of the metadata in \code{x}, if \code{metadata} is \code{TRUE}.
+#' with [read.csv()].  This output file will contain
+#' some of the metadata in `x`, if `metadata` is `TRUE`.
 #'
-#' @param object A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#' @param object a [ctd-class] object.
+#'
 #' @param file Either a character string (the file name) or a connection. If not
-#' provided, \code{file} defaults to \code{\link{stdout}()}.
+#' provided, `file` defaults to [stdout()].
 #'
 #' @param metadata a logical value indicating whether to put some selected
 #' metadata elements at the start of the output file.
@@ -2768,11 +2830,11 @@ ctdUpdateHeader <- function (x, debug=FALSE)
 #' @param flags a logical value indicating whether to show data-quality flags
 #' as well as data.
 #'
-#' @param format string indicating the format to use. This may be \code{"csv"}
-#' for a simple CSV format, or \code{"whp"} for the World Hydrographic
-#' Program format, described at [1] and exemplified at [2].
+#' @param format string indicating the format to use. This may be `"csv"`
+#' for a simple CSV format, or `"whp"` for the World Hydrographic
+#' Program format, described in reference 1 and exemplified in reference 2.
 #'
-#' @seealso The documentation for \code{\link{ctd-class}} explains the structure
+#' @seealso The documentation for [ctd-class] explains the structure
 #' of CTD objects.
 #'
 #' @examples
@@ -2792,6 +2854,8 @@ ctdUpdateHeader <- function (x, debug=FALSE)
 #' 2. https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv
 #'
 #' @family things related to ctd data
+#'
+#' @md
 write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 {
     if (!inherits(object, "ctd"))
@@ -2874,73 +2938,94 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'
 #' @details
 #' Creates a multi-panel summary plot of data measured in a CTD cast. The
-#' default values of \code{which} and other arguments are chosen to be useful
+#' default values of `which` and other arguments are chosen to be useful
 #' for quick overviews of data. However, for detailed work it is common
-#' to call the present function with just a single value of \code{which}, e.g.
+#' to call the present function with just a single value of `which`, e.g.
 #' with four calls to get four panels. The advantage of this is that it provides
 #' much more control over the display, and also it permits the addition of extra
 #' display elements (lines, points, margin notes, etc.) to the individual panels.
 #'
-#' Note that panels that draw more than one curve (e.g. \code{which="salinity+temperature"}
-#' draws temperature and salinity profiles in one graph), the value of \code{\link{par}("usr")}
+#' Note that panels that draw more than one curve (e.g. `which="salinity+temperature"`
+#' draws temperature and salinity profiles in one graph), the value of [`par`]`("usr")`
 #' is established by the second profile to have been drawn. Some experimentation will
-#' reveal what this profile is, for each permitted \code{which} case, although
+#' reveal what this profile is, for each permitted `which` case, although
 #' it seems unlikely that this will help much ... the simple fact is that drawing two
 #' profiles in one graph is useful for a quick overview, but not useful for e.g. interactive
-#' analysis with \code{\link{locator}} to flag bad data, etc.
+#' analysis with [locator()] to flag bad data, etc.
 #'
-#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#' @param x a [ctd-class] object.
 #'
-#' @param which List of desired plot types, as given below. If \code{which} is not
-#' supplied, a default will be used. This default will be \code{c(1,2,3,5)} if the
-#' CTD is in profiling mode (i.e. if \code{deploymentType} in the \code{metadata}
-#' slot equals \code{"profile"},
+#' @param which List of desired plot types, as given below. If `which` is not
+#' supplied, a default will be used. This default will be `c(1,2,3,5)` if the
+#' CTD is in profiling mode (i.e. if `deploymentType` in the `metadata`
+#' slot equals `"profile"`,
 #' or is missing) or
-#' \code{"moored"}/\code{"thermosalinograph"}, the default will be \code{c(30, 3, 31, 5)}.  If it
-#' is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as
+#' `"moored"`/`"thermosalinograph"`, the default will be `c(30, 3, 31, 5)`.  If it
+#' is `"towyo"`, `c(30, 31, 32, 3)` will be used. Details are as
 #' follows.
 #'
-#' \itemize{
-#'     \item \code{which=1} or \code{which="salinity+temperature"} gives
-#'     a combined profile of temperature and salinity
-#'     \item \code{which=2} or \code{which="density+N2"} gives a combined
-#'     profile of \eqn{\sigma_\theta}{sigma-theta} and \eqn{N^2}{N^2}
-#'     \item \code{which=3} or \code{which="TS"} gives a TS plot
-#'     \item \code{which=4} or \code{which="text"} gives a textual
-#'     summary of some aspects of the data
-#'     \item \code{which=5} or \code{which="map"} gives a map plotted
-#'     with \code{\link{plot,coastline-method}}, with a dot for
-#'     the station location.  Notes near the top boundary of the map give the
-#'     station number, the sampling date, and the name of the chief scientist,
-#'     if these are known. Note that the longitude will be converted to a value
-#'     between -180 and 180 before plotting.  (See also notes
-#'     about \code{span}.)
-#'     \item \code{which=5.1} as for \code{which=5}, except that the file name
-#'     is drawn above the map
-#'     \item \code{which=6} or \code{which="density+dpdt"} gives a
-#'     profile of density and \eqn{dP/dt}{dP/dt}, which is useful for
-#'     evaluating whether the instrument is dropping properly through the
-#'     water column
-#'     \item \code{which=7} or \code{which="density+time"} gives a
-#'     profile of density and time
-#'     \item \code{which=8} or \code{which="index"} gives a profile of
-#'     index number (especially useful for \code{\link{ctdTrim}})
-#'     \item \code{which=9} or \code{which="salinity"} gives a salinity profile
-#'     \item \code{which=10} or \code{which="temperature"} gives a temperature profile
-#'     \item \code{which=11} or \code{which="density"} gives a density profile
-#'     \item \code{which=12} or \code{which="N2"} gives an \eqn{N^2}{N^2} profile
-#'     \item \code{which=13} or \code{which="spice"} gives a spiciness profile
-#'     \item \code{which=14} or \code{which="tritium"} gives a tritium profile
-#'     \item \code{which=15} or \code{which="Rrho"} gives an Rrho profile
-#'     \item \code{which=16} or \code{which="RrhoSF"} gives an RrhoSF profile
-#'     \item \code{which=17} or \code{which="conductivity"} gives a conductivity profile
-#'     \item \code{which=20} or \code{which="CT"} gives a Conservative Temperature profile
-#'     \item \code{which=21} or \code{which="SA"} gives an Absolute Salinity profile
-#'     \item \code{which=30} gives a time series of Salinity
-#'     \item \code{which=31} gives a time series of Temperature
-#'     \item \code{which=32} gives a time series of pressure
-#'     \item \code{which=33} gives a time series of sigmaTheta
-#' }
+#' * `which=1` or `which="salinity+temperature"` gives
+#' a combined profile of temperature and salinity
+#'
+#' * `which=2` or `which="density+N2"` gives a combined
+#' profile of \eqn{\sigma_\theta}{sigma-theta} and \eqn{N^2}{N^2}
+#'
+#' * `which=3` or `which="TS"` gives a TS plot
+#'
+#' * `which=4` or `which="text"` gives a textual
+#' summary of some aspects of the data
+#'
+#' * `which=5` or `which="map"` gives a map plotted
+#' with [plot,coastline-method()], with a dot for
+#' the station location.  Notes near the top boundary of the map give the
+#' station number, the sampling date, and the name of the chief scientist,
+#' if these are known. Note that the longitude will be converted to a value
+#' between -180 and 180 before plotting.  (See also notes
+#' about `span`.)
+#'
+#' * `which=5.1` as for `which=5`, except that the file name
+#' is drawn above the map
+#'
+#' * `which=6` or `which="density+dpdt"` gives a
+#' profile of density and \eqn{dP/dt}{dP/dt}, which is useful for
+#' evaluating whether the instrument is dropping properly through the
+#' water column
+#'
+#' * `which=7` or `which="density+time"` gives a
+#' profile of density and time
+#'
+#' * `which=8` or `which="index"` gives a profile of
+#' index number (especially useful for [ctdTrim()])
+#'
+#' * `which=9` or `which="salinity"` gives a salinity profile
+#'
+#' * `which=10` or `which="temperature"` gives a temperature profile
+#'
+#' * `which=11` or `which="density"` gives a density profile
+#'
+#' * `which=12` or `which="N2"` gives an \eqn{N^2}{N^2} profile
+#'
+#' * `which=13` or `which="spice"` gives a spiciness profile
+#'
+#' * `which=14` or `which="tritium"` gives a tritium profile
+#'
+#' * `which=15` or `which="Rrho"` gives an Rrho profile
+#'
+#' * `which=16` or `which="RrhoSF"` gives an RrhoSF profile
+#'
+#' * `which=17` or `which="conductivity"` gives a conductivity profile
+#'
+#' * `which=20` or `which="CT"` gives a Conservative Temperature profile
+#'
+#' * `which=21` or `which="SA"` gives an Absolute Salinity profile
+#'
+#' * `which=30` gives a time series of Salinity
+#'
+#' * `which=31` gives a time series of Temperature
+#'
+#' * `which=32` gives a time series of pressure
+#'
+#' * `which=33` gives a time series of sigmaTheta
 #'
 #' @param col Color of lines or symbols.
 #'
@@ -2948,32 +3033,32 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' \dQuote{History}.
 #'
 #' @param borderCoastline Color of coastlines and international borders, passed
-#' to \code{\link{plot,coastline-method}} if a map is included in \code{which}.
+#' to [plot,coastline-method()] if a map is included in `which`.
 #'
 #' @param colCoastline Fill color of coastlines and international borders, passed
-#' to \code{\link{plot,coastline-method}} if a map is included in \code{which}. Set to
-#' \code{NULL} to avoid filling.
+#' to [plot,coastline-method()] if a map is included in `which`. Set to
+#' `NULL` to avoid filling.
 #'
 #' @param eos String indicating the equation of state to be used, either
-#' \code{"unesco"} or \code{"gsw"}.
+#' `"unesco"` or `"gsw"`.
 #'
 #' @param ref.lat Latitude of reference point for distance calculation.
 #'
 #' @param ref.lon Longitude of reference point for distance calculation.
 #'
-#' @param grid Set \code{TRUE} to get a grid on all plots.
+#' @param grid Set `TRUE` to get a grid on all plots.
 #'
 #' @param coastline A specification of the coastline to be used for
-#' \code{which="map"}.  This may be a coastline object, whether built-in or
+#' `which="map"`.  This may be a coastline object, whether built-in or
 #' supplied by the user, or a character string.  If the later, it may be the
-#' name of a built-in coastline (\code{"coastlineWorld"},
-#' \code{"coastlineWorldFine"}, or
-#' \code{"coastlineWorldCoarse"}), or \code{"best"}, to choose
-#' a suitable coastline for the locale, or \code{"none"} to prevent
+#' name of a built-in coastline (`"coastlineWorld"`,
+#' `"coastlineWorldFine"`, or
+#' `"coastlineWorldCoarse"`), or `"best"`, to choose
+#' a suitable coastline for the locale, or `"none"` to prevent
 #' the drawing of a coastline.  There is a speed penalty for providing
-#' \code{coastline} as a character string, because it forces
-#' \code{\link{plot,coastline-method}} to load it on every call.  So, if
-#' \code{\link{plot,coastline-method}} is to be called several times for a given
+#' `coastline` as a character string, because it forces
+#' [plot,coastline-method()] to load it on every call.  So, if
+#' [plot,coastline-method()] is to be called several times for a given
 #' coastline, it makes sense to load it in before the first call, and to
 #' supply the object as an argument, as opposed to the name of the object.
 #'
@@ -3004,16 +3089,16 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'
 #' @param drawIsobaths An indication of whether to draw depth contours on
 #' maps, in addition to the coastline. The argument has no effect except
-#' for panels in which the value of \code{which} equals \code{"map"} or
-#' the equivalent numerical code, \code{5}. If \code{drawIsobaths} is
-#' \code{FALSE}, then no contours are drawn. If \code{drawIsobaths}
-#' is \code{TRUE}, then contours are selected automatically,
-#' using \code{\link{pretty}(c(0,300))} if the station depth is
-#' under 100m or \code{\link{pretty}(c(0,5500))} otherwise.
-#' If \code{drawIsobaths} is a numerical vector,
-#' then the indicated depths are drawn. For plots drawn with \code{projection}
-#' set to \code{NULL}, the contours are added with \code{\link{contour}}
-#' and otherwise \code{\link{mapContour}} is used. To customize
+#' for panels in which the value of `which` equals `"map"` or
+#' the equivalent numerical code, `5`. If `drawIsobaths` is
+#' `FALSE`, then no contours are drawn. If `drawIsobaths`
+#' is `TRUE`, then contours are selected automatically,
+#' using [`pretty`[`(c(0,300))` if the station depth is
+#' under 100m or [`pretty`]`(c(0,5500))` otherwise.
+#' If `drawIsobaths` is a numerical vector,
+#' then the indicated depths are drawn. For plots drawn with `projection`
+#' set to `NULL`, the contours are added with [contour()]
+#' and otherwise [mapContour()] is used. To customize
 #' the resultant contours, e.g. setting particular line types or colors,
 #' users should call these functions directly (see e.g. Example 2).
 #'
@@ -3029,23 +3114,23 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' labels.
 #'
 #' @param lonlabel,latlabel,sides Optional vectors of longitude and latitude to
-#' label on the indicated sides of plot, passed to \code{\link{plot,coastline-method}}.
+#' label on the indicated sides of plot, passed to [plot,coastline-method()].
 #' Using these arguments permits reasonably simple customization.  If they are are
 #' not provided, reasonable defaults will be used.
 #'
-#' @param projection Projection for map, if desired.  If this is \code{NULL}, no
+#' @param projection Projection for map, if desired.  If this is `NULL`, no
 #' projection will be used; the map will simply show longitude and latitude in a
 #' cartesian frame, scaled to retain shapes at the centre.  If this is the string
-#' \code{"automatic"}, then either a Mercator or Stereographic projection will be
+#' `"automatic"`, then either a Mercator or Stereographic projection will be
 #' used, depending on whether the CTD station is within 70 degrees of the equator
 #' or at higher latitudes.  Finally, if this is a string in the format used by
-#' \code{\link{mapPlot}}, then it is is passed to that function.
+#' [mapPlot()], then it is is passed to that function.
 #'
-#' @param parameters a \strong{deprecated} argument that has been ignored
-#' since February 2016; see \link{oce-deprecated}.
+#' @param parameters a **deprecated** argument that has been ignored
+#' since February 2016; see [oce-deprecated].
 #'
-#' @param orientation a \strong{deprecated} argument that has been ignored
-#' since February 2016; see \link{oce-deprecated}.
+#' @param orientation a **deprecated** argument that has been ignored
+#' since February 2016; see [oce-deprecated].
 #'
 #' @param latlon.pch Symbol code for sample location (ignored if no map plotted).
 #'
@@ -3055,66 +3140,66 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' @param latlon.col Color of symbol for sample location (ignored if no map
 #' plotted).
 #'
-#' @param cex Size to be used for plot symbols (see \code{\link{par}}).
+#' @param cex Size to be used for plot symbols (see [par()]).
 #'
-#' @param cex.axis Size factor for axis labels (see \code{\link{par}}).
+#' @param cex.axis Size factor for axis labels (see [par()]).
 #'
-#' @param pch Code for plotting symbol (see \code{\link{par}}).
+#' @param pch Code for plotting symbol (see [par()]).
 #'
-#' @param useSmoothScatter Boolean, set to \code{TRUE} to use
-#' \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw the plot.
+#' @param useSmoothScatter Boolean, set to `TRUE` to use
+#' [smoothScatter()] instead of [plot()] to draw the plot.
 #'
 #' @param df Optional argument that is ignored except for plotting buoyancy
-#' frequency; in that case, it is passed to \code{\link{swN2}} as the argument
-#' named \code{df}.
+#' frequency; in that case, it is passed to [swN2()] as the argument
+#' named `df`.
 #'
-#' @param keepNA Flag indicating whether to keep \code{NA} values in linegraphs,
+#' @param keepNA Flag indicating whether to keep `NA` values in linegraphs,
 #' which will yield breaks in the lines.
 #'
 #' @param type The type of plot to draw, using the same scheme as
-#' \code{\link{plot}}. If supplied, this is increased to be the
-#' same length as \code{which}, if necessary, and then supplied to
+#' [plot()]. If supplied, this is increased to be the
+#' same length as `which`, if necessary, and then supplied to
 #' each of the individual plot calls. If it is not supplied,
 #' then those plot calls use defaults (e.g. using a line for
-#' \code{\link{plotProfile}}, using dots for \code{\link{plotTS}},
+#' [plotProfile()], using dots for [plotTS()],
 #' etc).
 #'
 #' @param mgp Three-element numerical vector specifying axis-label geometry,
-#' passed to \code{\link{par}}.
+#' passed to [par()].
 #' The default establishes tighter margins than in the usual R setup.
 #'
 #' @param mar Four-element numerical vector specifying margin geometry,
-#' passed to \code{\link{par}}.
+#' passed to [par()].
 #' The default establishes tighter margins than in the usual R setup.
-#' Note that the value of \code{mar} is ignored for the map panel
+#' Note that the value of `mar` is ignored for the map panel
 #' of multi-panel maps; instead, the present value of
-#' \code{\link{par}("mar")} is used, which in the default call will
+#' [`par`]`("mar")` is used, which in the default call will
 #' make the map plot region equal that of the previously-drawn
 #' profiles and TS plot.
 #'
-#' @param inset Set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+#' @param inset Set to `TRUE` for use within [plotInset()].  The
 #' effect is to prevent the present function from adjusting margins, which is
 #' necessary because margin adjustment is the basis for the method used by
-#' \code{\link{plotInset}}.
+#' [plotInset()].
 #'
 #' @param add Logical, indication of whether to add to an existing plot.  This
-#' only works if \code{length(which)=1}, and it will yield odd results if the
-#' value of \code{which} does not match that in the previous plots.
+#' only works if `length(which)=1`, and it will yield odd results if the
+#' value of `which` does not match that in the previous plots.
 #'
 #' @template debugTemplate
 #'
 #' @param ... Optional arguments passed to plotting functions. A common example is
-#' to set \code{df}, for use in \link{swN2} calculations.
+#' to set `df`, for use in [swN2()] calculations.
 #'
 #' @seealso
-#' The documentation for \code{\link{ctd-class}} explains the structure of CTD
+#' The documentation for [ctd-class] explains the structure of CTD
 #' objects, and also outlines the other functions dealing with them.
 #'
 #' @section History:
-#' Until February, 2016, \code{plot,ctd-method} relied on a now-defunct argument
-#' \code{fill} to control colors; \code{colCoastline} is to be used now, instead.
+#' Until February, 2016, [plot,ctd-method()] relied on a now-defunct argument
+#' `fill` to control colors; `colCoastline` is to be used now, instead.
 #' Also, now it is possible to set the color of coasts and international
-#' boundaries, with \code{borderCoastline}.
+#' boundaries, with `borderCoastline`.
 #'
 #' @examples
 #' ## 1. simple plot
@@ -3141,7 +3226,10 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'
 #' @family functions that plot oce data
 #' @family things related to ctd data
+#'
 #' @aliases plot.ctd
+#'
+#' @md
 setMethod(f="plot",
           signature=signature("ctd"),
           definition=function(x, which,
@@ -3872,18 +3960,22 @@ setMethod(f="plot",
 #'
 #' This function is used to subset data within the
 #' levels of a ctd object. There are two ways of working. If
-#' \code{subset} is supplied, then it is a logical expression
-#' that is evaluated within the environment of the \code{data}
+#' `subset` is supplied, then it is a logical expression
+#' that is evaluated within the environment of the `data`
 #' slot of the object (see Example 1). Alternatively, if the
-#' \code{...} list contains an expression defining \code{indices},
+#' `...` list contains an expression defining `indices`,
 #' then that expression is used to subset each item within the
-#' \code{data} slot (see Example 2).
+#' `data` slot (see Example 2).
 #'
-#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
-#' @param subset An expression indicating how to subset \code{x}.
+#' @param x a [ctd-class] object.
+#'
+#' @param subset An expression indicating how to subset `x`.
+#'
 #' @param ... optional arguments, of which only the first is examined. The only
-#' possibility is that this argument be named \code{indices}. See \dQuote{Details}.
-#' @return A \code{\link{ctd-class}} object.
+#' possibility is that this argument be named `indices`. See \dQuote{Details}.
+#'
+#' @return A [ctd-class] object.
+#'
 #' @examples
 #' library(oce)
 #' data(ctd)
@@ -3897,6 +3989,8 @@ setMethod(f="plot",
 #'
 #' @family things related to ctd data
 #' @family functions that subset oce objects
+#'
+#' @md
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {
@@ -3945,33 +4039,33 @@ setMethod(f="subset",
 #' Plot CTD data as time-series against scan number, to help with trimming
 #' extraneous data from a CTD cast.
 #'
-#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#' @param x a [ctd-class] object.
 #'
 #' @param which Numerical vector numerical codes specifying the panels to draw: 1
-#' for pressure vs scan, 2 for \code{diff(pressure)} vs scan, 3 for temperature vs
+#' for pressure vs scan, 2 for `diff(pressure)` vs scan, 3 for temperature vs
 #' scan, and 4 for salinity vs scan.
 #'
 #' @param xtype Character string indicating variable for the x axis. May be
-#' \code{"scan"} (the default) or \code{"time"}. In the former case, a
-#' \code{scan} variable will be created using \code{\link{seq_along}},
-#' if necessary. In the latter case, an error results if the \code{data}
-#' slot of \code{x} lacks a variable called \code{time}.
+#' `"scan"` (the default) or `"time"`. In the former case, a
+#' `scan` variable will be created using [seq_along()],
+#' if necessary. In the latter case, an error results if the `data`
+#' slot of `x` lacks a variable called `time`.
 #'
-#' @param flipy Logical value, ignored unless \code{which} is 1. If \code{flipy}
-#' is \code{TRUE}, then a pressure plot will have high pressures at the bottom
+#' @param flipy Logical value, ignored unless `which` is 1. If `flipy`
+#' is `TRUE`, then a pressure plot will have high pressures at the bottom
 #' of the axis.
 #'
-#' @param type Character indicating the line type, as for \code{\link{plot.default}}. The default
-#' is \code{"l"}, meaning to connect data with line segments. Another good choice is
-#' \code{"o"}, to add points at the data.
+#' @param type Character indicating the line type, as for [plot.default()]. The default
+#' is `"l"`, meaning to connect data with line segments. Another good choice is
+#' `"o"`, to add points at the data.
 #'
-#' @param mgp Three-element numerical vector to use for \code{par(mgp)}, and also
-#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' @param mgp Three-element numerical vector to use for `par(mgp)`, and also
+#' for `par(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #'
-#' @param mar Four-element vector be used with \code{\link{par}("mar")}.  If set
-#' to \code{NULL}, then \code{par("mar")} is used.  A good choice for a TS diagram
-#' with a palette to the right is \code{mar=par("mar")+c(0, 0, 0, 1))}.
+#' @param mar Four-element vector be used with [`par`]`("mar")`.  If set
+#' to `NULL`, then `par("mar")` is used.  A good choice for a TS diagram
+#' with a palette to the right is `mar=par("mar")+c(0, 0, 0, 1))`.
 #'
 #' @param ... Optional arguments passed to plotting functions.
 #' @template debugTemplate
@@ -3983,8 +4077,11 @@ setMethod(f="subset",
 #' abline(v=c(130, 350), col='red') # useful for ctdTrim()
 #'
 #' @author Dan Kelley
+#'
 #' @family functions that plot oce data
 #' @family things related to ctd data
+#'
+#' @md
 plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
                      type='l', mgp=getOption("oceMgp"),
                      mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]), ..., debug=getOption("oceDebug"))
@@ -4047,20 +4144,24 @@ plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
 #'
 #' @author Dan Kelley
 #'
-#' @param type If \code{NULL}, then the first line is studied, in order to
-#' determine the file type.  If \code{type="SBE19"}, then a \emph{Seabird 19}, or
-#' similar, CTD format is assumed. If \code{type="WOCE"} then a WOCE-exchange file
-#' is assumed.  If \code{type="ITP"} then an ice-tethered profiler file is
-#' assumed.  If \code{type="ODF"} an ODF file is assumed.  If \code{type="ODV"} an
+#' @param type If `NULL`, then the first line is studied, in order to
+#' determine the file type.  If `type="SBE19"`, then a \emph{Seabird 19}, or
+#' similar, CTD format is assumed. If `type="WOCE"` then a WOCE-exchange file
+#' is assumed.  If `type="ITP"` then an ice-tethered profiler file is
+#' assumed.  If `type="ODF"` an ODF file is assumed.  If `type="ODV"` an
 #' ascii-ODV file is assumed.
 #'
 #' @details
-#' \code{read.ctd()} is a base function that in turn calls specialized functions, e.g.
-#' \code{\link{read.ctd.odf}} for the ODF data used in Fisheries and Oceans (Canada),
-#' \code{\link{read.ctd.woce}} for data in World Ocean Circulation Experiment format,
-#' \code{\link{read.ctd.woce.other}} for a variant of WOCE data,
-#' \code{\link{read.ctd.itp}} for ice-tethered-profiler data, or
-#' \code{\link{read.ctd.sbe}} for Seabird data.
+#' `read.ctd()` is a base function that in turn calls specialized functions, e.g.
+#' [read.ctd.odf()] for the ODF data used in Fisheries and Oceans (Canada),
+#' [read.ctd.woce()] for data in World Ocean Circulation Experiment format,
+#' [read.ctd.woce.other()] for a variant of WOCE data,
+#' [read.ctd.itp()] for ice-tethered-profiler data, or
+#' [read.ctd.sbe()] for Seabird data.
+#'
+#' @family functions that read ctd data
+#'
+#' @md
 read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                      monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
@@ -4133,11 +4234,17 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
 #'
 #' @param line a character string containing an indication of latitude or
 #' longitude.
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
+#'
 #' @return A numerical value of latitude or longitude.
+#'
 #' @author Dan Kelley
-#' @seealso Used by \code{\link{read.ctd}}.
+#'
+#' @seealso Used by [read.ctd()].
+#'
+#' @md
 parseLatLon <- function(line, debug=getOption("oceDebug"))
 {
     ## The following formats are understood (for, e.g. latitude)
@@ -4189,12 +4296,12 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 ## #' @author Dan Kelley
 ## #'
 ## #' @details
-## #' \code{read.ctd.odf()} reads files stored in ODV format, used by some European data providers.
+## #' `read.ctd.odf()` reads files stored in ODV format, used by some European data providers.
 ## #'
 ## #' @references
-## #' The \code{ODV} format is described in a file stored on the website of the British
-## #' Oceanographic Data Center, \code{bodc.ac.uk}, in a directory named
-## #' \code{data/codes_and_formats/odv_format}. (The URL is not provided here
+## #' The `ODV` format is described in a file stored on the website of the British
+## #' Oceanographic Data Center, `bodc.ac.uk`, in a directory named
+## #' `data/codes_and_formats/odv_format`. (The URL is not provided here
 ## #' because it is unreliable, which causes problems with CRAN submission of the
 ## #' oce package.)
 ## read.ctd.odv <- function(file, columns=NULL, station=NULL, missingValue, monitor=FALSE,
@@ -4209,81 +4316,120 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #'
 #' Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
 #'
-#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#' @param x a [ctd-class] object.
+#'
 #' @param inSitu A boolean indicating whether to use in-situ temperature or
 #' (the default) potential temperature, calculated with reference pressure
-#' given by \code{referencePressure}.  This is ignored if \code{eos="gsw"},
+#' given by `referencePressure`.  This is ignored if `eos="gsw"`,
 #' because those cases the y axis is necessarily the conservative formulation
 #' of temperature.
-#' @param type representation of data, \code{"p"} for points, \code{"l"} for
-#' connecting lines, or \code{"n"} for no indication.
+#'
+#' @param type representation of data, `"p"` for points, `"l"` for
+#' connecting lines, or `"n"` for no indication.
+#'
 #' @param referencePressure reference pressure, to be used in calculating
-#' potential temperature, if \code{inSitu} is \code{FALSE}.
+#' potential temperature, if `inSitu` is `FALSE`.
+#'
 #' @param nlevels Number of automatically-selected isopycnal levels (ignored if
-#' \code{levels} is supplied).
+#' `levels` is supplied).
+#'
 #' @param levels Optional vector of desired isopycnal levels.
-#' @param grid a flag that can be set to \code{TRUE} to get a grid.
+#'
+#' @param grid a flag that can be set to `TRUE` to get a grid.
+#'
 #' @param col.grid color for grid.
+#'
 #' @param lty.grid line type for grid.
+#'
 #' @param rho1000 if TRUE, label isopycnals as e.g. 1024; if FALSE, label as
 #' e.g. 24
-#' @param eos equation of state to be used, either \code{"unesco"} or
-#' \code{"gsw"}.
+#'
+#' @param eos equation of state to be used, either `"unesco"` or
+#' `"gsw"`.
+#'
 #' @param cex character-expansion factor for symbols, as in
-#' \code{\link{par}("cex")}.
-#' @param pch symbol type, as in \code{\link{par}("pch")}.
+#' [`par`]`("cex")`.
+#'
+#' @param pch symbol type, as in [`par`]`("pch")`.
+#'
 #' @param bg optional color to be painted under plotting area, before
-#' plotting.  (This is useful for cases in which \code{inset=TRUE}.)
-#' @param pt.bg inside color for symbols with \code{pch} in 21:25
+#' plotting.  (This is useful for cases in which `inset=TRUE`.)
+#'
+#' @param pt.bg inside color for symbols with `pch` in 21:25
+#'
 #' @param col color for symbols.
+#'
 #' @param col.rho color for isopycnal lines.
+#'
 #' @param cex.rho size of isopycnal labels.
+#'
 #' @param rotate if TRUE, labels in right-hand margin are written vertically
-#' @param useSmoothScatter if TRUE, use \code{\link{smoothScatter}} to plot the
+#'
+#' @param useSmoothScatter if TRUE, use [smoothScatter()] to plot the
 #' points.
-#' @param xlab optional label for the x axis, with default "Salinity [PSU]".
-#' @param ylab optional label for the y axis, with default "Temperature [C]".
+#'
+#' @param xlab optional label for the x axis, with default "Salinity \[PSU\]".
+#'
+#' @param ylab optional label for the y axis, with default "Temperature \[C\]".
+#'
 #' @param Slim optional limits for salinity axis, otherwise inferred from data.
+#'
 #' @param Tlim optional limits for temperature axis, otherwise inferred from
 #' data.
+#'
 #' @param drawFreezing logical indication of whether to draw a freezing-point
-#' line. This is based on zero pressure. If \code{eos="unesco"} then
-#' \code{\link{swTFreeze}} is used to compute the curve, whereas if
-#' \code{eos="gsw"} then \code{\link[gsw]{gsw_CT_freezing}} is used;
+#' line. This is based on zero pressure. If `eos="unesco"` then
+#' [swTFreeze()] is used to compute the curve, whereas if
+#' `eos="gsw"` then `\link[gsw]{gsw_CT_freezing`} is used;
 #' in each case, zero pressure is used.
-#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
-#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#'
+#' @param mgp 3-element numerical vector to use for `par(mgp)`, and also
+#' for `par(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
-#' @param mar value to be used with \code{\link{par}("mar")}.  If set to
-#' \code{NULL}, then \code{par("mar")} is used.  A good choice for a TS diagram
-#' with a palette to the right is \code{mar=par("mar")+c(0, 0, 0, 1))}.
+#'
+#' @param mar value to be used with [`par`]`("mar")`.  If set to
+#' `NULL`, then `par("mar")` is used.  A good choice for a TS diagram
+#' with a palette to the right is `mar=par("mar")+c(0, 0, 0, 1))`.
+#'
 #' @param lwd line width of lines or symbols.
+#'
 #' @param lty line type of lines or symbols.
+#'
 #' @param lwd.rho line width for density curves.
+#'
 #' @param lty.rho line type for density curves.
+#'
 #' @param add a flag that controls whether to add to an existing plot.  (It
-#' makes sense to use \code{add=TRUE} in the \code{panel} argument of a
-#' \code{\link{coplot}}, for example.)
-#' @param inset set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+#' makes sense to use `add=TRUE` in the `panel` argument of a
+#' [coplot()], for example.)
+#'
+#' @param inset set to `TRUE` for use within [plotInset()].  The
 #' effect is to prevent the present function from adjusting margins, which is
 #' necessary because margin adjustment is the basis for the method used by
-#' \code{\link{plotInset}}.
+#' [plotInset()].
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
-#' @param \dots optional arguments passed to plotting functions.
-#' @return A list is silently returned, containing \code{xat} and \code{yat},
-#' values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
-#' @author Dan Kelley
-#' @seealso \code{\link{summary,ctd-method}} summarizes the information, while
-#' \code{\link{read.ctd}} scans it from a file.
-#' @examples
 #'
+#' @param \dots optional arguments passed to plotting functions.
+#'
+#' @return A list is silently returned, containing `xat` and `yat`,
+#' values that can be used by [oce.grid()] to add a grid to the plot.
+#'
+#' @author Dan Kelley
+#'
+#' @seealso [summary,ctd-method()] summarizes the information, while
+#' [read.ctd()] scans it from a file.
+#'
+#' @examples
 #' library(oce)
 #' data(ctd)
 #' plotTS(ctd)
 #'
 #' @family functions that plot oce data
 #' @family things related to ctd data
+#'
+#' @md
 plotTS <- function (x,
                     inSitu=FALSE,
                     type='p',
@@ -4495,27 +4641,41 @@ plotTS <- function (x,
 #' Add Isopycnal Curves to TS Plot
 #'
 #' Adds isopycnal lines to an existing temperature-salinity plot.  This is
-#' called by \code{\link{plotTS}}, and may be called by the user also, e.g. if
+#' called by [plotTS()], and may be called by the user also, e.g. if
 #' an image plot is used to show TS data density.
 #'
 #' @param nlevels suggested number of density levels (i.e. isopycnal curves);
-#' ignored if \code{levels} is supplied.
+#' ignored if `levels` is supplied.
+#'
 #' @param levels optional density levels to draw.
-#' @param rotate boolean, set to \code{TRUE} to write all density labels
+#'
+#' @param rotate boolean, set to `TRUE` to write all density labels
 #' horizontally.
-#' @param rho1000 boolean, set to \code{TRUE} to write isopycnal labels as e.g.
+#'
+#' @param rho1000 boolean, set to `TRUE` to write isopycnal labels as e.g.
 #' 1024 instead of 24.
+#'
 #' @param digits number of decimal digits to use in label (supplied to
-#' \code{\link{round}}).
-#' @param eos equation of state to be used, either \code{"unesco"} or
-#' \code{"gsw"}.
+#' [round()]).
+#'
+#' @param eos equation of state to be used, either `"unesco"` or
+#' `"gsw"`.
+#'
 #' @param cex size for labels.
+#'
 #' @param col color for lines and labels.
+#'
 #' @param lwd line width for isopycnal curves
+#'
 #' @param lty line type for isopycnal curves
+#'
 #' @return None.
+#'
 #' @author Dan Kelley
-#' @seealso \code{\link{plotTS}}, which calls this.
+#'
+#' @seealso [plotTS()], which calls this.
+#'
+#' @md
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
                            eos=getOption("oceEOS", default='gsw'),
                            cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
@@ -4585,144 +4745,187 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #'
 #' Plot a profile, showing variation of some quantity (or quantities) with
 #' pressure, using the oceanographic convention of putting lower pressures
-#' nearer the top of the plot. This works for any \code{oce} object that has a
-#' pressure column in its \code{data} slot.
-#' The colors (\code{col.salinity}, etc.) are only used if two profiles appear
+#' nearer the top of the plot. This works for any `oce` object that has a
+#' pressure column in its `data` slot.
+#' The colors (`col.salinity`, etc.) are only used if two profiles appear
 #' on a plot.
 #'
-#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#' @param x a [ctd-class] object.
+#'
 #' @param xtype Item(s) plotted on the x axis, either a vector of length equal
-#' to that of \code{pressure} in the \code{data} slot,
+#' to that of `pressure` in the `data` slot,
 #' or a text code from the list below.
 #'
-#' \itemize{
+#' * `"salinity"` Profile of salinity.
 #'
-#' \item \code{"salinity"} Profile of salinity.
+#' * `"conductivity"` Profile of conductivity.
 #'
-#' \item \code{"conductivity"} Profile of conductivity.
+#' * `"temperature"` Profile of \emph{in-situ} temperature.
 #'
-#' \item \code{"temperature"} Profile of \emph{in-situ} temperature.
+#' * `"theta"` Profile of potential temperature.
 #'
-#' \item \code{"theta"} Profile of potential temperature.
+#' * `"density"` Profile of density (expressed as \eqn{\sigma_\theta}{sigma_theta}).
 #'
-#' \item \code{"density"} Profile of density (expressed as \eqn{\sigma_\theta}{sigma_theta}).
+#' * `"index"` Index of sample (useful for working with [ctdTrim()]).
 #'
-#' \item \code{"index"} Index of sample (useful for working with \code{\link{ctdTrim}}).
+#' * `"salinity+temperature"` Profile of salinity and temperature within a single axis frame.
 #'
-#' \item \code{"salinity+temperature"} Profile of salinity and temperature within a single axis frame.
-#'
-#' \item \code{"N2"} Profile of square of buoyancy frequency \eqn{N^2}{N^2},
-#' calculated with \code{\link{swN2}} with
-#' an optional argument setting of \code{df=length(x[["pressure"]])/4} to do
+#' * `"N2"` Profile of square of buoyancy frequency \eqn{N^2}{N^2},
+#' calculated with [swN2()] with
+#' an optional argument setting of `df=length(x[["pressure"]])/4` to do
 #' some smoothing.
 #'
-#' \item \code{"density+N2"} Profile of sigma0 and
+#' * `"density+N2"` Profile of sigma0 and
 #' the square of buoyancy frequency within a single axis frame.
 #'
-#' \item \code{"density+dpdt"} Profile of sigma0 and dP/dt for the
+#' * `"density+dpdt"` Profile of sigma0 and dP/dt for the
 #' sensor.  The latter is useful in indicating problems with the deployment.
 #' It is calculated by first differencing pressure and then using a smoothing
 #' spline on the result (to avoid grid-point wiggles that result because the
 #' SBE software only writes 3 decimal places in pressure).  Note that dP/dt may
 #' be off by a scale factor; this should not be a problem if there is a
-#' \code{time} column in the \code{data} slot, or a \code{sample.rate} in the
-#' \code{metadata} slot.
+#' `time` column in the `data` slot, or a `sample.rate` in the
+#' `metadata` slot.
 #'
-#' \item \code{"sigma0"}, \code{"sigma1"}, \code{"sigma2"}, \code{"sigma3"}
-#' and \code{"sigma4"} Profile of potential density referenced
+#' * `"sigma0"`, `"sigma1"`, `"sigma2"`, `"sigma3"`
+#' and `"sigma4"` Profile of potential density referenced
 #' to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.
 #'
-#' \item \code{"spice"} Profile of spice.
+#' * `"spice"` Profile of spice.
 #'
-#' \item \code{"Rrho"} Profile of Rrho, defined in the diffusive sense.
+#' * `"Rrho"` Profile of Rrho, defined in the diffusive sense.
 #'
-#' \item \code{"RrhoSF"} Profile of Rrho, defined in the salt-finger sense.
+#' * `"RrhoSF"` Profile of Rrho, defined in the salt-finger sense.
 #'
-#'}
 #'
 #' @param ytype variable to use on y axis. The valid choices are:
-#' \code{"pressure"} (the default), \code{"z"},
-#' \code{"depth"} and \code{"sigmaTheta"}.
+#' `"pressure"` (the default), `"z"`,
+#' `"depth"` and `"sigmaTheta"`.
 #'
-#' @param eos equation of state to be used, either \code{"unesco"} or
-#' \code{"gsw"}.
+#' @param eos equation of state to be used, either `"unesco"` or
+#' `"gsw"`.
+#'
 #' @param xlab optional label for x axis (at top of plot).
-#' @param ylab optional label for y axis.  Set to \code{""} to prevent
+#'
+#' @param ylab optional label for y axis.  Set to `""` to prevent
 #' labelling the axis.
+#'
 #' @param lty line type for the profile.
+#'
 #' @param col color for a general profile.
+#'
 #' @param col.salinity color for salinity profile (see \dQuote{Details}).
+#'
 #' @param col.temperature color for temperature (see \dQuote{Details}).
+#'
 #' @param col.rho color for density (see \dQuote{Details}).
+#'
 #' @param col.N2 color for square of buoyancy frequency (see
 #' \dQuote{Details}).
+#'
 #' @param col.dpdt color for dP/dt.
+#'
 #' @param col.time color for delta-time.
-#' @param pt.bg inside color for symbols with \code{pch} in 21:25
-#' @param grid logical, set to \code{TRUE} to get a grid.
+#'
+#' @param pt.bg inside color for symbols with `pch` in 21:25
+#'
+#' @param grid logical, set to `TRUE` to get a grid.
+#'
 #' @param col.grid color for grid.
+#'
 #' @param lty.grid line type for grid.
+#'
 #' @param Slim Optional limit for S axis
+#'
 #' @param Clim Optional limit for conductivity axis
+#'
 #' @param Tlim Optional limit for T axis
+#'
 #' @param densitylim Optional limit for density axis
+#'
 #' @param N2lim Optional limit for N2 axis
+#'
 #' @param Rrholim Optional limit for Rrho axis
+#'
 #' @param dpdtlim Optional limit for dp/dt axis
+#'
 #' @param timelim Optional limit for delta-time axis
+#'
 #' @param plim Optional limit for pressure axis, ignored unless
-#' \code{ytype=="pressure"}, in which case it takes precedence over
-#' \code{ylim}.
+#' `ytype=="pressure"`, in which case it takes precedence over
+#' `ylim`.
+#'
 #' @param xlim Optional limit for x axis, which can apply to any plot type.
 #' This is ignored if the plotted x variable is something for which a limit
-#' may be specified with an argument, e.g. \code{xlim} is ignored for a
-#' salinity profile, because \code{Slim} ought to be given in such a case.
+#' may be specified with an argument, e.g. `xlim` is ignored for a
+#' salinity profile, because `Slim` ought to be given in such a case.
+#'
 #' @param ylim Optional limit for y axis, which can apply to any plot type,
-#' although is overridden by \code{plim} if \code{ytype} is \code{"pressure"}
-#' or by \code{densitylim} if \code{ytype} is \code{"sigmaTheta"}.
+#' although is overridden by `plim` if `ytype` is `"pressure"`
+#' or by `densitylim` if `ytype` is `"sigmaTheta"`.
+#'
 #' @param lwd lwd value for data line
-#' @param xaxs value of \code{\link{par}} \code{xaxs} to use
-#' @param yaxs value of \code{\link{par}} \code{yaxs} to use
-#' @param cex size to be used for plot symbols (see \code{\link{par}})
-#' @param pch code for plotting symbol (see \code{\link{par}}).
-#' @param useSmoothScatter boolean, set to \code{TRUE} to use
-#' \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw the plot.
-#' @param df optional argument, passed to \code{\link{swN2}} if provided, and
+#'
+#' @param xaxs value of [par()] `xaxs` to use
+#'
+#' @param yaxs value of [par()] `yaxs` to use
+#'
+#' @param cex size to be used for plot symbols (see [par()])
+#'
+#' @param pch code for plotting symbol (see [par()]).
+#'
+#' @param useSmoothScatter boolean, set to `TRUE` to use
+#' [smoothScatter()] instead of [plot()] to draw the plot.
+#'
+#' @param df optional argument, passed to [swN2()] if provided, and
 #' if a plot using \eqn{N^2}{N^2} is requested.
+#'
 #' @param keepNA FALSE
+#'
 #' @param type type of plot to draw, using the same scheme as
-#' \code{\link{plot}}.
-#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
-#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' [plot()].
+#'
+#' @param mgp 3-element numerical vector to use for `par(mgp)`, and also
+#' for `par(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
+#'
 #' @param mar Four-element numerical value to be used to set the plot
-#' margins, with a call to \code{\link{par}(mar)} prior to the plot.
+#' margins, with a call to [`par`]`(mar)` prior to the plot.
 #' If this is not supplied, a reasonable default will be set up.
+#'
 #' @param add A logical value that controls whether to add to an existing plot.  (It
-#' makes sense to use \code{add=TRUE} in the \code{panel} argument of a
-#' \code{\link{coplot}}, for example.)
+#' makes sense to use `add=TRUE` in the `panel` argument of a
+#' [coplot()], for example.)
+#'
 #' @param inset A logical value indicating whether to draw an inset plot.
-#' Setting this to \code{TRUE} will prevent the present function from adjusting
+#' Setting this to `TRUE` will prevent the present function from adjusting
 #' the margins, which is
 #' necessary because margin adjustment is the basis for the method used by
-#' \code{\link{plotInset}}.
+#' [plotInset()].
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
-#' @param \dots optional arguments passed to other functions.  A common example
-#' is to set \code{df}, for use in \link{swN2} calculations.
-#' @return None.
-#' @author Dan Kelley
-#' @seealso \code{\link{read.ctd}} scans ctd information from a file,
-#' \code{\link{plot,ctd-method}} is a general plotting function for \code{ctd}
-#' objects, and \code{\link{plotTS}} plots a temperature-salinity diagrams.
-#' @examples
 #'
+#' @param \dots optional arguments passed to other functions.  A common example
+#' is to set `df`, for use in [swN2()] calculations.
+#'
+#' @return None.
+#'
+#' @author Dan Kelley
+#'
+#' @seealso [read.ctd()] scans ctd information from a file,
+#' [plot,ctd-method()] is a general plotting function for `ctd`
+#' objects, and [plotTS()] plots a temperature-salinity diagrams.
+#'
+#' @examples
 #' library(oce)
 #' data(ctd)
 #' plotProfile(ctd, xtype="temperature")
 #'
 #' @family functions that plot oce data
 #' @family things related to ctd data
+#'
+#' @md
 plotProfile <- function (x,
                          xtype="salinity+temperature", ytype="pressure",
                          eos=getOption("oceEOS", default="gsw"),

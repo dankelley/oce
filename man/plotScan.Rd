@@ -9,7 +9,7 @@ plotScan(x, which = 1, xtype = "scan", flipy = FALSE, type = "l",
   mgp[1], mgp[1]), ..., debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{x}{a \linkS4class{ctd} object.}
 
 \item{which}{Numerical vector numerical codes specifying the panels to draw: 1
 for pressure vs scan, 2 for \code{diff(pressure)} vs scan, 3 for temperature vs
@@ -17,7 +17,7 @@ scan, and 4 for salinity vs scan.}
 
 \item{xtype}{Character string indicating variable for the x axis. May be
 \code{"scan"} (the default) or \code{"time"}. In the former case, a
-\code{scan} variable will be created using \code{\link{seq_along}},
+\code{scan} variable will be created using \code{\link[=seq_along]{seq_along()}},
 if necessary. In the latter case, an error results if the \code{data}
 slot of \code{x} lacks a variable called \code{time}.}
 
@@ -25,7 +25,7 @@ slot of \code{x} lacks a variable called \code{time}.}
 is \code{TRUE}, then a pressure plot will have high pressures at the bottom
 of the axis.}
 
-\item{type}{Character indicating the line type, as for \code{\link{plot.default}}. The default
+\item{type}{Character indicating the line type, as for \code{\link[=plot.default]{plot.default()}}. The default
 is \code{"l"}, meaning to connect data with line segments. Another good choice is
 \code{"o"}, to add points at the data.}
 
@@ -33,7 +33,7 @@ is \code{"l"}, meaning to connect data with line segments. Another good choice i
 for \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{Four-element vector be used with \code{\link{par}("mar")}.  If set
+\item{mar}{Four-element vector be used with \code{\link{par}}\code{("mar")}.  If set
 to \code{NULL}, then \code{par("mar")} is used.  A good choice for a TS diagram
 with a palette to the right is \code{mar=par("mar")+c(0, 0, 0, 1))}.}
 

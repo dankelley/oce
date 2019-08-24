@@ -111,8 +111,13 @@ Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+
+Other functions that read ctd data: \code{\link{read.ctd.itp}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}}, \code{\link{read.ctd}}
 }
 \author{
 Dan Kelley
 }
+\concept{functions that read ctd data}
 \concept{things related to ctd data}

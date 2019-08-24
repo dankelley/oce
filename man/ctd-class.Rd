@@ -13,14 +13,14 @@ salinity, temperature and pressure instead (or in addition). For this
 reason, \code{ctd} objects are required to hold \code{salinity},
 \code{temperature} and \code{pressure} in their \code{data} slot,
 with other data being optional. Formulae are available for converting
-between variants of these data triplets, e.g. \code{\link{swSCTp}}
+between variants of these data triplets, e.g. \code{\link[=swSCTp]{swSCTp()}}
 can calculate \code{salinity} given \code{conductivity}, \code{temperature}
 and \code{pressure}, and these are used by the main functions that
-create \code{ctd} objects. For example, if \code{\link{read.ctd.sbe}}
+create \code{ctd} objects. For example, if \code{\link[=read.ctd.sbe]{read.ctd.sbe()}}
 is used to read a Seabird file that contains only conductivity, temperature
 and pressure, then that function will automatically append a data
-item to hold salinity.  \code{\link{as.ctd}} acts similarly. The result
-this is that all \code{ctd} objects hold \code{salinity},
+item to hold salinity.  Since \code{\link[=as.ctd]{as.ctd()}} does the same with
+salinity, the result this is that all \code{ctd} objects hold \code{salinity},
 \code{temperature} and \code{pressure}, which are henceforth called
 the three basic quantities.
 }
@@ -29,10 +29,10 @@ Different units and scales are permitted for the three basic quantities, and
 most \code{oce} functions check those units and scales before
 doing calculations (e.g. of seawater density), because those calculations
 demand certain units and scales. The way this is handled is that the
-accessor function \code{\link{[[,ctd-method}} returns values in standardized
+accessor function \code{\link{[[,ctd-method}}] returns values in standardized
 form. For example, a \code{ctd} object might hold temperature defined on the
 IPTS-68 scale, but e.g. \code{ctd[["temperature"]]} returns a value on the ITS-90
-scale. (The conversion is done with \code{\link{T90fromT68}}.)  Similarly,
+scale. (The conversion is done with \code{\link[=T90fromT68]{T90fromT68()}}.)  Similarly,
 pressure may be stored in either dbars or PSI, but e.g. \code{ctd[["pressure"]]}
 returns a value in dbars, after dividing by 0.689476 if the value is
 stored in PSI. Luckily, there is (as of early 2016) only one salinity scale in
@@ -89,28 +89,29 @@ to find items more directly, using \code{\link{oceGetData}} and
 \section{Reading/creating \code{ctd} objects}{
 
 A file containing CTD profile data may be read with
-\code{\link{read.ctd}}, and a CTD object can also be created with
-\code{\link{as.ctd}}.  See \code{\link{read.ctd}} for references on data
+\code{\link[=read.ctd]{read.ctd()}}, and a CTD object can also be created with
+\code{\link[=as.ctd]{as.ctd()}}.  See \code{\link[=read.ctd]{read.ctd()}} for references on data
 formats used in CTD files. Data can also be assembled into
-\code{ctd} objects with \code{\link{as.ctd}}.
+\code{ctd} objects with \code{\link[=as.ctd]{as.ctd()}}.
 
-Statistical summaries are provided by \code{\link{summary,ctd-method}}, while
-\code{\link{show}} displays an overview.
+Statistical summaries are provided by \code{\link[=summary,ctd-method]{summary,ctd-method()}}, while
+\code{\link[=show]{show()}} displays an overview.
 
-CTD objects may be plotted with \code{\link{plot,ctd-method}}, which does much of its
-work by calling \code{\link{plotProfile}} or \code{\link{plotTS}}, both of
+CTD objects may be plotted with \code{\link[=plot,ctd-method]{plot,ctd-method()}}, which does much of its
+work by calling \code{\link[=plotProfile]{plotProfile()}} or \code{\link[=plotTS]{plotTS()}}, both of
 which can also be called by the user, to get fine control over the plots.
 
-A CTD profile can be isolated from a larger record with \code{\link{ctdTrim}},
-a task made easier when \code{\link{plotScan}} is used to examine the results.
+A CTD profile can be isolated from a larger record with \code{\link[=ctdTrim]{ctdTrim()}},
+a task made easier when \code{\link[=plotScan]{plotScan()}} is used to examine the results.
 Towyow data can be split up into sets of profiles (ascending or descending)
-with \code{\link{ctdFindProfiles}}.  CTD data may be smoothed and/or cast onto
-specified pressure levels with \code{\link{ctdDecimate}}.
+with \code{\link[=ctdFindProfiles]{ctdFindProfiles()}}.  CTD data may be smoothed and/or cast onto
+specified pressure levels with \code{\link[=ctdDecimate]{ctdDecimate()}}.
 
 As with all oce objects, low-level manipulation may be done with
-\code{\link{oceSetData}} and \code{\link{oceSetMetadata}}. Additionally,
-many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-method}} scheme
-discussed above, and skilled users may also manipulate the contents directly.
+\code{\link[=oceSetData]{oceSetData()}} and \code{\link[=oceSetMetadata]{oceSetMetadata()}}. Additionally,
+many of the contents of CTD objects may be altered with the
+\code{\link{[[<-,ctd-method}} scheme,
+and sufficiently skilled users may even manipulate the contents directly.
 }
 
 \examples{

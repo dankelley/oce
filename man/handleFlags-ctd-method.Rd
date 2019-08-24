@@ -9,7 +9,7 @@
   where = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{object}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{object}{a \linkS4class{ctd} object.}
 
 \item{flags}{A \code{\link{list}} specifying flag values upon which
 actions will be taken. This can take two forms. In the first, the
@@ -115,7 +115,9 @@ expect_equal(is.na(Bf[["salinity"]]), deep)
 
 }
 \references{
-1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+\enumerate{
+\item \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+}
 }
 \seealso{
 Other functions relating to data-quality flags: \code{\link{defaultFlags}},

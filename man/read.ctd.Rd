@@ -88,11 +88,11 @@ Read a General CTD File
 }
 \details{
 \code{read.ctd()} is a base function that in turn calls specialized functions, e.g.
-\code{\link{read.ctd.odf}} for the ODF data used in Fisheries and Oceans (Canada),
-\code{\link{read.ctd.woce}} for data in World Ocean Circulation Experiment format,
-\code{\link{read.ctd.woce.other}} for a variant of WOCE data,
-\code{\link{read.ctd.itp}} for ice-tethered-profiler data, or
-\code{\link{read.ctd.sbe}} for Seabird data.
+\code{\link[=read.ctd.odf]{read.ctd.odf()}} for the ODF data used in Fisheries and Oceans (Canada),
+\code{\link[=read.ctd.woce]{read.ctd.woce()}} for data in World Ocean Circulation Experiment format,
+\code{\link[=read.ctd.woce.other]{read.ctd.woce.other()}} for a variant of WOCE data,
+\code{\link[=read.ctd.itp]{read.ctd.itp()}} for ice-tethered-profiler data, or
+\code{\link[=read.ctd.sbe]{read.ctd.sbe()}} for Seabird data.
 }
 \seealso{
 Other things related to ctd data: \code{\link{[[,ctd-method}},
@@ -116,8 +116,14 @@ Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+
+Other functions that read ctd data: \code{\link{read.ctd.itp}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
+  \code{\link{read.ctd.woce}}
 }
 \author{
 Dan Kelley
 }
+\concept{functions that read ctd data}
 \concept{things related to ctd data}

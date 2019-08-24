@@ -739,6 +739,8 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' `SBEDataProcessing_7.26.4.pdf` and had release date 12/08/2017,
 #' and this was the reference version used in coding `oce`.
 #'
+#' @family functions that read ctd data
+#'
 #' @md
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)

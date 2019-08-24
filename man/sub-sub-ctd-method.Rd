@@ -8,7 +8,7 @@
 \S4method{[[}{ctd}(x, i, j, ...)
 }
 \arguments{
-\item{x}{An \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{x}{a \linkS4class{ctd} object.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
@@ -93,7 +93,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 \section{Details of the specialized \code{ctd} method}{
 
 
-Some uses of \code{[[,ctd-method} involve direct retrieval of
+Some uses of \code{\link{[[,ctd-method}} involve direct retrieval of
 items within the \code{data} slot of the \code{ctd} object,
 while other uses involve calculations based on items in that
 \code{data} slot. For an example, all \code{ctd} objects
@@ -101,24 +101,24 @@ should hold an item named \code{temperature} in the \code{data}
 slot, so for example \code{x[["temperature"]]} will retrieve that
 item. By contrast, \code{x[["sigmaTheta"]]} is taken to be a
 request to compute \eqn{\sigma_\theta}{sigma[theta]}, and so
-it yields a call to \code{\link{swTheta}(x)} even if
+it yields a call to \code{\link{swTheta}}\code{(x)} even if
 the \code{data} slot of \code{x} might happen to contain an item
 named \code{theta}. This can be confusing at first, but it tends
 to lead to fewer surprises in everyday work, for otherwise the
 user would be forced to check the contents of any \code{ctd}
 object under analysis, to determine whether that item will be looked
 up or computed. Nothing is lost in this scheme, since the data
-within the object are always accessible with \code{\link{oceGetData}}.
+within the object are always accessible with \code{\link[=oceGetData]{oceGetData()}}.
 
 It should be noted that the accessor is set up to retrieve quantities
-in conventional units. For example, \code{\link{read.ctd.sbe}} is
+in conventional units. For example, \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} is
 used on a \code{.cnv} file that stores pressure in psi, it will
 be stored in the same unit within the \code{ctd} object, but
 \code{x[["pressure"]]} will return a value that has been converted
 to decibars.  (To get pressure in PSI, use \code{x[["pressurePSI"]]}.)
 Similarly, temperature is
 returned in the ITS-90 scale, with a conversion having been performed with
-\code{\link{T90fromT68}}, if the object holds temperature in
+\code{\link[=T90fromT68]{T90fromT68()}}, if the object holds temperature in
 IPTS-68.  Again, temperature on the IPTS-68
 scale is returned with \code{x@data$temperature}.
 
@@ -127,17 +127,15 @@ by first checking for computed quantities, and then falling
 back to the general \code{[[} method if no match is found.
 
 Some quantities are optionally computed. For example, some data files
-(e.g. the one upon which the \code{\link{section}} dataset is based)
+(e.g. the one upon which the \code{\link[=section]{section()}} dataset is based)
 store \code{nitrite} along with the sum of nitrite and nitrate, the
-latter with name \code{`NO2+NO3`}. In this case, e.g. \code{x[["nitrate"]]}
+latter with name \code{NO2+NO3}. In this case, e.g. \code{x[["nitrate"]]}
 will detect the setup, and subtract nitrite from the sum to yield
 nitrate.
 
 The list given below provides notes on some quantities that are,
 or may be, computed.
-
 \itemize{
-
 \item \code{conductivity} without a second argument (e.g. \code{a[["conductivity"]]})
 returns the value stored in the object. However, if a second argument is given,
 and it is string specifying a unit, then conversion is made to that unit. The
@@ -145,69 +143,50 @@ permitted units are: either \code{""} or \code{"ratio"} (for ratio),
 \code{"uS/cm"}, \code{"mS/cm"} and \code{"S/m"}. The calculations are based on
 the definition of conductivity ratio as the ratio between measured conductivity
 and the standard value 4.2914 S/m.
-
 \item \code{CT} or \code{Conservative Temperature}: Conservative Temperature,
-computed with \code{\link[gsw]{gsw_CT_from_t}} in the \code{gsw} package.
-
-\item \code{density}: seawater density, computed with \code{\link{swRho}(x)}.
+computed with [gsw::gsw_CT_from_t()\code{in the}gsw` package.
+\item \code{density}: seawater density, computed with \code{\link{swRho}}\code{(x)}.
 (Note that it may be better to call that function directly, to gain
 control of the choice of equation of state, etc.)
-
 \item \code{depth}: Depth in metres below the surface, computed
-with \code{\link{swDepth}(x)}.
-
+with \code{\link{swDepth}}\code{(x)}.
 \item \code{N2}: Square of Brunt-Vaisala frequency, computed  with
-\code{\link{swN2}(x)}.
-
+\code{\link{swN2}}\code{(x)}.
 \item \code{potential temperature}: Potential temperature in the
-UNESCO formulation, computed with \code{\link{swTheta}(x)}.
+UNESCO formulation, computed with \code{\link{swTheta}}\code{(x)}.
 This is a synonym for \code{theta}.
-
-\item \code{Rrho}: Density ratio, computed with \code{\link{swRrho}(x)}.
-
+\item \code{Rrho}: Density ratio, computed with \code{\link{swRrho}}\code{(x)}.
 \item \code{SA} or \code{Absolute Salinity}: Absolute Salinity,
 computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package.
 The calculation involves location as well as measured water properties.
 If the object \code{x} does not containing information on the location,
 then 30N and 60W is used for the calculation, and a warning is generated.
-
 \item \code{sigmaTheta}: A form of potential density anomaly, computed with
-\code{\link{swSigmaTheta}(x)}.
-
+\code{\link{swSigmaTheta}}\code{(x)}.
 \item \code{sigma0} Equal to \code{sigmaTheta}, i.e. potential density anomaly
-referenced to a pressure of 0dbar, computed with \code{\link{swSigma0}(x)}.
-
+referenced to a pressure of 0dbar, computed with \code{\link{swSigma0}}\code{(x)}.
 \item \code{sigma1}: Potential density anomaly
-referenced to a pressure of 1000dbar, computed with \code{\link{swSigma1}(x)}.
-
+referenced to a pressure of 1000dbar, computed with \code{\link{swSigma1}}\code{(x)}.
 \item \code{sigma2}: Potential density anomaly
-referenced to a pressure of 2000dbar, computed with \code{\link{swSigma2}(x)}.
-
+referenced to a pressure of 2000dbar, computed with \code{\link{swSigma2}}\code{(x)}.
 \item \code{sigma3}: Potential density anomaly
-referenced to a pressure of 3000dbar, computed with \code{\link{swSigma3}(x)}.
-
+referenced to a pressure of 3000dbar, computed with \code{\link{swSigma3}}\code{(x)}.
 \item \code{sigma4}: potential density anomaly
-referenced to a pressure of 4000dbar, computed with \code{\link{swSigma4}(x)}.
-
+referenced to a pressure of 4000dbar, computed with \code{\link{swSigma4}}\code{(x)}.
 \item \code{SP}: Salinity on the Practical Salinity Scale, which is
 \code{salinity} in the \code{data} slot.
-
 \item \code{spice} or \code{spiciness0}: a variable that is in some sense
-orthogonal to density, calculated with \code{\link{swSpice}(x)}.
+orthogonal to density, calculated with \code{\link{swSpice}}\code{(x)}.
 Note that this is defined differently for \code{eos="unesco"} and
 \code{eos="gsw"}.
-
 \item \code{SR}: Reference Salinity computed with
 \code{\link[gsw]{gsw_SR_from_SP}} in the \code{gsw} package.
-
 \item \code{Sstar}: Preformed Salinity computed with
 \code{\link[gsw]{gsw_SR_from_SP}} in the \code{gsw} package.
 See \code{SA} for a note on longitude and latitude.
-
 \item \code{theta}: potential temperature in the UNESCO formulation,
-computed with \code{\link{swTheta}(x)}. This is a synonym for
+computed with \code{\link{swTheta}}\code{(x)}. This is a synonym for
 \code{potential temperature}.
-
 \item \code{time}: returns either a vector of times, a single
 time, or \code{NULL}. A vector is returned if \code{time}
 is present in the \code{data} slot, or if a time can be
@@ -218,12 +197,10 @@ value is returned if the dataset only has information on the start
 time (which is stored as \code{startTime} within the \code{metadata}
 slot. If it is impossible to determine the sampling time, then
 \code{NULL} is returned. These time variants occur, in the
-present version of oce, only for data read by \code{\link{read.ctd.sbe}},
+present version of oce, only for data read by \code{\link[=read.ctd.sbe]{read.ctd.sbe()}},
 the documention of which explains how times are computed.
-
 \item \code{z}: Vertical coordinate in metres above the surface, computed with
-\code{\link{swZ}(x)}.
-
+\code{\link{swZ}}\code{(x)}.
 }
 }
 

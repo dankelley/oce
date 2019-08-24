@@ -2,13 +2,13 @@
 % Please edit documentation in R/ctd.R
 \name{ctdAddColumn}
 \alias{ctdAddColumn}
-\title{Add a Column to the Data Slot of a CTD Object [defunct]}
+\title{Add a Column to the Data Slot of a CTD Object (defunct)}
 \usage{
 ctdAddColumn(x, column, name, label, unit = NULL, log = TRUE,
   originalName = "", debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{x}{a \linkS4class{ctd} object.}
 
 \item{column}{A column of data to be inserted, in the form of a
 numeric vector, whose length matches that of columns in the
@@ -42,21 +42,21 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-A ctd object.
+A \linkS4class{ctd} object.
 }
 \description{
 \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
 }
 \details{
-Use \code{\link{oceSetData}} instead of the present function.
+Use \code{\link[=oceSetData]{oceSetData()}} instead of the present function.
 
 Add a column to the \code{data} slot of an object of
-\code{\link{ctd-class}}, also updating the \code{metadata}
+\linkS4class{ctd}, also updating the \code{metadata}
 slot as appropriate.
 }
 \seealso{
-The documentation for \code{\link{ctd-class}} explains the structure
-   of CTD objects, and also outlines the other functions dealing with them.
+The documentation for \linkS4class{ctd} explains the structure
+of CTD objects, and also outlines the other functions dealing with them.
 
 Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdUpdateHeader}},

@@ -252,6 +252,8 @@ woceUnit2oceUnit <- function(woceUnit)
 #' and a sample file is at
 #' \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
 #'
+#' @family functions that read ctd data
+#'
 #' @author Dan Kelley
 #'
 #' @md
@@ -663,6 +665,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, deploy
 #' This reads WOCE exchange files that start with the string `"EXPOCODE"`.
 #'
 #' @template readCtdTemplate
+#'
+#' @family functions that read ctd data
 #'
 #' @author Dan Kelley
 #'

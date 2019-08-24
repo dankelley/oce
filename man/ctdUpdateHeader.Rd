@@ -2,12 +2,12 @@
 % Please edit documentation in R/ctd.R
 \name{ctdUpdateHeader}
 \alias{ctdUpdateHeader}
-\title{Update a CTD Header [defunct]}
+\title{Update a CTD Header (defunct)}
 \usage{
 ctdUpdateHeader(x, debug = FALSE)
 }
 \arguments{
-\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{x}{a \linkS4class{ctd} object.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -18,10 +18,10 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-A new \code{\link{ctd-class}} object.
+A \linkS4class{ctd} object.
 }
 \description{
-\strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
+\emph{W}ARNING:** This function will be removed soon; see \link{oce-defunct}.
 }
 \details{
 Update the header of a \code{ctd} object, e.g. adjusting \code{nvalues} and the
@@ -30,7 +30,7 @@ example.
 }
 \references{
 The Seabird CTD instrument is described at
-  \code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
+\code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 }
 \seealso{
 Other functions that will be removed soon: \code{\link{addColumn}},

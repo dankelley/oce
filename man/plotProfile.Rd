@@ -17,36 +17,25 @@ plotProfile(x, xtype = "salinity+temperature", ytype = "pressure",
   add = FALSE, inset = FALSE, debug = getOption("oceDebug", 0), ...)
 }
 \arguments{
-\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{x}{a \linkS4class{ctd} object.}
 
 \item{xtype}{Item(s) plotted on the x axis, either a vector of length equal
 to that of \code{pressure} in the \code{data} slot,
 or a text code from the list below.
-
 \itemize{
-
 \item \code{"salinity"} Profile of salinity.
-
 \item \code{"conductivity"} Profile of conductivity.
-
 \item \code{"temperature"} Profile of \emph{in-situ} temperature.
-
 \item \code{"theta"} Profile of potential temperature.
-
 \item \code{"density"} Profile of density (expressed as \eqn{\sigma_\theta}{sigma_theta}).
-
-\item \code{"index"} Index of sample (useful for working with \code{\link{ctdTrim}}).
-
+\item \code{"index"} Index of sample (useful for working with \code{\link[=ctdTrim]{ctdTrim()}}).
 \item \code{"salinity+temperature"} Profile of salinity and temperature within a single axis frame.
-
 \item \code{"N2"} Profile of square of buoyancy frequency \eqn{N^2}{N^2},
-calculated with \code{\link{swN2}} with
+calculated with \code{\link[=swN2]{swN2()}} with
 an optional argument setting of \code{df=length(x[["pressure"]])/4} to do
 some smoothing.
-
 \item \code{"density+N2"} Profile of sigma0 and
 the square of buoyancy frequency within a single axis frame.
-
 \item \code{"density+dpdt"} Profile of sigma0 and dP/dt for the
 sensor.  The latter is useful in indicating problems with the deployment.
 It is calculated by first differencing pressure and then using a smoothing
@@ -55,17 +44,12 @@ SBE software only writes 3 decimal places in pressure).  Note that dP/dt may
 be off by a scale factor; this should not be a problem if there is a
 \code{time} column in the \code{data} slot, or a \code{sample.rate} in the
 \code{metadata} slot.
-
 \item \code{"sigma0"}, \code{"sigma1"}, \code{"sigma2"}, \code{"sigma3"}
 and \code{"sigma4"} Profile of potential density referenced
 to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.
-
 \item \code{"spice"} Profile of spice.
-
 \item \code{"Rrho"} Profile of Rrho, defined in the diffusive sense.
-
 \item \code{"RrhoSF"} Profile of Rrho, defined in the salt-finger sense.
-
 }}
 
 \item{ytype}{variable to use on y axis. The valid choices are:
@@ -136,48 +120,48 @@ or by \code{densitylim} if \code{ytype} is \code{"sigmaTheta"}.}
 
 \item{lwd}{lwd value for data line}
 
-\item{xaxs}{value of \code{\link{par}} \code{xaxs} to use}
+\item{xaxs}{value of \code{\link[=par]{par()}} \code{xaxs} to use}
 
-\item{yaxs}{value of \code{\link{par}} \code{yaxs} to use}
+\item{yaxs}{value of \code{\link[=par]{par()}} \code{yaxs} to use}
 
-\item{cex}{size to be used for plot symbols (see \code{\link{par}})}
+\item{cex}{size to be used for plot symbols (see \code{\link[=par]{par()}})}
 
-\item{pch}{code for plotting symbol (see \code{\link{par}}).}
+\item{pch}{code for plotting symbol (see \code{\link[=par]{par()}}).}
 
 \item{useSmoothScatter}{boolean, set to \code{TRUE} to use
-\code{\link{smoothScatter}} instead of \code{\link{plot}} to draw the plot.}
+\code{\link[=smoothScatter]{smoothScatter()}} instead of \code{\link[=plot]{plot()}} to draw the plot.}
 
-\item{df}{optional argument, passed to \code{\link{swN2}} if provided, and
+\item{df}{optional argument, passed to \code{\link[=swN2]{swN2()}} if provided, and
 if a plot using \eqn{N^2}{N^2} is requested.}
 
 \item{keepNA}{FALSE}
 
 \item{type}{type of plot to draw, using the same scheme as
-\code{\link{plot}}.}
+\code{\link[=plot]{plot()}}.}
 
 \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also
 for \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{Four-element numerical value to be used to set the plot
-margins, with a call to \code{\link{par}(mar)} prior to the plot.
+margins, with a call to \code{\link{par}}\code{(mar)} prior to the plot.
 If this is not supplied, a reasonable default will be set up.}
 
 \item{add}{A logical value that controls whether to add to an existing plot.  (It
 makes sense to use \code{add=TRUE} in the \code{panel} argument of a
-\code{\link{coplot}}, for example.)}
+\code{\link[=coplot]{coplot()}}, for example.)}
 
 \item{inset}{A logical value indicating whether to draw an inset plot.
 Setting this to \code{TRUE} will prevent the present function from adjusting
 the margins, which is
 necessary because margin adjustment is the basis for the method used by
-\code{\link{plotInset}}.}
+\code{\link[=plotInset]{plotInset()}}.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
 
 \item{\dots}{optional arguments passed to other functions.  A common example
-is to set \code{df}, for use in \link{swN2} calculations.}
+is to set \code{df}, for use in \code{\link[=swN2]{swN2()}} calculations.}
 }
 \value{
 None.
@@ -191,16 +175,15 @@ The colors (\code{col.salinity}, etc.) are only used if two profiles appear
 on a plot.
 }
 \examples{
-
 library(oce)
 data(ctd)
 plotProfile(ctd, xtype="temperature")
 
 }
 \seealso{
-\code{\link{read.ctd}} scans ctd information from a file,
-\code{\link{plot,ctd-method}} is a general plotting function for \code{ctd}
-objects, and \code{\link{plotTS}} plots a temperature-salinity diagrams.
+\code{\link[=read.ctd]{read.ctd()}} scans ctd information from a file,
+\code{\link[=plot,ctd-method]{plot,ctd-method()}} is a general plotting function for \code{ctd}
+objects, and \code{\link[=plotTS]{plotTS()}} plots a temperature-salinity diagrams.
 
 Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},

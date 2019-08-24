@@ -10,7 +10,7 @@ ctdFindProfiles(x, cutoff = 0.5, minLength = 10, minHeight = 0.1 *
   distinct, debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{x}{a \linkS4class{ctd} object.}
 
 \item{cutoff}{criterion on pressure difference; see \dQuote{Details}.}
 
@@ -23,7 +23,7 @@ casts. The default is \code{smooth.spline}, which performs well for
 a small number of cycles; see \dQuote{Examples} for a method that is
 better for a long tow-yo. The return value from \code{smoother} must
 be either a list containing an element named \code{y} or something
-that can be coerced to a vector with \code{\link{as.vector}}. To
+that can be coerced to a vector with \code{\link[=as.vector]{as.vector()}}. To
 turn smoothing off, so that cycles in pressure are determined by
 simple first difference, set \code{smoother} to \code{NULL}.}
 
@@ -73,20 +73,20 @@ either indices to these events or a vector of CTD records containing the events.
 \details{
 The method works by examining the pressure record.  First, this is smoothed using
 \code{smoother()} (see \dQuote{Arguments}), and then the result is first-differenced
-using \code{\link{diff}}.  Median values of the positive and
+using \code{\link[=diff]{diff()}}.  Median values of the positive and
 negative first-difference values are then multiplied by \code{cutoff}.  This establishes criteria
 for any given point to be in an ascending profile, a descending profile, or a non-profile.
 Contiguous regions are then found, and those that have fewer than \code{minLength} points are
 discarded.  Then, those that have pressure ranges less than \code{minHeight} are discarded.
 
 Caution: this method is not well-suited to all datasets. For example, the default
-value of \code{smoother} is \code{\link{smooth.spline}}, and this works well for just a few
+value of \code{smoother} is \code{\link[=smooth.spline]{smooth.spline()}}, and this works well for just a few
 profiles, but poorly for a tow-yo with a long sequence of profiles; in the latter case,
 it can be preferable to use simpler smoothers (see \dQuote{Examples}). Also, depending
 on the sampling protocol, it is often necessary to pass the resultant profiles through
-\code{\link{ctdTrim}}, to remove artifacts such as an equilibration phase, etc.
+\code{\link[=ctdTrim]{ctdTrim()}}, to remove artifacts such as an equilibration phase, etc.
 Generally, one is well-advised to use the present function for a quick look at the data,
-relying on e.g. \code{\link{plotScan}} to identify profiles visually, for a final product.
+relying on e.g. \code{\link[=plotScan]{plotScan()}} to identify profiles visually, for a final product.
 }
 \examples{
 \dontrun{
@@ -121,7 +121,7 @@ profiles <- ctdFindProfiles(ctd, breaks=breaks)
 
 }
 \seealso{
-The documentation for \code{\link{ctd-class}} explains the structure
+The documentation for \linkS4class{ctd} explains the structure
 of CTD objects, and also outlines the other functions dealing with them.
 
 Other things related to ctd data: \code{\link{[[,ctd-method}},

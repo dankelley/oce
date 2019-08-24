@@ -8,7 +8,7 @@
 \S4method{subset}{ctd}(x, subset, ...)
 }
 \arguments{
-\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{x}{a \linkS4class{ctd} object.}
 
 \item{subset}{An expression indicating how to subset \code{x}.}
 
@@ -16,7 +16,7 @@
 possibility is that this argument be named \code{indices}. See \dQuote{Details}.}
 }
 \value{
-A \code{\link{ctd-class}} object.
+A \linkS4class{ctd} object.
 }
 \description{
 Return a subset of a section object.

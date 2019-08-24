@@ -19,6 +19,7 @@
 #'
 #' @family things related to ctd data
 #' @family things related to odf data
+#' @family functions that read ctd data
 #'
 #' @md
 read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",

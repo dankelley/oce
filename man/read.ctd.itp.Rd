@@ -106,6 +106,11 @@ Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+
+Other functions that read ctd data: \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}}
 }
 \author{
 Dan Kelley
@@ -116,4 +121,5 @@ documentation on the format, the author constructed this function
 to work with some files that were on-hand. Whether the function will
 prove robust is an open question.
 }
+\concept{functions that read ctd data}
 \concept{things related to ctd data}

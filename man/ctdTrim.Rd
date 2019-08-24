@@ -8,7 +8,7 @@ ctdTrim(x, method, removeDepthInversions = FALSE, parameters = NULL,
   indices = FALSE, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{x}{a \linkS4class{ctd} object.}
 
 \item{method}{A string (or a vector of two strings) specifying the trimming method, or a function to
 be used to determine data indices to keep.  If \code{method} is not provided, \code{"downcast"} is
@@ -16,14 +16,14 @@ assumed. See \dQuote{Details}.}
 
 \item{removeDepthInversions}{Logical value indicating whether to remove any levels at which depth is
 less than, or equal to, a depth above.  (This is needed if the object is to be assembled into a
-section, unless \code{\link{ctdDecimate}} will be used, which will remove the inversions.}
+section, unless \code{\link[=ctdDecimate]{ctdDecimate()}} will be used, which will remove the inversions.}
 
 \item{parameters}{A list whose elements depend on the method; see \dQuote{Details}.}
 
 \item{indices}{Logical value indicating what to return. If \code{indices=FALSE} (the default),
-then the return value is a subsetted \code{\link{ctd-class}} object. If \code{indices=TRUE},
+then the return value is a subsetted \linkS4class{ctd} object. If \code{indices=TRUE},
 then the return value is a logical vector that could be used to subset the data
-with \code{\link{subset,ctd-method}} or to set data-quality flags.}
+with \code{\link[=subset,ctd-method]{subset,ctd-method()}} or to set data-quality flags.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -34,7 +34,7 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-Either an object of \code{\link{ctd-class}} or a logical vector of length
+Either a \linkS4class{ctd} object of or a logical vector of length
 matching the data. The first option is the default. The second option,
 achieved by setting \code{indices=FALSE}, may be useful in constructing
 data flags to be inserted into the object.
@@ -43,7 +43,7 @@ data flags to be inserted into the object.
 Often in CTD profiling, the goal is to isolate only the downcast, discarding measurements made in
 the air, in an equilibration phase in which the device is held below the water surface, and then the
 upcast phase that follows the downcast.  This is handled reasonably well by \code{ctdTrim} with
-\code{method="downcast"}, although it is almost always best to use \code{\link{plotScan}} to
+\code{method="downcast"}, although it is almost always best to use \code{\link[=plotScan]{plotScan()}} to
 investigate the data, and then use the \code{method="index"} or \code{method="scan"} method based on
 visual inspection of the data.
 }
@@ -52,77 +52,80 @@ visual inspection of the data.
 these are all of the same value, then the input \code{ctd} object is returned, unaltered.
 This handles the case of pressure-binned data. However, if the pressure difference
 varies, a variety of approaches are taken to trimming the dataset.
-
 \itemize{
-  \item{If \code{method[1]} is \code{"downcast"} then an attempt is made to keep only data for
-  which the CTD is descending.  This is done in stages, with variants based on \code{method[2]}, if
-  supplied.  \emph{Step 1.} The pressure data are despiked with a smooth() filter with method "3R".
-  This removes wild spikes that arise from poor instrument connections, etc.  \emph{Step 2.} If no
-  \code{parameters} are given, then any data with negative pressures are deleted.  If there is a
-  parameter named \code{pmin}, then that pressure (in decibars) is used instead as the lower limit.
-  This is a commonly-used setup, e.g.  \code{ctdTrim(ctd, parameters=list(pmin=1))} removes the top
-  decibar (roughly 1m) from the data.  Specifying \code{pmin} is a simple way to remove near-surface
-  data, such as a shallow equilibration phase, and if specified will cause \code{ctdTrim} to skip
-  step 4 below.  \emph{Step 3.} The maximum pressure is determined, and data acquired subsequent to
-  that point are deleted.  This removes the upcast and any subsequent data.  \emph{Step 4.} If the
-  \code{pmin} parameter is not specified, an attempt is made to remove an initial equilibrium phase
-  by a regression of pressure on scan number.  There are three variants to this, depending on the
-  value of the second \code{method} element. If it is \code{"A"} (or not given), the procedure is to
-  call \code{\link{nls}} to fit a piecewise linear model of pressure as a function of scan,
-  in which pressure is
-  constant for scan less than a critical value, and then linearly varying for with scan. This is
-  meant to handle the common situation in which the CTD is held at roughly constant depth (typically
-  a metre or so) to equilibrate, before it is lowered through the water column.
-  Case \code{"B"} is the same,
-  except that the pressure in the surface region is taken to be zero (this does not make
-  much sense, but it might help in some cases). Note that, prior to early 2016, method \code{"B"} was
-  called method \code{"C"}; the old \code{"B"} method was judged useless and was removed.}
-
-\item{If \code{method="upcast"}, a sort of reverse of \code{"downcast"} is used. This
-  was added in late April 2017 and has not been well tested yet.}
-
-\item{If \code{method="sbe"}, a method similar to that described
-  in the SBE Data Processing manual is used to remove the "soak"
-  period at the beginning of a cast (see Section 6 under subsection
-  "Loop Edit"). The method is based on the soak procedure whereby
-  the instrument sits at a fixed depth for a period of time, after
-  which it is raised toward the surface before beginning the actual
-  downcast. This enables equilibration of the sensors while still
-  permitting reasonably good near-surface data. Parameters for the
-  method can be passed using the \code{parameters} argument, which
-  include \code{minSoak} (the minimum depth for the soak) and
-  \code{maxSoak} the maximum depth of the soak. The method finds
-  the minimum pressure prior to the \code{maxSoak} value being
-  passed, each of which occurring after the scan in which the
-  \code{minSoak} value was reached. For the method to work, the
-  pre-cast pressure minimum must be less than the \code{minSoak}
-  value. The default values of \code{minSoak} and \code{maxSoak}
-  are 1 and 20 dbar, respectively.}
-
-\item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
-  value of \code{parameters}. If the latter is a logical vector of length matching data column
-  length, then it is used directly for subsetting. If \code{parameters} is a numerical vector with
-  two elements, then the index or scan values that lie between \code{parameters[1]}
-  and \code{parameters[2]} (inclusive) are used for subsetting.  The
-  two-element method is probably the most useful, with the values being determined by visual
-  inspection of the results of \code{\link{plotScan}}. While this may take a minute or two, the
-  analyst should bear in mind that a deep-water CTD profile might take 6 hours, corresponding to
-  ship-time costs exceeding a week of salary.}
-
-\item{If \code{method="range"} then data are selected based on the value of the column named
-  \code{parameters$item}.  This may be by range or by critical value.  By range: select values
-  between \code{parameters$from} (the lower limit) and \code{parameters$to} (the upper limit) By
-  critical value: select if the named column exceeds the value.  For example, \code{ctd2 <-
+\item If \code{method[1]} is \code{"downcast"} then an attempt is made to keep only data for
+which the CTD is descending.  This is done in stages, with variants based on \code{method[2]}, if
+supplied.
+}
+\enumerate{
+\item The pressure data are despiked with a smooth() filter with method "3R".
+This removes wild spikes that arise from poor instrument connections, etc.
+\item \emph{Step 2.} If no \code{parameters} are given, then any data with negative pressures
+are deleted.  If there is a parameter named \code{pmin}, then that pressure (in decibars)
+is used instead as the lower limit. This is a commonly-used setup, e.g.
+\code{ctdTrim(ctd, parameters=list(pmin=1))} removes the top decibar (roughly 1m) from
+the data.  Specifying \code{pmin} is a simple way to remove near-surface
+data, such as a shallow equilibration phase, and if specified will cause \code{ctdTrim}
+to skip step 4 below.
+\item The maximum pressure is determined, and data acquired subsequent to
+that point are deleted.  This removes the upcast and any subsequent data.
+\item If the \code{pmin} parameter is not specified, an attempt is made to remove an initial
+equilibrium phase by a regression of pressure on scan number.  There are three
+variants to this, depending on the value of the second \code{method} element.
+If \code{method} is \code{"A"} (or not given), the procedure is to
+call \code{\link[=nls]{nls()}} to fit a piecewise linear model of pressure as a function of scan,
+in which pressure is constant for scan less than a critical value, and then
+linearly varying for with scan. This is  meant to handle the common situation
+in which the CTD is held at roughly constant depth (typically
+a metre or so) to equilibrate, before it is lowered through the water column.
+If \code{method} is \code{"B"}, the procedure is similar, except that the pressure
+in the surface region is taken to be zero (this does not make
+much sense, but it might help in some cases). Note that, prior to early 2016,
+method \code{"B"} was called method \code{"C"}; the old \code{"B"} method was judged useless
+and so it was removed.
+}
+\itemize{
+\item If \code{method="upcast"}, a sort of reverse of \code{"downcast"} is used. This
+was added in late April 2017 and has not been well tested yet.
+\item If \code{method="sbe"}, a method similar to that described
+in the SBE Data Processing manual is used to remove the "soak"
+period at the beginning of a cast (see Section 6 under subsection
+"Loop Edit"). The method is based on the soak procedure whereby
+the instrument sits at a fixed depth for a period of time, after
+which it is raised toward the surface before beginning the actual
+downcast. This enables equilibration of the sensors while still
+permitting reasonably good near-surface data. Parameters for the
+method can be passed using the \code{parameters} argument, which
+include \code{minSoak} (the minimum depth for the soak) and
+\code{maxSoak} the maximum depth of the soak. The method finds
+the minimum pressure prior to the \code{maxSoak} value being
+passed, each of which occurring after the scan in which the
+\code{minSoak} value was reached. For the method to work, the
+pre-cast pressure minimum must be less than the \code{minSoak}
+value. The default values of \code{minSoak} and \code{maxSoak}
+are 1 and 20 dbar, respectively.
+\item If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
+value of \code{parameters}. If the latter is a logical vector of length matching data column
+length, then it is used directly for subsetting. If \code{parameters} is a numerical vector with
+two elements, then the index or scan values that lie between \code{parameters[1]}
+and \code{parameters[2]} (inclusive) are used for subsetting.  The
+two-element method is probably the most useful, with the values being determined by visual
+inspection of the results of \code{\link[=plotScan]{plotScan()}}. While this may take a minute or two, the
+analyst should bear in mind that a deep-water CTD profile might take 6 hours, corresponding to
+ship-time costs exceeding a week of salary.
+\item If \code{method="range"} then data are selected based on the value of the column named
+\code{parameters$item}.  This may be by range or by critical value.  By range: select values
+between \code{parameters$from} (the lower limit) and \code{parameters$to} (the upper limit) By
+critical value: select if the named column exceeds the value.  For example, \code{ctd2 <-
     ctdTrim(ctd, "range", parameters=list(item="scan", from=5))} starts at scan number 5 and
-  continues to the end, while
-  \code{ctdTrim(ctd,"range",parameters=list(item="scan",from=5,to=100))} also starts at scan 5,
-  but extends only to scan 100.}
-
-\item{If \code{method} is a function, then it must return a vector of \code{\link{logical}}
-  values, computed based on two arguments: \code{data} (a
-  \code{\link{list}}), and \code{parameters} as supplied to \code{ctdTrim}.  Both
-  \code{inferWaterDepth} and \code{removeInversions} are ignored in the function case. See
-  \dQuote{Examples}.}
+continues to the end, while
+\code{ctdTrim(ctd,"range",parameters=list(item="scan",from=5,to=100))} also starts at scan 5,
+but extends only to scan 100.
+\item If \code{method} is a function, then it must return a vector of \code{\link[=logical]{logical()}}
+values, computed based on two arguments: \code{data} (a
+\code{\link[=list]{list()}}), and \code{parameters} as supplied to \code{ctdTrim}.  Both
+\code{inferWaterDepth} and \code{removeInversions} are ignored in the function case. See
+\dQuote{Examples}.
 }
 }
 \examples{

@@ -13,7 +13,7 @@ This is sample CTD profile provided for testing.  It includes not just the
 but also data from the upcast and from time spent near the surface.  Spikes are
 also clearly evident in the pressure record.  With such real-world wrinkles,
 this dataset provides a good example of data that need trimming with
-\code{\link{ctdTrim}}.
+\code{\link[=ctdTrim]{ctdTrim()}}.
 }
 \details{
 This station was sampled by students enrolled in the Dan Kelley's
@@ -22,11 +22,11 @@ The data were acquired near the centre of the Bedford Basin of the
 Halifax Harbour, during an October 2003 field trip of Dalhousie University's
 Oceanography 4120/5120 class. The original \code{.cnv} data file had
 temperature in the IPTS-68 scale, but this was converted to the more modern
-scale using \code{\link{T90fromT68}}.
+scale using \code{\link[=T90fromT68]{T90fromT68()}}.
 }
 \seealso{
 A similar dataset (trimmed to the downcast) is available as
-\code{data(\link{ctd})}.
+\code{data(ctd)}.
 
 Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
