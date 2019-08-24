@@ -2,6 +2,7 @@ language: r
 warnings_are_errors: false
 sudo: required
 dist: trusty
+after_success: travis_wait 20 after_success
 
 addons:
     apt:
