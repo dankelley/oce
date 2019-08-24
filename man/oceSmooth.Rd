@@ -8,7 +8,7 @@
 oceSmooth(x, ...)
 }
 \arguments{
-\item{x}{an \code{oce} object.}
+\item{x}{an \linkS4class{oce} object.}
 
 \item{\dots}{parameters to be supplied to \code{\link[=smooth]{smooth()}}, which does
 the actual work.}
@@ -27,7 +27,6 @@ library(oce)
 data(ctd)
 d <- oce.smooth(ctd)
 plot(d)
-
 }
 \seealso{
 The work is done with \code{\link[=smooth]{smooth()}}, and the \code{...}

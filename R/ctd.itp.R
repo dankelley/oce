@@ -17,8 +17,6 @@
 #' profiler-mode, not fixed-depth mode.
 #'
 #' @family functions that read ctd data
-#'
-#' @md
 read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {

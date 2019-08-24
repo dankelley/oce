@@ -7,7 +7,7 @@
 fillGap(x, method = c("linear"), rule = 1)
 }
 \arguments{
-\item{x}{an \code{oce} object.}
+\item{x}{an \linkS4class{oce} object.}
 
 \item{method}{to use; see \dQuote{Details}.}
 
@@ -43,7 +43,6 @@ print(data.frame(x,y))
 x <- x + 0.1
 y <- fillGap(x)
 print(data.frame(x,y))
-
 }
 \author{
 Dan Kelley

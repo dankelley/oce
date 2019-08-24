@@ -10,19 +10,19 @@ swRho(salinity, temperature = NULL, pressure = NULL,
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}
-and \code{pressure} must be provided) \strong{or} an \code{oce} object, in
+and \code{pressure} must be provided) \emph{or} an \code{oce} object, in
 which case \code{salinity}, \code{temperature} (in the ITS-90 scale; see
 next item), etc. are inferred from the object.}
 
-\item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
+\item{temperature}{\emph{in-situ} temperature (\eqn{^\circ}{deg}C), defined
 on the ITS-90 scale.  This scale is used by GSW-style calculation (as
 requested by setting \code{eos="gsw"}), and is the value contained within
 \code{ctd} objects (and probably most other objects created with data
 acquired in the past decade or two). Since the UNESCO-style calculation is
 based on IPTS-68, the temperature is converted within the present function,
-using \code{\link{T68fromT90}}.}
+using \code{\link[=T68fromT90]{T68fromT90()}}.}
 
-\item{pressure}{pressure [dbar]}
+\item{pressure}{pressure (dbar)}
 
 \item{longitude}{longitude of observation (only used if \code{eos="gsw"};
 see \sQuote{Details}).}
@@ -30,19 +30,19 @@ see \sQuote{Details}).}
 \item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
 \sQuote{Details}).}
 
-\item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
-[3,4].}
+\item{eos}{equation of state, either \code{"unesco"} (references 1 and 2)
+or \code{"gsw"} (references 3 and 4).}
 }
 \value{
-\emph{In-situ} density [kg/m\eqn{^3}{^3}].
+\emph{In-situ} density (kg/m\eqn{^3}{^3}).
 }
 \description{
 Compute \eqn{\rho}{rho}, the \emph{in-situ} density of seawater.
 }
 \details{
 If \code{eos="unesco"}, the density is calculated using the UNESCO equation
-of state for seawater [1,2], and if \code{eos="gsw"}, the GSW formulation
-[3,4] is used.
+of state for seawater (references 1 and 2), and if \code{eos="gsw"}, the GSW formulation
+(references 3 and 4) is used.
 }
 \section{Temperature units}{
  The UNESCO formulae are defined in terms of
@@ -58,7 +58,7 @@ between the two scales is a few millidegrees.
 
 \examples{
 library(oce)
-# The numbers in the comments are the check values listed in reference [1];
+# The numbers in the comments are the check values listed in reference 1;
 # note that temperature in that reference was on the T68 scale, but that
 # the present function works with the ITS-90 scale, so a conversion
 # is required.
@@ -69,25 +69,25 @@ swRho(35, T90fromT68(25), 10000, eos="unesco") # 1062.53817
 
 }
 \references{
-1. Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
-fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
-Science}, \bold{44}, 53 pp
-
-2. Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
+\enumerate{
+\item Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
+fundamental properties of seawater.
+\emph{Unesco Technical Papers in Marine Science},
+\emph{44}, 53 pp
+\item Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
 York, 662 pp.
-
-3. IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
+\item IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
 seawater-2010: Calculation and use of thermodynamic properties.  Technical
 Report 56, Intergovernmental Oceanographic Commission, Manuals and Guide.
-
-4. McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
+\item McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
 the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
 ISBN 978-0-646-55621-5.
 }
+}
 \seealso{
-Related density routines include \code{\link{swSigma0}} (and
-equivalents at other pressure horizons), \code{\link{swSigmaT}}, and
-\code{\link{swSigmaTheta}}.
+Related density routines include \code{\link[=swSigma0]{swSigma0()}} (and
+equivalents at other pressure horizons), \code{\link[=swSigmaT]{swSigmaT()}}, and
+\code{\link[=swSigmaTheta]{swSigmaTheta()}}.
 
 Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{T90fromT48}}, \code{\link{T90fromT68}},

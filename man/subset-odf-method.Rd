@@ -8,7 +8,7 @@
 \S4method{subset}{odf}(x, subset, ...)
 }
 \arguments{
-\item{x}{an \code{odf} object.}
+\item{x}{an \linkS4class{odf} object.}
 
 \item{subset}{a condition to be applied to the \code{data} portion of
 \code{x}.  See \sQuote{Details}.}

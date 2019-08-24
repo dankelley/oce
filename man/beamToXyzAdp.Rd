@@ -7,7 +7,7 @@
 beamToXyzAdp(x, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{an object of class \code{"adp"}.}
+\item{x}{an \linkS4class{adp} object.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -31,7 +31,7 @@ xyz-based coordinate system. The action depends on the type of object.
 Objects creating by reading RDI Teledyne, Sontek, and some Nortek
 instruments are handled directly. However, Nortek
 data stored in in the AD2CP format are handled by the specialized
-function \code{\link{beamToXyzAdpAD2CP}}, the documentation for which
+function \code{\link[=beamToXyzAdpAD2CP]{beamToXyzAdpAD2CP()}}, the documentation for which
 should be consulted, rather than the material given blow.
 }
 \details{
@@ -61,14 +61,15 @@ where \eqn{\theta}{theta} is the angle the beams make to the axial direction
 \eqn{d=a/\sqrt{2}}{d=a/sqrt(2)}.
 }
 \references{
-1. Teledyne RD Instruments. \dQuote{ADCP Coordinate Transformation: Formulas and
+\enumerate{
+\item Teledyne RD Instruments. \dQuote{ADCP Coordinate Transformation: Formulas and
 Calculations,} January 2010. P/N 951-6079-00.
-
-2. WHOI/USGS-provided Matlab code for beam-enu transformation
+\item WHOI/USGS-provided Matlab code for beam-enu transformation
 \samp{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
 }
+}
 \seealso{
-See \code{\link{read.adp}} for other functions that relate to
+See \code{\link[=read.adp]{read.adp()}} for other functions that relate to
 objects of class \code{"adp"}.
 
 Other things related to adp data: \code{\link{[[,adp-method}},
@@ -92,6 +93,7 @@ Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},

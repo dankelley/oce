@@ -7,7 +7,7 @@
 decimate(x, by = 10, to, filter, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{an \code{oce} object containing a \code{data} element.}
+\item{x}{an \linkS4class{oce} object.}
 
 \item{by}{an indication of the subsampling.  If this is a single number,
 then it indicates the spacing between elements of \code{x} that are
@@ -49,7 +49,6 @@ data(adp)
 plot(adp)
 adpDec <- decimate(adp,by=2,filter=c(1/4, 1/2, 1/4))
 plot(adpDec)
-
 }
 \seealso{
 Filter coefficients may be calculated using

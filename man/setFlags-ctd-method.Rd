@@ -15,7 +15,7 @@
 this variable is not contained in the object's \code{data} slot, an error is reported.}
 
 \item{i}{Indication of where to insert the flags; see \dQuote{Description} for
-general rules and \dQuote{Details} for rules for \code{\link{ctd-class}}
+general rules and \dQuote{Details} for rules for \linkS4class{ctd}
 objects.}
 
 \item{value}{The value to be inserted in the flag.}
@@ -53,8 +53,8 @@ of the data item), (b) a logical array that has dimension equal to
 that of the data item, or (c) a function that takes an \code{oce}
 object as its single input and returns such a data frame or array.
 }
-See \dQuote{Details} for the particular case of
-\code{\link{ctd-class}} objects.
+
+See \dQuote{Details} for the particular case of \linkS4class{ctd} objects.
 }
 \details{
 Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector (either logical as in Example 1 or integer as in Example 2), or a function taking a \code{ctd} object and returning such a vector (see \dQuote{Indexing rules}).

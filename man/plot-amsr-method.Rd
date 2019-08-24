@@ -11,7 +11,7 @@
   "mediumVioletRed"), debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{An \linkS4class{amsr} object.}
+\item{x}{an \linkS4class{amsr} object.}
 
 \item{y}{String indicating the name of the band to plot; if not provided,
 \code{SST} is used; see the documenation for the \linkS4class{amsr} class for a list of bands.}

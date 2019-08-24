@@ -39,7 +39,6 @@ points(x, d$Y, pch=20)
 abline(d$a, d$b, col='blue')
 abline(h=0)
 points(x, d$Y + d$a + d$b * x, col='blue', pch='+')
-
 }
 \author{
 Dan Kelley

@@ -30,5 +30,4 @@ to learn about the \code{metadata}, etc.
 \examples{
 o <- new("oce")
 summary(o)
-
 }

@@ -31,7 +31,6 @@ library(oce)
 x <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
 plot(x) # summary with TS and profiles
 plotTS(x) # just the TS
-
 }
 \seealso{
 The file type is determined by \code{\link[=oceMagic]{oceMagic()}}.  If the file

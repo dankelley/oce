@@ -35,8 +35,6 @@
 #'
 #' @family things related to adp data
 #' @family things related to adv data
-#'
-#' @md
 velocityStatistics <- function(x, control, ...)
 {
     if (inherits(x, "adp")) {
@@ -87,8 +85,6 @@ velocityStatistics <- function(x, control, ...)
 #'
 #' @family things related to adp data
 #' @family things related to adv data
-#'
-#' @md
 beamToXyz <- function(x, ...)
 {
     if (inherits(x, "adp"))
@@ -112,8 +108,6 @@ beamToXyz <- function(x, ...)
 #'
 #' @family things related to adp data
 #' @family things related to adv data
-#'
-#' @md
 xyzToEnu <- function(x, ...)
 {
     if (inherits(x, "adp"))
@@ -137,8 +131,6 @@ xyzToEnu <- function(x, ...)
 #'
 #' @family things related to adp data
 #' @family things related to adv data
-#'
-#' @md
 enuToOther <- function(x, ...)
 {
     if (inherits(x, "adp"))
@@ -161,8 +153,6 @@ enuToOther <- function(x, ...)
 #'
 #' @family things related to adp data
 #' @family things related to adv data
-#'
-#' @md
 toEnu <- function(x, ...)
 {
     if (inherits(x, "adp"))

@@ -60,8 +60,6 @@
 #'
 #' @docType package
 #' @name oce
-#'
-#' @md
 NULL
 
 
@@ -84,8 +82,8 @@ NULL
 #' "defunct".
 #'
 #' \tabular{lll}{
-#' \strong{Deprecated}       \tab \strong{Replacement}            \tab \strong{Notes}\cr
-#' `byteToBinary`       \tab [rawToBits()]         \tab Deprecated in 2016?\cr
+#' **Deprecated** \tab **Replacement** \tab **Notes**\cr
+#' `byteToBinary` \tab [rawToBits()]   \tab Deprecated in 2016\cr
 #' }
 #'
 #' The following are marked "defunct", so calling them in the
@@ -95,16 +93,16 @@ NULL
 #'
 ## In table below, I put two spaces before version number, if a build-test exists.
 #'\tabular{lll}{
-#'\strong{Defunct}       \tab \strong{Replacement}                     \tab \strong{Version} \cr
-#'`addColumn`       \tab [oceSetData()]                 \tab  0.9.24\cr
-#'`byteToBinary`    \tab [rawToBits()]                  \tab  0.9.24 'endian="little" disallowed\cr
-#'`findInOrdered`   \tab [findInterval()]               \tab  0.9.24\cr
-#'`ctdAddColumn`    \tab [oceSetData()]                 \tab  0.9.24\cr
-#'`ctdUpdateHeader` \tab [oceSetMetadata()]             \tab  0.9.24\cr
-#'`mapZones`        \tab [mapGrid()]                    \tab  0.9.24\cr
-#'`mapMeridians`    \tab [mapGrid()]                    \tab  0.9.24\cr
-#'`oce.as.POSIXlt`  \tab `\link[lubridate]{parse_date_time`} \tab  0.9.24\cr
-#'`oce.magic`       \tab [oceMagic()]                   \tab  0.9.24\cr
+#'**Defunct**       \tab **Replacement**              \tab **Version** \cr
+#'`addColumn`       \tab [oceSetData()]               \tab  0.9.24\cr
+#'`byteToBinary`    \tab [rawToBits()]                \tab  0.9.24 'endian="little" disallowed\cr
+#'`findInOrdered`   \tab [findInterval()]             \tab  0.9.24\cr
+#'`ctdAddColumn`    \tab [oceSetData()]               \tab  0.9.24\cr
+#'`ctdUpdateHeader` \tab [oceSetMetadata()]           \tab  0.9.24\cr
+#'`mapZones`        \tab [mapGrid()]                  \tab  0.9.24\cr
+#'`mapMeridians`    \tab [mapGrid()]                  \tab  0.9.24\cr
+#'`oce.as.POSIXlt`  \tab [lubridate::parse_date_time] \tab  0.9.24\cr
+#'`oce.magic`       \tab [oceMagic()]                 \tab  0.9.24\cr
 #'}
 #'
 #' The following were removed recently, having been marked as "deprecated"
@@ -112,8 +110,8 @@ NULL
 #' one CRAN release.
 #'
 #'\tabular{lll}{
-#'\strong{Function}      \tab \strong{Replacement}         \tab \strong{Version}\cr
-#'`makeSection`     \tab [as.section()]     \tab           0.9.24\cr
+#'**Function**  \tab **Replacement** \tab  **Version**\cr
+#'`makeSection` \tab [as.section()]  \tab       0.9.24\cr
 #'}
 #'
 #' Several \sQuote{oce} function arguments are considered "deprecated", which
@@ -121,49 +119,41 @@ NULL
 #' listed in the help page for the function in question. A few that may be
 #' of general interest are also listed below.
 #'
-#' \itemize{
-
-#' \item The `eos` argument of [swN2()] was removed on 2019
+#' * The `eos` argument of [swN2()] was removed on 2019
 #' April 11; for details, see the \dQuote{Deprecation Notation} section
 #' of the documentation for [swN2()].
 #'
-#' \item The `endian` argument of [byteToBinary()] will be removed sometime
+#' * The `endian` argument of [byteToBinary()] will be removed sometime
 #' in the year 2017, and should be set to `"big"` in the meantime.
 #'
-#' \item The `parameters` argument of [plot,ctd-method()]
+#' * The `parameters` argument of [plot,ctd-method()]
 #' was deprecated on 2016-12-30.  It was once used by
 #' [plot,coastline-method()] but has been ignored by that
 #' function since February 2016.
 #'
-#' \item The `orientation` argument of [plot,ctd-method()]
+#' * The `orientation` argument of [plot,ctd-method()]
 #' was deprecated on 2016-12-30.  It was once used by
 #' [plot,coastline-method()] but has been ignored by that
 #' function since February 2016.
-#'
-#' }
 #'
 #' Several \sQuote{oce} function arguments are considered "defunct", which
 #' means they will be removed in the next CRAN release. They are as follows.
 #'
-#' \itemize{
-#'
-#' \item The `date` argument of [as.ctd()]
+#' * The `date` argument of [as.ctd()]
 #' was discovered to have been unused in early 2016. Since
 #' the `startTime` actually fills its role, `date`
 #' was considered to be deprecated in June 2016.
 #'
-#' \item The `quality` flag of [as.ctd()] was
+#' * The `quality` flag of [as.ctd()] was
 #' marked as deprecated in March 2016.
 #'
-#' \item The `fill` argument of [mapPlot()] was confusing
+#' * The `fill` argument of [mapPlot()] was confusing
 #' to users, so it was designated as deprecated in June 2016.
 #' (The confusion stemmed from subtle differences between
 #' [plot()] and [polygon()], and the problem is that
 #' [mapPlot()] can use either of these functions, according
 #' to whether coastlines are to be filled.)
 #' The functionality is preserved, in the `col` argument.
-#'
-#' }
 #'
 #' @aliases oce-defunct
 #'
@@ -173,8 +163,6 @@ NULL
 #' described at
 #' \url{https://www.bioconductor.org/developers/how-to/deprecation/} and it is
 #' extended here to function arguments.
-#'
-#' @md
 NULL
 
 #' Coerce Something Into an Oce Object
@@ -206,16 +194,14 @@ NULL
 #' the proper return value.  There
 #' are only a few cases (although more may be added if there is
 #' sufficient user demand). The cases are as follows.
-#' \itemize{
 #'
-#' \item If `x` contains items named `temperature`,
+#' * If `x` contains items named `temperature`,
 #' `pressure` and either `salinity` or `conductivity`,
 #' then an object of type [ctd-class] will be returned.
 #'
-#' \item If `x` contains columns named `longitude` and `latitude`,
+#' * If `x` contains columns named `longitude` and `latitude`,
 #' but no other columns, then an object of class [coastline-class]
 #' is returned.
-#' }
 #'
 #' @param x an item containing data. This may be data frame, list, or an oce object.
 #'
@@ -223,8 +209,6 @@ NULL
 #' [as.coastline()] or [ODF2oce()], if these are used.
 #'
 #' @return An [oce-class] object.
-#'
-#' @md
 as.oce <- function(x, ...)
 {
     if (inherits(x, "oce")) {
@@ -410,9 +394,6 @@ as.oce <- function(x, ...)
 #' `g`, and then adding the angle `add`.
 #'
 #' @author Dan Kelley
-#'
-#'
-#' @md
 useHeading <- function(b, g, add=0)
 {
     if (!"heading" %in% names(b@data))
@@ -493,8 +474,6 @@ useHeading <- function(b, g, add=0)
 #' plot(early)
 #' bottom <- window(adp, start=0, end=20, which="distance")
 #' plot(bottom)
-#'
-#' @md
 window.oce <- function(x, start=NULL, end=NULL, frequency=NULL, deltat=NULL, extend=FALSE,
                        which=c("time", "distance"), indexReturn=FALSE,
                        debug=getOption("oceDebug"), ...)
@@ -614,8 +593,6 @@ window.oce <- function(x, start=NULL, end=NULL, frequency=NULL, deltat=NULL, ext
 #' @seealso [tail.oce()], which yields the end of an `oce` object.
 #'
 #' @author Dan Kelley
-#'
-#' @md
 head.oce <- function(x, n=6L, ...)
     headOrTail(x=x, n=n, headTail=head, ...)
 
@@ -779,8 +756,6 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
 #' @seealso [head.oce()], which yields the start of an `oce` object.
 #'
 #' @author Dan Kelley
-#'
-#' @md
 tail.oce <- function(x, n=6L, ...)
     headOrTail(x=x, n=n, headTail=tail, ...)
 
@@ -806,8 +781,6 @@ tail.oce <- function(x, n=6L, ...)
 #' r <- rnorm(50, mean=2, sd=0.1)
 #' theta <- runif(50, 0, 360)
 #' plotPolar(r, theta)
-#'
-#' @md
 plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
 {
 
@@ -892,7 +865,7 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
 #'
 #' @references
 #' 1.  R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
-#' application to oceanographic data.  \emph{Deep Sea Research}, \bold{15},
+#' application to oceanographic data.  *Deep Sea Research*, **15**,
 #' 185-193.
 #'
 #' 2. Daphne R. Johnson, Tim P. Boyer, Hernan E. Garcia, Ricardo A.
@@ -919,8 +892,6 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
 #'     lines(a2, zz, col='red')
 #'     legend("bottomright",lwd=1,col=1:2, legend=c("rr","unesco"),cex=3/4)
 #'}
-#'
-#' @md
 oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
 {
     method <- match.arg(method)
@@ -1020,8 +991,6 @@ oce.approx <- oceApprox
 #' p <- met[["pressure"]]
 #' oce.plot.ts(t, p)
 #' plotSticks(t, 99, u, v, yscale=25, add=TRUE)
-#'
-#' @md
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
                        mgp=getOption("oceMgp"),
                        mar=c(mgp[1]+1, mgp[1]+1, 1, 1+par("cex")),
@@ -1112,8 +1081,6 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 #' @param lty type for grid lines (see [par()])
 #'
 #' @param lwd width for grid lines (see [par()])
-#'
-#' @md
 oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 {
     if (missing(xat) && missing(yat)) {
@@ -1255,8 +1222,6 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' oce.plot.ts(t, y, type='p', xlim=c(t[6], t[12]))
 #' # Flip the y axis
 #' oce.plot.ts(t, y, flipy=TRUE)
-#'
-#' @md
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, ylab,
                         drawTimeRange, fill=FALSE, col=par("col"), pch=par("pch"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
@@ -1430,9 +1395,9 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
 }
 
 
-#' Oce Variant of as.POSIXlt [defunct]
+#' Oce Variant of as.POSIXlt (defunct)
 #'
-#' \strong{WARNING:} This function will be removed soon; see [oce-deprecated].
+#' **WARNING:** This function will be removed soon; see [oce-deprecated].
 #'
 #' It was realized in December of 2016 that this function was not used within
 #' oce, and also that `\link[lubridate]{parse_date_time`} in the
@@ -1449,8 +1414,6 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
 #' @author Dan Kelley
 #'
 #' @family functions that will be removed soon
-#'
-#' @md
 oce.as.POSIXlt <- function(x, tz = "")
 {
     .Defunct("lubridate::parse_date_time",
@@ -1519,35 +1482,29 @@ oce.as.POSIXlt <- function(x, tz = "")
 #'
 #' There are several ways to use this function.
 #'
-#'\itemize{
-#' \item Case 1. If both an `item` and `value` are supplied, then
+#' 1. If both an `item` and `value` are supplied, then
 #' either the object's metadata or data slot may be altered. There are
 #' two ways in which this can be done.
 #'
-#' \itemize{
+#'    * Case 1A. If the `item` string does not contain an
+#'    `@` character, then the `metadata` slot is examined
+#'    for an entry named `item`, and that is modified if so.
+#'    Alternatively, if `item` is found in `metadata`, then
+#'    that value is modified. However, if `item` is not found in
+#'    either `metadata` or `data`, then an error is reported
+#'    (see 1B for how to add something that does not yet exist).
 #'
-#' \item Case 1A. If the `item` string does not contain an
-#' `@` character, then the `metadata` slot is examined
-#' for an entry named `item`, and that is modified if so.
-#' Alternatively, if `item` is found in `metadata`, then
-#' that value is modified. However, if `item` is not found in
-#' either `metadata` or `data`, then an error is reported
-#' (see 1B for how to add something that does not yet exist).
+#'    * Case 1B. If the `item` string contains
+#'    the `@` character, then the text to the left of that character
+#'    must be either `"metadata"` or `"data"`, and it names the slot
+#'    in which the change is done. In contrast with case 1A, this will
+#'    *create* a new item, if it is not already in existence.
 #'
-#' \item Case 1B. If the `item` string contains
-#' the `@` character, then the text to the left of that character
-#' must be either `"metadata"` or `"data"`, and it names the slot
-#' in which the change is done. In contrast with case 1A, this will
-#' \emph{create} a new item, if it is not already in existence.
 #'
-#' }
-#'
-#' \item Case 2. If `item` and `value` are not supplied, then `action` must
+#' 2. If `item` and `value` are not supplied, then `action` must
 #' be supplied.  This is a character string specifying some action to be
 #' performed on the object, e.g. a manipulation of a column.  The action must
 #' refer to the object as `x`; see Examples.
-#'
-#'}
 #'
 #' In any case, a log entry is stored in the object, to document the change.
 #' Indeed, this is the main benefit to using this function, instead of altering
@@ -1557,8 +1514,8 @@ oce.as.POSIXlt <- function(x, tz = "")
 #'
 #' @aliases oce.edit
 #'
-#' @param x an `oce` object.  The exact action of `oceEdit` depends
-#' on the [class] of `x`.
+#' @param x an [oce-class] object.  The exact action of [oceEdit()] depends
+#' on the sub-class of `x`.
 #'
 #' @param item if supplied, a character string naming an item in the object's
 #' `metadata` or `data` slot, the former being checked first.
@@ -1589,8 +1546,6 @@ oce.as.POSIXlt <- function(x, tz = "")
 #' ctd2 <- oceEdit(ctd, item="latitude", value=47.8879,
 #'                reason="illustration", person="Dan Kelley")
 #' ctd3 <- oceEdit(ctd,action="x@@data$pressure<-x@@data$pressure-1")
-#'
-#' @md
 oceEdit <- function(x, item, value, action, reason="", person="",
                      debug=getOption("oceDebug"))
 {
@@ -1714,20 +1669,18 @@ oce.edit <- oceEdit
 #' are omitted here, making for a file format that is more conventional in
 #' Oceanography.
 #'
-#' @param x an `oce` object that contains a `data` table.
+#' @param x an [oce-class] object.
 #'
-#' @param file file name, as passed to `\link[utils]{write.table`}.  Use
+#' @param file file name, as passed to [utils::write.table()].  Use
 #' `""` to get a listing in the terminal window.
 #'
-#' @param ... optional arguments passed to `\link[utils]{write.table`}.
+#' @param ... optional arguments passed to [utils::write.table()].
 #'
-#' @return The value of `\link[utils]{write.table`} is returned.
+#' @return The value returned by [utils::write.table()].
 #'
 #' @author Dan Kelley
 #'
 #' @seealso `\link[utils]{write.table`}, which does the actual work.
-#'
-#' @md
 oce.write.table <- function (x, file="", ...)
 {
     if (!inherits(x, "oce"))
@@ -1779,8 +1732,6 @@ oce.write.table <- function (x, file="", ...)
 #' H. E. Garcia, O. K. Baranova, M. M. Zweng, D. R. Johnson, and
 #' S. Levitus. \dQuote{World Ocean Atlas 2009 Temperature.}
 #' US Government printing Office, 2010.
-#'
-#' @md
 standardDepths <- function(n=0)
 {
     d <- c(0, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250,
@@ -1822,8 +1773,6 @@ standardDepths <- function(n=0)
 #' @author Dan Kelley
 #'
 #' @seealso This is used mainly by [read.oce()].
-#'
-#' @md
 oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
@@ -2117,8 +2066,6 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
 #' x <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
 #' plot(x) # summary with TS and profiles
 #' plotTS(x) # just the TS
-#'
-#' @md
 read.oce <- function(file, ...)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
@@ -2272,8 +2219,6 @@ read.oce <- function(file, ...)
 #'
 #' @return
 #' An [oce-class] object.
-#'
-#' @md
 read.netcdf <- function(file, ...)
 {
     if (!requireNamespace("ncdf4", quietly=TRUE))
@@ -2356,8 +2301,6 @@ read.netcdf <- function(file, ...)
 #' imagep(volcano-mean(range(volcano)), col=oceColorsTwo(128),
 #'        zlim="symmetric", zlab="oceColorsTwo")
 #' @family things related to colors
-#'
-#' @md
 oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 {
     ## code borrows heavily from cm.color()
@@ -2394,8 +2337,6 @@ oce.colorsTwo <- oceColorsTwo
 #' imagep(min(volcano) - volcano, col=oceColorsGebco(128),
 #'        zlab="oceColorsGebco")
 #' @family things related to colors
-#'
-#' @md
 oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill", "line"))
 {
     region <- match.arg(region)
@@ -2463,8 +2404,6 @@ oce.colorsGebco <- oceColorsGebco
 #' imagep(m, col=oceColorsOxygenUpdated, zlab="oxygenUpdated")
 #'}
 #' @family things related to colors
-#'
-#' @md
 oceColorsClosure <- function(spec) {
     function(n) {
         if (is.character(spec)) {
@@ -2495,7 +2434,7 @@ oceColorsClosure <- function(spec) {
 #' scales is at \url{http://bids.github.io/colormap/}.
 #'
 #' 2. Light, A., and P. J. Bartlein, 2004. The End of the Rainbow? Color
-#' Schemes for Improved Data Graphics. \emph{Eos Trans. AGU}, 85(40),
+#' Schemes for Improved Data Graphics. *Eos Trans. AGU*, 85(40),
 #' doi:10.1029/2004EO400002.
 #'
 #' 3. Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
@@ -2503,7 +2442,7 @@ oceColorsClosure <- function(spec) {
 #' \samp{https://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}.
 #'
 #' 4. Stephenson, David B., 2005. Comment on ``Color schemes for improved data
-#' graphics,'' by A. Light and P. J. Bartlein. \emph{Eos Trans. AGU}, 86(20).
+#' graphics,'' by A. Light and P. J. Bartlein. *Eos Trans. AGU*, 86(20).
 #'
 #' @author Dan Kelley
 #'
@@ -2512,92 +2451,66 @@ oceColorsClosure <- function(spec) {
 #' imagep(volcano, col=oceColorsViridis(128),
 #'        zlab="oceColorsViridis")
 #' @family things related to colors
-#'
-#' @md
 oceColorsViridis <- oce.colorsViridis <- oceColorsClosure("viridis")
 
 #' @templateVar colorItem CDOM
 #' @templateVar colorItemUC CDOM
 #' @template cmcolorTemplate
-#'
-#' @md
 oceColorsCDOM <- oce.colorsCDOM <- oceColorsClosure("cdom")
 
 #' @templateVar colorItem chlorophyll
 #' @templateVar colorItemUC Chlorophyll
 #' @template cmcolorTemplate
-#'
-#' @md
 oceColorsChlorophyll <- oce.colorsChlorophyll <- oceColorsClosure("chlorophyll")
 
 #' @templateVar colorItem density
 #' @templateVar colorItemUC Density
 #' @template cmcolorTemplate
-#'
-#' @md
 oceColorsDensity <- oce.colorsDensity <- oceColorsClosure("density")
 
 #' @templateVar colorItem freesurface
 #' @templateVar colorItemUC Freesurface
 #' @template cmcolorTemplate
-#'
-#' @md
 oceColorsFreesurface <- oce.colorsFreesurface <- oceColorsClosure("freesurface")
 
 #' @templateVar colorItem oxygen
 #' @templateVar colorItemUC Oxygen
 #' @template cmcolorTemplate
-#'
-#' @md
 oceColorsOxygen <- oce.colorsOxygen <- oceColorsClosure("oxygen")
 
 #' @templateVar colorItem PAR
 #' @templateVar colorItemUC PAR
 #' @template cmcolorTemplate
-#'
-#' @md
 oceColorsPAR <- oce.colorsPAR <- oceColorsClosure("par")
 
 #' @templateVar colorItem phase
 #' @templateVar colorItemUC Phase
 #' @template cmcolorTemplate
-#'
-#' @md
 oceColorsPhase <- oce.colorsPhase <- oceColorsClosure("phase")
 
 #' @templateVar colorItem salinity
 #' @templateVar colorItemUC Salinity
 #' @template cmcolorTemplate
-#'
-#' @md
 oceColorsSalinity <- oce.colorsSalinity <- oceColorsClosure("salinity")
 
 #' @templateVar colorItem temperature
 #' @templateVar colorItemUC Temperature
 #' @template cmcolorTemplate
-#'
-#' @md
 oceColorsTemperature <- oce.colorsTemperature <- oceColorsClosure("temperature")
 
 #' @templateVar colorItem turbidity
 #' @templateVar colorItemUC Turbidity
 #' @template cmcolorTemplate
-#'
-#' @md
 oceColorsTurbidity <- oce.colorsTurbidity <- oceColorsClosure("turbidity")
 
 #' @templateVar colorItem velocity
 #' @templateVar colorItemUC Velocity
 #' @template cmcolorTemplate
-#'
-#' @md
 oceColorsVelocity <- oce.colorsVelocity <- oceColorsClosure("velocity")
 
 #' @templateVar colorItem vorticity
 #' @templateVar colorItemUC Vorticity
 #' @template cmcolorTemplate
-#'
-#' @md
 oceColorsVorticity <- oce.colorsVorticity <- oceColorsClosure("vorticity")
 
 
@@ -2609,8 +2522,6 @@ oceColorsVorticity <- oce.colorsVorticity <- oceColorsClosure("vorticity")
 #' imagep(volcano, col=oceColorsJet(128),
 #'        zlab="oceColorsJet")
 #' @family things related to colors
-#'
-#' @md
 oceColorsJet <- function(n)
 {
     if (missing(n) || n <= 0)
@@ -2640,8 +2551,6 @@ oce.colors9A <- oceColors9A <- oce.colorsJet <- oceColorsJet
 #' imagep(volcano, col=oceColors9B(128),
 #'        zlab="oceColors9B")
 #' @family things related to colors
-#'
-#' @md
 oceColors9B <- function(n)
 {
     if (missing(n) || n <= 0)
@@ -2670,8 +2579,6 @@ oce.colors9B <- oceColors9B
 #' @aliases oce.colorsPalette oceColorsPalette
 #'
 #' @family things related to colors
-#'
-#' @md
 oceColorsPalette <- function(n, which=1)
 {
     if ( (n <- as.integer(n[1])) > 0 ) {
@@ -2813,8 +2720,6 @@ oce.colorsPalette <- oceColorsPalette
 #' @author Dan Kelley
 #'
 #' @seealso This is used mainly by [oce.plot.ts()].
-#'
-#' @md
 oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
                               drawTimeRange,
                               abbreviateTimeRange=FALSE, drawFrequency=FALSE,
@@ -3204,8 +3109,6 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
 #' numberAsHMS(t)
 #'
 #' @family things related to time
-#'
-#' @md
 numberAsHMS <- function(t, default=0)
 {
     if ("factor" == class(t))
@@ -3327,8 +3230,6 @@ numberAsHMS <- function(t, default=0)
 #' numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
 #'
 #' @family things related to time
-#'
-#' @md
 numberAsPOSIXct <- function(t, type, tz="UTC")
 {
     if (missing(type)) {
@@ -3465,8 +3366,6 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
 #'           expr=plot(ctd, which='map',
 #'           coastline="coastlineWorld",
 #'           span=5000, mar=NULL, cex.axis=3/4))
-#'
-#' @md
 plotInset <- function(xleft, ybottom, xright, ytop, expr,
                       mar=c(2, 2, 1, 1),
                       debug=getOption("oceDebug"))
@@ -3631,8 +3530,6 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
 #' decodeTime("2013/07/01")
 #'
 #' @family functions relating to time
-#'
-#' @md
 decodeTime <- function(time, timeFormats, tz="UTC")
 {
     if (missing(timeFormats))
@@ -3697,7 +3594,7 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 #'     directions. If a two-element vector, specifies different values
 #'     for the `x` and `y` directions.
 #'
-#' @param length indication of \strong{width} of arrowheads. The
+#' @param length indication of *width* of arrowheads. The
 #'     somewhat confusing name of this argument is a consequence of
 #'     the fact that it is passed to [arrows()] for drawing
 #'     arrows.  Note that the present default is smaller than the
@@ -3749,8 +3646,6 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 #' oceContour(x, y, z, add=TRUE)
 #'
 #' @author Dan Kelley and Clark Richards
-#'
-#' @md
 drawDirectionField <- function(x, y, u, v, scalex, scaley, skip, length=0.05, add=FALSE,
                                type=1, col=par("fg"), pch=1, cex=par("cex"),
                                lwd=par("lwd"), lty=par("lty"),
@@ -3888,8 +3783,6 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, skip, length=0.05, ad
 #' z <- topoWorld[["z"]]
 #' oce.contour(lon, lat, z, levels=0, drawlabels=FALSE)
 #' oce.contour(lon, lat, z, levels=-130, drawlabels=FALSE, col='blue', add=TRUE)
-#'
-#' @md
 oce.contour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
                        tformat, drawTimeRange=getOption("oceDrawTimeRange"),
                        debug=getOption("oceDebug"), ...)

@@ -9,8 +9,6 @@
 #' @param object an [oce-class] object.
 #'
 #' @param name String indicating the name of the item to be found.
-#'
-#' @md
 oceGetData <- function(object, name)
 {
     if (!inherits(object, "oce"))
@@ -28,8 +26,6 @@ oceGetData <- function(object, name)
 #'
 #' @param object an `oce` object
 #' @param name String indicating the name of the item to be deleted.
-#'
-#' @md
 oceDeleteData <- function(object, name)
 {
     if (!inherits(object, "oce"))
@@ -92,8 +88,6 @@ oceDeleteData <- function(object, name)
 #' ctd <- oceSetData(ctd, name="depthInFeet", value=feet, expression("feet"))
 #' fathoms <- feet / 6
 #' ctd <- oceSetData(ctd, "depthInFathoms", fathoms, "fathoms")
-#'
-#' @md
 oceSetData <- function(object, name, value, unit, originalName, note="")
 {
     if (!inherits(object, "oce"))
@@ -168,8 +162,6 @@ oceSetData <- function(object, name, value, unit, originalName, note="")
 #' @param object an `oce` object
 #'
 #' @param name String indicating the name of the item to be found.
-#'
-#' @md
 oceGetMetadata <- function(object, name)
 {
     if (!inherits(object, "oce"))
@@ -188,8 +180,6 @@ oceGetMetadata <- function(object, name)
 #' @param object an `oce` object
 #'
 #' @param name String indicating the name of the item to be deleted.
-#'
-#' @md
 oceDeleteMetadata <- function(object, name)
 {
     if (!inherits(object, "oce"))
@@ -217,8 +207,6 @@ oceDeleteMetadata <- function(object, name)
 #' `oceSetData` is to be called many times in succession, resulting
 #' in an overly verbose processing log; in such cases, it might help
 #' to add a note by e.g. `processingLog(a) <- "QC (memo dek-2018-01/31)"`
-#'
-#' @md
 oceSetMetadata <- function(object, name, value, note="")
 {
     if (!inherits(object, "oce"))

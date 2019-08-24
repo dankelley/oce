@@ -20,14 +20,14 @@ equator.}
 Pressure in dbar.
 }
 \description{
-Compute seawater pressure from depth by inverting \code{\link{swDepth}}
-using \code{\link{uniroot}}.
+Compute seawater pressure from depth by inverting \code{\link[=swDepth]{swDepth()}}
+using \code{\link[=uniroot]{uniroot()}}.
 }
 \details{
 If \code{eos="unesco"} this is done by numerical inversion of
-\code{\link{swDepth}} is done using \code{\link{uniroot}}. If
-\code{eos="gsw"}, it is done using \code{\link[gsw]{gsw_p_from_z}} in the
-\code{gsw} package.
+\code{\link[=swDepth]{swDepth()}} is done using \code{\link[=uniroot]{uniroot()}}. If
+\code{eos="gsw"}, it is done using \code{\link[gsw:gsw_p_from_z]{gsw::gsw_p_from_z()}} in the
+\CRANpkg{gsw} package.
 }
 \examples{
 swPressure(9712.653, 30, eos="unesco") # 10000

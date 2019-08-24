@@ -58,8 +58,6 @@
 #' legend("bottomright", lwd=2, bg="white",
 #'        col=c("black", "red"),
 #'        legend=c("swN2()", "using runlm()"))
-#'
-#' @md
 runlm <- function(x, y, xout, window=c("hanning", "boxcar"), L, deriv)
 {
     if (missing(x)) stop("must supply 'x'")

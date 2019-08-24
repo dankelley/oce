@@ -8,7 +8,7 @@
 \S4method{subset}{adp}(x, subset, ...)
 }
 \arguments{
-\item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
+\item{x}{an \linkS4class{adp} object.}
 
 \item{subset}{A condition to be applied to the \code{data} portion of
 \code{x}.  See \sQuote{Details}.}
@@ -16,11 +16,11 @@
 \item{...}{Ignored.}
 }
 \value{
-A new \code{\link{adp-class}} object.
+An \linkS4class{adp} object.
 }
 \description{
 Subset an adp (acoustic Doppler profile) object, in a manner that is function
-is somewhat analogous to \code{\link{subset.data.frame}}.
+is somewhat analogous to \code{\link[=subset.data.frame]{subset.data.frame()}}.
 }
 \details{
 For any data type,
@@ -30,7 +30,7 @@ carry out combined operations, e.g.
 \code{subset(subset(adp,distance<d0), time<t0)}
 
 For the special
-case of AD2CP data (see \code{\link{read.adp.ad2cp}}), it is possible to subset
+case of AD2CP data (see \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}), it is possible to subset
 to the "average" data records with \code{subset="average"}, to the
 "burst" records with \code{subset="burst"}, or to the "interleavedBurst"
 with \code{subset="interleavedBurst"}; note that no warning is issued,
@@ -71,6 +71,7 @@ Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},

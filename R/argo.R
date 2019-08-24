@@ -30,8 +30,6 @@
 #'
 #' @family classes provided by oce
 #' @family things related to argo data
-#'
-#' @md
 setClass("argo", contains="oce")
 
 #' ARGO float dataset
@@ -69,8 +67,6 @@ setClass("argo", contains="oce")
 #'
 #' @family datasets provided with oce
 #' @family things related to argo data
-#'
-#' @md
 NULL
 
 
@@ -138,8 +134,6 @@ NULL
 #'
 #' @family things related to argo data
 #' @author Dan Kelley
-#'
-#' @md
 setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -236,8 +230,6 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to argo data
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -301,8 +293,9 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 #' the qualifiers
 #' `_ADJUSTED`, `_ERROR` and `_QC`,
 #' are translated to `Adjusted`, `Error`, and `QC`, respectively.
+#'
 #' \tabular{ll}{
-#' \strong{Argo name} \tab \strong{oce name}\cr
+#' **Argo name** \tab **oce name**\cr
 #' `BBP` \tab `bbp`\cr
 #' `BETA_BACKSCATTERING` \tab `betaBackscattering`\cr
 #' `BPHASE_OXY` \tab `bphaseOxygen`\cr
@@ -357,10 +350,12 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 #'}
 #'
 #' @param names vector of character strings containing names in the Argo convention.
+#'
 #' @param ignore.case a logical value passed to [gsub()], indicating whether to
 #' ignore the case of input strings. The default is set to `TRUE` because some data
 #' files use lower-case names, despite the fact that the Argo documentation specifies
 #' upper-case.
+#'
 #' @return A character vector of the same length as `names`, but with
 #' replacements having been made for all known quantities.
 #'
@@ -374,8 +369,6 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 #' \url{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
 #'
 #' @family things related to argo data
-#'
-#' @md
 argoNames2oceNames <- function(names, ignore.case=TRUE)
 {
     ## do NOT change the order below, because we are working with partial strings.
@@ -498,8 +491,6 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #'
 #' @family things related to argo data
 #' @family functions that subset oce objects
-#'
-#' @md
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
@@ -735,8 +726,6 @@ setMethod(f="subset",
 #'
 #' @author Dan Kelley
 #' @family things related to argo data
-#'
-#' @md
 setMethod(f="summary",
           signature="argo",
           definition=function(object, ...) {
@@ -802,8 +791,6 @@ ncdfFixMatrix <- function(x)
 #'
 #' @family things related to argo data
 #' @author Dan Kelley and Clark Richards
-#'
-#' @md
 argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "argoGrid() {\n", sep="", unindent=1)
@@ -1022,8 +1009,6 @@ argoDecodeFlags <- function(f) # local function
 #'
 #' @author Dan Kelley
 #' @family things related to argo data
-#'
-#' @md
 read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
@@ -1430,8 +1415,6 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 #'
 #' @author Dan Kelley
 #' @family things related to argo data
-#'
-#' @md
 as.argo <- function(time, longitude, latitude,
                        salinity, temperature, pressure,
                        units=NULL,
@@ -1482,27 +1465,26 @@ as.argo <- function(time, longitude, latitude,
 #' character matches, and that an error will occur if the match is
 #' not complete (e.g. `"salinity"` matches to both
 #' `"salinity ts"` and `"salinity profile"`.).
-#' \itemize{
-#'     \item `which=1`, `which="trajectory"` or `which="map"` gives a
-#'     plot of the argo trajectory, with the coastline, if one is provided.
 #'
-#'     \item `which=2` or `"salinity ts"` gives a time series of
-#'     salinity at the indicated level(s)
+#' * `which=1`, `which="trajectory"` or `which="map"` gives a
+#' plot of the argo trajectory, with the coastline, if one is provided.
 #'
-#'     \item `which=3` or `"temperature ts"` gives a time series
-#'     of temperature at the indicated level(s)
+#' * `which=2` or `"salinity ts"` gives a time series of
+#' salinity at the indicated level(s)
 #'
-#'     \item `which=4` or `"TS"` gives a TS diagram at the
-#'     indicated level(s)
+#' * `which=3` or `"temperature ts"` gives a time series
+#' of temperature at the indicated level(s)
 #'
-#'     \item `which=5` or `"salinity profile"` gives a salinity
-#'     profile of all the data (with S and p trimmed to the 1 and 99
-#'     percentiles)
+#' * `which=4` or `"TS"` gives a TS diagram at the
+#' indicated level(s)
 #'
-#'     \item `which=6` or `"temperature profile"` gives a
-#'     temperature profile (with T and p trimmed to the 1 and 99
-#'     percentiles)
-#' }
+#' * `which=5` or `"salinity profile"` gives a salinity
+#' profile of all the data (with S and p trimmed to the 1 and 99
+#' percentiles)
+#'
+#' * `which=6` or `"temperature profile"` gives a
+#' temperature profile (with T and p trimmed to the 1 and 99
+#' percentiles)
 #
 #' @param level depth pseudo-level to plot, for `which=2` and higher.  May be an
 #' integer, in which case it refers to an index of depth (1 being the top)
@@ -1569,8 +1551,6 @@ as.argo <- function(time, longitude, latitude,
 #' @family things related to argo data
 #' @family functions that plot oce data
 #' @aliases plot.argo
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("argo"),
           definition=function (x, which = 1, level,
@@ -1810,8 +1790,6 @@ setMethod(f="plot",
 #' @author Dan Kelley
 #'
 #' @family things related to argo data
-#'
-#' @md
 setMethod("handleFlags", signature=c(object="argo", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
           definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup

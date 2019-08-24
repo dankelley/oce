@@ -36,8 +36,8 @@ along geodesic curves.  See \dQuote{Caution}.
 The calculation is as follows.
 Consider the \code{i}-th point in the \code{longitude} and \code{latitude}
 vectors.  To calculate \code{x[i]}, \code{\link[=geodDist]{geodDist()}} is
-used is to find the distance \emph{along a
-geodesic curve} connecting (\code{longitude[i]}, \code{latitude[i]}) with
+used is to find the distance
+\emph{along a geodesic curve} connecting (\code{longitude[i]}, \code{latitude[i]}) with
 (\code{longitudeRef}, \code{latitude[i]}). The resultant distance
 is multiplied by -1 if \code{longitude[i]-longitudeRef} is negative,
 and the result is assigned to \code{x[i]}.

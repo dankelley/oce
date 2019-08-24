@@ -37,7 +37,6 @@ S <- ctd[["salinity"]]
 T <- ctd[["temperature"]]
 plot(S, T)
 errorbars(S, T, 0.05, 0.5)
-
 }
 \author{
 Dan Kelley

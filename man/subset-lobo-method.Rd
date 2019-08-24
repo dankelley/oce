@@ -8,7 +8,7 @@
 \S4method{subset}{lobo}(x, subset, ...)
 }
 \arguments{
-\item{x}{a \code{lobo} object.}
+\item{x}{a \linkS4class{lobo} object.}
 
 \item{subset}{a condition to be applied to the \code{data} portion of
 \code{x}.  See \sQuote{Details}.}

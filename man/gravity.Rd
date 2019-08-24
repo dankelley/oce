@@ -25,14 +25,12 @@ Value not verified yet, except roughly.
 }
 \examples{
 g <- gravity(45) # 9.8
-
 }
 \references{
 Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
 Press, New York, 662 pp.
 
-\strong{Caution:} Fofonoff and Millard (1983 UNESCO) use a different
-formula.
+\strong{Caution:} Fofonoff and Millard (1983 UNESCO) use a different formula.
 }
 \author{
 Dan Kelley

@@ -101,7 +101,6 @@ grid()
 legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
        legend=c("Practical", "Theory"), bg="white")
 }
-
 }
 \references{
 F. J. Harris, 1978.  On the use of windows for harmonic analysis

@@ -214,8 +214,6 @@
 #'
 #' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers
-#'
-#' @md
 cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "cnvName2oceName() {\n", unindent=1)
@@ -740,8 +738,6 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' and this was the reference version used in coding `oce`.
 #'
 #' @family functions that read ctd data
-#'
-#' @md
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {

@@ -14,9 +14,7 @@
   ...)
 }
 \arguments{
-\item{x}{A \code{gps} object, as read by \code{\link[=read.gps]{read.gps()}} or created
-by \code{\link[=as.gps]{as.gps()}}, or a list containing items named \code{longitude}
-and \code{latitude}.}
+\item{x}{a \linkS4class{gps} object.}
 
 \item{xlab}{label for x axis}
 

@@ -27,8 +27,6 @@
 #'
 #' @family classes provided by oce
 #' @family things related to bremen data
-#'
-#' @md
 setClass("bremen", contains="oce") # 20150528 may be called "geomar" or something later
 
 setMethod(f="initialize",
@@ -48,8 +46,6 @@ setMethod(f="initialize",
 #' @template sub_subTemplate
 #'
 #' @family things related to bremen data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="bremen", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -63,8 +59,6 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to bremen data
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="bremen", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -92,8 +86,6 @@ setMethod(f="[[<-",
 #' @family things related to bremen data
 #'
 #' @aliases plot.bremen
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("bremen"),
           definition=function(x, type, ...) {
@@ -121,8 +113,6 @@ setMethod(f="plot",
 #' @author Dan Kelley
 #'
 #' @family things related to bremen data
-#'
-#' @md
 setMethod(f="summary",
           signature="bremen",
           definition=function(object, ...) {
@@ -188,8 +178,6 @@ findInHeaderBremen <- function(key, lines)
 #' @author Dan Kelley
 #'
 #' @family things related to bremen data
-#'
-#' @md
 read.bremen <- function(file)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)

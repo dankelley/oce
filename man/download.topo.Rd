@@ -90,14 +90,11 @@ a fail to download the data. Another
 hint is to look at the source code for
 \code{\link[marmap:getNOAA.bathy]{marmap::getNOAA.bathy()}} in the \code{marmap} package,
 which is also forced to track the moving target that is NOAA.
-
 \itemize{
 \item August 2016.
 \samp{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
-
 \item December 2016.
 \samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
-
 \item June-September 2017.
 \samp{https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
 }

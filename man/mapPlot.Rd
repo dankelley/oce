@@ -365,27 +365,22 @@ machines.
 \section{Changes}{
 
 \itemize{
-
 \item 2019-03-20: the test code provided the \dQuote{Examples} section
 is disabled on i386/windows machines, on which the requisite
 \CRANpkg{rgdal} package continues to fail on common projections.
-
 \item 2017-11-19: \code{imw_p} removed, because it has problems doing
 inverse calculations.
 This is a also problem in the standalone PROJ.4 application version
 4.9.3, downloaded and built on OSX.
 See \url{https://github.com/dankelley/oce/issues/1319} for details.
-
 \item 2017-11-17: \code{lsat} removed, because it does not work in
 \CRANpkg{rgdal} or in the latest standalone PROJ.4 application.
 This is a also problem in the standalone PROJ.4 application version
 4.9.3, downloaded and built on OSX.
 See \url{https://github.com/dankelley/oce/issues/1337} for details.
-
 \item 2017-09-30: \code{lcca} removed, because its inverse was
 wildly inaccurate in a Pacific Antarctic-Alaska application
 (see \url{https://github.com/dankelley/oce/issues/1303}).
-
 }
 }
 

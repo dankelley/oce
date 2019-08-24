@@ -75,7 +75,6 @@ v <- met[["v"]]
 p <- met[["pressure"]]
 oce.plot.ts(t, p)
 plotSticks(t, 99, u, v, yscale=25, add=TRUE)
-
 }
 \author{
 Dan Kelley

@@ -50,8 +50,6 @@
 #' more informatoin on the handling data from the Landsat-8 satellite.
 #'
 #' @family things related to amsr data
-#'
-#' @md
 setClass("amsr", contains="satellite")
 
 setMethod(f="initialize",
@@ -90,8 +88,6 @@ setMethod(f="show",
 #' @concept satellite
 #'
 #' @family things related to amsr data
-#'
-#' @md
 setMethod(f="summary",
           signature="amsr",
           definition=function(object, ...) {
@@ -149,7 +145,7 @@ setMethod(f="summary",
 #' the raw data equal `as.raw(251:255)`, as explained
 #' in \dQuote{Details}.
 #'
-#' @param x An [amsr-class] object.
+#' @param x an [amsr-class] object.
 #'
 #' @author Dan Kelley
 #'
@@ -173,8 +169,6 @@ setMethod(f="summary",
 #' mtext("red: too rainy to sense SSTDay")
 #'}
 #' @family things related to amsr data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -261,13 +255,11 @@ setMethod(f="[[",
 
 #' @title Replace Parts of an AMSR Object
 #'
-#' @param x An [amsr-class] object.
+#' @param x an [amsr-class] object.
 #'
 #' @family things related to amsr data
 #'
 #' @template sub_subsetTemplate
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -283,7 +275,7 @@ setMethod(f="[[<-",
 #' repeated calls will be necessary to subset based on more than one
 #' independent variable (e.g. latitude and longitude).
 #'
-#' @param x An [amsr-class] object.
+#' @param x an [amsr-class] object.
 #'
 #' @param subset An expression indicating how to subset `x`.
 #'
@@ -303,8 +295,6 @@ setMethod(f="[[<-",
 #'
 #' @family things related to amsr data
 #' @family functions that subset oce objects
-#'
-#' @md
 setMethod(f="subset",
           signature="amsr",
           definition=function(x, subset, ...) {
@@ -334,7 +324,7 @@ setMethod(f="subset",
 
 #' Plot an amsr Object
 #'
-#' @param x An [amsr-class] object.
+#' @param x an [amsr-class] object.
 #'
 #' @param y String indicating the name of the band to plot; if not provided,
 #' `SST` is used; see the documenation for the [amsr-class] class for a list of bands.
@@ -370,8 +360,6 @@ setMethod(f="subset",
 #' @family things related to amsr data
 #'
 #' @aliases plot.amsr
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
@@ -491,8 +479,6 @@ setMethod(f="plot",
 #' `http://images.remss.com/amsr/amsr2_data_daily.html`
 #' provides daily images going back to 2012. Three-day,
 #' monthly, and monthly composites are also provided on that site.
-#'
-#' @md
 download.amsr <- function(year, month, day, destdir=".", server="http://data.remss.com/amsr2/bmaps_v08")
 {
     ## ftp ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/y2016/m08/f34_20160804v7.2.gz
@@ -558,8 +544,6 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
 #' @author Dan Kelley and Chantelle Layton
 #'
 #' @family things related to amsr data
-#'
-#' @md
 read.amsr <- function(file, debug=getOption("oceDebug"))
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
@@ -674,8 +658,6 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
 #' @family things related to amsr data
 #'
 #' @template compositeTemplate
-#'
-#' @md
 setMethod("composite",
           c(object="amsr"),
           function(object, ...) {

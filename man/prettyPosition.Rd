@@ -25,7 +25,6 @@ half-degrees, minutes, etc.
 \examples{
 library(oce)
 formatPosition(prettyPosition(10+1:10/60+2.8/3600))
-
 }
 \author{
 Dan Kelley

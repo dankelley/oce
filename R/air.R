@@ -14,8 +14,6 @@
 #' conventional data,'' *J.  Climate Appl.  Met.*, vol 22, p. 1487-1503.
 #'
 #' @family datasets provided with oce
-#'
-#' @md
 NULL
 
 
@@ -33,7 +31,7 @@ NULL
 #'
 #' @param humidity ignored at present
 #'
-#' @return \emph{In-situ} air density, in kg/m\eqn{^3}{^3}.
+#' @return *In-situ* air density, in kg/m\eqn{^3}{^3}.
 #'
 #' @author Dan Kelley
 #'
@@ -49,8 +47,6 @@ NULL
 #' degC <- seq(0,30,length.out=100)
 #' p <- seq(98,102,length.out=100) * 1e3
 #' contour(x=degC, y=p, z=outer(degC,p,airRho), labcex=1)
-#'
-#' @md
 airRho <- function(temperature, pressure, humidity)
 {
     Tkelvin <- temperature + 273.15

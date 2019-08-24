@@ -100,7 +100,6 @@ setMethod(f="initialize",
 #' reference.
 #'
 #' @family things related to tides
-#' @md
 NULL
 
 
@@ -137,8 +136,6 @@ NULL
 #'}
 #'
 #' @family things related to tides
-#'
-#' @md
 setMethod(f="summary",
           signature="tidem",
           definition=function(object, p, constituent, ...) {
@@ -220,8 +217,6 @@ setMethod(f="summary",
 #' @template sub_subTemplate
 #'
 #' @family things related to tides
-#'
-#' @md
 setMethod(f="[[",
           signature(x="tidem", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -243,7 +238,6 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to tides
-#' @md
 setMethod(f="[[<-",
           signature(x="tidem", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -306,8 +300,6 @@ setMethod(f="[[<-",
 #' @aliases plot.tidem
 #'
 #' @family things related to tides
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("tidem"),
           definition=function(x,
@@ -460,8 +452,6 @@ setMethod(f="plot",
 #' Downloaded Aug 17, 2019.
 #'
 #' @family things related to tides
-#'
-#' @md
 as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "as.tidem() {\n", sep="", unindent=1)
@@ -571,8 +561,6 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 #' Computers and Geosciences, 28, 929-937.
 #'
 #' @family things related to tides
-#'
-#' @md
 tidemVuf <- function(t, j, latitude=NULL)
 {
     debug <- 0
@@ -693,8 +681,6 @@ tidemVuf <- function(t, j, latitude=NULL)
 #' Computers and Geosciences, 28, 929-937.
 #'
 #' @family things related to tides
-#'
-#' @md
 tidemAstron <- function(t)
 {
     debug <- FALSE
@@ -740,9 +726,7 @@ tidemAstron <- function(t)
 #' The tidal constituents to be used in the analysis are specified as follows;
 #' see \dQuote{Constituent Naming Convention}.
 #'
-#' \itemize{
-#'
-#' \item **Case 1**. If `constituents` is not provided, then the constituent
+#' 1. If `constituents` is not provided, then the constituent
 #' list will be made up of the 69 constituents designated by Foreman as "standard".
 #' These include astronomical frequencies and some shallow-water frequencies,
 #' and are as follows: `c("Z0", "SA", "SSA", "MSM", "MM", "MSF", "MF",
@@ -753,7 +737,7 @@ tidemAstron <- function(t)
 #' "MK3", "SK3", "MN4", "M4", "SN4", "MS4", "MK4", "S4", "SK4", "2MK5", "2SK5",
 #' "2MN6", "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8")`.
 #'
-#' \item **Case 2**. If the first item in `constituents` is the string
+#' 2. If the first item in `constituents` is the string
 #' `"standard"`, then a provisional list is set up as in Case 1, and then
 #' the (optional) rest of the elements of `constituents` are examined, in
 #' order.  Each of these constituents is based on the name of a tidal
@@ -765,12 +749,11 @@ tidemAstron <- function(t)
 #' `constituents=c("standard", "-M2", "ST32")` would remove the M2
 #' constituent and add the ST32 constituent.
 #'
-#' \item **Case 3**. If the first item is not `"standard"`, then the list of
+#' 3. If the first item is not `"standard"`, then the list of
 #' constituents is processed as in Case 2, but without starting with the
 #' standard list. As an example, `constituents=c("K1", "M2")` would fit
 #' for just the K1 and M2 components. (It would be strange to use a minus sign
 #' to remove items from the list, but the function allows that.)
-#' }
 #'
 #' In each of the above cases, the list is reordered in frequency prior to the
 #' analysis, so that the results of [summary,tidem-method()] will be in a
@@ -968,8 +951,6 @@ tidemAstron <- function(t)
 #' summary(m)
 #'
 #' @family things related to tides
-#'
-#' @md
 tidem <- function(t, x, constituents, infer=NULL,
                   latitude=NULL, rc=1, regress=lm,
                   debug=getOption("oceDebug"))
@@ -1542,7 +1523,6 @@ tidem <- function(t, x, constituents, infer=NULL,
 #' @author Dan Kelley
 #'
 #' @family things related to tides
-#' @md
 predict.tidem <- function(object, newdata, ...)
 {
     dots <- list(...)
@@ -1610,8 +1590,8 @@ predict.tidem <- function(object, newdata, ...)
 #' and if it is installed in a standard location. The details
 #' of installation are not within the oce purvue.
 #'
-#' There ar two methos of using this function.
-#' \emph{Case 1:} `action="map"`. In this case, if
+#' There are two methods of using this function.
+#' *Case 1:* `action="map"`. In this case, if
 #' `plot` is `FALSE`, a list is returned, containing
 #' all the `node`s in the selected database, along with all
 #' the `latitude`s and `longitude`s. This value is
@@ -1625,7 +1605,7 @@ predict.tidem <- function(object, newdata, ...)
 #' where the user clicks the mouse is indicated in the plot and in the
 #' return value.
 #'
-#' `Case 2:` `action="predict"`. If `plot` is `FALSE`,
+#' *Case 2:* `action="predict"`. If `plot` is `FALSE`,
 #' then a list is returned, indicating `time`, predicted
 #' `elevation`, velocity components `u` and `v`,
 #' `node` number, the name of the `basedir`, and
@@ -1671,19 +1651,18 @@ predict.tidem <- function(object, newdata, ...)
 #' example is to set `xlim` and `ylim`, to focus a map region.
 #'
 #' @return The value depends on `action`:
-#'\itemize{
-#'\item If `action="map"` the return value is a
+#'
+#' * If `action="map"` the return value is a
 #' list containing the index of the nearest node, along with the
 #' `latitude` and `longitude` of that node.  If
 #' `plot` is `FALSE`, this value is returned invisibly.
 #'
-#'\item If `action="predict"`, the return value is a list containing a vector
+#' * If `action="predict"`, the return value is a list containing a vector
 #' of times (`time`), as well as vectors of the predicted `elevation`
 #' in metres and the predicted horizontal components of velocity, `u` and
 #' `v`, along with the `node` number, and the `basedir` and
-#' `region` as supplied to this function.
-#' If `plot` is `FALSE`, this value is returned invisibly.
-#'}
+#' `region` as supplied to this function. If `plot` is `FALSE`,
+#' this value is returned invisibly.
 #'
 #' @source The WebTide software may be downloaded for free at the
 #' Department of Fisheries and Oceans (Canada) website at
@@ -1711,8 +1690,6 @@ predict.tidem <- function(object, newdata, ...)
 #' @author Dan Kelley
 #'
 #' @family things related to tides
-#'
-#' @md
 webtide <- function(action=c("map", "predict"),
                     longitude, latitude, node, time,
                     basedir=getOption("webtide"),

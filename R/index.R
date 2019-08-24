@@ -60,8 +60,6 @@
 #' soirecent <- subset(soi, t > as.POSIXct("2000-01-01"))
 #' oce.plot.ts(soirecent$t, soirecent$index)
 #'}
-#'
-#' @md
 read.index <- function(file, format, missingValue, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)

@@ -9,10 +9,10 @@
 \S4method{plot}{oce}(x, y, ...)
 }
 \arguments{
-\item{x}{An object of the \linkS4class{oce} class,
-but not from any subclass of that (because these subclasses go to the subclass
-plot methods, e.g. a \linkS4class{ctd}-class object would go to
-\link{plot,ctd-method}.}
+\item{x}{a basic \linkS4class{oce} object,
+but not from any subclass that derive from this base, because
+subclases have their own plot methods, e.g. calling \code{plot()} on a
+\linkS4class{ctd} object dispatches to \code{\link[=plot,ctd-method]{plot,ctd-method()}}.}
 
 \item{y}{Ignored; only present here because S4 object for generic \code{plot}
 need to have a second parameter before the \code{...} parameter.}

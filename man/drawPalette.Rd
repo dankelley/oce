@@ -134,7 +134,6 @@ layout(matrix(1:2,nrow=1), widths=c(1-d,d))
 image(volcano, col=oce.colorsJet(100), zlim=c(90, 200))
 contour(volcano, add=TRUE)
 drawPalette(c(90, 200), fullpage=TRUE, col=oce.colorsJet)
-
 }
 \seealso{
 This is used by \code{\link[=imagep]{imagep()}}.

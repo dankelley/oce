@@ -140,7 +140,6 @@ oce.plot.ts(t, y, type='p', xaxs='i',
 oce.plot.ts(t, y, type='p', xlim=c(t[6], t[12]))
 # Flip the y axis
 oce.plot.ts(t, y, flipy=TRUE)
-
 }
 \author{
 Dan Kelley and Clark Richards

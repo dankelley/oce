@@ -20,8 +20,6 @@
 #' @author Dan Kelley
 #'
 #' @family things related to ladp data
-#'
-#' @md
 setClass("ladp", contains="oce")
 
 setMethod(f="initialize",
@@ -65,8 +63,6 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to ladp data
-#'
-#' @md
 setMethod(f="summary",
           signature="ladp",
           definition=function(object, ...) {
@@ -88,8 +84,6 @@ setMethod(f="summary",
 #' @author Dan Kelley
 #'
 #' @family things related to ladp data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="ladp", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -121,8 +115,6 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to ladp data
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="ladp", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -144,8 +136,6 @@ setMethod(f="[[<-",
 #' @family functions that plot oce data
 #'
 #' @aliases plot.ladp
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("ladp"),
           definition=function(x, which=c("u", "v"), ...) {
@@ -196,8 +186,6 @@ fixColumn <- function(x) {
 #' @author Dan Kelley
 #'
 #' @family things related to ladp data
-#'
-#' @md
 as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, salinity, temperature, ...)
 {
     if (inherits(longitude, "oce")) {

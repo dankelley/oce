@@ -10,10 +10,10 @@ read.ctd(file, type = NULL, columns = NULL, station = NULL,
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file to
-load.  For \code{\link{read.ctd.sbe}()} and \code{\link{read.ctd.woce}()}, this may be a
+load.  For \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} and \code{\link[=read.ctd.woce]{read.ctd.woce()}}, this may be a
 wildcard (e.g. \code{"*.cnv"} or \code{"*.csv"}) in which case the return
 value is a vector containing CTD objects created by reading the files from
-\code{\link{list.files}()} with \code{pattern} set to the specified wildcard
+\code{\link[=list.files]{list.files()}} with \code{pattern} set to the specified wildcard
 pattern.}
 
 \item{type}{If \code{NULL}, then the first line is studied, in order to
@@ -23,16 +23,15 @@ is assumed.  If \code{type="ITP"} then an ice-tethered profiler file is
 assumed.  If \code{type="ODF"} an ODF file is assumed.  If \code{type="ODV"} an
 ascii-ODV file is assumed.}
 
-\item{columns}{an optional \code{\link{list}} that can be used to convert unrecognized
+\item{columns}{an optional \link{list} that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
-\code{\link{read.ctd.sbe}()} and \code{\link{read.ctd.odf}()}. For example,
-if a data file named salinity as \code{"SAL"}, then using
-\preformatted{
-d <- read.ctd(f, columns=list(
+\code{\link[=read.ctd.sbe]{read.ctd.sbe()}} and \code{\link[=read.ctd.odf]{read.ctd.odf()}}. For example,
+if a data file named salinity as \code{"SAL"}, then using\preformatted{d <- read.ctd(f, columns=list(
     salinity=list(name="SAL",
                   unit=list(unit=expression(),
                   scale="PSS-78"))))
 }
+
 would assign the \code{"SAL"} column to the \code{salinity} entry in the data
 slot of the CTD object returned by the \code{read.*} function.}
 
@@ -78,7 +77,7 @@ better for normal calls by a user.}
 \item{...}{additional arguments, passed to called routines.}
 }
 \value{
-a \code{\link{ctd-class}} object. The details of the contents
+a \linkS4class{ctd} object. The details of the contents
 depend on the source file. The \code{metadata} slot is particularly
 variable across data formats, because the meta-information provided
 in those formats varies so widely.

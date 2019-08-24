@@ -71,10 +71,9 @@ x <- seq(0, 1, length.out=300)
 y <- rnorm(n=300, mean=10, sd=1) * x
 m <- lm(y~x)
 print(formatCI(model=m))
-
 }
 \references{
-JCGM, 2008.  \emph{Evaluation of measurement data - Guide to the
+JCGM, 2008. \emph{Evaluation of measurement data - Guide to the
 expression of uncertainty in measurement (JCGM 100:2008)}, published by the
 Joint Committee for Guides in Metrology,
 http://www.bipm.org/en/publications/guides/gum.html (see section

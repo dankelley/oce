@@ -14,7 +14,7 @@
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{A \linkS4class{landsat} object.}
+\item{x}{a \linkS4class{landsat} object.}
 
 \item{band}{If given, the name of the band.  For Landsat-8 data, this may be
 one of: \code{"aerosol"}, \code{"blue"}, \code{"green"}, \code{"red"},

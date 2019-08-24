@@ -43,8 +43,6 @@
 #' @return A two-column matrix, with first column holding either
 #' `longitude` or `x`, and second column holding either
 #' `latitude` or `y`.
-#'
-#' @md
 oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, passNA=FALSE)
 {
     if (!requireNamespace("rgdal", quietly=TRUE))
@@ -103,8 +101,6 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
 #' @author Dan Kelley
 #'
 #' @family functions related to maps
-#'
-#' @md
 usrLonLat <- function(n=25, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "usrLonLat(n=", n, ", debug=", debug, "\n", unindent=1, sep="")
@@ -212,8 +208,6 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
 #' plot(pacific, proj=oceCRS("North Pacific"), span=12000, col=NULL)
 #' plot(pacific, proj=oceCRS("South Pacific"), span=12000, col=NULL)
 #'}
-#'
-#' @md
 oceCRS <- function(region)
 {
     regionChoices <- c("North Atlantic", "South Atlantic", "Atlantic", "Arctic", "Antarctic",
@@ -247,8 +241,6 @@ oceCRS <- function(region)
 #' @seealso [matrixShiftLongitude()] and [standardizeLongitude()].
 #'
 #' @family functions related to maps
-#'
-#' @md
 shiftLongitude <- function(longitudes) {
     if (any(longitudes > 180)) longitudes-360 else longitudes
 }
@@ -402,8 +394,6 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-#'
-#' @md
 mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
                     tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
                     lty="solid", lwd=1, lwd.ticks=lwd, col=NULL, col.ticks=NULL,
@@ -646,8 +636,6 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
 #'
 #' @seealso A map must first have been created with [mapPlot()].
 #' @family functions related to maps
-#'
-#' @md
 mapContour <- function(longitude, latitude, z,
                        nlevels=10, levels=pretty(range(z, na.rm=TRUE), nlevels),
                        ##labels=null,
@@ -833,9 +821,6 @@ mapContour <- function(longitude, latitude, z,
 #' @author Chantelle Layton
 #'
 #' @family functions related to maps
-#'
-#'
-#' @md
 mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 {
     if (missing(longitude))
@@ -912,8 +897,6 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-#'
-#' @md
 mapDirectionField <- function(longitude, latitude, u, v,
                               scale=1, length=0.05, code=2, col=par("fg"), ...)
 {
@@ -977,8 +960,6 @@ mapDirectionField <- function(longitude, latitude, u, v,
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-#'
-#' @md
 mapLongitudeLatitudeXY <- function(longitude, latitude)
 {
     if ("none" == .Projection()$type)
@@ -1254,7 +1235,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' applications, and reference 8 for a gallery indicating how to use every projection.
 #'
 #' \tabular{lll}{
-#' \strong{Projection}                       \tab \strong{Code}   \tab \strong{Arguments}\cr
+#' **Projection**                       \tab **Code**   \tab **Arguments**\cr
 #' Albers equal area                         \tab `aea`      \tab `lat_1`, `lat_2`\cr
 #' Azimuthal equidistant                     \tab `aeqd`     \tab `lat_0`, `guam`\cr
 #' Aitoff                                    \tab `aitoff`   \tab - \cr
@@ -1429,29 +1410,27 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' machines.
 #'
 #' @section Changes:
-#' \itemize{
 #'
-#' \item 2019-03-20: the test code provided the \dQuote{Examples} section
+#' * 2019-03-20: the test code provided the \dQuote{Examples} section
 #' is disabled on i386/windows machines, on which the requisite
 #' \CRANpkg{rgdal} package continues to fail on common projections.
 #'
-#' \item 2017-11-19: `imw_p` removed, because it has problems doing
+#' * 2017-11-19: `imw_p` removed, because it has problems doing
 #' inverse calculations.
 #' This is a also problem in the standalone PROJ.4 application version
 #' 4.9.3, downloaded and built on OSX.
 #' See \url{https://github.com/dankelley/oce/issues/1319} for details.
 #'
-#' \item 2017-11-17: `lsat` removed, because it does not work in
+#' * 2017-11-17: `lsat` removed, because it does not work in
 #' \CRANpkg{rgdal} or in the latest standalone PROJ.4 application.
 #' This is a also problem in the standalone PROJ.4 application version
 #' 4.9.3, downloaded and built on OSX.
 #' See \url{https://github.com/dankelley/oce/issues/1337} for details.
 #'
-#' \item 2017-09-30: `lcca` removed, because its inverse was
+#' * 2017-09-30: `lcca` removed, because its inverse was
 #' wildly inaccurate in a Pacific Antarctic-Alaska application
 #' (see \url{https://github.com/dankelley/oce/issues/1303}).
 #'
-#' }
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -1488,8 +1467,6 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' (1993). Two thousand years of map projections. University of Chicago Press.
 #'
 #' @family functions related to maps
-#'
-#' @md
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     bg, fill,
                     border=NULL, col=NULL,
@@ -1899,8 +1876,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-#'
-#' @md
 mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
                     longitudelim, latitudelim,
@@ -2097,8 +2072,6 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 #' @author Dan Kelley
 #'
 #' @family functions that will be removed soon
-#'
-#' @md
 mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
     .Defunct("mapGrid",
@@ -2189,8 +2162,6 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-#'
-#' @md
 mapScalebar <- function(x, y=NULL, length,
                         lwd=1.5*par("lwd"), cex=par("cex"),
                         col="black")
@@ -2281,8 +2252,6 @@ mapScalebar <- function(x, y=NULL, length,
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-#'
-#' @md
 mapText <- function(longitude, latitude, labels, ...)
 {
     if ("none" == .Projection()$type)
@@ -2345,8 +2314,6 @@ mapText <- function(longitude, latitude, labels, ...)
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-#'
-#' @md
 mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 {
     if ("none" == .Projection()$type)
@@ -2394,8 +2361,6 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 #' @author Dan Kelley
 #'
 #' @family functions that will be removed soon
-#'
-#' @md
 mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
     .Defunct("mapGrid",
@@ -2465,8 +2430,6 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-#'
-#' @md
 mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 {
     if ("none" == .Projection()$type)
@@ -2536,8 +2499,6 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-#'
-#' @md
 mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "mapPoints() {\n", unindent=1, sep="")
@@ -2611,8 +2572,6 @@ mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-#'
-#' @md
 mapArrows <- function(longitude0, latitude0,
                       longitude1=longitude0, latitude1=latitude0,
                       length=0.25, angle=30,
@@ -2664,8 +2623,6 @@ mapArrows <- function(longitude0, latitude0,
 #' formatPosition(10+1:10/60+2.8/3600, type="string")
 #'
 #' @family functions related to maps
-#'
-#' @md
 formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"), showHemi=TRUE)
 {
     type <- match.arg(type)
@@ -2757,8 +2714,6 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-#'
-#' @md
 mapLocator <- function(n=512, type='n', ...)
 {
     if ("none" == .Projection()$type)
@@ -2821,8 +2776,6 @@ mapLocator <- function(n=512, type='n', ...)
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-#'
-#' @md
 map2lonlat <- function(x, y, init=NULL)
 {
     if (missing(x))
@@ -2873,8 +2826,6 @@ map2lonlat <- function(x, y, init=NULL)
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-#'
-#' @md
 mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
                        border=NULL, col=NA, lty=par('lty'), ..., fillOddEven=FALSE)
 {
@@ -3060,8 +3011,6 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-#'
-#' @md
 mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                      breaks, col, colormap, border=NA,
                      lwd=par("lwd"), lty=par("lty"), missingColor=NA,
@@ -3467,8 +3416,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
 #'}
 #'
 #' @family functions related to maps
-#'
-#' @md
 lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
 {
     names <- names(longitude)
@@ -3565,8 +3512,6 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
 #'}
 #'
 #' @family functions related to maps
-#'
-#' @md
 utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
 {
     names <- names(easting)
@@ -3706,8 +3651,6 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 #' }
 #'
 #' @family functions related to maps
-#'
-#' @md
 lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceDebug"))
 {
     oceDebug(debug, "lonlat2map() {\n", unindent=1, sep="")

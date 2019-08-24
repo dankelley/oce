@@ -61,8 +61,6 @@
 #' 2. The Nortek Knowledge Center
 #' http://www.nortekusa.com/en/knowledge-center
 #' may be of help if problems arise in dealing with data from Nortek instruments.
-#'
-#' @md
 decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "vector"), debug=getOption("oceDebug"), ...)
 {
     type <- match.arg(type)
@@ -409,8 +407,6 @@ ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst", "interle
 #'}
 #'
 #' @family things related to adp data
-#'
-#' @md
 ad2cpHeaderValue <- function(x, key, item, numeric=TRUE, default)
 {
     if (missing(x))
@@ -456,8 +452,6 @@ ad2cpHeaderValue <- function(x, key, item, numeric=TRUE, default)
 #' with `fileType` in its `metadata` slot equal to `"AD2CP"`.
 #'
 #' @family things related to adp data
-#'
-#' @md
 is.ad2cp <- function(x)
 {
     if (!inherits(x, "adp")) {
@@ -562,8 +556,6 @@ is.ad2cp <- function(x)
 #' page numbers than reference 3.)
 #'
 #' @family things related to adp data
-#'
-#' @md
 read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
                            longitude=NA, latitude=NA,
                            orientation, distance, plan, type,
@@ -2191,8 +2183,6 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
-#'
-#' @md
 read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                           longitude=NA, latitude=NA,
                           orientation, distance,
@@ -2250,8 +2240,6 @@ read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
-#'
-#' @md
 read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=NA, latitude=NA,
                             orientation=orientation, distance,
@@ -2310,8 +2298,6 @@ read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
-#'
-#' @md
 read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                   longitude=NA, latitude=NA,
                                   orientation, distance,
@@ -2362,8 +2348,6 @@ read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
-#'
-#' @md
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=NA, latitude=NA,
                             type=c("aquadoppHR", "aquadoppProfiler", "aquadopp"),

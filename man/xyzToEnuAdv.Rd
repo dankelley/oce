@@ -79,21 +79,35 @@ Entries S, F and M refer to so-called ship coordinates starboard, forward,
 and mast; it is these that are used together with a rotation matrix to get
 velocity components in the east, north, and upward directions.
 
-\tabular{rrrrrrrrrrrr}{ \strong{Case} \tab \strong{Mfr.} \tab
-\strong{Instr.} \tab \strong{Cabled} \tab \strong{H. case} \tab
-\strong{Orient.} \tab \strong{H} \tab \strong{P} \tab \strong{R} \tab
-\strong{S} \tab \strong{F} \tab \strong{M}\cr 1 \tab Nortek \tab vector \tab
-no \tab - \tab up \tab H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr 2 \tab
-Nortek \tab vector \tab no \tab - \tab down \tab H-90 \tab R \tab -P \tab X
-\tab Y \tab Z\cr 3 \tab Nortek \tab vector \tab yes \tab yes \tab up \tab
-H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr 4 \tab Nortek \tab vector \tab
-yes \tab yes \tab down \tab H-90 \tab R \tab P \tab X \tab -Y \tab -Z\cr 5
-\tab Nortek \tab vector \tab yes \tab no \tab up \tab - \tab - \tab - \tab -
-\tab - \tab -\cr 6 \tab Nortek \tab vector \tab yes \tab no \tab down \tab -
-\tab - \tab - \tab - \tab - \tab -\cr 7 \tab Sontek \tab adv \tab - \tab -
-\tab up \tab H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr 8 \tab Sontek
-\tab adv \tab - \tab - \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab
-Z\cr }
+\tabular{rrrrrrrrrrrr}{
+\strong{\code{Case}} \tab \strong{\code{Mfr.}} \tab
+\strong{\code{Instr.}} \tab \strong{\code{Cabled}} \tab \strong{\code{H. case}} \tab
+\strong{\code{Orient.}} \tab \strong{\code{H}} \tab \strong{\code{P}} \tab \strong{\code{R}} \tab
+\strong{\code{S}} \tab \strong{\code{F}} \tab \strong{\code{M}}\cr
+
+1 \tab Nortek \tab vector \tab
+no \tab - \tab up \tab H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr
+
+2 \tab Nortek \tab vector \tab no \tab - \tab down \tab H-90 \tab R \tab -P \tab X
+\tab Y \tab Z\cr
+
+3 \tab Nortek \tab vector \tab yes \tab yes \tab up \tab
+H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr
+
+4 \tab Nortek \tab vector \tab
+yes \tab yes \tab down \tab H-90 \tab R \tab P \tab X \tab -Y \tab -Z\cr
+
+5 \tab Nortek \tab vector \tab yes \tab no \tab up \tab - \tab - \tab - \tab -
+\tab - \tab -\cr
+
+6 \tab Nortek \tab vector \tab yes \tab no \tab down \tab -
+\tab - \tab - \tab - \tab - \tab -\cr
+
+7 \tab Sontek \tab adv \tab - \tab -
+\tab up \tab H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr
+
+8 \tab Sontek \tab adv \tab - \tab - \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr
+}
 }
 \references{
 \enumerate{

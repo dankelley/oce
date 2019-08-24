@@ -48,7 +48,6 @@ print(sum(dA))
 print(tail(cA, 1))
 print(integrateTrapezoid(diff(x[1:2]), y))
 print(integrateTrapezoid(y))
-
 }
 \author{
 Dan Kelley

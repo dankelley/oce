@@ -7,15 +7,15 @@
 oce.write.table(x, file = "", ...)
 }
 \arguments{
-\item{x}{an \code{oce} object that contains a \code{data} table.}
+\item{x}{an \linkS4class{oce} object.}
 
-\item{file}{file name, as passed to \code{\link[utils]{write.table}}.  Use
+\item{file}{file name, as passed to \code{\link[utils:write.table]{utils::write.table()}}.  Use
 \code{""} to get a listing in the terminal window.}
 
-\item{...}{optional arguments passed to \code{\link[utils]{write.table}}.}
+\item{...}{optional arguments passed to \code{\link[utils:write.table]{utils::write.table()}}.}
 }
 \value{
-The value of \code{\link[utils]{write.table}} is returned.
+The value returned by \code{\link[utils:write.table]{utils::write.table()}}.
 }
 \description{
 The output has a line containing the names of the columns in \code{x$data},

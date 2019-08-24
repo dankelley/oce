@@ -15,7 +15,7 @@
 this variable is not contained in the object's \code{data} slot, an error is reported.}
 
 \item{i}{Indication of where to insert the flags; see \dQuote{Description} for
-general rules and \dQuote{Details} for rules for \code{\link{adp-class}}
+general rules and \dQuote{Details} for rules for \linkS4class{adp}
 objects.}
 
 \item{value}{The value to be inserted in the flag.}
@@ -53,8 +53,8 @@ of the data item), (b) a logical array that has dimension equal to
 that of the data item, or (c) a function that takes an \code{oce}
 object as its single input and returns such a data frame or array.
 }
-See \dQuote{Details} for the particular case of
-\code{\link{adp-class}} objects.
+
+See \dQuote{Details} for the particular case of \linkS4class{adp} objects.
 }
 \details{
 The only flag that may be set is \code{v}, for the array holding velocity. See \dQuote{Indexing rules}, noting that adp data are stored in 3D arrays; Example 1 shows using a data frame for \code{i}, while Example 2 shows using an array.
@@ -137,6 +137,7 @@ Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},

@@ -10,8 +10,6 @@
 #' @concept satellite
 #'
 #' @family things related to satellite data
-#'
-#' @md
 setClass("satellite", contains="oce")
 
 setMethod(f="initialize",
@@ -36,8 +34,6 @@ setMethod(f="initialize",
 #' @concept satellite
 #'
 #' @family things related to satellite data
-#'
-#' @md
 setMethod(f="summary",
           signature="satellite",
           definition=function(object, ...) {
@@ -88,8 +84,6 @@ setMethod(f="summary",
 #' @family functions that plot oce data
 #'
 #' @aliases plot.satellite
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("satellite"),
           definition=function(x, y, asp, debug=getOption("oceDebug"), ...)

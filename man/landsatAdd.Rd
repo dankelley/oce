@@ -7,7 +7,7 @@
 landsatAdd(x, data, name, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \linkS4class{landsat} object.}
+\item{x}{a \linkS4class{landsat} object.}
 
 \item{data}{A matrix of data, with dimensions matching that of entries already in \code{x}.}
 

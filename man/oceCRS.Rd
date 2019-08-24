@@ -46,7 +46,6 @@ plot(pacific, proj=oceCRS("Pacific"), span=15000, col=NULL)
 plot(pacific, proj=oceCRS("North Pacific"), span=12000, col=NULL)
 plot(pacific, proj=oceCRS("South Pacific"), span=12000, col=NULL)
 }
-
 }
 \seealso{
 Other functions related to maps: \code{\link{formatPosition}},

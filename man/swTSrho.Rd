@@ -8,17 +8,17 @@ swTSrho(salinity, density, pressure = NULL, eos = getOption("oceEOS",
   default = "gsw"))
 }
 \arguments{
-\item{salinity}{\emph{in-situ} salinity [PSU]}
+\item{salinity}{\emph{in-situ} salinity (PSU)}
 
-\item{density}{\emph{in-situ} density or sigma value [kg/m\eqn{^3}{^3}]}
+\item{density}{\emph{in-situ} density or sigma value (kg/m\eqn{^3}{^3})}
 
-\item{pressure}{\emph{in-situ} pressure [dbar]}
+\item{pressure}{\emph{in-situ} pressure (dbar)}
 
 \item{eos}{equation of state to be used, either \code{"unesco"} or
 \code{"gsw"} (ignored at present).}
 }
 \value{
-\emph{In-situ} temperature [\eqn{^\circ C}{degC}] in the ITS-90
+\emph{In-situ} temperature (\eqn{^\circ C}{degC}) in the ITS-90
 scale.
 }
 \description{
@@ -36,13 +36,13 @@ swTSrho(35, 23, 0, eos="unesco") # 26.11301
 \references{
 Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
 computation of fundamental properties of seawater. \emph{Unesco Technical
-Papers in Marine Science}, \bold{44}, 53 pp
+Papers in Marine Science}, \emph{44}, 53 pp
 
 Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
 York, 662 pp.
 }
 \seealso{
-\code{\link{swSTrho}}
+\code{\link[=swSTrho]{swSTrho()}}
 
 Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{T90fromT48}}, \code{\link{T90fromT68}},

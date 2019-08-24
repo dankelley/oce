@@ -7,7 +7,7 @@
 rotateAboutZ(x, angle)
 }
 \arguments{
-\item{x}{An oce object of class \code{adp}, \code{adv} or \code{cm}.}
+\item{x}{an \linkS4class{adp}, \linkS4class{adv}, or \linkS4class{cm} object.}
 
 \item{angle}{The rotation angle about the z axis, in degrees counterclockwise.}
 }
@@ -65,6 +65,7 @@ Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadopp}},
   \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},

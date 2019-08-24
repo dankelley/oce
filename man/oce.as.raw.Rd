@@ -22,7 +22,6 @@ the result is passed to \code{\link[=as.raw]{as.raw()}} and returned.
 \examples{
 x <- c(-0.1, 0, 1, 255, 255.1)
 data.frame(x, oce.as.raw(x))
-
 }
 \author{
 Dan Kelley

@@ -76,23 +76,25 @@ either at the top-right of the main image, or on the side, in the axis
 for the palette.}
 
 \item{decimate}{Controls whether the image will be decimated before plotting,
-in three possible cases. \strong{Case 1.}
-If \code{decimate=FALSE} then every grid cell in the matrix will
-be represented by a pixel in the image. \strong{Case 2 (the default).}
-If \code{decimate=TRUE}, then decimation will be done
+in three possible cases.
+\enumerate{
+\item If \code{decimate=FALSE} then every grid cell in the matrix will
+be represented by a pixel in the image.
+\item If \code{decimate=TRUE} (the default), then decimation will be done
 in the horizontal or vertical direction (or both) if the length of the
 corresponding edge of the \code{z} matrix exceeds 800. (This also creates
 a warning message.) The decimation
 factor is computed as the integer just below the ratio of \code{z} dimension
 to 400. Thus, no decimation is done if the dimension is less than 800,
 but if the dimension s between 800 and 1199, only every second grid
-point is mapped to a pixel in the image.  \strong{Case 3.}
-If \code{decimate} is an integer, then that \code{z} is subsampled
+point is mapped to a pixel in the image.
+\item If \code{decimate} is an integer, then that \code{z} is subsampled
 at \code{seq.int(1L, dim(z)[1], by=decimate)} (as is \code{x}), and
-the same is done for the \code{y} direction. \strong{Case 4.} If
-\code{decimate} is a vector of two integers, the first is used for
+the same is done for the \code{y} direction.
+\item If \code{decimate} is a vector of two integers, the first is used for
 the first index of \code{z}, and the second is used for the second
-index.}
+index.
+}}
 
 \item{breaks}{The z values for breaks in the color scheme.  If this is of
 length 1, the value indicates the desired number of breaks, which is

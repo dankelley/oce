@@ -43,47 +43,61 @@ common use in data files, namely PSS-78.
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{ctd} objects is a
-\code{\link{list}} containing the main data for the object.
+\link{list} containing the main data for the object.
 The key items stored in this slot are: \code{salinity}, \code{temperature}, and \code{pressure}, although in many instances there are quite a few additional items.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{ctd} objects is a \code{\link{list}} containing
+for \code{ctd} objects is a \link{list} containing
 information about the \code{data} or about the object itself.
 An example of the former might be the location at which a \code{ctd} measurement was made, stored in \code{longitude} and \code{latitude}, and of the latter might be \code{filename}, the name of the data source.}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{ctd} objects is a
-\code{\link{list}} with entries describing the creation and evolution
+\link{list} with entries describing the creation and evolution
 of the object. The contents are updated by various \code{oce} functions to
 keep a record of processing steps.  Object summaries and
-\code{\link{processingLogShow}} both display the log.}
+\code{\link[=processingLogShow]{processingLogShow()}} both display the log.}
 }}
 
 \section{Modifying slot contents}{
 
 
 Although the \code{[[<-} operator may permit modification of the contents
-of \code{ctd} objects (see \code{\link{[[<-,ctd-method}}),
-it is better to use \code{\link{oceSetData}}
-and \code{\link{oceSetMetadata}}, because that will save an entry
-in the \code{processingLog} to describe the change.
+of \linkS4class{ctd} objects (see \code{\link{[[<-,ctd-method}}),
+it is better to use \code{\link[=oceSetData]{oceSetData()}} and \code{\link[=oceSetMetadata]{oceSetMetadata()}},
+because those functions save an entry in the \code{processingLog}
+that describes the change.
 }
 
 \section{Retrieving slot contents}{
 
 
-The full contents of the \code{data} and \code{metadata} slots of a \code{ctd}
-object named \code{ctd} may be retrieved in the standard R way. For example,
-\code{slot(ctd, "data")} and \code{slot(ctd, "metadata")} return
-the \code{data} and \code{metadata} slots, respectively. The
-\code{\link{[[,ctd-method}} operator can also be used to access slots,
-with \code{ctd[["data"]]} and \code{ctd[["metadata"]]}, respectively.
-Furthermore, \code{\link{[[,ctd-method}} can be used to retrieve
-named items (and potentially some derived items) within the
-\code{metadata} and \code{data} slots, the former taking precedence
-over the latter in the lookup. It is also possible
-to find items more directly, using \code{\link{oceGetData}} and
-\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+The full contents of the \code{data} and \code{metadata} slots of a \linkS4class{ctd}
+object may be retrieved in the standard R way using \code{\link[=slot]{slot()}}. For
+example \code{slot(o,"data")} returns the \code{data} slot of an object named \code{o},
+and similarly \code{slot(o,"metadata")} returns
+the \code{metadata} slot.
+
+The slots may also be obtained with the \code{\link{[[,ctd-method}}
+operator, as e.g. \code{o[["data"]]} and \code{o[["metadata"]]}, respectively.
+
+The \code{\link{[[,ctd-method}} operator can also
+be used to retrieve items from within the \code{data} and \code{metadata} slots.
+For example, \code{o[["temperature"]]} can be used to retrieve temperature
+from an object containing that quantity. The rule is that a named
+quantity is sought first within the object's \code{metadata} slot,
+with the \code{data} slot being checked only if \code{metadata} does not
+contain the item. This \code{[[} method can also be used to get
+certain derived quantities, if the object contains sufficient
+information to calculate them. For example, an object that holds
+(practical) salinity, temperature and pressure, along with
+longitude and latitudee, has sufficient information to compute
+Absolute Salinity, and so \code{o[["SA"]]} will yield the
+calculated Absolute Salinity.
+
+It is also possible to find items more directly, using \code{\link[=oceGetData]{oceGetData()}} and
+\code{\link[=oceGetMetadata]{oceGetMetadata()}}, but neither of these functions can
+retrieve derived items.
 }
 
 \section{Reading/creating \code{ctd} objects}{

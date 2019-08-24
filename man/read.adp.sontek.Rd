@@ -44,7 +44,7 @@ North.}
 
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
 in reading the file, either by printing a dot for each profile or by writing
-a textual progress bar with \code{\link{txtProgressBar}}.}
+a textual progress bar with \code{\link[=txtProgressBar]{txtProgressBar()}}.}
 
 \item{despike}{if \code{TRUE}, \code{\link[=despike]{despike()}} will be used to clean
 anomalous spikes in heading, etc.}
@@ -59,7 +59,7 @@ amount of debugging information, or to 2 to get more.}
 \item{\dots}{additional arguments, passed to called routines.}
 }
 \value{
-An \code{\link{adp-class}} object.
+An \linkS4class{adp} object.
 The contents of that object make sense for the particular instrument
 type under study, e.g. if the data file contains
 NMEA strings, then navigational data will be stored in an item
@@ -95,6 +95,7 @@ Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},

@@ -68,7 +68,6 @@ points(x, f2, pch="+", col="blue")
 legend("topleft", col=c("black","red","blue"), pch=c("o","x","+"),
        legend=c("data","normal filter", "zero-phase filter"))
 mtext("note that normal filter rolls off at end")
-
 }
 \author{
 Dan Kelley

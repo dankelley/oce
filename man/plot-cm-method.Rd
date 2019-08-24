@@ -13,7 +13,7 @@
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{an \code{cm} object, e.g. as read by \code{\link[=read.cm]{read.cm()}}.}
+\item{x}{a \linkS4class{cm} object.}
 
 \item{which}{list of desired plot types.  These are graphed in panels running
 down from the top of the page.  See \dQuote{Details} for the meanings of various

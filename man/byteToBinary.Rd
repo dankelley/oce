@@ -10,8 +10,7 @@ byteToBinary(x, endian = "big")
 \item{x}{an integer to be interpreted as a byte.}
 
 \item{endian}{character string indicating the endian-ness ("big" or
-"little"). \strong{This argument will be removed in the upcoming CRAN
-release.}}
+"little"). \strong{WARNING:} This argument will be removed soon.}
 }
 \value{
 A character string representing the bit strings for the elements of
@@ -34,7 +33,6 @@ library(oce)
 a <- as.raw(0x0a)
 byteToBinary(a, "big")        # "00001010"
 as.integer(rev(rawToBits(a))) # 0 0 0 0 1 0 1 0
-
 }
 \author{
 Dan Kelley

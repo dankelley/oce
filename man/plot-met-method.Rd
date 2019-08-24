@@ -24,13 +24,11 @@ note that the values returned by \code{met[["direction"]]} must be multiplied by
 to get the direction plotted)
 }}
 
-\item{mgp}{A 3-element numerical vector used with \code{\link{par}("mgp")}
-to control the spacing of axis elements.
-The default is tighter than the R default.}
+\item{mgp}{A 3-element numerical vector used with \code{\link{par}}\code{("mgp")}
+to control the spacing of axis elements.  The default is tighter than the R default.}
 
-\item{mar}{A 4-element numerical vector used with \code{\link{par}("mar")}
-to control the plot margins.
-The default is tighter than the R default.}
+\item{mar}{A 4-element numerical vector used with \code{\link{par}}\code{("mar")}
+to control the plot margins. The default is tighter than the R default.}
 
 \item{tformat}{optional argument passed to \code{\link[=oce.plot.ts]{oce.plot.ts()}}, for
 plot types that call that function.  (See \code{\link[=strptime]{strptime()}} for the

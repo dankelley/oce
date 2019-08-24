@@ -64,8 +64,6 @@
 #' @author Dan Kelley
 #'
 #' @family things related to echosounder data
-#'
-#' @md
 setClass("echosounder", contains="oce")
 
 
@@ -85,8 +83,6 @@ setClass("echosounder", contains="oce")
 #' using [decimate()] with `by=c()`.
 #' @family datasets provided with oce
 #' @family things related to echosounder data
-#'
-#' @md
 NULL
 
 setMethod(f="initialize",
@@ -114,8 +110,6 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to echosounder data
-#'
-#' @md
 setMethod(f="summary",
           signature="echosounder",
           definition=function(object, ...) {
@@ -174,8 +168,6 @@ setMethod(f="summary",
 #' @template sub_subTemplate
 #'
 #' @family things related to echosounder data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="echosounder", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -217,8 +209,6 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to echosounder data
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="echosounder", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -252,8 +242,6 @@ setMethod(f="[[<-",
 #'
 #' @family things related to echosounder data
 #' @family functions that subset oce objects
-#'
-#' @md
 setMethod(f="subset",
           signature="echosounder",
           definition=function(x, subset, ...) {
@@ -368,8 +356,6 @@ setMethod(f="subset",
 #' @author Dan Kelley
 #'
 #' @family things related to echosounder data
-#'
-#' @md
 as.echosounder <- function(time, depth, a, src="",
                            sourceLevel=220,
                            receiverSensitivity=-55.4,
@@ -435,8 +421,6 @@ as.echosounder <- function(time, depth, a, src="",
 #' functions dealing with them.
 #'
 #' @family things related to echosounder data
-#'
-#' @md
 findBottom <- function(x, ignore=5, clean=despike)
 {
     a <- x[["a"]]
@@ -556,8 +540,6 @@ findBottom <- function(x, ignore=5, clean=despike)
 #'}
 #' @family things related to echosounder data
 #' @aliases plot.echosounder
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("echosounder"),
           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
@@ -824,8 +806,6 @@ setMethod(f="plot",
 #' Advanced Digital Hydroacoustics. July, 2010.  SOFTWARE AND ENGINEERING
 #' LIBRARY REPORT BS&E-2004-07-0009-2.0.
 #' @family things related to echosounder data
-#'
-#' @md
 read.echosounder <- function(file, channel=1, soundSpeed,
                              tz=getOption("oceTz"), debug=getOption("oceDebug"),
                              processingLog)

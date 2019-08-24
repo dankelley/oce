@@ -27,22 +27,16 @@ as listed below.
 }
 \details{
 \itemize{
-
 \item for \code{argo}, the default is
 \code{c(0,2,3,4,7,8,9)}, i.e. all flags except \code{passed_all_tests}.
-
 \item for \code{BODC}, the default is
 \code{c(0,2,3,4,5,6,7,8,9)}, i.e. all flags except \code{good}.
-
 \item for \code{DFO}, the default is
 \code{c(0,2,3,4,5,8,9)}, i.e. all flags except \code{appears_correct}.
-
 \item for \code{WHP bottle}, the default is
 \code{c(1,3,4,5,6,7,8,9)}, i.e. all flags except \code{no_problems_noted}.
-
 \item for \code{WHP ctd}, the default is
 \code{c(1,3,4,5,6,7,9)}, i.e. all flags except \code{acceptable}.
-
 }
 }
 \seealso{

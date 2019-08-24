@@ -76,12 +76,11 @@ if (require(ocedata)) {
     lines(a2, zz, col='red')
     legend("bottomright",lwd=1,col=1:2, legend=c("rr","unesco"),cex=3/4)
 }
-
 }
 \references{
 \enumerate{
 \item R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
-application to oceanographic data.  \emph{Deep Sea Research}, \bold{15},
+application to oceanographic data.  \emph{Deep Sea Research}, \strong{15},
 185-193.
 \item Daphne R. Johnson, Tim P. Boyer, Hernan E. Garcia, Ricardo A.
 Locarnini, Olga K. Baranova, and Melissa M. Zweng, 2011. World Ocean

@@ -31,7 +31,7 @@ matrix \code{u, v} case). If a single value, the same
 directions. If a two-element vector, specifies different values
 for the \code{x} and \code{y} directions.}
 
-\item{length}{indication of \strong{width} of arrowheads. The
+\item{length}{indication of \emph{width} of arrowheads. The
 somewhat confusing name of this argument is a consequence of
 the fact that it is passed to \code{\link[=arrows]{arrows()}} for drawing
 arrows.  Note that the present default is smaller than the

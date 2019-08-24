@@ -17,8 +17,6 @@
 #' \url{https://github.com/matplotlib/matplotlib}.
 #' @family datasets provided with oce
 #' @family things related to colors
-#'
-#' @md
 NULL
 
 
@@ -624,8 +622,6 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #'}
 #'
 #' @family things related to colors
-#'
-#' @md
 colormap <- function(z=NULL,
                      zlim, zclip=FALSE,
                      breaks, col=oceColorsJet,

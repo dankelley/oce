@@ -32,7 +32,6 @@ heading <- ifelse(heading > 360, heading - 360, heading)
 x <- 1:n
 plot(x, heading, ylim=c(-10, 360), type='l', col='lightgray', lwd=10)
 lines(x, angleRemap(heading))
-
 }
 \author{
 Dan Kelley

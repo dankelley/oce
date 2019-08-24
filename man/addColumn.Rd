@@ -7,7 +7,7 @@
 addColumn(x, data, name)
 }
 \arguments{
-\item{x}{A \code{ctd} object, e.g. as read by \code{\link[=read.ctd]{read.ctd()}}.}
+\item{x}{a \linkS4class{ctd} object.}
 
 \item{data}{the data.  The length of this item must match that of the
 existing data entries in the \code{data} slot).}

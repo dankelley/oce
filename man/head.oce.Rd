@@ -17,20 +17,20 @@
 Extract The Start of an Oce Object
 
 This function handles the following object classes directly:
-\code{\link{adp-class}},
-\code{\link{adv-class}},
-\code{\link{argo-class}} (selection by profile),
-\code{\link{coastline-class}},
-\code{\link{ctd-class}},
-\code{\link{echosounder-class}} (selection by ping),
-\code{\link{section-class}} (selection by station)
+\linkS4class{adp},
+\linkS4class{adv},
+\linkS4class{argo} (selection by profile),
+\linkS4class{coastline},
+\linkS4class{ctd},
+\linkS4class{echosounder} (selection by ping),
+\linkS4class{section} (selection by station)
 and
-\code{\link{topo-class}} (selection by longitude and latitude).
+\linkS4class{topo} (selection by longitude and latitude).
 It does not handle
-\code{\link{amsr-class}} or
-\code{\link{landsat-class}}
+\linkS4class{amsr} or
+\linkS4class{landsat}
 yet, instead issuing a warning and returning \code{x} in those cases.
-For all other classes, it calls \code{\link{head}}
+For all other classes, it calls \code{\link[=head]{head()}}
 with \code{n} as provided, for each item in the \code{data}
 slot, issuing a warning if that item is not a vector; the
 author is quite aware that this may not work well for all classes.

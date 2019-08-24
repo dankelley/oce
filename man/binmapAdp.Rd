@@ -7,7 +7,7 @@
 binmapAdp(x, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{an \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
+\item{x}{an \linkS4class{adp} object.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -18,7 +18,7 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"adp"}.
+An \linkS4class{adp} object.
 }
 \description{
 Bin-map an ADP object, by interpolating velocities, backscatter amplitudes,
@@ -31,7 +31,6 @@ coordinates.
 }
 
 \examples{
-
 \dontrun{
 library(oce)
 beam <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000",
@@ -51,7 +50,7 @@ The method was devised by Clark Richards for use in his PhD work
 at Department of Oceanography at Dalhousie University.
 }
 \seealso{
-See \code{\link{adp-class}} for a discussion of \code{adp} objects
+See \linkS4class{adp} for a discussion of \code{adp} objects
 and notes on the many functions dealing with them.
 
 Other things related to adp data: \code{\link{[[,adp-method}},
@@ -75,6 +74,7 @@ Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},

@@ -86,7 +86,6 @@ plot(log10(s$freq), s$spec * s$freq,
 title("Variance-preserving spectrum")
 pw <- pwelch(co2, nfft=256, plot=FALSE)
 lines(log10(pw$freq), pw$spec * pw$freq, col='red')
-
 }
 \references{
 Welch, P. D., 1967. The Use of Fast Fourier Transform for the

@@ -22,8 +22,6 @@
 #' @family classes provided by oce
 #'
 #' @author Dan Kelley
-#'
-#' @md
 setClass("cm", contains="oce")
 
 #' A Current Meter (cm) Object
@@ -48,19 +46,15 @@ setClass("cm", contains="oce")
 #'}
 #' @family datasets provided with oce
 #' @family things related to cm data
-#'
-# @md
 NULL
 
 #' Extract Something From a CM Object
 #'
-#' @param x A [cm-class] object.
+#' @param x a [cm-class] object.
 #'
 #' @template sub_subTemplate
 #'
 #' @family things related to cm data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="cm", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -69,13 +63,11 @@ setMethod(f="[[",
 
 #' Replace Parts of a CM Object
 #'
-#' @param x A [cm-class] object.
+#' @param x a [cm-class] object.
 #'
 #' @template sub_subsetTemplate
 #'
 #' @family things related to cm data
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="cm", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -130,8 +122,6 @@ setMethod(f="initialize",
 #' @family things related to cm data
 #'
 #' @author Dan Kelley
-#'
-#' @md
 setMethod(f="summary",
           signature="cm",
           definition=function(object, ...) {
@@ -149,7 +139,7 @@ setMethod(f="summary",
 #'
 #' This function is somewhat analogous to [subset.data.frame()].
 #'
-#' @param x A [cm-class] object.
+#' @param x a [cm-class] object.
 #'
 #' @param subset a condition to be applied to the `data` portion of `x`.
 #' See \sQuote{Details}.
@@ -168,8 +158,6 @@ setMethod(f="summary",
 #' @family functions that subset oce objects
 #'
 #' @author Dan Kelley
-#'
-#' @md
 setMethod(f="subset",
           signature="cm",
           definition=function(x, subset, ...) {
@@ -244,8 +232,6 @@ setMethod(f="subset",
 #' @template debugTemplate
 #'
 #' @family things related to cm data
-#'
-#' @md
 as.cm <- function(time, u=NULL, v=NULL,
                   pressure=NULL, conductivity=NULL, temperature=NULL, salinity=NULL,
                   longitude=NA, latitude=NA, filename="", debug=getOption("oceDebug"))
@@ -406,7 +392,7 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' each pair of profiles that is read. This may not make much sense, if the data
 #' are not equi-spaced in time.  If `by` is a string representing a time
 #' interval, in colon-separated format, then this interval is divided by the
-#' sampling interval, to get the stride length. \emph{BUG:} if the data are not
+#' sampling interval, to get the stride length. *BUG:* if the data are not
 #' equi-spaced, then odd results will occur.
 #'
 #' @param longitude optional signed number indicating the longitude in degrees
@@ -463,8 +449,6 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' @family things related to cm data
 #'
 #' @author Dan Kelley
-#'
-#' @md
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     type=c("s4"),
                     longitude=NA, latitude=NA,
@@ -693,7 +677,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' * `which=20` or `"direction"` for the direction of flow
 #'
-#' @param x an `cm` object, e.g. as read by [read.cm()].
+#' @param x a [cm-class] object.
 #'
 #' @param which list of desired plot types.  These are graphed in panels running
 #' down from the top of the page.  See \dQuote{Details} for the meanings of various
@@ -743,8 +727,6 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @aliases plot.cm
 #'
 #' @author Dan Kelley
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("cm"),
           definition=function(x,

@@ -58,5 +58,4 @@ feet <- swDepth(ctd) / 0.3048
 ctd <- oceSetData(ctd, name="depthInFeet", value=feet, expression("feet"))
 fathoms <- feet / 6
 ctd <- oceSetData(ctd, "depthInFathoms", fathoms, "fathoms")
-
 }

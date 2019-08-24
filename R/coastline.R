@@ -18,8 +18,6 @@
 #' @family things related to coastline data
 #'
 #' @author Dan Kelley
-#'
-#' @md
 setClass("coastline", contains="oce")
 
 
@@ -49,8 +47,6 @@ setClass("coastline", contains="oce")
 #' update on December 16, 2017.
 #' @family datasets provided with oce
 #' @family things related to coastline data
-#'
-#' @md
 NULL
 
 setMethod(f="initialize",
@@ -81,8 +77,6 @@ setMethod(f="initialize",
 #' @family things related to coastline data
 #'
 #' @author Dan Kelley
-#'
-#' @md
 setMethod(f="[[",
           signature(x="coastline", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -98,8 +92,6 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @author Dan Kelley
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="coastline", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -153,8 +145,6 @@ setMethod(f="[[<-",
 #' @family functions that subset oce objects
 #'
 #' @author Dan Kelley
-#'
-#' @md
 setMethod(f="subset",
           signature="coastline",
           definition=function(x, subset, ...) {
@@ -281,8 +271,6 @@ setMethod(f="subset",
 #' @family things related to coastline data
 #'
 #' @author Dan Kelley
-#'
-#' @md
 setMethod(f="summary",
           signature="coastline",
           definition=function(object, ...) {
@@ -315,8 +303,6 @@ setMethod(f="summary",
 #' @family things related to coastline data
 #'
 #' @author Dan Kelley
-#'
-#' @md
 as.coastline <- function(longitude, latitude, fillable=FALSE)
 {
     if (missing(longitude)) stop("must provide longitude")
@@ -515,8 +501,6 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' @aliases plot.coastline
 #'
 #' @author Dan Kelley
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("coastline"),
           definition=function (x,
@@ -901,8 +885,6 @@ setMethod(f="plot",
 #' @family things related to coastline data
 #'
 #' @author Dan Kelley
-#'
-#' @md
 download.coastline <- function(resolution, item="coastline",
                            destdir=".", destfile,
                            server="naturalearth",
@@ -960,8 +942,6 @@ download.coastline <- function(resolution, item="coastline",
 #' @return a [coastline-class] object.
 #'
 #' @author Dan Kelley
-#'
-#' @md
 read.coastline <- function(file,
                            type=c("R", "S", "mapgen", "shapefile", "openstreetmap"),
                            debug=getOption("oceDebug"), monitor=FALSE, processingLog)
@@ -1070,21 +1050,17 @@ read.coastline <- function(file,
 #' constructed, of which coastlines could be a subset.
 #'
 #' @references
-#'\itemize{
-#' \item 1. The ``shapefile'' format is described in \emph{ESRI Shapefile
-#' Technical Description}, March 1998, available at
+#' 1. The ``shapefile'' format is described in
+#' *ESRI Shapefile Technical Description*, March 1998, available at
 #' \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
 #'
-#' \item 2. The NaturalEarth website \url{https://www.naturalearthdata.com/downloads}
+#' 2. The NaturalEarth website \url{https://www.naturalearthdata.com/downloads}
 #' provides coastline datasets in three resolutions, along with similar files
 #' lakes and rivers, for borders, etc. It is highly recommended.
-#'}
 #'
 #' @family things related to coastline data
 #'
 #' @author Dan Kelley
-#'
-#' @md
 read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90),
                                      debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
@@ -1294,8 +1270,6 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
 #' @family things related to coastline data
 #'
 #' @author Dan Kelley
-#'
-#' @md
 read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90),
                                      debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
@@ -1380,12 +1354,10 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90
 #' @family things related to coastline data
 #'
 #' @author Dan Kelley
-#'
-#' @md
 coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "coastlineBest(",
-             "lonRange=c(", 
+             "lonRange=c(",
              if (missing(lonRange)) "missing" else paste(round(lonRange, 2), collapse=","), "), ",
              "latRange=c(",
              if (missing(latRange)) "missing" else paste(round(latRange, 2), collapse=","), "), ",
@@ -1455,8 +1427,6 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' @family things related to coastline data
 #'
 #' @author Dan Kelley
-#'
-#' @md
 coastlineCut <- function(coastline, lon_0=0)
 {
     if (lon_0 == 0)

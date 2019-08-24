@@ -21,8 +21,6 @@
 #'
 #' @family classes provided by oce
 #' @family things related to lisst data
-#'
-#' @md
 setClass("lisst", contains="oce")
 
 #' Extract Something From a LISST Object
@@ -32,8 +30,6 @@ setClass("lisst", contains="oce")
 #' @template sub_subTemplate
 #'
 #' @family things related to lisst data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="lisst", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -47,8 +43,6 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to lisst data
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="lisst", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -72,8 +66,6 @@ setMethod(f="[[<-",
 #' @source This was constructed artificially using [as.lisst()],
 #' to approximately match values that might be measured in the field.
 #' @family datasets provided with oce
-#'
-#' @md
 NULL
 
 setMethod(f="initialize",
@@ -108,8 +100,6 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to lisst data
-#'
-#' @md
 setMethod(f="summary",
           signature="lisst",
           definition=function(object, ...) {
@@ -153,7 +143,7 @@ setMethod(f="summary",
 #' * `which=42` or `which="beam"` for a time-series plot of
 #' beam-C, in 1/metre.
 #'
-#' @param x a `lisst` object, e.g. as read by [read.lisst()].
+#' @param x a [lisst-class] object.
 #'
 #' @param which list of desired plot types.  These are graphed in panels
 #' running down from the top of the page.  See \dQuote{Details} for the
@@ -183,8 +173,6 @@ setMethod(f="summary",
 #' @family things related to lisst data
 #'
 #' @aliases plot.lisst
-#'
-#' @md
 setMethod(f="plot",
           signature="lisst",
           definition=function(x, which = c(16, 37, 38), tformat, debug=getOption("oceDebug"), ...) {
@@ -266,8 +254,6 @@ setMethod(f="plot",
 #' @author Dan Kelley
 #'
 #' @family things related to lisst data
-#'
-#' @md
 as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude=NA)
 {
     res <- new("lisst", filename=filename, latitude=latitude, longitude=longitude)
@@ -336,8 +322,6 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
 #' @author Dan Kelley
 #'
 #' @family things related to lisst data
-#'
-#' @md
 read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)

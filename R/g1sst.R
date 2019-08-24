@@ -43,20 +43,16 @@ setClass("satellite", contains="oce")
 #' @author Dan Kelley
 #'
 #' @family things related to satellite data
-#'
-#' @md
 setClass("g1sst", contains="satellite")
 
 
 #' @title Extract Something From a G1SST Object
 #'
-#' @param x A [g1sst-class] object.
+#' @param x a [g1sst-class] object.
 #'
 #' @template sub_subTemplate
 #'
 #' @family things related to g1sst data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="g1sst", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -65,13 +61,11 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a G1SST Object
 #'
-#' @param x A [g1sst-class] object.
+#' @param x a [g1sst-class] object.
 #'
 #' @template sub_subsetTemplate
 #'
 #' @family things related to g1sst data
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="g1sst", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -130,8 +124,6 @@ setMethod(f="[[<-",
 #' (link worked in 2016 but was seen to fail 2017 Feb 2).
 #'
 #' @family things related to satellite data
-#'
-#' @md
 read.g1sst <- function(file)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)

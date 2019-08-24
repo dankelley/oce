@@ -384,7 +384,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' If a heading bias had been set with the `EB` command during the setup
 #' for the deployment, then a heading bias will have been stored in the file's
 #' header.  This value is stored in the object's metadata as
-#' `metadata$heading.bias`.  \strong{Importantly}, this value is
+#' `metadata$heading.bias`.  **Importantly**, this value is
 #' subtracted from the headings stored in the file, and the result of this
 #' subtraction is stored in the objects heading value (in `data$heading`).
 #' It should be noted that `read.adp.rdi()` was tested for firmware
@@ -664,8 +664,6 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' can be a good way to narrow in on problems.
 #'
 #' @family things related to adp data
-#'
-#' @md
 read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          longitude=NA, latitude=NA,
                          type=c("workhorse"),

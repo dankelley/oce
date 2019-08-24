@@ -1,6 +1,6 @@
 #' Add an item to a processing log (in place)
 #'
-#' @param x An [oce-class] object.
+#' @param x an [oce-class] object.
 #'
 #' @param value A character string with the description of the logged activity.
 #'
@@ -11,8 +11,6 @@
 #' processingLogShow(ctd)
 #'
 #' @family things related to processing logs
-#'
-#' @md
 "processingLog<-" <- function(x, value)
 {
     if (inherits(x, "oce")) {
@@ -41,8 +39,6 @@
 #' @param value A string indicating the text of the log entry.
 #'
 #' @family things related to processing logs
-#'
-#' @md
 processingLogAppend <- function(h, value="")
 {
     if (inherits(h, "oce"))
@@ -72,8 +68,6 @@ processingLogAppend <- function(h, value="")
 #' `value`, a string that is set to the argument of the same name.
 #'
 #' @family things related to processing logs
-#'
-#' @md
 processingLogItem <- function(value="")
 {
     list(time=c(presentTime()), value=value)
@@ -81,11 +75,9 @@ processingLogItem <- function(value="")
 
 #' Show the processing log of an oce object
 #'
-#' @param x An [oce-class] object.
+#' @param x an [oce-class] object.
 #'
 #' @family things related to processing logs
-#'
-#' @md
 processingLogShow <- function(x)
 {
     cat("* Processing Log\n")

@@ -22,5 +22,4 @@ possibly this will reduce copying and thus storage impact.
 library(oce)
 data(ctd)
 dataLabel(names(ctd@data), ctd@metadata$units)
-
 }

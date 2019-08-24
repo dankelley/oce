@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{oce.as.POSIXlt}
 \alias{oce.as.POSIXlt}
-\title{Oce Variant of as.POSIXlt \link{defunct}}
+\title{Oce Variant of as.POSIXlt (defunct)}
 \usage{
 oce.as.POSIXlt(x, tz = "")
 }

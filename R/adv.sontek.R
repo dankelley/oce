@@ -5,8 +5,6 @@
 #' if `filename` is a vector of file names.
 #'
 #' @param deltat the time between samples.
-#'
-#' @md
 read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                    longitude=NA, latitude=NA,
                                    start=NULL, deltat=NULL,
@@ -156,8 +154,6 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
 #' @param header A logical value indicating whether the file starts with a header.
 #' (This will not be the case for files that are created by data loggers that
 #' chop the raw data up into a series of sub-files, e.g. once per hour.)
-#'
-#' @md
 read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                 header=TRUE,
                                 longitude=NA, latitude=NA,
@@ -647,8 +643,6 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' The `file` argument does not actually name a file. It names a basename
 #' for a file. The actual file names are created by appending suffix
 #' `.hd1` for one file and `.ts1` for another.
-#'
-#' @md
 read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                  originalCoordinate="xyz", transformationMatrix,
                                  longitude=NA, latitude=NA,

@@ -7,7 +7,7 @@
 processingLog(x) <- value
 }
 \arguments{
-\item{x}{An \linkS4class{oce} object.}
+\item{x}{an \linkS4class{oce} object.}
 
 \item{value}{A character string with the description of the logged activity.}
 }

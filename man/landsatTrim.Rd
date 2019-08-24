@@ -7,7 +7,7 @@
 landsatTrim(x, ll, ur, box, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \linkS4class{landsat} object.}
+\item{x}{a \linkS4class{landsat} object.}
 
 \item{ll}{A list containing \code{longitude} and \code{latitude}, for the
 lower-left corner of the portion of the image to retain, or a vector

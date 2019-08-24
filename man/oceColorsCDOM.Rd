@@ -16,12 +16,12 @@ A vector of color specificications.
 \description{
 Create a set of colors for displaying CDOM values,
 based on the scheme devised by Kristen M. Thyng
-in her \code{cmcolor} Python package, which is available at
-\url{https://github.com/kthyng/cmocean}. The
+in her \code{cmcolor} Python package
+(available at https://github.com/kthyng/cmocean). The
 color specifications were downloaded for use here
 on 2015-09-29. To avoid changes in \code{oce} scripts,
 more recent changes to \code{cmcolor} have not been
-tracked; \code{\link{oceColorsClosure}}
+tracked; \code{\link[=oceColorsClosure]{oceColorsClosure()}}
 has an example of how to incorporate such changes.
 }
 \examples{

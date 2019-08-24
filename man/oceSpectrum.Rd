@@ -8,8 +8,7 @@
 oceSpectrum(x, ...)
 }
 \arguments{
-\item{x}{As for \code{\link[=spectrum]{spectrum()}}, a univariate or multivariate time
-series.}
+\item{x}{a univariate or multivariate time series, as for \code{\link[=spectrum]{spectrum()}}.}
 
 \item{\dots}{extra arguments passed on to \code{\link[=spectrum]{spectrum()}}.}
 }
@@ -28,7 +27,6 @@ values equals the variance of the input \code{x}.
   cat("variance of x=", var(x), "\\n")
   cat("integral of     spectrum=", sum(s$spec)*diff(s$freq[1:2]), "\\n")
   cat("integral of oce.spectrum=", sum(ss$spec)*diff(ss$freq[1:2]), "\\n")
-
 }
 \seealso{
 \code{\link[=spectrum]{spectrum()}}.

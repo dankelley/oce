@@ -22,16 +22,17 @@ of debugging information, or to 2 to get more.}
 \value{
 A \linkS4class{windrose} object, with \code{data} slot containing
 
-\describe{
-\item{\code{n}}{the number of x values}
-\item{\code{x.mean}}{the mean of the x values}
-\item{\code{y.mean}}{the mean of the y values}
-\item{\code{theta}}{the central angle (in degrees) for the class}
-\item{\code{count}}{the number of observations in this class}
-\item{\code{mean}}{the mean of the observations in this class}
-\item{\code{fivenum}}{the \code{\link[=fivenum]{fivenum()}} vector for
+\tabular{ll}{
+\strong{Item}   \tab \strong{Meaning}\cr
+\code{n}       \tab the number of \code{x} values\cr
+\code{x.mean}  \tab the mean of the \code{x} values\cr
+\code{y.mean}  \tab the mean of the \code{y} values\cr
+\code{theta}   \tab the central angle (in degrees) for the class\cr
+\code{count}   \tab the number of observations in this class\cr
+\code{mean}    \tab the mean of the observations in this class\cr
+\code{fivenum} \tab the \code{\link[=fivenum]{fivenum()}} vector for
 observations in this class (the min, the lower hinge, the
-median, the upper hinge, and the max)}
+median, the upper hinge, and the max)\cr
 }
 }
 \description{

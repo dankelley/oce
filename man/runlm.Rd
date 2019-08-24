@@ -65,7 +65,6 @@ lines(N2, -zz, col='red')
 legend("bottomright", lwd=2, bg="white",
        col=c("black", "red"),
        legend=c("swN2()", "using runlm()"))
-
 }
 \author{
 Dan Kelley

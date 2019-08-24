@@ -13,7 +13,7 @@ setFlags(object, name = NULL, i = NULL, value = NULL, debug = 0)
 this variable is not contained in the object's \code{data} slot, an error is reported.}
 
 \item{i}{Indication of where to insert the flags; see \dQuote{Description} for
-general rules and \dQuote{Details} for rules for \code{\link{oce-class}}
+general rules and \dQuote{Details} for rules for \linkS4class{oce}
 objects.}
 
 \item{value}{The value to be inserted in the flag.}
@@ -51,8 +51,8 @@ of the data item), (b) a logical array that has dimension equal to
 that of the data item, or (c) a function that takes an \code{oce}
 object as its single input and returns such a data frame or array.
 }
-See \dQuote{Details} for the particular case of
-\code{\link{oce-class}} objects.
+
+See \dQuote{Details} for the particular case of \linkS4class{oce} objects.
 }
 \details{
 This generic function is overridden by specialized functions for some object classes.

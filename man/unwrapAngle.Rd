@@ -37,7 +37,6 @@ abline(v=true, col="blue")
 mtext("true (solid)\\n estimate (dashed)", at=true, side=3, col="blue")
 abline(v=mean(a), col="red")
 mtext("mean", at=mean(a), side=3, col="red")
-
 }
 \author{
 Dan Kelley

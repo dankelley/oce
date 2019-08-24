@@ -63,13 +63,12 @@ The value depends on \code{action}:
 list containing the index of the nearest node, along with the
 \code{latitude} and \code{longitude} of that node.  If
 \code{plot} is \code{FALSE}, this value is returned invisibly.
-
 \item If \code{action="predict"}, the return value is a list containing a vector
 of times (\code{time}), as well as vectors of the predicted \code{elevation}
 in metres and the predicted horizontal components of velocity, \code{u} and
 \code{v}, along with the \code{node} number, and the \code{basedir} and
-\code{region} as supplied to this function.
-If \code{plot} is \code{FALSE}, this value is returned invisibly.
+\code{region} as supplied to this function. If \code{plot} is \code{FALSE},
+this value is returned invisibly.
 }
 }
 \description{
@@ -79,7 +78,7 @@ and if it is installed in a standard location. The details
 of installation are not within the oce purvue.
 }
 \details{
-There ar two methos of using this function.
+There are two methods of using this function.
 \emph{Case 1:} \code{action="map"}. In this case, if
 \code{plot} is \code{FALSE}, a list is returned, containing
 all the \code{node}s in the selected database, along with all
@@ -94,7 +93,7 @@ then \code{\link[=locator]{locator()}} is called, and the node nearest the spot
 where the user clicks the mouse is indicated in the plot and in the
 return value.
 
-\code{Case 2:} \code{action="predict"}. If \code{plot} is \code{FALSE},
+\emph{Case 2:} \code{action="predict"}. If \code{plot} is \code{FALSE},
 then a list is returned, indicating \code{time}, predicted
 \code{elevation}, velocity components \code{u} and \code{v},
 \code{node} number, the name of the \code{basedir}, and

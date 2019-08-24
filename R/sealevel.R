@@ -18,8 +18,6 @@
 #'
 #' @family classes provided by oce
 #' @family things related to sealevel data
-#'
-#' @md
 setClass("sealevel", contains="oce")
 
 
@@ -48,8 +46,6 @@ setClass("sealevel", contains="oce")
 #'
 #' @family datasets provided with oce
 #' @family things related to sealevel data
-#'
-#' @md
 NULL
 
 #' Sea-level data set acquired in 1975 at Tuktoyaktuk
@@ -105,8 +101,6 @@ NULL
 #'
 #' @family datasets provided with oce
 #' @family things related to sealevel data
-#'
-#' @md
 NULL
 
 setMethod(f="initialize",
@@ -141,8 +135,6 @@ setMethod(f="initialize",
 #' summary(sealevel)
 #'
 #' @family things related to sealevel data
-#'
-#' @md
 setMethod(f="summary",
           signature="sealevel",
           definition=function(object, ...) {
@@ -188,8 +180,6 @@ setMethod(f="summary",
 #'
 #' @family things related to sealevel data
 #' @family functions that subset oce objects
-#'
-#' @md
 setMethod(f="subset",
           signature="sealevel",
           definition=function(x, subset, ...) {
@@ -216,8 +206,6 @@ setMethod(f="subset",
 #' @template sub_subTemplate
 #'
 #' @family things related to sealevel data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="sealevel", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -232,8 +220,6 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to sealevel data
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="sealevel", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -331,8 +317,6 @@ setValidity("sealevel",
 #' sl <- as.sealevel(elevation, time)
 #' summary(sl)
 #' @family things related to sealevel data
-#'
-#' @md
 as.sealevel <- function(elevation,
                         time,
                         header=NULL,
@@ -398,8 +382,7 @@ as.sealevel <- function(elevation,
 #' the plot.  For multi-panel plots, `par` is returned to the value it had
 #' before the call.
 #'
-#' @param x an object of class `"sealevel"`, e.g. as read by
-#' [read.sealevel()].
+#' @param x a [sealevel-class] object.
 #'
 #' @param which a numerical or string vector indicating desired plot types,
 #' with possibilities 1 or `"all"` for a time-series of all the data, 2 or
@@ -456,8 +439,6 @@ as.sealevel <- function(elevation,
 #' @family things related to sealevel data
 #'
 #' @aliases plot.sealevel
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("sealevel"),
           definition=function(x, which=1:3,
@@ -690,8 +671,6 @@ setMethod(f="plot",
 #'}
 #'
 #' @family things related to sealevel data
-#'
-#' @md
 read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getOption("oceDebug"))
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)

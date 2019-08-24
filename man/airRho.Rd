@@ -28,7 +28,6 @@ humidity.
 degC <- seq(0,30,length.out=100)
 p <- seq(98,102,length.out=100) * 1e3
 contour(x=degC, y=p, z=outer(degC,p,airRho), labcex=1)
-
 }
 \references{
 National Oceanographic and Atmospheric Agency, 1976.  U.S.

@@ -95,7 +95,7 @@ setup facilitates the conversion of \linkS4class{rsk} objects to
 Culkin, F., and Norman D. Smith, 1980. Determination of the concentration of
 potassium chloride solution having the same electrical conductivity, at 15 C and
 infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
-19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering}, \bold{5}, pp 22-23.
+19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering}, \strong{5}, pp 22-23.
 }
 \seealso{
 The documentation for \linkS4class{rsk} explains the structure of

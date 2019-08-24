@@ -145,16 +145,16 @@
 #'
 #' 9. Yu, X. X. Guo and Z. Wu., 2014. Land Surface Temperature Retrieval from
 #' Landsat 8 TIRS-Comparison between Radiative Transfer Equation-Based Method,
-#' Split Window Algorithm and Single Channel Method, \emph{Remote Sensing}, 6,
+#' Split Window Algorithm and Single Channel Method, *Remote Sensing*, 6,
 #' 9829-9652.  \url{http://www.mdpi.com/2072-4292/6/10/9829}
 #'
 #' 10. Rajeshwari, A., and N. D. Mani, 2014.  Estimation of land surface
-#' temperature of Dindigul district using Landsat 8 data.  \emph{International
-#'     Journal of Research in Engineering and Technology}, 3(5), 122-126.
+#' temperature of Dindigul district using Landsat 8 data. *International
+#'     Journal of Research in Engineering and Technology*, 3(5), 122-126.
 #' `http://www.academia.edu/7655089/ESTIMATION_OF_LAND_SURFACE_TEMPERATURE_OF_DINDIGUL_DISTRICT_USING_LANDSAT_8_DATA`
 #'
 #' 11. Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
-#' Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.
+#' Surface Emissivity.  *Journal of Oceanography*, 50, 17:30.
 #' \url{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
 #'
 #' @concept satellite
@@ -162,8 +162,6 @@
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to landsat data
-#'
-#' @md
 setClass("landsat", contains="satellite")
 
 
@@ -186,8 +184,6 @@ setClass("landsat", contains="satellite")
 #' @family datasets provided with oce
 #'
 #' @family things related to landsat data
-#'
-#' @md
 NULL
 
 
@@ -230,8 +226,6 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to landsat data
-#'
-#' @md
 setMethod(f="summary",
           signature="landsat",
           definition=function(object, ...) {
@@ -260,7 +254,7 @@ setMethod(f="summary",
 
 #' @title Extract Something From a landsat Object
 #'
-#' @param x A [landsat-class] object.
+#' @param x a [landsat-class] object.
 #'
 #' @templateVar class landsat
 #'
@@ -271,7 +265,7 @@ setMethod(f="summary",
 #' Users are isolated from the details of the two-byte storage system
 #' by using the `[[` operator.
 #'
-#' \emph{Accessing band data.}  The data may be accessed with e.g.
+#' *Accessing band data.*  The data may be accessed with e.g.
 #' `landsat[["panchromatic"]]`, for the panchromatic band.  If a new
 #' ``band'' is added with [landsatAdd()], it may be referred by
 #' name.  In all cases, a second argument can be provided, to govern
@@ -288,7 +282,7 @@ setMethod(f="summary",
 #' plotting, and in fact is done through the `decimate` argument of
 #' [plot,landsat-method()].
 #'
-#' \emph{Accessing derived data.}  One may retrieve several derived quantities
+#' *Accessing derived data.*  One may retrieve several derived quantities
 #' that are calculated from data stored in the object:
 #' `landsat[["longitude"]]` and `landsat[["latitude"]]` give pixel
 #' locations.  Accessing `landsat[["temperature"]]` creates an estimate
@@ -314,7 +308,7 @@ setMethod(f="summary",
 #' reference 9 lists 0.9668 for soil and 0.9863 for vegetation,
 #' while Table 5 of reference 10 lists 0.971 and 0.987 for the same quantities.
 #'
-#' \emph{Accessing metadata.} Anything in the metadata can be accessed by
+#' *Accessing metadata.* Anything in the metadata can be accessed by
 #' name, e.g. `landsat[["time"]]`.  Note that some items are simply
 #' copied over from the source data file and are not altered by e.g.
 #' decimation.  An exception is the lat-lon box, which is altered by
@@ -325,8 +319,6 @@ setMethod(f="summary",
 #' @author Dan Kelley
 #'
 #' @family things related to landsat data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="landsat", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -534,13 +526,11 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a landsat Object
 #'
-#' @param x A [landsat-class] object.
+#' @param x a [landsat-class] object.
 #'
 #' @template sub_subsetTemplate
 #'
 #' @family things related to landsat data
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="landsat", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -576,11 +566,12 @@ setMethod(f="[[<-",
 #'
 #' In addition to the above there are also some pseudo-bands that
 #' can be plotted, as follows.
-#' \itemize{
-#' \item Setting `band="temperature"` will plot an estimate
+#'
+#' * Setting `band="temperature"` will plot an estimate
 #' of at-satellite brightness temperature, computed from the
 #' `tirs1` band.
-#' \item Setting `band="terralook"` will plot a sort of natural
+#'
+#' * Setting `band="terralook"` will plot a sort of natural
 #' color by combining the `red`, `green`, `blue` and
 #' `nir` bands according to the formula provided at
 #' `https://lta.cr.usgs.gov/terralook/what_is_terralook` (a
@@ -592,10 +583,9 @@ setMethod(f="[[<-",
 #' the `blue` argument is computed as 2/3 of the `green`-band
 #' data minus 1/3 of the `nir`-band data. (This is not a typo: the
 #' `blue` band is not used.)
-#' }
 #'
 #'
-#' @param x A [landsat-class] object.
+#' @param x a [landsat-class] object.
 #'
 #' @param band If given, the name of the band.  For Landsat-8 data, this may be
 #' one of: `"aerosol"`, `"blue"`, `"green"`, `"red"`,
@@ -680,8 +670,6 @@ setMethod(f="[[<-",
 #' @family functions that plot oce data
 #'
 #' @aliases plot.landsat
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("landsat"),
           definition=function(x, band, which=1, decimate=TRUE, zlim, utm=FALSE,
@@ -1073,7 +1061,7 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' @references
 #'
 #' 1. Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
-#' Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.  Available at
+#' Surface Emissivity.  *Journal of Oceanography*, 50, 17:30.  Available at
 #' \url{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf} as of
 #' February 2015.
 #'
@@ -1082,8 +1070,6 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' @concept satellite
 #'
 #' @family things related to landsat data
-#'
-#' @md
 read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=getOption("oceDebug"))
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
@@ -1197,7 +1183,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
 #' it will require much more storage than data read with
 #' [read.landsat()].
 #'
-#' @param x A [landsat-class] object.
+#' @param x a [landsat-class] object.
 #'
 #' @param data A matrix of data, with dimensions matching that of entries already in `x`.
 #'
@@ -1220,8 +1206,6 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
 #' @concept satellite
 #'
 #' @family things related to landsat data
-#'
-#' @md
 landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 {
     if (!is.matrix(data))
@@ -1251,7 +1235,7 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 #' also, if a problem in lonlat/utm conversion is resolved.) An error results if
 #' there is no intersection between the trimming box and the image box.
 #'
-#' @param x A [landsat-class] object.
+#' @param x a [landsat-class] object.
 #'
 #' @param ll A list containing `longitude` and `latitude`, for the
 #' lower-left corner of the portion of the image to retain, or a vector
@@ -1284,8 +1268,6 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 #' @concept satellite
 #'
 #' @family things related to landsat data
-#'
-#' @md
 landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "landsat"))

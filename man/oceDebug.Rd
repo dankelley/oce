@@ -32,7 +32,6 @@ foo <- function(debug)
 debug <- 1
 oceDebug(debug, "in main")
 foo(debug=debug-1)
-
 }
 \author{
 Dan Kelley

@@ -18,8 +18,6 @@
 #'
 #' @family classes provided by oce
 #' @family things related to lobo data
-#'
-#' @md
 setClass("lobo", contains="oce")
 
 setMethod(f="initialize",
@@ -89,8 +87,6 @@ setMethod(f="initialize",
 #'
 #' @family datasets provided with oce
 #' @family things related to lobo data
-#'
-#' @md
 NULL
 
 #' @title Extract Something From a LOBO Object
@@ -100,8 +96,6 @@ NULL
 #' @template sub_subTemplate
 #'
 #' @family things related to lobo data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="lobo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -115,8 +109,6 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to lobo data
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="lobo", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -149,8 +141,6 @@ setMethod(f="[[<-",
 #' data(lobo)
 #' summary(lobo)
 #' @family things related to lobo data
-#'
-#' @md
 setMethod(f="summary",
           signature="lobo",
           definition=function(object, ...) {
@@ -166,7 +156,7 @@ setMethod(f="summary",
 #' Subset an lobo object, in a way that is somewhat
 #' analogous to [subset.data.frame()].
 #'
-#' @param x a `lobo` object.
+#' @param x a [lobo-class] object.
 #'
 #' @param subset a condition to be applied to the `data` portion of
 #' `x`.  See \sQuote{Details}.
@@ -179,8 +169,6 @@ setMethod(f="summary",
 #'
 #' @family things related to lobo data
 #' @family functions that subset oce objects
-#'
-#' @md
 setMethod(f="subset",
           signature="lobo",
           definition=function(x, subset, ...) {
@@ -200,8 +188,6 @@ setMethod(f="subset",
 
 
 #' @family things related to lobo data
-#'
-#' @md
 plot.lobo.timeseries.TS <- function(lobo,
                                     S.col = "blue", T.col = "darkgreen", draw.legend=FALSE, ...)
 {
@@ -232,8 +218,6 @@ plot.lobo.timeseries.TS <- function(lobo,
 }
 
 #' @family things related to lobo data
-#'
-#' @md
 plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", draw.legend=FALSE, ...)
 {
     peak <- max(range(c(lobo@data$u, lobo@data$v), na.rm=TRUE))
@@ -253,8 +237,6 @@ plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", d
 }
 
 #' @family things related to lobo data
-#'
-#' @md
 plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.nitrate = "darkgreen", draw.legend=FALSE, ...)
 {
     plot(lobo@data$time, lobo@data$fluorescence, type='l', ylab="", axes=FALSE, ...)
@@ -278,8 +260,6 @@ plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.ni
 }
 
 #' @family things related to lobo data
-#'
-#' @md
 plot.lobo.TS <- function(lobo, ...)
 {
     plotTS(as.ctd(lobo[["salinity"]], lobo[["temperature"]], 0), ...)
@@ -318,8 +298,6 @@ plot.lobo.TS <- function(lobo, ...)
 #' @family things related to lobo data
 #'
 #' @aliases plot.lobo
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("lobo"),
           definition=function(x,
@@ -404,8 +382,6 @@ setMethod(f="plot",
 #' lobo <- read.lobo(uri)
 #'}
 #' @family things related to lobo data
-#'
-#' @md
 read.lobo <- function(file, cols=7, processingLog)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
@@ -488,8 +464,6 @@ read.lobo <- function(file, cols=7, processingLog)
 #' @author Dan Kelley
 #'
 #' @family things related to lobo data
-#'
-#' @md
 as.lobo <- function(time, u, v, salinity, temperature, pressure, nitrate, fluorescence, filename="")
 {
     if (missing(u) || missing(v) || missing(salinity) || missing(temperature) || missing(pressure))

@@ -40,8 +40,6 @@
 #'
 #' @family classes provided by oce
 #' @family things related to adv data
-#'
-#' @md
 setClass("adv", contains="oce")
 
 #' ADV (acoustic-doppler velocimeter) dataset
@@ -76,8 +74,6 @@ setClass("adv", contains="oce")
 #'
 #' @family datasets provided with oce
 #' @family things related to adv data
-#'
-#' @md
 NULL
 
 
@@ -113,8 +109,6 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to adv data
-#'
-#' @md
 setMethod(f="summary",
           signature="adv",
           definition=function(object, ...) {
@@ -159,8 +153,6 @@ setMethod(f="summary",
 #' @author Dan Kelley
 #'
 #' @family things related to adv data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="adv", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -225,8 +217,6 @@ setMethod(f="[[",
 #' @template sub_subTemplate
 #'
 #' @family things related to adv data
-#'
-#' @md
 setMethod(f="[[<-",
           signature="adv",
           definition=function(x, i, j, ..., value) {
@@ -284,8 +274,6 @@ setMethod(f="[[<-",
 #'
 #' @family things related to adv data
 #' @family functions that subset oce objects
-#'
-#' @md
 setMethod(f="subset",
           signature="adv",
           definition=function(x, subset, ...) {
@@ -363,8 +351,6 @@ setMethod(f="subset",
 #' @param header A logical value indicating whether the file starts with a header.
 #' (This will not be the case for files that are created by data loggers that
 #' chop the raw data up into a series of sub-files, e.g. once per hour.)
-#'
-#' @md
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      header=TRUE,
@@ -570,8 +556,6 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @family things related to adv data
 #'
 #' @aliases plot.adv
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("adv"),
           definition=function(x, which=c(1:3, 14, 15),
@@ -1171,8 +1155,6 @@ setMethod(f="plot",
 #' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 #'
 #' @family things related to adv data
-#'
-#' @md
 toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "adv.2enu() {\n", unindent=1)
@@ -1220,8 +1202,6 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 #' @references
 #' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 #' @family things related to adp data
-#'
-#' @md
 beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "beamToXyzAdv() {\n", unindent=1)
@@ -1306,21 +1286,35 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' and mast; it is these that are used together with a rotation matrix to get
 #' velocity components in the east, north, and upward directions.
 #'
-#' \tabular{rrrrrrrrrrrr}{ \strong{Case} \tab \strong{Mfr.} \tab
-#' \strong{Instr.} \tab \strong{Cabled} \tab \strong{H. case} \tab
-#' \strong{Orient.} \tab \strong{H} \tab \strong{P} \tab \strong{R} \tab
-#' \strong{S} \tab \strong{F} \tab \strong{M}\cr 1 \tab Nortek \tab vector \tab
-#' no \tab - \tab up \tab H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr 2 \tab
-#' Nortek \tab vector \tab no \tab - \tab down \tab H-90 \tab R \tab -P \tab X
-#' \tab Y \tab Z\cr 3 \tab Nortek \tab vector \tab yes \tab yes \tab up \tab
-#' H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr 4 \tab Nortek \tab vector \tab
-#' yes \tab yes \tab down \tab H-90 \tab R \tab P \tab X \tab -Y \tab -Z\cr 5
-#' \tab Nortek \tab vector \tab yes \tab no \tab up \tab - \tab - \tab - \tab -
-#' \tab - \tab -\cr 6 \tab Nortek \tab vector \tab yes \tab no \tab down \tab -
-#' \tab - \tab - \tab - \tab - \tab -\cr 7 \tab Sontek \tab adv \tab - \tab -
-#' \tab up \tab H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr 8 \tab Sontek
-#' \tab adv \tab - \tab - \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab
-#' Z\cr }
+#' \tabular{rrrrrrrrrrrr}{
+#' **`Case`** \tab **`Mfr.`** \tab
+#' **`Instr.`** \tab **`Cabled`** \tab **`H. case`** \tab
+#' **`Orient.`** \tab **`H`** \tab **`P`** \tab **`R`** \tab
+#' **`S`** \tab **`F`** \tab **`M`**\cr
+#'
+#' 1 \tab Nortek \tab vector \tab
+#' no \tab - \tab up \tab H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr
+#'
+#' 2 \tab Nortek \tab vector \tab no \tab - \tab down \tab H-90 \tab R \tab -P \tab X
+#' \tab Y \tab Z\cr
+#'
+#' 3 \tab Nortek \tab vector \tab yes \tab yes \tab up \tab
+#' H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr
+#'
+#' 4 \tab Nortek \tab vector \tab
+#' yes \tab yes \tab down \tab H-90 \tab R \tab P \tab X \tab -Y \tab -Z\cr
+#'
+#' 5 \tab Nortek \tab vector \tab yes \tab no \tab up \tab - \tab - \tab - \tab -
+#' \tab - \tab -\cr
+#'
+#' 6 \tab Nortek \tab vector \tab yes \tab no \tab down \tab -
+#' \tab - \tab - \tab - \tab - \tab -\cr
+#'
+#' 7 \tab Sontek \tab adv \tab - \tab -
+#' \tab up \tab H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr
+#'
+#' 8 \tab Sontek \tab adv \tab - \tab - \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr
+#'}
 #'
 #' @param x an [adv-class] object.
 #'
@@ -1339,7 +1333,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' the sensor points.  The value, which must be `"upward"` or
 #' `"downward"`, over-rides the value of `orientation`,
 #' in the `metadata` slot,
-#' which will have been set by [read.adv()], \emph{provided} that the
+#' which will have been set by [read.adv()], *provided* that the
 #' data file contained the full header.  See \dQuote{Details}.
 #'
 #' @param debug a flag that, if non-zero, turns on debugging.  Higher values
@@ -1357,8 +1351,6 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' Oceanography.
 #'
 #' @family things related to adv data
-#'
-#' @md
 xyzToEnuAdv <- function(x, declination=0,
                         cabled=FALSE, horizontalCase, sensorOrientation,
                         debug=getOption("oceDebug"))
@@ -1540,8 +1532,6 @@ xyzToEnuAdv <- function(x, declination=0,
 #' @author Dan Kelley
 #'
 #' @family things related to adv data
-#'
-#' @md
 enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "adv"))

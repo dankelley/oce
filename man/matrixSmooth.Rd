@@ -36,7 +36,6 @@ image(m1, col=rainbow(100), zlim=c(0, 4), main="smoothed 1 time")
 image(m2, col=rainbow(100), zlim=c(0, 4), main="smoothed 2 times")
 image(m3, col=rainbow(100), zlim=c(0, 4), main="smoothed 3 times")
 par(opar)
-
 }
 \author{
 Dan Kelley

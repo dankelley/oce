@@ -68,8 +68,6 @@
 #' @family things related to astronomy
 #'
 #' @author Dan Kelley
-#'
-#' @md
 sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
 {
     if (missing(t)) stop("must provide t")

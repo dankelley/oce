@@ -10,19 +10,19 @@ swSigmaT(salinity, temperature = NULL, pressure = NULL,
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}
-and \code{pressure} must be provided) \strong{or} an \code{oce} object, in
+and \code{pressure} must be provided) \emph{or} an \code{oce} object, in
 which case \code{salinity}, \code{temperature} (in the ITS-90 scale; see
 next item), etc. are inferred from the object.}
 
-\item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
+\item{temperature}{\emph{in-situ} temperature (\eqn{^\circ}{deg}C), defined
 on the ITS-90 scale.  This scale is used by GSW-style calculation (as
 requested by setting \code{eos="gsw"}), and is the value contained within
 \code{ctd} objects (and probably most other objects created with data
 acquired in the past decade or two). Since the UNESCO-style calculation is
 based on IPTS-68, the temperature is converted within the present function,
-using \code{\link{T68fromT90}}.}
+using \code{\link[=T68fromT90]{T68fromT90()}}.}
 
-\item{pressure}{pressure [dbar]}
+\item{pressure}{pressure (dbar)}
 
 \item{longitude}{longitude of observation (only used if \code{eos="gsw"};
 see \sQuote{Details}).}
@@ -30,11 +30,11 @@ see \sQuote{Details}).}
 \item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
 \sQuote{Details}).}
 
-\item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
-[3,4].}
+\item{eos}{equation of state, either \code{"unesco"} (references 1 and 2)
+or \code{"gsw"} (references 3 and 4).}
 }
 \value{
-Quasi-potential density anomaly [kg/m\eqn{^3}{^3}], defined as the
+Quasi-potential density anomaly (kg/m\eqn{^3}{^3}), defined as the
 density calculated with pressure set to zero.
 }
 \description{
@@ -42,7 +42,7 @@ Compute \eqn{\sigma_t}{sigma-t}, a rough estimate of potential density of
 seawater, minus 1000 kg/m\eqn{^3}{^3}.
 }
 \details{
-If the first argument is an \code{oce} object, then salinity, etc., are
+If the first argument is an \linkS4class{oce} object, then salinity, etc., are
 extracted from it, and used for the calculation.
 }
 \examples{
@@ -51,7 +51,7 @@ swSigmaT(35, T90fromT68(13), 1000, eos="unesco") # 26.39354
 
 }
 \references{
-See citations provided in the \code{\link{swRho}} documentation.
+See citations provided in the \code{\link[=swRho]{swRho()}} documentation.
 }
 \seealso{
 Other functions that calculate seawater properties: \code{\link{T68fromT90}},

@@ -18,8 +18,7 @@
   labcex = 1, debug, ...)
 }
 \arguments{
-\item{x}{a \code{section} object, e.g. as created by \code{\link[=as.section]{as.section()}}
-or \code{\link[=read.section]{read.section()}}.}
+\item{x}{a \linkS4class{section} object.}
 
 \item{which}{a list of desired plot types, as explained in \dQuote{Details}.
 There may be up to four panels in total, and the desired plots are placed in
@@ -28,9 +27,8 @@ not adjusted, which makes it easy to add to the plot with subsequent plotting
 commands.}
 
 \item{eos}{Character indication of the seawater equation of state
-to use. The permitted choices are \code{"gsw"} and \code{"unesco"}.
-If \code{eos} is not supplied, it defaults to
-\code{getOption("oceEOS", default="gsw")}.}
+to use. The permitted choices are \code{"gsw"} and \code{"unesco"}. If \code{eos} is
+not supplied, it defaults to \code{\link{getOption}}\code{("oceEOS",default="gsw")}.}
 
 \item{at}{If \code{NULL} (the default), the x axis will indicate the distance
 of the stations from the first in the section.  (This may give errors in the
@@ -153,7 +151,7 @@ to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
 be printed. If \code{debug} is not supplied, it defaults to
-\code{\link{getOption}("oceDebug")}.}
+\code{\link{getOption}}\code{("oceDebug")}.}
 
 \item{...}{Optional arguments passed to the contouring function.}
 }

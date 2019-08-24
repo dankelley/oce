@@ -62,7 +62,6 @@ early <- window(adp, start="2008-06-26 00:00:00", end="2008-06-26 12:00:00")
 plot(early)
 bottom <- window(adp, start=0, end=20, which="distance")
 plot(bottom)
-
 }
 \seealso{
 \code{\link[=subset]{subset()}} provides more flexible selection of subsets.

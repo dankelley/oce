@@ -31,8 +31,6 @@
 #' USA. 429 pages.
 #'
 #' @family things related to astronomy
-#'
-#' @md
 eclipticalToEquatorial <- function(lambda, beta, epsilon)
 {
     if (is.data.frame(lambda)) {
@@ -80,8 +78,6 @@ eclipticalToEquatorial <- function(lambda, beta, epsilon)
 #' USA. 429 pages.
 #'
 #' @family things related to astronomy
-#'
-#' @md
 equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitude, latitude)
 {
     RPD <- atan2(1, 1) / 45            # radians per degree
@@ -121,8 +117,6 @@ equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitud
 #' print(siderealTime(t))
 #'
 #' @family things related to astronomy
-#'
-#' @md
 siderealTime <- function(t)
 {
     tt <- as.POSIXlt(t)
@@ -190,8 +184,6 @@ siderealTime <- function(t)
 #'
 #' @family things related to astronomy
 #' @family things related to time
-#'
-#' @md
 julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz="UTC")
 {
     if (!inherits(t, "POSIXt"))  {
@@ -241,8 +233,6 @@ julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz=
 #'
 #' @family things related to astronomy
 #' @family things related to time
-#'
-#' @md
 julianCenturyAnomaly <- function(jd)
 {
     (jd - 2415020.0) / 36525         # reference 1 Meeus 1982 (eq 7.1 or 15.1)
@@ -347,8 +337,6 @@ julianCenturyAnomaly <- function(jd)
 #' }
 #'
 #' @family things related to astronomy
-#'
-#' @md
 moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
 {
     if (missing(t)) stop("must provide 't'")

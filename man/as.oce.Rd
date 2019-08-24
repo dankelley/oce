@@ -46,11 +46,9 @@ the proper return value.  There
 are only a few cases (although more may be added if there is
 sufficient user demand). The cases are as follows.
 \itemize{
-
 \item If \code{x} contains items named \code{temperature},
 \code{pressure} and either \code{salinity} or \code{conductivity},
 then an object of type \linkS4class{ctd} will be returned.
-
 \item If \code{x} contains columns named \code{longitude} and \code{latitude},
 but no other columns, then an object of class \linkS4class{coastline}
 is returned.

@@ -18,8 +18,6 @@
 #'
 #' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers
-#'
-#' @md
 oceNames2whpNames <- function(names)
 {
     ## see woceNames2oceNames, and update both at once when new items added
@@ -72,8 +70,6 @@ oceNames2whpNames <- function(names)
 #'
 #' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers
-#'
-#' @md
 oceUnits2whpUnits <- function(units, scales)
 {
     if (length(units) != length(scales))
@@ -155,8 +151,6 @@ oceUnits2whpUnits <- function(units, scales)
 #'
 #' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers
-#'
-#' @md
 woceNames2oceNames <- function(names)
 {
     ## see woceNames2oceNames, and update both at once when new items added
@@ -205,8 +199,6 @@ woceNames2oceNames <- function(names)
 #'
 #' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers
-#'
-#' @md
 woceUnit2oceUnit <- function(woceUnit)
 {
     ## message("woceUnit2oceUnit(\"", woceUnit, "\")", sep="")
@@ -255,8 +247,6 @@ woceUnit2oceUnit <- function(woceUnit)
 #' @family functions that read ctd data
 #'
 #' @author Dan Kelley
-#'
-#' @md
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                           monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
@@ -669,8 +659,6 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, deploy
 #' @family functions that read ctd data
 #'
 #' @author Dan Kelley
-#'
-#' @md
 read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                                 monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {

@@ -27,7 +27,6 @@ This is a helper function for various \code{summary} functions.
 library(oce)
 data(ctd)
 showMetadataItem(ctd, "ship", "ship")
-
 }
 \author{
 Dan Kelley

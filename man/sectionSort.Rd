@@ -16,14 +16,15 @@ distance from the first station, \code{"longitude"}, for longitude,
 \code{"latitude"} for latitude, and \code{"time"}, for time.}
 }
 \value{
-An object of \code{\link{section-class}} that has less lateral
-variation than the input section.
+object A \linkS4class{section} object that has been smoothed,
+so its data fields will station-to-statoin variation than
+is the case for the input section, \code{x}.
 }
 \description{
-Sections created with \code{\link{as.section}} have "stations" that are in the
+Sections created with \code{\link[=as.section]{as.section()}} have "stations" that are in the
 order of the CTD objects (or filenames for such objects) provided.  Sometimes,
 this is not the desired order, e.g. if file names discovered with
-\code{\link{dir}} are in an order that makes no sense.  (For example, a
+\code{\link[=dir]{dir()}} are in an order that makes no sense.  (For example, a
 practioner might name stations \code{"stn1"}, \code{"stn2"}, etc., not
 realizing that this will yield an unhelpful ordering, by file name, if there
 are more than 9 stations.) The purpose of \code{sectionSort} is to permit

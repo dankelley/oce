@@ -21,7 +21,6 @@ Substitute NA for data outside a range, e.g. to remove wild spikes in data.
 \examples{
 
 ten.to.twenty <- rangeLimit(1:100, 10, 20)
-
 }
 \author{
 Dan Kelley

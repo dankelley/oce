@@ -41,16 +41,16 @@ North.}
 
 \item{manufacturer}{an optional character string indicating the manufacturer, used by
 the general function \code{read.adp} to select a subsidiary function to use. If this
-is not given, then \code{\link{oceMagic}} is used to try to infer the type. If this
-is provided, then the value \code{"rdi"} will cause \code{\link{read.adp.rdi}}
-to be used, \code{"nortek"} will cause \code{\link{read.adp.nortek}} to be used,
-and \code{"sontek"} will cause \code{\link{read.adp.sontek}} to be used.}
+is not given, then \code{\link[=oceMagic]{oceMagic()}} is used to try to infer the type. If this
+is provided, then the value \code{"rdi"} will cause \code{\link[=read.adp.rdi]{read.adp.rdi()}}
+to be used, \code{"nortek"} will cause \code{\link[=read.adp.nortek]{read.adp.nortek()}} to be used,
+and \code{"sontek"} will cause \code{\link[=read.adp.sontek]{read.adp.sontek()}} to be used.}
 
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
 in reading the file, either by printing a dot for each profile or by writing
-a textual progress bar with \code{\link{txtProgressBar}}.}
+a textual progress bar with \code{\link[=txtProgressBar]{txtProgressBar()}}.}
 
-\item{despike}{if \code{TRUE}, \code{\link{despike}} will be used to clean
+\item{despike}{if \code{TRUE}, \code{\link[=despike]{despike()}} will be used to clean
 anomalous spikes in heading, etc.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
@@ -63,15 +63,14 @@ amount of debugging information, or to 2 to get more.}
 \item{\dots}{additional arguments, passed to called routines.}
 }
 \value{
-An \code{\link{adp-class}} object.
+An \linkS4class{adp} object.
 The contents of that object make sense for the particular instrument
 type under study, e.g. if the data file contains
 NMEA strings, then navigational data will be stored in an item
 called \code{nmea} in the \code{data} slot).
 }
 \description{
-Read an ADP data file, producing an \code{adp} object, i.e. one inheriting
-from \code{\link{adp-class}}.
+Read an ADP data file, producing an \linkS4class{adp} object.
 }
 \details{
 Several file types can be handled.  Some of
@@ -79,7 +78,7 @@ these functions are wrappers that map to device names, e.g.
 \code{read.aquadoppProfiler} does its work by calling
 \code{read.adp.nortek}; in this context, it is worth noting that the
 ``aquadopp'' instrument is a one-cell profiler that might just as well have
-been documented under the heading \code{\link{read.adv}}.
+been documented under the heading \code{\link[=read.adv]{read.adv()}}.
 }
 \seealso{
 Other things related to adp data: \code{\link{[[,adp-method}},
@@ -104,6 +103,7 @@ Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},

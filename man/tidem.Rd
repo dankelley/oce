@@ -100,15 +100,12 @@ resultant coefficients on the sine and cosine terms.
 \details{
 The tidal constituents to be used in the analysis are specified as follows;
 see \dQuote{Constituent Naming Convention}.
-
-\itemize{
-
-\item \strong{Case 1}. If \code{constituents} is not provided, then the constituent
+\enumerate{
+\item If \code{constituents} is not provided, then the constituent
 list will be made up of the 69 constituents designated by Foreman as "standard".
 These include astronomical frequencies and some shallow-water frequencies,
 and are as follows: \code{c("Z0", "SA", "SSA", "MSM", "MM", "MSF", "MF", "ALP1", "2Q1", "SIG1", "Q1", "RHO1", "O1", "TAU1", "BET1", "NO1", "CHI1", "PI1", "P1", "S1", "K1", "PSI1", "PHI1", "THE1", "J1", "SO1", "OO1", "UPS1", "OQ2", "EPS2", "2N2", "MU2", "N2", "NU2", "GAM2", "H1", "M2", "H2", "MKS2", "LDA2", "L2", "T2", "S2", "R2", "K2", "MSN2", "ETA2", "MO3", "M3", "SO3", "MK3", "SK3", "MN4", "M4", "SN4", "MS4", "MK4", "S4", "SK4", "2MK5", "2SK5", "2MN6", "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8")}.
-
-\item \strong{Case 2}. If the first item in \code{constituents} is the string
+\item If the first item in \code{constituents} is the string
 \code{"standard"}, then a provisional list is set up as in Case 1, and then
 the (optional) rest of the elements of \code{constituents} are examined, in
 order.  Each of these constituents is based on the name of a tidal
@@ -119,8 +116,7 @@ But, if the constituent is preceded by a minus sign, then it is removed
 from the list (if it is already there).  Thus, for example,
 \code{constituents=c("standard", "-M2", "ST32")} would remove the M2
 constituent and add the ST32 constituent.
-
-\item \strong{Case 3}. If the first item is not \code{"standard"}, then the list of
+\item If the first item is not \code{"standard"}, then the list of
 constituents is processed as in Case 2, but without starting with the
 standard list. As an example, \code{constituents=c("K1", "M2")} would fit
 for just the K1 and M2 components. (It would be strange to use a minus sign

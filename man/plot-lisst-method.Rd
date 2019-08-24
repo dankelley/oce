@@ -10,7 +10,7 @@
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{a \code{lisst} object, e.g. as read by \code{\link[=read.lisst]{read.lisst()}}.}
+\item{x}{a \linkS4class{lisst} object.}
 
 \item{which}{list of desired plot types.  These are graphed in panels
 running down from the top of the page.  See \dQuote{Details} for the

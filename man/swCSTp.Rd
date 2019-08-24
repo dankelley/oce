@@ -11,16 +11,16 @@ swCSTp(salinity, temperature = 15, pressure = 0,
 \item{salinity}{practical salinity, or a CTD object (in which case its
 temperature and pressure are used, and the next two arguments are ignored)}
 
-\item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
+\item{temperature}{\emph{in-situ} temperature (\eqn{^\circ}{deg}C), defined
 on the ITS-90 scale; see the examples, as well as the
-\dQuote{Temperature units} section in the documentation for \code{\link{swRho}}.}
+\dQuote{Temperature units} section in the documentation for \code{\link[=swRho]{swRho()}}.}
 
-\item{pressure}{pressure [dbar]}
+\item{pressure}{pressure (dbar)}
 
 \item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
 }
 \value{
-Conductivity ratio [unitless], i.e. the ratio of conductivity to the
+Conductivity ratio (unitless), i.e. the ratio of conductivity to the
 conductivity at salinity=35, temperature=15 (IPTS-68 scale) and pressure=0,
 which has numerical value 42.9140 mS/cm = 4.29140 S/m (see
 Culkin and Smith, 1980, in the regression result cited at the bottom of
@@ -34,8 +34,8 @@ temperature68=15, and pressure=0).
 \details{
 If \code{eos="unesco"}, the calculation is done by a bisection root search
 on the UNESCO formula relating salinity to conductivity, temperature, and
-pressure (see \code{\link{swSCTp}}).  If it is \code{"gsw"} then the
-Gibbs-SeaWater formulation is used, via \code{\link{gsw_C_from_SP}}.
+pressure (see \code{\link[=swSCTp]{swSCTp()}}).  If it is \code{"gsw"} then the
+Gibbs-SeaWater formulation is used, via \code{\link[=gsw_C_from_SP]{gsw_C_from_SP()}}.
 }
 \examples{
 expect_equal(1, swCSTp(35, T90fromT68(15), 0, eos="unesco")) # by definition of cond. ratio
@@ -44,20 +44,21 @@ expect_equal(1, swCSTp(34.25045, T90fromT68(15), 2000, eos="gsw"), tolerance=1e-
 
 }
 \references{
-1. Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
+\enumerate{
+\item Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
 computation of fundamental properties of seawater. \emph{Unesco Technical
-Papers in Marine Science}, \bold{44}, 53 pp.
-
-2. Culkin, F., and Norman D. Smith, 1980. Determination of the concentration of
+Papers in Marine Science}, \emph{44}, 53 pp.
+\item Culkin, F., and Norman D. Smith, 1980. Determination of the concentration of
 potassium chloride solution having the same electrical conductivity, at 15 C
 and infinite frequency, as standard seawater of salinity 35.0000 ppt
 (Chlorinity 19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering},
-\bold{5}, pp 22-23.
+\emph{5}, pp 22-23.
+}
 }
 \seealso{
 For thermal (as opposed to electrical) conductivity, see
-\code{\link{swThermalConductivity}}. For computation of salinity from
-electrical conductivity, see \code{\link{swSCTp}}.
+\code{\link[=swThermalConductivity]{swThermalConductivity()}}. For computation of salinity from
+electrical conductivity, see \code{\link[=swSCTp]{swSCTp()}}.
 
 Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{T90fromT48}}, \code{\link{T90fromT68}},

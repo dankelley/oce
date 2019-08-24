@@ -56,7 +56,6 @@ plot(1:11, x, type='o', xlab="time", ylab="x and X")
 X <- lowpass(x, n=5)
 lines(1:11, X, col=2)
 points(1:11, X, col=2)
-
 }
 \author{
 Dan Kelley

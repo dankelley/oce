@@ -9,8 +9,8 @@
 #' The calculation is as follows.
 #' Consider the `i`-th point in the `longitude` and `latitude`
 #' vectors.  To calculate `x[i]`, [geodDist()] is
-#' used is to find the distance \emph{along a
-#' geodesic curve} connecting (`longitude[i]`, `latitude[i]`) with
+#' used is to find the distance
+#' *along a geodesic curve* connecting (`longitude[i]`, `latitude[i]`) with
 #' (`longitudeRef`, `latitude[i]`). The resultant distance
 #' is multiplied by -1 if `longitude[i]-longitudeRef` is negative,
 #' and the result is assigned to `x[i]`.
@@ -70,8 +70,6 @@
 #'        legend=c(sprintf("geod: %.1f deg", angle), sprintf("utm: %.1f deg",angleUTM)))
 #'}
 #' @family functions relating to geodesy
-#'
-#' @md
 geodXy <- function(longitude, latitude, longitudeRef, latitudeRef, debug=getOption("oceDebug"))
 {
     a <- 6378137.00          # WGS84 major axis
@@ -123,8 +121,6 @@ geodXy <- function(longitude, latitude, longitudeRef, latitudeRef, debug=getOpti
 #' @return a data frame containing `longitude` and `latitude`
 #'
 #' @family functions relating to geodesy
-#'
-#' @md
 geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceDebug"))
 {
     a <- 6378137.00          # WGS84 major axis
@@ -159,7 +155,7 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
 #'
 #' Case 2: `longitude1` is a vector.  If `longitude2` and
 #' `latitude2` are not given, then the return value is a vector containing
-#' the distances of each point from the first one, \emph{or} the distance
+#' the distances of each point from the first one, *or* the distance
 #' along the path connecting the points, according to the value of
 #' `alongPath`.  On the other hand, if both `longitude2` and
 #' `latitude2` are specified, then the return result depends on the length
@@ -171,7 +167,7 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
 #' corresponding (`longitude1`,`latitude1`) and
 #' (`longitude2`,`latitude2`) values.
 #'
-#' @param longitude1 longitude or a vector of longitudes, \strong{or} a
+#' @param longitude1 longitude or a vector of longitudes, *or* a
 #' `section` object, from which longitude and latitude are extracted and
 #' used instead of the next three arguments
 #'
@@ -198,7 +194,7 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
 #' @seealso [geodXy()]
 #'
 #' @references T. Vincenty, "Direct and Inverse Solutions of Ellipsoid on the
-#' Ellipsoid with Application of Nested Equations", \emph{Survey Review}, April
+#' Ellipsoid with Application of Nested Equations", *Survey Review*, April
 #' 1975.
 #'
 #' @examples
@@ -209,8 +205,6 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
 #' geodDist(section, alongPath=TRUE)
 #'
 #' @family functions relating to geodesy
-#'
-#' @md
 geodDist <- function (longitude1, latitude1=NULL, longitude2=NULL, latitude2=NULL, alongPath=FALSE)
 {
     a <- 6378137.00          # WGS84 major axis
@@ -294,9 +288,6 @@ geodDist <- function (longitude1, latitude1=NULL, longitude2=NULL, latitude2=NUL
 #'}
 #'
 #' @family functions relating to geodesy
-#'
-#'
-#' @md
 geodGc <- function(longitude, latitude, dmax)
 {
     n <- length(latitude)

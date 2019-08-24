@@ -13,8 +13,7 @@
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{an object of class \code{"sealevel"}, e.g. as read by
-\code{\link[=read.sealevel]{read.sealevel()}}.}
+\item{x}{a \linkS4class{sealevel} object.}
 
 \item{which}{a numerical or string vector indicating desired plot types,
 with possibilities 1 or \code{"all"} for a time-series of all the data, 2 or

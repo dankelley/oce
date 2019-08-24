@@ -24,8 +24,6 @@
 #'
 #' @family classes provided by oce
 #' @family things related to windrose data
-#'
-#' @md
 setClass("windrose", contains="oce")
 
 setMethod(f="initialize",
@@ -47,8 +45,6 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to windrose data
-#'
-#' @md
 setMethod(f="summary",
           signature="windrose",
           definition=function(object, ...) {
@@ -62,15 +58,13 @@ setMethod(f="summary",
 
 #' @title Extract Something From a Windrose Object
 #'
-#' @param x A [windrose-class] object.
+#' @param x a [windrose-class] object.
 #'
 #' @section Details of the specialized windrose method:
 #' There are no special features for [windrose-class] data;
 #' the general method is used directly.
 #' @template sub_subTemplate
 #' @family things related to windrose data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="windrose", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -79,13 +73,11 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a Windrose Object
 #'
-#' @param x A [windrose-class] object.
+#' @param x a [windrose-class] object.
 #'
 #' @template sub_subsetTemplate
 #'
 #' @family things related to windrose data
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="windrose", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -112,16 +104,17 @@ setMethod(f="[[<-",
 #'
 #' @return A [windrose-class] object, with `data` slot containing
 #'
-#' \describe{
-#'     \item{`n`}{the number of x values}
-#'     \item{`x.mean`}{the mean of the x values}
-#'     \item{`y.mean`}{the mean of the y values}
-#'     \item{`theta`}{the central angle (in degrees) for the class}
-#'     \item{`count`}{the number of observations in this class}
-#'     \item{`mean`}{the mean of the observations in this class}
-#'     \item{`fivenum`}{the [fivenum()] vector for
+#' \tabular{ll}{
+#' **Item**   \tab **Meaning**\cr
+#'  `n`       \tab the number of `x` values\cr
+#'  `x.mean`  \tab the mean of the `x` values\cr
+#'  `y.mean`  \tab the mean of the `y` values\cr
+#'  `theta`   \tab the central angle (in degrees) for the class\cr
+#'  `count`   \tab the number of observations in this class\cr
+#'  `mean`    \tab the mean of the observations in this class\cr
+#'  `fivenum` \tab the [fivenum()] vector for
 #'         observations in this class (the min, the lower hinge, the
-#'         median, the upper hinge, and the max)}
+#'         median, the upper hinge, and the max)\cr
 #' }
 #'
 #' @examples
@@ -135,8 +128,6 @@ setMethod(f="[[<-",
 #' @author Dan Kelley, with considerable help from Alex Deckmyn.
 #'
 #' @family things related to windrose data
-#'
-#' @md
 as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "as.windrose(x, y, dtheta=", dtheta, ", debug=", debug, ") {\n", sep="", unindent=1)
@@ -195,7 +186,7 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 #' @description
 #' Plot a [windrose-class] object.
 #'
-#' @param x A [windrose-class] object.
+#' @param x a [windrose-class] object.
 #'
 #' @param type The thing to be plotted, either the number of counts in the angle
 #' interval, the mean of the values in the interval, the median of the values, or
@@ -238,9 +229,8 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 #'
 #' @family functions that plot oce data
 #' @family things related to windrose data
-#' @aliases plot.windrose
 #'
-#' @md
+#' @aliases plot.windrose
 setMethod(f="plot",
           signature=signature("windrose"),
           definition=function(x,

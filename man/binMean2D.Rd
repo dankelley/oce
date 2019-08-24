@@ -8,9 +8,9 @@ binMean2D(x, y, f, xbreaks, ybreaks, flatten = FALSE, fill = FALSE,
   fillgap = -1)
 }
 \arguments{
-\item{x}{Vector of numerical values.}
+\item{x}{vector of numerical values.}
 
-\item{y}{Vector of numerical values.}
+\item{y}{vector of numerical values.}
 
 \item{f}{Matrix of numerical values, a matrix f=f(x,y).}
 

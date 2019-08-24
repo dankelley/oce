@@ -36,7 +36,7 @@ is typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.}
 }
 \value{
-An object of class \code{\link{section-class}}.
+A \linkS4class{section} object.
 }
 \description{
 Read a file that contains a series of \code{ctd} profiles that make up an
@@ -64,7 +64,7 @@ to exist for years is \url{https://cchdo.ucsd.edu}, but a search on \code{"WOCE
   bottle data"} should turn up other sites, if this one ceases to exist. Only
 the so-called \emph{exchange BOT} data format can be processed by read.section()
 at this time. Data names are inferred from column headings using
-\code{\link{woceNames2oceNames}}.
+\code{\link[=woceNames2oceNames]{woceNames2oceNames()}}.
 }
 \seealso{
 Other things related to section data: \code{\link{[[,section-method}},

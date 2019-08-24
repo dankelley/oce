@@ -55,7 +55,6 @@ x <- sealevel[["elevation"]]
 M2 <- predict(tidem(sealevel, constituents="M2"))
 S2 <- predict(tidem(sealevel, constituents=c("S2")))
 plotTaylor(x, cbind(M2, S2))
-
 }
 \references{
 Taylor, Karl E., 2001.  Summarizing multiple aspects of model

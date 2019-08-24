@@ -11,8 +11,8 @@
 }
 \arguments{
 \item{object}{an object of class \code{"adp"}, usually, a result of a call
-to \code{\link{read.oce}}, \code{\link{read.adp.rdi}}, or
-\code{\link{read.adp.nortek}}.}
+to \code{\link[=read.oce]{read.oce()}}, \code{\link[=read.adp.rdi]{read.adp.rdi()}}, or
+\code{\link[=read.adp.nortek]{read.adp.nortek()}}.}
 
 \item{\dots}{further arguments passed to or from other methods.}
 }
@@ -48,8 +48,10 @@ Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
-  \code{\link{subset,adp-method}}, \code{\link{toEnuAdp}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
+  \code{\link{toEnuAdp}}, \code{\link{toEnu}},
+  \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }

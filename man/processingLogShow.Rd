@@ -7,7 +7,7 @@
 processingLogShow(x)
 }
 \arguments{
-\item{x}{An \linkS4class{oce} object.}
+\item{x}{an \linkS4class{oce} object.}
 }
 \description{
 Show the processing log of an oce object

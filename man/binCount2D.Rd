@@ -7,9 +7,9 @@
 binCount2D(x, y, xbreaks, ybreaks, flatten = FALSE)
 }
 \arguments{
-\item{x}{Vector of numerical values.}
+\item{x}{vector of numerical values.}
 
-\item{y}{Vector of numerical values.}
+\item{y}{vector of numerical values.}
 
 \item{xbreaks}{Vector of values of \code{x} at the boundaries between bins, calculated using
 [\code{pretty``]}(x)` if not supplied.}

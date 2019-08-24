@@ -52,7 +52,7 @@
 #'
 #' @references Welch, P. D., 1967. The Use of Fast Fourier Transform for the
 #' Estimation of Power Spectra: A Method Based on Time Averaging Over Short,
-#' Modified Periodograms. \emph{IEEE Transactions on Audio Electroacoustics},
+#' Modified Periodograms. *IEEE Transactions on Audio Electroacoustics*,
 #' AU-15, 70--73.
 #'
 #' @examples
@@ -80,8 +80,6 @@
 #' title("Variance-preserving spectrum")
 #' pw <- pwelch(co2, nfft=256, plot=FALSE)
 #' lines(log10(pw$freq), pw$spec * pw$freq, col='red')
-#'
-#' @md
 pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
                    plot=TRUE,
                    debug=getOption("oceDebug"), ...)

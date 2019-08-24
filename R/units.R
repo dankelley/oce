@@ -21,8 +21,6 @@
 #' as.unit("ITS-90")
 #' as.unit("PSS-78")
 #' as.unit("UMOL/KG")
-#'
-#' @md
 as.unit <- function(u, default=list(unit=expression(), scale=""))
 {
     if (missing(u) || !is.character(u))

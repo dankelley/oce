@@ -13,7 +13,7 @@
   1, mgp[1] + 1, 1, 1), debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{A \linkS4class{topo} object.}
+\item{x}{a \linkS4class{topo} object.}
 
 \item{xlab, ylab}{Character strings giving a label for the x and y axes.}
 

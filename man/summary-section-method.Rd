@@ -9,8 +9,8 @@
 }
 \arguments{
 \item{object}{An object of class \code{"section"}, usually, a result of a call
-to \code{\link{read.section}}, \code{\link{read.oce}}, or
-\code{\link{as.section}}.}
+to \code{\link[=read.section]{read.section()}}, \code{\link[=read.oce]{read.oce()}}, or
+\code{\link[=as.section]{as.section()}}.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }

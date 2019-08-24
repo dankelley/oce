@@ -28,8 +28,6 @@ clipmin <- function(x, min=0)
 #'
 #' @seealso This is used by various functions that draw time labels on axes,
 #' e.g.  [plot,adp-method()].
-#'
-#' @md
 abbreviateTimeLabels <- function(t, ...)
 {
     if (!inherits(t, "POSIXt"))
@@ -288,8 +286,6 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #' image(volcano, col=oce.colorsJet(100), zlim=c(90, 200))
 #' contour(volcano, add=TRUE)
 #' drawPalette(c(90, 200), fullpage=TRUE, col=oce.colorsJet)
-#'
-#' @md
 drawPalette <- function(zlim, zlab="",
                         breaks, col, colormap,
                         mai, cex.axis=par("cex.axis"), pos=4,
@@ -577,23 +573,23 @@ drawPalette <- function(zlim, zlab="",
 #' here only the first is permitted.)
 #'
 #' @param x,y These have different meanings in different modes of operation.
-#'         \emph{Mode 1.} One
+#'         *Mode 1.* One
 #'         mode has them meaning the locations of coordinates along which values
 #'         matrix `z` are defined. In this case, both `x` and `y`
 #'         must be supplied and, within each, the values must be finite and
 #'         distinct; if values are out of order, they (and `z`) will be
 #'         transformed to put them in order.
-#'         ordered in a matching way).  \emph{Mode 2.}
+#'         ordered in a matching way).  *Mode 2.*
 #'         If `z` is provided but not `x` and `y`, then the latter
 #'         are constructed to
 #'         indicate the indices of the matrix, in contrast
 #'         to the range of 0 to 1, as is the case for [image()].
-#'         \emph{Mode 3.} If
+#'         *Mode 3.* If
 #'         `x` is a list, its components `x$x` and `x$y` are used
 #'         for `x` and `y`, respectively. If the list has component
 #'         `z` this is used for `z`. (NOTE: these arguments are meant to
 #'         mimic those of [image()], which explains the same description
-#'         here.)  \emph{Mode 4.} There are also some special cases, e.g. if `x` is a
+#'         here.)  *Mode 4.* There are also some special cases, e.g. if `x` is a
 #'         topographic object such as can be created with [read.topo()]
 #'         or [as.topo()], then longitude and latitude are used for
 #'         axes, and topographic height is drawn.
@@ -621,7 +617,7 @@ drawPalette <- function(zlim, zlab="",
 #'
 #' @param  flipy Logical, with `TRUE` indicating that the graph
 #' should have the y axis reversed, i.e. with smaller values at
-#' the bottom of the page. (\emph{Historical note:} until 2019 March 26,
+#' the bottom of the page. (*Historical note:* until 2019 March 26,
 #' the meaning of `flipy` was different; it meant to reverse the
 #' range of the y axis, so that if `ylim` were given as a reversed
 #' range, then setting `flipy=TRUE` would reverse the flip, yielding
@@ -633,48 +629,60 @@ drawPalette <- function(zlim, zlab="",
 #'         either at the top-right of the main image, or on the side, in the axis
 #'         for the palette.
 #' @param  decimate Controls whether the image will be decimated before plotting,
-#'         in three possible cases. \strong{Case 1.}
-#'         If `decimate=FALSE` then every grid cell in the matrix will
-#'         be represented by a pixel in the image. \strong{Case 2 (the default).}
-#'         If `decimate=TRUE`, then decimation will be done
-#'         in the horizontal or vertical direction (or both) if the length of the
-#'         corresponding edge of the `z` matrix exceeds 800. (This also creates
-#'         a warning message.) The decimation
-#'         factor is computed as the integer just below the ratio of `z` dimension
-#'         to 400. Thus, no decimation is done if the dimension is less than 800,
-#'         but if the dimension s between 800 and 1199, only every second grid
-#'         point is mapped to a pixel in the image.  \strong{Case 3.}
-#'         If `decimate` is an integer, then that `z` is subsampled
-#'         at `seq.int(1L, dim(z)[1], by=decimate)` (as is `x`), and
-#'         the same is done for the `y` direction. \strong{Case 4.} If
-#'         `decimate` is a vector of two integers, the first is used for
-#'         the first index of `z`, and the second is used for the second
-#'         index.
+#'         in three possible cases.
+#'
+#' 1. If `decimate=FALSE` then every grid cell in the matrix will
+#'    be represented by a pixel in the image.
+#'
+#' 2. If `decimate=TRUE` (the default), then decimation will be done
+#'    in the horizontal or vertical direction (or both) if the length of the
+#'    corresponding edge of the `z` matrix exceeds 800. (This also creates
+#'    a warning message.) The decimation
+#'    factor is computed as the integer just below the ratio of `z` dimension
+#'    to 400. Thus, no decimation is done if the dimension is less than 800,
+#'    but if the dimension s between 800 and 1199, only every second grid
+#'    point is mapped to a pixel in the image.
+#'
+#' 3. If `decimate` is an integer, then that `z` is subsampled
+#'    at `seq.int(1L, dim(z)[1], by=decimate)` (as is `x`), and
+#'    the same is done for the `y` direction.
+#'
+#' 4. If `decimate` is a vector of two integers, the first is used for
+#'    the first index of `z`, and the second is used for the second
+#'    index.
+#'
 #' @param  breaks The z values for breaks in the color scheme.  If this is of
 #'         length 1, the value indicates the desired number of breaks, which is
 #'         supplied to [pretty()], in determining clean break points.
+#'
 #' @param  col Either a vector of colors corresponding to the breaks, of length
 #'         1 plus the number of breaks, or a function specifying colors,
 #'         e.g. [oce.colorsJet()] for a rainbow.
+#'
 #' @param  colormap A color map as created by [colormap()].  If
 #'         provided, then `colormap$breaks` and `colormap$col` take
 #'         precedence over the present arguments `breaks` and `col`.
 #'         (All of the other contents of `colormap` are ignored, though.)
+#'
 #' @param  labels Optional vector of labels for ticks on palette axis (must
 #'         correspond with `at`).
+#'
 #' @param  at Optional vector of positions for the `label`s.
 #'
 #' @param  drawContours Logical value indicating whether to draw contours on the
 #'         image, and palette, at the color breaks.  Images with a great deal of
 #'         high-wavenumber variation look poor with contours.
+#'
 #' @param  tformat Optional argument passed to [oce.plot.ts()], for
 #'         plot types that call that function.  (See [strptime()] for the
 #'         format used.)
+#'
 #' @param  drawTimeRange Logical, only used if the `x` axis is a
 #'         time.  If `TRUE`, then an indication of the time range of the
 #'         data (not the axis) is indicated at the top-left margin of the
 #'         graph.  This is useful because the labels on time axes only indicate
 #'         hours if the range is less than a day, etc.
+#'
 #' @param  drawPalette Indication of the type of palette to draw, if any.  If
 #'         `drawPalette=TRUE`, a palette is drawn at the right-hand side of the
 #'         main image.  If `drawPalette=FALSE`, no palette is drawn, and the
@@ -684,30 +692,39 @@ drawPalette <- function(zlim, zlab="",
 #'         have been drawn.  This last form is useful for producing stacked plots
 #'         with uniform left and right margins, but with palettes on only some of
 #'         the images.
+#'
 #' @param  drawTriangles Logical value indicating whether to draw
 #'         triangles on the top and bottom of the palette.  This is passed to
 #'         [drawPalette()].
+#'
 #' @param  filledContour Boolean value indicating whether to use filled
 #'         contours to plot the image.
+#'
 #' @param  missingColor A color to be used to indicate missing data, or
 #'         `NULL` for transparent (to see this, try setting
 #'         `par("bg")<-"red"`).
+#'
 #' @param useRaster A logical value passed to [image()], in cases
 #'        where `filledContour` is `FALSE`. Setting `useRaster=TRUE`
 #'        can alleviate some anti-aliasing effects on some plot devices;
 #'        see the documentation for [image()].
+#'
 #' @param  mgp A 3-element numerical vector to use for `par(mgp)`, and
 #'         also for `par(mar)`, computed from this.  The default is
 #'         tighter than the R default, in order to use more space for the
 #'         data and less for the axes.
+#'
 #' @param  mar A 4-element Value to be used with [`par`]`("mar")`.  If not
 #'         given, a reasonable value is calculated based on whether `xlab` and
 #'         `ylab` are empty strings.
+#'
 #' @param  mai.palette Palette margin corrections (in inches), added to the
 #'         `mai` value used for the palette.  Use with care.
+#'
 #' @param  xaxs Character indicating whether image should extend to edge
 #'         of x axis (with value `"i"`) or not; see
 #'         [`par`]`("xaxs")`.
+#'
 #' @param  yaxs As `xaxs` but for y axis.
 #'
 #' @param asp Aspect ratio of the plot, as for [plot.default()]. If
@@ -813,8 +830,6 @@ drawPalette <- function(zlim, zlab="",
 #' imagep(topoWorld, colormap=cm)
 #'
 #' @author Dan Kelley and Clark Richards
-#'
-#' @md
 imagep <- function(x, y, z,
                    xlim, ylim, zlim,
                    zclip=FALSE, flipy=FALSE,

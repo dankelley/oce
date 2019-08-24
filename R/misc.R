@@ -17,7 +17,7 @@ abbreviateVector <- function(x)
 #'
 #' Use [oceSetData()] instead of the present function.
 #'
-#' @param x A `ctd` object, e.g. as read by [read.ctd()].
+#' @param x a [ctd-class] object.
 #'
 #' @param data the data.  The length of this item must match that of the
 #' existing data entries in the `data` slot).
@@ -30,8 +30,6 @@ abbreviateVector <- function(x)
 #'
 #' @seealso Please use [oceSetData()] instead of the present function.
 #' @family functions that will be removed soon
-#'
-#' @md
 addColumn <- function (x, data, name)
 {
     .Defunct("oceSetData",
@@ -82,8 +80,6 @@ addColumn <- function (x, data, name)
 #' x <- 1:n
 #' plot(x, heading, ylim=c(-10, 360), type='l', col='lightgray', lwd=10)
 #' lines(x, angleRemap(heading))
-#'
-#' @md
 angleRemap <- function(theta)
 {
     toRad <- atan2(1, 1) / 45
@@ -100,20 +96,24 @@ angleRemap <- function(theta)
 #' set up, so that the velocities as recorded are already.  Other times, the
 #' data need to be adjusted.  This function is for the latter case.
 #'
-#' @param x an oce object.
+#' @param x an [oce-class] object.
+#'
 #' @param declination magnetic declination (to be added to the heading)
+#'
 #' @param debug a debugging flag, set to a positive value to get debugging.
+#'
 #' @return Object, with velocity components adjusted to be aligned with
 #' geographic north and east.
+#'
 #' @author Dan Kelley
+#'
 #' @seealso Use [magneticField()] to determine the declination,
 #' inclination and intensity at a given spot on the world, at a given time.
+#'
 #' @references
 #' 1. \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
 #'
 #' @family things related to magnetism
-#'
-#' @md
 applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "applyMagneticDeclination(x,declination=", declination, ") {\n", sep="", unindent=1)
@@ -181,8 +181,6 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
 #' plot(xout, approx, type='l')
 #' points(xout[1], f[1, 1, 1])
 #' points(xout[m], f[n,n,n])
-#'
-#' @md
 approx3d <- function(x, y, z, f, xout, yout, zout)
 {
     ## Were all arguments given?
@@ -233,11 +231,12 @@ approx3d <- function(x, y, z, f, xout, yout, zout)
 #' Show an argument to a function, e.g. for debugging
 #'
 #' @param x the argument
-#' @param nshow number of values to show at first (if length(x)> 1)
-#' @param last indicates whether this is the final argument to the function
-#' @param sep the separator between name and value
 #'
-#' @md
+#' @param nshow number of values to show at first (if length(x)> 1)
+#'
+#' @param last indicates whether this is the final argument to the function
+#'
+#' @param sep the separator between name and value
 argShow <- function(x, nshow=4, last=FALSE, sep="=")
 {
     if (missing(x))
@@ -292,8 +291,6 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
 #' tmn <- read.woa("/data/woa13/woa13_decav_t00_5dv2.nc", "t_mn")
 #' imagep(tmn$longitude, tmn$latitude, tmn$t_mn[,,1], zlab="SST")
 #'}
-#'
-#' @md
 read.woa <- function(file, name, positive=FALSE)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
@@ -367,8 +364,6 @@ shortenTimeString <- function(t, debug=getOption("oceDebug"))
 
 #' Get first finite value in a vector or array, or NULL if none
 #' @param v A numerical vector or array.
-#'
-#' @md
 firstFinite <- function(v)
 {
     if (!is.vector(v))
@@ -387,8 +382,6 @@ firstFinite <- function(v)
 #' @examples
 #' unitFromString("DB") # dbar
 #' @family functions that interpret variable names and units from headers
-#'
-#' @md
 unitFromString <- function(s)
 {
     ## 1. Strings that have been encountered in WOCE secton (.csv) files
@@ -475,8 +468,6 @@ unitFromString <- function(s)
 #' @examples
 #' unduplicateNames(c("a", "b", "a", "c", "b"))
 #' unduplicateNames(c("a", "b", "a", "c", "b"), style=2)
-#'
-#' @md
 unduplicateNames <- function(strings, style=1)
 {
     ## Handle duplicated names
@@ -524,8 +515,6 @@ unduplicateNames <- function(strings, style=1)
 #' new <- oceSetData(new, name="temperature",
 #'                   value=T90fromT68(new[["temperature68"]]),
 #'                   unit=list(unit=expression(degree*C),scale="ITS=90"))
-#'
-#' @md
 renameData <- function(x, old=NULL, new=NULL)
 {
     if (is.null(old)) stop("need to supply old")
@@ -553,8 +542,6 @@ renameData <- function(x, old=NULL, new=NULL)
 #' @param x a single positive number
 #'
 #' @return for positive x, a value exceeding x that has mantissa 1, 2, or 5; otherwise, x
-#'
-#' @md
 bound125 <- function(x)
 {
     x <- x[1] # ignore all but first element
@@ -582,8 +569,6 @@ bound125 <- function(x)
 #' @seealso
 #' [matrixShiftLongitude()] and [shiftLongitude()] are more
 #' powerful relatives to `standardizeLongitude`.
-#'
-#' @md
 standardizeLongitude <- function(longitude) ifelse(longitude > 180, longitude-360, longitude)
 
 #' Try to associate data names with units, for use by summary()
@@ -601,8 +586,6 @@ standardizeLongitude <- function(longitude) ifelse(longitude > 180, longitude-36
 #' library(oce)
 #' data(ctd)
 #' dataLabel(names(ctd@@data), ctd@@metadata$units)
-#'
-#' @md
 dataLabel <- function(names, units)
 {
     res <- names
@@ -648,8 +631,6 @@ dataLabel <- function(names, units)
 #'
 #' @return vector of strings patterned on `w` but with first letter
 #' in upper case and others in lower case
-#'
-#' @md
 titleCase <- function(w)
 {
     unlist(lapply(seq_along(w),
@@ -747,8 +728,6 @@ titleCase <- function(w)
 #' imagep(x, y, C$curl, zlab="curl", asp=1)
 #' hist(C$curl, breaks=100)
 #' @family functions relating to vector calculus
-#'
-#' @md
 curl <- function(u, v, x, y, geographical=FALSE, method=1)
 {
     if (missing(u)) stop("must supply u")
@@ -785,8 +764,6 @@ curl <- function(u, v, x, y, geographical=FALSE, method=1)
 #' @return A two-element vector with the extended range of `x`.
 #'
 #' @author Dan Kelley
-#'
-#' @md
 rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
 {
     if (length(x) == 1) {
@@ -838,8 +815,6 @@ rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
 #' points(S, p, pch=20)
 #'
 #' @family bin-related functions
-#'
-#' @md
 binApply1D <- function(x, f, xbreaks, FUN, ...)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -932,8 +907,6 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
 #'}
 #'
 #' @family bin-related functions
-#'
-#' @md
 binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -983,7 +956,7 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 #' Count the number of elements of a given vector that fall within
 #' successive pairs of values within a second vector.
 #'
-#' @param x Vector of numerical values.
+#' @param x vector of numerical values.
 #'
 #' @param xbreaks Vector of values of x at the boundaries between bins, calculated using
 #' [pretty()] if not supplied.
@@ -995,8 +968,6 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-#'
-#' @md
 binCount1D <- function(x, xbreaks)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -1022,9 +993,9 @@ binCount1D <- function(x, xbreaks)
 #' vector `x`. A common example might be averaging CTD profile
 #' data into pressure bins (see \dQuote{Examples}).
 #'
-#' @param x Vector of numerical values.
+#' @param x vector of numerical values.
 #'
-#' @param f Vector of numerical values.
+#' @param f vector of numerical values.
 #'
 #' @param xbreaks Vector of values of x at the boundaries between bins, calculated using
 #' [pretty()] if not supplied.
@@ -1047,8 +1018,6 @@ binCount1D <- function(x, xbreaks)
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-#'
-#' @md
 binMean1D <- function(x, f, xbreaks)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -1079,9 +1048,9 @@ binMean1D <- function(x, f, xbreaks)
 #' Count the number of elements of a given matrix z=z(x,y) that fall within
 #' successive pairs of breaks in x and y.
 #'
-#' @param x Vector of numerical values.
+#' @param x vector of numerical values.
 #'
-#' @param y Vector of numerical values.
+#' @param y vector of numerical values.
 #'
 #' @param xbreaks Vector of values of `x` at the boundaries between bins, calculated using
 #' [`pretty``]`(x)` if not supplied.
@@ -1104,8 +1073,6 @@ binMean1D <- function(x, f, xbreaks)
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-#'
-#' @md
 binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -1145,9 +1112,9 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 #' vectors `x` and `y`. A common example might be averaging
 #' spatial data into location bins.
 #'
-#' @param x Vector of numerical values.
+#' @param x vector of numerical values.
 #'
-#' @param y Vector of numerical values.
+#' @param y vector of numerical values.
 #'
 #' @param f Matrix of numerical values, a matrix f=f(x,y).
 #'
@@ -1192,8 +1159,6 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-#'
-#' @md
 binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fillgap=-1)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -1279,8 +1244,6 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fill
 #' points(avg$x, avg$y, col='red')
 #'
 #' @family bin-related functions
-#'
-#' @md
 binAverage <- function(x, y, xmin, xmax, xinc)
 {
     if (missing(y))
@@ -1332,8 +1295,6 @@ binAverage <- function(x, y, xmin, xmax, xinc)
 #' contour(u$xg, u$yg, u$zg)
 #' U <- ungrid(u$xg, u$yg, u$zg)
 #' points(U$x, U$y, col=oce.colorsJet(100)[rescale(U$grid, rlow=1, rhigh=100)], pch=20)
-#'
-#' @md
 ungrid <- function(x, y, grid)
 {
     nrow <- nrow(grid)
@@ -1376,8 +1337,6 @@ ungrid <- function(x, y, grid)
 #' T <- ctd[["temperature"]]
 #' plot(S, T)
 #' errorbars(S, T, 0.05, 0.5)
-#'
-#' @md
 errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 {
     if (missing(x))
@@ -1439,8 +1398,6 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 #' @author Dan Kelley
 #'
 #' @family functions that will be removed soon
-#'
-#' @md
 findInOrdered <- function(x, f)
 {
     .Defunct("findInterval",
@@ -1521,8 +1478,6 @@ filterSomething <- function(x, filter)
 #' M2 <- predict(tidem(sealevel, constituents="M2"))
 #' S2 <- predict(tidem(sealevel, constituents=c("S2")))
 #' plotTaylor(x, cbind(M2, S2))
-#'
-#' @md
 plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -1603,8 +1558,6 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
 #' @examples
 #' library(oce)
 #' formatPosition(prettyPosition(10+1:10/60+2.8/3600))
-#'
-#' @md
 prettyPosition <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "prettyPosition(...) {\n", sep="", unindent=1)
@@ -1696,8 +1649,6 @@ smoothSomething <- function(x, ...)
 #' drawPalette(zlim=zlim, col=palette)
 #' plot(x, z, type='p', pch=20, cex=3,
 #'      col=palette[rescale(T, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=100)])
-#'
-#' @md
 rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 {
     x <- as.numeric(x)
@@ -1761,8 +1712,6 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 #' data(adv)
 #' adv2 <- retime(adv,0,1e-4,as.POSIXct("2008-07-01 00:00:00",tz="UTC"))
 #' plot(adv[["time"]], adv2[["time"]]-adv[["time"]], type='l')
-#'
-#' @md
 retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 {
     if (missing(x))
@@ -1808,8 +1757,6 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 #' name).  Another change is that the function now returns numerical
 #' results, leaving the task of setting the number of digits to
 #' [summary()].
-#'
-#' @md
 threenum <- function(x)
 {
     dim <- dim(x)
@@ -1894,8 +1841,6 @@ normalize <- function(x)
 #' abline(d$a, d$b, col='blue')
 #' abline(h=0)
 #' points(x, d$Y + d$a + d$b * x, col='blue', pch='+')
-#'
-#' @md
 detrend <- function(x, y)
 {
     if (missing(x))
@@ -2007,8 +1952,6 @@ detrend <- function(x, y)
 #' ctd[["temperature"]] <- T
 #' CTD <- despike(ctd)
 #' plot(CTD)
-#'
-#' @md
 despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min=NA, max=NA,
                     replace=c("reference", "NA"), skip)
 {
@@ -2121,8 +2064,6 @@ despikeColumn <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, 
 #' @examples
 #'
 #' ten.to.twenty <- rangeLimit(1:100, 10, 20)
-#'
-#' @md
 rangeLimit <- function(x, min, max)
 {
     if (missing(min) && missing(max)) {
@@ -2149,8 +2090,6 @@ rangeLimit <- function(x, min, max)
 #' @examples
 #' fullYear <- unabbreviateYear(c(99, 8, 108))
 #' @family things related to time
-#'
-#' @md
 unabbreviateYear <- function(year)
 {
     ## handle e.g. 2008 as 2008 (full year), 8 (year-2000 offset), or 108 (year 1900 offset)
@@ -2195,8 +2134,6 @@ unabbreviateYear <- function(year)
 #' mtext("true (solid)\n estimate (dashed)", at=true, side=3, col="blue")
 #' abline(v=mean(a), col="red")
 #' mtext("mean", at=mean(a), side=3, col="red")
-#'
-#' @md
 unwrapAngle <- function(angle)
 {
     toRad <- atan2(1, 1) / 45
@@ -2253,8 +2190,6 @@ unwrapAngle <- function(angle)
 #' @examples
 #' library(oce)
 #' oce.pmatch(c("s", "at", "te"), list(salinity=1, temperature=3.1))
-#'
-#' @md
 ocePmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
 {
     ## FIXME: do element by element, and extend as follows, to allow string numbers
@@ -2291,8 +2226,7 @@ oce.pmatch <- ocePmatch
 #'
 #' @aliases oce.spectrum oceSpectrum
 #'
-#' @param x As for [spectrum()], a univariate or multivariate time
-#' series.
+#' @param x a univariate or multivariate time series, as for [spectrum()].
 #'
 #' @param \dots extra arguments passed on to [spectrum()].
 #'
@@ -2309,8 +2243,6 @@ oce.pmatch <- ocePmatch
 #'   cat("variance of x=", var(x), "\n")
 #'   cat("integral of     spectrum=", sum(s$spec)*diff(s$freq[1:2]), "\n")
 #'   cat("integral of oce.spectrum=", sum(ss$spec)*diff(ss$freq[1:2]), "\n")
-#'
-#' @md
 oceSpectrum <- function(x, ...)
 {
     args <- list(...)
@@ -2354,8 +2286,6 @@ oce.spectrum <- oceSpectrum
 #' [oceDebug()].
 #'
 #' @author Dan Kelley
-#'
-#' @md
 vectorShow <- function(v, msg, digits=5, n=2L)
 {
     nv <- length(v)
@@ -2410,8 +2340,6 @@ vectorShow <- function(v, msg, digits=5, n=2L)
 #' @return Full file name
 #'
 #' @author Dan Kelley
-#'
-#' @md
 fullFilename <- function(filename)
 {
     warn <- options('warn')$warn
@@ -2466,8 +2394,6 @@ fullFilename <- function(filename)
 #' is set by `psep` or [`getOption`]`("oceUnitSep")`.
 #'
 #' @author Dan Kelley
-#'
-#' @md
 resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "resizableLabel(item=\"", item,
@@ -2759,7 +2685,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
 #' `adv` or `cm` objects, by applying a rotation about
 #' the vertical axis.
 #'
-#' @param x An oce object of class `adp`, `adv` or `cm`.
+#' @param x an [adp-class], [adv-class], or [cm-class] object.
 #'
 #' @param angle The rotation angle about the z axis, in degrees counterclockwise.
 #'
@@ -2793,8 +2719,6 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
 #' @family things related to adp data
 #' @family things related to adv data
 #' @family things related to cm data
-#'
-#' @md
 rotateAboutZ <- function(x, angle)
 {
     if (missing(angle))
@@ -2858,8 +2782,6 @@ rotateAboutZ <- function(x, angle)
 #' @author Dan Kelley
 #'
 #' @seealso [latFormat()] and [lonFormat()].
-#'
-#' @md
 latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lon)
@@ -2891,8 +2813,6 @@ latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
 #' @author Dan Kelley
 #'
 #' @seealso [lonFormat()] and [latlonFormat()].
-#'
-#' @md
 latFormat <- function(lat, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lat)
@@ -2922,8 +2842,6 @@ latFormat <- function(lat, digits=max(6, getOption("digits") - 1))
 #' @author Dan Kelley
 #'
 #' @seealso [latFormat()] and [latlonFormat()].
-#'
-#' @md
 lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lon)
@@ -2959,8 +2877,6 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 #' library(oce)
 #' cat("Atlantic Standard Time is ", GMTOffsetFromTz("AST"), "hours after UTC")
 #' @family functions relating to time
-#'
-#' @md
 GMTOffsetFromTz <- function(tz)
 {
     ## Data are from
@@ -3077,16 +2993,13 @@ GMTOffsetFromTz <- function(tz)
 #'
 #' @author Dan Kelley
 #'
-#' @references Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
+#' @references Gill, A.E., 1982. *Atmosphere-ocean Dynamics*, Academic
 #' Press, New York, 662 pp.
 #'
-#' \strong{Caution:} Fofonoff and Millard (1983 UNESCO) use a different
-#' formula.
+#' **Caution:** Fofonoff and Millard (1983 UNESCO) use a different formula.
 #'
 #' @examples
 #' g <- gravity(45) # 9.8
-#'
-#' @md
 gravity <- function(latitude=45, degrees=TRUE)
 {
     if (degrees) latitude <- latitude * 0.0174532925199433
@@ -3145,7 +3058,7 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' @author Dan Kelley
 #'
 #' @references F. J. Harris, 1978.  On the use of windows for harmonic analysis
-#' with the discrete Fourier Transform.  \emph{Proceedings of the IEEE}, 66(1),
+#' with the discrete Fourier Transform.  *Proceedings of the IEEE*, 66(1),
 #' 51-83 (\url{http://web.mit.edu/xiphmont/Public/windows.pdf}.)
 #'
 #' @examples
@@ -3194,8 +3107,6 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
 #'        legend=c("Practical", "Theory"), bg="white")
 #'}
-#'
-#' @md
 makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=TRUE)
 {
     type <- match.arg(type)
@@ -3291,8 +3202,6 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
 #' legend("topleft", col=c("black","red","blue"), pch=c("o","x","+"),
 #'        legend=c("data","normal filter", "zero-phase filter"))
 #' mtext("note that normal filter rolls off at end")
-#'
-#' @md
 oceFilter <- function(x, a=1, b, zero.phase=FALSE)
 {
     if (missing(x))
@@ -3380,7 +3289,7 @@ oce.filter <- oceFilter
 #'
 #' @references S. E.  Koch and M.  DesJardins and P. J. Kocin, 1983.  ``An
 #' interactive Barnes objective map analysis scheme for use with satellite and
-#' conventional data,'' \emph{J.  Climate Appl.  Met.}, vol 22, p. 1487-1503.
+#' conventional data,'' *J.  Climate Appl.  Met.*, vol 22, p. 1487-1503.
 #'
 #' @examples
 #' library(oce)
@@ -3418,8 +3327,6 @@ oce.filter <- oceFilter
 #' g <- interpBarnes(p, y, S, xg=pg, xr=1)
 #' plot(S, p, cex=0.5, col="blue", ylim=rev(range(p)))
 #' lines(g$zg, g$xg, col="red")
-#'
-#' @md
 interpBarnes <- function(x, y, z, w,
                          xg, yg, xgl, ygl,
                          xr, yr, gamma=0.5, iterations=2, trim=0,
@@ -3534,7 +3441,7 @@ interpBarnes <- function(x, y, z, w,
 #' @author Dan Kelley
 #'
 #' @references
-#' 1. Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
+#' 1. Gill, A.E., 1982. *Atmosphere-ocean Dynamics*, Academic
 #' Press, New York, 662 pp.
 #'
 #' 2. Groten, E., 2004: Fundamental Parameters and Current, 2004. Best
@@ -3546,8 +3453,6 @@ interpBarnes <- function(x, y, z, w,
 #'
 #' @examples
 #' C <- coriolis(45) # 1e-4
-#'
-#' @md
 coriolis <- function(latitude, degrees=TRUE)
 {
     ## Siderial day 86164.1 s.
@@ -3568,7 +3473,7 @@ coriolis <- function(latitude, degrees=TRUE)
 #' `slowEnd`) takes too few samples in a given time interval, so
 #' `undriftTime` will increase the number of data.
 #'
-#' @param x an object of [oce-class].
+#' @param x an [oce-class] object.
 #'
 #' @param slowEnd number of seconds to add to final instrument time, to get the
 #' correct time of the final sample.  This will be a positive number, for a
@@ -3592,8 +3497,6 @@ coriolis <- function(latitude, degrees=TRUE)
 #' summary(d)
 #' summary(x)
 #'}
-#'
-#' @md
 undriftTime <- function(x, slowEnd = 0, tname="time")
 {
     if (!inherits(x, "oce"))
@@ -3635,7 +3538,7 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
 #' Sequences of `NA` values, are filled by linear interpolation between
 #' the non-`NA` values that bound the gap.
 #'
-#' @param x an `oce` object.
+#' @param x an [oce-class] object.
 #'
 #' @param method to use; see \dQuote{Details}.
 #'
@@ -3664,8 +3567,6 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
 #' x <- x + 0.1
 #' y <- fillGap(x)
 #' print(data.frame(x,y))
-#'
-#' @md
 fillGap <- function(x, method=c("linear"), rule=1)
 {
     if (!is.numeric(x))
@@ -3695,7 +3596,7 @@ fillGap <- function(x, method=c("linear"), rule=1)
 #' retired in favour of this, a more general, function.  The filtering is done
 #' with the [filter()] function of the stats package.
 #'
-#' @param x an `oce` object containing a `data` element.
+#' @param x an [oce-class] object.
 #'
 #' @param by an indication of the subsampling.  If this is a single number,
 #' then it indicates the spacing between elements of `x` that are
@@ -3735,8 +3636,6 @@ fillGap <- function(x, method=c("linear"), rule=1)
 #' plot(adp)
 #' adpDec <- decimate(adp,by=2,filter=c(1/4, 1/2, 1/4))
 #' plot(adpDec)
-#'
-#' @md
 decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "oce"))
@@ -3926,7 +3825,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 #'
 #' @aliases oce.smooth
 #'
-#' @param x an `oce` object.
+#' @param x an [oce-class] object.
 #'
 #' @param \dots parameters to be supplied to [smooth()], which does
 #' the actual work.
@@ -3944,8 +3843,6 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 #' data(ctd)
 #' d <- oce.smooth(ctd)
 #' plot(d)
-#'
-#' @md
 oceSmooth <- function(x, ...)
 {
     if (!inherits(x, "oce"))
@@ -4007,8 +3904,6 @@ oce.smooth <- oceSmooth
 #' library(oce)
 #' twenty.five <- bcdToInteger(as.raw(0x25))
 #' thirty.seven <- as.integer(as.raw(0x25))
-#'
-#' @md
 bcdToInteger <- function(x, endian=c("little", "big"))
 {
     endian <- match.arg(endian)
@@ -4021,7 +3916,7 @@ bcdToInteger <- function(x, endian=c("little", "big"))
 
 #' Format bytes as binary [defunct]
 #'
-#' \strong{WARNING:} The `endian` argument will soon be removed
+#' **WARNING:** The `endian` argument will soon be removed
 #' from this function; see \link{oce-defunct}.
 #' This is because the actions for `endian="little"` made
 #' no sense in practical work. The default value for `endian`
@@ -4030,8 +3925,7 @@ bcdToInteger <- function(x, endian=c("little", "big"))
 #' @param x an integer to be interpreted as a byte.
 #'
 #' @param endian character string indicating the endian-ness ("big" or
-#' "little"). \strong{This argument will be removed in the upcoming CRAN
-#' release.}
+#' "little"). **WARNING:** This argument will be removed soon.
 #'
 #' @return A character string representing the bit strings for the elements of
 #' `x`, in order of significance for the `endian="big"` case.
@@ -4048,8 +3942,6 @@ bcdToInteger <- function(x, endian=c("little", "big"))
 #' a <- as.raw(0x0a)
 #' byteToBinary(a, "big")        # "00001010"
 #' as.integer(rev(rawToBits(a))) # 0 0 0 0 1 0 1 0
-#'
-#' @md
 byteToBinary <- function(x, endian="big")
 {
     if (endian != "big")
@@ -4147,15 +4039,15 @@ byteToBinary <- function(x, endian="big")
 #'
 #' @author Dan Kelley
 #'
-#' @references JCGM, 2008.  \emph{Evaluation of measurement data - Guide to the
-#' expression of uncertainty in measurement (JCGM 100:2008)}, published by the
+#' @references JCGM, 2008. *Evaluation of measurement data - Guide to the
+#' expression of uncertainty in measurement (JCGM 100:2008)*, published by the
 #' Joint Committee for Guides in Metrology,
 #' http://www.bipm.org/en/publications/guides/gum.html (see section
 #' 7.2.2 for a summary of notation, which shows equal values to the right of a
 #' `+-` sign and in parentheses.
 #'
 #' I. Mills, T. Cvitas, K. Homann, N. Kallay, and K. Kuchitsu, 1993.
-#' \emph{Quantities, Units and Symbols in Physical Chemistry}, published
+#' *Quantities, Units and Symbols in Physical Chemistry*, published
 #' Blackwell Science for the International Union of Pure and Applied Chemistry.
 #' (See section 4.1, page 83, for a summary of notation, which shows that a
 #' value to the right of a `+-` sign is to be halved if put in
@@ -4165,8 +4057,6 @@ byteToBinary <- function(x, endian="big")
 #' y <- rnorm(n=300, mean=10, sd=1) * x
 #' m <- lm(y~x)
 #' print(formatCI(model=m))
-#'
-#' @md
 formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
 {
     formatCI.one <- function(ci, style, digits=NULL)
@@ -4249,8 +4139,6 @@ formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
 #' library(oce)
 #' A <- integerToAscii(65)
 #' cat("A=", A, "\n")
-#'
-#' @md
 integerToAscii <- function(i)
 {
     c("", "\001", "\002", "\003", "\004", "\005", "\006", "\a", "\b",
@@ -4357,8 +4245,6 @@ integerToAscii <- function(i)
 #'}
 #'
 #' @family things related to magnetism
-#'
-#' @md
 magneticField <- function(longitude, latitude, time)
 {
     if (missing(longitude) || missing(latitude) || missing(time))
@@ -4430,8 +4316,6 @@ magneticField <- function(longitude, latitude, time)
 #' match <- matchBytes(buf, 0xa5, 0x11)
 #' print(buf)
 #' print(match)
-#'
-#' @md
 matchBytes <- function(input, b1, ...)
 {
     if (missing(input))
@@ -4465,8 +4349,6 @@ matchBytes <- function(input, b1, ...)
 #' @return A list containing `m` and `longitude`, both rearranged as appropriate.
 #'
 #' @seealso [shiftLongitude()] and [standardizeLongitude()].
-#'
-#' @md
 matrixShiftLongitude <- function(m, longitude)
 {
     if (missing(m))
@@ -4516,8 +4398,6 @@ matrixShiftLongitude <- function(m, longitude)
 #' image(m2, col=rainbow(100), zlim=c(0, 4), main="smoothed 2 times")
 #' image(m3, col=rainbow(100), zlim=c(0, 4), main="smoothed 3 times")
 #' par(opar)
-#'
-#' @md
 matrixSmooth <- function(m, passes=1)
 {
     if (missing(m))
@@ -4552,8 +4432,6 @@ matrixSmooth <- function(m, passes=1)
 #' cat("   61 s = ", secondsToCtime(61), "\n", sep="")
 #' cat("86400 s = ", secondsToCtime(86400), "\n", sep="")
 #' @family things related to time
-#'
-#' @md
 secondsToCtime <- function(sec)
 {
     if (sec < 60)
@@ -4590,8 +4468,6 @@ secondsToCtime <- function(sec)
 #' cat("01:04   = ", ctimeToSeconds("01:04"), "s\n", sep="")
 #' cat("1:00:00 = ", ctimeToSeconds("1:00:00"), "s\n", sep="")
 #' @family things related to time
-#'
-#' @md
 ctimeToSeconds <- function(ctime)
 {
     if (length(grep(":", ctime)) > 0) {
@@ -4663,8 +4539,6 @@ ctimeToSeconds <- function(ctime)
 #' debug <- 1
 #' oceDebug(debug, "in main")
 #' foo(debug=debug-1)
-#'
-#' @md
 oceDebug <- function(debug=0, ..., unindent=0)
 {
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
@@ -4702,8 +4576,6 @@ oce.debug <- oceDebug
 #' library(oce)
 #' data(ctd)
 #' showMetadataItem(ctd, "ship", "ship")
-#'
-#' @md
 showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE, quote=FALSE)
 {
     if (name %in% names(object@metadata)) {
@@ -4766,8 +4638,6 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 #' print(tail(cA, 1))
 #' print(integrateTrapezoid(diff(x[1:2]), y))
 #' print(integrateTrapezoid(y))
-#'
-#' @md
 integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 {
     type <- match.arg(type)
@@ -4880,8 +4750,6 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 #' contour(x, y, sqrt(u^2+v^2), asp=1, main=expression(speed))
 #'
 #' @family functions relating to vector calculus
-#'
-#' @md
 grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol(h)))
 {
     if (missing(h))
@@ -4918,8 +4786,6 @@ grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol
 #' @examples
 #' x <- c(-0.1, 0, 1, 255, 255.1)
 #' data.frame(x, oce.as.raw(x))
-#'
-#' @md
 oce.as.raw <- function(x)
 {
     ## prevent warnings from out-of-range with as.raw()
@@ -4966,8 +4832,6 @@ oce.as.raw <- function(x)
 #' observation <- oce.convolve(signal, filter)
 #' plot(t, signal, type='l')
 #' lines(t, observation, lty='dotted')
-#'
-#' @md
 oceConvolve <- function(x, f, end=2)
 {
     do_oce_convolve(x, f, end)
@@ -4981,8 +4845,6 @@ oce.convolve <- oceConvolve
 #'
 #' @return a new vector formed by trimming leading and trailing whitespace
 #' from the elements of `s`.
-#'
-#' @md
 trimString <- function(s)
 {
     gsub("^ *", "", gsub(" *$", "", s))
@@ -5036,8 +4898,6 @@ trimString <- function(s)
 #' X <- lowpass(x, n=5)
 #' lines(1:11, X, col=2)
 #' points(1:11, X, col=2)
-#'
-#' @md
 lowpass <- function(x, filter="hamming", n, replace=TRUE, coefficients=FALSE)
 {
     # .Call("hammingFilter", x, n)

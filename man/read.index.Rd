@@ -66,7 +66,6 @@ soi <- read.index("https://www.cgd.ucar.edu/cas/catalog/climind/SOI.signal.ascii
 soirecent <- subset(soi, t > as.POSIXct("2000-01-01"))
 oce.plot.ts(soirecent$t, soirecent$index)
 }
-
 }
 \references{
 See \url{https://www.esrl.noaa.gov/psd/data/climateindices/list/}

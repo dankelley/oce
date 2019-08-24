@@ -38,7 +38,6 @@ filter <- filter / sum(filter)
 observation <- oce.convolve(signal, filter)
 plot(t, signal, type='l')
 lines(t, observation, lty='dotted')
-
 }
 \author{
 Dan Kelley

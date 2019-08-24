@@ -8,7 +8,7 @@ applyMagneticDeclination(x, declination = 0,
   debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{an oce object.}
+\item{x}{an \linkS4class{oce} object.}
 
 \item{declination}{magnetic declination (to be added to the heading)}
 

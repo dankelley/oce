@@ -30,8 +30,6 @@
 #'
 #' @family classes provided by oce
 #' @family things related to rsk data
-#'
-#' @md
 setClass("rsk", contains="oce")
 
 #' Sample Rsk Dataset
@@ -58,8 +56,6 @@ setClass("rsk", contains="oce")
 #'
 #' @family datasets provided with oce
 #' @family things related to rsk data
-#'
-#' @md
 NULL
 
 
@@ -105,8 +101,6 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to rsk data
-#'
-#' @md
 setMethod(f="summary",
           signature="rsk",
           definition=function(object, ...) {
@@ -132,8 +126,6 @@ setMethod(f="summary",
 #' @author Dan Kelley
 #'
 #' @family things related to rsk data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="rsk", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -147,8 +139,6 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to rsk data
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="rsk", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -182,8 +172,6 @@ setMethod(f="[[<-",
 #'
 #' @family things related to rsk data
 #' @family functions that subset oce objects
-#'
-#' @md
 setMethod(f="subset",
           signature="rsk",
           definition=function(x, subset, ...) {
@@ -233,8 +221,6 @@ setMethod(f="subset",
 #' @return List of unit lists.
 #'
 #' @family functions that interpret variable names and units from headers
-#'
-#' @md
 unitFromStringRsk <- function(s)
 {
     ## Note: some of these use e.g. [lL] because the Ruskin GUI uses upper case,
@@ -292,7 +278,7 @@ unitFromStringRsk <- function(s)
 #' `conductivity`, and it must be in units of mS/cm. If there is a
 #' temperature, it must be called `temperature`, and it must be an in-situ
 #' value recorded in ITS-90 units.  And if there is a pressure, it must be
-#' \emph{absolute} pressure (sea pressure plus atmospheric pressure) and it must
+#' *absolute* pressure (sea pressure plus atmospheric pressure) and it must
 #' be named `pressure`. No checks are made within `as.rsk` on any of
 #' these rules, but if they are broken, you may expect problems with any further
 #' processing.
@@ -320,8 +306,6 @@ unitFromStringRsk <- function(s)
 #' @author Dan Kelley
 #'
 #' @family things related to rsk data
-#'
-#' @md
 as.rsk <- function(time, columns,
                    filename="", instrumentType="rbr", serialNumber="", model="",
                    sampleInterval=NA,
@@ -452,8 +436,6 @@ as.rsk <- function(time, columns,
 #' @family things related to rsk data
 #'
 #' @aliases plot.rsk
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("rsk"),
           definition=function(x, which="timeseries",
@@ -566,14 +548,14 @@ setMethod(f="plot",
 #'
 #' Options 2-4 are mostly obsolete, and will be removed from future versions.
 #'
-#' \emph{A note on conductivity.} RBR devices record conductivity in mS/cm, and it
+#' *A note on conductivity.* RBR devices record conductivity in mS/cm, and it
 #' is this value that is stored in the object returned by `read.rsk`. This can
 #' be converted to conductivity ratio (which is what many other instruments report)
 #' by dividing by 42.914 (see Culkin and Smith, 1980) which will be necessary in
 #' any seawater-related function that takes conductivity ratio as an argument (see
 #' \dQuote{Examples}).
 #'
-#'   \emph{A note on pressure.} RBR devices tend to record absolute pressure (i.e.
+#'   *A note on pressure.* RBR devices tend to record absolute pressure (i.e.
 #'   sea pressure plus atmospheric pressure), unlike most oceanographic instruments
 #'   that record sea pressure (or an estimate thereof).  The handling of pressure
 #'   is controlled with the `patm` argument, for which there are three
@@ -640,13 +622,11 @@ setMethod(f="plot",
 #' Culkin, F., and Norman D. Smith, 1980. Determination of the concentration of
 #' potassium chloride solution having the same electrical conductivity, at 15 C and
 #' infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
-#' 19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering}, \bold{5}, pp 22-23.
+#' 19.37394 ppt). *IEEE Journal of Oceanic Engineering*, **5**, pp 22-23.
 #'
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to rsk data
-#'
-#' @md
 read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default="UTC"),
                         patm=FALSE, processingLog, debug=getOption("oceDebug"))
 {
@@ -1257,8 +1237,6 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
 #' [as.ctd()]).
 #'
 #' @template debugTemplate
-#'
-#' @md
 rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
                     ship=NULL, cruise=NULL, station=NULL, deploymentType=NULL,
                     debug=getOption("oceDebug"))
@@ -1394,8 +1372,6 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
 #' @author Dan Kelley
 #'
 #' @family things related to rsk data
-#'
-#' @md
 rskPatm <- function(x, dp=0.5)
 {
     p <- if (inherits(x, "rsk")) x@data$pressure else x
@@ -1457,8 +1433,6 @@ rskPatm <- function(x, dp=0.5)
 #' @author Dan Kelley
 #'
 #' @family things related to rsk data
-#'
-#' @md
 rskToc <- function(dir, from, to, debug=getOption("oceDebug"))
 {
     if (missing(dir))

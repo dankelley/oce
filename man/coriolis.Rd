@@ -25,7 +25,6 @@ of \eqn{omega}{omega}.
 }
 \examples{
 C <- coriolis(45) # 1e-4
-
 }
 \references{
 \enumerate{

@@ -87,8 +87,6 @@
 #'
 #' @family things related to ctd data
 #' @family classes provided by oce
-#'
-#' @md
 setClass("ctd", contains="oce")
 
 setAs("list", "ctd", function(from) {
@@ -128,8 +126,6 @@ setAs("list", "ctd", function(from) {
 #'
 #' @family datasets provided with oce
 #' @family things related to ctd data
-#'
-#' @md
 NULL
 
 #' Seawater CTD Profile, Without Trimming of Extraneous Data
@@ -159,8 +155,6 @@ NULL
 #'
 #' @family things related to ctd data
 #' @family datasets provided with oce
-#'
-#' @md
 NULL
 
 
@@ -223,8 +217,6 @@ NULL
 #' expect_equal(is.na(Bf[["salinity"]]), deep)
 #'
 #' @family things related to ctd data
-#'
-#' @md
 setMethod("handleFlags", signature=c(object="ctd", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
           definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
@@ -295,8 +287,6 @@ setMethod("handleFlags", signature=c(object="ctd", flags="ANY", actions="ANY", w
 #'}
 #'
 #' @family things related to ctd data
-#'
-#' @md
 setMethod("setFlags",
           c(object="ctd", name="ANY", i="ANY", value="ANY", debug="ANY"),
           function(object, name=NULL, i=NULL, value=NULL, debug=getOption("oceDebug")) {
@@ -312,8 +302,6 @@ setMethod("setFlags",
 #' @templateVar class ctd
 #' @templateVar details {NA}
 #' @template initializeFlagSchemeTemplate
-#'
-#' @md
 setMethod("initializeFlagScheme",
           signature=c(object="ctd", name="ANY", mapping="ANY", default="ANY", debug="ANY"),
           definition=function(object, name=NULL, mapping=NULL, default=NULL, debug=0) {
@@ -390,8 +378,6 @@ setMethod("initializeFlagScheme",
 #' plot(ctd, eos="gsw")
 #'
 #' @aliases initialize,ctd-method
-#'
-#' @md
 setMethod(f="initialize",
           signature="ctd",
           definition=function(.Object, pressure, salinity, temperature, conductivity,
@@ -452,8 +438,6 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to ctd data
-#'
-#' @md
 setMethod(f="summary",
           signature="ctd",
           definition=function(object, ...) {
@@ -651,8 +635,6 @@ setMethod(f="summary",
 #' @author Dan Kelley
 #'
 #' @family things related to ctd data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -946,8 +928,6 @@ setMethod(f="[[",
 #' summary(ctd)
 #'
 #' @family things related to ctd data
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="ctd", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -1176,8 +1156,6 @@ setMethod(f="[[<-",
 #' @author Dan Kelley
 #'
 #' @family things related to ctd data
-#'
-#' @md
 as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    ##1108 SA=NULL, CT=NULL, oxygen=NULL, nitrate=NULL, nitrite=NULL, phosphate=NULL, silicate=NULL,
                    scan=NULL,
@@ -1598,7 +1576,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 
 #' Add a Column to the Data Slot of a CTD Object (defunct)
 #'
-#' \strong{WARNING:} This function will be removed soon; see [oce-defunct].
+#' **WARNING:** This function will be removed soon; see [oce-defunct].
 #'
 #' Use [oceSetData()] instead of the present function.
 #'
@@ -1641,8 +1619,6 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #' @author Dan Kelley
 #'
 #' @family functions that will be removed soon
-#'
-#' @md
 ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalName="",
                           debug=getOption("oceDebug"))
 {
@@ -1790,7 +1766,7 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
 #'
 #' @references
 #' 1. R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
-#' application to oceanographic data.  \emph{Deep Sea Research}, \bold{15},
+#' application to oceanographic data.  *Deep Sea Research*, **15**,
 #' 185-193.
 #'
 #' 2. Oguma, Sachiko, Toru Suzuki, Yutaka Nagata, Hidetoshi Watanabe, Hatsuyo Yamaguchi,
@@ -1801,8 +1777,6 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
 #' @author Dan Kelley
 #'
 #' @family things related to ctd data
-#'
-#' @md
 ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption("oceDebug"))
 {
     methodFunction <- is.function(method)
@@ -2127,8 +2101,6 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to ctd data
-#'
-#' @md
 ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
                             smoother=smooth.spline,
                             direction=c("descending", "ascending"),
@@ -2292,7 +2264,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'   1. The pressure data are despiked with a smooth() filter with method "3R".
 #'      This removes wild spikes that arise from poor instrument connections, etc.
 #'
-#'   2. \emph{Step 2.} If no `parameters` are given, then any data with negative pressures
+#'   2. *Step 2.* If no `parameters` are given, then any data with negative pressures
 #'      are deleted.  If there is a parameter named `pmin`, then that pressure (in decibars)
 #'      is used instead as the lower limit. This is a commonly-used setup, e.g.
 #'      `ctdTrim(ctd, parameters=list(pmin=1))` removes the top decibar (roughly 1m) from
@@ -2413,8 +2385,6 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to ctd data
-#'
-#' @md
 ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                     indices=FALSE, debug=getOption("oceDebug"))
 {
@@ -2774,8 +2744,6 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 #' @author Dan Kelley
 #'
 #' @family functions that will be removed soon
-#'
-#' @md
 ctdUpdateHeader <- function (x, debug=FALSE)
 {
     .Defunct("oceSetMetadata",
@@ -2854,8 +2822,6 @@ ctdUpdateHeader <- function (x, debug=FALSE)
 #' 2. https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv
 #'
 #' @family things related to ctd data
-#'
-#' @md
 write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 {
     if (!inherits(object, "ctd"))
@@ -3228,8 +3194,6 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' @family things related to ctd data
 #'
 #' @aliases plot.ctd
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("ctd"),
           definition=function(x, which,
@@ -3989,8 +3953,6 @@ setMethod(f="plot",
 #'
 #' @family things related to ctd data
 #' @family functions that subset oce objects
-#'
-#' @md
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {
@@ -4080,8 +4042,6 @@ setMethod(f="subset",
 #'
 #' @family functions that plot oce data
 #' @family things related to ctd data
-#'
-#' @md
 plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
                      type='l', mgp=getOption("oceMgp"),
                      mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]), ..., debug=getOption("oceDebug"))
@@ -4145,7 +4105,7 @@ plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
 #' @author Dan Kelley
 #'
 #' @param type If `NULL`, then the first line is studied, in order to
-#' determine the file type.  If `type="SBE19"`, then a \emph{Seabird 19}, or
+#' determine the file type.  If `type="SBE19"`, then a *Seabird 19*, or
 #' similar, CTD format is assumed. If `type="WOCE"` then a WOCE-exchange file
 #' is assumed.  If `type="ITP"` then an ice-tethered profiler file is
 #' assumed.  If `type="ODF"` an ODF file is assumed.  If `type="ODV"` an
@@ -4160,8 +4120,6 @@ plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
 #' [read.ctd.sbe()] for Seabird data.
 #'
 #' @family functions that read ctd data
-#'
-#' @md
 read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                      monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
@@ -4243,8 +4201,6 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
 #' @author Dan Kelley
 #'
 #' @seealso Used by [read.ctd()].
-#'
-#' @md
 parseLatLon <- function(line, debug=getOption("oceDebug"))
 {
     ## The following formats are understood (for, e.g. latitude)
@@ -4428,8 +4384,6 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #'
 #' @family functions that plot oce data
 #' @family things related to ctd data
-#'
-#' @md
 plotTS <- function (x,
                     inSitu=FALSE,
                     type='p',
@@ -4674,8 +4628,6 @@ plotTS <- function (x,
 #' @author Dan Kelley
 #'
 #' @seealso [plotTS()], which calls this.
-#'
-#' @md
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
                            eos=getOption("oceEOS", default='gsw'),
                            cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
@@ -4760,7 +4712,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #'
 #' * `"conductivity"` Profile of conductivity.
 #'
-#' * `"temperature"` Profile of \emph{in-situ} temperature.
+#' * `"temperature"` Profile of *in-situ* temperature.
 #'
 #' * `"theta"` Profile of potential temperature.
 #'
@@ -4924,8 +4876,6 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #'
 #' @family functions that plot oce data
 #' @family things related to ctd data
-#'
-#' @md
 plotProfile <- function (x,
                          xtype="salinity+temperature", ytype="pressure",
                          eos=getOption("oceEOS", default="gsw"),

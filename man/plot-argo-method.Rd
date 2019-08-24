@@ -22,24 +22,19 @@ not complete (e.g. \code{"salinity"} matches to both
 \code{"salinity ts"} and \code{"salinity profile"}.).
 \itemize{
 \item \code{which=1}, \code{which="trajectory"} or \code{which="map"} gives a
-plot of the argo trajectory, with the coastline, if one is provided.\preformatted{\item `which=2` or `"salinity ts"` gives a time series of
+plot of the argo trajectory, with the coastline, if one is provided.
+\item \code{which=2} or \code{"salinity ts"} gives a time series of
 salinity at the indicated level(s)
-
-\item `which=3` or `"temperature ts"` gives a time series
+\item \code{which=3} or \code{"temperature ts"} gives a time series
 of temperature at the indicated level(s)
-
-\item `which=4` or `"TS"` gives a TS diagram at the
+\item \code{which=4} or \code{"TS"} gives a TS diagram at the
 indicated level(s)
-
-\item `which=5` or `"salinity profile"` gives a salinity
+\item \code{which=5} or \code{"salinity profile"} gives a salinity
 profile of all the data (with S and p trimmed to the 1 and 99
 percentiles)
-
-\item `which=6` or `"temperature profile"` gives a
+\item \code{which=6} or \code{"temperature profile"} gives a
 temperature profile (with T and p trimmed to the 1 and 99
 percentiles)
-}
-
 }}
 
 \item{level}{depth pseudo-level to plot, for \code{which=2} and higher.  May be an

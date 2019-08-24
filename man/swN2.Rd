@@ -8,18 +8,18 @@ swN2(pressure, sigmaTheta = NULL, derivs, df,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{pressure}{either pressure [dbar] (in which case \code{sigmaTheta} must
-be provided) \strong{or} an object of class \code{ctd} object (in which case
+\item{pressure}{either pressure (dbar) (in which case \code{sigmaTheta} must
+be provided) \emph{or} an object of class \code{ctd} object (in which case
 \code{sigmaTheta} is inferred from the object.}
 
 \item{sigmaTheta}{Surface-referenced potential density minus 1000
-[kg/m\eqn{^3}{^3}]}
+(kg/m\eqn{^3}{^3}).}
 
 \item{derivs}{optional argument to control how the derivative
 \eqn{d\sigma_\theta/dp}{d(sigmaTheta)/d(pressure)} is calculated.  This may
 be a character string or a function of two arguments.  See \dQuote{Details}.}
 
-\item{df}{argument passed to \code{\link{smooth.spline}} if this function is
+\item{df}{argument passed to \code{\link[=smooth.spline]{smooth.spline()}} if this function is
 used for smoothing; set to \code{NA} to prevent smoothing.}
 
 \item{debug}{an integer specifying whether debugging information is
@@ -30,11 +30,11 @@ be printed. If one function calls another, it usually reduces the value of
 \code{debug} first, so that a user can often obtain deeper debugging
 by specifying higher \code{debug} values.}
 
-\item{\dots}{additional argument, passed to \code{\link{smooth.spline}}, in
+\item{\dots}{additional argument, passed to \code{\link[=smooth.spline]{smooth.spline()}}, in
 the case that \code{derivs="smoothing"}.  See \dQuote{Details}.}
 }
 \value{
-Square of buoyancy frequency [\eqn{radian^2/s^2}{radian^2/s^2}].
+Square of buoyancy frequency (\eqn{radian^2/s^2}{radian^2/s^2}).
 }
 \description{
 Compute \eqn{N^2}{N^2}, the square of the buoyancy frequency for a seawater
@@ -42,7 +42,7 @@ profile.
 }
 \details{
 Smoothing is often useful prior to computing buoyancy frequency, and so this
-may optionally be done with \code{\link{smooth.spline}}, unless
+may optionally be done with \code{\link[=smooth.spline]{smooth.spline()}}, unless
 \code{df=NA}, in which case raw data are used.  If \code{df} is not
 provided, a possibly reasonable value computed from an analysis of the
 profile, based on the number of pressure levels.
@@ -51,29 +51,25 @@ The core of the
 method involves differentiating potential density (referenced to median
 pressure) with respect to pressure, and the \code{derivs} argument is used
 to control how this is done, as follows.
-
 \itemize{
-
-\item if \code{derivs} is not supplied, the action is as though it were
+\item If \code{derivs} is not supplied, the action is as though it were
 given as the string \code{"smoothing"}
-
-\item if \code{derivs} equals \code{"simple"}, then the derivative of
+\item If \code{derivs} equals \code{"simple"}, then the derivative of
 density with respect to pressure is calculated as the ratio of first-order
 derivatives of density and pressure, each calculated using
-\code{\link{diff}}.  (A zero is appended at the top level.)
-
-\item if \code{derivs} equals \code{"smoothing"}, then the processing
+\code{\link[=diff]{diff()}}.  (A zero is appended at the top level.)
+\item If \code{derivs} equals \code{"smoothing"}, then the processing
 depends on the number of data in the profile, and on whether \code{df} is
 given as an optional argument.  When the number of points exceeds 4, and
-when \code{df} exceeds 1, \code{\link{smooth.spline}} is used to calculate
+when \code{df} exceeds 1, \code{\link[=smooth.spline]{smooth.spline()}} is used to calculate
 smoothing spline representation the variation of density as a function of
 pressure, and derivatives are extracted from the spline using
-\code{predict}.  Otherwise, density is smoothed using \code{\link{smooth}},
+\code{predict}.  Otherwise, density is smoothed using \code{\link[=smooth]{smooth()}},
 and derivatives are calculated as with the \code{"simple"} method.
-
-\item if \code{derivs} is a function taking two arguments (first pressure,
+\item If \code{derivs} is a function taking two arguments (first pressure,
 then density) then that function is called directly to calculate the
-derivative, and no smoothing is done before or after that call.  }
+derivative, and no smoothing is done before or after that call.
+}
 
 For precise work, it makes sense to skip \code{swN2} entirely, choosing
 whether, what, and how to smooth based on an understanding of fundamental
@@ -87,9 +83,8 @@ object. Besides, the argument name was inherently deceptive, because the UNESCO
 scheme does not specify how N2 is to be calculated.
 Nothing is really lost by making this change, because the new default is the
 same as was previously available with the \code{eos="unesco"}
-setup, and the gsw-formulated estimate of N2 is still available, as
-\code{\link[gsw]{gsw_Nsquared}} in the \CRANpkg{gsw}
-package.
+setup, and the gsw-formulated estimate of N2 is provided
+by \code{\link[gsw:gsw_Nsquared]{gsw::gsw_Nsquared()}} in the \CRANpkg{gsw} package.
 }
 
 \examples{
@@ -108,7 +103,7 @@ lines(swN2(ctd, df=3), p, col=2)
 
 }
 \seealso{
-The \code{\link[gsw]{gsw_Nsquared}} function of the \CRANpkg{gsw}
+The \code{\link[gsw:gsw_Nsquared]{gsw::gsw_Nsquared()}} function of the \CRANpkg{gsw}
 provides an alternative to this, as formulated in the GSW system. It
 has a more sophisticated treatment of potential density, but it is based
 on simple first-difference derivatives, so its results may require

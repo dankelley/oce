@@ -26,8 +26,6 @@
 #'
 #' @family classes provided by oce
 #' @family things related to met data
-#'
-#' @md
 setClass("met", contains="oce")
 
 
@@ -38,8 +36,6 @@ setClass("met", contains="oce")
 #' @template sub_subTemplate
 #'
 #' @family things related to met data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="met", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -53,8 +49,6 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 #'
 #' @family things related to met data
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="met", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -88,8 +82,6 @@ setMethod(f="[[<-",
 #'
 #' @family datasets provided with oce
 #' @family things related to met data
-#'
-#' @md
 NULL
 
 setMethod(f="initialize",
@@ -119,8 +111,6 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to met data
-#'
-#' @md
 setMethod(f="summary",
           signature="met",
           definition=function(object, ...) {
@@ -158,8 +148,6 @@ setMethod(f="summary",
 #'
 #' @family things related to met data
 #' @family functions that subset oce objects
-#'
-#' @md
 setMethod(f="subset",
           signature="met",
           definition=function(x, subset, ...) {
@@ -215,8 +203,6 @@ setMethod(f="subset",
 #' \url{http://climate.weather.gc.ca/index_e.html}
 #'
 #' @family things related to met data
-#'
-#' @md
 as.met <- function(time, temperature, pressure, u, v, filename="(constructed from data)")
 {
     if (missing(time)) stop("must provide time")
@@ -355,8 +341,6 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' @family functions that download files
 #' @family things related to met data
-#'
-#' @md
 download.met <- function(id, year, month, deltat, destdir=".", destfile,
                          debug=getOption("oceDebug"))
 {
@@ -435,8 +419,6 @@ download.met <- function(id, year, month, deltat, destdir=".", destfile,
 #' @return
 #' Vector of strings for the decoded names. If an unknown scheme is provided,
 #' this will just be `names`.
-#'
-#' @md
 metNames2oceNames <- function(names, scheme)
 {
     ##schemeGiven <- !missing(scheme)
@@ -553,8 +535,6 @@ metNames2oceNames <- function(names, scheme)
 #' \url{http://climate.weather.gc.ca/index_e.html}
 #'
 #' @family things related to met data
-#'
-#' @md
 read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
@@ -799,16 +779,19 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
 #' @param x a [met-class] object.
 #'
 #' @param which list of desired plot types.
-#' \itemize{
-#' \item `which=1` gives a time-series plot of temperature
-#' \item `which=2` gives a time-series plot of pressure
-#' \item `which=3` gives a time-series plot of the x (eastward) component of velocity
-#' \item `which=4` gives a time-series plot of the y (northward) component of velocity
-#' \item `which=5` gives a time-series plot of speed
-#' \item `which=6` gives a time-series plot of direction (degrees clockwise from north;
+#' * `which=1` gives a time-series plot of temperature
+#'
+#' * `which=2` gives a time-series plot of pressure
+#'
+#' * `which=3` gives a time-series plot of the x (eastward) component of velocity
+#'
+#' * `which=4` gives a time-series plot of the y (northward) component of velocity
+#'
+#' * `which=5` gives a time-series plot of speed
+#'
+#' * `which=6` gives a time-series plot of direction (degrees clockwise from north;
 #' note that the values returned by `met[["direction"]]` must be multiplied by 10
 #' to get the direction plotted)
-#' }
 #'
 #' @param tformat optional argument passed to [oce.plot.ts()], for
 #' plot types that call that function.  (See [strptime()] for the
@@ -844,8 +827,6 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
 #' @family things related to met data
 #'
 #' @aliases plot.met
-#'
-#' @md
 setMethod(f="plot",
            signature=signature("met"),
            definition=function(x, which = 1:4, mgp, mar, tformat, debug=getOption("oceDebug"))

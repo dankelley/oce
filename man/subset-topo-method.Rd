@@ -8,7 +8,7 @@
 \S4method{subset}{topo}(x, subset, ...)
 }
 \arguments{
-\item{x}{A \linkS4class{topo} object.}
+\item{x}{a \linkS4class{topo} object.}
 
 \item{subset}{A condition to be applied to the \code{data} portion of \code{x}.
 See \sQuote{Details}.}

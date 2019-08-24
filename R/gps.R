@@ -22,8 +22,6 @@
 #' @author Dan Kelley
 #'
 #' @family things related to gps data
-#'
-#' @md
 setClass("gps", contains="oce")
 
 setMethod(f="initialize",
@@ -50,8 +48,6 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to gps data
-#'
-#' @md
 setMethod(f="summary",
           signature="gps",
           definition=function(object, ...) {
@@ -62,13 +58,11 @@ setMethod(f="summary",
 
 #' Extract Something From a GPS Object
 #'
-#' @param x A [gps-class] object.
+#' @param x a [gps-class] object.
 #'
 #' @template sub_subTemplate
 #'
 #' @family things related to gps data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="gps", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -77,13 +71,11 @@ setMethod(f="[[",
 
 #' Replace Parts of a GPS Object
 #'
-#' @param x A [gps-class] object.
+#' @param x a [gps-class] object.
 #'
 #' @template sub_subsetTemplate
 #'
 #' @family things related to gps data
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="gps", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -102,9 +94,7 @@ setMethod(f="[[<-",
 #' `mar` that moves the inset plot to a desired location on the existing
 #' plot, and with `bg="white"`.
 #'
-#' @param x A `gps` object, as read by [read.gps()] or created
-#' by [as.gps()], or a list containing items named `longitude`
-#' and `latitude`.
+#' @param x a [gps-class] object.
 #'
 #' @param xlab label for x axis
 #'
@@ -192,8 +182,6 @@ setMethod(f="[[<-",
 #' @family things related to gps data
 #'
 #' @aliases plot.gps
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("gps"),
           definition=function (x,
@@ -437,8 +425,6 @@ setMethod(f="plot",
 #' @author Dan Kelley
 #'
 #' @family things related to gps data
-#'
-#' @md
 as.gps <- function(longitude, latitude, filename="")
 {
     names <- names(longitude)
@@ -472,8 +458,6 @@ as.gps <- function(longitude, latitude, filename="")
 #' @author Dan Kelley
 #'
 #' @family things related to gps data
-#'
-#' @md
 read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)

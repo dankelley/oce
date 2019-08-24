@@ -44,6 +44,7 @@ searches anchored to the start of the string. After that,
 the qualifiers
 \code{_ADJUSTED}, \code{_ERROR} and \code{_QC},
 are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
+
 \tabular{ll}{
 \strong{Argo name} \tab \strong{oce name}\cr
 \code{BBP} \tab \code{bbp}\cr

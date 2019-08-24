@@ -8,7 +8,7 @@ geodDist(longitude1, latitude1 = NULL, longitude2 = NULL,
   latitude2 = NULL, alongPath = FALSE)
 }
 \arguments{
-\item{longitude1}{longitude or a vector of longitudes, \strong{or} a
+\item{longitude1}{longitude or a vector of longitudes, \emph{or} a
 \code{section} object, from which longitude and latitude are extracted and
 used instead of the next three arguments}
 

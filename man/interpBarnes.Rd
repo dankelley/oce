@@ -108,7 +108,6 @@ pg <- pretty(p, n=100)
 g <- interpBarnes(p, y, S, xg=pg, xr=1)
 plot(S, p, cex=0.5, col="blue", ylim=rev(range(p)))
 lines(g$zg, g$xg, col="red")
-
 }
 \references{
 S. E.  Koch and M.  DesJardins and P. J. Kocin, 1983.  ``An

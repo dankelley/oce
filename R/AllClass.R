@@ -10,8 +10,6 @@
 #'
 #' @return A [POSIXct()]-style object holding the present time, in the
 #' indicated timezone.
-#'
-#' @md
 ## NOTE: we need to define this here so setClass() knows about it;
 ## NOTE: having it in NAMESPACE is not sufficient.
 presentTime <- function(tz="UTC")
@@ -45,8 +43,6 @@ presentTime <- function(tz="UTC")
 #' str(new("oce"))
 #'
 #' @family classes provided by oce
-#'
-#' @md
 setClass("oce",
          representation(metadata="list",
                         data="list",
@@ -79,8 +75,6 @@ setClass("oce",
 #' @examples
 #' o <- new("oce")
 #' summary(o)
-#'
-#' @md
 setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {
@@ -284,10 +278,10 @@ setClass("satellite", contains="oce") # both amsr and landsat stem from this
 #' slot, if there are more than 2 elements there, or a simple xy plot if 2
 #' elements, or a histogram if 1 element.
 #'
-#' @param x An object of the [oce-class] class,
-#' but not from any subclass of that (because these subclasses go to the subclass
-#' plot methods, e.g. a [ctd-class]-class object would go to
-#' [plot,ctd-method].
+#' @param x a basic [oce-class] object,
+#' but not from any subclass that derive from this base, because
+#' subclases have their own plot methods, e.g. calling `plot()` on a
+#' [ctd-class] object dispatches to [plot,ctd-method()].
 #'
 #' @param y Ignored; only present here because S4 object for generic `plot`
 #' need to have a second parameter before the `...` parameter.
@@ -303,8 +297,6 @@ setClass("satellite", contains="oce") # both amsr and landsat stem from this
 #' o <- oceSetData(o, 'z', rnorm(10))
 #' plot(o)
 #' @aliases plot.oce
-#'
-#' @md
 setMethod(f="plot",
           signature="oce",
           definition=function(x, y, ...) {
@@ -326,7 +318,7 @@ setMethod(f="plot",
 #' versions for most sub-classes, e.g. [subset,ctd-method()]
 #' for `ctd` objects.
 #'
-#' @param x an oce object
+#' @param x an [oce-class] object
 #'
 #' @param subset a logical expression indicating how to take the subset; the form depends on the sub-class.
 #'
@@ -343,8 +335,6 @@ setMethod(f="plot",
 #' plotProfile(ctd)
 #' plotProfile(top10)
 #' @family functions that subset oce objects
-#'
-#' @md
 setMethod(f="subset",
           signature="oce",
           definition=function(x, subset, ...) {
@@ -389,7 +379,7 @@ setMethod(f="subset",
 #'
 #' @template sub_subTemplate
 #'
-#' @param x An oce object
+#' @param x an [oce-class] object
 ## @param i The item to extract.
 ## @param j Optional additional information on the `i` item.
 ## @param ... Optional additional information (ignored).
@@ -397,8 +387,6 @@ setMethod(f="subset",
 #' @seealso
 #' Many `oce` object classes have specialized versions
 #' of `[[` that handle the details in specialized way.
-#'
-#' @md
 setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -472,8 +460,6 @@ setMethod(f="[[",
 #' @param x an [oce-class] object.
 #'
 #' @template sub_subsetTemplate
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="oce", i="ANY", j="ANY"),
           function(x, i, j, ..., value) {
@@ -591,7 +577,6 @@ setMethod(f="show",
 #' [oce-class] objects of the same sub-class as the first argument.
 #'
 #' @template compositeTemplate
-#' @md
 setGeneric("composite",
            function(object, ...) {
                standardGeneric("composite")
@@ -610,8 +595,6 @@ setGeneric("composite",
 #' @param object A [list] of [oce-class]-class objects.
 #'
 #' @template compositeTemplate
-#'
-#' @md
 setMethod("composite",
           c(object="list"),
           function(object) {
@@ -635,8 +618,6 @@ setMethod("composite",
 #' @param object An object of [oce-class] class.
 #'
 #' @template handleFlagsTemplate
-#'
-#' @md
 setGeneric("handleFlags", function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
            standardGeneric("handleFlags")
          })
@@ -647,8 +628,6 @@ setGeneric("handleFlags", function(object, flags=NULL, actions=NULL, where=NULL,
 #' @param actions Ignored.
 #' @param where Ignored.
 #' @param debug Ignored.
-#'
-#' @md
 setMethod("handleFlags", signature=c(object="vector", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
           definition=function(object, flags=list(), actions=list(), where=list(), debug=getOption("oceDebug")) {
               stop("handleFlags() can only be applied to objects inheriting from \"oce\"")
@@ -663,8 +642,6 @@ setMethod("handleFlags", signature=c(object="vector", flags="ANY", actions="ANY"
 #' @param object An object of [oce-class] class.
 #
 #' @template handleFlagsTemplate
-#'
-#' @md
 setMethod("handleFlags", signature=c(object="oce", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
           definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
@@ -716,8 +693,6 @@ setMethod("handleFlags", signature=c(object="oce", flags="ANY", actions="ANY", w
 #' @return A copy of `object`, possibly with modifications to its
 #' `data` slot, if `object` contains flag values that have
 #' actions that alter the data.
-#'
-#' @md
 handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
     oceDebug(debug, "handleFlagsInternal() {\n", sep="", unindent=1)
     if (debug) {
@@ -855,24 +830,20 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
 #' then a pre-defined (very conservative) scheme is used,
 #' as listed below.
 #'
-#'\itemize{
-#'
-#' \item for `argo`, the default is
+#' * for `argo`, the default is
 #' `c(0,2,3,4,7,8,9)`, i.e. all flags except `passed_all_tests`.
 #'
-#' \item for `BODC`, the default is
+#' * for `BODC`, the default is
 #' `c(0,2,3,4,5,6,7,8,9)`, i.e. all flags except `good`.
 #'
-#' \item for `DFO`, the default is
+#' * for `DFO`, the default is
 #' `c(0,2,3,4,5,8,9)`, i.e. all flags except `appears_correct`.
 #'
-#' \item for `WHP bottle`, the default is
+#' * for `WHP bottle`, the default is
 #' `c(1,3,4,5,6,7,8,9)`, i.e. all flags except `no_problems_noted`.
 #'
-#' \item for `WHP ctd`, the default is
+#' * for `WHP ctd`, the default is
 #' `c(1,3,4,5,6,7,9)`, i.e. all flags except `acceptable`.
-#'
-#'}
 #'
 #' @param object An oce object
 #'
@@ -881,8 +852,6 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
 #' or if it has a scheme that is not in the list provide in \dQuote{Description}.
 #'
 #' @family functions relating to data-quality flags
-#'
-#' @md
 defaultFlags <- function(object)
 {
     if (is.null(object@metadata$flagScheme))
@@ -911,8 +880,6 @@ defaultFlags <- function(object)
 #' @templateVar class oce
 #' @templateVar note This generic function is overridden by specialized functions for some object classes.
 #' @template setFlagsTemplate
-#'
-#' @md
 setGeneric("setFlags", function(object, name=NULL, i=NULL, value=NULL, debug=0) {
            standardGeneric("setFlags")
          })
@@ -921,8 +888,6 @@ setGeneric("setFlags", function(object, name=NULL, i=NULL, value=NULL, debug=0) 
 #' @templateVar class oce
 #' @templateVar note This generic function is overridden by specialized functions for some object classes.
 #' @template setFlagsTemplate
-#'
-#' @md
 setMethod("setFlags",
           signature=c(object="oce", name="ANY", i="ANY", value="ANY", debug="ANY"),
           definition=function(object, name=NULL, i=NULL, value=NULL, debug=getOption("oceDebug")) {
@@ -995,16 +960,12 @@ setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, debug=getOpt
 
 #' @templateVar class oce
 #' @template initializeFlagsTemplate
-#'
-#' @md
 setGeneric("initializeFlags", function(object, name=NULL, value=NULL, debug=0) {
            standardGeneric("initializeFlags")
          })
 
 #' @templateVar class oce
 #' @template initializeFlagsTemplate
-#'
-#' @md
 setMethod("initializeFlags",
           signature=c(object="oce", name="ANY", value="ANY", debug="ANY"),
           definition=function(object, name, value, debug=getOption("oceDebug")) {
@@ -1014,8 +975,6 @@ setMethod("initializeFlags",
 #' @templateVar class oce
 #' @templateVar details This is a low-level internal function used by user-accessible functions.
 #' @template initializeFlagsTemplate
-#'
-#' @md
 initializeFlagsInternal <- function(object, name=NULL, value=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "initializeFlagsInternal(object, name=\"", name, "\", value, debug=", debug, ") {", sep="", unindent=1)
@@ -1064,8 +1023,6 @@ initializeFlagsInternal <- function(object, name=NULL, value=NULL, debug=getOpti
 #' @templateVar details There are no pre-defined `scheme`s for this object class.
 #'
 #' @template initializeFlagSchemeTemplate
-#'
-#' @md
 setGeneric("initializeFlagScheme", function(object, name=NULL, mapping=NULL, default=NULL, debug=0) {
            standardGeneric("initializeFlagScheme")
          })
@@ -1075,8 +1032,6 @@ setGeneric("initializeFlagScheme", function(object, name=NULL, mapping=NULL, def
 #' @templateVar details There are no pre-defined `scheme`s for this object class.
 #'
 #' @template initializeFlagSchemeTemplate
-#'
-#' @md
 setMethod("initializeFlagScheme",
           signature=c(object="oce", name="ANY", mapping="ANY", default="ANY", debug="ANY"),
           definition=function(object, name, mapping, default, debug) {
@@ -1086,8 +1041,6 @@ setMethod("initializeFlagScheme",
 #' @templateVar class oce
 #' @templateVar details This is a low-level internal function used by user-accessible functions.
 #' @template initializeFlagSchemeTemplate
-#'
-#' @md
 initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, default=NULL, debug=0)
 {
     oceDebug(debug, "initializeFlagSchemeInternal(object, name=\"", name, "\", debug=", debug, ") {", sep="", unindent=1)
@@ -1162,8 +1115,6 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, defaul
 #' @return An object of class corresponding to that of `object`.
 #'
 #' @family functions that concatenate oce objects.
-#'
-#' @md
 setGeneric("concatenate",
            function(object, ...) {
                standardGeneric("concatenate")
@@ -1174,8 +1125,6 @@ setGeneric("concatenate",
 #' @templateVar class oce
 #'
 #' @template concatenateTemplate
-#'
-#' @md
 setMethod("concatenate",
           signature="oce",
           definition=function(object, ...) {
@@ -1260,8 +1209,6 @@ setMethod("concatenate",
 #' @return An object of class corresponding to that in `object`.
 #'
 #' @family functions that concatenate [oce] objects.
-#'
-#' @md
 setMethod("concatenate",
           c(object="list"),
           function(object) {

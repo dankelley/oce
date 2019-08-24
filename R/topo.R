@@ -25,8 +25,6 @@
 #' @family classes provided by oce
 #'
 #' @family things related to topo data
-#'
-#' @md
 setClass("topo", contains="oce")
 
 #' @title Global Topographic Dataset at Half-degree Resolution
@@ -85,8 +83,6 @@ setClass("topo", contains="oce")
 #'
 #' @family datasets provided with oce
 #' @family things related to topo data
-#'
-#' @md
 NULL
 
 setMethod(f="initialize",
@@ -123,8 +119,6 @@ setMethod(f="initialize",
 #' @author Dan Kelley
 #'
 #' @family things related to topo data
-#'
-#' @md
 setMethod(f="summary",
           signature="topo",
           definition=function(object, ...) {
@@ -135,7 +129,7 @@ setMethod(f="summary",
 
 #' @title Extract Something From a Topo Object
 #'
-#' @param x A [topo-class] object.
+#' @param x a [topo-class] object.
 #'
 #' @examples
 #' data(topoWorld)
@@ -146,8 +140,6 @@ setMethod(f="summary",
 #' the general method is used directly.
 #' @template sub_subTemplate
 #' @family things related to topo data
-#'
-#' @md
 setMethod(f="[[",
           signature(x="topo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -156,13 +148,11 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a Topo Object
 #'
-#' @param x A [topo-class] object.
+#' @param x a [topo-class] object.
 #'
 #' @family things related to topo data
 #'
 #' @template sub_subsetTemplate
-#'
-#' @md
 setMethod(f="[[<-",
           signature(x="topo", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -176,7 +166,7 @@ setMethod(f="[[<-",
 #' Subsetting can be by `time` or `distance`, but these may not be
 #' combined; use a sequence of calls to subset by both.
 #'
-#' @param x A [topo-class] object.
+#' @param x a [topo-class] object.
 #'
 #' @param subset A condition to be applied to the `data` portion of `x`.
 #' See \sQuote{Details}.
@@ -195,8 +185,6 @@ setMethod(f="[[<-",
 #'
 #' @family things related to topo data
 #' @family functions that subset oce objects
-#'
-#' @md
 setMethod(f="subset",
           signature="topo",
           definition=function(x, subset, ...) {
@@ -309,16 +297,14 @@ setMethod(f="subset",
 #' [marmap::getNOAA.bathy()] in the `marmap` package,
 #' which is also forced to track the moving target that is NOAA.
 #'
-#' \itemize{
-#' \item August 2016.
+#' * August 2016.
 #' \samp{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
 #'
-#' \item December 2016.
+#' * December 2016.
 #' \samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
 #'
-#' \item June-September 2017.
+#' * June-September 2017.
 #' \samp{https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
-#' }
 #'
 #' @seealso The work is done with [utils::download.file()].
 #'
@@ -331,8 +317,6 @@ setMethod(f="subset",
 #'
 #' @family functions that download files
 #' @family things related to topo data
-#'
-#' @md
 download.topo <- function(west, east, south, north, resolution,
                            destdir, destfile, format,
                            server, debug=getOption("oceDebug"))
@@ -429,8 +413,6 @@ download.topo <- function(west, east, south, north, resolution,
 #' @author Dan Kelley
 #'
 #' @family things related to topo data
-#'
-#' @md
 topoInterpolate <- function(longitude, latitude, topo)
 {
     if (missing(longitude)) stop("must supply longitude")
@@ -441,16 +423,15 @@ topoInterpolate <- function(longitude, latitude, topo)
 }
 
 
-#' @title Plot a Topo Object
+#' Plot a Topo Object
 #'
-#' @description
 #' This plots contours of topographic elevation.  The plot aspect ratio is set
 #' based on the middle latitude in the plot.  The line properties, such as
 #' `land.lwd`, may either be a single item, or a vector; in the latter case,
 #' the length must match the length of the corresponding properties, e.g.
 #' `land.z`.
 #'
-#' @param x A [topo-class] object.
+#' @param x a [topo-class] object.
 #'
 #' @param xlab,ylab Character strings giving a label for the x and y axes.
 #'
@@ -530,8 +511,6 @@ topoInterpolate <- function(longitude, latitude, topo)
 #' @family functions that plot oce data
 #' @family things related to topo data
 #' @aliases plot.topo
-#'
-#' @md
 setMethod(f="plot",
           signature=signature("topo"),
           definition=function(x,
@@ -852,8 +831,6 @@ setMethod(f="plot",
 #'
 #' @author Dan Kelley
 #' @family things related to topo data
-#'
-#' @md
 read.topo <- function(file, debug=getOption("oceDebug"))
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
@@ -966,8 +943,6 @@ read.topo <- function(file, debug=getOption("oceDebug"))
 #' @author Dan Kelley
 #'
 #' @family things related to topo data
-#'
-#' @md
 as.topo <- function(longitude, latitude, z, filename="")
 {
     if (inherits(longitude, "bathy")) {
