@@ -4154,7 +4154,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
             type <- "WOCE"
         } else if ("* Sea-Bird" == substr(line, 1, 10)) {
             type <- "SBE19"
-        } else if (1 == length(grep("^ODF_HEADER,[ ]*$", line))) {
+        } else if (1 == length(grep("^[ ]*ODF_HEADER,[ ]*$", line))) {
             type <- "ODF"
         } else {
             stop("Cannot discover type in line '", line, "'\n")
