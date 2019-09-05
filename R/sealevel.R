@@ -334,6 +334,8 @@ as.sealevel <- function(elevation,
 {
     if (missing(elevation))
         stop("must supply sealevel height, elevation, in metres")
+    if (inherits(elevation, "POSIXt"))
+        stop("elevation must be a numeric vector, not a time vector")
     res <- new('sealevel')
     n <- length(elevation)
     if (missing(time)) {
@@ -549,8 +551,7 @@ setMethod(f="plot",
                       }
                       atWeek <- seq(from=from, to=to, by="week")
                       atDay  <- seq(from=from, to=to, by="day")
-                      tmp <- (pretty(max(xx@data$elevation-MSL, na.rm=TRUE) -
-                                     min(xx@data$elevation-MSL, na.rm=TRUE))/2)[2]
+                      tmp <- max(abs(range(xx@data$elevation-MSL)))
                       ylim <- c(-tmp, tmp)
                       plot(xx@data$time, xx@data$elevation - MSL,
                            xlab="",
