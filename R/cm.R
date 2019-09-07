@@ -480,7 +480,6 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
-        on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")

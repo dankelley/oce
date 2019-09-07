@@ -549,23 +549,29 @@ setMethod(f="plot",
                       for (i in seq_along(x@data)) {
                           xx@data[[i]] <- x@data[[i]][look]
                       }
-                      atWeek <- seq(from=from, to=to, by="week")
-                      atDay  <- seq(from=from, to=to, by="day")
-                      tmp <- max(abs(range(xx@data$elevation-MSL)))
-                      ylim <- c(-tmp, tmp)
-                      plot(xx@data$time, xx@data$elevation - MSL,
-                           xlab="",
-                           ylab=resizableLabel("elevation"),
-                           type='l', ylim=ylim, xaxs="i",
-                           axes=FALSE)
-                      oce.axis.POSIXct(1, xx@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
-                      yax <- axis(2)
-                      abline(h=yax, col="lightgray", lty="dotted")
-                      box()
-                      abline(v=atWeek, col="darkgray", lty="dotted")
-                      abline(v=atDay, col="lightgray", lty="dotted")
-                      abline(h=0, col="darkgreen")
-                      mtext(side=4, text=sprintf("%.2f m", MSL), col="darkgreen", cex=2/3)
+                      if (any(is.finite(xx@data$elevation))) {
+                          atWeek <- seq(from=from, to=to, by="week")
+                          atDay  <- seq(from=from, to=to, by="day")
+                          tmp <- max(abs(range(xx@data$elevation-MSL, na.rm=TRUE)))
+                          ylim <- c(-tmp, tmp)
+                          plot(xx@data$time, xx@data$elevation - MSL,
+                               xlab="",
+                               ylab=resizableLabel("elevation"),
+                               type='l', ylim=ylim, xaxs="i",
+                               axes=FALSE)
+                          oce.axis.POSIXct(1, xx@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
+                          yax <- axis(2)
+                          abline(h=yax, col="lightgray", lty="dotted")
+                          box()
+                          abline(v=atWeek, col="darkgray", lty="dotted")
+                          abline(v=atDay, col="lightgray", lty="dotted")
+                          abline(h=0, col="darkgreen")
+                          mtext(side=4, text=sprintf("%.2f m", MSL), col="darkgreen", cex=2/3)
+                      } else {
+                          plot(0:1, 0:1, type="n", xlab="", ylab="", axes=FALSE)
+                          box()
+                          text(0.5, 0.5, "Cannot show first month, since all data are NA then")
+                      }
                   } else if (which2[w] == 3) {
                       if (num.NA == 0) {
                           Elevation <- ts(x@data$elevation, start=1, deltat=x@metadata$deltat)
@@ -582,7 +588,9 @@ setMethod(f="plot",
                           grid()
                           drawConstituents()
                       } else {
-                          warning("cannot draw sealevel spectum, because the series contains missing values")
+                          plot(0:1, 0:1, type="n", xlab="", ylab="", axes=FALSE)
+                          box()
+                          text(0.5, 0.5, "Some elevations are NA, so cannot calculate the spectrum")
                       }
                   } else if (which2[w] == 4) {
                       if (num.NA == 0) {
@@ -619,22 +627,34 @@ setMethod(f="plot",
 
 
 
-#' @title Read a Sealevel File
+#' Read a Sealevel File
 #'
-#' @description
 #' Read a data file holding sea level data.  BUG: the time vector assumes GMT,
 #' regardless of the GMT.offset value.
 #'
-#' @details
 #' This function starts by scanning the first line of the file, from which it
 #' determines whether the file is in one of two known formats: type 1, the
 #' format used at the Hawaii archive centre, and type 2, the
 #' comma-separated-value format used by the Marine Environmental Data Service.
-#' (The file type is inferred by checking for the existence of the string
-#' `Station_Name` on the first line of the file, indicating type 2.) If
+#' The file type is inferred by examination of its first line. If that contains
+#' the string `Station_Name` the file is of type 2. If
 #' the file is in neither of these formats, the user might wish to scan it
 #' directly, and then to use [as.sealevel()] to create a
 #' `sealevel` object.
+
+#' The Hawaii archive site at
+#' `http://ilikai.soest.hawaii.edu/uhslc/datai.html` at one time provided a graphical
+#' interface for downloading sealevel data in Type 1, with format that was once
+#' described at `http://ilikai.soest.hawaii.edu/rqds/hourly.fmt` (although that link
+#' was observed to no longer work, on December 4, 2016).
+#' Examination of data retrieved from what seems to be a replacement Hawaii server
+#' (https://uhslc.soest.hawaii.edu/data/?rq) in September 2019 indicated that the
+#' format had been changed to what is called Type 3 by `read.sealevel`.
+#' Web searches did not uncover documentaiton on this format, so the
+#' decoding scheme was developed solely through examination of
+#' data files, which means that it might be not be correct.
+#' The MEDS repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
+#' provides Type 2 data.
 #'
 #' @param file a connection or a character string giving the name of the file
 #' to load.  See Details for the types of files that are recognized.
@@ -652,47 +672,29 @@ setMethod(f="plot",
 #'
 #' @author Dan Kelley
 #'
-#' @references The Hawaii archive site at
-#' `http://ilikai.soest.hawaii.edu/uhslc/datai.html` provides a graphical
-#' interface for downloading sealevel data in Type 1, with format as described
-#' at `http://ilikai.soest.hawaii.edu/rqds/hourly.fmt` (this link worked
-#' for years but failed at least temporarily on December 4, 2016).  The MEDS
-#' repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
-#' provides Type 2 data.
-#'
-#' @examples
-#'\dontrun{
-#' library(oce)
-#' # this yields the sealevel dataset
-#' sl <- read.oce("h275a96.dat")
-#' summary(sl)
-#' plot(sl)
-#' m <- tidem(sl)
-#' plot(m)
-#'}
-#'
 #' @family things related to sealevel data
 read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "read.sealevel(file=\"", file, "\", ...) {\n", sep="", unindent=1)
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
-    if (!is.character(file))
-        stop("'file' must be a character string")
-    fileOrig <- file
-    filename <- fullFilename(file)
+    filename <- "?"
     if (is.character(file)) {
+        filename <- fullFilename(file)
         file <- file(file, "r")
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
     if (!isOpen(file)) {
+        filename <- "(connection)"
         open(file, "r")
         on.exit(close(file))
     }
-    firstLine <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
+    fileOrig <- file
+    firstLine <- readLines(file, n=1, encoding="UTF-8")
     header <- firstLine
+    oceDebug(debug, "header (first line in file): '", header, "'\n", sep="")
     pushBack(firstLine, file)
     stationNumber <- NA
     stationVersion <- NA
@@ -707,7 +709,6 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     referenceCode <- NA
     res <- new('sealevel')
     if (substr(firstLine, 1, 12) == "Station_Name") {
-        ## type 2
         oceDebug(debug, "File is of format 1 (e.g. as in MEDS archives)\n")
         ## Station_Name,HALIFAX
         ## Station_Number,490
@@ -729,7 +730,9 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
         longitude     <- as.numeric(strsplit(header[4], ",")[[1]][2])
         tz            <- strsplit(header[6], ",")[[1]][2] # needed for get GMT offset
         GMTOffset     <- GMTOffsetFromTz(tz)
-        x <- read.csv(file, header=FALSE, stringsAsFactors=FALSE, skip=headerLength)
+        oceDebug(debug, "about to read data\n")
+        x <- read.csv(file, header=FALSE, stringsAsFactors=FALSE)#, skip=headerLength)
+        oceDebug(debug, "... finished reading data\n")
         if (length(grep("[0-9]{4}/", x$V1[1])) > 0) {
             oceDebug(debug, "Date format is year/month/day hour:min with hour in range 1:24\n")
             time <- strptime(as.character(x$V1), "%Y/%m/%d %H:%M", "UTC") + 3600 * GMTOffset
@@ -743,68 +746,152 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
                   "first pass has time start:", format(time[1]), " ", attr(time[1], "tzone"), "\n")
         year <- as.POSIXlt(time[1])$year + 1900
     } else {
-        ## type 1
-        if (debug) cat("File is of type 2 (e.g. as in the Hawaii archives)\n")
+        oceDebug(debug, "File is of type 2 or 3\n")
         d <- readLines(file)
         n <- length(d)
         header <- d[1]
-        stationNumber    <- substr(header,  1,  3)
-        stationVersion   <- substr(header,  4,  4)
-        stationName      <- substr(header,  6, 23)
-        stationName      <- sub("[ ]*$", "", stationName)
-        region           <- substr(header, 25, 43)
-        region           <- sub("[ ]*$", "", region)
-        year             <- substr(header, 45, 48)
-        latitudeStr      <- substr(header, 50, 55) #degrees,minutes,tenths,hemisphere
-        latitude <- as.numeric(substr(latitudeStr,   1, 2)) + (as.numeric(substr(latitudeStr,  3, 5)))/600
-        if (tolower(substr(latitudeStr,  6, 6)) == "s") latitude <- -latitude
-        longitudeStr     <- substr(header, 57, 63) #degrees,minutes,tenths,hemisphere
-        longitude <- as.numeric(substr(longitudeStr, 1, 3)) + (as.numeric(substr(longitudeStr, 4, 6)))/600
-        if (tolower(substr(longitudeStr, 7, 7)) == "w") longitude <- -longitude
-        GMTOffset        <- substr(header, 65, 68) #hours,tenths (East is +ve)
-        oceDebug(debug, "GMTOffset=", GMTOffset, "\n")
-        decimationMethod <- substr(header, 70, 70) #1=filtered 2=average 3=spot readings 4=other
-        referenceOffset  <- substr(header, 72, 76) # add to values
-        referenceCode    <- substr(header, 77, 77) # add to values
-        units            <- substr(header, 79, 80)
-        oceDebug(debug, "units=", units, "\n")
-        if (tolower(units) != "mm")
-            stop("require units to be 'mm' or 'MM', not '", units, "'")
-        elevation <- array(NA_real_, 12 * (n-1))
-        ## first.twelve.hours  <- 3600 * (0:11)
-        ## second.twelve.hours <- 3600 * (12:23)
-        twelve <- seq(1, 12, 1)
-        lastDayPortion <- -1 # ignored; prevents undefined warning in code analysis
-        for (i in 2:n) {
-            sp <- strsplit(d[i], "[ ]+")[[1]]
-            target.index <- 12 * (i-2) + twelve
-            elevation[target.index] <- as.numeric(sp[4:15])
-            dayPortion <- as.numeric(substr(sp[3], 9, 9))
-            if (i == 2) {
-                startDay <- as.POSIXct(strptime(paste(substr(sp[3], 1, 8), "00:00:00"), "%Y%m%d"), tz=tz)
-            } else {
-                if (dayPortion == 1) {
-                    if (i > 2 && lastDayPortion != 2)
-                        stop("non-alternating day portions on data line ", i)
-                } else if (dayPortion == 2) {
-                    if (i > 2 && lastDayPortion != 1)
-                        stop("non-alternating day portions on data line ", i)
-                } else {
-                    stop("day portion is ", dayPortion, " but must be 1 or 2, on data line", i)
+        if (grepl("LAT=", header) && grepl("LONG=", header) && grepl("TIMEZONE",header)) {
+            ## URL
+            ## http://uhslc.soest.hawaii.edu/woce/h275.dat
+            ## is a sample file, which starts as below (with quote marks added):
+            ## '275HALIFAX 1895  LAT=44 40.0N  LONG=063 35.0W  TIMEZONE=GMT '
+            ## '275HALIFAX 189501011 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999'
+            ## '275HALIFAX 189501012 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999'
+            oceDebug(debug, "type 3 (format inferred/guessed from e.g. http://uhslc.soest.hawaii.edu/woce/h275.dat)\n")
+            stationNumber <- strtrim(header, 3)
+            oceDebug(debug, "  stationNumber='", stationNumber, "'\n", sep="")
+            longitudeString <- gsub("^.*LONG=([ 0-9.]*[EWew]).*$", "\\1", header)
+            latitudeString <- gsub("^.*LAT=([ 0-9.]*[NSns]).*$", "\\1", header)
+            oceDebug(debug, "  longitudeString='", longitudeString, "'\n", sep="")
+            oceDebug(debug, "  latitudeString='", latitudeString, "'\n", sep="")
+            longitudeSplit <- strsplit(longitudeString, split="[ \t]+")[[1]]
+            longitudeDegree <- longitudeSplit[1]
+            longitudeMinute <- longitudeSplit[2]
+            oceDebug(debug, "  longitudeDegree='", longitudeDegree, "'\n", sep="")
+            oceDebug(debug, "  longitudeMinute='", longitudeMinute, "'\n", sep="")
+            longitudeSign <- if (grepl("[wW]", longitudeMinute)) -1 else 1
+            oceDebug(debug, "  longitudeSign=", longitudeSign, "\n")
+            longitudeMinute <- gsub("[EWew]", "", longitudeMinute)
+            oceDebug(debug, "  longitudeMinute='", longitudeMinute, "' after removing EW suffix\n", sep="")
+            longitude <- longitudeSign * (as.numeric(longitudeDegree) + as.numeric(longitudeMinute)/60)
+            oceDebug(debug, "  longitude=", longitude, "\n")
+            latitudeSplit <- strsplit(latitudeString, split="[ \t]+")[[1]]
+            latitudeDegree <- latitudeSplit[1]
+            latitudeMinute <- latitudeSplit[2]
+            latitudeSign <- if (grepl("[sS]", latitudeMinute)) -1 else 1
+            oceDebug(debug, "  latitudeSign=", latitudeSign, "\n")
+            latitudeMinute <- gsub("[SNsn]", "", latitudeMinute)
+            oceDebug(debug, "  latitudeMinute='", latitudeMinute, "' after removing NS suffix\n", sep="")
+            latitude <- latitudeSign * (as.numeric(latitudeDegree) + as.numeric(latitudeMinute)/60)
+            oceDebug(debug, "  latitude=", latitude, "\n")
+            ## Remove interspersed year boundaries (which look like the first line).
+            d2 <- d[!grepl("LAT=.*LONG=", d)]
+            start <- 1 + which(strsplit(header,"")[[1]]==" ")[1]
+            d3 <- substr(d2, start, 1000L)
+            ## Fix problem where the month is sometimes e.g. ' 1' instead of '01'
+            d4 <- gsub("^([1-9][0-9]{3}) ", "\\10", d3)
+            ## Fix problem where the day is sometimes e.g. ' 1' instead of '01'
+            d5 <- gsub("^([1-9][0-9]{3}[0-9]{2}) ", "\\10", d4)
+            n <- length(d5)
+            ## Now we have as below. But the second block sometimes has ' ' for '0', so we
+            ## need to fix that.
+            ## '275HALIFAX 189501011 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999'
+            twelve <- seq(1, 12, 1)
+            elevation <- rep(NA, 12 * n)
+            time <- rep(NA, 12 * n)
+            for (i in 1:n) {
+                sp <- strsplit(d5[i], "[ ]+")[[1]]
+                target.index <- 12 * (i-1) + twelve
+                ## oceDebug(debug, " i=", i, ", length(sp)=", length(sp), "\n")
+                if (length(sp) != 13) {
+                    stop("cannot parse tokens on line '", d2[i], "'\n", sep="")
                 }
+                elevation[target.index] <- as.numeric(sp[2:13])
+                dayPortion <- as.numeric(substr(sp[1], 9, 9))
+                if (i == 1) {
+                    startDay <- as.POSIXct(strptime(paste(substr(sp[1], 1, 8), "00:00:00"), "%Y%m%d"), tz=tz)
+                    oceDebug(debug, "  startDay=", startDay, "\n")
+                } else {
+                    if (dayPortion == 1) {
+                        if (i > 2 && lastDayPortion != 2)
+                            stop("non-alternating day portions on data line ", i)
+                    } else if (dayPortion == 2) {
+                        if (i > 2 && lastDayPortion != 1)
+                            stop("non-alternating day portions on data line ", i)
+                    } else {
+                        stop("day portion is ", dayPortion, " but must be 1 or 2, on data line", i)
+                    }
+                }
+                lastDayPortion <- dayPortion
+                time[target.index] <- as.POSIXct(sp[1], format="%Y%m%d",tz="UTC")+3600*(seq(0,11) + 12 * (dayPortion-1))
             }
-            lastDayPortion <- dayPortion
-        }
-        time <- as.POSIXct(startDay + 3600 * (seq(0, 12 * (n-1)-1)), tz=tz)
-        elevation[elevation==9999] <- NA
-        if (tolower(units) == "mm") {
-            elevation <- elevation / 1000
+            elevation[elevation==9999] <- NA
+            elevation <- elevation  / 1000 # convert mm to m
+            time <- numberAsPOSIXct(time, tz="UTC") # guess on timezone
         } else {
-            stop("require units to be MM")
+            oceDebug(debug, "type 2 (an old Hawaii format, inferred from documentation)\n")
+            stationNumber    <- substr(header,  1,  3)
+            stationVersion   <- substr(header,  4,  4)
+            stationName      <- substr(header,  6, 23)
+            stationName      <- sub("[ ]*$", "", stationName)
+            region           <- substr(header, 25, 43)
+            region           <- sub("[ ]*$", "", region)
+            year             <- substr(header, 45, 48)
+            latitudeStr      <- substr(header, 50, 55) #degrees,minutes,tenths,hemisphere
+            latitude <- as.numeric(substr(latitudeStr,   1, 2)) + (as.numeric(substr(latitudeStr,  3, 5)))/600
+            if (tolower(substr(latitudeStr,  6, 6)) == "s") latitude <- -latitude
+            longitudeStr     <- substr(header, 57, 63) #degrees,minutes,tenths,hemisphere
+            longitude <- as.numeric(substr(longitudeStr, 1, 3)) + (as.numeric(substr(longitudeStr, 4, 6)))/600
+            if (tolower(substr(longitudeStr, 7, 7)) == "w") longitude <- -longitude
+            GMTOffset        <- substr(header, 65, 68) #hours,tenths (East is +ve)
+            oceDebug(debug, "GMTOffset=", GMTOffset, "\n")
+            decimationMethod <- substr(header, 70, 70) #1=filtered 2=average 3=spot readings 4=other
+            referenceOffset  <- substr(header, 72, 76) # add to values
+            referenceCode    <- substr(header, 77, 77) # add to values
+            units            <- substr(header, 79, 80)
+            oceDebug(debug, "units=", units, "\n")
+            if (nchar(units) == 0) {
+                warning("no units can be inferred from the file, so assuming 'mm'")
+            } else {
+                if (units != "mm" && units != "MM")
+                    stop("require units to be 'mm' or 'MM', not '", units, "'")
+            }
+            elevation <- array(NA_real_, 12 * (n-1))
+            ## first.twelve.hours  <- 3600 * (0:11)
+            ## second.twelve.hours <- 3600 * (12:23)
+            twelve <- seq(1, 12, 1)
+            lastDayPortion <- -1 # ignored; prevents undefined warning in code analysis
+            for (i in 2:n) {
+                sp <- strsplit(d[i], "[ ]+")[[1]]
+                target.index <- 12 * (i-2) + twelve
+                elevation[target.index] <- as.numeric(sp[4:15])
+                dayPortion <- as.numeric(substr(sp[3], 9, 9))
+                if (i == 2) {
+                    startDay <- as.POSIXct(strptime(paste(substr(sp[3], 1, 8), "00:00:00"), "%Y%m%d"), tz=tz)
+                } else {
+                    if (dayPortion == 1) {
+                        if (i > 2 && lastDayPortion != 2)
+                            stop("non-alternating day portions on data line ", i)
+                    } else if (dayPortion == 2) {
+                        if (i > 2 && lastDayPortion != 1)
+                            stop("non-alternating day portions on data line ", i)
+                    } else {
+                        stop("day portion is ", dayPortion, " but must be 1 or 2, on data line", i)
+                    }
+                }
+                lastDayPortion <- dayPortion
+            }
+            time <- as.POSIXct(startDay + 3600 * (seq(0, 12 * (n-1)-1)), tz=tz)
+            elevation[elevation==9999] <- NA
+            if (tolower(units) == "mm") {
+                elevation <- elevation / 1000
+            } else {
+                stop("require units to be MM")
+            }
         }
     }
-    num.missing <- sum(is.na(elevation))
-    if (num.missing > 0) warning("there are ", num.missing, " missing points in this timeseries, at indices ", paste(which(is.na(elevation)), ""))
+    ##num.missing <- sum(is.na(elevation))
+    ##if (num.missing > 0) warning("there are ", num.missing, " missing points in this timeseries, at indices ", paste(which(is.na(elevation)), ""))
     res@metadata$filename <- filename
     res@metadata$header <- header
     res@metadata$year <- year
