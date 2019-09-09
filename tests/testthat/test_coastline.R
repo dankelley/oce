@@ -23,6 +23,6 @@ test_that("various methods of coastline creation", {
 
 test_that("coastlineCut", {
           data(coastlineWorld)
-          expect_silent(cw180 <- coastlineCut(coastlineWorld, lon_0=100))
+          expect_silent(coastlineCut(coastlineWorld, lon_0=100))
 })
 

@@ -273,7 +273,7 @@ test_that("alter flag scheme", {
           data(section)
           ctd <- section[["station", 1]]
           expect_equal(c(1, 3:9), defaultFlags(ctd))
-          expect_warning(ctd <- initializeFlagScheme(ctd, "will give error"),
+          ctd <- expect_warning(initializeFlagScheme(ctd, "will give error"),
                          "cannot alter a flagScheme that is already is place")
           ctd[["flagScheme"]] <- NULL
           ctd <- initializeFlagScheme(ctd, "argo")

@@ -39,31 +39,23 @@ This function starts by scanning the first line of the file, from which it
 determines whether the file is in one of two known formats: type 1, the
 format used at the Hawaii archive centre, and type 2, the
 comma-separated-value format used by the Marine Environmental Data Service.
-(The file type is inferred by checking for the existence of the string
-\code{Station_Name} on the first line of the file, indicating type 2.) If
+The file type is inferred by examination of its first line. If that contains
+the string \code{Station_Name} the file is of type 2. If
 the file is in neither of these formats, the user might wish to scan it
 directly, and then to use \code{\link[=as.sealevel]{as.sealevel()}} to create a
 \code{sealevel} object.
-}
-\examples{
-\dontrun{
-library(oce)
-# this yields the sealevel dataset
-sl <- read.oce("h275a96.dat")
-summary(sl)
-plot(sl)
-m <- tidem(sl)
-plot(m)
-}
-
-}
-\references{
 The Hawaii archive site at
-\code{http://ilikai.soest.hawaii.edu/uhslc/datai.html} provides a graphical
-interface for downloading sealevel data in Type 1, with format as described
-at \code{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (this link worked
-for years but failed at least temporarily on December 4, 2016).  The MEDS
-repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
+\code{http://ilikai.soest.hawaii.edu/uhslc/datai.html} at one time provided a graphical
+interface for downloading sealevel data in Type 1, with format that was once
+described at \code{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (although that link
+was observed to no longer work, on December 4, 2016).
+Examination of data retrieved from what seems to be a replacement Hawaii server
+(https://uhslc.soest.hawaii.edu/data/?rq) in September 2019 indicated that the
+format had been changed to what is called Type 3 by \code{read.sealevel}.
+Web searches did not uncover documentaiton on this format, so the
+decoding scheme was developed solely through examination of
+data files, which means that it might be not be correct.
+The MEDS repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
 provides Type 2 data.
 }
 \seealso{

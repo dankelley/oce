@@ -472,6 +472,8 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                        longitude=NA, latitude=NA,
                        debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     if (debug > 1)
         debug <- 1
     oceDebug(debug, "read.cm.s4(file=\"", file,
@@ -480,6 +482,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
+        on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
