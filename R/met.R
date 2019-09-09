@@ -428,53 +428,53 @@ metNames2oceNames <- function(names, scheme)
             res <- ODFNames2oceNames(ODFnames=names, ODFunits=NULL)
         } else if (scheme == "met") {
             ## next block handles monthly data
-            if (1 == length(i <- grep("^Date.Time$", res))) res[i] <- "DateTime"
-            if (1 == length(i <- grep("^Year$", res))) res[i] <- "Year"
-            if (1 == length(i <- grep("^Month$", res))) res[i] <- "Month"
-            if (1 == length(i <- grep("^Mean.Max.Temp...C.$", res))) res[i] <- "temperatureMaximum"
-            if (1 == length(i <- grep("^Extr.Max.Temp...C.$", res))) res[i] <- "temperatureExtraMaximum"
-            if (1 == length(i <- grep("^Extr.Max.Temp.Flag$", res))) res[i] <- "temperatureExtraMaximumFlag"
-            if (1 == length(i <- grep("^Mean.Min.Temp...C.$", res))) res[i] <- "temperatureMinimum"
-            if (1 == length(i <- grep("^Extr.Min.Temp...C.$", res))) res[i] <- "temperatureExtraMinimum"
-            if (1 == length(i <- grep("^Extr.Min.Temp.Flag$", res))) res[i] <- "temperatureExtraMinimumFlag"
-            if (1 == length(i <- grep("^Mean.Temp...C.$", res))) res[i] <- "temperature"
-            if (1 == length(i <- grep("^Mean.Max.Temp.Flag$", res))) res[i] <- "temperatureMaximumFlag"
-            if (1 == length(i <- grep("^Mean.Min.Temp.Flag$", res))) res[i] <- "temperatureMinimumFlag"
-            if (1 == length(i <- grep("^Mean.Temp.Flag$", res))) res[i] <- "temperatureFlag"
-            if (1 == length(i <- grep("^Total.Rain..mm.$", res))) res[i] <- "rain"
-            if (1 == length(i <- grep("^Total.Rain.Flag$", res))) res[i] <- "rainFlag"
-            if (1 == length(i <- grep("^Total.Snow..cm.$", res))) res[i] <- "snow"
-            if (1 == length(i <- grep("^Snow.Grnd.Last.Day..cm.$", res))) res[i] <- "snowGroundLastDay"
-            if (1 == length(i <- grep("^Snow.Grnd.Last.Day.Flag$", res))) res[i] <- "snowGroundLastDayFlag"
-            if (1 == length(i <- grep("^Total.Snow.Flag$", res))) res[i] <- "snowFlag"
-            if (1 == length(i <- grep("^Total.Precip..mm", res))) res[i] <- "precipitation"
-            if (1 == length(i <- grep("^Total.Precip.Flag", res))) res[i] <- "precipitationFlag"
-            if (1 == length(i <- grep("^Dir.of.Max.Gust..10.s.deg.$", res))) res[i] <- "directionMaximumGust"
-            if (1 == length(i <- grep("^Dir.of.Max.Gust.Flag$", res))) res[i] <- "directionMaximumGustFlag"
-            if (1 == length(i <- grep("^Spd.of.Max.Gust..km.h.$", res))) res[i] <- "speedMaximumGust"
-            if (1 == length(i <- grep("^Spd.of.Max.Gust.Flag$", res))) res[i] <- "speedMaximumGustFlag"
+            res[grep("^Date.Time$", res)] <- "DateTime"
+            res[grep("^Year$", res)] <- "Year"
+            res[grep("^Month$", res)] <- "Month"
+            res[grep("^Mean.Max.Temp...C.$", res)] <- "temperatureMaximum"
+            res[grep("^Extr.Max.Temp...C.$", res)] <- "temperatureExtraMaximum"
+            res[grep("^Extr.Max.Temp.Flag$", res)] <- "temperatureExtraMaximumFlag"
+            res[grep("^Mean.Min.Temp...C.$", res)] <- "temperatureMinimum"
+            res[grep("^Extr.Min.Temp...C.$", res)] <- "temperatureExtraMinimum"
+            res[grep("^Extr.Min.Temp.Flag$", res)] <- "temperatureExtraMinimumFlag"
+            res[grep("^Mean.Temp...C.$", res)] <- "temperature"
+            res[grep("^Mean.Max.Temp.Flag$", res)] <- "temperatureMaximumFlag"
+            res[grep("^Mean.Min.Temp.Flag$", res)] <- "temperatureMinimumFlag"
+            res[grep("^Mean.Temp.Flag$", res)] <- "temperatureFlag"
+            res[grep("^Total.Rain..mm.$", res)] <- "rain"
+            res[grep("^Total.Rain.Flag$", res)] <- "rainFlag"
+            res[grep("^Total.Snow..cm.$", res)] <- "snow"
+            res[grep("^Snow.Grnd.Last.Day..cm.$", res)] <- "snowGroundLastDay"
+            res[grep("^Snow.Grnd.Last.Day.Flag$", res)] <- "snowGroundLastDayFlag"
+            res[grep("^Total.Snow.Flag$", res)] <- "snowFlag"
+            res[grep("^Total.Precip..mm", res)] <- "precipitation"
+            res[grep("^Total.Precip.Flag", res)] <- "precipitationFlag"
+            res[grep("^Dir.of.Max.Gust..10.s.deg.$", res)] <- "directionMaximumGust"
+            res[grep("^Dir.of.Max.Gust.Flag$", res)] <- "directionMaximumGustFlag"
+            res[grep("^Spd.of.Max.Gust..km.h.$", res)] <- "speedMaximumGust"
+            res[grep("^Spd.of.Max.Gust.Flag$", res)] <- "speedMaximumGustFlag"
             ## next block handles hourly data
-            if (1 == length(i <- grep("^Data.Quality$", res))) res[i] <- "dataQuality"
-            if (1 == length(i <- grep("^Dew.Point.Temp.*C.$", res))) res[i] <- "dewPoint"
-            if (1 == length(i <- grep("^Dew.Point.Temp.Flag$", res))) res[i] <- "dewPointFlag"
-            if (1 == length(i <- grep("^Hmdx$", res))) res[i] <- "humidex"
-            if (1 == length(i <- grep("^Hmdx.Flag$", res))) res[i] <- "humidexFlag"
-            if (1 == length(i <- grep("^Rel.Hum....$", res))) res[i] <- "humidity"
-            if (1 == length(i <- grep("^Rel.Hum.Flag$", res))) res[i] <- "humidityFlag"
-            if (1 == length(i <- grep("^Stn.*Press.*kPa.*$", res))) res[i] <- "pressure"
-            if (1 == length(i <- grep("^Stn.Press.Flag$", res))) res[i] <- "pressureFlag"
-            if (1 == length(i <- grep("^Temp.*C.*$", res))) res[i] <- "temperature"
-            if (1 == length(i <- grep("^Temp.*Flag$", res))) res[i] <- "temperatureFlag"
-            if (1 == length(i <- grep("^Visibility.*km.*$", res))) res[i] <- "visibility"
-            if (1 == length(i <- grep("^Visibility.*Flag$", res))) res[i] <- "visibilityFlag"
-            if (1 == length(i <- grep("^Wind.*Spd.*km.*$", res))) res[i] <- "wind"
-            if (1 == length(i <- grep("^Wind.*Spd.*Flag$", res))) res[i] <- "windFlag"
+            res[grep("^Data.Quality$", res)] <- "dataQuality"
+            res[grep("^Dew.Point.Temp.*C.$", res)] <- "dewPoint"
+            res[grep("^Dew.Point.Temp.Flag$", res)] <- "dewPointFlag"
+            res[grep("^Hmdx$", res)] <- "humidex"
+            res[grep("^Hmdx.Flag$", res)] <- "humidexFlag"
+            res[grep("^Rel.Hum....$", res)] <- "humidity"
+            res[grep("^Rel.Hum.Flag$", res)] <- "humidityFlag"
+            res[grep("^Stn.*Press.*kPa.*$", res)] <- "pressure"
+            res[grep("^Stn.Press.Flag$", res)] <- "pressureFlag"
+            res[grep("^Temp.*C.*$", res)] <- "temperature"
+            res[grep("^Temp.*Flag$", res)] <- "temperatureFlag"
+            res[grep("^Visibility.*km.*$", res)] <- "visibility"
+            res[grep("^Visibility.*Flag$", res)] <- "visibilityFlag"
+            res[grep("^Wind.*Spd.*km.*$", res)] <- "wind"
+            res[grep("^Wind.*Spd.*Flag$", res)] <- "windFlag"
             ## some files have "10s" and others "10.s" (I think)
-            if (1 == length(i <- grep("^Wind.Dir..10.*s.deg.$", res))) res[i] <- "direction"
-            if (1 == length(i <- grep("^Wind.Dir.Flag$", res))) res[i] <- "directionFlag"
-            if (1 == length(i <- grep("^Wind.Chill$", res))) res[i] <- "windChill"
-            if (1 == length(i <- grep("^Wind.Chill.Flag$", res))) res[i] <- "windChillFlag"
-            if (1 == length(i <- grep("^Weather$", res))) res[i] <- "weather"
+            res[grep("^Wind.Dir..10.*s.deg.$", res)] <- "direction"
+            res[grep("^Wind.Dir.Flag$", res)] <- "directionFlag"
+            res[grep("^Wind.Chill$", res)] <- "windChill"
+            res[grep("^Wind.Chill.Flag$", res)] <- "windChillFlag"
+            res[grep("^Weather$", res)] <- "weather"
         } else {
             warning("unknown scheme ", scheme)
         }
@@ -537,8 +537,6 @@ metNames2oceNames <- function(names, scheme)
 #' @family things related to met data
 read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
     oceDebug(debug, "read.met() {\n", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -557,7 +555,8 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
     text <- readLines(file, encoding="UTF-8", warn=FALSE)
     ##print(header[1:19])
     textItem <- function(text, name, numeric=TRUE) {
-        if (length(i <- grep(name, text))) {
+        i <- grep(name, text)
+        if (length(i)) {
             if (numeric)
                 as.numeric(sub("[^d](.*)[^d]$", "\\1", strsplit(text[i], ",")[[1]][2]))
             else

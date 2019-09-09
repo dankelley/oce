@@ -86,7 +86,7 @@ test_that("as.section() works with vector of CTD objects", {
           fake[["longitude"]] <- ctd[["longitude"]] + 0.01
           fake[["station"]] <- "fake"
           ctds[[2]] <- fake
-          expect_warning(sec <- as.section(ctds), "estimated waterDepth as max\\(pressure\\) for CTDs numbered 1:2")
+          sec <- expect_warning(as.section(ctds), "estimated waterDepth as max\\(pressure\\) for CTDs numbered 1:2")
           expect_equal(2, length(sec[["station"]]))
 })
 
@@ -255,9 +255,9 @@ test_that("sectionSmooth profile count", {
           expect_equal(length(s[["station"]]), length(sbarnes[["station"]]))
           if (requireNamespace("automap", quietly=TRUE) &&
               requireNamespace("sp", quietly=TRUE)) {
-            expect_warning(skrigingInternal <- sectionSmooth(s, "kriging"), "NaNs produced")
+            skrigingInternal <- expect_warning(sectionSmooth(s, "kriging"), "NaNs produced")
             expect_equal(length(s[["station"]]), length(skrigingInternal[["station"]]))
-            expect_warning(skrigingInternal2 <- sectionSmooth(s, "kriging", xg=seq(0,200,50)), "NaNs produced")
+            skrigingInternal2 <- expect_warning(sectionSmooth(s, "kriging", xg=seq(0,200,50)), "NaNs produced")
             expect_equal(length(skrigingInternal2[["station"]]), 3)
             krigFunction <- function(x, y, F, xg, xr, yg, yr) {
               xy <- data.frame(x=x/xr, y=y/yr)
@@ -266,10 +266,10 @@ test_that("sectionSmooth profile count", {
                                       new_data=sp::SpatialPoints(expand.grid(xg/xr, yg/yr)))
               matrix(K$krige_output@data$var1.pred, nrow=length(xg), ncol=length(yg))
             }
-            expect_output(expect_warning(skrigingUser <- sectionSmooth(s, krigFunction), "NaNs produced"),
+            skrigingUser <- expect_output(expect_warning(sectionSmooth(s, krigFunction), "NaNs produced"),
                           "using ordinary kriging")
             expect_equal(length(skrigingUser[["station"]]), length(s[["station"]]))
-            expect_output(expect_warning(skrigingUser2 <- sectionSmooth(s, krigFunction, xg=seq(0,200,50)), "NaNs produced"),
+            skrigingUser2 <- expect_output(expect_warning(sectionSmooth(s, krigFunction, xg=seq(0,200,50)), "NaNs produced"),
                           "using ordinary kriging")
             expect_equal(length(skrigingUser2[["station"]]), 3)
           }

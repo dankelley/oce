@@ -799,6 +799,7 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
             twelve <- seq(1, 12, 1)
             elevation <- rep(NA, 12 * n)
             time <- rep(NA, 12 * n)
+            lastDayPortion <- NULL # value defined at i=1, checked at i>2, so the initial value is immaterial
             for (i in 1:n) {
                 sp <- strsplit(d5[i], "[ ]+")[[1]]
                 target.index <- 12 * (i-1) + twelve

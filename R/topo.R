@@ -906,7 +906,8 @@ read.topo <- function(file, debug=getOption("oceDebug"))
         latitudeLowerLeft <- as.numeric(strsplit(header[4], "[ ]+", perl=TRUE)[[1]][2])
         cellSize <- as.numeric(strsplit(header[5], "[ ]+", perl=TRUE)[[1]][2])
         missingValue <- NA
-        if (length(i <- grep("nodata", header)))
+        i <- grep("nodata", header)
+        if (length(i))
             missingValue <- as.numeric(strsplit(header[i], "[ ]+", perl=TRUE)[[1]][2])
         zz <- as.matrix(read.table(file, header=FALSE, skip=nh), byrow=TRUE)
         rownames(zz) <- NULL

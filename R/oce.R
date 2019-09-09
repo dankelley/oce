@@ -1423,7 +1423,8 @@ oce.as.POSIXlt <- function(x, tz = "")
         xx <- x[1]
         if (is.na(xx)) {
             j <- 1
-            while (is.na(xx) && (j <- j + 1) <= length(x)) xx <- x[j]
+            while (is.na(xx) && (j <- j + 1) <= length(x))
+                xx <- x[j]
             if (is.na(xx))
                 f <- "%Y-%m-%d"
         }
@@ -3550,7 +3551,9 @@ decodeTime <- function(time, timeFormats, tz="UTC")
     res <- NA
     for (format in timeFormats) {
         ##cat("TRYING FORMAT:", format, "\n")
-        if (!is.na(res <-  as.POSIXct(time, format=format, tz=tz))) {
+        res <- as.POSIXct(time, format=format, tz=tz)
+        if (!is.na(res)) {
+            ##cat("YES!\n")
             break
         }
     }

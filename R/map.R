@@ -52,22 +52,27 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
     if (passNA) {
         na <- which(is.na(xy[,1]))
         xy[na, ] <- 0
-        capture.output(XY <- unname(rgdal::project(xy, proj=proj, inv=inv)))
+        capture.output(
+                       {
+                           XY <- unname(rgdal::project(xy, proj=proj, inv=inv))
+                       }
+        )
         XY[na, ] <- NA
     } else {
         if (.Platform$OS.type == "windows" && .Platform$r_arch == "i386") {
             if (packageVersion("rgdal") < "1.3.9")
                 stop("rgdal must be at least version 1.3.9, on i386/windows platforms")
-            capture.output(XY <- unname(rgdal::project(xy,
-                                                       proj=proj,
-                                                       inv=inv,
-                                                       legacy=legacy,
-                                                       allowNAs_if_not_legacy=TRUE)))
+            capture.output(
+                           {
+                               XY <- unname(rgdal::project(xy, proj=proj, inv=inv, legacy=legacy, allowNAs_if_not_legacy=TRUE))
+                           }
+            )
         } else {
-            capture.output(XY <- unname(rgdal::project(xy=xy,
-                                                       proj=proj,
-                                                       inv=inv,
-                                                       legacy=legacy)))
+            capture.output(
+                           {
+                               XY <- unname(rgdal::project(xy=xy, proj=proj, inv=inv, legacy=legacy))
+                           }
+            )
         }
     }
     options(warn=owarn)
@@ -1918,9 +1923,9 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
     ## If a pole is present, we put longitude lines around the world, no matter
     ## what else is true.
     poleInView <- FALSE
-    try(pole <- lonlat2map(0, 90), silent=TRUE)
+    pole <- try(lonlat2map(0, 90), silent=TRUE)
     if (inherits(pole, "try-error")) {
-        try(pole <- lonlat2map(0, -90), silent=TRUE)
+        pole <- try(lonlat2map(0, -90), silent=TRUE)
     }
     if (!inherits(pole, "try-error")) {
         pusr <- par("usr") # don't alter existing

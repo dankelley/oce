@@ -4,7 +4,7 @@ context("landsat")
 f <- "~/Dropbox/data/archive/landsat/LC80080292014065LGN00"
 if (file.exists(f)) {
     test_that("read landsat (private file)", {
-              expect_warning(l <- read.landsat(f, band="tirs1"))
+              l <- expect_warning(read.landsat(f, band="tirs1"))
               expect_equal(dim(l@data$tirs1$msb), c(7861, 7991))
               expect_equal(dim(l@data$tirs1$lsb), c(7861, 7991))
               expect_equal(l@data$tirs1$lsb[2000, 2000:2005],

@@ -258,7 +258,11 @@ maybeLC <- function(s, lower)
 
 getData <- function(file, name) # a local function -- no need to pollute namesapce with it
 {
-    capture.output(res <- try(ncdf4::ncvar_get(file, name), silent=TRUE))
+    res <- NA
+    o <- capture.output(
+                        {
+                            res <- try(ncdf4::ncvar_get(file, name), silent=TRUE)
+                        })
     if (inherits(res, "try-error")) {
         warning(file$filename, " has no variable named '", name, "'\n", sep='')
         res <- NULL
@@ -1348,7 +1352,12 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     ## "HISTORY_PREVIOUS_VALUE", "HISTORY_QCTEST"
     for (name in varNames) {
         oceDebug(debug, "about to try to insert \"", name, "\" into metadata\n", sep="")
-        o <- capture.output(value <- try(ncdf4::ncvar_get(file, name), silent=TRUE))
+        value <- NA
+        o <- capture.output(
+                            {
+                                value <- try(ncdf4::ncvar_get(file, name), silent=TRUE)
+                            }
+        )
         if (inherits(value, "try-error")) {
             ## see https://github.com/dankelley/oce/issues/1522 for a discussion of the fact
             ## that the file used for data(argo) has zero-length HISTORY_* items.

@@ -2842,9 +2842,11 @@ sectionSmooth <- function(section, method="spline",
         oceDebug(debug, "dim matrix for input grid=", paste(dim(VAR), collapse="X"), "\n")
         for (var in vars) {
             ##? res@data$station[[istn]][[var]] <- rep(NA, npressure)
-            oceDebug(debug, "smoothing", var, "\n")
-            for (istn in seq_len(nx))
+            oceDebug(debug, "smoothing '", var, "'\n", sep="")
+            for (istn in seq_len(nx)) {
+                ##message("istn=", istn)
                 VAR[istn, ] <- if (var %in% names(stations[[istn]][["data"]])) stations[[istn]][[var]] else rep(NA, npressure)
+            }
             ## Smooth at each pressure value (turn off warnings because smooth.spline is confusingly chatty)
             owarn <- options('warn')$warn
             options(warn=-1)
@@ -2903,7 +2905,7 @@ sectionSmooth <- function(section, method="spline",
         ## Smooth each variable separately
         for (var in vars) {
             v <- NULL
-            oceDebug(debug, "smoothing", var, "\n")
+            oceDebug(debug, "smoothing '", var, "' near section.R:2908\n", sep="")
             ## collect data
             v <- unlist(lapply(section[["station"]],
                                function(CTD)
@@ -2932,7 +2934,11 @@ sectionSmooth <- function(section, method="spline",
                         }
                         owarn <- options('warn')$warn
                         options(warn=-1) # silence autoKrige chattiness on e.g. method selection
-                        capture.output(smu <- list(z=krigFunction(X[ok], P[ok], v[ok], xg=xg, xr=xr, yg=yg, yr=yr)))
+                        capture.output(
+                                       {
+                                           smu <- list(z=krigFunction(X[ok], P[ok], v[ok], xg=xg, xr=xr, yg=yg, yr=yr))
+                                       }
+                        )
                         options(warn=owarn)
                     } else {
                         stop('method="kriging" requires packages "automap" and "sp" to be installed\n')

@@ -38,7 +38,7 @@ test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burs
             expect_silent(read.adp.ad2cp(f1, 1, 100, 1, plan=0))
             expect_error(read.adp.ad2cp(f1, 1, 100, 1, plan=10),
                          "there are no data for plan=10; try one of the following values instead: 1 0")
-            expect_warning(d1 <- read.adp.ad2cp(f1, 1, 100, 1),
+            d1 <- expect_warning(read.adp.ad2cp(f1, 1, 100, 1),
                            "since 'plan' was not given, using the most common value, namely 0")
             nnn <- c("average", "burst", "interleavedBurst")
             expect_equal(c(TRUE, TRUE, FALSE), nnn %in% names(d1@data))
@@ -341,7 +341,7 @@ test_that("read.adp() on a private AD2CP file that has only 'burst' data", {
           if (file.exists(f2)) {
             N <- 500
             ## Note: using read.adp() to ensure that it also works
-            expect_warning(d2 <- read.adp(f2, from=1, to=N, by=1),
+            d2 <- expect_warning(read.adp(f2, from=1, to=N, by=1),
                            "since 'plan' was not given, using the most common value, namely 0")
             nnn <- c("average", "burst", "interleavedBurst")
             expect_equal(c(FALSE, TRUE, FALSE), nnn %in% names(d2@data))
@@ -394,7 +394,7 @@ test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedB
           if (file.exists(f3)) {
             N <- 100
             ## Note: using read.oce() to ensure that it also works
-            expect_warning(d3 <- read.oce(f3, from=1, to=N, by=1),
+            d3 <- expect_warning(read.oce(f3, from=1, to=N, by=1),
                            "since 'plan' was not given, using the most common value, namely 1")
             ## subsetting
             nnn <- c("average", "burst", "interleavedBurst")

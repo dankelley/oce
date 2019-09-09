@@ -1945,8 +1945,8 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
                             } else {
                                 if (datumName != "pressure") {
                                     yvar <- x@data[[datumName]][focus]
-                                    t <- try(m <- lm(yvar ~ xvar), silent=TRUE)
-                                    if (class(t) != "try-error")
+                                    m <- try(lm(yvar ~ xvar), silent=TRUE)
+                                    if (class(m) != "try-error")
                                         dataNew[[datumName]][i] <- predict(m, newdata=list(xvar=pt[i]))
                                     else
                                         dataNew[[datumName]][i] <- NA
@@ -2548,21 +2548,23 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 ## Handle submethods.
                 if (submethod == "A") {
                     oceDebug(debug, "method[2]=\"A\"\n")
-                    t <- try(m <- nls(pp ~ function(ss, s0, p0, dpds) {
-                                          oceDebug(debug-1, "bilinearA s0=", s0, "p0=",
-                                                   p0, "dpds=", dpds, "\n")
-                                          ifelse(s < s0, p0, p0+dpds * (s-s0))
-                                      },
-                                      start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
-                    scanStart <- if (class(t) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
+                    m <- try(nls(pp ~ function(ss, s0, p0, dpds)
+                                 {
+                                     oceDebug(debug-1, "bilinearA s0=", s0, "p0=",
+                                              p0, "dpds=", dpds, "\n")
+                                     ifelse(s < s0, p0, p0+dpds * (s-s0))
+                                 },
+                                 start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
+                    scanStart <- if (class(m) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
                 } else if (submethod == "B") {
                     oceDebug(debug, "method[3]=\"B\" so using two-segment model with zero near-surface pressure\n")
-                    t <- try(m <- nls(pp ~ function(ss, s0, dpds) {
-                                          oceDebug(debug-1, "bilinearB s0=", s0, "dpds=", dpds, "\n")
-                                          ifelse(s < s0, 0, dpds * (s-s0))
-                                      },
-                                      start=list(s0=s0, dpds=dpds0)), silent=TRUE)
-                    scanStart <- if (class(t) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
+                    m <- try(nls(pp ~ function(ss, s0, dpds)
+                                 {
+                                     oceDebug(debug-1, "bilinearB s0=", s0, "dpds=", dpds, "\n")
+                                     ifelse(s < s0, 0, dpds * (s-s0))
+                                 },
+                                 start=list(s0=s0, dpds=dpds0)), silent=TRUE)
+                    scanStart <- if (class(m) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
                 } else {
                     stop("unknown submethod '", submethod, "'")
                 }
@@ -2613,21 +2615,23 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 ## Handle submethods.
                 if (submethod == "A") {
                     oceDebug(debug, "method[2]=\"A\"\n")
-                    t <- try(m <- nls(pp ~ function(ss, s0, p0, dpds) {
-                                          oceDebug(debug-1, "bilinearA s0=", s0, "p0=",
-                                                   p0, "dpds=", dpds, "\n")
-                                          ifelse(s < s0, p0, p0+dpds * (s-s0))
-                                      },
-                                      start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
-                    scanStart <- if (class(t) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
+                    m <- try(nls(pp ~ function(ss, s0, p0, dpds)
+                                 {
+                                     oceDebug(debug-1, "bilinearA s0=", s0, "p0=",
+                                              p0, "dpds=", dpds, "\n")
+                                     ifelse(s < s0, p0, p0+dpds * (s-s0))
+                                 },
+                                 start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
+                    scanStart <- if (class(m) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
                 } else if (submethod == "B") {
                     oceDebug(debug, "method[3]=\"B\" so using two-segment model with zero near-surface pressure\n")
-                    t <- try(m <- nls(pp ~ function(ss, s0, dpds) {
-                                          oceDebug(debug-1, "bilinearB s0=", s0, "dpds=", dpds, "\n")
-                                          ifelse(s < s0, 0, dpds * (s-s0))
-                                      },
-                                      start=list(s0=s0, dpds=dpds0)), silent=TRUE)
-                    scanStart <- if (class(t) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
+                    m <- try(nls(pp ~ function(ss, s0, dpds)
+                                 {
+                                     oceDebug(debug-1, "bilinearB s0=", s0, "dpds=", dpds, "\n")
+                                     ifelse(s < s0, 0, dpds * (s-s0))
+                                 },
+                                 start=list(s0=s0, dpds=dpds0)), silent=TRUE)
+                    scanStart <- if (class(m) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
                 } else {
                     stop("unknown submethod '", submethod, "'")
                 }
@@ -4223,10 +4227,10 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
     ## if single number, it's decimal degrees; if two numbers, degrees and then decimal minutes
     xx <- strsplit(x, '[ \\t]+')[[1]]
     if (1 == length(xx)) {
-        suppressWarnings(res <- as.numeric(xx))
+        res <- suppressWarnings(as.numeric(xx))
         oceDebug(debug, "  step 5. \"", res, "\" (inferred from single #, decimal degrees)\n", sep="")
     } else if (2 == length(xx)) {
-        suppressWarnings(res <- as.numeric(xx[1]) + as.numeric(xx[2]) / 60)
+        res <- suppressWarnings(as.numeric(xx[1]) + as.numeric(xx[2]) / 60)
         oceDebug(debug, "  step 5. \"", res, "\" (inferred from two #, degrees and decimal minutes)\n", sep="")
     } else if (3 == length(xx)) {
         res <- suppressWarnings(as.numeric(xx[1]) + as.numeric(xx[2]) / 60 + as.numeric(xx[3]) / 3600)

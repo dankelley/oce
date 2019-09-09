@@ -93,7 +93,7 @@ test_that("Teledyn/RDI binmap", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               beam <- read.oce("local_data/adp_rdi",
                                from=1, to=10, latitude=47.88126, longitude=-69.73433)
-              expect_silent(beam2 <- binmapAdp(beam))
+              beam2 <- expect_silent(binmapAdp(beam))
               ## FIXME: add tests on the data
           }
 })
