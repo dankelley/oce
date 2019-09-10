@@ -2369,7 +2369,7 @@ fullFilename <- function(filename)
 #' `"heading"`, `"pitch"`, `"roll"`, `"u"`, `"v"`,
 #' `"w"`, `"speed"`, `"direction"`, `"eastward"`,
 #' `"northward"`, `"depth"`, `"elevation"`, `"latitude"`,
-#' `"longitude"`, `"frequency cph"`, or \code{"spectral density
+#' `"longitude"`, `"frequency cph"`, `"sound speed"`, or \code{"spectral density
 #' m2/cph"}.
 #'
 #' @param axis a string indicating which axis to use; must be `x` or
@@ -2413,7 +2413,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
                      "along-track distance km", "heading", "pitch", "roll", "u",
                      "v", "w", "speed", "direction", "eastward", "northward",
                      "depth", "elevation", "latitude", "longitude", "frequency cph",
-                     "spectral density m2/cph")
+                     "sound speed", "spectral density m2/cph")
     if (!missing(unit)) {
         if (is.list(unit)) {
             unit <- unit[[1]] # second item is a scale
@@ -2644,6 +2644,10 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
     } else if (item == "frequency cph") {
         var <- gettext("Frequency", domain="R-oce")
         unit <- gettext("cph", domain="R-oce")
+        abbreviated <- full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+    } else if (item == "sound speed") {
+        var <- gettext("Sound Speed", domain="R-oce")
+        unit <- gettext("m/s", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
     } else if (item == "spectral density m2/cph") {
         var <- gettext("Spectral density", domain="R-oce")

@@ -113,7 +113,8 @@ Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,odf-method}},
   \code{\link{subset,rsk-method}},
   \code{\link{subset,sealevel-method}},
-  \code{\link{subset,topo-method}}
+  \code{\link{subset,topo-method}},
+  \code{\link{subset,xbt-method}}
 
 Other things related to section data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},

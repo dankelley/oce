@@ -21,7 +21,7 @@ umol/kg"}, \code{"phosphate"}, \code{"silicate"}, \code{"tritium"},
 \code{"heading"}, \code{"pitch"}, \code{"roll"}, \code{"u"}, \code{"v"},
 \code{"w"}, \code{"speed"}, \code{"direction"}, \code{"eastward"},
 \code{"northward"}, \code{"depth"}, \code{"elevation"}, \code{"latitude"},
-\code{"longitude"}, \code{"frequency cph"}, or \code{"spectral density
+\code{"longitude"}, \code{"frequency cph"}, \code{"sound speed"}, or \code{"spectral density
 m2/cph"}.}
 
 \item{axis}{a string indicating which axis to use; must be \code{x} or

@@ -22,7 +22,8 @@ Other datasets provided with oce: \code{\link{adp}},
   \code{\link{lobo}}, \code{\link{met}}, \code{\link{rsk}},
   \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}}
+  \code{\link{topoWorld}}, \code{\link{wind}},
+  \code{\link{xbt}}
 
 Other things related to colors: \code{\link{colormap}},
   \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},

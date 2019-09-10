@@ -81,7 +81,8 @@ Other functions that replace parts of oce objects: \code{\link{[[<-,adp-method}}
   \code{\link{[[<-,section-method}},
   \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,topo-method}},
-  \code{\link{[[<-,windrose-method}}
+  \code{\link{[[<-,windrose-method}},
+  \code{\link{[[<-,xbt-method}}
 
 Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{as.ctd}}, \code{\link{cnvName2oceName}},

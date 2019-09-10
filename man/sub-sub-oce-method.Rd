@@ -111,6 +111,7 @@ Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}},
+  \code{\link{[[,xbt-method}},
   \code{\link{[[<-,adv-method}}
 }
 \concept{functions that extract parts of oce objects}

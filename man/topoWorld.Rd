@@ -67,7 +67,7 @@ Other datasets provided with oce: \code{\link{adp}},
   \code{\link{ocecolors}}, \code{\link{rsk}},
   \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{wind}}
+  \code{\link{wind}}, \code{\link{xbt}}
 
 Other things related to topo data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},

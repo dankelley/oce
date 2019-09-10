@@ -71,7 +71,8 @@ Other functions that replace parts of oce objects: \code{\link{[[<-,adp-method}}
   \code{\link{[[<-,sealevel-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{[[<-,tidem-method}},
-  \code{\link{[[<-,topo-method}}
+  \code{\link{[[<-,topo-method}},
+  \code{\link{[[<-,xbt-method}}
 
 Other things related to windrose data: \code{\link{[[,windrose-method}},
   \code{\link{as.windrose}},

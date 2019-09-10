@@ -413,8 +413,6 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' parameter is typically only provided for internal calls; the default that it
 #' provides is better for normal calls by a user.
 #'
-#' @param ... Optional arguments passed to plotting functions.
-#'
 #' @return An [cm-class] object.
 #'
 #' The `data` slot will contain all the data in the file, with names
@@ -452,7 +450,7 @@ as.cm <- function(time, u=NULL, v=NULL,
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     type=c("s4"),
                     longitude=NA, latitude=NA,
-                    debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
+                    debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
@@ -463,14 +461,14 @@ read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (type == "s4")
         read.cm.s4(file=file, from=from, to=to, by=by, tz=tz,
                    longitude=longitude, latitude=latitude,
-                   debug=debug-1, monitor=monitor, processingLog=processingLog, ...)
+                   debug=debug-1, monitor=monitor, processingLog=processingLog)
     else
         stop("unknown type of current meter")
 }
 
 read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                        longitude=NA, latitude=NA,
-                       debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
+                       debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
@@ -615,7 +613,6 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         if (length(grep("^X[.0-9]*$", dname)))
             res@metadata$dataNamesOriginal[[dname]] <- "-"
     }
-    message("B")
     res@data <- d
     ## res <- new("cm", sample=as.numeric(sample[keep]), time=time[keep],
     ##            u=u[keep], v=v[keep], direction=direction[keep],

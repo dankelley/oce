@@ -96,8 +96,9 @@ Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotProfile}}, \code{\link{plotScan}},
-  \code{\link{plotTS}}, \code{\link{tidem-class}}
+  \code{\link{plot,xbt-method}}, \code{\link{plotProfile}},
+  \code{\link{plotScan}}, \code{\link{plotTS}},
+  \code{\link{tidem-class}}
 
 Other things related to met data: \code{\link{[[,met-method}},
   \code{\link{[[<-,met-method}}, \code{\link{as.met}},

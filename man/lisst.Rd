@@ -24,7 +24,8 @@ Other datasets provided with oce: \code{\link{adp}},
   \code{\link{met}}, \code{\link{ocecolors}},
   \code{\link{rsk}}, \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}}
+  \code{\link{topoWorld}}, \code{\link{wind}},
+  \code{\link{xbt}}
 }
 \author{
 Dan Kelley

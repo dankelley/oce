@@ -6,7 +6,7 @@
 \usage{
 read.cm(file, from = 1, to, by = 1, tz = getOption("oceTz"),
   type = c("s4"), longitude = NA, latitude = NA,
-  debug = getOption("oceDebug"), monitor = FALSE, processingLog, ...)
+  debug = getOption("oceDebug"), monitor = FALSE, processingLog)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file to
@@ -44,8 +44,6 @@ within the call stack to which debugging applies.}
 \item{processingLog}{if provided, the action item to be stored in the log.  This
 parameter is typically only provided for internal calls; the default that it
 provides is better for normal calls by a user.}
-
-\item{...}{Optional arguments passed to plotting functions.}
 }
 \value{
 An \linkS4class{cm} object.

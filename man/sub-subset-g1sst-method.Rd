@@ -71,7 +71,8 @@ Other functions that replace parts of oce objects: \code{\link{[[<-,adp-method}}
   \code{\link{[[<-,section-method}},
   \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,topo-method}},
-  \code{\link{[[<-,windrose-method}}
+  \code{\link{[[<-,windrose-method}},
+  \code{\link{[[<-,xbt-method}}
 
 Other things related to g1sst data: \code{\link{[[,g1sst-method}}
 }

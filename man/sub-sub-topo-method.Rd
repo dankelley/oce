@@ -118,6 +118,7 @@ Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,section-method}},
   \code{\link{[[,tidem-method}},
   \code{\link{[[,windrose-method}},
+  \code{\link{[[,xbt-method}},
   \code{\link{[[<-,adv-method}}
 
 Other things related to topo data: \code{\link{[[<-,topo-method}},

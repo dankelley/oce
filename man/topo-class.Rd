@@ -81,7 +81,8 @@ Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{met-class}}, \code{\link{oce-class}},
   \code{\link{odf-class}}, \code{\link{rsk-class}},
   \code{\link{sealevel-class}},
-  \code{\link{section-class}}, \code{\link{windrose-class}}
+  \code{\link{section-class}},
+  \code{\link{windrose-class}}, \code{\link{xbt-class}}
 
 Other things related to topo data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},

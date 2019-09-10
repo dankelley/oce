@@ -74,7 +74,8 @@ Other functions that replace parts of oce objects: \code{\link{[[<-,amsr-method}
   \code{\link{[[<-,section-method}},
   \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,topo-method}},
-  \code{\link{[[<-,windrose-method}}
+  \code{\link{[[<-,windrose-method}},
+  \code{\link{[[<-,xbt-method}}
 
 Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},

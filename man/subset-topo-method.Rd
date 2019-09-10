@@ -53,7 +53,8 @@ Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,odf-method}},
   \code{\link{subset,rsk-method}},
   \code{\link{subset,sealevel-method}},
-  \code{\link{subset,section-method}}
+  \code{\link{subset,section-method}},
+  \code{\link{subset,xbt-method}}
 }
 \author{
 Dan Kelley

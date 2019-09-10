@@ -58,7 +58,8 @@ Other datasets provided with oce: \code{\link{adp}},
   \code{\link{met}}, \code{\link{ocecolors}},
   \code{\link{rsk}}, \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}}
+  \code{\link{topoWorld}}, \code{\link{wind}},
+  \code{\link{xbt}}
 }
 \concept{datasets provided with oce}
 \concept{things related to ctd data}

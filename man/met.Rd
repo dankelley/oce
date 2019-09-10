@@ -33,7 +33,8 @@ Other datasets provided with oce: \code{\link{adp}},
   \code{\link{lobo}}, \code{\link{ocecolors}},
   \code{\link{rsk}}, \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}}
+  \code{\link{topoWorld}}, \code{\link{wind}},
+  \code{\link{xbt}}
 
 Other things related to met data: \code{\link{[[,met-method}},
   \code{\link{[[<-,met-method}}, \code{\link{as.met}},
