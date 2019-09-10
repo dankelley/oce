@@ -259,10 +259,12 @@ maybeLC <- function(s, lower)
 getData <- function(file, name) # a local function -- no need to pollute namesapce with it
 {
     res <- NA
-    o <- capture.output(
-                        {
-                            res <- try(ncdf4::ncvar_get(file, name), silent=TRUE)
-                        })
+    ## wrap in capture.output to silence what seems like direct printing to stdout()
+    ## or stderr() by ncvar_get().
+    capture.output(
+                   {
+                       res <- try(ncdf4::ncvar_get(file, name), silent=TRUE)
+                   })
     if (inherits(res, "try-error")) {
         warning(file$filename, " has no variable named '", name, "'\n", sep='')
         res <- NULL
