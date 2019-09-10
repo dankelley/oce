@@ -9,23 +9,23 @@
 \S4method{plot}{ladp}(x, which = c("u", "v"), ...)
 }
 \arguments{
-\item{x}{A \code{ladp} object, e.g. as read by \code{\link{as.ladp}}.}
+\item{x}{an \linkS4class{ladp} object.}
 
-\item{which}{Vector of names of items to be plotted.}
+\item{which}{a character vector storing names of items to be plotted.}
 
 \item{...}{Other arguments, passed to plotting functions.}
 }
 \description{
-Uses \code{\link{plotProfile}} to create panels of depth variation of easterly
+Uses \code{\link[=plotProfile]{plotProfile()}} to create panels of depth variation of easterly
 and northerly velocity components.
 }
 \seealso{
-Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
+Other things related to ladp data: \code{\link{[[,ladp-method}},
   \code{\link{[[<-,ladp-method}}, \code{\link{as.ladp}},
   \code{\link{ladp-class}},
   \code{\link{summary,ladp-method}}
 
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -52,5 +52,5 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{ladp} data}
+\concept{functions that plot oce data}
+\concept{things related to ladp data}

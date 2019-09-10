@@ -7,29 +7,28 @@
 mapLocator(n = 512, type = "n", ...)
 }
 \arguments{
-\item{n}{number of points to locate; see \code{\link{locator}}.}
+\item{n}{number of points to locate; see \code{\link[=locator]{locator()}}.}
 
-\item{type}{type of connector for the points; see \code{\link{locator}}.}
+\item{type}{type of connector for the points; see \code{\link[=locator]{locator()}}.}
 
-\item{\dots}{extra arguments passed to \code{\link{locator}} (and either
-\code{\link{mapPoints}} or \code{\link{mapLines}}, if appropriate) if
+\item{\dots}{extra arguments passed to \code{\link[=locator]{locator()}} (and either
+\code{\link[=mapPoints]{mapPoints()}} or \code{\link[=mapLines]{mapLines()}}, if appropriate) if
 \code{type} is not \code{'n'}.}
 }
 \description{
 Locate points on an existing map.
-}
-\details{
-This uses \code{\link{map2lonlat}} to infer the location in
-geographical space; see the documentation for that function on its
-limitations.
+This uses \code{\link[=map2lonlat]{map2lonlat()}} to infer the location in
+geographical space, so it suffers the same
+limitations as that function.
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
+Other functions related to maps: \code{\link{formatPosition}},
+  \code{\link{lonlat2map}}, \code{\link{lonlat2utm}},
+  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
+  \code{\link{mapAxis}}, \code{\link{mapContour}},
+  \code{\link{mapCoordinateSystem}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
   \code{\link{mapImage}}, \code{\link{mapLines}},
   \code{\link{mapLongitudeLatitudeXY}},

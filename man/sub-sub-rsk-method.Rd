@@ -8,9 +8,9 @@
 \S4method{[[}{rsk}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A rsk object, i.e. one inheriting from \code{\link{rsk-class}}.}
+\item{x}{an \linkS4class{rsk} object.}
 
-\item{i}{Character string indicating the name of item to extract.}
+\item{i}{Character string indicating the name of an item to extract.}
 
 \item{j}{Optional additional information on the \code{i} item.}
 
@@ -18,7 +18,7 @@
 }
 \description{
 The \code{[[} method works for all \code{oce} objects, i.e.
-objects inheriting from \code{\link{oce-class}}.  The purpose
+objects inheriting from \linkS4class{oce}.  The purpose
 is to insulate users from the internal details of \code{oce}
 objects, by looking for items within the various storage
 slots of the object. Items that are not actually stored in
@@ -41,41 +41,37 @@ method is applied. As with the specialized method, the procedure hinges
 first on the values of \code{i} and, optionally, \code{j}. The work
 proceeds in steps, by testing a sequence of possible conditions
 in sequence.
-
 \enumerate{
-
 \item A check is made as to whether \code{i} names one of the standard
 \code{oce} slots. If so, \code{[[} returns the slot contents of that slot.
 Thus, \code{x[["metadata"]]} will retrieve the \code{metadata} slot,
 while \code{x[["data"]]} and \code{x[["processingLog"]]} return
 those slots.
-
 \item If \code{i} is a string ending in the
 \code{"Unit"}, then the characters preceding that string
 are taken to be the name of an item in the data object, and a list
 containing the unit is returned. This list consists of an item
-named \code{unit}, which is an \code{\link{expression}}, and
+named \code{unit}, which is an \code{\link[=expression]{expression()}}, and
 an item named \code{scale}, which is a string describing the
 measurement scale.  If the string ends in \code{" unit"}, e.g.
 \code{x[["temperature unit"]]} (note the space),
 then just the expression is returned, and if it ends in
 \code{" scale"}, then just the scale is returned.
-
 \item If \code{i} is a string ending in \code{"Flag"}, then the corresponding
 data-quality flag is returned (or \code{NULL} if there is no such flag).
 For example, \code{x[["salinityFlag"]]} returns a vector of salinity
 flags if \code{x} is a ctd object.
-
 \item If \code{i} is \code{"sigmaTheta"}, then the value of
-\code{\link{swSigmaTheta}(x)} is returned. Similarly,
-\code{"sigma0"} returns \code{\link{swSigma0}(x)} and
-\code{"spice"} returns \code{\link{swSpice}(x)}. Note that
-these relate to seawater properties and only make sense for
-certain object types.
-
+\code{\link[=swSigmaTheta]{swSigmaTheta()}} is called with \code{x} as the sole
+argument, and the results are returned. Similarly,
+\code{\link[=swSigma0]{swSigma0()}} is used if \code{i="sigma0"}, and
+\code{\link[=swSpice]{swSpice()}} is used if \code{i="spice"}. Of course, these
+actions only make sense for objects that contain
+the relevant items within their \code{data} slot.
 \item After these possibilities are eliminated,
 the action depends on whether \code{j} has been provided.
-If \code{j} is not provided, then \code{i} is sought
+If \code{j} is not provided, or is the string \code{""},
+then \code{i} is sought
 in the \code{metadata} slot, and then in the \code{data} slot,
 returning whichever is found first.  In other words, if \code{j}
 is not provided, the \code{metadata} slot takes preference over
@@ -90,7 +86,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -114,7 +110,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{rsk} data: \code{\link{[[<-,rsk-method}},
+Other things related to rsk data: \code{\link{[[<-,rsk-method}},
   \code{\link{as.rsk}}, \code{\link{plot,rsk-method}},
   \code{\link{read.rsk}}, \code{\link{rsk-class}},
   \code{\link{rskPatm}}, \code{\link{rskToc}},
@@ -124,5 +120,5 @@ Other things related to \code{rsk} data: \code{\link{[[<-,rsk-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that extract parts of \code{oce} objects}
-\concept{things related to \code{rsk} data}
+\concept{functions that extract parts of oce objects}
+\concept{things related to rsk data}

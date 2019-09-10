@@ -7,13 +7,12 @@
 rskPatm(x, dp = 0.5)
 }
 \arguments{
-\item{x}{A \code{rsk} object, or a list of pressures (in decibars).}
+\item{x}{an \linkS4class{rsk} object.}
 
 \item{dp}{Half-width of pressure window to be examined (in decibars).}
 }
 \value{
-A list of four estimates: \code{sap}, the median, the mean, and the weighted
-mean.
+A list of four estimates: \code{sap}, the median, the mean, and the weighted mean.
 }
 \description{
 Estimate atmospheric pressure in rsk record.
@@ -33,10 +32,10 @@ print(rskPatm(rsk))
 
 }
 \seealso{
-The documentation for \code{\link{rsk-class}} explains the structure of
+The documentation for \linkS4class{rsk} explains the structure of
 \code{rsk} objects, and also outlines the other functions dealing with them.
 
-Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
+Other things related to rsk data: \code{\link{[[,rsk-method}},
   \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
   \code{\link{plot,rsk-method}}, \code{\link{read.rsk}},
   \code{\link{rsk-class}}, \code{\link{rskToc}},
@@ -46,4 +45,4 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{rsk} data}
+\concept{things related to rsk data}

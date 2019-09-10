@@ -13,7 +13,7 @@ oceNames2whpNames(names)
 vector of strings holding WHP-style names.
 }
 \description{
-Translate oce-style names to WOCE names, using \code{\link{gsub}}
+Translate oce-style names to WOCE names, using \code{\link[=gsub]{gsub()}}
 to match patterns. For example, the pattern \code{"oxygen"}
 is taken to mean \code{"CTDOXY"}.
 }
@@ -22,7 +22,7 @@ Several online sources list WHP names. An example is
 \url{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
@@ -55,4 +55,4 @@ Other functions that interpret variable names and units from headers: \code{\lin
 Dan Kelley
 }
 \concept{functions that interpret variable names and units from headers}
-\concept{things related to \code{ctd} data}
+\concept{things related to ctd data}

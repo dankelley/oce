@@ -39,7 +39,6 @@ within the inset, so it is essential to finish a plot before drawing an
 inset.
 }
 \examples{
-
 library(oce)
 ## power law in linear and log form
 x <- 1:10

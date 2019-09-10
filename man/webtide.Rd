@@ -25,7 +25,7 @@ draw a map or \code{action="predict"} to get a prediction; see
 \item{node}{optional integer relating to a node in the database. If \code{node}
 is given, then neither \code{latitude} nor \code{longitude} may be given.
 If \code{node} is positive, then specifies indicates the node. If it is negative,
-\code{\link{locator}} is called so that the user can click (once) on the map, after
+\code{\link[=locator]{locator()}} is called so that the user can click (once) on the map, after
 which the node is displayed on the map.}
 
 \item{time}{a vector of times at which prediction is to be made.
@@ -41,8 +41,8 @@ Gulf of Maine.}
 
 \item{plot}{boolean indicating whether to plot.}
 
-\item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
-plot types that call that function.  (See \code{\link{strptime}} for the
+\item{tformat}{optional argument passed to \code{\link[=oce.plot.ts]{oce.plot.ts()}}, for
+plot types that call that function.  (See \code{\link[=strptime]{strptime()}} for the
 format used.)}
 
 \item{debug}{an integer specifying whether debugging information is
@@ -63,18 +63,22 @@ The value depends on \code{action}:
 list containing the index of the nearest node, along with the
 \code{latitude} and \code{longitude} of that node.  If
 \code{plot} is \code{FALSE}, this value is returned invisibly.
-
 \item If \code{action="predict"}, the return value is a list containing a vector
 of times (\code{time}), as well as vectors of the predicted \code{elevation}
 in metres and the predicted horizontal components of velocity, \code{u} and
 \code{v}, along with the \code{node} number, and the \code{basedir} and
-\code{region} as supplied to this function.
-If \code{plot} is \code{FALSE}, this value is returned invisibly.
+\code{region} as supplied to this function. If \code{plot} is \code{FALSE},
+this value is returned invisibly.
 }
 }
 \description{
-Get a tidal prediction from a WebTide database. There are two distinct cases.
-
+Get a tidal prediction from a WebTide database. This only
+works if the standalone WebTide application is installed,
+and if it is installed in a standard location. The details
+of installation are not within the oce purvue.
+}
+\details{
+There are two methods of using this function.
 \emph{Case 1:} \code{action="map"}. In this case, if
 \code{plot} is \code{FALSE}, a list is returned, containing
 all the \code{node}s in the selected database, along with all
@@ -85,11 +89,11 @@ a plot is drawn to indicate the node locations. If \code{latitude} and
 the map; otherwise, if \code{node} is given, then the location of that
 node is indicated. There is also a special case: if \code{node} is negative
 and \code{interactive()} is \code{TRUE},
-then \code{\link{locator}} is called, and the node nearest the spot
+then \code{\link[=locator]{locator()}} is called, and the node nearest the spot
 where the user clicks the mouse is indicated in the plot and in the
 return value.
 
-\code{Case 2:} \code{action="predict"}. If \code{plot} is \code{FALSE},
+\emph{Case 2:} \code{action="predict"}. If \code{plot} is \code{FALSE},
 then a list is returned, indicating \code{time}, predicted
 \code{elevation}, velocity components \code{u} and \code{v},
 \code{node} number, the name of the \code{basedir}, and

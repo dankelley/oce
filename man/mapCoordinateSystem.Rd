@@ -15,7 +15,7 @@ mapCoordinateSystem(longitude, latitude, L = 100, phi = 0, ...)
 
 \item{phi}{angle, in degrees counterclockwise, that the "x" axis makes to a line of latitude.}
 
-\item{...}{plotting arguments, passed to \code{\link{mapArrows}};
+\item{...}{plotting arguments, passed to \code{\link[=mapArrows]{mapArrows()}};
 see \dQuote{Examples} for how to control the arrow-head size.}
 }
 \description{
@@ -40,6 +40,22 @@ mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
 }
 
 }
+\seealso{
+Other functions related to maps: \code{\link{formatPosition}},
+  \code{\link{lonlat2map}}, \code{\link{lonlat2utm}},
+  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
+  \code{\link{mapAxis}}, \code{\link{mapContour}},
+  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
+  \code{\link{mapImage}}, \code{\link{mapLines}},
+  \code{\link{mapLocator}},
+  \code{\link{mapLongitudeLatitudeXY}},
+  \code{\link{mapPlot}}, \code{\link{mapPoints}},
+  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
+  \code{\link{mapText}}, \code{\link{mapTissot}},
+  \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
+  \code{\link{usrLonLat}}, \code{\link{utm2lonlat}}
+}
 \author{
 Chantelle Layton
 }
+\concept{functions related to maps}

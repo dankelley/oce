@@ -19,24 +19,18 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-An object of type \code{\link{topo-class}} that which has the following slots.
-\item{\code{data}}{: a data frame containing \code{lat}, \code{lon}, and
-  \code{z}}
-\item{\code{metadata}}{: a list containing the source filename}
-\item{\code{processingLog}}{: a log, in the standard \code{oce} format.}
+A \linkS4class{topo} object that.
 }
 \description{
 Read a file that contains topographic data in the ETOPO dataset, as provided by
-the NOAA website (see \code{\link{download.topo}} for a good server for such
+the NOAA website (see \code{\link[=download.topo]{download.topo()}} for a good server for such
 files.
 }
 \details{
 The three permitted file types are as follows: (1) an ascii type described
 by NOAA as "?"; (2) a NetCDF format described by NOAA as "GMT NetCDF"
-(recognized by the presence of a variable named \code{}), and
-(3) another NetCDF format described by NOAA as "NetCDF" (recognized
-by the presence of a variable called \code{}). Files in each of these formats
-can be downloaded with \code{\link{download.topo}}.
+(recognized by the presence of a variable named \code{), and (3) another NetCDF format described by NOAA as "NetCDF" (recognized by the presence of a variable called }). Files in each of these formats
+can be downloaded with \code{\link[=download.topo]{download.topo()}}.
 }
 \examples{
 \dontrun{
@@ -47,7 +41,7 @@ plot(topographyMaritimes)
 
 }
 \seealso{
-Other things related to \code{topo} data: \code{\link{[[,topo-method}},
+Other things related to topo data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
   \code{\link{download.topo}},
   \code{\link{plot,topo-method}},
@@ -59,4 +53,4 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{topo} data}
+\concept{things related to topo data}

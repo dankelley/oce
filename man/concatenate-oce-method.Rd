@@ -8,13 +8,13 @@
 \S4method{concatenate}{oce}(object, ...)
 }
 \arguments{
-\item{object}{An object of \code{\link{oce-class}}, or a list containing such
+\item{object}{An object of \linkS4class{oce}, or a list containing such
 objects (in which case the remaining arguments are ignored).}
 
-\item{...}{Optional additional objects of \code{\link{oce-class}}.}
+\item{...}{Optional additional objects of \linkS4class{oce}.}
 }
 \value{
-An object of \code{\link{oce-class}}.
+An object of \linkS4class{oce}.
 }
 \description{
 This function concatenates oce objects. It is intended
@@ -22,11 +22,11 @@ for objects holding data sampled through time, and it works by pasting
 together data linearly if they are vectors, by row if they are matrices,
 and by second index if they are arrays. It has been tested for the following
 classes:
-\code{\link{adp-class}},
-\code{\link{adv-class}},
-\code{\link{ctd-class}},
+\linkS4class{adp},
+\linkS4class{adv},
+\linkS4class{ctd},
 and
-\code{\link{met-class}}. It may do useful things for other classes, and
+\linkS4class{met}. It may do useful things for other classes, and
 so users are encouraged to try, and to report problems to the developers.
 It is unlikely that the function will do anything even remotely useful
 for image and topographic data, to name just two cases that do not fit
@@ -55,11 +55,9 @@ MET <- concatenate(met1, met2)
 
 }
 \seealso{
-Other functions that concatenate \code{oce} objects.: \code{\link{concatenate,adp-method}},
-  \code{\link{concatenate,list-method}},
-  \code{\link{concatenate}}
+Other functions that concatenate oce objects: \code{\link{concatenate,adp-method}}
 }
 \author{
 Dan Kelley
 }
-\concept{functions that concatenate \code{oce} objects.}
+\concept{functions that concatenate oce objects}

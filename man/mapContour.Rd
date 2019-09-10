@@ -11,7 +11,7 @@ mapContour(longitude, latitude, z, nlevels = 10,
 }
 \arguments{
 \item{longitude}{vector of longitudes of points to be plotted, or an object of
-class \code{topo} (see \code{\link{topo-class}}), in which case
+class \code{topo} (see \linkS4class{topo}), in which case
 \code{longitude}, \code{latitude} and \code{z} are inferred from that object.}
 
 \item{latitude}{vector of latitudes of points to be plotted.}
@@ -24,16 +24,16 @@ must equal the lengths of \code{longitude} and \code{latitude}, respectively.}
 \item{levels}{vector of contour levels.}
 
 \item{labcex}{\code{cex} value used for contour labelling. As with
-\code{\link{contour}}, this is an absolute size, not a multiple of
-\code{\link{par}("cex")}.}
+\code{\link[=contour]{contour()}}, this is an absolute size, not a multiple of
+\code{\link{par}}\code{("cex")}.}
 
 \item{drawlabels}{logical value or vector indicating whether to draw contour
 labels.  If the length of \code{drawlabels} is less than the number of
-levels specified, then \code{\link{rep}} is used to increase the length,
+levels specified, then \code{\link[=rep]{rep()}} is used to increase the length,
 providing a value for each contour line. For those levels that are thus
 indicated, labels are added, at a spot where the contour line is
 closest to horizontal on the page. First, though, the region underneath
-the label is filled with the colour given by \code{\link{par}("bg")}.
+the label is filled with the colour given by \code{\link{par}}\code{("bg")}.
 See \dQuote{Limitations} for notes on the status of contour
 labelling, and its limitations.}
 
@@ -43,18 +43,18 @@ is drawn  first, then the area under the label is erased (filled with
 white 'ink'), and then the label is drawn. This can be useful
 in drawing coarsely-spaced labelled contours on top of finely-spaced
 unlabelled contours. On the othr hand, if \code{underlay} equals
-\code{"interrupt"}, then the contour line is interupted in the
+\code{"interrupt"}, then the contour line is interrupted in the
 region of the label, which is closer to the scheme used by the
-base \code{\link{contour}} function.}
+base \code{\link[=contour]{contour()}} function.}
 
-\item{col}{colour of the contour line, as for \code{\link{par}("col")},
-except here \code{col} gets lengthened by calling \code{\link{rep}},
+\item{col}{colour of the contour line, as for \code{\link{par}}\code{("col")},
+except here \code{col} gets lengthened by calling \code{\link[=rep]{rep()}},
 so that individual contours can be coloured distinctly.}
 
-\item{lty}{type of the contour line, as for \code{\link{par}("lty")},
+\item{lty}{type of the contour line, as for \code{\link{par}}\code{("lty")},
 except for lengthening, as described for \code{col}.}
 
-\item{lwd}{width of the contour line, as for \code{\link{par}("lwd")},
+\item{lwd}{width of the contour line, as for \code{\link{par}}\code{("lwd")},
 except for lengthening, as described for \code{col} and \code{lty}.}
 
 \item{debug}{an integer specifying whether debugging information is
@@ -69,12 +69,12 @@ by specifying higher \code{debug} values.}
 Plot contours on an existing map.
 }
 \details{
-Adds contour lines to an existing map, using \code{\link{mapLines}}.
+Adds contour lines to an existing map, using \code{\link[=mapLines]{mapLines()}}.
 
 The ability to label the contours was added in February, 2019, and
 how this works may change through the summer months of that year.
 Note that label placement in \code{mapContour} is handled differently
-than in \code{\link{contour}}.
+than in \code{\link[=contour]{contour()}}.
 }
 \examples{
 \donttest{
@@ -90,11 +90,12 @@ if (require(ocedata)) {
 
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
+Other functions related to maps: \code{\link{formatPosition}},
+  \code{\link{lonlat2map}}, \code{\link{lonlat2utm}},
+  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
+  \code{\link{mapAxis}}, \code{\link{mapCoordinateSystem}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
   \code{\link{mapImage}}, \code{\link{mapLines}},
   \code{\link{mapLocator}},

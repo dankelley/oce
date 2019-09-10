@@ -38,18 +38,17 @@ standard deviation of the corresponding quantity, i.e. x and the columns in
 y.  The angle connecting a point on the graph to the focus provides an
 indication of correlation coefficient with respect to x.  The ``east'' side
 of the graph indicates \eqn{R=1}{R=1}, while \eqn{R=0}{R=0} is at the
-``north edge'' and \eqn{R=-1}{R=-1} is at the ``west'' side.  The \code{x}
+"north" edge and \eqn{R=-1}{R=-1} is at the "west" side.  The \code{x}
 data are indicated with a bullet on the graph, appearing on the lower edge
 to the right of the focus at a distance indicating the standard deviation of
-\code{x}.  The other points on the graph represent the columns of \code{y},
-coded automatically or with the supplied values of \code{pch} and
-\code{col}.
+`x`.  The other points on the graph represent the columns of `y`,
+coded automatically or with the supplied values of `pch` and
+`col`.
 The example shows two tidal models of the Halifax sealevel data, computed
-with \code{\link{tidem}} with just the M2 component and the S2 component;
+with \code{\link[=tidem]{tidem()}} with just the M2 component and the S2 component;
 the graph indicates that the M2 model is much better than the S2 model.
 }
 \examples{
-
 library(oce)
 data(sealevel)
 x <- sealevel[["elevation"]]
@@ -59,8 +58,7 @@ plotTaylor(x, cbind(M2, S2))
 }
 \references{
 Taylor, Karl E., 2001.  Summarizing multiple aspects of model
-performance in a single diagram, \emph{J. Geophys. Res.}, 106:D7,
-7183--7192.
+performance in a single diagram, \emph{J. Geophys. Res.}, 106:D7, 7183--7192.
 }
 \author{
 Dan Kelley

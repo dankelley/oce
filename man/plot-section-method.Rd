@@ -11,14 +11,14 @@
   contourLabels = NULL, stationIndices, coastline = "best",
   xlim = NULL, ylim = NULL, zlim = NULL, map.xlim = NULL,
   map.ylim = NULL, clongitude, clatitude, span, projection = NULL,
-  xtype = "distance", ytype = "depth", ztype = "contour",
-  zbreaks = NULL, zcol = NULL, legend.loc = "bottomright",
-  showStations = FALSE, showStart = TRUE, showBottom = TRUE,
-  axes = TRUE, mgp, mar, col, cex, pch, labcex = 1, debug, ...)
+  xtype = "distance", ytype = "depth", ztype = "contour", longitude0,
+  latitude0, zbreaks = NULL, zcol = NULL, legend.loc = "bottomright",
+  showStations = FALSE, showStart = TRUE, stationTicks = TRUE,
+  showBottom = TRUE, axes = TRUE, mgp, mar, col, cex, pch,
+  labcex = 1, debug, ...)
 }
 \arguments{
-\item{x}{a \code{section} object, e.g. as created by \code{\link{as.section}}
-or \code{\link{read.section}}.}
+\item{x}{a \linkS4class{section} object.}
 
 \item{which}{a list of desired plot types, as explained in \dQuote{Details}.
 There may be up to four panels in total, and the desired plots are placed in
@@ -27,9 +27,8 @@ not adjusted, which makes it easy to add to the plot with subsequent plotting
 commands.}
 
 \item{eos}{Character indication of the seawater equation of state
-to use. The permitted choices are \code{"gsw"} and \code{"unesco"}.
-If \code{eos} is not supplied, it defaults to
-\code{getOption("oceEOS", default="gsw")}.}
+to use. The permitted choices are \code{"gsw"} and \code{"unesco"}. If \code{eos} is
+not supplied, it defaults to \code{\link{getOption}}\code{("oceEOS",default="gsw")}.}
 
 \item{at}{If \code{NULL} (the default), the x axis will indicate the distance
 of the stations from the first in the section.  (This may give errors in the
@@ -72,7 +71,7 @@ ignored if \code{map.xlim} is provided.}
 \item{clongitude, clatitude, span}{Optional map centre position and span (km).}
 
 \item{projection}{Parameter specifying map
-projection; see \code{\link{mapPlot}}.  If \code{projection="automatic"},
+projection; see \code{\link[=mapPlot]{mapPlot()}}.  If \code{projection="automatic"},
 however, a projection is devised from the data, with \code{stereographic} if
 the mean latitude exceeds 70N and \code{mollweide} otherwise.}
 
@@ -84,15 +83,18 @@ order (which may make no sense) and a warning will be printed.}
 
 \item{ytype}{Type of y axis for contour plots, either \code{"pressure"} for
 pressure (in dbar, with zero at the surface) or \code{"depth"} for depth (in m
-below the surface, calculated from pressure with \code{\link{swDepth}}).}
+below the surface, calculated from pressure with \code{\link[=swDepth]{swDepth()}}).}
 
 \item{ztype}{String indicating whether to how to indicate the "z"
 data (in the R sense, i.e. this could be salinity, temperature, etc; it does
 not mean the vertical coordinate) The choices are: \code{"contour"} for
-contours, \code{"image"} for an image (drawn with \code{\link{imagep}} with
+contours, \code{"image"} for an image (drawn with \code{\link[=imagep]{imagep()}} with
 \code{filledContours=TRUE}), or \code{"points"} to draw points.
 In the first two cases, the data must be gridded, with identical pressures at
 each station.}
+
+\item{longitude0, latitude0}{Location of the point from which distance is measured.
+These values are ignored unless \code{xtype} is \code{"distance"}.}
 
 \item{zbreaks, zcol}{Indication of breaks and colors to be used if \code{ztype="points"} or
 \code{"image"}. If not provided, reasonable default are used. If \code{zlim}
@@ -101,21 +103,26 @@ run from \code{zlim[1]} to \code{zlim[2]}. If \code{zcol} is a function,
 it will be invoked with an argument equal to
 \code{1+length(zbreaks)}.}
 
-\item{legend.loc}{Location of legend, as supplied to \code{\link{legend}}, or
+\item{legend.loc}{Location of legend, as supplied to \code{\link[=legend]{legend()}}, or
 set to the empty string to avoid plotting a legend.}
 
 \item{showStations}{Logical indicating whether to draw station numbers on maps.}
 
-\item{showStart}{Logical indicating whether to indicate the first station with
-a different symbol than the others.}
+\item{showStart}{Logical indicating whether to indicate the first station with}
+
+\item{stationTicks}{A logical value indicating whether to indicate station
+locations with ticks at the top margin of cross-section plots. Setting this
+parameter to \code{FALSE} frees the user up to do their own labelling
+at this spot.}
 
 \item{showBottom}{An indication of whether (and how) to indicate the ocean bottom.
 If \code{FALSE}, then the bottom is not rendered. If \code{TRUE}, then it
 is rendered with a gray polygon. If \code{showBottom} is a character string,
 then there are three possibilities: is the string is \code{"polygon"} then
 a polygon is drawn, if it is \code{"lines"} then a line is drawn, and if it
-is \code{"points"} then points are drawn. If \code{showBottom} is an object
-inheriting from \code{\link{topo-class}} then the station locations are
+is \code{"points"} then points are drawn. If \code{showBottom} is
+a \linkS4class{topo} object,
+then the station locations are
 interpolated to that topography and the results are shown with a polygon.
 In this last case, the interpolation is set at a grid that is roughly
 in accordance with the resolution of the latitudes in the \code{topo} object.
@@ -125,26 +132,26 @@ See \dQuote{Examples}.}
 
 \item{mgp}{A 3-element numerical vector to use for \code{par(mgp)}, and also for
 \code{par(mar)}, computed from this. If not provided, this defaults to
-\code{getOption("oceMgp")}.}
+\code{\link{getOption}}\code{("oceMgp")}.}
 
-\item{mar}{Value to be used with \code{\link{par}("mar")}. If not provided,
+\item{mar}{Value to be used with \code{\link{par}}\code{("mar")}. If not provided,
 a default is set up.}
 
-\item{col}{Color, which defaults to \code{\link{par}("col")}.}
+\item{col}{Color, which defaults to \code{\link{par}}\code{("col")}.}
 
-\item{cex}{Numerical character-expansion factor, which defaults to \code{\link{par}("cex")}.}
+\item{cex}{Numerical character-expansion factor, which defaults to \code{\link{par}}\code{("cex")}.}
 
-\item{pch}{Indication of symbol type; defaults to \code{\link{par}("pch")}.}
+\item{pch}{Indication of symbol type; defaults to \code{\link{par}}\code{("pch")}.}
 
 \item{labcex}{Size of characters in contour labels (passed to
-\code{\link{contour}}).}
+\code{\link[=contour]{contour()}}).}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
 be printed. If \code{debug} is not supplied, it defaults to
-\code{\link{getOption}("oceDebug")}.}
+\code{\link{getOption}}\code{("oceDebug")}.}
 
 \item{...}{Optional arguments passed to the contouring function.}
 }
@@ -161,23 +168,22 @@ Creates a summary plot for a CTD section, with one panel for each value of
 }
 \details{
 The type of plot is governed by \code{which}, as follows.
-
 \itemize{
-    \item \code{which=0} or \code{"potential temperature"} for temperature contours
-    \item \code{which=1} or \code{"temperature"} for temperature contours (the default)
-    \item \code{which=2} or \code{"salinity"} for salinity contours
-    \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
-    \item \code{which=4} or \code{"nitrate"} for nitrate concentration contours
-    \item \code{which=5} or \code{"nitrite"} for nitrite concentration contours
-    \item \code{which=6} or \code{"oxygen"} for oxygen concentration  contours
-    \item \code{which=7} or \code{"phosphate"} for phosphate concentration contours
-    \item \code{which=8} or \code{"silicate"} for silicate concentration contours
-    \item \code{which=9} or \code{"u"} for eastward velocity
-    \item \code{which=10} or \code{"uz"} for vertical derivative of eastward velocity
-    \item \code{which=11} or \code{"v"} for northward velocity
-    \item \code{which=12} or \code{"vz"} for vertical derivative of northward velocity
-    \item \code{which=20} or \code{"data"} for a dot for each data location
-    \item \code{which=99} or \code{"map"} for a location map
+\item \code{which=0} or \code{"potential temperature"} for temperature contours
+\item \code{which=1} or \code{"temperature"} for temperature contours (the default)
+\item \code{which=2} or \code{"salinity"} for salinity contours
+\item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
+\item \code{which=4} or \code{"nitrate"} for nitrate concentration contours
+\item \code{which=5} or \code{"nitrite"} for nitrite concentration contours
+\item \code{which=6} or \code{"oxygen"} for oxygen concentration  contours
+\item \code{which=7} or \code{"phosphate"} for phosphate concentration contours
+\item \code{which=8} or \code{"silicate"} for silicate concentration contours
+\item \code{which=9} or \code{"u"} for eastward velocity
+\item \code{which=10} or \code{"uz"} for vertical derivative of eastward velocity
+\item \code{which=11} or \code{"v"} for northward velocity
+\item \code{which=12} or \code{"vz"} for vertical derivative of northward velocity
+\item \code{which=20} or \code{"data"} for a dot for each data location
+\item \code{which=99} or \code{"map"} for a location map
 }
 
 The y-axis for the contours is pressure, plotted in the conventional reversed
@@ -185,11 +191,11 @@ form, so that the water surface appears at the top of the plot.  The x-axis is
 more complicated. If \code{at} is not supplied, then the routine calculates x
 as the distance between the first station in the section and each of the other
 stations. (This will produce an error if the stations are not ordered
-geographically, because the \code{\link{contour}} routine cannot handle
+geographically, because the \code{\link[=contour]{contour()}} routine cannot handle
 non-increasing axis coordinates.) If \code{at} is specified, then it is taken
 to be the location, in arbitrary units, along the x-axis of labels specified by
 \code{labels}; the way this works is designed to be the same as for
-\code{\link{axis}}.
+\code{\link[=axis]{axis()}}.
 }
 \examples{
 library(oce)
@@ -241,11 +247,11 @@ contour(distance, depth, salinity, col=2, add=TRUE)
 
 }
 \seealso{
-The documentation for \code{\link{section-class}} explains the
+The documentation for \linkS4class{section} explains the
 structure of section objects, and also outlines the other functions dealing
 with them.
 
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -269,7 +275,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{section} data: \code{\link{[[,section-method}},
+Other things related to section data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{handleFlags,section-method}},
@@ -284,5 +290,5 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{section} data}
+\concept{functions that plot oce data}
+\concept{things related to section data}

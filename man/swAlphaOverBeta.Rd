@@ -11,12 +11,12 @@ swAlphaOverBeta(salinity, temperature = NULL, pressure = NULL,
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}
-and \code{pressure} must be provided) \strong{or} an \code{oce} object (in
+and \code{pressure} must be provided) \emph{or} an \code{oce} object (in
 which case \code{salinity}, etc. are inferred from the object).}
 
-\item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+\item{temperature}{\emph{in-situ} temperature (\eqn{^\circ}{deg}C)}
 
-\item{pressure}{pressure [dbar]}
+\item{pressure}{pressure (dbar)}
 
 \item{longitude}{longitude of observation (only used if \code{eos="gsw"};
 see \sQuote{Details}).}
@@ -41,7 +41,7 @@ The \code{eos="unesco"} formulae are based on the UNESCO
 equation of state, but are formulated empirically by Trevor J. McDougall,
 1987, Neutral Surfaces, Journal of Physical Oceanography, volume 17, pages
 1950-1964. The \code{eos="gsw"} formulae come from GSW; see references in
-the \code{\link{swRho}} documentation.
+the \code{\link[=swRho]{swRho()}} documentation.
 }
 \seealso{
 Other functions that calculate seawater properties: \code{\link{T68fromT90}},

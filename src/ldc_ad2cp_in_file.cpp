@@ -129,15 +129,16 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
 
   if (from[0] < 0)
     ::Rf_error("'from' must be positive but it is %d", from[0]);
-  unsigned int from_value = from[0];
+  //unsigned int from_value = from[0];
   if (to[0] < 0)
     ::Rf_error("'to' must be positive but it is %d", to[0]);
   unsigned int to_value = to[0];
   if (by[0] < 0)
     ::Rf_error("'by' must be positive but it is %d", by[0]);
-  unsigned int by_value = by[0];
+  //unsigned int by_value = by[0];
 #if defined(DEBUG)
-  Rprintf("from=%d, to=%d, by=%d\n", from_value, to_value, by_value);
+  Rprintf("to=%d\n", to_value);
+  // Rprintf("from=%d, to=%d, by=%d\n", from_value, to_value, by_value);
 #endif
 
   // FIXME: should we just get this from R? and do we even need it??

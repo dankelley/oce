@@ -8,7 +8,7 @@
 \S4method{summary}{sealevel}(object, ...)
 }
 \arguments{
-\item{object}{A \code{sealevel} object, i.e. one inheriting from \code{\link{sealevel-class}}.}
+\item{object}{A \linkS4class{sealevel} object.}
 
 \item{\dots}{further arguments passed to or from other methods.}
 }
@@ -26,7 +26,7 @@ summary(sealevel)
 
 }
 \seealso{
-Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
+Other things related to sealevel data: \code{\link{[[,sealevel-method}},
   \code{\link{[[<-,sealevel-method}},
   \code{\link{as.sealevel}},
   \code{\link{plot,sealevel-method}},
@@ -39,4 +39,4 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{sealevel} data}
+\concept{things related to sealevel data}

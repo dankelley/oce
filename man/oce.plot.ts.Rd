@@ -30,7 +30,7 @@ window.}
 
 \item{log}{a character value that must be either empty (the default) for linear
 \code{y} axis, or \code{"y"} for logarithmic \code{y} axis.  (Unlike
-\code{\link{plot.default}} etc., \code{oce.plot.ts} does not permit
+\code{\link[=plot.default]{plot.default()}} etc., \code{oce.plot.ts} does not permit
 logarithmic time, or \code{x} axis.)}
 
 \item{flipy}{Logical, with \code{TRUE} indicating that the graph
@@ -42,7 +42,7 @@ the bottom of the page.}
 \item{ylab}{name for y axis; defaults to the plotted item.}
 
 \item{drawTimeRange}{an optional indication of whether/how to draw a time range,
-in the top-left margin of the plot; see \code{\link{oce.axis.POSIXct}} for details.}
+in the top-left margin of the plot; see \code{\link[=oce.axis.POSIXct]{oce.axis.POSIXct()}} for details.}
 
 \item{fill}{boolean, set \code{TRUE} to fill the curve to zero (which it
 does incorrectly if there are missing values in \code{y}).}
@@ -56,36 +56,36 @@ For the \code{type="l"} case, the line is plotted in the first colour specified.
 \item{pch}{character code, used if \code{type=="p"}.
 If there are fewer \code{pch} values than there are \code{x} values, then the \code{pch} values
 are recycled in the standard fashion.
-See \code{\link{points}} for the possible values for \code{pch}.}
+See \code{\link[=points]{points()}} for the possible values for \code{pch}.}
 
 \item{cex}{character expansion factor, used if \code{type} is \code{"p"}.
 If there are fewer \code{pch} values than there are \code{x} values, then the \code{pch} values
-are recycled in the standard fashion. See \code{\link{par}} for more on \code{cex}.}
+are recycled in the standard fashion. See \code{\link[=par]{par()}} for more on \code{cex}.}
 
-\item{cex.axis}{character expansion factor for axes; see \code{\link[graphics]{par}}("cex.axis").}
+\item{cex.axis}{character expansion factor for axes; see \code{\link[=par]{par()}}.}
 
-\item{cex.main}{see \code{\link[graphics]{par}}("cex.main").}
+\item{cex.main}{see \code{\link[=par]{par()}}.}
 
-\item{xaxs}{control x axis ending; see \code{\link{par}("xaxs")}.}
+\item{xaxs}{control x axis ending; see \code{\link{par}}\code{("xaxs")}.}
 
-\item{yaxs}{control y axis ending; see \code{\link{par}("yaxs")}.}
+\item{yaxs}{control y axis ending; see \code{\link{par}}\code{("yaxs")}.}
 
 \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also
 for \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{\link{par}("mar")} to set margins.
+\item{mar}{value to be used with \code{\link{par}}\code{("mar")} to set margins.
 The default value uses significantly tighter margins than is the norm in R,
 which gives more space for the data.  However, in doing this, the existing
 \code{par("mar")} value is ignored, which contradicts values that may have
-been set by a previous call to \code{\link{drawPalette}}.  To get plot with
-a palette, first call \code{\link{drawPalette}}, then call
+been set by a previous call to \code{\link[=drawPalette]{drawPalette()}}.  To get plot with
+a palette, first call \code{\link[=drawPalette]{drawPalette()}}, then call
 \code{oce.plot.ts} with \code{mar=par("mar")}.}
 
 \item{main}{title of plot.}
 
 \item{despike}{boolean flag that can turn on despiking with
-\code{\link{despike}}.}
+\code{\link[=despike]{despike()}}.}
 
 \item{axes}{boolean, set to \code{TRUE} to get axes plotted}
 
@@ -93,10 +93,10 @@ a palette, first call \code{\link{drawPalette}}, then call
 
 \item{marginsAsImage}{boolean indicating whether to set the right-hand
 margin to the width normally taken by an image drawn with
-\code{\link{imagep}}.}
+\code{\link[=imagep]{imagep()}}.}
 
 \item{grid}{if \code{TRUE}, a grid will be drawn for each panel.  (This
-argument is needed, because calling \code{\link{grid}} after doing a
+argument is needed, because calling \code{\link[=grid]{grid()}} after doing a
 sequence of plots will not result in useful results for the individual
 panels.}
 
@@ -109,23 +109,23 @@ panels.}
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
 
-\item{\dots}{graphical parameters passed down to \code{\link{plot}}.}
+\item{\dots}{graphical parameters passed down to \code{\link[=plot]{plot()}}.}
 }
 \value{
 A list is silently returned, containing \code{xat} and \code{yat},
-values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
+values that can be used by \code{\link[=oce.grid]{oce.grid()}} to add a grid to the plot.
 }
 \description{
 Plot a time-series, obeying the timezone and possibly drawing the range in
 the top-left margin.
 }
 \details{
-Depending on the version of R, the standard \code{\link{plot}} and
-\code{\link{plot.ts}} routines will not obey the time zone of the data.
+Depending on the version of R, the standard \code{\link[=plot]{plot()}} and
+\code{\link[=plot.ts]{plot.ts()}} routines will not obey the time zone of the data.
 This routine gets around that problem.  It can also plot the time range in
 the top-left margin, if desired; this string includes the timezone, to
 remove any possible confusion.
-The time axis is drawn with \code{\link{oce.axis.POSIXct}}.
+The time axis is drawn with \code{\link[=oce.axis.POSIXct]{oce.axis.POSIXct()}}.
 }
 \examples{
 library(oce)

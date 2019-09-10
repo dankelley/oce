@@ -22,13 +22,13 @@ Also, you should change the name of the coastline object from
 \code{coastlineWorld}, to avoid conflicts with the built-in dataset. Save
 the \code{.rda} file to some directory of your choosing, e.g. perhaps
 \code{/data/coastlines} or \code{~/data/coastlines} on a unix-type machine.
-Then, whenever you need the file, use \code{\link{load}} to load it.  Most
-users find it convenient to do the loading in an \code{\link{Rprofile}}
+Then, whenever you need the file, use \code{\link[=load]{load()}} to load it.  Most
+users find it convenient to do the loading in an \code{\link[=Rprofile]{Rprofile()}}
 startup file.
 }
 
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{ctdRaw}}, \code{\link{ctd}},
   \code{\link{echosounder}}, \code{\link{landsat}},
@@ -38,7 +38,7 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 
-Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+Other things related to coastline data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
   \code{\link{as.coastline}},
   \code{\link{coastline-class}},
@@ -50,8 +50,5 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
 }
-\author{
-Dan Kelley
-}
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{coastline} data}
+\concept{datasets provided with oce}
+\concept{things related to coastline data}

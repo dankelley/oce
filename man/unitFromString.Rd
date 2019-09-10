@@ -10,8 +10,8 @@ unitFromString(s)
 \item{s}{A string.}
 }
 \value{
-A \code{\link{list}} of two items: \code{unit} which is an
-\code{\link{expression}}, and \code{scale}, which is a string.
+A \code{\link[=list]{list()}} of two items: \code{unit} which is an
+\code{\link[=expression]{expression()}}, and \code{scale}, which is a string.
 }
 \description{
 Decode units, from strings

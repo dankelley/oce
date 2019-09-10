@@ -12,29 +12,29 @@ oce.grid(xat, yat, col = "lightgray", lty = "dotted",
 
 \item{yat}{a list of y values at which to plot the grid (ignored if \code{gx} was a return value from an oce plotting function)}
 
-\item{col}{color of grid lines (see \code{\link{par}})}
+\item{col}{color of grid lines (see \code{\link[=par]{par()}})}
 
-\item{lty}{type for grid lines (see \code{\link{par}})}
+\item{lty}{type for grid lines (see \code{\link[=par]{par()}})}
 
-\item{lwd}{width for grid lines (see \code{\link{par}})}
+\item{lwd}{width for grid lines (see \code{\link[=par]{par()}})}
 }
 \description{
 Add a Grid to an Existing Oce Plot
 }
 \details{
 For plots not created by oce functions, or for missing \code{xat} and \code{yat},
-this is the same as a call to \code{\link{grid}} with missing \code{nx} and
+this is the same as a call to \code{\link[=grid]{grid()}} with missing \code{nx} and
 \code{ny}. However, if \code{xat} is the return value from certain oce functions,
-a more sophisticated grid is constructed. The problem with \code{\link{grid}} is
+a more sophisticated grid is constructed. The problem with \code{\link[=grid]{grid()}} is
 that it cannot handle axes with non-uniform grids, e.g. those with time axes
 that span months of differing lengths.
 
 As of early February 2015, \code{oce.grid} handles \code{xat} produced as the
-return value from the following functions: \code{\link{imagep}} and
-\code{\link{oce.plot.ts}}, \code{\link{plot,adp-method}},
-\code{\link{plot,echosounder-method}}, and \code{\link{plotTS}}.
+return value from the following functions: \code{\link[=imagep]{imagep()}} and
+\code{\link[=oce.plot.ts]{oce.plot.ts()}}, \code{\link[=plot,adp-method]{plot,adp-method()}},
+\code{\link[=plot,echosounder-method]{plot,echosounder-method()}}, and \code{\link[=plotTS]{plotTS()}}.
 It makes no sense to try to use \code{oce.grid} for multipanel oce plots,
-e.g. the default plot from \code{\link{plot,adp-method}}.
+e.g. the default plot from \code{\link[=plot,adp-method]{plot,adp-method()}}.
 }
 \examples{
 library(oce)

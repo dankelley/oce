@@ -17,11 +17,11 @@ just one item, the color \code{"black"}.}
 
 \item{zlim}{optional vector containing two numbers that specify the \code{z}
 limits for the color scale.  If provided, it overrides defaults as describe
-in the following.  If \code{name} is given, then the \code{\link{range}} of
+in the following.  If \code{name} is given, then the \code{\link[=range]{range()}} of
 numerical values contained therein will be used for \code{zlim}.  Otherwise,
-if \code{z} is given, then its \code{\link{rangeExtended}} sets \code{zlim}.
+if \code{z} is given, then its \code{\link[=rangeExtended]{rangeExtended()}} sets \code{zlim}.
 Otherwise, if \code{x0} and \code{x1} are given, then their
-\code{\link{range}} sets \code{zlim}.  Otherwise, there is no way to infer
+\code{\link[=range]{range()}} sets \code{zlim}.  Otherwise, there is no way to infer
 \code{zlim} and indeed there is no way to construct a colormap, so an error
 is reported.  It is an error to specify both \code{zlim} and \code{breaks},
 if the length of the latter does not equal 1.}
@@ -32,13 +32,11 @@ range of \code{zlim} or \code{breaks} should be painted with
 painted with the nearest in-range color.}
 
 \item{breaks}{an optional indication of break points between color levels
-(see \code{\link{image}}).  If this is provided, the arguments \code{name}
+(see \code{\link[=image]{image()}}).  If this is provided, the arguments \code{name}
 through \code{blend} are all ignored (see \dQuote{Details}).  If it is
 provided, then it may either be a vector of break points, or a single number
 indicating the desired number of break points to be computed with
-\code{\link{pretty}(z, breaks)}.  In either case of non-missing
-\code{breaks}, the resultant break points must number 1 plus the number of
-colors (see \code{col}).}
+\code{\link{pretty}}\code{(z,breaks)1.  In either case of non-missing }breaks\code{, the resultant break points must number 1 plus the number of colors (see }col`).}
 
 \item{col}{either a vector of colors or a function taking a numerical value
 as its single argument and returning a vector of colors.  The value of
@@ -56,8 +54,8 @@ ignored.}
 \item{x0, x1, col0, col1}{Vectors that specify a color map.  They must all be
 the same length, with \code{x0} and \code{x1} being numerical values, and
 \code{col0} and \code{col1} being colors.  The colors may be strings (e.g.
-\code{"red"}) or colors as defined by \code{\link{rgb}} or
-\code{\link{hsv}}.}
+\code{"red"}) or colors as defined by \code{\link[=rgb]{rgb()}} or
+\code{\link[=hsv]{hsv()}}.}
 
 \item{blend}{a number indicating how to blend colors within each band.
 This is ignored except when \code{x0} through \code{col1} are supplied.  A
@@ -77,36 +75,27 @@ amount of debugging information, or to 2 to get more.}
 }
 \value{
 A list containing the following (not necessarily in this order)
-
 \itemize{
-
 \item \code{zcol}, a vector of colors for \code{z}, if \code{z} was
 provided, otherwise \code{"black"}
-
 \item \code{zlim}, a two-element vector suitable as the argument of the same
-name supplied to \code{\link{image}} or \code{\link{imagep}}
-
+name supplied to \code{\link[=image]{image()}} or \code{\link[=imagep]{imagep()}}
 \item \code{breaks} and \code{col}, vectors of breakpoints and colors,
-suitable as the same-named arguments to \code{\link{image}} or
-\code{\link{imagep}}
-
+suitable as the same-named arguments to \code{\link[=image]{image()}} or
+\code{\link[=imagep]{imagep()}}
 \item \code{zclip} the provided value of \code{zclip}.
-
 \item \code{x0} and \code{x1}, numerical vectors of the sides of color
 intervals, and \code{col0} and \code{col1}, vectors of corresponding
 colors.  The meaning is the same as on input.  The purpose of returning
 these four vectors is to permit users to alter color mapping, as in example
 3 in \dQuote{Examples}.
-
 \item \code{missingColor}, a color that could be used to specify missing
-values, e.g. as the same-named argument to \code{\link{imagep}}.  If this is
+values, e.g. as the same-named argument to \code{\link[=imagep]{imagep()}}.  If this is
 supplied as an argument, its value is repeated in the return value.
 Otherwise, its value is either \code{"gray"} or, in the case of \code{name}
 being given, the value in the GMT color map specification.
-
 \item \code{colfunction}, a univariate function that returns a vector
 of colors, given a vector of \code{z} values; see Example 6.
-
 }
 }
 \description{
@@ -117,19 +106,16 @@ cases that extend far beyond the examples.
 \details{
 This is a multi-purpose function that generally links (``maps'') numerical
 values to colors.  The return value can specify colors for points on a
-graph, or \code{breaks} and \code{col} vectors that are suitable for use by
-\code{\link{drawPalette}}, \code{\link{imagep}} or \code{\link{image}}.
+graph, or \code{breaks} and `col` vectors that are suitable for use by
+\code{\link[=drawPalette]{drawPalette()}}, \code{\link[=imagep]{imagep()}} or \code{\link[=image]{image()}}.
 
 There are three ways of specifying color schemes, and \code{colormap} works
 by checking for each condition in turn.
-
 \itemize{
-
-\item{Case A.} Supply \code{z} but nothing else.  In this case,
-\code{breaks} will be set to \code{\link{pretty}(z, 10)} and things are
+\item \strong{Case A.} Supply \code{z} but nothing else.  In this case,
+\code{breaks} will be set to \code{[}pretty\code{]}(z,10)` and things are
 otherwise as in case B.
-
-\item{Case B.} Supply \code{breaks}.  In this case, \code{breaks} and
+\item \strong{Case B.} Supply \code{breaks}.  In this case, \code{breaks} and
 \code{col} are used together to specify a color scheme.  If \code{col} is a
 function, then it is expected to take a single numerical argument that
 specifies the number of colors, and this number will be set to
@@ -137,33 +123,30 @@ specifies the number of colors, and this number will be set to
 and its length must be one less than the number of breaks.  (NB. if
 \code{breaks} is given, then all other arguments except \code{col} and
 \code{missingColor} are ignored.) \if{html}{The figure below explains the
-(\code{breaks}, \code{col}) method of specifying a color mapping.  Note
+(`breaks`, `col`) method of specifying a color mapping.  Note
 that there must be one more break than color.  This is the method used by
-e.g. \code{\link{image}}.}
+e.g. [image()].}
 \if{html}{\figure{colormap_fig_1.png}}
-
-\item{Case C.} Do not supply \code{breaks}, but supply \code{name}
+\item \strong{Case C.} Do not supply \code{breaks}, but supply \code{name}
 instead.  This \code{name} may be the name of a pre-defined color palette
 (\code{"gmt_relief"}, \code{"gmt_ocean"}, \code{"gmt_globe"} or
 \code{"gmt_gebco"}), or it may be the name of a file (including a URL)
 containing a color map in the GMT format (see \dQuote{References}).  (NB.
 if \code{name} is given, then all other arguments except \code{z} and
 \code{missingColor} are ignored.)
-
-\item{Case D.} Do not supply either \code{breaks} or \code{name}, but
+\item \strong{Case D.} Do not supply either \code{breaks} or \code{name}, but
 instead supply each of \code{x0}, \code{x1}, \code{col0}, and \code{col1}.
 These values are specify a value-color mapping that is similar to that used
-for GMT color maps.  The method works by using \code{\link{seq}} to
+for GMT color maps.  The method works by using \code{\link[=seq]{seq()}} to
 interpolate between the elements of the \code{x0} vector.  The same is done
-for \code{x1}.  Similarly, \code{\link{colorRampPalette}} is used to
+for \code{x1}.  Similarly, \code{\link[=colorRampPalette]{colorRampPalette()}} is used to
 interpolate between the colors in the \code{col0} vector, and the same is
-done for \code{col1}.  \if{html}{The figure above explains the (\code{x0},
-\code{x1}, \code{col0}, \code{col1}) method of specifying a color mapping.
+done for \code{col1}.  \if{html}{The figure above explains the (`x0`,
+`x1`, `col0`, `col1`) method of specifying a color mapping.
 Note that the each of the items has the same length. The case of
-\code{blend=0}, which has color \code{col0[i]} between \code{x0[i]} and
-\code{x1[i]}, is illustrated below.}
+`blend=0`, which has color `col0[i]` between `x0[i]` and
+`x1[i]`, is illustrated below.}
 \if{html}{\figure{colormap_fig_2.png}}
-
 }
 }
 \examples{
@@ -232,6 +215,7 @@ z <- seq(0, 1, length.out=length(x))
 drawPalette(colormap=cm)
 plot(x, y, pch=21, bg=cm$colfunction(z), cex=3)
 }
+
 }
 \references{
 Information on GMT software is given at

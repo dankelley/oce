@@ -7,18 +7,17 @@
 is.ad2cp(x)
 }
 \arguments{
-\item{x}{An item}
+\item{x}{character value naming an item.}
 }
 \value{
-Logical value indicating whether the object inherits from the
-\code{\link{adp-class}} and has \code{fileType} in its
-\code{metadata} slot equal to \code{"AD2CP"}.
+Logical value indicating whether \code{x} is an \linkS4class{adp} object,
+with \code{fileType} in its \code{metadata} slot equal to \code{"AD2CP"}.
 }
 \description{
 Test whether object is an AD2CP type
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -40,9 +39,10 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

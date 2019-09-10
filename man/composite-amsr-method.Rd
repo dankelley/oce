@@ -8,12 +8,11 @@
 \S4method{composite}{amsr}(object, ...)
 }
 \arguments{
-\item{object}{An object inheriting from \link{amsr-class}.}
+\item{object}{An \linkS4class{amsr} object.}
 
 \item{...}{Other amsr objects.}
 }
 \description{
-Items within the \code{data} slots of the
 objects that are supplied as arguments are averaged in a way that
 makes sense for the object class, i.e. taking into account
 the particular bad-data codes of that particular class.
@@ -29,8 +28,9 @@ final argument, except that the filename is set to a comma-separated list
 of the component filenames.
 }
 \seealso{
-Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
-  \code{\link{amsr-class}}, \code{\link{download.amsr}},
+Other things related to amsr data: \code{\link{[[,amsr-method}},
+  \code{\link{[[<-,amsr-method}}, \code{\link{amsr-class}},
+  \code{\link{download.amsr}},
   \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
   \code{\link{subset,amsr-method}},
   \code{\link{summary,amsr-method}}
@@ -39,4 +39,4 @@ Other functions that create composite objects: \code{\link{composite,list-method
   \code{\link{composite}}
 }
 \concept{functions that create composite objects}
-\concept{things related to \code{amsr} data}
+\concept{things related to amsr data}

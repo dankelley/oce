@@ -8,9 +8,9 @@
 \S4method{[[}{landsat}(x, i, j, ...)
 }
 \arguments{
-\item{x}{An landsat object, i.e. one inheriting from \code{\link{landsat-class}}.}
+\item{x}{a \linkS4class{landsat} object.}
 
-\item{i}{Character string indicating the name of item to extract.}
+\item{i}{Character string indicating the name of an item to extract.}
 
 \item{j}{Optional additional information on the \code{i} item.}
 
@@ -18,7 +18,7 @@
 }
 \description{
 The \code{[[} method works for all \code{oce} objects, i.e.
-objects inheriting from \code{\link{oce-class}}.  The purpose
+objects inheriting from \linkS4class{oce}.  The purpose
 is to insulate users from the internal details of \code{oce}
 objects, by looking for items within the various storage
 slots of the object. Items that are not actually stored in
@@ -41,41 +41,37 @@ method is applied. As with the specialized method, the procedure hinges
 first on the values of \code{i} and, optionally, \code{j}. The work
 proceeds in steps, by testing a sequence of possible conditions
 in sequence.
-
 \enumerate{
-
 \item A check is made as to whether \code{i} names one of the standard
 \code{oce} slots. If so, \code{[[} returns the slot contents of that slot.
 Thus, \code{x[["metadata"]]} will retrieve the \code{metadata} slot,
 while \code{x[["data"]]} and \code{x[["processingLog"]]} return
 those slots.
-
 \item If \code{i} is a string ending in the
 \code{"Unit"}, then the characters preceding that string
 are taken to be the name of an item in the data object, and a list
 containing the unit is returned. This list consists of an item
-named \code{unit}, which is an \code{\link{expression}}, and
+named \code{unit}, which is an \code{\link[=expression]{expression()}}, and
 an item named \code{scale}, which is a string describing the
 measurement scale.  If the string ends in \code{" unit"}, e.g.
 \code{x[["temperature unit"]]} (note the space),
 then just the expression is returned, and if it ends in
 \code{" scale"}, then just the scale is returned.
-
 \item If \code{i} is a string ending in \code{"Flag"}, then the corresponding
 data-quality flag is returned (or \code{NULL} if there is no such flag).
 For example, \code{x[["salinityFlag"]]} returns a vector of salinity
 flags if \code{x} is a ctd object.
-
 \item If \code{i} is \code{"sigmaTheta"}, then the value of
-\code{\link{swSigmaTheta}(x)} is returned. Similarly,
-\code{"sigma0"} returns \code{\link{swSigma0}(x)} and
-\code{"spice"} returns \code{\link{swSpice}(x)}. Note that
-these relate to seawater properties and only make sense for
-certain object types.
-
+\code{\link[=swSigmaTheta]{swSigmaTheta()}} is called with \code{x} as the sole
+argument, and the results are returned. Similarly,
+\code{\link[=swSigma0]{swSigma0()}} is used if \code{i="sigma0"}, and
+\code{\link[=swSpice]{swSpice()}} is used if \code{i="spice"}. Of course, these
+actions only make sense for objects that contain
+the relevant items within their \code{data} slot.
 \item After these possibilities are eliminated,
 the action depends on whether \code{j} has been provided.
-If \code{j} is not provided, then \code{i} is sought
+If \code{j} is not provided, or is the string \code{""},
+then \code{i} is sought
 in the \code{metadata} slot, and then in the \code{data} slot,
 returning whichever is found first.  In other words, if \code{j}
 is not provided, the \code{metadata} slot takes preference over
@@ -97,7 +93,7 @@ by using the \code{[[} operator.
 
 \emph{Accessing band data.}  The data may be accessed with e.g.
 \code{landsat[["panchromatic"]]}, for the panchromatic band.  If a new
-``band'' is added with \code{\link{landsatAdd}}, it may be referred by
+``band'' is added with \code{\link[=landsatAdd]{landsatAdd()}}, it may be referred by
 name.  In all cases, a second argument can be provided, to govern
 decimation.  If this is missing, all the relevant data are returned.  If
 this is present and equal to \code{TRUE}, then the data will be
@@ -109,14 +105,14 @@ reducing the grid width and height from 16000 to about 800.  Similarly,
 \code{landsat[["panchromatic",10]]} will reduce width and height to about
 1600.  On machines with limited RAM (e.g. under about 6GB), decimation is a
 good idea in almost all processing steps.  It also makes sense for
-plotting, and in fact is done through the \code{decimate} argument of
-\code{\link{plot,landsat-method}}.
+plotting, and in fact is done through the `decimate` argument of
+\code{\link[=plot,landsat-method]{plot,landsat-method()}}.
 
 \emph{Accessing derived data.}  One may retrieve several derived quantities
 that are calculated from data stored in the object:
 \code{landsat[["longitude"]]} and \code{landsat[["latitude"]]} give pixel
 locations.  Accessing \code{landsat[["temperature"]]} creates an estimate
-of ground temperature as follows (see [4]).  First, the ``count value'' in
+of ground temperature as follows (see reference 4).  First, the ``count value'' in
 band 10, denoted \eqn{b_{10}}{b_10} say, is scaled with coefficients stored
 in the image metadata using
 \eqn{\lambda_L=b_{10}M_L+A_L}{lambda_L=b_10*M_L+A_L} where \eqn{M_L}{M_L}
@@ -126,27 +122,27 @@ used, again with coefficients in the metadata, to compute Celcius
 temperature \eqn{T=K_2/ln(\epsilon
     K_1/\lambda_L+1)-273.15}{T=K_2/ln(epsilon*K_1/\lambda_L+1)-273.15}.
 The value of the emissivity \eqn{\epsilon}{epsilon} is set to unity by
-\code{\link{read.landsat}}, although it can be changed easily later, by
-assigning a new value to \code{landsat@metadata$emissivity}. The default
-emissivity value set by \code{\link{read.landsat}} is from [11], and is
-within the oceanic range suggested by [5]. Adjustment is as simple as
-altering \code{landsat@metadata$emissivity}. This value can be a single
+\code{\link[=read.landsat]{read.landsat()}}, although it can be changed easily later, by
+assigning a new value to `landsat@metadata$emissivity`. The default
+emissivity value set by \code{\link[=read.landsat]{read.landsat()}} is from reference 11, and is
+within the oceanic range suggested by reference 5. Adjustment is as simple as
+altering `landsat@metadata$emissivity`. This value can be a single
 number meant to apply for the whole image, or a matrix with dimensions
 matching those of band 10.  The matrix case is probably more useful for
 images of land, where one might wish to account for the different
-emissivities of soil and vegetation, etc.; for example, Table 4 of [9]
-lists 0.9668 for soil and 0.9863 for vegetation, while Table 5 of [10]
-lists 0.971 and 0.987 for the same quantities.
+emissivities of soil and vegetation, etc.; for example, Table 4 of
+reference 9 lists 0.9668 for soil and 0.9863 for vegetation,
+while Table 5 of reference 10 lists 0.971 and 0.987 for the same quantities.
 
 \emph{Accessing metadata.} Anything in the metadata can be accessed by
 name, e.g. \code{landsat[["time"]]}.  Note that some items are simply
 copied over from the source data file and are not altered by e.g.
 decimation.  An exception is the lat-lon box, which is altered by
-\code{\link{landsatTrim}}.
+\code{\link[=landsatTrim]{landsatTrim()}}.
 }
 
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
@@ -169,7 +165,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{landsat} data: \code{\link{[[<-,landsat-method}},
+Other things related to landsat data: \code{\link{[[<-,landsat-method}},
   \code{\link{landsat-class}}, \code{\link{landsatAdd}},
   \code{\link{landsatTrim}}, \code{\link{landsat}},
   \code{\link{plot,landsat-method}},
@@ -179,6 +175,6 @@ Other things related to \code{landsat} data: \code{\link{[[<-,landsat-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that extract parts of \code{oce} objects}
+\concept{functions that extract parts of oce objects}
 \concept{satellite}
-\concept{things related to \code{landsat} data}
+\concept{things related to landsat data}

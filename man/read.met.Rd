@@ -26,26 +26,14 @@ that to be header.}
 amount of debugging information, or to 2 to get more.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"met"}, of which the
-\code{data} slot contains vectors \code{time}, \code{temperature},
-\code{pressure}, \code{u}, and \code{v}.  The velocity components have units
-m/s and are the components of the vector of wind direction.  In other words,
-the oceanographic convention on velocity is employed, not the meteorological
-one; the weather forecaster's "North wind" has positive \code{v} and zero
-\code{u}.  In addition to these things, \code{data} also contains
-\code{wind} (in km/h), taken straight from the data file.
+A \linkS4class{met} object.
 }
 \description{
 Reads a comma-separated value file in the format used by the Environment
-Canada [1].  The agency does not publish a format for these
+Canada (see reference 1).  The agency does not publish a format for these
 files, so this function was based on a study of a few sample files, and it
 may fail for other files, if Environment Canada changes the format.
 }
-\section{Note}{
- There seem to be several similar formats in use, so this
-function may not work in all cases.
-}
-
 \examples{
 \dontrun{
 library(oce)
@@ -59,11 +47,13 @@ plot(met, which=3:4)
 
 }
 \references{
-1. Environment Canada website for Historical Climate Data
+\enumerate{
+\item Environment Canada website for Historical Climate Data
 \url{http://climate.weather.gc.ca/index_e.html}
 }
+}
 \seealso{
-Other things related to \code{met} data: \code{\link{[[,met-method}},
+Other things related to met data: \code{\link{[[,met-method}},
   \code{\link{[[<-,met-method}}, \code{\link{as.met}},
   \code{\link{download.met}}, \code{\link{met-class}},
   \code{\link{met}}, \code{\link{plot,met-method}},
@@ -73,4 +63,4 @@ Other things related to \code{met} data: \code{\link{[[,met-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{met} data}
+\concept{things related to met data}

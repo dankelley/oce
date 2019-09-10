@@ -8,8 +8,7 @@
 \S4method{summary}{lisst}(object, ...)
 }
 \arguments{
-\item{object}{An object of class \code{lisst}, usually, a result of a call to
-\code{\link{read.lisst}} or \code{\link{as.lisst}}.}
+\item{object}{a \linkS4class{lisst} object.}
 
 \item{...}{Ignored.}
 }
@@ -24,7 +23,7 @@ summary(lisst)
 
 }
 \seealso{
-Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
+Other things related to lisst data: \code{\link{[[,lisst-method}},
   \code{\link{[[<-,lisst-method}}, \code{\link{as.lisst}},
   \code{\link{lisst-class}},
   \code{\link{plot,lisst-method}}, \code{\link{read.lisst}}
@@ -32,4 +31,4 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{lisst} data}
+\concept{things related to lisst data}

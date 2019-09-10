@@ -20,21 +20,20 @@ to load.}
 \item{latitude}{latitude of observation (stored in metadata)}
 }
 \value{
-An object of \code{\link{lisst-class}}.
+x A \linkS4class{lisst} object.
 }
 \description{
-Read a LISST data file, producing a \code{lisst} object, i.e. one
-inheriting from \code{\link{lisst-class}}.
+Read a LISST data file.
 The file should contain 42 columns, with no header.  If there are fewer than
 42 columns, an error results.  If there are more, only the first 42 are
-used.  Note that \code{\link{read.oce}} can recognize LISST files by their
+used.  Note that \code{\link[=read.oce]{read.oce()}} can recognize LISST files by their
 having a name ending in \code{".asc"} and by having 42 elements on the first
 line.  Even so, it is preferred to use the present function, because it
 gives the opportunity to specify the year and timezone, so that times can be
 calculated properly.
 }
 \seealso{
-Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
+Other things related to lisst data: \code{\link{[[,lisst-method}},
   \code{\link{[[<-,lisst-method}}, \code{\link{as.lisst}},
   \code{\link{lisst-class}},
   \code{\link{plot,lisst-method}},
@@ -43,4 +42,4 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{lisst} data}
+\concept{things related to lisst data}

@@ -13,17 +13,18 @@ shiftLongitude(longitudes)
 vector of longitudes, shifted to the desired range.
 }
 \description{
-This is a utility function used by \code{\link{mapGrid}}. It works
+This is a utility function used by \code{\link[=mapGrid]{mapGrid()}}. It works
 simply by subtracting 180 from each longitude, if any longitude
 in the vector exceeds 180.
 }
 \seealso{
-\code{\link{matrixShiftLongitude}} and \code{\link{standardizeLongitude}}.
+\code{\link[=matrixShiftLongitude]{matrixShiftLongitude()}} and \code{\link[=standardizeLongitude]{standardizeLongitude()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
+Other functions related to maps: \code{\link{formatPosition}},
+  \code{\link{lonlat2map}}, \code{\link{lonlat2utm}},
+  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
+  \code{\link{mapAxis}}, \code{\link{mapContour}},
+  \code{\link{mapCoordinateSystem}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
   \code{\link{mapImage}}, \code{\link{mapLines}},
   \code{\link{mapLocator}},

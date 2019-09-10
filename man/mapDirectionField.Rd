@@ -15,14 +15,14 @@ field.}
 
 \item{scale}{latitude degrees per unit of \code{u} or \code{v}.}
 
-\item{length}{length of arrow heads, passed to \code{\link{arrows}}.}
+\item{length}{length of arrow heads, passed to \code{\link[=arrows]{arrows()}}.}
 
-\item{code}{code of arrows, passed to \code{\link{arrows}}.}
+\item{code}{code of arrows, passed to \code{\link[=arrows]{arrows()}}.}
 
 \item{col}{color of arrows.  This may be a single color, or a matrix
 of colors of the same dimension as \code{u}.}
 
-\item{\dots}{optional arguments passed to \code{\link{arrows}}, e.g.
+\item{\dots}{optional arguments passed to \code{\link[=arrows]{arrows()}}, e.g.
 \code{angle} and \code{lwd} can be useful in differentiating different
 fields.}
 }
@@ -60,12 +60,13 @@ mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=2)
 
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}}, \code{\link{mapGrid}},
+Other functions related to maps: \code{\link{formatPosition}},
+  \code{\link{lonlat2map}}, \code{\link{lonlat2utm}},
+  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
+  \code{\link{mapAxis}}, \code{\link{mapContour}},
+  \code{\link{mapCoordinateSystem}}, \code{\link{mapGrid}},
   \code{\link{mapImage}}, \code{\link{mapLines}},
   \code{\link{mapLocator}},
   \code{\link{mapLongitudeLatitudeXY}},

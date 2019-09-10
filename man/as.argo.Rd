@@ -35,18 +35,18 @@ then \code{"degree east"} is used for \code{longitude},
 taken as \code{NA}.}
 }
 \value{
-An object of \code{\link{argo-class}}.
+An \linkS4class{argo} object.
 }
 \description{
 Coerce a dataset into an argo dataset. This is not the right way to
 read official argo datasets, which are provided in NetCDF format and may
-be read with \code{\link{read.argo}}.
+be read with \code{\link[=read.argo]{read.argo()}}.
 }
 \seealso{
-The documentation for \code{\link{argo-class}} explains the structure of argo
+The documentation for the \linkS4class{argo} class explains the structure of argo
 objects, and also outlines the other functions dealing with them.
 
-Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+Other things related to argo data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
   \code{\link{argo}},
@@ -58,4 +58,4 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{argo} data}
+\concept{things related to argo data}

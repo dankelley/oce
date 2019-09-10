@@ -20,7 +20,7 @@ these separate a list describing the file type, with the first element being
 the general type, the second element being the manufacturer, and the third
 element being the manufacturer's name for the instrument. For example,
 \code{"adp/nortek/aquadopp"} indicates a acoustic-doppler profiler made by
-NorTek, of the model type called AquaDopp.
+NorTek, of the model type called Aquadopp.
 }
 \description{
 \code{oceMagic} tries to infer the file type, based on the data
@@ -31,7 +31,7 @@ within the file, the file name, or a combination of the two.
 alias was removed in version 0.9.24; see \link{oce-defunct}.
 }
 \seealso{
-This is used mainly by \code{\link{read.oce}}.
+This is used mainly by \code{\link[=read.oce]{read.oce()}}.
 }
 \author{
 Dan Kelley

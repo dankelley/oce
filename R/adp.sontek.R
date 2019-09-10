@@ -2,22 +2,21 @@
 
 #' Read a Sontek ADP File
 #'
-#' Read a Sontek acoustic-Doppler profiler file [1].
+#' Read a Sontek acoustic-Doppler profiler file (see reference 1).
 #'
-#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' @param despike if `TRUE`, [despike()] will be used to clean
 #' anomalous spikes in heading, etc.
+#'
 #' @param type A character string indicating the type of instrument.
 #'
 #' @template adpTemplate
 #'
 #' @references
-#' 1. Information about Sontek profilers is available at
-#'
-#' \url{https://www.sontek.com}.
+#' 1. Information about Sontek profilers is available at https://www.sontek.com.
 #'
 #' @author Dan Kelley and Clark Richards
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=NA, latitude=NA,
                             type=c("adp", "pcadp"),
@@ -25,6 +24,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             debug=getOption("oceDebug"),
                             ...)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     missing.to <- missing(to)
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
@@ -78,6 +79,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "read.adp.sontek(...,from=", from, ",to=", if (missing.to) "(missing)" else to, ",by=", by, "type=", type, "...)\n")
     ##parameters <- list(profile.byte1 = 0xa5, profile.byte2=0x10, profile.headerLength=80)
     if (is.character(file)) {
+        if (0 == file.info(file)$size)
+            stop("empty file")
         filename <- fullFilename(file)
         file <- file(file, "rb")
         on.exit(close(file))
@@ -419,17 +422,19 @@ sontek.time <- function(t, tz=getOption("oceTz"))
 #' is possibly unique to Dalhousie University.
 #'
 #' @param beamAngle angle between instrument axis and beams, in degrees.
+#'
 #' @param type a character string indicating the type of instrument.
+#'
 #' @param orientation optional character string specifying the orientation of the
 #' sensor, provided for those cases in which it cannot be inferred from the
-#' data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
-#' \code{"sideward"}.
+#' data file.  The valid choices are `"upward"`, `"downward"`, and
+#' `"sideward"`.
 #'
 #' @template adpTemplate
 #'
 #' @author Dan Kelley and Clark Richards
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                    longitude=NA, latitude=NA,
                                    type=c("adp", "pcadp"),
@@ -437,6 +442,8 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                                    monitor=FALSE, processingLog,
                                    debug=getOption("oceDebug"))
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     ## Data format is described in
     ##   SonTek/YSI
     ##   ADPManual_v710.pdf

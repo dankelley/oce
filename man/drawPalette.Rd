@@ -21,13 +21,13 @@ is used.}
 
 \item{col}{either a vector of colors corresponding to the breaks, of length
 1 less than the number of breaks, or a function specifying colors, e.g.
-\code{\link{oce.colorsJet}} for a rainbow.}
+\code{\link[=oce.colorsJet]{oce.colorsJet()}} for a rainbow.}
 
-\item{colormap}{a color map as created by \code{\link{colormap}}.  If
+\item{colormap}{a color map as created by \code{\link[=colormap]{colormap()}}.  If
 provided, this takes precedence over \code{breaks} and \code{col}.}
 
 \item{mai}{margins for palette, as defined in the usual way; see
-\code{\link{par}}.  If not given, reasonable values are inferred from the
+\code{\link[=par]{par()}}.  If not given, reasonable values are inferred from the
 existence of a non-blank \code{zlab}.}
 
 \item{cex.axis}{character-expansion value for text labels}
@@ -54,7 +54,7 @@ as in example 1 of \dQuote{Examples}.}
 
 \item{fullpage}{logical value indicating whether to draw the palette filling
 the whole plot width (apart from \code{mai}, of course).  This can be
-helpful if the palette panel is to be created with \code{\link{layout}}, as
+helpful if the palette panel is to be created with \code{\link[=layout]{layout()}}, as
 illustrated in the \dQuote{Examples}.}
 
 \item{drawTriangles}{logical value indicating whether to draw triangles on
@@ -136,7 +136,7 @@ contour(volcano, add=TRUE)
 drawPalette(c(90, 200), fullpage=TRUE, col=oce.colorsJet)
 }
 \seealso{
-This is used by \code{\link{imagep}}.
+This is used by \code{\link[=imagep]{imagep()}}.
 }
 \author{
 Dan Kelley, with help from Clark Richards

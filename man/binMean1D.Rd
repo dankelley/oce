@@ -7,12 +7,12 @@
 binMean1D(x, f, xbreaks)
 }
 \arguments{
-\item{x}{Vector of numerical values.}
+\item{x}{vector of numerical values.}
 
-\item{f}{Vector of numerical values.}
+\item{f}{vector of numerical values.}
 
 \item{xbreaks}{Vector of values of x at the boundaries between bins, calculated using
-\code{\link{pretty}} if not supplied.}
+\code{\link[=pretty]{pretty()}} if not supplied.}
 }
 \value{
 A list with the following elements: the breaks (\code{xbreaks},

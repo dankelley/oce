@@ -7,9 +7,9 @@
 concatenate(object, ...)
 }
 \arguments{
-\item{object}{An object of \code{\link{oce-class}}.}
+\item{object}{An object of \linkS4class{oce} class.}
 
-\item{...}{Optional additional objects of \code{\link{oce-class}}.}
+\item{...}{Optional additional objects of \linkS4class{oce} class.}
 }
 \value{
 An object of class corresponding to that of \code{object}.
@@ -17,9 +17,4 @@ An object of class corresponding to that of \code{object}.
 \description{
 Concatenate oce objects
 }
-\seealso{
-Other functions that concatenate \code{oce} objects.: \code{\link{concatenate,adp-method}},
-  \code{\link{concatenate,list-method}},
-  \code{\link{concatenate,oce-method}}
-}
-\concept{functions that concatenate \code{oce} objects.}
+\concept{functions that concatenate oce objects.}

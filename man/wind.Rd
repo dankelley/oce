@@ -6,7 +6,7 @@
 \title{Wind dataset}
 \description{
 Wind data inferred from Figure 5 of Koch et al. (1983), provided to
-illustrate the \code{\link{interpBarnes}} function.
+illustrate the \code{\link[=interpBarnes]{interpBarnes()}} function.
 Columns \code{wind$x} and \code{wind$y} are location, while \code{wind$z} is
 the wind speed, in m/s.
 }
@@ -16,7 +16,7 @@ interactive Barnes objective map analysis scheme for use with satellite and
 conventional data,'' \emph{J.  Climate Appl.  Met.}, vol 22, p. 1487-1503.
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
@@ -27,4 +27,4 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}
 }
-\concept{datasets provided with \code{oce}}
+\concept{datasets provided with oce}

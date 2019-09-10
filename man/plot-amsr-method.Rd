@@ -11,10 +11,10 @@
   "mediumVioletRed"), debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{An object inheriting from \code{\link{amsr-class}}.}
+\item{x}{an \linkS4class{amsr} object.}
 
 \item{y}{String indicating the name of the band to plot; if not provided,
-\code{SST} is used; see \code{\link{amsr-class}} for a list of bands.}
+\code{SST} is used; see the documenation for the \linkS4class{amsr} class for a list of bands.}
 
 \item{asp}{Optional aspect ratio for plot.}
 
@@ -27,7 +27,7 @@ default values in \code{missingColor}.}
 
 \item{debug}{A debugging flag, integer.}
 
-\item{...}{extra arguments passed to \code{\link{imagep}}, e.g. set
+\item{...}{extra arguments passed to \code{\link[=imagep]{imagep()}}, e.g. set
 \code{col} to control colors.}
 }
 \description{
@@ -44,7 +44,7 @@ lines(coastlineWorldMedium[['longitude']], coastlineWorldMedium[['latitude']])
 
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,argo-method}},
   \code{\link{plot,bremen-method}},
@@ -68,8 +68,8 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
-  \code{\link{amsr-class}},
+Other things related to amsr data: \code{\link{[[,amsr-method}},
+  \code{\link{[[<-,amsr-method}}, \code{\link{amsr-class}},
   \code{\link{composite,amsr-method}},
   \code{\link{download.amsr}}, \code{\link{read.amsr}},
   \code{\link{subset,amsr-method}},
@@ -78,6 +78,6 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
+\concept{functions that plot oce data}
 \concept{satellite}
-\concept{things related to \code{amsr} data}
+\concept{things related to amsr data}

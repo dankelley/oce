@@ -7,17 +7,17 @@
 airRho(temperature, pressure, humidity)
 }
 \arguments{
-\item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+\item{temperature}{\emph{in-situ} temperature, in \eqn{^\circ}{deg}C.}
 
 \item{pressure}{pressure in Pa (NOT kPa) -- ignored at present}
 
 \item{humidity}{ignored at present}
 }
 \value{
-\emph{In-situ} air density [kg/m\eqn{^3}{^3}].
+\emph{In-situ} air density, in kg/m\eqn{^3}{^3}.
 }
 \description{
-Compute, \eqn{\rho}{rho}, the \emph{in-situ} density of air.
+Compute \eqn{\rho}{rho}, the \emph{in-situ} density of air.
 }
 \details{
 This will eventually be a proper equation of state, but for now it's just

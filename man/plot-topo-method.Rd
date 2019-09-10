@@ -13,7 +13,7 @@
   1, mgp[1] + 1, 1, 1), debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{A \code{topo} object, i.e. inheriting from \code{\link{topo-class}}.}
+\item{x}{a \linkS4class{topo} object.}
 
 \item{xlab, ylab}{Character strings giving a label for the x and y axes.}
 
@@ -48,7 +48,7 @@ are inferred from the data.}
 
 \item{col.water}{Colors corresponding to \code{water.z} values.  If not
 provided, these will be \code{"fill"} colors from
-\code{\link{oce.colorsGebco}}.}
+\code{\link[=oce.colorsGebco]{oce.colorsGebco()}}.}
 
 \item{lty.water}{Line type(s) for water contours.}
 
@@ -60,7 +60,7 @@ plotted.}
 
 \item{col.land}{Colors corresponding to \code{land.z} values.  If not
 provided, these will be \code{"fill"} colors from
-\code{\link{oce.colorsGebco}}.}
+\code{\link[=oce.colorsGebco]{oce.colorsGebco()}}.}
 
 \item{lty.land}{Line type(s) for land contours.}
 
@@ -76,7 +76,7 @@ longitudes without minus signs.}
 default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{Four-element numerical vector to be used with
-\code{\link{par}("mar")}.}
+\code{\link{par}}\code{("mar")}.}
 
 \item{debug}{Numerical value, with positive values indicating higher levels of
 debugging.}
@@ -97,7 +97,7 @@ plot(topoWorld, clongitude=-60, clatitude=45, span=10000)
 
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -121,7 +121,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{topo} data: \code{\link{[[,topo-method}},
+Other things related to topo data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
   \code{\link{download.topo}}, \code{\link{read.topo}},
   \code{\link{subset,topo-method}},
@@ -132,5 +132,5 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{topo} data}
+\concept{functions that plot oce data}
+\concept{things related to topo data}

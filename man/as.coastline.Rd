@@ -19,16 +19,15 @@ Equator.}
 filled polygon.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"coastline"} (for
-details, see \code{\link{read.coastline}}).
+a \linkS4class{coastline} object.
 }
 \description{
 Coerces a sequence of longitudes and latitudes into a coastline dataset.
-This may be used when \code{\link{read.coastline}} cannot read a file, or
+This may be used when \code{\link[=read.coastline]{read.coastline()}} cannot read a file, or
 when the data have been manipulated.
 }
 \seealso{
-Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+Other things related to coastline data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
   \code{\link{coastline-class}},
   \code{\link{coastlineBest}}, \code{\link{coastlineCut}},
@@ -43,4 +42,4 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
 \author{
 Dan Kelley
 }
-\concept{things related to \code{coastline} data}
+\concept{things related to coastline data}

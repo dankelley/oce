@@ -155,9 +155,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         else beamConfig <- "unknown"
     }
     bits <- substr(systemConfiguration, 1, 1)
-    if (bits == "1") orientation <- "upward"
-    else orientation <- "downward"
-    oceDebug(debug, "bits=", bits, "so that orientation=", orientation, "\n")
+    ###if (bits == "1") orientation <- "upward" else orientation <- "downward"
+    ###oceDebug(debug, "bits=", bits, "so that orientation=", orientation, "\n")
 
     ##real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
     ##lagLength <- readBin(FLD[8], "integer", n=1, size=1, signed=FALSE) # unused
@@ -321,7 +320,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
                 beamAngle=beamAngle,
                 beamPattern=beamPattern,
                 beamConfig=beamConfig,
-                orientation=orientation,
+                ###orientation=orientation,
                 numberOfDataTypes=numberOfDataTypes,
                 dataOffset=dataOffset,
                 codes=codes,
@@ -382,21 +381,21 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' combination of a 4 beam workhorse with an additional vertical
 #' centre beam.
 #'
-#' If a heading bias had been set with the \code{EB} command during the setup
+#' If a heading bias had been set with the `EB` command during the setup
 #' for the deployment, then a heading bias will have been stored in the file's
 #' header.  This value is stored in the object's metadata as
-#' \code{metadata$heading.bias}.  \strong{Importantly}, this value is
+#' `metadata$heading.bias`.  **Importantly**, this value is
 #' subtracted from the headings stored in the file, and the result of this
-#' subtraction is stored in the objects heading value (in \code{data$heading}).
-#' It should be noted that \code{read.adp.rdi()} was tested for firmware
+#' subtraction is stored in the objects heading value (in `data$heading`).
+#' It should be noted that `read.adp.rdi()` was tested for firmware
 #' version 16.30.  For other versions, there may be problems.  For example, the
 #' serial number is not recognized properly for version 16.28.
 #'
 #' In Teledyne/RDI ADP data files, velocities are coded to signed 2-byte integers, with a
 #' scale factor being used to convert to velocity in metres per second.  These
 #' two facts control the maximum recordable velocity and the velocity
-#' resolution, values that may be retrieved for an ADP object name \code{d}
-#' with \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
+#' resolution, values that may be retrieved for an ADP object name `d`
+#' with `d[["velocityMaximum"]]` and `d[["velocityResolution"]]`.
 #'
 #' @template adpTemplate
 #'
@@ -404,86 +403,88 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'
 #' @param type character string indicating the type of instrument.
 #'
-#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' @param despike if `TRUE`, [despike()] will be used to clean
 #' anomalous spikes in heading, etc.
 #'
 #' @section Names of items in data slot:
 #'
-#' The names of items in the \code{data} slot are below. Not all items are present
-#' for ll file varieties; use \code{\link{names}(d[["data"]])} to determine the
-#' names used in an object named \code{d}. In this list, items are either
-#' a vector (with one sample per time of measurement), a 
-#' ``matrix'' with first index for time and second for bin number,
-#' or an ``array'' with first index for time, second for bin number,
-#' and third for beam number. (Items are of vector type, unless
-#' otherwise indicated.)
+#' The names of items in the `data` slot are below. Not all items are present
+#' for ll file varieties; use e.g. `names(d[["data"]])` to determine the
+#' names used in an object named `d`. In this list, items are either
+#' a vector (with one sample per time of measurement), a
+#' [matrix] with first index for time and second for bin number,
+#' or an [array] with first index for time, second for bin number,
+#' and third for beam number. Items are of vector type, unless
+#' otherwise indicated.
 #'
-#' \strong{\code{a}}=signal amplitude array [units?];
-#' \strong{\code{ambientTemp}}=ambient temperature [degC];
-#' \strong{\code{attitude}}=attitude [deg];
-#' \strong{\code{attitudeTemp}}=XXX;
-#' \strong{\code{avgMagnitudeVelocityEast}}=XXX;
-#' \strong{\code{avgMagnitudeVelocityNorth}}=XXX;
-#' \strong{\code{avgSpeed}}=XXX;
-#' \strong{\code{avgTrackMagnetic}}=XXX;
-#' \strong{\code{avgTrackTrue}}=XXX;
-#' \strong{\code{avgTrueVelocityEast}}=XXX;
-#' \strong{\code{avgTrueVelocityNorth}}=XXX;
-#' \strong{\code{br}}=bottom range matrix [m];
-#' \strong{\code{bv}}=bottom velocity matrix [m/s];
-#' \strong{\code{contaminationSensor}}=XXX;
-#' \strong{\code{depth}}=depth [m];
-#' \strong{\code{directionMadeGood}}=XXX;
-#' \strong{\code{distance}}=XXX;
-#' \strong{\code{firstLatitude}}=latitude at start of profile [deg];
-#' \strong{\code{firstLongitude}}=longitude at start of profile [deg];
-#' \strong{\code{firstTime}}=XXX;
-#' \strong{\code{g}}=data goodness matrix [units?];
-#' \strong{\code{heading}}=instrument heading [degrees];
-#' \strong{\code{headingStd}}=instrument heading std-dev [deg];
-#' \strong{\code{lastLatitude}}=latitude at end of profile [deg];
-#' \strong{\code{lastLongitude}}=longitude at end of profile [deg];
-#' \strong{\code{lastTime}}=XXX;
-#' \strong{\code{numberOfHeadingSamplesAveraged}}=XXX;
-#' \strong{\code{numberOfMagneticTrackSamplesAveraged}}=XXX;
-#' \strong{\code{numberOfPitchRollSamplesAveraged}}=XXX;
-#' \strong{\code{numberOfSpeedSamplesAveraged}}=XXX;
-#' \strong{\code{numberOfTrueTrackSamplesAveraged}}=XXX;
-#' \strong{\code{pitch}}=instrument pitch [deg];
-#' \strong{\code{pitchStd}}=instrument pitch std-dev [deg];
-#' \strong{\code{pressure}}=pressure [dbar];
-#' \strong{\code{pressureMinus}}=XXX;
-#' \strong{\code{pressurePlus}}=XXX;
-#' \strong{\code{pressureStd}}=pressure std-dev [dbar];
-#' \strong{\code{primaryFlags}}=XXX;
-#' \strong{\code{q}}=data quality array;
-#' \strong{\code{roll}}=instrument roll [deg];
-#' \strong{\code{rollStd}}=instrument roll std-dev [deg];
-#' \strong{\code{salinity}}=salinity;
-#' \strong{\code{shipHeading}}=ship heading [deg];
-#' \strong{\code{shipPitch}}=ship pitch [deg];
-#' \strong{\code{shipRoll}}=ship roll [deg];
-#' \strong{\code{soundSpeed}}=sound speed [m/s];
-#' \strong{\code{speedMadeGood}}=speed over ground (?) [m/s];
-#' \strong{\code{speedMadeGoodEast}}=XXX;
-#' \strong{\code{speedMadeGoodNorth}}=XXX;
-#' \strong{\code{temperature}}=temperature [degC];
-#' \strong{\code{time}}=profile time [POSIXct];
-#' \strong{\code{v}}=velocity array [m/s];
-#' \strong{\code{xmitCurrent}}=transmit current [unit?];
-#' and
-#' \strong{\code{xmitVoltage}}=transmit voltage.
+#'\tabular{rr}{
+#' **Item** \tab **Meaning** \cr
+#' `a`                                    \tab signal amplitude array (units?)\cr
+#' `ambientTemp`                          \tab ambient temperature (degC)\cr
+#' `attitude`                             \tab attitude (deg)\cr
+#' `attitudeTemp`                         \tab (FIXME add a description here)\cr
+#' `avgMagnitudeVelocityEast`             \tab (FIXME add a description here)\cr
+#' `avgMagnitudeVelocityNorth`            \tab (FIXME add a description here)\cr
+#' `avgSpeed`                             \tab (FIXME add a description here)\cr
+#' `avgTrackMagnetic`                     \tab (FIXME add a description here)\cr
+#' `avgTrackTrue`                         \tab (FIXME add a description here)\cr
+#' `avgTrueVelocityEast`                  \tab (FIXME add a description here)\cr
+#' `avgTrueVelocityNorth`                 \tab (FIXME add a description here)\cr
+#' `br`                                   \tab bottom range matrix (m)\cr
+#' `bv`                                   \tab bottom velocity matrix (m/s)\cr
+#' `contaminationSensor`                  \tab (FIXME add a description here)\cr
+#' `depth`                                \tab depth (m)\cr
+#' `directionMadeGood`                    \tab (FIXME add a description here)\cr
+#' `distance`                             \tab (FIXME add a description here)\cr
+#' `firstLatitude`                        \tab latitude at start of profile (deg)\cr
+#' `firstLongitude`                       \tab longitude at start of profile (deg)\cr
+#' `firstTime`                            \tab (FIXME add a description here)\cr
+#' `g`                                    \tab data goodness matrix (units?)\cr
+#' `heading`                              \tab instrument heading (degrees)\cr
+#' `headingStd`                           \tab instrument heading std-dev (deg)\cr
+#' `lastLatitude`                         \tab latitude at end of profile (deg)\cr
+#' `lastLongitude`                        \tab longitude at end of profile (deg)\cr
+#' `lastTime`                             \tab (FIXME add a description here)\cr
+#' `numberOfHeadingSamplesAveraged`       \tab (FIXME add a description here)\cr
+#' `numberOfMagneticTrackSamplesAveraged` \tab (FIXME add a description here)\cr
+#' `numberOfPitchRollSamplesAveraged`     \tab (FIXME add a description here)\cr
+#' `numberOfSpeedSamplesAveraged`         \tab (FIXME add a description here)\cr
+#' `numberOfTrueTrackSamplesAveraged`     \tab (FIXME add a description here)\cr
+#' `pitch`                                \tab instrument pitch (deg)\cr
+#' `pitchStd`                             \tab instrument pitch std-dev (deg)\cr
+#' `pressure`                             \tab pressure (dbar)\cr
+#' `pressureMinus`                        \tab (FIXME add a description here)\cr
+#' `pressurePlus`                         \tab (FIXME add a description here)\cr
+#' `pressureStd`                          \tab pressure std-dev (dbar)\cr
+#' `primaryFlags`                         \tab (FIXME add a description here)\cr
+#' `q`                                    \tab data quality array\cr
+#' `roll`                                 \tab instrument roll (deg)\cr
+#' `rollStd`                              \tab instrument roll std-dev (deg)\cr
+#' `salinity`                             \tab salinity\cr
+#' `shipHeading`                          \tab ship heading (deg)\cr
+#' `shipPitch`                            \tab ship pitch (deg)\cr
+#' `shipRoll`                             \tab ship roll (deg)\cr
+#' `soundSpeed`                           \tab sound speed (m/s)\cr
+#' `speedMadeGood`                        \tab speed over ground (?) (m/s)\cr
+#' `speedMadeGoodEast`                    \tab (FIXME add a description here)\cr
+#' `speedMadeGoodNorth`                   \tab (FIXME add a description here)\cr
+#' `temperature`                          \tab temperature (degC)\cr
+#' `time`                                 \tab profile time (POSIXct)\cr
+#' `v`                                    \tab velocity array (m/s)\cr
+#' `xmitCurrent`                          \tab transmit current (unit?)\cr
+#' `xmitVoltage`                          \tab transmit voltage\cr
+#'}
 #'
 #' @section Memory considerations:
 #'
-#' For \code{RDI} files only, and only in the case where \code{by} is not specified,
+#' For `RDI` files only, and only in the case where `by` is not specified,
 #' an attempt is made to avoid running out of memory by skipping some profiles
-#' in large input files. This only applies if \code{from} and \code{to} are both
+#' in large input files. This only applies if `from` and `to` are both
 #' integers; if they are times, none of the rest of this section applies.
 #'
 #' A key issue is that RDI files store velocities in 2-byte values, which is
 #' not a format that R supports. These velocities become 8-byte (numeric) values
-#' in R. Thus, the R object created by \code{read.adp.rdi} will require more memory
+#' in R. Thus, the R object created by `read.adp.rdi` will require more memory
 #' than that of the data file. A scale factor can be estimated by ignoring
 #' vector quantities (e.g. time, which has just one value per profile) and concentrating on matrix properties
 #' such as velocity, backscatter, and correlation. These three elements have equal dimensions.
@@ -495,36 +496,33 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' Various things can limit the size of objects in R, but a strong upper limit
 #' is set by the space the operating system provides to R. The least-performant machines
 #' in typical use appear to be Microsoft-Windows systems, which limit R objects to
-#' about 2e6 bytes (see \code{?Memory-limits}).  Since R routinely duplicates objects for certain tasks
-#' (e.g. for call-by-value in function evaluation), \code{read.adp.rdi} uses a safety
+#' about 2e6 bytes (see `?Memory-limits`).  Since R routinely duplicates objects for certain tasks
+#' (e.g. for call-by-value in function evaluation), `read.adp.rdi` uses a safety
 #' factor in its calculation of when to auto-decimate a file. This factor is set to 3,
 #' based partly on the developers' experience with datasets in their possession.
 #' Multiplied by the previously stated safety factor of 3,
 #' this suggests that the 2 GB limit on R objects corresponds to approximately a
-#' 222 MB limit on file size. In the present version of \code{read.adp.rdi}, this
+#' 222 MB limit on file size. In the present version of `read.adp.rdi`, this
 #' value is lowered to 200 MB for simplicity. Larger files are considered to be "big",
-#' and are decimated unless the user supplies a value for the \code{by} argument.
+#' and are decimated unless the user supplies a value for the `by` argument.
 #'
 #' The decimation procedure has two cases.
-#' \enumerate{
-#' \item \emph{Case 1.} If \code{from=1} and
-#' \code{to=0} (or if neither \code{from} or \code{to} is given), then the
+#' 1. If `from=1` and `to=0` (or if neither `from` or `to` is given), then the
 #' intention is to process the full span of the data.  If the input file is
-#' under 200 MB, then \code{by} defaults to 1, so that all profiles are read.
-#' For larger files, \code{by} is set to the \code{\link{ceiling}} of the
+#' under 200 MB, then `by` defaults to 1, so that all profiles are read.
+#' For larger files, `by` is set to the [ceiling()] of the
 #' ratio of input file size to 200 MB.
 #'
-#' \item \emph{Case 2.} If \code{from} exceeds 1, and/or \code{to} is nonzero, then
+#' 2. If `from` exceeds 1, and/or `to` is nonzero, then
 #' the intention is to process only an interior subset of the file. In this
-#' case, \code{by} is calculated as the \code{\link{ceiling}} of
-#' the ratio of \code{bbp*(1+to-from)} to 200 MB, where \code{bbp} is the number
-#' of file bytes per profile. Of course, \code{by} is set to 1, if this
+#' case, `by` is calculated as the [ceiling()] of
+#' the ratio of `bbp*(1+to-from)` to 200 MB, where `bbp` is the number
+#' of file bytes per profile. Of course, `by` is set to 1, if this
 #' ratio is less than 1.
-#'}
 #'
-#' If the result of these calculations is that \code{by} exceeds 1, then
+#' If the result of these calculations is that `by` exceeds 1, then
 #' messages are printed to alert the user that the file will be decimated,
-#' and also \code{monitor} is set to \code{TRUE}, so that a textual progress bar
+#' and also `monitor` is set to `TRUE`, so that a textual progress bar
 #' is shown.
 #'
 #' @author Dan Kelley and Clark Richards
@@ -534,22 +532,22 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' summary(adp)
 #'
 #' @references
-#' 1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
-#' format.} P/N 957-6156-00 (November 2007).  (Section 5.3 h details the binary
-#' format, e.g. the file should start with the byte \code{0x7f} repeated twice,
-#' and each profile starts with the bytes \code{0x80}, followed by \code{0x00},
+#' 1. Teledyne-RDI, 2007. *WorkHorse commands and output data
+#' format.* P/N 957-6156-00 (November 2007).  (Section 5.3 h details the binary
+#' format, e.g. the file should start with the byte `0x7f` repeated twice,
+#' and each profile starts with the bytes `0x80`, followed by `0x00`,
 #' followed by the sequence number of the profile, represented as a
-#' little-endian two-byte short integer.  \code{read.adp.rdi} uses these
+#' little-endian two-byte short integer.  `read.adp.rdi` uses these
 #' sequences to interpret data files.)
 #'
-#' 2. Teledyne RD Instruments, 2015. \emph{V Series monitor, sentinel Output Data Format.}
-#' P/N 95D-6022-00 (May 2015). \code{SV_ODF_May15.pdf}
+#' 2. Teledyne RD Instruments, 2015. *V Series monitor, sentinel Output Data Format.*
+#' P/N 95D-6022-00 (May 2015). `SV_ODF_May15.pdf`
 #'
-#' 3. Teledyne RD Instruments, 2014. \emph{Ocean Surveyor / Ocean Observer Technical Manual.}
-#' P/N 95A-6012-00 (April 2014). \code{OS_TM_Apr14.pdf}
+#' 3. Teledyne RD Instruments, 2014. *Ocean Surveyor / Ocean Observer Technical Manual.*
+#' P/N 95A-6012-00 (April 2014). `OS_TM_Apr14.pdf`
 #'
-#' 4. Teledyne RD Instruments, 201?. \emph{WinRiver User's Guide International Version}
-#' P/N 957-6171-00 (June 2001) \code{WinRiver User Guide International Version.pdf.pdf}
+#' 4. Teledyne RD Instruments, 2001. *WinRiver User's Guide International Version.*
+#' P/N 957-6171-00 (June 2001) `WinRiver User Guide International Version.pdf.pdf`
 #'
 #' @section Development Notes:
 #' An important part of the work of this function is to recognize what
@@ -557,119 +555,115 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' developed in a practical way, with emphasis being focussed on
 #' data files in the possession of the developers. Since Teledyne-RDI tends
 #' to introduce new ID codes with new instruments, that means that
-#' \code{read.adp.rdi} may not work on recently-developed instruments.
+#' `read.adp.rdi` may not work on recently-developed instruments.
 #'
-#' The following two-byte ID codes are recognized by \code{read.adp.rdi}
+#' The following two-byte ID codes are recognized by `read.adp.rdi`
 #' at this time (with bytes listed in natural order, LSB byte before
 #' MSB). Items preceeded by an asterisk are recognized, but not handled,
 #' and so produce a warning.
-#'\preformatted{
-#'   0x00 0x01 velocity
-#'   0x00 0x02 correlation
-#'   0x00 0x03 echo intensity
-#'   0x00 0x04 percent good
-#'   0x00 0x06 bottom track
-#'   0x00 0x0a Sentinel vertical beam velocity
-#'   0x00 0x0b Sentinel vertical beam correlation
-#'   0x00 0x0c Sentinel vertical beam amplitude
-#'   0x00 0x0d Sentinel vertical beam percent good
-#'   0x00 0x20 VMDASS
-#' * 0x00 0x30 binary fixed attitude (developer: see p169 of [3] for format)
-#'   0x00 0x32 Sentinel transformation matrix
-#'   0x00 0x0a Sentinel data
-#'   0x00 0x0b Sentinel correlation
-#'   0x00 0x0c Sentinel amplitude
-#'   0x00 0x0d Sentinel percent good
-#'   0x01 0x0f ?? something to do with V series and 4-beam
-#' }
+#'\tabular{rrrr}{
+#'   \tab **Byte 1** \tab **Byte 2** \tab **Meaning**\cr
+#'   \tab 0x00 \tab 0x01 \tab velocity\cr
+#'   \tab 0x00 \tab 0x01 \tab velocity\cr
+#'   \tab 0x00 \tab 0x02 \tab correlation\cr
+#'   \tab 0x00 \tab 0x03 \tab echo intensity\cr
+#'   \tab 0x00 \tab 0x04 \tab percent good\cr
+#'   \tab 0x00 \tab 0x06 \tab bottom track\cr
+#'   \tab 0x00 \tab 0x0a \tab Sentinel vertical beam velocity\cr
+#'   \tab 0x00 \tab 0x0b \tab Sentinel vertical beam correlation\cr
+#'   \tab 0x00 \tab 0x0c \tab Sentinel vertical beam amplitude\cr
+#'   \tab 0x00 \tab 0x0d \tab Sentinel vertical beam percent good\cr
+#'   \tab 0x00 \tab 0x20 \tab VMDASS\cr
+#' \*\tab 0x00 \tab 0x30 \tab binary fixed attitude (see p169 of reference 3 for format)\cr
+#'   \tab 0x00 \tab 0x32 \tab Sentinel transformation matrix\cr
+#'   \tab 0x00 \tab 0x0a \tab Sentinel data\cr
+#'   \tab 0x00 \tab 0x0b \tab Sentinel correlation\cr
+#'   \tab 0x00 \tab 0x0c \tab Sentinel amplitude\cr
+#'   \tab 0x00 \tab 0x0d \tab Sentinel percent good\cr
+#'   \tab 0x01 \tab 0x0f \tab ?? something to do with V series and 4-beam\cr
+#'}
 #'
 #' Lacking a comprehensive Teledyne-RDI listing of ID codes,
 #' the authors have cobbled together a listing from documents to which they
-#' have access, viz.
-#' \itemize{
+#' have access, as follows.
 #'
-#' \item
-#' Table 33 of [3] lists codes as follows:
-#' \preformatted{
-#' Standard ID    Standard plus 1D    DESCRIPTION
-#' ===========    ================    ===========================
-#'  MSB    LSB          MSB    LSB
-#'  ---    ---          ---    ---
-#'   7F     7F           7F     7F    Header
-#'   00     00           00     01    Fixed Leader
-#'   00     80           00     81    Variable Leader
-#'   01     00           01     01    Velocity Profile Data
-#'   02     00           02     01    Correlation Profile Data
-#'   03     00           03     01    Echo Intensity Profile Data
-#'   04     00           04     01    Percent Good Profile Data
-#'   05     00           05     01    Status Profile Data
-#'   06     00           06     01    Bottom Track Data
-#'   20     00           20     00    Navigation
-#'   30     00           30     00    Binary Fixed Attitude
-#'   30  40-F0           30  40-F0    Binary Variable Attitude
-#' }
-#' \item
-#' Table 6 on p90 of [4] lists "Fixed Leader Navigation" ID
-#' codes (none of which are handled by \code{read.adp.rdi} yet)
+#' * Table 33 of reference 3 lists codes as follows:
+#'\tabular{rrr}{
+#' **Standard ID**  \tab  **Standard plus 1D** \tab **DESCRIPTION**\cr
+#'  MSB    LSB  \tab        MSB    LSB\tab\cr
+#'  ---    ---  \tab        ---    ---\tab\cr
+#'   7F     7F  \tab         7F     7F \tab   Header\cr
+#'   00     00  \tab         00     01 \tab   Fixed Leader\cr
+#'   00     80  \tab         00     81 \tab   Variable Leader\cr
+#'   01     00  \tab         01     01 \tab   Velocity Profile Data\cr
+#'   02     00  \tab         02     01 \tab   Correlation Profile Data\cr
+#'   03     00  \tab         03     01 \tab   Echo Intensity Profile Data\cr
+#'   04     00  \tab         04     01 \tab   Percent Good Profile Data\cr
+#'   05     00  \tab         05     01 \tab   Status Profile Data\cr
+#'   06     00  \tab         06     01 \tab   Bottom Track Data\cr
+#'   20     00  \tab         20     00 \tab   Navigation\cr
+#'   30     00  \tab         30     00 \tab   Binary Fixed Attitude\cr
+#'   30  40-F0  \tab         30  40-F0 \tab   Binary Variable Attitude\cr
+#'}
+#'
+#' * Table 6 on p90 of reference 4 lists "Fixed Leader Navigation" ID
+#' codes (none of which are handled by `read.adp.rdi` yet)
 #' as follows (the format is reproduced literally; note that
 #' e.g. 0x2100 is 0x00,0x21 in the oce notation):
-#'\preformatted{
-#' ID       Description
-#' ======   ===========
-#' 0x2100   $xxDBT
-#' 0x2101   $xxGGA
-#' 0x2102   $xxVTG
-#' 0x2103   $xxGSA
-#' 0x2104   $xxHDT, $xxHGD or $PRDID
+#'\tabular{rr}{
+#' **ID** \tab **Description**\cr
+#' 0x2100 \tab  $xxDBT\cr
+#' 0x2101 \tab  $xxGGA\cr
+#' 0x2102 \tab  $xxVTG\cr
+#' 0x2103 \tab  $xxGSA\cr
+#' 0x2104 \tab  $xxHDT, $xxHGD or $PRDID\cr
 #'}
-#' and following pages in that manual reveal that
-#' DBT refers to depth below transducer;
-#' GGA refers to global positioning system;
-#' VTA refers to track made good and ground speed;
-#' GSA refers to GPS DOP and active satellites;
-#' HDT refers to heading, true;
-#' HDG refers to heading, deviation, and variation;
-#' and
-#' PRDID refers to heading, pitch and roll.
+#' and following pages in that manual reveal the following meanings
+#'\tabular{rr}{
+#' **Symbol** \tab **Meaning**\cr
+#' `DBT`   \tab depth below transducer\cr
+#' `GGA`   \tab global positioning system\cr
+#' `VTA`   \tab track made good and ground speed\cr
+#' `GSA`   \tab GPS DOP and active satellites\cr
+#' `HDT`   \tab heading, true\cr
+#' `HDG`   \tab heading, deviation, and variation\cr
+#' `PRDID` \tab heading, pitch and roll\cr
 #'}
-#'
 #'
 #' @section Error recovery:
 #'
-#' Files can sometimes be corrupted, and \code{read.adp.rdi} has ways to handle two types
+#' Files can sometimes be corrupted, and `read.adp.rdi` has ways to handle two types
 #' of error that have been noticed in files supplied by users.
-#'\enumerate{
 #'
-#' \item There are two bytes within each ensemble that indicate the number of bytes to check within
+#' 1. There are two bytes within each ensemble that indicate the number of bytes to check within
 #' that ensemble, to get the checksum. Sometimes, those two bytes can be erroneous, so that
 #' the wrong number of bytes are checked, leading to a failed checksum. As a preventative
-#' measure, \code{read.adp.rdi} checks the stated ensemble length, whenever it detects a
+#' measure, `read.adp.rdi` checks the stated ensemble length, whenever it detects a
 #' failed checksum. If that length agrees with the length of the most recent ensemble that
 #' had a good checksum, then the ensemble is declared as faulty and is ignored. However,
-#' if the length differs from that of the most recent accepted ensemble, then \code{read.adp.rdi}
+#' if the length differs from that of the most recent accepted ensemble, then `read.adp.rdi`
 #' goes back to just after the start of the ensemble, and searches forward for the next two-byte
-#' pair, namely \code{0x7f 0x7f}, that designates the start of an ensemble.  Distinct notifications
+#' pair, namely `0x7f 0x7f`, that designates the start of an ensemble.  Distinct notifications
 #' are given about these two cases, and they give the byte numbers in the original file, as a way
 #' to help analysts who want to look at the data stream with other tools.
 #'
-#' \item At the end of an ensemble, the next two characters ought to be \code{0x7f 0x7f}, and if they
-#' are not, then the next ensemble is faulty. If this error occurs, \code{read.adp.rdi} attempts
+#' 2. At the end of an ensemble, the next two characters ought to be `0x7f 0x7f`, and if they
+#' are not, then the next ensemble is faulty. If this error occurs, `read.adp.rdi` attempts
 #' to recover by searching forward to the next instance of this two-byte pair, discarding any
 #' information that is present in the mangled ensemble.
-#'}
 #'
 #' In each of these cases, warnings are printed about ensembles that seem problematic.
 #' Advanced users who want to diagnose the problem further might find it helpful to
-#' examine the original data file using other tools. To this end, \code{read.adp.rdi}
-#' inserts an element named \code{ensembleInFile} into the \code{metadata} slot.
+#' examine the original data file using other tools. To this end, `read.adp.rdi`
+#' inserts an element named `ensembleInFile` into the `metadata` slot.
 #' This gives the starting byte number of each inferred ensemble within the original data
-#' file.  For example, if \code{d} is an object read with \code{read.adp.rdi}, then using
-#'\preformatted{
+#' file.  For example, if `d` is an object read with `read.adp.rdi`, then using
+#'```
 #' plot(d[["time"]][-1], diff(d[["ensembleInFile"]]))
-#'}
+#'```
 #' can be a good way to narrow in on problems.
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          longitude=NA, latitude=NA,
                          type=c("workhorse"),
@@ -687,7 +681,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
              ", from=", if (fromGiven) format(from) else "(missing)",
              ", to=", if (toGiven) format(to) else "(missing)",
              ", by=", if (byGiven) format(by) else "(missing)",
-             "...) {\n", unindent=1)
+             "...) {\n", unindent=1, sep="")
     if (!fromGiven)
         from <- 1
     if (!byGiven)
@@ -778,6 +772,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     ##     oceDebug(debug, "class(from)=", class(from), "; class(to)=", class(to), "\n")
     ## }
     if (is.character(file)) {
+        if (0 == file.info(file)$size)
+            stop("empty file")
         filename <- fullFilename(file)
         file <- file(file, "rb")
         on.exit(close(file))
@@ -796,6 +792,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     seek(file, where=0, origin="end")
     fileSize <- seek(file, where=0)
     oceDebug(debug, "fileSize=", fileSize, "\n")
+    if (fileSize < 1)
+        stop("empty data file")
 
     ## FIXME 20170107
     ## We process the header wholly in R, and we don't need more than probably 2000 bytes
@@ -1198,6 +1196,9 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             ##. unknownWarningCount <- 0
             nmea <- NULL
             nmeaLen <- 0
+            orientation <- vector("character", profilesToRead)
+            ensembleNumber <- vector("numeric", profilesToRead)
+            ##cat("** got space for orientation\n")
             for (i in 1:profilesToRead) {
                 ## update the data descriptions, after realizing, while working on
                 ## [issue 1401](https://github.com/dankelley/oce/issues/1401), that files
@@ -1213,27 +1214,34 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
 
                 for (chunk in 1:header$numberOfDataTypes) {
                     o <- ensembleStart[i] + header$dataOffset[chunk]
-                    if (buf[o] == 0x00 & buf[1+o] == 0x00) {
-                        ##slow if (i <= profilesToShow) oceDebug(debug, "  fixed leader skipped\n")
-                    } else if (buf[o] == 0x80 & buf[1+o] == 0x00) {
+                    if (buf[o] == 0x00 && buf[1+o] == 0x00) {
+                        orientation[i] <- if ("1" == substr(byteToBinary(buf[o+4], endian="big"), 1, 1)) "upward" else "downward"
+                        ##cat("** assigned orientation[",i,"] as ", orientation[i], "\n")
+                        ## testConfiguration <- paste(byteToBinary(buf[o+4], endian="big"), byteToBinary(buf[o+5], endian="big"), sep="-")
+                        ## if (testConfiguration != header$systemConfiguration) {
+                        ##     warning("(test for issue 1588) systemConfiguration mismatch at profile i=", i, "; header$configuration='",
+                        ##             header$systemConfiguration, "' but testConfiguration='", testConfiguration, "'\n", sep="")
+                        ## }
+                    } else if (buf[o] == 0x80 && buf[1+o] == 0x00) {
                         ##slow if (i <= profilesToShow) oceDebug(debug, "  variable leader skipped\n")
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x01) {
+                        ensembleNumber[i] <- readBin(buf[o + 2:3], "integer", n=1, size=2, endian="little", signed=TRUE) + as.integer(buf[o + 11]) * 65535L
+                    } else if (buf[o] == 0x00 && buf[1+o] == 0x01) {
                         vtmp <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
                         vtmp[-32768 == vtmp] <- NA       # blank out bad data
                         v[i, , ] <- matrix(velocityScale * vtmp, ncol=numberOfBeams, byrow=TRUE)
                         ##slow if (debug && i <= profilesToShow) oceDebug(debug, vectorShow(v[i, , 1], paste("  v[", i, ",,1]", sep="")))
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x02) {
+                    } else if (buf[o] == 0x00 && buf[1+o] == 0x02) {
                         q[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
                         ##slow if (debug && i <= profilesToShow) oceDebug(debug, vectorShow(q[i, , 1], paste("  q[", i, ",,1]", sep="")))
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x03) {
+                    } else if (buf[o] == 0x00 && buf[1+o] == 0x03) {
                         a[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
                         ##slow if (debug && i <= profilesToShow) oceDebug(debug, vectorShow(a[i, , 1], paste("  a[", i, ",,1]", sep="")))
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x04) {
+                    } else if (buf[o] == 0x00 && buf[1+o] == 0x04) {
                         g[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
                         ##slow if (debug && i <= profilesToShow) oceDebug(debug, vectorShow(g[i, , 1], paste("  g[", i, ",,1]", sep="")))
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x05) {
+                    } else if (buf[o] == 0x00 && buf[1+o] == 0x05) {
                         ##slow if (i <= profilesToShow) oceDebug(debug, "  status profile ignored\n")
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x06) {
+                    } else if (buf[o] == 0x00 && buf[1+o] == 0x06) {
                         rangeLSB <- readBin(buf[o+c(16:23)], "integer", n=4, size=2, signed=FALSE, endian="little")
                         rangeMSB <- readBin(buf[o+77:80], "integer", n=4, size=1, signed=FALSE, endian="little")
                         if (is.null(br)) {
@@ -1427,177 +1435,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 }
                 if (monitor)
                     close(progressBar)
-
-                ##20170112 if (FALSE) {
-                ##20170112     stop("CANNOT GET HERE -- report to the developer named Dan Kelley please")
-                ##20170112     ## FIXME
-                ##20170112     o <- profileStart[i] + header$dataOffset[3] - header$dataOffset[2] # 65 for workhorse; 50 for surveyor
-                ##20170112     ## Process data chunks, detecting each type by the second byte in the chunk; the
-                ##20170112     ## first byte must be 0x00. The second-byte codes are given in
-                ##20170112     ## teledyne2014ostm(Table 33, page 146)
-
-                ##20170112     for (dataType in 1:header$numberOfDataTypes) {
-                ##20170112         if (buf[o] != 0x00)
-                ##20170112             stop("Expecting byte 0x00 but got byte 0x", buf[o], " while trying to read a data chunk for profile ", i)
-                ##20170112         oceDebug(debug, "buf[", o, "+1]: ", buf[o+1], "\n")
-                ##20170112         if (buf[o+1] == 0x01) {
-                ##20170112             oceDebug(debug, "VELOCITY\n")
-                ##20170112             ##>message("velo at o=", o, "; profile=", i)
-                ##20170112             vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
-                ##20170112             ##cat(vectorShow(vv, "vv:"))
-                ##20170112             vv[-32768 == vv] <- NA       # blank out bad data
-                ##20170112             v[i, , ] <- matrix(velocityScale * vv, ncol=numberOfBeams, byrow=TRUE)
-                ##20170112             o <- o + items * 2 + 2 # point to next chunk
-                ##20170112             if (debug && i <= profilesToShow) cat(vectorShow(v[i, , ], paste("v[", i, ",,]", sep="")))
-                ##20170112         } else if (buf[o+1] == 0x02) {
-                ##20170112             oceDebug(debug, "CORRELATION\n")
-                ##20170112             q[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
-                ##20170112             if (debug && i <= profilesToShow) cat(vectorShow(q[i, , ], paste("q[", i, ",,]", sep="")))
-                ##20170112             o <- o + items + 2 # point to next chunk
-                ##20170112         } else if (buf[o+1] == 0x03) {
-                ##20170112             oceDebug(debug, "ECHO INTENSITY\n")
-                ##20170112             a[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
-                ##20170112             if (debug && i <= profilesToShow) cat(vectorShow(a[i, , ], paste("a[", i, ",,]", sep="")))
-                ##20170112             o <- o + items + 2 # point to next chunk
-                ##20170112         } else if (buf[o+1] == 0x04) {
-                ##20170112             oceDebug(debug, "PERCENT GOOD\n")
-                ##20170112             g[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
-                ##20170112             if (debug && i <= profilesToShow) cat(vectorShow(g[i, , ], paste("g[", i, ",,]", sep="")))
-                ##20170112             o <- o + items + 2
-                ##20170112         } else if (buf[o+1] == 0x05) {
-                ##20170112             o <- o + 2 + items
-                ##20170112             ## FIXME do something with these STATUS data
-                ##20170112             if (debug && i <= profilesToShow) cat("skipping ", 2 + items, " bytes for STATUS data (FIXME: not stored)\n")
-                ##20170112         } else if (buf[o+1] == 0x06) {
-                ##20170112             ## bottom-track
-                ##20170112             if (is.null(br)) {
-                ##20170112                 warning("cannot store bottom-track data for profile ", i, " because profile 1 lacked such data so no storage was set up (adp.rdi.R near line 1146)\n")
-                ##20170112             } else {
-                ##20170112                 ## the bottom range is in 3 bytes, split into two chunks
-                ##20170112                 rangeLSB <- readBin(buf[o+c(16:23)], "integer", n=4, size=2, signed=FALSE, endian="little")
-                ##20170112                 rangeMSB <- readBin(buf[o+77:80], "integer", n=4, size=1, signed=FALSE, endian="little")
-                ##20170112                 br[i, ] <- 0.01 * (65536 * rangeMSB + rangeLSB)
-                ##20170112                 bv[i, ] <- 0.001 * readBin(buf[o+c(24:31)], "integer", n=4, size=2, signed=TRUE, endian="little")
-                ##20170112                 bc[i, ] <- as.integer(buf[o+32:35])
-                ##20170112                 ba[i, ] <- as.integer(buf[o+36:39])
-                ##20170112                 bg[i, ] <- as.integer(buf[o+40:43])
-                ##20170112                 o <- o + 81 ## BOTTOM data chunk is always 81 bytes (Fig 46, p145 teledyne2014ostm)
-                ##20170112                 if (debug && i <= profilesToShow) {
-                ##20170112                     ## FIXME: speed things up by commenting this out when things are working
-                ##20170112                     cat(vectorShow(br[i, ], paste("br[", i, ",]", sep="")))
-                ##20170112                     cat(vectorShow(bv[i, ], paste("bv[", i, ",]", sep="")))
-                ##20170112                     cat(vectorShow(bc[i, ], paste("bc[", i, ",]", sep="")))
-                ##20170112                     cat(vectorShow(ba[i, ], paste("ba[", i, ",]", sep="")))
-                ##20170112                     cat(vectorShow(bg[i, ], paste("bg[", i, ",]", sep="")))
-                ##20170112                 }
-                ##20170112             }
-                ##20170112         } else if (buf[o+1] == 0x20) {
-                ##20170112             ## navigation
-                ##20170112             oceDebug(debug, "found NAVIGATION block (buf[o+1] is 0x20)")
-                ##20170112             ## On the first profile, we set up space.
-                ##20170112             if (!VMDASStorageInitialized) {
-                ##20170112                 VMDASStorageInitialized <- TRUE
-                ##20170112                 oceDebug(debug, "This is a VMDAS file\n")
-                ##20170112                 isVMDAS <- TRUE
-                ##20170112                 ## FIXME: set up space; this c() method is slow and ugly
-                ##20170112                 firstTime <- firstLongitude <- firstLatitude <- NULL
-                ##20170112                 lastTime <- lastLongitude <- lastLatitude <- NULL
-                ##20170112                 avgSpeed <- avgTrackTrue <- avgTrackMagnetic <- NULL
-                ##20170112                 speedMadeGood <- speedMadeGoodNorth <- speedMadeGoodEast <- NULL
-                ##20170112                 directionMadeGood <- NULL
-                ##20170112                 shipPitch <- shipRoll <- shipHeading <- NULL
-                ##20170112                 numberOfSpeedSamplesAveraged <- numberOfTrueTrackSamplesAveraged <-
-                ##20170112                     numberOfMagneticTrackSamplesAveraged <- numberOfHeadingSamplesAveraged <-
-                ##20170112                         numberOfPitchRollSamplesAveraged <- NULL
-                ##20170112                 avgTrueVelocityNorth <- avgTrueVelocityEast <- NULL
-                ##20170112                 avgMagnitudeVelocityNorth <- avgMagnitudeVelocityEast <- NULL
-                ##20170112                 primaryFlags <- NULL
-                ##20170112             } else {
-                ##20170112                 if (!isVMDAS)
-                ##20170112                     badVMDAS <- c(badVMDAS, i)
-                ##20170112             }
-                ##20170112             tmpTime <- as.numeric(ISOdatetime(as.integer(buf[o+4]) + 256*as.integer(buf[o+5]), #year
-                ##20170112                                               as.integer(buf[o+3]), #month
-                ##20170112                                               as.integer(buf[o+2]), #day
-                ##20170112                                               0, 0, 0,
-                ##20170112                                               tz=tz))
-                ##20170112             clockOffset <- 0.001 * readBin(buf[o+10:13], 'integer', n=1, size=4, endian='little')
-                ##20170112             firstTime <- c(firstTime, tmpTime + clockOffset+readBin(buf[o+6:9], 'integer', n=1, size=4, endian='little')/10000)
-                ##20170112             ##704 sNavTime <- as.POSIXct(sNavTime, origin='1970-01-01', tz=tz)
-                ##20170112             cfac <- 180/2^31 # from rdradcp.m line 825
-                ##20170112             ## FIXME: this c() operation is slow and inelegant
-                ##20170112             firstLatitude <- c(firstLatitude, readBin(buf[o+14:17], 'integer', n=1, size=4, endian='little')*cfac)
-                ##20170112             firstLongitude <- c(firstLongitude, readBin(buf[o+18:21], 'integer', n=1, size=4, endian='little')*cfac)
-                ##20170112             lastTime <- c(lastTime,   tmpTime + clockOffset+readBin(buf[o+22:25], 'integer', n=1, size=4, endian='little')/10000)
-                ##20170112             lastLatitude <- c(lastLatitude, readBin(buf[o+26:29], 'integer', n=1, size=4, endian='little')*cfac)
-                ##20170112             lastLongitude <- c(lastLongitude, readBin(buf[o+30:33], 'integer', n=1, size=4, endian='little')*cfac)
-                ##20170112             ## FIXME: DK: I need to figure out the difference between eNavTime and navTime
-                ##20170112             ## FIXME: CR: what you are calling navTime should be the same as the "ADCP time"
-                ##20170112             ## tmpTime <- ISOdatetime(as.integer(buf[o+54]) + 256*as.integer(buf[o+55]), #year
-                ##20170112             ##                        as.integer(buf[o+57]), #month
-                ##20170112             ##                        as.integer(buf[o+56]), #day
-                ##20170112             ##                        0, 0, 0,
-                ##20170112             ##                        tz=tz)
-                ##20170112             ## navTime <- c(navTime, tmpTime + readBin(buf[o+58:61], 'integer', n=1, size=4, endian='little')/100)
-                ##20170112             ##(A) navTime <- as.POSIXct(navTime, origin='1970-01-01', tz=tz)
-                ##20170112             avgSpeed <- c(avgSpeed, 0.001*readBin(buf[o+34:35], 'integer', n=1, size=2, endian='little'))
-                ##20170112             avgTrackTrue <- c(avgTrackTrue, readBin(buf[o+36:37], 'integer', n=1, size=2, endian='little'))
-                ##20170112             avgTrackMagnetic <- c(avgTrackMagnetic, readBin(buf[o+38:39], 'integer', n=1, size=2, endian='little'))
-                ##20170112             speedMadeGood <- c(speedMadeGood, 0.001*readBin(buf[o+40:41], 'integer', n=1, size=2, endian='little'))
-                ##20170112             directionMadeGood <- c(directionMadeGood, (360/2^16)*readBin(buf[o+42:43], 'integer', n=1, size=2, endian='little'))
-                ##20170112             shipPitch <- c(shipPitch,
-                ##20170112                            (360/2^16)*readBin(buf[o+62:63], 'integer', n=1, size=2, endian='little'))
-                ##20170112             shipRoll <- c(shipRoll,
-                ##20170112                           (360/2^16)*readBin(buf[o+64:65], 'integer', n=1, size=2, endian='little'))
-                ##20170112             shipHeading <- c(shipHeading,
-                ##20170112                              (360/2^16)*readBin(buf[o+66:67], 'integer', n=1, size=2, endian='little'))
-                ##20170112             numberOfSpeedSamplesAveraged <- c(numberOfSpeedSamplesAveraged,
-                ##20170112                                               readBin(buf[o+68:69], 'integer', n=1, size=2, endian='little'))
-                ##20170112             numberOfTrueTrackSamplesAveraged <- c(numberOfTrueTrackSamplesAveraged,
-                ##20170112                                                   readBin(buf[o+70:71], 'integer', n=1, size=2, endian='little'))
-                ##20170112             numberOfMagneticTrackSamplesAveraged <- c(numberOfMagneticTrackSamplesAveraged,
-                ##20170112                                                       readBin(buf[o+72:73], 'integer', n=1, size=2, endian='little'))
-                ##20170112             numberOfHeadingSamplesAveraged <- c(numberOfHeadingSamplesAveraged,
-                ##20170112                                                 readBin(buf[o+74:75], 'integer', n=1, size=2, endian='little'))
-                ##20170112             numberOfPitchRollSamplesAveraged <- c(numberOfPitchRollSamplesAveraged,
-                ##20170112                                                   readBin(buf[o+76:77], 'integer', n=1, size=2, endian='little'))
-                ##20170112             avgTrueVelocityNorth <- c(avgTrueVelocityNorth,
-                ##20170112                                       readBin(buf[o+78:79], 'integer', n=1, size=2, endian='little'))
-                ##20170112             avgTrueVelocityEast <- c(avgTrueVelocityEast,
-                ##20170112                                      readBin(buf[o+80:81], 'integer', n=1, size=2, endian='little'))
-                ##20170112             avgMagnitudeVelocityNorth <- c(avgMagnitudeVelocityNorth,
-                ##20170112                                            readBin(buf[o+82:83], 'integer', n=1, size=2, endian='little'))
-                ##20170112             avgMagnitudeVelocityEast <- c(avgMagnitudeVelocityEast,
-                ##20170112                                           readBin(buf[o+84:85], 'integer', n=1, size=2, endian='little'))
-                ##20170112             speedMadeGoodNorth <- c(speedMadeGoodNorth,
-                ##20170112                                     0.001*readBin(buf[o+86:87], 'integer', n=1, size=2, endian='little'))
-                ##20170112             speedMadeGoodEast <- c(speedMadeGoodEast,
-                ##20170112                                    0.001*readBin(buf[o+88:89], 'integer', n=1, size=2, endian='little'))
-                ##20170112             primaryFlags <- c(primaryFlags,
-                ##20170112                               readBin(buf[o+90:91], 'integer', n=1, size=2, endian='little'))
-                ##20170112             o <- o + 78 ## NAVIGATION data chunk is always 78 bytes (Fig 46, p145 teledyne2014ostm)
-                ##20170112         } else if (buf[o+1] == 0x30) {
-                ##20170112             ## FIXED ATTITUDE
-                ##20170112             oceDebug(debug, "FIXED ATTITUDE\n")
-                ##20170112             o <- o + 41 ## FIXED ATTITUDE data chunk is always 41 bytes (Fig 46, p145 teledyne2014ostm)
-                ##20170112             warning("skipping BINARY FIXED ATTITUDE data chunk, profile ", i)
-                ##20170112         } else {
-                ##20170112             oceDebug(debug, "0x", buf[o+1], " flag... unknown. FIXME: handle 0x40-0xF0 0x30 (p146 teledynRDI 2014)\n")
-                ##20170112             oceDebug(debug, "also, how far should we skip forward?\n")
-                ##20170112             stop("unknown byte code 0x", buf[o+1], " encountered while trying to read profile ", i)
-                ##20170112         }
-                ##20170112     }
-                ##20170112 } ## this whole block is being skipped and will be deleted later
-                ##VMDAS }
-                ##VMDAS } else {
-                ##VMDAS     badProfiles <- c(badProfiles, i)
-                ##VMDAS     if (monitor) {
-                ##VMDAS         cat("X", ...)
-                ##VMDAS         if (!(i %% 50))
-                ##VMDAS             cat(i, "\n", ...)
-                ##VMDAS     }
-                ##VMDAS }
-                ##if (o >= fileSize) {
                 if (o >= bufSize) {
                     warning("got to end of file; o=", o, ", fileSize=", bufSize, "\n")
                     break
@@ -1613,6 +1450,12 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                     msg <- paste(msg, "    Code ", name, " occurred ", warningUnknownCode[[name]], " times\n", sep="")
                 warning(msg)
             }
+            if (1 != length(unique(orientation)))
+                warning("the instrument orientation is not constant. The user is advised to determine
+the orientation during the relevant measurement phase, and to set this into the
+object with e.g.
+    adp<-oceSetMetadata(adp,'orientation','upward')
+in case conversion to ENU is to be done later.")
 
             ## time <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart+4])), # year
             ##                     as.integer(buf[profileStart+5]),      # month
@@ -1622,6 +1465,13 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             ##                     as.integer(buf[profileStart+9])+0.01*as.integer(buf[profileStart+10]), # decimal second
             ##                     tz=tz)
             time <- as.POSIXct(ldc$time + 0.01 * as.numeric(ldc$sec100), origin="1970-01-01")
+            oceDebug(debug, "length(time)=", length(time), "\n")
+            if (length(time) > length(profileStart)) {
+                warning("length(time)=", length(time), " exceeds length(profileStart)=", length(profileStart), " so trimming time\n")
+                message("length(time)=", length(time), " exceeds length(profileStart)=", length(profileStart), " so trimming time")
+                time <- time[seq_len(length(profileStart))]
+            }
+            oceDebug(debug, "length(time)=", length(time), " after possible shortening to match length(profileStart)\n")
 
             ## Identify "junk" profiles by NA times
             junkProfiles <- which(is.na(time))
@@ -1647,6 +1497,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
 
             profileStart2 <- sort(c(profileStart, profileStart + 1)) # lets us index two-byte chunks
             profileStart4 <- sort(c(profileStart, profileStart + 1, profileStart + 2, profileStart + 3)) # lets us index four-byte chunks
+            oceDebug(debug, "length(profileStart)=", length(profileStart), " after checking for bad profiles)\n")
+
 
             ## cat("profileStart=", paste(profileStart, collapse=" "), "\n")
             ## cat("profileStart2=", paste(profileStart2, collapse=" "), "\n")
@@ -1697,6 +1549,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             res <- new('adp')
             for (name in names(header))
                 res@metadata[[name]] <- header[[name]]
+            res@metadata$orientation <- orientation # overrides a single value fromd decodeHeader()
+            res@metadata$ensembleNumber <- ensembleNumber
             res@metadata$manufacturer <- "rdi"
             res@metadata$instrumentType <- "adcp"
             res@metadata$filename <- filename

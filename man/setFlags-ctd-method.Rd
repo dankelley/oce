@@ -15,7 +15,7 @@
 this variable is not contained in the object's \code{data} slot, an error is reported.}
 
 \item{i}{Indication of where to insert the flags; see \dQuote{Description} for
-general rules and \dQuote{Details} for rules for \code{\link{ctd-class}}
+general rules and \dQuote{Details} for rules for \linkS4class{ctd}
 objects.}
 
 \item{value}{The value to be inserted in the flag.}
@@ -53,8 +53,8 @@ of the data item), (b) a logical array that has dimension equal to
 that of the data item, or (c) a function that takes an \code{oce}
 object as its single input and returns such a data frame or array.
 }
-See \dQuote{Details} for the particular case of
-\code{\link{ctd-class}} objects.
+
+See \dQuote{Details} for the particular case of \linkS4class{ctd} objects.
 }
 \details{
 Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector (either logical as in Example 1 or integer as in Example 2), or a function taking a \code{ctd} object and returning such a vector (see \dQuote{Indexing rules}).
@@ -117,6 +117,7 @@ Other functions relating to data-quality flags: \code{\link{defaultFlags}},
   \code{\link{handleFlags,adp-method}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{handleFlags,oce-method}},
   \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}},
   \code{\link{initializeFlagScheme,ctd-method}},
@@ -131,7 +132,7 @@ Other functions relating to data-quality flags: \code{\link{defaultFlags}},
   \code{\link{setFlags,adp-method}},
   \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
 
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
@@ -153,4 +154,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }
 \concept{functions relating to data-quality flags}
-\concept{things related to \code{ctd} data}
+\concept{things related to ctd data}

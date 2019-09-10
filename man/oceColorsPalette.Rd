@@ -14,16 +14,12 @@ oceColorsPalette(n, which = 1)
 to use; see \dQuote{Details}.}
 }
 \description{
-Create a vector of colors
-}
-\details{
 The available schemes are:
 \itemize{
 \item \code{which=1} for a red-white-blue scheme.
 \item \code{which=2} for a red-yellow-blue scheme.
-\item \code{which=9.01}, \code{which="9A"} or \code{which="jet"}
-for \code{\link{oceColorsJet}(n)}.
-\item \code{which=9.02} or \code{which="9B"} for \code{\link{oceColors9B}(n)}.
+\item \code{which=9.01}, \code{which="9A"} or \code{which="jet"} for \code{\link{oceColorsJet}}\code{(n)}.
+\item \code{which=9.02} or \code{which="9B"} for \code{\link{oceColors9B}}\code{(n)}.
 }
 }
 \seealso{

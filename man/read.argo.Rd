@@ -19,29 +19,29 @@ better for normal calls by a user.)}
 \item{...}{additional arguments, passed to called routines.}
 }
 \value{
-An object of \code{\link{argo-class}}.
+An \linkS4class{argo} object.
 }
 \description{
 \code{read.argo} is used to read an Argo file, producing an object of type
 \code{argo}. The file must be in the ARGO-style NetCDF format described at
-in the Argo documentation [2,3].
+in the Argo documentation (see references 2 and 3).
 }
 \details{
 Items are inferred from the data file in a straightforward way, using
-\code{\link[ncdf4]{ncvar_get}}, converting from one-column matrices
+\code{\link[ncdf4:ncvar_get]{ncdf4::ncvar_get()}}, converting from one-column matrices
 to vectors, and trimming leading and trailing blank space in character
-values, using \code{\link{trimString}}.
+values, using \code{\link[=trimString]{trimString()}}.
 
 Items are renamed from the argo ('snake case') forms to oce ('camel
-case') forms with \code{\link{argoNames2oceNames}}. For example,
+case') forms with \code{\link[=argoNames2oceNames]{argoNames2oceNames()}}. For example,
 \code{FIRMWARE_VERSION} in the data file is renamed as
 \code{firmwareVersion} in the return value.
 Note that some files use upper-case for items, while other files
 use lower-case for the same things; \code{read.argo} attempts
 to ignore this variation.
 
-See the Argo documentation [2,3] for some details on what files contain.
-Many items listed in section 2.2.3 of [3] are read from the
+See the Argo documentation (see references 2 and 3) for some details on what files contain.
+Many items listed in section 2.2.3 of reference 3 are read from the
 file and stored in the \code{metadata} slot, with the exception of
 \code{longitude} and \code{latitude}, which are stored in the
 \code{data} slot, alongside hydrographic information.
@@ -56,12 +56,12 @@ named \code{Conventions} in the file.
 
 It is assumed that the profile data are as listed in the NetCDF variable
 called \code{STATION_PARAMETERS}. Each item can have variants, as
-described in Sections 2.3.4 of [3].
+described in Sections 2.3.4 of reference 3.
 For example, if \code{"PRES"} is found in \code{STATION_PARAMETERS},
 then \code{PRES} (pressure) data are sought in the file, along with
 \code{PRES_QC}, \code{PRES_ADJUSTED}, \code{PRES_ADJUSTED_QC}, and
 \code{PRES_ERROR}. The same pattern works for other profile data. The variables
-are stored with different names within the resultant \code{\link{argo-class}}
+are stored with different names within the resultant \linkS4class{argo}
 object, to match with \code{oce} conventions. Thus, \code{PRES} gets renamed
 \code{pressure}, while \code{PRES_ADJUSTED} gets renamed \code{pressureAdjusted},
 and \code{PRES_ERROR} gets renamed \code{pressureError}; all of these are
@@ -90,7 +90,7 @@ Other servers provide data on a per-float basis. A complicating
 factor is that these data tend to be categorized by "dac" (data
 archiving centre), which makes it difficult to find a particular
 float. For example,
-\url{http://www.usgodae.org/ftp/outgoing/argo/} is the top level of
+\url{https://www.usgodae.org/ftp/outgoing/argo/} is the top level of
 a such a repository. If the ID of a float is known but not the
 "dac", then a first step is to download the text file
 \url{http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
@@ -103,13 +103,13 @@ containing that token is
 \code{bodc/6900388/6900388_meta.nc,846,BO,20120225005617}, from
 which the dac is seen to be the British Oceanographic Data Centre
 (\code{bodc}). Armed with that information, visit
-\url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}
-and see a directory called `profiles` that contains a NetCDF
+\url{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}
+and see a directory called \code{profiles} that contains a NetCDF
 file for each profile the float made. These can be read with
 \code{read.argo}. It is also possible, and probably more common,
 to read a NetCDF file containing all the profiles together and for
 that purpose the file
-\url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}
+\url{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}
 should be downloaded and provided as the \code{file} argument to
 \code{read.argo}.  This can be automated as in Example 2,
 although readers are cautioned that URL structures tend to change
@@ -128,7 +128,7 @@ plot(d)
 
 ## Example 2: construct URL for download (brittle)
 id <- "6900388"
-url <- "http://www.usgodae.org/ftp/outgoing/argo"
+url <- "https://www.usgodae.org/ftp/outgoing/argo"
 if (!length(list.files(pattern="argo_index.txt")))
     download.file(paste(url, "ar_index_global_meta.txt", sep="/"), "argo_index.txt")
 index <- readLines("argo_index.txt")
@@ -146,22 +146,22 @@ summary(argo)
 
 }
 \references{
-1. \url{http://www.argo.ucsd.edu/}
-
-2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
+\enumerate{
+\item \url{http://www.argo.ucsd.edu/}
+\item Argo User's Manual Version 3.2, Dec 29th, 2015, available at
 \url{https://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
 (but note that this is a draft; newer versions may have
 replaced this by now).
-
-3. User's Manual (ar-um-02-01) 13 July 2010, available at
+\item User's Manual (ar-um-02-01) 13 July 2010, available at
 \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf},
 which is the main document describing argo data.
 }
+}
 \seealso{
-The documentation for \code{\link{argo-class}} explains the structure of argo
+The documentation for the \linkS4class{argo} class explains the structure of argo
 objects, and also outlines the other functions dealing with them.
 
-Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+Other things related to argo data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
   \code{\link{argo}}, \code{\link{as.argo}},
@@ -173,4 +173,4 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{argo} data}
+\concept{things related to argo data}

@@ -10,7 +10,7 @@ matchBytes(input, b1, ...)
 \item{input}{a vector of raw (byte) values.}
 
 \item{b1}{a vector of bytes to match (must be of length 2 or 3 at present;
-for 1-byte, use \code{\link{which}}).}
+for 1-byte, use \code{\link[=which]{which()}}).}
 
 \item{\dots}{additional bytes to match for (up to 2 permitted)}
 }
@@ -22,7 +22,6 @@ List of the indices of \code{input} that match the start of the
 Find spots in a raw vector that match a given byte sequence.
 }
 \examples{
-
 buf <- as.raw(c(0xa5, 0x11, 0xaa, 0xa5, 0x11, 0x00))
 match <- matchBytes(buf, 0xa5, 0x11)
 print(buf)

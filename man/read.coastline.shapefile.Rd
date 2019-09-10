@@ -11,7 +11,7 @@ read.coastline.shapefile(file, lonlim = c(-180, 180), latlim = c(-90,
 \item{file}{name of file containing coastline data (a file ending in \code{.shp})
 or a zipfile that contains such a file, with a corresponding name.
 The second scheme is useful for files downloaded from the NaturalEarth
-website [2].}
+website (see reference 2).}
 
 \item{lonlim, latlim}{numerical vectors specifying the
 west and east edges (and south and north edges) of a focus window.
@@ -29,10 +29,10 @@ the file.}
 better for normal calls by a user.)}
 }
 \value{
-An object of \code{\link{coastline-class}}
+x a \linkS4class{coastline} object.
 }
 \description{
-Read coastline data stored in the shapefile format [1].
+Read coastline data stored in the shapefile format (see reference 1).
 }
 \section{A hack for depth contours}{
  The following demonstrates that this
@@ -42,18 +42,17 @@ constructed, of which coastlines could be a subset.
 }
 
 \references{
-\itemize{
-\item 1. The ``shapefile'' format is described in \emph{ESRI Shapefile
-Technical Description}, March 1998, available at
+\enumerate{
+\item The ``shapefile'' format is described in
+\emph{ESRI Shapefile Technical Description}, March 1998, available at
 \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
-
-\item 2. The NaturalEarth website \url{https://www.naturalearthdata.com/downloads}
+\item The NaturalEarth website \url{https://www.naturalearthdata.com/downloads}
 provides coastline datasets in three resolutions, along with similar files
 lakes and rivers, for borders, etc. It is highly recommended.
 }
 }
 \seealso{
-Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+Other things related to coastline data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
   \code{\link{as.coastline}},
   \code{\link{coastline-class}},
@@ -68,4 +67,4 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
 \author{
 Dan Kelley
 }
-\concept{things related to \code{coastline} data}
+\concept{things related to coastline data}

@@ -374,6 +374,20 @@ test_that("times", {
           mt <- 7.362007209411687e5
           expect_equal(as.numeric(numberAsPOSIXct(mt, "matlab", tz="UTC")),
                        as.numeric(as.POSIXct("2015-08-24 17:18:09", tz="UTC")), tolerance=1)
+          ## Excel time. I created the test value by entering "Jul 1, 2019" into
+          ## excel, then copying to a new cell with "paste special" set to
+          ## "value".
+          expect_equal(numberAsPOSIXct(43647.0, "excel"), ISOdatetime(2019,07,01,0,0,0,tz="UTC"))
+          ## Now, check around the erroneous leap-day in 1900, for which oce
+          ## returns a time of NA, to tell the user that 1900 was not a leap
+          ## year (i.e. for consistency with what user would get by trying to
+          ## specify that date in ISOdatetime() or other functions).
+          expect_equal(numberAsPOSIXct(59, "excel"), ISOdatetime(1900,2,28,0,0,0,tz="UTC"))
+          expect_true(is.na(numberAsPOSIXct(60, "excel")))
+          expect_equal(numberAsPOSIXct(61, "excel"), ISOdatetime(1900,03,01,0,0,0,tz="UTC"))
+          expect_equal(numberAsPOSIXct(367, "excel"), ISOdatetime(1901,01,01,0,0,0,tz="UTC"))
+          expect_equal(numberAsPOSIXct(368, "excel"), ISOdatetime(1901,01,02,0,0,0,tz="UTC"))
+
           ## NCEP1 times; test value from
           ## http://coastwatch.pfeg.noaa.gov/erddap/convert/time.html?isoTime=2015-09-04T12%3A00%3A00Z&units=hours+since+1800-01-01
           expect_equal(as.numeric(numberAsPOSIXct(1890564, "ncep1")),

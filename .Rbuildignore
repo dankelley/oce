@@ -42,3 +42,6 @@ tests/testthat/valgrind_tests.*
 R/check_urls.R
 .lintr
 ^cran-comments\.md$
+^CRAN-RELEASE$
+^Rplot*.png$
+

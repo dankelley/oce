@@ -7,25 +7,26 @@
 tidemAstron(t)
 }
 \arguments{
-\item{t}{Either a time in \code{POSIXct} format (with \code{"UTC"} timezone),
+\item{t}{Either a time in \code{POSIXct} format (with \code{"UTC"} timezone,
+or else odd behaviours may result),
 or an integer. In the second case, it is converted to a time with
-\code{\link{numberAsPOSIXct}(t,tz="UTC")}.
-If \code{t} (It is \strong{very} important to use \code{tz="GMT"} in constructing \code{t}.)}
+\code{\link[=numberAsPOSIXct]{numberAsPOSIXct()}}, using \code{tz="UTC"}.}
 }
 \value{
-A \code{\link[base]{list}} containing items named
-\code{astro} and \code{ader} (see \code{T_TIDE} documentation).
+A \code{list} containing items named
+\code{astro} and \code{ader} (see the \code{T_TIDE} documentation).
 }
 \description{
-Do some astronomical calculations for \code{\link{tidem}}.  This function is based directly
-on \code{t_astron} in the \code{T_TIDE} Matlab package [1].
+Do some astronomical calculations for \code{\link[=tidem]{tidem()}}.  This function is based directly
+on \code{t_astron} in the \code{T_TIDE} Matlab package (see Pawlowicz et al.
+2002).
 }
 \examples{
 tidemAstron(as.POSIXct("2008-01-22 18:50:24"))
 
 }
 \references{
-1. Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002. Classical tidal
+Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
 harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 Computers and Geosciences, 28, 929-937.
 }

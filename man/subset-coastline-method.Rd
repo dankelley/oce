@@ -8,7 +8,7 @@
 \S4method{subset}{coastline}(x, subset, ...)
 }
 \arguments{
-\item{x}{A \code{coastline} object, i.e. one inheriting from \code{\link{coastline-class}}.}
+\item{x}{a \linkS4class{coastline} object.}
 
 \item{subset}{An expression indicating how to subset \code{x}. See \dQuote{Details}.}
 
@@ -25,7 +25,7 @@ A \code{coastline} object.
 \description{
 Subsets a coastline object according to limiting values for longitude
 and latitude. The \CRANpkg{raster} package must be installed for this
-to work, because it relies on the \code{\link[raster]{intersect}} function
+to work, because it relies on the \code{\link[raster:intersect]{raster::intersect()}} function
 from that package.
 }
 \details{
@@ -54,7 +54,7 @@ rect(-80, 30, -50, 60, bg="transparent", border="red")
 }
 }
 \seealso{
-Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+Other things related to coastline data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
   \code{\link{as.coastline}},
   \code{\link{coastline-class}},
@@ -66,7 +66,7 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{read.coastline.shapefile}},
   \code{\link{summary,coastline-method}}
 
-Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,adv-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,argo-method}},
@@ -85,5 +85,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that subset \code{oce} objects}
-\concept{things related to \code{coastline} data}
+\concept{functions that subset oce objects}
+\concept{things related to coastline data}

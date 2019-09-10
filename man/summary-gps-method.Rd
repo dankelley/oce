@@ -13,10 +13,10 @@
 \item{\dots}{further arguments passed to or from other methods.}
 }
 \description{
-Summarize a \code{gps} object, i.e. one inheriting from \code{\link{gps-class}}.
+Summarize a \linkS4class{gps} object.
 }
 \seealso{
-Other things related to \code{gps} data: \code{\link{[[,gps-method}},
+Other things related to gps data: \code{\link{[[,gps-method}},
   \code{\link{[[<-,gps-method}}, \code{\link{as.gps}},
   \code{\link{gps-class}}, \code{\link{plot,gps-method}},
   \code{\link{read.gps}}
@@ -24,4 +24,4 @@ Other things related to \code{gps} data: \code{\link{[[,gps-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{gps} data}
+\concept{things related to gps data}

@@ -17,7 +17,7 @@ mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg,
 something (an \code{oce} object, a list, or a data frame) from which both
 longitude and latitude may be inferred (in which case the \code{latitude}
 argument is ignored).  If \code{longitude} is missing, both it and
-\code{latitude} are taken from \code{\link{coastlineWorld}}.}
+\code{latitude} are taken from \code{\link[=coastlineWorld]{coastlineWorld()}}.}
 
 \item{latitude}{vector of latitudes of points to be plotted (ignored
 if the first argument contains both latitude and longitude).}
@@ -43,12 +43,11 @@ the grid drawing.  In the case of numerical values, \code{NA} can be used to
 turn off the grid in longitude or latitude.  Grids are set up based on
 examination of the scale used in middle 10 percent of the plot area, and for
 most projections this works quite well.  If not, one may set
-\code{grid=FALSE} and add a grid later with \code{\link{mapGrid}}.}
+\code{grid=FALSE} and add a grid later with \code{\link[=mapGrid]{mapGrid()}}.}
 
 \item{bg}{color of the background (ignored).}
 
-\item{fill}{\strong{(deprecated)} is a deprecated argument; see
-\link{oce-deprecated}.}
+\item{fill}{is a deprecated argument; see \link{oce-deprecated}.}
 
 \item{border}{color of coastlines and international borders (ignored unless
 \code{type="polygon"}.}
@@ -79,10 +78,10 @@ for some projections or scales.}
 \item{cex}{character expansion factor for plot symbols,
 used if \code{type='p'} or any other value that yields symbols.}
 
-\item{cex.axis}{axis-label expansion factor (see \code{\link{par}}).}
+\item{cex.axis}{axis-label expansion factor (see \code{\link[=par]{par()}}).}
 
 \item{mgp}{three-element numerical vector describing axis-label
-placement, passed to \code{\link{mapAxis}}.}
+placement, passed to \code{\link[=mapAxis]{mapAxis()}}.}
 
 \item{drawBox}{logical value indicating whether to draw a box around the plot.
 This is helpful for many projections at sub-global scale.}
@@ -95,7 +94,7 @@ extending from the poles, within which zones are not drawn.}
 
 \item{lonlabel, latlabel, sides}{Optional vectors of longitude and latitude
 to label on the indicated sides of plot, passed to
-\code{\link{plot,coastline-method}}.  Using these arguments permits reasonably
+\code{\link[=plot,coastline-method]{plot,coastline-method()}}.  Using these arguments permits reasonably
 simple customization.  If they are are not provided, reasonable defaults
 will be used.}
 
@@ -104,11 +103,11 @@ forms. First, it may be a character string in the "CRS" format that is
 used by the \CRANpkg{rgdal} package (and in much of modern computer-based
 cartography). For example, \code{projection="+proj=merc"} specifies a
 Mercator projection. The second format is the output from
-\code{\link[sp]{CRS}} in the \CRANpkg{sp} package, which is an object
+\code{\link[sp:CRS]{sp::CRS()}} in the \CRANpkg{sp} package, which is an object
 with a slot named \code{projarg} that gets used as a projection string.
 See \dQuote{Details}.}
 
-\item{tissot}{logical value indicating whether to use \code{\link{mapTissot}}
+\item{tissot}{logical value indicating whether to use \code{\link[=mapTissot]{mapTissot()}}
 to plot Tissot indicatrices, i.e. ellipses at grid intersection points, which
 indicate map distortion.}
 
@@ -139,13 +138,13 @@ information on the \code{projection} argument, projections are specified in
 the notation used by \code{project()} in the \CRANpkg{rgdal} package; see
 \dQuote{Available Projections} for a list of possibilities.
 
-Further details on map projections are provided by [1,11], an exhaustive
+Further details on map projections are provided by references 1 and 11, an exhaustive
 treatment that includes many illustrations, an overview of the history of the
 topic, and some notes on the strengths and weaknesses of the various
 formulations.  See especially pages 2 through 7, which define terms and
-provide recommendations.  Reference [2] is also useful, especially regarding
-datum shifts; [3] and [4] are less detailed and perhaps better for novices.
-See [8] for a gallery of projections.
+provide recommendations.  Reference 2 is also useful, especially regarding
+datum shifts; references 3 and 4 are less detailed and perhaps better for novices.
+See reference 8 for a gallery of projections.
 }
 \section{Available Projections}{
 
@@ -170,7 +169,6 @@ The allowed projections include those PROJ.4 projections provided by
 and
 \code{nzmg} overdraws \code{coastlineWorld}.
 
-
 The information in the table is reformatted from the output of the unix
 command \code{proj -lP}, where \code{proj} is provided by version 4.9.0 of
 the PROJ.4 system. Most of the arguments listed have default values. In
@@ -181,10 +179,10 @@ shifting the longitude can yield poor filling of coastlines.
 Further details of the projections and the controlling arguments are
 provided at several websites, because PROJ.4 has been incorporated into
 \CRANpkg{rgdal} and other R packages, plus many other software systems; a good
-starting point for learning is [6].
+starting point for learning is reference 6.
 
 See \dQuote{Examples} for suggested projections for some common
-applications, and [8] for a gallery indicating how to use every projection.
+applications, and reference 8 for a gallery indicating how to use every projection.
 
 \tabular{lll}{
 \strong{Projection}                       \tab \strong{Code}   \tab \strong{Arguments}\cr
@@ -249,11 +247,11 @@ Nell-Hammer                               \tab \code{nell_h}   \tab\cr
 Near-sided perspective                    \tab \code{nsper}    \tab \code{h}\cr
 New Zealand map grid                      \tab \code{nzmg}     \tab\cr
 General oblique transformation            \tab \code{ob_tran}  \tab \code{o_proj}, \code{o_lat_p}, \code{o_lon_p}, \code{o_alpha}, \code{o_lon_c}\cr
-                                          \tab                 \tab \code{o_lat_c}, \code{o_lon_1}, \code{o_lat_1}, \code{o_lon_2}, \code{o_lat_2}\cr
+\tab                 \tab \code{o_lat_c}, \code{o_lon_1}, \code{o_lat_1}, \code{o_lon_2}, \code{o_lat_2}\cr
 Oblique cylindrical equal area            \tab \code{ocea}     \tab \code{lat_1}, \code{lat_2}, \code{lon_1}, \code{lon_2}\cr
 Oblated equal area                        \tab \code{oea}      \tab \code{n}, \code{m}, \code{theta}\cr
 Oblique Mercator                          \tab \code{omerc}    \tab \code{alpha}, \code{gamma}, \code{no_off}, \code{lonc}, \code{lon_1},\cr
-                                          \tab                 \tab \code{lat_1}, \code{lon_2}, \code{lat_2}\cr
+\tab                 \tab \code{lat_1}, \code{lon_2}, \code{lat_2}\cr
 Orthographic                              \tab \code{ortho}    \tab - \cr
 Perspective conic                         \tab \code{pconic}   \tab \code{lat_1}, \code{lat_2}\cr
 Polyconic American                        \tab \code{poly}     \tab - \cr
@@ -356,7 +354,7 @@ those used in the examples.
 
 There are also systematic problems on i386/windows machines, owing to
 problems with \CRANpkg{rgdal} on such systems. This explains why
-\code{\link{example}("mapPlot")} does not try to create maps on such
+\code{\link{example}}\code{("mapPlot")} does not try to create maps on such
 machines. However, \CRANpkg{rgdal} is in continue development, so it
 is reasonable to hope that \code{oce} map projections may start working
 at some time. As of \CRANpkg{rgdal} version 1.4-3 (in March 2019),
@@ -367,27 +365,22 @@ machines.
 \section{Changes}{
 
 \itemize{
-
 \item 2019-03-20: the test code provided the \dQuote{Examples} section
 is disabled on i386/windows machines, on which the requisite
 \CRANpkg{rgdal} package continues to fail on common projections.
-
 \item 2017-11-19: \code{imw_p} removed, because it has problems doing
 inverse calculations.
 This is a also problem in the standalone PROJ.4 application version
 4.9.3, downloaded and built on OSX.
 See \url{https://github.com/dankelley/oce/issues/1319} for details.
-
 \item 2017-11-17: \code{lsat} removed, because it does not work in
 \CRANpkg{rgdal} or in the latest standalone PROJ.4 application.
 This is a also problem in the standalone PROJ.4 application version
 4.9.3, downloaded and built on OSX.
 See \url{https://github.com/dankelley/oce/issues/1337} for details.
-
 \item 2017-09-30: \code{lcca} removed, because its inverse was
 wildly inaccurate in a Pacific Antarctic-Alaska application
 (see \url{https://github.com/dankelley/oce/issues/1303}).
-
 }
 }
 
@@ -398,13 +391,13 @@ if (canProject) {
     data(coastlineWorld)
 
     # Example 1.
-    # Mollweide ([1] page 54) is an equal-area projection that works well
+    # Mollweide (referenc 1 page 54) is an equal-area projection that works well
     # for whole-globe views.
     mapPlot(coastlineWorld, projection="+proj=moll", col='gray')
     mtext("Mollweide", adj=1)
 
     # Example 2.
-    # Note that filling is not employed (\\code{col} is not
+    # Note that filling is not employed (`col` is not
     # given) when the prime meridian is shifted, because
     # this causes a problem with Antarctica
     cl180 <- coastlineCut(coastlineWorld, lon_0=-180)
@@ -415,7 +408,7 @@ if (canProject) {
     # Orthographic projections resemble a globe, making them attractive for
     # non-technical use, but they are neither conformal nor equal-area, so they
     # are somewhat limited for serious use on large scales.  See Section 20 of
-    # [1]. Note that filling is not employed because it causes a problem with
+    # reference 1. Note that filling is not employed because it causes a problem with
     # Antarctica.
     par(mar=c(3, 3, 1, 1))
     mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
@@ -423,7 +416,7 @@ if (canProject) {
 
     # Example 4.
     # The Lambert conformal conic projection is an equal-area projection
-    # recommended by [1], page 95, for regions of large east-west extent
+    # recommended by reference 1, page 95, for regions of large east-west extent
     # away from the equator, here illustrated for the USA and Canada.
     par(mar=c(3, 3, 1, 1))
     mapPlot(coastlineCut(coastlineWorld, -100),
@@ -432,7 +425,7 @@ if (canProject) {
     mtext("Lambert conformal", adj=1)
 
     # Example 5.
-    # The stereographic projection [1], page 120, is conformal, used
+    # The stereographic projection (reference 1, page 120) is conformal, used
     # below for an Arctic view with a Canadian focus.  Note the trick of going
     # past the pole: the second latitudelim value is 180 minus the first, and the
     # second longitudelim is 180 plus the first; this uses image points "over"
@@ -466,49 +459,45 @@ if (canProject) {
 }
 }
 \references{
-1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
+\enumerate{
+\item Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 Professional Paper: 1395 (available at
-\url{pubs.usgs.gov/pp/1395/report.pdf}).
-
-2. Natural Resources Canada
+\url{https://pubs.er.usgs.gov/publication/pp1395}).
+\item Natural Resources Canada
 \url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
-
-3. Wikipedia page \url{https://en.wikipedia.org/wiki/List_of_map_projections}
-
-4. Radical Cartography website
+\item Wikipedia page \url{https://en.wikipedia.org/wiki/List_of_map_projections}
+\item Radical Cartography website
 \code{http://www.radicalcartography.net/?projectionref} (This URL worked
 prior to Nov 16, 2016, but was found to fail on that date.)
-
-5. The \code{PROJ.4} website is \url{http://trac.osgeo.org/proj}, and it is
+\item The \code{PROJ.4} website is \url{http://trac.osgeo.org/proj}, and it is
 the place to start to learn about the code.
-
-6. \code{PROJ.4} projection details were once at
+\item \code{PROJ.4} projection details were once at
 \code{http://www.remotesensing.org/geotiff/proj_list/} but it was
 discovered on Dec 18, 2016, that this link no longer exists. Indeed, there
 seems to have been significant reorganization of websites related to this.
 The base website seems to be \url{https://trac.osgeo.org/geotiff/} and that
 lists only what is called an unofficial listing, on the wayback web-archiver server
 \url{http://web.archive.org/web/20160802172057/http://www.remotesensing.org/geotiff/proj_list/}
-
-7. A gallery of map plots is provided at
+\item A gallery of map plots is provided at
 \url{http://dankelley.github.io/r/2015/04/03/oce-proj.html}.
-
-8. A fascinating historical perspective is provided by Snyder, J. P.
+\item A fascinating historical perspective is provided by Snyder, J. P.
 (1993). Two thousand years of map projections. University of Chicago Press.
 }
+}
 \seealso{
-Points may be added to a map with \code{\link{mapPoints}}, lines with
-\code{\link{mapLines}}, text with \code{\link{mapText}}, polygons with
-\code{\link{mapPolygon}}, images with \code{\link{mapImage}}, and scale bars
-with \code{\link{mapScalebar}}.  Points on a map may be determined with mouse
-clicks using \code{\link{mapLocator}}.  Great circle paths can be calculated
-with \code{\link{geodGc}}.  See [8] for a demonstration of the available map
+Points may be added to a map with \code{\link[=mapPoints]{mapPoints()}}, lines with
+\code{\link[=mapLines]{mapLines()}}, text with \code{\link[=mapText]{mapText()}}, polygons with
+\code{\link[=mapPolygon]{mapPolygon()}}, images with \code{\link[=mapImage]{mapImage()}}, and scale bars
+with \code{\link[=mapScalebar]{mapScalebar()}}.  Points on a map may be determined with mouse
+clicks using \code{\link[=mapLocator]{mapLocator()}}.  Great circle paths can be calculated
+with \code{\link[=geodGc]{geodGc()}}.  See reference 8 for a demonstration of the available map
 projections (with graphs).
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
+Other functions related to maps: \code{\link{formatPosition}},
+  \code{\link{lonlat2map}}, \code{\link{lonlat2utm}},
+  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
+  \code{\link{mapAxis}}, \code{\link{mapContour}},
+  \code{\link{mapCoordinateSystem}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
   \code{\link{mapImage}}, \code{\link{mapLines}},
   \code{\link{mapLocator}},

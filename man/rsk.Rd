@@ -25,7 +25,7 @@ plot(as.ctd(rsk))
 \url{https://rbr-global.com/}
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
@@ -36,12 +36,12 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 
-Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
+Other things related to rsk data: \code{\link{[[,rsk-method}},
   \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
   \code{\link{plot,rsk-method}}, \code{\link{read.rsk}},
   \code{\link{rsk-class}}, \code{\link{rskPatm}},
   \code{\link{rskToc}}, \code{\link{subset,rsk-method}},
   \code{\link{summary,rsk-method}}
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{rsk} data}
+\concept{datasets provided with oce}
+\concept{things related to rsk data}

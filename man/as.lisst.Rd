@@ -25,17 +25,17 @@ timestamps do not indicate the timezone.}
 \item{latitude}{Latitude of observation.}
 }
 \value{
-An object of \code{\link{lisst-class}}.
+A \linkS4class{lisst} object.
 }
 \description{
 Coerce data into a lisst object
 If \code{data} contains fewer than 42 columns, an error is reported.  If it
 contains more than 42 columns, only the first 42 are used.  This is used by
-\code{\link{read.lisst}}, the documentation on which explains the meanings
+\code{\link[=read.lisst]{read.lisst()}}, the documentation on which explains the meanings
 of the columns.
 }
 \seealso{
-Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
+Other things related to lisst data: \code{\link{[[,lisst-method}},
   \code{\link{[[<-,lisst-method}},
   \code{\link{lisst-class}},
   \code{\link{plot,lisst-method}},
@@ -45,4 +45,4 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{lisst} data}
+\concept{things related to lisst data}

@@ -17,7 +17,7 @@ data were decimation by a factor of 100 to reduce the file size from about 1GB
 to under 100Kb.
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
@@ -27,7 +27,7 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 
-Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
+Other things related to landsat data: \code{\link{[[,landsat-method}},
   \code{\link{[[<-,landsat-method}},
   \code{\link{landsat-class}}, \code{\link{landsatAdd}},
   \code{\link{landsatTrim}},
@@ -35,5 +35,5 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
   \code{\link{read.landsat}},
   \code{\link{summary,landsat-method}}
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{landsat} data}
+\concept{datasets provided with oce}
+\concept{things related to landsat data}

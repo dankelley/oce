@@ -27,7 +27,7 @@ the y axis are drawn}
 a pre-existing plot.}
 
 \item{tformat}{time format; if not supplied, a reasonable choice will be
-made by \code{\link{oce.axis.POSIXct}}, which draws time axes.}
+made by \code{\link[=oce.axis.POSIXct]{oce.axis.POSIXct()}}, which draws time axes.}
 
 \item{drawTimeRange}{logical, only used if the \code{x} axis is a time.  If
 \code{TRUE}, then an indication of the time range of the data (not the axis)
@@ -41,13 +41,12 @@ the processing.}
 \item{\dots}{optional arguments passed to plotting functions.}
 }
 \description{
-This provides something analagous to \code{\link{contour}}, but with the
+This provides something analogous to \code{\link[=contour]{contour()}}, but with the
 ability to flip x and y.
 Setting \code{revy=TRUE} can be helpful if the \code{y} data represent
 pressure or depth below the surface.
 }
 \examples{
-
 library(oce)
 data(topoWorld)
 ## coastline now, and in last glacial maximum

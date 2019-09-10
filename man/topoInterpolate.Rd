@@ -13,8 +13,7 @@ topoInterpolate(longitude, latitude, topo)
 \item{latitude}{Vector of latitudes (in the same sign convention as used in
 \code{topo}).}
 
-\item{topo}{A \code{topo} object, i.e. inheriting from
-\code{\link{topo-class}}.}
+\item{topo}{A \linkS4class{topo} object.}
 }
 \value{
 Vector of heights giving the elevation of the earth above means sea
@@ -33,7 +32,7 @@ topoInterpolate(45, -57, topoWorld)
 
 }
 \seealso{
-Other things related to \code{topo} data: \code{\link{[[,topo-method}},
+Other things related to topo data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
   \code{\link{download.topo}},
   \code{\link{plot,topo-method}}, \code{\link{read.topo}},
@@ -44,4 +43,4 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{topo} data}
+\concept{things related to topo data}

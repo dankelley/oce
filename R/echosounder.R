@@ -7,10 +7,10 @@
 #' Class to Store Echosounder Data
 #'
 #' This class stores echosounder data. Echosounder objects may be
-#' read with \code{\link{read.echosounder}},
-#' summarized with \code{\link{summary,echosounder-method}},
-#' and plotted with \code{\link{plot,echosounder-method}}.
-#' The \code{\link{findBottom}}
+#' read with [read.echosounder()],
+#' summarized with [summary,echosounder-method()],
+#' and plotted with [plot,echosounder-method()].
+#' The [findBottom()]
 #' function infers the ocean bottom from tracing the strongest reflector from
 #' ping to ping.
 #'
@@ -28,69 +28,68 @@
 #'
 #' @details
 #'
-#' \itemize{
+#' * An infrequently updated record of the intrument position, in
+#' `timeSlow`, `longitudeSlow` and `latitudeSlow`.  These are
+#' used in plotting maps with [plot,echosounder-method()].
 #'
-#' \item An infrequently updated record of the intrument position, in
-#' \code{timeSlow}, \code{longitudeSlow} and \code{latitudeSlow}.  These are
-#' used in plotting maps with \code{\link{plot,echosounder-method}}.
-#'
-#' \item An interpolated record of the instrument position, in \code{time},
-#' \code{longitude}, and \code{latitude}.  Linear interpolation is used to
+#' * An interpolated record of the instrument position, in `time`,
+#' `longitude`, and `latitude`.  Linear interpolation is used to
 #' infer the longitude and latitude from the variables listed above.
 #'
-#' \item \code{depth}, vector of depths of echo samples (measured positive
+#' * `depth`, vector of depths of echo samples (measured positive
 #' downwards in the water column).  This is calculated from the inter-sample
-#' time interval and the sound speed provided as the \code{soundSpeed} argument
-#' to \code{\link{read.echosounder}}, so altering the value of the latter will
-#' alter the echosounder plots provided by \code{\link{plot,echosounder-method}}.
+#' time interval and the sound speed provided as the `soundSpeed` argument
+#' to [read.echosounder()], so altering the value of the latter will
+#' alter the echosounder plots provided by [plot,echosounder-method()].
 #'
-#' \item The echosounder signal amplitude \code{a}, a matrix whose number of
-#' rows matches the length of \code{time}, etc., and number of columns equal to
-#' the length of \code{depth}.  Thus, for example, \code{a[100,]} represents
+#' * The echosounder signal amplitude `a`, a matrix whose number of
+#' rows matches the length of `time`, etc., and number of columns equal to
+#' the length of `depth`.  Thus, for example, `a[100,]` represents
 #' the depth-dependent amplitude at the time of the 100th ping.
 #'
-#' \item A matrix named \code{b} exists for dual-beam and split-beam cases.
-#' For dual-beam data, this is the wide-beam data, whereas \code{a} is the
+#' * A matrix named `b` exists for dual-beam and split-beam cases.
+#' For dual-beam data, this is the wide-beam data, whereas `a` is the
 #' narrow-beam data.  For split-beam data, this is the x-angle data.
 #'
-#' \item A matrix named \code{c} exists for split-beam data, containing the
+#' * A matrix named `c` exists for split-beam data, containing the
 #' y-angle data.
 #'
-#' \item In addition to these matrices, ad-hoc calculated matrices named
-#' \code{Sv} and \code{TS} may be accessed as explained in the next section.
-#'
-#' }
+#' * In addition to these matrices, ad-hoc calculated matrices named
+#' `Sv` and `TS` may be accessed as explained in the next section.
 #'
 #' @name echosounder-class
+#'
 #' @docType class
 #'
 #' @author Dan Kelley
-#' @family things related to \code{echosounder} data
+#'
+#' @family things related to echosounder data
 setClass("echosounder", contains="oce")
 
 
-#' @title Echosounder Dataset
+#' Echosounder Dataset
 #'
-#' @description
 #' This is degraded subsample of measurements that were made with a Biosonics
 #' scientific echosounder, as part of the St Lawrence Internal Wave Experiment
 #' (SLEIWEX).
 #'
 #' @name echosounder
+#'
 #' @docType data
 #'
 #' @author Dan Kelley
+#'
 #' @source This file came from the SLEIWEX-2008 experiment, and was decimated
-#' using \code{\link{decimate}} with \code{by=c()}.
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{echosounder} data
+#' using [decimate()] with `by=c()`.
+#' @family datasets provided with oce
+#' @family things related to echosounder data
 NULL
 
 setMethod(f="initialize",
           signature="echosounder",
           definition=function(.Object, filename="") {
               .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'echosounder' object"
               return(.Object)
           })
@@ -98,17 +97,19 @@ setMethod(f="initialize",
 
 
 
-#' @title Summarize an Echosounder Object
+#' Summarize an Echosounder Object
 #'
-#' @description
-#' Summarizes some of the data in an \code{echosounder} object.
+#' Summarizes some of the data in an [echosounder-class] object.
 #'
-#' @param object an object of class \code{"echosounder"}, usually, a result of
-#' a call to \code{\link{read.echosounder}}, \code{\link{read.oce}}, or
-#' \code{\link{as.echosounder}}.
+#' @param object an object of class `"echosounder"`, usually, a result of
+#' a call to [read.echosounder()], [read.oce()], or
+#' [as.echosounder()].
+#'
 #' @param \dots further arguments passed to or from other methods.
+#'
 #' @author Dan Kelley
-#' @family things related to \code{echosounder} data
+#'
+#' @family things related to echosounder data
 setMethod(f="summary",
           signature="echosounder",
           definition=function(object, ...) {
@@ -136,13 +137,14 @@ setMethod(f="summary",
 
 
 #' Extract Something from an Echosounder Object
-#' @param x A \code{echosounder} object, i.e. one inheriting from \code{\link{echosounder-class}}.
+#'
+#' @param x an [echosounder-class] object.
 #'
 #' @templateVar class echosounder
 #'
-#' @section Details of the specialized \code{echosounder} method:
+#' @section Details of the specialized `echosounder` method:
 #'
-#' If \code{i} is the string \code{"Sv"}, the return value is calculated according to
+#' If `i` is the string `"Sv"`, the return value is calculated according to
 #' \preformatted{
 #' Sv <- 20*log10(a) -
 #'   (x@@metadata$sourceLevel+x@@metadata$receiverSensitivity+x@@metadata$transmitPower) +
@@ -152,7 +154,7 @@ setMethod(f="summary",
 #'   10*log10(soundSpeed*x@@metadata$pulseDuration/1e6*psi/2)
 #'}
 #'
-#' If \code{i} is the string \code{"TS"},
+#' If `i` is the string `"TS"`,
 #' \preformatted{
 #' TS <- 20*log10(a) -
 #'   (x@@metadata$sourceLevel+x@@metadata$receiverSensitivity+x@@metadata$transmitPower) +
@@ -161,9 +163,11 @@ setMethod(f="summary",
 #'   x@@metadata$correction
 #'}
 #'
-#' Otherwise, the generic \code{[[} is used.
+#' Otherwise, the generic `[[` is used.
+#'
 #' @template sub_subTemplate
-#' @family things related to \code{echosounder} data
+#'
+#' @family things related to echosounder data
 setMethod(f="[[",
           signature(x="echosounder", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -198,10 +202,13 @@ setMethod(f="[[",
               }
           })
 
-#' @title Replace Parts of an Echosounder Object
-#' @param x An \code{echosounder} object, i.e. inheriting from \code{\link{echosounder-class}}
+#' Replace Parts of an Echosounder Object
+#'
+#' @param x an [echosounder-class] object.
+#'
 #' @template sub_subsetTemplate
-#' @family things related to \code{echosounder} data
+#'
+#' @family things related to echosounder data
 setMethod(f="[[<-",
           signature(x="echosounder", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -209,19 +216,23 @@ setMethod(f="[[<-",
           })
 
 
-#' @title Subset an Echosounder Object
+#' Subset an Echosounder Object
 #'
-#' @description
-#' This function is somewhat analogous to \code{\link{subset.data.frame}}.
-#' Subsetting can be by \code{time} or \code{depth}, but these may not be
+#' This function is somewhat analogous to [subset.data.frame()].
+#' Subsetting can be by `time` or `depth`, but these may not be
 #' combined; use a sequence of calls to subset by both.
 #'
-#' @param x a \code{echosounder} object.
-#' @param subset a condition to be applied to the \code{data} portion of
-#' \code{x}.  See \sQuote{Details}.
+#' @param x an [echosounder-class] object.
+#'
+#' @param subset a condition to be applied to the `data` portion of
+#' `x`.  See \sQuote{Details}.
+#'
 #' @param \dots ignored.
-#' @return A new \code{echosounder} object.
+#'
+#' @return An [echosounder-class] object.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' library(oce)
 #' data(echosounder)
@@ -229,8 +240,8 @@ setMethod(f="[[<-",
 #' plot(subset(echosounder, depth < 10))
 #' plot(subset(echosounder, time < mean(range(echosounder[['time']]))))
 #'
-#' @family things related to \code{echosounder} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to echosounder data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="echosounder",
           definition=function(x, subset, ...) {
@@ -305,33 +316,46 @@ setMethod(f="subset",
 #'
 #' Coerces a dataset into a echosounder dataset.
 #'
-#' Creates an echosounder file.  The defaults for e.g.  \code{transmitPower}
-#' are taken from the \code{echosounder} dataset, and they are unlikely to make
+#' Creates an echosounder file.  The defaults for e.g.  `transmitPower`
+#' are taken from the `echosounder` dataset, and they are unlikely to make
 #' sense generally.
 #'
 #' @param time times of pings
+#'
 #' @param depth depths of samples within pings
+#'
 #' @param a matrix of amplitudes
+#'
 #' @param src optional string indicating data source
-#' @param sourceLevel source level, in dB (uPa at 1m), denoted \code{sl} in [1
-#' p15], where it is in units 0.1dB (uPa at 1m)
+#'
+#' @param sourceLevel source level, in dB (uPa at 1m), denoted `sl` in
+#' reference 1 p15, where it is in units 0.1dB (uPa at 1m)
+#'
 #' @param receiverSensitivity receiver sensivitity of the main element, in
-#' dB(counts/uPa), denoted \code{rs} in [1 p15], where it is in units of
+#' dB(counts/uPa), denoted `rs` in reference 1 p15, where it is in units of
 #' 0.1dB(counts/uPa)
+#'
 #' @param transmitPower transmit power reduction factor, in dB, denoted
-#' \code{tpow} in [1 p10], where it is in units 0.1 dB.
+#' `tpow` in reference 1 p10, where it is in units 0.1 dB.
+#'
 #' @param pulseDuration duration of transmitted pulse in us
-#' @param beamwidthX x-axis -3dB one-way beamwidth in deg, denoted \code{bwx}
-#' in [1 p16], where the unit is 0.2 deg
-#' @param beamwidthY y-axis -3dB one-way beamwidth in deg, denoted \code{bwx}
-#' in [1 p16], where the unit is 0.2 deg
-#' @param frequency transducer frequency in Hz, denoted \code{fq} in [1 p16]
+#'
+#' @param beamwidthX x-axis -3dB one-way beamwidth in deg, denoted `bwx`
+#' in reference 1 p16, where the unit is 0.2 deg
+#'
+#' @param beamwidthY y-axis -3dB one-way beamwidth in deg, denoted `bwx`
+#' in reference 1 p16, where the unit is 0.2 deg
+#'
+#' @param frequency transducer frequency in Hz, denoted `fq` in reference 1 p16
+#'
 #' @param correction user-defined calibration correction in dB, denoted
-#' \code{corr} in [1 p14], where the unit is 0.01dB.
-#' @return An object of \code{\link[base]{class}} \code{"echosounder"}; for
-#' details of this data type, see \code{\link{echosounder-class}}).
+#' `corr` in reference 1 p14, where the unit is 0.01dB.
+#'
+#' @return An [echosounder-class] object.
+#'
 #' @author Dan Kelley
-#' @family things related to \code{echosounder} data
+#'
+#' @family things related to echosounder data
 as.echosounder <- function(time, depth, a, src="",
                            sourceLevel=220,
                            receiverSensitivity=-55.4,
@@ -375,23 +399,28 @@ as.echosounder <- function(time, depth, a, src="",
 
 
 
-#' @title Find the Ocean Bottom in an Echosounder Object
+#' Find the Ocean Bottom in an Echosounder Object
 #'
-#' @description
 #' Finds the depth in a Biosonics echosounder file, by finding the strongest
 #' reflector and smoothing its trace.
 #'
-#' @param x an object of class \code{echosounder}
-#' @param ignore number of metres of data to ignore, near the surface
-#' @param clean a function to clean the inferred depth of spikes
-#' @return A list with elements: the \code{time} of a ping, the \code{depth} of
-#' the inferred depth in metres, and the \code{index} of the inferred bottom
-#' location, referenced to the object's \code{depth} vector.
+#' @param x an [echosounder-class] object.
+#'
+#' @param ignore number of metres of data to ignore, near the surface.
+#'
+#' @param clean a function to clean the inferred depth of spikes.
+#'
+#' @return A list with elements: the `time` of a ping, the `depth` of
+#' the inferred depth in metres, and the `index` of the inferred bottom
+#' location, referenced to the object's `depth` vector.
+#'
 #' @author Dan Kelley
-#' @seealso The documentation for \code{\link{echosounder-class}} explains the
-#' structure of \code{echosounder} objects, and also outlines the other
+#'
+#' @seealso The documentation for [echosounder-class] explains the
+#' structure of `echosounder` objects, and also outlines the other
 #' functions dealing with them.
-#' @family things related to \code{echosounder} data
+#'
+#' @family things related to echosounder data
 findBottom <- function(x, ignore=5, clean=despike)
 {
     a <- x[["a"]]
@@ -402,82 +431,106 @@ findBottom <- function(x, ignore=5, clean=despike)
 }
 
 
-#' @title Plot Echosounder Data
+#' Plot Echosounder Data
 #'
-#' @description
 #' Plot echosounder data.
-#' Simple linear approximation is used when a \code{newx} value is specified
-#' with the \code{which=2} method, but arguably a gridding method should be
+#' Simple linear approximation is used when a `newx` value is specified
+#' with the `which=2` method, but arguably a gridding method should be
 #' used, and this may be added in the future.
 #'
-#' @param x An \code{echosounder} object, e.g. as read by
-#' \code{\link{read.echosounder}}, or created by \code{\link{as.echosounder}}.
-#' @param which list of desired plot types: \code{which=1} or \code{which="zt
-#' image"} gives a z-time image, \code{which=2} or \code{which="zx image"}
-#' gives a z-distance image, and \code{which=3} or \code{which="map"} gives a
+#' @param x an [echosounder-class] object.
+#'
+#' @param which list of desired plot types: `which=1` or \code{which="zt
+#' image"} gives a z-time image, `which=2` or `which="zx image"`
+#' gives a z-distance image, and `which=3` or `which="map"` gives a
 #' map showing the cruise track.  In the image plots, the display is of
-#' \code{\link{log10}} of amplitude, trimmed to zero for any amplitude values
+#' [log10()] of amplitude, trimmed to zero for any amplitude values
 #' less than 1 (including missing values, which equal 0).  Add 10 to the
 #' numeric codes to get the secondary data (non-existent for single-beam files,
+#'
 #' @param beam a more detailed specification of the data to be plotted.  For
-#' single-beam data, this may only be \code{"a"}.  For dual-beam data, this may
-#' be \code{"a"} for the narrow-beam signal, or \code{"b"} for the wide-beam
-#' signal.  For split-beam data, this may be \code{"a"} for amplitude,
-#' \code{"b"} for x-angle data, or \code{"c"} for y-angle data.
+#' single-beam data, this may only be `"a"`.  For dual-beam data, this may
+#' be `"a"` for the narrow-beam signal, or `"b"` for the wide-beam
+#' signal.  For split-beam data, this may be `"a"` for amplitude,
+#' `"b"` for x-angle data, or `"c"` for y-angle data.
+#'
 #' @param newx optional vector of values to appear on the horizontal axis if
-#' \code{which=1}, instead of time.  This must be of the same length as the
-#' time vector, because the image is remapped from time to \code{newx} using
-#' \code{\link{approx}}.
+#' `which=1`, instead of time.  This must be of the same length as the
+#' time vector, because the image is remapped from time to `newx` using
+#' [approx()].
+#'
 #' @param xlab,ylab optional labels for the horizontal and vertical axes; if
-#' not provided, the labels depend on the value of \code{which}.
+#' not provided, the labels depend on the value of `which`.
+#'
 #' @param xlim optional range for x axis.
+#'
 #' @param ylim optional range for y axis.
+#'
 #' @param zlim optional range for color scale.
-#' @param type type of graph, \code{"l"} for line, \code{"p"} for points, or
-#' \code{"b"} for both.
+#'
+#' @param type type of graph, `"l"` for line, `"p"` for points, or
+#' `"b"` for both.
+#'
 #' @param col color scale for image, a function
-#' @param lwd line width (ignored if \code{type="p"})
+#'
+#' @param lwd line width (ignored if `type="p"`)
+#'
 #' @param atTop optional vector of time values, for labels at the top of the
-#' plot produced with \code{which=2}.  If \code{labelsTop} is provided, then it
-#' will hold the labels.  If \code{labelsTop} is not provided, the labels will
-#' be constructed with the \code{\link{format}} function, and these may be
-#' customized by supplying a \code{format} in the \dots{} arguments.
+#' plot produced with `which=2`.  If `labelsTop` is provided, then it
+#' will hold the labels.  If `labelsTop` is not provided, the labels will
+#' be constructed with the [format()] function, and these may be
+#' customized by supplying a `format` in the `...` arguments.
+#'
 #' @param labelsTop optional vector of character strings to be plotted above
-#' the \code{atTop} times.  Ignored unless \code{atTop} was provided.
-#' @param tformat optional argument passed to \code{\link{imagep}}, for plot
-#' types that call that function.  (See \code{\link{strptime}} for the format
+#' the `atTop` times.  Ignored unless `atTop` was provided.
+#'
+#' @param tformat optional argument passed to [imagep()], for plot
+#' types that call that function.  (See [strptime()] for the format
 #' used.)
-#' @param despike remove vertical banding by using \code{\link{smooth}} to
+#'
+#' @param despike remove vertical banding by using [smooth()] to
 #' smooth across image columns, row by row.
-#' @param drawBottom optional flag used for section images.  If \code{TRUE},
+#'
+#' @param drawBottom optional flag used for section images.  If `TRUE`,
 #' then the bottom is inferred as a smoothed version of the ridge of highest
 #' image value, and data below that are grayed out after the image is drawn.
-#' If \code{drawBottom} is a color, then that color is used, instead of
-#' white.  The bottom is detected with \code{\link{findBottom}}, using the
-#' \code{ignore} value described next.
+#' If `drawBottom` is a color, then that color is used, instead of
+#' white.  The bottom is detected with [findBottom()], using the
+#' `ignore` value described next.
+#'
 #' @param ignore optional flag specifying the thickness in metres of a surface
 #' region to be ignored during the bottom-detection process.  This is ignored
-#' unless \code{drawBottom=TRUE}.
-#' @param drawTimeRange if \code{TRUE}, the time range will be drawn at the
-#' top.  Ignored except for \code{which=2}, i.e. distance-depth plots.
-#' @param drawPalette if \code{TRUE}, the palette will be drawn.
-#' @param radius radius to use for maps; ignored unless \code{which=3} or
-#' \code{which="map"}.
-#' @param coastline coastline to use for maps; ignored unless \code{which=3} or
-#' \code{which="map"}.
+#' unless `drawBottom=TRUE`.
 #'
-#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
-#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' @param drawTimeRange if `TRUE`, the time range will be drawn at the
+#' top.  Ignored except for `which=2`, i.e. distance-depth plots.
+#'
+#' @param drawPalette if `TRUE`, the palette will be drawn.
+#'
+#' @param radius radius to use for maps; ignored unless `which=3` or
+#' `which="map"`.
+#'
+#' @param coastline coastline to use for maps; ignored unless `which=3` or
+#' `which="map"`.
+#'
+#' @param mgp 3-element numerical vector to use for [`par`]`("mgp")`, and also
+#' for [`par`]`("mar")`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
-#' @param mar value to be used with \code{\link{par}("mar")}.
+#'
+#' @param mar value to be used with [`par`]`("mar")`.
+#'
 #' @param debug set to an integer exceeding zero, to get debugging information
 #' during processing.
+#'
 #' @param \dots optional arguments passed to plotting functions.  For example,
 #' for maps, it is possible to specify the radius of the view in kilometres,
-#' with \code{radius}.
-#' @return A list is silently returned, containing \code{xat} and \code{yat},
-#' values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
+#' with `radius`.
+#'
+#' @return A list is silently returned, containing `xat` and `yat`,
+#' values that can be used by [oce.grid()] to add a grid to the plot.
+#'
 #' @author Dan Kelley, with extensive help from Clark Richards
+#'
 #' @examples
 #'
 #'\donttest{
@@ -485,7 +538,7 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' data(echosounder)
 #' plot(echosounder, which=c(1,2), drawBottom=TRUE)
 #'}
-#' @family things related to \code{echosounder} data
+#' @family things related to echosounder data
 #' @aliases plot.echosounder
 setMethod(f="plot",
           signature=signature("echosounder"),
@@ -702,30 +755,33 @@ setMethod(f="plot",
           })
 
 
-#' @title Read an Echosounder File
+#' Read an Echosounder File
 #'
-#' @description
 #' Reads a biosonics echosounder file.  This function was written for and
 #' tested with single-beam, dual-beam, and split-beam Biosonics files of type
 #' V3, and may not work properly with other file formats.
 #'
 #' @param file a connection or a character string giving the name of the file
 #' to load.
+#'
 #' @param channel sequence number of channel to extract, for multi-channel
 #' files.
+#'
 #' @param soundSpeed sound speed, in m/s. If not provided, this is calculated
-#' using \code{\link{swSoundSpeed}(35, 15, 30, eos="unesco")}.  (In theory,
+#' using [`swSoundSpeed`]`(35,15,30,eos="unesco")`.  (In theory,
 #' it could be calculated using the temperature and salinity that are stored
 #' in the data file, but these will just be nominal values, anyway.
+#'
 #' @param tz character string indicating time zone to be assumed in the data.
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
+#'
 #' @param processingLog if provided, the action item to be stored in the log,
 #' typically only provided for internal calls.
-#' @return An object of \code{\link[base]{class}} \code{"echosounder"} with
-#' standard slots \code{metadata}, \code{data} and \code{processingLog} that
-#' are described in the documentation for the object
-#' \code{\link{echosounder-class}}.
+#'
+#' @return An [echosounder-class] object.
+#'
 #' @section Bugs: Only the amplitude information (in counts) is determined.  A
 #' future version of this function may provide conversion to dB, etc.  The
 #' handling of dual-beam and split-beam files is limited.  In the dual-beam
@@ -733,24 +789,29 @@ setMethod(f="plot",
 #' narrow beam, actually, given the confusing endian tricks being played).  In
 #' the split-beam case, only amplitude is read, with the x-axis and y-axis
 #' angle data being ignored.
+#'
 #' @author Dan Kelley, with help from Clark Richards
-#' @seealso The documentation for \code{\link{echosounder-class}} explains the
-#' structure of \code{ctd} objects, and also outlines the other functions
+#'
+#' @seealso The documentation for [echosounder-class] explains the
+#' structure of `ctd` objects, and also outlines the other functions
 #' dealing with them.
+#'
 #' @references Various echosounder instruments provided by BioSonics are
 #' described at the company website, \url{https://www.biosonicsinc.com/}.  The
-#' document listed as [1] below was provided to the author of this function in
+#' document listed as reference 1 below was provided to the author of this function in
 #' November 2011, which suggests that the data format was not changed since
 #' July 2010.
 #'
-#' [1] Biosonics, 2010.  DT4 Data File Format Specification.  BioSonics
+#' 1. Biosonics, 2010.  DT4 Data File Format Specification.  BioSonics
 #' Advanced Digital Hydroacoustics. July, 2010.  SOFTWARE AND ENGINEERING
 #' LIBRARY REPORT BS&E-2004-07-0009-2.0.
-#' @family things related to \code{echosounder} data
+#' @family things related to echosounder data
 read.echosounder <- function(file, channel=1, soundSpeed,
                              tz=getOption("oceTz"), debug=getOption("oceDebug"),
                              processingLog)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     oceDebug(debug, "read.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="", unindent=1)
     ##ofile <- file
     filename <- NULL
@@ -1130,6 +1191,6 @@ read.echosounder <- function(file, channel=1, soundSpeed,
     res@processingLog <- processingLogAppend(res@processingLog,
                                              paste("read.echosounder(\"", filename, "\", channel=", channel, ", soundSpeed=",
                                                    if (missing(soundSpeed)) "(missing)" else soundSpeed, ", tz=\"", tz, "\", debug=", debug, ", processingLog)", sep=""))
-    .C("biosonics_free_storage", package="oce") # clear temporary storage space
+    .C("biosonics_free_storage", PACKAGE="oce") # clear temporary storage space
     res
 }

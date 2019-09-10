@@ -45,8 +45,8 @@ be \code{"unknown"}, \code{"profile"}, \code{"towyo"}, or \code{"thermosalinogra
 If this is not set, the value defaults to \code{"unknown"}.}
 }
 \description{
-This function creates \code{oce} objects of \code{\link{ctd-class}}. It is mainly
-used by \code{oce} functions such as \code{\link{read.ctd}} and \code{\link{as.ctd}},
+This function creates \linkS4class{ctd} objects. It is mainly
+used by \code{oce} functions such as \code{\link[=read.ctd]{read.ctd()}} and \code{\link[=as.ctd]{as.ctd()}},
 and it is not intended for novice users, so it may change at any time, without
 following the usual rules for transitioning to deprecated and defunct status
 (see \link{oce-deprecated}).
@@ -56,11 +56,11 @@ To save storage, this function has arguments only for quantities that are often 
 files all cases. For example, not
 all data files will have oxygen, so that's not present here.
 Extra data may be added after the object is created, using
-\code{\link{oceSetData}}.
-Similarly, \code{\link{oceSetMetadata}} may be used to add metadata (station ID, etc),
+\code{\link[=oceSetData]{oceSetData()}}.
+Similarly, \code{\link[=oceSetMetadata]{oceSetMetadata()}} may be used to add metadata (station ID, etc),
 while bearing in mind that other functions look for such information
 in very particular places (e.g. the station ID is a string named \code{station}
-within the \code{metadata} slot). See \code{\link{ctd-class}} for more information
+within the \code{metadata} slot). See \linkS4class{ctd} for more information
 on elements stored in \code{ctd} objects.
 }
 \examples{
@@ -82,7 +82,7 @@ plot(ctd, eos="gsw")
 
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
@@ -103,4 +103,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }
-\concept{things related to \code{ctd} data}
+\concept{things related to ctd data}

@@ -6,7 +6,7 @@
 \title{Class to Store Satellite Data}
 \description{
 This class holds satellite data of various types, including
-\code{\link{amsr-class}} and \code{\link{g1sst-class}}.
+\linkS4class{amsr} and \linkS4class{g1sst}.
 }
 \seealso{
 Other things related to satellite data: \code{\link{g1sst-class}},

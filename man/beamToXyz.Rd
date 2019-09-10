@@ -7,14 +7,13 @@
 beamToXyz(x, ...)
 }
 \arguments{
-\item{x}{an \code{adp} or \code{adv} object, i.e. one inheriting from
-\code{\link{adp-class}} or \code{\link{adv-class}}.}
+\item{x}{an \linkS4class{adp} or \linkS4class{adv} object.}
 
-\item{\dots}{extra arguments that are passed on to \code{\link{beamToXyzAdp}}
-or \code{\link{beamToXyzAdv}}.}
+\item{\dots}{extra arguments that are passed on to \code{\link[=beamToXyzAdp]{beamToXyzAdp()}}
+or \code{\link[=beamToXyzAdv]{beamToXyzAdv()}}.}
 }
 \value{
-An object of the same type as \code{x}, but with velocities
+An object of the same class as \code{x}, but with velocities
 in xyz coordinates instead of beam coordinates.
 }
 \description{
@@ -22,7 +21,7 @@ Convert velocity data from an acoustic-Doppler velocimeter or
 acoustic-Doppler profiler from one coordinate system to another.
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -43,12 +42,13 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 
-Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+Other things related to adv data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
   \code{\link{adv}}, \code{\link{beamName}},
   \code{\link{enuToOtherAdv}}, \code{\link{enuToOther}},
@@ -66,5 +66,5 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{adp} data}
-\concept{things related to \code{adv} data}
+\concept{things related to adp data}
+\concept{things related to adv data}

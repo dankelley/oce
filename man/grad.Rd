@@ -53,6 +53,7 @@ v <-  (gprime / f) * grad$gx
 contour(x, y, u, asp=1, main=expression(u))
 contour(x, y, v, asp=1, main=expression(v))
 contour(x, y, sqrt(u^2+v^2), asp=1, main=expression(speed))
+
 }
 \seealso{
 Other functions relating to vector calculus: \code{\link{curl}}

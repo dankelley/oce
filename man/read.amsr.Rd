@@ -13,9 +13,8 @@ read.amsr(file, debug = getOption("oceDebug"))
 \item{debug}{A debugging flag, integer.}
 }
 \description{
-Read a compressed amsr file, generating an object that inherits from
-\code{\link{amsr-class}}.  Note that only compressed files are read in
-this version.
+Read a compressed amsr file, generating an \linkS4class{amsr} object.
+Note that only compressed files are read in this version.
 }
 \section{File sources}{
 
@@ -34,10 +33,10 @@ about inability to read a 6-chunk file, but
 }
 
 \seealso{
-\code{\link{plot,amsr-method}} for an example.
+\code{\link[=plot,amsr-method]{plot,amsr-method()}} for an example.
 
-Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
-  \code{\link{amsr-class}},
+Other things related to amsr data: \code{\link{[[,amsr-method}},
+  \code{\link{[[<-,amsr-method}}, \code{\link{amsr-class}},
   \code{\link{composite,amsr-method}},
   \code{\link{download.amsr}},
   \code{\link{plot,amsr-method}},
@@ -48,4 +47,4 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
 Dan Kelley and Chantelle Layton
 }
 \concept{satellite}
-\concept{things related to \code{amsr} data}
+\concept{things related to amsr data}

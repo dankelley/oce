@@ -8,7 +8,7 @@
 \S4method{subset}{lobo}(x, subset, ...)
 }
 \arguments{
-\item{x}{a \code{lobo} object.}
+\item{x}{a \linkS4class{lobo} object.}
 
 \item{subset}{a condition to be applied to the \code{data} portion of
 \code{x}.  See \sQuote{Details}.}
@@ -16,20 +16,20 @@
 \item{\dots}{ignored.}
 }
 \value{
-A new \code{lobo} object.
+A \linkS4class{lobo} object.
 }
 \description{
 Subset an lobo object, in a way that is somewhat
-analogous to \code{\link{subset.data.frame}}.
+analogous to \code{\link[=subset.data.frame]{subset.data.frame()}}.
 }
 \seealso{
-Other things related to code{lobo} data: \code{\link{[[,lobo-method}},
+Other things related to lobo data: \code{\link{[[,lobo-method}},
   \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},
   \code{\link{lobo-class}}, \code{\link{lobo}},
-  \code{\link{read.lobo}},
+  \code{\link{plot,lobo-method}}, \code{\link{read.lobo}},
   \code{\link{summary,lobo-method}}
 
-Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,adv-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,argo-method}},
@@ -48,5 +48,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that subset \code{oce} objects}
-\concept{things related to code{lobo} data}
+\concept{functions that subset oce objects}
+\concept{things related to lobo data}

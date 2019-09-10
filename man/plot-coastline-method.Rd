@@ -16,9 +16,7 @@
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{A \code{coastline} object, as read by \code{\link{read.coastline}}
-or created by \code{\link{as.coastline}}, or a list containing items named
-\code{longitude} and \code{latitude}.}
+\item{x}{a \linkS4class{coastline} object.}
 
 \item{xlab}{label for x axis}
 
@@ -56,12 +54,12 @@ required to fine-tune a plot.  A value for \code{span} must be supplied, if
 
 \item{lonlabel, latlabel, sides}{optional vectors of longitude and latitude to
 label on the indicated sides of plot, passed to
-\code{\link{plot,coastline-method}}.  Using these arguments permits reasonably
+\code{\link[=plot,coastline-method]{plot,coastline-method()}}.  Using these arguments permits reasonably
 simple customization.  If they are are not provided, reasonable defaults
 will be used.}
 
 \item{projection}{optional map projection to use (see
-the \code{\link{mapPlot}} argument of the same name).
+the \code{\link[=mapPlot]{mapPlot()}} argument of the same name).
 If set to \code{FALSE} then no projection is used,
 and the data are plotted in a cartesion frame, with aspect ratio set to
 reduce distortion near the middle of the plot.  This option is useful if the
@@ -71,18 +69,18 @@ is not set, a Mercator projection is used for latitudes below about 70
 degrees, as if \code{projection="+proj=merc"} had been supplied, or a
 Stereopolar one is used as if \code{projection="+proj=stere"}.  Otherwise,
 \code{projection} must be a character string identifying a projection
-accepted by \code{\link{mapPlot}}.}
+accepted by \code{\link[=mapPlot]{mapPlot()}}.}
 
 \item{expand}{numerical factor for the expansion of plot limits, showing
 area outside the plot, e.g. if showing a ship track as a coastline, and then
 an actual coastline to show the ocean boundary.  The value of \code{expand}
 is ignored if either \code{xlim} or \code{ylim} is given.}
 
-\item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also
+\item{mgp}{3-element numerical vector to use for \code{\link{par}}\code{("mgp")}, and also
 for \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{\link{par}("mar")}.}
+\item{mar}{value to be used with \code{\link{par}}\code{("mar")}.}
 
 \item{bg}{optional color to be used for the background of the map.  This
 comes in handy for drawing insets (see \dQuote{details}).}
@@ -110,10 +108,10 @@ plot.  Note that this retains the aspect ratio of that existing plot, so it
 is important to set that correctly, e.g. with \code{asp=1/cos(lat * pi /
 180)}, where \code{clat} is the central latitude of the plot.}
 
-\item{inset}{set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+\item{inset}{set to \code{TRUE} for use within \code{\link[=plotInset]{plotInset()}}.  The
 effect is to prevent the present function from adjusting margins, which is
 necessary because margin adjustment is the basis for the method used by
-\code{\link{plotInset}}.}
+\code{\link[=plotInset]{plotInset()}}.}
 
 \item{geographical}{flag indicating the style of axes.  If
 \code{geographical=0}, the axes are conventional, with decimal degrees as
@@ -149,13 +147,13 @@ as appropriate.
 }
 \details{
 If \code{longitudelim}, \code{latitudelim} and \code{projection} are all given,
-then these arguments are passed to \code{\link{mapPlot}} to produce the plot.
+then these arguments are passed to \code{\link[=mapPlot]{mapPlot()}} to produce the plot.
 (The call uses \code{bg} for \code{col}, and uses \code{col}, \code{fill}
 and \code{border} directly.) If the results need further customization,
-users should use \code{\link{mapPlot}} directly.
+users should use \code{\link[=mapPlot]{mapPlot()}} directly.
 
 If \code{projection} is provided without \code{longitudelim} or \code{latitudelim},
-then \code{\link{mapPlot}} is still called, but \code{longitudelim} and
+then \code{\link[=mapPlot]{mapPlot()}} is still called, but \code{longitudelim} and
 \code{latitudelim} are computed from \code{clongitude}, \code{clatitude} and \code{span}.
 
 If \code{projection} is not provided, much simpler plots are produced. These are
@@ -165,7 +163,7 @@ be said of true map projections, which can be problematic in various ways owing
 to difficulties in inverting projection calculations.
 
 To get an inset map inside another map, draw the first map, do
-\code{par(new=TRUE)}, and then call \code{plot,coastline-method} with a value of
+\code{\link{par}}\code{(new=TRUE)}, and then call \code{\link[=plot,coastline-method]{plot,coastline-method()}} with a value of
 \code{mar} that moves the inset plot to a desired location on the existing
 plot, and with \code{bg="white"}.
 }
@@ -193,11 +191,11 @@ plot(coastlineWorld, clongitude=-95, clatitude=65, span=5500,
 
 }
 \seealso{
-The documentation for \code{\link{coastline-class}} explains the
+The documentation for the \linkS4class{coastline} class explains the
 structure of coastline objects, and also outlines the other functions
 dealing with them.
 
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -221,7 +219,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+Other things related to coastline data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
   \code{\link{as.coastline}},
   \code{\link{coastline-class}},
@@ -236,5 +234,5 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{coastline} data}
+\concept{functions that plot oce data}
+\concept{things related to coastline data}

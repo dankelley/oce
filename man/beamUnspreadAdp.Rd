@@ -8,7 +8,7 @@ beamUnspreadAdp(x, count2db = c(0.45, 0.45, 0.45, 0.45),
   asMatrix = FALSE, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
+\item{x}{an \linkS4class{adp} object.}
 
 \item{count2db}{a set of coefficients, one per beam, to convert from beam
 echo intensity to decibels.}
@@ -26,7 +26,7 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"adp"}.
+An \linkS4class{adp} object.
 }
 \description{
 Compensate ADP signal strength for spherical spreading.
@@ -40,7 +40,6 @@ sensor head to the water from which scattering is occurring.  \eqn{r}{r} is
 given by \code{x[["distance"]]}.
 }
 \examples{
-
 library(oce)
 data(adp)
 plot(adp, which=5) # beam 1 echo intensity
@@ -63,7 +62,7 @@ communication.  The logarithmic term is explained in textbooks on acoustics,
 optics, etc.
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -84,6 +83,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},
@@ -92,4 +92,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

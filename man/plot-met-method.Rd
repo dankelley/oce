@@ -10,8 +10,7 @@
   debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \code{met} object, e.g. as read by \code{\link{read.met}}, or a
-list containing items named \code{salinity} and \code{temperature}.}
+\item{x}{a \linkS4class{met} object.}
 
 \item{which}{list of desired plot types.
 \itemize{
@@ -25,16 +24,14 @@ note that the values returned by \code{met[["direction"]]} must be multiplied by
 to get the direction plotted)
 }}
 
-\item{mgp}{A 3-element numerical vector used with \code{\link{par}("mgp")}
-to control the spacing of axis elements.
-The default is tighter than the R default.}
+\item{mgp}{A 3-element numerical vector used with \code{\link{par}}\code{("mgp")}
+to control the spacing of axis elements.  The default is tighter than the R default.}
 
-\item{mar}{A 4-element numerical vector used with \code{\link{par}("mar")}
-to control the plot margins.
-The default is tighter than the R default.}
+\item{mar}{A 4-element numerical vector used with \code{\link{par}}\code{("mar")}
+to control the plot margins. The default is tighter than the R default.}
 
-\item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
-plot types that call that function.  (See \code{\link{strptime}} for the
+\item{tformat}{optional argument passed to \code{\link[=oce.plot.ts]{oce.plot.ts()}}, for
+plot types that call that function.  (See \code{\link[=strptime]{strptime()}} for the
 format used.)}
 
 \item{debug}{an integer specifying whether debugging information is
@@ -78,7 +75,7 @@ abline(v=t0)
 
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -102,7 +99,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{met} data: \code{\link{[[,met-method}},
+Other things related to met data: \code{\link{[[,met-method}},
   \code{\link{[[<-,met-method}}, \code{\link{as.met}},
   \code{\link{download.met}}, \code{\link{met-class}},
   \code{\link{met}}, \code{\link{read.met}},
@@ -112,5 +109,5 @@ Other things related to \code{met} data: \code{\link{[[,met-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{met} data}
+\concept{functions that plot oce data}
+\concept{things related to met data}

@@ -7,7 +7,7 @@
 landsatAdd(x, data, name, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.}
+\item{x}{a \linkS4class{landsat} object.}
 
 \item{data}{A matrix of data, with dimensions matching that of entries already in \code{x}.}
 
@@ -19,20 +19,20 @@ from the present function.}
 information, or a higher value for more debugging.}
 }
 \value{
-An object of \code{\link{landsat-class}}, with a new data band.
+A \linkS4class{landsat} object, with a new data band.
 }
 \description{
-Add a band to an object of \code{\link{landsat-class}}. Note that
+Add a band to a \linkS4class{landsat} object. Note that
 it will be stored in numeric form, not raw form, and therefore
 it will require much more storage than data read with
-\code{\link{read.landsat}}.
+\code{\link[=read.landsat]{read.landsat()}}.
 }
 \seealso{
-The documentation for \code{\link{landsat-class}} explains the
+The documentation for the \linkS4class{landsat} class explains the
 structure of landsat objects, and also outlines the other functions dealing
 with them.
 
-Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
+Other things related to landsat data: \code{\link{[[,landsat-method}},
   \code{\link{[[<-,landsat-method}},
   \code{\link{landsat-class}}, \code{\link{landsatTrim}},
   \code{\link{landsat}}, \code{\link{plot,landsat-method}},
@@ -43,4 +43,4 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
 Dan Kelley
 }
 \concept{satellite}
-\concept{things related to \code{landsat} data}
+\concept{things related to landsat data}

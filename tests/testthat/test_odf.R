@@ -8,8 +8,8 @@ context("ODF")
 ## first few data entries modified. This tests the ability to handle
 ## a different code for each data type.
 test_that("ODF CTD file", {
-          expect_warning(d <- read.ctd.odf("CTD_BCD2014666_008_1_DN_altered.ODF.gz"),
-                         "\"CRAT_01\" should be unitless")
+          d <- expect_warning(read.ctd.odf("CTD_BCD2014666_008_1_DN_altered.ODF.gz"),
+                              "\"CRAT_01\" should be unitless")
           expect_equal(d[["temperatureUnit"]]$unit, expression(degree*C))
           expect_equal(d[["temperatureUnit"]]$scale, "IPTS-68")
           ## FIXME: following works manually but fails in Rstudio build
@@ -77,8 +77,8 @@ test_that("ODF CTD file", {
 })
 
 test_that("ODF CTD file (not as CTD)", {
-          expect_warning(d <- read.odf("CTD_BCD2014666_008_1_DN_altered.ODF.gz"),
-                         "\"CRAT_01\" should be unitless")
+          d <- expect_warning(read.odf("CTD_BCD2014666_008_1_DN_altered.ODF.gz"),
+                              "\"CRAT_01\" should be unitless")
           ## First, check as in the previous test.
           expect_equal( 1, which(is.na(d[["scan"]])))
           expect_equal( 2, which(is.na(d[["pressure"]])))
@@ -115,16 +115,15 @@ test_that("ODF CTD file (not as CTD)", {
 
 test_that("ODF header", {
           f <- system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce")
-          expect_warning(d <- read.odf(f),
-                         "\"CRAT_01\" should be unitless")
-          expect_null(d[["header"]])
-          expect_warning(d <- read.odf(f, header="character"),
-                         "\"CRAT_01\" should be unitless")
+          d <- expect_warning(read.odf(f), "\"CRAT_01\" should be unitless")
+          expect_true(is.list((d[["header"]])))
+          expect_equal(length(d[["header"]]), 32)
+
+          d <- expect_warning(read.odf(f, header="character"), "\"CRAT_01\" should be unitless")
           expect_true(is.vector(d[["header"]]))
           expect_equal(32, length(grep("^[A-Z].*,$", d[["header"]])))
           expect_true(is.character(d[["header"]]))
-          expect_warning(d <- read.odf(f, header="list"),
-                         "\"CRAT_01\" should be unitless")
+          d <- expect_warning(read.odf(f, header="list"), "\"CRAT_01\" should be unitless")
           expect_true(is.list(d[["header"]]))
           expect_equal(32, length(d[["header"]]))
           expect_true(is.list(d[["header"]][[1]]))

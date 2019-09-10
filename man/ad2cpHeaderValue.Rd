@@ -7,8 +7,7 @@
 ad2cpHeaderValue(x, key, item, numeric = TRUE, default)
 }
 \arguments{
-\item{x}{Adp object of the ad2cp variety, i.e. an object created
-by \code{\link{read.adp.ad2cp}}.}
+\item{x}{an \linkS4class{adp} object that holds AD2CP data.}
 
 \item{key}{Character value that identifies a particular line in \code{x[["text"]]}.}
 
@@ -47,7 +46,7 @@ frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ", default=NA)
 
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
@@ -68,9 +67,10 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

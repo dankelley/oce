@@ -11,10 +11,10 @@ oceColors9B(n)
 \item{n}{number of colors}
 }
 \description{
-The results are similar to those of \code{\link{oceColorsJet}}, but
+The results are similar to those of \code{\link[=oceColorsJet]{oceColorsJet()}}, but
 with white hues in the centre, rather than green ones. The scheme
 may be useful in displaying signed quantities, and thus is somewhat
-analogous to \code{\link{oceColorsTwo}}, except that they (average)
+analogous to \code{\link[=oceColorsTwo]{oceColorsTwo()}}, except that they (average)
 eye may be more able to distinguish colors with \code{oceColors9B}.
 }
 \examples{

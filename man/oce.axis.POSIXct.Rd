@@ -11,26 +11,26 @@ oce.axis.POSIXct(side, x, at, tformat, labels = TRUE, drawTimeRange,
   main = "", debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{side}{as for \code{\link{axis.POSIXct}}.}
+\item{side}{as for \code{\link[=axis.POSIXct]{axis.POSIXct()}}.}
 
-\item{x}{as for \code{\link{axis.POSIXct}}.}
+\item{x}{as for \code{\link[=axis.POSIXct]{axis.POSIXct()}}.}
 
-\item{at}{as for \code{\link{axis.POSIXct}}.}
+\item{at}{as for \code{\link[=axis.POSIXct]{axis.POSIXct()}}.}
 
-\item{tformat}{as \code{format} for \code{\link{axis.POSIXct}} for now, but
+\item{tformat}{as \code{format} for \code{\link[=axis.POSIXct]{axis.POSIXct()}} for now, but
 may eventually have new features for multiline labels, e.g. day on one line
 and month on another.}
 
-\item{labels}{as for \code{\link{axis.POSIXct}}.}
+\item{labels}{as for \code{\link[=axis.POSIXct]{axis.POSIXct()}}.}
 
 \item{drawTimeRange}{Optional indication of whether/how to draw the time range
 in the margin on the side of the the plot opposite the time axis. If this is
 not supplied, it defaults to the value returned by
-\code{\link{getOption}("oceDrawTimeRange")}, and if that option is not set,
+\code{\link{getOption}}\code{("oceDrawTimeRange")}, and if that option is not set,
 it defaults to \code{TRUE}. No time range is drawn if \code{drawTimeRange} is \code{FALSE}.
 If it is \code{TRUE}, the range will be shown. This range refers to
 range of the x axis (not the data). The format of the elements of that range is set by
-\code{\link{getOption}("oceTimeFormat")} (or with the default value
+\code{\link{getOption}}\code{("oceTimeFormat")} (or with the default value
 of an empty string, if this option has not been set). The timezone will
 be indicated if the time range is under a week.  For preliminary work, it makes
 sense to use \code{drawTimeRange=TRUE}, but for published work it can be better
@@ -58,13 +58,13 @@ in the data}
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
 
-\item{\dots}{as for \code{\link{axis.POSIXct}}.}
+\item{\dots}{as for \code{\link[=axis.POSIXct]{axis.POSIXct()}}.}
 }
 \value{
 A vector of times corresponding to axis ticks is returned silently.
 }
 \description{
-A specialized variant of \code{\link{axis.POSIXct}} that produces
+A specialized variant of \code{\link[=axis.POSIXct]{axis.POSIXct()}} that produces
 results with less ambiguity in axis labels.
 }
 \details{
@@ -75,25 +75,19 @@ both small tick marks are interspersed between large ones.
 
 The user may set the format of axis numbers with the \code{tformat} argument.
 If this is not supplied, the format is set based on the time span of the axis:
-
 \itemize{
-
 \item If this time span is less than a minute, the time axis labels are in
 seconds (fractional seconds, if the interval is less than 2 seconds), with
 leading zeros on small integers. (Fractional seconds are enabled with a trick:
-the usual R format \code{"\%S"} is supplemented with a new format e.g.
-\code{"\%.2S"}, meaning to use two digits after the decimal.)
-
+the usual R format \code{"\\\%S"} is supplemented with a new format e.g.
+\code{"\\\%.2S"}, meaning to use two digits after the decimal.)
 \item If the time span exceeds a minute but is less than 1.5 days, the label
-format is \code{"\%H:\%M:\%S"}.
-
+format is \code{"\\\%H:\\\%M:\\\%S"}.
 \item If the time span exceeds 1.5 days but is less than 1 year, the format is
-\code{"\%b \%d"} (e.g. Jul 15) and, again, the tick marks are set up for several
+\code{"\\\%b \\\%d"} (e.g. Jul 15) and, again, the tick marks are set up for several
 subcategories.
-
-\item If the time span exceeds a year, the format is \code{"\%Y"}, i.e. the year
+\item If the time span exceeds a year, the format is \code{"\\\%Y"}, i.e. the year
 is displayed with 4 digits.
-
 }
 
 It should be noted that this scheme differs from the R approach in several
@@ -106,7 +100,7 @@ Bear in mind that \code{tformat} may be set to alter the number format, but
 that the tick mark scheme cannot (presently) be controlled.
 }
 \seealso{
-This is used mainly by \code{\link{oce.plot.ts}}.
+This is used mainly by \code{\link[=oce.plot.ts]{oce.plot.ts()}}.
 }
 \author{
 Dan Kelley

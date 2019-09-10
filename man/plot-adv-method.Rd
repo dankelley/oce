@@ -16,7 +16,7 @@
   colBrush = "red", main = "", debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.}
+\item{x}{an \linkS4class{adv} object.}
 
 \item{which}{List of desired plot types.  These are graphed in panels running
 down from the top of the page.  See \dQuote{Details} for the meanings of
@@ -31,13 +31,13 @@ plot panels.  For images, these strings will be placed in the right hand side
 of the top margin.  For timeseries, these strings are ignored.  If this is
 provided, its length must equal that of \code{which}.}
 
-\item{type}{Type of plot, as for \code{\link{plot}}.}
+\item{type}{Type of plot, as for \code{\link[=plot]{plot()}}.}
 
 \item{lwd}{If the plot is of a time-series or scattergraph format with lines,
 this is used in the usual way; otherwise, e.g. for image formats, this is
 ignored.}
 
-\item{drawTimeRange}{Boolean that applies to panels with time as the horizontal
+\item{drawTimeRange}{Logical value that applies to panels with time as the horizontal
 axis, indicating whether to draw the time range in the top-left margin of the
 plot.}
 
@@ -45,8 +45,8 @@ plot.}
 velocities.}
 
 \item{useSmoothScatter}{Logical value indicating whether to use
-\code{\link{smoothScatter}} in various plots, such as \code{which="uv"}.  If
-not provided a default is used, with \code{\link{smoothScatter}} being used if
+\code{\link[=smoothScatter]{smoothScatter()}} in various plots, such as \code{which="uv"}.  If
+not provided a default is used, with \code{\link[=smoothScatter]{smoothScatter()}} being used if
 there are more than 2000 points to plot.}
 
 \item{mgp}{3-element numerical
@@ -54,21 +54,21 @@ vector to use for \code{par(mgp)}, and also for \code{par(mar)}, computed from
 this.  The default is tighter than the R default, in order to use more space
 for the data and less for the axes.}
 
-\item{mar}{Value to be used with \code{\link{par}("mar")}.}
+\item{mar}{Value to be used with \code{\link{par}}\code{("mar")}.}
 
-\item{tformat}{Optional argument passed to \code{\link{oce.plot.ts}}, for plot
-types that call that function.  (See \code{\link{strptime}} for the format
+\item{tformat}{Optional argument passed to \code{\link[=oce.plot.ts]{oce.plot.ts()}}, for plot
+types that call that function.  (See \code{\link[=strptime]{strptime()}} for the format
 used.)}
 
 \item{marginsAsImage}{Logical value indicating whether to put a wide margin to
 the right of time-series plots, matching the space used up by a palette in an
-\code{\link{imagep}} plot.}
+\code{\link[=imagep]{imagep()}} plot.}
 
-\item{cex}{Size of labels on axes; see \code{\link[graphics]{par}}("cex").}
+\item{cex}{Size of labels on axes; see \code{\link[=par]{par()}}.}
 
-\item{cex.axis}{See \code{\link[graphics]{par}}("cex.axis").}
+\item{cex.axis}{See \code{\link[=par]{par()}}.}
 
-\item{cex.main}{See \code{\link[graphics]{par}}("cex.main").}
+\item{cex.main}{See \code{\link[=par]{par()}}.}
 
 \item{xlim}{Optional 2-element list for \code{xlim}, or 2-column matrix, in
 which case the rows are used, in order, for the panels of the graph.}
@@ -94,86 +94,65 @@ of debugging information, or to 2 to get more.}
 \item{...}{Optional arguments passed to plotting functions.}
 }
 \description{
-Plot ADV data, i.e. stored in an \code{\link{adv-class}} object.
+Plot \linkS4class{adv} data.
 }
 \details{
 Creates a multi-panel summary plot of data measured by an ADV.
 The panels are controlled by the \code{which} argument.  (Note the
 gaps in the sequence, e.g. 4 and 8 are not used.)
-
 \itemize{
-    \item \code{which=1} to \code{3} (or \code{"u1"} to \code{"u3"})
-
-    yield timeseries of the first, second, and third components of
-    velocity (in beam, xyz or enu coordinates).
-
-    \item \code{which=4} is not permitted (since ADV are 3-beam devices)
-
-    \item \code{which=5} to \code{7} (or \code{"a1"} to \code{"a3"})
-    yield timeseries of the amplitudes of beams 1 to 3.  (Note that
-    the data are called \code{data$a[,1]}, \code{data$a[,2]} and
-    \code{data$a[,3]}, for these three timeseries.)
-
-    \item \code{which=8} is not permitted (since ADV are 3-beam devices)
-
-    \item \code{which=9} to \code{11} (or \code{"q1"} to \code{"q3"})
-    yield timeseries of correlation for beams 1 to 3.  (Note that the
-    data are called \code{data$c[,1]}, \code{data$c[,2]} and
-    \code{data$c[,3]}, for these three timeseries.)
-
-    \item \code{which=12} is not permitted (since ADVs are 3-beam devices)
-
-    \item \code{which=13} is not permitted (since ADVs do not measure salinity)
-
-    \item \code{which=14} or \code{which="temperature"} yields a timeseries of temperature.
-
-    \item \code{which=15} or \code{which="pressure"} yields a timeseries of pressure.
-
-    \item \code{which=16} or \code{which="heading"} yields a timeseries of heading.
-
-    \item \code{which=17} or \code{which="pitch"}yields a timeseries of pitch.
-
-    \item \code{which=18} or \code{which="roll"}yields a timeseries of roll.
-
-    \item \code{which=19} to \code{21} yields plots of correlation versus
-    amplitude, for beams 1 through 3, using \code{\link{smoothScatter}}.
-
-    \item \code{which=22} is not permitted (since ADVs are 3-beam devices)
-
-    \item \code{which=23} or \code{"progressive vector"} yields a
-    progressive-vector diagram in the horizontal plane, plotted with
-    \code{asp=1}, and taking beam1 and beam2 as the eastward and
-    northward components of velocity, respectively.
-
-    \item \code{which=28} or \code{"uv"} yields velocity plot in the
-    horizontal plane, i.e. u[2] versus u[1].  If the number of data
-    points is small, a scattergraph is used, but if it is large,
-    \code{\link{smoothScatter}} is used.
-
-    \item \code{which=29} or \code{"uv+ellipse"} as the \code{"uv"}
-    case, but with an added indication of the tidal ellipse,
-    calculated from the eigen vectors of the covariance matrix.
-
-    \item \code{which=30} or \code{"uv+ellipse+arrow"} as the
-    \code{"uv+ellipse"} case, but with an added arrow indicating the
-    mean current.
-
-    \item \code{which=50} or \code{"analog1"} plots a time series of the
-    analog1 signal, if there is one.
-
-    \item \code{which=51} or \code{"analog2"} plots a time series of the
-    analog2 signal, if there is one.
-
-    \item \code{which=100} or \code{"voltage"} plots the voltage as a
-    timeseries, if voltage exists in the dataset.
+\item \code{which=1} to \code{3} (or \code{"u1"} to \code{"u3"})
+yield timeseries of the first, second, and third components of
+velocity (in beam, xyz or enu coordinates).
+\item \code{which=4} is not permitted (since ADV are 3-beam devices)
+\item \code{which=5} to \code{7} (or \code{"a1"} to \code{"a3"})
+yield timeseries of the amplitudes of beams 1 to 3.  (Note that
+the data are called \code{data$a[,1]}, \code{data$a[,2]} and
+\code{data$a[,3]}, for these three timeseries.)
+\item \code{which=8} is not permitted (since ADV are 3-beam devices)
+\item \code{which=9} to \code{11} (or \code{"q1"} to \code{"q3"})
+yield timeseries of correlation for beams 1 to 3.  (Note that the
+data are called \code{data$c[,1]}, \code{data$c[,2]} and
+\code{data$c[,3]}, for these three timeseries.)
+\item \code{which=12} is not permitted (since ADVs are 3-beam devices)
+\item \code{which=13} is not permitted (since ADVs do not measure salinity)
+\item \code{which=14} or \code{which="temperature"} yields a timeseries of temperature.
+\item \code{which=15} or \code{which="pressure"} yields a timeseries of pressure.
+\item \code{which=16} or \code{which="heading"} yields a timeseries of heading.
+\item \code{which=17} or \code{which="pitch"}yields a timeseries of pitch.
+\item \code{which=18} or \code{which="roll"}yields a timeseries of roll.
+\item \code{which=19} to \code{21} yields plots of correlation versus
+amplitude, for beams 1 through 3, using \code{\link[=smoothScatter]{smoothScatter()}}.
+\item \code{which=22} is not permitted (since ADVs are 3-beam devices)
+\item \code{which=23} or \code{"progressive vector"} yields a
+progressive-vector diagram in the horizontal plane, plotted with
+\code{asp=1}, and taking beam1 and beam2 as the eastward and
+northward components of velocity, respectively.
+\item \code{which=28} or \code{"uv"} yields velocity plot in the
+horizontal plane, i.e. \code{u[2]} versus \code{u[1]}.  If the number of data
+points is small, a scattergraph is used, but if it is large,
+\code{\link[=smoothScatter]{smoothScatter()}} is used.
+\item \code{which=29} or \code{"uv+ellipse"} as the \code{"uv"}
+case, but with an added indication of the tidal ellipse,
+calculated from the eigen vectors of the covariance matrix.
+\item \code{which=30} or \code{"uv+ellipse+arrow"} as the
+\code{"uv+ellipse"} case, but with an added arrow indicating the
+mean current.
+\item \code{which=50} or \code{"analog1"} plots a time series of the
+analog1 signal, if there is one.
+\item \code{which=51} or \code{"analog2"} plots a time series of the
+analog2 signal, if there is one.
+\item \code{which=100} or \code{"voltage"} plots the voltage as a
+timeseries, if voltage exists in the dataset.
 }
+
 In addition to the above, there are some groupings defined:
 \itemize{
-    \item \code{which="velocity"} equivalent to \code{which=1:3} (three velocity components)
-    \item \code{which="amplitude"} equivalent to \code{which=5:7} (three amplitude components)
-    \item \code{which="backscatter"} equivalent to \code{which=9:11} (three backscatter components)
-    \item \code{which="hydrography"} equivalent to \code{which=14:15} (temperature and pressure)
-    \item \code{which="angles"} equivalent to \code{which=16:18} (heading, pitch and roll)
+\item \code{which="velocity"} equivalent to \code{which=1:3} (three velocity components)
+\item \code{which="amplitude"} equivalent to \code{which=5:7} (three amplitude components)
+\item \code{which="backscatter"} equivalent to \code{which=9:11} (three backscatter components)
+\item \code{which="hydrography"} equivalent to \code{which=14:15} (temperature and pressure)
+\item \code{which="angles"} equivalent to \code{which=16:18} (heading, pitch and roll)
 }
 }
 \examples{
@@ -183,10 +162,10 @@ plot(adv)
 
 }
 \seealso{
-The documentation for \code{\link{adv-class}} explains the structure
+The documentation for \linkS4class{adv} explains the structure
 of ADV objects, and also outlines the other functions dealing with them.
 
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
   \code{\link{plot,bremen-method}},
@@ -210,7 +189,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+Other things related to adv data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
   \code{\link{adv}}, \code{\link{beamName}},
   \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
@@ -227,5 +206,5 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{adv} data}
+\concept{functions that plot oce data}
+\concept{things related to adv data}

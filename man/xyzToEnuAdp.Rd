@@ -7,7 +7,7 @@
 xyzToEnuAdp(x, declination = 0, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
+\item{x}{an \linkS4class{adp} object.}
 
 \item{declination}{magnetic declination to be added to the heading after
 "righting" (see below), to get ENU with N as "true" north.}
@@ -32,12 +32,12 @@ on what is stored in the data, and so it depends greatly on instrument type
 and the style of original data format. This function handles data from
 RDI Teledyne, Sontek, and some Nortek instruments directly. However, Nortek
 data stored in in the AD2CP format are handled by the specialized
-function \code{\link{xyzToEnuAdpAD2CP}}, the documentation for which
+function \code{\link[=xyzToEnuAdpAD2CP]{xyzToEnuAdpAD2CP()}}, the documentation for which
 should be consulted, rather than the material given blow.
 }
 \details{
 The first step is to convert the (x,y,z) velocity components (stored in the
-three columns of \code{x[["v"]][,,1:3]}) into what RDI [1, pages 11 and 12]
+three columns of \code{x[["v"]][,,1:3]}) into what RDI (reference 1, pages 11 and 12)
 calls "ship" (or "righted") components.  For example, the z coordinate,
 which may point upwards or downwards depending on instrument orientation, is
 mapped onto a "mast" coordinate that points more nearly upwards than
@@ -49,7 +49,7 @@ object.  These angles are defined differently for RDI and Sontek profilers.
 
 The code handles every case individually, based on the table given below.
 The table comes from Clark Richards, a former PhD student at Dalhousie
-University [2], who developed it based on instrument documentation,
+University (reference 2), who developed it based on instrument documentation,
 discussion on user groups, and analysis of measurements acquired with RDI
 and Sontek acoustic current profilers in the SLEIWEX experiment.  In the
 table, (X, Y, Z) denote instrument-coordinate velocities, (S, F, M) denote
@@ -71,7 +71,7 @@ Sontek \tab PCADP \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr
 
 Finally, a standardized rotation matrix is used to convert from ship
 coordinates to earth coordinates.  As described in the RDI coordinate
-transformation manual [1, pages 13 and 14], this matrix is based on sines
+transformation manual (reference 1, pages 13 and 14), this matrix is based on sines
 and cosines of heading, pitch, and roll If \code{CH} and \code{SH} denote
 cosine and sine of heading (after adjusting for declination), with similar
 terms for pitch and roll using second letters \code{P} and \code{R}, the
@@ -87,14 +87,15 @@ bottom a vector of "mast" values.  Finally, the columns of
 multiplication.
 }
 \references{
-1. Teledyne RD Instruments. \dQuote{ADCP Coordinate Transformation: Formulas and Calculations,}
+\enumerate{
+\item Teledyne RD Instruments. \dQuote{ADCP Coordinate Transformation: Formulas and Calculations,}
 January 2010. P/N 951-6079-00.
-
-2. Clark Richards, 2012, PhD Dalhousie University Department of
+\item Clark Richards, 2012, PhD Dalhousie University Department of
 Oceanography.
 }
+}
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -116,6 +117,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}}, \code{\link{xyzToEnu}}
@@ -123,4 +125,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

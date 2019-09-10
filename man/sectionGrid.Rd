@@ -14,17 +14,17 @@ sectionGrid(section, p, method = "approx", trim = TRUE,
 should be done.  If this is not supplied, the pressure levels will be
 calculated based on the typical spacing in the ctd profiles stored within
 \code{section}.  If \code{p="levitus"}, then pressures will be set to be those
-of the Levitus atlas, given by \code{\link{standardDepths}}.
+of the Levitus atlas, given by \code{\link[=standardDepths]{standardDepths()}}.
 If \code{p} is a single numerical value,
-it is taken as the number of subdivisions to use in a call to \code{\link{seq}}
+it is taken as the number of subdivisions to use in a call to \code{\link[=seq]{seq()}}
 that has range from 0 to the maximum pressure in \code{section}.  Finally, if a
-vector numerical values is provided, perhaps. constructed with \code{\link{seq}}
-or \code{\link{standardDepths}(5)} (as in the examples),
+vector numerical values is provided, perhaps. constructed with \code{\link[=seq]{seq()}}
+or \code{\link{standardDepths}}\code{(5)} (as in the examples),
 then it is used as is, after trimming any values that exceed the maximum
 pressure in the station data stored within \code{section}.}
 
 \item{method}{The method to use to decimate data within the stations; see
-\code{\link{ctdDecimate}}, which is used for the decimation.}
+\code{\link[=ctdDecimate]{ctdDecimate()}}, which is used for the decimation.}
 
 \item{trim}{Logical value indicating whether to trim gridded pressures
 to the range of the data in \code{section}.}
@@ -37,18 +37,18 @@ be printed. If one function calls another, it usually reduces the value of
 \code{debug} first, so that a user can often obtain deeper debugging
 by specifying higher \code{debug} values.}
 
-\item{...}{Optional arguments to be supplied to \code{\link{ctdDecimate}},
+\item{...}{Optional arguments to be supplied to \code{\link[=ctdDecimate]{ctdDecimate()}},
 e.g. \code{rule} controls extrapolation beyond the observed pressure range,
 in the case where \code{method} equals \code{"approx"}.}
 }
 \value{
-An object of \code{\link{section-class}} that contains stations whose
+A \linkS4class{section} object that contains stations whose
 pressure values match identically, and that has all flags set to \code{NA}.
 }
 \description{
 Grid a section, by interpolating to fixed pressure levels.  The
 \code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are described in the
-documentation for \code{\link{ctdDecimate}}, which is used to do this
+documentation for \code{\link[=ctdDecimate]{ctdDecimate()}}, which is used to do this
 processing.
 }
 \details{
@@ -84,7 +84,7 @@ mtext("sectionGrid(..., p=standardDepths(5))")
 
 }
 \seealso{
-Other things related to \code{section} data: \code{\link{[[,section-method}},
+Other things related to section data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{handleFlags,section-method}},
@@ -100,4 +100,4 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{section} data}
+\concept{things related to section data}

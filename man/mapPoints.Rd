@@ -17,13 +17,10 @@ arguments are ignored.  This objects that are possible include those of type
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate amount
 of debugging information, or to 2 to get more.}
 
-\item{...}{Optional arguments passed to \code{\link{points}}.}
+\item{...}{Optional arguments passed to \code{\link[=points]{points()}}.}
 }
 \description{
-Plot points on an existing map.
-}
-\details{
-Adds points to an existing map, by analogy to \code{\link{points}}.
+Plot points on an existing map, by analogy to \code{\link[=points]{points()}}.
 }
 \examples{
 \donttest{
@@ -37,14 +34,15 @@ mapPoints(section)
 
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
+Other functions related to maps: \code{\link{formatPosition}},
+  \code{\link{lonlat2map}}, \code{\link{lonlat2utm}},
+  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
+  \code{\link{mapAxis}}, \code{\link{mapContour}},
+  \code{\link{mapCoordinateSystem}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
   \code{\link{mapImage}}, \code{\link{mapLines}},
   \code{\link{mapLocator}},

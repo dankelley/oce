@@ -4,21 +4,21 @@
 #'
 #' This class stores data from Argo floats.
 #'
-#' An \code{argo} object may be read with \code{\link{read.argo}} or
-#' created with \code{\link{as.argo}}.  Argo data can be gridded to constant
-#' pressures with \code{\link{argoGrid}} or subsetted with
-#' \code{\link{subset,argo-method}}.  Plots can be made with
-#' \code{\link{plot,argo-method}}, while \code{\link{summary,argo-method}}
-#' produces statistical summaries and \code{show} produces overviews.
+#' An `argo` object may be read with [read.argo()] or
+#' created with [as.argo()].  Argo data can be gridded to constant
+#' pressures with [argoGrid()] or subsetted with
+#' [subset,argo-method()].  Plots can be made with
+#' [plot,argo-method()], while [summary,argo-method()]
+#' produces statistical summaries and `show` produces overviews.
 #'
 #' See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some
 #' argo-related datasets that may be useful in a wider context.
 #'
 #' @templateVar class argo
 #'
-#' @templateVar dataExample The key items stored in this slot include  equal-length vectors \code{time}, \code{longitude}, \code{latitude} and equal-dimension matrices \code{pressure}, \code{salinity}, and \code{temperature}.
+#' @templateVar dataExample The key items stored in this slot include  equal-length vectors `time`, `longitude`, `latitude` and equal-dimension matrices `pressure`, `salinity`, and `temperature`.
 #'
-#' @templateVar metadataExample Examples that are of common interest include \code{id}, a vector of ID codes for the profiles, and \code{dataMode}, a vector of strings indicating whether the profile is in archived mode (\code{"A"}), realtime mode (\code{"R"}), or delayed mode (\code{"D"}).
+#' @templateVar metadataExample Examples that are of common interest include `id`, a vector of ID codes for the profiles, and `dataMode`, a vector of strings indicating whether the profile is in archived mode (`"A"`), realtime mode (`"R"`), or delayed mode (`"D"`).
 #'
 #' @template slot_summary
 #'
@@ -28,8 +28,8 @@
 #'
 #' @author Dan Kelley and Clark Richards
 #'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{argo} data
+#' @family classes provided by oce
+#' @family things related to argo data
 setClass("argo", contains="oce")
 
 #' ARGO float dataset
@@ -65,65 +65,61 @@ setClass("argo", contains="oce")
 #' ftp ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc
 #'} issued on 2017 July 7.
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{argo} data
+#' @family datasets provided with oce
+#' @family things related to argo data
 NULL
 
 
-#' @title Extract Something From an Argo Object
-#' @param x An \code{argo} object, i.e. one inheriting from \code{\link{argo-class}}.
+#' Extract Something From an Argo Object
+#'
+#' @param x an [argo-class] object.
 #'
 #' @templateVar class argo
 #'
-#' @section Details of the specialized \code{argo} method:
+#' @section Details of the specialized `argo` method:
 #'
-#' There are several possibilities, depending on the nature of \code{i}.
+#' There are several possibilities, depending on the nature of `i`.
 #' Note that all of these calculations are done with
-#' \code{salinityAdjusted}, if that is present, or with \code{salinity}
+#' `salinityAdjusted`, if that is present, or with `salinity`
 #' otherwise, and similar for temperature and pressure.
 #'
-#'\itemize{
+#' * If `i` is `"profile"` and `j` is an integer vector,
+#' then an argo object is returned, as specified by `j`. For example,
+#' `argo[["profile", 2:5]]` is equivalent to
+#' `subset(argo, profile \%in\% 2:5)`.
 #'
-#' \item If \code{i} is \code{"profile"} and \code{j} is an integer vector,
-#' then an argo object is returned, as specified by \code{j}. For example,
-#' \code{argo[["profile", 2:5]]} is equivalent to
-#' \code{subset(argo, profile \%in\% 2:5)}.
-#'
-#' \item If \code{i} is \code{"CT"}, then
+#' * If `i` is `"CT"`, then
 #' Conservative Temperature is returned, as computed with
-#' \code{\link[gsw]{gsw_CT_from_t}(SA, t, p)}, where
-#' first \code{SA} is computed as explained
-#' in the next item, \code{t} is in-situ temperature,
-#' and \code{p} is pressure.
+#' [`gsw::gsw_CT_from_t`]`(SA,t,p)`, where
+#' first `SA` is computed as explained
+#' in the next item, `t` is in-situ temperature,
+#' and `p` is pressure.
 #'
-#' \item If \code{i} is \code{"N2"}, then
-#' the square of buoyancy is returned, as computed with
-#' \code{\link{swN2}}.
+#' * If `i` is `"N2"`, then the square of buoyancy is returned,
+#' as computed with [swN2()].
 #'
-#' \item If \code{i} is \code{"SA"}, then
+#' * If `i` is `"SA"`, then
 #' Absolute Salinity is returned, as computed with
-#' \code{\link[gsw]{gsw_SA_from_SP}}.
+#' [gsw::gsw_SA_from_SP()].
 #'
-#' \item If \code{i} is \code{"sigmaTheta"}, then
+#' * If `i` is `"sigmaTheta"`, then
 #' potential density anomaly (referenced to zero
-#' pressure) is computed, with \code{\link{swSigmaTheta}}, where the
+#' pressure) is computed, with [swSigmaTheta()], where the
 #' equation of state is taken to be
-#' \code{\link{getOption}("oceEOS", default="gsw")}.
+#' [`getOption`]`("oceEOS",default="gsw")`.
 #'
-#' \item If \code{i} is \code{"theta"}, then
+#' * If `i` is `"theta"`, then
 #' potential temperature (referenced to zero
-#' pressure) is computed, with \code{\link{swTheta}}, where the
+#' pressure) is computed, with [swTheta()], where the
 #' equation of state is taken to be
-#' \code{\link{getOption}("oceEOS", default="gsw")}.
+#' [`getOption`]`("oceEOS",default="gsw")`.
 #'
-#' \item If \code{i} is \code{"depth"}, then
+#' * If `i` is `"depth"`, then
 #' a matrix of depths is returned.
 #'
-#' \item If \code{i} is in the \code{data} slot of \code{x},
-#' then it is returned, otherwise if it is in the \code{metadata} slot,
-#' then that is returned, otherwise \code{NULL} is returned.
-#'
-#'}
+#' * If `i` is in the `data` slot of `x`,
+#' then it is returned, otherwise if it is in the `metadata` slot,
+#' then that is returned, otherwise `NULL` is returned.
 #'
 #' @template sub_subTemplate
 #'
@@ -136,7 +132,7 @@ NULL
 #' fivenum(argo[["salinity"]],na.rm=TRUE)
 #' fivenum(argo[["salinity"]][argo[["salinityFlag"]]==1],na.rm=TRUE)
 #'
-#' @family things related to \code{argo} data
+#' @family things related to argo data
 #' @author Dan Kelley
 setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
@@ -167,7 +163,7 @@ setMethod(f="[[",
                   if (i == "CT") {
                       res <- gsw_CT_from_t(x[["SA"]], temperature, pressure)
                   } else if (i == "N2") {
-                      nprofile <- dim[2]
+                      ##nprofile <- dim[2]
                       res <- array(NA_real_,  dim=dim)
                       for (i in seq_len(dim[2])) {
                           ##message("i=",i, ", nprofile=", nprofile)
@@ -227,10 +223,13 @@ setMethod(f="[[",
               res
           })
 
-#' @title Replace Parts of an Argo Object
-#' @param x An \code{argo} object, i.e. inheriting from \code{\link{argo-class}}
+#' Replace Parts of an Argo Object
+#'
+#' @param x an [argo-class] object.
+#'
 #' @template sub_subsetTemplate
-#' @family things related to \code{argo} data
+#'
+#' @family things related to argo data
 setMethod(f="[[<-",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -249,7 +248,7 @@ setMethod(f="initialize",
               if (!missing(pressure)) .Object@data$pressure <- pressure
               .Object@metadata$filename <- if (missing(filename)) "" else filename
               .Object@metadata$dataMode <- if (missing(dataMode)) "" else dataMode
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'argo' object"
               return(.Object)
           })
@@ -259,7 +258,13 @@ maybeLC <- function(s, lower)
 
 getData <- function(file, name) # a local function -- no need to pollute namesapce with it
 {
-    capture.output(res <- try(ncdf4::ncvar_get(file, name), silent=TRUE))
+    res <- NA
+    ## wrap in capture.output to silence what seems like direct printing to stdout()
+    ## or stderr() by ncvar_get().
+    capture.output(
+                   {
+                       res <- try(ncdf4::ncvar_get(file, name), silent=TRUE)
+                   })
     if (inherits(res, "try-error")) {
         warning(file$filename, " has no variable named '", name, "'\n", sep='')
         res <- NULL
@@ -269,92 +274,95 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 
 #' Convert Argo Data Name to Oce Name
 #'
-#' This function is used internally by \code{\link{read.argo}} to convert Argo-convention
+#' This function is used internally by [read.argo()] to convert Argo-convention
 #' data names to oce-convention names. Users should not call this directly, since
 #' its return value may be changed at any moment (e.g. to include units as well
 #' as names).
 #'
 #'
 #' The inference of names was done
-#' by inspection of some data files, using [1] as a reference. It should be noted,
+#' by inspection of some data files, based on reference 1. It should be noted,
 #' however, that the data files examined contain some names that are not
-#' undocumented in [1], and others that are listed only in its changelog,
+#' undocumented in reference 1, and others that are listed only in its changelog,
 #' with no actual definitions being given. For example, the files had six distinct
 #' variable names that seem to relate to phase in the oxygen sensor, but
 #' these are not translated by the present function because these
-#' variable names are not defined in [1], or not defined uniquely
-#' in [2].
+#' variable names are not defined in reference 1, or not defined uniquely
+#' in reference 2.
 #'
 #' The names are converted with
-#' \code{\link{gsub}}, using the \code{ignore.case} argument of the present
+#' [gsub()], using the `ignore.case` argument of the present
 #' function.
 #' The procedure
 #' is to first handle the items listed in the following table, with string
 #' searches anchored to the start of the string. After that,
 #' the qualifiers
-#' \code{_ADJUSTED}, \code{_ERROR} and \code{_QC},
-#' are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
+#' `_ADJUSTED`, `_ERROR` and `_QC`,
+#' are translated to `Adjusted`, `Error`, and `QC`, respectively.
+#'
 #' \tabular{ll}{
-#' \strong{Argo name} \tab \strong{oce name}\cr
-#' \code{BBP} \tab \code{bbp}\cr
-#' \code{BETA_BACKSCATTERING} \tab \code{betaBackscattering}\cr
-#' \code{BPHASE_OXY} \tab \code{bphaseOxygen}\cr
-#' \code{CDOM} \tab \code{CDOM}\cr
-#' \code{CNDC} \tab \code{conductivity}\cr
-#' \code{CHLA} \tab \code{chlorophyllA}\cr
-#' \code{CP} \tab \code{beamAttenuation}\cr
-#' \code{CYCLE_NUMBER} \tab \code{cycleNumber}\cr
-#' \code{DATA_CENTRE} \tab \code{dataCentre}\cr
-#' \code{DATA_MODE} \tab \code{dataMode}\cr
-#' \code{DATA_STATE_INDICATOR} \tab \code{dataStateIndicator}\cr
-#' \code{DC_REFERENCE} \tab \code{DCReference}\cr
-#' \code{DIRECTION} \tab \code{direction}\cr
-#' \code{DOWN_IRRADIANCE} \tab \code{downwellingIrradiance}\cr
-#' \code{DOWNWELLING_PAR} \tab \code{downwellingPAR}\cr
-#' \code{FIRMWARE_VERSION} \tab \code{firmwareVersion}\cr
-#' \code{FIT_ERROR_NITRATE} \tab \code{fitErrorNitrate}\cr
-#' \code{FLUORESCENCE_CDOM} \tab \code{fluorescenceCDOM}\cr
-#' \code{FLUORESCENCE_CHLA} \tab \code{fluorescenceChlorophyllA}\cr
-#' \code{INST_REFERENCE} \tab \code{instReference}\cr
-#' \code{JULD} \tab \code{juld} (and used to compute \code{time})\cr
-#' \code{JULD_QC_LOCATION} \tab \code{juldQCLocation}\cr
-#' \code{LATITUDE} \tab \code{latitude}\cr
-#' \code{LONGITUDE} \tab \code{longitude}\cr
-#' \code{MOLAR_DOXY} \tab \code{oxygenUncompensated}\cr
-#' \code{PH_IN_SITU_FREE} \tab \code{pHFree}\cr
-#' \code{PH_IN_SITU_TOTAL} \tab \code{pH}\cr
-#' \code{PI_NAME} \tab \code{PIName}\cr
-#' \code{PLATFORM_NUMBER} \tab \code{id}\cr
-#' \code{POSITION_ACCURACY} \tab \code{positionAccuracy}\cr
-#' \code{POSITIONING_SYSTEM} \tab \code{positioningSystem}\cr
-#' \code{PROFILE} \tab \code{profile}\cr
-#' \code{PROJECT_NAME} \tab \code{projectName}\cr
-#' \code{RAW_DOWNWELLING_IRRADIANCE} \tab \code{rawDownwellingIrradiance}\cr
-#' \code{RAW_DOWNWELLING_PAR} \tab \code{rawDownwellingPAR}\cr
-#' \code{RAW_UPWELLING_RADIANCE} \tab \code{rawUpwellingRadiance}\cr
-#' \code{STATION_PARAMETERS} \tab \code{stationParameters}\cr
-#' \code{TEMP} \tab \code{temperature}\cr
-#' \code{TEMP_CPU_CHLA} \tab \code{temperatureCPUChlorophyllA}\cr
-#' \code{TEMP_DOXY} \tab \code{temperatureOxygen}\cr
-#' \code{TEMP_NITRATE} \tab \code{temperatureNitrate}\cr
-#' \code{TEMP_PH} \tab \code{temperaturePH}\cr
-#' \code{TEMP_SPECTROPHOTOMETER_NITRATE} \tab \code{temperatureSpectrophotometerNitrate}\cr
-#' \code{TILT} \tab \code{tilt}\cr
-#' \code{TURBIDITY} \tab \code{turbidity}\cr
-#' \code{UP_RADIANCE} \tab \code{upwellingRadiance}\cr
-#' \code{UV_INTENSITY} \tab \code{UVIntensity}\cr
-#' \code{UV_INTENSITY_DARK_NITRATE} \tab \code{UVIntensityDarkNitrate}\cr
-#' \code{UV_INTENSITY_NITRATE} \tab \code{UVIntensityNitrate}\cr
-#' \code{VRS_PH} \tab \code{VRSpH}\cr
-#' \code{WMO_INST_TYPE} \tab \code{WMOInstType}\cr
+#' **Argo name** \tab **oce name**\cr
+#' `BBP` \tab `bbp`\cr
+#' `BETA_BACKSCATTERING` \tab `betaBackscattering`\cr
+#' `BPHASE_OXY` \tab `bphaseOxygen`\cr
+#' `CDOM` \tab `CDOM`\cr
+#' `CNDC` \tab `conductivity`\cr
+#' `CHLA` \tab `chlorophyllA`\cr
+#' `CP` \tab `beamAttenuation`\cr
+#' `CYCLE_NUMBER` \tab `cycleNumber`\cr
+#' `DATA_CENTRE` \tab `dataCentre`\cr
+#' `DATA_MODE` \tab `dataMode`\cr
+#' `DATA_STATE_INDICATOR` \tab `dataStateIndicator`\cr
+#' `DC_REFERENCE` \tab `DCReference`\cr
+#' `DIRECTION` \tab `direction`\cr
+#' `DOWN_IRRADIANCE` \tab `downwellingIrradiance`\cr
+#' `DOWNWELLING_PAR` \tab `downwellingPAR`\cr
+#' `FIRMWARE_VERSION` \tab `firmwareVersion`\cr
+#' `FIT_ERROR_NITRATE` \tab `fitErrorNitrate`\cr
+#' `FLUORESCENCE_CDOM` \tab `fluorescenceCDOM`\cr
+#' `FLUORESCENCE_CHLA` \tab `fluorescenceChlorophyllA`\cr
+#' `INST_REFERENCE` \tab `instReference`\cr
+#' `JULD` \tab `juld` (and used to compute `time`)\cr
+#' `JULD_QC_LOCATION` \tab `juldQCLocation`\cr
+#' `LATITUDE` \tab `latitude`\cr
+#' `LONGITUDE` \tab `longitude`\cr
+#' `MOLAR_DOXY` \tab `oxygenUncompensated`\cr
+#' `PH_IN_SITU_FREE` \tab `pHFree`\cr
+#' `PH_IN_SITU_TOTAL` \tab `pH`\cr
+#' `PI_NAME` \tab `PIName`\cr
+#' `PLATFORM_NUMBER` \tab `id`\cr
+#' `POSITION_ACCURACY` \tab `positionAccuracy`\cr
+#' `POSITIONING_SYSTEM` \tab `positioningSystem`\cr
+#' `PROFILE` \tab `profile`\cr
+#' `PROJECT_NAME` \tab `projectName`\cr
+#' `RAW_DOWNWELLING_IRRADIANCE` \tab `rawDownwellingIrradiance`\cr
+#' `RAW_DOWNWELLING_PAR` \tab `rawDownwellingPAR`\cr
+#' `RAW_UPWELLING_RADIANCE` \tab `rawUpwellingRadiance`\cr
+#' `STATION_PARAMETERS` \tab `stationParameters`\cr
+#' `TEMP` \tab `temperature`\cr
+#' `TEMP_CPU_CHLA` \tab `temperatureCPUChlorophyllA`\cr
+#' `TEMP_DOXY` \tab `temperatureOxygen`\cr
+#' `TEMP_NITRATE` \tab `temperatureNitrate`\cr
+#' `TEMP_PH` \tab `temperaturePH`\cr
+#' `TEMP_SPECTROPHOTOMETER_NITRATE` \tab `temperatureSpectrophotometerNitrate`\cr
+#' `TILT` \tab `tilt`\cr
+#' `TURBIDITY` \tab `turbidity`\cr
+#' `UP_RADIANCE` \tab `upwellingRadiance`\cr
+#' `UV_INTENSITY` \tab `UVIntensity`\cr
+#' `UV_INTENSITY_DARK_NITRATE` \tab `UVIntensityDarkNitrate`\cr
+#' `UV_INTENSITY_NITRATE` \tab `UVIntensityNitrate`\cr
+#' `VRS_PH` \tab `VRSpH`\cr
+#' `WMO_INST_TYPE` \tab `WMOInstType`\cr
 #'}
 #'
 #' @param names vector of character strings containing names in the Argo convention.
-#' @param ignore.case a logical value passed to \code{\link{gsub}}, indicating whether to
-#' ignore the case of input strings. The default is set to \code{TRUE} because some data
+#'
+#' @param ignore.case a logical value passed to [gsub()], indicating whether to
+#' ignore the case of input strings. The default is set to `TRUE` because some data
 #' files use lower-case names, despite the fact that the Argo documentation specifies
 #' upper-case.
-#' @return A character vector of the same length as \code{names}, but with
+#'
+#' @return A character vector of the same length as `names`, but with
 #' replacements having been made for all known quantities.
 #'
 #' @references
@@ -366,7 +374,7 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 #' 2. Argo list of parameters in an excel spreadsheet, available at
 #' \url{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
 #'
-#' @family things related to \code{argo} data
+#' @family things related to argo data
 argoNames2oceNames <- function(names, ignore.case=TRUE)
 {
     ## do NOT change the order below, because we are working with partial strings.
@@ -424,35 +432,35 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' or by subsetting by pressure or other variables.
 #'
 #' @details
-#' If \code{subset} is the string \code{"adjusted"}, then \code{subset}
+#' If `subset` is the string `"adjusted"`, then `subset`
 #' replaces the station variables with their adjusted counterparts. In
-#' the argo notation, e.g. \code{PSAL} is replaced with \code{PSAL_ADJUSTED};
-#' in the present notation, this means that \code{salinity} in the \code{data}
-#' slot is replaced with \code{salinityAdjusted}, and the latter is deleted.
-#' Similar replacements are also done with the flags stored in the \code{metadata}
+#' the argo notation, e.g. `PSAL` is replaced with `PSAL_ADJUSTED`;
+#' in the present notation, this means that `salinity` in the `data`
+#' slot is replaced with `salinityAdjusted`, and the latter is deleted.
+#' Similar replacements are also done with the flags stored in the `metadata`
 #' slot.
 #'
-#' If \code{subset} is an expression, then the action is somewhat similar
-#' to other \code{subset} functions, but with the restriction that
+#' If `subset` is an expression, then the action is somewhat similar
+#' to other `subset` functions, but with the restriction that
 #' only one independent variable may be
 #' used in in any call to the function, so that
 #' repeated calls will be necessary to subset based on more than one
 #' independent variable.  Subsetting may be done by anything
-#' stored in the data, e.g. \code{time},
-#' \code{latitude}, \code{longitude}, \code{profile}, \code{dataMode},
-#' or \code{pressure} or by \code{profile} (a made-up variable)
-#' or \code{id} (from the \code{metadata} slot).
+#' stored in the data, e.g. `time`,
+#' `latitude`, `longitude`, `profile`, `dataMode`,
+#' or `pressure` or by `profile` (a made-up variable)
+#' or `id` (from the `metadata` slot).
 #'
-#' @param x An \code{argo} object, i.e. one inheriting from \code{\link{argo-class}}.
+#' @param x an [argo-class] object.
 #'
-#' @param subset An expression indicating how to subset \code{x}.
+#' @param subset An expression indicating how to subset `x`.
 #'
 #' @param ... optional arguments, of which only the first is examined. The
-#' only possibility is \code{within}, a polygon enclosing data to be
+#' only possibility is `within`, a polygon enclosing data to be
 #' retained. This must be either a list or data frame, containing items
-#' named either \code{x} and \code{y} or \code{longitude} and
-#' \code{latitude}; see Example 4.  If \code{within} is given,
-#' then \code{subset} is ignored.
+#' named either `x` and `y` or `longitude` and
+#' `latitude`; see Example 4.  If `within` is given,
+#' then `subset` is ignored.
 #'
 #' @return An argo object.
 #'
@@ -487,8 +495,8 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{argo} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to argo data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
@@ -709,21 +717,21 @@ setMethod(f="subset",
 
 #' Summarize an Argo Object
 #'
-#' @description Summarizes some of the data in an \code{argo} object.
+#' @description Summarizes some of the data in an `argo` object.
 #'
 #' @details Pertinent summary information is presented.
-#' @param object}{an object of class \code{"argo"}, usually, a result of a
-#'     call to \code{\link{read.argo}}.
+#' @param object}{an object of class `"argo"`, usually, a result of a
+#'     call to [read.argo()].
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return A matrix containing statistics of the elements of the \code{data} slot.
+#' @return A matrix containing statistics of the elements of the `data` slot.
 #' @examples
 #' library(oce)
 #' data(argo)
 #' summary(argo)
 #'
 #' @author Dan Kelley
-#' @family things related to \code{argo} data
+#' @family things related to argo data
 setMethod(f="summary",
           signature="argo",
           definition=function(object, ...) {
@@ -750,32 +758,31 @@ ncdfFixMatrix <- function(x)
 #' Grid Argo float data
 #'
 #' Grid an Argo float, by interpolating to fixed pressure levels.
-#' The gridding is done with \code{\link{approx}}.  If there is
+#' The gridding is done with [approx()].  If there is
 #' sufficient user demand, other methods may be added, by analogy to
-#' \code{\link{sectionGrid}}.
+#' [sectionGrid()].
 #'
 #' @template flagDeletionTemplate
 #'
-#' @param argo A \code{argo} object to be gridded.
+#' @param argo A `argo` object to be gridded.
 #'
 #' @param p Optional indication of the pressure levels to which interpolation
 #' should be done.  If this is not supplied, the pressure levels will be
-#' calculated based on the existing values, using medians. If \code{p="levitus"},
+#' calculated based on the existing values, using medians. If `p="levitus"`,
 #' then pressures will be set to be those of the Levitus atlas, given by
-#' \code{\link{standardDepths}}, trimmed to the maximum pressure in \code{argo}.
-#' If \code{p} is a single numerical value, it is taken as the number of
-#' subdivisions to use in a call to \code{\link{seq}} that has range from 0 to the
-#' maximum pressure in \code{argo}.  Finally, if a vector numerical values is
+#' [standardDepths()], trimmed to the maximum pressure in `argo`.
+#' If `p` is a single numerical value, it is taken as the number of
+#' subdivisions to use in a call to [seq()] that has range from 0 to the
+#' maximum pressure in `argo`.  Finally, if a vector numerical values is
 #' provided, then it is used as is.
 #'
 #' @param debug A flag that turns on debugging.  Higher values provide deeper
 #' debugging.
 #'
-#' @param ... Optional arguments to \code{\link{approx}}, which is used to do the
+#' @param ... Optional arguments to [approx()], which is used to do the
 #' gridding.
 #'
-#' @return An object of \code{\link{argo-class}} that contains a pressure matrix
-#' with constant values along the first index.
+#' @return x an [argo-class] object.
 #'
 #' @examples
 #' library(oce)
@@ -788,7 +795,7 @@ ncdfFixMatrix <- function(x)
 #' imagep(t, z, t(g[['temperature']]), ylim=c(-100,0), zlim=c(0,20))
 #' imagep(t, z, t(g[['salinity']]), ylim=c(-100,0))
 #'
-#' @family things related to \code{argo} data
+#' @family things related to argo data
 #' @author Dan Kelley and Clark Richards
 argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
 {
@@ -855,60 +862,60 @@ argoDecodeFlags <- function(f) # local function
 
 #' Read an Argo Data File
 #'
-#' \code{read.argo} is used to read an Argo file, producing an object of type
-#' \code{argo}. The file must be in the ARGO-style NetCDF format described at
-#' in the Argo documentation [2,3].
+#' `read.argo` is used to read an Argo file, producing an object of type
+#' `argo`. The file must be in the ARGO-style NetCDF format described at
+#' in the Argo documentation (see references 2 and 3).
 #'
 #' @details
 #'
 #' Items are inferred from the data file in a straightforward way, using
-#' \code{\link[ncdf4]{ncvar_get}}, converting from one-column matrices
+#' [ncdf4::ncvar_get()], converting from one-column matrices
 #' to vectors, and trimming leading and trailing blank space in character
-#' values, using \code{\link{trimString}}.
+#' values, using [trimString()].
 #'
 #' Items are renamed from the argo ('snake case') forms to oce ('camel
-#' case') forms with \code{\link{argoNames2oceNames}}. For example,
-#' \code{FIRMWARE_VERSION} in the data file is renamed as
-#' \code{firmwareVersion} in the return value.
+#' case') forms with [argoNames2oceNames()]. For example,
+#' `FIRMWARE_VERSION` in the data file is renamed as
+#' `firmwareVersion` in the return value.
 #' Note that some files use upper-case for items, while other files
-#' use lower-case for the same things; \code{read.argo} attempts
+#' use lower-case for the same things; `read.argo` attempts
 #' to ignore this variation.
 #'
-#' See the Argo documentation [2,3] for some details on what files contain.
-#' Many items listed in section 2.2.3 of [3] are read from the
-#' file and stored in the \code{metadata} slot, with the exception of
-#' \code{longitude} and \code{latitude}, which are stored in the
-#' \code{data} slot, alongside hydrographic information.
+#' See the Argo documentation (see references 2 and 3) for some details on what files contain.
+#' Many items listed in section 2.2.3 of reference 3 are read from the
+#' file and stored in the `metadata` slot, with the exception of
+#' `longitude` and `latitude`, which are stored in the
+#' `data` slot, alongside hydrographic information.
 #'
 #' The following global attributes stored within the netcdf file are stored in the
-#' \code{metadata} slot: \code{title}, \code{institution}, \code{source},
-#' \code{history}, \code{references}, \code{userManualVersion}, \code{conventions},
-#' and \code{featureType}. These names are identical to those in the netcdf
-#' file, except that \code{userManualVersion} is named
-#' \code{user_manual_version} in the file, and \code{conventions} is
-#' named \code{Conventions} in the file.
+#' `metadata` slot: `title`, `institution`, `source`,
+#' `history`, `references`, `userManualVersion`, `conventions`,
+#' and `featureType`. These names are identical to those in the netcdf
+#' file, except that `userManualVersion` is named
+#' `user_manual_version` in the file, and `conventions` is
+#' named `Conventions` in the file.
 #'
 #' It is assumed that the profile data are as listed in the NetCDF variable
-#' called \code{STATION_PARAMETERS}. Each item can have variants, as
-#' described in Sections 2.3.4 of [3].
-#' For example, if \code{"PRES"} is found in \code{STATION_PARAMETERS},
-#' then \code{PRES} (pressure) data are sought in the file, along with
-#' \code{PRES_QC}, \code{PRES_ADJUSTED}, \code{PRES_ADJUSTED_QC}, and
-#' \code{PRES_ERROR}. The same pattern works for other profile data. The variables
-#' are stored with different names within the resultant \code{\link{argo-class}}
-#' object, to match with \code{oce} conventions. Thus, \code{PRES} gets renamed
-#' \code{pressure}, while \code{PRES_ADJUSTED} gets renamed \code{pressureAdjusted},
-#' and \code{PRES_ERROR} gets renamed \code{pressureError}; all of these are
-#' stored in the \code{data} slot. Meanwhile, the quality-control flags
-#' \code{PRES_QC} and \code{PRES_ADJUSTED_QC} are stored as \code{pressure}
-#' and \code{pressureAdjusted} in the \code{metadata$flags} slot.
+#' called `STATION_PARAMETERS`. Each item can have variants, as
+#' described in Sections 2.3.4 of reference 3.
+#' For example, if `"PRES"` is found in `STATION_PARAMETERS`,
+#' then `PRES` (pressure) data are sought in the file, along with
+#' `PRES_QC`, `PRES_ADJUSTED`, `PRES_ADJUSTED_QC`, and
+#' `PRES_ERROR`. The same pattern works for other profile data. The variables
+#' are stored with different names within the resultant [argo-class]
+#' object, to match with `oce` conventions. Thus, `PRES` gets renamed
+#' `pressure`, while `PRES_ADJUSTED` gets renamed `pressureAdjusted`,
+#' and `PRES_ERROR` gets renamed `pressureError`; all of these are
+#' stored in the `data` slot. Meanwhile, the quality-control flags
+#' `PRES_QC` and `PRES_ADJUSTED_QC` are stored as `pressure`
+#' and `pressureAdjusted` in the `metadata$flags` slot.
 #'
 #' Once a predefined series of items are inferred and stored in either the
-#' \code{metadata} or \code{data} slot, \code{read.argo} then reads all
-#' non-empty variables in the file, storing them in the \code{metadata}
+#' `metadata` or `data` slot, `read.argo` then reads all
+#' non-empty variables in the file, storing them in the `metadata`
 #' slot, using with the original ('snake case') name that is used in
-#' the data file. (Note that the sample dataset accessed with \code{data(argo)}
-#' lacks metadata items with names starting with \code{HISTORY_}, because
+#' the data file. (Note that the sample dataset accessed with `data(argo)`
+#' lacks metadata items with names starting with `HISTORY_`, because
 #' those are zero-length in the source file.)
 #'
 #' @param file a character string giving the name of the file to load.
@@ -923,7 +930,7 @@ argoDecodeFlags <- function(f) # local function
 #' @param ... additional arguments, passed to called routines.
 #'
 #' @return
-#' An object of \code{\link{argo-class}}.
+#' An [argo-class] object.
 #'
 #' @examples
 #'\dontrun{
@@ -935,7 +942,7 @@ argoDecodeFlags <- function(f) # local function
 #'
 #' ## Example 2: construct URL for download (brittle)
 #' id <- "6900388"
-#' url <- "http://www.usgodae.org/ftp/outgoing/argo"
+#' url <- "https://www.usgodae.org/ftp/outgoing/argo"
 #' if (!length(list.files(pattern="argo_index.txt")))
 #'     download.file(paste(url, "ar_index_global_meta.txt", sep="/"), "argo_index.txt")
 #' index <- readLines("argo_index.txt")
@@ -952,7 +959,7 @@ argoDecodeFlags <- function(f) # local function
 #'
 #'
 #' @seealso
-#' The documentation for \code{\link{argo-class}} explains the structure of argo
+#' The documentation for the [argo-class] class explains the structure of argo
 #' objects, and also outlines the other functions dealing with them.
 #'
 #' @references
@@ -979,37 +986,39 @@ argoDecodeFlags <- function(f) # local function
 #' factor is that these data tend to be categorized by "dac" (data
 #' archiving centre), which makes it difficult to find a particular
 #' float. For example,
-#' \url{http://www.usgodae.org/ftp/outgoing/argo/} is the top level of
+#' \url{https://www.usgodae.org/ftp/outgoing/argo/} is the top level of
 #' a such a repository. If the ID of a float is known but not the
 #' "dac", then a first step is to download the text file
 #' \url{http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
 #' and search for the ID. The first few lines of that file are header,
 #' and after that the format is simple, with columns separated by slash
-#' (\code{/}). The dac is in the first such column and the float ID in the
+#' (`/`). The dac is in the first such column and the float ID in the
 #' second. A simple search will reveal the dac.
-#' For example \code{data(argo)} is based on float 6900388, and the line
+#' For example `data(argo)` is based on float 6900388, and the line
 #' containing that token is
-#' \code{bodc/6900388/6900388_meta.nc,846,BO,20120225005617}, from
+#' `bodc/6900388/6900388_meta.nc,846,BO,20120225005617`, from
 #' which the dac is seen to be the British Oceanographic Data Centre
-#' (\code{bodc}). Armed with that information, visit
-#' \url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}
+#' (`bodc`). Armed with that information, visit
+#' \url{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}
 #' and see a directory called `profiles` that contains a NetCDF
 #' file for each profile the float made. These can be read with
-#' \code{read.argo}. It is also possible, and probably more common,
+#' `read.argo`. It is also possible, and probably more common,
 #' to read a NetCDF file containing all the profiles together and for
 #' that purpose the file
-#' \url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}
-#' should be downloaded and provided as the \code{file} argument to
-#' \code{read.argo}.  This can be automated as in Example 2,
+#' \url{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}
+#' should be downloaded and provided as the `file` argument to
+#' `read.argo`.  This can be automated as in Example 2,
 #' although readers are cautioned that URL structures tend to change
 #' over time.
 #'
 #' Similar steps can be followed on other servers.
 #'
 #' @author Dan Kelley
-#' @family things related to \code{argo} data
+#' @family things related to argo data
 read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     if (!requireNamespace("ncdf4", quietly=TRUE))
         stop('must install.packages("ncdf4") to read argo data')
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
@@ -1345,7 +1354,12 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     ## "HISTORY_PREVIOUS_VALUE", "HISTORY_QCTEST"
     for (name in varNames) {
         oceDebug(debug, "about to try to insert \"", name, "\" into metadata\n", sep="")
-        o <- capture.output(value <- try(ncdf4::ncvar_get(file, name), silent=TRUE))
+        value <- NA
+        o <- capture.output(
+                            {
+                                value <- try(ncdf4::ncvar_get(file, name), silent=TRUE)
+                            }
+        )
         if (inherits(value, "try-error")) {
             ## see https://github.com/dankelley/oce/issues/1522 for a discussion of the fact
             ## that the file used for data(argo) has zero-length HISTORY_* items.
@@ -1384,7 +1398,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 #'
 #' Coerce a dataset into an argo dataset. This is not the right way to
 #' read official argo datasets, which are provided in NetCDF format and may
-#' be read with \code{\link{read.argo}}.
+#' be read with [read.argo()].
 #'
 #' @param time vector of POSIXct times.
 #' @param longitude vector of longitudes.
@@ -1392,26 +1406,26 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 #' @param salinity vector of salinities.
 #' @param temperature vector of temperatures.
 #' @param pressure vector of pressures.
-#' @param units optional list containing units. If \code{NULL}, the default,
-#' then \code{"degree east"} is used for \code{longitude},
-#' \code{"degree north"} for \code{latitude},
-#' \code{""} for \code{salinity},
-#' \code{"ITS-90"} for \code{temperature}, and
-#' \code{"dbar"} for \code{pressure}.
+#' @param units optional list containing units. If `NULL`, the default,
+#' then `"degree east"` is used for `longitude`,
+#' `"degree north"` for `latitude`,
+#' `""` for `salinity`,
+#' `"ITS-90"` for `temperature`, and
+#' `"dbar"` for `pressure`.
 #' @param id identifier.
 #' @param filename source filename.
 #' @param missingValue Optional missing value, indicating data values that should be
-#' taken as \code{NA}.
+#' taken as `NA`.
 #'
 #' @return
-#' An object of \code{\link{argo-class}}.
+#' An [argo-class] object.
 #'
 #' @seealso
-#' The documentation for \code{\link{argo-class}} explains the structure of argo
+#' The documentation for the [argo-class] class explains the structure of argo
 #' objects, and also outlines the other functions dealing with them.
 #'
 #' @author Dan Kelley
-#' @family things related to \code{argo} data
+#' @family things related to argo data
 as.argo <- function(time, longitude, latitude,
                        salinity, temperature, pressure,
                        units=NULL,
@@ -1455,48 +1469,47 @@ as.argo <- function(time, longitude, latitude,
 #'
 #' Plot a summary diagram for argo data.
 #'
-#' @param x object inheriting from \code{\link{argo-class}}.
+#' @param x an [argo-class] object.
 #'
 #' @param which list of desired plot types, one of the following. Note
-#' that \code{\link{oce.pmatch}} is used to try to complete partial
+#' that [oce.pmatch()] is used to try to complete partial
 #' character matches, and that an error will occur if the match is
-#' not complete (e.g. \code{"salinity"} matches to both
-#' \code{"salinity ts"} and \code{"salinity profile"}.).
-#' \itemize{
-#'     \item \code{which=1}, \code{which="trajectory"} or \code{which="map"} gives a
-#'     plot of the argo trajectory, with the coastline, if one is provided.
+#' not complete (e.g. `"salinity"` matches to both
+#' `"salinity ts"` and `"salinity profile"`.).
 #'
-#'     \item \code{which=2} or \code{"salinity ts"} gives a time series of
-#'     salinity at the indicated level(s)
+#' * `which=1`, `which="trajectory"` or `which="map"` gives a
+#' plot of the argo trajectory, with the coastline, if one is provided.
 #'
-#'     \item \code{which=3} or \code{"temperature ts"} gives a time series
-#'     of temperature at the indicated level(s)
+#' * `which=2` or `"salinity ts"` gives a time series of
+#' salinity at the indicated level(s)
 #'
-#'     \item \code{which=4} or \code{"TS"} gives a TS diagram at the
-#'     indicated level(s)
+#' * `which=3` or `"temperature ts"` gives a time series
+#' of temperature at the indicated level(s)
 #'
-#'     \item \code{which=5} or \code{"salinity profile"} gives a salinity
-#'     profile of all the data (with S and p trimmed to the 1 and 99
-#'     percentiles)
+#' * `which=4` or `"TS"` gives a TS diagram at the
+#' indicated level(s)
 #'
-#'     \item \code{which=6} or \code{"temperature profile"} gives a
-#'     temperature profile (with T and p trimmed to the 1 and 99
-#'     percentiles)
-#' }
+#' * `which=5` or `"salinity profile"` gives a salinity
+#' profile of all the data (with S and p trimmed to the 1 and 99
+#' percentiles)
+#'
+#' * `which=6` or `"temperature profile"` gives a
+#' temperature profile (with T and p trimmed to the 1 and 99
+#' percentiles)
 #
-#' @param level depth pseudo-level to plot, for \code{which=2} and higher.  May be an
+#' @param level depth pseudo-level to plot, for `which=2` and higher.  May be an
 #' integer, in which case it refers to an index of depth (1 being the top)
 #' or it may be the string "all" which means to plot all data.
 #'
 #' @param coastline character string giving the coastline to be used in an Argo-location
-#' map, or \code{"best"} to pick the one with highest resolution, or
-#' \code{"none"} to avoid drawing the coastline.
+#' map, or `"best"` to pick the one with highest resolution, or
+#' `"none"` to avoid drawing the coastline.
 #'
-#' @param cex size of plotting symbols to be used if \code{type='p'}.
+#' @param cex size of plotting symbols to be used if `type='p'`.
 #'
-#' @param pch type of plotting symbols to be used if \code{type='p'}.
+#' @param pch type of plotting symbols to be used if `type='p'`.
 #'
-#' @param type plot type, either \code{"l"} or \code{"p"}.
+#' @param type plot type, either `"l"` or `"p"`.
 #'
 #' @param col optional list of colors for plotting.
 #'
@@ -1504,25 +1517,25 @@ as.argo <- function(time, longitude, latitude,
 #' light-gray, or a color name.  Owing to problems with some projections, the
 #' default is not to fill.
 #'
-#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for
-#' \code{par(mar)}, computed from this.  The default is tighter than the R
+#' @param mgp 3-element numerical vector to use for `par(mgp)`, and also for
+#' `par(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #'
 #' @param projection indication of the projection to be used
-#' in trajectory maps. If this is \code{NULL}, no projection is used, although
+#' in trajectory maps. If this is `NULL`, no projection is used, although
 #' the plot aspect ratio will be set to yield zero shape distortion at the
-#' mean float latitude.  If \code{projection="automatic"}, then one
-#' of two projections is used: stereopolar (i.e. \code{"+proj=stere +lon_0=X"}
-#' where \code{X} is the mean longitude), or Mercator (i.e. \code{"+proj=merc"})
-#' otherwise.  Otherwise, \code{projection} must be a character string specifying
-#' a projection in the notation used by the \code{link[rgdal]{project}} function
+#' mean float latitude.  If `projection="automatic"`, then one
+#' of two projections is used: stereopolar (i.e. `"+proj=stere +lon_0=X"`
+#' where `X` is the mean longitude), or Mercator (i.e. `"+proj=merc"`)
+#' otherwise.  Otherwise, `projection` must be a character string specifying
+#' a projection in the notation used by the [rgdal::project] function
 #' in the \CRANpkg{rgdal} package; this will be familiar to many readers as
-#' the PROJ.4 notation; see \code{\link{mapPlot}}.
+#' the PROJ.4 notation; see [mapPlot()].
 #'
-#' @param mar value to be used with \code{\link{par}}("mar").
+#' @param mar value to be used with [par()]("mar").
 #'
-#' @param tformat optional argument passed to \code{\link{oce.plot.ts}}, for plot
-#' types that call that function.  (See \code{\link{strptime}} for the format
+#' @param tformat optional argument passed to [oce.plot.ts()], for plot
+#' types that call that function.  (See [strptime()] for the format
 #' used.)
 #'
 #' @param debug debugging flag.
@@ -1546,8 +1559,8 @@ as.argo <- function(time, longitude, latitude,
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{argo} data
-#' @family functions that plot \code{oce} data
+#' @family things related to argo data
+#' @family functions that plot oce data
 #' @aliases plot.argo
 setMethod(f="plot",
           signature=signature("argo"),
@@ -1761,7 +1774,9 @@ setMethod(f="plot",
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle Flags in ARGO Objects
-#' @param object An object of \code{\link{argo-class}}.
+#'
+#' @param object an [argo-class] object.
+#'
 #' @template handleFlagsTemplate
 #'
 #' @references
@@ -1771,7 +1786,7 @@ setMethod(f="plot",
 #' library(oce)
 #' data(argo)
 #' # 1. Default: set to NA any data that is not flagged with
-#' # code value 1 (meaning \code{"passed_all_tests"})
+#' # code value 1 (meaning `"passed_all_tests"`)
 #' argoNew <- handleFlags(argo, flags=c(0, 2:9))
 #' # Demonstrate replacement, looking at the second profile
 #' f <- argo[["salinityFlag"]][,2] # first column with a flag=4 entry
@@ -1779,16 +1794,15 @@ setMethod(f="plot",
 #' df[11:15,] # notice line 13
 #'
 #' # 2. A less restrictive case: focussing just on salinity,
-#' # retain only data with flags 1 (meaning \code{"passed_all_tests"})
-#' # and 2 (\code{"probably_good"}).
+#' # retain only data with flags 1 (meaning `"passed_all_tests"`)
+#' # and 2 (`"probably_good"`).
 #' argoNew <- handleFlags(argo, flags=list(salinity=c(0, 3:9)))
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{argo} data
-setMethod("handleFlags",
-          c(object="argo", flags="ANY", actions="ANY", debug="ANY"),
-          function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
+#' @family things related to argo data
+setMethod("handleFlags", signature=c(object="argo", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
+          definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               if (is.null(flags)) {
                   flags <- defaultFlags(object)
@@ -1801,5 +1815,5 @@ setMethod("handleFlags",
               }
               if (any(names(actions)!=names(flags)))
                   stop("names of flags and actions must match")
-              handleFlagsInternal(object, flags, actions, debug)
+              handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug)
           })

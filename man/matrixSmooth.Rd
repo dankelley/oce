@@ -23,7 +23,6 @@ m_{i,j+1})/6}{r_[i,j] = (2 m_[i,j] + m_[i-1,j] + m_[i+1,j] + m_[i,j-1] +
 m_[i,j+1])/6}.  Note that missing values propagate to neighbours.
 }
 \examples{
-
 library(oce)
 opar <- par(no.readonly = TRUE)
 m <- matrix(rep(seq(0, 1, length.out=5), 5), nrow=5, byrow=TRUE)

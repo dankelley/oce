@@ -3,18 +3,19 @@
 
 #' Data that define some color palettes
 #'
-#' The \code{ocecolors} dataset is a list containing color-schemes, used
-#' by \code{\link{oceColorsClosure}} to create functions such as
-#' \code{\link{oceColorsViridis}}.
+#' The `ocecolors` dataset is a list containing color-schemes, used
+#' by [oceColorsClosure()] to create functions such as
+#' [oceColorsViridis()].
 #'
 #' @name ocecolors
+#'
 #' @docType data
 
 #' @author Authored by matplotlib contributers, packaged (with license permission) in oce by Dan Kelley
 #'
 #' @source The data come from the matplotlib site
 #' \url{https://github.com/matplotlib/matplotlib}.
-#' @family datasets provided with \code{oce}
+#' @family datasets provided with oce
 #' @family things related to colors
 NULL
 
@@ -402,148 +403,153 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #'
 #' This is a multi-purpose function that generally links (``maps'') numerical
 #' values to colors.  The return value can specify colors for points on a
-#' graph, or \code{breaks} and \code{col} vectors that are suitable for use by
-#' \code{\link{drawPalette}}, \code{\link{imagep}} or \code{\link{image}}.
+#' graph, or `breaks` and `col` vectors that are suitable for use by
+#' [drawPalette()], [imagep()] or [image()].
 #'
-#' There are three ways of specifying color schemes, and \code{colormap} works
+#' There are three ways of specifying color schemes, and `colormap` works
 #' by checking for each condition in turn.
 #'
-#' \itemize{
-#'
-#' \item{Case A.} Supply \code{z} but nothing else.  In this case,
-#' \code{breaks} will be set to \code{\link{pretty}(z, 10)} and things are
+#' * **Case A.** Supply `z` but nothing else.  In this case,
+#' `breaks` will be set to `[`pretty`]`(z,10)` and things are
 #' otherwise as in case B.
 #'
-#' \item{Case B.} Supply \code{breaks}.  In this case, \code{breaks} and
-#' \code{col} are used together to specify a color scheme.  If \code{col} is a
+#' * **Case B.** Supply `breaks`.  In this case, `breaks` and
+#' `col` are used together to specify a color scheme.  If `col` is a
 #' function, then it is expected to take a single numerical argument that
 #' specifies the number of colors, and this number will be set to
-#' \code{length(breaks)-1}.  Otherwise, \code{col} may be a vector of colors,
+#' `length(breaks)-1`.  Otherwise, `col` may be a vector of colors,
 #' and its length must be one less than the number of breaks.  (NB. if
-#' \code{breaks} is given, then all other arguments except \code{col} and
-#' \code{missingColor} are ignored.) \if{html}{The figure below explains the
-#' (\code{breaks}, \code{col}) method of specifying a color mapping.  Note
+#' `breaks` is given, then all other arguments except `col` and
+#' `missingColor` are ignored.) \if{html}{The figure below explains the
+#' (`breaks`, `col`) method of specifying a color mapping.  Note
 #' that there must be one more break than color.  This is the method used by
-#' e.g. \code{\link{image}}.}
+#' e.g. [image()].}
 #' \if{html}{\figure{colormap_fig_1.png}}
 #'
-#' \item{Case C.} Do not supply \code{breaks}, but supply \code{name}
-#' instead.  This \code{name} may be the name of a pre-defined color palette
-#' (\code{"gmt_relief"}, \code{"gmt_ocean"}, \code{"gmt_globe"} or
-#' \code{"gmt_gebco"}), or it may be the name of a file (including a URL)
+#' * **Case C.** Do not supply `breaks`, but supply `name`
+#' instead.  This `name` may be the name of a pre-defined color palette
+#' (`"gmt_relief"`, `"gmt_ocean"`, `"gmt_globe"` or
+#' `"gmt_gebco"`), or it may be the name of a file (including a URL)
 #' containing a color map in the GMT format (see \dQuote{References}).  (NB.
-#' if \code{name} is given, then all other arguments except \code{z} and
-#' \code{missingColor} are ignored.)
+#' if `name` is given, then all other arguments except `z` and
+#' `missingColor` are ignored.)
 #'
-#' \item{Case D.} Do not supply either \code{breaks} or \code{name}, but
-#' instead supply each of \code{x0}, \code{x1}, \code{col0}, and \code{col1}.
+#' * **Case D.** Do not supply either `breaks` or `name`, but
+#' instead supply each of `x0`, `x1`, `col0`, and `col1`.
 #' These values are specify a value-color mapping that is similar to that used
-#' for GMT color maps.  The method works by using \code{\link{seq}} to
-#' interpolate between the elements of the \code{x0} vector.  The same is done
-#' for \code{x1}.  Similarly, \code{\link{colorRampPalette}} is used to
-#' interpolate between the colors in the \code{col0} vector, and the same is
-#' done for \code{col1}.  \if{html}{The figure above explains the (\code{x0},
-#' \code{x1}, \code{col0}, \code{col1}) method of specifying a color mapping.
+#' for GMT color maps.  The method works by using [seq()] to
+#' interpolate between the elements of the `x0` vector.  The same is done
+#' for `x1`.  Similarly, [colorRampPalette()] is used to
+#' interpolate between the colors in the `col0` vector, and the same is
+#' done for `col1`.  \if{html}{The figure above explains the (`x0`,
+#' `x1`, `col0`, `col1`) method of specifying a color mapping.
 #' Note that the each of the items has the same length. The case of
-#' \code{blend=0}, which has color \code{col0[i]} between \code{x0[i]} and
-#' \code{x1[i]}, is illustrated below.}
+#' `blend=0`, which has color `col0[i]` between `x0[i]` and
+#' `x1[i]`, is illustrated below.}
 #' \if{html}{\figure{colormap_fig_2.png}}
 #'
-#' }
-#'
 #' @param z an optional vector or other set of numerical values to be examined.
-#' If \code{z} is given, the return value will contain an item named
-#' \code{zcol} that will be a vector of the same length as \code{z}, containing
-#' a color for each point.  If \code{z} is not given, \code{zcol} will contain
-#' just one item, the color \code{"black"}.
-#' @param zlim optional vector containing two numbers that specify the \code{z}
+#' If `z` is given, the return value will contain an item named
+#' `zcol` that will be a vector of the same length as `z`, containing
+#' a color for each point.  If `z` is not given, `zcol` will contain
+#' just one item, the color `"black"`.
+#'
+#' @param zlim optional vector containing two numbers that specify the `z`
 #' limits for the color scale.  If provided, it overrides defaults as describe
-#' in the following.  If \code{name} is given, then the \code{\link{range}} of
-#' numerical values contained therein will be used for \code{zlim}.  Otherwise,
-#' if \code{z} is given, then its \code{\link{rangeExtended}} sets \code{zlim}.
-#' Otherwise, if \code{x0} and \code{x1} are given, then their
-#' \code{\link{range}} sets \code{zlim}.  Otherwise, there is no way to infer
-#' \code{zlim} and indeed there is no way to construct a colormap, so an error
-#' is reported.  It is an error to specify both \code{zlim} and \code{breaks},
+#' in the following.  If `name` is given, then the [range()] of
+#' numerical values contained therein will be used for `zlim`.  Otherwise,
+#' if `z` is given, then its [rangeExtended()] sets `zlim`.
+#' Otherwise, if `x0` and `x1` are given, then their
+#' [range()] sets `zlim`.  Otherwise, there is no way to infer
+#' `zlim` and indeed there is no way to construct a colormap, so an error
+#' is reported.  It is an error to specify both `zlim` and `breaks`,
 #' if the length of the latter does not equal 1.
-#' @param zclip logical, with \code{TRUE} indicating that z values outside the
-#' range of \code{zlim} or \code{breaks} should be painted with
-#' \code{missingColor} and \code{FALSE} indicating that these values should be
+#'
+#' @param zclip logical, with `TRUE` indicating that z values outside the
+#' range of `zlim` or `breaks` should be painted with
+#' `missingColor` and `FALSE` indicating that these values should be
 #' painted with the nearest in-range color.
+#'
 #' @param breaks an optional indication of break points between color levels
-#' (see \code{\link{image}}).  If this is provided, the arguments \code{name}
-#' through \code{blend} are all ignored (see \dQuote{Details}).  If it is
+#' (see [image()]).  If this is provided, the arguments `name`
+#' through `blend` are all ignored (see \dQuote{Details}).  If it is
 #' provided, then it may either be a vector of break points, or a single number
 #' indicating the desired number of break points to be computed with
-#' \code{\link{pretty}(z, breaks)}.  In either case of non-missing
-#' \code{breaks}, the resultant break points must number 1 plus the number of
-#' colors (see \code{col}).
+#' [`pretty`]`(z,breaks)1.  In either case of non-missing
+#' `breaks`, the resultant break points must number 1 plus the number of
+#' colors (see `col`).
+#'
 #' @param col either a vector of colors or a function taking a numerical value
 #' as its single argument and returning a vector of colors.  The value of
-#' \code{col} is ignored if \code{name} is provided, or if \code{x0} through
-#' \code{col1} are provided.
+#' `col` is ignored if `name` is provided, or if `x0` through
+#' `col1` are provided.
+#'
 #' @param name an optional string naming a built-in colormap (one of
-#' \code{"gmt_relief"}, \code{"gmt_ocean"}, \code{"gmt_globe"} or
-#' \code{"gmt_gebco"}) or the name of a file or URL that contains a color map
-#' specification in GMT format, e.g. one of the \code{.cpt} files from
-#' \url{http://www.beamreach.org/maps/gmt/share/cpt}). If \code{name} is
-#' provided, then \code{x0}, \code{x1}, \code{col0} and \code{col1} are all
+#' `"gmt_relief"`, `"gmt_ocean"`, `"gmt_globe"` or
+#' `"gmt_gebco"`) or the name of a file or URL that contains a color map
+#' specification in GMT format, e.g. one of the `.cpt` files from
+#' \url{http://www.beamreach.org/maps/gmt/share/cpt}). If `name` is
+#' provided, then `x0`, `x1`, `col0` and `col1` are all
 #' ignored.
+#'
 #' @param x0,x1,col0,col1 Vectors that specify a color map.  They must all be
-#' the same length, with \code{x0} and \code{x1} being numerical values, and
-#' \code{col0} and \code{col1} being colors.  The colors may be strings (e.g.
-#' \code{"red"}) or colors as defined by \code{\link{rgb}} or
-#' \code{\link{hsv}}.
+#' the same length, with `x0` and `x1` being numerical values, and
+#' `col0` and `col1` being colors.  The colors may be strings (e.g.
+#' `"red"`) or colors as defined by [rgb()] or
+#' [hsv()].
+#'
 #' @param blend a number indicating how to blend colors within each band.
-#' This is ignored except when \code{x0} through \code{col1} are supplied.  A
-#' value of 0 means to use \code{col0[i]} through the interval \code{x0[i]} to
-#' \code{x1[i]}.  A value of 1 means to use \code{col1[i]} in that interval.  A
+#' This is ignored except when `x0` through `col1` are supplied.  A
+#' value of 0 means to use `col0[i]` through the interval `x0[i]` to
+#' `x1[i]`.  A value of 1 means to use `col1[i]` in that interval.  A
 #' value between 0 and 1 means to blend between the two colors according to
 #' the stated fraction.  Values exceeding 1 are an error at present, but there
 #' is a plan to use this to indicate subintervals, so a smooth palette can be
 #' created from a few colors.
+#'
 #' @param missingColor color to use for missing values.  If not provided, this
-#' will be \code{"gray"}, unless \code{name} is given, in which case it comes
+#' will be `"gray"`, unless `name` is given, in which case it comes
 #' from that color table.
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
+#'
 #' @return A list containing the following (not necessarily in this order)
 #'
-#' \itemize{
 #'
-#' \item \code{zcol}, a vector of colors for \code{z}, if \code{z} was
-#' provided, otherwise \code{"black"}
+#' * `zcol`, a vector of colors for `z`, if `z` was
+#' provided, otherwise `"black"`
 #'
-#' \item \code{zlim}, a two-element vector suitable as the argument of the same
-#' name supplied to \code{\link{image}} or \code{\link{imagep}}
+#' * `zlim`, a two-element vector suitable as the argument of the same
+#' name supplied to [image()] or [imagep()]
 #'
-#' \item \code{breaks} and \code{col}, vectors of breakpoints and colors,
-#' suitable as the same-named arguments to \code{\link{image}} or
-#' \code{\link{imagep}}
+#' * `breaks` and `col`, vectors of breakpoints and colors,
+#' suitable as the same-named arguments to [image()] or
+#' [imagep()]
 #'
-#' \item \code{zclip} the provided value of \code{zclip}.
+#' * `zclip` the provided value of `zclip`.
 #'
-#' \item \code{x0} and \code{x1}, numerical vectors of the sides of color
-#' intervals, and \code{col0} and \code{col1}, vectors of corresponding
+#' * `x0` and `x1`, numerical vectors of the sides of color
+#' intervals, and `col0` and `col1`, vectors of corresponding
 #' colors.  The meaning is the same as on input.  The purpose of returning
 #' these four vectors is to permit users to alter color mapping, as in example
 #' 3 in \dQuote{Examples}.
 #'
-#' \item \code{missingColor}, a color that could be used to specify missing
-#' values, e.g. as the same-named argument to \code{\link{imagep}}.  If this is
+#' * `missingColor`, a color that could be used to specify missing
+#' values, e.g. as the same-named argument to [imagep()].  If this is
 #' supplied as an argument, its value is repeated in the return value.
-#' Otherwise, its value is either \code{"gray"} or, in the case of \code{name}
+#' Otherwise, its value is either `"gray"` or, in the case of `name`
 #' being given, the value in the GMT color map specification.
 #'
-#' \item \code{colfunction}, a univariate function that returns a vector
-#' of colors, given a vector of \code{z} values; see Example 6.
+#' * `colfunction`, a univariate function that returns a vector
+#' of colors, given a vector of `z` values; see Example 6.
 #'
-#' }
 #' @author Dan Kelley
+#'
 #' @references Information on GMT software is given at
-#' \code{http://gmt.soest.hawaii.edu} (link worked for years but failed
+#' `http://gmt.soest.hawaii.edu` (link worked for years but failed
 #' 2015-12-12).  Diagrams showing the GMT color schemes are at
-#' \code{http://www.geos.ed.ac.uk/it/howto/GMT/CPT/palettes.html} (link worked
+#' `http://www.geos.ed.ac.uk/it/howto/GMT/CPT/palettes.html` (link worked
 #' for years but failed 2015-12-08), and numerical specifications for some
 #' color maps are at \url{http://www.beamreach.org/maps/gmt/share/cpt},
 #' \url{http://soliton.vm.bytemark.co.uk/pub/cpt-city}, and other sources.
@@ -614,6 +620,7 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #' drawPalette(colormap=cm)
 #' plot(x, y, pch=21, bg=cm$colfunction(z), cex=3)
 #'}
+#'
 #' @family things related to colors
 colormap <- function(z=NULL,
                      zlim, zclip=FALSE,

@@ -21,7 +21,6 @@ An integer, or list of integers.
 Decode BCD to integer
 }
 \examples{
-
 library(oce)
 twenty.five <- bcdToInteger(as.raw(0x25))
 thirty.seven <- as.integer(as.raw(0x25))

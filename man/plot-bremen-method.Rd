@@ -9,7 +9,7 @@
 \S4method{plot}{bremen}(x, type, ...)
 }
 \arguments{
-\item{x}{A \code{bremen} object, e.g. as read by \code{\link{read.bremen}}.}
+\item{x}{a \linkS4class{bremen} object.}
 
 \item{type}{Optional string indicating the type to which \code{x} should be
 coerced before plotting. The choices are \code{ctd} and \code{ladp}.}
@@ -17,14 +17,14 @@ coerced before plotting. The choices are \code{ctd} and \code{ladp}.}
 \item{...}{Other arguments, passed to plotting functions.}
 }
 \description{
-Plot a \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
-If \code{x} seems to be a CTD dataset, uses \code{\link{plot,ctd-method}};
-otherwise, \code{x} is assumed to be a lowered-adp object, and a two-panel
-plot is created with \code{\link{plot,ladp-method}} to show velocity variation with
+Plot a \linkS4class{bremen} object.
+If the first argument seems to be a CTD dataset, this uses \code{\link[=plot,ctd-method]{plot,ctd-method()}};
+otherwise, that argument is assumed to be a \linkS4class{ladp} object, and a two-panel
+plot is created with \code{\link[=plot,ladp-method]{plot,ladp-method()}} to show velocity variation with
 pressure.
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -48,7 +48,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
+Other things related to bremen data: \code{\link{[[,bremen-method}},
   \code{\link{[[<-,bremen-method}},
   \code{\link{bremen-class}}, \code{\link{read.bremen}},
   \code{\link{summary,bremen-method}}
@@ -56,5 +56,5 @@ Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{bremen} data}
+\concept{functions that plot oce data}
+\concept{things related to bremen data}

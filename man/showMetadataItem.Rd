@@ -8,7 +8,7 @@ showMetadataItem(object, name, label = "", postlabel = "",
   isdate = FALSE, quote = FALSE)
 }
 \arguments{
-\item{object}{an object inheriting from the base \code{oce} class.}
+\item{object}{an \linkS4class{oce} object.}
 
 \item{name}{name of item}
 
@@ -24,7 +24,6 @@ showMetadataItem(object, name, label = "", postlabel = "",
 This is a helper function for various \code{summary} functions.
 }
 \examples{
-
 library(oce)
 data(ctd)
 showMetadataItem(ctd, "ship", "ship")

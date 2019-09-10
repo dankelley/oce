@@ -23,7 +23,7 @@ each of the pregriddd points is given equal weight.}
 these values are inferred from the data, using e.g. \code{pretty(x, n=50)}.}
 
 \item{xgl, ygl}{optional lengths of the x and y grids, to be constructed with
-\code{\link{seq}} spanning the data range.  These values \code{xgl} are only
+\code{\link[=seq]{seq()}} spanning the data range.  These values \code{xgl} are only
 examined if \code{xg} and \code{yg} are not supplied.}
 
 \item{xr, yr}{optional values defining the width of the radius ellipse in the
@@ -39,12 +39,12 @@ and y over the square root of the number of data.}
 to be used as a criterion for blanking out the gridded value (using
 \code{NA}).  If 0, the whole \code{zg} grid is returned.  If >0, any spots
 on the grid where the data weight is less than the \code{trim}-th
-\code{\link{quantile}} are set to \code{NA}.  See examples.}
+\code{\link[=quantile]{quantile()}} are set to \code{NA}.  See examples.}
 
 \item{pregrid}{an indication of whether to pre-grid the data. If
 \code{FALSE}, this is not done, i.e. conventional Barnes interpolation is
 performed.  Otherwise, then the data are first averaged within grid cells
-using \code{\link{binMean2D}}.  If \code{pregrid} is \code{TRUE} or
+using \code{\link[=binMean2D]{binMean2D()}}.  If \code{pregrid} is \code{TRUE} or
 \code{4}, then this averaging is done within a grid that is 4 times finer
 than the grid that will be used for the Barnes interpolation. Otherwise,
 \code{pregrid} may be a single integer indicating the grid refinement (4
@@ -73,7 +73,6 @@ sparse, using the \code{trim} argument, and the ability to pre-grid, with
 the \code{pregrid} argument.
 }
 \examples{
-
 library(oce)
 
 # 1. contouring example, with wind-speed data from Koch et al. (1983)
@@ -116,7 +115,7 @@ interactive Barnes objective map analysis scheme for use with satellite and
 conventional data,'' \emph{J.  Climate Appl.  Met.}, vol 22, p. 1487-1503.
 }
 \seealso{
-See \code{\link{wind}}.
+See \code{\link[=wind]{wind()}}.
 }
 \author{
 Dan Kelley

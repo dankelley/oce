@@ -8,7 +8,7 @@
 \S4method{subset}{adp}(x, subset, ...)
 }
 \arguments{
-\item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
+\item{x}{an \linkS4class{adp} object.}
 
 \item{subset}{A condition to be applied to the \code{data} portion of
 \code{x}.  See \sQuote{Details}.}
@@ -16,14 +16,21 @@
 \item{...}{Ignored.}
 }
 \value{
-A new \code{\link{adp-class}} object.
+An \linkS4class{adp} object.
 }
 \description{
 Subset an adp (acoustic Doppler profile) object, in a manner that is function
-is somewhat analogous to \code{\link{subset.data.frame}}. For any data type,
-subsetting can be by \code{time} or \code{distance}, but these may not be
-combined; use a sequence of calls to subset by both. For the special
-case of AD2CP data (see \code{\link{read.adp.ad2cp}}), it is possible to subset
+is somewhat analogous to \code{\link[=subset.data.frame]{subset.data.frame()}}.
+}
+\details{
+For any data type,
+subsetting can be by \code{time}, \code{ensembleNumber}, or \code{distance}.
+These may not be combined, but it is easy to use a string of calls to
+carry out combined operations, e.g.
+\code{subset(subset(adp,distance<d0), time<t0)}
+
+For the special
+case of AD2CP data (see \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}), it is possible to subset
 to the "average" data records with \code{subset="average"}, to the
 "burst" records with \code{subset="burst"}, or to the "interleavedBurst"
 with \code{subset="interleavedBurst"}; note that no warning is issued,
@@ -32,12 +39,18 @@ if this leaves an object with no useful data.
 \examples{
 library(oce)
 data(adp)
-# First part of time series
-plot(subset(adp, time < mean(range(adp[['time']]))))
+# 1. Look at first part of time series, organized by time
+earlyTime <- subset(adp, time < mean(range(adp[['time']])))
+plot(earlyTime)
+
+# 2. Look at first ten ensembles (AKA profiles)
+en <- adp[["ensembleNumber"]]
+firstTen <- subset(adp, ensembleNumber < en[11])
+plot(firstTen)
 
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -58,12 +71,13 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 
-Other functions that subset \code{oce} objects: \code{\link{subset,adv-method}},
+Other functions that subset oce objects: \code{\link{subset,adv-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,argo-method}},
   \code{\link{subset,cm-method}},
@@ -82,5 +96,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adv-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that subset \code{oce} objects}
-\concept{things related to \code{adp} data}
+\concept{functions that subset oce objects}
+\concept{things related to adp data}

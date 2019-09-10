@@ -4,26 +4,26 @@
 #'
 #' This class stores data from oceanographic section surveys.
 #'
-#' Sections can be read with \code{\link{read.section}} or created with
-#' \code{\link{read.section}} or created from CTD objects by using
-#' \code{\link{as.section}} or by adding a ctd station to an existing section with
-#' \code{\link{sectionAddStation}}.
+#' Sections can be read with [read.section()] or created with
+#' [read.section()] or created from CTD objects by using
+#' [as.section()] or by adding a ctd station to an existing section with
+#' [sectionAddStation()].
 #'
-#' Sections may be sorted with \code{\link{sectionSort}}, subsetted with
-#' \code{\link{subset,section-method}}, smoothed with \code{\link{sectionSmooth}}, and
-#' gridded with \code{\link{sectionGrid}}.  Gridded sections may be plotted with
-#' \code{\link{plot,section-method}}.
+#' Sections may be sorted with [sectionSort()], subsetted with
+#' [subset,section-method()], smoothed with [sectionSmooth()], and
+#' gridded with [sectionGrid()].  Gridded sections may be plotted with
+#' [plot,section-method()].
 #'
-#' Statistical summaries are provided by \code{\link{summary,section-method}}, while
-#' overviews are provided by \code{show}.
+#' Statistical summaries are provided by [summary,section-method()], while
+#' overviews are provided by `show`.
 #'
-#' The sample dataset \code{\link{section}} contains data along WOCE line A03.
+#' The sample dataset [section()] contains data along WOCE line A03.
 #'
 #' @templateVar class section
 #'
 #' @templateVar dataExample {}
 #'
-#' @templateVar metadataExample Examples that are of common interest include \code{stationId}, \code{longitude}, \code{latitude} and \code{time}.
+#' @templateVar metadataExample Examples that are of common interest include `stationId`, `longitude`, `latitude` and `time`.
 #'
 #' @template slot_summary
 #'
@@ -45,21 +45,20 @@
 #'
 #' @author Dan Kelley
 #'
-#' @family classes provided by \code{oce}
-#' @family things related to \code{section} data
+#' @family classes provided by oce
+#' @family things related to section data
 setClass("section", contains="oce")
 
 
-#' @title Hydrographic section
+#' Hydrographic section
 #'
-#' @description
 #' This is line A03 (ExpoCode 90CT40_1, with nominal sampling date 1993-09-11).
 #' The chief scientist was Tereschenkov of SOI, working aboard the Russian ship
 #' Multanovsky, undertaking a westward transect from the Mediterranean outflow
 #' region across to North America, with a change of heading in the last few dozen
 #' stations to run across the nominal Gulf Stream axis.
 #' The data flags follow the "WHP Bottle"convention, set by
-#' \code{\link{initializeFlagScheme,section-method}} to \code{"WHP bottle"}; see
+#' [initializeFlagScheme,section-method()] to `"WHP bottle"`; see
 #' \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 #' for more information on World Hydrographic Program flag conventions.
 #'
@@ -79,11 +78,11 @@ setClass("section", contains="oce")
 #'
 #' @usage data(section)
 #'
-#' @source This is based on the WOCE file named \code{a03_hy1.csv}, downloaded
+#' @source This is based on the WOCE file named `a03_hy1.csv`, downloaded
 #' from \url{https://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{section} data
+#' @family datasets provided with oce
+#' @family things related to section data
 NULL
 
 setMethod(f="initialize",
@@ -93,7 +92,7 @@ setMethod(f="initialize",
               .Object@metadata$flags <- NULL # senseless keeping these from oce()
               .Object@metadata$filename <- filename
               .Object@metadata$sectionId <- sectionId
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'section' object"
               return(.Object)
           })
@@ -104,18 +103,21 @@ setMethod(f="initialize",
 #' @title Handle flags in Section Objects
 #'
 #' @details
-#' The default for \code{flags} is based on
-#' calling \code{\link{defaultFlags}} based on the
-#' \code{metadata} in the first station in the section. If the
+#' The default for `flags` is based on
+#' calling [defaultFlags()] based on the
+#' `metadata` in the first station in the section. If the
 #' other stations have different flag schemes (which seems highly
 #' unlikely for archived data), this will not work well, and indeed
-#' the only way to proceed would be to use \code{\link{handleFlags,ctd-method}}
+#' the only way to proceed would be to use [handleFlags,ctd-method()]
 #' on the stations, individually.
 #'
-#' @param object An object of \code{\link{section-class}}.
+#' @param object A [section-class] object.
+#'
 #' @template handleFlagsTemplate
+#'
 #' @references
 #' 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+#'
 #' @examples
 #' library(oce)
 #' data(section)
@@ -124,10 +126,9 @@ setMethod(f="initialize",
 #' plotTS(section)
 #' plotTS(section2)
 #'
-#' @family things related to \code{section} data
-setMethod("handleFlags",
-          c(object="section", flags="ANY", actions="ANY", debug="ANY"),
-          function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
+#' @family things related to section data
+setMethod("handleFlags", signature=c(object="section", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
+          definition=function(object, flags=NULL, actions=NULL, where=where, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               if (is.null(flags)) {
                   flags <- defaultFlags(object[["station", 1]])
@@ -142,13 +143,13 @@ setMethod("handleFlags",
                   stop("names of flags and actions must match")
               res <- object
               for (i in seq_along(res@data$station)) {
-                  res@data$station[[i]] <- handleFlags(res@data$station[[i]], flags, actions, debug)
+                  res@data$station[[i]] <- handleFlags(res@data$station[[i]], flags, actions, where=where, debug)
               }
               res
           })
 
 #' @templateVar class section
-#' @templateVar details This applies \code{initializeFlagScheme} for each \code{ctd} station within the \code{stations} element of the \code{data} slot.
+#' @templateVar details This applies `initializeFlagScheme` for each `ctd` station within the `stations` element of the `data` slot.
 #' @template initializeFlagSchemeTemplate
 #'
 #' @examples
@@ -176,26 +177,25 @@ setMethod("initializeFlagScheme",
               res
           })
 
-#' @title Summarize a Section Object
+#' Summarize a Section Object
 #'
-#' @description
 #' Pertinent summary information is presented, including station locations,
 #' distance along track, etc.
 #'
-#' @param object An object of class \code{"section"}, usually, a result of a call
-#' to \code{\link{read.section}}, \code{\link{read.oce}}, or
-#' \code{\link{as.section}}.
+#' @param object An object of class `"section"`, usually, a result of a call
+#' to [read.section()], [read.oce()], or
+#' [as.section()].
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return \code{NULL}
+#' @return `NULL`
 #'
 #' @examples
 #' library(oce)
 #' data(section)
 #' summary(section)
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 #'
 #' @author Dan Kelley
 setMethod(f="summary",
@@ -252,58 +252,58 @@ setMethod(f="summary",
           })
 
 
-#' @title Extract Something From a Section Object
-#' @param x A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.
+#' Extract Something From a Section Object
+#'
+#' @param x a [section-class] object.
 #'
 #' @templateVar class section
 #'
-#' @section Details of the specialized \code{section} method:
+#' @section Details of the specialized `section` method:
 #'
-#' There are several possibilities, depending on the nature of \code{i}.
-#'\itemize{
-#' \item If \code{i} is the string \code{"station"}, then the method
-#' will return a \code{\link{list}} of
-#' \code{\link{ctd-class}} objects holding the station data.
-#' If \code{j} is also given, it specifies a station (or set of stations) to be returned.
-#' if \code{j} contains just a single value, then that station is returned, but otherwise
-#' a list is returned. If \code{j} is an integer, then the stations are specified by index,
+#' There are several possibilities, depending on the nature of `i`.
+#'
+#' * If `i` is the string `"station"`, then the method
+#' will return a [list()] of
+#' [ctd-class] objects holding the station data.
+#' If `j` is also given, it specifies a station (or set of stations) to be returned.
+#' if `j` contains just a single value, then that station is returned, but otherwise
+#' a list is returned. If `j` is an integer, then the stations are specified by index,
 #' but if it is character, then stations are specified by the names stored within
-#' their metadata. (Missing stations yield \code{NULL} in the return value.)
+#' their metadata. (Missing stations yield `NULL` in the return value.)
 #'
-#' \item If \code{i} is \code{"station ID"}, then the IDs of the stations in the
+#' * If `i` is `"station ID"`, then the IDs of the stations in the
 #' section are returned.
 #'
-#' \item If \code{i} is \code{"dynamic height"}, then an estimate of dynamic
-#' height is returned (as calculated with \code{\link{swDynamicHeight}(x)}).
+#' * If `i` is `"dynamic height"`, then an estimate of dynamic
+#' height is returned, as calculated with [`swDynamicHeight`]`(x)`.
 #'
-#' \item If \code{i} is \code{"distance"}, then the distance along the section is
-#' returned, using \code{\link{geodDist}}.
+#' * If `i` is `"distance"`, then the distance along the section is
+#' returned, using [geodDist()].
 #'
-#' \item If \code{i} is \code{"depth"}, then a vector containing the depths
+#' * If `i` is `"depth"`, then a vector containing the depths
 #' of the stations is returned.
 #'
-#' \item If \code{i} is \code{"z"}, then a vector containing the z
+#' * If `i` is `"z"`, then a vector containing the z
 #' coordinates is returned.
 #'
-#' \item If \code{i} is \code{"theta"} or \code{"potential temperature"}, then
+#' * If `i` is `"theta"` or `"potential temperature"`, then
 #' the potential temperatures of all the stations are returned in one
-#' vector.  Similarly, \code{"spice"} returns the property known
-#' as spice, using \code{\link{swSpice}}.
+#' vector.  Similarly, `"spice"` returns the property known
+#' as spice, using [swSpice()].
 #'
-#' \item If \code{i} is a string ending with \code{"Flag"}, then the characters
+#' * If `i` is a string ending with `"Flag"`, then the characters
 #' prior to that ending are taken to be the name of a variable contained
 #' within the stations in the section. If this flag is available in
 #' the first station of the section, then the flag values are looked
 #' up for every station.
-#'}
 #'
-#' If \code{j} is \code{"byStation"}, then a list is returned, with
+#' If `j` is `"byStation"`, then a list is returned, with
 #' one (unnamed) item per station.
-## #' If \code{j} is \code{"grid:distance-pressure"}, then a gridded
-## #' representation of \code{i} is returned, as a list with elements
-## #' \code{distance} (in km), \code{pressure} (in dbar) and
-## #' \code{field} (in whatever unit is used for \code{i}). See Example
-## #' for in the documentation for \code{\link{plot,section-method}}.
+## #' If `j` is `"grid:distance-pressure"`, then a gridded
+## #' representation of `i` is returned, as a list with elements
+## #' `distance` (in km), `pressure` (in dbar) and
+## #' `field` (in whatever unit is used for `i`). See Example
+## #' for in the documentation for [plot,section-method()].
 #'
 #' @template sub_subTemplate
 #'
@@ -318,7 +318,8 @@ setMethod(f="summary",
 #' # First station salinities
 #' Sl[[1]]
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
+#'
 #' @author Dan Kelley
 setMethod(f="[[",
           signature(x="section", i="ANY", j="ANY"),
@@ -459,10 +460,12 @@ setMethod(f="[[",
               res
           })
 
-#' @title Replace Parts of a Section Object
-#' @param x A \code{section} object, i.e. inheriting from \code{\link{section-class}}
-#' @family things related to \code{section} data
+#' Replace Parts of a Section Object
+#'
+#' @param x a [section-class] object.
+#'
 #' @template sub_subsetTemplate
+#'
 #' @examples
 #' # 1. Change section ID from a03 to A03
 #' data(section)
@@ -472,7 +475,10 @@ setMethod(f="[[",
 #' # 2. Add a millidegree to temperatures at station 10
 #' section[["station", 10]][["temperature"]] <-
 #'     1e-3 + section[["station", 10]][["temperature"]]
+#'
 #' @author Dan Kelley
+#'
+#' @family things related to section data
 setMethod(f="[[<-",
           signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -523,53 +529,53 @@ setMethod(f="show",
 #'
 #' This function is used to subset data within the
 #' stations of a section, or to choose a subset of the stations
-#' themselves. The first case is handled with the \code{subset} argument,
-#' while the second is handled if \code{...} contains a vector named
-#' \code{indices}. Either \code{subset} or \code{indices} must be
+#' themselves. The first case is handled with the `subset` argument,
+#' while the second is handled if `...` contains a vector named
+#' `indices`. Either `subset` or `indices` must be
 #' provided, but not both.
 #'
-#' \strong{In the "subset" method}, \code{subset} indicates
+#' **In the "subset" method**, `subset` indicates
 #' either stations to be kept, or data to be kept within the stations.
 #'
 #' The first step in processing is to check for the presence of certain
-#' key words in the \code{subset} expression. If \code{distance}
+#' key words in the `subset` expression. If `distance`
 #' is present, then stations are selected according to a condition on the
 #' distance (in km) from the first station to the given station (Example 1).
-#' If either \code{longitude} or \code{latitude} is given, then
+#' If either `longitude` or `latitude` is given, then
 #' stations are selected according to the stated condition (Example 2).
-#' If \code{stationId} is present, then selection is in terms of the
+#' If `stationId` is present, then selection is in terms of the
 #' station ID (not the sequence number) is used (Example 3). In all of these
 #' cases, stations are either selected in their entirety or dropped
 #' in their entirety.
 #'
-#' If none of these keywords is present, then the \code{subset} expression is
-#' evaluated in the context of the \code{data} slot of each of the CTD stations
-#' stored within \code{x}. (Note that this slot does not normally
+#' If none of these keywords is present, then the `subset` expression is
+#' evaluated in the context of the `data` slot of each of the CTD stations
+#' stored within `x`. (Note that this slot does not normally
 #' contain any of the keywords that are listed in the previous
 #' paragraph; it does, then odd results may occur.) Each station is examined
-#' in turn, with \code{subset} being evaluated individually in each. The evaluation
+#' in turn, with `subset` being evaluated individually in each. The evaluation
 #' produces a logical vector. If that vector has length 1 (Examples 4 and 5)
 #' then the station is retained or discarded, accordingly. If the vector is longer,
 #' then the logical vector is used as a sieve to subsample that individual CTD
 #' profile.
 #'
-#' \strong{In the "indices" method}, stations are selected using
-#' \code{indices}, which may be a vector of integers that indicate sequence
+#' **In the "indices" method**, stations are selected using
+#' `indices`, which may be a vector of integers that indicate sequence
 #' number, or a logical vector, again indicating which stations to keep.
 #'
-#' @param x A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.
+#' @param x a [section-class] object.
 #'
 #' @param subset an optional indication of either the stations to be kept,
 #' or the data to be kept within the stations.  See \dQuote{Details}.
 #'
 #' @param ... optional arguments, of which only the first is examined. The
-#' possibilities for this argument are \code{indices}, which must be a
-#' vector of station indices (see Example 6), or \code{within}, which must be
-#' a list or data frame, contianing items named either \code{x} and \code{y}
-#' or \code{longitude} and \code{latitude} (see Example 7). If \code{within}
-#' is given, then \code{subset} is ignored.
+#' possibilities for this argument are `indices`, which must be a
+#' vector of station indices (see Example 6), or `within`, which must be
+#' a list or data frame, contianing items named either `x` and `y`
+#' or `longitude` and `latitude` (see Example 7). If `within`
+#' is given, then `subset` is ignored.
 #'
-#' @return A \code{\link{section-class}} object.
+#' @return A [section-class] object.
 #'
 #' @examples
 #' library(oce)
@@ -605,8 +611,8 @@ setMethod(f="show",
 #' plot(GS, which="map")
 #'}
 #'
-#' @family functions that subset \code{oce} objects
-#' @family things related to \code{section} data
+#' @family functions that subset oce objects
+#' @family things related to section data
 #'
 #' @author Dan Kelley
 setMethod(f="subset",
@@ -795,28 +801,28 @@ setMethod(f="subset",
           })
 
 
-#' @title Sort a Section
+#' Sort a Section
 #'
-#' @description
-#' Sections created with \code{\link{as.section}} have "stations" that are in the
+#' Sections created with [as.section()] have "stations" that are in the
 #' order of the CTD objects (or filenames for such objects) provided.  Sometimes,
 #' this is not the desired order, e.g. if file names discovered with
-#' \code{\link{dir}} are in an order that makes no sense.  (For example, a
-#' practioner might name stations \code{"stn1"}, \code{"stn2"}, etc., not
+#' [dir()] are in an order that makes no sense.  (For example, a
+#' practioner might name stations `"stn1"`, `"stn2"`, etc., not
 #' realizing that this will yield an unhelpful ordering, by file name, if there
-#' are more than 9 stations.) The purpose of \code{sectionSort} is to permit
+#' are more than 9 stations.) The purpose of `sectionSort` is to permit
 #' reordering the constituent stations in sensible ways.
 #'
-#' @param section A \code{section} object containing the section whose stations
+#' @param section A `section` object containing the section whose stations
 #' are to be sorted.
 #'
 #' @param by An optional string indicating how to reorder.  If not provided,
-#' \code{"stationID"} will be assumed.  Other choices are \code{"distance"}, for
-#' distance from the first station, \code{"longitude"}, for longitude,
-#' \code{"latitude"} for latitude, and \code{"time"}, for time.
+#' `"stationID"` will be assumed.  Other choices are `"distance"`, for
+#' distance from the first station, `"longitude"`, for longitude,
+#' `"latitude"` for latitude, and `"time"`, for time.
 #'
-#' @return An object of \code{\link{section-class}} that has less lateral
-#' variation than the input section.
+#' @return object A [section-class] object that has been smoothed,
+#' so its data fields will station-to-statoin variation than
+#' is the case for the input section, \code{x}.
 #'
 #' @examples
 #'\dontrun{
@@ -832,7 +838,7 @@ setMethod(f="subset",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 sectionSort <- function(section, by)
 {
     if (missing(by)) {
@@ -870,13 +876,12 @@ sectionSort <- function(section, by)
     res
 }
 
-#' @title Add a CTD Station to a Section
+#' Add a CTD Station to a Section
 #'
-#' @description
 #' Add a CTD profile to an existing section.
 #'
 #' @section Historical note:
-#' Until March 2015, this operation was carried out with the \code{+} operator,
+#' Until March 2015, this operation was carried out with the `+` operator,
 #' but at that time, the syntax was flagged by the development version of R, so it
 #' was changed to the present form.
 #'
@@ -885,7 +890,7 @@ sectionSort <- function(section, by)
 #' @param station A ctd object holding data for the station to be added.
 #'
 #' @aliases sectionAddCtd
-#' @return An object of \code{\link[base]{class}} \code{section}.
+#' @return An object of `\link[base]{class`} `section`.
 #'
 #' @examples
 #' library(oce)
@@ -902,7 +907,7 @@ sectionSort <- function(section, by)
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 sectionAddStation <- function(section, station)
 {
     if (missing(section)) stop("must provide a section to which the ctd is to be added")
@@ -925,81 +930,74 @@ sectionAddStation <- function(section, station)
 sectionAddCtd <- sectionAddStation
 
 
-#' @title Plot a Section
+#' Plot a Section
 #'
-#' @description
 #' Creates a summary plot for a CTD section, with one panel for each value of
-#' \code{which}.
+#' `which`.
 #'
-#' @details
-#' The type of plot is governed by \code{which}, as follows.
-#'
-#' \itemize{
-#'     \item \code{which=0} or \code{"potential temperature"} for temperature contours
-#'     \item \code{which=1} or \code{"temperature"} for temperature contours (the default)
-#'     \item \code{which=2} or \code{"salinity"} for salinity contours
-#'     \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
-#'     \item \code{which=4} or \code{"nitrate"} for nitrate concentration contours
-#'     \item \code{which=5} or \code{"nitrite"} for nitrite concentration contours
-#'     \item \code{which=6} or \code{"oxygen"} for oxygen concentration  contours
-#'     \item \code{which=7} or \code{"phosphate"} for phosphate concentration contours
-#'     \item \code{which=8} or \code{"silicate"} for silicate concentration contours
-#'     \item \code{which=9} or \code{"u"} for eastward velocity
-#'     \item \code{which=10} or \code{"uz"} for vertical derivative of eastward velocity
-#'     \item \code{which=11} or \code{"v"} for northward velocity
-#'     \item \code{which=12} or \code{"vz"} for vertical derivative of northward velocity
-#'     \item \code{which=20} or \code{"data"} for a dot for each data location
-#'     \item \code{which=99} or \code{"map"} for a location map
-#' }
+#' The type of plot is governed by `which`, as follows.
+#' * `which=0` or `"potential temperature"` for temperature contours
+#' * `which=1` or `"temperature"` for temperature contours (the default)
+#' * `which=2` or `"salinity"` for salinity contours
+#' * `which=3` or `"sigmaTheta"` for sigma-theta contours
+#' * `which=4` or `"nitrate"` for nitrate concentration contours
+#' * `which=5` or `"nitrite"` for nitrite concentration contours
+#' * `which=6` or `"oxygen"` for oxygen concentration  contours
+#' * `which=7` or `"phosphate"` for phosphate concentration contours
+#' * `which=8` or `"silicate"` for silicate concentration contours
+#' * `which=9` or `"u"` for eastward velocity
+#' * `which=10` or `"uz"` for vertical derivative of eastward velocity
+#' * `which=11` or `"v"` for northward velocity
+#' * `which=12` or `"vz"` for vertical derivative of northward velocity
+#' * `which=20` or `"data"` for a dot for each data location
+#' * `which=99` or `"map"` for a location map
 #'
 #' The y-axis for the contours is pressure, plotted in the conventional reversed
 #' form, so that the water surface appears at the top of the plot.  The x-axis is
-#' more complicated. If \code{at} is not supplied, then the routine calculates x
+#' more complicated. If `at` is not supplied, then the routine calculates x
 #' as the distance between the first station in the section and each of the other
 #' stations. (This will produce an error if the stations are not ordered
-#' geographically, because the \code{\link{contour}} routine cannot handle
-#' non-increasing axis coordinates.) If \code{at} is specified, then it is taken
+#' geographically, because the [contour()] routine cannot handle
+#' non-increasing axis coordinates.) If `at` is specified, then it is taken
 #' to be the location, in arbitrary units, along the x-axis of labels specified by
-#' \code{labels}; the way this works is designed to be the same as for
-#' \code{\link{axis}}.
+#' `labels`; the way this works is designed to be the same as for
+#' [axis()].
 #'
-#'
-#' @param x a \code{section} object, e.g. as created by \code{\link{as.section}}
-#' or \code{\link{read.section}}.
+#' @param x a [section-class] object.
 #'
 #' @param which a list of desired plot types, as explained in \dQuote{Details}.
 #' There may be up to four panels in total, and the desired plots are placed in
-#' these panels, in reading order.  If only one panel is plotted, \code{par} is
+#' these panels, in reading order.  If only one panel is plotted, `par` is
 #' not adjusted, which makes it easy to add to the plot with subsequent plotting
 #' commands.
 #'
 #' @template eosTemplate
 #'
-#' @param at If \code{NULL} (the default), the x axis will indicate the distance
+#' @param at If `NULL` (the default), the x axis will indicate the distance
 #' of the stations from the first in the section.  (This may give errors in the
 #' contouring routine, if the stations are not present in a geographical order.)
 #' If a list, then it indicates the values at which stations will be plotted.
 #'
 #' @param labels Either a logical, indicating whether to put labels on the x axis,
 #' or a vector that is a list of labels to be placed at the x positions indicated
-#' by \code{at}.
+#' by `at`.
 #'
-#' @param grid If \code{TRUE}, points are drawn at data locations.
+#' @param grid If `TRUE`, points are drawn at data locations.
 #'
 #' @param contourLevels Optional contour levels.
 #'
 #' @param contourLabels Optional contour labels.
 #'
 #' @param stationIndices Optional list of the indices of stations to use.  Note
-#' that an index is \emph{not} a station number, e.g. to show the first 4
-#' stations, use \code{station.indices=1:4}.
+#' that an index is *not* a station number, e.g. to show the first 4
+#' stations, use `station.indices=1:4`.
 #'
 #' @param coastline String giving the coastline to be used in a station map
-#' The permitted choices are \code{"best"} (the default) to pick
-#' a variant that suits the scale, \code{"coastlineWorld"} for the coarse
+#' The permitted choices are `"best"` (the default) to pick
+#' a variant that suits the scale, `"coastlineWorld"` for the coarse
 #' version that is provided by \CRANpkg{oce},
-#' \code{"coastlineWorldMedium"} or \code{"coastlineWorldFine"} for two
-#' coastlines provided by the \CRANpkg{ocedata} package, or \code{"none"}, to avoid
+#' `"coastlineWorldMedium"` or `"coastlineWorldFine"` for two
+#' coastlines provided by the \CRANpkg{ocedata} package, or `"none"`, to avoid
 #' drawing a coastline.
 #'
 #' @param xlim Optional limit for x axis (only in sections, not map).
@@ -1007,81 +1005,89 @@ sectionAddCtd <- sectionAddStation
 #' @param ylim Optional limit for y axis (only in sections, not map)
 #'
 #' @param zlim Optional two-element numerical vector specifying the
-#' limit on the plotted field. This is used only if \code{ztype="image"};
-#' see also \code{zbreaks} and \code{zcol}.
+#' limit on the plotted field. This is used only if `ztype="image"`;
+#' see also `zbreaks` and `zcol`.
 #'
-#' @param map.xlim,map.ylim Optional limits for station map; \code{map.ylim} is
-#' ignored if \code{map.xlim} is provided.
+#' @param map.xlim,map.ylim Optional limits for station map; `map.ylim` is
+#' ignored if `map.xlim` is provided.
 #'
 #' @param clongitude,clatitude,span Optional map centre position and span (km).
 #'
 #' @param projection Parameter specifying map
-#' projection; see \code{\link{mapPlot}}.  If \code{projection="automatic"},
-#' however, a projection is devised from the data, with \code{stereographic} if
-#' the mean latitude exceeds 70N and \code{mollweide} otherwise.
+#' projection; see [mapPlot()].  If `projection="automatic"`,
+#' however, a projection is devised from the data, with `stereographic` if
+#' the mean latitude exceeds 70N and `mollweide` otherwise.
 #'
-#' @param xtype Type of x axis, for contour plots, either \code{"distance"} for
-#' distance (in km) to the first point in the section, \code{"track"} for distance
-#' along the cruise track, \code{"longitude"}, \code{"latitude"}, or
-#' \code{"time"}.  Note that if the x values are not in order, they will be put in
+#' @param xtype Type of x axis, for contour plots, either `"distance"` for
+#' distance (in km) to the first point in the section, `"track"` for distance
+#' along the cruise track, `"longitude"`, `"latitude"`, or
+#' `"time"`.  Note that if the x values are not in order, they will be put in
 #' order (which may make no sense) and a warning will be printed.
 #'
-#' @param ytype Type of y axis for contour plots, either \code{"pressure"} for
-#' pressure (in dbar, with zero at the surface) or \code{"depth"} for depth (in m
-#' below the surface, calculated from pressure with \code{\link{swDepth}}).
+#' @param longitude0,latitude0 Location of the point from which distance is measured.
+#' These values are ignored unless `xtype` is `"distance"`.
+#'
+#' @param ytype Type of y axis for contour plots, either `"pressure"` for
+#' pressure (in dbar, with zero at the surface) or `"depth"` for depth (in m
+#' below the surface, calculated from pressure with [swDepth()]).
 #'
 #' @param ztype String indicating whether to how to indicate the "z"
 #' data (in the R sense, i.e. this could be salinity, temperature, etc; it does
-#' not mean the vertical coordinate) The choices are: \code{"contour"} for
-#' contours, \code{"image"} for an image (drawn with \code{\link{imagep}} with
-#' \code{filledContours=TRUE}), or \code{"points"} to draw points.
+#' not mean the vertical coordinate) The choices are: `"contour"` for
+#' contours, `"image"` for an image (drawn with [imagep()] with
+#' `filledContours=TRUE`), or `"points"` to draw points.
 #' In the first two cases, the data must be gridded, with identical pressures at
 #' each station.
 #'
-#' @param zbreaks,zcol Indication of breaks and colors to be used if \code{ztype="points"} or
-#' \code{"image"}. If not provided, reasonable default are used. If \code{zlim}
-#' is given but \code{breaks} is not given, then \code{breaks} is computed to
-#' run from \code{zlim[1]} to \code{zlim[2]}. If \code{zcol} is a function,
+#' @param zbreaks,zcol Indication of breaks and colors to be used if `ztype="points"` or
+#' `"image"`. If not provided, reasonable default are used. If `zlim`
+#' is given but `breaks` is not given, then `breaks` is computed to
+#' run from `zlim[1]` to `zlim[2]`. If `zcol` is a function,
 #' it will be invoked with an argument equal to
-#' \code{1+length(zbreaks)}.
+#' `1+length(zbreaks)`.
 #'
-#' @param legend.loc Location of legend, as supplied to \code{\link{legend}}, or
+#' @param legend.loc Location of legend, as supplied to [legend()], or
 #' set to the empty string to avoid plotting a legend.
 #'
 #' @param showStations Logical indicating whether to draw station numbers on maps.
 #'
 #' @param showStart Logical indicating whether to indicate the first station with
-#' a different symbol than the others.
+#'
+#' @param stationTicks A logical value indicating whether to indicate station
+#' locations with ticks at the top margin of cross-section plots. Setting this
+#' parameter to `FALSE` frees the user up to do their own labelling
+#' at this spot.
 #'
 #' @param showBottom An indication of whether (and how) to indicate the ocean bottom.
-#' If \code{FALSE}, then the bottom is not rendered. If \code{TRUE}, then it
-#' is rendered with a gray polygon. If \code{showBottom} is a character string,
-#' then there are three possibilities: is the string is \code{"polygon"} then
-#' a polygon is drawn, if it is \code{"lines"} then a line is drawn, and if it
-#' is \code{"points"} then points are drawn. If \code{showBottom} is an object
-#' inheriting from \code{\link{topo-class}} then the station locations are
+#' If `FALSE`, then the bottom is not rendered. If `TRUE`, then it
+#' is rendered with a gray polygon. If `showBottom` is a character string,
+#' then there are three possibilities: is the string is `"polygon"` then
+#' a polygon is drawn, if it is `"lines"` then a line is drawn, and if it
+#' is `"points"` then points are drawn. If `showBottom` is
+#' a [topo-class] object,
+#' then the station locations are
 #' interpolated to that topography and the results are shown with a polygon.
 #' In this last case, the interpolation is set at a grid that is roughly
-#' in accordance with the resolution of the latitudes in the \code{topo} object.
+#' in accordance with the resolution of the latitudes in the `topo` object.
 #' See \dQuote{Examples}.
 #'
 #' @param axes Logical value indicating whether to draw axes.
 #'
-#' @param mgp A 3-element numerical vector to use for \code{par(mgp)}, and also for
-#' \code{par(mar)}, computed from this. If not provided, this defaults to
-#' \code{getOption("oceMgp")}.
+#' @param mgp A 3-element numerical vector to use for `par(mgp)`, and also for
+#' `par(mar)`, computed from this. If not provided, this defaults to
+#' [`getOption`]`("oceMgp")`.
 #'
-#' @param mar Value to be used with \code{\link{par}("mar")}. If not provided,
+#' @param mar Value to be used with [`par`]`("mar")`. If not provided,
 #' a default is set up.
 #'
-#' @param col Color, which defaults to \code{\link{par}("col")}.
+#' @param col Color, which defaults to [`par`]`("col")`.
 #'
-#' @param cex Numerical character-expansion factor, which defaults to \code{\link{par}("cex")}.
+#' @param cex Numerical character-expansion factor, which defaults to [`par`]`("cex")`.
 #'
-#' @param pch Indication of symbol type; defaults to \code{\link{par}("pch")}.
+#' @param pch Indication of symbol type; defaults to [`par`]`("pch")`.
 #'
 #' @param labcex Size of characters in contour labels (passed to
-#' \code{\link{contour}}).
+#' [contour()]).
 #'
 #' @template debugShortTemplate
 #'
@@ -1093,10 +1099,9 @@ sectionAddCtd <- sectionAddStation
 #' purpose of returning the section is to enable subsequent processing
 #' of the grid, including adding elements to the plot (see example 5).
 #'
-#' @seealso The documentation for \code{\link{section-class}} explains the
+#' @seealso The documentation for [section-class] explains the
 #' structure of section objects, and also outlines the other functions dealing
 #' with them.
-#'
 #'
 #' @examples
 #' library(oce)
@@ -1161,8 +1166,9 @@ sectionAddCtd <- sectionAddStation
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{section} data
+#' @family functions that plot oce data
+#' @family things related to section data
+#'
 #' @aliases plot.section
 setMethod(f="plot",
           signature=signature("section"),
@@ -1181,10 +1187,12 @@ setMethod(f="plot",
                               clongitude, clatitude, span,
                               projection=NULL,
                               xtype="distance", ytype="depth", ztype="contour",
+                              longitude0, latitude0,
                               zbreaks=NULL, zcol=NULL,
                               legend.loc="bottomright",
                               showStations=FALSE,
                               showStart=TRUE,
+                              stationTicks=TRUE,
                               showBottom=TRUE,
                               axes=TRUE, mgp, mar,
                               col, cex, pch,
@@ -1276,6 +1284,7 @@ setMethod(f="plot",
                                          variable="temperature", vtitle="T", unit=NULL,
                                          eos=getOption("oceEOS", default="gsw"),
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
+                                         showStations=FALSE,
                                          xlim=NULL, ylim=NULL,
                                          clongitude, clatitude, span,
                                          projection=NULL,
@@ -1292,6 +1301,7 @@ setMethod(f="plot",
                            "\", ztype=\"", ztype,
                            "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
                            "\", span=", if (missing(span)) "(missing)" else span,
+                           ", showStations=", showStations,
                            ", axes=", axes, ", ...) {\n", sep="", unindent=1)
                   ## L and R are used much later, for constructing labels
                   L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
@@ -1510,7 +1520,7 @@ setMethod(f="plot",
                                ylab=ylab,
                                axes=FALSE)
                           if (axes) {
-                              oceDebug(debug, "drawing axes\n")
+                              ## oceDebug(debug, "drawing axes\n")
                               axis(4, labels=FALSE)
                               ytics <- axis(2, labels=FALSE)
                               axis(2, at=ytics, labels=-ytics)
@@ -1526,6 +1536,7 @@ setMethod(f="plot",
                               } else {
                                   axis(1)
                               }
+                              ## oceDebug(debug, "finished drawing axes\n")
                           }
                           box()
                       } else {
@@ -1602,8 +1613,13 @@ setMethod(f="plot",
                                       } else {
                                           rep(NA, length(thisStation[["pressure"]]))
                                       }
-                                      ##. message("zz[",i,",]:", paste(head(zz[i,]), collapse=" "))
+                                      ## message("zz[",i,",]:", paste(head(zz[i,]), collapse=" "))
                                   }
+                                  ## if (all(dim(zz) > 2)) {
+                                  ##     oceDebug(debug, "zz[1,1:3]=", paste(zz[1,1:3], collapse=" "), "\n")
+                                  ##     oceDebug(debug, "zz[2,1:3]=", paste(zz[2,1:3], collapse=" "), "\n")
+                                  ##     oceDebug(debug, "zz[3,1:3]=", paste(zz[3,1:3], collapse=" "), "\n")
+                                  ## }
                               }
                           }
                           if (grid && !drawPoints)
@@ -1637,7 +1653,7 @@ setMethod(f="plot",
 
                       ##oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
                       ##waterDepth <- -waterDepth
-                      if (!grid && axes)
+                      if (!grid && axes && stationTicks)
                           Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
                       bottom.x <- c(xx[1], xx, xx[length(xx)])
                       bottom.y <- if (any(is.finite(waterDepth))) c(graph.bottom, -waterDepth, graph.bottom)
@@ -1648,10 +1664,11 @@ setMethod(f="plot",
                       ##par(xaxs="i", yaxs="i")
 
                       ## Put x in order, if it's not already
+                      xx[!is.finite(xx)] <- NA # for issue 1583: grid larger than data range can get NaN values
                       ox <- order(xx)
                       xxOrig <- xx
                       ii <- seq_along(xxOrig) # so we can use it later for drawing bottoms
-                      if (any(xx[ox] != xx)) {
+                      if (any(xx[ox] != xx, na.rm=TRUE)) { # for issue 1583: handle the NA just inserted
                           xx <- xx[ox]
                           zz <- zz[ox, ] ## FIXME keep this???
                           ii <- ii[ox]
@@ -1822,12 +1839,14 @@ setMethod(f="plot",
                        call.=FALSE)
               firstStation <- x@data$station[[stationIndices[1]]]
               num.depths <- length(firstStation@data$pressure)
-              zz <- matrix(nrow=numStations, ncol=num.depths)
-              xx <- array(NA_real_, numStations)
-              yy <- array(NA_real_, num.depths)
+              zz <- array(NA_real_, dim=c(numStations, num.depths))
+              xx <- rep(NA, numStations)
+              yy <- rep(NA, num.depths)
               if (is.null(at)) {
-                  lon0 <- mean(firstStation[["longitude"]], na.rm=TRUE)
-                  lat0 <- mean(firstStation[["latitude"]], na.rm=TRUE)
+                  lon0 <- if (missing(longitude0)) mean(firstStation[["longitude"]], na.rm=TRUE) else longitude0
+                  lat0 <- if (missing(latitude0)) mean(firstStation[["latitude"]], na.rm=TRUE) else latitude0
+                  oceDebug(debug, vectorShow(lon0))
+                  oceDebug(debug, vectorShow(lat0))
                   for (ix in 1:numStations) {
                       j <- stationIndices[ix]
                       if (which.xtype == 1) { # distance from first station
@@ -1890,7 +1909,7 @@ setMethod(f="plot",
               } else {
                   stop("unknown ytype")
               }
-              oceDebug(debug, "yy starts:", paste(head(yy), collapse=" "))
+              oceDebug(debug, vectorShow(yy))
               ##> message("CHECK(section.R:1034) yy: ", paste(round(yy), " "))
               ##> message("station 1 pressure: ", paste(x@data$station[[1]]@data$pressure, collapse=" "))
               par(mgp=mgp, mar=mar)
@@ -1947,6 +1966,7 @@ setMethod(f="plot",
                    } else {
                       if (which[w] == "temperature") {
                           oceDebug(debug, "plotting temperature with contourLevels not provided\n")
+                          ##if (!sum(is.finite(zz))) browser() ### FIXME:1583
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          "temperature",
                                          if (eos == "unesco") "T" else expression(Theta),
@@ -1998,28 +2018,27 @@ setMethod(f="plot",
           })
 
 
-#' @title Read a Section File
+#' Read a Section File
 #'
-#' @description
-#' Read a file that contains a series of \code{ctd} profiles that make up an
+#' Read a file that contains a series of `ctd` profiles that make up an
 #' oceanographic section.
-#' Only \emph{exchange BOT} comma-separated value format is permitted at this time,
+#' Only *exchange BOT* comma-separated value format is permitted at this time,
 #' but other formats may be added later.  It should also be noted that the parsing
 #' scheme was developed after inspection of the A03 data set (see Examples). This
 #' may cause problems if the format is not universal. For example, the header must
-#' name the salinity column "\code{CTDSAL}"; if not, salinity values will not be
+#' name the salinity column "`CTDSAL`"; if not, salinity values will not be
 #' read from the file.
 #'
 #' @section Disambiguating salinity:
-#' WOCE datasets commonly have a column named \code{CTDSAL} for salinity inferred
-#' from a CTD and \code{SALNTY} (not a typo) for salinity derived from bottle data.
+#' WOCE datasets commonly have a column named `CTDSAL` for salinity inferred
+#' from a CTD and `SALNTY` (not a typo) for salinity derived from bottle data.
 #' If only one of these is present in the data file, the data will be called
-#' \code{salinity} in the \code{data} slot of the return value. However, if both
-#' are present, then \code{CTDSAL} is stored as \code{salinity} and \code{SALNTY}
-#' is stored as \code{salinityBottle}.
+#' `salinity` in the `data` slot of the return value. However, if both
+#' are present, then `CTDSAL` is stored as `salinity` and `SALNTY`
+#' is stored as `salinityBottle`.
 #'
 #' @param file A file containing a set of CTD observations.  At present, only the
-#' \emph{exchange BOT} format is accepted (see Details).
+#' *exchange BOT* format is accepted (see Details).
 #'
 #' @param directory A character string indicating the name of a  directory that
 #' contains a set of CTD files that hold individual stations in the section.
@@ -2037,31 +2056,33 @@ setMethod(f="plot",
 #'
 #' @param missingValue Numerical value used to indicate missing data.
 #'
-#' @param debug Logical. If \code{TRUE}, print some information that might be
+#' @param debug Logical. If `TRUE`, print some information that might be
 #' helpful during debugging.
 #'
 #' @param processingLog If provided, the action item to be stored in the log.  This
 #' is typically only provided for internal calls; the default that it provides is
 #' better for normal calls by a user.
 #'
-#' @return An object of class \code{\link{section-class}}.
+#' @return A [section-class] object.
 #'
 #' @references
 #' Several repository sites provide section data. An example that is perhaps likely
 #' to exist for years is \url{https://cchdo.ucsd.edu}, but a search on \code{"WOCE
 #'   bottle data"} should turn up other sites, if this one ceases to exist. Only
-#' the so-called \emph{exchange BOT} data format can be processed by read.section()
+#' the so-called *exchange BOT* data format can be processed by read.section()
 #' at this time. Data names are inferred from column headings using
-#' \code{\link{woceNames2oceNames}}.
+#' [woceNames2oceNames()].
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 read.section <- function(file, directory, sectionId="", flags,
                          ship="", scientist="", institute="",
                          missingValue=-999,
                          debug=getOption("oceDebug"), processingLog)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     oceDebug(debug, "read.section(file=\"", file, "\", ...) {\n", unindent=1)
     if (!missing(directory)) {
         if (!missing(file))
@@ -2417,50 +2438,50 @@ read.section <- function(file, directory, sectionId="", flags,
 #' Grid a Section in Pressure Space
 #'
 #' Grid a section, by interpolating to fixed pressure levels.  The
-#' \code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are described in the
-#' documentation for \code{\link{ctdDecimate}}, which is used to do this
+#' `"approx"`, `"boxcar"` and `"lm"` methods are described in the
+#' documentation for [ctdDecimate()], which is used to do this
 #' processing.
 #'
-#' The default \code{"approx"} method is best for bottle data, the
-#' \code{"boxcar"} is best for ctd data, and the \code{"lm"} method is probably
+#' The default `"approx"` method is best for bottle data, the
+#' `"boxcar"` is best for ctd data, and the `"lm"` method is probably
 #' too slow to recommend for exploratory work, in which it is common to do trials
-#' with a variety of \code{"p"} values.
+#' with a variety of `"p"` values.
 #'
 #' The stations in the returned value have flags with names that match those
-#' of the corresponding stations in the original \code{section}, but the values
-#' of these flags are all set to \code{NA}. This recognizes that it makes
+#' of the corresponding stations in the original `section`, but the values
+#' of these flags are all set to `NA`. This recognizes that it makes
 #' no sense to grid flag values, but that there is merit in initializing
 #' a flag system, for possible use in later processing steps.
 #'
-#' @param section A \code{section} object containing the section to be gridded.
+#' @param section A `section` object containing the section to be gridded.
 #'
 #' @param p Optional indication of the pressure levels to which interpolation
 #' should be done.  If this is not supplied, the pressure levels will be
 #' calculated based on the typical spacing in the ctd profiles stored within
-#' \code{section}.  If \code{p="levitus"}, then pressures will be set to be those
-#' of the Levitus atlas, given by \code{\link{standardDepths}}.
-#' If \code{p} is a single numerical value,
-#' it is taken as the number of subdivisions to use in a call to \code{\link{seq}}
-#' that has range from 0 to the maximum pressure in \code{section}.  Finally, if a
-#' vector numerical values is provided, perhaps. constructed with \code{\link{seq}}
-#' or \code{\link{standardDepths}(5)} (as in the examples),
+#' `section`.  If `p="levitus"`, then pressures will be set to be those
+#' of the Levitus atlas, given by [standardDepths()].
+#' If `p` is a single numerical value,
+#' it is taken as the number of subdivisions to use in a call to [seq()]
+#' that has range from 0 to the maximum pressure in `section`.  Finally, if a
+#' vector numerical values is provided, perhaps. constructed with [seq()]
+#' or [`standardDepths`]`(5)` (as in the examples),
 #' then it is used as is, after trimming any values that exceed the maximum
-#' pressure in the station data stored within \code{section}.
+#' pressure in the station data stored within `section`.
 #'
 #' @param method The method to use to decimate data within the stations; see
-#' \code{\link{ctdDecimate}}, which is used for the decimation.
+#' [ctdDecimate()], which is used for the decimation.
 #'
 #' @param trim Logical value indicating whether to trim gridded pressures
-#' to the range of the data in \code{section}.
+#' to the range of the data in `section`.
 #'
 #' @template debugTemplate
 #'
-#' @param ... Optional arguments to be supplied to \code{\link{ctdDecimate}},
-#' e.g. \code{rule} controls extrapolation beyond the observed pressure range,
-#' in the case where \code{method} equals \code{"approx"}.
+#' @param ... Optional arguments to be supplied to [ctdDecimate()],
+#' e.g. `rule` controls extrapolation beyond the observed pressure range,
+#' in the case where `method` equals `"approx"`.
 #'
-#' @return An object of \code{\link{section-class}} that contains stations whose
-#' pressure values match identically, and that has all flags set to \code{NA}.
+#' @return A [section-class] object that contains stations whose
+#' pressure values match identically, and that has all flags set to `NA`.
 #'
 #' @examples
 #' # Gulf Stream
@@ -2483,7 +2504,7 @@ read.section <- function(file, directory, sectionId="", flags,
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "sectionGrid(section, p, ",
@@ -2491,7 +2512,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
              "p=", if (missing(p)) "(missing)" else paste("c(",paste(p, collapse=","),")", sep=""), ", ",
              "trim=", trim, ", ...) {\n",
              sep="", unindent=1)
-    warningMessages <- NULL
+    ##warningMessages <- NULL
     n <- length(section@data$station)
     nxg <- n
     oceDebug(debug, "have", n, "stations in this section\n")
@@ -2536,7 +2557,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
     }
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
-    npt <- length(pt)
+    ##OLD npt <- length(pt)
     nstation <- length(res[["station"]])
     nyg <- length(pt)
 
@@ -2578,114 +2599,117 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #' direction or in both the vertical and lateral directions.
 #'
 #' This function produces smoothed fields that might be useful in
-#' simplifying graphical elements created with \code{\link{plot,section-method}}.
+#' simplifying graphical elements created with [plot,section-method()].
 #' As with any smoothing method, a careful analyst will compare the results
-#' against the raw data, e.g. using \code{\link{plot,section-method}}.
+#' against the raw data, e.g. using [plot,section-method()].
 #' In addition the problem of falsely widening narrow features such as
 #' fronts, there is also the potential to get unphysical results with
 #' spars sampling near topographic features such as bottom slopes and ridges.
 #'
-#' The \code{method} argument selects between three possible methods.
+#' The `method` argument selects between three possible methods.
 #'
-#' \itemize{
-#'
-#' \item For \code{method="spline"}, i.e. the default, the section is smoothed
-#' laterally, using \code{\link{smooth.spline}} on individual pressure levels.
-#' (If the pressure levels do not match up, \code{\link{sectionGrid}} should
-#' be used first to create a \code{section} object that can be used here.)
-#' The \code{df} argument sets the degree of freedom of the spline, with
+#' * For `method="spline"`, i.e. the default, the section is smoothed
+#' laterally, using [smooth.spline()] on individual pressure levels.
+#' (If the pressure levels do not match up, [sectionGrid()] should
+#' be used first to create a `section` object that can be used here.)
+#' The `df` argument sets the degree of freedom of the spline, with
 #' larger values indicating less smoothing.
 #'
-#' \item For the (much slower) \code{method="barnes"} method, smoothing is done across
-#' both horizontal and vertical coordinates, using \code{\link{interpBarnes}}.
+#' * For the (much slower) `method="barnes"` method, smoothing is done across
+#' both horizontal and vertical coordinates, using [interpBarnes()].
 #' The output station locations are computed by linear interpolation of
-#' input locations, using \code{\link{approx}} on the original
+#' input locations, using [approx()] on the original
 #' longitudes and longitudes of stations, with the independent variable
-#' being the distance along the track, computed with \code{\link{geodDist}}.
-#' The values of \code{xg}, \code{yg}, \code{xgl} and \code{ygl} control
+#' being the distance along the track, computed with [geodDist()].
+#' The values of `xg`, `yg`, `xgl` and `ygl` control
 #' the smoothing.
 #'
-#' \item If \code{method} is a function, then that function is applied to
+#' * If `method` is a function, then that function is applied to
 #' the (distance, pressure) data for each variable at a grid defined by
-#' \code{xg}, \code{xgl}, \code{yg} and \code{ygl}. The function must
-#' be of the form \code{function(x,y,F,xg,xr,yg,yr)}, and must
+#' `xg`, `xgl`, `yg` and `ygl`. The function must
+#' be of the form `function(x,y,F,xg,xr,yg,yr)`, and must
 #' return a matrix of the gridded result, with first index indicating
 #' the "grid" station number and second index indicating "grid" pressure.
-#' The \code{x} value that is supplied to this function is set as
-#' the distance along the section, as computed with \code{\link{geodDist}},
+#' The `x` value that is supplied to this function is set as
+#' the distance along the section, as computed with [geodDist()],
 #' and repeated for each of the points at each station.  The corresponding
-#' pressures are provided in \code{y}, and the value to be gridded is
-#' in \code{v}, which will be \code{temperture} on one call to the function,
-#' \code{salinity} on another call, etc. The other quantities
+#' pressures are provided in `y`, and the value to be gridded is
+#' in `v`, which will be `temperture` on one call to the function,
+#' `salinity` on another call, etc. The other quantities
 #' have the meanings as described below.  See the \dQuote{Examples}
 #' for a description of how to set up and use a function for the gridding
 #' method known as Kriging.
 #'
-#'}
 #'
-#' @param section A \code{section} object containing the section to be smoothed.
-#' For \code{method="spline"}, the pressure levels must match for each station in
+#' @param section A `section` object containing the section to be smoothed.
+#' For `method="spline"`, the pressure levels must match for each station in
 #' the section.
 #'
 #' @param method A string or a function that specifies the method to use; see \sQuote{Details}.
 #'
-#' @param x Optional numerical vector, of the same length as the number of stations in \code{section},
+#' @param x Optional numerical vector, of the same length as the number of stations in `section`,
 #' which will be used in gridding in the lateral direction. If not provided, this
-#' defaults to \code{\link{geodDist}(section)}.
+#' defaults to [`geodDist`]`(section)`.
 #'
-#' @param xg,xgl ignored in the \code{method="spline"} case, but passed to
-#' \code{\link{interpBarnes}} if \code{method="barnes"} or
-#' to \code{method} if it is a function.
-#' If \code{xg} is supplied, it defines the x component of the grid, i.e. the resultant station
-#' distances, x, along the track of the section.
-#' Alternatively, if \code{xgl} is supplied, the x grid is established using \code{\link{seq}},
-#' to span the data with \code{xgl} elements. If neither of these is supplied, the output
+#' @param xg,xgl ignored in the `method="spline"` case, but passed to
+#' [interpBarnes()] if `method="barnes"`, to kriging
+#' functions if `method="kriging"`, or to `method` itself, if it
+#' is a function.
+#' If `xg` is supplied, it defines the x component of the grid, which by
+#' default is the terms of station distances, x, along the track of the section. (Note
+#' that the grid `xg` is trimmed to the range of the data `x`, because otherwise
+#' it would be impossible to interpolate between stations to infer water depth,
+#' longitude, and latitude, which are all stored within the stations in the
+#' returned `section` object.)
+#' Alternatively, if `xgl` is supplied, the x grid is established using [seq()],
+#' to span the data with `xgl` elements. If neither of these is supplied, the output
 #' x grid will equal the input x grid.
 #'
-#' @param yg,ygl similar to \code{xg} and \code{xgl}, but for pressure. If \code{yg}
-#' is not given, it is determined from the deepest station in the section. If
-#' \code{ygl} was not given, then a grid is constructed to span the pressures
-#' of that deepest station with \code{ygl} elements. On the other hand,
-#' if \code{ygl} was not given, then the y grid will constructed from the
+#' @param yg,ygl similar to `xg` and `xgl`, but for pressure. (Note that
+#' trimming to the input `y` is not done, as it is for `xg` and `x`.)
+#" If `yg` is not given, it is determined from the deepest station in the section.
+#' If `ygl` was not given, then a grid is constructed to span the pressures
+#' of that deepest station with `ygl` elements. On the other hand,
+#' if `ygl` was not given, then the y grid will constructed from the
 #' pressure levels in the deepest station.
 #'
 #' @param xr,yr influence ranges in x (along-section distance) and y (pressure),
-#' passed to \code{\link{interpBarnes}} if \code{method="barnes"} or to
-#' \code{method}, if the latter is a function. If missing, \code{xr} defaults to
-#' 1.5X the median inter-station distance and \code{yr} defaults to 0.2X
+#' passed to [interpBarnes()] if `method="barnes"` or to
+#' `method`, if the latter is a function. If missing, `xr` defaults to
+#' 1.5X the median inter-station distance and `yr` defaults to 0.2X
 #' the pressure range. Since these defaults have changed over the evolution
-#' of \code{sectionSmooth}, analysts ought to supply \code{xr} and \code{yr}
+#' of `sectionSmooth`, analysts ought to supply `xr` and `yr`
 #' in the function call, tailoring them to particular applications, and
-#' making the code more resistant to changes in \code{sectionSmooth}.
+#' making the code more resistant to changes in `sectionSmooth`.
 #'
-#' @param df Degree-of-freedom parameter, passed to \code{\link{smooth.spline}}
-#' if \code{method="spline"}, and ignored otherwise. If \code{df} is not provided,
-#' it defaults to 1/5-th of the number of stations containing non-\code{NA}
-#' data at the particular pressure level being processed, as \code{sectionSmooth}
+#' @param df Degree-of-freedom parameter, passed to [smooth.spline()]
+#' if `method="spline"`, and ignored otherwise. If `df` is not provided,
+#' it defaults to 1/5-th of the number of stations containing non-`NA`
+#' data at the particular pressure level being processed, as `sectionSmooth`
 #' works its way through the water column.
 #'
 #' @param gamma,iterations,trim,pregrid Values passed to
-#' \code{\link{interpBarnes}}, if \code{method="barnes"}, and
-#' ignored otherwise. \code{gamma} is the factor by which
-#' \code{xr} and \code{yr} are reduced on each of succeeding iterations.
-#' \code{iterations} is the number of iterations to do.
-#' \code{trim} controls whether the gridded data are set to
-#' \code{NA} in regions with sparse data
-#' coverage. \code{pregrid} controls whether data are to be
-#' pre-gridded with \code{\link{binMean2D}} before being passed to
-#' \code{\link{interpBarnes}}.
+#' [interpBarnes()], if `method="barnes"`, and
+#' ignored otherwise. `gamma` is the factor by which
+#' `xr` and `yr` are reduced on each of succeeding iterations.
+#' `iterations` is the number of iterations to do.
+#' `trim` controls whether the gridded data are set to
+#' `NA` in regions with sparse data
+#' coverage. `pregrid` controls whether data are to be
+#' pre-gridded with [binMean2D()] before being passed to
+#' [interpBarnes()].
 #'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
 #'
 #' @param ... Optional extra arguments, passed to either
-#' \code{\link{smooth.spline}}, if \code{method="spline"}, and ignored otherwise.
+#' [smooth.spline()], if `method="spline"`, and ignored otherwise.
 #'
-#' @return An object of \code{\link{section-class}} that has been smoothed in some way.
+#' @return A [section-class] object of that has been smoothed in some way.
 #' Every data field that is in even a single station of the input object
 #' is inserted into every station in the returned value, and therefore
 #' the units represent all the units in any of the stations, as do the
-#' flag names. However, the flags are all set to \code{NA} values.
+#' flag names. However, the flags are all set to `NA` values.
 #'
 #' @examples
 #' # Unsmoothed (Gulf Stream)
@@ -2724,7 +2748,7 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 sectionSmooth <- function(section, method="spline",
                           x,
                           xg, yg, xgl, ygl, xr, yr,
@@ -2735,6 +2759,8 @@ sectionSmooth <- function(section, method="spline",
         stop("method is only for objects of class '", "section", "'")
     if (!is.function(method) && !(is.character(method) && (method %in% c("barnes", "kriging", "spline"))))
         stop('method must be "barnes", "kriging", "spline", or an R function')
+    ## pin debug, since we only call one function, interpBarnes() that uses debug
+    debug <- if (debug > 2) 2 else if (debug < 0) 0 else debug
     oceDebug(debug, "sectionSmooth(section,method=\"",
              if (is.character(method)) method else "(function)", "\", ...) {\n", sep="", unindent=1)
     stations <- section[["station"]]
@@ -2759,16 +2785,23 @@ sectionSmooth <- function(section, method="spline",
     maxPressure <- max(P, na.rm=TRUE)
     if (missing(xg)) {
         xg <- if (missing(xgl)) x else seq(min(x), max(x), length.out=xgl)
-        oceDebug(debug, "defaulted xg=", paste(xg, collapse=" "), "\n")
+        oceDebug(debug, "defaulted", vectorShow(xg))
     } else {
-        oceDebug(debug, "user-supplied xg=", paste(xg, collapse=" "), "\n")
+        oceDebug(debug, "user-supplied", vectorShow(xg))
     }
     if (missing(yg)) {
         deepest <- which.max(unlist(lapply(section[["station"]], function(ctd) max(ctd[["pressure"]], na.rm=TRUE))))
         yg <- if (missing(ygl)) section[["station", deepest]][["pressure"]] else seq(0, maxPressure, length.out=ygl)
+        oceDebug(debug, "defaulted", vectorShow(yg))
+    } else {
+        oceDebug(debug, "user-supplied", vectorShow(yg))
     }
-    oceDebug(debug, vectorShow(xg))
-    oceDebug(debug, vectorShow(yg))
+    ## Trim xg to the data range in x (issue 1583)
+    oceDebug(debug, "original data", vectorShow(x))
+    keep <- min(x) <= xg & xg <= max(x)
+    oceDebug(debug, "before trimming", vectorShow(xg))
+    xg <- xg[keep]
+    oceDebug(debug, "after trimming", vectorShow(xg))
     stn1pressure <- stations[[1]][["pressure"]]
     if (identical(method, "spline") && !identical(yg, stn1pressure))
         stop("for method=\"spline\", yg must match the pressure vector in first station")
@@ -2809,9 +2842,11 @@ sectionSmooth <- function(section, method="spline",
         oceDebug(debug, "dim matrix for input grid=", paste(dim(VAR), collapse="X"), "\n")
         for (var in vars) {
             ##? res@data$station[[istn]][[var]] <- rep(NA, npressure)
-            oceDebug(debug, "  smoothing", var, "\n")
-            for (istn in seq_len(nx))
+            oceDebug(debug, "smoothing '", var, "'\n", sep="")
+            for (istn in seq_len(nx)) {
+                ##message("istn=", istn)
                 VAR[istn, ] <- if (var %in% names(stations[[istn]][["data"]])) stations[[istn]][[var]] else rep(NA, npressure)
+            }
             ## Smooth at each pressure value (turn off warnings because smooth.spline is confusingly chatty)
             owarn <- options('warn')$warn
             options(warn=-1)
@@ -2841,7 +2876,18 @@ sectionSmooth <- function(section, method="spline",
             }
         }
     } else {
-        oceDebug(debug, "using barnes or function method\n")
+        if (is.character(method)) {
+            if (method == "barnes")
+                oceDebug(debug, "using method=\"barnes\"\n")
+            else if (method == "kriging")
+                oceDebug(debug, "using method=\"kriging\"\n")
+            else
+                stop("unknown string method=\"", method, "\"; it must be \"barnes\" or \"kriging\"")
+        } else if (is.function(method)) {
+            oceDebug(debug, "using method=(function)\n")
+        } else {
+            stop("method must be a string or a function")
+        }
         ## either "barnes" or a function
         ## Find names of all variables in all stations; previous to 2019 May 2,
         ## we only got names from the first station.
@@ -2859,7 +2905,7 @@ sectionSmooth <- function(section, method="spline",
         ## Smooth each variable separately
         for (var in vars) {
             v <- NULL
-            oceDebug(debug, "  smoothing", var, "\n")
+            oceDebug(debug, "smoothing '", var, "' near section.R:2908\n", sep="")
             ## collect data
             v <- unlist(lapply(section[["station"]],
                                function(CTD)
@@ -2888,7 +2934,11 @@ sectionSmooth <- function(section, method="spline",
                         }
                         owarn <- options('warn')$warn
                         options(warn=-1) # silence autoKrige chattiness on e.g. method selection
-                        capture.output(smu <- list(z=krigFunction(X[ok], P[ok], v[ok], xg=xg, xr=xr, yg=yg, yr=yr)))
+                        capture.output(
+                                       {
+                                           smu <- list(z=krigFunction(X[ok], P[ok], v[ok], xg=xg, xr=xr, yg=yg, yr=yr))
+                                       }
+                        )
                         options(warn=owarn)
                     } else {
                         stop('method="kriging" requires packages "automap" and "sp" to be installed\n')
@@ -2915,13 +2965,20 @@ sectionSmooth <- function(section, method="spline",
             }
         }
     }
+    oceDebug(debug, "smoothing portion completed (near section.R line 2920)\n")
     ## Set up section-level and station-level metadata
+    ##longitudeNew <- approx(x, section[["longitude", "byStation"]], xg)$y # FIXME
+    ##latitudeNew <- approx(x, section[["latitude", "byStation"]], xg)$y
     res@metadata$longitude <- approx(x, section[["longitude", "byStation"]], xg)$y
     res@metadata$latitude <- approx(x, section[["latitude", "byStation"]], xg)$y
+    if (any(!is.finite(res@metadata$longitude)))
+        warning("some gridded longitudes are NA\n")
+    if (any(!is.finite(res@metadata$latitude)))
+        warning("some gridded latitudes are NA\n")
     for (i in seq_along(xg)) {
         res@data$station[[i]]@metadata$longitude <- res@metadata$longitude[i]
         res@data$station[[i]]@metadata$latitude <- res@metadata$latitude[i]
-        res@data$station[[istn]]@metadata$stationId <- if (nxg < 10) sprintf("x%d", istn)
+        res@data$station[[i]]@metadata$stationId <- if (nxg < 10) sprintf("x%d", istn)
             else if (nxg < 100) sprintf("x%02d", istn)
             else if (nxg < 1000) sprintf("x%03d", istn)
             else if (nxg < 10000) sprintf("x%04d", istn)
@@ -2935,15 +2992,23 @@ sectionSmooth <- function(section, method="spline",
             res@data$station[[i]]@metadata$waterDepth <- waterDepthNew[i]
         }
     }
+    oceDebug(debug > 3, "about to create units\n")
     ## Insert uniform units and flags into each station.
     units <- list()
-    for (i in seq_len(nstation)) {
+    for (i in seq_along(section[["station"]])) {
+        oceDebug(debug > 3, "station i=", i, ", nstation=", nstation, ", length(section@data$section)=", length(section@data$station), "\n", sep="")
         for (unitName in names(section@data$station[[i]]@metadata$units)) {
+            oceDebug(debug > 3, "unitName='", unitName, "'\n", sep="")
             if (!(unitName %in% names(units))) {
+                oceDebug(debug > 3, " ... installing unitName='", unitName, "'\n", sep="")
                 units[unitName] <- section@data$station[[i]]@metadata$units[unitName]
+                oceDebug(debug > 3, " ... installation was ok\n")
             }
         }
     }
+    oceDebug(debug > 3, "installing units\n")
+    oceDebug(debug > 3, "length(res@data$station)=", length(res@data$station), "\n")
+    oceDebug(debug > 3, "nxg=", nxg, "\n")
     for (i in seq_len(nxg)) {
         res@data$station[[i]]@metadata$units <- units
         ## Note that we put in flags for *all* variables in the output file. This
@@ -2962,16 +3027,15 @@ sectionSmooth <- function(section, method="spline",
 }
 
 
-#' @title Create a Section
+#' Create a Section
 #'
-#' @description
-#' Create a section based on columnar data, or a set of \code{\link{oce-class}}
+#' Create a section based on columnar data, or a set of [oce-class]
 #' objects that can be coerced to a section. There are three cases.
 #'
 #' Case 1. If the first argument is a numerical vector, then it is taken to be the
-#' salinity, and \code{\link{factor}} is applied to \code{station} to break the
-#' data up into chunks that are assembled into \code{\link{ctd-class}} objects with
-#' \code{\link{as.ctd}} and combined to make a \code{\link{section-class}} object
+#' salinity, and [factor()] is applied to `station` to break the
+#' data up into chunks that are assembled into [ctd-class] objects with
+#' [as.ctd()] and combined to make a [section-class] object
 #' to be returned. This mode of operation is provided as a convenience for datasets
 #' that are already partly processed; if original CTD data are available, the next
 #' mode is preferred, because it permits the storage of much more data and metadata
@@ -2979,18 +3043,18 @@ sectionSmooth <- function(section, method="spline",
 #'
 #' Case 2. If the first argument is a list containing oce objects, then those
 #' objects are taken as profiles of something.  A requirement for this
-#' to work is that every element of the list contains both \code{longitude}
-#' and \code{latitude} in either the \code{metadata} or \code{data} slot (in
+#' to work is that every element of the list contains both `longitude`
+#' and `latitude` in either the `metadata` or `data` slot (in
 #' the latter case, the mean value is recorded in the section object)
-#' and that every element also contains \code{pressure} in its \code{data} slot.
+#' and that every element also contains `pressure` in its `data` slot.
 #'
-#' Case 3. If the first argument is a \code{\link{argo-class}} object, then
-#' the profiles it contains are turned into \code{\link{ctd-class}} objects,
+#' Case 3. If the first argument is a [argo-class] object, then
+#' the profiles it contains are turned into [ctd-class] objects,
 #' and these are assembled into a section to be returned.
 #'
 #' @param salinity This may be a numerical vector, in which case it is interpreted
 #' as the salinity, and the other arguments are used for the other components of
-#' \code{\link{ctd-class}} objects. Alternatively, it may be one of a variety of
+#' [ctd-class] objects. Alternatively, it may be one of a variety of
 #' other objects from which the CTD objects can be inferred, in which case the
 #' other arguments are ignored; see \sQuote{Details}.
 #'
@@ -3006,7 +3070,7 @@ sectionSmooth <- function(section, method="spline",
 #'
 #' @param sectionId Section identifier.
 #'
-#' @return An object of \code{\link{section-class}}.
+#' @return An object of [section-class].
 #'
 #' @examples
 #' library(oce)
@@ -3032,7 +3096,7 @@ sectionSmooth <- function(section, method="spline",
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{section} data
+#' @family things related to section data
 as.section <- function(salinity, temperature, pressure, longitude, latitude, station, sectionId="")
 {
     if (missing(salinity))

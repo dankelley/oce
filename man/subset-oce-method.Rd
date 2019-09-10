@@ -8,18 +8,18 @@
 \S4method{subset}{oce}(x, subset, ...)
 }
 \arguments{
-\item{x}{an oce object}
+\item{x}{an \linkS4class{oce} object}
 
 \item{subset}{a logical expression indicating how to take the subset; the form depends on the sub-class.}
 
-\item{...}{optional arguments, used in some specialized methods (e.g. \code{\link{subset,section-method}}).}
+\item{...}{optional arguments, used in some specialized methods, e.g. \code{\link[=subset,section-method]{subset,section-method()}}.}
 }
 \value{
 An oce object.
 }
 \description{
 This is a basic class for general oce objects.  It has specialised
-versions for most sub-classes, e.g. \code{\link{subset,ctd-method}}
+versions for most sub-classes, e.g. \code{\link[=subset,ctd-method]{subset,ctd-method()}}
 for \code{ctd} objects.
 }
 \examples{
@@ -32,7 +32,7 @@ plotProfile(ctd)
 plotProfile(top10)
 }
 \seealso{
-Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,adv-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,argo-method}},
@@ -48,4 +48,4 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
   \code{\link{subset,section-method}},
   \code{\link{subset,topo-method}}
 }
-\concept{functions that subset \code{oce} objects}
+\concept{functions that subset oce objects}

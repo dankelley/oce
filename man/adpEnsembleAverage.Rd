@@ -7,7 +7,7 @@
 adpEnsembleAverage(x, n = 5, leftover = FALSE, na.rm = TRUE, ...)
 }
 \arguments{
-\item{x}{an \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
+\item{x}{an \linkS4class{adp} object.}
 
 \item{n}{number of pings to average together.}
 
@@ -23,7 +23,7 @@ before the computation proceeds}
 \item{...}{extra arguments to be passed to the \code{mean()} function.}
 }
 \value{
-A reduced object of \code{\link{adp-class}} with ensembles averaged as specified. E.g. for an \code{adp} object with 100 pings and \code{n=5} the number of rows of the data arrays will be reduced by a factor of 5.
+A new \linkS4class{adp} object with ensembles averaged as specified. E.g. for an \code{adp} object with 100 pings and \code{n=5} the number of rows of the data arrays will be reduced by a factor of 5.
 }
 \description{
 Ensemble averaging of \code{adp} objects is often necessary to
@@ -37,7 +37,6 @@ size of the data set and decreasing the uncertainty of the
 velocity estimates (by averaging out Doppler noise).
 }
 \examples{
-
 library(oce)
 data(adp)
 adpAvg <- adpEnsembleAverage(adp, n=2)
@@ -45,7 +44,7 @@ plot(adpAvg)
 
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adp}}, \code{\link{as.adp}},
@@ -66,6 +65,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},
@@ -74,4 +74,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Clark Richards and Dan Kelley
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

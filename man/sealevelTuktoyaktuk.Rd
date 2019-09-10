@@ -8,7 +8,7 @@
 The data were based on the \code{T_TIDE} dataset, which in turn
 seems to be based on Appendix 7.2 of Foreman (1977).  Minor editing was on
 file format, and then the \code{sealevelTuktoyaktuk} object was created
-using \code{\link{as.sealevel}}.
+using \code{\link[=as.sealevel]{as.sealevel()}}.
 }
 \description{
 This sea-level dataset is provided with in Appendix 7.2 of Foreman (1977)
@@ -57,7 +57,7 @@ harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 Computers and Geosciences, 28, 929-937.
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
@@ -67,7 +67,7 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 
-Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
+Other things related to sealevel data: \code{\link{[[,sealevel-method}},
   \code{\link{[[<-,sealevel-method}},
   \code{\link{as.sealevel}},
   \code{\link{plot,sealevel-method}},
@@ -76,5 +76,5 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{subset,sealevel-method}},
   \code{\link{summary,sealevel-method}}
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{sealevel} data}
+\concept{datasets provided with oce}
+\concept{things related to sealevel data}

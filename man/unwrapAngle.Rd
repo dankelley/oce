@@ -22,10 +22,9 @@ instrument is aligned nearly northward, so that small variations in heading
 to large angles, because of the modulo-360 cut point.
 The method is to use the cosine and sine of the angle, to construct "x" and
 "y" values on a unit circle, then to find means and medians of x and y
-respectively, and finally to use \code{\link{atan2}} to infer the angles.
+respectively, and finally to use \code{\link[=atan2]{atan2()}} to infer the angles.
 }
 \examples{
-
 library(oce)
 true <- 355
 a <- true + rnorm(100, sd=10)

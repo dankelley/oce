@@ -17,7 +17,7 @@ the indicated values are used, and next argument is ignored.}
 
 \item{projection}{optional indication of projection.  This must be character
 string in the format used by the \CRANpkg{rgdal} package;
-see \code{\link{mapPlot}}.)}
+see \code{\link[=mapPlot]{mapPlot()}}.)}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -31,7 +31,7 @@ by specifying higher \code{debug} values.}
 A list containing \code{x} and \code{y}.
 }
 \description{
-If a projection is already being used (e.g. as set by \code{\link{mapPlot}})
+If a projection is already being used (e.g. as set by \code{\link[=mapPlot]{mapPlot()}})
 then only \code{longitude} and \code{latitude} should be given, and the
 other arguments will be inferred by \code{lonlat2map}.  This is important
 because otherwise, if a new projection is called for, it will ruin any
@@ -56,13 +56,15 @@ if (canProject) {
 }
 \seealso{
 \code{mapLongitudeLatitudeXY} is a safer alternative, if a map has
-already been drawn with \code{\link{mapPlot}}, because that function cannot
-alter an existing projection. \code{\link{map2lonlat}} is an inverse to
+already been drawn with \code{\link[=mapPlot]{mapPlot()}}, because that function cannot
+alter an existing projection. \code{\link[=map2lonlat]{map2lonlat()}} is an inverse to
 \code{map2lonlat}.
 
-Other functions related to maps: \code{\link{lonlat2utm}},
-  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
-  \code{\link{mapAxis}}, \code{\link{mapContour}},
+Other functions related to maps: \code{\link{formatPosition}},
+  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
+  \code{\link{mapArrows}}, \code{\link{mapAxis}},
+  \code{\link{mapContour}},
+  \code{\link{mapCoordinateSystem}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
   \code{\link{mapImage}}, \code{\link{mapLines}},
   \code{\link{mapLocator}},

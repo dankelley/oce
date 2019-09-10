@@ -29,7 +29,25 @@ Format geographical positions to degrees, minutes, and hemispheres
 library(oce)
 formatPosition(10+1:10/60+2.8/3600)
 formatPosition(10+1:10/60+2.8/3600, type="string")
+
+}
+\seealso{
+Other functions related to maps: \code{\link{lonlat2map}},
+  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
+  \code{\link{mapArrows}}, \code{\link{mapAxis}},
+  \code{\link{mapContour}},
+  \code{\link{mapCoordinateSystem}},
+  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
+  \code{\link{mapImage}}, \code{\link{mapLines}},
+  \code{\link{mapLocator}},
+  \code{\link{mapLongitudeLatitudeXY}},
+  \code{\link{mapPlot}}, \code{\link{mapPoints}},
+  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
+  \code{\link{mapText}}, \code{\link{mapTissot}},
+  \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
+  \code{\link{usrLonLat}}, \code{\link{utm2lonlat}}
 }
 \author{
 Dan Kelley
 }
+\concept{functions related to maps}

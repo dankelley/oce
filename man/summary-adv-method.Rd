@@ -9,7 +9,7 @@
 }
 \arguments{
 \item{object}{an object of class \code{"adv"}, usually, a result of a call to
-\code{\link{read.adv}}.}
+\code{\link[=read.adv]{read.adv()}}.}
 
 \item{...}{further arguments passed to or from other methods.}
 }
@@ -23,7 +23,7 @@ summary(adv)
 
 }
 \seealso{
-Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+Other things related to adv data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
   \code{\link{adv}}, \code{\link{beamName}},
   \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
@@ -40,4 +40,4 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{adv} data}
+\concept{things related to adv data}

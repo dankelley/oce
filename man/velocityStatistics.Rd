@@ -7,16 +7,15 @@
 velocityStatistics(x, control, ...)
 }
 \arguments{
-\item{x}{an \code{adp} or \code{adv} object, i.e. one inheriting from
-\code{\link{adp-class}} or \code{\link{adv-class}}.}
+\item{x}{an \linkS4class{adp} or \linkS4class{adv} object.}
 
-\item{control}{An optional \code{\link{list}} used to specify more information.
+\item{control}{An optional \link{list} used to specify more information.
 This is presently ignored for \code{adv} objects.  For \code{adp} objects, if
 \code{control$bin} is an integer, it is taken as the bin to be selected
 (otherwise, an average across bins is used).}
 
 \item{\dots}{additional arguments that are used in the call to
-\code{\link{mean}}.}
+\code{\link[=mean]{mean()}}.}
 }
 \value{
 A list containing items the major and minor axes of the covariance
@@ -43,7 +42,7 @@ arrows(0, 0, a$uMean, a$vMean, lwd=5, length=1/10, col='blue', lty="dashed")
 
 }
 \seealso{
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -65,11 +64,12 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 
-Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+Other things related to adv data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
   \code{\link{adv}}, \code{\link{beamName}},
   \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
@@ -87,5 +87,5 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{adp} data}
-\concept{things related to \code{adv} data}
+\concept{things related to adp data}
+\concept{things related to adv data}

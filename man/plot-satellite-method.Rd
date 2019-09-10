@@ -9,7 +9,7 @@
 \S4method{plot}{satellite}(x, y, asp, debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{An object inherting from \code{\link{satellite-class}}.}
+\item{x}{a \linkS4class{satellite} object.}
 
 \item{y}{String indicating the quantity to be plotted.}
 
@@ -17,18 +17,18 @@
 
 \item{debug}{A debugging flag, integer.}
 
-\item{...}{extra arguments passed to \code{\link{imagep}}, e.g. set
+\item{...}{extra arguments passed to \code{\link[=imagep]{imagep()}}, e.g. set
 \code{col} to control colors.}
 }
 \description{
-For an example using \code{g1sst} data, see \code{\link{read.g1sst}}.
+For an example using \code{g1sst} data, see \code{\link[=read.g1sst]{read.g1sst()}}.
 }
 \seealso{
 Other things related to satellite data: \code{\link{g1sst-class}},
   \code{\link{read.g1sst}}, \code{\link{satellite-class}},
   \code{\link{summary,satellite-method}}
 
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -55,6 +55,6 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
+\concept{functions that plot oce data}
 \concept{satellite}
 \concept{things related to satellite data}

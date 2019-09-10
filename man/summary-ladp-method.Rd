@@ -8,8 +8,7 @@
 \S4method{summary}{ladp}(object, ...)
 }
 \arguments{
-\item{object}{An object of class \code{"ladp"}, usually, a result of a call to
-\code{\link{as.ladp}}.}
+\item{object}{an \linkS4class{ladp} object.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
@@ -21,11 +20,11 @@ Pertinent summary information is presented, including the station name,
 sampling location, data ranges, etc.
 }
 \seealso{
-Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
+Other things related to ladp data: \code{\link{[[,ladp-method}},
   \code{\link{[[<-,ladp-method}}, \code{\link{as.ladp}},
   \code{\link{ladp-class}}, \code{\link{plot,ladp-method}}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to \code{ladp} data}
+\concept{things related to ladp data}

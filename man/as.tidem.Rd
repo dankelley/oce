@@ -10,13 +10,14 @@ as.tidem(tRef, latitude, name, amplitude, phase,
 \arguments{
 \item{tRef}{a POSIXt value indicating the mean time of the
 observations used to develop the harmonic model. This is rounded
-to the nearest hour in \code{as.tidem}, to match \code{\link{tidem}}.}
+to the nearest hour in \code{\link[=as.tidem]{as.tidem()}}, to match \code{\link[=tidem]{tidem()}}.}
 
 \item{latitude}{Numerical value indicating the latitude of the
-observations that were used to create the harmonic model.}
+observations that were used to create the harmonic model. This
+is needed for nodal-correction procedures carried out
+by \code{\link[=tidemVuf]{tidemVuf()}}.}
 
-\item{name}{Character vector holding names of constituents, in the
-notation used within the \code{const} element of \code{data(tidedata)}.}
+\item{name}{character vector holding names of constituents.}
 
 \item{amplitude}{Numeric vector of constituent amplitudes.}
 
@@ -31,15 +32,29 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-An object of \code{\link{tidem-class}}, with only minimal
+An object of \linkS4class{tidem}, with only minimal
 contents.
 }
 \description{
 This function is intended to provide a bridge to
-\code{\link{predict.tidem}}, enabling tidal predictions based
-on published tables of harmonic fits. \strong{CAUTION:} this
-is a provisional function, and its action and argument list
-may change through the summer of 2018 ... use with caution!
+\code{\link[=predict.tidem]{predict.tidem()}}, enabling tidal predictions based
+on published tables of harmonic fits.
+}
+\details{
+Note that only constituent names known to \code{\link[=tidem]{tidem()}} are handled.
+The permitted names are those listed in Foreman (1978), and
+tabulated with
+\preformatted{
+data(tidedata)
+data.frame(name=tidedata$const$name, freq=tidedata$const$freq)
+}
+Warnings are issued for any constituent name that is not in this list; as
+of the late summer of 2019, the only example seen in practice is
+\code{M1}, which according to Wikipedia (2019) has frequency 0.0402557, which
+is very close to that of \code{NO1}, i.e. 0.04026859, perhaps explaining
+why Foreman (1978) did not handle this constituent. A warning is
+issued if this or any other unhandled constituent is provided
+in the \code{name} argument to \code{as.tidem()}.
 }
 \examples{
 # Simulate a tide table with output from tidem().
@@ -78,6 +93,14 @@ ylim <- par("usr")[3:4] # to match scales in other panels
 oce.plot.ts(sealevelTuktoyaktuk[["time"]], p1, ylim=ylim)
 oce.plot.ts(sealevelTuktoyaktuk[["time"]], p2, ylim=ylim)
 
+}
+\references{
+Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
+Sciences, Patricia Bay.
+
+Wikipedia, "Theory of Tides." https://en.wikipedia.org/wiki/Theory_of_tides
+Downloaded Aug 17, 2019.
 }
 \seealso{
 Other things related to tides: \code{\link{[[,tidem-method}},

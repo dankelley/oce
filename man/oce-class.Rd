@@ -13,9 +13,9 @@ object, if desired.
 
 \describe{
 \item{\code{metadata}}{A list containing information about the data. The
-contents vary across sub-classes, e.g. an \code{\link{adp-class}}
+contents vary across sub-classes, e.g. an \linkS4class{adp}
 object has information about beam patterns, which obviously would
-not make sense for a \code{\link{ctd-class}} object In addition,
+not make sense for a \linkS4class{ctd} object In addition,
 all classes have items named \code{units} and \code{flags}, used
 to store information on the units of the data, and the data quality.}
 
@@ -30,7 +30,7 @@ str(new("oce"))
 
 }
 \seealso{
-Other classes provided by \code{oce}: \code{\link{adp-class}},
+Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
@@ -40,4 +40,4 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 }
-\concept{classes provided by \code{oce}}
+\concept{classes provided by oce}

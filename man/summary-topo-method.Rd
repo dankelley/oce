@@ -8,7 +8,7 @@
 \S4method{summary}{topo}(object, ...)
 }
 \arguments{
-\item{object}{A \code{topo} object, i.e. inheriting from \code{\link{topo-class}}.}
+\item{object}{A \linkS4class{topo} object.}
 
 \item{\dots}{Further arguments passed to or from other methods.}
 }
@@ -26,7 +26,7 @@ summary(topoWorld)
 
 }
 \seealso{
-Other things related to \code{topo} data: \code{\link{[[,topo-method}},
+Other things related to topo data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
   \code{\link{download.topo}},
   \code{\link{plot,topo-method}}, \code{\link{read.topo}},
@@ -37,4 +37,4 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{topo} data}
+\concept{things related to topo data}

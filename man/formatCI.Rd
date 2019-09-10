@@ -11,11 +11,11 @@ formatCI(ci, style = c("+/-", "parentheses"), model, digits = NULL)
 
 \item{style}{string indicating notation to be used.}
 
-\item{model}{optional regression model, e.g. returned by \code{\link{lm}} or
-\code{\link{nls}}.}
+\item{model}{optional regression model, e.g. returned by \code{\link[=lm]{lm()}} or
+\code{\link[=nls]{nls()}}.}
 
 \item{digits}{optional number of digits to use; if not supplied,
-\code{\link{getOption}("digits")} is used.}
+[\code{getOption}[\code{("digits")} is used.}
 }
 \value{
 If \code{ci} is given, the result is a character string with the
@@ -28,7 +28,7 @@ Format a confidence interval in parenthetic notation.
 }
 \details{
 If a \code{model} is given, then \code{ci} is ignored, and a confidence
-interval is calculated using \code{\link{confint}} with \code{level} set to
+interval is calculated using \code{\link[=confint]{confint()}} with \code{level} set to
 0.6914619.  This \code{level} corresponds to a range of plus or minus one
 standard deviation, for the t distribution and a large number of degrees of
 freedom (since \code{qt(0.6914619, 100000)} is 0.5).
@@ -73,12 +73,12 @@ m <- lm(y~x)
 print(formatCI(model=m))
 }
 \references{
-JCGM, 2008.  \emph{Evaluation of measurement data - Guide to the
+JCGM, 2008. \emph{Evaluation of measurement data - Guide to the
 expression of uncertainty in measurement (JCGM 100:2008)}, published by the
-Joint Committee for Guides in Metrology.
-[\url{http://www.bipm.org/en/publications/guides/gum.html}] (See section
+Joint Committee for Guides in Metrology,
+http://www.bipm.org/en/publications/guides/gum.html (see section
 7.2.2 for a summary of notation, which shows equal values to the right of a
-\code{+-} sign and in parentheses.)
+\code{+-} sign and in parentheses.
 
 I. Mills, T. Cvitas, K. Homann, N. Kallay, and K. Kuchitsu, 1993.
 \emph{Quantities, Units and Symbols in Physical Chemistry}, published

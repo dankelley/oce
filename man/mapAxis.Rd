@@ -22,36 +22,36 @@ intersections of the grid lines with the plotting box.}
 grid has already been drawn, then the labels will be at the
 interesections of the grid lines with the plotting box.}
 
-\item{tick}{parameter passed to \code{\link{axis}}.}
+\item{tick}{parameter passed to \code{\link[=axis]{axis()}}.}
 
-\item{line}{parameter passed to \code{\link{axis}}.}
+\item{line}{parameter passed to \code{\link[=axis]{axis()}}.}
 
-\item{pos}{parameter passed to \code{\link{axis}}.}
+\item{pos}{parameter passed to \code{\link[=axis]{axis()}}.}
 
-\item{outer}{parameter passed to \code{\link{axis}}.}
+\item{outer}{parameter passed to \code{\link[=axis]{axis()}}.}
 
-\item{font}{axis font, passed to \code{\link{axis}}.}
+\item{font}{axis font, passed to \code{\link[=axis]{axis()}}.}
 
-\item{lty}{axis line type, passed to \code{\link{axis}}.}
+\item{lty}{axis line type, passed to \code{\link[=axis]{axis()}}.}
 
-\item{lwd}{axis line width, passed to \code{\link{axis}}).}
+\item{lwd}{axis line width, passed to \code{\link[=axis]{axis()}}).}
 
-\item{lwd.ticks}{tick line width, passed to \code{\link{axis}}.}
+\item{lwd.ticks}{tick line width, passed to \code{\link[=axis]{axis()}}.}
 
-\item{col}{axis color, passed to \code{\link{axis}}.}
+\item{col}{axis color, passed to \code{\link[=axis]{axis()}}.}
 
-\item{col.ticks}{axis tick color, passed to \code{\link{axis}}.}
+\item{col.ticks}{axis tick color, passed to \code{\link[=axis]{axis()}}.}
 
-\item{hadj}{an argument that is transmitted to \code{\link{axis}}.}
+\item{hadj}{an argument that is transmitted to \code{\link[=axis]{axis()}}.}
 
-\item{padj}{an argument that is transmitted to \code{\link{axis}}.}
+\item{padj}{an argument that is transmitted to \code{\link[=axis]{axis()}}.}
 
-\item{tcl}{axis-tick size (see \code{\link{par}}).}
+\item{tcl}{axis-tick size (see \code{\link[=par]{par()}}).}
 
-\item{cex.axis}{axis-label expansion factor (see \code{\link{par}}).}
+\item{cex.axis}{axis-label expansion factor (see \code{\link[=par]{par()}}).}
 
 \item{mgp}{three-element numerical vector describing axis-label
-placement (see \code{\link{par}}). It usually makes sense to set
+placement (see \code{\link[=par]{par()}}). It usually makes sense to set
 the first and third elements to zero.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
@@ -82,11 +82,13 @@ mapAxis()
 
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapContour}},
+Other functions related to maps: \code{\link{formatPosition}},
+  \code{\link{lonlat2map}}, \code{\link{lonlat2utm}},
+  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
+  \code{\link{mapContour}},
+  \code{\link{mapCoordinateSystem}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
   \code{\link{mapImage}}, \code{\link{mapLines}},
   \code{\link{mapLocator}},

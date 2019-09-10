@@ -1,40 +1,40 @@
 #' Infer variable name, units and scale from a Seabird (.cnv) header line
 #'
-#' This function is used by \code{\link{read.ctd.sbe}} to infer data names
-#' and units from the coding used by Teledyne/Seabird (SBE) \code{.cnv}
+#' This function is used by [read.ctd.sbe()] to infer data names
+#' and units from the coding used by Teledyne/Seabird (SBE) `.cnv`
 #' files.  Lacking access to documentation on the SBE format,
 #' the present function is based on inspection of a suite of CNV files
-#' available to the \code{oce} developers.
+#' available to the `oce` developers.
 #'
 #' A few sample header lines that have been encountered are:
-#'\preformatted{
+#'```
 #' # name 4 = t068: temperature, IPTS-68 [deg C]
 #' # name 3 = t090C: Temperature [ITS-90, deg C]
 #' # name 4 = t190C: Temperature, 2 [ITS-90, deg C]
-#'}
+#'```
 #' Examination of several CNV files suggests that it is best to
-#' try to infer the name from the characters between the "\code{=}"
-#' and "\code{:}" characters, because the material after the colon
+#' try to infer the name from the characters between the "`=`"
+#' and "`:`" characters, because the material after the colon
 #' seems to vary more between sample files.
 #'
 #' The table given below indicates the translation patterns used. These are
-#' taken from [1]. The \code{.cnv} convention for multiple sensors is to
+#' taken from reference 1. The `.cnv` convention for multiple sensors is to
 #' include optional extra digits in the name, and these are indicated
-#' with \code{~} in the table; their decoding is done with \code{\link{grep}}.
+#' with `~` in the table; their decoding is done with [grep()].
 #'
 #' It is important to note that this table is by no means complete, since there
-#' are a great many SBE names listed in their document [1], plus names
+#' are a great many SBE names listed in their document (reference 1), plus names
 #' not listed there but present in data files
 #' supplied by prominent archiving agencies. If an SBE name is not recognized,
 #' then the oce name is set to that SBE name. This can cause problems in
-#' some other processing steps (e.g. if \code{\link{swRho}} or a similar
-#' function is called with an \code{oce} object as first argument), and so
+#' some other processing steps (e.g. if [swRho()] or a similar
+#' function is called with an `oce` object as first argument), and so
 #' users are well-advised to rename the items as appropriate. The first
-#' step in doing this is to pass the object to \code{summary()}, to discover
+#' step in doing this is to pass the object to `summary()`, to discover
 #' the SBE names in question. Then consult the SBE documentation to find
 #' an appropriate name for the data, and either manipulate the names in the object
 #' data slot directly or use
-#' \code{\link{renameData}} to rename the elements. Finally, please publish
+#' [renameData()] to rename the elements. Finally, please publish
 #' an 'issue' on the oce Github site \url{https://github.com/dankelley/oce/issues}
 #' so that the developers can add the data type in question. (To save
 #' development time, there is no plan to add all possible data types without
@@ -42,174 +42,177 @@
 #' variants.)
 #'
 #' \tabular{llll}{
-#'   \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit;scale} \tab \strong{Notes} \cr
-#'   \code{alt}         \tab \code{altimeter}                    \tab m                   \tab    \cr
-#'   \code{altM}        \tab \code{altimeter}                    \tab m                   \tab    \cr
-#'   \code{accM}        \tab \code{acceleration}                 \tab m/s^2               \tab    \cr
-#'   \code{bat~}        \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
-#'   \code{C2-C1S/m}    \tab \code{conductivityDifference}       \tab S/m                 \tab    \cr
-#'   \code{C2-C1mS/cm}  \tab \code{conductivityDifference}       \tab mS/cm               \tab    \cr
-#'   \code{C2-C1uS/cm}  \tab \code{conductivityDifference}       \tab uS/cm               \tab    \cr
-#'   \code{c~mS/cm}     \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
-#'   \code{cond~mS/cm}  \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
-#'   \code{c~S/m}       \tab \code{conductivity}                 \tab S/m                 \tab    \cr
-#'   \code{cond~S/m}    \tab \code{conductivity}                 \tab S/m                 \tab    \cr
-#'   \code{c~uS/cm}     \tab \code{conductivity}                 \tab uS/cm               \tab    \cr
-#'   \code{cond~uS/cm}  \tab \code{conductivity}                 \tab uS/cm               \tab    \cr
-#'   \code{CStarAt~}    \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
-#'   \code{CStarTr~}    \tab \code{beamTransmission}             \tab percent             \tab    \cr
-#'   \code{density~~}   \tab \code{density}                      \tab kg/m^3              \tab    \cr
-#'   \code{depS}        \tab \code{depth}                        \tab m                   \tab    \cr
-#'   \code{depSM}       \tab \code{depth}                        \tab m                   \tab    \cr
-#'   \code{depF}        \tab \code{depth}                        \tab m                   \tab    \cr
-#'   \code{depFM}       \tab \code{depth}                        \tab m                   \tab    \cr
-#'   \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                 \tab    \cr
-#'   \code{f~}          \tab \code{frequency}                    \tab Hz                  \tab    \cr
-#'   \code{f~~}         \tab \code{frequency}                    \tab Hz                  \tab    \cr
-#'   \code{flC~}        \tab \code{fluorescence}                 \tab ug/l; Chelsea Aqua 3\tab    \cr
-#'   \code{flCM}        \tab \code{fluorescence}                 \tab ug/l; Chelsea Mini Chl Con\tab\cr
-#'   \code{flCUVA~}     \tab \code{fluorescence}                 \tab ug/l; Chelsea UV Aquatracka\tab\cr
-#'   \code{flEC-AFL~}   \tab \code{fluorescence}                 \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
-#'   \code{flS}         \tab \code{fluorescence}                 \tab -; Seatech          \tab    \cr
-#'   \code{flScufa~}    \tab \code{fluorescence}                 \tab -; Turner SCUFA [RFU]\tab\cr
-#'   \code{flSP}        \tab \code{fluorescence}                 \tab -; Seapoint         \tab    \cr
-#'   \code{flSPR}       \tab \code{fluorescence}                 \tab -; Seapoint, Rhodamine\tab  \cr
-#'   \code{flSPuv}      \tab \code{fluorescence}                 \tab -; Seapoint, UV      \tab   \cr
-#'   \code{flT}         \tab \code{fluorescence}                 \tab -; Turner 10-005 flT\tab   \cr
-#'   \code{gpa}         \tab \code{geopotentialAnomaly}          \tab -; J/kg              \tab   \cr
-#'   \code{latitude}    \tab \code{latitude}                     \tab degN                 \tab   \cr
-#'   \code{longitude}   \tab \code{longitude}                    \tab degE                 \tab   \cr
-#'   \code{n2satML/L}   \tab \code{nitrogenSaturation}           \tab ml/l                 \tab   \cr
-#'   \code{n2satMg/L}   \tab \code{nitrogenSaturation}           \tab mg/l                 \tab   \cr
-#'   \code{n2satumol/kg}\tab \code{nitrogenSaturation}           \tab umol/kg              \tab   \cr
-#'   \code{nbin}        \tab \code{nbin}                         \tab                      \tab   \cr
-#'   \code{obsscufa~}   \tab \code{backscatter}                  \tab NTU; Turner SCUFA    \tab   \cr
-#'   \code{opoxMg/L}    \tab \code{oxygen}                       \tab mg/l; Optode, Anderaa\tab   \cr
-#'   \code{opoxML/L}    \tab \code{oxygen}                       \tab ml/l; Optode, Anderaa\tab   \cr
-#'   \code{opoxMm/L}    \tab \code{oxygen}                       \tab umol/l; Optode, Anderaa\tab \cr
-#'   \code{opoxPS}      \tab \code{oxygen}                       \tab percent; Optode, Anderaa\tab   \cr
-#'   \code{oxsatML/L}   \tab \code{oxygen}                       \tab ml/l; Weiss          \tab   \cr
-#'   \code{oxsatMg/L}   \tab \code{oxygen}                       \tab mg/l; Weiss          \tab   \cr
-#'   \code{oxsatMm/Kg}  \tab \code{oxygen}                       \tab umol/kg; Weiss       \tab   \cr
-#'   \code{oxsolML/L}   \tab \code{oxygen}                       \tab ml/l; Garcia-Gordon  \tab   \cr
-#'   \code{oxsolMg/L}   \tab \code{oxygen}                       \tab mg/l; Garcia-Gordon  \tab   \cr
-#'   \code{oxsolMm/Kg}  \tab \code{oxygen}                       \tab umol/kg; Garcia-Gordon\tab  \cr
-#'   \code{par~}        \tab \code{PAR}                          \tab -; Biospherical/Licor\tab   \cr
-#'   \code{par/log}     \tab \code{PAR}                          \tab log; Satlantic       \tab   \cr
-#'   \code{ph}          \tab \code{pH}                           \tab -                    \tab   \cr
-#'   \code{potemp~68C}  \tab \code{thetaM}                       \tab degC; IPTS-68        \tab   \cr
-#'   \code{potemp~90C}  \tab \code{thetaM}                       \tab degC; ITS-90         \tab   \cr
-#'   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab 1 \cr
-#'   \code{prM}         \tab \code{pressure}                     \tab dbar                 \tab   \cr
-#'   \code{pr50M}       \tab \code{pressure}                     \tab dbar; SBE50          \tab   \cr
-#'   \code{prSM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
-#'   \code{prDM}        \tab \code{pressure}                     \tab dbar; digiquartz     \tab   \cr
-#'   \code{prdE}        \tab \code{pressure}                     \tab psi; strain gauge    \tab 2 \cr
-#'   \code{prDE}        \tab \code{pressure}                     \tab psi; digiquartz      \tab 2 \cr
-#'   \code{prdM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
-#'   \code{prSM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
-#'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 3 \cr
-#'   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
-#'   \code{rhodflTC~}   \tab \code{Rhodamine}                    \tab ppb; Turner Cyclops  \tab   \cr
-#'   \code{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
-#'   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
-#'   \code{sbox~ML/L}   \tab \code{oxygen}                       \tab ml/l; SBE43 (?)      \tab   \cr
-#'   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab umol/kg; SBE43       \tab   \cr
-#'   \code{sbox~Mm/Kg}  \tab \code{oxygen}                       \tab umol/kg; SBE43 (?)   \tab   \cr
-#'   \code{sbeox~Mm/L}  \tab \code{oxygen}                       \tab umol/l; SBE43        \tab   \cr
-#'   \code{sbox~Mm/L}   \tab \code{oxygen}                       \tab umol/l; SBE43 (?)    \tab   \cr
-#'   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
-#'   \code{sbox~PS}     \tab \code{oxygen}                       \tab percent; SBE43 (?)   \tab   \cr
-#'   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
-#'   \code{sbox~V}      \tab \code{oxygenRaw}                    \tab V; SBE43 (?)         \tab   \cr
-#'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
-#'   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; Seapoint        \tab   \cr
-#'   \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
-#'   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
-#'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
-#'   \code{sigma-é}     \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
-#'   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
-#'   \code{specc}       \tab \code{conductivity}                 \tab uS/cm                \tab   \cr
-#'   \code{sva}         \tab \code{specificVolumeAnomaly}        \tab 1e-8 m^3/kg;         \tab   \cr
-#'   \code{svCM~}       \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
-#'   \code{T2~68C}      \tab \code{temperatureDifference}        \tab degC; IPTS-68        \tab   \cr
-#'   \code{T2~90C}      \tab \code{temperatureDifference}        \tab degC; ITS-90         \tab   \cr
-#'   \code{t~68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{t~90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{t~68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{t~68C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{t~90C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{t090Cm}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{t4990C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{tnc90C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{tsa}         \tab \code{thermostericAnomaly}          \tab 1e-8 m^3/kg          \tab   \cr
-#'   \code{tv290C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{t4968C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{tnc68C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{tv268C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{t190C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{tnc290C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{tnc268C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{t3890C~}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{t38~90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{t3868C~}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{t38~38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{timeH}       \tab \code{timeH}                        \tab hour; elapsed        \tab   \cr
-#'   \code{timeJ}       \tab \code{timeJ}                        \tab julian day           \tab   \cr
-#'   \code{timeJV2}     \tab \code{timeJV2}                      \tab julian day           \tab   \cr
-#'   \code{timeK}       \tab \code{timeK}                        \tab s; since Jan 1, 2000 \tab   \cr
-#'   \code{timeM}       \tab \code{timeM}                        \tab minute; elapsed      \tab   \cr
-#'   \code{timeN}       \tab \code{timeN}                        \tab s; NMEA since Jan 1, 1970\tab\cr
-#'   \code{timeQ}       \tab \code{timeQ}                        \tab s; NMEA since Jan 1, 2000\tab\cr
-#'   \code{timeS}       \tab \code{timeS}                        \tab s; elapsed           \tab   \cr
-#'   \code{turbflTC~}   \tab \code{turbidity}                    \tab NTU; Turner Cyclops  \tab   \cr
-#'   \code{turbflTCdiff}\tab \code{turbidityDifference}          \tab NTU; Turner Cyclops  \tab   \cr
-#'   \code{turbWETbb~}  \tab \code{turbidity}                    \tab 1/(m*sr); WET Labs ECO\tab   \cr
-#'   \code{turbWETbbdiff}\tab \code{turbidityDifference}         \tab 1/(m*sr); WET Labs ECO\tab   \cr
-#'   \code{turbWETntu~} \tab \code{turbidity}                    \tab NTU; WET Labs ECO    \tab   \cr
-#'   \code{turbWETntudiff}\tab \code{turbidityDifference}        \tab NTU; WET Labs ECO    \tab   \cr
-#'   \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
-#'   \code{user~}       \tab \code{user}                         \tab -                    \tab   \cr
-#'   \code{v~~}         \tab \code{voltage}                      \tab V                    \tab   \cr
-#'   \code{wetBAttn}    \tab \code{beamAttenuation}              \tab 1/m; WET Labs AC3    \tab   \cr
-#'   \code{wetBTrans}   \tab \code{beamTransmission}             \tab percent; WET Labs AC3\tab   \cr
-#'   \code{wetCDOM~}    \tab \code{fluorescence}                 \tab mg/m^3; WET Labs CDOM\tab   \cr
-#'   \code{wetCDOMdiff} \tab \code{fluorescenceDifference}       \tab mg/m^3; WET Labs CDOM\tab   \cr
-#'   \code{wetChAbs}    \tab \code{fluorescence}                 \tab 1/m; WET Labs AC3 absorption\tab   \cr
-#'   \code{wetStar~}    \tab \code{fluorescence}                 \tab mg/m^3; WET Labs WETstar\tab   \cr
-#'   \code{wetStardiff} \tab \code{fluorescenceDifference}       \tab mg/m^3; WET Labs WETstar\tab   \cr
-#'   \code{xmiss}       \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
-#'   \code{xmiss~}      \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
+#'   **Key**       \tab **Result**                     \tab **Unit;scale**      \tab **Notes** \cr
+#'   `alt`         \tab `altimeter`                    \tab m                   \tab    \cr
+#'   `altM`        \tab `altimeter`                    \tab m                   \tab    \cr
+#'   `accM`        \tab `acceleration`                 \tab m/s^2               \tab    \cr
+#'   `bat~`        \tab `beamAttenuation`              \tab 1/m                 \tab    \cr
+#'   `C2-C1S/m`    \tab `conductivityDifference`       \tab S/m                 \tab    \cr
+#'   `C2-C1mS/cm`  \tab `conductivityDifference`       \tab mS/cm               \tab    \cr
+#'   `C2-C1uS/cm`  \tab `conductivityDifference`       \tab uS/cm               \tab    \cr
+#'   `c~mS/cm`     \tab `conductivity`                 \tab mS/cm               \tab    \cr
+#'   `cond~mS/cm`  \tab `conductivity`                 \tab mS/cm               \tab    \cr
+#'   `c~S/m`       \tab `conductivity`                 \tab S/m                 \tab    \cr
+#'   `cond~S/m`    \tab `conductivity`                 \tab S/m                 \tab    \cr
+#'   `c~uS/cm`     \tab `conductivity`                 \tab uS/cm               \tab    \cr
+#'   `cond~uS/cm`  \tab `conductivity`                 \tab uS/cm               \tab    \cr
+#'   `CStarAt~`    \tab `beamAttenuation`              \tab 1/m                 \tab    \cr
+#'   `CStarTr~`    \tab `beamTransmission`             \tab percent             \tab    \cr
+#'   `density~~`   \tab `density`                      \tab kg/m^3              \tab    \cr
+#'   `depS`        \tab `depth`                        \tab m                   \tab    \cr
+#'   `depSM`       \tab `depth`                        \tab m                   \tab    \cr
+#'   `depF`        \tab `depth`                        \tab m                   \tab    \cr
+#'   `depFM`       \tab `depth`                        \tab m                   \tab    \cr
+#'   `dz/dtM`      \tab `descentRate`                  \tab m/s                 \tab    \cr
+#'   `f~`          \tab `frequency`                    \tab Hz                  \tab    \cr
+#'   `f~~`         \tab `frequency`                    \tab Hz                  \tab    \cr
+#'   `flC~`        \tab `fluorescence`                 \tab ug/l; Chelsea Aqua 3\tab    \cr
+#'   `flCM`        \tab `fluorescence`                 \tab ug/l; Chelsea Mini Chl Con\tab\cr
+#'   `flCUVA~`     \tab `fluorescence`                 \tab ug/l; Chelsea UV Aquatracka\tab\cr
+#'   `flEC-AFL~`   \tab `fluorescence`                 \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
+#'   `flS`         \tab `fluorescence`                 \tab -; Seatech          \tab    \cr
+#'   `flScufa~`    \tab `fluorescence`                 \tab -; Turner SCUFA (RFU)\tab\cr
+#'   `flSP`        \tab `fluorescence`                 \tab -; Seapoint         \tab    \cr
+#'   `flSPR`       \tab `fluorescence`                 \tab -; Seapoint, Rhodamine\tab  \cr
+#'   `flSPuv`      \tab `fluorescence`                 \tab -; Seapoint, UV      \tab   \cr
+#'   `flT`         \tab `fluorescence`                 \tab -; Turner 10-005 flT\tab   \cr
+#'   `gpa`         \tab `geopotentialAnomaly`          \tab -; J/kg              \tab   \cr
+#'   `latitude`    \tab `latitude`                     \tab degN                 \tab   \cr
+#'   `longitude`   \tab `longitude`                    \tab degE                 \tab   \cr
+#'   `n2satML/L`   \tab `nitrogenSaturation`           \tab ml/l                 \tab   \cr
+#'   `n2satMg/L`   \tab `nitrogenSaturation`           \tab mg/l                 \tab   \cr
+#'   `n2satumol/kg`\tab `nitrogenSaturation`           \tab umol/kg              \tab   \cr
+#'   `nbin`        \tab `nbin`                         \tab                      \tab   \cr
+#'   `obsscufa~`   \tab `backscatter`                  \tab NTU; Turner SCUFA    \tab   \cr
+#'   `opoxMg/L`    \tab `oxygen`                       \tab mg/l; Optode, Anderaa\tab   \cr
+#'   `opoxML/L`    \tab `oxygen`                       \tab ml/l; Optode, Anderaa\tab   \cr
+#'   `opoxMm/L`    \tab `oxygen`                       \tab umol/l; Optode, Anderaa\tab \cr
+#'   `opoxPS`      \tab `oxygen`                       \tab percent; Optode, Anderaa\tab   \cr
+#'   `oxsatML/L`   \tab `oxygen`                       \tab ml/l; Weiss          \tab   \cr
+#'   `oxsatMg/L`   \tab `oxygen`                       \tab mg/l; Weiss          \tab   \cr
+#'   `oxsatMm/Kg`  \tab `oxygen`                       \tab umol/kg; Weiss       \tab   \cr
+#'   `oxsolML/L`   \tab `oxygen`                       \tab ml/l; Garcia-Gordon  \tab   \cr
+#'   `oxsolMg/L`   \tab `oxygen`                       \tab mg/l; Garcia-Gordon  \tab   \cr
+#'   `oxsolMm/Kg`  \tab `oxygen`                       \tab umol/kg; Garcia-Gordon\tab  \cr
+#'   `par~`        \tab `PAR`                          \tab -; Biospherical/Licor\tab   \cr
+#'   `par/log`     \tab `PAR`                          \tab log; Satlantic       \tab   \cr
+#'   `ph`          \tab `pH`                           \tab -                    \tab   \cr
+#'   `potemp~68C`  \tab `thetaM`                       \tab degC; IPTS-68        \tab   \cr
+#'   `potemp~90C`  \tab `thetaM`                       \tab degC; ITS-90         \tab   \cr
+#'   `pr`          \tab `pressure`                     \tab dbar                 \tab 1 \cr
+#'   `prM`         \tab `pressure`                     \tab dbar                 \tab   \cr
+#'   `pr50M`       \tab `pressure`                     \tab dbar; SBE50          \tab   \cr
+#'   `prSM`        \tab `pressure`                     \tab dbar                 \tab   \cr
+#'   `prDM`        \tab `pressure`                     \tab dbar; digiquartz     \tab   \cr
+#'   `prdE`        \tab `pressure`                     \tab psi; strain gauge    \tab 2 \cr
+#'   `prDE`        \tab `pressure`                     \tab psi; digiquartz      \tab 2 \cr
+#'   `prdM`        \tab `pressure`                     \tab dbar; strain gauge   \tab   \cr
+#'   `prSM`        \tab `pressure`                     \tab dbar; strain gauge   \tab   \cr
+#'   `ptempC`      \tab `pressureTemperature`          \tab degC; ITS-90         \tab 3 \cr
+#'   `pumps`       \tab `pumpStatus`                   \tab                      \tab   \cr
+#'   `rhodflTC~`   \tab `Rhodamine`                    \tab ppb; Turner Cyclops  \tab   \cr
+#'   `sal~~`       \tab `salinity`                     \tab -, PSS-78            \tab 4 \cr
+#'   `sbeox~ML/L`  \tab `oxygen`                       \tab ml/l; SBE43          \tab   \cr
+#'   `sbox~ML/L`   \tab `oxygen`                       \tab ml/l; SBE43 (?)      \tab   \cr
+#'   `sbeox~Mm/Kg` \tab `oxygen`                       \tab umol/kg; SBE43       \tab   \cr
+#'   `sbox~Mm/Kg`  \tab `oxygen`                       \tab umol/kg; SBE43 (?)   \tab   \cr
+#'   `sbeox~Mm/L`  \tab `oxygen`                       \tab umol/l; SBE43        \tab   \cr
+#'   `sbox~Mm/L`   \tab `oxygen`                       \tab umol/l; SBE43 (?)    \tab   \cr
+#'   `sbeox~PS`    \tab `oxygen`                       \tab percent; SBE43       \tab   \cr
+#'   `sbox~PS`     \tab `oxygen`                       \tab percent; SBE43 (?)   \tab   \cr
+#'   `sbeox~V`     \tab `oxygenRaw`                    \tab V; SBE43             \tab   \cr
+#'   `sbox~V`      \tab `oxygenRaw`                    \tab V; SBE43 (?)         \tab   \cr
+#'   `scan`        \tab `scan`                         \tab -                    \tab   \cr
+#'   `seaTurbMtr~` \tab `turbidity`                    \tab FTU; Seapoint        \tab   \cr
+#'   `secS-priS`   \tab `salinityDifference`           \tab -, PSS-78            \tab   \cr
+#'   `sigma-t`     \tab `sigmaT`                       \tab kg/m^3               \tab   \cr
+#'   `sigma-theta` \tab `sigmaTheta`                   \tab kg/m^3               \tab 5 \cr
+#'   `sigma-é`     \tab `sigmaTheta`                   \tab kg/m^3               \tab 5 \cr
+#'   `spar`        \tab `spar`                         \tab -                    \tab   \cr
+#'   `specc`       \tab `conductivity`                 \tab uS/cm                \tab   \cr
+#'   `sva`         \tab `specificVolumeAnomaly`        \tab 1e-8 m^3/kg;         \tab   \cr
+#'   `svCM~`       \tab `soundSpeed`                   \tab m/s; Chen-Millero    \tab   \cr
+#'   `T2~68C`      \tab `temperatureDifference`        \tab degC; IPTS-68        \tab   \cr
+#'   `T2~90C`      \tab `temperatureDifference`        \tab degC; ITS-90         \tab   \cr
+#'   `t~68`        \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
+#'   `t~90`        \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
+#'   `t~68`        \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
+#'   `t~68C`       \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
+#'   `t~90C`       \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
+#'   `t090Cm`      \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
+#'   `t4990C`      \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
+#'   `tnc90C`      \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
+#'   `tsa`         \tab `thermostericAnomaly`          \tab 1e-8 m^3/kg          \tab   \cr
+#'   `tv290C`      \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
+#'   `t4968C`      \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
+#'   `tnc68C`      \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
+#'   `tv268C`      \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
+#'   `t190C`       \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
+#'   `tnc290C`     \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
+#'   `tnc268C`     \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
+#'   `t3890C~`     \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
+#'   `t38~90C`     \tab `temperature`                  \tab degC; ITS-90         \tab   \cr
+#'   `t3868C~`     \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
+#'   `t38~38C`     \tab `temperature`                  \tab degC; IPTS-68        \tab   \cr
+#'   `timeH`       \tab `timeH`                        \tab hour; elapsed        \tab   \cr
+#'   `timeJ`       \tab `timeJ`                        \tab julian day           \tab   \cr
+#'   `timeJV2`     \tab `timeJV2`                      \tab julian day           \tab   \cr
+#'   `timeK`       \tab `timeK`                        \tab s; since Jan 1, 2000 \tab   \cr
+#'   `timeM`       \tab `timeM`                        \tab minute; elapsed      \tab   \cr
+#'   `timeN`       \tab `timeN`                        \tab s; NMEA since Jan 1, 1970\tab\cr
+#'   `timeQ`       \tab `timeQ`                        \tab s; NMEA since Jan 1, 2000\tab\cr
+#'   `timeS`       \tab `timeS`                        \tab s; elapsed           \tab   \cr
+#'   `turbflTC~`   \tab `turbidity`                    \tab NTU; Turner Cyclops  \tab   \cr
+#'   `turbflTCdiff`\tab `turbidityDifference`          \tab NTU; Turner Cyclops  \tab   \cr
+#'   `turbWETbb~`  \tab `turbidity`                    \tab 1/(m\*sr); WET Labs ECO\tab   \cr
+#'   `turbWETbbdiff`\tab `turbidityDifference`         \tab 1/(m\*sr); WET Labs ECO\tab   \cr
+#'   `turbWETntu~` \tab `turbidity`                    \tab NTU; WET Labs ECO    \tab   \cr
+#'   `turbWETntudiff`\tab `turbidityDifference`        \tab NTU; WET Labs ECO    \tab   \cr
+#'   `upoly~`      \tab `upoly`                        \tab -                    \tab   \cr
+#'   `user~`       \tab `user`                         \tab -                    \tab   \cr
+#'   `v~~`         \tab `voltage`                      \tab V                    \tab   \cr
+#'   `wetBAttn`    \tab `beamAttenuation`              \tab 1/m; WET Labs AC3    \tab   \cr
+#'   `wetBTrans`   \tab `beamTransmission`             \tab percent; WET Labs AC3\tab   \cr
+#'   `wetCDOM~`    \tab `fluorescence`                 \tab mg/m^3; WET Labs CDOM\tab   \cr
+#'   `wetCDOMdiff` \tab `fluorescenceDifference`       \tab mg/m^3; WET Labs CDOM\tab   \cr
+#'   `wetChAbs`    \tab `fluorescence`                 \tab 1/m; WET Labs AC3 absorption\tab   \cr
+#'   `wetStar~`    \tab `fluorescence`                 \tab mg/m^3; WET Labs WETstar\tab   \cr
+#'   `wetStardiff` \tab `fluorescenceDifference`       \tab mg/m^3; WET Labs WETstar\tab   \cr
+#'   `xmiss`       \tab `beamTransmission`             \tab percent; Chelsea/Seatech\tab \cr
+#'   `xmiss~`      \tab `beamTransmission`             \tab percent; Chelsea/Seatech\tab \cr
 #' }
 #' Notes:
-#' \itemize{
-#' \item{1: 'pr' is in a Dalhousie-generated data file but seems not to be in [1].}
-#' \item{2: this is an odd unit, and so if \code{sw*} functions are called on an object
+#' 1. 'pr' is in a Dalhousie-generated data file but seems not to be in reference 1.
+#' 2. this is an odd unit, and so if `sw*` functions are called on an object
 #' containing this, a conversion will be made before performing the computation. Be
-#' on the lookout for errors, since this is a rare situation.}
-#' \item{3: assume ITS-90 temperature scale, since sample \code{.cnv} file headers do not specify it.}
-#' \item{4: some files have PSU for this. Should we handle that? And are there other S scales to consider?}
-#' \item{5: 'theta' may appear in different ways with different encoding configurations, set up
-#' within R or in the operating system.}
-#' }
+#' on the lookout for errors, since this is a rare situation.
+#' 3. assume ITS-90 temperature scale, since sample `.cnv` file headers do not specify it.
+#' 4. some files have PSU for this. Should we handle that? And are there other S scales to consider?
+#' 5. 'theta' may appear in different ways with different encoding configurations, set up
+#' within R or in the operating system.
 #'
 #' @param h The header line.
+#'
 #' @param columns Optional list containing name correspondances, as described for
-#' \code{\link{read.ctd.sbe}}.
+#' [read.ctd.sbe()].
+#'
 #' @template debugTemplate
-#' @return a list containing \code{name} (the oce name), \code{nameOriginal} (the SBE name) and \code{unit}.
+#'
+#' @return a list containing `name` (the oce name), `nameOriginal` (the SBE name) and `unit`.
+#'
 #' @author Dan Kelley
+#'
 #' @references
 #' 1. A SBE data processing manual was once at
-#' \code{http://www.seabird.com/document/sbe-data-processing-manual},
+#' `http://www.seabird.com/document/sbe-data-processing-manual`,
 #' but as of summer 2018, this no longer seems to be provided by SeaBird.
 #' A web search will turn up copies of the manual that have been put
 #' online by various research groups and data-archiving agencies.
 #' As of 2018-07-05, the latest version was named
-#' \code{SBEDataProcessing_7.26.4.pdf} and had release date 12/08/2017,
-#' and this was the reference version used in coding \code{oce}.
+#' `SBEDataProcessing_7.26.4.pdf` and had release date 12/08/2017,
+#' and this was the reference version used in coding `oce`.
 #'
-#' @family things related to \code{ctd} data
+#' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers
 cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 {
@@ -646,63 +649,65 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' @author Dan Kelley and Clark Richards
 #'
 #' @details
-#' This function reads files stored in Seabird \code{.cnv} format.
+#' This function reads files stored in Seabird `.cnv` format.
 #' Note that these files can contain multiple sensors for a given field. For example,
-#' the file might contain a column named \code{t090C} for one
-#' temperature sensor and \code{t190C} for a second. The first will be denoted
-#' \code{temperature} in the \code{data} slot of the return value, and the second
-#' will be denoted \code{temperature1}. This means that the first sensor
-#' will be used in any future processing that accesses \code{temperature}. This
+#' the file might contain a column named `t090C` for one
+#' temperature sensor and `t190C` for a second. The first will be denoted
+#' `temperature` in the `data` slot of the return value, and the second
+#' will be denoted `temperature1`. This means that the first sensor
+#' will be used in any future processing that accesses `temperature`. This
 #' is for convenience of processing, and it does not pose a limitation, because the
-#' data from the second sensor are also available as e.g. \code{x[["temperature1"]]},
-#' where \code{x} is the name of the returned value.  For the details of the
-#' mapping from \code{.cnv} names to \code{ctd} names, see \code{\link{cnvName2oceName}}.
+#' data from the second sensor are also available as e.g. `x[["temperature1"]]`,
+#' where `x` is the name of the returned value.  For the details of the
+#' mapping from `.cnv` names to `ctd` names, see [cnvName2oceName()].
 #'
-#' The original data names as stored in \code{file} are stored within the \code{metadata}
-#' slot as \code{dataNamesOriginal}, and are displayed with \code{summary} alongside the
-#' numerical summary. See the Appendix VI of [2] for the meanings of these
+#' The original data names as stored in `file` are stored within the `metadata`
+#' slot as `dataNamesOriginal`, and are displayed with `summary` alongside the
+#' numerical summary. See the Appendix VI of reference 2 for the meanings of these
 #' names (in the "Short Name" column of the table spanning pages 161 through 172).
 #'
 #' @section A note on sampling times:
 #' Until November of 2018,
 #' there was a possibility for great confusion in the storage
-#' of the time entries within the \code{data} slot, because \code{read.ctd.sbe}
-#' renamed each of the ten variants of time (see [2] for a list)
-#' as \code{"time"} in the \code{data} slot of the returned value.
+#' of the time entries within the `data` slot, because `read.ctd.sbe`
+#' renamed each of the ten variants of time (see reference 2 for a list)
+#' as `"time"` in the `data` slot of the returned value.
 #' For CTD profiles, this was perhaps not a great problem, but it could
-#' lead to great confusion for moored data. Therefore, a change to \code{read.ctd.sbe} was
-#' made, so that it would Seabird times, using the \code{start_time} entry in
-#' the CNV file header (which is stored as \code{startTime} in the object
-#' \code{metadata} slot), along with specific time columns as follows
+#' lead to great confusion for moored data. Therefore, a change to `read.ctd.sbe` was
+#' made, so that it would Seabird times, using the `start_time` entry in
+#' the CNV file header (which is stored as `startTime` in the object
+#' `metadata` slot), along with specific time columns as follows
 #' (and as documented, with uneven clarity, in the
 #' SBE Seasoft data processing manual, revision 7.26.8, Appendix VI):
-#' \code{timeS} (seconds elapsed since \code{start_time}),
-#' \code{timeM} (minutes elapsed since \code{start_time}),
-#' \code{timeH} (hours elapsed since \code{start_time}),
-#' \code{timeJ} (Julian days since the start of the year of the first observation),
-#' \code{timeN} (NMEA-based time, in seconds past Jan 1, 1970),
-#' \code{timeQ} (NMEA-based time, in seconds past Jan 1, 2000),
-#' \code{timeK} (NMEA-based time, in seconds past Jan 1, 2000),
-#' \code{timeJV2} (as \code{timeJ}),
-#' \code{timeSCP} (as \code{timeJ}),
-#' and
-#' \code{timeY} (computer time, in seconds past Jan 1, 1970).
+#' \tabular{rl}{
+#' **Item** \tab **Meaning**\cr
+#' `timeS`   \tab seconds elapsed since `start_time`\cr
+#' `timeM`   \tab minutes elapsed since `start_time`\cr
+#' `timeH`   \tab hours elapsed since `start_time`\cr
+#' `timeJ`   \tab Julian days since the start of the year of the first observation\cr
+#' `timeN`   \tab NMEA-based time, in seconds past Jan 1, 1970\cr
+#' `timeQ`   \tab NMEA-based time, in seconds past Jan 1, 2000\cr
+#' `timeK`   \tab NMEA-based time, in seconds past Jan 1, 2000\cr
+#' `timeJV2` \tab as `timeJ`\cr
+#' `timeSCP` \tab as `timeJ`\cr
+#' `timeY`   \tab computer time, in seconds past Jan 1, 1970\cr
+#'}
 #' NOTE: not all of these times have been tested properly, and so users
-#' are asked to report incorrect times, so that \code{read.ctd.sbe} can
+#' are asked to report incorrect times, so that `read.ctd.sbe` can
 #' be improved.
 #'
 #' @section A note on scales:
 #' The user might encounter data files with a variety of scales for temperature and
 #' salinity. Oce keeps track of these scales in the units it sets up for the stored
-#' variables. For example, if \code{A} is a CTD object, then
-#' \code{A[["temperatureUnit"]]$scale} is a character string that will indicate the scale.
-#' Modern-day data will have \code{"ITS-90"} for that scale, and old data may have
-#' \code{"IPTS-68"}. The point of saving the scale in this way is so that the various
+#' variables. For example, if `A` is a CTD object, then
+#' `A[["temperatureUnit"]]$scale` is a character string that will indicate the scale.
+#' Modern-day data will have `"ITS-90"` for that scale, and old data may have
+#' `"IPTS-68"`. The point of saving the scale in this way is so that the various
 #' formulas that deal with water properties can account for the scale, e.g. converting
-#' from numerical values saved on the \code{"IPTS-68"} scale to the newer scale, using
-#' \code{\link{T90fromT68}} before doing calculations that are expressed in
-#' terms of the \code{"ITS-90"} scale. This is taken care of by retrieving temperatures
-#' with the accessor function, e.g. writing \code{A[["temperature"]]} will either
+#' from numerical values saved on the `"IPTS-68"` scale to the newer scale, using
+#' [T90fromT68()] before doing calculations that are expressed in
+#' terms of the `"ITS-90"` scale. This is taken care of by retrieving temperatures
+#' with the accessor function, e.g. writing `A[["temperature"]]` will either
 #' retrieve the stored values (if the scale is ITS-90) or converted values (if
 #' the scale is IPTS-68). Even though this procedure should work, users who
 #' really care about the details of their data are well-advised to do a couple
@@ -719,21 +724,25 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #'
 #' @references
 #' 1. The Sea-Bird SBE 19plus profiler is described at
-#' \code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
+#' `http://www.seabird.com/products/spec_sheets/19plusdata.htm`.  Some more
 #' information is given in the Sea-Bird data-processing manual
 #' (next item).
 #'
 #' 2. A SBE data processing manual was once at
-#' \code{http://www.seabird.com/document/sbe-data-processing-manual},
+#' `http://www.seabird.com/document/sbe-data-processing-manual`,
 #' but as of summer 2018, this no longer seems to be provided by SeaBird.
 #' A web search will turn up copies of the manual that have been put
 #' online by various research groups and data-archiving agencies.
 #' As of 2018-07-05, the latest version was named
-#' \code{SBEDataProcessing_7.26.4.pdf} and had release date 12/08/2017,
-#' and this was the reference version used in coding \code{oce}.
+#' `SBEDataProcessing_7.26.4.pdf` and had release date 12/08/2017,
+#' and this was the reference version used in coding `oce`.
+#'
+#' @family functions that read ctd data
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     if (length(grep("\\*", file, ignore.case=TRUE))) {
         oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") { # will read a series of files\n", unindent=1)
         files <- list.files(pattern=file)

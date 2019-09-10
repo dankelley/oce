@@ -8,7 +8,7 @@
 \S4method{subset}{rsk}(x, subset, ...)
 }
 \arguments{
-\item{x}{a \code{rsk} object, i.e. inheriting from \code{\link{rsk-class}}.}
+\item{x}{an \linkS4class{rsk} object.}
 
 \item{subset}{a condition to be applied to the \code{data} portion of \code{x}.
 See \sQuote{Details}.}
@@ -16,11 +16,11 @@ See \sQuote{Details}.}
 \item{\dots}{ignored.}
 }
 \value{
-A new \code{rsk} object.
+An \linkS4class{rsk} object.
 }
 \description{
 Subset a rsk object.  This function is somewhat analogous to
-\code{\link{subset.data.frame}}, but subsetting is only permitted by time.
+\code{\link[=subset.data.frame]{subset.data.frame()}}, but subsetting is only permitted by time.
 }
 \examples{
 library(oce)
@@ -30,14 +30,14 @@ plot(subset(rsk, time < mean(range(rsk[['time']]))))
 
 }
 \seealso{
-Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
+Other things related to rsk data: \code{\link{[[,rsk-method}},
   \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
   \code{\link{plot,rsk-method}}, \code{\link{read.rsk}},
   \code{\link{rsk-class}}, \code{\link{rskPatm}},
   \code{\link{rskToc}}, \code{\link{rsk}},
   \code{\link{summary,rsk-method}}
 
-Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,adv-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,argo-method}},
@@ -56,5 +56,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that subset \code{oce} objects}
-\concept{things related to \code{rsk} data}
+\concept{functions that subset oce objects}
+\concept{things related to rsk data}

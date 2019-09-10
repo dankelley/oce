@@ -17,7 +17,7 @@ therefore of the definition of Rrho; see \sQuote{Details}}
 latter is calculated as the number of data points, divided by the number
 within a depth interval of \code{smoothingLength} metres.}
 
-\item{df}{if given, this is provided to \code{\link{smooth.spline}}.}
+\item{df}{if given, this is provided to \code{\link[=smooth.spline]{smooth.spline()}}.}
 
 \item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
 }
@@ -40,9 +40,9 @@ the reciprocal for \code{"finger"}.
 
 If \code{eos="gsw"}, this is done by extracting absolute salinity and
 conservative temperature, smoothing with a smoothing spline as in the
-\code{"unesco"} case, and then calling \code{\link[gsw]{gsw_Turner_Rsubrho}}
+\code{"unesco"} case, and then calling \code{\link[gsw:gsw_Turner_Rsubrho]{gsw::gsw_Turner_Rsubrho()}}
 on these smoothed fields. Since the gsw function works on mid-point
-pressures, \code{\link{approx}} is used to interpolate back to the original
+pressures, \code{\link[=approx]{approx()}} is used to interpolate back to the original
 pressures.
 
 If the default arguments are acceptable, \code{ctd[["Rrho"]]} may be used

@@ -16,6 +16,6 @@ longitude in signed degrees East
 Put longitude in the range from -180 to 180
 }
 \seealso{
-\code{\link{matrixShiftLongitude}} and \code{\link{shiftLongitude}} are more
+\code{\link[=matrixShiftLongitude]{matrixShiftLongitude()}} and \code{\link[=shiftLongitude]{shiftLongitude()}} are more
 powerful relatives to \code{standardizeLongitude}.
 }

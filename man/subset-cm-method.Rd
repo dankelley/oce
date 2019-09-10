@@ -8,7 +8,7 @@
 \S4method{subset}{cm}(x, subset, ...)
 }
 \arguments{
-\item{x}{a \code{cm} object, i.e. inheriting from \code{\link{cm-class}}.}
+\item{x}{a \linkS4class{cm} object.}
 
 \item{subset}{a condition to be applied to the \code{data} portion of \code{x}.
 See \sQuote{Details}.}
@@ -19,7 +19,7 @@ See \sQuote{Details}.}
 A new \code{cm} object.
 }
 \description{
-This function is somewhat analogous to \code{\link{subset.data.frame}}.
+This function is somewhat analogous to \code{\link[=subset.data.frame]{subset.data.frame()}}.
 }
 \examples{
 library(oce)
@@ -29,14 +29,14 @@ plot(subset(cm, time < mean(range(cm[['time']]))))
 
 }
 \seealso{
-Other things related to \code{cm} data: \code{\link{[[,cm-method}},
+Other things related to cm data: \code{\link{[[,cm-method}},
   \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
   \code{\link{cm-class}}, \code{\link{cm}},
   \code{\link{plot,cm-method}}, \code{\link{read.cm}},
   \code{\link{rotateAboutZ}},
   \code{\link{summary,cm-method}}
 
-Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,adv-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,argo-method}},
@@ -55,5 +55,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that subset \code{oce} objects}
-\concept{things related to \code{cm} data}
+\concept{functions that subset oce objects}
+\concept{things related to cm data}

@@ -7,28 +7,37 @@
 tidemVuf(t, j, latitude = NULL)
 }
 \arguments{
-\item{t}{The time in \code{POSIXct} format.  (It is \strong{very} important to
+\item{t}{The time in \code{\link[=POSIXct]{POSIXct()}} format.  (It is \emph{very} important to
 use \code{tz="GMT"} in constructing \code{t}.)}
 
 \item{j}{Indices of tidal constituents to use.}
 
-\item{latitude}{Optional numerical value containing the latitude in degrees North.}
+\item{latitude}{Optional numerical value containing the latitude in degrees North.
+(For proper calculations, this really ought to be supplied.)}
 }
 \value{
-A \code{\link[base]{list}} containing
-items named \code{v}, \code{u} and \code{f} (see the \code{T_TIDE}
-documentation).
+A \code{list} containing
+items named \code{v}, \code{u} and \code{f} as described in the \code{T_TIDE} documentation,
+as well in Pawlowicz et al. (2002) and Foreman (1978).
 }
 \description{
-Do nodal modulation calculations for \code{\link{tidem}}. This function is based directly
-on \code{t_vuf} in the \code{T_TIDE} Matlab package [1].
+Carry out nodal modulation calculations for \code{\link[=tidem]{tidem()}}. This function is based directly
+on \code{t_vuf} in the \code{T_TIDE} Matlab package (Pawlowicz et al., 2002),
+which inherits from on the Fortran code described by Foreman (1978).
 }
 \examples{
-tidemVuf(as.POSIXct("2008-01-22 18:50:24"), 43, 45.0)
+## Look up values for the M2 constituent in Halifax Harbour, Canada.
+data("tidedata")
+j  <- which(tidedata$const$name=="M2")
+tidemVuf(t=as.POSIXct("2008-01-22 18:50:24"), j=j, lat=44.63)
 
 }
 \references{
-1. Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
+Sciences, Patricia Bay.
+
+Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
 harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 Computers and Geosciences, 28, 929-937.
 }
@@ -44,6 +53,6 @@ Other things related to tides: \code{\link{[[,tidem-method}},
 }
 \author{
 Dan Kelley translated this from \code{t_astron} from the \code{T_TIDE}
-package.
+package (see Pawlowicz et al. 2002).
 }
 \concept{things related to tides}

@@ -18,7 +18,7 @@ earth, in latitude degrees.}
 \item{crosshairs}{logical value indicating whether to draw constant-latitude
 and constant-longitude crosshairs within the ellipses.  (These are drawn
 with 10 line segments each.) This can be helpful in cases where it is
-not desired to use \code{\link{mapGrid}} to draw the longitude/latitude
+not desired to use \code{\link[=mapGrid]{mapGrid()}} to draw the longitude/latitude
 grid.}
 
 \item{\dots}{extra arguments passed to plotting functions, e.g.
@@ -26,12 +26,9 @@ grid.}
 }
 \description{
 Plot ellipses at grid intersection points, as a method for
-indicating the distortion inherent in the projection [1].
+indicating the distortion inherent in the projection, somewhat
+analogous to the scheme used in reference 1.
 (Each ellipse is drawn with 64 segments.)
-}
-\details{
-The purpose and interpretation are outlined in [1], but should also be
-self-explanatory.
 }
 \examples{
 \donttest{
@@ -46,17 +43,20 @@ mapTissot(c(15, 15), col='red')
 
 }
 \references{
-1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
+\enumerate{
+\item Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 Professional Paper: 1395 (available at
-\url{pubs.usgs.gov/pp/1395/report.pdf}).
+\url{https://pubs.er.usgs.gov/publication/pp1395}).
+}
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
+Other functions related to maps: \code{\link{formatPosition}},
+  \code{\link{lonlat2map}}, \code{\link{lonlat2utm}},
+  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
+  \code{\link{mapAxis}}, \code{\link{mapContour}},
+  \code{\link{mapCoordinateSystem}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
   \code{\link{mapImage}}, \code{\link{mapLines}},
   \code{\link{mapLocator}},

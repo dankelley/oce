@@ -8,8 +8,7 @@
 \S4method{summary}{lobo}(object, ...)
 }
 \arguments{
-\item{object}{an object of class \code{"lobo"}, usually, a result of a call
-to \code{\link{read.lobo}} or \code{\link{read.oce}}.}
+\item{object}{a \linkS4class{lobo} object.}
 
 \item{\dots}{further arguments passed to or from other methods.}
 }
@@ -31,16 +30,17 @@ summary(lobo)
 \url{http://lobo.satlantic.com} \url{http://www.mbari.org/lobo/}
 }
 \seealso{
-The documentation for \code{\link{lobo-class}} explains the
+The documentation for \linkS4class{lobo} explains the
 structure of LOBO objects, and also outlines the other functions dealing
 with them.
 
-Other things related to code{lobo} data: \code{\link{[[,lobo-method}},
+Other things related to lobo data: \code{\link{[[,lobo-method}},
   \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},
   \code{\link{lobo-class}}, \code{\link{lobo}},
-  \code{\link{read.lobo}}, \code{\link{subset,lobo-method}}
+  \code{\link{plot,lobo-method}}, \code{\link{read.lobo}},
+  \code{\link{subset,lobo-method}}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to code{lobo} data}
+\concept{things related to lobo data}

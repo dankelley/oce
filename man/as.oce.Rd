@@ -10,10 +10,10 @@ as.oce(x, ...)
 \item{x}{an item containing data. This may be data frame, list, or an oce object.}
 
 \item{\dots}{optional extra arguments, passed to conversion functions
-\code{\link{as.coastline}} or \code{\link{ODF2oce}}, if these are used.}
+\code{\link[=as.coastline]{as.coastline()}} or \code{\link[=ODF2oce]{ODF2oce()}}, if these are used.}
 }
 \value{
-\code{as.oce} returns an object inheriting from \code{\link{oce-class}}.
+An \linkS4class{oce} object.
 }
 \description{
 Coerce Something Into an Oce Object
@@ -21,22 +21,22 @@ Coerce Something Into an Oce Object
 \details{
 This function is limited and not intended for common use.
 In most circumstances, users should employ a function such
-as \code{\link{as.ctd}} to construct specialized oce sub-classes.
+as \code{\link[=as.ctd]{as.ctd()}} to construct specialized oce sub-classes.
 
 \code{as.oce} creates an oce object from data contained within its
 first argument, which may be a list, a data frame, or an object
-of \code{\link{oce-class}}.  (In the last case, \code{x} is
+of \linkS4class{oce}.  (In the last case, \code{x} is
 simply returned, without modification.)
 
 If \code{x} is a list containing items named \code{longitude} and
-\code{latitude}, then \code{\link{as.coastline}} is called (with
+\code{latitude}, then \code{\link[=as.coastline]{as.coastline()}} is called (with
 the specified \dots value) to create a coastline object.
 
 If \code{x} is a list created by \code{read_odf} from the (as
 yet unreleased) ODF package developed by the Bedford Institute of
-Oceanography, then \code{\link{ODF2oce}} is called (with
+Oceanography, then \code{\link[=ODF2oce]{ODF2oce()}} is called (with
 no arguments other than the first) to calculate a return value.
-If the sub-class inference made by \code{\link{ODF2oce}} is
+If the sub-class inference made by \code{\link[=ODF2oce]{ODF2oce()}} is
 incorrect, users should call that function directly, specifying
 a value for its \code{coerce} argument.
 
@@ -46,13 +46,11 @@ the proper return value.  There
 are only a few cases (although more may be added if there is
 sufficient user demand). The cases are as follows.
 \itemize{
-
 \item If \code{x} contains items named \code{temperature},
 \code{pressure} and either \code{salinity} or \code{conductivity},
-then an object of type \code{\link{ctd-class}} will be returned.
-
+then an object of type \linkS4class{ctd} will be returned.
 \item If \code{x} contains columns named \code{longitude} and \code{latitude},
-but no other columns, then an object of class \code{\link{coastline-class}}
+but no other columns, then an object of class \linkS4class{coastline}
 is returned.
 }
 }

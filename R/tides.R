@@ -19,7 +19,7 @@
 #' @template slot_get
 #'
 #' @author Dan Kelley
-#' @family functions that plot \code{oce} data
+#' @family functions that plot oce data
 #' @family things related to tides
 setClass("tidem", contains="oce")
 
@@ -27,94 +27,106 @@ setMethod(f="initialize",
           signature="tidem",
           definition=function(.Object) {
               .Object@metadata$version <- ""
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'tidem' object"
               return(.Object)
           })
 
 
-#' @title Tidal Constituent Information
+#' Tidal Constituent Information
 #'
-#' @description
-#' The \code{tidedata} dataset contains Tide-constituent information that is
-#' use by \code{\link{tidem}} to fit tidal models.  \code{tidedata} is a list
+#' The `tidedata` dataset contains Tide-constituent information that is
+#' use by [tidem()] to fit tidal models.  `tidedata` is a list
 #' containing
 #' \describe{
-#' \item{\code{const}}{
+#' \item{`const`}{
 #' a list containing vectors
-#' \code{name} (a string with constituent name),
-#' \code{freq} (the frequency, in cycles per hour),
-#' \code{kmpr} (a string naming the comparison constituent, blank if there is none),
-#' \code{ikmpr} (index of comparison constituent, or \code{0} if there is none),
-#' \code{df} (frequency difference between constituent and its
+#' `name` (a string with constituent name),
+#' `freq` (the frequency, in cycles per hour),
+#' `kmpr` (a string naming the comparison constituent, blank if there is none),
+#' `ikmpr` (index of comparison constituent, or `0` if there is none),
+#' `df` (frequency difference between constituent and its
 #' comparison, used in the Rayleigh criterion),
-#' \code{d1} through \code{d6} (the first through sixth Doodson numbers),
-#' \code{semi},
-#' \code{nsat} (number of satellite constituents),
-#' \code{ishallow},
-#' \code{nshallow},
-#' \code{doodsonamp},
+#' `d1` through `d6` (the first through sixth Doodson numbers),
+#' `semi`,
+#' `nsat` (number of satellite constituents),
+#' `ishallow`,
+#' `nshallow`,
+#' `doodsonamp`,
 #' and
-#' \code{doodsonspecies}.
+#' `doodsonspecies`.
 #'}
-#' \item{\code{sat}}{
+#' \item{`sat`}{
 #' a list containing vectors
-#' \code{deldood},
-#' \code{phcorr},
-#' \code{amprat},
-#' \code{ilatfac},
+#' `deldood`,
+#' `phcorr`,
+#' `amprat`,
+#' `ilatfac`,
 #' and
-#' \code{iconst}.
+#' `iconst`.
 #'}
-#' \item{\code{shallow}}{
+#' \item{`shallow`}{
 #' a list containing vectors
-#' \code{iconst},
-#' \code{coef},
+#' `iconst`,
+#' `coef`,
 #' and
-#' \code{iname}.
+#' `iname`.
 #'}
 #'}
-#' Apart from the use of \code{d1} through \code{d6}, the naming and content
-#' follows \code{T_TIDE} (see Pawlowicz et al. 2002), which in turn builds upon
-#' the analysis of Foreman (1977).
+#' Apart from the use of `d1` through `d6`, the naming and content
+#' follows `T_TIDE` (see Pawlowicz et al. 2002), which in turn builds upon
+#' the analysis of Foreman (1978).
 #'
 #' @name tidedata
+#'
 #' @docType data
+#'
 #' @author Dan Kelley
+#'
 #' @references
-#' Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
-#' prediction.  Pacific Marine Science Report 77-10, Institute of Ocean
-#' Sciences, Patricia Bay, Sidney, BC, 58pp.
+#'
+#' Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+#' Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
+#' Sciences, Patricia Bay.
 #'
 #' Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
-#' harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
+#' harmonic analysis including error estimates in MATLAB using `T_TIDE`.
 #' Computers and Geosciences, 28, 929-937.
-#' @source The data come from the \code{tide3.dat} file of the \code{T_TIDE}
+#'
+#' @source The data come from the `tide3.dat` file of the `T_TIDE`
 #' package (Pawlowicz et al., 2002), and derive from Appendices provided by
-#' Foreman (1977).  The data are scanned using \file{tests/tide.R} in this
-#' package, which also performs some tests using \code{T_TIDE} values as a
+#' Foreman (1978).  The data are scanned using \file{tests/tide.R} in this
+#' package, which also performs some tests using `T_TIDE` values as a
 #' reference.
+#'
 #' @family things related to tides
 NULL
 
 
-#' @title Summarize a Tidem Object
+#' Summarize a Tidem Object
 #'
-#' @description
 #' By default, all fitted constituents are plotted, but it is quite useful to
 #' set e.g. p=0.05 To see just those constituents that are significant at the 5
 #' percent level.
 #' Note that the p values are estimated as the average of the p values for the
 #' sine and cosine components at a given frequency.
 #'
-#' @param object an object of class \code{"tidem"}, usually, a result of a call
-#' to \code{tidem}.
+#' @param object an object of class [tidem], as created by
+#' [as.tidem()] or [tidem()].
+#'
 #' @param p optional value of the maximum p value for the display of an
 #' individual coefficient.  If not given, all coefficients are shown.
-#' @param constituent optional name of constituent on which to focus.
+#'
+#' @param constituent optional character vector holding the names
+#' of constituents on which to focus.
+#' @template tideconst
+#'
 #' @param \dots further arguments passed to or from other methods.
-#' @return \code{NULL}
+#'
+#' @return `NULL`
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #'\dontrun{
 #' library(oce)
@@ -130,7 +142,7 @@ setMethod(f="summary",
               version <- object@metadata$version
               if (missing(p))
                   p <- 1
-              ok <- object@data$p <= p | version == "3"
+              ok <- object@data$p <= p | version == 3
               haveP <- any(!is.na(object@data$p))
               if (missing(constituent)) {
                   fit <- data.frame(Const=object@data$const[ok],
@@ -141,11 +153,22 @@ setMethod(f="summary",
                                     p=object@data$p[ok])
               } else {
                   i <- NULL
-                  for (const in constituent)
-                      i <- c(i, which(object@data$name==const))
-                  i <- unique(i)
+                  bad <- NULL
+                  for (iconst in seq_along(constituent)) {
+                      w <- which(object@data$name==constituent[iconst])
+                      if (length(w) == 1) {
+                          i <- c(i, w)
+                      } else {
+                          bad <- c(bad, iconst)
+                      }
+                  }
+                  if (length(bad)) {
+                      warning("the following constituents are not handled: '",
+                              paste(constituent[bad], collapse="', '"), "'\n", sep="")
+                  }
                   if (length(i) == 0)
-                      stop("there is no such constituent '", constituent, "'")
+                      stop("In summary,tidem-method() : no known constituents were provided", call.=FALSE)
+                  i <- unique(i)
                   fit <- data.frame(Const=object@data$const[i],
                                     Name=object@data$name[i],
                                     Freq=object@data$freq[i],
@@ -179,17 +202,20 @@ setMethod(f="summary",
               invisible()
           })
 
-#' @title Extract Something From a Tidem Object
-#' @param x A tidem object, i.e. one inheriting from \code{\link{tidem-class}}.
-#' @section Details of the specialized \code{tidem} method:
+#' Extract Something From a Tidem Object
+#'
+#' @param x a [tidem-class] object.
+#'
+#' @section Details of the specialized `tidem` method:
 #'
 #' A vector of the frequencies of fitted constituents is recovered
-#' with e.g. \code{x[["frequency"]]}. Similarly, amplitude is
-#' recovered with e.g. \code{x[["amplitude"]]} and phase with
-#' e.g. \code{x[["phase"]]}. If any other string is specified, then
+#' with e.g. `x[["frequency"]]`. Similarly, amplitude is
+#' recovered with e.g. `x[["amplitude"]]` and phase with
+#' e.g. `x[["phase"]]`. If any other string is specified, then
 #' the underlying accessor \code{\link{[[,oce-method}}) is used.
 #'
 #' @template sub_subTemplate
+#'
 #' @family things related to tides
 setMethod(f="[[",
           signature(x="tidem", i="ANY", j="ANY"),
@@ -205,8 +231,10 @@ setMethod(f="[[",
               }
           })
 
-#' @title Replace Parts of a Tidem Object
-#' @param x An \code{tidem} object, i.e. inheriting from \code{\link{tidem-class}}
+#' Replace Parts of a Tidem Object
+#'
+#' @param x a [tidem-class] object.
+#'
 #' @template sub_subsetTemplate
 #'
 #' @family things related to tides
@@ -218,38 +246,40 @@ setMethod(f="[[<-",
 
 
 
-#' @title Plot a Tidem Prediction
+#' Plot a Tidem Prediction
 #'
-#' @description
 #' Plot a summary diagram for a tidal fit.
 #'
-#' @param x A \code{tidem} object, i.e. one inheriting from
-#' \code{\link{tidem-class}}.
+#' @param x a [tidem-class] object.
+#'
 #' @param which integer flag indicating plot type, 1 for stair-case spectral, 2
 #' for spike spectral.
 #'
-#' @param constituents a character vector of constituents that are
-#' to be drawn and label. If \code{NULL}, then no constituents will be shown.
-#' Consult the built-in dataset \code{\link{tidedata}} for the permissible
-#' constituent names and their frequencies.
+#' @param constituents character vector holding the names of constituents that are
+#' to be drawn and labelled. If `NULL`, then no constituents will be shown.
+#' @template tideconst
 #'
-#' @param sides an integer vector of length equal to that of \code{constituents},
+#' @param sides an integer vector of length equal to that of `constituents`,
 #' designating the side on which the constituent labels are to be drawn. As in
-#' all R graphics, the value \code{1} indicates the bottom of the plot, and
-#' \code{3} indicates the top. If \code{sides=NULL}, the default, then all labels
-#' are drawn at the top. Any value of \code{sides} that is not either 1 or 3
+#' all R graphics, the value `1` indicates the bottom of the plot, and
+#' `3` indicates the top. If `sides=NULL`, the default, then all labels
+#' are drawn at the top. Any value of `sides` that is not either 1 or 3
 #' is converted to 3.
 #'
-#' @param col a character vector naming colors to be used for \code{constituents}.
-#' Ignored if \code{sides=3}. Repeated to be of the same length as
-#' \code{constituents}, otherwise.
+#' @param col a character vector naming colors to be used for `constituents`.
+#' Ignored if `sides=3`. Repeated to be of the same length as
+#' `constituents`, otherwise.
 #'
-#' @param log if set to "\code{x}", the frequency axis will be logarithmic.
-#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
-#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' @param log if set to "`x`", the frequency axis will be logarithmic.
+#'
+#' @param mgp 3-element numerical vector to use for `par(mgp)`, and also
+#' for `par(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
-#' @param mar value to be used with \code{\link{par}("mar")}.
+#'
+#' @param mar value to be used with `[`par`]("mar")`.
+#'
 #' @param \dots optional arguments passed to plotting functions.
+#'
 #' @examples
 #'\dontrun{
 #' library(oce)
@@ -259,13 +289,14 @@ setMethod(f="[[<-",
 #'}
 #'
 #' @section Historical note:
-#' An argument named \code{labelIf} was removed in July 2016,
+#' An argument named `labelIf` was removed in July 2016,
 #' because it was discovered never to have worked as documented, and
-#' because the more useful argument \code{constituents} had been added.
+#' because the more useful argument `constituents` had been added.
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot \code{oce} data
+#' @family functions that plot oce data
+#'
 #' @aliases plot.tidem
 #'
 #' @family things related to tides
@@ -337,27 +368,42 @@ setMethod(f="plot",
 #' Create tidem object from fitted harmonic data
 #'
 #' This function is intended to provide a bridge to
-#' \code{\link{predict.tidem}}, enabling tidal predictions based
-#' on published tables of harmonic fits. \strong{CAUTION:} this
-#' is a provisional function, and its action and argument list
-#' may change through the summer of 2018 ... use with caution!
+#' [predict.tidem()], enabling tidal predictions based
+#' on published tables of harmonic fits.
+#'
+#' Note that only constituent names known to [tidem()] are handled.
+#' The permitted names are those listed in Foreman (1978), and
+#' tabulated with
+#'\preformatted{
+#' data(tidedata)
+#' data.frame(name=tidedata$const$name, freq=tidedata$const$freq)
+#'}
+#' Warnings are issued for any constituent name that is not in this list; as
+#' of the late summer of 2019, the only example seen in practice is
+#' `M1`, which according to Wikipedia (2019) has frequency 0.0402557, which
+#' is very close to that of `NO1`, i.e. 0.04026859, perhaps explaining
+#' why Foreman (1978) did not handle this constituent. A warning is
+#' issued if this or any other unhandled constituent is provided
+#' in the `name` argument to `as.tidem()`.
 #'
 #' @param tRef a POSIXt value indicating the mean time of the
 #' observations used to develop the harmonic model. This is rounded
-#' to the nearest hour in \code{as.tidem}, to match \code{\link{tidem}}.
+#' to the nearest hour in [as.tidem()], to match [tidem()].
 #'
 #' @param latitude Numerical value indicating the latitude of the
-#' observations that were used to create the harmonic model.
+#' observations that were used to create the harmonic model. This
+#' is needed for nodal-correction procedures carried out
+#' by [tidemVuf()].
 #'
-#' @param name Character vector holding names of constituents, in the
-#' notation used within the \code{const} element of \code{data(tidedata)}.
+#' @param name character vector holding names of constituents.
+#' @template tideconst
 #'
 #' @param amplitude Numeric vector of constituent amplitudes.
 #'
 #' @param phase Numeric vector of constituent Greenwich phases.
 #' @template debugTemplate
 #'
-#' @return An object of \code{\link{tidem-class}}, with only minimal
+#' @return An object of [tidem-class], with only minimal
 #' contents.
 #'
 #' @examples
@@ -397,6 +443,14 @@ setMethod(f="plot",
 #' oce.plot.ts(sealevelTuktoyaktuk[["time"]], p1, ylim=ylim)
 #' oce.plot.ts(sealevelTuktoyaktuk[["time"]], p2, ylim=ylim)
 #'
+#' @references
+#' Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+#' Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
+#' Sciences, Patricia Bay.
+#'
+#' Wikipedia, "Theory of Tides." https://en.wikipedia.org/wiki/Theory_of_tides
+#' Downloaded Aug 17, 2019.
+#'
 #' @family things related to tides
 as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oceDebug"))
 {
@@ -425,15 +479,31 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 
     freq <- rep(NA, nname)
     indices <- rep(NA, nname)
+    ibad <- NULL
     for (i in seq_along(name)) {
+        oceDebug(debug, "adjusting amplitude and phase for constituent '", name[i], "'\n", sep="")
         j <- which(tidedata$const$name==name[i])
-        vuf <- tidemVuf(tRef, j=j, latitude=latitude)
-        ## oceDebug(debug, "j=", j, ", vuf=", deparse(vuf), "\n")
-        indices[i] <- j
-        amplitude[i] <- amplitude[i] * vuf$f
-        phase[i] <- phase[i] - (vuf$v+vuf$u)*360
-        freq[i] <- tidedata$const$freq[j]
+        oceDebug(debug, "  inferred j=", j, " from constituent name\n", sep="")
+        if (length(j)) {
+            vuf <- tidemVuf(tRef, j=j, latitude=latitude)
+            oceDebug(debug, "  inferred vuf=", deparse(vuf), "\n")
+            indices[i] <- j
+            amplitude[i] <- amplitude[i] * vuf$f
+            phase[i] <- phase[i] - (vuf$v+vuf$u)*360
+            freq[i] <- tidedata$const$freq[j]
+        } else {
+            ibad <- c(ibad, i)
+        }
     }
+    if (length(ibad)) {
+        warning("the following constituents are not handled: '", paste(name[ibad], collapse="', '"), "'\n", sep="")
+        indices <- indices[-ibad]
+        name <- name[-ibad]
+        amplitude <- amplitude[-ibad]
+        phase <- phase[-ibad]
+        freq <- freq[-ibad]
+    }
+    oceDebug(debug, "after vuf correction, head(name): ", paste(head(name), collapse=" "), "\n")
     oceDebug(debug, "after vuf correction, head(phase): ", paste(head(phase), collapse=" "), "\n")
     oceDebug(debug, "after vuf correction, head(amplitude): ", paste(head(amplitude), collapse=" "), "\n")
     oceDebug(debug, "} # as.tidem()\n", sep="", unindent=1)
@@ -445,39 +515,49 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
                       freq=freq,
                       amplitude=amplitude,
                       phase=phase,
-                      p=rep(NA, nname))
-    res@metadata$version <- "3"
+                      p=rep(NA, length(name)))
+    res@metadata$version <- 3
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # as.tidem()\n", sep="", unindent=1)
     res
 }
 
 
-#' @title Nodal Modulation Calculations for Tidem
+#' Nodal Modulation Calculations for Tidem
 #'
-#' @description
-#' Do nodal modulation calculations for \code{\link{tidem}}. This function is based directly
-#' on \code{t_vuf} in the \code{T_TIDE} Matlab package [1].
+#' Carry out nodal modulation calculations for [tidem()]. This function is based directly
+#' on `t_vuf` in the `T_TIDE` Matlab package (Pawlowicz et al., 2002),
+#' which inherits from on the Fortran code described by Foreman (1978).
 #'
-#' @param t The time in \code{POSIXct} format.  (It is \strong{very} important to
-#' use \code{tz="GMT"} in constructing \code{t}.)
+#' @param t The time in [POSIXct()] format.  (It is *very* important to
+#' use `tz="GMT"` in constructing `t`.)
 #'
 #' @param j Indices of tidal constituents to use.
 #'
 #' @param latitude Optional numerical value containing the latitude in degrees North.
+#' (For proper calculations, this really ought to be supplied.)
 #'
-#' @return A \code{\link[base]{list}} containing
-#' items named \code{v}, \code{u} and \code{f} (see the \code{T_TIDE}
-#' documentation).
+#' @return A `list` containing
+#' items named `v`, `u` and `f` as described in the `T_TIDE` documentation,
+#' as well in Pawlowicz et al. (2002) and Foreman (1978).
 #'
-#' @author Dan Kelley translated this from \code{t_astron} from the \code{T_TIDE}
-#' package.
+#' @author Dan Kelley translated this from `t_astron` from the `T_TIDE`
+#' package (see Pawlowicz et al. 2002).
 #'
 #' @examples
-#' tidemVuf(as.POSIXct("2008-01-22 18:50:24"), 43, 45.0)
+#' ## Look up values for the M2 constituent in Halifax Harbour, Canada.
+#' data("tidedata")
+#' j  <- which(tidedata$const$name=="M2")
+#' tidemVuf(t=as.POSIXct("2008-01-22 18:50:24"), j=j, lat=44.63)
 #'
 #' @references
-#' 1. Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
-#' harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
+#'
+#' Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+#' Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
+#' Sciences, Patricia Bay.
+#'
+#' Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+#' harmonic analysis including error estimates in MATLAB using `T_TIDE`.
 #' Computers and Geosciences, 28, 929-937.
 #'
 #' @family things related to tides
@@ -574,29 +654,30 @@ tidemVuf <- function(t, j, latitude=NULL)
 }
 
 
-#' @title Astronomical Calculations for Tidem
+#' Astronomical Calculations for Tidem
 #'
-#' @description
-#' Do some astronomical calculations for \code{\link{tidem}}.  This function is based directly
-#' on \code{t_astron} in the \code{T_TIDE} Matlab package [1].
+#' Do some astronomical calculations for [tidem()].  This function is based directly
+#' on `t_astron` in the `T_TIDE` Matlab package (see Pawlowicz et al.
+#' 2002).
 #'
-#' @param t Either a time in \code{POSIXct} format (with \code{"UTC"} timezone),
+#' @param t Either a time in `POSIXct` format (with `"UTC"` timezone,
+#' or else odd behaviours may result),
 #' or an integer. In the second case, it is converted to a time with
-#' \code{\link{numberAsPOSIXct}(t,tz="UTC")}.
-#' If \code{t} (It is \strong{very} important to use \code{tz="GMT"} in constructing \code{t}.)
+#' [numberAsPOSIXct()], using `tz="UTC"`.
 #'
-#' @return A \code{\link[base]{list}} containing items named
-#' \code{astro} and \code{ader} (see \code{T_TIDE} documentation).
+#' @return A `list` containing items named
+#' `astro` and `ader` (see the `T_TIDE` documentation).
 #'
-#' @author Dan Kelley translated this from \code{t_astron} in the \code{T_TIDE}
+#' @author Dan Kelley translated this from `t_astron` in the `T_TIDE`
 #' package.
 #'
 #' @examples
 #' tidemAstron(as.POSIXct("2008-01-22 18:50:24"))
 #'
 #' @references
-#' 1. Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002. Classical tidal
-#' harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
+#'
+#' Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+#' harmonic analysis including error estimates in MATLAB using `T_TIDE`.
 #' Computers and Geosciences, 28, 929-937.
 #'
 #' @family things related to tides
@@ -636,125 +717,120 @@ tidemAstron <- function(t)
 }
 
 
-#' @title Fit a Tidem (Tidal Model) to a Timeseries
+#' Fit a Tidal Model to a Timeseries
 #'
-#' @description
 #' The fit is done in terms of sine and cosine components at the indicated
 #' tidal frequencies, with the amplitude and phase being calculated from the
 #' resultant coefficients on the sine and cosine terms.
 #'
-#' @details
 #' The tidal constituents to be used in the analysis are specified as follows;
 #' see \dQuote{Constituent Naming Convention}.
 #'
-#' \itemize{
-#'
-#' \item \strong{Case 1}. If \code{constituents} is not provided, then the constituent
+#' 1. If `constituents` is not provided, then the constituent
 #' list will be made up of the 69 constituents designated by Foreman as "standard".
 #' These include astronomical frequencies and some shallow-water frequencies,
-#' and are as follows: \code{c("Z0", "SA", "SSA", "MSM", "MM", "MSF", "MF",
+#' and are as follows: `c("Z0", "SA", "SSA", "MSM", "MM", "MSF", "MF",
 #' "ALP1", "2Q1", "SIG1", "Q1", "RHO1", "O1", "TAU1", "BET1", "NO1", "CHI1",
 #' "PI1", "P1", "S1", "K1", "PSI1", "PHI1", "THE1", "J1", "SO1", "OO1", "UPS1",
 #' "OQ2", "EPS2", "2N2", "MU2", "N2", "NU2", "GAM2", "H1", "M2", "H2", "MKS2",
 #' "LDA2", "L2", "T2", "S2", "R2", "K2", "MSN2", "ETA2", "MO3", "M3", "SO3",
 #' "MK3", "SK3", "MN4", "M4", "SN4", "MS4", "MK4", "S4", "SK4", "2MK5", "2SK5",
-#' "2MN6", "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8")}.
+#' "2MN6", "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8")`.
 #'
-#' \item \strong{Case 2}. If the first item in \code{constituents} is the string
-#' \code{"standard"}, then a provisional list is set up as in Case 1, and then
-#' the (optional) rest of the elements of \code{constituents} are examined, in
+#' 2. If the first item in `constituents` is the string
+#' `"standard"`, then a provisional list is set up as in Case 1, and then
+#' the (optional) rest of the elements of `constituents` are examined, in
 #' order.  Each of these constituents is based on the name of a tidal
-#' constituent in the Foreman (1977) notation.  (To get the list, execute
-#' \code{data(tidedata)} and then execute \code{cat(tideData$name)}.)  Each
+#' constituent in the Foreman (1978) notation.  (To get the list, execute
+#' `data(tidedata)` and then execute `cat(tideData$name)`.)  Each
 #' named constituent is added to the existing list, if it is not already there.
 #' But, if the constituent is preceded by a minus sign, then it is removed
 #' from the list (if it is already there).  Thus, for example,
-#' \code{constituents=c("standard", "-M2", "ST32")} would remove the M2
+#' `constituents=c("standard", "-M2", "ST32")` would remove the M2
 #' constituent and add the ST32 constituent.
 #'
-#' \item \strong{Case 3}. If the first item is not \code{"standard"}, then the list of
+#' 3. If the first item is not `"standard"`, then the list of
 #' constituents is processed as in Case 2, but without starting with the
-#' standard list. As an example, \code{constituents=c("K1", "M2")} would fit
+#' standard list. As an example, `constituents=c("K1", "M2")` would fit
 #' for just the K1 and M2 components. (It would be strange to use a minus sign
 #' to remove items from the list, but the function allows that.)
-#' }
 #'
 #' In each of the above cases, the list is reordered in frequency prior to the
-#' analysis, so that the results of \code{\link{summary,tidem-method}} will be in a
+#' analysis, so that the results of [summary,tidem-method()] will be in a
 #' familiar form.
 #'
-#' Once the constituent list is determined, \code{tidem} prunes the elements of
+#' Once the constituent list is determined, `tidem` prunes the elements of
 #' the list by using the Rayleigh criterion, according to which two
 #' constituents of frequencies \eqn{f_1}{f1} and \eqn{f_2}{f2} cannot be
 #' resolved unless the time series spans a time interval of at least
 #' \eqn{rc/(f_1-f_2)}{rc/(f1-f2)}.
 #'
-#' Finally, \code{tidem} looks in the remaining constituent list to check
+#' Finally, `tidem` looks in the remaining constituent list to check
 #' that the application of the Rayleigh criterion has not removed any of the
-#' constituents specified directly in the \code{constituents} argument. If
+#' constituents specified directly in the `constituents` argument. If
 #' any are found to have been removed, then they are added back. This last
-#' step was added on 2017-12-27, to make \code{tidem} behave the same
-#' way as the Foreman (1977) code [1], as illustrated in his
+#' step was added on 2017-12-27, to make `tidem` behave the same
+#' way as the Foreman (1978) code, as illustrated in his
 #' Appendices 7.2 and 7.3. (As an aside, his Appendix 7.3 has some errors,
 #' e.g. the frequency for the 2SK5 constituent is listed there (p58) as
 #' 0.20844743, but it is listed as 0.2084474129 in his Appendix 7.1 (p41).
-#' For this reason, the frequency comparison is relaxed to a \code{tol}
-#' value of \code{1e-7} in a portion of the oce test suite
-#' (see \code{tests/testthat/test_tidem.R} in the source).
+#' For this reason, the frequency comparison is relaxed to a `tol`
+#' value of `1e-7` in a portion of the oce test suite
+#' (see `tests/testthat/test_tidem.R` in the source).
 #'
 #' A specific example may be of help in understanding the removal of unresolvable
-#' constitutents. For example, the \code{data(sealevel)} dataset is of length
+#' constitutents. For example, the `data(sealevel)` dataset is of length
 #' 6718 hours, and this is too short to resolve the full list of constituents,
-#' with the conventional (and, really, necessary) limit of \code{rc=1}.
-#' From Table 1 of [1], this timeseries is too short to resolve the
-#' \code{SA} constituent, so that \code{SA} will not be in the resultant.
-#' Similarly, Table 2 of [1] dictates the removal of
-#' \code{PI1}, \code{S1} and \code{PSI1} from the list. And, finally,
-#' Table 3 of [1] dictates the removal of
-#' \code{H1}, \code{H2}, \code{T2} and \code{R2}.  Also, since Table 3
-#' of [1] indicates that \code{GAM2} gets subsumed into \code{H1},
-#' and if \code{H1} is already being deleted in this test case, then
-#' \code{GAM2} will also be deleted.
+#' with the conventional (and, really, necessary) limit of `rc=1`.
+#' From Table 1 of Foreman (1978), this timeseries is too short to resolve the
+#' `SA` constituent, so that `SA` will not be in the resultant.
+#' Similarly, Table 2 of Foreman (1978) dictates the removal of
+#' `PI1`, `S1` and `PSI1` from the list. And, finally,
+#' Table 3 of Foreman (1978) dictates the removal of
+#' `H1`, `H2`, `T2` and `R2`, and since that document
+#' suggests that `GAM2` be subsumed into `H1`,
+#' then if `H1` is already being deleted, then
+#' `GAM2` will also be deleted.
 #'
-#' A list of constituent names is created by the following:
+#' A summary of constituents may be found with:
 #' \preformatted{
 #' data(tidedata)
-#' print(tidedata$const$name)
+#' print(tidedata$const)
 #' }
 #'
-#' \strong{The text should include discussion of the (not yet performed) nodal
-#' correction treatment.}
+#' @param t A `sealevel` object created with
+#' [read.sealevel()] or [as.sealevel()], or a vector of
+#' times. In the former case, time is part of the object, so `t` may not
+#' be given here.  In the latter case, `tidem` needs a way to determine
+#' time, so `t` must be given.
 #'
-#' @param t Either a \code{sealevel} object (e.g. produced by
-#' \code{\link{read.sealevel}} or \code{\link{as.sealevel}}) or a vector of
-#' times. In the former case, time is part of the object, so \code{t} may not
-#' be given here.  In the latter case, \code{tidem} needs a way to determine
-#' time, so \code{t} must be given.
 #' @param x an optional numerical vector holding something that varies with
-#' time.  This is ignored if \code{t} is a \code{\link{sealevel-class}} object,
-#' in which case it is inferred as \code{t[["elevation"]]}.
-#' @param constituents an optional vector of strings that name
-#' tidal constituents to which the fit is done (see \dQuote{Details}
+#' time.  This is ignored if `t` is a [sealevel-class] object,
+#' in which case it is inferred as `t[["elevation"]]`.
+#'
+#' @param constituents an optional character vector holding the names
+#' of tidal constituents to which the fit is done (see \dQuote{Details}
 #' and \dQuote{Constituent Naming Convention}.)
+#' @template tideconst
 #'
 #' @param infer a list of constituents to be inferred from
 #' fitted constituents according to the method outlined
-#' in Section 2.3.4 of Foreman (1977) [1].
-#' If \code{infer} is \code{NULL}, the default, then
+#' in Section 2.3.4 of Foreman (1978).
+#' If `infer` is `NULL`, the default, then
 #' no such inferences are made. Otherwise, some constituents
 #' are computed based on other constituents, instead of being
 #' determined by regression at the proper frequency.
-#' If provided, \code{infer} must be a list containing
+#' If provided, `infer` must be a list containing
 #' four elements:
-#' \code{name}, a vector of strings naming the constituents to be
-#' inferred; \code{from}, a vector of strings naming the fitted
+#' `name`, a vector of strings naming the constituents to be
+#' inferred; `from`, a vector of strings naming the fitted
 #' constituents used as the sources for those inferences (these
 #' source constituents are added to the regression list, if they
 #' are not already there);
-#' \code{amp}, a numerical vector of factors to be applied to the
-#' source amplitudes; and \code{phase}, a numerical vector of angles,
+#' `amp`, a numerical vector of factors to be applied to the
+#' source amplitudes; and `phase`, a numerical vector of angles,
 #' in degrees, to be subtracted from the source phases. For example,
-#' Following Foreman (1997) [1], if any of the \code{name} items
+#' Following Foreman (1998), if any of the `name` items
 #' have already been computed, then the suggested inference is ignored,
 #' and the already-computed values are used.
 #'\preformatted{
@@ -763,29 +839,34 @@ tidemAstron <- function(t)
 #'            amp=c(0.33093, 0.27215),
 #'            phase=c(-7.07, -22.4)
 #'}
-#' means that the amplitude of \code{P1} will be set as 0.33093 times the calculated amplitude
-#' of \code{K1}, and that the \code{P1} phase will be set to the \code{K1} phase,
-#' minus an offset of \code{-7.07} degrees.
-#' (This example is used in the Foreman (1977) [1] discussion of a
-#' Fortran analysis code and also in Pawlowicz et al. (2002) [4] discussion
+#' means that the amplitude of `P1` will be set as 0.33093 times the calculated amplitude
+#' of `K1`, and that the `P1` phase will be set to the `K1` phase,
+#' minus an offset of `-7.07` degrees.
+#' (This example is used in the Foreman (1978) discussion of a
+#' Fortran analysis code and also in Pawlowicz et al. (2002) discussion
 #' of the T_TIDE Matlab code.
-#' Rounded to the 0.1mm resolution of values reported in [1] and [2],
-#' the \code{tidem} results have root-mean-square amplitude difference
-#' to Foreman's Appendix 7.3 of 0.06mm; by comparison,
+#' Rounded to the 0.1mm resolution of values reported in Foreman (1978)
+#' and Pawlowicz et al. (2002),
+#' the `tidem` results have root-mean-square amplitude difference
+#' to Foreman's (1978) Appendix 7.3 of 0.06mm; by comparison,
 #' the results in Table 1 of Pawlowicz et al. (2002) agree with Foreman's
 #' results to RMS difference 0.04mm.)
 #'
 #' @param latitude if provided, the latitude of the observations.  If not
-#' provided, \code{tidem} will try to infer this from \code{sl}.
+#' provided, `tidem` will try to infer this from `sl`.
+#'
 #' @param rc the value of the coefficient in the Rayleigh criterion.
+#'
 #' @param regress function to be used for regression, by default
-#' \code{\link{lm}}, but could be for example \code{rlm} from the
-#' \code{MASS} package.
+#' [lm()], but could be for example `rlm` from the
+#' `MASS` package.
+#'
 #' @template debugTemplate
-#' @return An object of \code{\link{tidem-class}}, consisting of
-#' \item{const}{constituent number, e.g. 1 for \code{Z0}, 1 for \code{SA},
+#'
+#' @return An object of [tidem-class], consisting of
+#' \item{const}{constituent number, e.g. 1 for `Z0`, 1 for `SA`,
 #' etc.} \item{model}{the regression model} \item{name}{a vector of constituent
-#' names, in non-subscript format, e.g. "\code{M2}".} \item{frequency}{a vector
+#' names, in non-subscript format, e.g. "`M2`".} \item{frequency}{a vector
 #' of constituent frequencies, in inverse hours.} \item{amplitude}{a vector of
 #' fitted constituent amplitudes, in metres.} \item{phase}{a vector of fitted
 #' constituent phase.  NOTE: The definition of phase is likely to change as
@@ -794,15 +875,14 @@ tidemAstron <- function(t)
 #' constituent.  This is calculated as the average of the p values for the
 #' sine() and cosine() portions used in fitting; whether it makes any sense is
 #' an open question.}
+#'
 #' @section Bugs:
 #'
 #' \enumerate{
 #' \item This function is not fully developed yet, and both the
 #' form of the call and the results of the calculation may change.
 #'
-#' \item Nodal correction is not done.
-#'
-#' \item The reported \code{p} value may make no sense at all, and it might be
+#' \item The reported `p` value may make no sense at all, and it might be
 #' removed in a future version of this function. Perhaps a significance level
 #' should be presented, as in the software developed by both Foreman and
 #' Pawlowicz.
@@ -811,17 +891,17 @@ tidemAstron <- function(t)
 #'
 #' @section Constituent Naming Convention:
 #'
-#' \code{tidem} uses constituent names that follow the convention
-#' set by Foreman (1977) [1]. This convention is slightly different
+#' `tidem` uses constituent names that follow the convention
+#' set by Foreman (1978). This convention is slightly different
 #' from that used in the T-TIDE package of Pawlowicz et al.
-#' (2002) [4], with Foreman's \code{UPS1} and \code{M8} becoming
-#' \code{UPSI} and \code{MS} in T-TIDE. As a convenience,
-#' \code{tidem} converts from these T-TIDE names to the
+#' (2002), with Foreman's `UPS1` and `M8` becoming
+#' `UPSI` and `MS` in T-TIDE. As a convenience,
+#' `tidem` converts from these T-TIDE names to the
 #' Foreman names, issuing warnings when doing so.
 #'
-#' @section Agreement with \code{T_TIDE} results:
+#' @section Agreement with `T_TIDE` results:
 #'
-#' The \code{tidem} amplitude and phase results, obtained with
+#' The `tidem` amplitude and phase results, obtained with
 #'\preformatted{
 #'tidem(sealevelTuktoyaktuk, constituents=c("standard", "M10"),
 #'      infer=list(name=c("P1", "K2"),
@@ -829,30 +909,32 @@ tidemAstron <- function(t)
 #'                 amp=c(0.33093, 0.27215),
 #'                 phase=c(-7.07, -22.40))),
 #'}
-#' are identical the \code{T_TIDE} values listed in
+#' are identical the `T_TIDE` values listed in
 #' Table 1 of Pawlowicz et al. (2002),
 #' after rounding amplitude and phase to 4 and 2 digits past
 #' the decimal place, to match the format of the table.
 #'
 #' @author Dan Kelley
-#' @references
-#' 1. Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
-#' prediction.  Pacific Marine Science Report 77-10, Institute of Ocean
-#' Sciences, Patricia Bay, Sidney, BC, 58pp.
 #'
-#' 2. Foreman, M. G. G., Neufeld, E. T., 1991.  Harmonic tidal analyses of long
+#' @references
+#'
+#' Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+#' Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
+#' Sciences, Patricia Bay.
+#'
+#' Foreman, M. G. G., Neufeld, E. T., 1991.  Harmonic tidal analyses of long
 #' time series.  International Hydrographic Review, 68 (1), 95-108.
 #'
-#' 3. Leffler, K. E. and D. A. Jay, 2009.  Enhancing tidal harmonic analysis:
+#' Leffler, K. E. and D. A. Jay, 2009.  Enhancing tidal harmonic analysis:
 #' Robust (hybrid) solutions.  Continental Shelf Research, 29(1):78-88.
 #'
-#' 4. Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
-#' harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
+#' Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+#' harmonic analysis including error estimates in MATLAB using `T_TIDE`.
 #' Computers and Geosciences, 28, 929-937.
 #'
 #' @examples
 #' library(oce)
-#' # The demonstration time series from Foreman (1977),
+#' # The demonstration time series from Foreman (1978),
 #' # also used in T_TIDE (Pawlowicz, 2002).
 #' data(sealevelTuktoyaktuk)
 #' tide <- tidem(sealevelTuktoyaktuk)
@@ -873,22 +955,23 @@ tidem <- function(t, x, constituents, infer=NULL,
                   latitude=NULL, rc=1, regress=lm,
                   debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "tidem() {\n", sep="", unindent=1)
     constituentNameFix <- function(names) # from T-TIDE to Foreman name
     {
         if ("MS" %in% names) {
-            warning("constituent name switched from T-TIDE 'MS' to Foreman (1977) 'M8'")
+            warning("constituent name switched from T-TIDE 'MS' to Foreman (1978) 'M8'")
             names[names == "MS"] <- "M8"
         }
         if ("-MS" %in% names) {
-            warning("removed-constituent name switched from T-TIDE 'MS' to Foreman (1977) 'M8'")
+            warning("removed-constituent name switched from T-TIDE 'MS' to Foreman (1978) 'M8'")
             names[names == "-MS"] <- "-M8"
         }
         if ("UPS1" %in% names) {
-            warning("constituent name switched from T-TIDE 'UPSI' to Foreman (1977) 'UPS1'")
+            warning("constituent name switched from T-TIDE 'UPSI' to Foreman (1978) 'UPS1'")
             names[names == "UPS1"] <- "UPSI"
         }
         if ("-UPS1" %in% names) {
-            warning("removed-constituent name switched from T-TIDE 'UPSI' to Foreman (1977) 'UPS1'")
+            warning("removed-constituent name switched from T-TIDE 'UPSI' to Foreman (1978) 'UPS1'")
             names[names == "-UPS1"] <- "-UPSI"
         }
         names
@@ -1007,8 +1090,7 @@ tidem <- function(t, x, constituents, infer=NULL,
                     ## Case 2: addition. Require a valid name, and ignore repeat requests.
                     add <- which(tc$name == constituents[i])
                     if (1 != length(add))
-                        stop("'", constituents[i], "' is not a known tidal constituent; try one of: ",
-                                paste(tc$name, collapse=" "), "\n")
+                        stop("'", constituents[i], "' is not a known tidal constituent")
                     if (!(constituents[i] %in% name)) {
                         name <- c(name, tc$name[add])
                         addedConstituents <- c(addedConstituents, add)
@@ -1072,7 +1154,7 @@ tidem <- function(t, x, constituents, infer=NULL,
     ## issue 1350, they would simply be dropped if they failed the Rayleigh
     ## criterion. Although that was a sensible choice, it was decided
     ## on 2017-12-27, whilst working on issue 1350, to make tidem() do the
-    ## the same thing as the Foreman 1977 code as exemplified in his appendices
+    ## the same thing as the Foreman 1978 code as exemplified in his appendices
     ## 7.2 and 7.3.)
     if (length(addedConstituents)) {
         oceDebug(debug, "addedConstituents=", paste(addedConstituents, collapse=" "), "\n")
@@ -1250,7 +1332,7 @@ tidem <- function(t, x, constituents, infer=NULL,
                     ## whole solution, after handling these inferences.
                     ##
                     ## The first step is to adjust the amp and phase of infer$from; this
-                    ## is done based on formulae in Foreman (1977) sec 2.3.4. It looks
+                    ## is done based on formulae in Foreman (1978) sec 2.3.4. It looks
                     ## as though t_tide.m on and after about line 472 is doing a
                     ## similar thing, although the numbers do not agree exactly,
                     ## as shown in issue 1351, code 1351c.R.
@@ -1289,7 +1371,7 @@ tidem <- function(t, x, constituents, infer=NULL,
                     ##TTIDE pearg <- 2 * pi * (vuName - vuFrom + infer$phase[n]) / 360
                     ##TTIDE ## t_tide.m:477
                     ##TTIDE ## pcfac=inf.amprat(ii).*f(mu+ii)./f(jref(ii)).*exp(i*pearg);
-                    ##TTIDE ## Relates loosely to Foreman (1977 sec2.3.4 p28) "S"
+                    ##TTIDE ## Relates loosely to Foreman (1978 sec2.3.4 p28) "S"
                     ##TTIDE pcfac <- infer$amp[n] * vufName$f / vufFrom$f * cos(pearg)
                     ##TTIDE ## t_tide.m:478
                     ##TTIDE ## pcorr=1+pcfac.*scarg;
@@ -1298,7 +1380,7 @@ tidem <- function(t, x, constituents, infer=NULL,
                     ##TTIDE ##message("  pcorr=", pcorr, " (should divide infer amp by this)")
                     ##TTIDE ##message("  new amp for (", infer$from[n], ") might be=", pcorr*amplitude[ifrom])
                     ##
-                    ## Foreman (1977) [1] sec 2.3.4.
+                    ## Foreman (1978) sec 2.3.4.
                     ## Notation: suffices "1" and "2" refer to "from" and "name" here.
                     i1 <- which(tc$name==infer$from[n])[1]
                     i2 <- which(tc$name==infer$name[n])[1]
@@ -1331,7 +1413,7 @@ tidem <- function(t, x, constituents, infer=NULL,
                     amplitude[ifrom] <- amplitude[ifrom] / sqrt(S^2+C^2)
                     oceDebug(1+debug, infer$from[n], "phase, old=", phase[ifrom], ", new=", phase[ifrom]+atan2(S, C) / rpd, "\n")
                     phase[ifrom] <- phase[ifrom] + atan2(S, C) / rpd
-                    ## End of Foreman 1977 inference calculation. Now we can define 'name' i.t.o. 'from'
+                    ## End of Foreman 1978 inference calculation. Now we can define 'name' i.t.o. 'from'
                     iname <- which(tc$name == infer$name[n])[1]
                     oceDebug(1+debug, "Below is inference for ", infer$name[n], " (index=", iname, ")\n")
                     indices <- c(indices, iname)
@@ -1385,26 +1467,26 @@ tidem <- function(t, x, constituents, infer=NULL,
                       phase=phase,
                       p=p)
     res@metadata$rc <- rc
-    res@metadata$version <- "2"
+    res@metadata$version <- 2
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # tidem()\n", sep="", unindent=1)
     res
 }
 
 
-#' @title Predict a Time Series from a Tidal Model
+#' Predict a Tidal Signal
 #'
-#' @description
-#' Predict a time series from a tidal model.
+#' This creates a time-series of predicted tides, based on a
+#' tidal model object that was created by [as.tidem()] or [tidem()].
 #'
-#' @param object A \code{tidem} object, i.e. one inheriting from
-#' \code{\link{tidem-class}}.
+#' @param object a [tidem-class] object.
 #'
 #' @param newdata vector of POSIXt times at which to make the
-#' prediction.  For models created with \code{\link{tidem}},
-#' \code{newdata} is optional, and if it is not provided, then
+#' prediction.  For models created with [tidem()],
+#' the `newdata` argument is optional, and if it is not provided, then
 #' the predictions are at the observation times given to
-#' \code{\link{tidem}}. However, \code{newdata} is required,
-#' if \code{\link{as.tidem}} had been used to create \code{object}.
+#' [tidem()]. However, `newdata` is required  if [as.tidem()]
+#' had been used to create `object`.
 #'
 #' @param \dots optional arguments passed on to children.
 #'
@@ -1443,29 +1525,32 @@ tidem <- function(t, x, constituents, infer=NULL,
 #' @family things related to tides
 predict.tidem <- function(object, newdata, ...)
 {
+    dots <- list(...)
+    debug <- if ("debug" %in% names(dots)) dots$debug else 0
+    oceDebug(debug, "predict.tidem() {\n", sep="", unindent=1)
     if (!missing(newdata) && !inherits(newdata, "POSIXt"))
         stop("newdata must be of class POSIXt")
     version <- object@metadata$version
     if (!is.null(version) && version == 3) {
+        oceDebug(debug, "object@metadata$version is 3, so assuming the object was created by as.tidem()\n")
         if (missing(newdata))
             stop("must supply newdata because object was created with as.tidem()")
         hour2pi <- 2 * pi * (as.numeric(newdata) - as.numeric(object[["tRef"]])) / 3600
+        oceDebug(debug, vectorShow(hour2pi))
         ## message("head(hour2pi): ", paste(head(hour2pi), collapse=" "))
         nc <- length(object@data$name)
-        res <- rep(0, nc)
+        res <- rep(0, length(hour2pi))
         for (i in seq_len(nc)) {
-            ## signal = a*sin() + b*cos()
-            ## amp = sqrt(a^2 + b^2)
-            ## pha = atan(a/b)
-            ## a = amp*sin(pha)
-            ## b = amp*cos(pha)
+            oceDebug(debug, "accounting for constitutent[", i, "] = ", object@data$name[i], "\n", sep="")
             omega.t <- object@data$freq[i] * hour2pi
             a <- object@data$amplitude[i] * sin(2 * pi * object@data$phase[i] / 360)
             b <- object@data$amplitude[i] * cos(2 * pi * object@data$phase[i] / 360)
             res <- res + a*sin(omega.t) + b*cos(omega.t)
         }
-    } else {
+    } else if (!is.null(version) && version == 2) {
+        oceDebug(debug, "object@metadata$version is 2, so assuming the object was created by tidem()\n")
         if (!missing(newdata) && !is.null(newdata)) {
+            oceDebug(debug, "newdata was provided\n")
             freq <- object@data$freq[-1]     # drop first (intercept)
             name <- object@data$name[-1]     # drop "z0" (intercept)
             nc <- length(freq)
@@ -1482,91 +1567,106 @@ predict.tidem <- function(object, newdata, ...)
             name2 <- matrix(rbind(paste(name, "_S", sep=""), paste(name, "_C", sep="")), nrow=length(name), ncol=2)
             dim(name2) <- c(2 * length(name), 1)
             colnames(x) <- name2
-            res <- predict(object@data$model, newdata=list(x=x), ...)
+            res <- as.numeric(predict(object@data$model, newdata=list(x=x), ...))
         } else {
-            if (!("version" %in% names(object@metadata)))
-                warning("prediction is being made based on an old object; it may be wrong\n")
+            oceDebug(debug, "newdata was not provided\n")
             res <- as.numeric(predict(object@data$model, ...))
         }
+    } else {
+        if (!("version" %in% names(object@metadata)))
+            warning("prediction is being made based on an old object; it may be wrong\n")
+        res <- as.numeric(predict(object@data$model, ...))
     }
+    oceDebug(debug, "} # predict.tidem()\n", sep="", unindent=1)
     res
 }
 
 
 
-#' @title Get a Tidal Prediction from a WebTide Database
+#' Get a Tidal Prediction from a WebTide Database
 #'
-#' @description
-#' Get a tidal prediction from a WebTide database. There are two distinct cases.
+#' Get a tidal prediction from a WebTide database. This only
+#' works if the standalone WebTide application is installed,
+#' and if it is installed in a standard location. The details
+#' of installation are not within the oce purvue.
 #'
-#' \emph{Case 1:} \code{action="map"}. In this case, if
-#' \code{plot} is \code{FALSE}, a list is returned, containing
-#' all the \code{node}s in the selected database, along with all
-#' the \code{latitude}s and \code{longitude}s. This value is
-#' also returned (silently) if \code{plot} is true, but in that case,
-#' a plot is drawn to indicate the node locations. If \code{latitude} and
-#' \code{longitude} are given, then the node nearest that spot is indicated on
-#' the map; otherwise, if \code{node} is given, then the location of that
-#' node is indicated. There is also a special case: if \code{node} is negative
-#' and \code{interactive()} is \code{TRUE},
-#' then \code{\link{locator}} is called, and the node nearest the spot
+#' There are two methods of using this function.
+#' *Case 1:* `action="map"`. In this case, if
+#' `plot` is `FALSE`, a list is returned, containing
+#' all the `node`s in the selected database, along with all
+#' the `latitude`s and `longitude`s. This value is
+#' also returned (silently) if `plot` is true, but in that case,
+#' a plot is drawn to indicate the node locations. If `latitude` and
+#' `longitude` are given, then the node nearest that spot is indicated on
+#' the map; otherwise, if `node` is given, then the location of that
+#' node is indicated. There is also a special case: if `node` is negative
+#' and `interactive()` is `TRUE`,
+#' then [locator()] is called, and the node nearest the spot
 #' where the user clicks the mouse is indicated in the plot and in the
 #' return value.
 #'
-#' \code{Case 2:} \code{action="predict"}. If \code{plot} is \code{FALSE},
-#' then a list is returned, indicating \code{time}, predicted
-#' \code{elevation}, velocity components \code{u} and \code{v},
-#' \code{node} number, the name of the \code{basedir}, and
-#' the \code{region}. If \code{plot} is \code{TRUE}, this list is returned
+#' *Case 2:* `action="predict"`. If `plot` is `FALSE`,
+#' then a list is returned, indicating `time`, predicted
+#' `elevation`, velocity components `u` and `v`,
+#' `node` number, the name of the `basedir`, and
+#' the `region`. If `plot` is `TRUE`, this list is returned
 #' silently, and time-series plots are drawn for elevation, u, and v.
 #'
-#' Naturally, \code{webtide} will not work unless WebTide has been installed on
+#' Naturally, `webtide` will not work unless WebTide has been installed on
 #' the computer.
 #'
-#' @param action An indication of the action, either \code{action="map"} to
-#' draw a map or \code{action="predict"} to get a prediction; see
+#' @param action An indication of the action, either `action="map"` to
+#' draw a map or `action="predict"` to get a prediction; see
 #' \sQuote{Details}.
+#'
 #' @param longitude,latitude optional location at which prediction is required (ignored if
-#' \code{node} is given).
-#' @param node optional integer relating to a node in the database. If \code{node}
-#' is given, then neither \code{latitude} nor \code{longitude} may be given.
-#' If \code{node} is positive, then specifies indicates the node. If it is negative,
-#' \code{\link{locator}} is called so that the user can click (once) on the map, after
+#' `node` is given).
+#'
+#' @param node optional integer relating to a node in the database. If `node`
+#' is given, then neither `latitude` nor `longitude` may be given.
+#' If `node` is positive, then specifies indicates the node. If it is negative,
+#' [locator()] is called so that the user can click (once) on the map, after
 #' which the node is displayed on the map.
+#'
 #' @param time a vector of times at which prediction is to be made.
 #' If not supplied, this will be the week starting at the present time,
 #' incrementing by 15 minutes.
-#' @param basedir directory containing the \code{WebTide} application.
+#'
+#' @param basedir directory containing the `WebTide` application.
+#'
 #' @param region database region, given as a directory name in the WebTide
-#' directory.  For example, \code{h3o} is for Halifax Harbour, \code{nwatl} is
-#' for the northwest Atlantic, and \code{sshelf} is for the Scotian Shelf and
+#' directory.  For example, `h3o` is for Halifax Harbour, `nwatl` is
+#' for the northwest Atlantic, and `sshelf` is for the Scotian Shelf and
 #' Gulf of Maine.
+#'
 #' @param plot boolean indicating whether to plot.
-#' @param tformat optional argument passed to \code{\link{oce.plot.ts}}, for
-#' plot types that call that function.  (See \code{\link{strptime}} for the
+#'
+#' @param tformat optional argument passed to [oce.plot.ts()], for
+#' plot types that call that function.  (See [strptime()] for the
 #' format used.)
+#'
 #' @template debugTemplate
+#'
 #' @param \dots optional arguments passed to plotting functions. A common
-#' example is to set \code{xlim} and \code{ylim}, to focus a map region.
+#' example is to set `xlim` and `ylim`, to focus a map region.
 #'
-#' @return The value depends on \code{action}:
-#'\itemize{
-#'\item If \code{action="map"} the return value is a
+#' @return The value depends on `action`:
+#'
+#' * If `action="map"` the return value is a
 #' list containing the index of the nearest node, along with the
-#' \code{latitude} and \code{longitude} of that node.  If
-#' \code{plot} is \code{FALSE}, this value is returned invisibly.
+#' `latitude` and `longitude` of that node.  If
+#' `plot` is `FALSE`, this value is returned invisibly.
 #'
-#'\item If \code{action="predict"}, the return value is a list containing a vector
-#' of times (\code{time}), as well as vectors of the predicted \code{elevation}
-#' in metres and the predicted horizontal components of velocity, \code{u} and
-#' \code{v}, along with the \code{node} number, and the \code{basedir} and
-#' \code{region} as supplied to this function.
-#' If \code{plot} is \code{FALSE}, this value is returned invisibly.
-#'}
+#' * If `action="predict"`, the return value is a list containing a vector
+#' of times (`time`), as well as vectors of the predicted `elevation`
+#' in metres and the predicted horizontal components of velocity, `u` and
+#' `v`, along with the `node` number, and the `basedir` and
+#' `region` as supplied to this function. If `plot` is `FALSE`,
+#' this value is returned invisibly.
 #'
 #' @source The WebTide software may be downloaded for free at the
 #' Department of Fisheries and Oceans (Canada) website at
-#' \code{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php}
+#' `http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php`
 #' (checked February 2016 and May 2017).
 #'
 #' @section Caution:
@@ -1663,7 +1763,7 @@ webtide <- function(action=c("map", "predict"),
         }
     } else if (action == "predict") {
         if (missing(time))
-            time <- seq.POSIXt(from=Sys.time(), by="15 min", length.out=7*4*24)
+            time <- seq.POSIXt(from=presentTime(), by="15 min", length.out=7*4*24) # Q: what about timezone?
         if (missing(node)) {
             if (missing(longitude) || missing(latitude))
                 stop("'longitude' and 'latitude' must be given unless 'node' is given")

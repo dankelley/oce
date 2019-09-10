@@ -9,7 +9,7 @@ abbreviateTimeLabels(t, ...)
 \arguments{
 \item{t}{vector of times.}
 
-\item{\dots}{optional arguments passed to the \code{\link{format}}, e.g.
+\item{\dots}{optional arguments passed to the \code{\link[=format]{format()}}, e.g.
 \code{format}.}
 }
 \value{
@@ -20,7 +20,7 @@ Abbreviate a vector of times by removing commonalities (e.g. year)
 }
 \seealso{
 This is used by various functions that draw time labels on axes,
-e.g.  \code{\link{plot,adp-method}}.
+e.g.  \code{\link[=plot,adp-method]{plot,adp-method()}}.
 }
 \author{
 Dan Kelley, with help from Clark Richards

@@ -1,7 +1,7 @@
 Package: oce
 Type: Package
 Title: Analysis of Oceanographic Data
-Version: 1.0-2.1
+Version: 1.1-2
 Authors@R: c(
     person(given="Dan", family="Kelley", email="Dan.Kelley@Dal.Ca", role=c("aut", "cre"), comment=c(ORCID="https://orcid.org/0000-0001-7808-5911")),
     person(given="Clark", family="Richards", email="clark.richards@gmail.com", role=c("aut"), comment=c(ORCID="https://orcid.org/0000-0002-7833-206X")),
@@ -17,12 +17,15 @@ Description: Supports the analysis of Oceanographic data, including 'ADCP'
     sectional data, sea-level time series, coastline and topographic data, etc.
     Provides specialized functions for calculating seawater properties such as
     potential temperature in either the 'UNESCO' or 'TEOS-10' equation of state.
-    Produces graphical displays that conform to the conventions of the Oceanographic
-    literature.
+    Produces graphical displays that conform to the conventions of the
+    Oceanographic literature. This package is discussed extensively in
+    Dan Kelley's book Oceanographic Analysis with R, published
+    in 2018 by 'Springer-Verlag' with ISBN 978-1-4939-8842-6.
 License: GPL (>= 2)
 Encoding: UTF-8
 URL: https://dankelley.github.io/oce
 LazyData: false
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
 BuildVignettes: true
 VignetteBuilder: knitr

@@ -9,8 +9,8 @@
 }
 \arguments{
 \item{object}{An object of class \code{"section"}, usually, a result of a call
-to \code{\link{read.section}}, \code{\link{read.oce}}, or
-\code{\link{as.section}}.}
+to \code{\link[=read.section]{read.section()}}, \code{\link[=read.oce]{read.oce()}}, or
+\code{\link[=as.section]{as.section()}}.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
@@ -28,7 +28,7 @@ summary(section)
 
 }
 \seealso{
-Other things related to \code{section} data: \code{\link{[[,section-method}},
+Other things related to section data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{handleFlags,section-method}},
@@ -43,4 +43,4 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{section} data}
+\concept{things related to section data}

@@ -14,47 +14,61 @@ used by analogy to ADVs.
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{adp} objects is a
-\code{\link{list}} containing the main data for the object.
+\link{list} containing the main data for the object.
 The key items stored in this slot include \code{time}, \code{distance}, and \code{v}, along with angles \code{heading}, \code{pitch} and \code{roll}.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{adp} objects is a \code{\link{list}} containing
+for \code{adp} objects is a \link{list} containing
 information about the \code{data} or about the object itself.
 Examples that are of common interest include \code{oceCoordinate}, \code{orientation}, \code{frequency}, and \code{beamAngle}.}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{adp} objects is a
-\code{\link{list}} with entries describing the creation and evolution
+\link{list} with entries describing the creation and evolution
 of the object. The contents are updated by various \code{oce} functions to
 keep a record of processing steps.  Object summaries and
-\code{\link{processingLogShow}} both display the log.}
+\code{\link[=processingLogShow]{processingLogShow()}} both display the log.}
 }}
 
 \section{Modifying slot contents}{
 
 
 Although the \code{[[<-} operator may permit modification of the contents
-of \code{adp} objects (see \code{\link{[[<-,adp-method}}),
-it is better to use \code{\link{oceSetData}}
-and \code{\link{oceSetMetadata}}, because that will save an entry
-in the \code{processingLog} to describe the change.
+of \linkS4class{adp} objects (see \code{\link{[[<-,adp-method}}),
+it is better to use \code{\link[=oceSetData]{oceSetData()}} and \code{\link[=oceSetMetadata]{oceSetMetadata()}},
+because those functions save an entry in the \code{processingLog}
+that describes the change.
 }
 
 \section{Retrieving slot contents}{
 
 
-The full contents of the \code{data} and \code{metadata} slots of a \code{adp}
-object named \code{adp} may be retrieved in the standard R way. For example,
-\code{slot(adp, "data")} and \code{slot(adp, "metadata")} return
-the \code{data} and \code{metadata} slots, respectively. The
-\code{\link{[[,adp-method}} operator can also be used to access slots,
-with \code{adp[["data"]]} and \code{adp[["metadata"]]}, respectively.
-Furthermore, \code{\link{[[,adp-method}} can be used to retrieve
-named items (and potentially some derived items) within the
-\code{metadata} and \code{data} slots, the former taking precedence
-over the latter in the lookup. It is also possible
-to find items more directly, using \code{\link{oceGetData}} and
-\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+The full contents of the \code{data} and \code{metadata} slots of a \linkS4class{adp}
+object may be retrieved in the standard R way using \code{\link[=slot]{slot()}}. For
+example \code{slot(o,"data")} returns the \code{data} slot of an object named \code{o},
+and similarly \code{slot(o,"metadata")} returns
+the \code{metadata} slot.
+
+The slots may also be obtained with the \code{\link{[[,adp-method}}
+operator, as e.g. \code{o[["data"]]} and \code{o[["metadata"]]}, respectively.
+
+The \code{\link{[[,adp-method}} operator can also
+be used to retrieve items from within the \code{data} and \code{metadata} slots.
+For example, \code{o[["temperature"]]} can be used to retrieve temperature
+from an object containing that quantity. The rule is that a named
+quantity is sought first within the object's \code{metadata} slot,
+with the \code{data} slot being checked only if \code{metadata} does not
+contain the item. This \code{[[} method can also be used to get
+certain derived quantities, if the object contains sufficient
+information to calculate them. For example, an object that holds
+(practical) salinity, temperature and pressure, along with
+longitude and latitudee, has sufficient information to compute
+Absolute Salinity, and so \code{o[["SA"]]} will yield the
+calculated Absolute Salinity.
+
+It is also possible to find items more directly, using \code{\link[=oceGetData]{oceGetData()}} and
+\code{\link[=oceGetMetadata]{oceGetMetadata()}}, but neither of these functions can
+retrieve derived items.
 }
 
 \section{Reading/creating \code{adp} objects}{
@@ -143,37 +157,37 @@ Teledyne-RDI profilers have an additional item \code{g} (for
 percent-good).
 
 VmDas-equipped Teledyne-RDI profilers additional navigation data, with
-details listed in the table below; note that the RDI documentation [2] and
+details listed in the table below; note that the RDI documentation (reference 2) and
 the RDI gui use inconsistent names for most items.
 
 \tabular{lll}{
-  \strong{Oce name}\tab \strong{RDI doc name}\tab \strong{RDI GUI name}\cr
-  \code{avgSpeed}\tab Avg Speed\tab Speed/Avg/Mag\cr
-  \code{avgMagnitudeVelocityEast}\tab Avg Mag Vel East\tab ?\cr
-  \code{avgMagnitudeVelocityNorth}\tab Avg Mag Vel North\tab ?\cr
-  \code{avgTrackMagnetic}\tab Avg Track Magnetic\tab Speed/Avg/Dir (?)\cr
-  \code{avgTrackTrue}\tab Avg Track True\tab Speed/Avg/Dir (?)\cr
-  \code{avgTrueVelocityEast}\tab Avg True Vel East\tab ?\cr
-  \code{avgTrueVelocityNorth}\tab Avg True Vel North\tab ?\cr
-  \code{directionMadeGood}\tab Direction Made Good\tab Speed/Made Good/Dir\cr
-  \code{firstLatitude}\tab First latitude\tab Start Lat\cr
-  \code{firstLongitude}\tab First longitude\tab Start Lon\cr
-  \code{firstTime}\tab UTC Time of last fix\tab End Time\cr
-  \code{lastLatitude}\tab Last latitude\tab End Lat\cr
-  \code{lastLongitude}\tab Last longitude\tab End Lon\cr
-  \code{lastTime}\tab UTC Time of last fix\tab End Time\cr
-  \code{numberOfHeadingSamplesAveraged}\tab Number heading samples averaged\tab ?\cr
-  \code{numberOfMagneticTrackSamplesAveraged}\tab Number of magnetic track samples averaged\tab ? \cr
-  \code{numberOfPitchRollSamplesAvg}\tab Number of magnetic track samples averaged\tab ? \cr
-  \code{numberOfSpeedSamplesAveraged}\tab Number of speed samples averaged\tab ? \cr
-  \code{numberOfTrueTrackSamplesAvg}\tab Number of true track samples averaged\tab ? \cr
-  \code{primaryFlags}\tab Primary Flags\tab ?\cr
-  \code{shipHeading}\tab Heading\tab ?\cr
-  \code{shipPitch}\tab Pitch\tab ?\cr
-  \code{shipRoll}\tab Roll\tab ?\cr
-  \code{speedMadeGood}\tab Speed Made Good\tab Speed/Made Good/Mag\cr
-  \code{speedMadeGoodEast}\tab Speed MG East\tab ?\cr
-  \code{speedMadeGoodNorth}\tab Speed MG North\tab ?\cr
+\strong{Oce name}\tab \strong{RDI doc name}\tab \strong{RDI GUI name}\cr
+\code{avgSpeed}\tab Avg Speed\tab Speed/Avg/Mag\cr
+\code{avgMagnitudeVelocityEast}\tab Avg Mag Vel East\tab ?\cr
+\code{avgMagnitudeVelocityNorth}\tab Avg Mag Vel North\tab ?\cr
+\code{avgTrackMagnetic}\tab Avg Track Magnetic\tab Speed/Avg/Dir (?)\cr
+\code{avgTrackTrue}\tab Avg Track True\tab Speed/Avg/Dir (?)\cr
+\code{avgTrueVelocityEast}\tab Avg True Vel East\tab ?\cr
+\code{avgTrueVelocityNorth}\tab Avg True Vel North\tab ?\cr
+\code{directionMadeGood}\tab Direction Made Good\tab Speed/Made Good/Dir\cr
+\code{firstLatitude}\tab First latitude\tab Start Lat\cr
+\code{firstLongitude}\tab First longitude\tab Start Lon\cr
+\code{firstTime}\tab UTC Time of last fix\tab End Time\cr
+\code{lastLatitude}\tab Last latitude\tab End Lat\cr
+\code{lastLongitude}\tab Last longitude\tab End Lon\cr
+\code{lastTime}\tab UTC Time of last fix\tab End Time\cr
+\code{numberOfHeadingSamplesAveraged}\tab Number heading samples averaged\tab ?\cr
+\code{numberOfMagneticTrackSamplesAveraged}\tab Number of magnetic track samples averaged\tab ? \cr
+\code{numberOfPitchRollSamplesAvg}\tab Number of magnetic track samples averaged\tab ? \cr
+\code{numberOfSpeedSamplesAveraged}\tab Number of speed samples averaged\tab ? \cr
+\code{numberOfTrueTrackSamplesAvg}\tab Number of true track samples averaged\tab ? \cr
+\code{primaryFlags}\tab Primary Flags\tab ?\cr
+\code{shipHeading}\tab Heading\tab ?\cr
+\code{shipPitch}\tab Pitch\tab ?\cr
+\code{shipRoll}\tab Roll\tab ?\cr
+\code{speedMadeGood}\tab Speed Made Good\tab Speed/Made Good/Mag\cr
+\code{speedMadeGoodEast}\tab Speed MG East\tab ?\cr
+\code{speedMadeGoodNorth}\tab Speed MG North\tab ?\cr
 }
 
 For Teledyne-RDI profilers, there are four three-dimensional arrays
@@ -182,23 +196,17 @@ second bin number, and the third beam number (or coordinate number, for
 data in \code{xyz}, \code{sfm}, \code{enu} or \code{other} coordinate systems).  In
 the list below, the quoted phrases are quantities as defined in Figure 9
 of reference 1.
-
 \itemize{
-
-  \item \code{v} is ``velocity'' in m/s, inferred from two-byte signed
-  integer values (multiplied by the scale factor that is stored in
-  \code{velocityScale} in the metadata).
-
-  \item \code{q} is ``correlation magnitude'' a one-byte quantity stored
-  as type \code{raw} in the object. The values may range from 0 to 255.
-
-  \item \code{a} is ``backscatter amplitude``, also known as ``echo
-  intensity'' a one-byte quantity stored as type \code{raw} in the object.
-  The values may range from 0 to 255.
-
-  \item \code{g} is ``percent good'' a one-byte quantity stored as \code{raw}
-  in the object.  The values may range from 0 to 100.
-
+\item \code{v} is ``velocity'' in m/s, inferred from two-byte signed
+integer values (multiplied by the scale factor that is stored in
+\code{velocityScale} in the metadata).
+\item \code{q} is ``correlation magnitude'' a one-byte quantity stored
+as type \code{raw} in the object. The values may range from 0 to 255.
+\item \code{a} is \code{backscatter amplitude}, also known as ``echo
+intensity'' a one-byte quantity stored as type \code{raw} in the object.
+The values may range from 0 to 255.
+\item \code{g} is ``percent good'' a one-byte quantity stored as \code{raw}
+in the object.  The values may range from 0 to 100.
 }
 
 Finally, there is a vector \code{adp[["distance"]]} that indicates the bin
@@ -209,14 +217,14 @@ line bisecting beam pairs.  The length of this vector equals
 
 \section{Teledyne-RDI Sentinel V ADCPs}{
  As of 2016-09-27 there is
-    provisional support for the TRDI "SentinelV" ADCPs, which are 5
-    beam ADCPs with a vertical centre beam. Relevant vertical beam
-    fields are called \code{adp[["vv"]]}, \code{adp[["va"]]},
-    \code{adp[["vq"]]}, and \code{adp[["vg"]]} in analogy with the
-    standard 4-beam fields.
+provisional support for the TRDI "SentinelV" ADCPs, which are 5
+beam ADCPs with a vertical centre beam. Relevant vertical beam
+fields are called \code{adp[["vv"]]}, \code{adp[["va"]]},
+\code{adp[["vq"]]}, and \code{adp[["vg"]]} in analogy with the
+standard 4-beam fields.
 }
 
-\section{Accessing and altering information within \code{\link{adp-class}} objects}{
+\section{Accessing and altering information within \linkS4class{adp} objects}{
 
 \emph{Extracting values} Matrix data may be accessed as illustrated
 above, e.g.  or an adp object named \code{adv}, the data are provided by
@@ -250,33 +258,35 @@ time wasted.
 
 \section{References}{
 
-1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
-format.} P/N 957-6156-00 (November 2007).
-
-2. Teledyne-RDI, 2012. \emph{VmDas User's Guide, Ver. 1.46.5}.
+\enumerate{
+\item Teledyne-RDI, 2007.
+\emph{WorkHorse commands and output data format.}
+P/N 957-6156-00 (November 2007).
+\item Teledyne-RDI, 2012. \emph{VmDas User's Guide, Ver. 1.46.5}.
+}
 }
 
 \seealso{
 A file containing ADP data is usually recognized by Oce, and so
-\code{\link{read.oce}} will usually read the data.  If not, one may use the
-general ADP function \code{\link{read.adp}} or specialized variants
-\code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}},
-\code{\link{read.adp.ad2cp}},
-\code{\link{read.adp.sontek}} or \code{\link{read.adp.sontek.serial}}.
+\code{\link[=read.oce]{read.oce()}} will usually read the data.  If not, one may use the
+general ADP function \code{\link[=read.adp]{read.adp()}} or specialized variants
+\code{\link[=read.adp.rdi]{read.adp.rdi()}}, \code{\link[=read.adp.nortek]{read.adp.nortek()}},
+\code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}},
+\code{\link[=read.adp.sontek]{read.adp.sontek()}} or \code{\link[=read.adp.sontek.serial]{read.adp.sontek.serial()}}.
 
-ADP data may be plotted with \code{\link{plot,adp-method}}, which is a
+ADP data may be plotted with \code{\link[=plot,adp-method]{plot,adp-method()}}, which is a
 generic function so it may be called simply as \code{plot}.
 
 Statistical summaries of ADP data are provided by the generic function
 \code{summary}, while briefer overviews are provided with \code{show}.
 
 Conversion from beam to xyz coordinates may be done with
-\code{\link{beamToXyzAdp}}, and from xyz to enu (east north up) may be done
-with \code{\link{xyzToEnuAdp}}.  \code{\link{toEnuAdp}} may be used to
+\code{\link[=beamToXyzAdp]{beamToXyzAdp()}}, and from xyz to enu (east north up) may be done
+with \code{\link[=xyzToEnuAdp]{xyzToEnuAdp()}}.  \code{\link[=toEnuAdp]{toEnuAdp()}} may be used to
 transfer either beam or xyz to enu.  Enu may be converted to other coordinates
-(e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
+(e.g. aligned with a coastline) with \code{\link[=enuToOtherAdp]{enuToOtherAdp()}}.
 
-Other classes provided by \code{oce}: \code{\link{adv-class}},
+Other classes provided by oce: \code{\link{adv-class}},
   \code{\link{argo-class}}, \code{\link{bremen-class}},
   \code{\link{cm-class}}, \code{\link{coastline-class}},
   \code{\link{ctd-class}}, \code{\link{lisst-class}},
@@ -286,7 +296,7 @@ Other classes provided by \code{oce}: \code{\link{adv-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -308,10 +318,11 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{adp} data}
+\concept{classes provided by oce}
+\concept{things related to adp data}

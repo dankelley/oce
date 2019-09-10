@@ -5,7 +5,7 @@
 \alias{topoWorld}
 \title{Global Topographic Dataset at Half-degree Resolution}
 \source{
-This is created with \code{\link{read.topo}}, using a file downloaded with
+This is created with \code{\link[=read.topo]{read.topo()}}, using a file downloaded with
 \preformatted{
 topoFile <- download.topo(west=-180, east=180, south=-90, north=90,
                          resolution=30, format="netcdf", destdir=".")
@@ -24,11 +24,11 @@ Height (\code{topoWorld[["z"]]}) is measured in metres above nominal sea level.
 The coarse resolution can be a problem in plotting depth contours along with
 coastlines in regions of steep topography. For example, near the southeast
 corner of Newfoundland, a 200m contour will overlap a coastline drawn with
-\code{\link[ocedata]{coastlineWorldFine}}. The solution in such cases is to
+\link[ocedata:coastlineWorldFine]{ocedata::coastlineWorldFine}. The solution in such cases is to
 download a higher-resolution topography file, perhaps using
-\code{\link{download.topo}}, and then use \code{\link{read.topo}}
+\code{\link[=download.topo]{download.topo()}}, and then use \code{\link[=read.topo]{read.topo()}}
 to create another \code{topo} object.  (With other data
-sources, \code{\link{as.topo}} may be helpful.)
+sources, \code{\link[=as.topo]{as.topo()}} may be helpful.)
 }
 \section{Historical note}{
 
@@ -36,7 +36,7 @@ From late 2009 until May 18, 2019, the \code{topoWorld} dataset was created
 with a fairly complicated code that read a binary file downloaded from NOAA
 (\samp{http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5}),
 decoded, decimated from 1/12th degree resolution to 1/2 degree resolution, and
-passed through \code{\link{matrixShiftLongitude}} to put longitude
+passed through \code{\link[=matrixShiftLongitude]{matrixShiftLongitude()}} to put longitude
 between -180 and 180 degrees. The new scheme for creating the dataset,
 (see \dQuote{Source}) is much simpler, and also a much better model
 of how users are likely to deal with topography files in the more
@@ -58,7 +58,7 @@ imagep(topoWorld)
 
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adp}},
+Other datasets provided with oce: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
@@ -69,7 +69,7 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{wind}}
 
-Other things related to \code{topo} data: \code{\link{[[,topo-method}},
+Other things related to topo data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
   \code{\link{download.topo}},
   \code{\link{plot,topo-method}}, \code{\link{read.topo}},
@@ -77,5 +77,5 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{summary,topo-method}},
   \code{\link{topo-class}}, \code{\link{topoInterpolate}}
 }
-\concept{datasets provided with \code{oce}}
-\concept{things related to \code{topo} data}
+\concept{datasets provided with oce}
+\concept{things related to topo data}

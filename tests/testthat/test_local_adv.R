@@ -4,15 +4,15 @@ test_that("nortek vector with integer from,to", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               beam <- read.oce("local_data/adv_nortek_vector", from=1, to=10,
                                latitude=47.87943, longitude=-69.72533)
-              expect_silent(xyz <- beamToXyzAdv(beam))
-              expect_silent(enu <- xyzToEnuAdv(xyz))
+              xyz <- expect_silent(beamToXyzAdv(beam))
+              enu <- expect_silent(xyzToEnuAdv(xyz))
               ## FIXME: add some tests on the data here
           }
 })
 
 test_that("nortek vector with POSIXct from,to", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
-              expect_silent(beam <- read.oce("local_data/adv_nortek_vector",
+              beam <- expect_silent(read.oce("local_data/adv_nortek_vector",
                                              from=as.POSIXct("2008-06-25 10:00:02",tz="UTC"),
                                              to=as.POSIXct("2008-06-25 10:00:08",tz="UTC"),
                                              latitude=47.87943, longitude=-69.72533))

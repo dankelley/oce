@@ -15,7 +15,7 @@ binApply2D(x, y, f, xbreaks, ybreaks, FUN, ...)
 supplied}
 
 \item{xbreaks}{values of \code{x} at the boundaries between the
-bins; calculated using \code{\link{pretty}} if not supplied.}
+bins; calculated using \code{\link[=pretty]{pretty()}} if not supplied.}
 
 \item{ybreaks}{as \code{xbreaks}, but for \code{y}.}
 
@@ -33,8 +33,8 @@ subsetted by these breaks.
 }
 \description{
 The function \code{FUN} is applied to \code{f} in bins specified by
-\code{xbreaks} and \code{ybreaks}.  (If \code{FUN} is \code{\link{mean}},
-consider using \code{\link{binMean2D}} instead, since it should be faster.)
+\code{xbreaks} and \code{ybreaks}.  (If \code{FUN} is \code{\link[=mean]{mean()}},
+consider using \code{\link[=binMean2D]{binMean2D()}} instead, since it should be faster.)
 }
 \examples{
 library(oce)

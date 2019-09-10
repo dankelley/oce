@@ -3,11 +3,11 @@
 #' Class to Store Meteorological Data
 #'
 #' This class stores meteorological data. For objects created with
-#' \code{\link{read.met}}, the \code{data} slot will contain all the columns
+#' [read.met()], the `data` slot will contain all the columns
 #' within the original file (with some guesses as to units) in addition to
-#' several calculated quantities such as \code{u} and \code{v}, which are
+#' several calculated quantities such as `u` and `v`, which are
 #' velocities in m/s (not the km/h stored in typical data files), and which
-#' obey the oceanographic convention that \code{u>0} is a wind towards the
+#' obey the oceanographic convention that `u>0` is a wind towards the
 #' east.
 #'
 #' @templateVar class met
@@ -23,24 +23,32 @@
 #' @template slot_get
 #'
 #' @author Dan Kelley
-#' @family classes provided by \code{oce}
-#' @family things related to \code{met} data
+#'
+#' @family classes provided by oce
+#' @family things related to met data
 setClass("met", contains="oce")
 
-#' @title Extract Something From a met Object
-#' @param x A met object, i.e. one inheriting from \code{\link{met-class}}.
+
+#' Extract Something From a met Object
+#'
+#' @param x a [met-class] object.
+#'
 #' @template sub_subTemplate
-#' @family things related to \code{met} data
+#'
+#' @family things related to met data
 setMethod(f="[[",
           signature(x="met", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
               callNextMethod()         # [[
           })
 
-#' @title Replace Parts of a met Object
-#' @param x An \code{met} object, i.e. inheriting from \code{\link{met-class}}
+#' Replace Parts of a met Object
+#'
+#' @param x a [met-class] object.
+#'
 #' @template sub_subsetTemplate
-#' @family things related to \code{met} data
+#'
+#' @family things related to met data
 setMethod(f="[[<-",
           signature(x="met", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -48,32 +56,32 @@ setMethod(f="[[<-",
           })
 
 
-#' @title Sample met Object
+#' Sample met Object
 #'
-#' @description
-#' This is sample \code{met} object containing data for Halifax, Nova Scotia,
+#' This is sample [met-class] object containing data for Halifax, Nova Scotia,
 #' during September of 2003 (the period during which Hurricane Juan struck the
 #' city).
 #'
-#' @details
 #' The data file was downloaded with
-#' \preformatted{
+#'```
 #'metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
 #'met <- read.met(metFile)
 #'met <- oceSetData(met, "time", met[["time"]]+4*3600,
 #'                  note="add 4h to local time to get UTC time")
-#'}
-#' Using \code{\link{download.met}} avoids having to navigate the
+#'```
+#' Using [download.met()] avoids having to navigate the
 #' the awkward Environment Canada website, but it imposes the burden
 #' of having to know the station number. See the documentation for
-#' \code{\link{download.met}} for more details on station numbers.
+#' [download.met()] for more details on station numbers.
 #'
 #' @name met
+#'
 #' @docType data
+#'
 #' @source Environment Canada website on February 1, 2017
 #'
-#' @family datasets provided with \code{oce}
-#' @family things related to \code{met} data
+#' @family datasets provided with oce
+#' @family things related to met data
 NULL
 
 setMethod(f="initialize",
@@ -85,22 +93,24 @@ setMethod(f="initialize",
               if (!missing(u)) .Object@data$u <- u
               if (!missing(v)) .Object@data$v <- v
               .Object@metadata$filename <- filename
-              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'met' object"
               return(.Object)
           })
 
 
-#' @title Summarize a met Object
+#' Summarize a met Object
 #'
-#' @description
 #' Pertinent summary information is presented, including the sampling location,
 #' data ranges, etc.
 #'
-#' @param object A \code{met} object, i.e. one inheriting from \code{\link{met-class}}.
+#' @param object a [met-class] object.
+#'
 #' @param \dots further arguments passed to or from other methods.
+#'
 #' @author Dan Kelley
-#' @family things related to \code{met} data
+#'
+#' @family things related to met data
 setMethod(f="summary",
           signature="met",
           definition=function(object, ...) {
@@ -116,24 +126,28 @@ setMethod(f="summary",
           })
 
 
-#' @title Subset a met Object
+#' Subset a met Object
 #'
-#' @description
-#' This function is somewhat analogous to \code{\link{subset.data.frame}}.
+#' This function is somewhat analogous to [subset.data.frame()].
 #'
-#' @param x An object inheriting from \code{\link{met-class}}.
-#' @param subset An expression indicating how to subset \code{x}.
+#' @param x a [met-class] object.
+#'
+#' @param subset An expression indicating how to subset `x`.
+#'
 #' @param \dots ignored.
-#' @return A new \code{met} object.
+#'
+#' @return A [met-class] object.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' library(oce)
 #' data(met)
 #' # Few days surrounding Hurricane Juan
 #' plot(subset(met, time > as.POSIXct("2003-09-27", tz="UTC")))
 #'
-#' @family things related to \code{met} data
-#' @family functions that subset \code{oce} objects
+#' @family things related to met data
+#' @family functions that subset oce objects
 setMethod(f="subset",
           signature="met",
           definition=function(x, subset, ...) {
@@ -153,36 +167,42 @@ setMethod(f="subset",
 
 
 
-#' @title Coerce Data into met Object
+#' Coerce Data into met Object
 #'
-#' @description
 #' Coerces a dataset into a met dataset. This fills in only a few of the typical
 #' data fields, so the returned object is much
-#' sparser than the output from \code{\link{read.met}}. Also, almost no
+#' sparser than the output from [read.met()]. Also, almost no
 #' metadata fields are filled in, so the resultant object does not store
 #' station location, units of the data, data-quality flags, etc. Anyone working
-#' with data from Environment Canada [2] is advised to use \code{\link{read.met}}
+#' with data from Environment Canada (reference 2) is advised to use [read.met()]
 #' instead of the present function.
 #'
 #' @param time Either a vector of observation times (or character strings that can be
-#' coerced into times) or the output from \code{canadaHCD::hcd_hourly} (see [1]).
+#' coerced into times) or the output from `canadaHCD::hcd_hourly` (see reference 1).
+#'
 #' @param temperature vector of temperatures.
+#'
 #' @param pressure vector of pressures.
+#'
 #' @param u vector of eastward wind speed in m/s.
+#'
 #' @param v vector of northward wind speed in m/s.
+#'
 #' @param filename optional string indicating data source
-#' @return An object of \code{\link{met-class}}.
+#'
+#' @return A [met-class] object.
+#'
 #' @author Dan Kelley
 #'
 #' @references
-#' 1. The \code{canadaHCD} package is in development by Gavin Simpson; see
+#' 1. The `canadaHCD` package is in development by Gavin Simpson; see
 #' \url{https://github.com/gavinsimpson/canadaHCD} for instructions on how
 #' to download and install from GitHub.
 #'
 #' 2. Environment Canada website for Historical Climate Data
 #' \url{http://climate.weather.gc.ca/index_e.html}
 #'
-#' @family things related to \code{met} data
+#' @family things related to met data
 as.met <- function(time, temperature, pressure, u, v, filename="(constructed from data)")
 {
     if (missing(time)) stop("must provide time")
@@ -251,15 +271,14 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' Data are downloaded from \url{http://climate.weather.gc.ca} and cached locally.
 #'
-#' @details
-#' The data are downloaded with \code{\link[utils]{download.file}}
-#' pointed to the Environment Canada website [1]
+#' The data are downloaded with [utils::download.file()]
+#' pointed to the Environment Canada website (reference 1)
 #' using queries that had to be devised by reverse-engineering, since the agency
 #' does not provide documentation about how to construct queries. Caution: the
-#' query format changes from time to time, so \code{download.met} may work one
+#' query format changes from time to time, so `download.met` may work one
 #' day, and fail the next.
 #'
-#' The constructed query contains Station ID, as provided in the \code{id} argument.
+#' The constructed query contains Station ID, as provided in the `id` argument.
 #' Note that this seems to be a creation of Environment Canada, alone;
 #' it is distinct from the more standard "Climate ID" and "WMO ID".
 #' To make things more difficult, Environment Canada states that the
@@ -267,32 +286,32 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' data is unclear.)
 #'
 #' Given these difficulties with Station ID, users are advised to consult
-#' the Environment Canada website [1] before downloading any data,
+#' the Environment Canada website (reference 1) before downloading any data,
 #' and to check it from time to time
 #' during the course of a research project, to see if the Station ID has changed.
 #' Another approach would be to use Gavin Simpson's
-#' \code{canadaHCD} package [2] to look up Station IDs. This package maintains
+#' `canadaHCD` package (reference 2) to look up Station IDs. This package maintains
 #' a copy of the Environment Canada listing of stations, and its
-#' \code{find_station} function provides an easy way to determine Station IDs.
-#' After that, its \code{hcd_hourly} function (and related functions) make
+#' `find_station` function provides an easy way to determine Station IDs.
+#' After that, its `hcd_hourly` function (and related functions) make
 #' it easy to read data. These data can then be converted to the
-#' \code{met} class with \code{\link{as.met}}, although doing so leaves
+#' `met` class with [as.met()], although doing so leaves
 #' many important metadata blank.
 #'
 #' @param id A number giving the "Station ID" of the station of interest. If not
-#' provided, \code{id} defaults to 6358, for Halifax International Airport. See
+#' provided, `id` defaults to 6358, for Halifax International Airport. See
 #' \dQuote{Details}.
 #'
-#' @param year A number giving the year of interest. Ignored unless \code{deltat}
-#' is \code{"hour"}. If \code{year} is not given, it defaults to the present year.
+#' @param year A number giving the year of interest. Ignored unless `deltat`
+#' is `"hour"`. If `year` is not given, it defaults to the present year.
 #'
-#' @param month A number giving the month of interest. Ignored unless \code{deltat}
-#' is \code{"hour"}. If \code{month} is not given, it defaults to the present
+#' @param month A number giving the month of interest. Ignored unless `deltat`
+#' is `"hour"`. If `month` is not given, it defaults to the present
 #' month.
 #'
 #' @param deltat Optional character string indicating the time step of the
-#' desired dataset. This may be \code{"hour"} or \code{"month"}.
-#' If \code{deltat} is not given, it defaults to \code{"hour"}.
+#' desired dataset. This may be `"hour"` or `"month"`.
+#' If `deltat` is not given, it defaults to `"hour"`.
 #'
 #' @template downloadDestTemplate
 #'
@@ -311,17 +330,17 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' met <- read.met(metFile)
 #'}
 #'
-#' @seealso The work is done with \code{\link[utils]{download.file}}.
+#' @seealso The work is done with `\link[utils]{download.file`}.
 #'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
 #' \url{http://climate.weather.gc.ca/index_e.html}
 #'
-#' 2. Gavin Simpon's \code{canadaHCD} package on GitHub
+#' 2. Gavin Simpon's `canadaHCD` package on GitHub
 #' \url{https://github.com/gavinsimpson/canadaHCD}
 #'
 #' @family functions that download files
-#' @family things related to \code{met} data
+#' @family things related to met data
 download.met <- function(id, year, month, deltat, destdir=".", destfile,
                          debug=getOption("oceDebug"))
 {
@@ -336,7 +355,7 @@ download.met <- function(id, year, month, deltat, destdir=".", destfile,
         stop("deltat=\"", deltat, "\" is not supported; try \"hour\" or \"month\"")
     deltat <- deltatChoices[deltatIndex]
     if (deltat == "hour") {
-        today <- as.POSIXlt(Sys.time())
+        today <- as.POSIXlt(presentTime())
         if (missing(year))
             year <- today$year + 1900
         if (missing(month)) {
@@ -377,9 +396,8 @@ download.met <- function(id, year, month, deltat, destdir=".", destfile,
 
 #' Convert met Data Name to Oce Name
 #'
-#' @details
 #' Interoperability between oce functions requires that standardized data names
-#' be used, e.g. \code{"temperature"} for in-situ temperature. Very few
+#' be used, e.g. `"temperature"` for in-situ temperature. Very few
 #' data-file headers name the temperature column in exactly that way, however,
 #' and this function is provided to try to guess the names. The task is complicated
 #' by the fact that Environment Canada seems to change the names of the columns,
@@ -388,18 +406,19 @@ download.met <- function(id, year, month, deltat, destdir=".", destfile,
 #' Several quantities in the returned object differ from their values in the source
 #' file. For example, speed is converted from km/h to m/s, and angles are converted
 #' from tens of degrees to degrees. Also, some items are created from scratch, e.g.
-#' \code{u} and \code{v}, the eastward and northward velocity, are computed from speed
+#' `u` and `v`, the eastward and northward velocity, are computed from speed
 #' and direction. (Note that e.g. u is positive if the wind blows to the east; the
 #' data are thus in the normal Physics convention.)
 #'
 #' @param names a vector of character strings with original names
+#'
 #' @param scheme an optional indication of the scheme that is employed. This may
-#' be \code{"ODF"}, in which case \code{\link{ODFNames2oceNames}} is used,
-#' or \code{"met"}, in which case some tentative code for met files is used.
+#' be `"ODF"`, in which case [ODFNames2oceNames()] is used,
+#' or `"met"`, in which case some tentative code for met files is used.
 #'
 #' @return
 #' Vector of strings for the decoded names. If an unknown scheme is provided,
-#' this will just be \code{names}.
+#' this will just be `names`.
 metNames2oceNames <- function(names, scheme)
 {
     ##schemeGiven <- !missing(scheme)
@@ -409,53 +428,53 @@ metNames2oceNames <- function(names, scheme)
             res <- ODFNames2oceNames(ODFnames=names, ODFunits=NULL)
         } else if (scheme == "met") {
             ## next block handles monthly data
-            if (1 == length(i <- grep("^Date.Time$", res))) res[i] <- "DateTime"
-            if (1 == length(i <- grep("^Year$", res))) res[i] <- "Year"
-            if (1 == length(i <- grep("^Month$", res))) res[i] <- "Month"
-            if (1 == length(i <- grep("^Mean.Max.Temp...C.$", res))) res[i] <- "temperatureMaximum"
-            if (1 == length(i <- grep("^Extr.Max.Temp...C.$", res))) res[i] <- "temperatureExtraMaximum"
-            if (1 == length(i <- grep("^Extr.Max.Temp.Flag$", res))) res[i] <- "temperatureExtraMaximumFlag"
-            if (1 == length(i <- grep("^Mean.Min.Temp...C.$", res))) res[i] <- "temperatureMinimum"
-            if (1 == length(i <- grep("^Extr.Min.Temp...C.$", res))) res[i] <- "temperatureExtraMinimum"
-            if (1 == length(i <- grep("^Extr.Min.Temp.Flag$", res))) res[i] <- "temperatureExtraMinimumFlag"
-            if (1 == length(i <- grep("^Mean.Temp...C.$", res))) res[i] <- "temperature"
-            if (1 == length(i <- grep("^Mean.Max.Temp.Flag$", res))) res[i] <- "temperatureMaximumFlag"
-            if (1 == length(i <- grep("^Mean.Min.Temp.Flag$", res))) res[i] <- "temperatureMinimumFlag"
-            if (1 == length(i <- grep("^Mean.Temp.Flag$", res))) res[i] <- "temperatureFlag"
-            if (1 == length(i <- grep("^Total.Rain..mm.$", res))) res[i] <- "rain"
-            if (1 == length(i <- grep("^Total.Rain.Flag$", res))) res[i] <- "rainFlag"
-            if (1 == length(i <- grep("^Total.Snow..cm.$", res))) res[i] <- "snow"
-            if (1 == length(i <- grep("^Snow.Grnd.Last.Day..cm.$", res))) res[i] <- "snowGroundLastDay"
-            if (1 == length(i <- grep("^Snow.Grnd.Last.Day.Flag$", res))) res[i] <- "snowGroundLastDayFlag"
-            if (1 == length(i <- grep("^Total.Snow.Flag$", res))) res[i] <- "snowFlag"
-            if (1 == length(i <- grep("^Total.Precip..mm", res))) res[i] <- "precipitation"
-            if (1 == length(i <- grep("^Total.Precip.Flag", res))) res[i] <- "precipitationFlag"
-            if (1 == length(i <- grep("^Dir.of.Max.Gust..10.s.deg.$", res))) res[i] <- "directionMaximumGust"
-            if (1 == length(i <- grep("^Dir.of.Max.Gust.Flag$", res))) res[i] <- "directionMaximumGustFlag"
-            if (1 == length(i <- grep("^Spd.of.Max.Gust..km.h.$", res))) res[i] <- "speedMaximumGust"
-            if (1 == length(i <- grep("^Spd.of.Max.Gust.Flag$", res))) res[i] <- "speedMaximumGustFlag"
+            res[grep("^Date.Time$", res)] <- "DateTime"
+            res[grep("^Year$", res)] <- "Year"
+            res[grep("^Month$", res)] <- "Month"
+            res[grep("^Mean.Max.Temp...C.$", res)] <- "temperatureMaximum"
+            res[grep("^Extr.Max.Temp...C.$", res)] <- "temperatureExtraMaximum"
+            res[grep("^Extr.Max.Temp.Flag$", res)] <- "temperatureExtraMaximumFlag"
+            res[grep("^Mean.Min.Temp...C.$", res)] <- "temperatureMinimum"
+            res[grep("^Extr.Min.Temp...C.$", res)] <- "temperatureExtraMinimum"
+            res[grep("^Extr.Min.Temp.Flag$", res)] <- "temperatureExtraMinimumFlag"
+            res[grep("^Mean.Temp...C.$", res)] <- "temperature"
+            res[grep("^Mean.Max.Temp.Flag$", res)] <- "temperatureMaximumFlag"
+            res[grep("^Mean.Min.Temp.Flag$", res)] <- "temperatureMinimumFlag"
+            res[grep("^Mean.Temp.Flag$", res)] <- "temperatureFlag"
+            res[grep("^Total.Rain..mm.$", res)] <- "rain"
+            res[grep("^Total.Rain.Flag$", res)] <- "rainFlag"
+            res[grep("^Total.Snow..cm.$", res)] <- "snow"
+            res[grep("^Snow.Grnd.Last.Day..cm.$", res)] <- "snowGroundLastDay"
+            res[grep("^Snow.Grnd.Last.Day.Flag$", res)] <- "snowGroundLastDayFlag"
+            res[grep("^Total.Snow.Flag$", res)] <- "snowFlag"
+            res[grep("^Total.Precip..mm", res)] <- "precipitation"
+            res[grep("^Total.Precip.Flag", res)] <- "precipitationFlag"
+            res[grep("^Dir.of.Max.Gust..10.s.deg.$", res)] <- "directionMaximumGust"
+            res[grep("^Dir.of.Max.Gust.Flag$", res)] <- "directionMaximumGustFlag"
+            res[grep("^Spd.of.Max.Gust..km.h.$", res)] <- "speedMaximumGust"
+            res[grep("^Spd.of.Max.Gust.Flag$", res)] <- "speedMaximumGustFlag"
             ## next block handles hourly data
-            if (1 == length(i <- grep("^Data.Quality$", res))) res[i] <- "dataQuality"
-            if (1 == length(i <- grep("^Dew.Point.Temp.*C.$", res))) res[i] <- "dewPoint"
-            if (1 == length(i <- grep("^Dew.Point.Temp.Flag$", res))) res[i] <- "dewPointFlag"
-            if (1 == length(i <- grep("^Hmdx$", res))) res[i] <- "humidex"
-            if (1 == length(i <- grep("^Hmdx.Flag$", res))) res[i] <- "humidexFlag"
-            if (1 == length(i <- grep("^Rel.Hum....$", res))) res[i] <- "humidity"
-            if (1 == length(i <- grep("^Rel.Hum.Flag$", res))) res[i] <- "humidityFlag"
-            if (1 == length(i <- grep("^Stn.*Press.*kPa.*$", res))) res[i] <- "pressure"
-            if (1 == length(i <- grep("^Stn.Press.Flag$", res))) res[i] <- "pressureFlag"
-            if (1 == length(i <- grep("^Temp.*C.*$", res))) res[i] <- "temperature"
-            if (1 == length(i <- grep("^Temp.*Flag$", res))) res[i] <- "temperatureFlag"
-            if (1 == length(i <- grep("^Visibility.*km.*$", res))) res[i] <- "visibility"
-            if (1 == length(i <- grep("^Visibility.*Flag$", res))) res[i] <- "visibilityFlag"
-            if (1 == length(i <- grep("^Wind.*Spd.*km.*$", res))) res[i] <- "wind"
-            if (1 == length(i <- grep("^Wind.*Spd.*Flag$", res))) res[i] <- "windFlag"
+            res[grep("^Data.Quality$", res)] <- "dataQuality"
+            res[grep("^Dew.Point.Temp.*C.$", res)] <- "dewPoint"
+            res[grep("^Dew.Point.Temp.Flag$", res)] <- "dewPointFlag"
+            res[grep("^Hmdx$", res)] <- "humidex"
+            res[grep("^Hmdx.Flag$", res)] <- "humidexFlag"
+            res[grep("^Rel.Hum....$", res)] <- "humidity"
+            res[grep("^Rel.Hum.Flag$", res)] <- "humidityFlag"
+            res[grep("^Stn.*Press.*kPa.*$", res)] <- "pressure"
+            res[grep("^Stn.Press.Flag$", res)] <- "pressureFlag"
+            res[grep("^Temp.*C.*$", res)] <- "temperature"
+            res[grep("^Temp.*Flag$", res)] <- "temperatureFlag"
+            res[grep("^Visibility.*km.*$", res)] <- "visibility"
+            res[grep("^Visibility.*Flag$", res)] <- "visibilityFlag"
+            res[grep("^Wind.*Spd.*km.*$", res)] <- "wind"
+            res[grep("^Wind.*Spd.*Flag$", res)] <- "windFlag"
             ## some files have "10s" and others "10.s" (I think)
-            if (1 == length(i <- grep("^Wind.Dir..10.*s.deg.$", res))) res[i] <- "direction"
-            if (1 == length(i <- grep("^Wind.Dir.Flag$", res))) res[i] <- "directionFlag"
-            if (1 == length(i <- grep("^Wind.Chill$", res))) res[i] <- "windChill"
-            if (1 == length(i <- grep("^Wind.Chill.Flag$", res))) res[i] <- "windChillFlag"
-            if (1 == length(i <- grep("^Weather$", res))) res[i] <- "weather"
+            res[grep("^Wind.Dir..10.*s.deg.$", res)] <- "direction"
+            res[grep("^Wind.Dir.Flag$", res)] <- "directionFlag"
+            res[grep("^Wind.Chill$", res)] <- "windChill"
+            res[grep("^Wind.Chill.Flag$", res)] <- "windChillFlag"
+            res[grep("^Weather$", res)] <- "weather"
         } else {
             warning("unknown scheme ", scheme)
         }
@@ -472,37 +491,34 @@ metNames2oceNames <- function(names, scheme)
 
 
 
-#' @title Read a met File
+#' Read a met File
 #'
-#' @description
 #' Reads a comma-separated value file in the format used by the Environment
-#' Canada [1].  The agency does not publish a format for these
+#' Canada (see reference 1).  The agency does not publish a format for these
 #' files, so this function was based on a study of a few sample files, and it
 #' may fail for other files, if Environment Canada changes the format.
 #'
 #' @param file a connection or a character string giving the name of the file
 #' to load.
-#' @param type if \code{NULL}, then the first line is studied, in order to
-#' determine the file type.  If \code{type="msc"}, then a file as formatted by
+#'
+#' @param type if `NULL`, then the first line is studied, in order to
+#' determine the file type.  If `type="msc"`, then a file as formatted by
 #' Environment Canada is assumed.
+#'
 #' @param skip optional number of lines of header that occur before the actual
-#' data.  If this is not supplied, \code{read.met} scans the file until it
-#' finds a line starting with \code{"Date/Time"}, and considers all lines above
+#' data.  If this is not supplied, `read.met` scans the file until it
+#' finds a line starting with `"Date/Time"`, and considers all lines above
 #' that to be header.
+#'
 #' @param tz timezone assumed for time data
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
-#' @return An object of \code{\link[base]{class}} \code{"met"}, of which the
-#' \code{data} slot contains vectors \code{time}, \code{temperature},
-#' \code{pressure}, \code{u}, and \code{v}.  The velocity components have units
-#' m/s and are the components of the vector of wind direction.  In other words,
-#' the oceanographic convention on velocity is employed, not the meteorological
-#' one; the weather forecaster's "North wind" has positive \code{v} and zero
-#' \code{u}.  In addition to these things, \code{data} also contains
-#' \code{wind} (in km/h), taken straight from the data file.
-#' @section Note: There seem to be several similar formats in use, so this
-#' function may not work in all cases.
+#'
+#' @return A [met-class] object.
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #'\dontrun{
 #'library(oce)
@@ -518,7 +534,7 @@ metNames2oceNames <- function(names, scheme)
 #' 1. Environment Canada website for Historical Climate Data
 #' \url{http://climate.weather.gc.ca/index_e.html}
 #'
-#' @family things related to \code{met} data
+#' @family things related to met data
 read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.met() {\n", unindent=1)
@@ -539,7 +555,8 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
     text <- readLines(file, encoding="UTF-8", warn=FALSE)
     ##print(header[1:19])
     textItem <- function(text, name, numeric=TRUE) {
-        if (length(i <- grep(name, text))) {
+        i <- grep(name, text)
+        if (length(i)) {
             if (numeric)
                 as.numeric(sub("[^d](.*)[^d]$", "\\1", strsplit(text[i], ",")[[1]][2]))
             else
@@ -747,36 +764,36 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
 }
 
 
-#' @title Plot met Data
+#' Plot met Data
 #'
-#' @description
 #' Creates a multi-panel summary plot of data measured in a meteorological data
-#' set.  cast. The panels are controlled by the \code{which} argument.
+#' set.  cast. The panels are controlled by the `which` argument.
 #'
-#' @details
-#' If more than one panel is drawn, then on exit from \code{plot.met}, the
-#' value of \code{par} will be reset to the value it had before the function
-#' call.  However, if only one panel is drawn, the adjustments to \code{par}
-#' made within \code{plot.met} are left in place, so that further additions may
+#' If more than one panel is drawn, then on exit from `plot.met`, the
+#' value of `par` will be reset to the value it had before the function
+#' call.  However, if only one panel is drawn, the adjustments to `par`
+#' made within `plot.met` are left in place, so that further additions may
 #' be made to the plot.
 #'
-#' @param x A \code{met} object, e.g. as read by \code{\link{read.met}}, or a
-#' list containing items named \code{salinity} and \code{temperature}.
+#' @param x a [met-class] object.
 #'
 #' @param which list of desired plot types.
-#' \itemize{
-#' \item \code{which=1} gives a time-series plot of temperature
-#' \item \code{which=2} gives a time-series plot of pressure
-#' \item \code{which=3} gives a time-series plot of the x (eastward) component of velocity
-#' \item \code{which=4} gives a time-series plot of the y (northward) component of velocity
-#' \item \code{which=5} gives a time-series plot of speed
-#' \item \code{which=6} gives a time-series plot of direction (degrees clockwise from north;
-#' note that the values returned by \code{met[["direction"]]} must be multiplied by 10
-#' to get the direction plotted)
-#' }
+#' * `which=1` gives a time-series plot of temperature
 #'
-#' @param tformat optional argument passed to \code{\link{oce.plot.ts}}, for
-#' plot types that call that function.  (See \code{\link{strptime}} for the
+#' * `which=2` gives a time-series plot of pressure
+#'
+#' * `which=3` gives a time-series plot of the x (eastward) component of velocity
+#'
+#' * `which=4` gives a time-series plot of the y (northward) component of velocity
+#'
+#' * `which=5` gives a time-series plot of speed
+#'
+#' * `which=6` gives a time-series plot of direction (degrees clockwise from north;
+#' note that the values returned by `met[["direction"]]` must be multiplied by 10
+#' to get the direction plotted)
+#'
+#' @param tformat optional argument passed to [oce.plot.ts()], for
+#' plot types that call that function.  (See [strptime()] for the
 #' format used.)
 #'
 #' @template mgpTemplate
@@ -805,8 +822,9 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
 #' plot(juan, which=6)
 #' abline(v=t0)
 #'
-#' @family functions that plot \code{oce} data
-#' @family things related to \code{met} data
+#' @family functions that plot oce data
+#' @family things related to met data
+#'
 #' @aliases plot.met
 setMethod(f="plot",
            signature=signature("met"),

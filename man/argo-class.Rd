@@ -8,11 +8,11 @@
 This class stores data from Argo floats.
 }
 \details{
-An \code{argo} object may be read with \code{\link{read.argo}} or
-created with \code{\link{as.argo}}.  Argo data can be gridded to constant
-pressures with \code{\link{argoGrid}} or subsetted with
-\code{\link{subset,argo-method}}.  Plots can be made with
-\code{\link{plot,argo-method}}, while \code{\link{summary,argo-method}}
+An \code{argo} object may be read with \code{\link[=read.argo]{read.argo()}} or
+created with \code{\link[=as.argo]{as.argo()}}.  Argo data can be gridded to constant
+pressures with \code{\link[=argoGrid]{argoGrid()}} or subsetted with
+\code{\link[=subset,argo-method]{subset,argo-method()}}.  Plots can be made with
+\code{\link[=plot,argo-method]{plot,argo-method()}}, while \code{\link[=summary,argo-method]{summary,argo-method()}}
 produces statistical summaries and \code{show} produces overviews.
 
 See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some
@@ -23,51 +23,65 @@ argo-related datasets that may be useful in a wider context.
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{argo} objects is a
-\code{\link{list}} containing the main data for the object.
+\link{list} containing the main data for the object.
 The key items stored in this slot include  equal-length vectors \code{time}, \code{longitude}, \code{latitude} and equal-dimension matrices \code{pressure}, \code{salinity}, and \code{temperature}.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{argo} objects is a \code{\link{list}} containing
+for \code{argo} objects is a \link{list} containing
 information about the \code{data} or about the object itself.
 Examples that are of common interest include \code{id}, a vector of ID codes for the profiles, and \code{dataMode}, a vector of strings indicating whether the profile is in archived mode (\code{"A"}), realtime mode (\code{"R"}), or delayed mode (\code{"D"}).}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{argo} objects is a
-\code{\link{list}} with entries describing the creation and evolution
+\link{list} with entries describing the creation and evolution
 of the object. The contents are updated by various \code{oce} functions to
 keep a record of processing steps.  Object summaries and
-\code{\link{processingLogShow}} both display the log.}
+\code{\link[=processingLogShow]{processingLogShow()}} both display the log.}
 }}
 
 \section{Modifying slot contents}{
 
 
 Although the \code{[[<-} operator may permit modification of the contents
-of \code{argo} objects (see \code{\link{[[<-,argo-method}}),
-it is better to use \code{\link{oceSetData}}
-and \code{\link{oceSetMetadata}}, because that will save an entry
-in the \code{processingLog} to describe the change.
+of \linkS4class{argo} objects (see \code{\link{[[<-,argo-method}}),
+it is better to use \code{\link[=oceSetData]{oceSetData()}} and \code{\link[=oceSetMetadata]{oceSetMetadata()}},
+because those functions save an entry in the \code{processingLog}
+that describes the change.
 }
 
 \section{Retrieving slot contents}{
 
 
-The full contents of the \code{data} and \code{metadata} slots of a \code{argo}
-object named \code{argo} may be retrieved in the standard R way. For example,
-\code{slot(argo, "data")} and \code{slot(argo, "metadata")} return
-the \code{data} and \code{metadata} slots, respectively. The
-\code{\link{[[,argo-method}} operator can also be used to access slots,
-with \code{argo[["data"]]} and \code{argo[["metadata"]]}, respectively.
-Furthermore, \code{\link{[[,argo-method}} can be used to retrieve
-named items (and potentially some derived items) within the
-\code{metadata} and \code{data} slots, the former taking precedence
-over the latter in the lookup. It is also possible
-to find items more directly, using \code{\link{oceGetData}} and
-\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+The full contents of the \code{data} and \code{metadata} slots of a \linkS4class{argo}
+object may be retrieved in the standard R way using \code{\link[=slot]{slot()}}. For
+example \code{slot(o,"data")} returns the \code{data} slot of an object named \code{o},
+and similarly \code{slot(o,"metadata")} returns
+the \code{metadata} slot.
+
+The slots may also be obtained with the \code{\link{[[,argo-method}}
+operator, as e.g. \code{o[["data"]]} and \code{o[["metadata"]]}, respectively.
+
+The \code{\link{[[,argo-method}} operator can also
+be used to retrieve items from within the \code{data} and \code{metadata} slots.
+For example, \code{o[["temperature"]]} can be used to retrieve temperature
+from an object containing that quantity. The rule is that a named
+quantity is sought first within the object's \code{metadata} slot,
+with the \code{data} slot being checked only if \code{metadata} does not
+contain the item. This \code{[[} method can also be used to get
+certain derived quantities, if the object contains sufficient
+information to calculate them. For example, an object that holds
+(practical) salinity, temperature and pressure, along with
+longitude and latitudee, has sufficient information to compute
+Absolute Salinity, and so \code{o[["SA"]]} will yield the
+calculated Absolute Salinity.
+
+It is also possible to find items more directly, using \code{\link[=oceGetData]{oceGetData()}} and
+\code{\link[=oceGetMetadata]{oceGetMetadata()}}, but neither of these functions can
+retrieve derived items.
 }
 
 \seealso{
-Other classes provided by \code{oce}: \code{\link{adp-class}},
+Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{bremen-class}},
   \code{\link{cm-class}}, \code{\link{coastline-class}},
   \code{\link{ctd-class}}, \code{\link{lisst-class}},
@@ -77,7 +91,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
-Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+Other things related to argo data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argoGrid}},
   \code{\link{argoNames2oceNames}}, \code{\link{argo}},
   \code{\link{as.argo}},
@@ -89,5 +103,5 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{classes provided by \code{oce}}
-\concept{things related to \code{argo} data}
+\concept{classes provided by oce}
+\concept{things related to argo data}

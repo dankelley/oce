@@ -7,14 +7,14 @@
 swViscosity(salinity, temperature)
 }
 \arguments{
-\item{salinity}{either salinity [PSU] (in which case \code{temperature} and
-\code{pressure} must be provided) \strong{or} a \code{ctd} object (in which
+\item{salinity}{either salinity (PSU) (in which case \code{temperature} and
+\code{pressure} must be provided) \emph{or} a \code{ctd} object (in which
 case \code{salinity}, \code{temperature} and \code{pressure} are determined
 from the object, and must not be provided in the argument list).}
 
-\item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
+\item{temperature}{\emph{in-situ} temperature (\eqn{^\circ}{deg}C), defined
 on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
-\code{\link{swRho}}, and the examples below.}
+\code{\link[=swRho]{swRho()}}, and the examples below.}
 }
 \value{
 Viscosity of seawater in \eqn{Pa\cdot s}{Pa*s}.  Divide by density
@@ -35,13 +35,13 @@ the table is one unit in the last decimal place.
 No pressure dependence was reported by Dorsey (1940).
 }
 \examples{
-
 swViscosity(30, 10) # 0.001383779
 
 }
 \references{
-N. Ernest Dorsey (1940), \emph{Properties of ordinary
-Water-substance}, American Chemical Society Monograph Series.  Reinhold
+N. Ernest Dorsey (1940),
+\emph{Properties of ordinary Water-substance},
+American Chemical Society Monograph Series.  Reinhold
 Publishing.
 }
 \seealso{

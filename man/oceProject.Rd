@@ -8,16 +8,8 @@ oceProject(xy, proj, inv = FALSE, use_ob_tran = FALSE, legacy = TRUE,
   passNA = FALSE)
 }
 \arguments{
-\item{xy}{As for the \code{\link[rgdal]{project}} function in the
+\item{xy, proj, inv, use_ob_tran, legacy}{As for the \code{\link[rgdal:project]{rgdal::project()}} function in the
 \CRANpkg{rgdal} package.}
-
-\item{proj}{"}
-
-\item{inv}{"}
-
-\item{use_ob_tran}{"}
-
-\item{legacy}{"}
 
 \item{passNA}{Logical value indicating whether to pass NA values into
 \CRANpkg{rgdal}.  The default is \code{FALSE}, meaning that any NA
@@ -33,7 +25,7 @@ A two-column matrix, with first column holding either
 }
 \description{
 This function is used to isolate other oce functions from
-changes to the \code{\link[rgdal]{project}} function in the \CRANpkg{rgdal}
+changes to the \code{\link[rgdal:project]{rgdal::project()}} function in the \CRANpkg{rgdal}
 package, which is used for calculations involved in both forward
 and inverse map projections.
 }
@@ -41,15 +33,15 @@ and inverse map projections.
 Some highlights of the evolving relationship with rgdal are:
 \enumerate{
 \item See https://github.com/dankelley/oce/issues/653#issuecomment-107040093
-   for the reason why oce switched from using \code{\link[rgdal]{rawTransform}},
-   to \code{\link[rgdal]{project}}, both functions provided by the
-   \CRANpkg{rgdal} package.
+for the reason why oce switched from using \code{\link[rgdal:rawTransform]{rgdal::rawTransform()}},
+to \code{\link[rgdal:project]{rgdal::project()}}, both functions provided by the
+\CRANpkg{rgdal} package.
 \item 2016 Apr: rgdal::project started returning named quantities
 \item 2019 Feb: allowNAs_if_not_legacy was added in rgdal 1.3-9 to prevent
-   an error on i386/windows. However, using this argument imposes a
-   burden on users to update \CRANpkg{rgdal}, so the approach taken
-   here (by default, i.e. with \code{passNA=FALSE}) is to
-   temporarily switch NA data to 0, and then switch
-   back to NA after the calculation.
+an error on i386/windows. However, using this argument imposes a
+burden on users to update \CRANpkg{rgdal}, so the approach taken
+here (by default, i.e. with \code{passNA=FALSE}) is to
+temporarily switch NA data to 0, and then switch
+back to NA after the calculation.
 }
 }

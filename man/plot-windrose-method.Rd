@@ -12,11 +12,11 @@
   mgp[1]), col, ...)
 }
 \arguments{
-\item{x}{A \code{windrose} object, e.g. inheriting from \code{\link{windrose-class}}.}
+\item{x}{a \linkS4class{windrose} object.}
 
 \item{type}{The thing to be plotted, either the number of counts in the angle
 interval, the mean of the values in the interval, the median of the values, or
-a \code{\link{fivenum}} representation of the values.}
+a \code{\link[=fivenum]{fivenum()}} representation of the values.}
 
 \item{convention}{String indicating whether to use meteorological convention or
 oceanographic convention for the arrows that emanate from the centre of the
@@ -24,11 +24,11 @@ rose.  In meteorological convection, an arrow emanates towards the right on
 the diagram if the wind is from the east; in oceanographic convention, such an
 arrow indicates flow \emph{to} the east.}
 
-\item{mgp}{Three-element numerical vector to use for \code{par(mgp)}, and also
-for \code{par(mar)}, computed from this.  The default is tighter than the R
+\item{mgp}{Three-element numerical vector to use for \code{\link{par}}\code{(mgp)}, and also
+for \code{\link{par}}\code{(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{Four-element numerical vector to be used with \code{\link{par}("mar")}.}
+\item{mar}{Four-element numerical vector to be used with \code{\link{par}}\code{("mar")}.}
 
 \item{col}{Optional list of colors to use.  If not set, the colors will be
 \code{c("red", "pink", "blue", "lightgray")}.  For the first three types of
@@ -41,7 +41,7 @@ the fourth is, again, used for the grid lines.}
 \item{...}{Optional arguments passed to plotting functions.}
 }
 \description{
-Plot a \code{windrose} object, i.e. one inheriting from \code{\link{windrose-class}}.
+Plot a \linkS4class{windrose} object.
 }
 \examples{
 library(oce)
@@ -56,7 +56,7 @@ par(opar)
 
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -80,7 +80,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
+Other things related to windrose data: \code{\link{[[,windrose-method}},
   \code{\link{[[<-,windrose-method}},
   \code{\link{as.windrose}},
   \code{\link{summary,windrose-method}},
@@ -89,5 +89,5 @@ Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{windrose} data}
+\concept{functions that plot oce data}
+\concept{things related to windrose data}

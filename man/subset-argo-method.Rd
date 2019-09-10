@@ -8,7 +8,7 @@
 \S4method{subset}{argo}(x, subset, ...)
 }
 \arguments{
-\item{x}{An \code{argo} object, i.e. one inheriting from \code{\link{argo-class}}.}
+\item{x}{an \linkS4class{argo} object.}
 
 \item{subset}{An expression indicating how to subset \code{x}.}
 
@@ -77,7 +77,7 @@ plot(argoSubset, which="map")
 
 }
 \seealso{
-Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+Other things related to argo data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
   \code{\link{argo}}, \code{\link{as.argo}},
@@ -85,7 +85,7 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{summary,argo-method}}
 
-Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,adv-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,cm-method}},
@@ -104,5 +104,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that subset \code{oce} objects}
-\concept{things related to \code{argo} data}
+\concept{functions that subset oce objects}
+\concept{things related to argo data}

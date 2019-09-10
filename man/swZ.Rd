@@ -8,7 +8,7 @@ swZ(pressure, latitude = 45, eos = getOption("oceEOS", default =
   "gsw"))
 }
 \arguments{
-\item{pressure}{either pressure [dbar], in which case \code{lat} must also
+\item{pressure}{either pressure (dbar), in which case \code{lat} must also
 be given, or a \code{ctd} object, in which case \code{lat} will be inferred
 from the object.}
 
@@ -20,7 +20,7 @@ equator.}
 }
 \description{
 Compute height above the surface. This is the negative of depth,
-and so is defined simply in terms of \code{\link{swDepth}}.
+and so is defined simply in terms of \code{\link[=swDepth]{swDepth()}}.
 }
 \seealso{
 Other functions that calculate seawater properties: \code{\link{T68fromT90}},

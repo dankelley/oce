@@ -4,28 +4,39 @@
 \alias{handleFlagsInternal}
 \title{Low-level function for handling data-quality flags}
 \usage{
-handleFlagsInternal(object, flags, actions, debug = 0)
+handleFlagsInternal(object, flags, actions, where, debug = 0)
 }
 \arguments{
-\item{object}{An \code{oce} object, i.e. an object that inherits from \code{\link{oce-class}}.}
+\item{object}{An object of \linkS4class{oce} class.}
 
-\item{flags}{A named \code{\link{list}} of numeric values, e.g. \code{list(good=1,bad=2)}.}
+\item{flags}{A named \link{list} of numeric values.}
 
 \item{actions}{A character vector indicating actions to be carried out for the corresponding
-\code{flags} values. This will be lengthened with \code{\link{rep}} if necessary, to be
+\code{flags} values. This will be lengthened with \code{\link[=rep]{rep()}} if necessary, to be
 of the same length as \code{flags}. A common value for \code{actions} is \code{"NA"}, which
 means that data values that are flagged are replaced by \code{NA} in the returned result.}
+
+\item{where}{An optional string that permits the function to work with
+objects that store flags in e.g. \code{object@metadata$flags$where}
+instead of in \code{object@metadata$flags}, and data within
+\code{object@data$where} instead of within \code{object@data}. The
+appropriate value for \code{where} within the oce package is
+the default, \code{NULL}, which means that this extra subdirectory
+is not being used.}
 
 \item{debug}{An integer indicating the degree of debugging requested, with value \code{0}
 meaning to act silently, and value \code{1} meaning to print some information about the
 steps in processing.}
 }
 \value{
-A copy of \code{object}, modified as indicated by \code{flags} and \code{actions}.
+A copy of \code{object}, possibly with modifications to its
+\code{data} slot, if \code{object} contains flag values that have
+actions that alter the data.
 }
 \description{
-This function carries out low-level processing relating to data-quality flags,
-as a support for higher-level functions such \code{\link{handleFlags,ctd-method}} for
-\code{ctd} objects. In most cases, users will not call \code{handleFlagsInternal}
-directly.
+This function is designed for internal use within the \code{oce} package.  Its
+purpose is to carry out low-level processing relating to data-quality flags,
+as a support for higher-level functions such \link{handleFlags,ctd-method} for
+\code{ctd} objects, \link{handleFlags,adp-method} for \code{adp} objects,
+etc.
 }

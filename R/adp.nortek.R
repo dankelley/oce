@@ -26,33 +26,40 @@
 #' Decode data in a Nortek ADV or ADP header.
 #'
 #' Decodes the header in a binary-format Nortek ADV/ADP file.  This function is
-#' designed to be used by \code{\link{read.adp}} and \code{\link{read.adv}},
+#' designed to be used by [read.adp()] and [read.adv()],
 #' but can be used directly as well.  The code is based on information in the
 #' Nortek System Integrator Guide (2008) and on postings on the Nortek
 #' ``knowledge center'' discussion board.  One might assume that the latter is
 #' less authoritative than the former.  For example, the inference of cell size
 #' follows advice found at
-#' \code{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
-#' (downloaded June 2012, link no longer working), which contains a typo in an early posting that is
+#' http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717,
+#' which contains a typo in an early posting that is
 #' corrected later on.
 #'
 #' @param buf a ``raw'' buffer containing the header
+#'
 #' @param type type of device
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
+#'
 #' @param \dots additional arguments, passed to called routines.
-#' @return A list containing elements \code{hardware}, \code{head}, \code{user}
-#' and \code{offset}.  The easiest way to find the contents of these is to run
-#' this function with \code{debug=3}.
+#'
+#' @return A list containing elements `hardware`, `head`, `user`
+#' and `offset`.  The easiest way to find the contents of these is to run
+#' this function with `debug=3`.
+#'
 #' @author Dan Kelley and Clark Richards
-#' @seealso Most users should employ the functions \code{\link{read.adp}} and
-#' \code{\link{read.adv}} instead of this one.
+#'
+#' @seealso Most users should employ the functions [read.adp()] and
+#' [read.adv()] instead of this one.
+#'
 #' @references 1. Information on Nortek profilers (including the System
 #' Integrator Guide, which explains the data format byte-by-byte) is available
 #' at \url{http://www.nortekusa.com/usa?set_language=usa} after login.
 #'
 #' 2. The Nortek Knowledge Center
-#' \code{http://www.nortekusa.com/en/knowledge-center} (link no longer working)
+#' http://www.nortekusa.com/en/knowledge-center
 #' may be of help if problems arise in dealing with data from Nortek instruments.
 decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "vector"), debug=getOption("oceDebug"), ...)
 {
@@ -366,10 +373,9 @@ ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst", "interle
 
 #' Decode an item from a Nortek AD2CP file header
 #'
-#' @param x Adp object of the ad2cp variety, i.e. an object created
-#' by \code{\link{read.adp.ad2cp}}.
+#' @param x an [adp-class] object that holds AD2CP data.
 #'
-#' @param key Character value that identifies a particular line in \code{x[["text"]]}.
+#' @param key Character value that identifies a particular line in `x[["text"]]`.
 #'
 #' @param item Character value indicating the name of the item sought.
 #'
@@ -377,11 +383,11 @@ ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst", "interle
 #' from a string to a numerical value.
 #'
 #' @param default Optional value to be used if the item is not found in the
-#' header, or if the header is \code{NULL} (as in the case of a split-up file
+#' header, or if the header is `NULL` (as in the case of a split-up file
 #' that lacks the initial header information)
 #'
-#' @return String or number interpreted from the \code{x[["text"]]}, or \code{NULL},
-#' if the desired item is not found there, or if \code{x} is not of the required
+#' @return String or number interpreted from the `x[["text"]]`, or `NULL`,
+#' if the desired item is not found there, or if `x` is not of the required
 #' class and variety.
 #'
 #' @examples
@@ -400,7 +406,7 @@ ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst", "interle
 #' frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ", default=NA)
 #'}
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 ad2cpHeaderValue <- function(x, key, item, numeric=TRUE, default)
 {
     if (missing(x))
@@ -440,13 +446,12 @@ ad2cpHeaderValue <- function(x, key, item, numeric=TRUE, default)
 
 #' Test whether object is an AD2CP type
 #'
-#' @param x An item
+#' @param x character value naming an item.
 #'
-#' @return Logical value indicating whether the object inherits from the
-#' \code{\link{adp-class}} and has \code{fileType} in its
-#' \code{metadata} slot equal to \code{"AD2CP"}.
+#' @return Logical value indicating whether `x` is an [adp-class] object,
+#' with `fileType` in its `metadata` slot equal to `"AD2CP"`.
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 is.ad2cp <- function(x)
 {
     if (!inherits(x, "adp")) {
@@ -462,15 +467,15 @@ is.ad2cp <- function(x)
 #'
 #' This function may be incomplete in some important ways,
 #' because AD2CP data formats are not described clearly enough
-#' in references [1], [2] and [3] to be certain of how to handle
+#' in references 1, 2 and 3 to be certain of how to handle
 #' the range of file configurations that may be possible. The code
 #' has been tested with a small number of files that are available
 #' to the author, but these do not cover some cases that users might
 #' require, e.g. involving echosounder and altimeter data streams.
 #' Please be on the lookout for problems and contact
 #' the author if you need help. Also, note that some of the standard
-#' \code{read.adp.*} arguments are handled differently with
-#' this function, e.g. \code{by} must equal 1, because skipping
+#' `read.adp.*` arguments are handled differently with
+#' this function, e.g. `by` must equal 1, because skipping
 #' records makes little sense with blended multiple streams;
 #' see the \dQuote{Arguments} section for other limitations
 #' that stem from the specifics of this file format.
@@ -478,54 +483,54 @@ is.ad2cp <- function(x)
 #' @param file A connection or a character string giving the name of the file to load.
 #'
 #' @param from An integer indicating the index number of the first record to
-#' read. This must equal 1, for this version of \code{read.adp.ad2cp}.
-#' (If not provided, \code{from} defaults to 1.)
+#' read. This must equal 1, for this version of `read.adp.ad2cp`.
+#' (If not provided, `from` defaults to 1.)
 #'
 #' @param by An integer indicating the step from record to record. This
-#' must equal 1, for this version of \code{read.adp.ad2cp}.
-#' (If not provided, \code{by} defaults to 1.)
+#' must equal 1, for this version of `read.adp.ad2cp`.
+#' (If not provided, `by` defaults to 1.)
 #'
 #' @param to An integer indicating the final record to read.
-#' (If not provided, \code{by} defaults to 1e9.)
+#' (If not provided, `by` defaults to 1e9.)
 #'
-#' @param tz Character alue indicating time zone. This is used in interpreting
+#' @param tz Character value indicating time zone. This is used in interpreting
 #' times stored in the file.
 #'
 #' @param longitude Numerical value indicating the longitude of observation.
 #'
 #' @param latitude Numerical value indicating the latitude of observation.
 #'
-#' @param orientation Ignored by \code{read.adp.ad2cp}, and provided only for similarity
+#' @param orientation Ignored by `read.adp.ad2cp`, and provided only for similarity
 #' to other adp-reading functions.
 #'
-#' @param distance Ignored by \code{read.adp.ad2cp}, and provided only for similarity
+#' @param distance Ignored by `read.adp.ad2cp`, and provided only for similarity
 #' to other adp-reading functions.
 #'
-#' @param plan Optional integer specifying which 'plan' to focus on (see [1]
+#' @param plan Optional integer specifying which 'plan' to focus on (see reference 1
 #' for the meaning of 'plan').  If this is not given, it defaults to the most
 #' common plan in the requested subset of the data.
 #'
 #' @param type Optional character value indicating the type of Nortek instrument.
 #' If this is not provided, an attempt is made to infer it
-#' from the file header (if there is one), and \code{"Signature1000"}
+#' from the file header (if there is one), and `"Signature1000"`
 #' is used, otherwise. The importance
 #' of knowing the type is for inferring the slantwise beam angle, which is usd in the
-#' conversion from beam coordinates to xyz coordinates. If \code{type} is
-#' provided, it must be one of \code{"Signature250"}, \code{"Signature500"},
-#' or \code{"Signature1000"}; the first of these has a 20 degree
-#' slant-beam angle, while the others each have 20 degrees (see [2],
-#' section 2 on page 6). Note that \code{\link{oceSetMetadata}}
+#' conversion from beam coordinates to xyz coordinates. If `type` is
+#' provided, it must be one of `"Signature250"`, `"Signature500"`,
+#' or `"Signature1000"`; the first of these has a 20 degree
+#' slant-beam angle, while the others each have 20 degrees (see reference 2,
+#' section 2 on page 6). Note that [oceSetMetadata()]
 #' can be used to alter the slantwise beam angle of an existing object,
 #' and this will alter any later conversion from beam to xyz coordinates.
 #'
 #' @param monitor Logical value indicating whether the progress in reading
-#' the file is to be illustrated by calling \code{\link{txtProgressBar}}.
+#' the file is to be illustrated by calling [txtProgressBar()].
 #'
 #' @param despike Ignored by this function, and provided only for similarity
 #' to other adp-reading functions.
 #'
 #' @param processingLog Character value that, if provided, is saved
-#' within the \code{processingLog} slot of th returned value.
+#' within the `processingLog` slot of th returned value.
 #'
 #' @param debug Integer value indicating the level of debugging.
 #' Set to 1 to get a moderate  amount of debugging information,
@@ -546,17 +551,19 @@ is.ad2cp <- function(x)
 #' 2. Nortek AS. \dQuote{Operations Manual - Signature250, 500 and 1000.} Nortek AS, September 21, 2018.
 #'
 #' 3. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018. (This revision of
-#' [1] is useful in including new information about instrument orientation. Note that
-#' most of the comments within the \code{read.adp.ad2cp} code refer to [1], which has different
-#' page numbers than [3].)
+#' reference 1 is useful in including new information about instrument orientation. Note that
+#' most of the comments within the `read.adp.ad2cp` code refer to reference 1, which has different
+#' page numbers than reference 3.)
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
                            longitude=NA, latitude=NA,
                            orientation, distance, plan, type,
                            monitor=FALSE, despike=FALSE, processingLog,
                            debug=getOption("oceDebug"), ...)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     if (!missing(orientation))
         warning("ignoring 'orientation' (see documentation)")
     if (!missing(distance))
@@ -2142,14 +2149,14 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 #' ``knowledge center'' discussion board.  One might assume that the latter is
 #' less authoritative than the former.  For example, the inference of cell size
 #' follows advice found at
-#' \code{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
-#' (downloaded June 2012, link no longer working), which contains a typo in an early posting that is
+#' http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717,
+#' which contains a typo in an early posting that is
 #' corrected later on.
 #'
 #' @param orientation Optional character string specifying the orientation of the
 #' sensor, provided for those cases in which it cannot be inferred from the
-#' data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
-#' \code{"sideward"}.
+#' data file.  The valid choices are `"upward"`, `"downward"`, and
+#' `"sideward"`.
 #'
 #' @param distance Optional vector holding the distances of bin centres from the
 #' sensor.  This argument is ignored except for Nortek profilers, and need not
@@ -2158,7 +2165,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 #' Integrator Guide (2008 edition, page 31), so the function must rely on
 #' word-of-mouth formulae that do not work in all cases.
 #'
-#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' @param despike if `TRUE`, [despike()] will be used to clean
 #' anomalous spikes in heading, etc.
 #'
 #' @references
@@ -2175,13 +2182,15 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                           longitude=NA, latitude=NA,
                           orientation, distance,
                           monitor=FALSE, despike=FALSE, processingLog,
                           debug=getOption("oceDebug"), ...)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
                            longitude=longitude, latitude=latitude,
                            type="aquadopp", orientation=orientation, distance=distance,
@@ -2197,16 +2206,18 @@ read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' ``knowledge center'' discussion board.  One might assume that the latter is
 #' less authoritative than the former.  For example, the inference of cell size
 #' follows advice found at
-#' \code{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
-#' (downloaded June 2012, link no longer working), which contains a typo in an early posting that is
+#' http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717,
+#' which contains a typo in an early posting that is
 #' corrected later on.
 #'
-#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' @param despike if `TRUE`, [despike()] will be used to clean
 #' anomalous spikes in heading, etc.
+#'
 #' @param orientation Optional character string specifying the orientation of the
 #' sensor, provided for those cases in which it cannot be inferred from the
-#' data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
-#' \code{"sideward"}.
+#' data file.  The valid choices are `"upward"`, `"downward"`, and
+#' `"sideward"`.
+#'
 #' @param distance Optional vector holding the distances of bin centres from the
 #' sensor.  This argument is ignored except for Nortek profilers, and need not
 #' be given if the function determines the distances correctly from the data.
@@ -2228,13 +2239,15 @@ read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=NA, latitude=NA,
                             orientation=orientation, distance,
                             monitor=FALSE, despike=FALSE, processingLog,
                             debug=getOption("oceDebug"), ...)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
                            longitude=longitude, latitude=latitude,
                            type="aquadoppHR",
@@ -2251,16 +2264,18 @@ read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' ``knowledge center'' discussion board.  One might assume that the latter is
 #' less authoritative than the former.  For example, the inference of cell size
 #' follows advice found at
-#' \code{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
-#' (downloaded June 2012, link no longer working), which contains a typo in an early posting that is
+#' http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717,
+#' which contains a typo in an early posting that is
 #' corrected later on.
 #'
-#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' @param despike if `TRUE`, [despike()] will be used to clean
 #' anomalous spikes in heading, etc.
+#'
 #' @param orientation Optional character string specifying the orientation of the
 #' sensor, provided for those cases in which it cannot be inferred from the
-#' data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
-#' \code{"sideward"}.
+#' data file.  The valid choices are `"upward"`, `"downward"`, and
+#' `"sideward"`.
+#'
 #' @param distance Optional vector holding the distances of bin centres from the
 #' sensor.  This argument is ignored except for Nortek profilers, and need not
 #' be given if the function determines the distances correctly from the data.
@@ -2282,13 +2297,15 @@ read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                   longitude=NA, latitude=NA,
                                   orientation, distance,
                                   monitor=FALSE, despike=FALSE, processingLog,
                                   debug=getOption("oceDebug"), ...)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
                            longitude=longitude, latitude=latitude,
                            type="aquadoppProfiler",
@@ -2299,14 +2316,17 @@ read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
 #' Read a Nortek ADP File
 #'
-#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' @param despike a logical value indicating whether to use [despike()] to remove
 #' anomalous spikes in heading, etc.
+#'
 #' @param type a character string indicating the type of instrument.
-#' @param orientation optional character string specifying the orientation of
+#'
+#' @param orientation an optional character string specifying the orientation of
 #' the sensor, provided for those cases in which it cannot be inferred from the
-#' data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
-#' \code{"sideward"}.
-#' @param distance optional vector holding the distances of bin centres from
+#' data file.  The valid choices are `"upward"`, `"downward"`, and
+#' `"sideward"`.
+#'
+#' @param distance an optional vector holding the distances of bin centres from
 #' the sensor.  This argument is ignored except for Nortek profilers, and need
 #' not be given if the function determines the distances correctly from the
 #' data.  The problem is that the distance is poorly documented in the Nortek
@@ -2327,7 +2347,7 @@ read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{adp} data
+#' @family things related to adp data
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=NA, latitude=NA,
                             type=c("aquadoppHR", "aquadoppProfiler", "aquadopp"),
@@ -2336,6 +2356,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             debug=getOption("oceDebug"),
                             ...)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     ##degToRad <- atan2(1, 1) / 45
     profileStart <- NULL # prevents scope warning in rstudio; defined later anyway
     bisectAdpNortek <- function(buf, t.find, add=0, debug=0) {

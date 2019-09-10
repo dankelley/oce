@@ -14,7 +14,7 @@
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.}
+\item{x}{a \linkS4class{landsat} object.}
 
 \item{band}{If given, the name of the band.  For Landsat-8 data, this may be
 one of: \code{"aerosol"}, \code{"blue"}, \code{"green"}, \code{"red"},
@@ -39,7 +39,7 @@ website that worked once, but failed as of Feb 2, 2017).}
 \item{which}{Desired plot type; 1=image, 2=histogram.}
 
 \item{decimate}{An indication of the desired decimation,
-passed to \code{\link{imagep}} for image plots.
+passed to \code{\link[=imagep]{imagep()}} for image plots.
 The default yields faster plotting.  Some decimation is sensible for
 full-size images, since no graphical displays can show 16 thousand pixels
 on a side.}
@@ -60,31 +60,31 @@ the latter case, the band designation is ignored, and the object must
 contain the three color bands.}
 
 \item{drawPalette}{Indication of the type of palette to draw, if
-any. See \code{\link{imagep}} for details.}
+any. See \code{\link[=imagep]{imagep()}} for details.}
 
 \item{showBandName}{A logical indicating whether the band name is to
 plotted in the top margin, near the right-hand side.}
 
 \item{alpha.f}{Argument used if \code{col="natural"}, to adjust colors
-with \code{\link{adjustcolor}}.}
+with \code{\link[=adjustcolor]{adjustcolor()}}.}
 
 \item{red.f}{Argument used if \code{col="natural"}, to adjust colors with
-\code{\link{adjustcolor}}.  Higher values of \code{red.f} cause red hues
+\code{\link[=adjustcolor]{adjustcolor()}}.  Higher values of \code{red.f} cause red hues
 to be emphasized (e.g. dry land).}
 
 \item{green.f}{Argument used if \code{col="natural"}, to adjust colors with
-\code{\link{adjustcolor}}.  Higher values of \code{green.f} emphasize
+\code{\link[=adjustcolor]{adjustcolor()}}.  Higher values of \code{green.f} emphasize
 green hues (e.g. forests).}
 
 \item{blue.f}{Argument used if \code{band="terralook"}, to adjust colors with
-\code{\link{adjustcolor}}.  Higher values of \code{blue.f} emphasize blue
+\code{\link[=adjustcolor]{adjustcolor()}}.  Higher values of \code{blue.f} emphasize blue
 hues (e.g. ocean).}
 
 \item{offset}{Argument used if \code{band="terralook"}, to adjust colors with
-\code{\link{adjustcolor}}.}
+\code{\link[=adjustcolor]{adjustcolor()}}.}
 
 \item{transform}{Argument used if \code{band="terralook"}, to adjust colors
-with \code{\link{adjustcolor}}.}
+with \code{\link[=adjustcolor]{adjustcolor()}}.}
 
 \item{debug}{Set to a positive value to get debugging information during
 processing.}
@@ -128,7 +128,7 @@ color by combining the \code{red}, \code{green}, \code{blue} and
 \code{https://lta.cr.usgs.gov/terralook/what_is_terralook} (a
 website that worked once, but failed as of Feb 2, 2017), namely
 that the \code{red}-band data are provided as the \code{red}
-argument of the \code{\link{rgb}} function, while
+argument of the \code{\link[=rgb]{rgb()}} function, while
 the \code{green} argument is computed as
 2/3 of the \code{green}-band data plus 1/3 of the \code{nir}-band data, and
 the \code{blue} argument is computed as 2/3 of the \code{green}-band
@@ -137,14 +137,14 @@ data minus 1/3 of the \code{nir}-band data. (This is not a typo: the
 }
 }
 \seealso{
-Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
+Other things related to landsat data: \code{\link{[[,landsat-method}},
   \code{\link{[[<-,landsat-method}},
   \code{\link{landsat-class}}, \code{\link{landsatAdd}},
   \code{\link{landsatTrim}}, \code{\link{landsat}},
   \code{\link{read.landsat}},
   \code{\link{summary,landsat-method}}
 
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -171,6 +171,6 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
+\concept{functions that plot oce data}
 \concept{satellite}
-\concept{things related to \code{landsat} data}
+\concept{things related to landsat data}

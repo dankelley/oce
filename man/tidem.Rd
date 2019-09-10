@@ -2,29 +2,29 @@
 % Please edit documentation in R/tides.R
 \name{tidem}
 \alias{tidem}
-\title{Fit a Tidem (Tidal Model) to a Timeseries}
+\title{Fit a Tidal Model to a Timeseries}
 \usage{
 tidem(t, x, constituents, infer = NULL, latitude = NULL, rc = 1,
   regress = lm, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{t}{Either a \code{sealevel} object (e.g. produced by
-\code{\link{read.sealevel}} or \code{\link{as.sealevel}}) or a vector of
+\item{t}{A \code{sealevel} object created with
+\code{\link[=read.sealevel]{read.sealevel()}} or \code{\link[=as.sealevel]{as.sealevel()}}, or a vector of
 times. In the former case, time is part of the object, so \code{t} may not
 be given here.  In the latter case, \code{tidem} needs a way to determine
 time, so \code{t} must be given.}
 
 \item{x}{an optional numerical vector holding something that varies with
-time.  This is ignored if \code{t} is a \code{\link{sealevel-class}} object,
+time.  This is ignored if \code{t} is a \linkS4class{sealevel} object,
 in which case it is inferred as \code{t[["elevation"]]}.}
 
-\item{constituents}{an optional vector of strings that name
-tidal constituents to which the fit is done (see \dQuote{Details}
+\item{constituents}{an optional character vector holding the names
+of tidal constituents to which the fit is done (see \dQuote{Details}
 and \dQuote{Constituent Naming Convention}.)}
 
 \item{infer}{a list of constituents to be inferred from
 fitted constituents according to the method outlined
-in Section 2.3.4 of Foreman (1977) [1].
+in Section 2.3.4 of Foreman (1978).
 If \code{infer} is \code{NULL}, the default, then
 no such inferences are made. Otherwise, some constituents
 are computed based on other constituents, instead of being
@@ -39,7 +39,7 @@ are not already there);
 \code{amp}, a numerical vector of factors to be applied to the
 source amplitudes; and \code{phase}, a numerical vector of angles,
 in degrees, to be subtracted from the source phases. For example,
-Following Foreman (1997) [1], if any of the \code{name} items
+Following Foreman (1998), if any of the \code{name} items
 have already been computed, then the suggested inference is ignored,
 and the already-computed values are used.
 \preformatted{
@@ -51,12 +51,13 @@ infer=list(name=c("P1","K2"),
 means that the amplitude of \code{P1} will be set as 0.33093 times the calculated amplitude
 of \code{K1}, and that the \code{P1} phase will be set to the \code{K1} phase,
 minus an offset of \code{-7.07} degrees.
-(This example is used in the Foreman (1977) [1] discussion of a
-Fortran analysis code and also in Pawlowicz et al. (2002) [4] discussion
+(This example is used in the Foreman (1978) discussion of a
+Fortran analysis code and also in Pawlowicz et al. (2002) discussion
 of the T_TIDE Matlab code.
-Rounded to the 0.1mm resolution of values reported in [1] and [2],
+Rounded to the 0.1mm resolution of values reported in Foreman (1978)
+and Pawlowicz et al. (2002),
 the \code{tidem} results have root-mean-square amplitude difference
-to Foreman's Appendix 7.3 of 0.06mm; by comparison,
+to Foreman's (1978) Appendix 7.3 of 0.06mm; by comparison,
 the results in Table 1 of Pawlowicz et al. (2002) agree with Foreman's
 results to RMS difference 0.04mm.)}
 
@@ -66,7 +67,7 @@ provided, \code{tidem} will try to infer this from \code{sl}.}
 \item{rc}{the value of the coefficient in the Rayleigh criterion.}
 
 \item{regress}{function to be used for regression, by default
-\code{\link{lm}}, but could be for example \code{rlm} from the
+\code{\link[=lm]{lm()}}, but could be for example \code{rlm} from the
 \code{MASS} package.}
 
 \item{debug}{an integer specifying whether debugging information is
@@ -78,7 +79,7 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-An object of \code{\link{tidem-class}}, consisting of
+An object of \linkS4class{tidem}, consisting of
 \item{const}{constituent number, e.g. 1 for \code{Z0}, 1 for \code{SA},
 etc.} \item{model}{the regression model} \item{name}{a vector of constituent
 names, in non-subscript format, e.g. "\code{M2}".} \item{frequency}{a vector
@@ -99,33 +100,23 @@ resultant coefficients on the sine and cosine terms.
 \details{
 The tidal constituents to be used in the analysis are specified as follows;
 see \dQuote{Constituent Naming Convention}.
-
-\itemize{
-
-\item \strong{Case 1}. If \code{constituents} is not provided, then the constituent
+\enumerate{
+\item If \code{constituents} is not provided, then the constituent
 list will be made up of the 69 constituents designated by Foreman as "standard".
 These include astronomical frequencies and some shallow-water frequencies,
-and are as follows: \code{c("Z0", "SA", "SSA", "MSM", "MM", "MSF", "MF",
-"ALP1", "2Q1", "SIG1", "Q1", "RHO1", "O1", "TAU1", "BET1", "NO1", "CHI1",
-"PI1", "P1", "S1", "K1", "PSI1", "PHI1", "THE1", "J1", "SO1", "OO1", "UPS1",
-"OQ2", "EPS2", "2N2", "MU2", "N2", "NU2", "GAM2", "H1", "M2", "H2", "MKS2",
-"LDA2", "L2", "T2", "S2", "R2", "K2", "MSN2", "ETA2", "MO3", "M3", "SO3",
-"MK3", "SK3", "MN4", "M4", "SN4", "MS4", "MK4", "S4", "SK4", "2MK5", "2SK5",
-"2MN6", "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8")}.
-
-\item \strong{Case 2}. If the first item in \code{constituents} is the string
+and are as follows: \code{c("Z0", "SA", "SSA", "MSM", "MM", "MSF", "MF", "ALP1", "2Q1", "SIG1", "Q1", "RHO1", "O1", "TAU1", "BET1", "NO1", "CHI1", "PI1", "P1", "S1", "K1", "PSI1", "PHI1", "THE1", "J1", "SO1", "OO1", "UPS1", "OQ2", "EPS2", "2N2", "MU2", "N2", "NU2", "GAM2", "H1", "M2", "H2", "MKS2", "LDA2", "L2", "T2", "S2", "R2", "K2", "MSN2", "ETA2", "MO3", "M3", "SO3", "MK3", "SK3", "MN4", "M4", "SN4", "MS4", "MK4", "S4", "SK4", "2MK5", "2SK5", "2MN6", "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8")}.
+\item If the first item in \code{constituents} is the string
 \code{"standard"}, then a provisional list is set up as in Case 1, and then
 the (optional) rest of the elements of \code{constituents} are examined, in
 order.  Each of these constituents is based on the name of a tidal
-constituent in the Foreman (1977) notation.  (To get the list, execute
+constituent in the Foreman (1978) notation.  (To get the list, execute
 \code{data(tidedata)} and then execute \code{cat(tideData$name)}.)  Each
 named constituent is added to the existing list, if it is not already there.
 But, if the constituent is preceded by a minus sign, then it is removed
 from the list (if it is already there).  Thus, for example,
 \code{constituents=c("standard", "-M2", "ST32")} would remove the M2
 constituent and add the ST32 constituent.
-
-\item \strong{Case 3}. If the first item is not \code{"standard"}, then the list of
+\item If the first item is not \code{"standard"}, then the list of
 constituents is processed as in Case 2, but without starting with the
 standard list. As an example, \code{constituents=c("K1", "M2")} would fit
 for just the K1 and M2 components. (It would be strange to use a minus sign
@@ -133,7 +124,7 @@ to remove items from the list, but the function allows that.)
 }
 
 In each of the above cases, the list is reordered in frequency prior to the
-analysis, so that the results of \code{\link{summary,tidem-method}} will be in a
+analysis, so that the results of \code{\link[=summary,tidem-method]{summary,tidem-method()}} will be in a
 familiar form.
 
 Once the constituent list is determined, \code{tidem} prunes the elements of
@@ -147,7 +138,7 @@ that the application of the Rayleigh criterion has not removed any of the
 constituents specified directly in the \code{constituents} argument. If
 any are found to have been removed, then they are added back. This last
 step was added on 2017-12-27, to make \code{tidem} behave the same
-way as the Foreman (1977) code [1], as illustrated in his
+way as the Foreman (1978) code, as illustrated in his
 Appendices 7.2 and 7.3. (As an aside, his Appendix 7.3 has some errors,
 e.g. the frequency for the 2SK5 constituent is listed there (p58) as
 0.20844743, but it is listed as 0.2084474129 in his Appendix 7.1 (p41).
@@ -159,24 +150,21 @@ A specific example may be of help in understanding the removal of unresolvable
 constitutents. For example, the \code{data(sealevel)} dataset is of length
 6718 hours, and this is too short to resolve the full list of constituents,
 with the conventional (and, really, necessary) limit of \code{rc=1}.
-From Table 1 of [1], this timeseries is too short to resolve the
+From Table 1 of Foreman (1978), this timeseries is too short to resolve the
 \code{SA} constituent, so that \code{SA} will not be in the resultant.
-Similarly, Table 2 of [1] dictates the removal of
+Similarly, Table 2 of Foreman (1978) dictates the removal of
 \code{PI1}, \code{S1} and \code{PSI1} from the list. And, finally,
-Table 3 of [1] dictates the removal of
-\code{H1}, \code{H2}, \code{T2} and \code{R2}.  Also, since Table 3
-of [1] indicates that \code{GAM2} gets subsumed into \code{H1},
-and if \code{H1} is already being deleted in this test case, then
+Table 3 of Foreman (1978) dictates the removal of
+\code{H1}, \code{H2}, \code{T2} and \code{R2}, and since that document
+suggests that \code{GAM2} be subsumed into \code{H1},
+then if \code{H1} is already being deleted, then
 \code{GAM2} will also be deleted.
 
-A list of constituent names is created by the following:
+A summary of constituents may be found with:
 \preformatted{
 data(tidedata)
-print(tidedata$const$name)
+print(tidedata$const)
 }
-
-\strong{The text should include discussion of the (not yet performed) nodal
-correction treatment.}
 }
 \section{Bugs}{
 
@@ -184,8 +172,6 @@ correction treatment.}
 \enumerate{
 \item This function is not fully developed yet, and both the
 form of the call and the results of the calculation may change.
-
-\item Nodal correction is not done.
 
 \item The reported \code{p} value may make no sense at all, and it might be
 removed in a future version of this function. Perhaps a significance level
@@ -199,9 +185,9 @@ Pawlowicz.
 
 
 \code{tidem} uses constituent names that follow the convention
-set by Foreman (1977) [1]. This convention is slightly different
+set by Foreman (1978). This convention is slightly different
 from that used in the T-TIDE package of Pawlowicz et al.
-(2002) [4], with Foreman's \code{UPS1} and \code{M8} becoming
+(2002), with Foreman's \code{UPS1} and \code{M8} becoming
 \code{UPSI} and \code{MS} in T-TIDE. As a convenience,
 \code{tidem} converts from these T-TIDE names to the
 Foreman names, issuing warnings when doing so.
@@ -226,7 +212,7 @@ the decimal place, to match the format of the table.
 
 \examples{
 library(oce)
-# The demonstration time series from Foreman (1977),
+# The demonstration time series from Foreman (1978),
 # also used in T_TIDE (Pawlowicz, 2002).
 data(sealevelTuktoyaktuk)
 tide <- tidem(sealevelTuktoyaktuk)
@@ -244,17 +230,17 @@ summary(m)
 
 }
 \references{
-1. Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
-prediction.  Pacific Marine Science Report 77-10, Institute of Ocean
-Sciences, Patricia Bay, Sidney, BC, 58pp.
+Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
+Sciences, Patricia Bay.
 
-2. Foreman, M. G. G., Neufeld, E. T., 1991.  Harmonic tidal analyses of long
+Foreman, M. G. G., Neufeld, E. T., 1991.  Harmonic tidal analyses of long
 time series.  International Hydrographic Review, 68 (1), 95-108.
 
-3. Leffler, K. E. and D. A. Jay, 2009.  Enhancing tidal harmonic analysis:
+Leffler, K. E. and D. A. Jay, 2009.  Enhancing tidal harmonic analysis:
 Robust (hybrid) solutions.  Continental Shelf Research, 29(1):78-88.
 
-4. Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
 harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 Computers and Geosciences, 28, 929-937.
 }

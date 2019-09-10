@@ -17,7 +17,7 @@ plotTS(x, inSitu = FALSE, type = "p", referencePressure = 0,
   add = FALSE, inset = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{x}{a \linkS4class{ctd} object.}
 
 \item{inSitu}{A boolean indicating whether to use in-situ temperature or
 (the default) potential temperature, calculated with reference pressure
@@ -49,11 +49,11 @@ e.g. 24}
 \code{"gsw"}.}
 
 \item{cex}{character-expansion factor for symbols, as in
-\code{\link{par}("cex")}.}
+\code{\link{par}}\code{("cex")}.}
 
 \item{col}{color for symbols.}
 
-\item{pch}{symbol type, as in \code{\link{par}("pch")}.}
+\item{pch}{symbol type, as in \code{\link{par}}\code{("pch")}.}
 
 \item{bg}{optional color to be painted under plotting area, before
 plotting.  (This is useful for cases in which \code{inset=TRUE}.)}
@@ -66,7 +66,7 @@ plotting.  (This is useful for cases in which \code{inset=TRUE}.)}
 
 \item{rotate}{if TRUE, labels in right-hand margin are written vertically}
 
-\item{useSmoothScatter}{if TRUE, use \code{\link{smoothScatter}} to plot the
+\item{useSmoothScatter}{if TRUE, use \code{\link[=smoothScatter]{smoothScatter()}} to plot the
 points.}
 
 \item{xlab}{optional label for the x axis, with default "Salinity [PSU]".}
@@ -80,7 +80,7 @@ data.}
 
 \item{drawFreezing}{logical indication of whether to draw a freezing-point
 line. This is based on zero pressure. If \code{eos="unesco"} then
-\code{\link{swTFreeze}} is used to compute the curve, whereas if
+\code{\link[=swTFreeze]{swTFreeze()}} is used to compute the curve, whereas if
 \code{eos="gsw"} then \code{\link[gsw]{gsw_CT_freezing}} is used;
 in each case, zero pressure is used.}
 
@@ -88,7 +88,7 @@ in each case, zero pressure is used.}
 for \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{\link{par}("mar")}.  If set to
+\item{mar}{value to be used with \code{\link{par}}\code{("mar")}.  If set to
 \code{NULL}, then \code{par("mar")} is used.  A good choice for a TS diagram
 with a palette to the right is \code{mar=par("mar")+c(0, 0, 0, 1))}.}
 
@@ -102,12 +102,12 @@ with a palette to the right is \code{mar=par("mar")+c(0, 0, 0, 1))}.}
 
 \item{add}{a flag that controls whether to add to an existing plot.  (It
 makes sense to use \code{add=TRUE} in the \code{panel} argument of a
-\code{\link{coplot}}, for example.)}
+\code{\link[=coplot]{coplot()}}, for example.)}
 
-\item{inset}{set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+\item{inset}{set to \code{TRUE} for use within \code{\link[=plotInset]{plotInset()}}.  The
 effect is to prevent the present function from adjusting margins, which is
 necessary because margin adjustment is the basis for the method used by
-\code{\link{plotInset}}.}
+\code{\link[=plotInset]{plotInset()}}.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
@@ -116,23 +116,22 @@ amount of debugging information, or to 2 to get more.}
 }
 \value{
 A list is silently returned, containing \code{xat} and \code{yat},
-values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
+values that can be used by \code{\link[=oce.grid]{oce.grid()}} to add a grid to the plot.
 }
 \description{
 Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
 }
 \examples{
-
 library(oce)
 data(ctd)
 plotTS(ctd)
 
 }
 \seealso{
-\code{\link{summary,ctd-method}} summarizes the information, while
-\code{\link{read.ctd}} scans it from a file.
+\code{\link[=summary,ctd-method]{summary,ctd-method()}} summarizes the information, while
+\code{\link[=read.ctd]{read.ctd()}} scans it from a file.
 
-Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -157,7 +156,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{tidem-class}}
 
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
@@ -181,5 +180,5 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that plot \code{oce} data}
-\concept{things related to \code{ctd} data}
+\concept{functions that plot oce data}
+\concept{things related to ctd data}

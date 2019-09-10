@@ -49,7 +49,7 @@ String indicating the full pathname to the downloaded file.
 \description{
 Data are downloaded (from \samp{https://maps.ngdc.noaa.gov/viewers/wcs-client/}, by
 default) and a string containing the full path to the downloaded file is returned.
-Typically, this return value is used with \code{\link{read.topo}} to read the
+Typically, this return value is used with \code{\link[=read.topo]{read.topo()}} to read the
 data. Subsequent calls to \code{download.topo}
 with identical parameters will simply return the name of the cached file,
 assuming the user has not deleted it in the meantime.
@@ -58,10 +58,10 @@ given, then \code{download.topo} will construct a filename from the other argume
 rounding longitude and latitude limits to 0.01 degrees.
 }
 \details{
-The data are downloaded with \code{\link[utils]{download.file}}, using a URL
+The data are downloaded with \code{\link[utils:download.file]{utils::download.file()}}, using a URL
 devised from reverse engineering web-based queries constructed by
 the default \code{server} used here. Note that the data source is "etopo1",
-which is a 1 arc-second file [1,2].
+which is a 1 arc-second file (see references 1 and 2).
 
 Three values are permitted for \code{format},
 each named after the
@@ -74,9 +74,9 @@ for the menu item named
 and (3) \code{"gmt"} (for the menu item named
 "GMT NetCDF"), which yields a NetCDF file in
 another format. All of these file formats are
-recognized by \code{\link{read.topo}}.
+recognized by \code{\link[=read.topo]{read.topo()}}.
 (The NOAA server has more options, and if
-\code{\link{read.topo}} is extended to handle them, they will
+\code{\link[=read.topo]{read.topo()}} is extended to handle them, they will
 also be added here.)
 }
 \section{Webserver history}{
@@ -88,16 +88,13 @@ in hopes that it can help users to make guesses
 for \code{server}, should \code{download.topo} fail because of
 a fail to download the data. Another
 hint is to look at the source code for
-\code{\link[marmap]{getNOAA.bathy}} in the \CRANpkg{marmap} package,
+\code{\link[marmap:getNOAA.bathy]{marmap::getNOAA.bathy()}} in the \code{marmap} package,
 which is also forced to track the moving target that is NOAA.
-
 \itemize{
 \item August 2016.
 \samp{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
-
 \item December 2016.
 \samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
-
 \item June-September 2017.
 \samp{https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
 }
@@ -116,21 +113,21 @@ lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
 
 }
 \references{
-1. \samp{https://www.ngdc.noaa.gov/mgg/global/global.html}
-
-2. Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
+\enumerate{
+\item \code{https://www.ngdc.noaa.gov/mgg/global/global.html}
+\item Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
 Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum
 NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
-[access date: Aug 30, 2017].
+}
 }
 \seealso{
-The work is done with \code{\link[utils]{download.file}}.
+The work is done with \code{\link[utils:download.file]{utils::download.file()}}.
 
 Other functions that download files: \code{\link{download.amsr}},
   \code{\link{download.coastline}},
   \code{\link{download.met}}
 
-Other things related to \code{topo} data: \code{\link{[[,topo-method}},
+Other things related to topo data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
   \code{\link{plot,topo-method}}, \code{\link{read.topo}},
   \code{\link{subset,topo-method}},
@@ -142,4 +139,4 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
 Dan Kelley
 }
 \concept{functions that download files}
-\concept{things related to \code{topo} data}
+\concept{things related to topo data}

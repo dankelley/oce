@@ -9,19 +9,19 @@ oceCRS(region)
 \arguments{
 \item{region}{character string indicating the region. This must be
 in the following list (or a string that matches to just one entry,
-with \code{\link{pmatch}}):
+with \code{\link[=pmatch]{pmatch()}}):
 \code{"North Atlantic"}, \code{"South Atlantic"}, \code{"Atlantic"},
 \code{"North Pacific"}, \code{"South Pacific"}, \code{"Pacific"},
 \code{"Arctic"},  and \code{"Antarctic"}.}
 }
 \value{
 string contain a CRS, which can be used as \code{projection}
-in \code{\link{mapPlot}}.
+in \code{\link[=mapPlot]{mapPlot()}}.
 }
 \description{
 Create a coordinate reference string (CRS), suitable for use as a
-\code{projection} argument to \code{\link{mapPlot}} or
-\code{\link{plot,coastline-method}}.
+\code{projection} argument to \code{\link[=mapPlot]{mapPlot()}} or
+\code{\link[=plot,coastline-method]{plot,coastline-method()}}.
 }
 \section{Caution}{
  This is a preliminary version of this function,
@@ -48,10 +48,11 @@ plot(pacific, proj=oceCRS("South Pacific"), span=12000, col=NULL)
 }
 }
 \seealso{
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
+Other functions related to maps: \code{\link{formatPosition}},
+  \code{\link{lonlat2map}}, \code{\link{lonlat2utm}},
+  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
+  \code{\link{mapAxis}}, \code{\link{mapContour}},
+  \code{\link{mapCoordinateSystem}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
   \code{\link{mapImage}}, \code{\link{mapLines}},
   \code{\link{mapLocator}},

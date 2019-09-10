@@ -17,10 +17,9 @@ A version of as.raw() that clips data to prevent warnings
 }
 \details{
 Negative values are clipped to 0, while values above 255 are clipped to 255;
-the result is passed to \code{\link{as.raw}} and returned.
+the result is passed to \code{\link[=as.raw]{as.raw()}} and returned.
 }
 \examples{
-
 x <- c(-0.1, 0, 1, 255, 255.1)
 data.frame(x, oce.as.raw(x))
 }

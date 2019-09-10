@@ -29,7 +29,7 @@ m2/cph"}.}
 
 \item{sep}{optional character string inserted between the unit and the
 parentheses or brackets that enclose it. If not provided, then
-\code{\link{getOption}("oceUnitSep")} is checked. If that exists, then it is
+\code{\link{getOption}}\code{("oceUnitSep")} is checked. If that exists, then it is
 used as the separator; if not, no separator is used.}
 
 \item{unit}{optional unit to use, if the default is not satisfactory. This
@@ -44,12 +44,12 @@ format, for use in the indicated axis at the present plot size.  Whether the
 unit is enclosed in parentheses or square brackets is determined by the
 value of \code{getOption("oceUnitBracket")}, which may be \code{"["} or
 \code{"("}.  Whether spaces are used between the unit and these deliminators
-is set by \code{psep} or \code{\link{getOption}("oceUnitSep")}.
+is set by \code{psep} or \code{\link{getOption}}\code{("oceUnitSep")}.
 }
 \description{
 Provide axis names in adjustable sizes, e.g. using T instead of Temperature,
 and including units as appropriate.
-Used by e.g. \code{\link{plot,ctd-method}}.
+Used by e.g. \code{\link[=plot,ctd-method]{plot,ctd-method()}}.
 }
 \author{
 Dan Kelley

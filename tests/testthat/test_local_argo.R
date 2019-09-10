@@ -32,8 +32,8 @@ test_that("the data from which data(argo) was constructed", {
 
 test_that("a bioargo dataset", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
-              expect_warning(a <- read.oce("local_data/BR5904179_001.nc"),
-                             "local_data/BR5904179_001.nc has no variable named 'PRES_QC'")
+              a <- expect_warning(read.oce("local_data/BR5904179_001.nc"),
+                                  "local_data/BR5904179_001.nc has no variable named 'PRES_QC'")
               expect_equal(a[["id"]][1], "5904179")
               expect_equal(dim(a[["pressure"]]), c(499,2))
               expect_equal(sort(names(a@data)),

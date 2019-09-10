@@ -8,7 +8,7 @@
 \S4method{subset}{adv}(x, subset, ...)
 }
 \arguments{
-\item{x}{An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.}
+\item{x}{an \linkS4class{adv} object.}
 
 \item{subset}{a condition to be applied to the \code{data} portion of \code{x}.
 See \sQuote{Details}.}
@@ -16,11 +16,11 @@ See \sQuote{Details}.}
 \item{\dots}{ignored.}
 }
 \value{
-A new \code{\link{adv-class}} object.
+A new \linkS4class{adv} object.
 }
 \description{
 Subset an adv (acoustic Doppler profile) object.  This function is somewhat
-analogous to \code{\link{subset.data.frame}}, except that subsets can only be
+analogous to \code{\link[=subset.data.frame]{subset.data.frame()}}, except that subsets can only be
 specified in terms of \code{time}.
 }
 \examples{
@@ -31,7 +31,7 @@ plot(subset(adv, time < mean(range(adv[['time']]))))
 
 }
 \seealso{
-Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+Other things related to adv data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
   \code{\link{adv}}, \code{\link{beamName}},
   \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
@@ -45,7 +45,7 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 
-Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,argo-method}},
   \code{\link{subset,cm-method}},
@@ -64,5 +64,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that subset \code{oce} objects}
-\concept{things related to \code{adv} data}
+\concept{functions that subset oce objects}
+\concept{things related to adv data}

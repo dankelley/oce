@@ -8,7 +8,7 @@
 \S4method{subset}{topo}(x, subset, ...)
 }
 \arguments{
-\item{x}{A \code{topo} object, i.e. inheriting from \code{\link{topo-class}}.}
+\item{x}{a \linkS4class{topo} object.}
 
 \item{subset}{A condition to be applied to the \code{data} portion of \code{x}.
 See \sQuote{Details}.}
@@ -16,10 +16,10 @@ See \sQuote{Details}.}
 \item{...}{Ignored.}
 }
 \value{
-A new \code{\link{topo-class}} object.
+A new \linkS4class{topo} object.
 }
 \description{
-This function is somewhat analogous to \code{\link{subset.data.frame}}.
+This function is somewhat analogous to \code{\link[=subset.data.frame]{subset.data.frame()}}.
 Subsetting can be by \code{time} or \code{distance}, but these may not be
 combined; use a sequence of calls to subset by both.
 }
@@ -31,7 +31,7 @@ plot(subset(topoWorld, latitude > 0))
 
 }
 \seealso{
-Other things related to \code{topo} data: \code{\link{[[,topo-method}},
+Other things related to topo data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
   \code{\link{download.topo}},
   \code{\link{plot,topo-method}}, \code{\link{read.topo}},
@@ -39,7 +39,7 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{topo-class}}, \code{\link{topoInterpolate}},
   \code{\link{topoWorld}}
 
-Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,adv-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,argo-method}},
@@ -58,5 +58,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that subset \code{oce} objects}
-\concept{things related to \code{topo} data}
+\concept{functions that subset oce objects}
+\concept{things related to topo data}

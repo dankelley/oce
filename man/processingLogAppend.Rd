@@ -13,7 +13,7 @@ an \code{oce} object from which the processingLog will be extracted}
 \item{value}{A string indicating the text of the log entry.}
 }
 \value{
-An \code{\link{list}} containing items named
+An \code{\link[=list]{list()}} containing items named
 \code{time} and \code{value}, i.e. the times of entries
 and the text notations of those entries..
 }

@@ -7,7 +7,7 @@
 toEnuAdp(x, declination = 0, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{an \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
+\item{x}{an \linkS4class{adp} object.}
 
 \item{declination}{magnetic declination to be added to the heading, to get
 ENU with N as "true" north.}
@@ -27,11 +27,11 @@ Convert an ADP Object to ENU Coordinates
 \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 }
 \seealso{
-See \code{\link{read.adp}} for notes on functions relating to
-\code{"adp"} objects.  Also, see \code{\link{beamToXyzAdp}} and
-\code{\link{xyzToEnuAdp}}.
+See \code{\link[=read.adp]{read.adp()}} for notes on functions relating to
+\code{"adp"} objects.  Also, see \code{\link[=beamToXyzAdp]{beamToXyzAdp()}} and
+\code{\link[=xyzToEnuAdp]{xyzToEnuAdp()}}.
 
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
@@ -53,6 +53,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnu}},
   \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},
@@ -61,4 +62,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{adp} data}
+\concept{things related to adp data}

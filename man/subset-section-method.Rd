@@ -8,7 +8,7 @@
 \S4method{subset}{section}(x, subset, ...)
 }
 \arguments{
-\item{x}{A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.}
+\item{x}{a \linkS4class{section} object.}
 
 \item{subset}{an optional indication of either the stations to be kept,
 or the data to be kept within the stations.  See \dQuote{Details}.}
@@ -21,7 +21,7 @@ or \code{longitude} and \code{latitude} (see Example 7). If \code{within}
 is given, then \code{subset} is ignored.}
 }
 \value{
-A \code{\link{section-class}} object.
+A \linkS4class{section} object.
 }
 \description{
 Return a subset of a section object.
@@ -99,7 +99,7 @@ plot(GS, which="map")
 
 }
 \seealso{
-Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+Other functions that subset oce objects: \code{\link{subset,adp-method}},
   \code{\link{subset,adv-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{subset,argo-method}},
@@ -115,7 +115,7 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
   \code{\link{subset,sealevel-method}},
   \code{\link{subset,topo-method}}
 
-Other things related to \code{section} data: \code{\link{[[,section-method}},
+Other things related to section data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{handleFlags,section-method}},
@@ -130,5 +130,5 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that subset \code{oce} objects}
-\concept{things related to \code{section} data}
+\concept{functions that subset oce objects}
+\concept{things related to section data}

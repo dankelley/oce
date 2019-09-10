@@ -8,8 +8,7 @@
 \S4method{summary}{bremen}(object, ...)
 }
 \arguments{
-\item{object}{A \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
-call to \code{\link{read.bremen}}.}
+\item{object}{a \linkS4class{bremen} object.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
@@ -18,7 +17,7 @@ Pertinent summary information is presented, including the station name,
 sampling location, data ranges, etc.
 }
 \seealso{
-Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
+Other things related to bremen data: \code{\link{[[,bremen-method}},
   \code{\link{[[<-,bremen-method}},
   \code{\link{bremen-class}},
   \code{\link{plot,bremen-method}},
@@ -27,4 +26,4 @@ Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{bremen} data}
+\concept{things related to bremen data}

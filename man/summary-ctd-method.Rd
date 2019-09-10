@@ -8,7 +8,7 @@
 \S4method{summary}{ctd}(object, ...)
 }
 \arguments{
-\item{object}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{object}{a \linkS4class{ctd} object.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
@@ -26,7 +26,7 @@ summary(ctd)
 
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
@@ -50,4 +50,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
-\concept{things related to \code{ctd} data}
+\concept{things related to ctd data}

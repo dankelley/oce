@@ -23,10 +23,9 @@ test_that("enuToOther(adv) test of rotation", {
           expect_equal(VR[1:5, 2], adv3[["v"]][1:5, 2])
 })
 
-
-test_that("read private Sontek file, with numeric 'to' and 'from'", {
-          f <- "/data/archive/sleiwex/2008/moorings/m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr"
-          if (file.exists(f)) {
+f <- "~/Dropbox/data/archive/sleiwex/2008/moorings/m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr"
+if (file.exists(f)) {
+  test_that("read private Sontek file, with numeric 'to' and 'from'", {
             n <- 500000
             adv <- read.oce(f, from=n+10, to=n+12)
             expect_equal(adv[['time']], as.POSIXct(c("2008-06-26 11:12:47.864",
@@ -44,13 +43,12 @@ test_that("read private Sontek file, with numeric 'to' and 'from'", {
             expect_equal(adv[['heading']], c(161.4, 0.0, 0.0))
             expect_equal(adv[['pitch']], c(0, 0, 0))
             expect_equal(adv[['roll']], c(-50, 0, 0))
-          }
-
 })
+}
 
-test_that("read private Nortek file, with numeric 'to' and 'from'", {
-          f <- "/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec"
-          if (file.exists(f)) {
+f <- "~/Dropbox/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec"
+if (file.exists(f)) {
+  test_that("read private Nortek file, with numeric 'to' and 'from'", {
             d <- read.oce(f, from=1, to=100)
             expect_equal(d[["v"]][1:3,1:3], matrix(c(0.094,  0.603, 0.483,
                                                      -0.706, -0.264, 0.037,
@@ -65,5 +63,6 @@ test_that("read private Nortek file, with numeric 'to' and 'from'", {
                                   0.08471679688, -7.9997558594, 2.2797851562,
                                   -0.34619140625, -0.3603515625,-0.3254394531),
                                 byrow=TRUE, ncol=3))
-          }
 })
+}
+

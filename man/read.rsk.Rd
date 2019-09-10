@@ -43,7 +43,7 @@ is better for normal calls by a user.}
 \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 \value{
-An object of \code{\link{rsk-class}}.
+An \linkS4class{rsk} object.
 }
 \description{
 Read an RBR rsk or txt file, e.g. as produced by an RBR logger, producing an
@@ -71,41 +71,41 @@ by dividing by 42.914 (see Culkin and Smith, 1980) which will be necessary in
 any seawater-related function that takes conductivity ratio as an argument (see
 \dQuote{Examples}).
 
-  \emph{A note on pressure.} RBR devices tend to record absolute pressure (i.e.
-  sea pressure plus atmospheric pressure), unlike most oceanographic instruments
-  that record sea pressure (or an estimate thereof).  The handling of pressure
-  is controlled with the \code{patm} argument, for which there are three
-  possibilities.  (1) If \code{patm} is \code{FALSE} (the default), then
-  pressure read from the data file is stored in the \code{data} slot of return
-  value, and the \code{metadata} item \code{pressureType} is set to the string
-  \code{"absolute"}.  (2) If \code{patm} is \code{TRUE}, then an estimate of
-  atmospheric pressure is subtracted from the raw data. For data files in the
-  SQLite format (i.e.  \code{*.rsk} files), this estimate will be the value read
-  from the file, or the ``standard atmosphere'' value 10.1325 dbar, if the file
-  lacks this information.  (3) If \code{patm} is a numerical value (or list of
-  values, one for each sampling time), then \code{patm} is subtracted from the
-  raw data.  In cases 2 and 3, an additional column named
-  \code{pressureOriginal} is added to the \code{data} slot to store the value
-  contained in the data file, and \code{pressureType} is set to a string
-  starting with \code{"sea"}.  See \code{\link{as.ctd}} for details of how this
-  setup facilitates the conversion of \code{\link{rsk-class}} objects to
-  \code{\link{ctd-class}} objects.
+\emph{A note on pressure.} RBR devices tend to record absolute pressure (i.e.
+sea pressure plus atmospheric pressure), unlike most oceanographic instruments
+that record sea pressure (or an estimate thereof).  The handling of pressure
+is controlled with the \code{patm} argument, for which there are three
+possibilities.  (1) If \code{patm} is \code{FALSE} (the default), then
+pressure read from the data file is stored in the \code{data} slot of return
+value, and the \code{metadata} item \code{pressureType} is set to the string
+\code{"absolute"}.  (2) If \code{patm} is \code{TRUE}, then an estimate of
+atmospheric pressure is subtracted from the raw data. For data files in the
+SQLite format (i.e.  \code{*.rsk} files), this estimate will be the value read
+from the file, or the ``standard atmosphere'' value 10.1325 dbar, if the file
+lacks this information.  (3) If \code{patm} is a numerical value (or list of
+values, one for each sampling time), then `patm` is subtracted from the
+raw data.  In cases 2 and 3, an additional column named
+`pressureOriginal` is added to the `data` slot to store the value
+contained in the data file, and `pressureType` is set to a string
+starting with `"sea"`.  See \code{\link[=as.ctd]{as.ctd()}} for details of how this
+setup facilitates the conversion of \linkS4class{rsk} objects to
+\linkS4class{ctd} objects.
 }
 \references{
 Culkin, F., and Norman D. Smith, 1980. Determination of the concentration of
 potassium chloride solution having the same electrical conductivity, at 15 C and
 infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
-19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering}, \bold{5}, pp 22-23.
+19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering}, \strong{5}, pp 22-23.
 }
 \seealso{
-The documentation for \code{\link{rsk-class}} explains the structure of
+The documentation for \linkS4class{rsk} explains the structure of
 \code{rsk} objects, and also outlines other functions dealing with them.  Since
 RBR has a wide variety of instruments, \code{rsk} datasets can be quite general,
 and it is common to coerce \code{rsk} objects to other forms for specialized
-work, e.g. \code{\link{as.ctd}} can be used to create CTD object, so that the
+work, e.g. \code{\link[=as.ctd]{as.ctd()}} can be used to create CTD object, so that the
 generic plot obeys the CTD format.
 
-Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
+Other things related to rsk data: \code{\link{[[,rsk-method}},
   \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
   \code{\link{plot,rsk-method}}, \code{\link{rsk-class}},
   \code{\link{rskPatm}}, \code{\link{rskToc}},
@@ -115,4 +115,4 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{things related to \code{rsk} data}
+\concept{things related to rsk data}

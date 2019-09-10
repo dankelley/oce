@@ -8,29 +8,30 @@
 \S4method{[[}{adp}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
+\item{x}{an \linkS4class{adp} object.}
 
-\item{i}{The item to replace.}
+\item{i}{character value naming the item to replace.}
 
-\item{j}{Optional additional information on the \code{i} item.}
+\item{j}{optional additional information on the \code{i} item.}
 
-\item{...}{Optional additional information (ignored).}
+\item{...}{optional additional information (ignored).}
 
 \item{value}{The value to be placed into \code{x}, somewhere.}
 }
 \description{
-The \code{[[<-} method works for all \code{oce} objects, i.e.
-objects inheriting from \code{\link{oce-class}}.  The purpose,
-as with the related extraction method, \code{\link{[[}},
-is to insulate users from the internal details of \code{oce}
+In addition to the usual insertion of elements by name, note
+that e.g. \code{pitch} gets stored into \code{pitchSlow}.
+
+The \code{[[<-} method works for all \linkS4class{oce} objects.
+The purpose, as with the related extraction method, \code{[[},
+is to insulate users from the internal details of \linkS4class{oce}
 objects, by looking for items within the various storage
 slots of the object. Items not actually stored can also be
 replaced, including units and data-quality
 flags.
 }
 \details{
-As with \code{\link{[[}} method, the procedure
-works in steps.
+As with \code{[[} method, the procedure works in steps.
 
 First, the \code{metadata} slot of \code{x} is checked to
 see whether it contains something named with \code{i}.
@@ -38,24 +39,21 @@ If so, then the named item is replaced with \code{value}.
 
 Otherwise, if the string value of \code{i} ends in \code{Unit}, then the
 characters preceding that are taken as the name of a variable, and
-the \code{metadata} slot of \code{x} is updated to store that unit, e.g.
-\preformatted{    x[["temperatureUnits"]] <- list(unit=expression(degree*F),scale="")}
+the \code{metadata} slot of \code{x} is updated to store that unit, e.g.\preformatted{x[["temperatureUnits"]] <- list(unit=expression(degree*F),scale="")
+}
 
 Similarly, if \code{i} ends in \code{Flag}, then quality-control
-flags are set up as defined by \code{result}, e.g.
-\preformatted{    x[["temperatureFlags"]] <- c(2,4,2,2)}
+flags are set up as defined by \code{result}, e.g.\preformatted{o[["temperatureFlags"]] <- c(2,4,2,2)
+}
 
-Otherwise, a partial string match is sought among the names of items
-in the \code{data} slot of \code{x}. (This is done with \code{\link{pmatch}}.)
+Otherwise, \code{\link[=pmatch]{pmatch()}} is used for a partial-string match with
+the names of the items that are in the \code{data} slot of \code{x}.
 The first item found (if any) is then updated to hold the value \code{result}.
 
 If none of these conditions is met, a warning is issued.
-
-In addition to the usual insertion of elements by name, note
-that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 }
 \seealso{
-Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
+Other functions that replace parts of oce objects: \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
   \code{\link{[[<-,cm-method}},
@@ -78,7 +76,7 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,amsr-
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
 
-Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
@@ -99,6 +97,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
   \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
+  \code{\link{subtractBottomVelocity}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdpAD2CP}},
@@ -107,5 +106,5 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{functions that replace parts of \code{oce} objects}
-\concept{things related to \code{adp} data}
+\concept{functions that replace parts of oce objects}
+\concept{things related to adp data}

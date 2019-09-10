@@ -8,8 +8,10 @@ summary(adp)
 expect_equal(adpOld[["data"]], adp[["data"]])
 names <- names(adp[["metadata"]])
 namesOld <- names(adpOld[["metadata"]])
-for (name in names) {
-    if (name %in% namesOld)
-        expect_equal(adpOld[["metadata"]][[name]], adp[["metadata"]][[name]])
+for (nameOld in namesOld) {
+    cat("nameOld=", nameOld, "\n")
+    ## NOTE: in early Aug, 2019, orientation became a vector
+    if (nameOld %in% names && nameOld != "orientation")
+        expect_equal(adpOld[["metadata"]][[nameOld]], adp[["metadata"]][[nameOld]])
 }
 
