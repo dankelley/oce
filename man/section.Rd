@@ -43,7 +43,7 @@ Other datasets provided with oce: \code{\link{adp}},
   \code{\link{ocecolors}}, \code{\link{rsk}},
   \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{topoWorld}},
-  \code{\link{wind}}
+  \code{\link{wind}}, \code{\link{xbt}}
 
 Other things related to section data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},

@@ -65,7 +65,8 @@ Other datasets provided with oce: \code{\link{adp}},
   \code{\link{lobo}}, \code{\link{met}},
   \code{\link{ocecolors}}, \code{\link{rsk}},
   \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}}
+  \code{\link{topoWorld}}, \code{\link{wind}},
+  \code{\link{xbt}}
 
 Other things related to sealevel data: \code{\link{[[,sealevel-method}},
   \code{\link{[[<-,sealevel-method}},

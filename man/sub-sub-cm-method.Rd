@@ -107,6 +107,7 @@ Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}},
+  \code{\link{[[,xbt-method}},
   \code{\link{[[<-,adv-method}}
 
 Other things related to cm data: \code{\link{[[<-,cm-method}},

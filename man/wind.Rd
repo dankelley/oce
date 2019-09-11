@@ -25,6 +25,6 @@ Other datasets provided with oce: \code{\link{adp}},
   \code{\link{ocecolors}}, \code{\link{rsk}},
   \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}
+  \code{\link{topoWorld}}, \code{\link{xbt}}
 }
 \concept{datasets provided with oce}

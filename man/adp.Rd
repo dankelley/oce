@@ -39,7 +39,8 @@ Other datasets provided with oce: \code{\link{adv}},
   \code{\link{ocecolors}}, \code{\link{rsk}},
   \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}}
+  \code{\link{topoWorld}}, \code{\link{wind}},
+  \code{\link{xbt}}
 
 Other things related to adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}},

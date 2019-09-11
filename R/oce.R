@@ -1867,6 +1867,10 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                 return("unknown")
             }
         }
+        if (length(grep(".edf$", filename))) {
+            return("xbt/edf")
+        }
+ 
         file <- file(file, "r")
     }
     if (!inherits(file, "connection"))
@@ -2187,6 +2191,8 @@ read.oce <- function(file, ...)
         res <- read.met(file, ...)
     } else if (type == "odf") {
         res <- read.odf(file, ...)
+    } else if (type == "xbt/edf") {
+        res <- read.xbt.edf(file, ...)
     } else {
         stop("unknown file type \"", type, "\"")
     }

@@ -1,0 +1,42 @@
+// This is a MK21 EXPORT DATA FILE  (EDF)
+//
+Date of Launch:  10/10/2000
+Time of Launch:  08:49:38
+Sequence #    :  49
+Latitude      :  4 0.000S
+Longitude     :  4 0.300E
+Serial #      :  0
+//
+// Here are the contents of the memo fields.
+//
+//
+// Here is some probe information for this drop.
+//
+Probe Type       : T-4
+Terminal Depth   : 460 m
+Depth Equation   : Standard
+Depth Coeff. 1   : 0.0
+Depth Coeff. 2   : 6.691
+Depth Coeff. 3   : -0.00225
+Depth Coeff. 4   : 0.0
+Pressure Pt Correction: 100.0%
+//
+Raw Data Filename: C:\SIPPICAN\WINMK21\DATA\T4_00049.RDF
+//
+Display Units    : Metric
+//
+// This XBT export file has been noise reduced and averaged.
+Noise Threshold : 10.0 (0.0% spikes)
+Averaging Window: 7
+//
+// Sound velocity derived with assumed salinity: 30.00 ppt
+//
+Depth (m) - Temperature (°C) - Sound Velocity (m/s)
+4.7 20.91 1575.30
+5.4 20.91 1575.31
+6.0 20.91 1575.32
+6.7 20.91 1575.33
+7.4 20.90 1575.34
+8.0 20.90 1575.35
+8.7 20.90 1575.36
+

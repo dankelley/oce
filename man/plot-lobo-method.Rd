@@ -65,8 +65,9 @@ Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotProfile}}, \code{\link{plotScan}},
-  \code{\link{plotTS}}, \code{\link{tidem-class}}
+  \code{\link{plot,xbt-method}}, \code{\link{plotProfile}},
+  \code{\link{plotScan}}, \code{\link{plotTS}},
+  \code{\link{tidem-class}}
 
 Other things related to lobo data: \code{\link{[[,lobo-method}},
   \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},

@@ -22,7 +22,8 @@ Other datasets provided with oce: \code{\link{adp}},
   \code{\link{met}}, \code{\link{ocecolors}},
   \code{\link{rsk}}, \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}}
+  \code{\link{topoWorld}}, \code{\link{wind}},
+  \code{\link{xbt}}
 
 Other things related to echosounder data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},

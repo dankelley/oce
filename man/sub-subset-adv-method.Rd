@@ -116,7 +116,8 @@ Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,section-method}},
   \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
-  \code{\link{[[,windrose-method}}
+  \code{\link{[[,windrose-method}},
+  \code{\link{[[,xbt-method}}
 
 Other things related to adv data: \code{\link{[[,adv-method}},
   \code{\link{adv-class}}, \code{\link{adv}},

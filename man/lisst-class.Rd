@@ -82,7 +82,7 @@ Other classes provided by oce: \code{\link{adp-class}},
   \code{\link{oce-class}}, \code{\link{odf-class}},
   \code{\link{rsk-class}}, \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
+  \code{\link{windrose-class}}, \code{\link{xbt-class}}
 
 Other things related to lisst data: \code{\link{[[,lisst-method}},
   \code{\link{[[<-,lisst-method}}, \code{\link{as.lisst}},
