@@ -6,7 +6,9 @@
 \title{Class to Store XBT Data}
 \description{
 This class stores expendible bathythermograph (XBT) data, e.g. from a Sippican
-device.
+device.  Reference 1 gives some information on Sippican
+devices, and reference 2 is a useful introduction to the
+modern literature on XBTs in general.
 }
 \section{Slots}{
 

@@ -4,7 +4,9 @@
 #' Class to Store XBT Data
 #'
 #' This class stores expendible bathythermograph (XBT) data, e.g. from a Sippican
-#' device.
+#' device.  Reference 1 gives some information on Sippican
+#' devices, and reference 2 is a useful introduction to the
+#' modern literature on XBTs in general.
 #'
 #' @templateVar class xbt
 #'
@@ -33,6 +35,11 @@ setClass("xbt", contains="oce")
 #' 1. Sippican, Inc. “Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
 #' Manual (P/N 308195, Rev. A),” 2003.
 #' https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
+#'
+#' 2. Cheng, Lijing, John Abraham, Gustavo Goni, Timothy Boyer, Susan Wijffels, Rebecca
+#' Cowley, Viktor Gouretski, et al. “XBT Science: Assessment of Instrumental Biases and Errors.”
+#' Bulletin of the American Meteorological Society 97, no. 6 (June 2016): 924–33.
+#' https://doi.org/10.1175/BAMS-D-15-00031.1.
 #'
 #' @name xbt
 #'
