@@ -16,7 +16,7 @@ modern literature on XBTs in general.
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{xbt} objects is a
 \link{list} containing the main data for the object.
-The key items stored in this slot are \code{depth}, \code{temperature} and \code{soundSpeed}.}
+The key items stored in this slot are \code{depth}, \code{temperature} and  \code{soundSpeed}.  Note that \code{depth} is inferred from time in  water, using an empirical formula for instrument descent  rate, and that \code{soundSpeed} is calculatd using a fixed  practical salinity of 35.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
 for \code{xbt} objects is a \link{list} containing
@@ -72,6 +72,17 @@ It is also possible to find items more directly, using \code{\link[=oceGetData]{
 retrieve derived items.
 }
 
+\references{
+\enumerate{
+\item Sippican, Inc. “Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
+Manual (P/N 308195, Rev. A),” 2003.
+https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
+\item Cheng, Lijing, John Abraham, Gustavo Goni, Timothy Boyer, Susan Wijffels, Rebecca
+Cowley, Viktor Gouretski, et al. “XBT Science: Assessment of Instrumental Biases and Errors.”
+Bulletin of the American Meteorological Society 97, no. 6 (June 2016): 924–33.
+https://doi.org/10.1175/BAMS-D-15-00031.1.
+}
+}
 \seealso{
 Other things related to xbt data: \code{\link{[[<-,xbt-method}},
   \code{\link{plot,xbt-method}}, \code{\link{read.xbt}},

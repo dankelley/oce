@@ -1,6 +1,5 @@
 ## vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4
 
-
 #' Class to Store XBT Data
 #'
 #' This class stores expendible bathythermograph (XBT) data, e.g. from a Sippican
@@ -8,9 +7,19 @@
 #' devices, and reference 2 is a useful introduction to the
 #' modern literature on XBTs in general.
 #'
+#' @references
+#' 1. Sippican, Inc. “Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
+#' Manual (P/N 308195, Rev. A),” 2003.
+#' https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
+#'
+#' 2. Cheng, Lijing, John Abraham, Gustavo Goni, Timothy Boyer, Susan Wijffels, Rebecca
+#' Cowley, Viktor Gouretski, et al. “XBT Science: Assessment of Instrumental Biases and Errors.”
+#' Bulletin of the American Meteorological Society 97, no. 6 (June 2016): 924–33.
+#' https://doi.org/10.1175/BAMS-D-15-00031.1.
+#'
 #' @templateVar class xbt
 #'
-#' @templateVar dataExample The key items stored in this slot are `depth`, `temperature` and `soundSpeed`.
+#' @templateVar dataExample The key items stored in this slot are `depth`, `temperature` and  `soundSpeed`.  Note that `depth` is inferred from time in  water, using an empirical formula for instrument descent  rate, and that `soundSpeed` is calculatd using a fixed  practical salinity of 35.
 #'
 #' @templateVar metadataExample {}
 #'
@@ -28,18 +37,8 @@ setClass("xbt", contains="oce")
 
 #' An XBT Object
 #'
-#' The result of using [read.xbt()] on a Sippican file created by extracting the near-surface
+#' An [xbt-class] object created by using [read.xbt()] on a Sippican file created by extracting the near-surface
 #' fraction of the sample provided in Section 5.5.6 of reference 1.
-#'
-#' @references
-#' 1. Sippican, Inc. “Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
-#' Manual (P/N 308195, Rev. A),” 2003.
-#' https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
-#'
-#' 2. Cheng, Lijing, John Abraham, Gustavo Goni, Timothy Boyer, Susan Wijffels, Rebecca
-#' Cowley, Viktor Gouretski, et al. “XBT Science: Assessment of Instrumental Biases and Errors.”
-#' Bulletin of the American Meteorological Society 97, no. 6 (June 2016): 924–33.
-#' https://doi.org/10.1175/BAMS-D-15-00031.1.
 #'
 #' @name xbt
 #'
@@ -52,6 +51,11 @@ setClass("xbt", contains="oce")
 #' data(xbt)
 #' summary(xbt)
 #' plot(xbt)
+#'
+#' @references
+#' 1. Sippican, Inc. “Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
+#' Manual (P/N 308195, Rev. A),” 2003.
+#' https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
 #'
 #' @family datasets provided with oce
 #' @family things related to xbtdata
