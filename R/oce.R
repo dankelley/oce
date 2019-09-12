@@ -1867,10 +1867,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                 return("unknown")
             }
         }
-        if (length(grep(".edf$", filename))) {
+        if (length(grep(".edf$", filename, ignore.case=TRUE))) {
             return("xbt/edf")
         }
- 
         file <- file(file, "r")
     }
     if (!inherits(file, "connection"))
@@ -2073,15 +2072,17 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
 #' plotTS(x) # just the TS
 read.oce <- function(file, ...)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
-    type <- oceMagic(file)
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
+        stop("empty file (read.oce)")
     dots <- list(...)
     debug <- if ("debug" %in% names(dots)) dots$debug else 0
+    type <- oceMagic(file, debug=debug-1)
     oceDebug(debug,
              "read.oce(\"", as.character(file), "\", ...) inferred type=\"", type, "\"\n",
              sep="", unindent=1)
-    if (is.character(file) && 0 == file.info(file)$size)
+    if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
         stop("empty file")
     ##> OLD: deparse is unhelpful if "file" is a variable in the calling code
     ##> OLD: processingLog <- paste(deparse(match.call()), sep="", collapse="")

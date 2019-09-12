@@ -224,10 +224,11 @@ setMethod(f="subset",
 #' @author Dan Kelley
 read.xbt <- function(file, type="sippican", longitude=NA, latitude=NA, debug=getOption("oceDebug"), processingLog)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
-    oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"", type, "\", longitude=", longitude, ", latitude=", latitude, "...) {\n",
-             sep="", unindent=1)
+    oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"", type, "\", longitude=", longitude, ", latitude=", latitude, "...) {\n", sep="", unindent=1)
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
+        stop("empty file (read.xbt)")
     type <- match.arg(type)
     res <- if (type == "sippican")
         read.xbt.edf(file=file, longitude=longitude, latitude=latitude,
@@ -270,8 +271,10 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, debug=getOption("oceDe
         res <- l[grep(name, l)]
         gsub(paste(name, "[ ]*:[ ]*", sep=""), "", res)
     }
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
+        stop("empty file (read.xbt.edf)")
     oceDebug(debug, "read.xbt(file=\"", file, "\", longitude=", longitude, ", latitude=", latitude, "...) {\n",
              sep="", unindent=1)
     filename <- ""
