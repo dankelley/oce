@@ -90,10 +90,12 @@ comes in handy for drawing insets (see \dQuote{details}).}
 
 \item{type}{indication of type; may be \code{"polygon"}, for a filled polygon,
 \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
-overlain with line segments.}
+overlain with line segments. See \code{color} for a note on how
+the the value of \code{type} alters the meaning of the \code{color}
+argument.}
 
-\item{border}{color of coastlines and international borders (ignored unless
-\code{type="polygon"}.}
+\item{border}{color used to indicate land (if \code{type="polygon"}) or
+the coastline and international borders (if \code{type="l"}).}
 
 \item{col}{either the color for filling polygons (if \code{type="polygon"})
 or the color of the points and line segments (if \code{type="p"},

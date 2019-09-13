@@ -423,10 +423,12 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #'
 #' @param type indication of type; may be `"polygon"`, for a filled polygon,
 #' `"p"` for points, `"l"` for line segments, or `"o"` for points
-#' overlain with line segments.
+#' overlain with line segments. See `color` for a note on how
+#' the the value of `type` alters the meaning of the `color`
+#' argument.
 #'
-#' @param border color of coastlines and international borders (ignored unless
-#' `type="polygon"`.
+#' @param border color used to indicate land (if `type="polygon"`) or
+#' the coastline and international borders (if `type="l"`).
 #'
 #' @param col either the color for filling polygons (if `type="polygon"`)
 #' or the color of the points and line segments (if `type="p"`,
