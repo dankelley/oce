@@ -6,7 +6,7 @@
 \alias{plot.xbt}
 \title{Plot An xbt data}
 \usage{
-\S4method{plot}{xbt}(x, which = c(1, 2), type = "l",
+\S4method{plot}{xbt}(x, which = 1, type = "l",
   mgp = getOption("oceMgp"), mar, debug = getOption("oceDebug"), ...)
 }
 \arguments{

@@ -16,7 +16,7 @@ modern literature on XBTs in general.
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{xbt} objects is a
 \link{list} containing the main data for the object.
-The key items stored in this slot are \code{depth}, \code{temperature} and  \code{soundSpeed}.  Note that \code{depth} is inferred from time in  water, using an empirical formula for instrument descent  rate, and that \code{soundSpeed} is calculatd using a fixed  practical salinity of 35.}
+The key items stored in this slot are \code{depth} (or \code{z}) and \code{temperature}, although some datasets also have \code{soundSpeed}.  Note that \code{depth} and \code{z} are inferred from time in water, using an empirical formula for instrument descent rate, and that \code{soundSpeed} is #' calculated using a fixed  practical salinity of 35. Note that the \code{[[} accessor will compute any of \code{depth}, \code{z} or \code{pressure}, based on whatever is in the data object.  Similarly, \code{soundspeed} will compute sound speed (assuming a practical salinity of 35), if that that item is present in the \code{data} slot.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
 for \code{xbt} objects is a \link{list} containing

@@ -1,4 +1,4 @@
-## vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4
+## vim:textwidth=150:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store XBT Data
 #'
@@ -19,7 +19,7 @@
 #'
 #' @templateVar class xbt
 #'
-#' @templateVar dataExample The key items stored in this slot are `depth`, `temperature` and  `soundSpeed`.  Note that `depth` is inferred from time in  water, using an empirical formula for instrument descent  rate, and that `soundSpeed` is calculatd using a fixed  practical salinity of 35.
+#' @templateVar dataExample The key items stored in this slot are `depth` (or `z`) and `temperature`, although some datasets also have `soundSpeed`.  Note that `depth` and `z` are inferred from time in water, using an empirical formula for instrument descent rate, and that `soundSpeed` is #' calculated using a fixed  practical salinity of 35. Note that the `[[` accessor will compute any of `depth`, `z` or `pressure`, based on whatever is in the data object.  Similarly, `soundspeed` will compute sound speed (assuming a practical salinity of 35), if that that item is present in the `data` slot.
 #'
 #' @templateVar metadataExample {}
 #'
@@ -71,7 +71,38 @@ NULL
 setMethod(f="[[",
           signature(x="xbt", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()         # [[
+              dataNames <- names(x@data)
+              S0 <- 35
+              if (i == "depth") {
+                  if ("depth" %in% dataNames)
+                      x@data$depth
+                  else if ("z" %in% dataNames)
+                      -x@data$depth
+                  else if ("pressure" %in% dataNames)
+                      swDepth(x@data$pressure, latitude=x@metadata$latitude)
+              } else if (i == "z") {
+                  if ("depth" %in% dataNames)
+                      -x@data$depth
+                  else if ("z" %in% dataNames)
+                      x@data$z
+                  else if ("pressure" %in% dataNames)
+                      -swDepth(x@data$pressure, latitude=x@metadata$latitude)
+              } else if (i == "pressure") {
+                  g <- gravity(x@metadata$latitude)
+                  if ("depth" %in% dataNames)
+                      swPressure(depth=x@data$depth, latitude=x[["latitude"]])
+                  else if ("z" %in% dataNames)
+                      swPressure(depth=-x@data$z, latitude=x[["latitude"]])
+                  else if ("pressure" %in% dataNames)
+                      x@data$pressure
+              } else if (i == "soundspeed") {
+                  if ("soundspeed" %in% dataNames)
+                      x@data$soundspeed
+                  else
+                      swSoundSpeed(S0, x[["temperature"]], x[["pressure"]])
+              } else {
+                  callNextMethod()
+              }
           })
 
 #' Replace Parts of an xbt Object
@@ -367,7 +398,7 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, debug=getOption("oceDe
 setMethod(f="plot",
           signature=signature("xbt"),
           definition=function(x,
-                              which=c(1, 2),
+                              which=1,
                               type="l",
                               mgp=getOption("oceMgp"),
                               mar,
@@ -375,10 +406,11 @@ setMethod(f="plot",
                               ...)
           {
               oceDebug(debug, "plot.xbt() {\n", unindent=1)
-              if (3 != sum(c("depth", "temperature", "soundSpeed") %in% names(x@data))) {
-                  warning("In plot,xbt-method() :\n  cannot plot an xbt object unless its 'data' slot contains 'depth', 'temperature' and 'soundSpeed'", call.=FALSE)
-                  return(invisible(NULL))
-              }
+              ## dataNames <- names(x@data)
+              ## if (3 != sum(c("depth", "temperature", "soundSpeed") %in% dataNames)) {
+              ##     warning("In plot,xbt-method() :\n  cannot plot an xbt object unless its 'data' slot contains 'depth', 'temperature' and 'soundSpeed'", call.=FALSE)
+              ##     return(invisible(NULL))
+              ## }
               if (missing(mar)) {
                   mar <- c(1, mgp[1]+1.5, mgp[1]+1.5, mgp[1])
               }
@@ -395,20 +427,19 @@ setMethod(f="plot",
                   oceDebug(debug, "calling par(mfrow=c(", lw, ", 1)\n")
               }
               len <- length(x@data$depth)
+              z <- x[["z"]]
+              temperature <- x[["temperature"]]
+              soundSpeed <- x[["soundSpeed"]]
               for (w in 1:lw) {
                   oceDebug(debug, "which[", w, "]=", which[w], "\n")
                   if (which[w] == 1) {
-                      plot(x@data$temperature, x@data$depth, ylim=rev(range(x@data$depth, na.rm=TRUE)),
-                           xlab="", ylab=resizableLabel("depth"),
-                           type=type, axes=FALSE)
+                      plot(temperature, z, xlab="", ylab=resizableLabel("z"), type=type, axes=FALSE)
                       axis(2)
                       box()
                       axis(3)
                       mtext(resizableLabel("temperature"), side=3, line=mgp[1])
                   } else if (which[w] == 2) {
-                      plot(x@data$soundSpeed, x@data$depth, ylim=rev(range(x@data$depth, na.rm=TRUE)),
-                           xlab="", ylab=resizableLabel("depth"),
-                           type=type, axes=FALSE)
+                      plot(soundSpeed, z, xlab="", ylab=resizableLabel("z"), type=type, axes=FALSE)
                       axis(2)
                       box()
                       axis(3)
