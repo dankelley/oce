@@ -348,7 +348,9 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, debug=getOption("oceDe
     res@metadata$longitude <- (londeg + lonmin/60) * ifelse(length(grep("W", lons[2])), -1, 1)
     res@metadata$probeType <- getHeaderItem(l, "Probe Type")
     res@metadata$terminalDepth <- as.numeric(gsub("[ ]*m$", "", getHeaderItem(l, "Terminal Depth"))) # FIXME: assumes metric
-    res@data <- as.list(read.table(file, skip=headerEnd+1, col.names=c("depth", "temperature", "soundSpeed")))
+    res@data <- as.list(read.table(file, skip=headerEnd+1,
+                                   col.names=c("depth", "temperature", "soundSpeed"),
+                                   encoding="UTF-8"))
     res@metadata$filename <- filename
     res@metadata$units$depth <- list(unit=expression(m), scale="")
     res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
