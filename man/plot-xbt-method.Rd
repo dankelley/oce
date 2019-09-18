@@ -26,7 +26,7 @@ in order to use more space for the data and less for the axes.}
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate amount
 of debugging information, or to 2 to get more.}
 
-\item{...}{Optional arguments passed to plotting functions.}
+\item{...}{optional arguments passed to plotting functions.}
 }
 \description{
 Plots data contained in an \linkS4class{xbt} object.

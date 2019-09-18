@@ -383,7 +383,7 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, debug=getOption("oceDe
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
 #'
-#' @param ... Optional arguments passed to plotting functions.
+#' @param ... optional arguments passed to plotting functions.
 #'
 #' @examples
 #' library(oce)
@@ -435,13 +435,13 @@ setMethod(f="plot",
               for (w in 1:lw) {
                   oceDebug(debug, "which[", w, "]=", which[w], "\n")
                   if (which[w] == 1) {
-                      plot(temperature, z, xlab="", ylab=resizableLabel("z"), type=type, axes=FALSE)
+                      plot(temperature, z, xlab="", ylab=resizableLabel("z"), type=type, axes=FALSE, ...)
                       axis(2)
                       box()
                       axis(3)
                       mtext(resizableLabel("temperature"), side=3, line=mgp[1])
                   } else if (which[w] == 2) {
-                      plot(soundSpeed, z, xlab="", ylab=resizableLabel("z"), type=type, axes=FALSE)
+                      plot(soundSpeed, z, xlab="", ylab=resizableLabel("z"), type=type, axes=FALSE, ...)
                       axis(2)
                       box()
                       axis(3)
