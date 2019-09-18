@@ -217,18 +217,21 @@ setMethod(f="subset",
 
 #' Read an xbt file
 #'
-#' In this version, only one type of file is handled, namely the `.edf` format, used
-#' for Sippican XBT files.  This is handled by calling [read.xbt.edf()].
+#' Two file types are handled: (1) the `"sippican"` format, used
+#' for Sippican XBT files, handled with [read.xbt.edf()], and (2)
+#' the `"noaa1"` format, handled with [read.xbt.noaa1()]. The first of
+#' these is recognized by [read.oce()], but the second must be calldd
+#' directly with [read.xbt.noaa1()].
 #'
 #' @param file a connection or a character string giving the name of the file to
 #' load.
 #'
-#' @param type character string indicating type of file (only `"sippican"` is permitted).
+#' @param type character string indicating type of file, with valid choices being
+#' `"sippican"` and `"noaa1"`.
 #'
-#' @param longitude optional signed number indicating the longitude in degrees
-#' East.
-#'
-#' @param latitude optional signed number indicating the latitude in degrees North.
+#' @param longitude,latitude optional signed numbers indicating the longitude in degrees
+#' East and latitude in degres North. These values are used if `type="sippican"`,
+#' but ignored if `type="noaa1"`, because those files contain location inforation.
 #'
 #' @param debug a flag that turns on debugging.  The value indicates the depth
 #' within the call stack to which debugging applies.
@@ -264,6 +267,8 @@ read.xbt <- function(file, type="sippican", longitude=NA, latitude=NA, debug=get
     res <- if (type == "sippican")
         read.xbt.edf(file=file, longitude=longitude, latitude=latitude,
                      debug=debug-1, processingLog=processingLog)
+    else if (type == "noaa1")
+        read.xbt.noaa1(file=file, debug=debug-1, processingLog=processingLog)
     else
         stop("unknown type of current meter")
     oceDebug(debug, "} # read.xbt()\n", sep="", unindent=1)
@@ -355,9 +360,90 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, debug=getOption("oceDe
     res@metadata$units$depth <- list(unit=expression(m), scale="")
     res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
     res@metadata$units$soundSpeed <- list(unit=expression(m/s), scale="")
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.xbt.edf()\n", unindent=1)
     res
 }
+
+#' Read a NOAA format for AXBTs
+#'
+#'
+#' This file format, described at https://www.aoml.noaa.gov/phod/dhos/axbt.php, contains a header
+#' line, followed by data lines.  For example, a particular file at this site has first
+#' three lines as follows.
+#' ```
+#' 181.589 20100709 140820  -85.336  25.290 N42RF GL10 14    2010-190-15:49:18
+#'   -0.0 27.52 -9.99
+#'   -1.5 27.52 -9.99
+#'```
+#' where the items on the header line are (1) a year-day (ignored here), (2)
+#' YYYYMMDD, (3) HHMMSS, (4) longitude, (5) latitude, (6) aircraft wing
+#' number, (7) project name, (8) AXBT channel and (9) AXBT ID.  The other lines hold vertical
+#' coordinate in metres, temperature and temperature error; -9.99 is a missing-value
+#' code.  (This formatting information is extracted from a file named `readme.axbt` that
+#' is provided with the data.)
+#'
+#' @param file character value naming a file, or a file connection, containing the data.
+#'
+#' @param debug a flag that turns on debugging.  The value indicates the depth
+#' within the call stack to which debugging applies.
+#'
+#' @param missingValue numerical value that is to be interpreted as `NA`
+#'
+#' @param processingLog if provided, the action item to be stored in the log.  This
+#' parameter is typically only provided for internal calls; the default that it
+#' provides is better for normal calls by a user.
+#'
+#' @return An [xbt-class] object.
+#'
+#' @family things related to xbt data
+#'
+#' @author Dan Kelley
+read.xbt.noaa1 <- function(file, debug=getOption("oceDebug"), missingValue=-9.99, processingLog)
+{
+    oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"", type, "\", longitude=", longitude, ", latitude=", latitude, "...) {\n", sep="", unindent=1)
+    filename <- "?"
+    if (is.character(file)) {
+        filename <- fullFilename(file)
+        file <- file(file, "r")
+        on.exit(close(file))
+    }
+    if (!inherits(file, "connection"))
+        stop("argument `file' must be a character string or connection")
+    if (!isOpen(file)) {
+        open(file, "r")
+        on.exit(close(file))
+    }
+    res <- new("xbt")
+    header <- readLines(file, 1)
+    res@metadata$header <- header
+    res@metadata$filename <- filename
+    headerTokens <- strsplit(header, "[ \t]+")[[1]]
+    res@metadata$time <- ISOdatetime(substr(headerTokens[2], 1, 4), # year
+                                     substr(headerTokens[2], 5, 6), # month
+                                     substr(headerTokens[2], 7, 8), # day
+                                     substr(headerTokens[3], 1, 2), # hour
+                                     substr(headerTokens[3], 3, 4), # minute
+                                     substr(headerTokens[3], 5, 6)) # second
+    res@metadata$longitude <- as.numeric(headerTokens[4])
+    res@metadata$latitude <- as.numeric(headerTokens[5])
+    res@metadata$aircraft <- headerTokens[6]
+    res@metadata$project <- headerTokens[7]
+    res@metadata$axbtChannel <- headerTokens[8]
+    res@metadata$axbtId <- headerTokens[9]
+    data <- read.table(file, skip=1, header=FALSE, col.names=c("z", "temperature", "temperatureError"))
+    res@metadata$header <- header
+    res@metadata$units$z <- list(unit=expression(m), scale="")
+    res@data <- as.list(data)
+    if (!is.null(missingValue)) {
+        for (name in names(res@data))
+            res@data[[name]][res@data[[name]] == missingValue] <- NA
+    }
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # read.xbt.noaa1()\n", sep="", unindent=1)
+    res
+}
+
 
 #' Plot An xbt data
 #'

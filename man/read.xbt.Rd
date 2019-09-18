@@ -11,12 +11,12 @@ read.xbt(file, type = "sippican", longitude = NA, latitude = NA,
 \item{file}{a connection or a character string giving the name of the file to
 load.}
 
-\item{type}{character string indicating type of file (only \code{"sippican"} is permitted).}
+\item{type}{character string indicating type of file, with valid choices being
+\code{"sippican"} and \code{"noaa1"}.}
 
-\item{longitude}{optional signed number indicating the longitude in degrees
-East.}
-
-\item{latitude}{optional signed number indicating the latitude in degrees North.}
+\item{longitude, latitude}{optional signed numbers indicating the longitude in degrees
+East and latitude in degres North. These values are used if \code{type="sippican"},
+but ignored if \code{type="noaa1"}, because those files contain location inforation.}
 
 \item{debug}{a flag that turns on debugging.  The value indicates the depth
 within the call stack to which debugging applies.}
@@ -29,8 +29,11 @@ provides is better for normal calls by a user.}
 An \linkS4class{xbt} object.
 }
 \description{
-In this version, only one type of file is handled, namely the \code{.edf} format, used
-for Sippican XBT files.  This is handled by calling \code{\link[=read.xbt.edf]{read.xbt.edf()}}.
+Two file types are handled: (1) the \code{"sippican"} format, used
+for Sippican XBT files, handled with \code{\link[=read.xbt.edf]{read.xbt.edf()}}, and (2)
+the \code{"noaa1"} format, handled with \code{\link[=read.xbt.noaa1]{read.xbt.noaa1()}}. The first of
+these is recognized by \code{\link[=read.oce]{read.oce()}}, but the second must be calldd
+directly with \code{\link[=read.xbt.noaa1]{read.xbt.noaa1()}}.
 }
 \examples{
 library(oce)
@@ -49,6 +52,7 @@ https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual
 \seealso{
 Other things related to xbt data: \code{\link{[[<-,xbt-method}},
   \code{\link{plot,xbt-method}},
+  \code{\link{read.xbt.noaa1}},
   \code{\link{subset,xbt-method}},
   \code{\link{summary,xbt-method}}, \code{\link{xbt-class}}
 }

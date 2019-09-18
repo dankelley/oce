@@ -75,7 +75,8 @@ Other functions that replace parts of oce objects: \code{\link{[[<-,adp-method}}
   \code{\link{[[<-,windrose-method}}
 
 Other things related to xbt data: \code{\link{plot,xbt-method}},
-  \code{\link{read.xbt}}, \code{\link{subset,xbt-method}},
+  \code{\link{read.xbt.noaa1}}, \code{\link{read.xbt}},
+  \code{\link{subset,xbt-method}},
   \code{\link{summary,xbt-method}}, \code{\link{xbt-class}}
 }
 \concept{functions that replace parts of oce objects}
