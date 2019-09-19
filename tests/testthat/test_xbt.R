@@ -4,6 +4,14 @@ data("xbt")
 
 context("xbt (expendible bathythermograph)")
 
+test_that("as.xbt() works", {
+          XBT <- as.xbt(z=-xbt[["depth"]], temperature=xbt[["temperature"]])
+          expect_equal(XBT[["units"]], list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+                                            z=list(unit=expression(m), scale="")))
+          expect_equal(XBT[["z"]], -xbt[["depth"]])
+          expect_equal(XBT[["temperature"]], xbt[["temperature"]])
+})
+
 test_that("can read .edf file correctly", {
           XBT <- read.oce(system.file("extdata", "xbt.edf", package="oce"))
           expect_equal(XBT@metadata[c("serialNumber", "sequenceNumber", "dataNamesOriginal", "latitude",

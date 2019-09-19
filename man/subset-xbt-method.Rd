@@ -30,7 +30,7 @@ plot(subset(xbt, depth < mean(range(xbt[["depth"]]))))
 }
 \seealso{
 Other things related to xbt data: \code{\link{[[<-,xbt-method}},
-  \code{\link{plot,xbt-method}},
+  \code{\link{as.xbt}}, \code{\link{plot,xbt-method}},
   \code{\link{read.xbt.noaa1}}, \code{\link{read.xbt}},
   \code{\link{summary,xbt-method}}, \code{\link{xbt-class}}
 

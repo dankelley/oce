@@ -72,8 +72,8 @@ Other functions that plot oce data: \code{\link{plot,adp-method}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to xbt data: \code{\link{[[<-,xbt-method}},
-  \code{\link{read.xbt.noaa1}}, \code{\link{read.xbt}},
-  \code{\link{subset,xbt-method}},
+  \code{\link{as.xbt}}, \code{\link{read.xbt.noaa1}},
+  \code{\link{read.xbt}}, \code{\link{subset,xbt-method}},
   \code{\link{summary,xbt-method}}, \code{\link{xbt-class}}
 }
 \author{

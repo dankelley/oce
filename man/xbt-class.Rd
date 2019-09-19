@@ -85,7 +85,7 @@ https://doi.org/10.1175/BAMS-D-15-00031.1.
 }
 \seealso{
 Other things related to xbt data: \code{\link{[[<-,xbt-method}},
-  \code{\link{plot,xbt-method}},
+  \code{\link{as.xbt}}, \code{\link{plot,xbt-method}},
   \code{\link{read.xbt.noaa1}}, \code{\link{read.xbt}},
   \code{\link{subset,xbt-method}},
   \code{\link{summary,xbt-method}}

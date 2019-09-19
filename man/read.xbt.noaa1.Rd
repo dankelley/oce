@@ -39,8 +39,8 @@ is provided with the data.)
 }
 \seealso{
 Other things related to xbt data: \code{\link{[[<-,xbt-method}},
-  \code{\link{plot,xbt-method}}, \code{\link{read.xbt}},
-  \code{\link{subset,xbt-method}},
+  \code{\link{as.xbt}}, \code{\link{plot,xbt-method}},
+  \code{\link{read.xbt}}, \code{\link{subset,xbt-method}},
   \code{\link{summary,xbt-method}}, \code{\link{xbt-class}}
 }
 \author{

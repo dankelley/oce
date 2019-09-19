@@ -51,7 +51,7 @@ https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual
 }
 \seealso{
 Other things related to xbt data: \code{\link{[[<-,xbt-method}},
-  \code{\link{plot,xbt-method}},
+  \code{\link{as.xbt}}, \code{\link{plot,xbt-method}},
   \code{\link{read.xbt.noaa1}},
   \code{\link{subset,xbt-method}},
   \code{\link{summary,xbt-method}}, \code{\link{xbt-class}}

@@ -120,18 +120,26 @@ setMethod(f="[[<-",
 
 setMethod(f="initialize",
           signature="xbt",
-          definition=function(.Object,
-                              depth=NULL, temperature=NULL, soundSpeed=NULL, units) {
+          ## the only thing we know for sure is that temperature will be given
+          definition=function(.Object, z=NULL, depth=NULL, temperature=NULL, units) {
+              if (!is.null(depth) && !is.null(z))
+                  stop("cannot initialize XBT with both depth and z")
               if (missing(units)) {
-                  .Object@metadata$units <- list(depth=list(unit=expression(m), scale=""),
-                                                 temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                                                 soundSpeed=list(unit=expression(m/s), scale=""))
+                  if (!is.null(temperature))
+                      .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+                  if (!is.null(z))
+                      .Object@metadata$units$z <- list(unit=expression(m), scale="")
+                  else if (!is.null(depth))
+                      .Object@metadata$units$depth <- list(unit=expression(m), scale="")
               } else {
                   .Object@metadata$units <- units # CAUTION: we are being quite trusting here
               }
-              .Object@data$depth <- depth
-              .Object@data$temperature <- temperature
-              .Object@data$soundSpeed <- soundSpeed
+              if (!is.null(depth))
+                  .Object@data$depth <- depth
+              if (!is.null(z))
+                  .Object@data$z <- z
+              if (!is.null(temperature))
+                  .Object@data$temperature <- temperature
               .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'xbt' object"
               return(.Object)
@@ -214,6 +222,49 @@ setMethod(f="subset",
               res
           })
 
+#' Create an xbt object
+#'
+#' @param z numeric vector giving vertical coordinates of measurements. This is the negative of
+#' depth, i.e. `z` is 0 at the air-sea interface, and negative within the water column.
+#'
+#' @param temperature numeric vector giving in-situ temperatures at the `z` values.
+#'
+#' @param longitude,latitude location in degE and degN.
+#'
+#' @param filename character value naming source file.
+#'
+#' @param sequenceNumber numerical value of the sequence number of the XBT drop.
+#'
+#' @param serialNumber character value holding the serial number of the XBT.
+#'
+#' @return An [xbt-class] object.
+#'
+#' @family things related to xbt data
+#'
+#' @author Dan Kelley
+as.xbt <- function(z, temperature, longitude=NA, latitude=NA, filename="", sequenceNumber=NA,
+                   serialNumber="")
+{
+    if (missing(z))
+        stop("must provide z")
+    if (missing(temperature))
+        stop("must provide temperture")
+    if (length(z) != length(temperature))
+        stop("length of z (", length(z), ") does not match length of temperature (", length(temperature), ")")
+    res <- new("xbt", z=z, temperature=temperature)
+    ## res@data$z <- z
+    ## res@metadata$units$z <- list(unit=expression(m), scale="")
+    ## res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+    ## res@data$temperature <- temperature
+    res@metadata$dataNamesOriginal <- list(z="", temperature="")
+    res@metadata$longitude <- longitude
+    res@metadata$latitude <- longitude
+    res@metadata$header <- ""
+    res@metadata$filename <- filename
+    res@metadata$sequenceNumber <- sequenceNumber
+    res@metadata$serialNumber <- serialNumber
+    res
+}
 
 #' Read an xbt file
 #'
@@ -264,13 +315,18 @@ read.xbt <- function(file, type="sippican", longitude=NA, latitude=NA, debug=get
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
         stop("empty file (read.xbt)")
     type <- match.arg(type)
-    res <- if (type == "sippican")
+    res <- if (type == "sippican") {
         read.xbt.edf(file=file, longitude=longitude, latitude=latitude,
                      debug=debug-1, processingLog=processingLog)
-    else if (type == "noaa1")
+    } else if (type == "noaa1") {
+        if (!is.null(longitude))
+            warning("longitude argument is ignored for type=\"noaa1\"\n")
+        if (!is.null(latitude))
+            warning("latitude argument is ignored for type=\"noaa1\"\n")
         read.xbt.noaa1(file=file, debug=debug-1, processingLog=processingLog)
-    else
+    } else {
         stop("unknown type of current meter")
+    }
     oceDebug(debug, "} # read.xbt()\n", sep="", unindent=1)
     res
 }
@@ -401,7 +457,7 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, debug=getOption("oceDe
 #' @author Dan Kelley
 read.xbt.noaa1 <- function(file, debug=getOption("oceDebug"), missingValue=-9.99, processingLog)
 {
-    oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"", type, "\", longitude=", longitude, ", latitude=", latitude, "...) {\n", sep="", unindent=1)
+    oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"", "...) {\n", sep="", unindent=1)
     filename <- "?"
     if (is.character(file)) {
         filename <- fullFilename(file)
