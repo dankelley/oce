@@ -471,7 +471,7 @@ read.xbt.noaa1 <- function(file, debug=getOption("oceDebug"), missingValue=-9.99
         on.exit(close(file))
     }
     res <- new("xbt")
-    header <- readLines(file, 1)
+    header <- readLines(file, 1, encoding="UTF-8") # first line is a header
     res@metadata$header <- header
     res@metadata$filename <- filename
     headerTokens <- strsplit(header, "[ \t]+")[[1]]
@@ -487,7 +487,7 @@ read.xbt.noaa1 <- function(file, debug=getOption("oceDebug"), missingValue=-9.99
     res@metadata$project <- headerTokens[7]
     res@metadata$axbtChannel <- headerTokens[8]
     res@metadata$axbtId <- headerTokens[9]
-    data <- read.table(file, skip=1, header=FALSE, col.names=c("z", "temperature", "temperatureError"))
+    data <- read.table(file, skip=1, header=FALSE, col.names=c("z", "temperature", "temperatureError"), encoding="UTF-8")
     res@metadata$header <- header
     res@metadata$units$z <- list(unit=expression(m), scale="")
     res@data <- as.list(data)
