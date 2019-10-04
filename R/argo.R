@@ -1589,8 +1589,10 @@ setMethod(f="plot",
               } else {
                   par(mgp=mgp, mar=mar)
               }
-              if (missing(level) || level == "all")
-                  level <- seq(1L, dim(x@data$temperature)[1])
+              if (missing(level) || level == "all") {
+                  level <- seq(1L,
+                               if (is.array(x@data$temperature)) dim(x@data$temperature)[1] else length(x@data$temperature))
+              }
               longitude <- x[["longitude"]]
               latitude <- x[["latitude"]]
               dim <- dim(x@data$salinity)

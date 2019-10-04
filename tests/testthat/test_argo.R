@@ -4,6 +4,11 @@ data(argo)
 
 context("Argo")
 
+test_that("plot works on indexed subsets", {
+          expect_silent(plot(argo[["profile", 1]])) # failed before fixing issue 1603
+          expect_silent(plot(argo[["profile", 1:3]]))
+})
+
 test_that("global attributes in metadata", {
           expect_equal(argo[["title"]], "Argo float vertical profile")
           expect_equal(argo[["institution"]], "FR GDAC")
