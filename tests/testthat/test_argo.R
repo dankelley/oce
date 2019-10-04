@@ -5,8 +5,10 @@ data(argo)
 context("Argo")
 
 test_that("plot works on indexed subsets", {
-          expect_silent(plot(argo[["profile", 1]])) # failed before fixing issue 1603
-          expect_silent(plot(argo[["profile", 1:3]]))
+          for (which in 1:6) {
+            expect_silent(plot(argo[["profile", 1]], which=which)) # failed before fixing issue 1603
+            expect_silent(plot(argo[["profile", 1:3]], which=which))
+          }
 })
 
 test_that("global attributes in metadata", {

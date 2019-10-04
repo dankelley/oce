@@ -695,7 +695,7 @@ setMethod(f="subset",
                           if (field != 'time' && field != 'longitude' && field != 'latitude' && field != 'profile') {
                               ifield <- which(field == fieldname)
                               res@data[[ifield]] <- if (is.matrix(x@data[[ifield]]))
-                                  x@data[[ifield]][, keep] else x@data[[ifield]][keep]
+                                  x@data[[ifield]][, keep, drop=FALSE] else x@data[[ifield]][keep]
                           }
                       }
                       fieldname <- names(x@metadata$flags)
@@ -1589,10 +1589,8 @@ setMethod(f="plot",
               } else {
                   par(mgp=mgp, mar=mar)
               }
-              if (missing(level) || level == "all") {
-                  level <- seq(1L,
-                               if (is.array(x@data$temperature)) dim(x@data$temperature)[1] else length(x@data$temperature))
-              }
+              if (missing(level) || level == "all")
+                  level <- seq(1L, dim(x@data$temperature)[1])
               longitude <- x[["longitude"]]
               latitude <- x[["latitude"]]
               dim <- dim(x@data$salinity)
