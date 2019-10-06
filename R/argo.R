@@ -533,7 +533,7 @@ setMethod(f="subset",
                   if (requireNamespace("sp", quietly=TRUE)) {
                       keep <- 1==sp::point.in.polygon(lon, lat, lonp, latp)
                   } else {
-                      stop("cannot use 'within' becaue the 'sp' package is not installed")
+                      stop("cannot use 'within' because the 'sp' package is not installed")
                   }
                   ## Metadata
                   for (name in names(x@metadata)) {

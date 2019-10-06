@@ -80,7 +80,7 @@ than in \code{\link[=contour]{contour()}}.
 \donttest{
 library(oce)
 data(coastlineWorld)
-if (require(ocedata)) {
+if (requireNamespace("ocedata", quietly=TRUE)) {
     data(levitus, package="ocedata")
     par(mar=rep(1, 4))
     mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")

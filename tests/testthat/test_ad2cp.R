@@ -42,8 +42,6 @@ test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burs
                            "since 'plan' was not given, using the most common value, namely 0")
             nnn <- c("average", "burst", "interleavedBurst")
             expect_equal(c(TRUE, TRUE, FALSE), nnn %in% names(d1@data))
-            expect_equal(c(TRUE, FALSE, FALSE), nnn %in% names(subset(d1, "average")@data))
-            expect_equal(c(FALSE, TRUE, FALSE), nnn %in% names(subset(d1, "burst")@data))
             expect_equal(sort(names(d1[["burst"]])),
                          sort(c("a", "accelerometerx", "accelerometery",
                            "accelerometerz", "AHRS", "blankingDistance", "cellSize",
@@ -345,7 +343,6 @@ test_that("read.adp() on a private AD2CP file that has only 'burst' data", {
                            "since 'plan' was not given, using the most common value, namely 0")
             nnn <- c("average", "burst", "interleavedBurst")
             expect_equal(c(FALSE, TRUE, FALSE), nnn %in% names(d2@data))
-            expect_equal(c(FALSE, FALSE, FALSE), nnn %in% names(subset(d2, "average")@data))
             expect_equal("beam", d2[["oceCoordinate"]])
             expect_equal(sort(names(d2[["burst"]])),
                          c("a", "accelerometerx", "accelerometery",

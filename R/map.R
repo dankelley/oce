@@ -629,7 +629,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
 #'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
-#' if (require(ocedata)) {
+#' if (requireNamespace("ocedata", quietly=TRUE)) {
 #'     data(levitus, package="ocedata")
 #'     par(mar=rep(1, 4))
 #'     mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
@@ -814,13 +814,15 @@ mapContour <- function(longitude, latitude, z,
 #' @examples
 #'\donttest{
 #' library(oce)
-#' data(coastlineWorldFine, package='ocedata')
-#' HfxLon <- -63.5752
-#' HfxLat <- 44.6488
-#' mapPlot(coastlineWorldFine, proj='+proj=merc',
-#'         longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
-#'         col='lightgrey')
-#' mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
+#' if (requireNamespace("ocedata", quietly=TRUE)) {
+#'     data(coastlineWorldFine, package='ocedata')
+#'     HfxLon <- -63.5752
+#'     HfxLat <- 44.6488
+#'     mapPlot(coastlineWorldFine, proj='+proj=merc',
+#'             longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
+#'             col='lightgrey')
+#'     mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
+#'    }
 #'}
 #'
 #' @author Chantelle Layton
@@ -2564,7 +2566,7 @@ mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 #' library(oce)
 #' data(coastlineWorld)
 #' mapPlot(coastlineWorld, longitudelim=c(-120, -60), latitudelim=c(30, 60),
-#'         col="lightgray", projection="+proj=lcc +lon_0=-100")
+#'         col="lightgray", projection="+proj=lcc +lat_1=45 +lon_0=-100")
 #' lon <- seq(-120, -75, 15)
 #' n <- length(lon)
 #' lat <- 45 + rep(0, n)
@@ -2992,16 +2994,18 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #'
 #' ## 3. Levitus SST
 #' par(mfrow=c(1,1))
-#' data(levitus, package='ocedata')
-#' lon <- levitus$longitude
-#' lat <- levitus$latitude
-#' SST <- levitus$SST
-#' par(mar=rep(1, 4))
-#' Tlim <- c(-2, 30)
-#' drawPalette(Tlim, col=oce.colorsJet)
-#' mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
-#' mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
-#' mapPolygon(coastlineWorld, col='gray')
+#' if (requireNamespace("ocedata", quietly=TRUE)) {
+#'     data(levitus, package='ocedata')
+#'     lon <- levitus$longitude
+#'     lat <- levitus$latitude
+#'     SST <- levitus$SST
+#'     par(mar=rep(1, 4))
+#'     Tlim <- c(-2, 30)
+#'     drawPalette(Tlim, col=oce.colorsJet)
+#'     mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
+#'     mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
+#'     mapPolygon(coastlineWorld, col='gray')
+#'}
 #'
 #' ## 4. Topography without drawing a coastline first
 #' data(topoWorld)

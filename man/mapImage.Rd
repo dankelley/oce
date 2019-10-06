@@ -134,16 +134,18 @@ mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
 ## 3. Levitus SST
 par(mfrow=c(1,1))
-data(levitus, package='ocedata')
-lon <- levitus$longitude
-lat <- levitus$latitude
-SST <- levitus$SST
-par(mar=rep(1, 4))
-Tlim <- c(-2, 30)
-drawPalette(Tlim, col=oce.colorsJet)
-mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
-mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
-mapPolygon(coastlineWorld, col='gray')
+if (requireNamespace("ocedata", quietly=TRUE)) {
+    data(levitus, package='ocedata')
+    lon <- levitus$longitude
+    lat <- levitus$latitude
+    SST <- levitus$SST
+    par(mar=rep(1, 4))
+    Tlim <- c(-2, 30)
+    drawPalette(Tlim, col=oce.colorsJet)
+    mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
+    mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
+    mapPolygon(coastlineWorld, col='gray')
+}
 
 ## 4. Topography without drawing a coastline first
 data(topoWorld)

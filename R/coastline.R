@@ -101,9 +101,9 @@ setMethod(f="[[<-",
 #' Subset a Coastline Object
 #'
 #' Subsets a coastline object according to limiting values for longitude
-#' and latitude. The \CRANpkg{raster} package must be installed for this
-#' to work, because it relies on the [raster::intersect()] function
-#' from that package.
+#' and latitude. This uses functions in the \CRANpkg{raster} package
+#' for some calculations, and so it will fail unless that package is
+#' installed.
 #'
 #' As illustrated in the \dQuote{Examples}, `subset` must be an
 #' expression that indicates limits on `latitude` and
@@ -136,10 +136,12 @@ setMethod(f="[[<-",
 #' library(oce)
 #' data(coastlineWorld)
 #' ## Eastern Canada
-#' cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
-#' ## The plot demonstrates that the trimming is as requested.
-#' plot(cl, clon=-65, clat=45, span=6000)
-#' rect(-80, 30, -50, 60, bg="transparent", border="red")
+#' if (requireNamespace("raster", quietly=TRUE)) {
+#'     cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
+#'     ## The plot demonstrates that the trimming is as requested.
+#'     plot(cl, clon=-65, clat=45, span=6000)
+#'     rect(-80, 30, -50, 60, bg="transparent", border="red")
+#' }
 #'}
 #' @family things related to coastline data
 #' @family functions that subset oce objects
@@ -150,8 +152,6 @@ setMethod(f="subset",
           definition=function(x, subset, ...) {
               if (missing(subset))
                   stop("must give 'subset'")
-              if (!requireNamespace("raster"))
-                  stop("must install.packages(\"raster\") for coastline subset to work")
               dots <- list(...)
               debug <- dots$debug
               if (is.null(debug))
@@ -215,6 +215,9 @@ setMethod(f="subset",
               cllon <- x[["longitude"]]
               cllat <- x[["latitude"]]
               ##old norig <- length(cllon)
+              if (!requireNamespace("raster", quietly=TRUE)) {
+                  stop("\"raster\" package must be installed for this to work")
+              }
               box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
               owarn <- options("warn")$warn
               options(warn=-1)

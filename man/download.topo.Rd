@@ -107,8 +107,10 @@ topoFile <- download.topo(west=-64, east=-60, south=43, north=46,
                           resolution=1, destdir="~/data/topo")
 topo <- read.topo(topoFile)
 imagep(topo, zlim=c(-400, 400), drawTriangles=TRUE)
-data(coastlineWorldFine, package="ocedata")
-lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
+if (requireNamespace("ocedata", quietly=TRUE)) {
+    data(coastlineWorldFine, package="ocedata")
+    lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
+}
 }
 
 }

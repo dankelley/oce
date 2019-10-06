@@ -30,13 +30,15 @@ works if the lines of constant latitude are horizontal on the plot.
 \examples{
 \donttest{
 library(oce)
-data(coastlineWorldFine, package='ocedata')
-HfxLon <- -63.5752
-HfxLat <- 44.6488
-mapPlot(coastlineWorldFine, proj='+proj=merc',
-        longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
-        col='lightgrey')
-mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
+if (requireNamespace("ocedata", quietly=TRUE)) {
+    data(coastlineWorldFine, package='ocedata')
+    HfxLon <- -63.5752
+    HfxLat <- 44.6488
+    mapPlot(coastlineWorldFine, proj='+proj=merc',
+            longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
+            col='lightgrey')
+    mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
+   }
 }
 
 }

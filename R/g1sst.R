@@ -112,8 +112,10 @@ setMethod(f="[[<-",
 #'     download.file(source, "a.nc")
 #' d <- read.g1sst("a.nc")
 #' plot(d, "SST", col=oceColorsJet)
-#' data(coastlineWorldFine, package="ocedata")
-#' lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
+#' if (requireNamespace("ocedata", quietly=TRUE)) {
+#'     data(coastlineWorldFine, package="ocedata")
+#'     lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
+#' }
 #'}
 #'
 #' @author Dan Kelley

@@ -38,7 +38,7 @@ Adds arrows to an existing map, by analogy to \code{\link[=arrows]{arrows()}}.
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, longitudelim=c(-120, -60), latitudelim=c(30, 60),
-        col="lightgray", projection="+proj=lcc +lon_0=-100")
+        col="lightgray", projection="+proj=lcc +lat_1=45 +lon_0=-100")
 lon <- seq(-120, -75, 15)
 n <- length(lon)
 lat <- 45 + rep(0, n)

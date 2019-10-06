@@ -69,19 +69,18 @@ the plot.
 
 To see the need for setting the aspect ratio, consider the following view of
 eastern North America.
-shape.
 
 ```{r}
 library(oce)
-data(coastlineWorldFine, package="ocedata")
-lon <- coastlineWorldFine[["longitude"]]
-lat <- coastlineWorldFine[["latitude"]]
+data(coastlineWorld)
+lon <- coastlineWorld[["longitude"]]
+lat <- coastlineWorld[["latitude"]]
 par(mar=c(4, 4, 0.5, 0.5))
 plot(lon, lat, type="l",
-     xlim=c(-80, -50), ylim=c(40, 50))
+     xlim=c(-130, -50), ylim=c(40, 50))
 ```
 
-Readers familiar with this region will see immediately that the coastline
+Readers familiar with this region will notice that the coastline
 shapes are distorted.  The solution to this problem is to set
 the `asp` argument of `plot()` to a value that will compensate
 for meridional convergence at the poles, as below.
@@ -89,7 +88,7 @@ for meridional convergence at the poles, as below.
 ```{r}
 par(mar=c(4, 4, 0.5, 0.5))
 plot(lon, lat, type="l",
-     xlim=c(-80, -50), ylim=c(40, 50), asp=1/cos(45*pi/180))
+     xlim=c(-130, -50), ylim=c(40, 50), asp=1/cos(45*pi/180))
 ```
 
 Although the above approach is not exactly taxing, the effort of setting the
@@ -97,18 +96,17 @@ aspect ratio and setting line-type plots can be spared by using the generic
 `plot()` function for `coastline` objects, as follows.
 
 ```{r}
-plot(coastlineWorldFine,
-     longitudelim=c(-69, -57), latitudelim=c(43, 47))
+plot(coastlineWorld,
+     longitudelim=c(-130, -50), latitudelim=c(40, 50))
 ```
 
-Irrespective of shape distortion, the graphs shown above share a common
-stength: the axes for longitude and latitude are orthogonal, and the scale
-along each axis is linear. This makes it easy for readers to identify the
-location of features of the diagrams. However, using linear axes on large-scale
-views leads to distortions of coastline shapes and relative feature sizes, and
-motivates the use of map projections. (Readers who question the previous
-sentence are again encouraged to consult some of the references in the
-bibliography.)
+The graphs shown above share a common stength: the axes for longitude and
+latitude are orthogonal, and the scale along each axis is linear. This makes it
+easy for readers to identify the location of features of the diagrams. However,
+using linear axes on large-scale views leads to distortions of coastline shapes
+and relative feature sizes, and motivates the use of map projections. (Readers
+who question the previous sentence are again encouraged to consult some of the
+references in the bibliography.)
 
 # Choosing a map projection
 
@@ -242,7 +240,7 @@ mapPlot(coastlineWorld, longitudelim=c(-180, 180), latitudelim=c(-130, -50),
 
 ```{r fig.cap="Eastern North Atlantic with Mercator projection.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
-mapPlot(coastlineWorldFine, col="lightgray",
+mapPlot(coastlineWorld, col="lightgray",
         projection="+proj=merc",
         longitudelim=c(-80, -40), latitudelim=c(20, 60))
 ```
@@ -264,18 +262,22 @@ diagram.
 
 ```{r fig.cap="Eastern North Atlantic with Albers equal-area projection.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
-mapPlot(coastlineWorldFine, col="lightgray",
+mapPlot(coastlineWorld, col="lightgray",
         projection="+proj=aea +lat_1=30 +lat_2=50 +lon_0=-60",
         longitudelim=c(-80, -40), latitudelim=c(20, 60))
 ```
 
 **Exercise 6.** Plot the world with the Goode projection, superimposing sea surface temperature as contours.
 
+Note that the temperature is provided by the `ocedata` package.
+
 ```{r fig.cap="SST contours with the Goode projection", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
 par(mar=rep(0.5, 4))
-data(levitus, package="ocedata")
 mapPlot(coastlineWorld, projection="+proj=goode", col="lightgray")
-mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+if (requireNamespace("ocedata", quietly=TRUE)) {
+    data(levitus, package="ocedata")
+    mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+}
 ```
 
 

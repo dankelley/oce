@@ -38,8 +38,8 @@ Plot an amsr Object
 d <- read.amsr("f34_20160102v7.2.gz")
 asp <- 1/cos(pi*40/180)
 plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
-data(coastlineWorldMedium, package="ocedata")
-lines(coastlineWorldMedium[['longitude']], coastlineWorldMedium[['latitude']])
+data(coastlineWorld)
+lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 }
 
 }
