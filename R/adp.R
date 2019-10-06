@@ -2794,6 +2794,9 @@ setMethod(f="plot",
                                       }  else {
                                           stop("there is no built-in coastline file of name \"", coastline, "\"")
                                       }
+                                  } else {
+                                      data("coastlineWorld", package="oce", envir=environment())
+                                      coastline <- get("coastlineWorld")
                                   }
                               }
                           }

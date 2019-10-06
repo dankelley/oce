@@ -13,7 +13,7 @@ test_that("multi-panel plots leave usr as it was originally", {
           plot(cm)
           expect_equal(par('usr'), orig)
           data(ctd)
-          plot(ctd)
+          expect_warning(plot(ctd), "CTD plots will have better coastlines after")
           expect_equal(par('usr'), orig)
           data(lisst)
           plot(lisst)

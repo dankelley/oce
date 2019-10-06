@@ -1,17 +1,28 @@
 library(oce)
 context("landsat")
 
+
 f <- "~/Dropbox/data/archive/landsat/LC80080292014065LGN00"
-if (file.exists(f)) {
-    test_that("read landsat (private file)", {
-              l <- expect_warning(read.landsat(f, band="tirs1"))
-              expect_equal(dim(l@data$tirs1$msb), c(7861, 7991))
-              expect_equal(dim(l@data$tirs1$lsb), c(7861, 7991))
-              expect_equal(l@data$tirs1$lsb[2000, 2000:2005],
-                           as.raw(c(0xb1, 0x94, 0x77, 0x5a, 0x47, 0x41)))
-              expect_equal(l@data$tirs1$msb[2000:2005, 2000],
-                           as.raw(c(0x3c, 0x3c, 0x3c, 0x3c, 0x3b, 0x3b)))
-})
+
+## Note the check on whether tiff is installed; otherwise we will get an error.
+## This is because oce only recommends tiff, as opposed to depending on tiff,
+## because not all oce users will need to work with landsat data.)
+if (file.exists(f) && requireNamespace("tiff", quietly=TRUE)) {
+    test_that("read landsat (private file)",
+              {
+                  ## Note the check on whether tiff is installed; otherwise we
+                  ## will get an error.  This is because oce only recommends
+                  ## tiff, as opposed to depending on tiff, because not all oce
+                  ## users will need to work with landsat data.)
+                  l <- expect_warning(read.landsat(f, band="tirs1"))
+                  expect_equal(dim(l@data$tirs1$msb), c(7861, 7991))
+                  expect_equal(dim(l@data$tirs1$lsb), c(7861, 7991))
+                  expect_equal(l@data$tirs1$lsb[2000, 2000:2005],
+                               as.raw(c(0xb1, 0x94, 0x77, 0x5a, 0x47, 0x41)))
+                  expect_equal(l@data$tirs1$msb[2000:2005, 2000],
+                               as.raw(c(0x3c, 0x3c, 0x3c, 0x3c, 0x3b, 0x3b)))
+              }
+    )
 }
 
 
