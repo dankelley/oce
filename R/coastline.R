@@ -136,7 +136,7 @@ setMethod(f="[[<-",
 #' library(oce)
 #' data(coastlineWorld)
 #' ## Eastern Canada
-#' if (requireNamespace("raster", quietly=TRUE)) {
+#' if (requireNamespace("raster", quietly=TRUE) && requireNamespace("rgeos", quietly=TRUE)) {
 #'     cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
 #'     ## The plot demonstrates that the trimming is as requested.
 #'     plot(cl, clon=-65, clat=45, span=6000)
@@ -215,9 +215,10 @@ setMethod(f="subset",
               cllon <- x[["longitude"]]
               cllat <- x[["latitude"]]
               ##old norig <- length(cllon)
-              if (!requireNamespace("raster", quietly=TRUE)) {
+              if (!requireNamespace("raster", quietly=TRUE))
                   stop("\"raster\" package must be installed for this to work")
-              }
+              if (!requireNamespace("rgeos", quietly=TRUE))
+                  stop("\"rgeos\" package must be installed for this to work")
               box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
               owarn <- options("warn")$warn
               options(warn=-1)

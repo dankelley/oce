@@ -47,7 +47,7 @@ as in the \dQuote{Examples}.
 library(oce)
 data(coastlineWorld)
 ## Eastern Canada
-if (requireNamespace("raster", quietly=TRUE)) {
+if (requireNamespace("raster", quietly=TRUE) && requireNamespace("rgeos", quietly=TRUE)) {
     cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
     ## The plot demonstrates that the trimming is as requested.
     plot(cl, clon=-65, clat=45, span=6000)
