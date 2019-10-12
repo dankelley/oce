@@ -1,5 +1,7 @@
 1.1-2
 
+* read.met() handles the new Environment Canada data format
+* handle upcoming rgdal/R-devel
 * sectionSmooth() detects grids that extend beyond data range
 * read.adp.rdi() trims time vector if it exceeds other data lengths
 * geodDist() defaults 2nd location correctly when alongPath=FALSE
