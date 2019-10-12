@@ -1853,10 +1853,13 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             ## gpx (e.g. Garmin GPS)
             return("gpx")
         }
-        if (length(grep(".csv$", filename, ignore.case=TRUE))) {
+        if (grepl(".csv$", filename, ignore.case=TRUE)) {
             someLines <- readLines(filename, 30)
-            if (1 == length(grep("^WMO Identifier", someLines, useBytes=TRUE))) {
-                return("met") # FIXME: may be other things too ...
+            ## print(grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1]))
+            if (1 == length(grep('^"WMO Identifier', someLines, useBytes=TRUE))) {
+                return("msc1") # FIXME: may be other things too ...
+            } else if (grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1], useBytes=TRUE)) {
+                return("msc2")
             } else if (1 == length(grep("^Station_Name,", someLines, useBytes=TRUE))) {
                 return("sealevel")
             } else if (1 == length(grep("^CTD,", someLines, useBytes=TRUE))) {
@@ -2188,8 +2191,8 @@ read.oce <- function(file, ...)
         res <- read.landsat(file, ...)
     } else if (type == "netcdf") {
         res <- read.netcdf(file, ...)
-    } else if (type == "met") {
-        res <- read.met(file, ...)
+    } else if (type %in% c("msc1", "msc2")) {
+        res <- read.met(file, type=type, ...)
     } else if (type == "odf") {
         res <- read.odf(file, ...)
     } else if (type == "xbt/edf") {

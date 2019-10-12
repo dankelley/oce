@@ -4,21 +4,26 @@
 \alias{read.met}
 \title{Read a met File}
 \usage{
-read.met(file, type = NULL, skip, tz = getOption("oceTz"),
+read.met(file, type = NULL, skip = NULL, tz = getOption("oceTz"),
   debug = getOption("oceDebug"))
 }
 \arguments{
-\item{file}{a connection or a character string giving the name of the file
-to load.}
+\item{file}{a character string naming a file that holds met data.}
 
-\item{type}{if \code{NULL}, then the first line is studied, in order to
-determine the file type.  If \code{type="msc"}, then a file as formatted by
-Environment Canada is assumed.}
+\item{type}{if \code{NULL}, which is the default, then the first 30 lines
+of the file are studied, in order to determine the file type.
+If \code{type} is \code{"msc"} or \code{"msc1"}, then a file as formatted by
+Environment Canada (for several years before 2019) is assumed. If \code{type} is
+\code{msc2}, then a new format (noticed in October 2019) is assumed. If
+the filename ends in \code{.csv}, \code{\link[=read.met]{read.met()}} will distinguish between the
+two \code{msc*} types automatically if \code{type} is \code{NULL}, because \code{\link[=oceMagic]{oceMagic()}}
+can detect the two variants.}
 
-\item{skip}{optional number of lines of header that occur before the actual
-data.  If this is not supplied, \code{read.met} scans the file until it
-finds a line starting with \code{"Date/Time"}, and considers all lines above
-that to be header.}
+\item{skip}{number of lines of header that occur before the actual
+data.  This is ignored unless \code{type} is \code{"msc1"}, in which case
+a non-\code{NULL} value of \code{skip} is taken as the number of lines preceding
+the columnar data ... and this is only needed if \code{\link[=read.met]{read.met()}} cannot
+find a line starting with \code{"Date/Time"}.}
 
 \item{tz}{timezone assumed for time data}
 
@@ -29,20 +34,27 @@ amount of debugging information, or to 2 to get more.}
 A \linkS4class{met} object.
 }
 \description{
-Reads a comma-separated value file in the format used by the Environment
-Canada (see reference 1).  The agency does not publish a format for these
-files, so this function was based on a study of a few sample files, and it
-may fail for other files, if Environment Canada changes the format.
+Reads a comma-separated value file in either of two formats used by the Environment
+Canada (see reference 1).  Since the agency does not publish the
+data format, this function had to be based on some sample files, and it
+is very likely to fail if Environment Canada changes the format of
+files they provide on their website.
 }
 \examples{
+# "msc1" format
+msc1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
+
+# "msc2" format
+msc2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
+
 \dontrun{
 library(oce)
 # Recreate data(met) and plot u(t) and v(t)
 metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
 met <- read.met(metFile)
 met <- oceSetData(met, "time", met[["time"]]+4*3600,
-                 note="add 4h to local time to get UTC time")
-plot(met, which=3:4)
+                  note="add 4h to local time to get UTC time")
+plot(met)
 }
 
 }

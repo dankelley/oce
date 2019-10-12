@@ -88,7 +88,7 @@ in hopes that it can help users to make guesses
 for \code{server}, should \code{download.topo} fail because of
 a fail to download the data. Another
 hint is to look at the source code for
-\code{\link[marmap:getNOAA.bathy]{marmap::getNOAA.bathy()}} in the \code{marmap} package,
+\code{getNOAA.bathy()} in the \code{marmap} package,
 which is also forced to track the moving target that is NOAA.
 \itemize{
 \item August 2016.

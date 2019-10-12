@@ -296,7 +296,7 @@ setMethod(f="subset",
 #' for `server`, should `download.topo` fail because of
 #' a fail to download the data. Another
 #' hint is to look at the source code for
-#' [marmap::getNOAA.bathy()] in the `marmap` package,
+#' `getNOAA.bathy()` in the `marmap` package,
 #' which is also forced to track the moving target that is NOAA.
 #'
 #' * August 2016.
