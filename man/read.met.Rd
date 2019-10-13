@@ -46,7 +46,8 @@ msc1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
 msc2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
 
 # "xml2" format
-xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
+if (requireNamespace("XML", quietly=TRUE))
+    xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
 
 \dontrun{
 library(oce)
