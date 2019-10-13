@@ -84,14 +84,16 @@ test_that("read.oce(file) and read.met(file, type=\"msc2\") give same metadata a
           }
 )
 
-test_that("read.oce(file) and read.met(file, type=\"xml2\") give same metadata and data slots",
-          {
-              doce <- read.oce(xml2)
-              dmet <- read.met(xml2)
-              expect_equal(doce[["data"]], dmet[["data"]])
-              moce <- doce[["metadata"]]
-              mmet <- dmet[["metadata"]]
-              expect_equal(moce[names(moce)!="filename"], mmet[names(mmet)!="filename"])
-          }
-)
-
+if (requireNamespace("XML", quietly=TRUE))
+{
+    test_that("read.oce(file) and read.met(file, type=\"xml2\") give same metadata and data slots",
+              {
+                  doce <- read.oce(xml2)
+                  dmet <- read.met(xml2)
+                  expect_equal(doce[["data"]], dmet[["data"]])
+                  moce <- doce[["metadata"]]
+                  mmet <- dmet[["metadata"]]
+                  expect_equal(moce[names(moce)!="filename"], mmet[names(mmet)!="filename"])
+              }
+    )
+}
