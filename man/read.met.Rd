@@ -10,14 +10,13 @@ read.met(file, type = NULL, skip = NULL, tz = getOption("oceTz"),
 \arguments{
 \item{file}{a character string naming a file that holds met data.}
 
-\item{type}{if \code{NULL}, which is the default, then the first 30 lines
-of the file are studied, in order to determine the file type.
-If \code{type} is \code{"msc"} or \code{"msc1"}, then a file as formatted by
-Environment Canada (for several years before 2019) is assumed. If \code{type} is
-\code{msc2}, then a new format (noticed in October 2019) is assumed. If
-the filename ends in \code{.csv}, \code{\link[=read.met]{read.met()}} will distinguish between the
-two \code{msc*} types automatically if \code{type} is \code{NULL}, because \code{\link[=oceMagic]{oceMagic()}}
-can detect the two variants.}
+\item{type}{if \code{NULL}, which is the default, then an attempt is
+made to infer the type from the file contents. If this fails, it
+will be necessary to provide a value for \code{type}.  The choices
+are: (a) \code{"msc"} or \code{"msc1"} for an old format,
+(b) \code{"msc2"} for a format noticed on the Environment Canada
+website in October 2019, and (c) \code{"xml2"} for an XML format
+noticed in October 2019.}
 
 \item{skip}{number of lines of header that occur before the actual
 data.  This is ignored unless \code{type} is \code{"msc1"}, in which case
@@ -34,11 +33,10 @@ amount of debugging information, or to 2 to get more.}
 A \linkS4class{met} object.
 }
 \description{
-Reads a comma-separated value file in either of two formats used by the Environment
+Reads some meteorological file formats used by the Environment
 Canada (see reference 1).  Since the agency does not publish the
-data format, this function had to be based on some sample files, and it
-is very likely to fail if Environment Canada changes the format of
-files they provide on their website.
+data formats, this function had to be based on some sample files, and it
+is likely to fail if Environment Canada changes their file format.
 }
 \examples{
 # "msc1" format
@@ -46,6 +44,9 @@ msc1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
 
 # "msc2" format
 msc2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
+
+# "xml2" format
+xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
 
 \dontrun{
 library(oce)

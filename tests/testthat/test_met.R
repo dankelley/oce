@@ -4,16 +4,23 @@ context("met")
 
 msc1 <- system.file("extdata", "test_met_vsn1.csv", package="oce")
 msc2 <- system.file("extdata", "test_met_vsn2.csv", package="oce")
+xml2 <- system.file("extdata", "test_met_xml2.xml", package="oce")
 
 test_that("oceMagic understands vsn1-style met data files",
           {
-              expect_equal("msc1", oceMagic(msc1))
+              expect_equal("met/msc1", oceMagic(msc1))
           }
 )
 
 test_that("oceMagic understands vsn2-style met data files",
           {
-              expect_equal("msc2", oceMagic(msc2))
+              expect_equal("met/msc2", oceMagic(msc2))
+          }
+)
+
+test_that("oceMagic understands xml2-style met data files",
+          {
+              expect_equal("met/xml2", oceMagic(xml2))
           }
 )
 
@@ -77,4 +84,14 @@ test_that("read.oce(file) and read.met(file, type=\"msc2\") give same metadata a
           }
 )
 
+test_that("read.oce(file) and read.met(file, type=\"xml2\") give same metadata and data slots",
+          {
+              doce <- read.oce(xml2)
+              dmet <- read.met(xml2)
+              expect_equal(doce[["data"]], dmet[["data"]])
+              moce <- doce[["metadata"]]
+              mmet <- dmet[["metadata"]]
+              expect_equal(moce[names(moce)!="filename"], mmet[names(mmet)!="filename"])
+          }
+)
 

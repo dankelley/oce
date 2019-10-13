@@ -1841,6 +1841,11 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                 stop('must install.packages("ncdf4") to read a NetCDF file')
             }
         }
+        if (length(grep(".xml$", filename, ignore.case=TRUE))) {
+            firstLine <- readLines(filename, 1)
+            if (grepl(".weather.gc.ca", firstLine))
+                return("met/xml2")
+        }
         if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) {
             ## openstreetmap
             return("openstreetmap")
@@ -1857,9 +1862,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             someLines <- readLines(filename, 30)
             ## print(grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1]))
             if (1 == length(grep('^"WMO Identifier', someLines, useBytes=TRUE))) {
-                return("msc1") # FIXME: may be other things too ...
+                return("met/msc1") # FIXME: may be other things too ...
             } else if (grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1], useBytes=TRUE)) {
-                return("msc2")
+                return("met/msc2")
             } else if (1 == length(grep("^Station_Name,", someLines, useBytes=TRUE))) {
                 return("sealevel")
             } else if (1 == length(grep("^CTD,", someLines, useBytes=TRUE))) {
@@ -2191,8 +2196,12 @@ read.oce <- function(file, ...)
         res <- read.landsat(file, ...)
     } else if (type == "netcdf") {
         res <- read.netcdf(file, ...)
-    } else if (type %in% c("msc1", "msc2")) {
-        res <- read.met(file, type=type, ...)
+    } else if (type == "met/msc1") {
+        res <- read.met(file, type="msc1", ...)
+    } else if (type == "met/msc2") {
+        res <- read.met(file, type="msc2", ...)
+    } else if (type == "met/xml2") {
+        res <- read.met(file, type="xml2", ...)
     } else if (type == "odf") {
         res <- read.odf(file, ...)
     } else if (type == "xbt/edf") {
