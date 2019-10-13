@@ -692,7 +692,7 @@ read.met.msc1 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
         res@metadata$dataNamesOriginal$humidex <- "Hmdx"
     }
     if ("humidity" %in% names) {
-        res@metadata$units$humidity <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$units$humidity <- list(unit=expression("%"), scale="")
         res@metadata$dataNamesOriginal$humidity <- "Rel Hum (%)"
     }
     if ("precipitation" %in% names) {
