@@ -4,8 +4,8 @@
 \alias{download.met}
 \title{Download and Cache a met File}
 \usage{
-download.met(id, year, month, deltat, destdir = ".", destfile,
-  debug = getOption("oceDebug"))
+download.met(id, year, month, deltat, type = "csv", destdir = ".",
+  destfile, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{id}{A number giving the "Station ID" of the station of interest. If not
@@ -22,6 +22,9 @@ month.}
 \item{deltat}{Optional character string indicating the time step of the
 desired dataset. This may be \code{"hour"} or \code{"month"}.
 If \code{deltat} is not given, it defaults to \code{"hour"}.}
+
+\item{type}{String indicating which type of file to download, either
+\code{"xml"} for an XML file or \code{"csv"} for a CSV file.}
 
 \item{destdir}{Optional string indicating the directory in which to store
 downloaded files. If not supplied, \code{"."} is used, i.e. the data file

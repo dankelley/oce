@@ -27,10 +27,11 @@ test_that("oceMagic understands xml2-style met data files",
 test_that("read.met() handles type=\"msc1\" files",
           {
               d <- read.met(msc1)
-              expect_equal(names(d@data),c("dataQuality", "temperature", "dewPoint",
-                                           "humidity", "direction", "wind", "visibility",
-                                           "pressure", "humidex", "windChill", "weather",
-                                           "speed", "u", "v", "time"))
+              expect_equal(names(d@data), c("dataQuality", "dewPoint",
+                                            "direction", "humidex", "humidity",
+                                            "pressure", "speed", "temperature",
+                                            "time", "u", "v", "visibility",
+                                            "weather", "wind", "windChill"))
               expect_equal(d[["latitude"]], 44.88)
               expect_equal(d[["longitude"]], -63.5)
               expect_equal(d[["elevation"]], 145.4)

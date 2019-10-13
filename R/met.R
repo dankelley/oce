@@ -313,6 +313,9 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' desired dataset. This may be `"hour"` or `"month"`.
 #' If `deltat` is not given, it defaults to `"hour"`.
 #'
+#' @param type String indicating which type of file to download, either
+#' `"xml"` for an XML file or `"csv"` for a CSV file.
+#'
 #' @template downloadDestTemplate
 #'
 #' @template debugTemplate
@@ -341,7 +344,8 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' @family functions that download files
 #' @family things related to met data
-download.met <- function(id, year, month, deltat, destdir=".", destfile,
+download.met <- function(id, year, month, deltat, type="csv",
+                         destdir=".", destfile,
                          debug=getOption("oceDebug"))
 {
     if (missing(id))
@@ -351,6 +355,8 @@ download.met <- function(id, year, month, deltat, destdir=".", destfile,
         deltat <- "hour"
     deltatChoices <- c("hour", "month") # FIXME: add "day"
     deltatIndex <- pmatch(deltat, deltatChoices)
+    if (!(type %in% c("csv", "xml")))
+        stop("type '", type, "' not permitted; try 'csv' or 'xml'")
     if (is.na(deltatIndex))
         stop("deltat=\"", deltat, "\" is not supported; try \"hour\" or \"month\"")
     deltat <- deltatChoices[deltatIndex]
@@ -368,18 +374,22 @@ download.met <- function(id, year, month, deltat, destdir=".", destfile,
         }
         ## Next line is an example that worked as of Feb 2, 2017
         ## http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=6358&Year=2003&Month=9&timeframe=1&submit=Download+Data
-        url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=",
-                     id, "&Year=", year, "&Month=", month, "&timeframe=1&submit=Download+Data", sep="")
+        url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?",
+                     "format=", type,
+                     "&stationID=", id,
+                     "&Year=", year,
+                     "&Month=", month,
+                     "&timeframe=1&submit=Download+Data", sep="")
         if (missing(destfile))
-            destfile <- sprintf("met_%d_hourly_%04d_%02d_%02d.csv", id, year, month, 1)
+            destfile <- sprintf("met_%d_hourly_%04d_%02d_%02d.%s", id, year, month, 1, type)
     } else if (deltat == "month") {
         ## Next line reverse engineered from monthly data at Resolute. I don't imagine we
         ## need Year and Month and Day.
         url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?stationID=",
-                     id, "&format=csv&timeframe=3&submit=Download+Data", sep="")
+                     id, "&format=", type, "&timeframe=3&submit=Download+Data", sep="")
                      ##id, "&Year=2000&Month=1&Day=14&format=csv&timeframe=3&submit=%20Download+Data", sep="")
         if (missing(destfile))
-            destfile <- sprintf("met_%d_monthly.csv", id)
+            destfile <- sprintf("met_%d_monthly.%s", id, type)
     } else {
         stop("deltat must be \"hour\" or \"month\"")
     }
@@ -808,6 +818,7 @@ read.met.msc1 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
         o <- iconv(o, "latin1", "ASCII", sub="")
         res@metadata$dataNamesOriginal[[dno]] <- o
     }
+    res@data <- res@data[order(names(res@data))] # put in alphabetical order for easier scanning in summary() views
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.met1()\n", unindent=1)
     res
@@ -950,6 +961,7 @@ read.met.msc2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
         res@metadata$flags[[knownFlagNames[iflag]]] <- res@data[[knownFlags[[iflag]]]]
         res@data[[knownFlags[[iflag]]]] <- NULL
     }
+    res@data <- res@data[order(names(res@data))] # put in alphabetical order for easier scanning in summary() views
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.met.msc2()\n", unindent=1)
     res
@@ -1047,6 +1059,7 @@ read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     hour <- as.numeric(lapply(stationData, function(sd) sd[[".attrs"]][["hour"]]))
     res@data$time <- ISOdatetime(year, month, day, hour, 0, 0, tz="UTC")
     res@metadata$dataNamesOriginal$time  <- "-"
+    res@data <- res@data[order(names(res@data))] # put in alphabetical order for easier scanning in summary() views
     oceDebug(debug, "} # read.met.xml2()\n", unindent=1)
     res
 }
