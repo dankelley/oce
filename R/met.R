@@ -1034,6 +1034,13 @@ read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     res@metadata$dataNamesOriginal$v  <- "-"
     res@metadata$units$v <- list(unit=expression(m/s), scale="")
 
+    ## fix up NA cases
+    zero <- is.na(res@data$direction) & res@data$speed == 0
+    res@data$u[zero] <- 0
+    res@data$v[zero] <- 0
+
+
+
     res@data$visibility <- extract("visibility")
     res@metadata$dataNamesOriginal$visibility  <- "visibility"
 
