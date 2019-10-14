@@ -114,13 +114,17 @@ setMethod(f="summary",
           signature="met",
           definition=function(object, ...) {
               cat("Met Summary\n-----------\n\n")
-              showMetadataItem(object, "filename", "Source     ", quote=TRUE)
-              showMetadataItem(object, "latitude", "Latitude     ")
-              showMetadataItem(object, "longitude", "Longitude   ")
-              showMetadataItem(object, "elevation", "Elevation   ")
+              showMetadataItem(object, "filename",          "Source                     ", quote=TRUE)
+              showMetadataItem(object, "name",              "Name                       ")
+              showMetadataItem(object, "province",          "Province                   ")
+              showMetadataItem(object, "stationOperator",   "Station Operator           ")
+              showMetadataItem(object, "latitude",          "Latitude                   ")
+              showMetadataItem(object, "longitude",         "Longitude                  ")
+              showMetadataItem(object, "elevation",         "Elevation                  ")
               showMetadataItem(object, "climateIdentifier", "Climate Identifer          ")
-              showMetadataItem(object, "WMOIdentifier", "World Met Office Identifer ")
-              showMetadataItem(object, "TCIdentifier", "Transport Canada Identifer ")
+              showMetadataItem(object, "WMOIdentifier",     "World Met Office Identifer ")
+              showMetadataItem(object, "TCIdentifier",      "Transport Canada Identifer ")
+              showMetadataItem(object, "note",              "Note                       ")
               invisible(callNextMethod()) # summary
           })
 
@@ -981,16 +985,30 @@ read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     stationData <- xml[isStation]
     n <- length(stationData)
     res <- new("met")
-    ## Fill in metadata. The available entries are found with
-    ##     str(stationInformation,1)
     res@metadata$filename <- file
-    res@metadata$elevation <- as.numeric(stationInformation$elevation)
-    res@metadata$longitude <- as.numeric(stationInformation$longitude)
-    res@metadata$latitude <- as.numeric(stationInformation$latitude)
-    res@metadata$climateIdentifier <- stationInformation$climate_identifier
+    ## Fill in station metadata. The available entries are found with
+    ##     names(stationInformation,1)
+    ## the output of which yields as follows, for a file downloaded 2019 oct 13.
+    ##     "name"
+    ##     "province"
+    ##     "stationoperator" (Not present in all files)
+    ##     "latitude"
+    ##     "longitude"
+    ##     "elevation"
+    ##     "climate_identifier"
+    ##     "wmo_identifier"
+    ##     "tc_identifier"
+    ##     "note"
     res@metadata$name <- stationInformation$name
     res@metadata$province <- stationInformation$province
-    res@metadata$tcIdentifier <- stationInformation$tc_identifier
+    res@metadata$stationOperator <- stationInformation$stationoperator
+    res@metadata$latitude <- as.numeric(stationInformation$latitude)
+    res@metadata$longitude <- as.numeric(stationInformation$longitude)
+    res@metadata$elevation <- as.numeric(stationInformation$elevation)
+    res@metadata$climateIdentifier <- stationInformation$climate_identifier
+    res@metadata$WMOIdentifier <- stationInformation$wmo_identifier
+    res@metadata$TCIdentifier <- stationInformation$tc_identifier
+    res@metadata$note <- stationInformation$note
     ## Fill in data. The names of items are found with
     ##     str(stationData[[1]], 1)
     n <- length(stationData)
