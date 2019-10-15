@@ -88,7 +88,6 @@ setMethod(f="[[",
                   else if ("pressure" %in% dataNames)
                       -swDepth(x@data$pressure, latitude=x@metadata$latitude)
               } else if (i == "pressure") {
-                  g <- gravity(x@metadata$latitude)
                   if ("depth" %in% dataNames)
                       swPressure(depth=x@data$depth, latitude=x[["latitude"]])
                   else if ("z" %in% dataNames)
@@ -564,13 +563,11 @@ setMethod(f="plot",
               if (lw > 1)
                   on.exit(par(opar))
               par(mgp=mgp, mar=mar)
-              dots <- list(...)
               oceDebug(debug, "which: c(", paste(which, collapse=", "), ")\n")
               if (lw > 1) {
                   par(mfrow=c(1, lw))
                   oceDebug(debug, "calling par(mfrow=c(", lw, ", 1)\n")
               }
-              len <- length(x@data$depth)
               z <- x[["z"]]
               temperature <- x[["temperature"]]
               soundSpeed <- x[["soundSpeed"]]
