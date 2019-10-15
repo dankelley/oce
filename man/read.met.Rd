@@ -13,13 +13,14 @@ read.met(file, type = NULL, skip = NULL, tz = getOption("oceTz"),
 \item{type}{if \code{NULL}, which is the default, then an attempt is
 made to infer the type from the file contents. If this fails, it
 will be necessary to provide a value for \code{type}.  The choices
-are: (a) \code{"msc"} or \code{"msc1"} for an old format,
-(b) \code{"msc2"} for a format noticed on the Environment Canada
-website in October 2019, and (c) \code{"xml2"} for an XML format
-noticed in October 2019.}
+are: (a) \code{"csv"} or \code{"csv1"} for an old CSV format,
+(b) \code{"csv2"} for a CSV format noticed on the Environment Canada
+website in October 2019 (but note that the paired metadata CSV file
+is ignored), and (c) \code{"xml2"} for an XML format that started appearing
+on the Environment Canada website in October 2019 or some time before.}
 
 \item{skip}{number of lines of header that occur before the actual
-data.  This is ignored unless \code{type} is \code{"msc1"}, in which case
+data.  This is ignored unless \code{type} is \code{"csv"} or \code{"csv1"}, in which case
 a non-\code{NULL} value of \code{skip} is taken as the number of lines preceding
 the columnar data ... and this is only needed if \code{\link[=read.met]{read.met()}} cannot
 find a line starting with \code{"Date/Time"}.}
@@ -39,11 +40,11 @@ data formats, this function had to be based on some sample files, and it
 is likely to fail if Environment Canada changes their file format.
 }
 \examples{
-# "msc1" format
-msc1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
+# The old csv format (no longer supplied by Environment Canada as of Oct 2019)
+csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
 
-# "msc2" format
-msc2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
+# The new "csv2" format (provided by Environment Canada as of Oct 2019)
+csv2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
 
 # "xml2" format
 if (requireNamespace("XML", quietly=TRUE))

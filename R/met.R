@@ -273,9 +273,12 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 
 #' Download and Cache a met File
 #'
-#' Data are downloaded from \url{http://climate.weather.gc.ca} and cached locally.
+#' Data are downloaded from the Environment Canada's historical data
+#' website and cached locally.
 #'
-#' The data are downloaded with [utils::download.file()]
+#' The data are downloaded from
+#' \url{https://climate.weather.gc.ca/historical_data/search_historic_data_e.html}
+#' using [utils::download.file()]
 #' pointed to the Environment Canada website (reference 1)
 #' using queries that had to be devised by reverse-engineering, since the agency
 #' does not provide documentation about how to construct queries. Caution: the
@@ -517,13 +520,14 @@ metNames2oceNames <- function(names, scheme)
 #' @param type if `NULL`, which is the default, then an attempt is
 #' made to infer the type from the file contents. If this fails, it
 #' will be necessary to provide a value for \code{type}.  The choices
-#' are: (a) `"msc"` or `"msc1"` for an old format,
-#' (b) `"msc2"` for a format noticed on the Environment Canada
-#' website in October 2019, and (c) `"xml2"` for an XML format
-#' noticed in October 2019.
+#' are: (a) `"csv"` or `"csv1"` for an old CSV format,
+#' (b) `"csv2"` for a CSV format noticed on the Environment Canada
+#' website in October 2019 (but note that the paired metadata CSV file
+#' is ignored), and (c) `"xml2"` for an XML format that started appearing
+#' on the Environment Canada website in October 2019 or some time before.
 #'
 #' @param skip number of lines of header that occur before the actual
-#' data.  This is ignored unless `type` is `"msc1"`, in which case
+#' data.  This is ignored unless `type` is `"csv"` or `"csv1"`, in which case
 #' a non-`NULL` value of `skip` is taken as the number of lines preceding
 #' the columnar data ... and this is only needed if [read.met()] cannot
 #' find a line starting with `"Date/Time"`.
@@ -538,11 +542,11 @@ metNames2oceNames <- function(names, scheme)
 #' @author Dan Kelley
 #'
 #' @examples
-#' # "msc1" format
-#' msc1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
+#' # The old csv format (no longer supplied by Environment Canada as of Oct 2019)
+#' csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
 #'
-#' # "msc2" format
-#' msc2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
+#' # The new "csv2" format (provided by Environment Canada as of Oct 2019)
+#' csv2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
 #'
 #' # "xml2" format
 #' if (requireNamespace("XML", quietly=TRUE))
@@ -574,28 +578,28 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"), debug=ge
     someLines <- readLines(file, 30, encoding="UTF-8")#, warn=FALSE)
     if (length(someLines) == 0L)
         stop("no data in file")
-    if (!is.null(type) && !(type %in% c("msc", "msc1", "msc2", "xml2")))
-        stop("type='", type, "' not allowd; try 'msc', 'msc1', 'msc2' or 'xml2'")
+    if (!is.null(type) && !(type %in% c("csv", "csv1", "csv2", "xml2")))
+        stop("type='", type, "' not allowd; try 'csv', 'csv1', 'csv2' or 'xml2'")
     oceDebug(debug, "read", length(someLines), "lines\n")
     if (is.null(type)) {
         ## print(grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1]))
         if (1 == length(grep('^"WMO Identifier', someLines, useBytes=TRUE))) {
-            type <- "msc1"
-            oceDebug(debug, "examination of file contents reveals that type is 'msc1'\n")
+            type <- "csv1"
+            oceDebug(debug, "examination of file contents reveals that type is 'csv1'\n")
         } else if (grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1], useBytes=TRUE)) {
-            type <- "msc2"
-            oceDebug(debug, "examination of file contents reveals that type is 'msc2'\n")
+            type <- "csv2"
+            oceDebug(debug, "examination of file contents reveals that type is 'csv2'\n")
         } else if (grepl(".weather.gc.ca", someLines[1])) {
             type <- "xml2"
-            oceDebug(debug, "examination of file contents reveals that type is 'msc1'\n")
+            oceDebug(debug, "examination of file contents reveals that type is 'csv1'\n")
         } else {
             type <- "?"
         }
     }
-    if (type == "msc" || type == "msc1")
-        res <- read.met.msc1(file, skip=skip, tz=tz, debug=debug-1)
-    else if (type == "msc2")
-        res <- read.met.msc2(file, skip=skip, tz=tz, debug=debug-1)
+    if (type == "csv" || type == "csv1")
+        res <- read.met.csv1(file, skip=skip, tz=tz, debug=debug-1)
+    else if (type == "csv2")
+        res <- read.met.csv2(file, skip=skip, tz=tz, debug=debug-1)
     else if (type == "xml2")
         res <- read.met.xml2(file, skip=skip, tz=tz, debug=debug-1)
     else
@@ -604,11 +608,11 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"), debug=ge
     res
 }
 
-read.met.msc1 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOption("oceDebug"))
+read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file'")
-    oceDebug(debug, "read.met.msc2(\"", file, "\") {\n", sep="", unindent=1)
+    oceDebug(debug, "read.metcsv2(\"", file, "\") {\n", sep="", unindent=1)
     if (!is.character(file))
         stop("'file' must be a character string")
     oceDebug(debug, "read.met1() {\n", unindent=1)
@@ -688,7 +692,7 @@ read.met.msc1 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     }
     rawData$time <- time
     res@data <- as.list(rawData)
-    pl <- paste("read.met(\"", file, "\", type=\"msc1\", tz=\"", tz, "\")", sep="")
+    pl <- paste("read.met(\"", file, "\", type=\"csv1\", tz=\"", tz, "\")", sep="")
     res@processingLog <- processingLogAppend(res@processingLog, pl)
     names <- names(res@data)
     res@metadata$dataNamesOriginal <- list()
@@ -828,11 +832,11 @@ read.met.msc1 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     res
 }
 
-read.met.msc2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOption("oceDebug"))
+read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
     if (!is.character(file))
         stop("'file' must be a character string")
-    oceDebug(debug, "read.met.msc2(\"", file, "\") {\n", sep="", unindent=1)
+    oceDebug(debug, "read.met.csv2(\"", file, "\") {\n", sep="", unindent=1)
     ## Sample first two lines (as of 2019 oct 12)
     ## "Longitude (x)","Latitude (y)","Station Name","Climate ID","Date/Time","Year","Month","Day","Time","Temp (°C)","Temp Flag","Dew Point Temp (°C)","Dew Point Temp Flag","Rel Hum (%)","Rel Hum Flag","Wind Dir (10s deg)","Wind Dir Flag","Wind Spd (km/h)","Wind Spd Flag","Visibility (km)","Visibility Flag","Stn Press (kPa)","Stn Press Flag","Hmdx","Hmdx Flag","Wind Chill","Wind Chill Flag","Weather"
     ## "-94.97","74.72","RESOLUTE BAY A","2403497","2019-10-01 00:00","2019","10","01","00:00","-3.2","","-4.6","","90","","18","","36","","","M","100.35","","","","-11","","NA"
@@ -933,7 +937,7 @@ read.met.msc2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     }
 
     ## Move some things to metadata, if they are uni-valued. This is so
-    ## code written for the msc1 style will work for msc2 style also.
+    ## code written for the csv1 style will work for csv2 style also.
     if (1 == length(unique(data$longitude))) {
         res@metadata$longitude <- data$longitude[1]
         res@data$longitude <- NULL
@@ -967,7 +971,7 @@ read.met.msc2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     }
     res@data <- res@data[order(names(res@data))] # put in alphabetical order for easier scanning in summary() views
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # read.met.msc2()\n", unindent=1)
+    oceDebug(debug, "} # read.met.csv2()\n", unindent=1)
     res
 }
 

@@ -48,10 +48,13 @@ by specifying higher \code{debug} values.}
 String indicating the full pathname to the downloaded file.
 }
 \description{
-Data are downloaded from \url{http://climate.weather.gc.ca} and cached locally.
+Data are downloaded from the Environment Canada's historical data
+website and cached locally.
 }
 \details{
-The data are downloaded with \code{\link[utils:download.file]{utils::download.file()}}
+The data are downloaded from
+\url{https://climate.weather.gc.ca/historical_data/search_historic_data_e.html}
+using \code{\link[utils:download.file]{utils::download.file()}}
 pointed to the Environment Canada website (reference 1)
 using queries that had to be devised by reverse-engineering, since the agency
 does not provide documentation about how to construct queries. Caution: the

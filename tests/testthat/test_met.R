@@ -2,19 +2,19 @@ library(oce)
 
 context("met")
 
-msc1 <- system.file("extdata", "test_met_vsn1.csv", package="oce")
-msc2 <- system.file("extdata", "test_met_vsn2.csv", package="oce")
+csv1 <- system.file("extdata", "test_met_vsn1.csv", package="oce")
+csv2 <- system.file("extdata", "test_met_vsn2.csv", package="oce")
 xml2 <- system.file("extdata", "test_met_xml2.xml", package="oce")
 
 test_that("oceMagic understands vsn1-style met data files",
           {
-              expect_equal("met/msc1", oceMagic(msc1))
+              expect_equal("met/csv1", oceMagic(csv1))
           }
 )
 
 test_that("oceMagic understands vsn2-style met data files",
           {
-              expect_equal("met/msc2", oceMagic(msc2))
+              expect_equal("met/csv2", oceMagic(csv2))
           }
 )
 
@@ -24,9 +24,9 @@ test_that("oceMagic understands xml2-style met data files",
           }
 )
 
-test_that("read.met() handles type=\"msc1\" files",
+test_that("read.met() handles type=\"csv1\" files",
           {
-              d <- read.met(msc1)
+              d <- read.met(csv1)
               expect_equal(names(d@data), c("dataQuality", "dewPoint",
                                             "direction", "humidex", "humidity",
                                             "pressure", "speed", "temperature",
@@ -52,10 +52,10 @@ test_that("read.met() handles type=\"msc1\" files",
           }
 )
 
-test_that("read.oce(file) and read.met(file, type=\"msc1\") give same metadata and data slots",
+test_that("read.oce(file) and read.met(file, type=\"csv1\") give same metadata and data slots",
           {
-              doce <- read.oce(msc1)
-              dmet <- read.met(msc1)
+              doce <- read.oce(csv1)
+              dmet <- read.met(csv1)
               expect_equal(doce[["data"]], dmet[["data"]])
               moce <- doce[["metadata"]]
               mmet <- dmet[["metadata"]]
@@ -63,9 +63,9 @@ test_that("read.oce(file) and read.met(file, type=\"msc1\") give same metadata a
           }
 )
 
-test_that("read.met() handles type=\"msc2\" files",
+test_that("read.met() handles type=\"csv2\" files",
           {
-              d <- expect_silent(read.met(msc1))
+              d <- expect_silent(read.met(csv1))
               expect_equal(sort(names(d[["data"]])),
                            c("dataQuality", "dewPoint", "direction", "humidex",
                              "humidity", "pressure", "speed", "temperature",
@@ -74,10 +74,10 @@ test_that("read.met() handles type=\"msc2\" files",
           }
 )
 
-test_that("read.oce(file) and read.met(file, type=\"msc2\") give same metadata and data slots",
+test_that("read.oce(file) and read.met(file, type=\"csv2\") give same metadata and data slots",
           {
-              doce <- read.oce(msc2)
-              dmet <- read.met(msc2)
+              doce <- read.oce(csv2)
+              dmet <- read.met(csv2)
               expect_equal(doce[["data"]], dmet[["data"]])
               moce <- doce[["metadata"]]
               mmet <- dmet[["metadata"]]

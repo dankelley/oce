@@ -1862,9 +1862,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             someLines <- readLines(filename, 30)
             ## print(grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1]))
             if (1 == length(grep('^"WMO Identifier', someLines, useBytes=TRUE))) {
-                return("met/msc1") # FIXME: may be other things too ...
+                return("met/csv1") # FIXME: may be other things too ...
             } else if (grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1], useBytes=TRUE)) {
-                return("met/msc2")
+                return("met/csv2")
             } else if (1 == length(grep("^Station_Name,", someLines, useBytes=TRUE))) {
                 return("sealevel")
             } else if (1 == length(grep("^CTD,", someLines, useBytes=TRUE))) {
@@ -2196,10 +2196,10 @@ read.oce <- function(file, ...)
         res <- read.landsat(file, ...)
     } else if (type == "netcdf") {
         res <- read.netcdf(file, ...)
-    } else if (type == "met/msc1") {
-        res <- read.met(file, type="msc1", ...)
-    } else if (type == "met/msc2") {
-        res <- read.met(file, type="msc2", ...)
+    } else if (type == "met/csv1") {
+        res <- read.met(file, type="csv1", ...)
+    } else if (type == "met/csv2") {
+        res <- read.met(file, type="csv2", ...)
     } else if (type == "met/xml2") {
         res <- read.met(file, type="xml2", ...)
     } else if (type == "odf") {
