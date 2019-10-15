@@ -1369,10 +1369,10 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
                 ## FIXME: The code worked on 2019-04-13.
                 oceDebug(debug, "ncdf4::ncvar_get() error diagnosis ... name=", name, " len=",file$var[[name]]$dim[[file$var[[name]]$ndim]]$len, " (if this is 0, will not save '", name, "' to metadata)\n")
                 if (0 != file$var[[name]]$dim[[file$var[[name]]$ndim]]$len) {
-                    warning("ncvar_get() failed for \"", name, "\" (Index exceeds dimension), so it isn't stored in metadata\n")
+                    oceDebug(debug, "ncvar_get() failed for \"", name, "\" (Index exceeds dimension), so it isn't stored in metadata\n")
                 }
             } else {
-                warning("ncvar_get() failed for \"", name, "\", so it isn't stored in metadata\n")
+                oceDebug(debug, "ncvar_get() failed for \"", name, "\", so it isn't stored in metadata\n")
             }
         } else{
             ## Make a vector, if it is a single-column matrix
