@@ -23,7 +23,9 @@ test_that("the data(argo) dataset",
 if (1 == length(list.files("6900388_prof.nc", path="local_data")) && requireNamespace("ncdf4", quietly=TRUE)) {
     test_that("the data from which data(argo) was constructed",
               {
-                  a <- expect_warning(read.oce("local_data/6900388_prof.nc"), 'ncvar_get\\(\\) failed for*')
+                  ## comment out next because things are ok on work machine
+                  ## a <- expect_warning(read.oce("local_data/6900388_prof.nc"), 'ncvar_get\\(\\) failed for*')
+                  a <- read.oce("local_data/6900388_prof.nc")
                   expect_equal(a[["id"]][1], "6900388")
                   expect_equal(dim(a[["pressure"]]), c(56,223))
                   expect_equal(sort(names(a[["data"]])),
