@@ -22,7 +22,8 @@ of \code{xbt} objects, and also outlines the other functions dealing with them.
 Other things related to xbt data: \code{\link{[[<-,xbt-method}},
   \code{\link{as.xbt}}, \code{\link{plot,xbt-method}},
   \code{\link{read.xbt.noaa1}}, \code{\link{read.xbt}},
-  \code{\link{subset,xbt-method}}, \code{\link{xbt-class}}
+  \code{\link{subset,xbt-method}}, \code{\link{xbt-class}},
+  \code{\link{xbt.edf}}
 }
 \author{
 Dan Kelley

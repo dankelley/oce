@@ -125,11 +125,14 @@ with a Complex Hydrographical Structure.} Journal of Atmospheric and Oceanic Tec
 The documentation for \linkS4class{ctd} explains the structure of
 CTD objects, and also outlines the other functions dealing with them.
 
-Other things related to ctd data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+  \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctd}},
+  \code{\link{ctd.cnv}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
+  \code{\link{ctd}}, \code{\link{d200321-001.ctd}},
+  \code{\link{d201211_0011.cnv}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{initialize,ctd-method}},
   \code{\link{initializeFlagScheme,ctd-method}},

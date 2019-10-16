@@ -198,12 +198,16 @@ conductivity, at 15 C and infinite frequency, as standard seawater of salinity
 Engineering}, volume \strong{5}, pages 22-23.
 }
 \seealso{
-Other things related to ctd data: \code{\link{[[,ctd-method}},
+Other things related to ctd data: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+  \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
-  \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{ctd.cnv}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
+  \code{\link{ctdTrim}}, \code{\link{ctd}},
+  \code{\link{d200321-001.ctd}},
+  \code{\link{d201211_0011.cnv}},
+  \code{\link{handleFlags,ctd-method}},
   \code{\link{initialize,ctd-method}},
   \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{oceNames2whpNames}},

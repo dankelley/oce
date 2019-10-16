@@ -79,7 +79,10 @@ Other things related to met data: \code{\link{[[,met-method}},
   \code{\link{met-class}}, \code{\link{met}},
   \code{\link{plot,met-method}}, \code{\link{read.met}},
   \code{\link{subset,met-method}},
-  \code{\link{summary,met-method}}
+  \code{\link{summary,met-method}},
+  \code{\link{test_met_csv1.csv}},
+  \code{\link{test_met_csv2.csv}},
+  \code{\link{test_met_xml2.xml}}
 }
 \concept{functions that replace parts of oce objects}
 \concept{things related to met data}
