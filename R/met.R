@@ -408,6 +408,11 @@ download.met <- function(id, year, month, deltat, type="csv",
         download.file(url, destination)
         oceDebug(debug, "Downloaded file stored as '", destination, "'\n", sep="")
     }
+    ## NOTE: if the format=csv part of the URL is changed to format=txt we get
+    ## the metadata file. But dealing with that is a bit of coding, both at the
+    ## download stage and at the read.met() stage, and I don't think this is
+    ## worthwhile.  The better scheme may be for users to move to the XML
+    ## format, instead of sticking with the CSV format.
     destination
 }
 
