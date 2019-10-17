@@ -111,8 +111,8 @@ Other functions that extract parts of oce objects: \code{\link{[[,adp-method}},
   \code{\link{[[,xbt-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to odf data: \code{\link{ODF2oce}},
-  \code{\link{ODFListFromHeader}},
+Other things related to odf data: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+  \code{\link{ODF2oce}}, \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
   \code{\link{plot,odf-method}},

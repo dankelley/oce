@@ -27,8 +27,8 @@ another class (e.g. ctd) and use the subset method of that class;
 note that some of those methods interpret the \dots argument.
 }
 \seealso{
-Other things related to odf data: \code{\link{ODF2oce}},
-  \code{\link{ODFListFromHeader}},
+Other things related to odf data: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+  \code{\link{ODF2oce}}, \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},

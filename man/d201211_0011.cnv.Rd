@@ -10,7 +10,7 @@ Sample ctd dataset in .cnv format
 }
 \examples{
 \dontrun{
-read.met(system.file("extdata", "d201211_0011.cnv", package="oce"))
+read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
 }
 
 }

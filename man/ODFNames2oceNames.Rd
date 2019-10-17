@@ -127,8 +127,8 @@ Other functions that interpret variable names and units from headers: \code{\lin
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}
 
-Other things related to odf data: \code{\link{ODF2oce}},
-  \code{\link{ODFListFromHeader}},
+Other things related to odf data: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+  \code{\link{ODF2oce}}, \code{\link{ODFListFromHeader}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
   \code{\link{plot,odf-method}},

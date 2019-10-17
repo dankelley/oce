@@ -21,8 +21,8 @@ Pertinent summary information is presented, including the station name,
 sampling location, data ranges, etc.
 }
 \seealso{
-Other things related to odf data: \code{\link{ODF2oce}},
-  \code{\link{ODFListFromHeader}},
+Other things related to odf data: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+  \code{\link{ODF2oce}}, \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},

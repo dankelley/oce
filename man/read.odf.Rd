@@ -143,8 +143,8 @@ and this is perhaps the best resource to learn more.
 \code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
 package is released by the Canadian Department of Fisheries and Oceans.
 
-Other things related to odf data: \code{\link{ODF2oce}},
-  \code{\link{ODFListFromHeader}},
+Other things related to odf data: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+  \code{\link{ODF2oce}}, \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},

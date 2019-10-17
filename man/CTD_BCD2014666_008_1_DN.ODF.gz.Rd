@@ -4,14 +4,15 @@
 \encoding{UTF-8}
 \name{CTD_BCD2014666_008_1_DN.ODF.gz}
 \alias{CTD_BCD2014666_008_1_DN.ODF.gz}
-\title{Sample ctd dataset in ODF format}
+\title{Sample ctd dataset in odf format}
 \description{
-Sample ctd dataset in ODF format
+The location is approximately 30km southeast of Halifax Harbour,
+at "Station 2" of the Halifax Line on the Scotian Shelf.
 }
 \examples{
-\dontrun{
-read.met(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce"))
-}
+ctd <- read.ctd(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce"))
+summary(ctd)
+plot(ctd)
 
 }
 \seealso{
@@ -46,6 +47,17 @@ Other things related to ctd data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+
+Other things related to odf data: \code{\link{ODF2oce}},
+  \code{\link{ODFListFromHeader}},
+  \code{\link{ODFNames2oceNames}},
+  \code{\link{[[,odf-method}},
+  \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
+  \code{\link{plot,odf-method}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
+  \code{\link{subset,odf-method}},
+  \code{\link{summary,odf-method}}
 }
 \concept{raw datasets}
 \concept{things related to ctd data}
+\concept{things related to odf data}

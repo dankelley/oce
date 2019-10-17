@@ -140,8 +140,8 @@ Other things related to ctd data: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 
-Other things related to odf data: \code{\link{ODF2oce}},
-  \code{\link{ODFListFromHeader}},
+Other things related to odf data: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+  \code{\link{ODF2oce}}, \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},

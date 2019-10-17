@@ -10,7 +10,7 @@ Sample ctd dataset in .ctd format
 }
 \examples{
 \dontrun{
-read.met(system.file("extdata", "d200321-001.ctd", package="oce"))
+read.oce(system.file("extdata", "d200321-001.ctd", package="oce"))
 }
 
 }

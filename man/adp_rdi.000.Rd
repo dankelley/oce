@@ -10,7 +10,7 @@ Sample RDI Teledyne adp dataset in format
 }
 \examples{
 \dontrun{
-read.met(system.file("extdata", "adp_rdi.000", package="oce"))
+read.oce(system.file("extdata", "adp_rdi.000", package="oce"))
 }
 
 }

@@ -1,4 +1,7 @@
-#' Sample ctd dataset in ODF format
+#' Sample ctd dataset in odf format
+#'
+#' The location is approximately 30km southeast of Halifax Harbour,
+#' at "Station 2" of the Halifax Line on the Scotian Shelf.
 #'
 #' @name CTD_BCD2014666_008_1_DN.ODF.gz
 #'
@@ -7,12 +10,13 @@
 #' @encoding UTF-8
 #'
 #' @examples
-#'\dontrun{
-#' read.met(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce"))
-#'}
+#' ctd <- read.ctd(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce"))
+#' summary(ctd)
+#' plot(ctd)
 #'
 #' @family raw datasets
 #' @family things related to ctd data
+#' @family things related to odf data
 NULL
 
 
@@ -26,7 +30,7 @@ NULL
 #'
 #' @examples
 #'\dontrun{
-#' read.met(system.file("extdata", "adp_rdi.000", package="oce"))
+#' read.oce(system.file("extdata", "adp_rdi.000", package="oce"))
 #'}
 #'
 #' @family raw datasets
@@ -44,7 +48,7 @@ NULL
 #'
 #' @examples
 #'\dontrun{
-#' read.met(system.file("extdata", "ctd.cnv", package="oce"))
+#' read.oce(system.file("extdata", "ctd.cnv", package="oce"))
 #'}
 #'
 #' @family raw datasets
@@ -62,7 +66,7 @@ NULL
 #'
 #' @examples
 #'\dontrun{
-#' read.met(system.file("extdata", "d200321-001.ctd", package="oce"))
+#' read.oce(system.file("extdata", "d200321-001.ctd", package="oce"))
 #'}
 #'
 #' @family raw datasets
@@ -80,7 +84,7 @@ NULL
 #'
 #' @examples
 #'\dontrun{
-#' read.met(system.file("extdata", "d201211_0011.cnv", package="oce"))
+#' read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
 #'}
 #'
 #' @family raw datasets

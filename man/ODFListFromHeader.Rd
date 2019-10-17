@@ -18,8 +18,8 @@ through the use of \code{\link{unduplicateNames}}.
 Create a list of ODF header metadata
 }
 \seealso{
-Other things related to odf data: \code{\link{ODF2oce}},
-  \code{\link{ODFNames2oceNames}},
+Other things related to odf data: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+  \code{\link{ODF2oce}}, \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
   \code{\link{plot,odf-method}},
