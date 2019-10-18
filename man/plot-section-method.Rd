@@ -14,8 +14,8 @@
   xtype = "distance", ytype = "depth", ztype = "contour", longitude0,
   latitude0, zbreaks = NULL, zcol = NULL, legend.loc = "bottomright",
   showStations = FALSE, showStart = TRUE, stationTicks = TRUE,
-  showBottom = TRUE, axes = TRUE, mgp, mar, col, cex, pch,
-  labcex = 1, debug, ...)
+  showBottom = TRUE, drawPalette = TRUE, axes = TRUE, mgp, mar, col,
+  cex, pch, labcex = 1, debug, ...)
 }
 \arguments{
 \item{x}{a \linkS4class{section} object.}
@@ -127,6 +127,9 @@ interpolated to that topography and the results are shown with a polygon.
 In this last case, the interpolation is set at a grid that is roughly
 in accordance with the resolution of the latitudes in the \code{topo} object.
 See \dQuote{Examples}.}
+
+\item{drawPalette}{Logical value indicating whether to draw a palette when \code{ztype="image"}
+ignored otherwise.}
 
 \item{axes}{Logical value indicating whether to draw axes.}
 
