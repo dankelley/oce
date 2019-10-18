@@ -1072,7 +1072,7 @@ sectionAddCtd <- sectionAddStation
 #' See \dQuote{Examples}.
 #'
 #' @param drawPalette Logical value indicating whether to draw a palette when `ztype="image"`
-#' ignorned otherwise.
+#' ignored otherwise.
 #'
 #' @param axes Logical value indicating whether to draw axes.
 #'
