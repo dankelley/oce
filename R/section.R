@@ -1071,6 +1071,9 @@ sectionAddCtd <- sectionAddStation
 #' in accordance with the resolution of the latitudes in the `topo` object.
 #' See \dQuote{Examples}.
 #'
+#' @param drawPalette Logical value indicating whether to draw a palette when `ztype="image"`
+#' ignorned otherwise.
+#'
 #' @param axes Logical value indicating whether to draw axes.
 #'
 #' @param mgp A 3-element numerical vector to use for `par(mgp)`, and also for
@@ -1194,6 +1197,7 @@ setMethod(f="plot",
                               showStart=TRUE,
                               stationTicks=TRUE,
                               showBottom=TRUE,
+                              drawPalette=TRUE,
                               axes=TRUE, mgp, mar,
                               col, cex, pch,
                               labcex=1,
@@ -1480,7 +1484,8 @@ setMethod(f="plot",
                               if (is.function(zcol))
                                   zcol <- zcol(nbreaks - 1)
                               zlim <- range(zbreaks)
-                              drawPalette(zlim=range(zbreaks), breaks=zbreaks, col=zcol)
+                              if(drawPalette == TRUE) {
+                              drawPalette(zlim=range(zbreaks), breaks=zbreaks, col=zcol)}
                           }
                       }
 
