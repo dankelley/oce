@@ -62,23 +62,33 @@ setMethod(f="[[<-",
 #' during September of 2003 (the period during which Hurricane Juan struck the
 #' city).
 #'
-#' The data file was downloaded with
+#' The data file was downloaded
+#'```R
+#'metFile <- download.met(id=6358, year=2003, month=9, destdir=".", type="xml")
 #'```
-#'metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
+#' Note that using [download.met()] avoids having to navigate the
+#' the awkward Environment Canada website, but it imposes the burden
+#' of having to know the station ID number.  With the data in-hand,
+#' the object was then created (and its timezone adjusted) with
+#'```R
 #'met <- read.met(metFile)
 #'met <- oceSetData(met, "time", met[["time"]]+4*3600,
 #'                  note="add 4h to local time to get UTC time")
 #'```
-#' Using [download.met()] avoids having to navigate the
-#' the awkward Environment Canada website, but it imposes the burden
-#' of having to know the station number. See the documentation for
-#' [download.met()] for more details on station numbers.
+#'
+#' *Historical note.* The `data(met)` object was changed on October 19,
+#' 2019, based on the data provided by Environment
+#' Canada at that time. The previous version of `data(met)`,
+#' created in 2017, had been based on a data format that
+#' Environment Canada no longer provided in 2019.  See the
+#' notes on the `type` argument of [read.met()] for more on this
+#' shift in the Environment Canada data format.
 #'
 #' @name met
 #'
 #' @docType data
 #'
-#' @source Environment Canada website on February 1, 2017
+#' @source Environment Canada website on October 19, 2019.
 #'
 #' @family datasets provided with oce
 #' @family things related to met data
@@ -282,7 +292,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' pointed to the Environment Canada website (reference 1)
 #' using queries that had to be devised by reverse-engineering, since the agency
 #' does not provide documentation about how to construct queries. Caution: the
-#' query format changes from time to time, so `download.met` may work one
+#' query format changes from time to time, so [download.met()] may work one
 #' day, and fail the next.
 #'
 #' The constructed query contains Station ID, as provided in the `id` argument.
@@ -321,7 +331,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' If `deltat` is not given, it defaults to `"hour"`.
 #'
 #' @param type String indicating which type of file to download, either
-#' `"xml"` for an XML file or `"csv"` for a CSV file.
+#' `"xml"` (the default) for an XML file or `"csv"` for a CSV file.
 #'
 #' @template downloadDestTemplate
 #'
@@ -351,7 +361,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' @family functions that download files
 #' @family things related to met data
-download.met <- function(id, year, month, deltat, type="csv",
+download.met <- function(id, year, month, deltat, type="xml",
                          destdir=".", destfile,
                          debug=getOption("oceDebug"))
 {
@@ -518,18 +528,21 @@ metNames2oceNames <- function(names, scheme)
 #' Reads some meteorological file formats used by the Environment
 #' Canada (see reference 1).  Since the agency does not publish the
 #' data formats, this function had to be based on some sample files, and it
-#' is likely to fail if Environment Canada changes their file format.
+#' is likely to fail if Environment Canada changes their file format. For
+#' example, a change was required in October 2019, to accommodate changes
+#' to the file format noticed at that time (see the notes on the `type` argument).
 #'
 #' @param file a character string naming a file that holds met data.
 #'
 #' @param type if `NULL`, which is the default, then an attempt is
 #' made to infer the type from the file contents. If this fails, it
-#' will be necessary to provide a value for \code{type}.  The choices
-#' are: (a) `"csv"` or `"csv1"` for an old CSV format,
+#' will be necessary for the user to provide a value for the \code{type}
+#' argument.  The permitted choices are: (a) `"csv"` or `"csv1"` for an
+#' old CSV format no longer provided as of October 2019,
 #' (b) `"csv2"` for a CSV format noticed on the Environment Canada
-#' website in October 2019 (but note that the paired metadata CSV file
-#' is ignored), and (c) `"xml2"` for an XML format that started appearing
-#' on the Environment Canada website in October 2019 or some time before.
+#' website in October 2019 (but note that the paired metadata file
+#' is ignored), and (c) `"xml2"` for an XML format that was noticed
+#' on the Environment Canada website in October 2019.
 #'
 #' @param skip number of lines of header that occur before the actual
 #' data.  This is ignored unless `type` is `"csv"` or `"csv1"`, in which case
@@ -1094,6 +1107,10 @@ read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     res@data$time <- ISOdatetime(year, month, day, hour, 0, 0, tz="UTC")
     res@metadata$dataNamesOriginal$time  <- "-"
     res@data <- res@data[order(names(res@data))] # put in alphabetical order for easier scanning in summary() views
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                             paste("read.met.xml2(file=\"", file, "\"",
+                                                   ", skip=", if(is.null(skip)) "NULL" else skip,
+                                                   ", tz=\"", tz, "\")", sep=""))
     oceDebug(debug, "} # read.met.xml2()\n", unindent=1)
     res
 }

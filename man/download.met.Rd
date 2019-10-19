@@ -4,7 +4,7 @@
 \alias{download.met}
 \title{Download and Cache a met File}
 \usage{
-download.met(id, year, month, deltat, type = "csv", destdir = ".",
+download.met(id, year, month, deltat, type = "xml", destdir = ".",
   destfile, debug = getOption("oceDebug"))
 }
 \arguments{
@@ -24,7 +24,7 @@ desired dataset. This may be \code{"hour"} or \code{"month"}.
 If \code{deltat} is not given, it defaults to \code{"hour"}.}
 
 \item{type}{String indicating which type of file to download, either
-\code{"xml"} for an XML file or \code{"csv"} for a CSV file.}
+\code{"xml"} (the default) for an XML file or \code{"csv"} for a CSV file.}
 
 \item{destdir}{Optional string indicating the directory in which to store
 downloaded files. If not supplied, \code{"."} is used, i.e. the data file
@@ -58,7 +58,7 @@ using \code{\link[utils:download.file]{utils::download.file()}}
 pointed to the Environment Canada website (reference 1)
 using queries that had to be devised by reverse-engineering, since the agency
 does not provide documentation about how to construct queries. Caution: the
-query format changes from time to time, so \code{download.met} may work one
+query format changes from time to time, so \code{\link[=download.met]{download.met()}} may work one
 day, and fail the next.
 
 The constructed query contains Station ID, as provided in the \code{id} argument.

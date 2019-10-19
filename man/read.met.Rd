@@ -12,12 +12,13 @@ read.met(file, type = NULL, skip = NULL, tz = getOption("oceTz"),
 
 \item{type}{if \code{NULL}, which is the default, then an attempt is
 made to infer the type from the file contents. If this fails, it
-will be necessary to provide a value for \code{type}.  The choices
-are: (a) \code{"csv"} or \code{"csv1"} for an old CSV format,
+will be necessary for the user to provide a value for the \code{type}
+argument.  The permitted choices are: (a) \code{"csv"} or \code{"csv1"} for an
+old CSV format no longer provided as of October 2019,
 (b) \code{"csv2"} for a CSV format noticed on the Environment Canada
-website in October 2019 (but note that the paired metadata CSV file
-is ignored), and (c) \code{"xml2"} for an XML format that started appearing
-on the Environment Canada website in October 2019 or some time before.}
+website in October 2019 (but note that the paired metadata file
+is ignored), and (c) \code{"xml2"} for an XML format that was noticed
+on the Environment Canada website in October 2019.}
 
 \item{skip}{number of lines of header that occur before the actual
 data.  This is ignored unless \code{type} is \code{"csv"} or \code{"csv1"}, in which case
@@ -37,7 +38,9 @@ A \linkS4class{met} object.
 Reads some meteorological file formats used by the Environment
 Canada (see reference 1).  Since the agency does not publish the
 data formats, this function had to be based on some sample files, and it
-is likely to fail if Environment Canada changes their file format.
+is likely to fail if Environment Canada changes their file format. For
+example, a change was required in October 2019, to accommodate changes
+to the file format noticed at that time (see the notes on the \code{type} argument).
 }
 \examples{
 # The old csv format (no longer supplied by Environment Canada as of Oct 2019)
