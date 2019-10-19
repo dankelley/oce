@@ -27,8 +27,7 @@ Use \code{\link[=mapGrid]{mapGrid()}} instead.
 Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdAddColumn}},
   \code{\link{ctdUpdateHeader}},
-  \code{\link{findInOrdered}}, \code{\link{mapZones}},
-  \code{\link{oce.as.POSIXlt}}
+  \code{\link{findInOrdered}}, \code{\link{mapZones}}
 }
 \author{
 Dan Kelley

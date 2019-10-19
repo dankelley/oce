@@ -101,17 +101,17 @@ NULL
 #'`ctdUpdateHeader` \tab [oceSetMetadata()]           \tab  0.9.24\cr
 #'`mapZones`        \tab [mapGrid()]                  \tab  0.9.24\cr
 #'`mapMeridians`    \tab [mapGrid()]                  \tab  0.9.24\cr
-#'`oce.as.POSIXlt`  \tab [lubridate::parse_date_time] \tab  0.9.24\cr
 #'`oce.magic`       \tab [oceMagic()]                 \tab  0.9.24\cr
 #'}
 #'
-#' The following were removed recently, having been marked as "deprecated"
+#' The following were removed after having been marked as "deprecated"
 #' in at least one CRAN release, and thereafter as "defunct" in at least
 #' one CRAN release.
 #'
 #'\tabular{lll}{
-#'**Function**  \tab **Replacement** \tab  **Version**\cr
-#'`makeSection` \tab [as.section()]  \tab       0.9.24\cr
+#'**Function**     \tab **Replacement**                \tab  **Version/When**\cr
+#'`makeSection`    \tab [as.section()]                 \tab  0.9.24          \cr
+#'`oce.as.POSIXlt` \tab [lubridate::parse_date_time()] \tab  1.1-2/2019-10-19\cr
 #'}
 #'
 #' Several \sQuote{oce} function arguments are considered "deprecated", which
@@ -1395,85 +1395,85 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
 }
 
 
-#' Oce Variant of as.POSIXlt (defunct)
-#'
-#' **WARNING:** This function will be removed soon; see [oce-deprecated].
-#'
-#' It was realized in December of 2016 that this function was not used within
-#' oce, and also that `\link[lubridate]{parse_date_time`} in the
-#' \CRANpkg{lubridate} package was superior and therefore a better choice for
-#' \dQuote{oce} users.
-#'
-#' @param x a date, as for `as.POSIXlt`, but also including forms in which
-#' the month name appears.
-#'
-#' @param tz the timezone, as for `as.POSIXlt`
-#'
-#' @return A POSIXlt object.
-#'
-#' @author Dan Kelley
-#'
-#' @family functions that will be removed soon
-oce.as.POSIXlt <- function(x, tz = "")
-{
-    .Defunct("lubridate::parse_date_time",
-             msg="oce.as.POSIXlt() will be removed soon. Use lubridate::parse_date_time() instead. See ?'oce-defunct'.")
-    fromchar <- function(x)
-    {
-        xx <- x[1]
-        if (is.na(xx)) {
-            j <- 1
-            while (is.na(xx) && (j <- j + 1) <= length(x))
-                xx <- x[j]
-            if (is.na(xx))
-                f <- "%Y-%m-%d"
-        }
-        ## year day hhmm
-        tokens <- strsplit(xx, " +")[[1]]
-        if (length(tokens) == 3 && nchar(tokens[3]) == 4) {
-            ## the nchar check skips [year month day]
-            return(strptime(x, format="%Y %j %H%M"))
-        }
-        if (is.na(xx) ||
-                                        # additions ...
-            ( (nchar(xx) == 8) && !is.na(strptime(xx, f <- "%Y%m%d")) ) || # 20020823
-            !is.na(strptime(xx, f <- "%B %d %Y %H:%M:%OS")) || # Aug 23 2002 or August 23 2002
-            !is.na(strptime(xx, f <- "%Y %B %d %H:%M:%OS")) || # 2002 Aug 23
-            !is.na(strptime(xx, f <- "%d %B %Y %H:%M:%OS")) || # 23 Aug 2002
-                                        # ... and now back to the standard
-            !is.na(strptime(xx, f <- "%Y-%m-%d %H:%M:%OS")) ||
-            !is.na(strptime(xx, f <- "%Y/%m/%d %H:%M:%OS")) ||
-            !is.na(strptime(xx, f <- "%Y-%m-%d %H:%M")) ||
-            !is.na(strptime(xx, f <- "%Y/%m/%d %H:%M")) ||
-            !is.na(strptime(xx, f <- "%Y-%m-%d")) ||
-            !is.na(strptime(xx, f <- "%Y/%m/%d"))) {
-            res <- strptime(x, f)
-            if (nchar(tz))
-                attr(res, "tzone") <- tz
-            return(res)
-        }
-        warning("The string \"", x, "\" is not in a known date format")
-        return(NA)
-    }
-    if (inherits(x, "POSIXlt"))
-        return(x)
-    if (inherits(x, "Date"))
-        return(as.POSIXlt(x))
-    tzone <- attr(x, "tzone")
-    if (inherits(x, "date") || inherits(x, "dates"))
-        x <- as.POSIXct(x)
-    if (is.character(x))
-        return(fromchar(unclass(x)))
-    if (is.factor(x))
-        return(fromchar(as.character(x)))
-    if (is.logical(x) && all(is.na(x)))
-        x <- as.POSIXct.default(x)
-    if (!inherits(x, "POSIXct"))
-        stop(gettextf("do not know how to convert '%s' to class \"POSIXlt\"", deparse(substitute(x))))
-    if (missing(tz) && !is.null(tzone))
-        tz <- tzone[1]
-    as.POSIXlt(x, tz)
-}
+##DEFUNCT #' Oce Variant of as.POSIXlt (defunct)
+##DEFUNCT #'
+##DEFUNCT #' **WARNING:** This function will be removed soon; see [oce-deprecated].
+##DEFUNCT #'
+##DEFUNCT #' It was realized in December of 2016 that this function was not used within
+##DEFUNCT #' oce, and also that `\link[lubridate]{parse_date_time`} in the
+##DEFUNCT #' \CRANpkg{lubridate} package was superior and therefore a better choice for
+##DEFUNCT #' \dQuote{oce} users.
+##DEFUNCT #'
+##DEFUNCT #' @param x a date, as for `as.POSIXlt`, but also including forms in which
+##DEFUNCT #' the month name appears.
+##DEFUNCT #'
+##DEFUNCT #' @param tz the timezone, as for `as.POSIXlt`
+##DEFUNCT #'
+##DEFUNCT #' @return A POSIXlt object.
+##DEFUNCT #'
+##DEFUNCT #' @author Dan Kelley
+##DEFUNCT #'
+##DEFUNCT #' @family functions that will be removed soon
+##DEFUNCT oce.as.POSIXlt <- function(x, tz = "")
+##DEFUNCT {
+##DEFUNCT     .Defunct("lubridate::parse_date_time",
+##DEFUNCT              msg="oce.as.POSIXlt() was removed in oce version 1.1-2, after being deprecated for a year. Use lubridate::parse_date_time() instead. See ?'oce-defunct'.")
+##DEFUNCT     fromchar <- function(x)
+##DEFUNCT     {
+##DEFUNCT         xx <- x[1]
+##DEFUNCT         if (is.na(xx)) {
+##DEFUNCT             j <- 1
+##DEFUNCT             while (is.na(xx) && (j <- j + 1) <= length(x))
+##DEFUNCT                 xx <- x[j]
+##DEFUNCT             if (is.na(xx))
+##DEFUNCT                 f <- "%Y-%m-%d"
+##DEFUNCT         }
+##DEFUNCT         ## year day hhmm
+##DEFUNCT         tokens <- strsplit(xx, " +")[[1]]
+##DEFUNCT         if (length(tokens) == 3 && nchar(tokens[3]) == 4) {
+##DEFUNCT             ## the nchar check skips [year month day]
+##DEFUNCT             return(strptime(x, format="%Y %j %H%M"))
+##DEFUNCT         }
+##DEFUNCT         if (is.na(xx) ||
+##DEFUNCT                                         # additions ...
+##DEFUNCT             ( (nchar(xx) == 8) && !is.na(strptime(xx, f <- "%Y%m%d")) ) || # 20020823
+##DEFUNCT             !is.na(strptime(xx, f <- "%B %d %Y %H:%M:%OS")) || # Aug 23 2002 or August 23 2002
+##DEFUNCT             !is.na(strptime(xx, f <- "%Y %B %d %H:%M:%OS")) || # 2002 Aug 23
+##DEFUNCT             !is.na(strptime(xx, f <- "%d %B %Y %H:%M:%OS")) || # 23 Aug 2002
+##DEFUNCT                                         # ... and now back to the standard
+##DEFUNCT             !is.na(strptime(xx, f <- "%Y-%m-%d %H:%M:%OS")) ||
+##DEFUNCT             !is.na(strptime(xx, f <- "%Y/%m/%d %H:%M:%OS")) ||
+##DEFUNCT             !is.na(strptime(xx, f <- "%Y-%m-%d %H:%M")) ||
+##DEFUNCT             !is.na(strptime(xx, f <- "%Y/%m/%d %H:%M")) ||
+##DEFUNCT             !is.na(strptime(xx, f <- "%Y-%m-%d")) ||
+##DEFUNCT             !is.na(strptime(xx, f <- "%Y/%m/%d"))) {
+##DEFUNCT             res <- strptime(x, f)
+##DEFUNCT             if (nchar(tz))
+##DEFUNCT                 attr(res, "tzone") <- tz
+##DEFUNCT             return(res)
+##DEFUNCT         }
+##DEFUNCT         warning("The string \"", x, "\" is not in a known date format")
+##DEFUNCT         return(NA)
+##DEFUNCT     }
+##DEFUNCT     if (inherits(x, "POSIXlt"))
+##DEFUNCT         return(x)
+##DEFUNCT     if (inherits(x, "Date"))
+##DEFUNCT         return(as.POSIXlt(x))
+##DEFUNCT     tzone <- attr(x, "tzone")
+##DEFUNCT     if (inherits(x, "date") || inherits(x, "dates"))
+##DEFUNCT         x <- as.POSIXct(x)
+##DEFUNCT     if (is.character(x))
+##DEFUNCT         return(fromchar(unclass(x)))
+##DEFUNCT     if (is.factor(x))
+##DEFUNCT         return(fromchar(as.character(x)))
+##DEFUNCT     if (is.logical(x) && all(is.na(x)))
+##DEFUNCT         x <- as.POSIXct.default(x)
+##DEFUNCT     if (!inherits(x, "POSIXct"))
+##DEFUNCT         stop(gettextf("do not know how to convert '%s' to class \"POSIXlt\"", deparse(substitute(x))))
+##DEFUNCT     if (missing(tz) && !is.null(tzone))
+##DEFUNCT         tz <- tzone[1]
+##DEFUNCT     as.POSIXlt(x, tz)
+##DEFUNCT }
 
 
 #' Edit an Oce Object

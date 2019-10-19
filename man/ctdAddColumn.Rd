@@ -61,7 +61,7 @@ of CTD objects, and also outlines the other functions dealing with them.
 Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdUpdateHeader}},
   \code{\link{findInOrdered}}, \code{\link{mapMeridians}},
-  \code{\link{mapZones}}, \code{\link{oce.as.POSIXlt}}
+  \code{\link{mapZones}}
 }
 \author{
 Dan Kelley

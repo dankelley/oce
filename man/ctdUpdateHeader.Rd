@@ -35,8 +35,7 @@ The Seabird CTD instrument is described at
 \seealso{
 Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdAddColumn}}, \code{\link{findInOrdered}},
-  \code{\link{mapMeridians}}, \code{\link{mapZones}},
-  \code{\link{oce.as.POSIXlt}}
+  \code{\link{mapMeridians}}, \code{\link{mapZones}}
 }
 \author{
 Dan Kelley

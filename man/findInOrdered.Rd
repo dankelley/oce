@@ -18,8 +18,7 @@ findInOrdered(x, f)
 Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdAddColumn}},
   \code{\link{ctdUpdateHeader}},
-  \code{\link{mapMeridians}}, \code{\link{mapZones}},
-  \code{\link{oce.as.POSIXlt}}
+  \code{\link{mapMeridians}}, \code{\link{mapZones}}
 }
 \author{
 Dan Kelley

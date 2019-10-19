@@ -38,17 +38,17 @@ be slated for outright deletion in a subsequent release.
 \code{ctdUpdateHeader} \tab \code{\link[=oceSetMetadata]{oceSetMetadata()}}           \tab  0.9.24\cr
 \code{mapZones}        \tab \code{\link[=mapGrid]{mapGrid()}}                  \tab  0.9.24\cr
 \code{mapMeridians}    \tab \code{\link[=mapGrid]{mapGrid()}}                  \tab  0.9.24\cr
-\code{oce.as.POSIXlt}  \tab \link[lubridate:parse_date_time]{lubridate::parse_date_time} \tab  0.9.24\cr
 \code{oce.magic}       \tab \code{\link[=oceMagic]{oceMagic()}}                 \tab  0.9.24\cr
 }
 
-The following were removed recently, having been marked as "deprecated"
+The following were removed after having been marked as "deprecated"
 in at least one CRAN release, and thereafter as "defunct" in at least
 one CRAN release.
 
 \tabular{lll}{
-\strong{Function}  \tab \strong{Replacement} \tab  \strong{Version}\cr
-\code{makeSection} \tab \code{\link[=as.section]{as.section()}}  \tab       0.9.24\cr
+\strong{Function}     \tab \strong{Replacement}                \tab  \strong{Version/When}\cr
+\code{makeSection}    \tab \code{\link[=as.section]{as.section()}}                 \tab  0.9.24          \cr
+\code{oce.as.POSIXlt} \tab \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}} \tab  1.1-2/2019-10-19\cr
 }
 
 Several \sQuote{oce} function arguments are considered "deprecated", which
