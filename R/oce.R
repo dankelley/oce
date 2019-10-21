@@ -82,8 +82,8 @@ NULL
 #' "defunct".
 #'
 #' \tabular{lll}{
-#' **Deprecated** \tab **Replacement** \tab **Notes**\cr
-#' `byteToBinary(x, "endian")` \tab [rawToBits()]   \tab Deprecated in 2016\cr
+#' **Deprecated**             \tab **Replacement** \tab **Notes**\cr
+#' `byteToBinary(x,"endian")` \tab [rawToBits()]   \tab Deprecated in 2016\cr
 #' }
 #'
 #' The following are marked "defunct", so calling them in the
@@ -91,10 +91,9 @@ NULL
 #' function. Once a function is marked "defunct" on one CRAN release, it will
 #' be slated for outright deletion in a subsequent release.
 #'
-## In table below, I put two spaces before version number, if a build-test exists.
 #'\tabular{lll}{
-#'**Defunct**       \tab **Replacement**              \tab **Version** \cr
-#' -                \tab -                            \tab -           \cr
+#' **Defunct**         \tab **Replacement**                \tab **Version**\cr
+#' -                   \tab -                              \tab -          \cr
 #'}
 #'
 #' The following were removed after having been marked as "deprecated"

@@ -20,8 +20,8 @@ The next CRAN release of \sQuote{oce} will designate these functions as
 "defunct".
 
 \tabular{lll}{
-\strong{Deprecated} \tab \strong{Replacement} \tab \strong{Notes}\cr
-\code{byteToBinary(x, "endian")} \tab \code{\link[=rawToBits]{rawToBits()}}   \tab Deprecated in 2016\cr
+\strong{Deprecated}             \tab \strong{Replacement} \tab \strong{Notes}\cr
+\code{byteToBinary(x,"endian")} \tab \code{\link[=rawToBits]{rawToBits()}}   \tab Deprecated in 2016\cr
 }
 
 The following are marked "defunct", so calling them in the
@@ -30,9 +30,9 @@ function. Once a function is marked "defunct" on one CRAN release, it will
 be slated for outright deletion in a subsequent release.
 
 \tabular{lll}{
-\strong{Defunct}       \tab \strong{Replacement}              \tab \strong{Version} \cr
+\strong{Defunct}         \tab \strong{Replacement}                \tab \strong{Version}\cr
 \itemize{
-\item \preformatted{           \tab -                            \tab -           \cr
+\item \preformatted{              \tab -                              \tab -          \cr
 }
 }
 
