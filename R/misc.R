@@ -11,51 +11,6 @@ abbreviateVector <- function(x)
 }
 
 
-#' Add a Column to the data Slot of an oce object (defunct)
-#'
-#' **WARNING:** This function will be removed soon; see [oce-defunct].
-#'
-#' Use [oceSetData()] instead of the present function.
-#'
-#' @param x a [ctd-class] object.
-#'
-#' @param data the data.  The length of this item must match that of the
-#' existing data entries in the `data` slot).
-#'
-#' @param name the name of the column.
-#'
-#' @return A [oce-class] object.
-#'
-#' @author Dan Kelley
-#'
-#' @seealso Please use [oceSetData()] instead of the present function.
-#' @family functions that will be removed soon
-addColumn <- function (x, data, name)
-{
-    .Defunct("oceSetData",
-             msg="addColumn() is disallowed and will be removed soon. Use oceSetData() instead. See ?'oce-defunct'.")
-    if (!inherits(x, "oce"))
-        stop("method is only for oce objects")
-    if (missing(data))
-        stop("must supply data")
-    if (missing(name))
-        stop("must supply name")
-    n <- length(data)
-    nd <- length(x@data)
-    if (n != length(data))
-        stop("data length is ", n, " but it must be ", nd, " to match existing data")
-    if (inherits(x, "ctd")) {
-        ## res <- ctdAddColumn(x, data, name) # FIXME: supply units
-        res <- oceSetData(x, name=name, value=data) # FIXME: supply units
-    } else {
-        res <- x
-        res@data[[name]] <- data
-    }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    res
-}
-
-
 #' Convert angles from 0:360 to -180:180
 #'
 #' This is mostly used for instrument heading angles, in cases where the

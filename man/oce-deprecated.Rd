@@ -21,7 +21,7 @@ The next CRAN release of \sQuote{oce} will designate these functions as
 
 \tabular{lll}{
 \strong{Deprecated} \tab \strong{Replacement} \tab \strong{Notes}\cr
-\code{byteToBinary} \tab \code{\link[=rawToBits]{rawToBits()}}   \tab Deprecated in 2016\cr
+\code{byteToBinary(x, "endian")} \tab \code{\link[=rawToBits]{rawToBits()}}   \tab Deprecated in 2016\cr
 }
 
 The following are marked "defunct", so calling them in the
@@ -31,24 +31,28 @@ be slated for outright deletion in a subsequent release.
 
 \tabular{lll}{
 \strong{Defunct}       \tab \strong{Replacement}              \tab \strong{Version} \cr
-\code{addColumn}       \tab \code{\link[=oceSetData]{oceSetData()}}               \tab  0.9.24\cr
-\code{byteToBinary}    \tab \code{\link[=rawToBits]{rawToBits()}}                \tab  0.9.24 'endian="little" disallowed\cr
-\code{findInOrdered}   \tab \code{\link[=findInterval]{findInterval()}}             \tab  0.9.24\cr
-\code{ctdAddColumn}    \tab \code{\link[=oceSetData]{oceSetData()}}               \tab  0.9.24\cr
-\code{ctdUpdateHeader} \tab \code{\link[=oceSetMetadata]{oceSetMetadata()}}           \tab  0.9.24\cr
-\code{mapZones}        \tab \code{\link[=mapGrid]{mapGrid()}}                  \tab  0.9.24\cr
-\code{mapMeridians}    \tab \code{\link[=mapGrid]{mapGrid()}}                  \tab  0.9.24\cr
-\code{oce.magic}       \tab \code{\link[=oceMagic]{oceMagic()}}                 \tab  0.9.24\cr
+\itemize{
+\item \preformatted{           \tab -                            \tab -           \cr
+}
+}
+
 }
 
 The following were removed after having been marked as "deprecated"
 in at least one CRAN release, and thereafter as "defunct" in at least
-one CRAN release.
+one CRAN release.  (The version number in the table is the first
+version to lack the named function.)
 
 \tabular{lll}{
-\strong{Function}     \tab \strong{Replacement}                \tab  \strong{Version/When}\cr
-\code{makeSection}    \tab \code{\link[=as.section]{as.section()}}                 \tab  0.9.24          \cr
-\code{oce.as.POSIXlt} \tab \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}} \tab  1.1-2/2019-10-19\cr
+\strong{Function}        \tab \strong{Replacement}                \tab \strong{Version}\cr
+\code{addColumn()}       \tab \code{\link[=oceSetData]{oceSetData()}}                 \tab 1.1-2      \cr
+\code{ctdAddColumn()}    \tab \code{\link[=oceSetData]{oceSetData()}}                 \tab 1.1-2      \cr
+\code{ctdUpdateHeader()} \tab \code{\link[=oceSetMetadata]{oceSetMetadata()}}             \tab 1.1-2      \cr
+\code{findInOrdered()}   \tab \code{\link[=findInterval]{findInterval()}}               \tab 1.1-2      \cr
+\code{makeSection()}     \tab \code{\link[=as.section]{as.section()}}                 \tab 0.9.24     \cr
+\code{mapMeridians()}    \tab \code{\link[=mapGrid]{mapGrid()}}                    \tab 1.1-2      \cr
+\code{mapZones()}        \tab \code{\link[=mapGrid]{mapGrid()}}                    \tab 1.1-2      \cr
+\code{oce.as.POSIXlt()}  \tab \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}} \tab 1.1-2      \cr
 }
 
 Several \sQuote{oce} function arguments are considered "deprecated", which

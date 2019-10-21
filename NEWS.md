@@ -1,10 +1,14 @@
 1.1-2
 
-* read.met() handles the new Environment Canada data format
+* remove `addColumn()`, `ctdAddColumn()`, `ctdUpdateHeader()`,
+  `findInOrdered()`, `mapMeridians()`, `mapZones()`, and `oce.as.POSIXlt()`,
+   all of which have been marked as "Deprecated" for the past two CRAN
+   releases.
+* `read.met()` handles the new Environment Canada data format
 * handle upcoming rgdal/R-devel
-* sectionSmooth() detects grids that extend beyond data range
-* read.adp.rdi() trims time vector if it exceeds other data lengths
-* geodDist() defaults 2nd location correctly when alongPath=FALSE
+* `sectionSmooth()` detects grids that extend beyond data range
+* `read.adp.rdi()` trims time vector if it exceeds other data lengths
+* `geodDist()` defaults 2nd location correctly when `alongPath=FALSE`
 * improvements to vignettes
 * fix itemized-list documentation problem pointed out by Kurt Hornik
 

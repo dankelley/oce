@@ -1690,8 +1690,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     usr <- par('usr')
     ## FIXME: meridians and zones should be added later because they can change depending
     ## FIXME: on the 'pretty' operation below.
-    ##if (grid[2]) mapMeridians(seq(-90, 90, grid[2]))
-    ##if (grid[1]) mapZones(seq(-180, 180, grid[1]), polarCircle=polarCircle)
     if (drawBox)
         box()
     drawGrid <- (is.logical(grid[1]) && grid[1]) || grid[1] > 0
@@ -2060,77 +2058,6 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 }
 
 
-#' Add Meridians on a Map (defunct)
-#'
-#' **WARNING:** This function will be removed soon; see [oce-deprecated].
-#' Use [mapGrid()] instead.
-#'
-#' @param latitude either a logical value indicating whether to draw
-#' a meridian grid, or a vector of latitudes at which to draw meridians.
-#'
-#' @param lty line type.
-#'
-#' @param lwd line width.
-#'
-#' @param col line color.
-#'
-#' @param ... optional arguments passed to [lines()].
-#'
-#' @author Dan Kelley
-#'
-#' @family functions that will be removed soon
-mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
-{
-    .Defunct("mapGrid",
-             msg="mapMeridians() will be removed soon. Use mapGrid() instead. See ?'oce-defunct'.")
-    if ("none" == .Projection()$type)
-        stop("must create a map first, with mapPlot()\n")
-    warning("Use mapGrid(longitude=NULL,latitude=latitude) instead of mapMeridians(latitude)")
-    if (missing(latitude))
-        latitude <- TRUE
-    small <- 0.001
-    if (is.logical(latitude)) {
-        if (!latitude)
-            return()
-        latitude <- seq(-90+small, 90-small, length.out=13)
-    }
-    ##usr <- par('usr')
-    n <- 360                           # number of points on line
-    for (l in latitude) {
-        ## FIXME: maybe we should use mapLines here
-        ## message("mapMeridian at ", l, " N")
-        line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n))
-        x <- line$x
-        y <- line$y
-        ok <- !is.na(x) & !is.na(y)
-        x <- x[ok]
-        if (0 == length(x))
-            next
-        y <- y[ok]
-        if (0 == length(y))
-            next
-        ## FIXME: below is a kludge to avoid weird horiz lines; it
-        ## FIXME: would be better to complete the polygons, so they
-        ## FIXME: can be filled.  It might be smart to do this in C
-        if (FALSE) {
-            ## this was a bad idea, e.g. in orthographic, lines cross whole domain
-            d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
-            d[!is.finite(d)] <- 0
-            if (0 == length(d))
-                next
-            ##2014-01-09 dc <- as.numeric(quantile(d, 0.99, na.rm=TRUE)) # FIXME: criterion
-            dc <- as.numeric(median(d, na.rm=TRUE))
-            bad <- d > 3 * dc
-            x[bad] <- NA                   # FIXME: add, don't replace
-            y[bad] <- NA                   # FIXME: add, don't replace
-        }
-        ## NB. used to check for points in region but when zoomed in closely, there may be none!
-        ##if (length(x) & length(y) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
-        lines(x, y, lty=lty, lwd=lwd, col=col, ...)
-    }
-}
-
-
 
 #' Add a Scalebar to a Map
 #'
@@ -2342,63 +2269,6 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
                 mapLines(seq(lon-d*factor, lon+d*factor, length.out=ncr), rep(lat, ncr), ...)
             }
         }
-    }
-}
-
-
-#' Add Zones to a Map (defunct)
-#'
-#' **WARNING:** This function will be removed soon; see [oce-deprecated].
-#' Use [mapGrid()] instead.
-#'
-#' @param longitude either a logical indicating whether to draw a zonal grid,
-#' or a vector of longitudes at which to draw zones.
-#'
-#' @param polarCircle a number indicating the number of degrees of latitude
-#' extending from the poles, within which zones are not drawn.
-#'
-#' @param lty line type.
-#'
-#' @param lwd line width.
-#'
-#' @param col line color.
-#'
-#' @param ... optional arguments passed to [lines()].
-#'
-#' @author Dan Kelley
-#'
-#' @family functions that will be removed soon
-mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
-{
-    .Defunct("mapGrid",
-             msg="mapZones() will be removed soon. Use mapGrid() instead. See ?'oce-defunct'.")
-    if ("none" == .Projection()$type)
-        stop("must create a map first, with mapPlot()\n")
-    warning("Use mapGrid(longitude=longitude,latitude=NULL) instead of mapZones(longitude)")
-    if (missing(longitude))
-        longitude <- TRUE
-    small <- 0.001
-    if (is.logical(longitude)) {
-        if (!longitude)
-            return()
-        longitude <- seq(-180, 180, 15)
-    }
-    if (polarCircle < 0 || polarCircle > 90)
-        polarCircle <- 0
-    ##usr <- par('usr')
-    n <- 360                           # number of points on line
-    for (l in longitude) {
-        ## FIXME: should use mapLines here
-        line <- lonlat2map(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
-        x <- line$x
-        y <- line$y
-        ok <- !is.na(x) & !is.na(y)
-        x <- x[ok]
-        y <- y[ok]
-        ## NB. used to check for points in region but when zoomed in closely, there may be none!
-        ##if (length(x) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
-        lines(x, y, lty=lty, lwd=lwd, col=col, ...)
-        ##}
     }
 }
 
