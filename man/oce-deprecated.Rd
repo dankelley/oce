@@ -31,11 +31,7 @@ be slated for outright deletion in a subsequent release.
 
 \tabular{lll}{
 \strong{Defunct}         \tab \strong{Replacement}                \tab \strong{Version}\cr
-\itemize{
-\item \preformatted{              \tab -                              \tab -          \cr
-}
-}
-
+(none)              \tab (none)                         \tab (none)     \cr
 }
 
 The following were removed after having been marked as "deprecated"

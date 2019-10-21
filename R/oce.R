@@ -93,7 +93,7 @@ NULL
 #'
 #'\tabular{lll}{
 #' **Defunct**         \tab **Replacement**                \tab **Version**\cr
-#' -                   \tab -                              \tab -          \cr
+#' (none)              \tab (none)                         \tab (none)     \cr
 #'}
 #'
 #' The following were removed after having been marked as "deprecated"
