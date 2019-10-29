@@ -3250,11 +3250,11 @@ setMethod(f="plot",
                                        "Tts"=31,
                                        "pts"=32,
                                        "rhots"=33))
-
               for (w in seq_along(which)) {
                   if (is.na(which[w])) {
                       if (whichOrig[w] %in% names(x@data)) {
                           plotProfile(x, xtype=x[[whichOrig[w]]], xlab=whichOrig[w],
+                                      xlab=xlab,
                                       Slim=Slim, Tlim=Tlim, plim=plim,
                                       eos=eos,
                                       useSmoothScatter=useSmoothScatter,
@@ -4607,7 +4607,9 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' @param eos equation of state to be used, either `"unesco"` or
 #' `"gsw"`.
 #'
-#' @param xlab optional label for x axis (at top of plot).
+#' @param xlab optional label for x axis (at top of plot). If this is \code{NULL},
+#' which is the default, then [plotProfile()] will construct a label
+#' based on the value of `xtype`.
 #'
 #' @param ylab optional label for y axis.  Set to `""` to prevent
 #' labelling the axis.
@@ -4773,6 +4775,7 @@ plotProfile <- function (x,
 
     plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
                                 xlim=NULL, ylim=NULL,
+                                xlab=NULL,
                                 lwd=par("lwd"),
                                 cex=1, pch=1, pt.bg="transparent",
                                 df=df, keepNA=FALSE, debug=getOption("oceDebug", 0))
@@ -5255,11 +5258,17 @@ plotProfile <- function (x,
                     if (!xlimGiven)
                         xlim <- range(xvar[look], na.rm=TRUE)
                     plot(xvar[look], y[look],
+                         xlab=if (is.null(xlab)) " " else xlab,
                          xlim=xlim, ylim=rev(range(y[look])),
-                         lty=lty, type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                         lty=lty, type="n", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 }
-                mtext(resizableLabel(xtype, "x", unit=unit, debug=debug-1),
-                      side=3, line=axisNameLoc, cex=par("cex"))
+                oceDebug(debug, "xlab=\"", xlab, "\"\n", sep="")
+                if (is.null(xlab)) {
+                    mtext(resizableLabel(xtype, "x", unit=unit, debug=debug-1),
+                          side=3, line=axisNameLoc, cex=par("cex"))
+                } else {
+                    mtext(xlab, side=3, line=axisNameLoc, cex=par("cex"))
+                }
                 axis(2)
                 axis(3)
                 box()
