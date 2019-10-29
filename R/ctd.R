@@ -3253,8 +3253,7 @@ setMethod(f="plot",
               for (w in seq_along(which)) {
                   if (is.na(which[w])) {
                       if (whichOrig[w] %in% names(x@data)) {
-                          plotProfile(x, xtype=x[[whichOrig[w]]], xlab=whichOrig[w],
-                                      xlab=xlab,
+                          plotProfile(x, xtype=x[[whichOrig[w]]],
                                       Slim=Slim, Tlim=Tlim, plim=plim,
                                       eos=eos,
                                       useSmoothScatter=useSmoothScatter,
@@ -4607,9 +4606,8 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' @param eos equation of state to be used, either `"unesco"` or
 #' `"gsw"`.
 #'
-#' @param xlab optional label for x axis (at top of plot). If this is \code{NULL},
-#' which is the default, then [plotProfile()] will construct a label
-#' based on the value of `xtype`.
+#' @param xlab optional label for x axis (at top of plot). If not
+#' provided, the value of `xtype` is used for the label.
 #'
 #' @param ylab optional label for y axis.  Set to `""` to prevent
 #' labelling the axis.
@@ -4771,6 +4769,8 @@ plotProfile <- function (x,
         if (length(xtype) == 1 && xtype %in% names(x@data))
             mar[1] <- 1 # the bottom margin is wrong for e.g. NO2+NO3
     }
+    if (!is.null(xlab))
+        xlab <- xtype
     plimGiven <- !missing(plim)
 
     plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
@@ -4781,6 +4781,8 @@ plotProfile <- function (x,
                                 df=df, keepNA=FALSE, debug=getOption("oceDebug", 0))
     {
         oceDebug(debug, "plotJustProfile(..., debug=", debug, ") {\n", sep="", unindent=1)
+        if (is.null(xlab))
+            xlab <- ""
         x <- as.vector(x) # because e.g. argo may be a 1-col matrix
         y <- as.vector(y)
         if (!keepNA) {

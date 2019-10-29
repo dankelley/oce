@@ -61,9 +61,8 @@ to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.
 
 \item{lty}{line type for the profile.}
 
-\item{xlab}{optional label for x axis (at top of plot). If this is \code{NULL},
-which is the default, then \code{\link[=plotProfile]{plotProfile()}} will construct a label
-based on the value of \code{xtype}.}
+\item{xlab}{optional label for x axis (at top of plot). If not
+provided, the value of \code{xtype} is used for the label.}
 
 \item{ylab}{optional label for y axis.  Set to \code{""} to prevent
 labelling the axis.}
