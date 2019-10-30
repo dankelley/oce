@@ -4761,7 +4761,9 @@ plotProfile <- function (x,
 {
     debug <- min(debug, 3)
     oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
-             "\", debug=", debug, ", ...) {\n", sep="", unindent=1)
+             "\"",
+             ", xlab=", if (is.null(xlab)) "NULL" else paste('"', xlab, '"', sep=""),
+             ", debug=", debug, ", ...) {\n", sep="", unindent=1)
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (missing(mar)) {
         ## default behaviour changed 20161020 for issue #1103
@@ -4769,8 +4771,6 @@ plotProfile <- function (x,
         if (length(xtype) == 1 && xtype %in% names(x@data))
             mar[1] <- 1 # the bottom margin is wrong for e.g. NO2+NO3
     }
-    if (!is.null(xlab))
-        xlab <- xtype
     plimGiven <- !missing(plim)
 
     plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
@@ -4908,7 +4908,6 @@ plotProfile <- function (x,
         y <- x[["sigmaTheta"]]
     }
     y <- as.vector(y)
-
 
     if (!add)
         par(mar=mar, mgp=mgp)
@@ -5264,7 +5263,6 @@ plotProfile <- function (x,
                          xlim=xlim, ylim=rev(range(y[look])),
                          lty=lty, type="n", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 }
-                oceDebug(debug, "xlab=\"", xlab, "\"\n", sep="")
                 if (is.null(xlab)) {
                     mtext(resizableLabel(xtype, "x", unit=unit, debug=debug-1),
                           side=3, line=axisNameLoc, cex=par("cex"))
