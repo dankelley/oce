@@ -84,16 +84,16 @@ work can be required to track down the data.
 
 Some servers provide  data for floats that surfaced in a given ocean
 on a given day, the anonymous FTP server
-\url{ftp://usgodae.org/pub/outgoing/argo/geo/} being an example.
+\code{ftp://usgodae.org/pub/outgoing/argo/geo/} being an example.
 
 Other servers provide data on a per-float basis. A complicating
 factor is that these data tend to be categorized by "dac" (data
 archiving centre), which makes it difficult to find a particular
 float. For example,
-\url{https://www.usgodae.org/ftp/outgoing/argo/} is the top level of
+\code{https://www.usgodae.org/ftp/outgoing/argo/} is the top level of
 a such a repository. If the ID of a float is known but not the
 "dac", then a first step is to download the text file
-\url{http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
+\code{http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
 and search for the ID. The first few lines of that file are header,
 and after that the format is simple, with columns separated by slash
 (\code{/}). The dac is in the first such column and the float ID in the
@@ -103,13 +103,13 @@ containing that token is
 \code{bodc/6900388/6900388_meta.nc,846,BO,20120225005617}, from
 which the dac is seen to be the British Oceanographic Data Centre
 (\code{bodc}). Armed with that information, visit
-\url{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}
+\code{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}
 and see a directory called \code{profiles} that contains a NetCDF
 file for each profile the float made. These can be read with
 \code{read.argo}. It is also possible, and probably more common,
 to read a NetCDF file containing all the profiles together and for
 that purpose the file
-\url{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}
+\code{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}
 should be downloaded and provided as the \code{file} argument to
 \code{read.argo}.  This can be automated as in Example 2,
 although readers are cautioned that URL structures tend to change
