@@ -954,8 +954,12 @@ ODFListFromHeader <- function(header)
 #' @family things related to odf data
 read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebug"))
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
-        stop("empty file")
+    if (missing(file))
+        stop("must supply 'file', a character value holding the name of an ODF file")
+    if (length(file) > 1)
+        stop("can only handle one file at a time (the length of 'file' is ", length(file), ", not 1)")
+    if (is.character(file) && 0 == file.info(file)$size)
+        stop("the file named '", file, "' is empty, and so cannot be read")
     oceDebug(debug, "read.odf(\"", file, "\", ...) {\n", unindent=1, sep="")
     if (!is.null(header)) {
         if (!is.character(header))
