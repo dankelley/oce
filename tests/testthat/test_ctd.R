@@ -557,3 +557,9 @@ test_that("as.ctd() handles multiple longitude and latitude", {
           }
 })
 
+test_that("lon360() works", {
+          data(ctd)
+          ctdShifted <- lon360(ctd)
+          expect_equal(360 + ctd[["longitude"]], ctdShifted[["longitude"]])
+})
+

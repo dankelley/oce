@@ -2819,18 +2819,15 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 #' Alter longitudes from -180:180 to 0:360 convention
 #'
 #' For numerical input, including vectors, matrices and arrays,
-#' this simply calls [ifelse()] to add 360 to any negative values. For
+#' [lon360()] simply calls [ifelse()] to add 360 to any negative values. For
 #' [section-class] objects, it changes `longitude` in the `metadata` slot
-#' and also in the `metadata` slots of the stations within the section.
-#' For other [oce-class] objects, this changes any `longitude` values
-#' that are present in both the `metadata` and `data` slots.
-#'
-#' This function can be helpful in dealing with [section-class] data
-#' that cross the dateline (i.e. longitude -180).  However, it is
-#' certainly not a useful method for dealing with the dateline problem
-#' in maps, because altering longitudes does not help with filled
-#' polygons; see [coastlineCut()] for an attempt to solve the
-#' dateline problem.
+#' and then calls itself to handle the [ctd-class] objects stored as
+#' as the entries in `station` within the `data` slot.
+#' For this [ctd-class] object, and indeed for all non-[section-class]
+#' objects, [lon360()] changes `longitude` values in the
+#' `metadata` slot (if present) and also in the `data` slot (again, if
+#' present). This function is not useful for dealing with coastline
+#' data; see [coastlineCut()] for such data.
 #'
 #' @param x either a numeric vector or array, or an [oce-class] object.
 #'
@@ -2845,17 +2842,16 @@ lon360 <- function(x)
     if (inherits(x, "section")) {
         ## Shift section-level metadata.
         res@metadata$longitude <- shift(x@metadata$longitude)
-        ## For each station, shift metadata and data, too, if the CTD objects have location there as well.
-        for (istn in seq_along(x[["station"]])) {
-            res@data$station[[istn]]@metadata$longitude <- shift(x@data$station[[istn]]@metadata$longitude)
-            if ("longitude" %in% names(x@data$station[[istn]]@data))
-                res@data$station[[istn]]@data$longitude <- shift(x@data$station[[istn]]@data$longitude)
-        }
+        ## Shift each station, by calling lon360() on that (CTD) object.
+        for (istn in seq_along(x[["station"]]))
+            res@data$station[[istn]] <- lon360(x@data$station[[istn]])
+        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     } else if (inherits(x, "oce")) {
         if ("longitude" %in% names(x[["metadata"]]))
             res@metadata$longitude <- shift(res@metadata$longitude)
         if ("longitude" %in% names(x[["data"]]))
             res@data$longitude <- shift(res@data$longitude)
+        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     } else if (is.numeric(x)) {
         res <- shift(x)
     } else {

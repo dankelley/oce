@@ -4378,7 +4378,8 @@ plotTS <- function (x,
         smoothScatter(salinity, y,
                       xlab=xlab, ylab=ylab,
                       xaxs=if (min(salinity, na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
-                                        #cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
+                      ## cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
+                      pch=pch, cex=cex, col=col,
                       xlim=Slim, ylim=Tlim,
                       ...)
     } else {
@@ -5130,7 +5131,8 @@ plotProfile <- function (x,
             if ("xlim" %in% names(dots)) Clim <- dots$xlim else Clim <- range(conductivity, na.rm=TRUE)
         }
         if (useSmoothScatter) {
-            smoothScatter(conductivity, y, xlim=Clim, ylim=ylim, xlab="", ylab=yname, axes=FALSE, ...)
+            smoothScatter(conductivity, y, xlim=Clim, ylim=ylim, xlab="", ylab=yname, axes=FALSE,
+                          cex=cex, pch=pch, col=col, ...)
             axis(2)
             axis(3)
             box()

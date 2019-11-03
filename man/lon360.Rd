@@ -11,19 +11,15 @@ lon360(x)
 }
 \description{
 For numerical input, including vectors, matrices and arrays,
-this simply calls \code{\link[=ifelse]{ifelse()}} to add 360 to any negative values. For
+\code{\link[=lon360]{lon360()}} simply calls \code{\link[=ifelse]{ifelse()}} to add 360 to any negative values. For
 \linkS4class{section} objects, it changes \code{longitude} in the \code{metadata} slot
-and also in the \code{metadata} slots of the stations within the section.
-For other \linkS4class{oce} objects, this changes any \code{longitude} values
-that are present in both the \code{metadata} and \code{data} slots.
-}
-\details{
-This function can be helpful in dealing with \linkS4class{section} data
-that cross the dateline (i.e. longitude -180).  However, it is
-certainly not a useful method for dealing with the dateline problem
-in maps, because altering longitudes does not help with filled
-polygons; see \code{\link[=coastlineCut]{coastlineCut()}} for an attempt to solve the
-dateline problem.
+and then calls itself to handle the \linkS4class{ctd} objects stored as
+as the entries in \code{station} within the \code{data} slot.
+For this \linkS4class{ctd} object, and indeed for all non-\linkS4class{section}
+objects, \code{\link[=lon360]{lon360()}} changes \code{longitude} values in the
+\code{metadata} slot (if present) and also in the \code{data} slot (again, if
+present). This function is not useful for dealing with coastline
+data; see \code{\link[=coastlineCut]{coastlineCut()}} for such data.
 }
 \examples{
 lon360(c(179, -179))
