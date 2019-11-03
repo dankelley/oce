@@ -8,7 +8,7 @@
 \S4method{composite}{list}(object)
 }
 \arguments{
-\item{object}{A \link{list} of \linkS4class{oce}-class objects.}
+\item{object}{a \link{list} of \linkS4class{oce} objects.}
 }
 \description{
 This is done

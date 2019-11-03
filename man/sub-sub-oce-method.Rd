@@ -8,7 +8,7 @@
 \S4method{[[}{oce}(x, i, j, ...)
 }
 \arguments{
-\item{x}{an \linkS4class{oce} object}
+\item{x}{an \linkS4class{oce} object.}
 
 \item{i}{Character string indicating the name of an item to extract.}
 

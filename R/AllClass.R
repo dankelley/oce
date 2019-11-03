@@ -318,7 +318,7 @@ setMethod(f="plot",
 #' versions for most sub-classes, e.g. [subset,ctd-method()]
 #' for `ctd` objects.
 #'
-#' @param x an [oce-class] object
+#' @param x an [oce-class] object.
 #'
 #' @param subset a logical expression indicating how to take the subset; the form depends on the sub-class.
 #'
@@ -379,7 +379,7 @@ setMethod(f="subset",
 #'
 #' @template sub_subTemplate
 #'
-#' @param x an [oce-class] object
+#' @param x an [oce-class] object.
 ## @param i The item to extract.
 ## @param j Optional additional information on the `i` item.
 ## @param ... Optional additional information (ignored).
@@ -566,10 +566,11 @@ setMethod(f="show",
               }
           })
 
+
 #' @title Create a composite object by averaging across good data
 #'
-#' @param object Either a [list] of [oce-class]-class objects, in
-#' which case this is the only argument, or a single [oce-class]-class object,
+#' @param object either a [list] of [oce-class] objects, in
+#' which case this is the only argument, or a single [oce-class] object,
 #' in which case at least one other argument (an object of the same size)
 #' must be supplied.
 #'
@@ -592,7 +593,7 @@ setGeneric("composite",
 #' action is to call
 #' [composite,amsr-method()].
 #'
-#' @param object A [list] of [oce-class]-class objects.
+#' @param object a [list] of [oce-class] objects.
 #'
 #' @template compositeTemplate
 setMethod("composite",
@@ -615,7 +616,7 @@ setMethod("composite",
 #' Each specialized variant of this function has its own defaults
 #' for `flags` and `actions`.
 #'
-#' @param object An object of [oce-class] class.
+#' @param object an [oce-class] object.
 #'
 #' @template handleFlagsTemplate
 setGeneric("handleFlags", function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
@@ -639,7 +640,7 @@ setMethod("handleFlags", signature=c(object="vector", flags="ANY", actions="ANY"
 #
 #' Base-level handling of flags.
 #
-#' @param object An object of [oce-class] class.
+#' @param object an [oce-class] object.
 #
 #' @template handleFlagsTemplate
 setMethod("handleFlags", signature=c(object="oce", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
@@ -669,9 +670,9 @@ setMethod("handleFlags", signature=c(object="oce", flags="ANY", actions="ANY", w
 #' `ctd` objects, [handleFlags,adp-method] for `adp` objects,
 #' etc.
 #'
-#' @param object An object of [oce-class] class.
+#' @param object an [oce-class] object.
 #'
-#' @param flags A named [list] of numeric values.
+#' @param flags a named [list] of numeric values.
 #'
 #' @param actions A character vector indicating actions to be carried out for the corresponding
 #' `flags` values. This will be lengthened with [rep()] if necessary, to be
@@ -1108,9 +1109,9 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, defaul
 
 #' Concatenate oce objects
 #'
-#' @param object An object of [oce-class] class.
+#' @param object an [oce-class] object.
 #'
-#' @param ... Optional additional objects of [oce-class] class.
+#' @param ... optional additional [oce-class] objects.
 #'
 #' @return An object of class corresponding to that of `object`.
 #'
@@ -1204,7 +1205,7 @@ setMethod("concatenate",
 
 #' Concatenate a list of oce objects
 #'
-#' @param object A list holding objects of the [oce-class] class.
+#' @param object a [list] of [oce-class] objects.
 #'
 #' @return An object of class corresponding to that in `object`.
 #'

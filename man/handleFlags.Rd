@@ -8,7 +8,7 @@ handleFlags(object, flags = NULL, actions = NULL, where = NULL,
   debug = getOption("oceDebug"))
 }
 \arguments{
-\item{object}{An object of \linkS4class{oce} class.}
+\item{object}{an \linkS4class{oce} object.}
 
 \item{flags}{A \link{list} specifying flag values upon which
 actions will be taken. This can take two forms.

@@ -1,4 +1,6 @@
 ^sandbox$
+^.*.odf$
+^.*.ODF$
 ^R/check_urls\.R$
 ^doc$
 ^Meta$

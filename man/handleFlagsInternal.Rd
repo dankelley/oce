@@ -7,9 +7,9 @@
 handleFlagsInternal(object, flags, actions, where, debug = 0)
 }
 \arguments{
-\item{object}{An object of \linkS4class{oce} class.}
+\item{object}{an \linkS4class{oce} object.}
 
-\item{flags}{A named \link{list} of numeric values.}
+\item{flags}{a named \link{list} of numeric values.}
 
 \item{actions}{A character vector indicating actions to be carried out for the corresponding
 \code{flags} values. This will be lengthened with \code{\link[=rep]{rep()}} if necessary, to be
