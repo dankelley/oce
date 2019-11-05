@@ -875,7 +875,6 @@ swTFreeze <- function(salinity, pressure=NULL,
     } else {
         l <- lookWithin(list(salinity=salinity, pressure=pressure))
     }
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     if (eos == "gsw") {
         ## Note that l$pressure is used for computing SA, but not for gsw_t_freezing().
@@ -885,7 +884,8 @@ swTFreeze <- function(salinity, pressure=NULL,
         res <- (-.0575+1.710523e-3*sqrt(abs(l$salinity))-2.154996e-4*l$salinity)*l$salinity-7.53e-4*l$pressure
         res <- T90fromT68(res)
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -1019,7 +1019,6 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
     } else {
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
     }
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     if (is.null(l$temperature))
         stop("must provide temperature")
@@ -1039,7 +1038,8 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
                    as.double(l$salinity), as.double(theta), as.double(l$pressure),
                    value=double(nS), NAOK=TRUE, PACKAGE="oce")$value
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -1100,7 +1100,6 @@ swBeta <- function(salinity, temperature=NULL, pressure=0,
     } else {
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
     }
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     nt <- length(l$temperature)
@@ -1118,7 +1117,8 @@ swBeta <- function(salinity, temperature=NULL, pressure=0,
                    as.double(l$salinity), as.double(theta), as.double(l$pressure),
                    value=double(nS), NAOK=TRUE, PACKAGE="oce")$value
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -1495,7 +1495,6 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
     } else {
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
     }
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     if (is.null(l$temperature))
@@ -1516,7 +1515,8 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
         ## the 1e4 is to convert from 1/Pa to 1/dbar
         res<- 1e4 * gsw::gsw_adiabatic_lapse_rate_from_CT(SA=SA, CT=CT, p=l$pressure)
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }                                      # swLapseRate
 
@@ -1625,7 +1625,6 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL,
         stop("must provide temperature")
     if (is.null(l$pressure))
         stop("must provide pressure")
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     nt <- length(l$temperature)
@@ -1644,7 +1643,8 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL,
         CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
         res <- gsw::gsw_rho(SA, CT, p=l$pressure)
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -1780,7 +1780,6 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
         stop("must provide temperature")
     if (is.null(pressure))
         stop("must provide pressure")
-    Smatrix <- is.matrix(salinity)
     dim <- dim(salinity)
     nS <- length(salinity)
     nt <- length(temperature)
@@ -1803,7 +1802,8 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
         SA <- gsw::gsw_SA_from_SP(SP=salinity, p=pressure, longitude=longitude, latitude=latitude)
         res <- gsw::gsw_pot_rho_t_exact(SA=SA, t=temperature, p=pressure, p_ref=referencePressure) - 1000
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -2081,7 +2081,6 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
     } else {
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
     }
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     if (is.null(l$temperature))
         stop("must provide temperature")
@@ -2101,7 +2100,8 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
         CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
         res <- gsw::gsw_sound_speed(SA=SA, CT=CT, p=l$pressure)
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -2159,7 +2159,6 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
     }
     if (is.null(l$temperature))
         stop("must provide temperature")
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     nt <- length(l$temperature)
@@ -2174,7 +2173,8 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
         res <- gsw::gsw_cp_t_exact(SA=SA, t=l$temperature, p=l$pressure)
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -2276,7 +2276,6 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL,
     }
     if (eos == "gsw" && is.null(pressure))
         stop("must provide pressure")
-    Smatrix <- is.matrix(salinity)
     dim <- dim(salinity)
     nS <- length(salinity)
     nt <- length(temperature)
@@ -2294,7 +2293,8 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL,
         CT <- gsw::gsw_CT_from_t(SA=SA, t=temperature, p=pressure)
         res <- gsw::gsw_spiciness0(SA, CT)
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -2398,7 +2398,6 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
     } else {
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure))
     }
-    Smatrix <- is.matrix(salinity)
     dim <- dim(salinity)
     nS <- length(salinity)
     nt <- length(temperature)
@@ -2422,7 +2421,7 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
                   value=double(nS), NAOK=TRUE, PACKAGE="oce")$value
         res <- T90fromT68(res)
     }
-    if (Smatrix)
+    if (!is.null(dim))
         dim(res) <- dim
     res
 }
@@ -2541,7 +2540,6 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
         stop("must supply latitude")
     l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                          longitude=longitude, latitude=latitude))
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     nt <- length(l$temperature)
@@ -2554,7 +2552,8 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
     good <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature[!bad], p=l$pressure[!bad])
     res <- rep(NA, nS)
     res[!bad] <- good
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -2612,7 +2611,6 @@ swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=NULL, latitude
     if (is.null(latitude))
         stop("must supply latitude")
     l <- lookWithin(list(salinity=salinity, pressure=pressure, longitude=longitude, latitude=latitude))
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     np <- length(l$pressure)
@@ -2621,6 +2619,7 @@ swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=NULL, latitude
     good <- gsw::gsw_SA_from_SP(l$salinity[!bad], l$pressure[!bad], l$longitude[!bad], l$latitude[!bad])
     res <- rep(NA, nS)
     res[!bad] <- good
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
