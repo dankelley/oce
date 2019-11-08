@@ -1083,7 +1083,7 @@ tidem <- function(t, x, constituents, infer=NULL,
                              paste(tc$name, collapse=" "))
                     remove <- which(name == nameRemove)
                     if (0 == length(remove))
-                        warning(nameRemove, "is not in the list of constituents currently under study")
+                        warning("'", nameRemove, "' is not in the list of constituents currently under study", sep="")
                     else
                         name <- name[-remove]
                 } else {
