@@ -72,6 +72,13 @@
 #' \code{\link{[[<-,ctd-method}} scheme,
 #' and sufficiently skilled users may even manipulate the contents directly.
 #'
+#' @section Data sources:
+#'
+#' Archived CTD (and other) data may be found on servers such as
+#' 1. \url{https://cchdo.ucsd.edu/}
+#' 2. \url{https://www.nodc.noaa.gov/woce/wdiu/}
+#' 3. \url{https://www.nodc.noaa.gov/cgi-bin/OC5/SELECT/builder.pl}
+#'
 #' @examples
 #'
 #' # 1. Create a ctd object with fake data.
