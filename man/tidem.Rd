@@ -188,8 +188,9 @@ Pawlowicz.
 set by Foreman (1978). This convention is slightly different
 from that used in the T-TIDE package of Pawlowicz et al.
 (2002), with Foreman's \code{UPS1} and \code{M8} becoming
-\code{UPSI} and \code{MS} in T-TIDE. As a convenience,
-\code{tidem} converts from these T-TIDE names to the
+\code{UPSI} and \code{MS} in T-TIDE. To permit the use of either notation,
+\code{\link[=tidem]{tidem()}} uses \code{\link[=tidemConstituentNameFix]{tidemConstituentNameFix()}} to
+convert from T-TIDE names to the
 Foreman names, issuing warnings when doing so.
 }
 
