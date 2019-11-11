@@ -5,8 +5,9 @@
 \title{Plot CTD data in a Low-Level Fashion}
 \usage{
 plotScan(x, which = 1, xtype = "scan", flipy = FALSE, type = "l",
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5, mgp[1] + 1.5,
-  mgp[1], mgp[1]), ..., debug = getOption("oceDebug"))
+  mgp = getOption("oceMgp"), xlim = NULL, ylim = NULL,
+  mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1], mgp[1]), ...,
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{a \linkS4class{ctd} object.}
@@ -32,6 +33,12 @@ is \code{"l"}, meaning to connect data with line segments. Another good choice i
 \item{mgp}{Three-element numerical vector to use for \code{par(mgp)}, and also
 for \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
+
+\item{xlim}{Limits on the x value. The default, \code{NULL}, is to select this
+from the data.}
+
+\item{ylim}{Limits on the y value. The default, \code{NULL}, is to select this
+from the data.}
 
 \item{mar}{Four-element vector be used with \code{\link{par}}\code{("mar")}.  If set
 to \code{NULL}, then \code{par("mar")} is used.  A good choice for a TS diagram

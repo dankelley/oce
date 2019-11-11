@@ -3877,6 +3877,12 @@ setMethod(f="subset",
 #' is `"l"`, meaning to connect data with line segments. Another good choice is
 #' `"o"`, to add points at the data.
 #'
+#' @param xlim Limits on the x value. The default, `NULL`, is to select this
+#' from the data.
+#'
+#' @param ylim Limits on the y value. The default, `NULL`, is to select this
+#' from the data.
+#'
 #' @param mgp Three-element numerical vector to use for `par(mgp)`, and also
 #' for `par(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
@@ -3900,6 +3906,7 @@ setMethod(f="subset",
 #' @family things related to ctd data
 plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
                      type='l', mgp=getOption("oceMgp"),
+                     xlim=NULL, ylim=NULL,
                      mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]), ..., debug=getOption("oceDebug"))
 {
     if (!inherits(x, "ctd"))
@@ -3913,21 +3920,31 @@ plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
     for (w in which) {
         if (xtype == "scan") {
             xvar <- if ("scan" %in% names(x@data)) x[["scan"]] else seq_along(x[["pressure"]])
+            if (missing(xlim))
+                xlim <- range(xvar, na.rm=TRUE)
             if (w == 1) {
-                ylim <- range(x[["pressure"]], na.rm=TRUE)
-                if (flipy)
-                    ylim <- rev(ylim)
+                if (missing(ylim)) {
+                    ylim <- range(x[["pressure"]], na.rm=TRUE)
+                    if (flipy)
+                        ylim <- rev(ylim)
+                }
                 plot(xvar, x[["pressure"]], xlab="Scan", ylab=resizableLabel("p", "y", debug=debug-1),
-                     yaxs='r', type=type, ylim=ylim, ...)
+                     yaxs='r', type=type, xlim=xlim, ylim=ylim, ...)
             } else if (w == 2) {
+                if (missing(ylim))
+                    ylim <- range(diff(x[["pressure"]]), na.rm=TRUE)
                 plot(xvar[-1], diff(x[["pressure"]]), xlab="Scan", ylab="diff(pressure)",
-                     yaxs='r', type=type, ...)
+                     yaxs='r', type=type, xlim=xlim, ylim=ylim, ...)
             } else if (w == 3) {
+                if (missing(ylim))
+                    ylim <- range(diff(x[["temperature"]]), na.rm=TRUE)
                 plot(xvar, x[["temperature"]], xlab="Scan", ylab=resizableLabel("T", "y", debug=debug-1),
-                     yaxs='r', type=type, ...)
+                     yaxs='r', type=type, xlim=xlim, ylim=ylim, ...)
             } else if (w == 4) {
+                if (missing(ylim))
+                    ylim <- range(diff(x[["salinity"]]), na.rm=TRUE)
                 plot(xvar, x[["salinity"]], xlab="Scan", ylab=resizableLabel("S", "y", debug=debug-1),
-                     yaxs='r', type=type, ...)
+                     yaxs='r', type=type, xlim=xlim, ylim=ylim, ...)
             } else {
                 stop("unknown 'which'; must be in 1:4")
             }
@@ -3935,18 +3952,28 @@ plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
             time <- x[["time"]]
             if (is.null(time))
                 stop("there is no 'time' in this ctd object")
+            if (missing(xlim))
+                xlim <- range(time)
             if (w == 1) {
+                if (missing(ylim))
+                    ylim <- range(x[["pressure"]], na.rm=TRUE)
                 oce.plot.ts(time, x[["pressure"]], ylab=resizableLabel("p", "y", debug=debug-1),
-                            yaxs='r', type=type, flipy=flipy, ...)
+                            yaxs='r', type=type, flipy=flipy, xlim=xlim, ylim=ylim, ...)
             } else if (w == 2) {
+                if (missing(ylim))
+                    ylim <- range(diff(x[["pressure"]]), na.rm=TRUE)
                 oce.plot.ts(time[-1], diff(x[["pressure"]]), ylab="diff(pressure)",
-                            yaxs='r', type=type, flipy=flipy, ...)
+                            yaxs='r', type=type, flipy=flipy, xlim=xlim, ylim=ylim, ...)
             } else if (w == 3) {
+                if (missing(ylim))
+                    ylim <- range(x[["temperature"]], na.rm=TRUE)
                 oce.plot.ts(time, x[["temperature"]], ylab=resizableLabel("T", "y", debug=debug-1),
-                            yaxs='r', type=type, flipy=flipy, ...)
+                            yaxs='r', type=type, flipy=flipy, xlim=xlim, ylim=ylim, ...)
             } else if (w == 4) {
+                if (missing(ylim))
+                    ylim <- range(x[["salinity"]], na.rm=TRUE)
                 oce.plot.ts(time, x[["salinity"]], ylab=resizableLabel("S", "y", debug=debug-1),
-                            yaxs='r', type=type, flipy=flipy, ...)
+                            yaxs='r', type=type, flipy=flipy, xlim=xlim, ylim=ylim, ...)
             } else {
                 stop("unknown 'which'; must be in 1:4")
             }
