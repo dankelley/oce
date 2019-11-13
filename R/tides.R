@@ -140,7 +140,6 @@ setMethod(f="summary",
           signature="tidem",
           definition=function(object, p, constituent, ...) {
               debug <- if ("debug" %in% names(list(...))) list(...)$debug else 0
-              cat("debug=",debug,"\n")
               version <- object@metadata$version
               if (missing(p))
                   p <- 1
@@ -193,8 +192,10 @@ setMethod(f="summary",
                   cat("RMS misfit to data: ", sqrt(var(object[["model"]]$residuals)), '\n')
                   cat("\nFitted Model:\n")
                   f <- fit[3:6]
-                  cat("fit:\n");print(fit)
-                  cat("f:\n");print(f)
+                  if (debug > 0) {
+                      cat("fit:\n");print(fit)
+                      cat("f:\n");print(f)
+                  }
                   rownames(f) <- as.character(fit[, 2])
                   if (haveP) {
                       printCoefmat(f, digits=3,
