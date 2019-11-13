@@ -1271,6 +1271,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
         col <- rep(col, length.out=nx)
         pch <- rep(pch, length.out=nx)
         cex <- rep(cex, length.out=nx)
+        oceDebug(debug, "made col, pch and cex of length ", nx, " to match length(x)\n")
     }
 
     pc <- paletteCalculations(maidiff=rep(0, 4))
@@ -1304,9 +1305,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
         ## FIXME: obey their mar?
         the.mai <- pc$mai0
         the.mai <- clipmin(the.mai, 0)         # just in case
-        oceDebug(debug, "the.mai=", the.mai, "\n")
-
-        par(mai=the.mai, cex=cex)
+        oceDebug(debug, "the.mai=", vectorShow(the.mai))
+        par(mai=the.mai)
         drawPalette(mai=rep(0, 4))
     }
     xrange <- range(x, na.rm=TRUE)
