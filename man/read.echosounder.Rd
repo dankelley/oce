@@ -4,9 +4,14 @@
 \alias{read.echosounder}
 \title{Read an Echosounder File}
 \usage{
-read.echosounder(file, channel = 1, soundSpeed,
-  tz = getOption("oceTz"), debug = getOption("oceDebug"),
-  processingLog)
+read.echosounder(
+  file,
+  channel = 1,
+  soundSpeed,
+  tz = getOption("oceTz"),
+  debug = getOption("oceDebug"),
+  processingLog
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -16,7 +21,7 @@ to load.}
 files.}
 
 \item{soundSpeed}{sound speed, in m/s. If not provided, this is calculated
-using \code{\link{swSoundSpeed}}\code{(35,15,30,eos="unesco")}.  (In theory,
+using \code{\link{swSoundSpeed}}\verb{(35,15,30,eos="unesco")}.  (In theory,
 it could be calculated using the temperature and salinity that are stored
 in the data file, but these will just be nominal values, anyway.}
 
@@ -63,14 +68,16 @@ The documentation for \linkS4class{echosounder} explains the
 structure of \code{ctd} objects, and also outlines the other functions
 dealing with them.
 
-Other things related to echosounder data: \code{\link{[[,echosounder-method}},
-  \code{\link{[[<-,echosounder-method}},
-  \code{\link{as.echosounder}},
-  \code{\link{echosounder-class}},
-  \code{\link{echosounder}}, \code{\link{findBottom}},
-  \code{\link{plot,echosounder-method}},
-  \code{\link{subset,echosounder-method}},
-  \code{\link{summary,echosounder-method}}
+Other things related to echosounder data: 
+\code{\link{[[,echosounder-method}},
+\code{\link{[[<-,echosounder-method}},
+\code{\link{as.echosounder}()},
+\code{\link{echosounder-class}},
+\code{\link{echosounder}},
+\code{\link{findBottom}()},
+\code{\link{plot,echosounder-method}},
+\code{\link{subset,echosounder-method}},
+\code{\link{summary,echosounder-method}}
 }
 \author{
 Dan Kelley, with help from Clark Richards

@@ -4,9 +4,19 @@
 \alias{read.cm}
 \title{Read a CM file}
 \usage{
-read.cm(file, from = 1, to, by = 1, tz = getOption("oceTz"),
-  type = c("s4"), longitude = NA, latitude = NA,
-  debug = getOption("oceDebug"), monitor = FALSE, processingLog)
+read.cm(
+  file,
+  from = 1,
+  to,
+  by = 1,
+  tz = getOption("oceTz"),
+  type = c("s4"),
+  longitude = NA,
+  latitude = NA,
+  debug = getOption("oceDebug"),
+  monitor = FALSE,
+  processingLog
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file to
@@ -115,12 +125,16 @@ return value, but it is no longer stored, since it can be derived from the
 
 }
 \seealso{
-Other things related to cm data: \code{\link{[[,cm-method}},
-  \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
-  \code{\link{cm-class}}, \code{\link{cm}},
-  \code{\link{plot,cm-method}}, \code{\link{rotateAboutZ}},
-  \code{\link{subset,cm-method}},
-  \code{\link{summary,cm-method}}
+Other things related to cm data: 
+\code{\link{[[,cm-method}},
+\code{\link{[[<-,cm-method}},
+\code{\link{as.cm}()},
+\code{\link{cm-class}},
+\code{\link{cm}},
+\code{\link{plot,cm-method}},
+\code{\link{rotateAboutZ}()},
+\code{\link{subset,cm-method}},
+\code{\link{summary,cm-method}}
 }
 \author{
 Dan Kelley

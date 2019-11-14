@@ -4,8 +4,14 @@
 \alias{download.coastline}
 \title{Download a coastline File}
 \usage{
-download.coastline(resolution, item = "coastline", destdir = ".",
-  destfile, server = "naturalearth", debug = getOption("oceDebug"))
+download.coastline(
+  resolution,
+  item = "coastline",
+  destdir = ".",
+  destfile,
+  server = "naturalearth",
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{resolution}{A character value specifying the desired resolution. The permitted
@@ -72,20 +78,24 @@ plot(coastline)
 \seealso{
 The work is done with \code{\link[utils:download.file]{utils::download.file()}}.
 
-Other functions that download files: \code{\link{download.amsr}},
-  \code{\link{download.met}}, \code{\link{download.topo}}
+Other functions that download files: 
+\code{\link{download.amsr}()},
+\code{\link{download.met}()},
+\code{\link{download.topo}()}
 
-Other things related to coastline data: \code{\link{[[,coastline-method}},
-  \code{\link{[[<-,coastline-method}},
-  \code{\link{as.coastline}},
-  \code{\link{coastline-class}},
-  \code{\link{coastlineBest}}, \code{\link{coastlineCut}},
-  \code{\link{coastlineWorld}},
-  \code{\link{plot,coastline-method}},
-  \code{\link{read.coastline.openstreetmap}},
-  \code{\link{read.coastline.shapefile}},
-  \code{\link{subset,coastline-method}},
-  \code{\link{summary,coastline-method}}
+Other things related to coastline data: 
+\code{\link{[[,coastline-method}},
+\code{\link{[[<-,coastline-method}},
+\code{\link{as.coastline}()},
+\code{\link{coastline-class}},
+\code{\link{coastlineBest}()},
+\code{\link{coastlineCut}()},
+\code{\link{coastlineWorld}},
+\code{\link{plot,coastline-method}},
+\code{\link{read.coastline.openstreetmap}()},
+\code{\link{read.coastline.shapefile}()},
+\code{\link{subset,coastline-method}},
+\code{\link{summary,coastline-method}}
 }
 \author{
 Dan Kelley

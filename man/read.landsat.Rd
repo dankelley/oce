@@ -4,8 +4,13 @@
 \alias{read.landsat}
 \title{Read a landsat File Directory}
 \usage{
-read.landsat(file, band = "all", emissivity = 0.984, decimate,
-  debug = getOption("oceDebug"))
+read.landsat(
+  file,
+  band = "all",
+  emissivity = 0.984,
+  decimate,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{file}{A connection or a character string giving the name of the file to
@@ -103,16 +108,19 @@ See the documentation for the \linkS4class{landsat} class
 for more information on \code{landsat} objects,
 especially band information.  Use \code{\link[=landsatTrim]{landsatTrim()}} to trim Landsat
 objects geographically and \code{\link[=landsatAdd]{landsatAdd()}} to add new ``bands.''  The
-accessor operator (\code{[[}) is used to access band information, full or
+accessor operator (\verb{[[}) is used to access band information, full or
 decimated, and to access certain derived quantities.  A sample dataset named
 \code{\link[=landsat]{landsat()}} is provided by the \CRANpkg{oce} package.
 
-Other things related to landsat data: \code{\link{[[,landsat-method}},
-  \code{\link{[[<-,landsat-method}},
-  \code{\link{landsat-class}}, \code{\link{landsatAdd}},
-  \code{\link{landsatTrim}}, \code{\link{landsat}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{summary,landsat-method}}
+Other things related to landsat data: 
+\code{\link{[[,landsat-method}},
+\code{\link{[[<-,landsat-method}},
+\code{\link{landsat-class}},
+\code{\link{landsatAdd}()},
+\code{\link{landsatTrim}()},
+\code{\link{landsat}},
+\code{\link{plot,landsat-method}},
+\code{\link{summary,landsat-method}}
 }
 \author{
 Dan Kelley

@@ -4,8 +4,14 @@
 \alias{oceProject}
 \title{Wrapper to rgdal::project()}
 \usage{
-oceProject(xy, proj, inv = FALSE, use_ob_tran = FALSE, legacy = TRUE,
-  passNA = FALSE)
+oceProject(
+  xy,
+  proj,
+  inv = FALSE,
+  use_ob_tran = FALSE,
+  legacy = TRUE,
+  passNA = FALSE
+)
 }
 \arguments{
 \item{xy, proj, inv, use_ob_tran, legacy}{As for the \code{\link[rgdal:project]{rgdal::project()}} function in the

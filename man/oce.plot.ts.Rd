@@ -4,15 +4,40 @@
 \alias{oce.plot.ts}
 \title{Oce Variant of plot.ts}
 \usage{
-oce.plot.ts(x, y, type = "l", xlim, ylim, log = "", flipy = FALSE,
-  xlab, ylab, drawTimeRange, fill = FALSE, col = par("col"),
-  pch = par("pch"), cex = par("cex"), cex.axis = par("cex.axis"),
-  cex.main = par("cex.main"), xaxs = par("xaxs"), yaxs = par("yaxs"),
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + if (nchar(xlab) > 0) 1.5
-  else 1, mgp[1] + 1.5, mgp[2] + 1, mgp[2] + 3/4), main = "",
-  despike = FALSE, axes = TRUE, tformat, marginsAsImage = FALSE,
-  grid = FALSE, grid.col = "lightgray", grid.lty = "dotted",
-  grid.lwd = par("lwd"), debug = getOption("oceDebug"), ...)
+oce.plot.ts(
+  x,
+  y,
+  type = "l",
+  xlim,
+  ylim,
+  log = "",
+  flipy = FALSE,
+  xlab,
+  ylab,
+  drawTimeRange,
+  fill = FALSE,
+  col = par("col"),
+  pch = par("pch"),
+  cex = par("cex"),
+  cex.axis = par("cex.axis"),
+  cex.main = par("cex.main"),
+  xaxs = par("xaxs"),
+  yaxs = par("yaxs"),
+  mgp = getOption("oceMgp"),
+  mar = c(mgp[1] + if (nchar(xlab) > 0) 1.5 else 1, mgp[1] + 1.5, mgp[2] + 1, mgp[2] +
+    3/4),
+  main = "",
+  despike = FALSE,
+  axes = TRUE,
+  tformat,
+  marginsAsImage = FALSE,
+  grid = FALSE,
+  grid.col = "lightgray",
+  grid.lty = "dotted",
+  grid.lwd = par("lwd"),
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{x}{the times of observations.}

@@ -4,8 +4,13 @@
 \alias{handleFlags}
 \title{Handle flags in oce objects}
 \usage{
-handleFlags(object, flags = NULL, actions = NULL, where = NULL,
-  debug = getOption("oceDebug"))
+handleFlags(
+  object,
+  flags = NULL,
+  actions = NULL,
+  where = NULL,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{object}{an \linkS4class{oce} object.}
@@ -76,23 +81,25 @@ Each specialized variant of this function has its own defaults
 for \code{flags} and \code{actions}.
 }
 \seealso{
-Other functions relating to data-quality flags: \code{\link{defaultFlags}},
-  \code{\link{handleFlags,adp-method}},
-  \code{\link{handleFlags,argo-method}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{handleFlags,oce-method}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{initializeFlagScheme,oce-method}},
-  \code{\link{initializeFlagScheme,section-method}},
-  \code{\link{initializeFlagSchemeInternal}},
-  \code{\link{initializeFlagScheme}},
-  \code{\link{initializeFlags,adp-method}},
-  \code{\link{initializeFlags,oce-method}},
-  \code{\link{initializeFlagsInternal}},
-  \code{\link{initializeFlags}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
+Other functions relating to data-quality flags: 
+\code{\link{defaultFlags}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{handleFlags,argo-method}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{handleFlags,oce-method}},
+\code{\link{handleFlags,section-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{initializeFlagScheme,oce-method}},
+\code{\link{initializeFlagScheme,section-method}},
+\code{\link{initializeFlagSchemeInternal}()},
+\code{\link{initializeFlagScheme}()},
+\code{\link{initializeFlags,adp-method}},
+\code{\link{initializeFlags,oce-method}},
+\code{\link{initializeFlagsInternal}()},
+\code{\link{initializeFlags}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{setFlags,ctd-method}},
+\code{\link{setFlags,oce-method}},
+\code{\link{setFlags}()}
 }
 \concept{functions relating to data-quality flags}

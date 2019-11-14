@@ -9,10 +9,11 @@ This class holds satellite data of various types, including
 \linkS4class{amsr} and \linkS4class{g1sst}.
 }
 \seealso{
-Other things related to satellite data: \code{\link{g1sst-class}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{read.g1sst}},
-  \code{\link{summary,satellite-method}}
+Other things related to satellite data: 
+\code{\link{g1sst-class}},
+\code{\link{plot,satellite-method}},
+\code{\link{read.g1sst}()},
+\code{\link{summary,satellite-method}}
 }
 \author{
 Dan Kelley and Chantelle Layton

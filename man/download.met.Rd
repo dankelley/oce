@@ -4,8 +4,16 @@
 \alias{download.met}
 \title{Download and Cache a met File}
 \usage{
-download.met(id, year, month, deltat, type = "xml", destdir = ".",
-  destfile, debug = getOption("oceDebug"))
+download.met(
+  id,
+  year,
+  month,
+  deltat,
+  type = "xml",
+  destdir = ".",
+  destfile,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{id}{A number giving the "Station ID" of the station of interest. If not
@@ -100,21 +108,26 @@ met <- read.met(metFile)
 }
 }
 \seealso{
-The work is done with \code{\link[utils]{download.file}}.
+The work is done with \code{\link[utils:download.file]{utils::download.file()}}.
 
-Other functions that download files: \code{\link{download.amsr}},
-  \code{\link{download.coastline}},
-  \code{\link{download.topo}}
+Other functions that download files: 
+\code{\link{download.amsr}()},
+\code{\link{download.coastline}()},
+\code{\link{download.topo}()}
 
-Other things related to met data: \code{\link{[[,met-method}},
-  \code{\link{[[<-,met-method}}, \code{\link{as.met}},
-  \code{\link{met-class}}, \code{\link{met}},
-  \code{\link{plot,met-method}}, \code{\link{read.met}},
-  \code{\link{subset,met-method}},
-  \code{\link{summary,met-method}},
-  \code{\link{test_met_csv1.csv}},
-  \code{\link{test_met_csv2.csv}},
-  \code{\link{test_met_xml2.xml}}
+Other things related to met data: 
+\code{\link{[[,met-method}},
+\code{\link{[[<-,met-method}},
+\code{\link{as.met}()},
+\code{\link{met-class}},
+\code{\link{met}},
+\code{\link{plot,met-method}},
+\code{\link{read.met}()},
+\code{\link{subset,met-method}},
+\code{\link{summary,met-method}},
+\code{\link{test_met_csv1.csv}},
+\code{\link{test_met_csv2.csv}},
+\code{\link{test_met_xml2.xml}}
 }
 \author{
 Dan Kelley

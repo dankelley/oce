@@ -96,11 +96,11 @@ a such a repository. If the ID of a float is known but not the
 \code{http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
 and search for the ID. The first few lines of that file are header,
 and after that the format is simple, with columns separated by slash
-(\code{/}). The dac is in the first such column and the float ID in the
+(\verb{/}). The dac is in the first such column and the float ID in the
 second. A simple search will reveal the dac.
 For example \code{data(argo)} is based on float 6900388, and the line
 containing that token is
-\code{bodc/6900388/6900388_meta.nc,846,BO,20120225005617}, from
+\verb{bodc/6900388/6900388_meta.nc,846,BO,20120225005617}, from
 which the dac is seen to be the British Oceanographic Data Centre
 (\code{bodc}). Armed with that information, visit
 \code{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}
@@ -161,14 +161,18 @@ which is the main document describing argo data.
 The documentation for the \linkS4class{argo} class explains the structure of argo
 objects, and also outlines the other functions dealing with them.
 
-Other things related to argo data: \code{\link{[[,argo-method}},
-  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
-  \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
-  \code{\link{argo}}, \code{\link{as.argo}},
-  \code{\link{handleFlags,argo-method}},
-  \code{\link{plot,argo-method}},
-  \code{\link{subset,argo-method}},
-  \code{\link{summary,argo-method}}
+Other things related to argo data: 
+\code{\link{[[,argo-method}},
+\code{\link{[[<-,argo-method}},
+\code{\link{argo-class}},
+\code{\link{argoGrid}()},
+\code{\link{argoNames2oceNames}()},
+\code{\link{argo}},
+\code{\link{as.argo}()},
+\code{\link{handleFlags,argo-method}},
+\code{\link{plot,argo-method}},
+\code{\link{subset,argo-method}},
+\code{\link{summary,argo-method}}
 }
 \author{
 Dan Kelley

@@ -4,8 +4,18 @@
 \alias{pwelch}
 \title{Welch periodogram}
 \usage{
-pwelch(x, window, noverlap, nfft, fs, spectrumtype, esttype, plot = TRUE,
-  debug = getOption("oceDebug"), ...)
+pwelch(
+  x,
+  window,
+  noverlap,
+  nfft,
+  fs,
+  spectrumtype,
+  esttype,
+  plot = TRUE,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{x}{a vector or timeseries to be analyzed.  If a timeseries, then there

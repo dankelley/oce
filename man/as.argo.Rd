@@ -4,8 +4,18 @@
 \alias{as.argo}
 \title{Coerce Data Into an Argo Dataset}
 \usage{
-as.argo(time, longitude, latitude, salinity, temperature, pressure,
-  units = NULL, id, filename = "", missingValue)
+as.argo(
+  time,
+  longitude,
+  latitude,
+  salinity,
+  temperature,
+  pressure,
+  units = NULL,
+  id,
+  filename = "",
+  missingValue
+)
 }
 \arguments{
 \item{time}{vector of POSIXct times.}
@@ -46,14 +56,18 @@ be read with \code{\link[=read.argo]{read.argo()}}.
 The documentation for the \linkS4class{argo} class explains the structure of argo
 objects, and also outlines the other functions dealing with them.
 
-Other things related to argo data: \code{\link{[[,argo-method}},
-  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
-  \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
-  \code{\link{argo}},
-  \code{\link{handleFlags,argo-method}},
-  \code{\link{plot,argo-method}}, \code{\link{read.argo}},
-  \code{\link{subset,argo-method}},
-  \code{\link{summary,argo-method}}
+Other things related to argo data: 
+\code{\link{[[,argo-method}},
+\code{\link{[[<-,argo-method}},
+\code{\link{argo-class}},
+\code{\link{argoGrid}()},
+\code{\link{argoNames2oceNames}()},
+\code{\link{argo}},
+\code{\link{handleFlags,argo-method}},
+\code{\link{plot,argo-method}},
+\code{\link{read.argo}()},
+\code{\link{subset,argo-method}},
+\code{\link{summary,argo-method}}
 }
 \author{
 Dan Kelley

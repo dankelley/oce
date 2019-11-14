@@ -34,7 +34,7 @@ Press, New York, 662 pp.
 Estimates of the Parameters of Common Relevance to Astronomy, Geodesy,
 and Geodynamics. Journal of Geodesy, 77:724-797.
 (downloaded from
-\code{http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf}
+\verb{http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf}
 March 11, 2017).
 }
 }

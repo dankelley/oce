@@ -74,21 +74,32 @@ A users's manual for the LISST-100 instrument is available at
 the manufacturer's website \url{http://www.sequoiasci.com}.
 }
 \seealso{
-Other classes provided by oce: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{lobo-class}}, \code{\link{met-class}},
-  \code{\link{oce-class}}, \code{\link{odf-class}},
-  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}, \code{\link{xbt-class}}
+Other classes provided by oce: 
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{argo-class}},
+\code{\link{bremen-class}},
+\code{\link{cm-class}},
+\code{\link{coastline-class}},
+\code{\link{ctd-class}},
+\code{\link{lobo-class}},
+\code{\link{met-class}},
+\code{\link{oce-class}},
+\code{\link{odf-class}},
+\code{\link{rsk-class}},
+\code{\link{sealevel-class}},
+\code{\link{section-class}},
+\code{\link{topo-class}},
+\code{\link{windrose-class}},
+\code{\link{xbt-class}}
 
-Other things related to lisst data: \code{\link{[[,lisst-method}},
-  \code{\link{[[<-,lisst-method}}, \code{\link{as.lisst}},
-  \code{\link{plot,lisst-method}},
-  \code{\link{read.lisst}},
-  \code{\link{summary,lisst-method}}
+Other things related to lisst data: 
+\code{\link{[[,lisst-method}},
+\code{\link{[[<-,lisst-method}},
+\code{\link{as.lisst}()},
+\code{\link{plot,lisst-method}},
+\code{\link{read.lisst}()},
+\code{\link{summary,lisst-method}}
 }
 \author{
 Dan Kelley

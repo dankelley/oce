@@ -13,16 +13,16 @@ during September of 2003 (the period during which Hurricane Juan struck the
 city).
 }
 \details{
-The data file was downloaded\preformatted{metFile <- download.met(id=6358, year=2003, month=9, destdir=".", type="xml")
-}
+The data file was downloaded\if{html}{\out{<div class="R">}}\preformatted{metFile <- download.met(id=6358, year=2003, month=9, destdir=".", type="xml")
+}\if{html}{\out{</div>}}
 
 Note that using \code{\link[=download.met]{download.met()}} avoids having to navigate the
 the awkward Environment Canada website, but it imposes the burden
 of having to know the station ID number.  With the data in-hand,
-the object was then created (and its timezone adjusted) with\preformatted{met <- read.met(metFile)
+the object was then created (and its timezone adjusted) with\if{html}{\out{<div class="R">}}\preformatted{met <- read.met(metFile)
 met <- oceSetData(met, "time", met[["time"]]+4*3600,
                  note="add 4h to local time to get UTC time")
-}
+}\if{html}{\out{</div>}}
 
 \emph{Historical note.} The \code{data(met)} object was changed on October 19,
 2019, based on the data provided by Environment
@@ -33,26 +33,40 @@ notes on the \code{type} argument of \code{\link[=read.met]{read.met()}} for mor
 shift in the Environment Canada data format.
 }
 \seealso{
-Other datasets provided with oce: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
-  \code{\link{landsat}}, \code{\link{lisst}},
-  \code{\link{lobo}}, \code{\link{ocecolors}},
-  \code{\link{rsk}}, \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}},
-  \code{\link{xbt}}
+Other datasets provided with oce: 
+\code{\link{adp}},
+\code{\link{adv}},
+\code{\link{argo}},
+\code{\link{cm}},
+\code{\link{coastlineWorld}},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{echosounder}},
+\code{\link{landsat}},
+\code{\link{lisst}},
+\code{\link{lobo}},
+\code{\link{ocecolors}},
+\code{\link{rsk}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{section}},
+\code{\link{topoWorld}},
+\code{\link{wind}},
+\code{\link{xbt}}
 
-Other things related to met data: \code{\link{[[,met-method}},
-  \code{\link{[[<-,met-method}}, \code{\link{as.met}},
-  \code{\link{download.met}}, \code{\link{met-class}},
-  \code{\link{plot,met-method}}, \code{\link{read.met}},
-  \code{\link{subset,met-method}},
-  \code{\link{summary,met-method}},
-  \code{\link{test_met_csv1.csv}},
-  \code{\link{test_met_csv2.csv}},
-  \code{\link{test_met_xml2.xml}}
+Other things related to met data: 
+\code{\link{[[,met-method}},
+\code{\link{[[<-,met-method}},
+\code{\link{as.met}()},
+\code{\link{download.met}()},
+\code{\link{met-class}},
+\code{\link{plot,met-method}},
+\code{\link{read.met}()},
+\code{\link{subset,met-method}},
+\code{\link{summary,met-method}},
+\code{\link{test_met_csv1.csv}},
+\code{\link{test_met_csv2.csv}},
+\code{\link{test_met_xml2.xml}}
 }
 \concept{datasets provided with oce}
 \concept{things related to met data}

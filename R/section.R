@@ -890,7 +890,7 @@ sectionSort <- function(section, by)
 #' @param station A ctd object holding data for the station to be added.
 #'
 #' @aliases sectionAddCtd
-#' @return An object of `\link[base]{class`} `section`.
+#' @return A [section-class] object.
 #'
 #' @examples
 #' library(oce)

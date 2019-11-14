@@ -4,8 +4,13 @@
 \alias{download.amsr}
 \title{Download and Cache an amsr File}
 \usage{
-download.amsr(year, month, day, destdir = ".",
-  server = "http://data.remss.com/amsr2/bmaps_v08")
+download.amsr(
+  year,
+  month,
+  day,
+  destdir = ".",
+  server = "http://data.remss.com/amsr2/bmaps_v08"
+)
 }
 \arguments{
 \item{year, month, day}{Numerical values of the year, month, and day
@@ -52,9 +57,9 @@ It is assumed that users will do some checking on the best source.
 
 On 23 January 2018, it was noticed that the server-url naming convention
 had changed, e.g.
-\code{http://data.remss.com/amsr2/bmaps_v07.2/y2017/m01/f34_20170114v7.2.gz}
+\verb{http://data.remss.com/amsr2/bmaps_v07.2/y2017/m01/f34_20170114v7.2.gz}
 becoming
-\code{http://data.remss.com/amsr2/bmaps_v08/y2017/m01/f34_20170114v8.gz}
+\verb{http://data.remss.com/amsr2/bmaps_v08/y2017/m01/f34_20170114v8.gz}
 }
 
 \examples{
@@ -68,20 +73,25 @@ mtext(d[["filename"]], side=3, line=0, adj=0)
 
 }
 \references{
-\code{http://images.remss.com/amsr/amsr2_data_daily.html}
+\verb{http://images.remss.com/amsr/amsr2_data_daily.html}
 provides daily images going back to 2012. Three-day,
 monthly, and monthly composites are also provided on that site.
 }
 \seealso{
-Other functions that download files: \code{\link{download.coastline}},
-  \code{\link{download.met}}, \code{\link{download.topo}}
+Other functions that download files: 
+\code{\link{download.coastline}()},
+\code{\link{download.met}()},
+\code{\link{download.topo}()}
 
-Other things related to amsr data: \code{\link{[[,amsr-method}},
-  \code{\link{[[<-,amsr-method}}, \code{\link{amsr-class}},
-  \code{\link{composite,amsr-method}},
-  \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
-  \code{\link{subset,amsr-method}},
-  \code{\link{summary,amsr-method}}
+Other things related to amsr data: 
+\code{\link{[[,amsr-method}},
+\code{\link{[[<-,amsr-method}},
+\code{\link{amsr-class}},
+\code{\link{composite,amsr-method}},
+\code{\link{plot,amsr-method}},
+\code{\link{read.amsr}()},
+\code{\link{subset,amsr-method}},
+\code{\link{summary,amsr-method}}
 }
 \concept{functions that download files}
 \concept{things related to amsr data}

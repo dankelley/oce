@@ -4,9 +4,21 @@
 \alias{plotSticks}
 \title{Draw a Stick Plot}
 \usage{
-plotSticks(x, y, u, v, yscale = 1, add = FALSE, length = 1/20,
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, 1, 1 +
-  par("cex")), xlab = "", ylab = "", col = 1, ...)
+plotSticks(
+  x,
+  y,
+  u,
+  v,
+  yscale = 1,
+  add = FALSE,
+  length = 1/20,
+  mgp = getOption("oceMgp"),
+  mar = c(mgp[1] + 1, mgp[1] + 1, 1, 1 + par("cex")),
+  xlab = "",
+  ylab = "",
+  col = 1,
+  ...
+)
 }
 \arguments{
 \item{x}{x coordinates of stick origins.}

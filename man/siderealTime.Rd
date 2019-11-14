@@ -33,11 +33,13 @@ Willmann-Bell. Richmond VA, USA. 201 pages
 }
 }
 \seealso{
-Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
-  \code{\link{equatorialToLocalHorizontal}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{julianDay}}, \code{\link{moonAngle}},
-  \code{\link{sunAngle}}
+Other things related to astronomy: 
+\code{\link{eclipticalToEquatorial}()},
+\code{\link{equatorialToLocalHorizontal}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{julianDay}()},
+\code{\link{moonAngle}()},
+\code{\link{sunAngle}()}
 }
 \author{
 Dan Kelley

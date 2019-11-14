@@ -4,10 +4,19 @@
 \alias{plotScan}
 \title{Plot CTD data in a Low-Level Fashion}
 \usage{
-plotScan(x, which = 1, xtype = "scan", flipy = FALSE, type = "l",
-  mgp = getOption("oceMgp"), xlim = NULL, ylim = NULL,
-  mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1], mgp[1]), ...,
-  debug = getOption("oceDebug"))
+plotScan(
+  x,
+  which = 1,
+  xtype = "scan",
+  flipy = FALSE,
+  type = "l",
+  mgp = getOption("oceMgp"),
+  xlim = NULL,
+  ylim = NULL,
+  mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1], mgp[1]),
+  ...,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{x}{a \linkS4class{ctd} object.}
@@ -30,8 +39,8 @@ of the axis.}
 is \code{"l"}, meaning to connect data with line segments. Another good choice is
 \code{"o"}, to add points at the data.}
 
-\item{mgp}{Three-element numerical vector to use for \code{par(mgp)}, and also
-for \code{par(mar)}, computed from this.  The default is tighter than the R
+\item{mgp}{Three-element numerical vector to use for \link{par}\code{(mgp)}, and also
+for \link{par}\code{(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
 \item{xlim}{Limits on the x value. The default, \code{NULL}, is to select this
@@ -40,9 +49,9 @@ from the data.}
 \item{ylim}{Limits on the y value. The default, \code{NULL}, is to select this
 from the data.}
 
-\item{mar}{Four-element vector be used with \code{\link{par}}\code{("mar")}.  If set
-to \code{NULL}, then \code{par("mar")} is used.  A good choice for a TS diagram
-with a palette to the right is \code{mar=par("mar")+c(0, 0, 0, 1))}.}
+\item{mar}{Four-element vector be used with \link{par}\code{("mar")}.  If set
+to \code{NULL}, then \link{par}\code{("mar")} is used.  A good choice for a TS diagram
+with a palette to the right is \verb{mar=par("mar")+c(0, 0, 0, 1))}.}
 
 \item{...}{Optional arguments passed to plotting functions.}
 
@@ -66,55 +75,69 @@ abline(v=c(130, 350), col='red') # useful for ctdTrim()
 
 }
 \seealso{
-Other functions that plot oce data: \code{\link{plot,adp-method}},
-  \code{\link{plot,adv-method}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,argo-method}},
-  \code{\link{plot,bremen-method}},
-  \code{\link{plot,cm-method}},
-  \code{\link{plot,coastline-method}},
-  \code{\link{plot,ctd-method}},
-  \code{\link{plot,gps-method}},
-  \code{\link{plot,ladp-method}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{plot,lisst-method}},
-  \code{\link{plot,lobo-method}},
-  \code{\link{plot,met-method}},
-  \code{\link{plot,odf-method}},
-  \code{\link{plot,rsk-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{plot,sealevel-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{plot,tidem-method}},
-  \code{\link{plot,topo-method}},
-  \code{\link{plot,windrose-method}},
-  \code{\link{plot,xbt-method}}, \code{\link{plotProfile}},
-  \code{\link{plotTS}}, \code{\link{tidem-class}}
+Other functions that plot oce data: 
+\code{\link{plot,adp-method}},
+\code{\link{plot,adv-method}},
+\code{\link{plot,amsr-method}},
+\code{\link{plot,argo-method}},
+\code{\link{plot,bremen-method}},
+\code{\link{plot,cm-method}},
+\code{\link{plot,coastline-method}},
+\code{\link{plot,ctd-method}},
+\code{\link{plot,gps-method}},
+\code{\link{plot,ladp-method}},
+\code{\link{plot,landsat-method}},
+\code{\link{plot,lisst-method}},
+\code{\link{plot,lobo-method}},
+\code{\link{plot,met-method}},
+\code{\link{plot,odf-method}},
+\code{\link{plot,rsk-method}},
+\code{\link{plot,satellite-method}},
+\code{\link{plot,sealevel-method}},
+\code{\link{plot,section-method}},
+\code{\link{plot,tidem-method}},
+\code{\link{plot,topo-method}},
+\code{\link{plot,windrose-method}},
+\code{\link{plot,xbt-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotTS}()},
+\code{\link{tidem-class}}
 
-Other things related to ctd data: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
-  \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctd.cnv}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctd}},
-  \code{\link{d200321-001.ctd}},
-  \code{\link{d201211_0011.cnv}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{initialize,ctd-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotTS}}, \code{\link{read.ctd.itp}},
-  \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+Other things related to ctd data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{[[,ctd-method}},
+\code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{ctd-class}},
+\code{\link{ctd.cnv}},
+\code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfiles}()},
+\code{\link{ctdRaw}},
+\code{\link{ctdTrim}()},
+\code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{initialize,ctd-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{plot,ctd-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotTS}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()},
+\code{\link{setFlags,ctd-method}},
+\code{\link{subset,ctd-method}},
+\code{\link{summary,ctd-method}},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()},
+\code{\link{write.ctd}()}
 }
 \author{
 Dan Kelley

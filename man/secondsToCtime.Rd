@@ -24,11 +24,13 @@ cat("86400 s = ", secondsToCtime(86400), "\\n", sep="")
 \seealso{
 See \code{\link[=ctimeToSeconds]{ctimeToSeconds()}}, the inverse of this.
 
-Other things related to time: \code{\link{ctimeToSeconds}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{julianDay}}, \code{\link{numberAsHMS}},
-  \code{\link{numberAsPOSIXct}},
-  \code{\link{unabbreviateYear}}
+Other things related to time: 
+\code{\link{ctimeToSeconds}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{julianDay}()},
+\code{\link{numberAsHMS}()},
+\code{\link{numberAsPOSIXct}()},
+\code{\link{unabbreviateYear}()}
 }
 \author{
 Dan Kelley

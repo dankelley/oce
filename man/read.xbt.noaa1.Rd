@@ -4,8 +4,12 @@
 \alias{read.xbt.noaa1}
 \title{Read a NOAA format for AXBTs}
 \usage{
-read.xbt.noaa1(file, debug = getOption("oceDebug"),
-  missingValue = -9.99, processingLog)
+read.xbt.noaa1(
+  file,
+  debug = getOption("oceDebug"),
+  missingValue = -9.99,
+  processingLog
+)
 }
 \arguments{
 \item{file}{character value naming a file, or a file connection, containing the data.}
@@ -38,11 +42,15 @@ code.  (This formatting information is extracted from a file named \code{readme.
 is provided with the data.)
 }
 \seealso{
-Other things related to xbt data: \code{\link{[[<-,xbt-method}},
-  \code{\link{as.xbt}}, \code{\link{plot,xbt-method}},
-  \code{\link{read.xbt}}, \code{\link{subset,xbt-method}},
-  \code{\link{summary,xbt-method}},
-  \code{\link{xbt-class}}, \code{\link{xbt.edf}}
+Other things related to xbt data: 
+\code{\link{[[<-,xbt-method}},
+\code{\link{as.xbt}()},
+\code{\link{plot,xbt-method}},
+\code{\link{read.xbt}()},
+\code{\link{subset,xbt-method}},
+\code{\link{summary,xbt-method}},
+\code{\link{xbt-class}},
+\code{\link{xbt.edf}}
 }
 \author{
 Dan Kelley

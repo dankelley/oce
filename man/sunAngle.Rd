@@ -81,11 +81,13 @@ Goddard Space Flight Center).
 \seealso{
 The equivalent function for the moon is \code{\link[=moonAngle]{moonAngle()}}.
 
-Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
-  \code{\link{equatorialToLocalHorizontal}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{julianDay}}, \code{\link{moonAngle}},
-  \code{\link{siderealTime}}
+Other things related to astronomy: 
+\code{\link{eclipticalToEquatorial}()},
+\code{\link{equatorialToLocalHorizontal}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{julianDay}()},
+\code{\link{moonAngle}()},
+\code{\link{siderealTime}()}
 }
 \author{
 Dan Kelley

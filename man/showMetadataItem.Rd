@@ -4,8 +4,14 @@
 \alias{showMetadataItem}
 \title{Show metadata item}
 \usage{
-showMetadataItem(object, name, label = "", postlabel = "",
-  isdate = FALSE, quote = FALSE)
+showMetadataItem(
+  object,
+  name,
+  label = "",
+  postlabel = "",
+  isdate = FALSE,
+  quote = FALSE
+)
 }
 \arguments{
 \item{object}{an \linkS4class{oce} object.}

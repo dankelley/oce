@@ -92,22 +92,24 @@ retrieve derived items.
 \references{
 \enumerate{
 \item Information on the satellite, how to cite the data, etc. is
-provided at \code{http://www.remss.com/missions/amsr/}.
+provided at \verb{http://www.remss.com/missions/amsr/}.
 \item A simple interface for viewing and downloading data is at
-\code{http://images.remss.com/amsr/amsr2_data_daily.html}.
+\verb{http://images.remss.com/amsr/amsr2_data_daily.html}.
 }
 }
 \seealso{
 The documenation for the \linkS4class{landsat} class has
 more informatoin on the handling data from the Landsat-8 satellite.
 
-Other things related to amsr data: \code{\link{[[,amsr-method}},
-  \code{\link{[[<-,amsr-method}},
-  \code{\link{composite,amsr-method}},
-  \code{\link{download.amsr}},
-  \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
-  \code{\link{subset,amsr-method}},
-  \code{\link{summary,amsr-method}}
+Other things related to amsr data: 
+\code{\link{[[,amsr-method}},
+\code{\link{[[<-,amsr-method}},
+\code{\link{composite,amsr-method}},
+\code{\link{download.amsr}()},
+\code{\link{plot,amsr-method}},
+\code{\link{read.amsr}()},
+\code{\link{subset,amsr-method}},
+\code{\link{summary,amsr-method}}
 }
 \author{
 Dan Kelley and Chantelle Layton

@@ -71,10 +71,13 @@ retrieve derived items.
 }
 
 \seealso{
-Other things related to gps data: \code{\link{[[,gps-method}},
-  \code{\link{[[<-,gps-method}}, \code{\link{as.gps}},
-  \code{\link{plot,gps-method}}, \code{\link{read.gps}},
-  \code{\link{summary,gps-method}}
+Other things related to gps data: 
+\code{\link{[[,gps-method}},
+\code{\link{[[<-,gps-method}},
+\code{\link{as.gps}()},
+\code{\link{plot,gps-method}},
+\code{\link{read.gps}()},
+\code{\link{summary,gps-method}}
 }
 \author{
 Dan Kelley

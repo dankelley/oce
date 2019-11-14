@@ -21,8 +21,9 @@ Users will probably prefer to use \code{\link[=processingLogAppend]{processingLo
 instead.
 }
 \seealso{
-Other things related to processing logs: \code{\link{processingLog<-}},
-  \code{\link{processingLogAppend}},
-  \code{\link{processingLogShow}}
+Other things related to processing logs: 
+\code{\link{processingLog<-}()},
+\code{\link{processingLogAppend}()},
+\code{\link{processingLogShow}()}
 }
 \concept{things related to processing logs}

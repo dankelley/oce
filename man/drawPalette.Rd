@@ -4,11 +4,27 @@
 \alias{drawPalette}
 \title{Draw a palette, leaving margins suitable for accompanying plot}
 \usage{
-drawPalette(zlim, zlab = "", breaks, col, colormap, mai,
-  cex.axis = par("cex.axis"), pos = 4, labels = NULL, at = NULL,
-  levels, drawContours = FALSE, plot = TRUE, fullpage = FALSE,
-  drawTriangles = FALSE, axisPalette, tformat,
-  debug = getOption("oceDebug"), ...)
+drawPalette(
+  zlim,
+  zlab = "",
+  breaks,
+  col,
+  colormap,
+  mai,
+  cex.axis = par("cex.axis"),
+  pos = 4,
+  labels = NULL,
+  at = NULL,
+  levels,
+  drawContours = FALSE,
+  plot = TRUE,
+  fullpage = FALSE,
+  drawTriangles = FALSE,
+  axisPalette,
+  tformat,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{zlim}{two-element vector containing the lower and upper limits of z.

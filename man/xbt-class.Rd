@@ -16,7 +16,7 @@ modern literature on XBTs in general.
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{xbt} objects is a
 \link{list} containing the main data for the object.
-The key items stored in this slot are \code{depth} (or \code{z}) and \code{temperature}, although some datasets also have \code{soundSpeed}.  Note that \code{depth} and \code{z} are inferred from time in water, using an empirical formula for instrument descent rate, and that \code{soundSpeed} is #' calculated using a fixed  practical salinity of 35. Note that the \code{[[} accessor will compute any of \code{depth}, \code{z} or \code{pressure}, based on whatever is in the data object.  Similarly, \code{soundspeed} will compute sound speed (assuming a practical salinity of 35), if that that item is present in the \code{data} slot.}
+The key items stored in this slot are \code{depth} (or \code{z}) and \code{temperature}, although some datasets also have \code{soundSpeed}.  Note that \code{depth} and \code{z} are inferred from time in water, using an empirical formula for instrument descent rate, and that \code{soundSpeed} is #' calculated using a fixed  practical salinity of 35. Note that the \verb{[[} accessor will compute any of \code{depth}, \code{z} or \code{pressure}, based on whatever is in the data object.  Similarly, \code{soundspeed} will compute sound speed (assuming a practical salinity of 35), if that that item is present in the \code{data} slot.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
 for \code{xbt} objects is a \link{list} containing
@@ -84,22 +84,34 @@ https://doi.org/10.1175/BAMS-D-15-00031.1.
 }
 }
 \seealso{
-Other things related to xbt data: \code{\link{[[<-,xbt-method}},
-  \code{\link{as.xbt}}, \code{\link{plot,xbt-method}},
-  \code{\link{read.xbt.noaa1}}, \code{\link{read.xbt}},
-  \code{\link{subset,xbt-method}},
-  \code{\link{summary,xbt-method}}, \code{\link{xbt.edf}}
+Other things related to xbt data: 
+\code{\link{[[<-,xbt-method}},
+\code{\link{as.xbt}()},
+\code{\link{plot,xbt-method}},
+\code{\link{read.xbt.noaa1}()},
+\code{\link{read.xbt}()},
+\code{\link{subset,xbt-method}},
+\code{\link{summary,xbt-method}},
+\code{\link{xbt.edf}}
 
-Other classes provided by oce: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
+Other classes provided by oce: 
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{argo-class}},
+\code{\link{bremen-class}},
+\code{\link{cm-class}},
+\code{\link{coastline-class}},
+\code{\link{ctd-class}},
+\code{\link{lisst-class}},
+\code{\link{lobo-class}},
+\code{\link{met-class}},
+\code{\link{oce-class}},
+\code{\link{odf-class}},
+\code{\link{rsk-class}},
+\code{\link{sealevel-class}},
+\code{\link{section-class}},
+\code{\link{topo-class}},
+\code{\link{windrose-class}}
 }
 \author{
 Dan Kelley

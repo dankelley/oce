@@ -4,8 +4,14 @@
 \alias{read.coastline.shapefile}
 \title{Read a Coastline File in Shapefile Format}
 \usage{
-read.coastline.shapefile(file, lonlim = c(-180, 180), latlim = c(-90,
-  90), debug = getOption("oceDebug"), monitor = FALSE, processingLog)
+read.coastline.shapefile(
+  file,
+  lonlim = c(-180, 180),
+  latlim = c(-90, 90),
+  debug = getOption("oceDebug"),
+  monitor = FALSE,
+  processingLog
+)
 }
 \arguments{
 \item{file}{name of file containing coastline data (a file ending in \code{.shp})
@@ -52,17 +58,19 @@ lakes and rivers, for borders, etc. It is highly recommended.
 }
 }
 \seealso{
-Other things related to coastline data: \code{\link{[[,coastline-method}},
-  \code{\link{[[<-,coastline-method}},
-  \code{\link{as.coastline}},
-  \code{\link{coastline-class}},
-  \code{\link{coastlineBest}}, \code{\link{coastlineCut}},
-  \code{\link{coastlineWorld}},
-  \code{\link{download.coastline}},
-  \code{\link{plot,coastline-method}},
-  \code{\link{read.coastline.openstreetmap}},
-  \code{\link{subset,coastline-method}},
-  \code{\link{summary,coastline-method}}
+Other things related to coastline data: 
+\code{\link{[[,coastline-method}},
+\code{\link{[[<-,coastline-method}},
+\code{\link{as.coastline}()},
+\code{\link{coastline-class}},
+\code{\link{coastlineBest}()},
+\code{\link{coastlineCut}()},
+\code{\link{coastlineWorld}},
+\code{\link{download.coastline}()},
+\code{\link{plot,coastline-method}},
+\code{\link{read.coastline.openstreetmap}()},
+\code{\link{subset,coastline-method}},
+\code{\link{summary,coastline-method}}
 }
 \author{
 Dan Kelley

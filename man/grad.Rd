@@ -4,8 +4,11 @@
 \alias{grad}
 \title{Calculate Matrix Gradient}
 \usage{
-grad(h, x = seq(0, 1, length.out = nrow(h)), y = seq(0, 1, length.out =
-  ncol(h)))
+grad(
+  h,
+  x = seq(0, 1, length.out = nrow(h)),
+  y = seq(0, 1, length.out = ncol(h))
+)
 }
 \arguments{
 \item{h}{a matrix of values}
@@ -56,7 +59,8 @@ contour(x, y, sqrt(u^2+v^2), asp=1, main=expression(speed))
 
 }
 \seealso{
-Other functions relating to vector calculus: \code{\link{curl}}
+Other functions relating to vector calculus: 
+\code{\link{curl}()}
 }
 \author{
 Dan Kelley, based on advice of Clark Richards, and mimicking a matlab function.

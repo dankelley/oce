@@ -4,17 +4,52 @@
 \alias{plotProfile}
 \title{Plot a CTD Profile}
 \usage{
-plotProfile(x, xtype = "salinity+temperature", ytype = "pressure",
-  eos = getOption("oceEOS", default = "gsw"), lty = 1, xlab = NULL,
-  ylab = NULL, col = "black", col.salinity = "darkgreen",
-  col.temperature = "red", col.rho = "blue", col.N2 = "brown",
-  col.dpdt = "darkgreen", col.time = "darkgreen",
-  pt.bg = "transparent", grid = TRUE, col.grid = "lightgray",
-  lty.grid = "dotted", Slim, Clim, Tlim, densitylim, N2lim, Rrholim,
-  dpdtlim, timelim, plim, xlim, ylim, lwd = par("lwd"), xaxs = "r",
-  yaxs = "r", cex = 1, pch = 1, useSmoothScatter = FALSE, df,
-  keepNA = FALSE, type = "l", mgp = getOption("oceMgp"), mar,
-  add = FALSE, inset = FALSE, debug = getOption("oceDebug", 0), ...)
+plotProfile(
+  x,
+  xtype = "salinity+temperature",
+  ytype = "pressure",
+  eos = getOption("oceEOS", default = "gsw"),
+  lty = 1,
+  xlab = NULL,
+  ylab = NULL,
+  col = "black",
+  col.salinity = "darkgreen",
+  col.temperature = "red",
+  col.rho = "blue",
+  col.N2 = "brown",
+  col.dpdt = "darkgreen",
+  col.time = "darkgreen",
+  pt.bg = "transparent",
+  grid = TRUE,
+  col.grid = "lightgray",
+  lty.grid = "dotted",
+  Slim,
+  Clim,
+  Tlim,
+  densitylim,
+  N2lim,
+  Rrholim,
+  dpdtlim,
+  timelim,
+  plim,
+  xlim,
+  ylim,
+  lwd = par("lwd"),
+  xaxs = "r",
+  yaxs = "r",
+  cex = 1,
+  pch = 1,
+  useSmoothScatter = FALSE,
+  df,
+  keepNA = FALSE,
+  type = "l",
+  mgp = getOption("oceMgp"),
+  mar,
+  add = FALSE,
+  inset = FALSE,
+  debug = getOption("oceDebug", 0),
+  ...
+)
 }
 \arguments{
 \item{x}{a \linkS4class{ctd} object.}
@@ -140,12 +175,12 @@ if a plot using \eqn{N^2}{N^2} is requested.}
 \item{type}{type of plot to draw, using the same scheme as
 \code{\link[=plot]{plot()}}.}
 
-\item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also
-for \code{par(mar)}, computed from this.  The default is tighter than the R
+\item{mgp}{3-element numerical vector to use for \link{par}\code{(mgp)}, and also
+for \link{par}\code{(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{Four-element numerical value to be used to set the plot
-margins, with a call to \code{\link{par}}\code{(mar)} prior to the plot.
+margins, with a call to \link{par}\code{(mar)} prior to the plot.
 If this is not supplied, a reasonable default will be set up.}
 
 \item{add}{A logical value that controls whether to add to an existing plot.  (It
@@ -186,55 +221,69 @@ plotProfile(ctd, xtype="temperature")
 \code{\link[=plot,ctd-method]{plot,ctd-method()}} is a general plotting function for \code{ctd}
 objects, and \code{\link[=plotTS]{plotTS()}} plots a temperature-salinity diagrams.
 
-Other functions that plot oce data: \code{\link{plot,adp-method}},
-  \code{\link{plot,adv-method}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,argo-method}},
-  \code{\link{plot,bremen-method}},
-  \code{\link{plot,cm-method}},
-  \code{\link{plot,coastline-method}},
-  \code{\link{plot,ctd-method}},
-  \code{\link{plot,gps-method}},
-  \code{\link{plot,ladp-method}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{plot,lisst-method}},
-  \code{\link{plot,lobo-method}},
-  \code{\link{plot,met-method}},
-  \code{\link{plot,odf-method}},
-  \code{\link{plot,rsk-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{plot,sealevel-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{plot,tidem-method}},
-  \code{\link{plot,topo-method}},
-  \code{\link{plot,windrose-method}},
-  \code{\link{plot,xbt-method}}, \code{\link{plotScan}},
-  \code{\link{plotTS}}, \code{\link{tidem-class}}
+Other functions that plot oce data: 
+\code{\link{plot,adp-method}},
+\code{\link{plot,adv-method}},
+\code{\link{plot,amsr-method}},
+\code{\link{plot,argo-method}},
+\code{\link{plot,bremen-method}},
+\code{\link{plot,cm-method}},
+\code{\link{plot,coastline-method}},
+\code{\link{plot,ctd-method}},
+\code{\link{plot,gps-method}},
+\code{\link{plot,ladp-method}},
+\code{\link{plot,landsat-method}},
+\code{\link{plot,lisst-method}},
+\code{\link{plot,lobo-method}},
+\code{\link{plot,met-method}},
+\code{\link{plot,odf-method}},
+\code{\link{plot,rsk-method}},
+\code{\link{plot,satellite-method}},
+\code{\link{plot,sealevel-method}},
+\code{\link{plot,section-method}},
+\code{\link{plot,tidem-method}},
+\code{\link{plot,topo-method}},
+\code{\link{plot,windrose-method}},
+\code{\link{plot,xbt-method}},
+\code{\link{plotScan}()},
+\code{\link{plotTS}()},
+\code{\link{tidem-class}}
 
-Other things related to ctd data: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
-  \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctd.cnv}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctd}},
-  \code{\link{d200321-001.ctd}},
-  \code{\link{d201211_0011.cnv}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{initialize,ctd-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
-  \code{\link{plotTS}}, \code{\link{read.ctd.itp}},
-  \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+Other things related to ctd data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{[[,ctd-method}},
+\code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{ctd-class}},
+\code{\link{ctd.cnv}},
+\code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfiles}()},
+\code{\link{ctdRaw}},
+\code{\link{ctdTrim}()},
+\code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{initialize,ctd-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{plot,ctd-method}},
+\code{\link{plotScan}()},
+\code{\link{plotTS}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()},
+\code{\link{setFlags,ctd-method}},
+\code{\link{subset,ctd-method}},
+\code{\link{summary,ctd-method}},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()},
+\code{\link{write.ctd}()}
 }
 \author{
 Dan Kelley

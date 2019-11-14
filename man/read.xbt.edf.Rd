@@ -4,8 +4,13 @@
 \alias{read.xbt.edf}
 \title{Read a Sippican '.edf' format xbt file}
 \usage{
-read.xbt.edf(file, longitude = NA, latitude = NA,
-  debug = getOption("oceDebug"), processingLog)
+read.xbt.edf(
+  file,
+  longitude = NA,
+  latitude = NA,
+  debug = getOption("oceDebug"),
+  processingLog
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file to

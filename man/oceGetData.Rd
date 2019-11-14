@@ -12,7 +12,7 @@ oceGetData(object, name)
 \item{name}{String indicating the name of the item to be found.}
 }
 \description{
-In contrast to the various \code{[[} functions, this is
+In contrast to the various \verb{[[} functions, this is
 guaranteed to look only within the \code{data} slot. If
 the named item is not found, \code{NULL} is returned.
 }

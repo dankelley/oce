@@ -27,11 +27,13 @@ numberAsHMS(t)
 
 }
 \seealso{
-Other things related to time: \code{\link{ctimeToSeconds}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{julianDay}}, \code{\link{numberAsPOSIXct}},
-  \code{\link{secondsToCtime}},
-  \code{\link{unabbreviateYear}}
+Other things related to time: 
+\code{\link{ctimeToSeconds}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{julianDay}()},
+\code{\link{numberAsPOSIXct}()},
+\code{\link{secondsToCtime}()},
+\code{\link{unabbreviateYear}()}
 }
 \author{
 Dan Kelley

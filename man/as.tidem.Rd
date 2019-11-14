@@ -4,8 +4,7 @@
 \alias{as.tidem}
 \title{Create tidem object from fitted harmonic data}
 \usage{
-as.tidem(tRef, latitude, name, amplitude, phase,
-  debug = getOption("oceDebug"))
+as.tidem(tRef, latitude, name, amplitude, phase, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{tRef}{a POSIXt value indicating the mean time of the
@@ -103,13 +102,17 @@ Wikipedia, "Theory of Tides." https://en.wikipedia.org/wiki/Theory_of_tides
 Downloaded Aug 17, 2019.
 }
 \seealso{
-Other things related to tides: \code{\link{[[,tidem-method}},
-  \code{\link{[[<-,tidem-method}},
-  \code{\link{plot,tidem-method}},
-  \code{\link{predict.tidem}},
-  \code{\link{summary,tidem-method}},
-  \code{\link{tidedata}}, \code{\link{tidem-class}},
-  \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
-  \code{\link{tidem}}, \code{\link{webtide}}
+Other things related to tides: 
+\code{\link{[[,tidem-method}},
+\code{\link{[[<-,tidem-method}},
+\code{\link{plot,tidem-method}},
+\code{\link{predict.tidem}()},
+\code{\link{summary,tidem-method}},
+\code{\link{tidedata}},
+\code{\link{tidem-class}},
+\code{\link{tidemAstron}()},
+\code{\link{tidemVuf}()},
+\code{\link{tidem}},
+\code{\link{webtide}()}
 }
 \concept{things related to tides}

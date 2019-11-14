@@ -18,21 +18,29 @@ read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
 
 }
 \seealso{
-Other raw datasets: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
-  \code{\link{adp_rdi.000}}, \code{\link{ctd.cnv}},
-  \code{\link{d200321-001.ctd}},
-  \code{\link{d201211_0011.cnv}},
-  \code{\link{test_met_csv1.csv}},
-  \code{\link{test_met_csv2.csv}}, \code{\link{xbt.edf}}
+Other raw datasets: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{adp_rdi.000}},
+\code{\link{ctd.cnv}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{test_met_csv1.csv}},
+\code{\link{test_met_csv2.csv}},
+\code{\link{xbt.edf}}
 
-Other things related to met data: \code{\link{[[,met-method}},
-  \code{\link{[[<-,met-method}}, \code{\link{as.met}},
-  \code{\link{download.met}}, \code{\link{met-class}},
-  \code{\link{met}}, \code{\link{plot,met-method}},
-  \code{\link{read.met}}, \code{\link{subset,met-method}},
-  \code{\link{summary,met-method}},
-  \code{\link{test_met_csv1.csv}},
-  \code{\link{test_met_csv2.csv}}
+Other things related to met data: 
+\code{\link{[[,met-method}},
+\code{\link{[[<-,met-method}},
+\code{\link{as.met}()},
+\code{\link{download.met}()},
+\code{\link{met-class}},
+\code{\link{met}},
+\code{\link{plot,met-method}},
+\code{\link{read.met}()},
+\code{\link{subset,met-method}},
+\code{\link{summary,met-method}},
+\code{\link{test_met_csv1.csv}},
+\code{\link{test_met_csv2.csv}}
 }
 \concept{raw datasets}
 \concept{things related to met data}

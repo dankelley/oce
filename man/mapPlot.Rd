@@ -4,13 +4,34 @@
 \alias{mapPlot}
 \title{Draw a Map}
 \usage{
-mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg,
-  fill, border = NULL, col = NULL, clip = TRUE, type = "polygon",
-  axes = TRUE, cex, cex.axis = 1, mgp = c(0, 0.5, 0),
-  drawBox = TRUE, showHemi = TRUE, polarCircle = 0,
-  lonlabel = NULL, latlabel = NULL, sides = NULL,
-  projection = "+proj=moll", tissot = FALSE, trim = TRUE,
-  debug = getOption("oceDebug"), ...)
+mapPlot(
+  longitude,
+  latitude,
+  longitudelim,
+  latitudelim,
+  grid = TRUE,
+  bg,
+  fill,
+  border = NULL,
+  col = NULL,
+  clip = TRUE,
+  type = "polygon",
+  axes = TRUE,
+  cex,
+  cex.axis = 1,
+  mgp = c(0, 0.5, 0),
+  drawBox = TRUE,
+  showHemi = TRUE,
+  polarCircle = 0,
+  lonlabel = NULL,
+  latlabel = NULL,
+  sides = NULL,
+  projection = "+proj=moll",
+  tissot = FALSE,
+  trim = TRUE,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{longitude}{either a vector of longitudes of points to be plotted, or
@@ -439,7 +460,7 @@ if (canProject) {
     # Example 6.
     # Spinning globe: create PNG files that can be assembled into a movie
 \dontrun{
-    png("globe-\%03d.png")
+    png("globe-%03d.png")
     lons <- seq(360, 0, -15)
     par(mar=rep(0, 4))
     for (i in seq_along(lons)) {
@@ -467,12 +488,12 @@ Professional Paper: 1395 (available at
 \url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
 \item Wikipedia page \url{https://en.wikipedia.org/wiki/List_of_map_projections}
 \item Radical Cartography website
-\code{http://www.radicalcartography.net/?projectionref} (This URL worked
+\verb{http://www.radicalcartography.net/?projectionref} (This URL worked
 prior to Nov 16, 2016, but was found to fail on that date.)
 \item The \code{PROJ.4} website is \url{http://trac.osgeo.org/proj}, and it is
 the place to start to learn about the code.
 \item \code{PROJ.4} projection details were once at
-\code{http://www.remotesensing.org/geotiff/proj_list/} but it was
+\verb{http://www.remotesensing.org/geotiff/proj_list/} but it was
 discovered on Dec 18, 2016, that this link no longer exists. Indeed, there
 seems to have been significant reorganization of websites related to this.
 The base website seems to be \url{https://trac.osgeo.org/geotiff/} and that
@@ -493,20 +514,30 @@ clicks using \code{\link[=mapLocator]{mapLocator()}}.  Great circle paths can be
 with \code{\link[=geodGc]{geodGc()}}.  See reference 8 for a demonstration of the available map
 projections (with graphs).
 
-Other functions related to maps: \code{\link{formatPosition}},
-  \code{\link{lonlat2map}}, \code{\link{lonlat2utm}},
-  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
-  \code{\link{mapAxis}}, \code{\link{mapContour}},
-  \code{\link{mapCoordinateSystem}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPoints}}, \code{\link{mapPolygon}},
-  \code{\link{mapScalebar}}, \code{\link{mapText}},
-  \code{\link{mapTissot}}, \code{\link{oceCRS}},
-  \code{\link{shiftLongitude}}, \code{\link{usrLonLat}},
-  \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley and Clark Richards

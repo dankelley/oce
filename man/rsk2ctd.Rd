@@ -4,9 +4,17 @@
 \alias{rsk2ctd}
 \title{Create a ctd Object from an rsk Object}
 \usage{
-rsk2ctd(x, pressureAtmospheric = 0, longitude = NULL,
-  latitude = NULL, ship = NULL, cruise = NULL, station = NULL,
-  deploymentType = NULL, debug = getOption("oceDebug"))
+rsk2ctd(
+  x,
+  pressureAtmospheric = 0,
+  longitude = NULL,
+  latitude = NULL,
+  ship = NULL,
+  cruise = NULL,
+  station = NULL,
+  deploymentType = NULL,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{x}{an \linkS4class{rsk} object.}

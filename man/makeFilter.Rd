@@ -4,8 +4,11 @@
 \alias{makeFilter}
 \title{Make a digital filter}
 \usage{
-makeFilter(type = c("blackman-harris", "rectangular", "hamming", "hann"),
-  m, asKernel = TRUE)
+makeFilter(
+  type = c("blackman-harris", "rectangular", "hamming", "hann"),
+  m,
+  asKernel = TRUE
+)
 }
 \arguments{
 \item{type}{a string indicating the type of filter to use.  (See Harris
@@ -18,12 +21,12 @@ Harris" by that author, in his Table 1, which lists figures of merit as
 follows: highest side lobe level -92dB; side lobe fall off -6 db/octave;
 coherent gain 0.36; equivalent noise bandwidth 2.00 bins; 3.0-dB bandwidth
 1.90 bins; scallop loss 0.83 dB; worst case process loss 3.85 dB; 6.0-db
-bandwidth 2.72 bins; overlap correlation 46 percent for 75\% overlap and 3.8
-for 50\% overlap.  Note that the equivalent noise bandwidth is the width of
+bandwidth 2.72 bins; overlap correlation 46 percent for 75\\% overlap and 3.8
+for 50\\% overlap.  Note that the equivalent noise bandwidth is the width of
 a spectral peak, so that a value of 2 indicates a cutoff frequency of
 \code{1/m}, where \code{m} is as given below.
 \item \code{"rectangular"} for a flat filter.  (This is just for convenience.  Note that
-\code{\link{kernel}}\code{("daniell",....)} gives the same result, in kernel form.)
+\code{\link{kernel}}\verb{("daniell",....)} gives the same result, in kernel form.)
 \code{"hamming"} for a Hamming filter (a raised-cosine that does not taper
 to zero at the ends)
 \item \code{"hann"} (a raised cosine that tapers to zero at the ends).

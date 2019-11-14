@@ -4,11 +4,24 @@
 \alias{oce.axis.POSIXct}
 \title{Oce Version of axis.POSIXct}
 \usage{
-oce.axis.POSIXct(side, x, at, tformat, labels = TRUE, drawTimeRange,
-  abbreviateTimeRange = FALSE, drawFrequency = FALSE,
-  cex = par("cex"), cex.axis = par("cex.axis"),
-  cex.main = par("cex.main"), mar = par("mar"), mgp = par("mgp"),
-  main = "", debug = getOption("oceDebug"), ...)
+oce.axis.POSIXct(
+  side,
+  x,
+  at,
+  tformat,
+  labels = TRUE,
+  drawTimeRange,
+  abbreviateTimeRange = FALSE,
+  drawFrequency = FALSE,
+  cex = par("cex"),
+  cex.axis = par("cex.axis"),
+  cex.main = par("cex.main"),
+  mar = par("mar"),
+  mgp = par("mgp"),
+  main = "",
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{side}{as for \code{\link[=axis.POSIXct]{axis.POSIXct()}}.}
@@ -43,11 +56,11 @@ first number.}
 \item{drawFrequency}{boolean, \code{TRUE} to show the frequency of sampling
 in the data}
 
-\item{cex}{size of labels on axes; see \code{\link[graphics]{par}}("cex").}
+\item{cex}{size of labels on axes; see \link[graphics:par]{graphics::par}\code{("cex")}.}
 
-\item{cex.axis}{see \code{\link[graphics]{par}}("cex.axis").}
+\item{cex.axis}{see \link[graphics:par]{graphics::par}\code{("cex.axis")}.}
 
-\item{cex.main}{see \code{\link[graphics]{par}}("cex.main").}
+\item{cex.main}{see \link[graphics:par]{graphics::par}\code{("cex.main")}.}
 
 \item{mar}{value for \code{par(mar)} for axis}
 

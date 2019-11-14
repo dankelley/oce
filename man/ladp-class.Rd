@@ -71,10 +71,12 @@ retrieve derived items.
 }
 
 \seealso{
-Other things related to ladp data: \code{\link{[[,ladp-method}},
-  \code{\link{[[<-,ladp-method}}, \code{\link{as.ladp}},
-  \code{\link{plot,ladp-method}},
-  \code{\link{summary,ladp-method}}
+Other things related to ladp data: 
+\code{\link{[[,ladp-method}},
+\code{\link{[[<-,ladp-method}},
+\code{\link{as.ladp}()},
+\code{\link{plot,ladp-method}},
+\code{\link{summary,ladp-method}}
 }
 \author{
 Dan Kelley

@@ -4,8 +4,7 @@
 \alias{geodXyInverse}
 \title{Inverse Geodesic Calculation}
 \usage{
-geodXyInverse(x, y, longitudeRef, latitudeRef,
-  debug = getOption("oceDebug"))
+geodXyInverse(x, y, longitudeRef, latitudeRef, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{value of x in metres, as given by \code{\link[=geodXy]{geodXy()}}}
@@ -46,7 +45,9 @@ users should read the documentation carefully before deciding to use it.
 }
 
 \seealso{
-Other functions relating to geodesy: \code{\link{geodDist}},
-  \code{\link{geodGc}}, \code{\link{geodXy}}
+Other functions relating to geodesy: 
+\code{\link{geodDist}()},
+\code{\link{geodGc}()},
+\code{\link{geodXy}()}
 }
 \concept{functions relating to geodesy}

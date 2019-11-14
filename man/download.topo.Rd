@@ -4,8 +4,18 @@
 \alias{download.topo}
 \title{Download and Cache a topo File}
 \usage{
-download.topo(west, east, south, north, resolution, destdir, destfile,
-  format, server, debug = getOption("oceDebug"))
+download.topo(
+  west,
+  east,
+  south,
+  north,
+  resolution,
+  destdir,
+  destfile,
+  format,
+  server,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{west, east}{Longitudes of the western and eastern sides of the box.}
@@ -116,7 +126,7 @@ if (requireNamespace("ocedata", quietly=TRUE)) {
 }
 \references{
 \enumerate{
-\item \code{https://www.ngdc.noaa.gov/mgg/global/global.html}
+\item \verb{https://www.ngdc.noaa.gov/mgg/global/global.html}
 \item Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
 Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum
 NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
@@ -125,17 +135,22 @@ NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
 \seealso{
 The work is done with \code{\link[utils:download.file]{utils::download.file()}}.
 
-Other functions that download files: \code{\link{download.amsr}},
-  \code{\link{download.coastline}},
-  \code{\link{download.met}}
+Other functions that download files: 
+\code{\link{download.amsr}()},
+\code{\link{download.coastline}()},
+\code{\link{download.met}()}
 
-Other things related to topo data: \code{\link{[[,topo-method}},
-  \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
-  \code{\link{plot,topo-method}}, \code{\link{read.topo}},
-  \code{\link{subset,topo-method}},
-  \code{\link{summary,topo-method}},
-  \code{\link{topo-class}}, \code{\link{topoInterpolate}},
-  \code{\link{topoWorld}}
+Other things related to topo data: 
+\code{\link{[[,topo-method}},
+\code{\link{[[<-,topo-method}},
+\code{\link{as.topo}()},
+\code{\link{plot,topo-method}},
+\code{\link{read.topo}()},
+\code{\link{subset,topo-method}},
+\code{\link{summary,topo-method}},
+\code{\link{topo-class}},
+\code{\link{topoInterpolate}()},
+\code{\link{topoWorld}}
 }
 \author{
 Dan Kelley

@@ -6,13 +6,23 @@
 \source{
 The WebTide software may be downloaded for free at the
 Department of Fisheries and Oceans (Canada) website at
-\code{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php}
+\verb{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php}
 (checked February 2016 and May 2017).
 }
 \usage{
-webtide(action = c("map", "predict"), longitude, latitude, node, time,
-  basedir = getOption("webtide"), region = "nwatl", plot = TRUE,
-  tformat, debug = getOption("oceDebug"), ...)
+webtide(
+  action = c("map", "predict"),
+  longitude,
+  latitude,
+  node,
+  time,
+  basedir = getOption("webtide"),
+  region = "nwatl",
+  plot = TRUE,
+  tformat,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{action}{An indication of the action, either \code{action="map"} to
@@ -118,21 +128,25 @@ library(oce)
 longitude <- -63.57
 latitude <- 44.65
 prediction <- webtide("predict", longitude=longitude, latitude=latitude)
-mtext(sprintf("prediction at \%fN \%fE", latitude, longitude), line=0.75, side=3)
+mtext(sprintf("prediction at %fN %fE", latitude, longitude), line=0.75, side=3)
 ## 2. map
 webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
 }
 
 }
 \seealso{
-Other things related to tides: \code{\link{[[,tidem-method}},
-  \code{\link{[[<-,tidem-method}}, \code{\link{as.tidem}},
-  \code{\link{plot,tidem-method}},
-  \code{\link{predict.tidem}},
-  \code{\link{summary,tidem-method}},
-  \code{\link{tidedata}}, \code{\link{tidem-class}},
-  \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
-  \code{\link{tidem}}
+Other things related to tides: 
+\code{\link{[[,tidem-method}},
+\code{\link{[[<-,tidem-method}},
+\code{\link{as.tidem}()},
+\code{\link{plot,tidem-method}},
+\code{\link{predict.tidem}()},
+\code{\link{summary,tidem-method}},
+\code{\link{tidedata}},
+\code{\link{tidem-class}},
+\code{\link{tidemAstron}()},
+\code{\link{tidemVuf}()},
+\code{\link{tidem}}
 }
 \author{
 Dan Kelley

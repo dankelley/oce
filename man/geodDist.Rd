@@ -4,8 +4,13 @@
 \alias{geodDist}
 \title{Compute Geodesic Distance on Surface of Earth}
 \usage{
-geodDist(longitude1, latitude1 = NULL, longitude2 = NULL,
-  latitude2 = NULL, alongPath = FALSE)
+geodDist(
+  longitude1,
+  latitude1 = NULL,
+  longitude2 = NULL,
+  latitude2 = NULL,
+  alongPath = FALSE
+)
 }
 \arguments{
 \item{longitude1}{longitude or a vector of longitudes, \emph{or} a
@@ -76,8 +81,10 @@ Ellipsoid with Application of Nested Equations", \emph{Survey Review}, April
 \seealso{
 \code{\link[=geodXy]{geodXy()}}
 
-Other functions relating to geodesy: \code{\link{geodGc}},
-  \code{\link{geodXyInverse}}, \code{\link{geodXy}}
+Other functions relating to geodesy: 
+\code{\link{geodGc}()},
+\code{\link{geodXyInverse}()},
+\code{\link{geodXy}()}
 }
 \author{
 Dan Kelley based this on R code sent to him by Darren Gillis, who in

@@ -4,10 +4,27 @@
 \alias{drawDirectionField}
 \title{Draw a Direction Field}
 \usage{
-drawDirectionField(x, y, u, v, scalex, scaley, skip, length = 0.05,
-  add = FALSE, type = 1, col = par("fg"), pch = 1,
-  cex = par("cex"), lwd = par("lwd"), lty = par("lty"), xlab = "",
-  ylab = "", debug = getOption("oceDebug"), ...)
+drawDirectionField(
+  x,
+  y,
+  u,
+  v,
+  scalex,
+  scaley,
+  skip,
+  length = 0.05,
+  add = FALSE,
+  type = 1,
+  col = par("fg"),
+  pch = 1,
+  cex = par("cex"),
+  lwd = par("lwd"),
+  lty = par("lty"),
+  xlab = "",
+  ylab = "",
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{x, y}{coordinates at which velocities are specified. The
@@ -15,7 +32,7 @@ length of \code{x} and \code{y} depends on the form of \code{u}
 and \code{v} (vectors or matrices).}
 
 \item{u, v}{velocity components in the x and y directions. Can be
-either vectors with the same length as \code{x, y}, or
+either vectors with the same length as \verb{x, y}, or
 matrices, of dimension \code{length(x)} by \code{length(y)}.}
 
 \item{scalex, scaley}{scale to be used for the velocity arrows.
@@ -26,7 +43,7 @@ argument is given.}
 
 \item{skip}{either an integer, or a two-element vector indicating
 the number of points to skip when plotting arrows (for the
-matrix \code{u, v} case). If a single value, the same
+matrix \verb{u, v} case). If a single value, the same
 \code{skip} is applied to both the \code{x} and \code{y}
 directions. If a two-element vector, specifies different values
 for the \code{x} and \code{y} directions.}

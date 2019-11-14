@@ -15,19 +15,25 @@ xbt <- read.oce(system.file("extdata", "xbt.edf", package="oce"))
 
 }
 \seealso{
-Other raw datasets: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
-  \code{\link{adp_rdi.000}}, \code{\link{ctd.cnv}},
-  \code{\link{d200321-001.ctd}},
-  \code{\link{d201211_0011.cnv}},
-  \code{\link{test_met_csv1.csv}},
-  \code{\link{test_met_csv2.csv}},
-  \code{\link{test_met_xml2.xml}}
+Other raw datasets: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{adp_rdi.000}},
+\code{\link{ctd.cnv}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{test_met_csv1.csv}},
+\code{\link{test_met_csv2.csv}},
+\code{\link{test_met_xml2.xml}}
 
-Other things related to xbt data: \code{\link{[[<-,xbt-method}},
-  \code{\link{as.xbt}}, \code{\link{plot,xbt-method}},
-  \code{\link{read.xbt.noaa1}}, \code{\link{read.xbt}},
-  \code{\link{subset,xbt-method}},
-  \code{\link{summary,xbt-method}}, \code{\link{xbt-class}}
+Other things related to xbt data: 
+\code{\link{[[<-,xbt-method}},
+\code{\link{as.xbt}()},
+\code{\link{plot,xbt-method}},
+\code{\link{read.xbt.noaa1}()},
+\code{\link{read.xbt}()},
+\code{\link{subset,xbt-method}},
+\code{\link{summary,xbt-method}},
+\code{\link{xbt-class}}
 }
 \concept{raw datasets}
 \concept{things related to xbt data}

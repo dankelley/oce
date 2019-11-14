@@ -35,10 +35,10 @@ lat0 <- 44
 lat1 <- 46
 source <- paste("https://coastwatch.pfeg.noaa.gov/erddap/griddap/",
                 "jplG1SST.nc?",
-                "SST\%5B(", day, "T12:00:00Z)",
-                "\%5D\%5B(", lat0, "):(", lat1, ")",
-                "\%5D\%5B(", lon0, "):(", lon1, ")",
-                "\%5D", sep="")
+                "SST%5B(", day, "T12:00:00Z)",
+                "%5D%5B(", lat0, "):(", lat1, ")",
+                "%5D%5B(", lon0, "):(", lon1, ")",
+                "%5D", sep="")
 if (!length(list.files(pattern="^a.nc$")))
     download.file(source, "a.nc")
 d <- read.g1sst("a.nc")
@@ -52,16 +52,17 @@ if (requireNamespace("ocedata", quietly=TRUE)) {
 }
 \references{
 \enumerate{
-\item ERDDAP Portal \code{https://coastwatch.pfeg.noaa.gov/erddap/}
-\item JPO OurOcean Portal \code{https://ourocean.jpl.nasa.gov/SST/}
+\item ERDDAP Portal \verb{https://coastwatch.pfeg.noaa.gov/erddap/}
+\item JPO OurOcean Portal \verb{https://ourocean.jpl.nasa.gov/SST/}
 (link worked in 2016 but was seen to fail 2017 Feb 2).
 }
 }
 \seealso{
-Other things related to satellite data: \code{\link{g1sst-class}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,satellite-method}}
+Other things related to satellite data: 
+\code{\link{g1sst-class}},
+\code{\link{plot,satellite-method}},
+\code{\link{satellite-class}},
+\code{\link{summary,satellite-method}}
 }
 \author{
 Dan Kelley

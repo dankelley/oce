@@ -4,9 +4,23 @@
 \alias{interpBarnes}
 \title{Grid data using Barnes algorithm}
 \usage{
-interpBarnes(x, y, z, w, xg, yg, xgl, ygl, xr, yr, gamma = 0.5,
-  iterations = 2, trim = 0, pregrid = FALSE,
-  debug = getOption("oceDebug"))
+interpBarnes(
+  x,
+  y,
+  z,
+  w,
+  xg,
+  yg,
+  xgl,
+  ygl,
+  xr,
+  yr,
+  gamma = 0.5,
+  iterations = 2,
+  trim = 0,
+  pregrid = FALSE,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{x, y}{a vector of x and ylocations.}

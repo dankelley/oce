@@ -40,11 +40,12 @@ project, and will be rendered useless if Bremen changes this data format.
 }
 
 \seealso{
-Other things related to bremen data: \code{\link{[[,bremen-method}},
-  \code{\link{[[<-,bremen-method}},
-  \code{\link{bremen-class}},
-  \code{\link{plot,bremen-method}},
-  \code{\link{summary,bremen-method}}
+Other things related to bremen data: 
+\code{\link{[[,bremen-method}},
+\code{\link{[[<-,bremen-method}},
+\code{\link{bremen-class}},
+\code{\link{plot,bremen-method}},
+\code{\link{summary,bremen-method}}
 }
 \author{
 Dan Kelley

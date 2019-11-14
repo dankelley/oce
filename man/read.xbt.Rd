@@ -4,8 +4,14 @@
 \alias{read.xbt}
 \title{Read an xbt file}
 \usage{
-read.xbt(file, type = "sippican", longitude = NA, latitude = NA,
-  debug = getOption("oceDebug"), processingLog)
+read.xbt(
+  file,
+  type = "sippican",
+  longitude = NA,
+  latitude = NA,
+  debug = getOption("oceDebug"),
+  processingLog
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file to
@@ -50,12 +56,15 @@ https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual
 }
 }
 \seealso{
-Other things related to xbt data: \code{\link{[[<-,xbt-method}},
-  \code{\link{as.xbt}}, \code{\link{plot,xbt-method}},
-  \code{\link{read.xbt.noaa1}},
-  \code{\link{subset,xbt-method}},
-  \code{\link{summary,xbt-method}},
-  \code{\link{xbt-class}}, \code{\link{xbt.edf}}
+Other things related to xbt data: 
+\code{\link{[[<-,xbt-method}},
+\code{\link{as.xbt}()},
+\code{\link{plot,xbt-method}},
+\code{\link{read.xbt.noaa1}()},
+\code{\link{subset,xbt-method}},
+\code{\link{summary,xbt-method}},
+\code{\link{xbt-class}},
+\code{\link{xbt.edf}}
 }
 \author{
 Dan Kelley

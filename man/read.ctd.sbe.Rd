@@ -4,9 +4,17 @@
 \alias{read.ctd.sbe}
 \title{Read a Seabird CTD File}
 \usage{
-read.ctd.sbe(file, columns = NULL, station = NULL, missingValue,
-  deploymentType = "unknown", monitor = FALSE,
-  debug = getOption("oceDebug"), processingLog, ...)
+read.ctd.sbe(
+  file,
+  columns = NULL,
+  station = NULL,
+  missingValue,
+  deploymentType = "unknown",
+  monitor = FALSE,
+  debug = getOption("oceDebug"),
+  processingLog,
+  ...
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file to
@@ -26,7 +34,7 @@ if a data file named salinity as \code{"SAL"}, then using\preformatted{d <- read
 }
 
 would assign the \code{"SAL"} column to the \code{salinity} entry in the data
-slot of the CTD object returned by the \code{read.*} function.}
+slot of the CTD object returned by the \verb{read.*} function.}
 
 \item{station}{optional character string containing an identifying name or
 number for the station. This can be useful if the routine cannot determine the
@@ -160,11 +168,11 @@ d <- read.ctd(f, columns=list(
 \references{
 \enumerate{
 \item The Sea-Bird SBE 19plus profiler is described at
-\code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
+\verb{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
 information is given in the Sea-Bird data-processing manual
 (next item).
 \item A SBE data processing manual was once at
-\code{http://www.seabird.com/document/sbe-data-processing-manual},
+\verb{http://www.seabird.com/document/sbe-data-processing-manual},
 but as of summer 2018, this no longer seems to be provided by SeaBird.
 A web search will turn up copies of the manual that have been put
 online by various research groups and data-archiving agencies.
@@ -174,35 +182,48 @@ and this was the reference version used in coding \code{oce}.
 }
 }
 \seealso{
-Other things related to ctd data: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
-  \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctd.cnv}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctd}},
-  \code{\link{d200321-001.ctd}},
-  \code{\link{d201211_0011.cnv}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{initialize,ctd-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{plotTS}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+Other things related to ctd data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{[[,ctd-method}},
+\code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{ctd-class}},
+\code{\link{ctd.cnv}},
+\code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfiles}()},
+\code{\link{ctdRaw}},
+\code{\link{ctdTrim}()},
+\code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{initialize,ctd-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{plot,ctd-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{plotTS}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()},
+\code{\link{setFlags,ctd-method}},
+\code{\link{subset,ctd-method}},
+\code{\link{summary,ctd-method}},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()},
+\code{\link{write.ctd}()}
 
-Other functions that read ctd data: \code{\link{read.ctd.itp}},
-  \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}}
+Other functions that read ctd data: 
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()}
 }
 \author{
 Dan Kelley and Clark Richards

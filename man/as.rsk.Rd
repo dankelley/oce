@@ -4,9 +4,16 @@
 \alias{as.rsk}
 \title{Coerce Data Into a Rsk Object}
 \usage{
-as.rsk(time, columns, filename = "", instrumentType = "rbr",
-  serialNumber = "", model = "", sampleInterval = NA,
-  debug = getOption("oceDebug"))
+as.rsk(
+  time,
+  columns,
+  filename = "",
+  instrumentType = "rbr",
+  serialNumber = "",
+  model = "",
+  sampleInterval = NA,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{time}{a vector of times for the data.}
@@ -47,13 +54,17 @@ these rules, but if they are broken, you may expect problems with any further
 processing.
 }
 \seealso{
-Other things related to rsk data: \code{\link{[[,rsk-method}},
-  \code{\link{[[<-,rsk-method}},
-  \code{\link{plot,rsk-method}}, \code{\link{read.rsk}},
-  \code{\link{rsk-class}}, \code{\link{rskPatm}},
-  \code{\link{rskToc}}, \code{\link{rsk}},
-  \code{\link{subset,rsk-method}},
-  \code{\link{summary,rsk-method}}
+Other things related to rsk data: 
+\code{\link{[[,rsk-method}},
+\code{\link{[[<-,rsk-method}},
+\code{\link{plot,rsk-method}},
+\code{\link{read.rsk}()},
+\code{\link{rsk-class}},
+\code{\link{rskPatm}()},
+\code{\link{rskToc}()},
+\code{\link{rsk}},
+\code{\link{subset,rsk-method}},
+\code{\link{summary,rsk-method}}
 }
 \author{
 Dan Kelley

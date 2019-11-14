@@ -109,11 +109,13 @@ USA. 429 pages.
 \seealso{
 The equivalent function for the sun is \code{\link[=sunAngle]{sunAngle()}}.
 
-Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
-  \code{\link{equatorialToLocalHorizontal}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{julianDay}}, \code{\link{siderealTime}},
-  \code{\link{sunAngle}}
+Other things related to astronomy: 
+\code{\link{eclipticalToEquatorial}()},
+\code{\link{equatorialToLocalHorizontal}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{julianDay}()},
+\code{\link{siderealTime}()},
+\code{\link{sunAngle}()}
 }
 \author{
 Dan Kelley, based on formulae in Meeus (1982).

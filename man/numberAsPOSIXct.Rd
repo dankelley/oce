@@ -90,11 +90,13 @@ https://doi.org/10.5670/oceanog.1996.10.
 \seealso{
 \code{\link[=numberAsHMS]{numberAsHMS()}}
 
-Other things related to time: \code{\link{ctimeToSeconds}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{julianDay}}, \code{\link{numberAsHMS}},
-  \code{\link{secondsToCtime}},
-  \code{\link{unabbreviateYear}}
+Other things related to time: 
+\code{\link{ctimeToSeconds}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{julianDay}()},
+\code{\link{numberAsHMS}()},
+\code{\link{secondsToCtime}()},
+\code{\link{unabbreviateYear}()}
 }
 \author{
 Dan Kelley

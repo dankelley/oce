@@ -49,12 +49,15 @@ The documentation for the \linkS4class{landsat} class explains the
 structure of landsat objects, and also outlines the other functions dealing
 with them.
 
-Other things related to landsat data: \code{\link{[[,landsat-method}},
-  \code{\link{[[<-,landsat-method}},
-  \code{\link{landsat-class}}, \code{\link{landsatAdd}},
-  \code{\link{landsat}}, \code{\link{plot,landsat-method}},
-  \code{\link{read.landsat}},
-  \code{\link{summary,landsat-method}}
+Other things related to landsat data: 
+\code{\link{[[,landsat-method}},
+\code{\link{[[<-,landsat-method}},
+\code{\link{landsat-class}},
+\code{\link{landsatAdd}()},
+\code{\link{landsat}},
+\code{\link{plot,landsat-method}},
+\code{\link{read.landsat}()},
+\code{\link{summary,landsat-method}}
 }
 \author{
 Dan Kelley and Clark Richards

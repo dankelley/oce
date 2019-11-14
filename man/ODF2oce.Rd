@@ -2,7 +2,7 @@
 % Please edit documentation in R/odf.R
 \name{ODF2oce}
 \alias{ODF2oce}
-\title{Create ODF object from the output of \code{ODF::read_ODF()}}
+\title{Create ODF object from the output of \code{ODF::read_ODF()}.}
 \usage{
 ODF2oce(ODF, coerce = TRUE, debug = getOption("oceDebug"))
 }
@@ -20,7 +20,7 @@ An oce object, possibly coerced to a subtype.
 }
 \description{
 As of August 11, 2015, \code{ODF::read_ODF} returns a list with 9 elements,
-one named \code{DATA}, which is a \code{\link{data.frame}} containing the
+one named \code{DATA}, which is a \code{\link[=data.frame]{data.frame()}} containing the
 columnar data, the others being headers of various sorts.  The present
 function constructs an oce object from such data, facilitating processing
 and plotting with the general oce functions.
@@ -30,7 +30,7 @@ copying some of the header
 information into more standard names (e.g.  \code{metadata@longitude} is a
 copy of \code{metadata@odfHeader$EVENT_HEADER$INITIAL_LATITUDE}).  As for
 the \code{DATA}, they are stored in the \code{data} slot, after renaming
-from ODF to oce convention using \code{\link{ODFNames2oceNames}}.
+from ODF to oce convention using \code{\link[=ODFNames2oceNames]{ODFNames2oceNames()}}.
 }
 \section{Caution}{
  This function may change as the \code{ODF} package
@@ -40,15 +40,18 @@ any users except those involved in the development of \code{oce} and
 }
 
 \seealso{
-Other things related to odf data: \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
-  \code{\link{ODFListFromHeader}},
-  \code{\link{ODFNames2oceNames}},
-  \code{\link{[[,odf-method}},
-  \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
-  \code{\link{plot,odf-method}},
-  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
-  \code{\link{subset,odf-method}},
-  \code{\link{summary,odf-method}}
+Other things related to odf data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{ODFListFromHeader}()},
+\code{\link{ODFNames2oceNames}()},
+\code{\link{[[,odf-method}},
+\code{\link{[[<-,odf-method}},
+\code{\link{odf-class}},
+\code{\link{plot,odf-method}},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.odf}()},
+\code{\link{subset,odf-method}},
+\code{\link{summary,odf-method}}
 }
 \author{
 Dan Kelley

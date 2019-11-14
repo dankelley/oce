@@ -79,7 +79,8 @@ Nature 565 (January 9, 2019): 143.
 }
 }
 \seealso{
-Other things related to magnetism: \code{\link{applyMagneticDeclination}}
+Other things related to magnetism: 
+\code{\link{applyMagneticDeclination}()}
 }
 \author{
 Dan Kelley wrote the R code and a fortran wrapper to the

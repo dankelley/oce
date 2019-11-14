@@ -5,9 +5,18 @@
 \alias{oceContour}
 \title{Oce Variant of contour}
 \usage{
-oce.contour(x, y, z, revx = FALSE, revy = FALSE, add = FALSE,
-  tformat, drawTimeRange = getOption("oceDrawTimeRange"),
-  debug = getOption("oceDebug"), ...)
+oce.contour(
+  x,
+  y,
+  z,
+  revx = FALSE,
+  revy = FALSE,
+  add = FALSE,
+  tformat,
+  drawTimeRange = getOption("oceDrawTimeRange"),
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{x}{values for x grid.}

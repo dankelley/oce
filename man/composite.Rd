@@ -21,7 +21,8 @@ makes sense for the object class, i.e. taking into account
 the particular bad-data codes of that particular class.
 }
 \seealso{
-Other functions that create composite objects: \code{\link{composite,amsr-method}},
-  \code{\link{composite,list-method}}
+Other functions that create composite objects: 
+\code{\link{composite,amsr-method}},
+\code{\link{composite,list-method}}
 }
 \concept{functions that create composite objects}

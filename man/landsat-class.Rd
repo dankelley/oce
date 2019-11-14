@@ -188,7 +188,7 @@ Split Window Algorithm and Single Channel Method, \emph{Remote Sensing}, 6,
 \item Rajeshwari, A., and N. D. Mani, 2014.  Estimation of land surface
 temperature of Dindigul district using Landsat 8 data. \emph{International
 Journal of Research in Engineering and Technology}, 3(5), 122-126.
-\code{http://www.academia.edu/7655089/ESTIMATION_OF_LAND_SURFACE_TEMPERATURE_OF_DINDIGUL_DISTRICT_USING_LANDSAT_8_DATA}
+\verb{http://www.academia.edu/7655089/ESTIMATION_OF_LAND_SURFACE_TEMPERATURE_OF_DINDIGUL_DISTRICT_USING_LANDSAT_8_DATA}
 \item Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
 Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.
 \url{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
@@ -206,12 +206,15 @@ slow, decimation is available both in the plotting function and as the separate
 function \code{\link[=decimate]{decimate()}}.  Images may be subsetted with
 \code{\link[=landsatTrim]{landsatTrim()}}.
 
-Other things related to landsat data: \code{\link{[[,landsat-method}},
-  \code{\link{[[<-,landsat-method}},
-  \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
-  \code{\link{landsat}}, \code{\link{plot,landsat-method}},
-  \code{\link{read.landsat}},
-  \code{\link{summary,landsat-method}}
+Other things related to landsat data: 
+\code{\link{[[,landsat-method}},
+\code{\link{[[<-,landsat-method}},
+\code{\link{landsatAdd}()},
+\code{\link{landsatTrim}()},
+\code{\link{landsat}},
+\code{\link{plot,landsat-method}},
+\code{\link{read.landsat}()},
+\code{\link{summary,landsat-method}}
 }
 \author{
 Dan Kelley and Clark Richards

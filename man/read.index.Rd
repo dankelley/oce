@@ -4,8 +4,13 @@
 \alias{read.index}
 \title{Read a NOAA ocean index file}
 \usage{
-read.index(file, format, missingValue, tz = getOption("oceTz"),
-  debug = getOption("oceDebug"))
+read.index(
+  file,
+  format,
+  missingValue,
+  tz = getOption("oceTz"),
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file

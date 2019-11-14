@@ -61,7 +61,8 @@ decodeTime("2013/07/01")
 
 }
 \seealso{
-Other functions relating to time: \code{\link{GMTOffsetFromTz}}
+Other functions relating to time: 
+\code{\link{GMTOffsetFromTz}()}
 }
 \author{
 Dan Kelley

@@ -3617,8 +3617,7 @@ fillGap <- function(x, method=c("linear"), rule=1)
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #'
-#' @return An object of `\link[base]{class`} `"oce"` that has been
-#' subsampled appropriately.
+#' @return An [oce-class] object that has been subsampled appropriately.
 #'
 #' @section Bugs: Only a preliminary version of this function is provided in
 #' the present package.  It only works for objects of class `echosounder`,
@@ -3832,8 +3831,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 #' @param \dots parameters to be supplied to [smooth()], which does
 #' the actual work.
 #'
-#' @return An object of `\link[base]{class`} `"oce"` that has been
-#' smoothed appropriately.
+#' @return An [oce-class] object that has been smoothed appropriately.
 #'
 #' @author Dan Kelley
 #'

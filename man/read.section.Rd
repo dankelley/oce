@@ -4,9 +4,18 @@
 \alias{read.section}
 \title{Read a Section File}
 \usage{
-read.section(file, directory, sectionId = "", flags, ship = "",
-  scientist = "", institute = "", missingValue = -999,
-  debug = getOption("oceDebug"), processingLog)
+read.section(
+  file,
+  directory,
+  sectionId = "",
+  flags,
+  ship = "",
+  scientist = "",
+  institute = "",
+  missingValue = -999,
+  debug = getOption("oceDebug"),
+  processingLog
+)
 }
 \arguments{
 \item{file}{A file containing a set of CTD observations.  At present, only the
@@ -67,18 +76,21 @@ at this time. Data names are inferred from column headings using
 \code{\link[=woceNames2oceNames]{woceNames2oceNames()}}.
 }
 \seealso{
-Other things related to section data: \code{\link{[[,section-method}},
-  \code{\link{[[<-,section-method}},
-  \code{\link{as.section}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{initializeFlagScheme,section-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{section-class}},
-  \code{\link{sectionAddStation}},
-  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
-  \code{\link{sectionSort}}, \code{\link{section}},
-  \code{\link{subset,section-method}},
-  \code{\link{summary,section-method}}
+Other things related to section data: 
+\code{\link{[[,section-method}},
+\code{\link{[[<-,section-method}},
+\code{\link{as.section}()},
+\code{\link{handleFlags,section-method}},
+\code{\link{initializeFlagScheme,section-method}},
+\code{\link{plot,section-method}},
+\code{\link{section-class}},
+\code{\link{sectionAddStation}()},
+\code{\link{sectionGrid}()},
+\code{\link{sectionSmooth}()},
+\code{\link{sectionSort}()},
+\code{\link{section}},
+\code{\link{subset,section-method}},
+\code{\link{summary,section-method}}
 }
 \author{
 Dan Kelley

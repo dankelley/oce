@@ -4,15 +4,47 @@
 \alias{imagep}
 \title{Plot an Image with a Color Palette}
 \usage{
-imagep(x, y, z, xlim, ylim, zlim, zclip = FALSE, flipy = FALSE,
-  xlab = "", ylab = "", zlab = "", zlabPosition = c("top", "side"),
-  decimate = TRUE, breaks, col, colormap, labels = NULL, at = NULL,
-  drawContours = FALSE, drawPalette = TRUE, drawTriangles = FALSE,
-  tformat, drawTimeRange = getOption("oceDrawTimeRange"),
-  filledContour = FALSE, missingColor = NULL, useRaster,
-  mgp = getOption("oceMgp"), mar, mai.palette, xaxs = "i",
-  yaxs = "i", asp = NA, cex = par("cex"), axes = TRUE, main = "",
-  axisPalette, add = FALSE, debug = getOption("oceDebug"), ...)
+imagep(
+  x,
+  y,
+  z,
+  xlim,
+  ylim,
+  zlim,
+  zclip = FALSE,
+  flipy = FALSE,
+  xlab = "",
+  ylab = "",
+  zlab = "",
+  zlabPosition = c("top", "side"),
+  decimate = TRUE,
+  breaks,
+  col,
+  colormap,
+  labels = NULL,
+  at = NULL,
+  drawContours = FALSE,
+  drawPalette = TRUE,
+  drawTriangles = FALSE,
+  tformat,
+  drawTimeRange = getOption("oceDrawTimeRange"),
+  filledContour = FALSE,
+  missingColor = NULL,
+  useRaster,
+  mgp = getOption("oceMgp"),
+  mar,
+  mai.palette,
+  xaxs = "i",
+  yaxs = "i",
+  asp = NA,
+  cex = par("cex"),
+  axes = TRUE,
+  main = "",
+  axisPalette,
+  add = FALSE,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{x, y}{These have different meanings in different modes of operation.

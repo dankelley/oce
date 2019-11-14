@@ -4,8 +4,13 @@
 \alias{geodXy}
 \title{Convert From Geographical to Geodesic Coordinates}
 \usage{
-geodXy(longitude, latitude, longitudeRef, latitudeRef,
-  debug = getOption("oceDebug"))
+geodXy(
+  longitude,
+  latitude,
+  longitudeRef,
+  latitudeRef,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{longitude, latitude}{vector of longitude and latitude}
@@ -85,14 +90,17 @@ UTM <- lonlat2utm(lon, lat, zone=18) # we need to set the zone for this task!
 angleUTM <- 180/pi*atan(coef(lm(northing~easting, data=UTM))[2])
 mapCoordinateSystem(lonR, latR, 500, angleUTM, col=3)
 legend("topright", lwd=1, col=2:3, bg="white", title="Axis Rotation Angle",
-       legend=c(sprintf("geod: \%.1f deg", angle), sprintf("utm: \%.1f deg",angleUTM)))
+       legend=c(sprintf("geod: \%.1f deg", angle),
+                sprintf("utm: \%.1f deg", angleUTM)))
 }
 }
 \seealso{
 \code{\link[=geodDist]{geodDist()}}
 
-Other functions relating to geodesy: \code{\link{geodDist}},
-  \code{\link{geodGc}}, \code{\link{geodXyInverse}}
+Other functions relating to geodesy: 
+\code{\link{geodDist}()},
+\code{\link{geodGc}()},
+\code{\link{geodXyInverse}()}
 }
 \author{
 Dan Kelley

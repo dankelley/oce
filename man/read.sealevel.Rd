@@ -4,8 +4,12 @@
 \alias{read.sealevel}
 \title{Read a Sealevel File}
 \usage{
-read.sealevel(file, tz = getOption("oceTz"), processingLog,
-  debug = getOption("oceDebug"))
+read.sealevel(
+  file,
+  tz = getOption("oceTz"),
+  processingLog,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -45,9 +49,9 @@ the file is in neither of these formats, the user might wish to scan it
 directly, and then to use \code{\link[=as.sealevel]{as.sealevel()}} to create a
 \code{sealevel} object.
 The Hawaii archive site at
-\code{http://ilikai.soest.hawaii.edu/uhslc/datai.html} at one time provided a graphical
+\verb{http://ilikai.soest.hawaii.edu/uhslc/datai.html} at one time provided a graphical
 interface for downloading sealevel data in Type 1, with format that was once
-described at \code{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (although that link
+described at \verb{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (although that link
 was observed to no longer work, on December 4, 2016).
 Examination of data retrieved from what seems to be a replacement Hawaii server
 (https://uhslc.soest.hawaii.edu/data/?rq) in September 2019 indicated that the
@@ -59,15 +63,16 @@ The MEDS repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
 provides Type 2 data.
 }
 \seealso{
-Other things related to sealevel data: \code{\link{[[,sealevel-method}},
-  \code{\link{[[<-,sealevel-method}},
-  \code{\link{as.sealevel}},
-  \code{\link{plot,sealevel-method}},
-  \code{\link{sealevel-class}},
-  \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}},
-  \code{\link{subset,sealevel-method}},
-  \code{\link{summary,sealevel-method}}
+Other things related to sealevel data: 
+\code{\link{[[,sealevel-method}},
+\code{\link{[[<-,sealevel-method}},
+\code{\link{as.sealevel}()},
+\code{\link{plot,sealevel-method}},
+\code{\link{sealevel-class}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{subset,sealevel-method}},
+\code{\link{summary,sealevel-method}}
 }
 \author{
 Dan Kelley

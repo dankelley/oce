@@ -4,8 +4,15 @@
 \alias{as.xbt}
 \title{Create an xbt object}
 \usage{
-as.xbt(z, temperature, longitude = NA, latitude = NA, filename = "",
-  sequenceNumber = NA, serialNumber = "")
+as.xbt(
+  z,
+  temperature,
+  longitude = NA,
+  latitude = NA,
+  filename = "",
+  sequenceNumber = NA,
+  serialNumber = ""
+)
 }
 \arguments{
 \item{z}{numeric vector giving vertical coordinates of measurements. This is the negative of
@@ -28,12 +35,15 @@ An \linkS4class{xbt} object.
 Create an xbt object
 }
 \seealso{
-Other things related to xbt data: \code{\link{[[<-,xbt-method}},
-  \code{\link{plot,xbt-method}},
-  \code{\link{read.xbt.noaa1}}, \code{\link{read.xbt}},
-  \code{\link{subset,xbt-method}},
-  \code{\link{summary,xbt-method}},
-  \code{\link{xbt-class}}, \code{\link{xbt.edf}}
+Other things related to xbt data: 
+\code{\link{[[<-,xbt-method}},
+\code{\link{plot,xbt-method}},
+\code{\link{read.xbt.noaa1}()},
+\code{\link{read.xbt}()},
+\code{\link{subset,xbt-method}},
+\code{\link{summary,xbt-method}},
+\code{\link{xbt-class}},
+\code{\link{xbt.edf}}
 }
 \author{
 Dan Kelley

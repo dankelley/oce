@@ -4,10 +4,22 @@
 \alias{read.adp.rdi}
 \title{Read a Teledyne/RDI ADP File}
 \usage{
-read.adp.rdi(file, from, to, by, tz = getOption("oceTz"),
-  longitude = NA, latitude = NA, type = c("workhorse"),
-  monitor = FALSE, despike = FALSE, processingLog, testing = FALSE,
-  debug = getOption("oceDebug"), ...)
+read.adp.rdi(
+  file,
+  from,
+  to,
+  by,
+  tz = getOption("oceTz"),
+  longitude = NA,
+  latitude = NA,
+  type = c("workhorse"),
+  monitor = FALSE,
+  despike = FALSE,
+  processingLog,
+  testing = FALSE,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -242,7 +254,7 @@ and so produce a warning.
 \tab 0x00 \tab 0x0c \tab Sentinel vertical beam amplitude\cr
 \tab 0x00 \tab 0x0d \tab Sentinel vertical beam percent good\cr
 \tab 0x00 \tab 0x20 \tab VMDASS\cr
-*\tab 0x00 \tab 0x30 \tab binary fixed attitude (see p169 of reference 3 for format)\cr
+\*\tab 0x00 \tab 0x30 \tab binary fixed attitude (see p169 of reference 3 for format)\cr
 \tab 0x00 \tab 0x32 \tab Sentinel transformation matrix\cr
 \tab 0x00 \tab 0x0a \tab Sentinel data\cr
 \tab 0x00 \tab 0x0b \tab Sentinel correlation\cr
@@ -313,10 +325,10 @@ failed checksum. If that length agrees with the length of the most recent ensemb
 had a good checksum, then the ensemble is declared as faulty and is ignored. However,
 if the length differs from that of the most recent accepted ensemble, then \code{read.adp.rdi}
 goes back to just after the start of the ensemble, and searches forward for the next two-byte
-pair, namely \code{0x7f 0x7f}, that designates the start of an ensemble.  Distinct notifications
+pair, namely \verb{0x7f 0x7f}, that designates the start of an ensemble.  Distinct notifications
 are given about these two cases, and they give the byte numbers in the original file, as a way
 to help analysts who want to look at the data stream with other tools.
-\item At the end of an ensemble, the next two characters ought to be \code{0x7f 0x7f}, and if they
+\item At the end of an ensemble, the next two characters ought to be \verb{0x7f 0x7f}, and if they
 are not, then the next ensemble is faulty. If this error occurs, \code{read.adp.rdi} attempts
 to recover by searching forward to the next instance of this two-byte pair, discarding any
 information that is present in the mangled ensemble.
@@ -352,37 +364,50 @@ P/N 95D-6022-00 (May 2015). \code{SV_ODF_May15.pdf}
 \item Teledyne RD Instruments, 2014. \emph{Ocean Surveyor / Ocean Observer Technical Manual.}
 P/N 95A-6012-00 (April 2014). \code{OS_TM_Apr14.pdf}
 \item Teledyne RD Instruments, 2001. \emph{WinRiver User's Guide International Version.}
-P/N 957-6171-00 (June 2001) \code{WinRiver User Guide International Version.pdf.pdf}
+P/N 957-6171-00 (June 2001) \verb{WinRiver User Guide International Version.pdf.pdf}
 }
 }
 \seealso{
-Other things related to adp data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}},
-  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
-  \code{\link{adpEnsembleAverage}},
-  \code{\link{adp_rdi.000}}, \code{\link{adp}},
-  \code{\link{as.adp}}, \code{\link{beamName}},
-  \code{\link{beamToXyzAdpAD2CP}},
-  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
-  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
-  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}},
-  \code{\link{handleFlags,adp-method}},
-  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
-  \code{\link{read.adp.ad2cp}},
-  \code{\link{read.adp.nortek}},
-  \code{\link{read.adp.sontek.serial}},
-  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
-  \code{\link{read.aquadoppHR}},
-  \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{subset,adp-method}},
-  \code{\link{subtractBottomVelocity}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdpAD2CP}},
-  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+Other things related to adp data: 
+\code{\link{[[,adp-method}},
+\code{\link{[[<-,adp-method}},
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{adp-class}},
+\code{\link{adpEnsembleAverage}()},
+\code{\link{adp_rdi.000}},
+\code{\link{adp}},
+\code{\link{as.adp}()},
+\code{\link{beamName}()},
+\code{\link{beamToXyzAdpAD2CP}()},
+\code{\link{beamToXyzAdp}()},
+\code{\link{beamToXyzAdv}()},
+\code{\link{beamToXyz}()},
+\code{\link{beamUnspreadAdp}()},
+\code{\link{binmapAdp}()},
+\code{\link{enuToOtherAdp}()},
+\code{\link{enuToOther}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{is.ad2cp}()},
+\code{\link{plot,adp-method}},
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{subset,adp-method}},
+\code{\link{subtractBottomVelocity}()},
+\code{\link{summary,adp-method}},
+\code{\link{toEnuAdp}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdpAD2CP}()},
+\code{\link{xyzToEnuAdp}()},
+\code{\link{xyzToEnu}()}
 }
 \author{
 Dan Kelley and Clark Richards

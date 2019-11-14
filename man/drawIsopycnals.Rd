@@ -4,9 +4,18 @@
 \alias{drawIsopycnals}
 \title{Add Isopycnal Curves to TS Plot}
 \usage{
-drawIsopycnals(nlevels = 6, levels, rotate = TRUE, rho1000 = FALSE,
-  digits = 2, eos = getOption("oceEOS", default = "gsw"), cex = 0.75
-  * par("cex"), col = "darkgray", lwd = par("lwd"), lty = par("lty"))
+drawIsopycnals(
+  nlevels = 6,
+  levels,
+  rotate = TRUE,
+  rho1000 = FALSE,
+  digits = 2,
+  eos = getOption("oceEOS", default = "gsw"),
+  cex = 0.75 * par("cex"),
+  col = "darkgray",
+  lwd = par("lwd"),
+  lty = par("lty")
+)
 }
 \arguments{
 \item{nlevels}{suggested number of density levels (i.e. isopycnal curves);

@@ -4,8 +4,14 @@
 \alias{as.lisst}
 \title{Coerce Data Into a LISST Object}
 \usage{
-as.lisst(data, filename = "", year = 0, tz = "UTC", longitude = NA,
-  latitude = NA)
+as.lisst(
+  data,
+  filename = "",
+  year = 0,
+  tz = "UTC",
+  longitude = NA,
+  latitude = NA
+)
 }
 \arguments{
 \item{data}{A table (or matrix) containing 42 columns, as in a LISST data
@@ -35,12 +41,13 @@ contains more than 42 columns, only the first 42 are used.  This is used by
 of the columns.
 }
 \seealso{
-Other things related to lisst data: \code{\link{[[,lisst-method}},
-  \code{\link{[[<-,lisst-method}},
-  \code{\link{lisst-class}},
-  \code{\link{plot,lisst-method}},
-  \code{\link{read.lisst}},
-  \code{\link{summary,lisst-method}}
+Other things related to lisst data: 
+\code{\link{[[,lisst-method}},
+\code{\link{[[<-,lisst-method}},
+\code{\link{lisst-class}},
+\code{\link{plot,lisst-method}},
+\code{\link{read.lisst}()},
+\code{\link{summary,lisst-method}}
 }
 \author{
 Dan Kelley

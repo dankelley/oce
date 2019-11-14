@@ -350,7 +350,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' met <- read.met(metFile)
 #'}
 #'
-#' @seealso The work is done with `\link[utils]{download.file`}.
+#' @seealso The work is done with [utils::download.file()].
 #'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data

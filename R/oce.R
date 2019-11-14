@@ -1,13 +1,31 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' oce: A Package for Oceanographic Analysis
+#' oce: A Package for Oceanographic Analysis.
 #'
+#' @description
 #' The oce package provides functions for working with
 #' Oceanographic data, for calculations that are specific
 #' to Oceanography, and for producing graphics that
 #' match the conventions of the field.
 #'
-#' @section Specialized functions:
+#' @details
+#'
+#' Over a dozen specialized data types are handled by oce,
+#' with generic plots and summaries for each, along with
+#' the specialized functions needed for typical Oceanographic
+#' analysis.
+#'
+#' See [oce-class] for a summary of the class structure
+#' and links to documentation for the many subclasses of
+#' oce objects, each aligned with a class of instrument or
+#' or type of dataset.  For a more task-oriented approach,
+#' see the several vignettes that are provided with oce,
+#' and a book
+#' (Kelley, Dan E. Oceanographic Analysis with R. New York: Springer-Verlag, 2018.
+#' https://www.springer.com/us/book/9781493988426) written
+#' by one of the oce co-authors.
+#'
+#' @section Specialized Functions:
 #' A key function is [read.oce()], which will attempt
 #' to read Oceanographic data in raw format. This uses
 #' [oceMagic()] to try to detect the file type,
@@ -16,12 +34,11 @@
 #' function, e.g. [read.ctd()] for CTD files, or
 #' [read.ctd.sbe()] for Teledyne-Seabird files.
 #'
-#' @section Generic methods:
+#' @section Generic Methods:
 #' A list of the generic methods in oce is provided by
-#' `methods(class="oce")`; a few that are used frequently
+#' [methods]`(class="oce")`; a few that are used frequently
 #' are as follows.
-#' \describe{
-#' \item{[[}{Find the value of an item in the object's
+#' * \code{[[} Finds the value of an item in the object's
 #'     `metadata` or `data` slot. If the item does
 #'     not exist, but can be calculated from the other items,
 #'     then the calculated value is returned. As an example of the
@@ -30,35 +47,22 @@
 #'     `ctd[["theta"]]` therefore causes [swTheta()]
 #'     to be called, to calculate `theta`.
 #'     See \link{[[,oce-method} or type `?"[[,oce-method"`
-#'     to learn more.}
-#' \item{[[<-}{Alters the named item in the object's `metadata` or
+#'     to learn more.
+#' * \code{[[<-} Alters the named item in the object's `metadata` or
 #'     `data` slot.  If the item does not exist, it is created.
 #'     See \link{[[<-,oce-method} or type `?"[[<-,oce-method"`
-#'     to learn more.}
-#' \item{summary}{Displays some information about the object named as an
+#'     to learn more.
+#' * \code{summary} Displays some information about the object named as an
 #'     argument, including a few elements from its `metadata` slot
 #'     and some statistics of the contents of its `data` slot.
 #'     See \link{summary,oce-method} or type `?"summary,oce-method"`
-#'     to learn more.}
-#' \item{subset}{Takes a subset of an oce object.
+#'     to learn more.
+#' * \code{subset} Takes a subset of an oce object.
 #'     See \link{subset,oce-method} or type `?"subset,oce-method"`
-#'     to learn more.}
-#' }
-#'
-#'
-#' @section Oceanographic data types handled:
-#' Over a dozen specialized data types are handled by oce,
-#' with generic plots and summaries for each, along with
-#' the specialized functions needed for typical Oceanographic
-#' analysis.
-#'
-#' @section Oce object structure:
-#' See [oce-class] for a summary of the class structure
-#' and links to documentation for the many subclasses of
-#' oce objects, each aligned with a class of instrument or
-#' or type of dataset.
+#'     to learn more.
 #'
 #' @docType package
+#'
 #' @name oce
 NULL
 
@@ -1456,7 +1460,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
 #' @param debug an integer that specifies a level of debugging, with 0 or less
 #' indicating no debugging, and 1 or more indicating debugging.
 #'
-#' @return An object of `\link[base]{class`} `"oce"`, altered
+#' @return A [oce-class] object, altered
 #' appropriately, and with a log item indicating the nature of the alteration.
 #'
 #' @author Dan Kelley
@@ -1583,10 +1587,10 @@ oce.edit <- oceEdit
 #' each enclosed in double quotes.  After that line are lines for the data
 #' themselves.  The default is to separate data items by a single space
 #' character, but this can be altered by using a `sep` argument in the
-#' `...` list (see `\link[utils]{write.table`}).
+#' `...` list; see [utils::write.table()].
 #'
 #' This function is little more than a thin wrapper around
-#' `\link[utils]{write.table`}, the only difference being that row names
+#' [utils::write.table()], the only difference being that row names
 #' are omitted here, making for a file format that is more conventional in
 #' Oceanography.
 #'
@@ -1601,7 +1605,7 @@ oce.edit <- oceEdit
 #'
 #' @author Dan Kelley
 #'
-#' @seealso `\link[utils]{write.table`}, which does the actual work.
+#' @seealso `[utils::write.table()], which does the actual work.
 oce.write.table <- function (x, file="", ...)
 {
     if (!inherits(x, "oce"))
@@ -2638,11 +2642,11 @@ oce.colorsPalette <- oceColorsPalette
 #' number in the time range, e.g. dropping the year if it is the same in the
 #' first number.
 #'
-#' @param cex size of labels on axes; see `\link[graphics]{par`}("cex").
+#' @param cex size of labels on axes; see [graphics::par]`("cex")`.
 #'
-#' @param cex.axis see `\link[graphics]{par`}("cex.axis").
+#' @param cex.axis see [graphics::par]`("cex.axis")`.
 #'
-#' @param cex.main see `\link[graphics]{par`}("cex.main").
+#' @param cex.main see [graphics::par]`("cex.main")`.
 #'
 #' @param mar value for `par(mar)` for axis
 #'

@@ -4,8 +4,13 @@
 \alias{equatorialToLocalHorizontal}
 \title{Convert equatorial to local horizontal coordinate}
 \usage{
-equatorialToLocalHorizontal(rightAscension, declination, t, longitude,
-  latitude)
+equatorialToLocalHorizontal(
+  rightAscension,
+  declination,
+  t,
+  longitude,
+  latitude
+)
 }
 \arguments{
 \item{rightAscension}{right ascension, e.g. calculated with
@@ -40,10 +45,13 @@ USA. 429 pages.
 }
 }
 \seealso{
-Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{julianDay}}, \code{\link{moonAngle}},
-  \code{\link{siderealTime}}, \code{\link{sunAngle}}
+Other things related to astronomy: 
+\code{\link{eclipticalToEquatorial}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{julianDay}()},
+\code{\link{moonAngle}()},
+\code{\link{siderealTime}()},
+\code{\link{sunAngle}()}
 }
 \author{
 Dan Kelley, based on formulae in refeences 1 and 2.

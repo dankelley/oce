@@ -42,7 +42,7 @@ The procedure
 is to first handle the items listed in the following table, with string
 searches anchored to the start of the string. After that,
 the qualifiers
-\code{_ADJUSTED}, \code{_ERROR} and \code{_QC},
+\verb{_ADJUSTED}, \verb{_ERROR} and \verb{_QC},
 are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 
 \tabular{ll}{
@@ -111,13 +111,17 @@ replaced this by now).
 }
 }
 \seealso{
-Other things related to argo data: \code{\link{[[,argo-method}},
-  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
-  \code{\link{argoGrid}}, \code{\link{argo}},
-  \code{\link{as.argo}},
-  \code{\link{handleFlags,argo-method}},
-  \code{\link{plot,argo-method}}, \code{\link{read.argo}},
-  \code{\link{subset,argo-method}},
-  \code{\link{summary,argo-method}}
+Other things related to argo data: 
+\code{\link{[[,argo-method}},
+\code{\link{[[<-,argo-method}},
+\code{\link{argo-class}},
+\code{\link{argoGrid}()},
+\code{\link{argo}},
+\code{\link{as.argo}()},
+\code{\link{handleFlags,argo-method}},
+\code{\link{plot,argo-method}},
+\code{\link{read.argo}()},
+\code{\link{subset,argo-method}},
+\code{\link{summary,argo-method}}
 }
 \concept{things related to argo data}

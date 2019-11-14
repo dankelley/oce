@@ -4,10 +4,20 @@
 \alias{read.adv.sontek.serial}
 \title{Read an ADV data file}
 \usage{
-read.adv.sontek.serial(file, from = 1, to, by = 1,
-  tz = getOption("oceTz"), longitude = NA, latitude = NA,
-  start = NULL, deltat = NULL, debug = getOption("oceDebug"),
-  monitor = FALSE, processingLog = NULL)
+read.adv.sontek.serial(
+  file,
+  from = 1,
+  to,
+  by = 1,
+  tz = getOption("oceTz"),
+  longitude = NA,
+  latitude = NA,
+  start = NULL,
+  deltat = NULL,
+  debug = getOption("oceDebug"),
+  monitor = FALSE,
+  processingLog = NULL
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -64,7 +74,7 @@ that it provides is better for normal calls by a user.}
 An \linkS4class{adv} object that contains measurements made with an ADV device.
 
 The \code{metadata} contains information as given in the following table.
-The \code{Nortek name'' is the name used in the Nortek System Integrator Guide (reference 1) and the }Sontek name'' is the name used in the relevant
+The \verb{Nortek name'' is the name used in the Nortek System Integrator Guide (reference 1) and the }Sontek name'' is the name used in the relevant
 Sontek documentation.  References are given in square brackets.
 
 \tabular{llll}{
@@ -160,13 +170,13 @@ the System Integrator Guide (reference 1) failed to indicate where this value is
 stored in the various headers contained in Vector datasets.  After some
 experimentation with a few data files, \code{read.adv.nortek} was set up to
 calculate \code{metadata$samplingRate} as \code{512/AvgInterval} where
-\code{AvgInterval} is a part of the \code{User Configuration'' header (reference 1 p30), where the explanation is }average interval in seconds'').  This formula was
+\code{AvgInterval} is a part of the \verb{User Configuration'' header (reference 1 p30), where the explanation is }average interval in seconds'').  This formula was
 developed through trial and error, but it was confirmed later on the Nortek
 discussion group, and it should appear in upcoming versions of (reference 1).
 
 Another basic issue is the determination of whether an instrument had
 recorded in continuous mode or burst mode.  One might infer that
-\code{TimCtrlReg} in the \code{User Configuration'' header (reference 1 p30) determines this, in bits 1 and 2.  However, this was the case in test files available to the author.  For this reason, `read.adv.nortek` infers the mode by reverse engineering of data files of known configuration.  The present version of `read.adv.nortek` determines the sampling mode from the ```NRecords`'' item of the }Vector Velocity Data'' header, which seems
+\code{TimCtrlReg} in the \verb{User Configuration'' header (reference 1 p30) determines this, in bits 1 and 2.  However, this was the case in test files available to the author.  For this reason, `read.adv.nortek` infers the mode by reverse engineering of data files of known configuration.  The present version of `read.adv.nortek` determines the sampling mode from the ```NRecords`'' item of the }Vector Velocity Data'' header, which seems
 to be 0 for data collected continuously, and non-zero for data collected in
 bursts.
 
@@ -187,7 +197,7 @@ instrument warm-up period.
 Starting in March
 2016, \code{read.adv.nortek} has offered some support for handling IMU
 (inertial measurement unit) data incorporated into Nortek binary files. This
-is not described in the Nortek document named \code{System Integrator Guide'' (reference 1A) but it appeared in }System Integrator Manual'' (reference 1B;
+is not described in the Nortek document named \verb{System Integrator Guide'' (reference 1A) but it appeared in }System Integrator Manual'' (reference 1B;
 reference 1C). Confusingly, 1B described 3 varieties of data, whereas 1C does not
 describe any of these, but describes instead a fourth variety. As of March
 2016, \code{read.adv.nortek} handles all 4 varieties, because files in the
@@ -284,23 +294,32 @@ Documentation (Sept 1, 2001).
 \item Nortek Knowledge Center (http://www.nortekusa.com/en/knowledge-center)
 \item A document describing an IMU unit that seems to be close to the one named
 in (references 1B and C) as being an adjunct to Nortek Vector systems is at
-\code{http://files.microstrain.com/3DM-GX3-35-Data-Communications-Protocol.pdf}
+\verb{http://files.microstrain.com/3DM-GX3-35-Data-Communications-Protocol.pdf}
 }
 }
 \seealso{
-Other things related to adv data: \code{\link{[[,adv-method}},
-  \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
-  \code{\link{adv}}, \code{\link{beamName}},
-  \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
-  \code{\link{enuToOther}}, \code{\link{plot,adv-method}},
-  \code{\link{read.adv.nortek}},
-  \code{\link{read.adv.sontek.adr}},
-  \code{\link{read.adv.sontek.text}},
-  \code{\link{read.adv}}, \code{\link{rotateAboutZ}},
-  \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
+Other things related to adv data: 
+\code{\link{[[,adv-method}},
+\code{\link{[[<-,adv-method}},
+\code{\link{adv-class}},
+\code{\link{adv}},
+\code{\link{beamName}()},
+\code{\link{beamToXyz}()},
+\code{\link{enuToOtherAdv}()},
+\code{\link{enuToOther}()},
+\code{\link{plot,adv-method}},
+\code{\link{read.adv.nortek}()},
+\code{\link{read.adv.sontek.adr}()},
+\code{\link{read.adv.sontek.text}()},
+\code{\link{read.adv}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{subset,adv-method}},
+\code{\link{summary,adv-method}},
+\code{\link{toEnuAdv}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdv}()},
+\code{\link{xyzToEnu}()}
 }
 \author{
 Dan Kelley

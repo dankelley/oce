@@ -5,8 +5,15 @@
 \alias{oce.edit}
 \title{Edit an Oce Object}
 \usage{
-oceEdit(x, item, value, action, reason = "", person = "",
-  debug = getOption("oceDebug"))
+oceEdit(
+  x,
+  item,
+  value,
+  action,
+  reason = "",
+  person = "",
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{x}{an \linkS4class{oce} object.  The exact action of \code{\link[=oceEdit]{oceEdit()}} depends
@@ -16,7 +23,7 @@ on the sub-class of \code{x}.}
 \code{metadata} or \code{data} slot, the former being checked first.
 An exception is if \code{item} starts with \code{"data@"} or
 \code{"metadata@"}, in which case the named slot is updated with a changed
-value of the contents of \code{item} after the \code{@} character.}
+value of the contents of \code{item} after the \verb{@} character.}
 
 \item{value}{new value for \code{item}, if both supplied.}
 
@@ -31,7 +38,7 @@ action on the object.}
 indicating no debugging, and 1 or more indicating debugging.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"oce"}, altered
+A \linkS4class{oce} object, altered
 appropriately, and with a log item indicating the nature of the alteration.
 }
 \description{
@@ -44,22 +51,20 @@ There are several ways to use this function.
 \item If both an \code{item} and \code{value} are supplied, then
 either the object's metadata or data slot may be altered. There are
 two ways in which this can be done.
-}
 \itemize{
 \item Case 1A. If the \code{item} string does not contain an
-\code{@} character, then the \code{metadata} slot is examined
+\verb{@} character, then the \code{metadata} slot is examined
 for an entry named \code{item}, and that is modified if so.
 Alternatively, if \code{item} is found in \code{metadata}, then
 that value is modified. However, if \code{item} is not found in
 either \code{metadata} or \code{data}, then an error is reported
 (see 1B for how to add something that does not yet exist).
 \item Case 1B. If the \code{item} string contains
-the \code{@} character, then the text to the left of that character
+the \verb{@} character, then the text to the left of that character
 must be either \code{"metadata"} or \code{"data"}, and it names the slot
 in which the change is done. In contrast with case 1A, this will
 \emph{create} a new item, if it is not already in existence.
 }
-\enumerate{
 \item If \code{item} and \code{value} are not supplied, then \code{action} must
 be supplied.  This is a character string specifying some action to be
 performed on the object, e.g. a manipulation of a column.  The action must

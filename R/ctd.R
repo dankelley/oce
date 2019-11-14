@@ -517,7 +517,7 @@ setMethod(f="summary",
 #' slot, so for example `x[["temperature"]]` will retrieve that
 #' item. By contrast, `x[["sigmaTheta"]]` is taken to be a
 #' request to compute \eqn{\sigma_\theta}{sigma[theta]}, and so
-#' it yields a call to [`swTheta`]`(x)` even if
+#' it yields a call to [swTheta]`(x)` even if
 #' the `data` slot of `x` might happen to contain an item
 #' named `theta`. This can be confusing at first, but it tends
 #' to lead to fewer surprises in everyday work, for otherwise the
@@ -561,65 +561,62 @@ setMethod(f="summary",
 #' and the standard value 4.2914 S/m.
 #'
 #' * `CT` or `Conservative Temperature`: Conservative Temperature,
-#' computed with [gsw::gsw_CT_from_t()` in the `gsw` package.
+#' computed with [gsw::gsw_CT_from_t()].
 #'
-#' * `density`: seawater density, computed with [`swRho`]`(x)`.
+#' * `density`: seawater density, computed with [swRho]`(x)`.
 #' (Note that it may be better to call that function directly, to gain
 #' control of the choice of equation of state, etc.)
 #'
 #' * `depth`: Depth in metres below the surface, computed
-#' with [`swDepth`]`(x)`.
+#' with [swDepth]`(x)`.
 #'
-#' * `N2`: Square of Brunt-Vaisala frequency, computed  with
-#' [`swN2`]`(x)`.
+#' * `N2`: Square of Brunt-Vaisala frequency, computed  with [swN2]`(x)`.
 #'
 #' * `potential temperature`: Potential temperature in the
-#' UNESCO formulation, computed with [`swTheta`]`(x)`.
+#' UNESCO formulation, computed with [swTheta]`(x)`.
 #' This is a synonym for `theta`.
 #'
-#' * `Rrho`: Density ratio, computed with [`swRrho`]`(x)`.
+#' * `Rrho`: Density ratio, computed with [swRrho]`(x)`.
 #'
 #' * `SA` or `Absolute Salinity`: Absolute Salinity,
-#' computed with `\link[gsw]{gsw_SA_from_SP`} in the `gsw` package.
+#' computed with [gsw::gsw_SA_from_SP()].
 #' The calculation involves location as well as measured water properties.
 #' If the object `x` does not containing information on the location,
 #' then 30N and 60W is used for the calculation, and a warning is generated.
 #'
 #' * `sigmaTheta`: A form of potential density anomaly, computed with
-#' [`swSigmaTheta`]`(x)`.
+#' [swSigmaTheta]`(x)`.
 #'
 #' * `sigma0` Equal to `sigmaTheta`, i.e. potential density anomaly
-#' referenced to a pressure of 0dbar, computed with [`swSigma0`]`(x)`.
+#' referenced to a pressure of 0dbar, computed with [swSigma0]`(x)`.
 #'
 #' * `sigma1`: Potential density anomaly
-#' referenced to a pressure of 1000dbar, computed with [`swSigma1`]`(x)`.
+#' referenced to a pressure of 1000dbar, computed with [swSigma1]`(x)`.
 #'
 #' * `sigma2`: Potential density anomaly
-#' referenced to a pressure of 2000dbar, computed with [`swSigma2`]`(x)`.
+#' referenced to a pressure of 2000dbar, computed with [swSigma2]`(x)`.
 #'
 #' * `sigma3`: Potential density anomaly
-#' referenced to a pressure of 3000dbar, computed with [`swSigma3`]`(x)`.
+#' referenced to a pressure of 3000dbar, computed with [swSigma3]`(x)`.
 #'
 #' * `sigma4`: potential density anomaly
-#' referenced to a pressure of 4000dbar, computed with [`swSigma4`]`(x)`.
+#' referenced to a pressure of 4000dbar, computed with [swSigma4]`(x)`.
 #'
 #' * `SP`: Salinity on the Practical Salinity Scale, which is
 #' `salinity` in the `data` slot.
 #'
 #' * `spice` or `spiciness0`: a variable that is in some sense
-#' orthogonal to density, calculated with [`swSpice`]`(x)`.
+#' orthogonal to density, calculated with [swSpice]`(x)`.
 #' Note that this is defined differently for `eos="unesco"` and
 #' `eos="gsw"`.
 #'
-#' * `SR`: Reference Salinity computed with
-#' `\link[gsw]{gsw_SR_from_SP`} in the `gsw` package.
+#' * `SR`: Reference Salinity computed with [gsw::gsw_SR_from_SP()].
 #'
-#' * `Sstar`: Preformed Salinity computed with
-#' `\link[gsw]{gsw_SR_from_SP`} in the `gsw` package.
+#' * `Sstar`: Preformed Salinity computed with [gsw::gsw_SR_from_SP()].
 #' See `SA` for a note on longitude and latitude.
 #'
 #' * `theta`: potential temperature in the UNESCO formulation,
-#' computed with [`swTheta`]`(x)`. This is a synonym for
+#' computed with [swTheta]`(x)`. This is a synonym for
 #' `potential temperature`.
 #'
 #' * `time`: returns either a vector of times, a single
@@ -636,7 +633,7 @@ setMethod(f="summary",
 #' the documention of which explains how times are computed.
 #'
 #' * `z`: Vertical coordinate in metres above the surface, computed with
-#' [`swZ`]`(x)`.
+#' [swZ]`(x)`.
 #'
 #'
 #' @author Dan Kelley
@@ -1001,7 +998,7 @@ setMethod(f="[[<-",
 ##1108 @param silicate optional silicate concentration
 ##1108
 #' @param scan optional scan number.  If not provided, this will be set to
-#' [`seq_along`]`(salinity)`.
+#' [seq_along]`(salinity)`.
 #'
 #' @param time optional vector of times of observation
 #'
@@ -2769,7 +2766,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' display elements (lines, points, margin notes, etc.) to the individual panels.
 #'
 #' Note that panels that draw more than one curve (e.g. `which="salinity+temperature"`
-#' draws temperature and salinity profiles in one graph), the value of [`par`]`("usr")`
+#' draws temperature and salinity profiles in one graph), the value of [par]`("usr")`
 #' is established by the second profile to have been drawn. Some experimentation will
 #' reveal what this profile is, for each permitted `which` case, although
 #' it seems unlikely that this will help much ... the simple fact is that drawing two
@@ -2916,8 +2913,8 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' the equivalent numerical code, `5`. If `drawIsobaths` is
 #' `FALSE`, then no contours are drawn. If `drawIsobaths`
 #' is `TRUE`, then contours are selected automatically,
-#' using [`pretty`[`(c(0,300))` if the station depth is
-#' under 100m or [`pretty`]`(c(0,5500))` otherwise.
+#' using [pretty]`(c(0,300))` if the station depth is
+#' under 100m or [pretty]`(c(0,5500))` otherwise.
 #' If `drawIsobaths` is a numerical vector,
 #' then the indicated depths are drawn. For plots drawn with `projection`
 #' set to `NULL`, the contours are added with [contour()]
@@ -2996,7 +2993,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' The default establishes tighter margins than in the usual R setup.
 #' Note that the value of `mar` is ignored for the map panel
 #' of multi-panel maps; instead, the present value of
-#' [`par`]`("mar")` is used, which in the default call will
+#' [par]`("mar")` is used, which in the default call will
 #' make the map plot region equal that of the previously-drawn
 #' profiles and TS plot.
 #'
@@ -3883,12 +3880,12 @@ setMethod(f="subset",
 #' @param ylim Limits on the y value. The default, `NULL`, is to select this
 #' from the data.
 #'
-#' @param mgp Three-element numerical vector to use for `par(mgp)`, and also
-#' for `par(mar)`, computed from this.  The default is tighter than the R
+#' @param mgp Three-element numerical vector to use for [par]`(mgp)`, and also
+#' for [par]`(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #'
-#' @param mar Four-element vector be used with [`par`]`("mar")`.  If set
-#' to `NULL`, then `par("mar")` is used.  A good choice for a TS diagram
+#' @param mar Four-element vector be used with [par]`("mar")`.  If set
+#' to `NULL`, then [par]`("mar")` is used.  A good choice for a TS diagram
 #' with a palette to the right is `mar=par("mar")+c(0, 0, 0, 1))`.
 #'
 #' @param ... Optional arguments passed to plotting functions.
@@ -4186,10 +4183,9 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' @param eos equation of state to be used, either `"unesco"` or
 #' `"gsw"`.
 #'
-#' @param cex character-expansion factor for symbols, as in
-#' [`par`]`("cex")`.
+#' @param cex character-expansion factor for symbols, as in [par]`("cex")`.
 #'
-#' @param pch symbol type, as in [`par`]`("pch")`.
+#' @param pch symbol type, as in [par]`("pch")`.
 #'
 #' @param bg optional color to be painted under plotting area, before
 #' plotting.  (This is useful for cases in which `inset=TRUE`.)
@@ -4219,15 +4215,15 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' @param drawFreezing logical indication of whether to draw a freezing-point
 #' line. This is based on zero pressure. If `eos="unesco"` then
 #' [swTFreeze()] is used to compute the curve, whereas if
-#' `eos="gsw"` then `\link[gsw]{gsw_CT_freezing`} is used;
+#' `eos="gsw"` then [gsw::gsw_CT_freezing()] is used;
 #' in each case, zero pressure is used.
 #'
-#' @param mgp 3-element numerical vector to use for `par(mgp)`, and also
-#' for `par(mar)`, computed from this.  The default is tighter than the R
+#' @param mgp 3-element numerical vector to use for `[par](mgp)`, and also
+#' for [par]`(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #'
-#' @param mar value to be used with [`par`]`("mar")`.  If set to
-#' `NULL`, then `par("mar")` is used.  A good choice for a TS diagram
+#' @param mar value to be used with [par]`("mar")`.  If set to
+#' `NULL`, then [par]`("mar")` is used.  A good choice for a TS diagram
 #' with a palette to the right is `mar=par("mar")+c(0, 0, 0, 1))`.
 #'
 #' @param lwd line width of lines or symbols.
@@ -4722,12 +4718,12 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' @param type type of plot to draw, using the same scheme as
 #' [plot()].
 #'
-#' @param mgp 3-element numerical vector to use for `par(mgp)`, and also
-#' for `par(mar)`, computed from this.  The default is tighter than the R
+#' @param mgp 3-element numerical vector to use for [par]`(mgp)`, and also
+#' for [par]`(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #'
 #' @param mar Four-element numerical value to be used to set the plot
-#' margins, with a call to [`par`]`(mar)` prior to the plot.
+#' margins, with a call to [par]`(mar)` prior to the plot.
 #' If this is not supplied, a reasonable default will be set up.
 #'
 #' @param add A logical value that controls whether to add to an existing plot.  (It

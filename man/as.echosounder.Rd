@@ -4,10 +4,20 @@
 \alias{as.echosounder}
 \title{Coerce Data into an Echosounder Object}
 \usage{
-as.echosounder(time, depth, a, src = "", sourceLevel = 220,
-  receiverSensitivity = -55.4, transmitPower = 0,
-  pulseDuration = 400, beamwidthX = 6.5, beamwidthY = 6.5,
-  frequency = 41800, correction = 0)
+as.echosounder(
+  time,
+  depth,
+  a,
+  src = "",
+  sourceLevel = 220,
+  receiverSensitivity = -55.4,
+  transmitPower = 0,
+  pulseDuration = 400,
+  beamwidthX = 6.5,
+  beamwidthY = 6.5,
+  frequency = 41800,
+  correction = 0
+)
 }
 \arguments{
 \item{time}{times of pings}
@@ -53,14 +63,16 @@ are taken from the \code{echosounder} dataset, and they are unlikely to make
 sense generally.
 }
 \seealso{
-Other things related to echosounder data: \code{\link{[[,echosounder-method}},
-  \code{\link{[[<-,echosounder-method}},
-  \code{\link{echosounder-class}},
-  \code{\link{echosounder}}, \code{\link{findBottom}},
-  \code{\link{plot,echosounder-method}},
-  \code{\link{read.echosounder}},
-  \code{\link{subset,echosounder-method}},
-  \code{\link{summary,echosounder-method}}
+Other things related to echosounder data: 
+\code{\link{[[,echosounder-method}},
+\code{\link{[[<-,echosounder-method}},
+\code{\link{echosounder-class}},
+\code{\link{echosounder}},
+\code{\link{findBottom}()},
+\code{\link{plot,echosounder-method}},
+\code{\link{read.echosounder}()},
+\code{\link{subset,echosounder-method}},
+\code{\link{summary,echosounder-method}}
 }
 \author{
 Dan Kelley
