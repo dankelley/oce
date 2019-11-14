@@ -29,37 +29,41 @@
 #' A key function is [read.oce()], which will attempt
 #' to read Oceanographic data in raw format. This uses
 #' [oceMagic()] to try to detect the file type,
-#' based on the file name and contents. If it proves impossible
-#' to detect the type, users should next try a more specialized
-#' function, e.g. [read.ctd()] for CTD files, or
-#' [read.ctd.sbe()] for Teledyne-Seabird files.
+#' based on the file name and contents. If this detection
+#' is not possible, users will need to go beyond [read.oce()],
+#" using a more specialized function, e.g. [read.ctd()] for CTD files,
+#' [read.ctd.sbe()] for Teledyne-Seabird files, etc.
 #'
 #' @section Generic Methods:
 #' A list of the generic methods in oce is provided by
 #' [methods]`(class="oce")`; a few that are used frequently
 #' are as follows.
-#' * \code{[[} Finds the value of an item in the object's
-#'     `metadata` or `data` slot. If the item does
-#'     not exist, but can be calculated from the other items,
-#'     then the calculated value is returned. As an example of the
-#'     latter, consider the built-in `ctd` dataset, which does
-#'     not contain potential temperature, "`theta`". Using
-#'     `ctd[["theta"]]` therefore causes [swTheta()]
-#'     to be called, to calculate `theta`.
-#'     See \link{[[,oce-method} or type `?"[[,oce-method"`
-#'     to learn more.
-#' * \code{[[<-} Alters the named item in the object's `metadata` or
-#'     `data` slot.  If the item does not exist, it is created.
-#'     See \link{[[<-,oce-method} or type `?"[[<-,oce-method"`
-#'     to learn more.
-#' * \code{summary} Displays some information about the object named as an
-#'     argument, including a few elements from its `metadata` slot
-#'     and some statistics of the contents of its `data` slot.
-#'     See \link{summary,oce-method} or type `?"summary,oce-method"`
-#'     to learn more.
-#' * \code{subset} Takes a subset of an oce object.
-#'     See \link{subset,oce-method} or type `?"subset,oce-method"`
-#'     to learn more.
+#' * `[[` Finds the value of an item in the object's
+#'    `metadata` or `data` slot. If the item does
+#'    not exist, but can be calculated from the other items,
+#'    then the calculated value is returned. As an example of the
+#'    latter, consider the built-in `ctd` dataset, which does
+#'    not contain potential temperature, "`theta`". Using
+#'    `ctd[["theta"]]` therefore causes [swTheta()]
+#'    to be called, to calculate `theta`.
+#'    See \link{[[,oce-method} or type `?"[[,oce-method"`
+#'    to learn more about general functioning, or a specialized
+#'    method like \link{[[,ctd-method} for CTD data, etc.
+#' * `[[<-` Alters the named item in the object's `metadata` or
+#'    `data` slot.  If the item does not exist, it is created.
+#'    See \link{[[<-,oce-method} or type `?"[[<-,oce-method"`
+#'    to learn more about the general methodology, or a specialized
+#'    method like \link{[[<-,ctd-method} for CTD data, etc.
+#' * `summary()` Displays some information about the object named as an
+#'    argument, including a few elements from its `metadata` slot
+#'    and some statistics of the contents of its `data` slot.
+#'    See \link{summary,oce-method} or type `?"summary,oce-method"`
+#'    to learn more about general functioning, or a specialized
+#'    method like \link{summary,ctd-method} for CTD data, etc.
+#' * `subset()` Takes a subset of an oce object.
+#'    See \link{subset,oce-method} or type `?"subset,oce-method"`
+#'    to learn more about general functioning, or a specialized
+#'    method like \link{subset,ctd-method} for CTD data, etc.
 #'
 #' @docType package
 #'
