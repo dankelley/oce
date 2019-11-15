@@ -135,7 +135,6 @@ Archived CTD (and other) data may be found on servers such as
 \enumerate{
 \item \url{https://cchdo.ucsd.edu/}
 \item \url{https://www.nodc.noaa.gov/woce/wdiu/}
-\item \url{https://www.nodc.noaa.gov/cgi-bin/OC5/SELECT/builder.pl}
 }
 }
 

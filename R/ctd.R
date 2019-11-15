@@ -77,7 +77,7 @@
 #' Archived CTD (and other) data may be found on servers such as
 #' 1. \url{https://cchdo.ucsd.edu/}
 #' 2. \url{https://www.nodc.noaa.gov/woce/wdiu/}
-#' 3. \url{https://www.nodc.noaa.gov/cgi-bin/OC5/SELECT/builder.pl}
+## 3. \url{https://www.nodc.noaa.gov/cgi-bin/OC5/SELECT/builder.pl}
 #'
 #' @examples
 #'
