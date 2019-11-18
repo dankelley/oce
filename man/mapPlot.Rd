@@ -25,7 +25,7 @@ mapPlot(
   polarCircle = 0,
   lonlabel = NULL,
   latlabel = NULL,
-  sides = NULL,
+  sides,
   projection = "+proj=moll",
   tissot = FALSE,
   trim = TRUE,
@@ -94,7 +94,8 @@ overlain with line segments.}
 
 \item{axes}{logical value indicating whether to draw longitude and latitude
 values in the lower and left margin, respectively.  This may not work well
-for some projections or scales.}
+for some projections or scales.  See also \code{lonlabel} and \code{latlabel}, which
+offer more granular control of labelling.}
 
 \item{cex}{character expansion factor for plot symbols,
 used if \code{type='p'} or any other value that yields symbols.}
@@ -113,11 +114,19 @@ axis tick labels.}
 \item{polarCircle}{a number indicating the number of degrees of latitude
 extending from the poles, within which zones are not drawn.}
 
-\item{lonlabel, latlabel, sides}{Optional vectors of longitude and latitude
-to label on the indicated sides of plot, passed to
-\code{\link[=plot,coastline-method]{plot,coastline-method()}}.  Using these arguments permits reasonably
-simple customization.  If they are are not provided, reasonable defaults
-will be used.}
+\item{lonlabel}{An optional numeric vector that controls
+the labelling of longitude values in the plot margins.  If \code{lonlabel}
+is \code{NULL} (the default), then values are inferred from the data.
+Otherwise, if \code{lonlabel} is the single value \code{NA}, then no labels are drawn.
+Finally, if \code{lonlabel} is a vector of finite numerical values, then those values
+are taken to be the longitudes at which labels are to be drawn. Note that
+\code{\link[=mapAxis]{mapAxis()}}, which does the work of labelling, will avoid overdrawing of labels.
+Note that setting \code{axes=FALSE} ensures that no longitude or latitude axes
+will be drawn regardlss of the value of \code{lonlabel}.}
+
+\item{latlabel}{As \code{lonlabel}, but for latitude.}
+
+\item{sides}{Ignored.}
 
 \item{projection}{optional indication of projection, in one of two
 forms. First, it may be a character string in the "CRS" format that is

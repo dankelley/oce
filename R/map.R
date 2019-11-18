@@ -1067,7 +1067,8 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @param axes logical value indicating whether to draw longitude and latitude
 #' values in the lower and left margin, respectively.  This may not work well
-#' for some projections or scales.
+#' for some projections or scales.  See also `lonlabel` and `latlabel`, which
+#' offer more granular control of labelling.
 #'
 #' @param cex character expansion factor for plot symbols,
 #' used if `type='p'` or any other value that yields symbols.
@@ -1086,11 +1087,19 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @param polarCircle a number indicating the number of degrees of latitude
 #' extending from the poles, within which zones are not drawn.
 #'
-#' @param lonlabel,latlabel,sides Optional vectors of longitude and latitude
-#' to label on the indicated sides of plot, passed to
-#' [plot,coastline-method()].  Using these arguments permits reasonably
-#' simple customization.  If they are are not provided, reasonable defaults
-#' will be used.
+#' @param lonlabel An optional numeric vector that controls
+#' the labelling of longitude values in the plot margins.  If `lonlabel`
+#' is `NULL` (the default), then values are inferred from the data.
+#' Otherwise, if `lonlabel` is the single value `NA`, then no labels are drawn.
+#' Finally, if `lonlabel` is a vector of finite numerical values, then those values
+#' are taken to be the longitudes at which labels are to be drawn. Note that
+#' [mapAxis()], which does the work of labelling, will avoid overdrawing of labels.
+#' Note that setting `axes=FALSE` ensures that no longitude or latitude axes
+#' will be drawn regardlss of the value of `lonlabel`.
+#'
+#' @param latlabel As `lonlabel`, but for latitude.
+#'
+#' @param sides Ignored.
 #'
 #' @param projection optional indication of projection, in one of two
 #' forms. First, it may be a character string in the "CRS" format that is
@@ -1480,7 +1489,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     clip=TRUE,
                     type='polygon',
                     axes=TRUE, cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
-                    polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
+                    polarCircle=0, lonlabel=NULL, latlabel=NULL, sides,
                     projection="+proj=moll", tissot=FALSE, trim=TRUE,
                     debug=getOption("oceDebug"),
                     ...)
@@ -1809,8 +1818,25 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
         }
         if (axes) {
-            mapAxis(side=1, longitude=.axis()$longitude, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
-            mapAxis(side=2, latitude=.axis()$latitude, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
+            ## e.g. lonlabel=NULL for default labels; lonlabel=NA for unlabelled; otherwise, label at lonlabel
+            if (is.null(lonlabel)) {
+                oceDebug(debug, "default longitude labels\n")
+                mapAxis(side=1, longitude=.axis()$longitude, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
+            } else {
+                if (!is.na(lonlabel[1])) {
+                    oceDebug(debug, "longitude labels given by 'lonlabel' argument\n")
+                    mapAxis(side=1, longitude=lonlabel, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
+                }
+            }
+            if (is.null(latlabel)) {
+                oceDebug(debug, "default latitude labels\n")
+                mapAxis(side=2, latitude=.axis()$latitude, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
+            } else {
+                if (!is.na(latlabel[1])) {
+                    oceDebug(debug, "latitude labels given by 'latlabel' argument\n")
+                    mapAxis(side=2, latitude=latlabel, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
+                }
+            }
         }
         if (tissot)
             mapTissot(grid, col='red', debug=debug-1)
