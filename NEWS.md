@@ -1,5 +1,6 @@
 1.1-2
 
+* improve axis control for `mapPlot()` and `plot,coastline-method`.
 * remove `addColumn()`, `ctdAddColumn()`, `ctdUpdateHeader()`,
   `findInOrdered()`, `mapMeridians()`, `mapZones()`, and `oce.as.POSIXlt()`,
    all of which have been marked as "Deprecated" for the past two CRAN

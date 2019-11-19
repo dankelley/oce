@@ -6,8 +6,8 @@
 \usage{
 mapAxis(
   side = 1:2,
-  longitude = NULL,
-  latitude = NULL,
+  longitude = TRUE,
+  latitude = TRUE,
   tick = TRUE,
   line = NA,
   pos = NA,
@@ -30,13 +30,19 @@ mapAxis(
 \item{side}{the side at which labels are to be drawn.  If not provided,
 sides 1 and 2 will be used (i.e. bottom and left-hand sides).}
 
-\item{longitude}{vector of longitudes to indicate.  If not provided, and if
-a grid has already been drawn, then the labels will be at the
-intersections of the grid lines with the plotting box.}
+\item{longitude}{either a logical value or a vector of longitudes. There
+are three possible cases:
+(1) If \code{longitude=TRUE} (the default) then ticks and nearby numbers will occur at the
+longitude grid established by the previous call to \code{\link[=mapPlot]{mapPlot()}};
+(2) if \code{longitude=FALSE} then no longitude ticks or numbers are
+drawn;
+(3) if \code{longitude} is a vector of numerical values, then those ticks
+are placed at those values, and numbers are written beside them.
+Note that in cases 1 and 3, efforts are made to avoid overdrawing text,
+so some longitude values might get ticks but not numbers. To get ticks
+but not numbers, set \code{cex.axis=0}.}
 
-\item{latitude}{vector of latitudes to indicate.  If not provided, and if a
-grid has already been drawn, then the labels will be at the
-interesections of the grid lines with the plotting box.}
+\item{latitude}{similar to \code{longitude} but for latitude.}
 
 \item{tick}{parameter passed to \code{\link[=axis]{axis()}}.}
 
@@ -64,7 +70,8 @@ interesections of the grid lines with the plotting box.}
 
 \item{tcl}{axis-tick size (see \code{\link[=par]{par()}}).}
 
-\item{cex.axis}{axis-label expansion factor (see \code{\link[=par]{par()}}).}
+\item{cex.axis}{axis-label expansion factor (see \code{\link[=par]{par()}}); set to 0
+to prevent numbers from being placed in axes.}
 
 \item{mgp}{three-element numerical vector describing axis-label
 placement (see \code{\link[=par]{par()}}). It usually makes sense to set

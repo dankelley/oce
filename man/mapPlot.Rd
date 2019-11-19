@@ -23,9 +23,8 @@ mapPlot(
   drawBox = TRUE,
   showHemi = TRUE,
   polarCircle = 0,
-  lonlabel = NULL,
-  latlabel = NULL,
-  sides,
+  lonlabels = TRUE,
+  latlabels = TRUE,
   projection = "+proj=moll",
   tissot = FALSE,
   trim = TRUE,
@@ -94,7 +93,7 @@ overlain with line segments.}
 
 \item{axes}{logical value indicating whether to draw longitude and latitude
 values in the lower and left margin, respectively.  This may not work well
-for some projections or scales.  See also \code{lonlabel} and \code{latlabel}, which
+for some projections or scales.  See also \code{lonlabels} and \code{latlabels}, which
 offer more granular control of labelling.}
 
 \item{cex}{character expansion factor for plot symbols,
@@ -114,19 +113,24 @@ axis tick labels.}
 \item{polarCircle}{a number indicating the number of degrees of latitude
 extending from the poles, within which zones are not drawn.}
 
-\item{lonlabel}{An optional numeric vector that controls
-the labelling of longitude values in the plot margins.  If \code{lonlabel}
-is \code{NULL} (the default), then values are inferred from the data.
-Otherwise, if \code{lonlabel} is the single value \code{NA}, then no labels are drawn.
-Finally, if \code{lonlabel} is a vector of finite numerical values, then those values
-are taken to be the longitudes at which labels are to be drawn. Note that
-\code{\link[=mapAxis]{mapAxis()}}, which does the work of labelling, will avoid overdrawing of labels.
-Note that setting \code{axes=FALSE} ensures that no longitude or latitude axes
-will be drawn regardlss of the value of \code{lonlabel}.}
+\item{lonlabels}{An optional logical value or numeric vector that controls
+the labelling of longitude values using \code{\link[=mapAxis]{mapAxis()}}. There are
+four possibilities for the value of \code{lonlabels}:
+(1) If \code{lonlabels} is \code{TRUE} (the default), then reasonable values are inferred
+and axes are drawn accordingly with both ticks and longitudes
+alongside those ticks;
+(2) if \code{lonlabels} is \code{FALSE}, then ticks are drawn by but not numbers;
+(3) if \code{lonlabels} is \code{NULL}, then no axis ticks or numbers are are drawn; and
+(4) if \code{lonlabels} is  a vector of finite numerical values, then tick marks
+are placed  at those longitudes, and labels are put alongside them.
+In cases 1 and 4, overdrawing of numbers is avoided,
+so some ticks may not have numbers alongside them.
+See also \code{latlabels}, and note that setting \code{axes=FALSE}
+ensures that no longitude or latitude axes will be drawn regardless
+of the values of \code{lonlabels} and \code{latlabels}.}
 
-\item{latlabel}{As \code{lonlabel}, but for latitude.}
-
-\item{sides}{Ignored.}
+\item{latlabels}{As \code{lonlabels}, but for latitude, on the bottom
+plot axis.}
 
 \item{projection}{optional indication of projection, in one of two
 forms. First, it may be a character string in the "CRS" format that is

@@ -33,9 +33,8 @@
   clatitude,
   span,
   showHemi = TRUE,
-  lonlabel = NULL,
-  latlabel = NULL,
-  sides = NULL,
+  lonlabels = TRUE,
+  latlabels = TRUE,
   projection = NULL,
   parameters = NULL,
   orientation = NULL,
@@ -196,10 +195,9 @@ attempt to show some coastline in the plot.}
 \item{showHemi}{Logical indicating whether to show hemisphere in axis tick
 labels.}
 
-\item{lonlabel, latlabel, sides}{Optional vectors of longitude and latitude to
-label on the indicated sides of plot, passed to \code{\link[=plot,coastline-method]{plot,coastline-method()}}.
-Using these arguments permits reasonably simple customization.  If they are are
-not provided, reasonable defaults will be used.}
+\item{lonlabels, latlabels}{Values that control the labelling of
+longitude and latitude along the sides of the plot, used only if
+\code{projection} is not \code{NULL}.  See \code{\link[=mapPlot]{mapPlot()}} for details.}
 
 \item{projection}{Projection for map, if desired.  If this is \code{NULL}, no
 projection will be used; the map will simply show longitude and latitude in a

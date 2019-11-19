@@ -389,11 +389,10 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' `clongitude` and `clatitude` are supplied
 #' (or inferred from `projection`).
 #'
-#' @param lonlabel,latlabel,sides optional vectors of longitude and latitude to
-#' label on the indicated sides of plot, passed to
-#' [plot,coastline-method()].  Using these arguments permits reasonably
-#' simple customization.  If they are are not provided, reasonable defaults
-#' will be used.
+#' @param lonlabels,latlabels optional vectors of longitude and latitude to
+#' label on the sides of plot, passed to [mapPlot()] to control
+#' axis labelling, for plots done with map projections (i.e. for
+#' cases in which `projection` is not `NULL`).
 #'
 #' @param projection optional map projection to use (see
 #' the [mapPlot()] argument of the same name).
@@ -513,7 +512,7 @@ setMethod(f="plot",
                                xlab="", ylab="", showHemi=TRUE,
                                asp,
                                clongitude, clatitude, span,
-                               lonlabel=NULL, latlabel=NULL, sides=NULL,
+                               lonlabels=TRUE, latlabels=TRUE,
                                projection=NULL,
                                expand=1,
                                mgp=getOption("oceMgp"), mar=c(mgp[1]+1, mgp[1]+1, 1, 1),
@@ -622,7 +621,7 @@ setMethod(f="plot",
                           showHemi=showHemi,
                           mgp=mgp, mar=mar,
                           bg="white", border=border, col=col, type=type, axes=TRUE, ## FIXME: use bg and col here; delete fill
-                          lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                          lonlabels=lonlabels, latlabels=latlabels,
                           projection=projection,
                           debug=debug-1, ...)
                   oceDebug(debug, "} # plot.coastline()\n", unindent=1)

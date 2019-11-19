@@ -14,9 +14,8 @@
   clongitude,
   clatitude,
   span,
-  lonlabel = NULL,
-  latlabel = NULL,
-  sides = NULL,
+  lonlabels = TRUE,
+  latlabels = TRUE,
   projection = NULL,
   expand = 1,
   mgp = getOption("oceMgp"),
@@ -74,11 +73,10 @@ required to fine-tune a plot.  A value for \code{span} must be supplied, if
 \code{clongitude} and \code{clatitude} are supplied
 (or inferred from \code{projection}).}
 
-\item{lonlabel, latlabel, sides}{optional vectors of longitude and latitude to
-label on the indicated sides of plot, passed to
-\code{\link[=plot,coastline-method]{plot,coastline-method()}}.  Using these arguments permits reasonably
-simple customization.  If they are are not provided, reasonable defaults
-will be used.}
+\item{lonlabels, latlabels}{optional vectors of longitude and latitude to
+label on the sides of plot, passed to \code{\link[=mapPlot]{mapPlot()}} to control
+axis labelling, for plots done with map projections (i.e. for
+cases in which \code{projection} is not \code{NULL}).}
 
 \item{projection}{optional map projection to use (see
 the \code{\link[=mapPlot]{mapPlot()}} argument of the same name).

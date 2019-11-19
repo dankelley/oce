@@ -2933,10 +2933,9 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' @param showHemi Logical indicating whether to show hemisphere in axis tick
 #' labels.
 #'
-#' @param lonlabel,latlabel,sides Optional vectors of longitude and latitude to
-#' label on the indicated sides of plot, passed to [plot,coastline-method()].
-#' Using these arguments permits reasonably simple customization.  If they are are
-#' not provided, reasonable defaults will be used.
+#' @param lonlabels,latlabels Values that control the labelling of
+#' longitude and latitude along the sides of the plot, used only if
+#' `projection` is not `NULL`.  See [mapPlot()] for details.
 #'
 #' @param projection Projection for map, if desired.  If this is `NULL`, no
 #' projection will be used; the map will simply show longitude and latitude in a
@@ -3061,7 +3060,7 @@ setMethod(f="plot",
                               dpdtlim, timelim,
                               lonlim, latlim, # FIXME: maybe should be deprecated 2014-01-07
                               drawIsobaths=FALSE, clongitude, clatitude, span, showHemi=TRUE,
-                              lonlabel=NULL, latlabel=NULL, sides=NULL,
+                              lonlabels=TRUE, latlabels=TRUE,
                               projection=NULL, parameters=NULL, orientation=NULL,
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                               cex=1, cex.axis=par('cex.axis'),
@@ -3600,7 +3599,7 @@ setMethod(f="plot",
                                    projection=projection, # parameters=parameters, orientation=orientation,
                                    border=borderCoastline, col=colCoastline,
                                    mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                   lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                   lonlabels=lonlabels, latlabels=latlabels,
                                    debug=debug-1)
                           } else {
                               if (missing(lonlim)) {
@@ -3625,7 +3624,7 @@ setMethod(f="plot",
                                            projection=projection, # parameters=parameters, orientation=orientation,
                                            border=borderCoastline, col=colCoastline,
                                            mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                           lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                           lonlabels=lonlabels, latlabels=latlabels,
                                            debug=debug-1)
                                       oceDebug(debug, " ... did plot(coastline)\n")
                                   } else {
@@ -3636,7 +3635,7 @@ setMethod(f="plot",
                                            projection=projection, # parameters=parameters, orientation=orientation,
                                            border=borderCoastline, col=colCoastline,
                                            mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                           lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                           lonlabels=lonlabels, latlabels=latlabels,
                                            debug=debug-1)
                                   }
                                   if (is.numeric(which[w]) && round(which[w], 1) == 5.1) # HIDDEN FEATURE
@@ -3654,7 +3653,7 @@ setMethod(f="plot",
                                            projection=projection, #parameters=parameters, orientation=orientation,
                                            border=borderCoastline, col=colCoastline,
                                            mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                           lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                           lonlabels=lonlabels, latlabels=latlabels,
                                            debug=debug-1)
                                   } else {
                                       oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
@@ -3664,7 +3663,7 @@ setMethod(f="plot",
                                            border=borderCoastline, col=colCoastline,
                                            projection=projection, #parameters=parameters, orientation=orientation,
                                            mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                           lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                           lonlabels=lonlabels, latlabels=latlabels,
                                            debug=debug-1)
                                   }
                               }

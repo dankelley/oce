@@ -331,13 +331,19 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' @param side the side at which labels are to be drawn.  If not provided,
 #' sides 1 and 2 will be used (i.e. bottom and left-hand sides).
 #'
-#' @param longitude vector of longitudes to indicate.  If not provided, and if
-#' a grid has already been drawn, then the labels will be at the
-#' intersections of the grid lines with the plotting box.
+#' @param longitude either a logical value or a vector of longitudes. There
+#' are three possible cases:
+#' (1) If `longitude=TRUE` (the default) then ticks and nearby numbers will occur at the
+#' longitude grid established by the previous call to [mapPlot()];
+#' (2) if `longitude=FALSE` then no longitude ticks or numbers are
+#' drawn;
+#' (3) if `longitude` is a vector of numerical values, then those ticks
+#' are placed at those values, and numbers are written beside them.
+#' Note that in cases 1 and 3, efforts are made to avoid overdrawing text,
+#' so some longitude values might get ticks but not numbers. To get ticks
+#' but not numbers, set `cex.axis=0`.
 #'
-#' @param latitude vector of latitudes to indicate.  If not provided, and if a
-#' grid has already been drawn, then the labels will be at the
-#' interesections of the grid lines with the plotting box.
+#' @param latitude similar to `longitude` but for latitude.
 #'
 #' @param tick parameter passed to [axis()].
 #'
@@ -365,7 +371,8 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #'
 #' @param tcl axis-tick size (see [par()]).
 #'
-#' @param cex.axis axis-label expansion factor (see [par()]).
+#' @param cex.axis axis-label expansion factor (see [par()]); set to 0
+#' to prevent numbers from being placed in axes.
 #'
 #' @param mgp three-element numerical vector describing axis-label
 #' placement (see [par()]). It usually makes sense to set
@@ -415,25 +422,30 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
     boxLonLat <- usrLonLat()
     axis <- .axis()
     #if (debug > 0) print(axis)
-    if (is.logical(longitude) && longitude[1])
-        longitude <- axis$longitude
-    if (is.logical(latitude) && latitude[1])
-        latitude <- axis$latitude
-    message("code is broken at map.R:422 with NULL to FALSE (etc) transitions. Also, need to handle cex=0. Also docs for mapAxis wrong now")
-    if (is.null(longitude) && is.null(latitude))
+    if (is.logical(longitude) && !longitude && is.logical(latitude) && !latitude) {
+        oceDebug(debug, "longitude=latitude=FALSE, so not drawing axes\n")
         return()
-    oceDebug(debug, "mapAxis: initially, longitude=", paste(longitude, collapse=" "), "\n")
-    if (!is.null(longitude) && boxLonLat$ok) {
+    }
+    if (is.logical(longitude) && longitude[1]) {
+        longitude <- axis$longitude
+        oceDebug(debug, "autosetting to", vectorShow(longitude))
+    }
+    if (is.logical(latitude) && latitude[1]) {
+        latitude <- axis$latitude
+        oceDebug(debug, "autosetting to", vectorShow(latitude))
+    }
+    oceDebug(debug, "mapAxis: initially, ", vectorShow(longitude))
+    if (boxLonLat$ok) {
         ok <- boxLonLat$lonmin <= longitude & longitude <= boxLonLat$lonmax
         longitude <- longitude[ok]
     }
-    oceDebug(debug, "mapAxis: after box-trimming, longitude=", paste(longitude, collapse=" "), "\n")
-    oceDebug(debug, "mapAxis: initially, latitude=", paste(latitude, collapse=" "), "\n")
-    if (!is.null(latitude) && boxLonLat$ok) {
+    oceDebug(debug, "mapAxis: after box-trimming, ", vectorShow(longitude))
+    oceDebug(debug, "mapAxis: initially, ", vectorShow(latitude))
+    if (boxLonLat$ok) {
         ok <- boxLonLat$latmin <= latitude & latitude <= boxLonLat$latmax
         latitude <- latitude[ok]
     }
-    oceDebug(debug, "mapAxis: after box-trimming, latitude=", paste(latitude, collapse=" "), "\n")
+    oceDebug(debug, "mapAxis: after box-trimming, ", vectorShow(latitude))
 
     ## if (is.null(axis$longitude)) oceDebug(debug, "should auto generate longitude grid and then axis\n")
     ## if (is.null(axis$latitude)) oceDebug(debug, "should auto generate latitude grid and then axis\n")
@@ -474,10 +486,12 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
             }
         }
         if (!is.null(AT)) {
-            axis(side=1, at=AT, labels=fixneg(LAB), mgp=mgp,
-                 tick=tick, line=line, pos=pos, outer=outer, font=font,
+            ## prevent calling axis() with cex.axis=0, by just giving empty labels then
+            oceDebug(debug, "calling axis(1) with cex.axis=", cex.axis, "\n")
+            axis(side=1, at=AT, labels=if (cex.axis>0) fixneg(LAB) else rep("", length(AT)),
+                 mgp=mgp, tick=tick, line=line, pos=pos, outer=outer, font=font,
                  lty=lty, lwd=lwd, lwd.ticks=lwd.ticks, col=col, col.ticks=col.ticks,
-                 hadj=hadj, padj=padj, tcl=tcl, cex.axis=cex.axis)
+                 hadj=hadj, padj=padj, tcl=tcl, cex.axis=if (cex.axis>0) cex.axis else 1)
         }
         if (length(latitude)) {
             warning("mapAxis(side=1) cannot draw latitude labels yet; contact author if you need this")
@@ -546,10 +560,12 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
         }
         #browser()
         if (!is.null(AT)) {
-            axis(side=2, at=AT, labels=fixneg(LAB), mgp=mgp,
-                 tick=tick, line=line, pos=pos, outer=outer, font=font,
+            oceDebug(debug, "calling axis(2) with cex.axis=", cex.axis, "\n")
+            ## prevent calling axis() with cex.axis=0, by just giving empty labels then
+            axis(side=2, at=AT, labels=if (cex.axis>0) fixneg(LAB) else rep("", length(AT)),
+                 mgp=mgp, tick=tick, line=line, pos=pos, outer=outer, font=font,
                  lty=lty, lwd=lwd, lwd.ticks=lwd.ticks, col=col, col.ticks=col.ticks,
-                 hadj=hadj, padj=padj, tcl=tcl, cex.axis=cex.axis)
+                 hadj=hadj, padj=padj, tcl=tcl, cex.axis=if (cex.axis>0) cex.axis else 1)
         }
         if (length(longitude)) {
             warning("mapAxis(side=2) cannot draw longitude labels yet; contact author if you need this")
@@ -1089,15 +1105,15 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' extending from the poles, within which zones are not drawn.
 #'
 #' @param lonlabels An optional logical value or numeric vector that controls
-#' the labelling of longitude values in left plot axis. There are
-#' four possibilities for the value of `lonlabels`: (1) If `lonlabels`
-#' is `TRUE` (the default), then reasonable values are inferred
-#' and axes are drawn accordingly, with both ticks and longitudes
-#' alongside those ticks; (2) if `lonlabels` is `FALSE`, then
-#' ticks are drawn but not numbers; (3) if `lonlabels` is `NULL`, then no
-#' axis ticks or numbers are are drawn; and (4) if `lonlabels` is
-#' a vector of finite numerical values, then tick marks are placed
-#' at those longitudes, and labels are put alongside them.
+#' the labelling of longitude values using [mapAxis()]. There are
+#' four possibilities for the value of `lonlabels`:
+#' (1) If `lonlabels` is `TRUE` (the default), then reasonable values are inferred
+#' and axes are drawn accordingly with both ticks and longitudes
+#' alongside those ticks;
+#' (2) if `lonlabels` is `FALSE`, then ticks are drawn by but not numbers;
+#' (3) if `lonlabels` is `NULL`, then no axis ticks or numbers are are drawn; and
+#' (4) if `lonlabels` is  a vector of finite numerical values, then tick marks
+#' are placed  at those longitudes, and labels are put alongside them.
 #' In cases 1 and 4, overdrawing of numbers is avoided,
 #' so some ticks may not have numbers alongside them.
 #' See also `latlabels`, and note that setting `axes=FALSE`
@@ -1106,8 +1122,6 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @param latlabels As `lonlabels`, but for latitude, on the bottom
 #' plot axis.
-#'
-#' @param sides Ignored.
 #'
 #' @param projection optional indication of projection, in one of two
 #' forms. First, it may be a character string in the "CRS" format that is
@@ -1497,7 +1511,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     clip=TRUE,
                     type='polygon',
                     axes=TRUE, cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
-                    polarCircle=0, lonlabels=TRUE, latlabels=TRUE, sides,
+                    polarCircle=0, lonlabels=TRUE, latlabels=TRUE,
                     projection="+proj=moll", tissot=FALSE, trim=TRUE,
                     debug=getOption("oceDebug"),
                     ...)
@@ -1827,16 +1841,14 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         if (axes) {
             if (is.logical(lonlabels)) {
-                mapAxis(side=1, longitude=.axis()$longitude, cex.axis=if(lonlabels) cex.axis else 0,
-                        mgp=mgp, debug=debug-1)
+                mapAxis(side=1, longitude=.axis()$longitude, latitude=FALSE, cex.axis=if (lonlabels) cex.axis else 0, mgp=mgp, debug=debug-1)
             } else if (!is.null(lonlabels)) {
-                mapAxis(side=1, longitude=lonlabels, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
+                mapAxis(side=1, longitude=lonlabels, latitude=FALSE, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
             }
             if (is.logical(latlabels)) {
-                mapAxis(side=2, latitude=.axis()$latitude, cex.axis=if(latlabels) cex.axis else 0,
-                        mgp=mgp, debug=debug-1)
+                mapAxis(side=2, latitude=.axis()$latitude, longitude=FALSE, cex.axis=if (latlabels) cex.axis else 0, mgp=mgp, debug=debug-1)
             } else if (!is.null(latlabels)) {
-                mapAxis(side=2, latitude=latlabels, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
+                mapAxis(side=2, latitude=latlabels, longitude=FALSE, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
             }
         }
         if (tissot)
