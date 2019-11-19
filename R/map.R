@@ -399,7 +399,7 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
+mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
                     tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
                     lty="solid", lwd=1, lwd.ticks=lwd, col=NULL, col.ticks=NULL,
                     hadj=NA, padj=NA, tcl=-0.3, cex.axis=1,
@@ -415,10 +415,11 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
     boxLonLat <- usrLonLat()
     axis <- .axis()
     #if (debug > 0) print(axis)
-    if (is.null(longitude) && is.null(latitude)) {
+    if (is.logical(longitude) && longitude[1])
         longitude <- axis$longitude
+    if (is.logical(latitude) && latitude[1])
         latitude <- axis$latitude
-    }
+    message("code is broken at map.R:422 with NULL to FALSE (etc) transitions. Also, need to handle cex=0. Also docs for mapAxis wrong now")
     if (is.null(longitude) && is.null(latitude))
         return()
     oceDebug(debug, "mapAxis: initially, longitude=", paste(longitude, collapse=" "), "\n")
@@ -1067,7 +1068,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @param axes logical value indicating whether to draw longitude and latitude
 #' values in the lower and left margin, respectively.  This may not work well
-#' for some projections or scales.  See also `lonlabel` and `latlabel`, which
+#' for some projections or scales.  See also `lonlabels` and `latlabels`, which
 #' offer more granular control of labelling.
 #'
 #' @param cex character expansion factor for plot symbols,
@@ -1087,17 +1088,24 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @param polarCircle a number indicating the number of degrees of latitude
 #' extending from the poles, within which zones are not drawn.
 #'
-#' @param lonlabel An optional numeric vector that controls
-#' the labelling of longitude values in the plot margins.  If `lonlabel`
-#' is `NULL` (the default), then values are inferred from the data.
-#' Otherwise, if `lonlabel` is the single value `NA`, then no labels are drawn.
-#' Finally, if `lonlabel` is a vector of finite numerical values, then those values
-#' are taken to be the longitudes at which labels are to be drawn. Note that
-#' [mapAxis()], which does the work of labelling, will avoid overdrawing of labels.
-#' Note that setting `axes=FALSE` ensures that no longitude or latitude axes
-#' will be drawn regardlss of the value of `lonlabel`.
+#' @param lonlabels An optional logical value or numeric vector that controls
+#' the labelling of longitude values in left plot axis. There are
+#' four possibilities for the value of `lonlabels`: (1) If `lonlabels`
+#' is `TRUE` (the default), then reasonable values are inferred
+#' and axes are drawn accordingly, with both ticks and longitudes
+#' alongside those ticks; (2) if `lonlabels` is `FALSE`, then
+#' ticks are drawn but not numbers; (3) if `lonlabels` is `NULL`, then no
+#' axis ticks or numbers are are drawn; and (4) if `lonlabels` is
+#' a vector of finite numerical values, then tick marks are placed
+#' at those longitudes, and labels are put alongside them.
+#' In cases 1 and 4, overdrawing of numbers is avoided,
+#' so some ticks may not have numbers alongside them.
+#' See also `latlabels`, and note that setting `axes=FALSE`
+#' ensures that no longitude or latitude axes will be drawn regardless
+#' of the values of `lonlabels` and `latlabels`.
 #'
-#' @param latlabel As `lonlabel`, but for latitude.
+#' @param latlabels As `lonlabels`, but for latitude, on the bottom
+#' plot axis.
 #'
 #' @param sides Ignored.
 #'
@@ -1489,7 +1497,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     clip=TRUE,
                     type='polygon',
                     axes=TRUE, cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
-                    polarCircle=0, lonlabel=NULL, latlabel=NULL, sides,
+                    polarCircle=0, lonlabels=TRUE, latlabels=TRUE, sides,
                     projection="+proj=moll", tissot=FALSE, trim=TRUE,
                     debug=getOption("oceDebug"),
                     ...)
@@ -1818,24 +1826,17 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
         }
         if (axes) {
-            ## e.g. lonlabel=NULL for default labels; lonlabel=NA for unlabelled; otherwise, label at lonlabel
-            if (is.null(lonlabel)) {
-                oceDebug(debug, "default longitude labels\n")
-                mapAxis(side=1, longitude=.axis()$longitude, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
-            } else {
-                if (!is.na(lonlabel[1])) {
-                    oceDebug(debug, "longitude labels given by 'lonlabel' argument\n")
-                    mapAxis(side=1, longitude=lonlabel, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
-                }
+            if (is.logical(lonlabels)) {
+                mapAxis(side=1, longitude=.axis()$longitude, cex.axis=if(lonlabels) cex.axis else 0,
+                        mgp=mgp, debug=debug-1)
+            } else if (!is.null(lonlabels)) {
+                mapAxis(side=1, longitude=lonlabels, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
             }
-            if (is.null(latlabel)) {
-                oceDebug(debug, "default latitude labels\n")
-                mapAxis(side=2, latitude=.axis()$latitude, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
-            } else {
-                if (!is.na(latlabel[1])) {
-                    oceDebug(debug, "latitude labels given by 'latlabel' argument\n")
-                    mapAxis(side=2, latitude=latlabel, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
-                }
+            if (is.logical(latlabels)) {
+                mapAxis(side=2, latitude=.axis()$latitude, cex.axis=if(latlabels) cex.axis else 0,
+                        mgp=mgp, debug=debug-1)
+            } else if (!is.null(latlabels)) {
+                mapAxis(side=2, latitude=latlabels, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
             }
         }
         if (tissot)
