@@ -129,7 +129,7 @@ See also \code{latlabels}, and note that setting \code{axes=FALSE}
 ensures that no longitude or latitude axes will be drawn regardless
 of the values of \code{lonlabels} and \code{latlabels}.}
 
-\item{latlabels}{As \code{lonlabels}, but for latitude, on the bottom
+\item{latlabels}{As \code{lonlabels}, but for latitude, on the left
 plot axis.}
 
 \item{projection}{optional indication of projection, in one of two

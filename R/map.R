@@ -1120,7 +1120,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' ensures that no longitude or latitude axes will be drawn regardless
 #' of the values of `lonlabels` and `latlabels`.
 #'
-#' @param latlabels As `lonlabels`, but for latitude, on the bottom
+#' @param latlabels As `lonlabels`, but for latitude, on the left
 #' plot axis.
 #'
 #' @param projection optional indication of projection, in one of two
