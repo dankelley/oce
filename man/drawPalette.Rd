@@ -12,6 +12,7 @@ drawPalette(
   colormap,
   mai,
   cex.axis = par("cex.axis"),
+  cex.zlab = par("cex"),
   pos = 4,
   labels = NULL,
   at = NULL,
@@ -47,6 +48,8 @@ provided, this takes precedence over \code{breaks} and \code{col}.}
 existence of a non-blank \code{zlab}.}
 
 \item{cex.axis}{character-expansion value for text labels}
+
+\item{cex.zlab}{character expansion factor for z label}
 
 \item{pos}{an integer indicating the location of the palette within the
 plotting area, 1 for near the bottom, 2 for near the left-hand side, 3 for
@@ -93,17 +96,15 @@ amount of debugging information, or to 2 to get more.}
 None.
 }
 \description{
-Draw a palette, leaving margins suitable for accompanying plot.
-}
-\details{
-In the normal use, \code{drawPalette} draws an image palette near the
+In the normal use, \code{\link[=drawPalette]{drawPalette()}} draws an image palette near the
 right-hand side of the plotting device, and then adjusts the global margin
 settings in such a way as to cause the next plot to appear (with much larger
 width) to the left of the palette. The function can also be used, if
 \code{zlim} is not provided, to adjust the margin without drawing anything;
 this is useful in lining up the x axes of a stack of plots, some some of
 which will have palettes and others not.
-
+}
+\details{
 The plot positioning is done entirely with margins, not with
 \code{par(mfrow)} or other R schemes for multi-panel plots.  This means that
 the user is free to use those schemes without worrying about nesting or

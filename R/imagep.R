@@ -164,9 +164,7 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 
 #' Draw a palette, leaving margins suitable for accompanying plot
 #'
-#' Draw a palette, leaving margins suitable for accompanying plot.
-#'
-#' In the normal use, `drawPalette` draws an image palette near the
+#' In the normal use, [drawPalette()] draws an image palette near the
 #' right-hand side of the plotting device, and then adjusts the global margin
 #' settings in such a way as to cause the next plot to appear (with much larger
 #' width) to the left of the palette. The function can also be used, if
@@ -236,6 +234,8 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #' @param tformat optional format for axis labels, if the variable is a time
 #' type (ignored otherwise).
 #'
+#' @param cex.zlab character expansion factor for z label
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #'
@@ -288,7 +288,7 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #' drawPalette(c(90, 200), fullpage=TRUE, col=oce.colorsJet)
 drawPalette <- function(zlim, zlab="",
                         breaks, col, colormap,
-                        mai, cex.axis=par("cex.axis"), pos=4,
+                        mai, cex.axis=par("cex.axis"), cex.zlab=par("cex"), pos=4,
                         labels=NULL, at=NULL,
                         levels, drawContours=FALSE,
                         plot=TRUE, fullpage=FALSE, drawTriangles=FALSE,
@@ -514,19 +514,19 @@ drawPalette <- function(zlim, zlab="",
         if (pos == 1) {
             axis(side=1, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis)
             if (haveZlab) mtext(zlab, side=1, line=getOption("oceMgp")[1],
-                                cex=par('cex'), cex.axis=cex.axis)
+                                cex=cex.zlab, cex.axis=cex.axis)
         } else if (pos == 2) {
             axis(side=2, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis)
             if (haveZlab) mtext(zlab, side=2, line=getOption("oceMgp")[1],
-                                cex=par('cex'), cex.axis=cex.axis)
+                                cex=cex.zlab, cex.axis=cex.axis)
         } else if (pos == 3) {
             axis(side=3, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis)
             if (haveZlab) mtext(zlab, side=3, line=getOption("oceMgp")[1],
-                                cex=par('cex'), cex.axis=cex.axis)
+                                cex=cex.zlab, cex.axis=cex.axis)
         } else if (pos == 4) {
             axis(side=4, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis)
             if (haveZlab) mtext(zlab, side=4, line=getOption("oceMgp")[1],
-                                cex=par('cex'), cex.axis=cex.axis)
+                                cex=cex.zlab, cex.axis=cex.axis)
         } else {
             stop("pos must be 1, 2, 3 or 4") # cannot be reached
         }
