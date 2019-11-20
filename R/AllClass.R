@@ -1115,7 +1115,7 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, defaul
 #'
 #' @return An object of class corresponding to that of `object`.
 #'
-#' @family functions that concatenate oce objects.
+#' @family functions that concatenate oce objects
 setGeneric("concatenate",
            function(object, ...) {
                standardGeneric("concatenate")
@@ -1209,7 +1209,7 @@ setMethod("concatenate",
 #'
 #' @return An object of class corresponding to that in `object`.
 #'
-#' @family functions that concatenate [oce] objects.
+#' @family functions that concatenate oce objects
 setMethod("concatenate",
           c(object="list"),
           function(object) {

@@ -15,4 +15,10 @@ An object of class corresponding to that in \code{object}.
 \description{
 Concatenate a list of oce objects
 }
-\concept{functions that concatenate \link{oce} objects.}
+\seealso{
+Other functions that concatenate oce objects: 
+\code{\link{concatenate,adp-method}},
+\code{\link{concatenate,oce-method}},
+\code{\link{concatenate}()}
+}
+\concept{functions that concatenate oce objects}
