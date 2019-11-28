@@ -17,6 +17,7 @@ imagep(
   ylab = "",
   zlab = "",
   zlabPosition = c("top", "side"),
+  las.palette = 0,
   decimate = TRUE,
   breaks,
   col,
@@ -106,6 +107,10 @@ a conventional axis with smaller values at the bottom.)}
 \item{zlabPosition}{String indicating where to put the label for the z axis,
 either at the top-right of the main image, or on the side, in the axis
 for the palette.}
+
+\item{las.palette}{Parameter controlling the orientation of labels on the
+image palette, passed as the \code{las} argument to \code{\link[=drawPalette]{drawPalette()}}.  See the
+documentation for \code{\link[=drawPalette]{drawPalette()}} for details.}
 
 \item{decimate}{Controls whether the image will be decimated before plotting,
 in three possible cases.
@@ -216,7 +221,7 @@ Otherwise, if \code{asp} is not \code{NA}, then it is used directly.}
 
 \item{main}{Title for plot.}
 
-\item{axisPalette}{Optional replacement function for \code{axis()}, passed to
+\item{axisPalette}{Optional replacement function for \code{\link[=axis]{axis()}}, passed to
 \code{\link[=drawPalette]{drawPalette()}}.}
 
 \item{add}{Logical value indicating whether to add to an existing plot.

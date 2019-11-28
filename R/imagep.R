@@ -202,6 +202,16 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #' plotting area, 1 for near the bottom, 2 for near the left-hand side, 3 for
 #' near the top side, and 4 (the default) for near the right-hand side.
 #'
+#' @param las optional argument, passed to [axis()], to control the orientation
+#' of numbers along the axis. As explained in the help for [par()], the
+#' meaning of `las` is as follows: `las=0` (the default) means to put labels
+#' parallel to the axis, `las=1` means horizontal (regardless of
+#' axis orientation), `las=2` means perpendicular to the axis,
+#' and `las=3` means to vertical (regardless of axis orientation).  Note that
+#' the automatic computation of margin spacing parameter `mai`
+#' assumes that `las=0`, and so for other cases, the user may need to
+#' specify the `mai` argument directly.
+#'
 #' @param labels optional vector of labels for ticks on palette axis (must
 #' correspond with `at`)
 #'
@@ -245,7 +255,7 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #'
 #' @section Use with multi-panel plots: An important consequence of the margin
 #' adjustment is that multi-panel plots require that the initial margin be
-#' stored prior to the first call to `drawPalette`, and reset after each
+#' stored prior to the first call to [drawPalette()], and reset after each
 #' palette-plot pair.  This method is illustrated in \dQuote{Examples}.
 #'
 #' @author Dan Kelley, with help from Clark Richards
@@ -288,7 +298,7 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #' drawPalette(c(90, 200), fullpage=TRUE, col=oce.colorsJet)
 drawPalette <- function(zlim, zlab="",
                         breaks, col, colormap,
-                        mai, cex.axis=par("cex.axis"), cex.zlab=par("cex"), pos=4,
+                        mai, cex.axis=par("cex.axis"), cex.zlab=par("cex"), pos=4, las=0,
                         labels=NULL, at=NULL,
                         levels, drawContours=FALSE,
                         plot=TRUE, fullpage=FALSE, drawTriangles=FALSE,
@@ -512,19 +522,19 @@ drawPalette <- function(zlim, zlab="",
         if (!missing(axisPalette))
             axis <- axisPalette
         if (pos == 1) {
-            axis(side=1, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis)
+            axis(side=1, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis, las=las)
             if (haveZlab) mtext(zlab, side=1, line=getOption("oceMgp")[1],
                                 cex=cex.zlab, cex.axis=cex.axis)
         } else if (pos == 2) {
-            axis(side=2, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis)
+            axis(side=2, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis, las=las)
             if (haveZlab) mtext(zlab, side=2, line=getOption("oceMgp")[1],
                                 cex=cex.zlab, cex.axis=cex.axis)
         } else if (pos == 3) {
-            axis(side=3, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis)
+            axis(side=3, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis, las=las)
             if (haveZlab) mtext(zlab, side=3, line=getOption("oceMgp")[1],
                                 cex=cex.zlab, cex.axis=cex.axis)
         } else if (pos == 4) {
-            axis(side=4, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis)
+            axis(side=4, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis, las=las)
             if (haveZlab) mtext(zlab, side=4, line=getOption("oceMgp")[1],
                                 cex=cex.zlab, cex.axis=cex.axis)
         } else {
@@ -628,6 +638,11 @@ drawPalette <- function(zlim, zlab="",
 #' @param  zlabPosition String indicating where to put the label for the z axis,
 #'         either at the top-right of the main image, or on the side, in the axis
 #'         for the palette.
+#'
+#' @param las.palette Parameter controlling the orientation of labels on the
+#' image palette, passed as the `las` argument to [drawPalette()].  See the
+#' documentation for [drawPalette()] for details.
+#'
 #' @param  decimate Controls whether the image will be decimated before plotting,
 #'         in three possible cases.
 #'
@@ -738,7 +753,7 @@ drawPalette <- function(zlim, zlab="",
 #'
 #' @param  main Title for plot.
 #'
-#' @param  axisPalette Optional replacement function for `axis()`, passed to
+#' @param  axisPalette Optional replacement function for [axis()], passed to
 #'         [drawPalette()].
 #'
 #' @param add Logical value indicating whether to add to an existing plot.
@@ -834,6 +849,7 @@ imagep <- function(x, y, z,
                    xlim, ylim, zlim,
                    zclip=FALSE, flipy=FALSE,
                    xlab="", ylab="", zlab="", zlabPosition=c("top", "side"),
+                   las.palette=0,
                    decimate=TRUE,
                    breaks, col, colormap, labels=NULL, at=NULL,
                    drawContours=FALSE,
@@ -1228,7 +1244,7 @@ imagep <- function(x, y, z,
 
 
     if (drawPalette == "space") {
-        drawPalette(zlab=if (zlabPosition=="side") zlab else "", axisPalette=axisPalette, debug=debug-1)
+        drawPalette(zlab=if (zlabPosition=="side") zlab else "", axisPalette=axisPalette, debug=debug-1, las=las.palette)
     } else if (drawPalette) {
         ## issue 542: put this above the block
         ## if (missing(zlim)) {
@@ -1260,7 +1276,7 @@ imagep <- function(x, y, z,
                         labels=labels, at=seq(0, 1, 0.1),
                         drawContours=drawContours,
                         drawTriangles=drawTriangles,
-                        mai=mai.palette, debug=debug-1)
+                        mai=mai.palette, las=las.palette, debug=debug-1)
         } else {
             oceDebug(debug, "palette with zlim not \"histogram\"\n")
             drawPalette(zlim=zlim, zlab=if (zlabPosition=="side") zlab else "",
@@ -1269,6 +1285,7 @@ imagep <- function(x, y, z,
                         drawContours=drawContours,
                         drawTriangles=drawTriangles,
                         mai=mai.palette,
+                        las=las.palette, 
                         axisPalette=axisPalette,
                         debug=debug-1)
         }

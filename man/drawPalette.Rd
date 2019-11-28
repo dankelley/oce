@@ -14,6 +14,7 @@ drawPalette(
   cex.axis = par("cex.axis"),
   cex.zlab = par("cex"),
   pos = 4,
+  las = 0,
   labels = NULL,
   at = NULL,
   levels,
@@ -54,6 +55,16 @@ existence of a non-blank \code{zlab}.}
 \item{pos}{an integer indicating the location of the palette within the
 plotting area, 1 for near the bottom, 2 for near the left-hand side, 3 for
 near the top side, and 4 (the default) for near the right-hand side.}
+
+\item{las}{optional argument, passed to \code{\link[=axis]{axis()}}, to control the orientation
+of numbers along the axis. As explained in the help for \code{\link[=par]{par()}}, the
+meaning of \code{las} is as follows: \code{las=0} (the default) means to put labels
+parallel to the axis, \code{las=1} means horizontal (regardless of
+axis orientation), \code{las=2} means perpendicular to the axis,
+and \code{las=3} means to vertical (regardless of axis orientation).  Note that
+the automatic computation of margin spacing parameter \code{mai}
+assumes that \code{las=0}, and so for other cases, the user may need to
+specify the \code{mai} argument directly.}
 
 \item{labels}{optional vector of labels for ticks on palette axis (must
 correspond with \code{at})}
@@ -113,7 +124,7 @@ conflicts.
 \section{Use with multi-panel plots}{
  An important consequence of the margin
 adjustment is that multi-panel plots require that the initial margin be
-stored prior to the first call to \code{drawPalette}, and reset after each
+stored prior to the first call to \code{\link[=drawPalette]{drawPalette()}}, and reset after each
 palette-plot pair.  This method is illustrated in \dQuote{Examples}.
 }
 
