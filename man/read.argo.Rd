@@ -96,7 +96,7 @@ a such a repository. If the ID of a float is known but not the
 \code{http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
 and search for the ID. The first few lines of that file are header,
 and after that the format is simple, with columns separated by slash
-(\verb{/}). The dac is in the first such column and the float ID in the
+(\code{/}). The dac is in the first such column and the float ID in the
 second. A simple search will reveal the dac.
 For example \code{data(argo)} is based on float 6900388, and the line
 containing that token is

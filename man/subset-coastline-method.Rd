@@ -34,9 +34,9 @@ expression that indicates limits on \code{latitude} and
 not mathematical notation (i.e. \verb{30<latitude<60} would not work).
 Ampersands must be used to combine the limits.  The simplest way
 to understand this is to copy the example directly, and then modify
-the stated limits. Note that \verb{>} comparison is not permitted,
-and that \verb{<} is converted to \verb{<=} in the calculation.
-Similarly, \verb{&&} is converted to \verb{&}. Spaces in the
+the stated limits. Note that \code{>} comparison is not permitted,
+and that \code{<} is converted to \code{<=} in the calculation.
+Similarly, \code{&&} is converted to \code{&}. Spaces in the
 expression are ignored. For convenience, \code{longitude} and
 and \code{latitude} may be abbreviated as \code{lon} and \code{lat},
 as in the \dQuote{Examples}.

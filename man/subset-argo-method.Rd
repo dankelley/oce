@@ -66,13 +66,12 @@ plotTS(argo)
 plotTS(subset(argo, "adjusted"))
 
 # Example 4. Subset by a polygon determined with locator()
-\dontrun{
-par(mfrow=c(2, 1))
+par(mfrow=c(1, 2))
 plot(argo, which="map")
-bdy <- locator(4) # Click the mouse on 4 boundary points
+## Can get a boundary with e.g. locator(4)
+bdy <- list(x=c(-65, -40, -40, -65), y=c(65, 65, 45, 45))
 argoSubset <- subset(argo, within=bdy)
 plot(argoSubset, which="map")
-}
 
 }
 \seealso{

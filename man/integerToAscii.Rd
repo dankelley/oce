@@ -18,7 +18,7 @@ Decode integer to corresponding ASCII code
 \examples{
 library(oce)
 A <- integerToAscii(65)
-cat("A=", A, "\\n")
+cat("A=", A, "\n")
 }
 \author{
 Dan Kelley

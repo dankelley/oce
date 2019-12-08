@@ -125,7 +125,7 @@ There are three ways of specifying color schemes, and \code{colormap} works
 by checking for each condition in turn.
 \itemize{
 \item \strong{Case A.} Supply \code{z} but nothing else.  In this case,
-\code{breaks} will be set to \verb{[}pretty\verb{]}(z,10)` and things are
+\code{breaks} will be set to \code{[}pretty\verb{]}(z,10)` and things are
 otherwise as in case B.
 \item \strong{Case B.} Supply \code{breaks}.  In this case, \code{breaks} and
 \code{col} are used together to specify a color scheme.  If \code{col} is a

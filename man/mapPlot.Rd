@@ -473,7 +473,7 @@ if (canProject) {
     # Example 6.
     # Spinning globe: create PNG files that can be assembled into a movie
 \dontrun{
-    png("globe-%03d.png")
+    png("globe-\%03d.png")
     lons <- seq(360, 0, -15)
     par(mar=rep(0, 4))
     for (i in seq_along(lons)) {

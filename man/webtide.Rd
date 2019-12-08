@@ -128,7 +128,7 @@ library(oce)
 longitude <- -63.57
 latitude <- 44.65
 prediction <- webtide("predict", longitude=longitude, latitude=latitude)
-mtext(sprintf("prediction at %fN %fE", latitude, longitude), line=0.75, side=3)
+mtext(sprintf("prediction at \%fN \%fE", latitude, longitude), line=0.75, side=3)
 ## 2. map
 webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
 }

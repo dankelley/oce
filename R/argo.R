@@ -485,13 +485,12 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' plotTS(subset(argo, "adjusted"))
 #'
 #' # Example 4. Subset by a polygon determined with locator()
-#'\dontrun{
-#' par(mfrow=c(2, 1))
+#' par(mfrow=c(1, 2))
 #' plot(argo, which="map")
-#' bdy <- locator(4) # Click the mouse on 4 boundary points
+#' ## Can get a boundary with e.g. locator(4)
+#' bdy <- list(x=c(-65, -40, -40, -65), y=c(65, 65, 45, 45))
 #' argoSubset <- subset(argo, within=bdy)
 #' plot(argoSubset, which="map")
-#'}
 #'
 #' @author Dan Kelley
 #'
@@ -505,11 +504,9 @@ setMethod(f="subset",
               dots <- list(...)
               dotsNames <- names(dots)
               withinGiven <- length(dots) && ("within" %in% dotsNames)
-              debug <- getOption("oceDebug")
-              if (length(dots) && ("debug" %in% names(dots)))
-                  debug <- dots$debug
+              debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
               if (withinGiven) {
-                  oceDebug(debug, "subsetting with 'within' method")
+                  oceDebug(debug, "subsetting with 'within' method\n")
                   polygon <- dots$within
                   if (!is.data.frame(polygon) && !is.list(polygon))
                       stop("'within' must be a data frame or a polygon")
@@ -534,6 +531,31 @@ setMethod(f="subset",
                       keep <- 1==sp::point.in.polygon(lon, lat, lonp, latp)
                   } else {
                       stop("cannot use 'within' because the 'sp' package is not installed")
+                  }
+                  if (debug > 0) {
+                      oceDebug(debug, "testing oce:convert_to_sp for subset(..., within=...)\n")
+                      oceDebug(debug, "  polygon ", vectorShow(lonp))
+                      oceDebug(debug, "  polygon ", vectorShow(latp))
+                      oceDebug(debug, "  keeping ", sum(keep)/length(keep)*100, "% of profiles, viz. ",
+                               paste(which(keep), collapse=" "), "\n", sep="")
+                  }
+                  if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
+                      message("NOTE: options(\"oce:test_sf\"=1), so testing whether the proposed new 'sf' method works")
+                      if (requireNamespace("sf", quietly=TRUE)) {
+                          ## st_polygon requires a closed x,y path, hence the appending of the first point
+                          polyNew <- sf::st_polygon(list(outer=cbind(c(lonp, lonp[1]), c(latp, latp[1]))))
+                          ## There may be a more elegant way of intersecting, but this works on example 4 of the documentation
+                          keepNew <- as.logical(lapply(seq_along(lon),
+                                                       function(i)
+                                                           lengths(sf::st_intersects(sf::st_point(c(lon[i],lat[i])), polyNew))))
+                          if (!all.equal(keepNew, keep)) {
+                              warning("'keep' list disagreement, between old method and proposed new 'sf' method\n")
+                          } else {
+                              message(" the 'keep' vector from the 'sf' method matches that from the previous 'sp' method")
+                          }
+                      } else {
+                          stop("cannot use 'within' argument with options(\"oce:test_sf\"=1) because the 'sf' package is not installed")
+                      }
                   }
                   ## Metadata
                   for (name in names(x@metadata)) {

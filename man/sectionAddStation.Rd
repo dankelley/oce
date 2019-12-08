@@ -20,7 +20,7 @@ Add a CTD profile to an existing section.
 }
 \section{Historical note}{
 
-Until March 2015, this operation was carried out with the \verb{+} operator,
+Until March 2015, this operation was carried out with the \code{+} operator,
 but at that time, the syntax was flagged by the development version of R, so it
 was changed to the present form.
 }
