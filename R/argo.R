@@ -538,7 +538,7 @@ setMethod(f="subset",
                                paste(which(keep), collapse=" "), "\n", sep="")
                   }
                   if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
-                      message("NOTE: options(\"oce:test_sf\"=1), so testing whether the proposed new 'sf' method works")
+                      message("subset,argo-method(): testing 'sf' method, since options(\"oce:test_sf\"=1)")
                       if (requireNamespace("sf", quietly=TRUE)) {
                           ## st_polygon requires a closed x,y path, hence the appending of the first point
                           polyNew <- sf::st_polygon(list(outer=cbind(c(lonp, lonp[1]), c(latp, latp[1]))))
@@ -547,12 +547,10 @@ setMethod(f="subset",
                                                        function(i)
                                                            lengths(sf::st_intersects(sf::st_point(c(lon[i],lat[i])), polyNew))))
                           if (!all.equal(keepNew, keep)) {
-                              warning("'keep' list disagreement, between old method and proposed new 'sf' method\n")
-                          } else {
-                              message(" the 'keep' vector from the 'sf' method matches that from the previous 'sp' method")
+                              warning("FAIL: 'keep' list disagreement, between old 'sp' method and trial 'sf' method\n")
                           }
                       } else {
-                          stop("cannot use 'within' argument with options(\"oce:test_sf\"=1) because the 'sf' package is not installed")
+                          stop("subset,argo-method with 'within' argument: must install 'sf' package to handle option(\"oce:test_sf\"=1)")
                       }
                   }
                   ## Metadata

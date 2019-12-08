@@ -617,7 +617,7 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
 #' is drawn  first, then the area under the label is erased (filled with
 #' white 'ink'), and then the label is drawn. This can be useful
 #' in drawing coarsely-spaced labelled contours on top of finely-spaced
-#' unlabelled contours. On the othr hand, if `underlay` equals
+#' unlabelled contours. On the other hand, if `underlay` equals
 #' `"interrupt"`, then the contour line is interrupted in the
 #' region of the label, which is closer to the scheme used by the
 #' base [contour()] function.
@@ -783,9 +783,35 @@ mapContour <- function(longitude, latitude, z,
                             polygon(xc[labelj]+XYrot[,1], yc[labelj]+XYrot[,2],
                                     col=colUnderLabel, border=colUnderLabel)
                         } else if (underlay == "interrupt") {
+                            ## cat("old 'sp' method timing:\n")
+                            ##print(system.time({
                             erase <- 1==sp::point.in.polygon(xc, yc,
                                                              xc[labelj]+XYrot[,1], yc[labelj]+XYrot[,2])
-                            oceDebug(debug, "ignoring", sum(erase), "points under", label, "contour\n")
+                            ##}))
+                            if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
+                                ## NOTE: 'sf' method is 10X slower than 'sp' method on doc test case
+                                ##message("mapContour(...,underlay=\"interrupt\"): TEST 'sf' method, since options(\"oce:test_sf\"=1)")
+                                if (requireNamespace("sf", quietly=TRUE)) {
+                                    ##cat(" new 'sf' method timing:\n")
+                                    ##print(system.time({
+                                    polyx <<- xc[labelj] + XYrot[,1]
+                                    polyy <<- yc[labelj] + XYrot[,2]
+                                    polyNew <<- sf::st_polygon(list(outer=cbind(c(polyx, polyx[1]), c(polyy, polyy[1]))))
+                                    eraseNew <<- as.logical(lapply(seq_along(xc),
+                                                                  function(i)
+                                                                      lengths(sf::st_intersects(sf::st_point(c(xc[i],yc[i])), polyNew), use.names=FALSE)))
+                                    eraseOld <<- erase
+                                    xcOld<<-xc
+                                    ycOld<<-yc
+                                    ##}))
+                                    if (!all.equal(eraseNew, erase)) {
+                                        warning("FAIL: 'erase' list disagreement, between old 'sp' method and trial 'sf' method\n")
+                                    }
+                                } else {
+                                    stop("mapContour(): must install 'sf' package to handle option(\"oce:test_sf\"=1)")
+                                }
+                                oceDebug(debug, "ignoring", sum(erase), "points under", label, "contour\n")
+                            }
                             XC <- xc
                             YC <- yc
                             XC[erase] <- NA
