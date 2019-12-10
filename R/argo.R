@@ -1416,21 +1416,23 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 #' read official argo datasets, which are provided in NetCDF format and may
 #' be read with [read.argo()].
 #'
-#' @param time vector of POSIXct times.
-#' @param longitude vector of longitudes.
-#' @param latitude vector of latitudes.
-#' @param salinity vector of salinities.
-#' @param temperature vector of temperatures.
-#' @param pressure vector of pressures.
-#' @param units optional list containing units. If `NULL`, the default,
+#' @param time a vector of POSIXct times.
+#' @param longitude a vector of longitudes.
+#' @param latitude a vector of latitudes.
+#' @param salinity a vector of salinities.
+#' @param temperature a vector of temperatures.
+#' @param pressure a vector of pressures.
+#' @param units an optional list containing units. If `NULL`, the default,
 #' then `"degree east"` is used for `longitude`,
 #' `"degree north"` for `latitude`,
 #' `""` for `salinity`,
 #' `"ITS-90"` for `temperature`, and
 #' `"dbar"` for `pressure`.
-#' @param id identifier.
-#' @param filename source filename.
-#' @param missingValue Optional missing value, indicating data values that should be
+#' @param id an identifier for the argo float, typically a number, but stored within
+#' the object in a character form. (For example, the dataset retrieved with `data(argo)`
+#' has an `id` of `"6900388"`.)
+#' @param filename a source filename, which defaults to an empty string.
+#' @param missingValue an optional missing value, indicating data values that should be
 #' taken as `NA`.
 #'
 #' @return

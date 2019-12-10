@@ -18,30 +18,32 @@ as.argo(
 )
 }
 \arguments{
-\item{time}{vector of POSIXct times.}
+\item{time}{a vector of POSIXct times.}
 
-\item{longitude}{vector of longitudes.}
+\item{longitude}{a vector of longitudes.}
 
-\item{latitude}{vector of latitudes.}
+\item{latitude}{a vector of latitudes.}
 
-\item{salinity}{vector of salinities.}
+\item{salinity}{a vector of salinities.}
 
-\item{temperature}{vector of temperatures.}
+\item{temperature}{a vector of temperatures.}
 
-\item{pressure}{vector of pressures.}
+\item{pressure}{a vector of pressures.}
 
-\item{units}{optional list containing units. If \code{NULL}, the default,
+\item{units}{an optional list containing units. If \code{NULL}, the default,
 then \code{"degree east"} is used for \code{longitude},
 \code{"degree north"} for \code{latitude},
 \code{""} for \code{salinity},
 \code{"ITS-90"} for \code{temperature}, and
 \code{"dbar"} for \code{pressure}.}
 
-\item{id}{identifier.}
+\item{id}{an identifier for the argo float, typically a number, but stored within
+the object in a character form. (For example, the dataset retrieved with \code{data(argo)}
+has an \code{id} of \code{"6900388"}.)}
 
-\item{filename}{source filename.}
+\item{filename}{a source filename, which defaults to an empty string.}
 
-\item{missingValue}{Optional missing value, indicating data values that should be
+\item{missingValue}{an optional missing value, indicating data values that should be
 taken as \code{NA}.}
 }
 \value{
