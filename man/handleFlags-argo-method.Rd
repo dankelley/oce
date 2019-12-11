@@ -2,6 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{handleFlags,argo-method}
 \alias{handleFlags,argo-method}
+\alias{handleFlags.argo}
 \title{Handle Flags in ARGO Objects}
 \usage{
 \S4method{handleFlags}{argo}(

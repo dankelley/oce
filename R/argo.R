@@ -499,6 +499,7 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #'
 #' @family things related to argo data
 #' @family functions that subset oce objects
+#' @aliases subset.argo
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
@@ -701,9 +702,7 @@ setMethod(f="subset",
                       fieldname <- names(x@metadata$flags)
                       for (field in fieldname) {
                           ifield <- which(field == fieldname)
-                          message("B")
                           res@metadata$flags[[ifield]] <- res@metadata$flags[[ifield]][, keep]
-                          message(" / B")
                       }
                                         #if (sum(keep) < 1) warning("In subset.argo() :\n  removed all profiles", call.=FALSE)
                       ## res@data$salinity <- x@data$salinity[, keep]
@@ -734,6 +733,7 @@ setMethod(f="subset",
 #'
 #' @author Dan Kelley
 #' @family things related to argo data
+#' @aliases summary.argo
 setMethod(f="summary",
           signature="argo",
           definition=function(object, ...) {
@@ -1805,6 +1805,7 @@ setMethod(f="plot",
 #' @author Dan Kelley
 #'
 #' @family things related to argo data
+#' @aliases handleFlags.argo
 setMethod("handleFlags", signature=c(object="argo", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
           definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup

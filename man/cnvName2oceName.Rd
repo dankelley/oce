@@ -37,14 +37,14 @@ A few sample header lines that have been encountered are:\preformatted{# name 4 
 }
 
 Examination of several CNV files suggests that it is best to
-try to infer the name from the characters between the "\verb{=}"
-and "\verb{:}" characters, because the material after the colon
+try to infer the name from the characters between the "\code{=}"
+and "\code{:}" characters, because the material after the colon
 seems to vary more between sample files.
 
 The table given below indicates the translation patterns used. These are
 taken from reference 1. The \code{.cnv} convention for multiple sensors is to
 include optional extra digits in the name, and these are indicated
-with \verb{~} in the table; their decoding is done with \code{\link[=grep]{grep()}}.
+with \code{~} in the table; their decoding is done with \code{\link[=grep]{grep()}}.
 
 It is important to note that this table is by no means complete, since there
 are a great many SBE names listed in their document (reference 1), plus names

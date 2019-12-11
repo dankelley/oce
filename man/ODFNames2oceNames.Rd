@@ -90,7 +90,7 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
 \verb{TE90_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                   \cr
 \verb{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                   \cr
 \verb{TOTP_*.*} \tab \code{pressureAbsolute}   \tab Used mainly in \code{ctd} objects                   \cr
-\verb{UNKN_*.*} \tab \verb{-}                  \tab The result is context-dependent                \cr
+\verb{UNKN_*.*} \tab \code{-}                  \tab The result is context-dependent                \cr
 \verb{VAIS_*.*} \tab \code{BVFrequency}        \tab                                                \cr
 \verb{VCSP_*.*} \tab \code{w}                  \tab Used in \code{adp} objects                          \cr
 }

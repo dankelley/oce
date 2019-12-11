@@ -22,7 +22,7 @@ example provided by reference 1 example 15.a, with fractional error 3e-8.
 
 t <- ISOdatetime(1978, 11, 13, 4, 35, 0, tz="UTC")
 jca <- julianCenturyAnomaly(julianDay(t))
-cat(format(t), "is Julian Century anomaly", format(jca, digits=8), "\\n")
+cat(format(t), "is Julian Century anomaly", format(jca, digits=8), "\n")
 
 }
 \references{

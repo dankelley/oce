@@ -42,7 +42,7 @@ proceeds in steps, by testing a sequence of possible conditions
 in sequence.
 \enumerate{
 \item A check is made as to whether \code{i} names one of the standard
-\code{oce} slots. If so, \verb{[[} returns the slot contents of that slot.
+\code{oce} slots. If so, \code{[[} returns the slot contents of that slot.
 Thus, \code{x[["metadata"]]} will retrieve the \code{metadata} slot,
 while \code{x[["data"]]} and \code{x[["processingLog"]]} return
 those slots.
@@ -81,7 +81,7 @@ and it directs where to look.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned,
 without the issuance of a warning or error message. (This silent operation
-is employed so that \verb{[[} will behave like the normal R version.)
+is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \section{Details of the specialized \code{ctd} method}{
@@ -118,7 +118,7 @@ scale is returned with \code{x@data$temperature}.
 
 This preference for computed over stored quantities is accomplished
 by first checking for computed quantities, and then falling
-back to the general \verb{[[} method if no match is found.
+back to the general \code{[[} method if no match is found.
 
 Some quantities are optionally computed. For example, some data files
 (e.g. the one upon which the \code{\link[=section]{section()}} dataset is based)

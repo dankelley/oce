@@ -2,6 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{subset,argo-method}
 \alias{subset,argo-method}
+\alias{subset.argo}
 \title{Subset an Argo Object}
 \usage{
 \S4method{subset}{argo}(x, subset, ...)
