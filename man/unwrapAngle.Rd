@@ -34,7 +34,7 @@ par(mar=c(3, 3, 5, 3))
 hist(a, breaks=360)
 abline(v=a2$mean, col="blue", lty="dashed")
 abline(v=true, col="blue")
-mtext("true (solid)\\n estimate (dashed)", at=true, side=3, col="blue")
+mtext("true (solid)\n estimate (dashed)", at=true, side=3, col="blue")
 abline(v=mean(a), col="red")
 mtext("mean", at=mean(a), side=3, col="red")
 }

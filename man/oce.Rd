@@ -42,7 +42,7 @@ A list of the generic methods in oce is provided by
 \link{methods}\code{(class="oce")}; a few that are used frequently
 are as follows.
 \itemize{
-\item \verb{[[} Finds the value of an item in the object's
+\item \code{[[} Finds the value of an item in the object's
 \code{metadata} or \code{data} slot. If the item does
 not exist, but can be calculated from the other items,
 then the calculated value is returned. As an example of the

@@ -42,7 +42,7 @@ proceeds in steps, by testing a sequence of possible conditions
 in sequence.
 \enumerate{
 \item A check is made as to whether \code{i} names one of the standard
-\code{oce} slots. If so, \verb{[[} returns the slot contents of that slot.
+\code{oce} slots. If so, \code{[[} returns the slot contents of that slot.
 Thus, \code{x[["metadata"]]} will retrieve the \code{metadata} slot,
 while \code{x[["data"]]} and \code{x[["processingLog"]]} return
 those slots.
@@ -81,7 +81,7 @@ and it directs where to look.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned,
 without the issuance of a warning or error message. (This silent operation
-is employed so that \verb{[[} will behave like the normal R version.)
+is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \section{Details of the specialized \code{adv} method}{

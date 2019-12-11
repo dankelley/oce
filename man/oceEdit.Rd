@@ -23,7 +23,7 @@ on the sub-class of \code{x}.}
 \code{metadata} or \code{data} slot, the former being checked first.
 An exception is if \code{item} starts with \code{"data@"} or
 \code{"metadata@"}, in which case the named slot is updated with a changed
-value of the contents of \code{item} after the \verb{@} character.}
+value of the contents of \code{item} after the \code{@} character.}
 
 \item{value}{new value for \code{item}, if both supplied.}
 
@@ -53,14 +53,14 @@ either the object's metadata or data slot may be altered. There are
 two ways in which this can be done.
 \itemize{
 \item Case 1A. If the \code{item} string does not contain an
-\verb{@} character, then the \code{metadata} slot is examined
+\code{@} character, then the \code{metadata} slot is examined
 for an entry named \code{item}, and that is modified if so.
 Alternatively, if \code{item} is found in \code{metadata}, then
 that value is modified. However, if \code{item} is not found in
 either \code{metadata} or \code{data}, then an error is reported
 (see 1B for how to add something that does not yet exist).
 \item Case 1B. If the \code{item} string contains
-the \verb{@} character, then the text to the left of that character
+the \code{@} character, then the text to the left of that character
 must be either \code{"metadata"} or \code{"data"}, and it names the slot
 in which the change is done. In contrast with case 1A, this will
 \emph{create} a new item, if it is not already in existence.

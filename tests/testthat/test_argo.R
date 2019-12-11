@@ -54,6 +54,22 @@ test_that("[[,argo-method", {
           expect_equal(sub1[["data"]], sub2[["data"]])
 })
 
+test_that("subset(argo, pressure < 500))", {
+          data(argo)
+          pcut <- 500
+          top <- subset(argo, pressure < pcut)
+          # test a few fields in a few profiles
+          pressure <- argo[["pressure"]]
+          for (i in 1:5) {
+            p <- argo[["pressure"]][, i]
+            S <- argo[["salinity"]][, i]
+            T <- argo[["temperature"]][, i]
+            expect_equal(top[["pressure"]][,i], ifelse(p < pcut, p, NA))
+            expect_equal(top[["salinity"]][,i], ifelse(p < pcut, S, NA))
+            expect_equal(top[["temperature"]][,i], ifelse(p < pcut, T, NA))
+          }
+})
+
 test_that("subset(argo, within=(POLYGON))", {
           ## Labrador Sea (this test will fail if data(argo) is changed)
           nold <- 223

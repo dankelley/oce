@@ -108,7 +108,7 @@ See the documentation for the \linkS4class{landsat} class
 for more information on \code{landsat} objects,
 especially band information.  Use \code{\link[=landsatTrim]{landsatTrim()}} to trim Landsat
 objects geographically and \code{\link[=landsatAdd]{landsatAdd()}} to add new ``bands.''  The
-accessor operator (\verb{[[}) is used to access band information, full or
+accessor operator (\code{[[}) is used to access band information, full or
 decimated, and to access certain derived quantities.  A sample dataset named
 \code{\link[=landsat]{landsat()}} is provided by the \CRANpkg{oce} package.
 
