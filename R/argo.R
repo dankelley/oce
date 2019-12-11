@@ -449,7 +449,9 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' stored in the data, e.g. `time`,
 #' `latitude`, `longitude`, `profile`, `dataMode`,
 #' or `pressure` or by `profile` (a made-up variable)
-#' or `id` (from the `metadata` slot).
+#' or `id` (from the `metadata` slot). Note that subsetting by `pressure`
+#' preserves matrix shape, by setting discarded values to `NA`, as opposed
+#' to dropping data (as is the case with `time`, for example).
 #'
 #' @param x an [argo-class] object.
 #'
@@ -641,22 +643,24 @@ setMethod(f="subset",
                       keep <- eval(substitute(subset), tmp, parent.frame(2))
                       rm(tmp)
                   } else if (length(grep("pressure", subsetString))) {
-                      ## check that it is a "gridded" argo
-                      gridded <- ifelse(all(apply(x@data$pressure, 1, diff) == 0, na.rm=TRUE), TRUE, FALSE)
-                      if (gridded) {
-                          x@data$pressure <- x@data$pressure[, 1] ## FIXME: have to convert pressure to vector
-                          keep <- eval(substitute(subset), x@data, parent.frame(2))
-                          x@data$pressure <- res@data$pressure ## FIXME: convert back to original for subsetting below
-                      } else {
-                          stop("cannot subset ungridded argo by pressure -- use argoGrid() first", call.=FALSE)
-                      }
+                      ## issue1628 ## check that it is a "gridded" argo
+                      ## issue1628 gridded <- ifelse(all(apply(x@data$pressure, 1, diff) == 0, na.rm=TRUE), TRUE, FALSE)
+                      ## issue1628 if (gridded) {
+                      ## issue1628     x@data$pressure <- x@data$pressure[, 1] ## FIXME: have to convert pressure to vector
+                      ## issue1628     keep <- eval(substitute(subset), x@data, parent.frame(2))
+                      ## issue1628     x@data$pressure <- res@data$pressure ## FIXME: convert back to original for subsetting below
+                      ## issue1628 } else {
+                      ## issue1628     stop("cannot subset ungridded argo by pressure -- use argoGrid() first", call.=FALSE)
+                      ## issue1628 }
+                      keep <- eval(substitute(subset), x@data, parent.frame(2))
                   } else if (length(grep("dataMode", subsetString))) {
                       keep <- eval(substitute(subset), x@metadata, parent.frame(2))
                   } else {
                       stop("can only subset by time, longitude, latitude, pressure, dataMode, and not by combinations", call.=FALSE)
                   }
-                  ## Now do the subset
                   if (length(grep("pressure", subsetString))) {
+                      ## Now do the subset. Note that we preserve matrix dimensions, by setting
+                      ## discarded values to NA.
                       fieldname <- names(x@data)
                       for (field in fieldname) {
                           if (field != 'time' & field != 'longitude' & field != 'latitude') { # DEBUG: see issue 1327
@@ -665,20 +669,16 @@ setMethod(f="subset",
                               ##debug        "\n\tlength(keep)=", length(keep),
                               ##debug        "\n\tsum(keep)=", sum(keep))
                               if (is.matrix(res@data[[ifield]])) {
-                                  ##debug message("\tdim(x@data[[ifield]])=", paste(dim(x@data[[ifield]]), collapse=","))
-                                  res@data[[ifield]] <- res@data[[ifield]][keep,]
-                                  ##debugmessage("\tdim(res@data[[ifield]])=", paste(dim(res@data[[ifield]]), collapse=","))
+                                  res@data[[ifield]][!keep] <- NA
                               } else {
-                                  ##debug message("\tlength(x@data[[ifield]])=", length(x@data[[ifield]]))
-                                  res@data[[ifield]] <- res@data[[ifield]][keep]
-                                  ##debug message("\tlength(res@data[[ifield]])=", length(res@data[[ifield]]))
+                                  res@data[[ifield]][!keep] <- NA
                               }
                           }
                       }
                       fieldname <- names(x@metadata$flags)
                       for (field in fieldname) {
                           ifield <- which(field == fieldname)
-                          res@metadata$flags[[ifield]] <- res@metadata$flags[[ifield]][keep, ]
+                          res@metadata$flags[[ifield]][!keep] <- NA
                       }
                       ## res@data$salinity <- x@data$salinity[keep, ]
                       ## res@data$temperature <- x@data$temperature[keep, ]
@@ -701,7 +701,9 @@ setMethod(f="subset",
                       fieldname <- names(x@metadata$flags)
                       for (field in fieldname) {
                           ifield <- which(field == fieldname)
+                          message("B")
                           res@metadata$flags[[ifield]] <- res@metadata$flags[[ifield]][, keep]
+                          message(" / B")
                       }
                                         #if (sum(keep) < 1) warning("In subset.argo() :\n  removed all profiles", call.=FALSE)
                       ## res@data$salinity <- x@data$salinity[, keep]
