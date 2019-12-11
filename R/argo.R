@@ -366,10 +366,8 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 #' replacements having been made for all known quantities.
 #'
 #' @references
-#' 1. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-#' \url{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-#' (but note that this is a draft; newer versions may have
-#' replaced this by now).
+#' 1. Argo User's Manual Version 3.3, Nov 89th, 2019, available at
+#' \url{https://archimer.ifremer.fr/doc/00187/29825/}
 #'
 #' 2. Argo list of parameters in an excel spreadsheet, available at
 #' \url{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
@@ -967,10 +965,8 @@ argoDecodeFlags <- function(f) # local function
 #' @references
 #' 1. \url{http://www.argo.ucsd.edu/}
 #'
-#' 2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-#' \url{https://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-#' (but note that this is a draft; newer versions may have
-#' replaced this by now).
+#' 2. Argo User's Manual Version 3.3, Nov 89th, 2019, available at
+#' \url{https://archimer.ifremer.fr/doc/00187/29825/}
 #'
 #' 3. User's Manual (ar-um-02-01) 13 July 2010, available at
 #' \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf},
