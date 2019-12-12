@@ -546,9 +546,13 @@ setMethod(f="subset",
                           ## st_polygon requires a closed x,y path, hence the appending of the first point
                           polyNew <- sf::st_polygon(list(outer=cbind(c(lonp, lonp[1]), c(latp, latp[1]))))
                           ## There may be a more elegant way of intersecting, but this works on example 4 of the documentation
-                          keepNew <- as.logical(lapply(seq_along(lon),
-                                                       function(i)
-                                                           lengths(sf::st_intersects(sf::st_point(c(lon[i],lat[i])), polyNew))))
+                          ##. keepNew <- as.logical(lapply(seq_along(lon),
+                          ##.                              function(i)
+                          ##.                                  lengths(sf::st_intersects(sf::st_point(c(lon[i],lat[i])), polyNew))))
+
+                          pointsNew <- sf::st_multipoint(cbind(lon, lat))
+                          insideNew <- sf::st_intersection(pointsNew, polyNew)
+                          keepNew <- matrix(pointsNew %in% insideNew, ncol=2)[,1]
                           if (!all.equal(keepNew, keep)) {
                               warning("FAIL: 'keep' list disagreement, between old 'sp' method and trial 'sf' method\n")
                           }
