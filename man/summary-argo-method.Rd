@@ -2,6 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{summary,argo-method}
 \alias{summary,argo-method}
+\alias{summary.argo}
 \title{Summarize an Argo Object}
 \usage{
 \S4method{summary}{argo}(object, ...)

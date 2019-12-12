@@ -796,17 +796,33 @@ mapContour <- function(longitude, latitude, z,
                                     ##print(system.time({
                                     polyx <<- xc[labelj] + XYrot[,1]
                                     polyy <<- yc[labelj] + XYrot[,2]
-                                    polyNew <<- sf::st_polygon(list(outer=cbind(c(polyx, polyx[1]), c(polyy, polyy[1]))))
-                                    eraseNew <<- as.logical(lapply(seq_along(xc),
-                                                                  function(i)
-                                                                      lengths(sf::st_intersects(sf::st_point(c(xc[i],yc[i])), polyNew), use.names=FALSE)))
+                                    ##. cat(system.time({
+                                    ##. polyNew <<- sf::st_polygon(list(outer=cbind(c(polyx, polyx[1]), c(polyy, polyy[1]))))
+                                    ##. eraseNew <<- as.logical(lapply(seq_along(xc),
+                                    ##.                               function(i)
+                                    ##.                                   lengths(sf::st_intersects(sf::st_point(c(xc[i],yc[i])), polyNew), use.names=FALSE)))
+                                    ##. })[1], " ")
+                                    ##.cat(system.time({
+                                    pointsNew <<- sf::st_multipoint(cbind(xc, yc))
+                                    insideNew <<- sf::st_intersection(pointsNew, polyNew)
+                                    eraseNew <<- matrix(pointsNew %in% insideNew, ncol=2)[,1]
+                                    ##.})[1], "\n")
                                     eraseOld <<- erase
                                     xcOld<<-xc
                                     ycOld<<-yc
-                                    ##}))
+                                    ## cat(class(erase),"\n")
+                                    ## cat(vectorShow(erase))
+                                    ## cat(class(eraseNew),"\n")
+                                    ## cat(vectorShow(eraseNew))
+                                    ## cat(class(eraseNewer),"\n")
+                                    ## cat(vectorShow(eraseNewer))
                                     if (!all.equal(eraseNew, erase)) {
-                                        warning("FAIL: 'erase' list disagreement, between old 'sp' method and trial 'sf' method\n")
+                                        warning("FAIL: 'erase' disagreement with trial 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n")
                                     }
+                                    ##}))
+                                    ##.if (!all.equal(eraseNew, erase)) {
+                                    ##.    warning("FAIL: 'erase' list disagreement, between old 'sp' method and trial 'sf' method\n")
+                                    ##>}
                                 } else {
                                     stop("mapContour(): must install 'sf' package to handle option(\"oce:test_sf\"=1)")
                                 }

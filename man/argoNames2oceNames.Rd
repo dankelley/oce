@@ -102,7 +102,7 @@ are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 }
 \references{
 \enumerate{
-\item Argo User's Manual Version 3.3, 2019-11-28, available at
+\item Argo User's Manual Version 3.3, Nov 89th, 2019, available at
 \url{https://archimer.ifremer.fr/doc/00187/29825/} online.
 \item Argo list of parameters in an excel spreadsheet, available at
 \url{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}

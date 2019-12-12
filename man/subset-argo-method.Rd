@@ -2,6 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{subset,argo-method}
 \alias{subset,argo-method}
+\alias{subset.argo}
 \title{Subset an Argo Object}
 \usage{
 \S4method{subset}{argo}(x, subset, ...)
@@ -43,7 +44,9 @@ independent variable.  Subsetting may be done by anything
 stored in the data, e.g. \code{time},
 \code{latitude}, \code{longitude}, \code{profile}, \code{dataMode},
 or \code{pressure} or by \code{profile} (a made-up variable)
-or \code{id} (from the \code{metadata} slot).
+or \code{id} (from the \code{metadata} slot). Note that subsetting by \code{pressure}
+preserves matrix shape, by setting discarded values to \code{NA}, as opposed
+to dropping data (as is the case with \code{time}, for example).
 }
 \examples{
 library(oce)

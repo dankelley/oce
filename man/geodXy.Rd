@@ -91,7 +91,7 @@ angleUTM <- 180/pi*atan(coef(lm(northing~easting, data=UTM))[2])
 mapCoordinateSystem(lonR, latR, 500, angleUTM, col=3)
 legend("topright", lwd=1, col=2:3, bg="white", title="Axis Rotation Angle",
        legend=c(sprintf("geod: \%.1f deg", angle),
-                sprintf("utm: \%.1f deg", angleUTM)))
+                sprintf("utm:  \%.1f deg", angleUTM)))
 }
 }
 \seealso{

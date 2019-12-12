@@ -21,6 +21,7 @@ importFrom("gsw", "gsw_CT_freezing", "gsw_CT_from_t", "gsw_C_from_SP",
            "gsw_t_from_CT", "gsw_z_from_p")
 importFrom("methods", "as", "callNextMethod", "new", "slot<-", "slotNames",
            "validObject")
+importFrom("sf", "st_intersection", "st_multipoint", "st_polygon")
 importFrom("stats", "approx", "approxfun", "coef", "confint", "cor", "cov",
            "fivenum", "frequency", "integrate", "is.ts", "kernel", "lm",
            "median", "na.exclude", "nls", "optim", "optimize", "predict",
