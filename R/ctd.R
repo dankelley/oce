@@ -1679,7 +1679,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #' 2. Oguma, Sachiko, Toru Suzuki, Yutaka Nagata, Hidetoshi Watanabe, Hatsuyo Yamaguchi,
 #' and Kimio Hanawa. \dQuote{Interpolation Scheme for Standard Depth Data Applicable for Areas
 #' with a Complex Hydrographical Structure.} Journal of Atmospheric and Oceanic Technology
-#' 21, no. 4 (April 1, 2004): 704–15.
+#' 21, no. 4 (April 1, 2004): 704-15.
 #'
 #' @author Dan Kelley
 #'
