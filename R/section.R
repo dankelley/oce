@@ -686,9 +686,9 @@ setMethod(f="subset",
                       message("subset,section-method(): testing 'sf' method, since options(\"oce:test_sf\"=1)")
                       if (requireNamespace("sf", quietly=TRUE)) {
                           polyNew <- sf::st_polygon(list(outer=cbind(c(lonp, lonp[1]), c(latp, latp[1]))))
-                          pointsNew <<- sf::st_multipoint(cbind(lon, lat))
-                          inside <<- sf::st_intersection(pointsNew, polyNew)
-                          keepNew <<- matrix(pointsNew %in% inside, ncol=2)[,1]
+                          pointsNew <- sf::st_multipoint(cbind(lon, lat))
+                          inside <- sf::st_intersection(pointsNew, polyNew)
+                          keepNew <- matrix(pointsNew %in% inside, ncol=2)[,1]
                           if (!all.equal(keepNew, keep)) {
                               warning("subset,section-method error: 'keep' disagreement with trial 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n")
                           }
