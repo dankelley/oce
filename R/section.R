@@ -127,6 +127,7 @@ setMethod(f="initialize",
 #' plotTS(section2)
 #'
 #' @family things related to section data
+#' @aliases handleFlags.section
 setMethod("handleFlags", signature=c(object="section", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
           definition=function(object, flags=NULL, actions=NULL, where=where, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
@@ -198,6 +199,7 @@ setMethod("initializeFlagScheme",
 #' @family things related to section data
 #'
 #' @author Dan Kelley
+#' @aliases summary.section
 setMethod(f="summary",
           signature="section",
           definition=function(object, ...) {
@@ -611,10 +613,11 @@ setMethod(f="show",
 #' plot(GS, which="map")
 #'}
 #'
+#' @author Dan Kelley
+#'
 #' @family functions that subset oce objects
 #' @family things related to section data
-#'
-#' @author Dan Kelley
+#' @aliases subset.section
 setMethod(f="subset",
           signature="section",
           definition=function(x, subset, ...) {
@@ -677,7 +680,21 @@ setMethod(f="subset",
                   if (requireNamespace("sp", quietly=TRUE)) {
                       keep <- 1==sp::point.in.polygon(lon, lat, lonp, latp)
                   } else {
-                      stop("cannot use 'within' becaue the 'sp' package is not installed")
+                      stop("subset,section-method cannot use 'within' because the 'sp' package is not installed")
+                  }
+                  if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
+                      message("subset,section-method(): testing 'sf' method, since options(\"oce:test_sf\"=1)")
+                      if (requireNamespace("sf", quietly=TRUE)) {
+                          polyNew <- sf::st_polygon(list(outer=cbind(c(lonp, lonp[1]), c(latp, latp[1]))))
+                          pointsNew <<- sf::st_multipoint(cbind(lon, lat))
+                          inside <<- sf::st_intersection(pointsNew, polyNew)
+                          keepNew <<- matrix(pointsNew %in% inside, ncol=2)[,1]
+                          if (!all.equal(keepNew, keep)) {
+                              warning("subset,section-method error: 'keep' disagreement with trial 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n")
+                          }
+                      } else {
+                          stop("subset,section-method with 'within' argument: must install 'sf' package to handle option(\"oce:test_sf\"=1)")
+                      }
                   }
                   res <- x
                   res@metadata$stationId <- x@metadata$stationId[keep]
