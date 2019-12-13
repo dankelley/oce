@@ -1956,6 +1956,7 @@ setMethod(f="plot",
               ##message("numberOfCells=", numberOfCells)
               haveTimeImages <- any(which %in% images) && 1 < numberOfCells
               oceDebug(debug, 'haveTimeImages=', haveTimeImages, '(if TRUE, it means any timeseries graphs get padding on RHS)\n')
+              omar <- par("mar")
               for (w in 1:nw) {
                   oceDebug(debug, " which[", w, "]=", which[w], "; drawTimeRange=", drawTimeRange, "\n", sep="")
                   if (which[w] %in% images) {
@@ -2846,6 +2847,7 @@ setMethod(f="plot",
                   }
                   if (is.logical(grid[1]) && grid[1])
                       grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
+                  par(mar=omar)        # prevent margin creep if we have non-images after images (issue 1632 item 2)
               }
               par(cex=opar$cex)
               oceDebug(debug, "} # plot,adp-method()\n", unindent=1)
