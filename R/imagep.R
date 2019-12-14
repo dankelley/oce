@@ -311,7 +311,7 @@ drawPalette <- function(zlim, zlab="",
     if (zlimGiven && zlim[2] < zlim[1])
         stop("'zlim' must be ordered")
     colormapGiven <- !missing(colormap)
-    oceDebug(debug, "colormapGiven =", colormapGiven, "\n")
+    ## oceDebug(debug, "colormapGiven=", colormapGiven, "\n", sep="")
     ##message("missing(col) ", missing(col))
     if (!zlimGiven && !colormapGiven)
         plot <- FALSE
@@ -327,15 +327,15 @@ drawPalette <- function(zlim, zlab="",
                  zlim[2], "), zlab=", "\"", as.character(zlab), "\"",
                  ", pos=", pos,
                  ", drawTriangles=c(", paste(drawTriangles, collapse=","), "), ...) {\n",
-                 unindent=1, sep="")
+                 unindent=1, sep="", style="bold")
     else
-        oceDebug(debug, "drawPalette() with no zlim argument\n", sep="", unindent=1)
+        oceDebug(debug, "drawPalette() { # with no zlim argument\n", sep="", unindent=1, style="bold")
     maiGiven <- !missing(mai)
-    oceDebug(debug, "maiGiven =", maiGiven, "\n")
+    oceDebug(debug, "maiGiven=", maiGiven, "\n", sep="")
     if (maiGiven)
-        oceDebug(debug, "mai = c(", paste(mai, collapse=","), ") = the argument, not the par() value\n")
-    oceDebug(debug, "breaksGiven =", breaksGiven, "\n")
-    oceDebug(debug, "fullpage =", fullpage, "\n")
+        oceDebug(debug, "mai=c(", paste(mai, collapse=","), ") = the argument, not the par() value\n", sep="")
+    oceDebug(debug, "breaksGiven=", breaksGiven, "\n", sep="")
+    oceDebug(debug, "fullpage=", fullpage, "\n", sep="")
     haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     if (colormapGiven && !zlimGiven) {
         zlim <- colormap$zlim
@@ -551,9 +551,10 @@ drawPalette <- function(zlim, zlab="",
             par(mai=pc$mai2)
         }
     }
-    oceDebug(debug, "at end of drawPalette(), par('mai') yields c(",
-             paste(format(par('mai'), digits=2), collapse=","), ")\n")
-    oceDebug(debug, "} # drawPalette()\n", unindent=1)
+    oceDebug(debug, "just before drawPalette() returns\n")
+    oceDebug(debug, vectorShow(par("mar")), style="blue")
+    oceDebug(debug, vectorShow(par("mai")), style="blue")
+    oceDebug(debug, "} # drawPalette()\n", unindent=1, style="bold")
     invisible()
 }
 
@@ -872,11 +873,9 @@ imagep <- function(x, y, z,
                    debug=getOption("oceDebug"),
                    ...)
 {
-
     if ("adorn" %in% names(list(...)))
         warning("the 'adorn' argument was removed in November 2017")
     zlabPosition <- match.arg(zlabPosition)
-
     oceDebug(debug, "imagep(x, y, z, ",
              argShow(cex),
              argShow(flipy),
@@ -891,7 +890,7 @@ imagep <- function(x, y, z,
              argShow(filledContour),
              argShow(drawTriangles),
              argShow(missingColor),
-             "...) {\n", sep="", unindent=1)
+             "...) {\n", sep="", unindent=1, style="bold")
     oceDebug(debug, "par('mai'):", paste(format(par('mai'), digits=2)), "\n")
     oceDebug(debug, "par('mar'):", paste(format(par('mar'), digits=2)), "\n")
     if (!is.logical(flipy))
@@ -1114,6 +1113,7 @@ imagep <- function(x, y, z,
     ocex <- par("cex")
     if (missing(mar))
         mar <- c(mgp[1]+if (nchar(xlab[1])>0) 1.5 else 1, mgp[1]+if (nchar(ylab[1])>0) 1.5 else 1, mgp[2]+1/2, 1/2)
+    oceDebug(debug, "after possibly recalculating, mar=c(", paste(mar, collapse=", "), "); based on mgp=c(", paste(mgp, collapse=","),")\n", sep="")
     if (missing(mai.palette)) {
         ##mai.palette <- c(0, 1/8, 0, 3/8 + if (haveZlab && zlabPosition=="side") 1.5*par('cin')[2] else 0)
         mai.palette <- rep(0, 4)
@@ -1136,7 +1136,7 @@ imagep <- function(x, y, z,
     zrange <- range(z, na.rm=TRUE)
 
     if (colormapGiven) {
-        oceDebug(debug, "colormap provided\n")
+        oceDebug(debug, "colormap provided\n", sep="")
         breaks <- colormap$breaks
         breaks2 <- breaks
         col <- colormap$col
@@ -1352,10 +1352,11 @@ imagep <- function(x, y, z,
         }
         if (axes) {
             box()
+            oceDebug(debug,"about to call oce.axis.POSIXct() with par('mar')=c(", paste(par('mar'),collapse=","), ", mar=c(", paste(mar,collapse=","), ") and mgp=c(",paste(mgp,collapse=","),")\n")
             xat <- oce.axis.POSIXct(side=1, x=x, #cex=cex, cex.axis=cex, cex.lab=cex,
                                     drawTimeRange=drawTimeRange,
                                     mar=mar, mgp=mgp, tformat=tformat, debug=debug-1)
-            yat <- axis(2)#, cex.axis=cex, cex.lab=cex)
+            yat <- axis(2)
         }
     } else {
         ## x is not a POSIXt
@@ -1411,6 +1412,6 @@ imagep <- function(x, y, z,
     oceDebug(debug, "par('mai')=c(",
              paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",
              paste(format(par('mar'), digits=2), collapse=","), ")\n", sep='')
-    oceDebug(debug, "} # imagep()\n", unindent=1)
+    oceDebug(debug, "} # imagep()\n", unindent=1, style="bold")
     invisible(list(xat=xat, yat=yat, decimate=decimate))
 }
