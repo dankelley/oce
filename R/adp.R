@@ -1595,11 +1595,9 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' of time-series plots, even if there are no images in the `which` list.
 #' (The margin is made wide if there are some images in the sequence.)
 #'
-#' @param cex size of labels on axes; see [`par`]`("cex")`.
+#' @param cex numeric character expansion factor for plot symbols; see [par()].
 #'
-#' @param cex.axis see [`par`]`("cex.axis")`.
-#'
-#' @param cex.main see [`par`]`("cex.main")`.
+#' @param cex.axis,cex.lab,cex.main character expansion factors for axis numbers, axis names and plot titles; see [par()].
 #'
 #' @param xlim optional 2-element list for `xlim`, or 2-column matrix, in
 #' which case the rows are used, in order, for the panels of the graph.
@@ -1677,7 +1675,8 @@ setMethod(f="plot",
                               mai.palette=rep(0, 4),
                               tformat,
                               marginsAsImage=FALSE,
-                              cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+                              cex=par("cex"),
+                              cex.axis=par("cex.axis"), cex.lab=par("cex.lab"), cex.main=par("cex.main"),
                               xlim, ylim,
                               control,
                               useLayout=FALSE,
@@ -1688,12 +1687,19 @@ setMethod(f="plot",
                               ...)
           {
               debug <- max(0, min(debug, 4))
-              oceDebug(debug, "plot,adp-method(x",
-                       ", mar=c(", paste(mar, collapse=", "), ")",
-                       ", which=", if (missing(which)) "(missing)" else paste(which, collapse=","),
-                       ", breaks=", if (missing(breaks)) "(missing)" else paste("c(", paste(breaks, collapse=","), ")", sep=""),
-                       ", j=", if (missing(j)) "(missing)" else paste(paste("\"", j, "\"", sep=""), "\""),
-                       ", ...) {\n", sep="", unindent=1, style="bold")
+              oceDebug(debug, "plot,adp-method(x, ",
+                       argShow(mar),
+                       "\n", sep="", unindent=1, style="bold")
+              oceDebug(debug, "                ",
+                       argShow(mgp),
+                       "\n", sep="", unindent=1, style="bold")
+              oceDebug(debug, "                ",
+                       argShow(which),
+                       "\n", sep="", unindent=1, style="bold")
+              oceDebug(debug, "                ",
+                       argShow(breaks),
+                       argShow(j),
+                       "...) {\n", sep="", unindent=1, style="bold")
               ## oceDebug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
               ## oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
               ## oceDebug(debug, "par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
@@ -1747,39 +1753,15 @@ setMethod(f="plot",
                   stop("In plot,adp-method() : there are no profiles in this dataset", call.=FALSE)
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
+              fac <- 1 - min(nw / 8, 1/4) # try to emulate par(mfrow)
+              ## par(cex=cex*fac, cex.axis=fac*cex.axis, cex.lab=fac*cex.lab) # BUILD-TEST FAILURE
+              ## par(cex=cex*fac)                                             # OK
+              par(cex=cex*fac, cex.axis=fac*cex.axis)                         # OK
+              rm(fac)
               numberOfBeams <- x[["numberOfBeams", j]]
               oceDebug(debug, "numberOfBeams=", numberOfBeams, " (note: j=\"", j, "\")\n", sep="")
               numberOfCells <- x[["numberOfCells", j]]
               oceDebug(debug, "numberOfCells=", numberOfCells, " (note: j=\"", j, "\")\n", sep="")
-
-              ## DELETE: ## FIXME: delete this block
-              ## DELETE: if (FALSE && "instrumentType" %in% names(x@metadata) && !is.null(x@metadata$instrumentType) && x@metadata$instrumentType == "AD2CP") {
-              ## DELETE:     warning("In plot,adp-method() : AD2CP objects are handled very crudely, ignoring most function arguments", call.=FALSE)
-              ## DELETE:     firstVelo <- which(x[["id"]] == 22)[1]
-              ## DELETE:     if (length(firstVelo)) {
-              ## DELETE:         stop("no average-mode velocity data")
-              ## DELETE:         par(mfrow=c(nw, 1))
-              ## DELETE:         distance <- x[["blankingDistance"]][firstVelo] + x[["cellSize"]][firstVelo]*seq(1, dim(v)[2])
-              ## DELETE:         for (w in which) {
-              ## DELETE:             v <- x[["v"]]
-              ## DELETE:             tt <- x[["time"]][x[["id"]]==22]
-              ## DELETE:             imagep(x=tt, y=distance, z=v[,,4], zlab="beam 4",
-              ## DELETE:                    xlab="Time", ylab=resizableLabel("distance"),
-              ## DELETE:                    zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,4])))
-              ## DELETE:             imagep(x=tt, y=distance, z=v[,,3], zlab="beam 3",
-              ## DELETE:                    xlab="Time", ylab=resizableLabel("distance"),
-              ## DELETE:                    zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,3])))
-              ## DELETE:             imagep(x=tt, y=distance, z=v[,,2], zlab="beam 2",
-              ## DELETE:                    xlab="Time", ylab=resizableLabel("distance"),
-              ## DELETE:                    zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,2])))
-              ## DELETE:             imagep(x=tt, y=distance, z=v[,,1], zlab="beam 1",
-              ## DELETE:                    xlab="Time", ylab=resizableLabel("distance"),
-              ## DELETE:                    zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,1])))
-              ## DELETE:             return(invisible())
-              ## DELETE:         }
-              ## DELETE:     }
-              ## DELETE: }
-
 
               if (nw == 1) {
                   pm <- pmatch(which, c("velocity", "amplitude", "quality", "hydrography", "angles"))
