@@ -1413,8 +1413,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
         oceDebug(debug, "} # oce.plot.ts()\n", unindent=1, style="bold")
         invisible(list(xat=xat, yat=yat))
     }
-}
-
+}                                      # oce.plot.ts()
 
 
 
@@ -2949,9 +2948,9 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
               "UTC\n")
     keep <- range[1] <= (z + twiddle) & (z - twiddle) <= range[2]
     ##oceDebug(debug, vectorShow(keep, "keep"))
-    oceDebug(debug, vectorShow(z, "z before keep"))
+    oceDebug(debug>1, vectorShow(z, "z before keep"))
     z <- z[keep]
-    oceDebug(debug, vectorShow(z, "z after keep"))
+    oceDebug(debug>1, vectorShow(z, "z after keep"))
     if (!is.logical(labels)) {
         labels <- labels[keep]
     } else if (labels[1]) {
@@ -3049,8 +3048,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         par(xaxp=xaxp)
     }
     invisible(z)                       # FIXME: or z.sub?
-}
-
+}                                      # oce.axis.POSIXct()
 
 #' Convert a Numeric Time to Hour, Minute, and Second
 #'
