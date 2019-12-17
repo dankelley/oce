@@ -513,11 +513,9 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' the right of time-series plots, matching the space used up by a palette in an
 #' [imagep()] plot.
 #'
-#' @param cex Size of labels on axes; see [par()].
+#' @param cex numeric character expansion factor for plot symbols; see [par()].
 #'
-#' @param cex.axis See [par()].
-#'
-#' @param cex.main See [par()].
+#' @param cex.axis,cex.lab,cex.main character expansion factors for axis numbers, axis names and plot titles; see [par()].
 #'
 #' @param xlim Optional 2-element list for `xlim`, or 2-column matrix, in
 #' which case the rows are used, in order, for the panels of the graph.
@@ -570,7 +568,8 @@ setMethod(f="plot",
                               mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
                               tformat,
                               marginsAsImage=FALSE,
-                              cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+                              cex=par("cex"),
+                              cex.axis=par("cex.axis"), cex.lab=par("cex.lab"), cex.main=par("cex.main"),
                               xlim, ylim,
                               brushCorrelation, colBrush="red",
                               main="",
@@ -583,8 +582,11 @@ setMethod(f="plot",
               oceDebug(debug, "plot.adv(x, which=c(", paste(which, collapse=","), "), type=\"", type, "\", ...) {\n", sep="", unindent=1)
               have.brushCorrelation <- !missing(brushCorrelation)
               oceDebug(debug, "brushCorrelation", if (have.brushCorrelation) brushCorrelation else "not given", "\n")
-              oceDebug(debug, "cex=", cex, " cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
-              oceDebug(debug, "mar=c(", paste(mar, collapse=","), ")\n")
+              oceDebug(debug, argShow(cex))
+              oceDebug(debug, argShow(cex.axis))
+              oceDebug(debug, argShow(cex.lab))
+              oceDebug(debug, argShow(cex.main))
+              oceDebug(debug, argoShow(mar))
               opar <- par(no.readonly = TRUE)
               dots <- names(list(...))
               ##if (!all(which %in% c(1:3,5:7,9:11,14:21,23)))
@@ -729,7 +731,7 @@ setMethod(f="plot",
                                       xlim=if (gave.xlim) xlim[w, ] else tlim,
                                       ylim=if (gave.ylim) ylim[w, ] else range(y, na.rm=TRUE),
                                       type=type,
-                                      cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                      cex=cex, cex.axis=cex.axis, cex.lab=cex.lab, cex.main=cex.main,
                                       mgp=mgp,
                                       mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       lwd=lwd[w], col=col[w],

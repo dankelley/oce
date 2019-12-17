@@ -1156,11 +1156,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' fewer `pch` values than there are `x` values, then the `pch` values are recycled
 #' in the standard fashion. See [par()] for more on `cex`.
 #'
-#' @param cex.axis character expansion factor for numbers on axes. See [par()].
-#'
-#' @param cex.main character expansion factor for main titles. See [par()].
-#'
-#' @param cex.lab character expansion factor for names of axes. See [par()].
+#' @param cex.axis,cex.lab,cex.main character expansion factors for axis numbers, axis names and plot titles; see [par()].
 #'
 #' @param  flipy Logical, with `TRUE` indicating that the graph
 #' should have the y axis reversed, i.e. with smaller values at
@@ -1235,7 +1231,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' oce.plot.ts(t, y, flipy=TRUE)
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, ylab,
                         drawTimeRange, fill=FALSE, col=par("col"), pch=par("pch"),
-                        cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"), cex.lab=par("cex.lab"),
+                        cex=par("cex"), cex.axis=par("cex.axis"), cex.lab=par("cex.lab"), cex.main=par("cex.main"),
                         xaxs=par("xaxs"), yaxs=par("yaxs"),
                         mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if (nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
