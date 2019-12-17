@@ -1597,7 +1597,7 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #'
 #' @param cex numeric character expansion factor for plot symbols; see [par()].
 #'
-#' @param cex.axis,cex.lab,cex.main character expansion factors for axis numbers, axis names and plot titles; see [par()].
+#' @param cex.axis,cex.lab character expansion factors for axis numbers and axis names; see [par()].
 #'
 #' @param xlim optional 2-element list for `xlim`, or 2-column matrix, in
 #' which case the rows are used, in order, for the panels of the graph.
@@ -1675,8 +1675,7 @@ setMethod(f="plot",
                               mai.palette=rep(0, 4),
                               tformat,
                               marginsAsImage=FALSE,
-                              cex=par("cex"),
-                              cex.axis=par("cex.axis"), cex.lab=par("cex.lab"), cex.main=par("cex.main"),
+                              cex=par("cex"), cex.axis=par("cex.axis"), cex.lab=par("cex.lab"),
                               xlim, ylim,
                               control,
                               useLayout=FALSE,
@@ -1846,9 +1845,9 @@ setMethod(f="plot",
                   main <- rep('', length.out=nw)
               else
                   main <- rep(main, length.out=nw)
-              oceDebug(debug, "later on in plot,adp-method:\n")
-              oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
-              oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
+              ## oceDebug(debug, "later on in plot,adp-method:\n")
+              ## oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
+              ## oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
 
               oceDebug(debug, "which:", which, "\n")
               whichOrig <- which
@@ -1939,22 +1938,30 @@ setMethod(f="plot",
               haveTimeImages <- any(which %in% images) && 1 < numberOfCells
               oceDebug(debug, 'haveTimeImages=', haveTimeImages, '(if TRUE, it means any timeseries graphs get padding on RHS)\n')
               par(mar=mar, mgp=mgp)
+              if (haveTimeImages) {
+                  oceDebug(debug, "setting up margin spacing before plotting\n", style="italic")
+                  oceDebug(debug, "  before: ", vectorShow(par("mar")), unindent=1, style="blue")
+                  ## Since zlim not given, this just does calculations
+                  drawPalette(#cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                              debug=debug-1)
+                  oceDebug(debug, "  after: ", vectorShow(par("mar")), unindent=1, style="blue")
+              }
               omar <- par("mar")
-              oceDebug(debug, "drawTimeRange=", drawTimeRange, "\n", sep="")
+              oceDebug(debug, vectorShow(omar), style="red")
+              ##oceDebug(debug, "drawTimeRange=", drawTimeRange, "\n", sep="")
               for (w in 1:nw) {
                   oceDebug(debug, "plot,adp-method top of loop (before setting par('mar'))\n", style="italic")
                   oceDebug(debug, vectorShow(par("mar")), style="blue")
                   oceDebug(debug, vectorShow(par("mai")), style="blue")
                   oceDebug(debug, vectorShow(omar), style="blue")
                   par(mar=omar) # ensures all panels start with original mar
-                  oceDebug(debug, "which[", w, "]=", which[w], "\n", sep="")
+                  oceDebug(debug, "which[", w, "]=", which[w], "\n", sep="", style="red")
                   if (which[w] %in% images) {
                       ## image types
                       skip <- FALSE
                       numberOfBeams <- x[["numberOfBeams", j]]
                       v <- x[["v"]]
                       if (which[w] %in% 1:4) {
-                          oceDebug(debug, "which[", w, "]=", which[w], "\n")
                           ## velocity
                           if (instrumentType == "aquadopp" && j == "diagnostic") {
                               oceDebug(debug, "a diagnostic velocity component image/timeseries\n")
@@ -2114,6 +2121,7 @@ setMethod(f="plot",
                       if (!skip) {
                           if (numberOfCells > 1) {
                               if (xlimGiven) {
+                                  oceDebug(debug, "xlimGiven case\n")
                                   ats <- imagep(x=tt, y=x[["distance", j]], z=z,
                                                 xlim=xlim[w, ],
                                                 zlim=zlim,
@@ -2133,12 +2141,12 @@ setMethod(f="plot",
                                                 mgp=mgp,
                                                 mar=mar,
                                                 mai.palette=mai.palette,
-                                                cex=cex * (1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
+                                                ## cex=cex * (1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
                                                 main=main[w],
                                                 debug=debug-1,
                                                 ...)
                               } else {
-                                  oceDebug(debug, "about to do an image plot with no xlim given, with cex=", cex, ", par(\"cex\")=", par("cex"), ", nw=", nw, ", cex sent to oce.plots=", cex*(1-min(nw/8, 1/4)), "\n")
+                                  oceDebug(debug, "a. about to do an image plot with no xlim given, with cex=", cex, ", par(\"cex\")=", par("cex"), ", nw=", nw, ", cex sent to oce.plots=", cex*(1-min(nw/8, 1/4)), "\n")
                                   oceDebug(debug, "   with par('mar')=c(", paste(par('mar'),collapse=","), ", mar=c(", paste(mar,collapse=","), ") and mgp=c(",paste(mgp,collapse=","),")", "\n")
                                   oceDebug(debug, "   with time[1]=", format(tt[[1]], "%Y-%m-%d %H:%M:%S"), "\n")
                                   ats <- imagep(x=tt, y=x[["distance", j]], z=z,
@@ -2158,7 +2166,7 @@ setMethod(f="plot",
                                                 mgp=mgp,
                                                 mar=mar,
                                                 mai.palette=mai.palette,
-                                                cex=cex * (1 - min(nw / 8, 1/4)),
+                                                cex=if (nw > 2) 0.66 else 1, # HERE_IMAGEP
                                                 main=main[w],
                                                 debug=debug-1,
                                                 ...)
@@ -2175,8 +2183,8 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 ##? cex=cex * (1 - min(nw / 8, 1/4)),
+                                                 ##? cex.axis=cex * (1 - min(nw / 8, 1/4)),
                                                  main=main[w],
                                                  type=type,
                                                  mgp=mgp,
@@ -2264,7 +2272,7 @@ setMethod(f="plot",
                                                  col=col[w],
                                                  lwd=lwd[w],
                                                  cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 ## cex.axis=cex * (1 - min(nw / 8, 1/4)),
                                                  main=main[w],
                                                  ylab="pDia",
                                                  type=type,
@@ -2275,10 +2283,11 @@ setMethod(f="plot",
                                                  tformat=tformat,
                                                  debug=debug-1)
                           } else {
-                              oceDebug(debug, "about to do pressure plot, with cex=", cex, ", par(\"cex\")=", par("cex"), ", nw=", nw, ", cex sent to oce.plots=", cex*(1-min(nw/8, 1/4)), "\n", sep="", style="italic")
+                              oceDebug(debug, "about to do non-diagnostic pressure plot, with cex=", cex, ", par(\"cex\")=", par("cex"), ", nw=", nw, ", cex sent to oce.plots=", cex*(1-min(nw/8, 1/4)), "\n", sep="", style="italic")
                               oceDebug(debug, vectorShow(mar), style="blue")
                               oceDebug(debug, vectorShow(par("mar")), style="blue")
                               oceDebug(debug, vectorShow(par("mai")), style="blue")
+                              oceDebug(debug, vectorShow(haveTimeImages), style="blue")
                               oceDebug(debug, "time[1]=", format(x[["time",j]][1], "%Y-%m-%d %H:%M:%S"), "\n", style="blue")
                               ats <- oce.plot.ts(x[["time", j]], x[["pressure", j]],
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
@@ -2286,15 +2295,14 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.lab=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=if (nw > 2) 0.66 else 1, # HERE_PRESSURE
+                                                 cex.lab=if (nw > 2) 0.66 else 1, # HERE_PRESSURE
+                                                 cex.axis=if (nw > 2) 0.66 else 1, # HERE_PRESSURE
                                                  main=main[w],
                                                  ylab=resizableLabel("p"),
                                                  type=type,
                                                  mgp=mgp,
-                                                 ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                                 mar=if (haveTimeImages) par('mar') else mar,
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
@@ -2854,7 +2862,7 @@ setMethod(f="plot",
                   oceDebug(debug, vectorShow(par("mar")), style="blue")
                   oceDebug(debug, vectorShow(par("mai")), style="blue")
               }
-              par(cex=opar$cex)
+              par(cex=opar$cex, cex.axis=opar$cex.axis, cex.lab=opar$cex.lab)
               if (exists("ats")) {
                   res$xat <- ats$xat
                   res$yat <- ats$yat

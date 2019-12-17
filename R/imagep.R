@@ -1337,7 +1337,7 @@ imagep <- function(x, y, z,
             ## issue 489: use breaks/col instead of breaks2/col2
             #.filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks2), col=col2)
             .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
-            mtext(ylab, side=2, line=par('mgp')[1])
+            mtext(ylab, side=2, line=par('mgp')[1], cex=cex)
         } else {
             oceDebug(debug, "not doing filled contours [2]\n")
             if (zlimHistogram) {
@@ -1347,16 +1347,17 @@ imagep <- function(x, y, z,
                 ## issue 489: use breaks/col instead of breaks2/col2
                 ##image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks2, col=col2,
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
-                  xlim=xlim, ylim=ylim, zlim=zlim, asp=asp, add=add, useRaster=useRaster, ...)
+                  xlim=xlim, ylim=ylim, zlim=zlim, asp=asp, add=add, useRaster=useRaster, cex=cex, ...)
             }
         }
         if (axes) {
             box()
             oceDebug(debug,"about to call oce.axis.POSIXct() with par('mar')=c(", paste(par('mar'),collapse=","), ", mar=c(", paste(mar,collapse=","), ") and mgp=c(",paste(mgp,collapse=","),")\n")
-            xat <- oce.axis.POSIXct(side=1, x=x, #cex=cex, cex.axis=cex, cex.lab=cex,
+            xat <- oce.axis.POSIXct(side=1, x=x, cex.axis=cex, cex.lab=cex, cex.main=cex,
                                     drawTimeRange=drawTimeRange,
                                     mar=mar, mgp=mgp, tformat=tformat, debug=debug-1)
-            yat <- axis(2)
+            message("imagep() doing y axis with cex=", cex)
+            yat <- axis(2, cex=cex, cex.axis=cex) # HERE_HERE
         }
     } else {
         ## x is not a POSIXt
@@ -1370,8 +1371,8 @@ imagep <- function(x, y, z,
             ## issue 489: use breaks/col instead of breaks2/col2
             ##.filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks2), col=col2)
             .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
-            mtext(xlab, side=1, line=mgp[1])
-            mtext(ylab, side=2, line=mgp[1])
+            mtext(xlab, side=1, cex=cex, line=mgp[1])
+            mtext(ylab, side=2, cex=cex, line=mgp[1])
         } else {
             oceDebug(debug, "not doing filled contours\n")
             if (zlimHistogram) {
@@ -1387,8 +1388,8 @@ imagep <- function(x, y, z,
         }
         if (axes) {
             box()
-            xat <- axis(1)#, cex.axis=cex, cex.lab=cex)
-            yat <- axis(2)#, cex.axis=cex, cex.lab=cex)
+            xat <- axis(1, cex.axis=cex)#, cex.axis=cex, cex.lab=cex)
+            yat <- axis(2, cex.axis=cex)#, cex.axis=cex, cex.lab=cex)
         }
     }
     if (!is.null(missingColor)) {
@@ -1398,20 +1399,20 @@ imagep <- function(x, y, z,
             box()
     }
     if (is.na(main)) {
-        mtext("", at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))
+        mtext("", at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=cex)
     } else if (!(is.character(main) && main == "")) {
-        mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))
+        mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=cex)
     }
     if (drawContours) {
         oceDebug(debug, "adding contours\n")
         contour(x=xorig, y=yorig, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
     }
     if (zlabPosition == "top")
-        mtext(zlab, side=3, cex=par("cex"), adj=1, line=1/8)
+        mtext(zlab, side=3, cex=cex, adj=1, line=1/8)
     par(cex=ocex)
     oceDebug(debug, "par('mai')=c(",
              paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",
              paste(format(par('mar'), digits=2), collapse=","), ")\n", sep='')
     oceDebug(debug, "} # imagep()\n", unindent=1, style="bold")
     invisible(list(xat=xat, yat=yat, decimate=decimate))
-}
+}                                      # imagep()

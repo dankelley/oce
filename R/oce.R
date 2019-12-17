@@ -1289,6 +1289,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
     }
 
     pc <- paletteCalculations(maidiff=rep(0, 4))
+    oceDebug(debug, as.character(dput(pc)), "\n", style="red")
     par(mgp=mgp, mar=mar)
     args <- list(...)
     xlimGiven <- !missing(xlim)
@@ -1335,7 +1336,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
         box()
         mtext("bad data", side=3, line=-1, cex=cex)
         warning("no valid data for '", ylab, "'", sep="")
-        oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
+        oceDebug(debug, "} # oce.plot.ts()\n", unindent=1, style="bold")
         return()
     } else {
         if (fill) {
@@ -1346,6 +1347,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
                  ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
                  xlab="", ylab="",
                  type=type, col=col, cex=cex, pch=pch, log=log, ...)
+            message("dan. cex.lab=", cex.lab, "\n")
+            message("dan. mgp[1]=", mgp[1], "\n")
             mtext(xlab, side=1, cex=cex.lab, line=mgp[1]*cex.lab)
             mtext(ylab, side=2, cex=cex.lab, line=mgp[1]*cex.lab)
             fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
@@ -2655,11 +2658,7 @@ oce.colorsPalette <- oceColorsPalette
 #' number in the time range, e.g. dropping the year if it is the same in the
 #' first number.
 #'
-#' @param cex size of labels on axes; see [graphics::par]`("cex")`.
-#'
-#' @param cex.axis see [graphics::par]`("cex.axis")`.
-#'
-#' @param cex.main see [graphics::par]`("cex.main")`.
+#' @param cex.axis,cex.lab,cex.main character expansion factors for axis numbers, axis names and plot titles; see [par()].
 #'
 #' @param mar value for `par(mar)` for axis
 #'
@@ -2680,17 +2679,17 @@ oce.colorsPalette <- oceColorsPalette
 oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
                               drawTimeRange,
                               abbreviateTimeRange=FALSE, drawFrequency=FALSE,
-                              cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+                              cex.axis=par("cex.axis"), cex.lab=par("cex.lab"), cex.main=par("cex.main"),
                               mar=par("mar"),
                               mgp=par("mgp"),
                               main="",
                               debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "oce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="", unindent=1)
-    oceDebug(debug, "mar=", mar, "\n")
-    oceDebug(debug, "mgp=", mgp, "\n")
-    oceDebug(debug, "cex[1]=", cex[1], " cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
-    oceDebug(debug, vectorShow(x, "x"))
+    oceDebug(debug, "oce.axis.POSIXct(..., debug=", debug, ",...) {\n", sep="", unindent=1, style="bold")
+    oceDebug(debug, argShow(mar), "\n", style="blue")
+    oceDebug(debug, argShow(mgp), "\n", style="blue")
+    oceDebug(debug, "cex.axis=", cex.axis, ", cex.lab=", cex.lab, ", cex.main=", cex.main, "\n", style="blue")
+    oceDebug(debug, vectorShow(x, "x"), style="blue")
     tformatGiven <- !missing(tformat)
     if (missing(drawTimeRange))
         drawTimeRange <- getOption("oceDrawTimeRange")
@@ -3009,24 +3008,26 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         }
         if (drawFrequency && is.finite(1/deltat))
             label <- paste(label, "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
-        oceDebug(debug, "label=", label, "\n")
-        mtext(label, side=if (side==1) 3 else 1, cex=0.9*cex.axis*par('cex'), adj=0)
+        oceDebug(debug, "label=", label, " at cex.lab=", cex.lab, "\n")
+        message("DANNY about to write time range")
+        mtext(label, side=if (side==1) 3 else 1, cex=cex.lab, adj=0)
         oceDebug(debug, "cex.axis=", cex.axis, "; par('cex')=", par('cex'), "\n")
     }
     if (nchar(main) > 0) {
-        mtext(main, side=if (side==1) 3 else 1, cex=cex.axis*par('cex'), adj=1)
+        mtext(main, side=if (side==1) 3 else 1, cex=cex.lab, adj=1)
     }
     oceDebug(debug, vectorShow(z, "z="))
     if (length(z.sub) > 0) {
-        axis(side, at = z.sub, line=0, labels = FALSE, tcl=-0.25)
+        axis(side, at=z.sub, line=0, labels=FALSE, tcl=-0.25)
         oceDebug(debug, vectorShow(z.sub, "z.sub="))
     }
     oceDebug(debug, vectorShow(labels, "labels="))
     ##ocex <- par('cex')
     ocex.axis <- par('cex.axis')
+    ocex.lab <- par('cex.lab')
     ocex.main <- par('cex.main')
     omgp <- par('mgp')
-    par(cex.axis=cex.axis, cex.main=cex.main, mgp=mgp, tcl=-0.5)
+    par(cex.axis=cex.axis, cex.lab=cex.lab, cex.main=cex.main, mgp=mgp, tcl=-0.5)
     ##axis(side, at=z, line=0, labels=labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, mar=mar, mgp=mgp)
 
     ## If the user did gave tformat, shorten the strings for aesthetic reasons.
@@ -3035,9 +3036,9 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         labels <- shortenTimeString(labels, debug=debug-1)
         oceDebug(debug, "axis labels after shortenTimeString(): '", paste(labels, "', '"), "'\n")
     }
-    axis(side, at=z, line=0, labels=labels, mgp=mgp, cex.main=cex.main, cex.axis=cex.axis, ...)
-    par(cex.axis=ocex.axis, cex.main=ocex.main, mgp=omgp)
-    oceDebug(debug, "} # oce.axis.ts()\n", unindent=1)
+    axis(side, at=z, line=0, labels=labels, mgp=mgp, cex.axis=cex.axis, cex.lab=cex.lab, cex.main=cex.main, ...)
+    par(cex.axis=ocex.axis, cex.lab=cex.lab, cex.main=ocex.main, mgp=omgp)
+    oceDebug(debug, "} # oce.axis.POSIXct()\n", unindent=1, style="bold")
     zzz <- as.numeric(z)
     if (1 < length(zzz)) {
         xaxp <- c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz))
