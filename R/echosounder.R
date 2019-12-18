@@ -578,16 +578,10 @@ setMethod(f="plot",
                   else
                       lay <- layout(matrix(1:2, nrow=2, byrow=TRUE))
               }
-              oceDebug(debug, "which:", which, "\n")
+              oceDebug(debug, "which before converting to numbers: c(", paste(which, collapse=","), ")\n")
               whichOrig <- which
               which <- oce.pmatch(which, list("zt image"=1, "zx image"=2, map=3))
-              if (!(which %in% 1:3)) {
-                  if (is.character(whichOrig))
-                      stop("In plot,echosounder-method : unknown value of which (\"", whichOrig, "\"); try 1, 2 or 3, or, equivalently, \"zt image\", \"zx image\" or \"map\"", call.=FALSE)
-                  else
-                      stop("In plot,echosounder-method : unknown value of which (", whichOrig, "); try 1, 2 or 3, or, equivalently, \"zt image\", \"zx image\" or \"map\"", call.=FALSE)
-              }
-              oceDebug(debug, "which:", which, "\n")
+              oceDebug(debug, "which after converting to numbers: c(", paste(which, collapse=","), ")\n")
               for (w in seq_along(which)) {
                   oceDebug(debug, "this which:", which[w], "\n")
                   if (which[w] == 1) {
@@ -757,6 +751,13 @@ setMethod(f="plot",
                           }
                       }
                       lines(lon, lat, col=if (!is.function(col)) col else "black", lwd=lwd)
+                  } else {
+                      stop("In plot,echosounder-method : unknown value of which (",
+                           if (is.character(whichOrig[w])) {
+                               paste("\"", whichOrig[w], "\"", sep="")
+                           }  else {
+                               whichOrig[w]
+                           }, "); try 1, 2 or 3, or, equivalently, \"zt image\", \"zx image\" or \"map\"", call.=FALSE)
                   }
               }
               oceDebug(debug, "} # plot.echosounder()\n", unindent=1, style="bold")
