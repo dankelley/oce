@@ -909,10 +909,12 @@ read.echosounder <- function(file, channel=1, soundSpeed,
         code2 <- buf[offset+4]
         ## Next line said 'endian="small"' prior to 2019-12-18, an error kindly pointed out
         ## to Dan Kelley in a private email. However, this was not used here, except for an
-        ## erroneous use (where the test should have been on code2).
+        ## erroneous use (where the test should have been on code2). But note that we do not
+        ## actually *use* the 'code' defined previously
         ## See https://github.com/dankelley/oce/issues/1634
-        code <- readBin(buf[offset+3:4], "integer", size=2, n=1, endian="small", signed=FALSE)
+        ## code <- readBin(buf[offset+3:4], "integer", size=2, n=1, endian="little", signed=FALSE)
         if (debug > 3) cat("buf[", 3+offset, "] = code1 = 0x", code1, sep="")
+        if (debug > 3) cat("buf[", 4+offset, "] = code2 = 0x", code2, sep="")
         ## Interpret code1 and code2, which signal beam type.  These are listed in [1 table 3.5],
         ## as follows (note that the table lists in little-endian ordering, so the first two
         ## digits are code2 here, and the second two digits are code1 here.
