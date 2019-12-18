@@ -6,7 +6,21 @@ echosounderOLD <- echosounder
 ## to remind me where the original file resided, what times I used for chopping, etc.
 
 ##echosounder <- read.oce("/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_161403.dt4")
-echosounder <- read.oce("~/Dropbox/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_163942.dt4")
+files <- c("/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_163942.dt4",
+           "~/Dropbox/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_163942.dt4")
+ok <- FALSE
+for (file in files) {
+    if (file.exists(file)) {
+        message(file)
+        echosounder <- read.oce(file)
+        ok <- TRUE
+        break
+    }
+}
+if (!ok)
+    stop("cannot find file in c(", paste(files, collapse=","), ")")
+
+#echosounder <- read.oce("dood/Dropbox/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_163942.dt4")
 ##echosounder <- read.oce("/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_164323.dt4")
 ##echosounder <- read.oce("/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_163942.dt4")
 ##echosounder <- read.oce("/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_164742.dt4")
@@ -34,7 +48,7 @@ expect_equal(head(echosounder[["longitude"]]),
                -69.72369625, -69.72370900))
 e <- echosounder
 if (!interactive()) png("echosounder-new.png")
-plot(echosounder, drawBottom=TRUE, despike=TRUE, which="zx image")
+plot(echosounder)#, drawBottom=TRUE)#, despike=TRUE)#, which="zx image")
 if (!interactive()) dev.off()
 if (!interactive()) png("echosounder-old.png")
 plot(echosounderOLD, drawBottom=TRUE, despike=TRUE, which="zx image")
