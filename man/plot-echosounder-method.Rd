@@ -26,7 +26,7 @@
   radius,
   coastline,
   mgp = getOption("oceMgp"),
-  mar = c(mgp[1] + 1, mgp[1] + 1, mgp[1] + 1, mgp[1] + 1),
+  mar = c(mgp[1], mgp[1] + 1.5, mgp[2] + 1/2, 1/2),
   atTop,
   labelsTop,
   tformat,

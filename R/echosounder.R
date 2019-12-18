@@ -553,7 +553,7 @@ setMethod(f="plot",
                               drawTimeRange=FALSE, drawPalette=TRUE,
                               radius, coastline,
                               mgp=getOption("oceMgp"),
-                              mar=c(mgp[1]+1, mgp[1]+1, mgp[1]+1, mgp[1]+1),
+                              mar=c(mgp[1], mgp[1]+1.5, mgp[2]+1/2, 1/2),
                               atTop, labelsTop,
                               tformat,
                               debug=getOption("oceDebug"),
@@ -562,7 +562,7 @@ setMethod(f="plot",
               dots <- list(...)
               res <- list(xat=NULL, yat=NULL)
               dotsNames <- names(dots)
-              oceDebug(debug, "plot() { # for echosounder\n", unindent=1)
+              oceDebug(debug, "plot() { # for echosounder\n", unindent=1, style="bold")
               if ("adorn" %in% names(list(...)))
                   warning("In plot,echosounder-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               opar <- par(no.readonly = TRUE)
@@ -578,9 +578,15 @@ setMethod(f="plot",
                   else
                       lay <- layout(matrix(1:2, nrow=2, byrow=TRUE))
               }
-
               oceDebug(debug, "which:", which, "\n")
+              whichOrig <- which
               which <- oce.pmatch(which, list("zt image"=1, "zx image"=2, map=3))
+              if (!(which %in% 1:3)) {
+                  if (is.character(whichOrig))
+                      stop("In plot,echosounder-method : unknown value of which (\"", whichOrig, "\"); try 1, 2 or 3, or, equivalently, \"zt image\", \"zx image\" or \"map\"", call.=FALSE)
+                  else
+                      stop("In plot,echosounder-method : unknown value of which (", whichOrig, "); try 1, 2 or 3, or, equivalently, \"zt image\", \"zx image\" or \"map\"", call.=FALSE)
+              }
               oceDebug(debug, "which:", which, "\n")
               for (w in seq_along(which)) {
                   oceDebug(debug, "this which:", which[w], "\n")
@@ -621,7 +627,9 @@ setMethod(f="plot",
                                         mgp=mgp, mar=mar,
                                         tformat=tformat,
                                         drawPalette=drawPalette,
-                                        debug=debug-1, ...)
+                                        debug=debug-1,
+                                        zlab=beam[w],
+                                        ...)
                           axisBottom <- par('usr')[3]
                           waterDepth <- c(axisBottom, -waterDepth, axisBottom)
                           time <-  x[["time"]]
@@ -690,7 +698,8 @@ setMethod(f="plot",
                                     tformat=tformat,
                                     col=col,
                                     drawPalette=drawPalette,
-                                    debug=debug-1)
+                                    debug=debug-1,
+                                    zlab=beam[w])
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "white"
@@ -750,7 +759,7 @@ setMethod(f="plot",
                       lines(lon, lat, col=if (!is.function(col)) col else "black", lwd=lwd)
                   }
               }
-              oceDebug(debug, "} # plot.echosounder()\n", unindent=1)
+              oceDebug(debug, "} # plot.echosounder()\n", unindent=1, style="bold")
               invisible(res)
           })
 
