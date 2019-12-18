@@ -6,7 +6,21 @@ echosounderOLD <- echosounder
 ## to remind me where the original file resided, what times I used for chopping, etc.
 
 ##echosounder <- read.oce("/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_161403.dt4")
-echosounder <- read.oce("/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_163942.dt4")
+files <- c("/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_163942.dt4",
+           "~/Dropbox/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_163942.dt4")
+ok <- FALSE
+for (file in files) {
+    if (file.exists(file)) {
+        message(file)
+        echosounder <- read.oce(file)
+        ok <- TRUE
+        break
+    }
+}
+if (!ok)
+    stop("cannot find file in c(", paste(files, collapse=","), ")")
+
+#echosounder <- read.oce("dood/Dropbox/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_163942.dt4")
 ##echosounder <- read.oce("/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_164323.dt4")
 ##echosounder <- read.oce("/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_163942.dt4")
 ##echosounder <- read.oce("/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_164742.dt4")
@@ -32,18 +46,20 @@ expect_equal(head(echosounder[["latitude"]]),
 expect_equal(head(echosounder[["longitude"]]),
              c(-69.72364436, -69.72366061, -69.72367686, -69.72368808,
                -69.72369625, -69.72370900))
-
-plot(echosounder, drawBottom=TRUE, despike=TRUE, which="zx image")
-##plot(echosounder2, drawBottom=TRUE)
-
 e <- echosounder
-par(mfrow=c(1, 2), mar=c(3, 3, 1, 1))
-plot(echosounder, drawBottom=TRUE, despike=TRUE, which="zx image")
+if (!interactive()) png("echosounder-new.png")
+plot(echosounder)#, drawBottom=TRUE)#, despike=TRUE)#, which="zx image")
+if (!interactive()) dev.off()
+if (!interactive()) png("echosounder-old.png")
 plot(echosounderOLD, drawBottom=TRUE, despike=TRUE, which="zx image")
+if (!interactive()) dev.off()
 
-if (utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
+## Force to save in version 2, because otherwise users with R 3.5.x and
+## earlier will not be able to use data("echosounder")
+if (TRUE || utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
     save(echosounder, file="echosounder.rda", version=2)
     tools::resaveRdaFiles("echosounder.rda", version=2)
+    message("saving in version 2, so R<3.6 can handle data(echosounder)")
 } else {
     save(echosounder, file="echosounder.rda")
     tools::resaveRdaFiles("echosounder.rda")

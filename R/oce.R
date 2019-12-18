@@ -2023,8 +2023,10 @@ read.oce <- function(file, ...)
 {
     if (missing(file))
         stop("must supply 'file'")
+    if (is.character(file) && "http://" != substr(file, 1, 7) && !file.exists(file))
+        stop("In read.oce() : cannot open '", file, "' because there is no such file or directory", call.=FALSE)
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
-        stop("empty file (read.oce)")
+        stop("empty file")
     dots <- list(...)
     debug <- if ("debug" %in% names(dots)) dots$debug else 0
     type <- oceMagic(file, debug=debug-1)
