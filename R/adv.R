@@ -586,7 +586,7 @@ setMethod(f="plot",
               oceDebug(debug, argShow(cex.axis))
               oceDebug(debug, argShow(cex.lab))
               oceDebug(debug, argShow(cex.main))
-              oceDebug(debug, argoShow(mar))
+              oceDebug(debug, argShow(mar))
               opar <- par(no.readonly = TRUE)
               dots <- names(list(...))
               ##if (!all(which %in% c(1:3,5:7,9:11,14:21,23)))

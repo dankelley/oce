@@ -1696,6 +1696,11 @@ setMethod(f="plot",
                        argShow(which),
                        "\n", sep="", unindent=1, style="bold")
               oceDebug(debug, "                ",
+                       argShow(cex),
+                       argShow(cex.axis),
+                       argShow(cex.lab),
+                       "\n", sep="", unindent=1, style="bold")
+              oceDebug(debug, "                ",
                        argShow(breaks),
                        argShow(j),
                        "...) {\n", sep="", unindent=1, style="bold")
@@ -1752,10 +1757,13 @@ setMethod(f="plot",
                   stop("In plot,adp-method() : there are no profiles in this dataset", call.=FALSE)
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
-              fac <- 1 - min(nw / 8, 1/4) # try to emulate par(mfrow)
+              fac <- if (nw < 3) 1 else 0.66 # try to emulate par(mfrow)
               ## par(cex=cex*fac, cex.axis=fac*cex.axis, cex.lab=fac*cex.lab) # BUILD-TEST FAILURE
               ## par(cex=cex*fac)                                             # OK
-              par(cex=cex*fac, cex.axis=fac*cex.axis)                         # OK
+              oceDebug(debug, "adp.R:1759 cex=", cex, ", original par('cex')=", par('cex'), style="blue")
+              ##par(cex=cex*fac, cex.axis=fac*cex.axis)                         # OK
+              par(cex.axis=fac*cex.axis, cex.lab=fac*cex.lab) # OK
+              oceDebug(debug, "adp.R:1761 ... after par() call, have par('cex')=", par('cex'), style="blue")
               rm(fac)
               numberOfBeams <- x[["numberOfBeams", j]]
               oceDebug(debug, "numberOfBeams=", numberOfBeams, " (note: j=\"", j, "\")\n", sep="")
@@ -1913,6 +1921,7 @@ setMethod(f="plot",
               if (showBottom)
                   bottom <- apply(x@data$bottomRange, 1, mean, na.rm=TRUE)
               oceDebug(debug, "showBottom=", showBottom, "\n")
+              oceDebug(debug, "cex=", cex, ", par('cex')=", par('cex'), style="blue")
               if (useLayout) {
                   if (any(which %in% images) || marginsAsImage) {
                       w <- 1.5
@@ -1949,6 +1958,7 @@ setMethod(f="plot",
               omar <- par("mar")
               oceDebug(debug, vectorShow(omar), style="red")
               ##oceDebug(debug, "drawTimeRange=", drawTimeRange, "\n", sep="")
+              oceDebug(debug, "cex=", cex, ", par('cex')=", par('cex'), style="blue")
               for (w in 1:nw) {
                   oceDebug(debug, "plot,adp-method top of loop (before setting par('mar'))\n", style="italic")
                   oceDebug(debug, vectorShow(par("mar")), style="blue")
@@ -2121,6 +2131,7 @@ setMethod(f="plot",
                       if (!skip) {
                           if (numberOfCells > 1) {
                               if (xlimGiven) {
+                                  oceDebug(debug, "about to call imagep() with xlim given: par('cex')=", par("cex"), ", cex=", cex, style="blue")
                                   oceDebug(debug, "xlimGiven case\n")
                                   ats <- imagep(x=tt, y=x[["distance", j]], z=z,
                                                 xlim=xlim[w, ],
@@ -2139,14 +2150,15 @@ setMethod(f="plot",
                                                 drawContours=FALSE,
                                                 missingColor=missingColor,
                                                 mgp=mgp,
-                                                mar=mar,
+                                                mar=omar,
                                                 mai.palette=mai.palette,
-                                                ## cex=cex * (1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
+                                                cex=1,
                                                 main=main[w],
                                                 debug=debug-1,
                                                 ...)
                               } else {
-                                  oceDebug(debug, "a. about to do an image plot with no xlim given, with cex=", cex, ", par(\"cex\")=", par("cex"), ", nw=", nw, ", cex sent to oce.plots=", cex*(1-min(nw/8, 1/4)), "\n")
+                                  oceDebug(debug, "about to call imagep() with no xlim. cex=", cex, ", par('cex')=", par("cex"), ", par('cex.axis')=", par("cex.axis"), style="blue")
+                                  oceDebug(debug, "about to do an image plot with no xlim given, with cex=", cex, ", par(\"cex\")=", par("cex"), ", nw=", nw, ", cex sent to oce.plots=", cex*(1-min(nw/8, 1/4)), "\n")
                                   oceDebug(debug, "   with par('mar')=c(", paste(par('mar'),collapse=","), ", mar=c(", paste(mar,collapse=","), ") and mgp=c(",paste(mgp,collapse=","),")", "\n")
                                   oceDebug(debug, "   with time[1]=", format(tt[[1]], "%Y-%m-%d %H:%M:%S"), "\n")
                                   ats <- imagep(x=tt, y=x[["distance", j]], z=z,
@@ -2166,7 +2178,7 @@ setMethod(f="plot",
                                                 mgp=mgp,
                                                 mar=mar,
                                                 mai.palette=mai.palette,
-                                                cex=if (nw > 2) 0.66 else 1, # HERE_IMAGEP
+                                                cex=1,
                                                 main=main[w],
                                                 debug=debug-1,
                                                 ...)
@@ -2183,13 +2195,11 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 ##? cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 ##? cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  type=type,
                                                  mgp=mgp,
-                                                 ##mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                                 mar=mar,
+                                                 mar=omar,
                                                  tformat=tformat,
                                                  debug=debug-1)
                               res$xat <- ats$xat
@@ -2212,14 +2222,12 @@ setMethod(f="plot",
                                              xaxs="i",
                                              col=col[w],
                                              lwd=lwd[w],
-                                             cex=cex * (1 - min(nw / 8, 1/4)),
-                                             cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                             cex=1, cex.axis=1, cex.lab=1,
                                              main=main[w],
                                              ylab=resizableLabel("S"),
                                              type=type,
                                              mgp=mgp,
-                                             ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                             mar=if (haveTimeImages) par('mar') else mar,
+                                             mar=omar,
                                              drawTimeRange=drawTimeRange,
                                              tformat=tformat,
                                              debug=debug-1)
@@ -2233,14 +2241,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=expression(paste("Diagnostic T [ ", degree, "C ]")),
                                                  type=type,
                                                  mgp=mgp,
-                                                 ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                                 mar=if (haveTimeImages) par('mar') else mar,
+                                                 mar=omar,
                                                  tformat=tformat,
                                                  debug=debug-1)
                           } else {
@@ -2250,14 +2256,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=expression(paste("T [ ", degree, "C ]")),
                                                  type=type,
                                                  mgp=mgp,
-                                                 ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                                 mar=if (haveTimeImages) par('mar') else mar,
+                                                 mar=omar,
                                                  tformat=tformat,
                                                  debug=debug-1)
                           }
@@ -2271,14 +2275,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 ## cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab="pDia",
                                                  type=type,
                                                  mgp=mgp,
-                                                 ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                                 mar=if (haveTimeImages) par('mar') else mar,
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
@@ -2295,9 +2297,7 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=if (nw > 2) 0.66 else 1, # HERE_PRESSURE
-                                                 cex.lab=if (nw > 2) 0.66 else 1, # HERE_PRESSURE
-                                                 cex.axis=if (nw > 2) 0.66 else 1, # HERE_PRESSURE
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=resizableLabel("p"),
                                                  type=type,
@@ -2316,14 +2316,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab="headingDia",
                                                  type=type,
                                                  mgp=mgp,
-                                                 ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                                 mar=if (haveTimeImages) par('mar') else mar,
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
@@ -2334,14 +2332,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=resizableLabel("heading"),
                                                  type=type,
                                                  mgp=mgp,
-                                                 ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                                 mar=if (haveTimeImages) par('mar') else mar,
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
@@ -2355,14 +2351,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab="pitchDia",
                                                  type=type,
                                                  mgp=mgp,
-                                                 ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                                 mar=if (haveTimeImages) par('mar') else mar,
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
@@ -2373,14 +2367,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=resizableLabel("pitch"),
                                                  type=type,
                                                  mgp=mgp,
-                                                 ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                                 mar=if (haveTimeImages) par('mar') else mar,
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
@@ -2394,14 +2386,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab="rollDia",
                                                  type=type,
                                                  mgp=mgp,
-                                                 ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                                 mar=if (haveTimeImages) par('mar') else mar,
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
@@ -2412,14 +2402,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=resizableLabel("roll"),
                                                  type=type,
                                                  mgp=mgp,
-                                                 ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                                 mar=if (haveTimeImages) par('mar') else mar,
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
@@ -2433,14 +2421,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=beamName(x, 1),
                                                  type=type,
                                                  mgp=mgp,
-                                                 ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                                 mar=if (haveTimeImages) par('mar') else mar,
+                                                 mar=omar,
                                                  #mai.palette=mai.palette,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
@@ -2457,14 +2443,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=beamName(x, 2),
                                                  type=type,
                                                  mgp=mgp,
-                                                 ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                                 mar=if (haveTimeImages) par('mar') else mar,
+                                                 mar=omar,
                                                  #mai.palette=mai.palette,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
@@ -2481,14 +2465,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=beamName(x, 3),
                                                  type=type,
                                                  mgp=mgp,
-                                                 ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                                 mar=if (haveTimeImages) par('mar') else mar,
+                                                 mar=omar,
                                                  #mai.palette=mai.palette,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
@@ -2505,14 +2487,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=beamName(x, 4),
                                                  type=type,
                                                  mgp=mgp,
-                                                 ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                                 mar=if (haveTimeImages) par('mar') else mar,
+                                                 mar=omar,
                                                  #mai.palette=mai.palette,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
@@ -2530,14 +2510,12 @@ setMethod(f="plot",
                                              xaxs="i",
                                              col=col[w],
                                              lwd=lwd[w],
-                                             cex=cex * (1 - min(nw / 8, 1/4)),
-                                             cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                             cex=1, cex.axis=1, cex.lab=1,
                                              main=main[w],
                                              ylab="Heaving [m]",
                                              type=type,
                                              mgp=mgp,
-                                             ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                             mar=if (haveTimeImages) par('mar') else mar,
+                                             mar=omar,
                                              #mai.palette=mai.palette,
                                              drawTimeRange=drawTimeRange,
                                              tformat=tformat,
@@ -2552,14 +2530,12 @@ setMethod(f="plot",
                                              xaxs="i",
                                              col=col[w],
                                              lwd=lwd[w],
-                                             cex=cex * (1 - min(nw / 8, 1/4)),
-                                             cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                             cex=1, cex.axis=1, cex.lab=1,
                                              main=main[w],
                                              ylab="Sound Speed [m/s]",
                                              type=type,
                                              mgp=mgp,
-                                             ##mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                             mar=if (haveTimeImages) par('mar') else mar,
+                                             mar=omar,
                                              tformat=tformat,
                                              debug=debug-1)
                       } else if (which[w] %in% 40:44) {
@@ -2574,7 +2550,9 @@ setMethod(f="plot",
                                                      type=type,
                                                      xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                      ylim=if (ylimGiven) ylim[w, ] else range(R, na.rm=TRUE),
+                                                     cex=1, cex.axis=1, cex.lab=1,
                                                      tformat=tformat,
+                                                     mar=omar,
                                                      debug=debug-1)
                               } else {
                                   R <- x@data$br[, which[w]-40]
@@ -2583,7 +2561,9 @@ setMethod(f="plot",
                                                      type=type,
                                                      xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                      ylim=if (ylimGiven) ylim[w, ] else range(R, na.rm=TRUE),
+                                                     cex=1, cex.axis=1, cex.lab=1,
                                                      tformat=tformat,
+                                                     mar=omar,
                                                      debug=debug-1)
                               }
                           } else {
@@ -2602,6 +2582,8 @@ setMethod(f="plot",
                                                      xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                      ylim=if (ylimGiven) ylim[w, ] else range(V, na.rm=TRUE),
                                                      tformat=tformat,
+                                                     cex=1, cex.axis=1, cex.lab=1,
+                                                     mar=omar,
                                                      debug=debug-1)
                               } else {
                                   V <- x@data$bv[, which[w]-50]
@@ -2611,6 +2593,8 @@ setMethod(f="plot",
                                                      xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                      ylim=if (ylimGiven) ylim[w, ] else range(V, na.rm=TRUE),
                                                      tformat=tformat,
+                                                     cex=1, cex.axis=1, cex.lab=1,
+                                                     mar=omar,
                                                      debug=debug-1)
                               }
                           } else {
@@ -2750,8 +2734,10 @@ setMethod(f="plot",
                       yat <- seq(yaxp[1], yaxp[2], length.out=1+yaxp[3])
                       ats <- list(xat=xat, yat=yat)
 
-                      if (main[w] != "")
-                          mtext(main[w], adj=1)
+                      if (main[w] != "") {
+                          oceDebug(debug, "about to title the plot with character size ", cex.lab*par("cex"), "\n")
+                          mtext(main[w], adj=1, cex=cex.lab*par("cex"))
+                      }
                       if (which[w] >= 29 && which[w] < 40) {
                           ok <- !is.na(u) & !is.na(v)
                           e <- eigen(cov(data.frame(u[ok], v[ok])))

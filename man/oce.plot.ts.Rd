@@ -84,13 +84,14 @@ If there are fewer \code{pch} values than there are \code{x} values, then the \c
 are recycled in the standard fashion.
 See \code{\link[=points]{points()}} for the possible values for \code{pch}.}
 
-\item{cex}{character expansion factor for points on plots, ignored unless
+\item{cex}{numeric character expansion factor for points on plots, ignored unless
 \code{type} is \code{"p"}.  This may be a single number, applied to all points, or
 a vector of numbers to be applied to the points in seequence.  If there are
 fewer \code{pch} values than there are \code{x} values, then the \code{pch} values are recycled
 in the standard fashion. See \code{\link[=par]{par()}} for more on \code{cex}.}
 
-\item{cex.axis, cex.lab, cex.main}{character expansion factors for axis numbers, axis names and plot titles; see \code{\link[=par]{par()}}.}
+\item{cex.axis, cex.lab, cex.main}{numeric character expansion factors for axis numbers,
+axis names and plot titles; see \code{\link[=par]{par()}}.}
 
 \item{xaxs}{control x axis ending; see \code{\link{par}}\code{("xaxs")}.}
 

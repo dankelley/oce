@@ -1150,13 +1150,14 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' are recycled in the standard fashion.
 #' See [points()] for the possible values for `pch`.
 #'
-#' @param cex character expansion factor for points on plots, ignored unless
+#' @param cex numeric character expansion factor for points on plots, ignored unless
 #' `type` is `"p"`.  This may be a single number, applied to all points, or
 #' a vector of numbers to be applied to the points in seequence.  If there are
 #' fewer `pch` values than there are `x` values, then the `pch` values are recycled
 #' in the standard fashion. See [par()] for more on `cex`.
 #'
-#' @param cex.axis,cex.lab,cex.main character expansion factors for axis numbers, axis names and plot titles; see [par()].
+#' @param cex.axis,cex.lab,cex.main numeric character expansion factors for axis numbers,
+#' axis names and plot titles; see [par()].
 #'
 #' @param  flipy Logical, with `TRUE` indicating that the graph
 #' should have the y axis reversed, i.e. with smaller values at
@@ -1347,8 +1348,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
                  ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
                  xlab="", ylab="",
                  type=type, col=col, cex=cex, pch=pch, log=log, ...)
-            message("dan. cex.lab=", cex.lab, "\n")
-            message("dan. mgp[1]=", mgp[1], "\n")
+            ##message("dan. cex.lab=", cex.lab, "\n")
+            ##message("dan. mgp[1]=", mgp[1], "\n")
             mtext(xlab, side=1, cex=cex.lab, line=mgp[1]*cex.lab)
             mtext(ylab, side=2, cex=cex.lab, line=mgp[1]*cex.lab)
             fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
@@ -1359,8 +1360,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
                  ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
                  xlab="", ylab="",
                  type=type, col=col, cex=cex, cex.axis=cex.axis, cex.lab=cex.lab, pch=pch, log=log, ...)
-            mtext(xlab, side=1, cex=cex.lab, line=mgp[1]*cex.lab)
-            mtext(ylab, side=2, cex=cex.lab, line=mgp[1]*cex.lab)
+            mtext(xlab, side=1, cex=cex.lab*par('cex'), line=mgp[1]*cex.lab)
+            mtext(ylab, side=2, cex=cex.lab*par('cex'), line=mgp[1]*cex.lab)
         }
         xat <- NULL
         yat <- NULL
@@ -3009,12 +3010,13 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         if (drawFrequency && is.finite(1/deltat))
             label <- paste(label, "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
         oceDebug(debug, "label=", label, " at cex.lab=", cex.lab, "\n")
-        message("DANNY about to write time range")
-        mtext(label, side=if (side==1) 3 else 1, cex=cex.lab, adj=0)
+        ## message("DANNY about to write time range with size cex.lab=", cex.lab, " resulting in ", cex.lab*par('cex'))
+        mtext(label, side=if (side==1) 3 else 1, cex=cex.lab*par('cex'), adj=0)
         oceDebug(debug, "cex.axis=", cex.axis, "; par('cex')=", par('cex'), "\n")
     }
     if (nchar(main) > 0) {
-        mtext(main, side=if (side==1) 3 else 1, cex=cex.lab, adj=1)
+        ## message("DANNIE about to write label with cex.lab=", cex.lab, " resulting in ", cex.lab*par('cex'))
+        mtext(main, side=if (side==1) 3 else 1, cex=cex.lab*par('cex'), adj=1)
     }
     oceDebug(debug, vectorShow(z, "z="))
     if (length(z.sub) > 0) {
@@ -3037,7 +3039,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         oceDebug(debug, "axis labels after shortenTimeString(): '", paste(labels, "', '"), "'\n")
     }
     axis(side, at=z, line=0, labels=labels, mgp=mgp, cex.axis=cex.axis, cex.lab=cex.lab, cex.main=cex.main, ...)
-    par(cex.axis=ocex.axis, cex.lab=cex.lab, cex.main=ocex.main, mgp=omgp)
+    par(cex.axis=ocex.axis, cex.lab=ocex.lab, cex.main=ocex.main, mgp=omgp)
     oceDebug(debug, "} # oce.axis.POSIXct()\n", unindent=1, style="bold")
     zzz <- as.numeric(z)
     if (1 < length(zzz)) {

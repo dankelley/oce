@@ -39,6 +39,9 @@ imagep(
   yaxs = "i",
   asp = NA,
   cex = par("cex"),
+  cex.axis = cex,
+  cex.lab = cex,
+  cex.main = cex,
   axes = TRUE,
   main = "",
   axisPalette,
@@ -215,7 +218,11 @@ default) then \code{asp} is redefined to be the reciprocal of the
 mean latitude in \code{x}, as a way to reduce geographical distortion.
 Otherwise, if \code{asp} is not \code{NA}, then it is used directly.}
 
-\item{cex}{Size of labels on axes and palette; see \code{\link{par}}\code{("cex")}.}
+\item{cex}{numeric character expansion factor, used for \code{cex.axis}, \code{cex.lab} and \code{cex.main},
+if those values are not supplied.}
+
+\item{cex.axis, cex.lab, cex.main}{numeric character expansion factors for axis numbers,
+axis names and plot titles; see \code{\link[=par]{par()}}.}
 
 \item{axes}{Logical, set \code{TRUE} to get axes on the main image.}
 

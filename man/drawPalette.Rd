@@ -11,8 +11,7 @@ drawPalette(
   col,
   colormap,
   mai,
-  cex.axis = par("cex.axis"),
-  cex.zlab = par("cex"),
+  cex = par("cex"),
   pos = 4,
   las = 0,
   labels = NULL,
@@ -48,9 +47,7 @@ provided, this takes precedence over \code{breaks} and \code{col}.}
 \code{\link[=par]{par()}}.  If not given, reasonable values are inferred from the
 existence of a non-blank \code{zlab}.}
 
-\item{cex.axis}{character-expansion value for text labels}
-
-\item{cex.zlab}{character expansion factor for z label}
+\item{cex}{numeric character expansion value for text labels}
 
 \item{pos}{an integer indicating the location of the palette within the
 plotting area, 1 for near the bottom, 2 for near the left-hand side, 3 for
