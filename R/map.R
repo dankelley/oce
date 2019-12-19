@@ -789,38 +789,17 @@ mapContour <- function(longitude, latitude, z,
                                                              xc[labelj]+XYrot[,1], yc[labelj]+XYrot[,2])
                             ##}))
                             if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
-                                ## NOTE: 'sf' method is 10X slower than 'sp' method on doc test case
-                                ##message("mapContour(...,underlay=\"interrupt\"): TEST 'sf' method, since options(\"oce:test_sf\"=1)")
                                 if (requireNamespace("sf", quietly=TRUE)) {
-                                    ##cat(" new 'sf' method timing:\n")
-                                    ##print(system.time({
                                     polyx <- xc[labelj] + XYrot[,1]
                                     polyy <- yc[labelj] + XYrot[,2]
-                                    ##. cat(system.time({
                                     polyNew <- sf::st_polygon(list(outer=cbind(c(polyx, polyx[1]), c(polyy, polyy[1]))))
-                                    ##. eraseNew <- as.logical(lapply(seq_along(xc),
-                                    ##.                               function(i)
-                                    ##.                                   lengths(sf::st_intersects(sf::st_point(c(xc[i],yc[i])), polyNew), use.names=FALSE)))
-                                    ##. })[1], " ")
-                                    ##.cat(system.time({
                                     pointsNew <- sf::st_multipoint(cbind(xc, yc))
                                     insideNew <- sf::st_intersection(pointsNew, polyNew)
                                     eraseNew <- matrix(pointsNew %in% insideNew, ncol=2)[,1]
-                                    ##.})[1], "\n")
                                     eraseOld <- erase
-                                    ##. xcOld <- xc
-                                    ##. ycOld <- yc
-                                    ##. cat("erase is ", class(erase),"\n")
-                                    ##. cat(vectorShow(erase))
-                                    ##. cat("eraseNew is ", class(eraseNew),"\n")
-                                    ##. cat(vectorShow(eraseNew))
                                     if (!all.equal(eraseNew, erase)) {
                                         warning("mapContour() error: 'erase' disagreement with trial 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n")
                                     }
-                                    ##}))
-                                    ##.if (!all.equal(eraseNew, erase)) {
-                                    ##.    warning("FAIL: 'erase' list disagreement, between old 'sp' method and trial 'sf' method\n")
-                                    ##>}
                                 } else {
                                     stop("mapContour(): must install 'sf' package to handle option(\"oce:test_sf\"=1)")
                                 }
