@@ -2608,7 +2608,7 @@ setMethod(f="plot",
                           ## blank plot, to get axis length same as for images
                           omar <- par("mar")
                           par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
-                          plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
+                          plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="", cex=1, cex.axis=1, cex.lab=1)
                           par(mar=omar)
                       }
                   } else if (which[w] %in% spatial) {
@@ -2651,7 +2651,10 @@ setMethod(f="plot",
                           v[is.na(v)] <- 0
                           xDist <- integrateTrapezoid(ttt, u, 'cA') / mPerKm
                           yDist<- integrateTrapezoid(ttt, v, 'cA') / mPerKm
-                          plot(xDist, yDist, xlab="km", ylab="km", type='l', asp=1, col=if (colGiven) col else "black", ...)
+                          plot(xDist, yDist, xlab="km", ylab="km", type='l', asp=1,
+                               col=if (colGiven) col else "black",
+                               cex=1, cex.axis=1, cex.lab=1,
+                               ...)
                           xaxp <- par("xaxp")
                           xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
                           yaxp <- par("yaxp")
@@ -2666,10 +2669,14 @@ setMethod(f="plot",
                               yy <- x[["distance", j]]
                               if (ytype == "profile" && x@metadata$orientation[1] == "downward" && !ylimGiven) {
                                   plot(value, yy, xlab=beamName(x, which[w]-23),
-                                       ylab=resizableLabel("distance"), type='l', ylim=rev(range(yy)), ...)
+                                       ylab=resizableLabel("distance"), type='l', ylim=rev(range(yy)),
+                                       cex=1, cex.axis=1, cex.lab=1,
+                                       ...)
                               } else {
                                   plot(value, yy, xlab=beamName(x, 1),
-                                       ylab=resizableLabel("distance"), type='l', ...)
+                                       ylab=resizableLabel("distance"), type='l',
+                                       cex=1, cex.axis=1, cex.lab=1,
+                                       ...)
                               }
                               xaxp <- par("xaxp")
                               xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
@@ -2708,6 +2715,7 @@ setMethod(f="plot",
                                    asp=1, col=if (colGiven) col else "black",
                                    xlim=if (xlimGiven) xlim[w, ] else range(u, na.rm=TRUE),
                                    ylim=if (ylimGiven) ylim[w, ] else range(v, na.rm=TRUE),
+                                   cex=1, cex.axis=1, cex.lab=1,
                                    ...)
                           } else {
                               plot(u, v,
@@ -2716,6 +2724,7 @@ setMethod(f="plot",
                                    type='n', asp=1,
                                    xlim=if (xlimGiven) xlim[w, ] else range(u, na.rm=TRUE),
                                    ylim=if (ylimGiven) ylim[w, ] else range(v, na.rm=TRUE),
+                                   cex=1, cex.axis=1, cex.lab=1,
                                    ...)
                               points(u, v, cex=cex/2, col=if (colGiven) col else "black")
                           }
@@ -2726,6 +2735,7 @@ setMethod(f="plot",
                                         asp=1,
                                         xlim=if (xlimGiven) xlim[w, ] else range(u, na.rm=TRUE),
                                         ylim=if (ylimGiven) ylim[w, ] else range(v, na.rm=TRUE),
+                                        cex=1, cex.axis=1, cex.lab=1,
                                         ...)
                       }
                       xaxp <- par("xaxp")
@@ -2782,7 +2792,8 @@ setMethod(f="plot",
                       if (is.character(coastline)) {
                           if (coastline == "none") {
                               if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
-                                  plot(x@metadata$longitude, x@metadata$latitude, xlab="", ylab="")
+                                  plot(x@metadata$longitude, x@metadata$latitude, xlab="", ylab="",
+                                       cex=1, cex.axis=1, cex.lab=1)
                               } else {
                                   stop("In plot,adp-method() : no latitude or longitude in object's metadata, so cannot draw map", call.=FALSE)
                               }
@@ -2818,15 +2829,17 @@ setMethod(f="plot",
                               lat <- x[["firstLatitude"]]
                               lon <- x[["firstLongitude"]]
                               ##asp <- 1 / cos(mean(lat, na.rm=TRUE) * pi / 180)
-                              plot(coastline, clatitude=mean(lat, na.rm=TRUE), clongitude=mean(lon, na.rm=TRUE), span=span)
+                              plot(coastline, clatitude=mean(lat, na.rm=TRUE),
+                                   clongitude=mean(lon, na.rm=TRUE),
+                                   span=span,
+                                   cex=1, cex.axis=1, cex.lab=1)
                               points(lon, lat)
-                              #plot(lon, lat, asp=asp, xlab="Latitude", ylab="Longitude")
-                              #lines(coastline[["longitude"]], coastline[["latitude"]], col='gray')
                           } else if ("latitude" %in% names(x@metadata)) {
                               lat <- x[["latitude"]]
                               lon <- x[["longitude"]]
                               if (is.finite(lat) && is.finite(lon)) {
-                                  plot(coastline, clatitude=lat, clongitude=lon, span=50)
+                                  plot(coastline, clatitude=lat, clongitude=lon, span=50,
+                                       cex=1, cex.axis=1, cex.lab=1)
                                   points(x[["longitude"]], x[["latitude"]], cex=2*par('cex'))
                               } else {
                                   stop("In plot,adp-method() : nothing to map", call.=FALSE)
@@ -2836,7 +2849,7 @@ setMethod(f="plot",
                           }
                       }
                   } else {
-                      stop("unknown value of which (", which[w], ")")
+                      stop("In plot,adp-method() : unknown value of which (", which[w], ")", call.=FALSE)
                   }
                   if (is.logical(grid[1]) && grid[1])
                       grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
