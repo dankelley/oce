@@ -4524,31 +4524,81 @@ ctimeToSeconds <- function(ctime)
 #' are treated like 4.
 #'
 #' @param \dots items to be supplied to [cat()], which does the
-#' printing.  Almost always, this should include a trailing newline.
+#' printing.  Note that no newline will be printed unless \dots
+#' contains a string with a newline character (as in the example).
 #'
-#' @param unindent Number of levels to un-indent, e.g. for start and end lines
-#' from a called function.
+#' @param style either a string or a function. If a string,
+#' it must be `"plain"` (the default) for plain text,
+#' `"bold"`, `"italic"`, `"red"`, `"green"` or `"blue"` (with
+#' obvious meanings).
+#' If `style` is a function, it must prepend and postpend the text
+#' with control codes, as in the cyan-coloured example; note that
+#' \CRANpkg{crayon} provides many functions that work well for `style`.
+#'
+#' @param unindent integer giving the number of levels to un-indent,
+#' e.g. for start and end lines from a called function.
 #'
 #' @author Dan Kelley
 #'
 #' @examples
-#' foo <- function(debug)
-#' {
-#'    oceDebug(debug, "in function foo\n")
-#' }
-#' debug <- 1
-#' oceDebug(debug, "in main")
-#' foo(debug=debug-1)
-oceDebug <- function(debug=0, ..., unindent=0)
+#' oceDebug(debug=1, "Example", 1, "Plain text")
+#' oceDebug(debug=1, "Example", 2, "Bold", style="bold")
+#' oceDebug(debug=1, "Example", 3, "Italic", style="italic")
+#' oceDebug(debug=1, "Example", 4, "Red", style="red")
+#' oceDebug(debug=1, "Example", 5, "Green", style="green")
+#' oceDebug(debug=1, "Example", 6, "Blue", style="blue")
+#' mycyan <- function(...) paste("\033[36m", paste(..., sep=" "), "\033[0m", sep="")
+#' oceDebug(debug=1, "Example", 7, "User-set cyan", style=mycyan)
+oceDebug <- function(debug=0, ..., style="plain", unindent=0)
 {
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     if (debug > 0) {
         n <- 5 - debug - unindent
-        if (n > 0)
-            cat(paste(rep("  ", n), collapse=""))
-        cat(...)
+        if (is.character(style) && style == "plain") {
+            if (n > 0)
+                cat(paste(rep("  ", n), collapse=""))
+            cat(...)
+        } else if (is.character(style) && style == "bold") {
+            cat("\033[1m")
+            if (n > 0)
+                cat(paste(rep("  ", n), collapse=""))
+            cat(...)
+            cat("\033[0m")
+        } else if (is.character(style) && style == "italic") {
+            cat("\033[3m")
+            if (n > 0)
+                cat(paste(rep("  ", n), collapse=""))
+            cat(...)
+            cat("\033[0m")
+        } else if (is.character(style) && style == "red") {
+            cat("\033[31m")
+            if (n > 0)
+                cat(paste(rep("  ", n), collapse=""))
+            cat(...)
+            cat("\033[0m")
+        } else if (is.character(style) && style == "green") {
+            cat("\033[32m")
+            if (n > 0)
+                cat(paste(rep("  ", n), collapse=""))
+            cat(...)
+            cat("\033[0m")
+        } else if (is.character(style) && style == "blue") {
+            cat("\033[34m")
+            if (n > 0)
+                cat(paste(rep("  ", n), collapse=""))
+            cat(...)
+            cat("\033[0m")
+        } else if (is.function(style)) {
+            if (n > 0)
+                cat(style(paste(rep("  ", n), collapse="")))
+            cat(style(...))
+        } else { # fallback
+            if (n > 0)
+                cat(paste(rep("  ", n), collapse=""))
+            cat(...)
+        }
+        flush.console()
     }
-    flush.console()
     invisible()
 }
 oce.debug <- oceDebug

@@ -1150,13 +1150,17 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' are recycled in the standard fashion.
 #' See [points()] for the possible values for `pch`.
 #'
-#' @param cex character expansion factor, used if `type` is `"p"`.
-#' If there are fewer `pch` values than there are `x` values, then the `pch` values
-#' are recycled in the standard fashion. See [par()] for more on `cex`.
+#' @param cex character expansion factor for points on plots, ignored unless
+#' `type` is `"p"`.  This may be a single number, applied to all points, or
+#' a vector of numbers to be applied to the points in seequence.  If there are
+#' fewer `pch` values than there are `x` values, then the `pch` values are recycled
+#' in the standard fashion. See [par()] for more on `cex`.
 #'
-#' @param cex.axis character expansion factor for axes; see [par()].
+#' @param cex.axis character expansion factor for numbers on axes. See [par()].
 #'
-#' @param cex.main see [par()].
+#' @param cex.main character expansion factor for main titles. See [par()].
+#'
+#' @param cex.lab character expansion factor for names of axes. See [par()].
 #'
 #' @param  flipy Logical, with `TRUE` indicating that the graph
 #' should have the y axis reversed, i.e. with smaller values at
@@ -1231,7 +1235,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' oce.plot.ts(t, y, flipy=TRUE)
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, ylab,
                         drawTimeRange, fill=FALSE, col=par("col"), pch=par("pch"),
-                        cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+                        cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"), cex.lab=par("cex.lab"),
                         xaxs=par("xaxs"), yaxs=par("yaxs"),
                         mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if (nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
@@ -1259,11 +1263,17 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
     oceDebug(debug, "oce.plot.ts(...,debug=", debug,",",
              argShow(type),
              argShow(flipy),
-             argShow(log),
-             argShow(mar), #",mar=c(", paste(mar, collapse=","), ")",
-             argShow(mgp), #",mgp=c(", paste(mgp, collapse=","), ")",
-             argShow(cex[1]), #", cex[1]=", cex[1], "(length "), length(cex), "),"
-             "...) {\n", sep="", unindent=1)
+             argShow(log), "\n", sep="", unindent=1, style="bold")
+    oceDebug(debug,
+             "          ",
+             argShow(mar),
+             argShow(mgp), "\n", sep="", style="bold")
+    oceDebug(debug,
+             "          ",
+             argShow(cex),
+             argShow(cex.axis),
+             argShow(cex.lab),
+             "...) {\n", sep="", style="bold")
     if (!is.logical(flipy))
         stop("flipy must be TRUE or FALSE")
     if (!log %in% c("", "y"))
@@ -1331,23 +1341,27 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
         warning("no valid data for '", ylab, "'", sep="")
         oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
         return()
-     } else {
+    } else {
         if (fill) {
             xx <- c(x[1], x, x[length(x)])
             yy <- c(0, y, 0)
             plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
                  xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
                  ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
-                 xlab=xlab, ylab=ylab,
+                 xlab="", ylab="",
                  type=type, col=col, cex=cex, pch=pch, log=log, ...)
+            mtext(xlab, side=1, cex=cex.lab, line=mgp[1]*cex.lab)
+            mtext(ylab, side=2, cex=cex.lab, line=mgp[1]*cex.lab)
             fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
             do.call(polygon, list(x=xx, y=yy, col=fillcol))
         } else {
             plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
                  xlim=if (missing(xlim)) NULL else xlim,
                  ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
-                 xlab=xlab, ylab=ylab,
-                 type=type, col=col, cex=cex, pch=pch, log=log, ...)
+                 xlab="", ylab="",
+                 type=type, col=col, cex=cex, cex.axis=cex.axis, cex.lab=cex.lab, pch=pch, log=log, ...)
+            mtext(xlab, side=1, cex=cex.lab, line=mgp[1]*cex.lab)
+            mtext(ylab, side=2, cex=cex.lab, line=mgp[1]*cex.lab)
         }
         xat <- NULL
         yat <- NULL
@@ -1360,7 +1374,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
                 xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
                                           mgp=mgp,
                                           xlim=if (missing(xlim)) range(x) else xlim,
-                                          cex.axis=cex.axis, cex.main=cex.main,
+                                          cex.axis=cex.axis, cex.main=cex.main, cex.lab=cex.lab,
                                           tformat=tformat,
                                           debug=debug-1)
                 xat <- xlabs
@@ -1396,7 +1410,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
             }
             abline(v=axTicks(1), col=grid.col, lty=grid.lty, lwd=grid.lwd)
         }
-        oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
+        oceDebug(debug, "} # oce.plot.ts()\n", unindent=1, style="bold")
         invisible(list(xat=xat, yat=yat))
     }
 }
@@ -2010,8 +2024,10 @@ read.oce <- function(file, ...)
 {
     if (missing(file))
         stop("must supply 'file'")
+    if (is.character(file) && "http://" != substr(file, 1, 7) && !file.exists(file))
+        stop("In read.oce() : cannot open '", file, "' because there is no such file or directory", call.=FALSE)
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
-        stop("empty file (read.oce)")
+        stop("empty file")
     dots <- list(...)
     debug <- if ("debug" %in% names(dots)) dots$debug else 0
     type <- oceMagic(file, debug=debug-1)
