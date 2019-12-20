@@ -1,4 +1,4 @@
-# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
+## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 
 #' Class to Store Coastline Data
 #'

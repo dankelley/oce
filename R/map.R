@@ -1,3 +1,5 @@
+## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
+
 .axis <- local({
     val <- list(longitude=NULL, latitude=NULL)
     function(new) if (!missing(new)) val <<- new else val
@@ -48,6 +50,7 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
     if (!requireNamespace("rgdal", quietly=TRUE))
         stop('must install.packages("rgdal") to do map projections')
     owarn <- options()$warn # this, and the capture.output, quieten the processing
+    ## {{{ OLD 'rgdal' method
     options(warn=-1)
     if (passNA) {
         na <- which(is.na(xy[,1]))
@@ -75,6 +78,61 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
             )
         }
     }
+    ## }}}
+    ## {{{ NEW 'sf' method
+    if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
+        ## message("subset,section-method(): testing 'sf' method, since options(\"oce:test_sf\"=1)")
+        if (requireNamespace("sf", quietly=TRUE)) {
+            ## message("subset,section-method(): testing 'sf' method, since options(\"oce:test_sf\"=1)")
+            na <- which(!is.finite(xy[,1]))
+            xy[na, ] <- 0
+            ##message("xy:")
+            ##cat(str(xy))
+            if (inv) {
+                ##message(" -- inverse proj='", proj, "'")
+                x <- sf::st_sfc(sf::st_multipoint(xy), crs=sf::st_crs(proj))
+                XYSF <- unname(sf::st_coordinates(sf::st_transform(x=x,
+                                                                    crs=sf::st_crs("+proj=longlat"),
+                                                                    check=FALSE,
+                                                                    partial=TRUE))[,1:2,drop=FALSE])
+                ## message("old XY:")
+                ## cat(str(XY))
+                ## message("new XYSF:")
+                ## cat(str(XYSF))
+            } else {
+                ##message(" -- forward proj='", proj, "'")
+                x <- sf::st_sfc(sf::st_multipoint(xy), crs=sf::st_crs("+proj=longlat"))
+                XYSF <- unname(sf::st_coordinates(sf::st_transform(x=x,
+                                                                    crs=sf::st_crs(proj),
+                                                                    check=FALSE,
+                                                                    partial=TRUE))[,1:2,drop=FALSE])
+                ##message("old XY:")
+                ##cat(str(XY))
+                ##message("new XYSF:")
+                ##cat(str(XYSF))
+            }
+            XYSF[na, ] <- NA
+            ## message("... head(XY):")
+            ## print(head(XY))
+            ## message("... head(XYSF):")
+            ## print(head(XYSF))
+
+            ##> options("oce:test_sf"=1);source("R/map.R");mapPlot(coastlineWorld,proj="+proj=robin")
+
+            message("proj=",proj,",inv=",inv,",dim(xy)=",paste(dim(xy),collapse="x"))
+            daninv <<- inv
+            danproj <<- proj
+            dancrs <<- sf::st_crs(proj)
+            danx <<- x
+            danxy <<- xy
+            danXY <<- XY
+            danXYSF <<- XYSF
+            if(!all.equal(XY, XYSF)) {
+                warning("mismatch with old; see danproj, dancrs, danx, danxy, danXY, danXYSF\n")
+            }
+        }
+    }
+    ## }}}
     options(warn=owarn)
     XY
 }
