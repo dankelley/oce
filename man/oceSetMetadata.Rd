@@ -26,3 +26,13 @@ to add a note by e.g. \code{processingLog(a) <- "QC (memo dek-2018-01/31)"}}
 \description{
 Set Something in the metadata Slot of an oce Object
 }
+\seealso{
+Other things related to the metadata slot: 
+\code{\link{oceDeleteMetadata}()},
+\code{\link{oceGetMetadata}()},
+\code{\link{oceRenameMetadata}()}
+}
+\author{
+Dan Kelley
+}
+\concept{things related to the metadata slot}

@@ -74,4 +74,7 @@ Other functions that replace parts of oce objects:
 \code{\link{[[<-,windrose-method}},
 \code{\link{[[<-,xbt-method}}
 }
+\author{
+Dan Kelley
+}
 \concept{functions that replace parts of oce objects}

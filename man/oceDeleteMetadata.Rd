@@ -16,3 +16,13 @@ Return a copy of the supplied object that lacks the named
 element in its \code{metadata} slot, and that has a note
 about the deletion in its processing log.
 }
+\seealso{
+Other things related to the metadata slot: 
+\code{\link{oceGetMetadata}()},
+\code{\link{oceRenameMetadata}()},
+\code{\link{oceSetMetadata}()}
+}
+\author{
+Dan Kelley
+}
+\concept{things related to the metadata slot}

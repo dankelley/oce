@@ -387,6 +387,8 @@ setMethod(f="subset",
 #' @seealso
 #' Many `oce` object classes have specialized versions
 #' of `[[` that handle the details in specialized way.
+#'
+#' @author Dan Kelley
 setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -460,6 +462,7 @@ setMethod(f="[[",
 #' @param x an [oce-class] object.
 #'
 #' @template sub_subsetTemplate
+#' @author Dan Kelley
 setMethod(f="[[<-",
           signature(x="oce", i="ANY", j="ANY"),
           function(x, i, j, ..., value) {

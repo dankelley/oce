@@ -7,7 +7,7 @@
 oceSetData(object, name, value, unit, originalName, note = "")
 }
 \arguments{
-\item{object}{an \code{oce} object}
+\item{object}{an \linkS4class{oce} object.}
 
 \item{name}{String indicating the name of the item to be set.}
 
@@ -58,4 +58,15 @@ feet <- swDepth(ctd) / 0.3048
 ctd <- oceSetData(ctd, name="depthInFeet", value=feet, expression("feet"))
 fathoms <- feet / 6
 ctd <- oceSetData(ctd, "depthInFathoms", fathoms, "fathoms")
+
 }
+\seealso{
+Other things related to the data slot: 
+\code{\link{oceDeleteData}()},
+\code{\link{oceGetData}()},
+\code{\link{oceRenameData}()}
+}
+\author{
+Dan Kelley
+}
+\concept{things related to the data slot}

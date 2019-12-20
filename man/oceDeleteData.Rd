@@ -16,3 +16,13 @@ Return a copy of the supplied object that lacks the named
 element in its \code{data} slot, and that has a note
 about the deletion in its processing log.
 }
+\seealso{
+Other things related to the data slot: 
+\code{\link{oceGetData}()},
+\code{\link{oceRenameData}()},
+\code{\link{oceSetData}()}
+}
+\author{
+Dan Kelley
+}
+\concept{things related to the data slot}

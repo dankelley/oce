@@ -166,4 +166,8 @@ test_that("accessor operations (adp)", {
           expect_equal(adp[["somethingNew"]], 1:4)
 })
 
-
+test_that("renaming items in the data slot", {
+          data(ctd)
+          bad <- oceRenameData(ctd, "salinity", "saltiness", note="a bad idea!")
+          expect_error(plot(bad), "data slot lacks 'salinity")
+})

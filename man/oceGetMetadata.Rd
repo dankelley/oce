@@ -16,3 +16,13 @@ In contrast to the various \code{[[} functions, this is
 guaranteed to look only within the \code{metadata} slot. If
 the named item is not found, \code{NULL} is returned.
 }
+\seealso{
+Other things related to the metadata slot: 
+\code{\link{oceDeleteMetadata}()},
+\code{\link{oceRenameMetadata}()},
+\code{\link{oceSetMetadata}()}
+}
+\author{
+Dan Kelley
+}
+\concept{things related to the metadata slot}

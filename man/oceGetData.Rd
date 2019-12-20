@@ -16,3 +16,13 @@ In contrast to the various \code{[[} functions, this is
 guaranteed to look only within the \code{data} slot. If
 the named item is not found, \code{NULL} is returned.
 }
+\seealso{
+Other things related to the data slot: 
+\code{\link{oceDeleteData}()},
+\code{\link{oceRenameData}()},
+\code{\link{oceSetData}()}
+}
+\author{
+Dan Kelley
+}
+\concept{things related to the data slot}
