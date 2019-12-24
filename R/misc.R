@@ -2354,7 +2354,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
     oceDebug(debug, "resizableLabel(item=\"", item,
              "\", axis=\"", axis,
              "\", sep=\"", if (missing(sep)) "(missing)" else sep, "\", ...) {\n",
-            sep="", unindent=1)
+            sep="", unindent=1, style="bold")
     if (missing(item))
         stop("must provide 'item'")
     if (axis != "x" && axis != "y")
@@ -2633,7 +2633,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
     ##cat("fraction=", fraction, "\n")
     #print(full)
     #print(abbreviated)
-    oceDebug(debug, "} # resizableLabel\n", unindent=1)
+    oceDebug(debug, "} # resizableLabel\n", unindent=1, style="bold")
     if (fraction < 1) full else abbreviated
 }
 

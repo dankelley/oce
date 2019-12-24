@@ -21,6 +21,7 @@
   marginsAsImage = FALSE,
   cex = par("cex"),
   cex.axis = par("cex.axis"),
+  cex.lab = par("cex.lab"),
   cex.main = par("cex.main"),
   xlim,
   ylim,
@@ -80,11 +81,9 @@ used.)}
 the right of time-series plots, matching the space used up by a palette in an
 \code{\link[=imagep]{imagep()}} plot.}
 
-\item{cex}{Size of labels on axes; see \code{\link[=par]{par()}}.}
+\item{cex}{numeric character expansion factor for plot symbols; see \code{\link[=par]{par()}}.}
 
-\item{cex.axis}{See \code{\link[=par]{par()}}.}
-
-\item{cex.main}{See \code{\link[=par]{par()}}.}
+\item{cex.axis, cex.lab, cex.main}{character expansion factors for axis numbers, axis names and plot titles; see \code{\link[=par]{par()}}.}
 
 \item{xlim}{Optional 2-element list for \code{xlim}, or 2-column matrix, in
 which case the rows are used, in order, for the panels of the graph.}

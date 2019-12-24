@@ -4295,7 +4295,7 @@ plotTS <- function (x,
              "eos=\"", eos, "\", ",
              "mgp=c(", paste(mgp, collapse=","), "), ",
              "mar=c(", paste(mar, collapse=","), "), ",
-             "...) {\n", sep="", unindent=1)
+             "debug=", debug, ", ...) {\n", sep="", unindent=1, style="bold")
     eos <- match.arg(eos, c("unesco", "gsw"))
     xat <- NULL
     yat <- NULL
@@ -4427,7 +4427,7 @@ plotTS <- function (x,
             plot(Slim, Tlim,
                  xlab=xlab, ylab=ylab,
                  xaxs=if (min(salinity, na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
-                 cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
+                 cex=cex, pch=pch, col=col,# cex.axis=cex,
                  type="n",
                  ...)
             if (!missing(bg)) {
@@ -4461,12 +4461,12 @@ plotTS <- function (x,
         } else stop("unknown eos; must be \"unesco\" or \"gsw\"")
     }
     box()                              # redraw box (otherwise overdrawn with isopycnals)
-    oceDebug(debug, "} # plotTS(...)\n", sep="", unindent=1)
     ## infer from par()
     xaxp <- par("xaxp")
     xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
     yaxp <- par("yaxp")
     yat <- seq(yaxp[1], yaxp[2], length.out=1+yaxp[3])
+    oceDebug(debug, "} # plotTS(...)\n", sep="", unindent=1, style="bold")
     invisible(list(xat=xat, yat=yat))
 }
 

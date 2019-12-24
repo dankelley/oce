@@ -26,7 +26,7 @@
   marginsAsImage = FALSE,
   cex = par("cex"),
   cex.axis = par("cex.axis"),
-  cex.main = par("cex.main"),
+  cex.lab = par("cex.lab"),
   xlim,
   ylim,
   control,
@@ -125,11 +125,9 @@ format used.)}
 of time-series plots, even if there are no images in the \code{which} list.
 (The margin is made wide if there are some images in the sequence.)}
 
-\item{cex}{size of labels on axes; see \code{\link{par}}\code{("cex")}.}
+\item{cex}{numeric character expansion factor for plot symbols; see \code{\link[=par]{par()}}.}
 
-\item{cex.axis}{see \code{\link{par}}\code{("cex.axis")}.}
-
-\item{cex.main}{see \code{\link{par}}\code{("cex.main")}.}
+\item{cex.axis, cex.lab}{character expansion factors for axis numbers and axis names; see \code{\link[=par]{par()}}.}
 
 \item{xlim}{optional 2-element list for \code{xlim}, or 2-column matrix, in
 which case the rows are used, in order, for the panels of the graph.}
