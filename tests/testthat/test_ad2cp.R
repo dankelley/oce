@@ -496,7 +496,7 @@ test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedB
             expect_silent(plot(d3xyz, which=1, zlim=zlim, drawTimeRange=FALSE))
             expect_silent(plot(d3xyz, which=2, zlim=zlim, drawTimeRange=FALSE))
             expect_silent(plot(d3xyz, which=3, zlim=zlim/4, drawTimeRange=FALSE))
-            expect_silent(d3enu <- xyzToEnu(d3xyz))
+            d3enu <- expect_silent(xyzToEnu(d3xyz))
             expect_silent(plot(d3enu, which=1, zlim=zlim, drawTimeRange=FALSE))
             expect_silent(plot(d3enu, which=2, zlim=zlim, drawTimeRange=FALSE))
             expect_silent(plot(d3enu, which=3, zlim=zlim/4, drawTimeRange=FALSE))

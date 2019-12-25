@@ -1348,11 +1348,9 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
                  ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
                  xlab="", ylab="",
                  type=type, col=col, cex=cex, pch=pch, log=log, ...)
-            ##message("dan. cex.lab=", cex.lab, "\n")
-            ##message("dan. mgp[1]=", mgp[1], "\n")
-            mtext(xlab, side=1, cex=cex.lab, line=mgp[1]*cex.lab)
-            mtext(ylab, side=2, cex=cex.lab, line=mgp[1]*cex.lab)
-            fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
+            mtext(xlab, side=1, cex=cex.lab*par("cex"), line=mgp[1])
+            mtext(ylab, side=2, cex=cex.lab*par("cex"), line=mgp[1])
+            fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should this be a formal argument?
             do.call(polygon, list(x=xx, y=yy, col=fillcol))
         } else {
             plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
@@ -1360,8 +1358,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
                  ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
                  xlab="", ylab="",
                  type=type, col=col, cex=cex, cex.axis=cex.axis, cex.lab=cex.lab, pch=pch, log=log, ...)
-            mtext(xlab, side=1, cex=cex.lab*par('cex'), line=mgp[1]*cex.lab)
-            mtext(ylab, side=2, cex=cex.lab*par('cex'), line=mgp[1]*cex.lab)
+            ##mtext(paste("TEST: xlab at mgp[1]", xlab), side=1, cex=cex.lab*par('cex'), line=mgp[1])
+            mtext(ylab, side=2, cex=cex.lab*par('cex'), line=mgp[1])
         }
         xat <- NULL
         yat <- NULL
