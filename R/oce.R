@@ -79,7 +79,7 @@ NULL
 #' Certain functions and function arguments are still provided for
 #' compatibility with older versions of \CRANpkg{oce}, but will be removed soon.
 #' The \CRANpkg{oce} scheme for removing functions is similar to that used by
-#' \CRANpkg{Bioconductor}: items are marked as "deprecated" in one release, marked as
+#' `Bioconductor`: items are marked as "deprecated" in one release, marked as
 #' "defunct" in the next, and removed in the next after that. This goal is to provide a
 #' gentle migration path for users who keep their packages reasonably
 #' up-to-date.
