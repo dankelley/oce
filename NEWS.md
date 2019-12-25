@@ -1,6 +1,6 @@
 1.1-2
 
-* add `oceRenameData()` and `oceRenamemetadata()`
+* add `oceRenameData()` and `oceRenamemetadata()`; deprecate `renameData()`
 * improve axis control for `mapPlot()` and `plot,coastline-method`.
 * remove `addColumn()`, `ctdAddColumn()`, `ctdUpdateHeader()`,
   `findInOrdered()`, `mapMeridians()`, `mapZones()`, and `oce.as.POSIXlt()`,

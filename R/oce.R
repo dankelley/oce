@@ -71,27 +71,28 @@
 NULL
 
 
-###################################################################################
-## IMPORTANT: Update this and test_deprecation, whenever function status changes. #
-###################################################################################
-#' Deprecated and Defunct Elements of package \sQuote{oce}
+##################################################################
+## DEVELOPER NOTE: Update this whenever function status changes. #
+##################################################################
+#' Deprecated and Defunct Elements of the oce package
 #'
 #' Certain functions and function arguments are still provided for
-#' compatibility with older versions of \sQuote{oce}, but will be removed soon.
-#' The \sQuote{oce} scheme for removing functions is similar to that used by
-#' \sQuote{Bioconductor}: items are marked as "deprecated" in one release, marked as
+#' compatibility with older versions of \CRANpkg{oce}, but will be removed soon.
+#' The \CRANpkg{oce} scheme for removing functions is similar to that used by
+#' \CRANpkg{Bioconductor}: items are marked as "deprecated" in one release, marked as
 #' "defunct" in the next, and removed in the next after that. This goal is to provide a
 #' gentle migration path for users who keep their packages reasonably
 #' up-to-date.
 #'
-#' Several \sQuote{oce} functions are marked "deprecated" in the present
-#' release of oce. Please use the replacement functions as listed below.
-#' The next CRAN release of \sQuote{oce} will designate these functions as
-#' "defunct".
+#' The following are marked "deprecated" in the present CRAN release of \CRANpkg{oce}.
+#' Please use the replacement functions as listed below. The upcoming CRAN
+#' release of \CRANpkg{oce} will mark these as "defunct", which is the
+#' last step before outright removal.
 #'
-#' \tabular{lll}{
-#' **Deprecated**             \tab **Replacement** \tab **Notes**\cr
-#' `byteToBinary(x,"endian")` \tab [rawToBits()]   \tab Deprecated in 2016\cr
+#' \tabular{lllll}{
+#' **Deprecated**             \tab **Replacement**   \tab **Deprecated**  \tab **Defunct** \tab **Removed** \cr
+#' `byteToBinary(x,"endian")` \tab [rawToBits()]     \tab 1.1-1           \tab 1.1-3       \tab 1.1-4       \cr
+#' `renameData()`             \tab [oceRenameData()] \tab 1.1-2           \tab 1.1-3       \tab 1.1-4       \cr
 #' }
 #'
 #' The following are marked "defunct", so calling them in the
@@ -121,7 +122,7 @@ NULL
 #' `oce.as.POSIXlt()`  \tab [lubridate::parse_date_time()] \tab 1.1-2      \cr
 #'}
 #'
-#' Several \sQuote{oce} function arguments are considered "deprecated", which
+#' Several \CRANpkg{oce} function arguments are considered "deprecated", which
 #' means they will be marked "defunct" in the next CRAN release. These are normally
 #' listed in the help page for the function in question. A few that may be
 #' of general interest are also listed below.

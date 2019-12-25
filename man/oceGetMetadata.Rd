@@ -2,12 +2,12 @@
 % Please edit documentation in R/accessors.R
 \name{oceGetMetadata}
 \alias{oceGetMetadata}
-\title{Get Something From the metadata Slot in an oce Object}
+\title{Get Something From an oce metadata Slot}
 \usage{
 oceGetMetadata(object, name)
 }
 \arguments{
-\item{object}{an \code{oce} object}
+\item{object}{an \linkS4class{oce} object.}
 
 \item{name}{String indicating the name of the item to be found.}
 }

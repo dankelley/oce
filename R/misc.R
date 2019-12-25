@@ -451,12 +451,15 @@ unduplicateNames <- function(strings, style=1)
 }
 
 
-#' Rename items in the data slot of an oce object
+#' Rename items in the data slot of an oce object (**deprecated**)
 #'
-#' This function may be used to rename elements within the
-#' `data` slot of `oce` objects. It also updates
-#' the processing log of the returned object, indicating
-#' the changes.
+#' This was deprecatd in December 2019, because [oceRenameData()] does
+#' a better job and is more consistent with other functions that work
+#' with items in the `data` and `metadata` slots.
+## This function may be used to rename elements within the
+## `data` slot of `oce` objects. It also updates
+## the processing log of the returned object, indicating
+## the changes.
 #'
 #' @param x an [oce-class] object.
 #'
@@ -464,14 +467,15 @@ unduplicateNames <- function(strings, style=1)
 #'
 #' @param new Vector of strings, containing old names.
 #'
-#' @examples
-#' data(ctd)
-#' new <- renameData(ctd, "temperature", "temperature68")
-#' new <- oceSetData(new, name="temperature",
-#'                   value=T90fromT68(new[["temperature68"]]),
-#'                   unit=list(unit=expression(degree*C),scale="ITS=90"))
+## @examples
+## data(ctd)
+## new <- renameData(ctd, "temperature", "temperature68")
+## new <- oceSetData(new, name="temperature",
+##                   value=T90fromT68(new[["temperature68"]]),
+##                   unit=list(unit=expression(degree*C),scale="ITS=90"))
 renameData <- function(x, old=NULL, new=NULL)
 {
+    .Deprecated("oceRenameData", msg="Superceded by oceRenameData(), as of December 2019")
     if (is.null(old)) stop("need to supply old")
     if (is.null(new)) stop("need to supply new")
     n <- length(old)

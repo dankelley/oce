@@ -171,3 +171,9 @@ test_that("renaming items in the data slot", {
           bad <- oceRenameData(ctd, "salinity", "saltiness", note="a bad idea!")
           expect_error(plot(bad), "data slot lacks 'salinity")
 })
+
+test_that("argo original names (issue 1640)", {
+          data(argo)
+          expect_equal(argo[["temperature"]], argo[["TEMP"]])
+})
+

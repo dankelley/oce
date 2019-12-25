@@ -218,7 +218,8 @@ setMethod(f="[[",
               } else if (i == "longitude") {
                   res <- x@data$longitude
               } else {
-                  res <- callNextMethod()         # [[
+                  ##message("FIXME: [[,argo-method calling next method")
+                  res <- callNextMethod()         # [[ defined in R/AllClass.R
               }
               res
           })

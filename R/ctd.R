@@ -912,7 +912,8 @@ setMethod(f="[[",
               } else if (i == "N2") {
                   swN2(x)
               } else {
-                  callNextMethod()     # [[
+                  ## message("FIXME: [[,ctd-method calling next method")
+                  callNextMethod()     # [[ defined in R/AllClass.R
               }
           })
 

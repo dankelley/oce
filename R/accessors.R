@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Get Something from the data Slot of an oce Object
+#' Get Something from an oce data Slot
 #'
 #' In contrast to the various `[[` functions, this is
 #' guaranteed to look only within the `data` slot. If
@@ -22,13 +22,13 @@ oceGetData <- function(object, name)
     object@data[[name]]
 }
 
-#' Delete Something in the data Slot of an oce Object
+#' Delete Something in an oce data Slot
 #'
 #' Return a copy of the supplied object that lacks the named
 #' element in its `data` slot, and that has a note
 #' about the deletion in its processing log.
 #'
-#' @param object an `oce` object
+#' @param object an [oce-class] object.
 #'
 #' @param name String indicating the name of the item to be deleted.
 #'
@@ -49,7 +49,7 @@ oceDeleteData <- function(object, name)
     object
 }
 
-#' Set Something in the data Slot of an oce Object
+#' Set Something in an oce data Slot
 #'
 #' @details
 #' There are three possibilities for `unit`:
@@ -167,9 +167,11 @@ oceSetData <- function(object, name, value, unit, originalName, note="")
 }
 
 
-#' Rename Something in an object's data Slot
+#' Rename Something in an oce data Slot
 #'
-#' Rename an item within the `data` slot of an [oce-class] object.
+#' Rename an item within the `data` slot of an [oce-class] object, also changing
+#' `dataNamesOriginal` in the `metadata` slot, so that the `[[` accessor will
+#' still work with the original name that was stored in the data.
 #'
 #' @param object an [oce-class] object.
 #'
@@ -183,6 +185,13 @@ oceSetData <- function(object, name, value, unit, originalName, note="")
 #' is a string of non-zero length, then this is inserted in the processing log of the returned
 #' value. If it is `NULL`, then no entry is added to the processing log.  Otherwise, the processing
 #' log gets a new item that is constructed from the function call.
+#'
+#' @examples
+#' library(oce)
+#' data(ctd)
+#' CTD <- oceRenameData(ctd, "salinity", "SALT")
+#' expect_equal(ctd[["salinity"]], CTD[["SALT"]])
+#' expect_equal(ctd[["sal00"]], CTD[["SALT"]])
 #'
 #' @author Dan Kelley
 #'
@@ -208,10 +217,20 @@ oceRenameData <- function(object, old, new, note="")
                 processingLogAppend(object@processingLog, paste(deparse(match.call())))
         }
     }
+    ## update original names
+    if ("dataNamesOriginal" %in% names(object@metadata)) {
+        dataNamesOriginalNames <- names(object@metadata$dataNamesOriginal)
+        if (old %in% dataNamesOriginalNames) {
+            ##message("old: ", vectorShow(dataNamesOriginalNames))
+            dataNamesOriginalNames[dataNamesOriginalNames == old] <- new
+            ##message("new: ", vectorShow(dataNamesOriginalNames ))
+            names(object@metadata$dataNamesOriginal) <- dataNamesOriginalNames
+        }
+    }
     object
 }
 
-#' Rename Something in an object's metadata Slot
+#' Rename Something in an oce metadata Slot
 #'
 #' Rename an item within the `metadata` slot of an [oce-class] object.
 #'
@@ -255,13 +274,13 @@ oceRenameMetadata <- function(object, old, new, note="")
     object
 }
 
-#' Get Something From the metadata Slot in an oce Object
+#' Get Something From an oce metadata Slot
 #'
 #' In contrast to the various `[[` functions, this is
 #' guaranteed to look only within the `metadata` slot. If
 #' the named item is not found, `NULL` is returned.
 #'
-#' @param object an `oce` object
+#' @param object an [oce-class] object.
 #'
 #' @param name String indicating the name of the item to be found.
 #'
@@ -277,13 +296,13 @@ oceGetMetadata <- function(object, name)
     object@metadata[[name]]
 }
 
-#' Delete Something in the metadata Slot of an oce Object
+#' Delete Something in an oce metadata Slot
 #'
 #' Return a copy of the supplied object that lacks the named
 #' element in its `metadata` slot, and that has a note
 #' about the deletion in its processing log.
 #'
-#' @param object an `oce` object
+#' @param object an [oce-class] object.
 #'
 #' @param name String indicating the name of the item to be deleted.
 #'
@@ -300,9 +319,9 @@ oceDeleteMetadata <- function(object, name)
     object
 }
 
-#' Set Something in the metadata Slot of an oce Object
+#' Set Something in an oce metadata Slot
 #'
-#' @param object an `oce` object
+#' @param object an [oce-class] object.
 #'
 #' @param name String indicating the name of the item to be set.
 #'

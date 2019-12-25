@@ -2,7 +2,7 @@
 % Please edit documentation in R/accessors.R
 \name{oceRenameData}
 \alias{oceRenameData}
-\title{Rename Something in an object's data Slot}
+\title{Rename Something in an oce data Slot}
 \usage{
 oceRenameData(object, old, new, note = "")
 }
@@ -21,7 +21,17 @@ value. If it is \code{NULL}, then no entry is added to the processing log.  Othe
 log gets a new item that is constructed from the function call.}
 }
 \description{
-Rename an item within the \code{data} slot of an \linkS4class{oce} object.
+Rename an item within the \code{data} slot of an \linkS4class{oce} object, also changing
+\code{dataNamesOriginal} in the \code{metadata} slot, so that the \code{[[} accessor will
+still work with the original name that was stored in the data.
+}
+\examples{
+library(oce)
+data(ctd)
+CTD <- oceRenameData(ctd, "salinity", "SALT")
+expect_equal(ctd[["salinity"]], CTD[["SALT"]])
+expect_equal(ctd[["sal00"]], CTD[["SALT"]])
+
 }
 \seealso{
 Other things related to the data slot: 

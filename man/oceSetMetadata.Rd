@@ -2,12 +2,12 @@
 % Please edit documentation in R/accessors.R
 \name{oceSetMetadata}
 \alias{oceSetMetadata}
-\title{Set Something in the metadata Slot of an oce Object}
+\title{Set Something in an oce metadata Slot}
 \usage{
 oceSetMetadata(object, name, value, note = "")
 }
 \arguments{
-\item{object}{an \code{oce} object}
+\item{object}{an \linkS4class{oce} object.}
 
 \item{name}{String indicating the name of the item to be set.}
 
@@ -24,7 +24,7 @@ in an overly verbose processing log; in such cases, it might help
 to add a note by e.g. \code{processingLog(a) <- "QC (memo dek-2018-01/31)"}}
 }
 \description{
-Set Something in the metadata Slot of an oce Object
+Set Something in an oce metadata Slot
 }
 \seealso{
 Other things related to the metadata slot: 

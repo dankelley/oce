@@ -2,7 +2,7 @@
 % Please edit documentation in R/accessors.R
 \name{oceSetData}
 \alias{oceSetData}
-\title{Set Something in the data Slot of an oce Object}
+\title{Set Something in an oce data Slot}
 \usage{
 oceSetData(object, name, value, unit, originalName, note = "")
 }
@@ -30,7 +30,7 @@ in an overly verbose processing log; in such cases, it might help
 to add a note by e.g. \code{processingLog(a) <- "QC (memo dek-2018-01/31)"}}
 }
 \description{
-Set Something in the data Slot of an oce Object
+Set Something in an oce data Slot
 }
 \details{
 There are three possibilities for \code{unit}:
