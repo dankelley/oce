@@ -50,7 +50,9 @@ that function.}
 \item{latitudelim}{similar to \code{longitudelim}.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
-amount of debugging information, or to 2 to get more.}
+amount of debugging information, 2 to go two function levels deep, or
+3 to go all the way to the core functions. Any value above 3 will be
+truncated to 3.}
 }
 \description{
 Plot longitude and latitude grid on an existing map.
