@@ -218,7 +218,8 @@ setMethod(f="[[",
               } else if (i == "longitude") {
                   res <- x@data$longitude
               } else {
-                  res <- callNextMethod()         # [[
+                  ##message("FIXME: [[,argo-method calling next method")
+                  res <- callNextMethod()         # [[ defined in R/AllClass.R
               }
               res
           })
@@ -1603,9 +1604,10 @@ setMethod(f="plot",
               if ("adorn" %in% names(list(...)))
                   warning("In plot,argo-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               oceDebug(debug, "plot.argo(x, which=c(", paste(which, collapse=","), "),",
-                      " mgp=c(", paste(mgp, collapse=","), "),",
-                      " mar=c(", paste(mar, collapse=","), "),",
-                      " ...) {\n", sep="", unindent=1)
+                      argShow(mgp),
+                      argShow(mar),
+                      argShow(cex),
+                      " ...) {\n", sep="", unindent=1, style="bold")
               coastline <- match.arg(coastline)
               nw  <- length(which)
               if (nw > 1) {
@@ -1746,7 +1748,7 @@ setMethod(f="plot",
                           oce.plot.ts(t, as.vector(x@data$salinity[level, ]),
                                       ylab=resizableLabel("S", "y"), type=type,
                                       col=if (missing(col)) "black" else col,
-                                      tformat=tformat, ...)
+                                      tformat=tformat, cex=cex)# , ...)
                       } else {
                           warning("no non-missing salinity data")
                       }
@@ -1768,7 +1770,7 @@ setMethod(f="plot",
                   } else if (which[w] == 4) {
                       ## TS
                       if (0 != sum(!is.na(x@data$temperature)) && 0 != sum(!is.na(x@data$salinity))) {
-                          plotTS(ctd, col=if (missing(col)) "black" else col, type=type, ...)
+                          plotTS(ctd, col=if (missing(col)) "black" else col, type=type, ..., debug=debug-1)
                      } else {
                           warning("no non-missing salinity data")
                       }
@@ -1790,7 +1792,7 @@ setMethod(f="plot",
                       stop("Unknown value of which=", which[w], "\n", call.=FALSE)
                   }
               }
-              oceDebug(debug, "} # plot.argo()\n", unindent=1)
+              oceDebug(debug, "} # plot.argo()\n", unindent=1, style="bold")
               invisible()
           })
 

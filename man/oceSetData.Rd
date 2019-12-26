@@ -2,12 +2,12 @@
 % Please edit documentation in R/accessors.R
 \name{oceSetData}
 \alias{oceSetData}
-\title{Set Something in the data Slot of an oce Object}
+\title{Set Something in an oce data Slot}
 \usage{
 oceSetData(object, name, value, unit, originalName, note = "")
 }
 \arguments{
-\item{object}{an \code{oce} object}
+\item{object}{an \linkS4class{oce} object.}
 
 \item{name}{String indicating the name of the item to be set.}
 
@@ -30,7 +30,7 @@ in an overly verbose processing log; in such cases, it might help
 to add a note by e.g. \code{processingLog(a) <- "QC (memo dek-2018-01/31)"}}
 }
 \description{
-Set Something in the data Slot of an oce Object
+Set Something in an oce data Slot
 }
 \details{
 There are three possibilities for \code{unit}:
@@ -58,4 +58,15 @@ feet <- swDepth(ctd) / 0.3048
 ctd <- oceSetData(ctd, name="depthInFeet", value=feet, expression("feet"))
 fathoms <- feet / 6
 ctd <- oceSetData(ctd, "depthInFathoms", fathoms, "fathoms")
+
 }
+\seealso{
+Other things related to the data slot: 
+\code{\link{oceDeleteData}()},
+\code{\link{oceGetData}()},
+\code{\link{oceRenameData}()}
+}
+\author{
+Dan Kelley
+}
+\concept{things related to the data slot}

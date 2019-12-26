@@ -2,12 +2,12 @@
 % Please edit documentation in R/accessors.R
 \name{oceDeleteMetadata}
 \alias{oceDeleteMetadata}
-\title{Delete Something in the metadata Slot of an oce Object}
+\title{Delete Something in an oce metadata Slot}
 \usage{
 oceDeleteMetadata(object, name)
 }
 \arguments{
-\item{object}{an \code{oce} object}
+\item{object}{an \linkS4class{oce} object.}
 
 \item{name}{String indicating the name of the item to be deleted.}
 }
@@ -16,3 +16,13 @@ Return a copy of the supplied object that lacks the named
 element in its \code{metadata} slot, and that has a note
 about the deletion in its processing log.
 }
+\seealso{
+Other things related to the metadata slot: 
+\code{\link{oceGetMetadata}()},
+\code{\link{oceRenameMetadata}()},
+\code{\link{oceSetMetadata}()}
+}
+\author{
+Dan Kelley
+}
+\concept{things related to the metadata slot}

@@ -2,12 +2,12 @@
 % Please edit documentation in R/accessors.R
 \name{oceGetMetadata}
 \alias{oceGetMetadata}
-\title{Get Something From the metadata Slot in an oce Object}
+\title{Get Something From an oce metadata Slot}
 \usage{
 oceGetMetadata(object, name)
 }
 \arguments{
-\item{object}{an \code{oce} object}
+\item{object}{an \linkS4class{oce} object.}
 
 \item{name}{String indicating the name of the item to be found.}
 }
@@ -16,3 +16,13 @@ In contrast to the various \code{[[} functions, this is
 guaranteed to look only within the \code{metadata} slot. If
 the named item is not found, \code{NULL} is returned.
 }
+\seealso{
+Other things related to the metadata slot: 
+\code{\link{oceDeleteMetadata}()},
+\code{\link{oceRenameMetadata}()},
+\code{\link{oceSetMetadata}()}
+}
+\author{
+Dan Kelley
+}
+\concept{things related to the metadata slot}

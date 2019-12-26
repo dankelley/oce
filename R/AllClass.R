@@ -387,9 +387,12 @@ setMethod(f="subset",
 #' @seealso
 #' Many `oce` object classes have specialized versions
 #' of `[[` that handle the details in specialized way.
+#'
+#' @author Dan Kelley
 setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              ##DEBUG debug <- 1               # DEVELOPER: set manually to test code
               if (i == "metadata") {
                   return(x@metadata)
               } else if (i == "data") {
@@ -415,20 +418,28 @@ setMethod(f="[[",
               } else if (i == "spice") {
                   return(swSpice(x))
               } else {
+                  ##DEBUG oceDebug(debug, "[[ at base level. i='", i, "'\n", sep="", unindent=1, style="bold")
                   if (missing(j) || j == "") {
+                      ##DEBUG oceDebug(debug, "j missing or empty ...\n")
                       ## Since 'j' is not provided, we must search for 'i'. We look first
                       ## in the metadata slot, but if it's not there, we look in the
                       ## data slot. In the 'data' case, we also permit partial-match names,
                       ## as well as non-partial matching to the original names, as
                       ## contained in a data file.
-                      if (i %in% names(x@metadata))
+                      if (i %in% names(x@metadata)) {
+                          ##DEBUG oceDebug(debug, "[[ base case 1\n")
                           return(x@metadata[[i]])
+                      }
                       ## partial match allowed in data, but not in original-name of data
                       index <- pmatch(i, names(x@data))
                       if (!is.na(index[1])) {
+                          ##DEBUG oceDebug(debug, "[[ base case 2\n")
                           return(x@data[[index]])
                       } else if (i %in% x@metadata$dataNamesOriginal) {
-                          return(x@data[[which(i==x@metadata$dataNamesOriginal)[1]]])
+                          w <- which(i==x@metadata$dataNamesOriginal)
+                          name <- names(x@metadata$dataNamesOriginal)[w]
+                          ##DEBUG oceDebug(debug, "[[ base case 3. w=", w, ", name='", name, "'\n", sep="")
+                          return(x@data[[name]])
                       } else {
                           return(NULL)
                       }
@@ -460,6 +471,7 @@ setMethod(f="[[",
 #' @param x an [oce-class] object.
 #'
 #' @template sub_subsetTemplate
+#' @author Dan Kelley
 setMethod(f="[[<-",
           signature(x="oce", i="ANY", j="ANY"),
           function(x, i, j, ..., value) {

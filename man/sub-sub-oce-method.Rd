@@ -115,4 +115,7 @@ Other functions that extract parts of oce objects:
 \code{\link{[[,xbt-method}},
 \code{\link{[[<-,adv-method}}
 }
+\author{
+Dan Kelley
+}
 \concept{functions that extract parts of oce objects}

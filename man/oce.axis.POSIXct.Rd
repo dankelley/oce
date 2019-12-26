@@ -13,8 +13,8 @@ oce.axis.POSIXct(
   drawTimeRange,
   abbreviateTimeRange = FALSE,
   drawFrequency = FALSE,
-  cex = par("cex"),
   cex.axis = par("cex.axis"),
+  cex.lab = par("cex.lab"),
   cex.main = par("cex.main"),
   mar = par("mar"),
   mgp = par("mgp"),
@@ -56,11 +56,7 @@ first number.}
 \item{drawFrequency}{boolean, \code{TRUE} to show the frequency of sampling
 in the data}
 
-\item{cex}{size of labels on axes; see \link[graphics:par]{graphics::par}\code{("cex")}.}
-
-\item{cex.axis}{see \link[graphics:par]{graphics::par}\code{("cex.axis")}.}
-
-\item{cex.main}{see \link[graphics:par]{graphics::par}\code{("cex.main")}.}
+\item{cex.axis, cex.lab, cex.main}{character expansion factors for axis numbers, axis names and plot titles; see \code{\link[=par]{par()}}.}
 
 \item{mar}{value for \code{par(mar)} for axis}
 
