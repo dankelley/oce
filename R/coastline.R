@@ -170,9 +170,9 @@ setMethod(f="subset",
               ## conversion of && to & and <= to <) for the pattern matching
               ## to work simply.
               s0 <- deparse(substitute(subset), width.cutoff=500)
+              oceDebug(debug, "subset,coastline-method(..., ", s0, ") {\n", unindent=1, sep="", style="bold")
               if (length(grep(">", s0)))
                   stop("the 'subset' may not contain the character '>'")
-              oceDebug(debug, "s0='", s0, "'\n", sep="")
               s1 <- gsub(" ", "", s0) # remove all spaces
               oceDebug(debug, "s1='", s1, "'\n", sep="")
               s2 <- gsub("&&", "&", gsub("=", "", gsub("[ ]*", "", s1))) # && becomes &
@@ -203,7 +203,7 @@ setMethod(f="subset",
               if (is.na(E)) stop("could not determine eastern longitude limit")
               if (is.na(S)) stop("could not determine southern latitude limit")
               if (is.na(N)) stop("could not determine northern latitude limit")
-              oceDebug(debug, "W=", W, ", E=", E, ", S=", S, ", N=", N)
+              oceDebug(debug, "W=", W, ", E=", E, ", S=", S, ", N=", N, "\n", sep="")
               res <- x
               cllon <- x[["longitude"]]
               cllat <- x[["latitude"]]
@@ -216,6 +216,7 @@ setMethod(f="subset",
               ## }}}
               ## {{{ NEW 'sf' method
               if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
+                  oceDebug(debug, "using sf:: methodology for polygon operations\n")
                   if (requireNamespace("sf", quietly=TRUE)) {
                       boxSF <- sf::st_polygon(list(outer=cbind(c(W,W,E,E,W), c(S,N,N,S,S))))
                   } else {
@@ -228,15 +229,10 @@ setMethod(f="subset",
               na <- which(is.na(cllon))
               nseg <- length(na)
               nnew <- 0
-              outlon <- NULL # FIXME: will remove when transition to sp is complete
-              outlat <- NULL # FIXME: will remove when transition to sp is complete
-              outlonSF <- NULL
-              outlatSF <- NULL
-              ## {{{ NEW 'sf' method
-              ## TESTING_SF DAN<<-vector("list")
-              ## TESTING_SF iDAN<<-1
-              ## }}}
-
+              outlon <- NULL           # FIXME: remove after transition to sf::
+              outlat <- NULL           # FIXME: remove after transition to sf::
+              outlonSF <- NULL         # FIXME: remove after transition to sf::
+              outlatSF <- NULL         # FIXME: remove after transition to sf:"
               for (iseg in 2:nseg) {
                   look <- seq.int(na[iseg-1]+1, na[iseg]-1)
                   lon <- cllon[look]
@@ -260,7 +256,6 @@ setMethod(f="subset",
                                   nnew <- nnew + length(seglon)
                                   outlon <- c(outlon, NA, seglon)
                                   outlat <- c(outlat, NA, seglat)
-                                  ## oceDebug(debug > 1, "iseg=", iseg, ", j=", j, ", k=", k, "\n", sep="")
                               }
                           }
                       }
@@ -268,17 +263,12 @@ setMethod(f="subset",
                       ## {{{ NEW 'sf' method
                       if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
                           if (requireNamespace("sf", quietly=TRUE)) {
-                              ## TESTING_SF message("coastline.R:266")
                               CSF <- sf::st_polygon(list(outer=cbind(c(lon, lon[1]), c(lat, lat[1]))))
                               insideSF <- sf::st_intersection(boxSF, CSF)
-                              ## TESTING_SF DAN[[iDAN]] <<- insideSF
-                              ## TESTING_SF cat("iDAN=", iDAN, "; length=", length(insideSF), " (41 42 44 51 270)\n")
                               if (1 == length(insideSF)) {
                                   outlonSF <- c(outlonSF, NA, insideSF[[1]][,1])
                                   outlatSF <- c(outlatSF, NA, insideSF[[1]][,2])
                               }
-                              ## TESTING_SF iDAN <<- iDAN + 1
-                              ##print(dput(insideSF))
                           } else {
                               stop("subset,coastline-method(): must install 'sf' package to handle option(\"oce:test_sf\"=1)")
                           }
@@ -286,14 +276,18 @@ setMethod(f="subset",
                       ## }}}
                   }
               }
-              ## TESTING_SF OLD<<-cbind(outlon,outlat)
-              ## TESTING_SF NEW<<-cbind(outlonSF,outlatSF)
               ## {{{ NEW 'sf' method
               if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
-                  if (!all.equal(outlon, outlonSF)) 
+                  if (!all.equal(outlon, outlonSF)) {
                       warning("subset,coastline() error: longitude disagreement between trial 'sf' method and old method. Please post an issue on www.github.com/dankelley/oce/issues\n")
-                  if (!all.equal(outlat, outlatSF)) 
+                  } else {
+                      oceDebug(debug, "sf:: method agrees with old method on longitude\n")
+                  }
+                  if (!all.equal(outlat, outlatSF)) {
                       warning("subset,coastline() error: latitude disagreement between trial 'sf' method and old method. Please post an issue on www.github.com/dankelley/oce/issues\n")
+                  } else {
+                      oceDebug(debug, "sf:: method agrees with old method on latitude\n")
+                  }
               }
               ## }}}
               res@data$longitude <- outlon
@@ -301,6 +295,7 @@ setMethod(f="subset",
               options(warn=owarn)
               res@processingLog <- processingLogAppend(res@processingLog,
                                                        paste("subset(x, ", s0, ")", sep=""))
+              oceDebug(debug, "} # subset,coastline-method\n", unindent=1, sep="", style="bold")
               res
           })
 

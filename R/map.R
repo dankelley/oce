@@ -42,13 +42,16 @@
 #' errors on the i386/windows platform, but it seems likely that a version
 #' of \CRANpkg{rgdal} released after 1.3-9 may not have that error.
 #'
+#' @template debugTemplate
+#'
 #' @return A two-column matrix, with first column holding either
 #' `longitude` or `x`, and second column holding either
 #' `latitude` or `y`.
-oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, passNA=FALSE)
+oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, passNA=FALSE, debug=getOption("oceDebug"))
 {
     if (!requireNamespace("rgdal", quietly=TRUE))
         stop('must install.packages("rgdal") to do map projections')
+    oceDebug(debug, "oceProject(xy, proj=\"", proj, "\", ...) {\n", sep="", unindent=1, style="bold")
     owarn <- options()$warn # this, and the capture.output, quieten the processing
     ## {{{ OLD 'rgdal' method
     options(warn=-1)
@@ -81,7 +84,7 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
     ## }}}
     ## {{{ NEW 'sf' method
     if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
-        ## message("subset,section-method(): testing 'sf' method, since options(\"oce:test_sf\"=1)")
+        oceDebug(debug, "testing 'sf' method, since options(\"oce:test_sf\"=1)\n")
         if (requireNamespace("sf", quietly=TRUE)) {
             ## message("subset,section-method(): testing 'sf' method, since options(\"oce:test_sf\"=1)")
             na <- which(!is.finite(xy[,1]))
@@ -90,22 +93,24 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
             ##cat(str(xy))
             if (inv) {
                 ##message(" -- inverse proj='", proj, "'")
-                x <- sf::st_sfc(sf::st_multipoint(xy), crs=sf::st_crs(proj))
-                XYSF <- unname(sf::st_coordinates(sf::st_transform(x=x,
-                                                                    crs=sf::st_crs("+proj=longlat"),
-                                                                    check=FALSE,
-                                                                    partial=TRUE))[,1:2,drop=FALSE])
+                ##>>> x <- sf::st_sfc(sf::st_multipoint(xy), crs=sf::st_crs(proj))
+                ##>>> XYSF <- unname(sf::st_coordinates(sf::st_transform(x=x,
+                ##>>>                                                     crs=sf::st_crs("+proj=longlat"),
+                ##>>>                                                     check=FALSE,
+                ##>>>                                                     partial=TRUE))[,1:2,drop=FALSE])
+                XYSF <- unname(sf::sf_project("+proj=longlat", proj, xy))
                 ## message("old XY:")
                 ## cat(str(XY))
                 ## message("new XYSF:")
                 ## cat(str(XYSF))
             } else {
                 ##message(" -- forward proj='", proj, "'")
-                x <- sf::st_sfc(sf::st_multipoint(xy), crs=sf::st_crs("+proj=longlat"))
-                XYSF <- unname(sf::st_coordinates(sf::st_transform(x=x,
-                                                                    crs=sf::st_crs(proj),
-                                                                    check=FALSE,
-                                                                    partial=TRUE))[,1:2,drop=FALSE])
+                ##>>> x <- sf::st_sfc(sf::st_multipoint(xy), crs=sf::st_crs("+proj=longlat"))
+                ##>>> XYSF <- unname(sf::st_coordinates(sf::st_transform(x=x,
+                ##>>>                                                     crs=sf::st_crs(proj),
+                ##>>>                                                     check=FALSE,
+                ##>>>                                                     partial=TRUE))[,1:2,drop=FALSE])
+                XYSF <- unname(sf::sf_project(proj, "+proj=longlat", xy))
                 ##message("old XY:")
                 ##cat(str(XY))
                 ##message("new XYSF:")
@@ -119,14 +124,20 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
 
             ##> options("oce:test_sf"=1);source("R/map.R");mapPlot(coastlineWorld,proj="+proj=robin")
 
-            message("proj=",proj,",inv=",inv,",dim(xy)=",paste(dim(xy),collapse="x"))
+            oceDebug(debug, "dim(xy)=", paste(dim(xy), collapse=" X "), "\n", sep="")
             daninv <<- inv
             danproj <<- proj
             dancrs <<- sf::st_crs(proj)
-            danx <<- x
             danxy <<- xy
             danXY <<- XY
             danXYSF <<- XYSF
+            print("XY:")
+            print(str(XY))
+            ##cat(vectorShow(XY))
+            print("XYSF:")
+            print("XYSF:")
+            print(str(XYSF))
+            ##cat(vectorShow(XYSF))
             if(!all.equal(XY, XYSF)) {
                 warning("mismatch with old; see danproj, dancrs, danx, danxy, danXY, danXYSF\n")
             }
@@ -134,6 +145,7 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
     }
     ## }}}
     options(warn=owarn)
+    oceDebug(debug, "} oceProject\n", sep="", unindent=1, style="bold")
     XY
 }
 
@@ -1600,13 +1612,13 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (!missing(projection) && inherits(projection, "CRS")) {
         projection <- projection@projargs
     }
-    oceDebug(debug, "mapPlot(longitude, latitude",
-             ", longitudelim=", if (missing(longitudelim)) "(missing)" else c("c(", paste(format(longitudelim, digits=4), collapse=","), ")"),
-             ", longitudelim=", if (missing(latitudelim)) "(missing)" else c("c(", paste(format(latitudelim, digits=4), collapse=","), ")"),
-             ", type=\"", type, "\"",
-             ", projection=\"", if (is.null(projection)) "NULL" else projection, "\"",
-             ", grid=c(", paste(gridOrig, collapse=","), ")",
-             ", ...) {\n", sep="", unindent=1)
+    oceDebug(debug, "mapPlot(longitude, latitude,",
+             argShow(longitudelim),
+             argShow(latitudelim),
+             argShow(type),
+             argShow(projection),
+             argShow(grid),
+             "...) {\n", sep="", unindent=1, style="bold")
     if (missing(longitude)) {
         data("coastlineWorld", package="oce", envir=environment())
         longitude <- get("coastlineWorld")
@@ -1650,7 +1662,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (nchar(projection) && substr(projection, 1, 1) != "+") {
         stop("use PROJ.4 format, e.g. projection=\"+proj=merc\" for Mercator\n", sep="")
     }
-    xy <- lonlat2map(longitude, latitude, projection=projection)
+    xy <- lonlat2map(longitude, latitude, projection=projection, debug=debug-1)
     if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("latitudelim must contain two distinct values")
     if (!missing(longitudelim) && 0 == diff(longitudelim)) stop("longitudelim must contain two distinct values")
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
@@ -1932,7 +1944,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             mapTissot(grid, col='red', debug=debug-1)
         options(warn=options$warn)
     }
-    oceDebug(debug, "} # mapPlot()\n", unindent=1)
+    oceDebug(debug, "} # mapPlot()\n", sep="", unindent=1, style="bold")
 }
 
 
@@ -3648,7 +3660,7 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 #' @family functions related to maps
 lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "lonlat2map() {\n", unindent=1, sep="")
+    oceDebug(debug, "lonlat2map() {\n", unindent=1, sep="", style="bold")
     if (missing(longitude))
         stop("must supply longitude")
     if (is.list(longitude)) {
@@ -3672,8 +3684,8 @@ lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceD
     n <- length(longitude)
     if (n != length(latitude))
         stop("lengths of longitude and latitude must match, but they are ", n, " and ", length(latitude))
-    XY <- oceProject(xy=cbind(longitude, latitude), proj=as.character(projection), inv=FALSE)
+    XY <- oceProject(xy=cbind(longitude, latitude), proj=as.character(projection), inv=FALSE, debug=debug-1)
     .Projection(list(type="proj4", projection=projection))
-    oceDebug(debug, "} # lonlat2map()\n", unindent=1, sep="")
+    oceDebug(debug, "} # lonlat2map()\n", unindent=1, sep="", style="bold")
     list(x=XY[, 1], y=XY[, 2])
 }
