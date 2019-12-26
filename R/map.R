@@ -83,66 +83,20 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
     }
     ## }}}
     ## {{{ NEW 'sf' method
-    if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
-        oceDebug(debug, "testing 'sf' method, since options(\"oce:test_sf\"=1)\n")
-        if (requireNamespace("sf", quietly=TRUE)) {
-            ## message("subset,section-method(): testing 'sf' method, since options(\"oce:test_sf\"=1)")
-            na <- which(!is.finite(xy[,1]))
-            xy[na, ] <- 0
-            ##message("xy:")
-            ##cat(str(xy))
-            if (inv) {
-                ##message(" -- inverse proj='", proj, "'")
-                ##>>> x <- sf::st_sfc(sf::st_multipoint(xy), crs=sf::st_crs(proj))
-                ##>>> XYSF <- unname(sf::st_coordinates(sf::st_transform(x=x,
-                ##>>>                                                     crs=sf::st_crs("+proj=longlat"),
-                ##>>>                                                     check=FALSE,
-                ##>>>                                                     partial=TRUE))[,1:2,drop=FALSE])
-                XYSF <- unname(sf::sf_project(proj, "+proj=longlat", xy))
-                ## message("old XY:")
-                ## cat(str(XY))
-                ## message("new XYSF:")
-                ## cat(str(XYSF))
-            } else {
-                ##message(" -- forward proj='", proj, "'")
-                ##>>> x <- sf::st_sfc(sf::st_multipoint(xy), crs=sf::st_crs("+proj=longlat"))
-                ##>>> XYSF <- unname(sf::st_coordinates(sf::st_transform(x=x,
-                ##>>>                                                     crs=sf::st_crs(proj),
-                ##>>>                                                     check=FALSE,
-                ##>>>                                                     partial=TRUE))[,1:2,drop=FALSE])
-                XYSF <- unname(sf::sf_project("+proj=longlat", proj, xy))
-                ##message("old XY:")
-                ##cat(str(XY))
-                ##message("new XYSF:")
-                ##cat(str(XYSF))
-            }
-            XYSF[na, ] <- NA
-            ## message("... head(XY):")
-            ## print(head(XY))
-            ## message("... head(XYSF):")
-            ## print(head(XYSF))
-
-            ##> options("oce:test_sf"=1);source("R/map.R");mapPlot(coastlineWorld,proj="+proj=robin")
-
-            ##oceDebug(debug, "dim(xy)=", paste(dim(xy), collapse=" X "), "\n", sep="")
-            if (debug) {
-                ## daninv <<- inv
-                ## danproj <<- proj
-                ## dancrs <<- sf::st_crs(proj)
-                ## danxy <<- xy
-                ## danXY <<- XY
-                ## danXYSF <<- XYSF
-                ##cat(vectorShow(XY))
-                ##cat(vectorShow(XYSF))
-            }
-            if(!all.equal(XY, XYSF)) {
-                warning("mismatch with old; see danproj, dancrs, danx, danxy, danXY, danXYSF\n")
-            }
-        }
+    na <- which(!is.finite(xy[,1]))
+    xy[na, ] <- 0
+    if (inv) {
+        XYSF <- unname(sf::sf_project(proj, "+proj=longlat", xy))
+    } else {
+        XYSF <- unname(sf::sf_project("+proj=longlat", proj, xy))
+    }
+    XYSF[na, ] <- NA
+    if (!all.equal(XY, XYSF)) {
+        warning("oceProject(): disagreement between old 'sp' method and new 'sf' method\n")
     }
     ## }}}
     options(warn=owarn)
-    oceDebug(debug, "} oceProject\n", sep="", unindent=1, style="bold")
+    oceDebug(debug, "} # oceProject\n", sep="", unindent=1, style="bold")
     XY
 }
 
@@ -851,28 +805,19 @@ mapContour <- function(longitude, latitude, z,
                             polygon(xc[labelj]+XYrot[,1], yc[labelj]+XYrot[,2],
                                     col=colUnderLabel, border=colUnderLabel)
                         } else if (underlay == "interrupt") {
-                            ## cat("old 'sp' method timing:\n")
-                            ##print(system.time({
                             erase <- 1==sp::point.in.polygon(xc, yc,
                                                              xc[labelj]+XYrot[,1], yc[labelj]+XYrot[,2])
-                            ##}))
-                            if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
-                                if (requireNamespace("sf", quietly=TRUE)) {
-                                    polyx <- xc[labelj] + XYrot[,1]
-                                    polyy <- yc[labelj] + XYrot[,2]
-                                    polyNew <- sf::st_polygon(list(outer=cbind(c(polyx, polyx[1]), c(polyy, polyy[1]))))
-                                    pointsNew <- sf::st_multipoint(cbind(xc, yc))
-                                    insideNew <- sf::st_intersection(pointsNew, polyNew)
-                                    eraseNew <- matrix(pointsNew %in% insideNew, ncol=2)[,1]
-                                    eraseOld <- erase
-                                    if (!all.equal(eraseNew, erase)) {
-                                        warning("mapContour() error: 'erase' disagreement with trial 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n")
-                                    }
-                                } else {
-                                    stop("mapContour(): must install 'sf' package to handle option(\"oce:test_sf\"=1)")
-                                }
-                                oceDebug(debug, "ignoring", sum(erase), "points under", label, "contour\n")
+                            polyx <- xc[labelj] + XYrot[,1]
+                            polyy <- yc[labelj] + XYrot[,2]
+                            polyNew <- sf::st_polygon(list(outer=cbind(c(polyx, polyx[1]), c(polyy, polyy[1]))))
+                            pointsNew <- sf::st_multipoint(cbind(xc, yc))
+                            insideNew <- sf::st_intersection(pointsNew, polyNew)
+                            eraseNew <- matrix(pointsNew %in% insideNew, ncol=2)[,1]
+                            eraseOld <- erase
+                            if (!all.equal(eraseNew, erase)) {
+                                warning("mapContour() error: 'erase' disagreement with trial 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n")
                             }
+                            oceDebug(debug, "ignoring", sum(erase), "points under", label, "contour\n")
                             XC <- xc
                             YC <- yc
                             XC[erase] <- NA

@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 
 #' Class to Store Hydrographic Section Data
 #'
@@ -661,6 +661,7 @@ setMethod(f="subset",
                   if (!is.data.frame(polygon) && !is.list(polygon))
                       stop("'within' must be a data frame or a polygon")
                   polygonNames <- names(polygon)
+                  ## {{{ OLD 'sp::point.in.polygon' method
                   lonp <- if ("x" %in% polygonNames) {
                       polygon$x
                   } else if ("longitude" %in% polygonNames) {
@@ -682,20 +683,16 @@ setMethod(f="subset",
                   } else {
                       stop("subset,section-method cannot use 'within' because the 'sp' package is not installed")
                   }
-                  if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
-                      message("subset,section-method(): testing 'sf' method, since options(\"oce:test_sf\"=1)")
-                      if (requireNamespace("sf", quietly=TRUE)) {
-                          polyNew <- sf::st_polygon(list(outer=cbind(c(lonp, lonp[1]), c(latp, latp[1]))))
-                          pointsNew <- sf::st_multipoint(cbind(lon, lat))
-                          inside <- sf::st_intersection(pointsNew, polyNew)
-                          keepNew <- matrix(pointsNew %in% inside, ncol=2)[,1]
-                          if (!all.equal(keepNew, keep)) {
-                              warning("subset,section-method error: 'keep' disagreement with trial 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n")
-                          }
-                      } else {
-                          stop("subset,section-method with 'within' argument: must install 'sf' package to handle option(\"oce:test_sf\"=1)")
-                      }
+                  ## }}}
+                  ## {{{ NEW 'sf' method
+                  polyNew <- sf::st_polygon(list(outer=cbind(c(lonp, lonp[1]), c(latp, latp[1]))))
+                  pointsNew <- sf::st_multipoint(cbind(lon, lat))
+                  inside <- sf::st_intersection(pointsNew, polyNew)
+                  keepNew <- matrix(pointsNew %in% inside, ncol=2)[,1]
+                  if (!all.equal(keepNew, keep)) {
+                      warning("subset,section-method error: 'keep' disagreement with trial 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n")
                   }
+                  ## }}}
                   res <- x
                   res@metadata$stationId <- x@metadata$stationId[keep]
                   res@metadata$longitude <- x@metadata$longitude[keep]

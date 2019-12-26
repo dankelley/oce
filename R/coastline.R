@@ -215,14 +215,8 @@ setMethod(f="subset",
               box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
               ## }}}
               ## {{{ NEW 'sf' method
-              if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
-                  oceDebug(debug, "using sf:: methodology for polygon operations\n")
-                  if (requireNamespace("sf", quietly=TRUE)) {
-                      boxSF <- sf::st_polygon(list(outer=cbind(c(W,W,E,E,W), c(S,N,N,S,S))))
-                  } else {
-                      stop("subset,coastline-method(): must install 'sf' package to handle option(\"oce:test_sf\"=1)")
-                  }
-              }
+              oceDebug(debug, "using sf:: methodology for polygon operations\n")
+              boxSF <- sf::st_polygon(list(outer=cbind(c(W,W,E,E,W), c(S,N,N,S,S))))
               ## }}}
               owarn <- options("warn")$warn
               options(warn=-1)
@@ -261,33 +255,25 @@ setMethod(f="subset",
                       }
                       ## }}}
                       ## {{{ NEW 'sf' method
-                      if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
-                          if (requireNamespace("sf", quietly=TRUE)) {
-                              CSF <- sf::st_polygon(list(outer=cbind(c(lon, lon[1]), c(lat, lat[1]))))
-                              insideSF <- sf::st_intersection(boxSF, CSF)
-                              if (1 == length(insideSF)) {
-                                  outlonSF <- c(outlonSF, NA, insideSF[[1]][,1])
-                                  outlatSF <- c(outlatSF, NA, insideSF[[1]][,2])
-                              }
-                          } else {
-                              stop("subset,coastline-method(): must install 'sf' package to handle option(\"oce:test_sf\"=1)")
-                          }
+                      CSF <- sf::st_polygon(list(outer=cbind(c(lon, lon[1]), c(lat, lat[1]))))
+                      insideSF <- sf::st_intersection(boxSF, CSF)
+                      if (1 == length(insideSF)) {
+                          outlonSF <- c(outlonSF, NA, insideSF[[1]][,1])
+                          outlatSF <- c(outlatSF, NA, insideSF[[1]][,2])
                       }
                       ## }}}
                   }
               }
               ## {{{ NEW 'sf' method
-              if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
-                  if (!all.equal(outlon, outlonSF)) {
-                      warning("subset,coastline() error: longitude disagreement between trial 'sf' method and old method. Please post an issue on www.github.com/dankelley/oce/issues\n")
-                  } else {
-                      oceDebug(debug, "sf:: method agrees with old method on longitude\n")
-                  }
-                  if (!all.equal(outlat, outlatSF)) {
-                      warning("subset,coastline() error: latitude disagreement between trial 'sf' method and old method. Please post an issue on www.github.com/dankelley/oce/issues\n")
-                  } else {
-                      oceDebug(debug, "sf:: method agrees with old method on latitude\n")
-                  }
+              if (!all.equal(outlon, outlonSF)) {
+                  warning("subset,coastline() error: longitude disagreement between trial 'sf' method and old method. Please post an issue on www.github.com/dankelley/oce/issues\n")
+              } else {
+                  oceDebug(debug, "sf:: method agrees with old method on longitude\n")
+              }
+              if (!all.equal(outlat, outlatSF)) {
+                  warning("subset,coastline() error: latitude disagreement between trial 'sf' method and old method. Please post an issue on www.github.com/dankelley/oce/issues\n")
+              } else {
+                  oceDebug(debug, "sf:: method agrees with old method on latitude\n")
               }
               ## }}}
               res@data$longitude <- outlon

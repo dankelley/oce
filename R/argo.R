@@ -1,5 +1,4 @@
-# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
-
+# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 #' Class to Store Argo Data
 #'
 #' This class stores data from Argo floats.
@@ -507,8 +506,10 @@ setMethod(f="subset",
               dotsNames <- names(dots)
               withinGiven <- length(dots) && ("within" %in% dotsNames)
               debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
+              oceDebug(debug, "subset,argo-method() {\n", sep="", unindent=1, style="bold")
               if (withinGiven) {
                   oceDebug(debug, "subsetting with 'within' method\n")
+                  ## {{{ OLD 'sp::point.in.polygon' method
                   polygon <- dots$within
                   if (!is.data.frame(polygon) && !is.list(polygon))
                       stop("'within' must be a data frame or a polygon")
@@ -534,36 +535,22 @@ setMethod(f="subset",
                   } else {
                       stop("cannot use 'within' because the 'sp' package is not installed")
                   }
-                  if (debug > 0) {
-                      oceDebug(debug, "testing oce:convert_to_sp for subset(..., within=...)\n")
-                      oceDebug(debug, "  polygon ", vectorShow(lonp))
-                      oceDebug(debug, "  polygon ", vectorShow(latp))
-                      oceDebug(debug, "  keeping ", sum(keep)/length(keep)*100, "% of profiles, viz. ",
-                               paste(which(keep), collapse=" "), "\n", sep="")
+                  ## }}}
+                  ## {{{ NEW 'sf' method
+                  ## Compare with 'sf' results
+                  polyNew <- sf::st_polygon(list(outer=cbind(c(lonp, lonp[1]), c(latp, latp[1]))))
+                  pointsNew <- sf::st_multipoint(cbind(lon, lat))
+                  insideNew <- sf::st_intersection(pointsNew, polyNew)
+                  keepNew <- matrix(pointsNew %in% insideNew, ncol=2)[,1]
+                  if (!all.equal(keepNew, keep)) {
+                      warning("subset,argo-method disagreement between old 'sp' method and new 'sf' method\n")
+                  } else {
+                      oceDebug(debug, "subset,argo-method: old 'sp' method and new 'sf' method gave identical results\n");
                   }
-                  if (!is.null(options("oce:test_sf")$`oce:test_sf`)) {
-                      message("subset,argo-method(): testing 'sf' method, since options(\"oce:test_sf\"=1)")
-                      if (requireNamespace("sf", quietly=TRUE)) {
-                          ## st_polygon requires a closed x,y path, hence the appending of the first point
-                          polyNew <- sf::st_polygon(list(outer=cbind(c(lonp, lonp[1]), c(latp, latp[1]))))
-                          ## There may be a more elegant way of intersecting, but this works on example 4 of the documentation
-                          ##. keepNew <- as.logical(lapply(seq_along(lon),
-                          ##.                              function(i)
-                          ##.                                  lengths(sf::st_intersects(sf::st_point(c(lon[i],lat[i])), polyNew))))
-
-                          pointsNew <- sf::st_multipoint(cbind(lon, lat))
-                          insideNew <- sf::st_intersection(pointsNew, polyNew)
-                          keepNew <- matrix(pointsNew %in% insideNew, ncol=2)[,1]
-                          if (!all.equal(keepNew, keep)) {
-                              warning("FAIL: 'keep' list disagreement, between old 'sp' method and trial 'sf' method\n")
-                          }
-                      } else {
-                          stop("subset,argo-method with 'within' argument: must install 'sf' package to handle option(\"oce:test_sf\"=1)")
-                      }
-                  }
+                  ## }}}
                   ## Metadata
                   for (name in names(x@metadata)) {
-                      oceDebug(debug, "subsetting metadata item named '", name, "'\n", sep="")
+                      oceDebug(debug>2, "subsetting metadata item named '", name, "'\n", sep="")
                       ## Pass oce-generated things through directly.
                       if (name %in% c("units", "flags", "filename", "flagScheme", "dataNamesOriginal")) {
                           ##.message("  ... special case, so passed directly")
@@ -590,7 +577,7 @@ setMethod(f="subset",
                   }
                   ## Data
                   for (name in names(x@data)) {
-                      oceDebug(debug, "subsetting data item named '", name, "'\n", sep="")
+                      oceDebug(debug>2, "subsetting data item named '", name, "'\n", sep="")
                       item <- x@data[[name]]
                       if ("time" == name) {
                           ##.message("'", name, "' is time (not a vector)")
@@ -735,6 +722,7 @@ setMethod(f="subset",
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset.argo(x, subset=", subsetString, ")", sep=""))
                   }
               }
+              oceDebug(debug, "} # subset,argo-method\n", sep="", unindent=1, style="bold")
               res
           })
 
@@ -1589,7 +1577,7 @@ as.argo <- function(time, longitude, latitude,
 #' @aliases plot.argo
 setMethod(f="plot",
           signature=signature("argo"),
-          definition=function (x, which = 1, level,
+          definition=function (x, which=1, level,
                                coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
                                            "coastlineWorldFine", "none"),
                                cex=1, pch=1, type='p', col, fill=FALSE,
@@ -1603,18 +1591,17 @@ setMethod(f="plot",
                   stop("method is only for objects of class '", "argo", "'")
               if ("adorn" %in% names(list(...)))
                   warning("In plot,argo-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
-              oceDebug(debug, "plot.argo(x, which=c(", paste(which, collapse=","), "),",
+              oceDebug(debug, "plot.argo(x, which=c(",
+                      argShow(which),
                       argShow(mgp),
                       argShow(mar),
                       argShow(cex),
                       " ...) {\n", sep="", unindent=1, style="bold")
               coastline <- match.arg(coastline)
               nw  <- length(which)
-              if (nw > 1) {
-                  par(mfcol=c(1, nw), mgp=mgp, mar=mar)
-              } else {
-                  par(mgp=mgp, mar=mar)
-              }
+              if (nw > 1)
+                  par(mfcol=c(1, nw))
+              par(mgp=mgp, mar=mar)
               if (missing(level) || level == "all")
                   level <- seq(1L, dim(x@data$temperature)[1])
               longitude <- x[["longitude"]]
@@ -1644,7 +1631,8 @@ setMethod(f="plot",
                   stop("In plot,argo-method() :\n  unrecognized value of which", call.=FALSE)
               for (w in 1:nw) {
                   if (which[w] == 1) {
-                      oceDebug(debug, "which[", w, "] ==1, so plotting a map\n")
+                      oceDebug(debug, "which[", w, "] == 1, so plotting a map\n")
+                      oceDebug(debug, "note: par(\"mfrow\") = ", paste(par("mfrow"), collapse=","), "\n")
                       ## map
                       ## FIXME: coastline selection should be DRY
                       haveCoastline <- FALSE
@@ -1688,6 +1676,7 @@ setMethod(f="plot",
                       ## if (!is.character(coastline)) stop("coastline must be a character string")
 
                       if (!is.null(projection)) {
+                          oceDebug(debug, "drawing an argo map with a projection\n")
                           meanlat <- mean(x[['latitude']], na.rm=TRUE)
                           meanlon <- mean(x[['longitude']], na.rm=TRUE)
                           ## id <- pmatch(projection, "automatic")
@@ -1713,6 +1702,7 @@ setMethod(f="plot",
                               }
                           }
                       } else {
+                          oceDebug(debug, "drawing an argo map without a projection\n")
                           asp <- 1 / cos(mean(range(x@data$latitude, na.rm=TRUE)) * atan2(1, 1) / 45)
                           plot(x@data$longitude, x@data$latitude, asp=asp,
                                type=type, cex=cex, pch=pch,
