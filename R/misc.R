@@ -2247,12 +2247,22 @@ oce.spectrum <- oceSpectrum
 #' @author Dan Kelley
 vectorShow <- function(v, msg=NULL, digits=5, n=2L)
 {
+    DIM <- dim(v)
     nv <- length(v)
     if (is.null(msg))
         msg <- deparse(substitute(v))
     if (is.null(msg))
         msg <- ""
-    if (nchar(msg) && !grepl(":", msg)) {
+    if (!is.null(DIM)) {
+        msg <- paste(msg,
+                     paste("[",
+                           paste(unlist(lapply(DIM, function(x) paste("1:",x,sep=""))),collapse=", "),
+                           "]",
+                           sep=""))
+    } else if (nv > 1) {
+        msg <- paste(msg, paste("[1:", nv, "]", sep=""))
+    }
+    if (nchar(msg) && !grepl(":$", msg)) {
         msg <- paste0(msg, ": ")
     }
     if (nv == 0) {
@@ -2266,21 +2276,18 @@ vectorShow <- function(v, msg=NULL, digits=5, n=2L)
         }
         if (is.numeric(v)) {
             if (showAll) {
-                paste(msg, paste(format(v, digits=digits), collapse=", "),
-                      if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
+                paste(msg, paste(format(v, digits=digits), collapse=", "), "\n", sep="")
             } else {
                 paste(msg, paste(format(v[1:n], digits=digits), collapse=", "),
                       ", ..., ", paste(format(v[nv-seq.int(n-1, 0)], digits=digits), collapse=", "),
-                      if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
+                      "\n", sep="")
             }
         } else {
             if (showAll) {
-                paste(msg, paste(v, collapse=", "),
-                      if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
+                paste(msg, paste(v, collapse=", "), "\n", sep="")
             } else {
                 paste(msg, paste(v[1:n], collapse=", "),
-                      ", ..., ", paste(v[nv-seq.int(n-1, 0)], collapse=", "),
-                      if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
+                      ", ..., ", paste(v[nv-seq.int(n-1, 0)], collapse=", "), "\n", sep="")
             }
         }
     }
