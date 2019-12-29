@@ -1782,7 +1782,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             }
         }
         if (length(grep(".xml$", filename, ignore.case=TRUE))) {
-            firstLine <- readLines(filename, 1)
+            firstLine <- readLines(filename, 1, encoding="UTF-8")
             if (grepl(".weather.gc.ca", firstLine))
                 return("met/xml2")
         }
@@ -1799,7 +1799,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             return("gpx")
         }
         if (grepl(".csv$", filename, ignore.case=TRUE)) {
-            someLines <- readLines(filename, 30)
+            someLines <- readLines(filename, 30, encoding="UTF-8")
             ## print(grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1]))
             if (1 == length(grep('^"WMO Identifier', someLines, useBytes=TRUE))) {
                 return("met/csv1") # FIXME: may be other things too ...
@@ -1825,7 +1825,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     if (!isOpen(file))
         open(file, "r")
     ## Grab text at start of file.
-    lines <- readLines(file, n=2, skipNul=TRUE)
+    lines <- readLines(file, n=2, skipNul=TRUE, encoding="UTF-8")
     line <- lines[1]
     line2 <- lines[2]
     oceDebug(debug, "first line of file: ", line, "\n", sep="")
