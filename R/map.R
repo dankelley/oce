@@ -53,16 +53,14 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
         stop('must install.packages("rgdal") to do map projections')
     oceDebug(debug, "oceProject(xy, proj=\"", proj, "\", ...) {\n", sep="", unindent=1, style="bold")
     owarn <- options()$warn # this, and the capture.output, quieten the processing
-    ## {{{ OLD 'rgdal' method
     options(warn=-1)
+    ## {{{ OLD 'rgdal' method
     if (passNA) {
         na <- which(is.na(xy[,1]))
         xy[na, ] <- 0
-        capture.output(
-                       {
-                           XY <- unname(rgdal::project(xy, proj=proj, inv=inv))
-                       }
-        )
+        capture.output({
+            XY <- unname(rgdal::project(xy, proj=proj, inv=inv))
+        })
         XY[na, ] <- NA
     } else {
         if (.Platform$OS.type == "windows" && .Platform$r_arch == "i386") {
@@ -85,14 +83,36 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
     ## {{{ NEW 'sf' method
     na <- which(!is.finite(xy[,1]))
     xy[na, ] <- 0
-    if (inv) {
-        XYSF <- unname(sf::sf_project(proj, "+proj=longlat", xy))
-    } else {
-        XYSF <- unname(sf::sf_project("+proj=longlat", proj, xy))
+    ## sf_project() with proj=lcc fails at S. pole. We will never need things
+    ## to be *precisely* at the poles, so let's move near-polar (or extra-polar)
+    ## points to a tiny distance equatorward of the poles.  On my osx machine,
+    ## 1e-6 degrees (or about 10cm) seems to work.
+    if (!inv) {
+        oceDebug(debug, "before moving poles:", vectorShow(xy))
+        southPole <- xy[,2] < (-90 + 1e-6)
+        xy[southPole, 2] <- -90 + 1e-6
+        northPole <- xy[,2] > (90 - 1e-6)
+        xy[northPole, 2] <- 90 - 1e-6
+        oceDebug(debug, "after moving poles:", vectorShow(xy))
     }
-    XYSF[na, ] <- NA
-    if (!all.equal(XY, XYSF)) {
-        warning("oceProject(): disagreement between old 'sp' method and new 'sf' method\n")
+    ##> DANxy<<-xy
+    capture.output({
+        if (inv) {
+            XYSF <- try(unname(sf::sf_project(proj, "+proj=longlat", xy, keep=TRUE)), silent=TRUE)
+        } else {
+            XYSF <- try(unname(sf::sf_project("+proj=longlat", proj, xy, keep=TRUE)), silent=TRUE)
+        }
+    })
+    oceDebug(debug, "about to test equality of XY and XYSF\n")
+    if (inherits(XYSF, "try-error")) {
+        warning("oceProject() : sf_project() yielded errors that must be fixed before oce can switch from rgdal to sf\n")
+    } else {
+        XYSF[na, ] <- NA
+        if (!isTRUE(all.equal(XY, XYSF))) {
+            warning("oceProject() : disagreement between old 'rgdal' method and proposed 'sf' method\n")
+        } else {
+            oceDebug(debug, "old 'rgdal' and new 'sf' methods yield the same results\n", style="blue")
+        }
     }
     ## }}}
     options(warn=owarn)
@@ -150,7 +170,7 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
     ## if (debug > 2)
     ##     points(x, y, pch=20, cex=3, col=2)
     oceDebug(debug, "about to call map2lonlat\n")
-    ll <- map2lonlat(x, y)
+    ll <- map2lonlat(x, y, debug=debug-1)
     nok <- sum(is.finite(ll$longitude))
     ## Convert -Inf and +Inf to NA
     oceDebug(debug, "DONE with call map2lonlat\n")
@@ -814,7 +834,7 @@ mapContour <- function(longitude, latitude, z,
                             insideNew <- sf::st_intersection(pointsNew, polyNew)
                             eraseNew <- matrix(pointsNew %in% insideNew, ncol=2)[,1]
                             eraseOld <- erase
-                            if (!all.equal(eraseNew, erase)) {
+                            if (!isTRUE(all.equal(eraseNew, erase))) {
                                 warning("mapContour() error: 'erase' disagreement with trial 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n")
                             }
                             oceDebug(debug, "ignoring", sum(erase), "points under", label, "contour\n")
@@ -1771,6 +1791,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     oceDebug(debug, "yfrac:", yfrac, "\n")
     oceDebug(debug, "finally fractionOfGlobe:", fractionOfGlobe, "\n")
     if (axes || drawGrid) {
+        oceDebug(debug, "axes=", axes, "|| drawGrid=", drawGrid, " is TRUE\n")
         ## Grid lines and axes.
         ## Find ll and ur corners of plot, if possible, for use in calculating
         ## lon and lat spans.  This will not work in all cases; e.g. for a
@@ -1824,7 +1845,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 ntick <- 8
                 dx <- (usr[2] - usr[1]) / ntick
                 dy <- (usr[4] - usr[3]) / ntick
-                ll <- map2lonlat(x0-dx, y0-dy)
+                ll <- map2lonlat(x0-dx, y0-dy, debug=debug-1)
                 ur <- map2lonlat(x0+dx, y0+dy)
                 ## If ll and ur are finite, the plot covers a fraction of the
                 ## globe, and we can compute a grid based on the scale.
@@ -2044,7 +2065,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                 next
             }
             oceDebug(debug, "drawing longitude =", l, "line\n")
-            line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n))
+            line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n), debug=debug-1)
             x <- line$x
             y <- line$y
             ok <- !is.na(x) & !is.na(y)
@@ -2688,6 +2709,8 @@ mapLocator <- function(n=512, type='n', ...)
 #' @param init vector containing the initial guesses for longitude and latitude,
 #' presently ignored.
 #'
+#' @template debugTemplate
+#'
 #' @section Bugs:
 #' `oce` uses [rgdal::project()] in the \CRANpkg{rgdal}
 #' package to handle projections. Only those projections that have inverses are
@@ -2717,7 +2740,7 @@ mapLocator <- function(n=512, type='n', ...)
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-map2lonlat <- function(x, y, init=NULL)
+map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
 {
     if (missing(x))
         stop("must supply x")
@@ -2730,7 +2753,8 @@ map2lonlat <- function(x, y, init=NULL)
     n <- length(x)
     if (n != length(y))
         stop("lengths of x and y must match, but they are ", n, " and ", length(y))
-    XY <- oceProject(xy=cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE)
+    ## Pass same debug level to oceProject(), since this is just a wrapper.
+    XY <- oceProject(xy=cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE, debug=debug)
     list(longitude=XY[, 1], latitude=XY[, 2])
 }
 
