@@ -1,6 +1,7 @@
 # **oce**
 
 [![Build Status](https://travis-ci.org/dankelley/oce.svg?branch=develop)](https://travis-ci.org/dankelley/oce)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/dankelley/oce?branch=develop)](https://ci.appveyor.com/project/dankelley/oce)
 [![codecov](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://codecov.io/gh/dankelley/oce)
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/oce)](https://cran.r-project.org/package=oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-month/oce)
