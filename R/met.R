@@ -601,10 +601,10 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"), debug=ge
     oceDebug(debug, "read", length(someLines), "lines\n")
     if (is.null(type)) {
         ## print(grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1]))
-        if (1 == length(grep('^.?"WMO Identifier', someLines, useBytes=TRUE))) {
+        if (1 == length(grep('^.?"WMO Identifier",', someLines))) {
             type <- "csv1"
             oceDebug(debug, "examination of file contents reveals that type is 'csv1'\n")
-        } else if (grepl('"Longitude.[^"]*","Latitude[^"]*","Station Name","Climate ID"', someLines[1])) {
+        } else if (grepl('^.?"Longitude.[^"]*","Latitude[^"]*","Station Name","Climate ID"', someLines[1])) {
             type <- "csv2"
             oceDebug(debug, "examination of file contents reveals that type is 'csv2'\n")
         } else if (grepl(".weather.gc.ca", someLines[1])) {

@@ -1801,11 +1801,11 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         if (grepl(".csv$", filename, ignore.case=TRUE)) {
             someLines <- readLines(filename, 30, encoding="UTF-8")
             ## print(grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1]))
-            if (1 == length(grep('^"WMO Identifier', someLines, useBytes=TRUE))) {
+            if (1 == length(grep('^.?"WMO Identifier",', someLines))) {
                 return("met/csv1") # FIXME: may be other things too ...
-            } else if (grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1], useBytes=TRUE)) {
+            } else if (grepl('^.?"Longitude.[^"]*","Latitude[^"]*","Station Name","Climate ID"', someLines[1])) {
                 return("met/csv2")
-            } else if (1 == length(grep("^Station_Name,", someLines, useBytes=TRUE))) {
+            } else if (1 == length(grep("^.?Station_Name,", someLines, useBytes=TRUE))) {
                 return("sealevel")
             } else if (1 == length(grep("^CTD,", someLines, useBytes=TRUE))) {
                 return("ctd/woce/exchange")
