@@ -46,3 +46,4 @@ R/check_urls.R
 ^CRAN-RELEASE$
 ^Rplot*.png$
 
+^appveyor\.yml$
