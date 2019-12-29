@@ -597,7 +597,7 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"), debug=ge
     if (length(someLines) == 0L)
         stop("no data in file")
     if (!is.null(type) && !(type %in% c("csv", "csv1", "csv2", "xml2")))
-        stop("type='", type, "' not allowd; try 'csv', 'csv1', 'csv2' or 'xml2'")
+        stop("type='", type, "' not allowed; try 'csv', 'csv1', 'csv2' or 'xml2'")
     oceDebug(debug, "read", length(someLines), "lines\n")
     if (is.null(type)) {
         ## print(grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1]))
@@ -611,7 +611,7 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"), debug=ge
             type <- "xml2"
             oceDebug(debug, "examination of file contents reveals that type is 'csv1'\n")
         } else {
-            type <- "?"
+            stop("cannot determine file type from file contents; first line is '", someLines[1], "'")
         }
     }
     if (type == "csv" || type == "csv1")
@@ -621,7 +621,7 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"), debug=ge
     else if (type == "xml2")
         res <- read.met.xml2(file, skip=skip, tz=tz, debug=debug-1)
     else
-        stop("cannot determine file type")
+        stop("cannot handle file type '", type, "'")
     oceDebug(debug, "} # read.met()\n", unindent=1)
     res
 }
