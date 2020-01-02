@@ -81,38 +81,41 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
     }
     ## }}}
     ## {{{ NEW 'sf' method
-    na <- which(!is.finite(xy[,1]))
-    xy[na, ] <- 0
-    ## sf_project() with proj=lcc fails at S. pole. We will never need things
-    ## to be *precisely* at the poles, so let's move near-polar (or extra-polar)
-    ## points to a tiny distance equatorward of the poles.  On my osx machine,
-    ## 1e-6 degrees (or about 10cm) seems to work.
-    if (!inv) {
-        oceDebug(debug, "before moving poles:", vectorShow(xy))
-        southPole <- xy[,2] < (-90 + 1e-6)
-        xy[southPole, 2] <- -90 + 1e-6
-        northPole <- xy[,2] > (90 - 1e-6)
-        xy[northPole, 2] <- 90 - 1e-6
-        oceDebug(debug, "after moving poles:", vectorShow(xy))
-    }
-    ##> DANxy<<-xy
-    capture.output({
-        if (inv) {
-            XYSF <- try(unname(sf::sf_project(proj, "+proj=longlat", xy, keep=TRUE)), silent=TRUE)
-        } else {
-            XYSF <- try(unname(sf::sf_project("+proj=longlat", proj, xy, keep=TRUE)), silent=TRUE)
+    if (packageVersion("sf") >= "0.8.1") {
+        na <- which(!is.finite(xy[,1]))
+        xy[na, ] <- 0
+        ## sf_project() with proj=lcc fails at S. pole. We will never need things
+        ## to be *precisely* at the poles, so let's move near-polar (or extra-polar)
+        ## points to a tiny distance equatorward of the poles.  On my osx machine,
+        ## 1e-6 degrees (or about 10cm) seems to work.
+        if (!inv) {
+            oceDebug(debug, "before moving poles:", vectorShow(xy))
+            southPole <- xy[,2] < (-90 + 1e-6)
+            xy[southPole, 2] <- -90 + 1e-6
+            northPole <- xy[,2] > (90 - 1e-6)
+            xy[northPole, 2] <- 90 - 1e-6
+            oceDebug(debug, "after moving poles:", vectorShow(xy))
         }
-    })
-    oceDebug(debug, "about to test equality of XY and XYSF\n")
-    if (inherits(XYSF, "try-error")) {
-        warning("oceProject() : sf_project() yielded errors that must be fixed before oce can switch from rgdal to sf\n")
+        capture.output({
+            if (inv) {
+                XYSF <- try(unname(sf::sf_project(proj, "+proj=longlat", xy, keep=TRUE)), silent=TRUE)
+            } else {
+                XYSF <- try(unname(sf::sf_project("+proj=longlat", proj, xy, keep=TRUE)), silent=TRUE)
+            }
+        })
+        oceDebug(debug, "about to test equality of XY and XYSF\n")
+        if (inherits(XYSF, "try-error")) {
+            warning("oceProject() : sf_project() yielded errors that must be fixed before oce can switch from rgdal to sf\n")
+        } else {
+            XYSF[na, ] <- NA
+            if (!isTRUE(all.equal(XY, XYSF))) {
+                warning("oceProject() : disagreement between old 'rgdal' method and proposed 'sf' method\n")
+            } else {
+                oceDebug(debug, "old 'rgdal' and new 'sf' methods yield the same results\n", style="blue")
+            }
+        }
     } else {
-        XYSF[na, ] <- NA
-        if (!isTRUE(all.equal(XY, XYSF))) {
-            warning("oceProject() : disagreement between old 'rgdal' method and proposed 'sf' method\n")
-        } else {
-            oceDebug(debug, "old 'rgdal' and new 'sf' methods yield the same results\n", style="blue")
-        }
+        oceDebug(debug, "oceProject() skipping sf test, because sf version (", packageVersion("sf"), ") predates 0.8.1\n", sep="")
     }
     ## }}}
     options(warn=owarn)
