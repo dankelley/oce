@@ -357,7 +357,7 @@ moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
     if (is.null(tzone) || "UTC" != tzone)
         attributes(t)$tzone <- "UTC"
     RPD <- atan2(1, 1) / 45            # radians per degree
-    ## In this cde, the symbol names follow Meeus (1982) chapter 30, with e.g. "p"
+    ## In this code, the symbol names follow Meeus (1982) chapter 30, with e.g. "p"
     ## used to indicate primes, e.g. Lp stands for L' in Meeus' notation.
     ## Also, T2 and T3 are powers on T.
     T <- julianCenturyAnomaly(julianDay(t))
