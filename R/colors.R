@@ -687,15 +687,13 @@ colormap <- function(z=NULL,
         } else {
             zcol <- "black"
         }
-        if (missing(missingColor))
-            missingColor <- "gray"
         res <- list(x0=x0, x1=x1, col0=col0, col1=col1,
                      missingColor=missingColor,
                      zclip=FALSE,
                      zlim=if (!missing(zlim)) zlim else range(breaks),
                      breaks=breaks,
                      col=col,
-                     zcol="black")
+                     zcol=zcol)
         class(res) <- c("list", "colormap")
         return(res)
     }
