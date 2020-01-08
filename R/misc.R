@@ -2229,30 +2229,39 @@ oce.spectrum <- oceSpectrum
 #'
 #' @param v the vector.
 #'
-#' @param msg a message to show, introducing the vector.  If not provided, then
+#' @param msg optional character value indicating a message to show,
+#' introducing the vector.  If not provided, then
 #' a message is created from `v`. If `msg` is a non-empty string,
 #' then that string is pasted together with a colon (unless `msg` already
 #' contains a colon), before pasting a summary of data values.
+#'
+#' @param postscript optional character value indicating an optional message
+#' to append at the end of the return value.
 #'
 #' @param digits for numerical values of `v`, this is the number of digits
 #' to use, in formatting the numbers with [format()]; otherwise,
 #' `digits` is ignored.
 #'
-#' @param n number of elements to at start and end. If `n`
+#' @param n number of elements to show at start and end. If `n`
 #' is negative, then all the elements are shown.
 #'
-#' @return A string, suitable for using in [cat()] or
-#' [oceDebug()].
+#' @return A string ending in a newline character, suitable for
+#' display with [cat()] or [oceDebug()].
+#'
+#' @examples
+#' vectorShow(pi)
+#' vectorShow(volcano)
+#' knot2mps <- 0.5144444 
+#' vectorShow(knot2mps, postscript="knots per m/s")
+#' vectorShow("January", msg="The first month is")
 #'
 #' @author Dan Kelley
-vectorShow <- function(v, msg=NULL, digits=5, n=2L)
+vectorShow <- function(v, msg, postscript, digits=5, n=2L)
 {
     DIM <- dim(v)
     nv <- length(v)
-    if (is.null(msg))
+    if (missing(msg))
         msg <- deparse(substitute(v))
-    if (is.null(msg))
-        msg <- ""
     if (!is.null(DIM)) {
         msg <- paste(msg,
                      paste("[",
@@ -2265,8 +2274,9 @@ vectorShow <- function(v, msg=NULL, digits=5, n=2L)
     if (nchar(msg) && !grepl(":$", msg)) {
         msg <- paste0(msg, ": ")
     }
+    res <- msg
     if (nv == 0) {
-        paste(msg, "(empty vector)\n")
+        res <- paste(res, "(empty vector)\n")
     } else {
         if (n < 0 || nv <= 2*n) {
             showAll <- TRUE
@@ -2276,21 +2286,25 @@ vectorShow <- function(v, msg=NULL, digits=5, n=2L)
         }
         if (is.numeric(v)) {
             if (showAll) {
-                paste(msg, paste(format(v, digits=digits), collapse=", "), "\n", sep="")
+                res <- paste(msg, paste(format(v, digits=digits), collapse=", "), sep="")
             } else {
-                paste(msg, paste(format(v[1:n], digits=digits), collapse=", "),
-                      ", ..., ", paste(format(v[nv-seq.int(n-1, 0)], digits=digits), collapse=", "),
-                      "\n", sep="")
+                res <- paste(msg, paste(format(v[1:n], digits=digits), collapse=", "),
+                             ", ..., ", paste(format(v[nv-seq.int(n-1, 0)], digits=digits), collapse=", "),
+                             sep="")
             }
         } else {
             if (showAll) {
-                paste(msg, paste(v, collapse=", "), "\n", sep="")
+                res <- paste(msg, paste(v, collapse=", "), "\n", sep="")
             } else {
-                paste(msg, paste(v[1:n], collapse=", "),
-                      ", ..., ", paste(v[nv-seq.int(n-1, 0)], collapse=", "), "\n", sep="")
+                res <- paste(msg, paste(v[1:n], collapse=", "),
+                             ", ..., ", paste(v[nv-seq.int(n-1, 0)], collapse=", "), sep="")
             }
         }
     }
+    if (!missing(postscript))
+        res <- paste(res, postscript)
+    res <- paste(res, "\n", sep="")
+    res
 }
 
 
