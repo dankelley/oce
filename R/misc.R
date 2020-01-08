@@ -2294,7 +2294,7 @@ vectorShow <- function(v, msg, postscript, digits=5, n=2L)
             }
         } else {
             if (showAll) {
-                res <- paste(msg, paste(v, collapse=", "), "\n", sep="")
+                res <- paste(msg, paste(v, collapse=", "), sep="")
             } else {
                 res <- paste(msg, paste(v[1:n], collapse=", "),
                              ", ..., ", paste(v[nv-seq.int(n-1, 0)], collapse=", "), sep="")
