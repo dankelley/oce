@@ -4223,7 +4223,7 @@ integerToAscii <- function(i)
 #' 1. The underlying Fortran code is from `igrf12.f`, downloaded the NOAA
 #' website (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
 #' 2015.
-#' 2. Witze, Alexandra. \dQuote{Earth’s Magnetic Field Is Acting up and Geologists Don’t Know Why.}
+#' 2. Witze, Alexandra. \dQuote{Earth's Magnetic Field Is Acting up and Geologists Don't Know Why.}
 #' Nature 565 (January 9, 2019): 143.
 #' \url{https://doi.org/10.1038/d41586-019-00007-1}.
 #'

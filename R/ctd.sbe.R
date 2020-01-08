@@ -127,7 +127,8 @@
 #'   `secS-priS`   \tab `salinityDifference`           \tab -, PSS-78            \tab   \cr
 #'   `sigma-t`     \tab `sigmaT`                       \tab kg/m^3               \tab   \cr
 #'   `sigma-theta` \tab `sigmaTheta`                   \tab kg/m^3               \tab 5 \cr
-#'   `sigma-é`     \tab `sigmaTheta`                   \tab kg/m^3               \tab 5 \cr
+##   `sigma-é`     \tab `sigmaTheta`                   \tab kg/m^3               \tab 5 \cr
+#'   \code{sigma-}\enc{é}{e} \tab `sigmaTheta`         \tab kg/m^3               \tab 5 \cr
 #'   `spar`        \tab `spar`                         \tab -                    \tab   \cr
 #'   `specc`       \tab `conductivity`                 \tab uS/cm                \tab   \cr
 #'   `sva`         \tab `specificVolumeAnomaly`        \tab 1e-8 m^3/kg;         \tab   \cr
