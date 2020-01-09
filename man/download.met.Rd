@@ -12,6 +12,8 @@ download.met(
   type = "xml",
   destdir = ".",
   destfile,
+  force = FALSE,
+  quiet = FALSE,
   debug = getOption("oceDebug")
 )
 }
@@ -43,6 +45,12 @@ If not supplied, the file name is constructed from the other
 parameters of the function call, so subsequent calls with the same
 parameters will yield the same result, thus providing the key
 to the caching scheme.}
+
+\item{force}{Logical value indicating whether to force a download, even
+if the file already exists locally.}
+
+\item{quiet}{Logical value passed to \code{\link[=download.file]{download.file()}}; a \code{TRUE} value
+silences output.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

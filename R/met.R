@@ -335,6 +335,12 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' @template downloadDestTemplate
 #'
+#' @param force Logical value indicating whether to force a download, even
+#' if the file already exists locally.
+#'
+#' @param quiet Logical value passed to [download.file()]; a `TRUE` value
+#' silences output.
+#'
 #' @template debugTemplate
 #'
 #' @return String indicating the full pathname to the downloaded file.
@@ -362,7 +368,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' @family functions that download files
 #' @family things related to met data
 download.met <- function(id, year, month, deltat, type="xml",
-                         destdir=".", destfile,
+                         destdir=".", destfile, force=FALSE, quiet=FALSE,
                          debug=getOption("oceDebug"))
 {
     if (missing(id))
@@ -412,10 +418,13 @@ download.met <- function(id, year, month, deltat, type="xml",
     }
     destination <- paste(destdir, destfile, sep="/")
     oceDebug(debug, "url:", url, "\n")
-    if (1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
+    if (!force && 1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
         oceDebug(debug, "Not downloading \"", destfile, "\" because it is already present in the \"", destdir, "\" directory\n", sep="")
     } else {
-        download.file(url, destination)
+        ##?owarn <- options()$warn # this, and the capture.output, quieten the processing
+        ##?options(warn=-1)
+        capture.output({download.file(url, destination, quiet=TRUE)})
+        ##?options(warn=owarn)
         oceDebug(debug, "Downloaded file stored as '", destination, "'\n", sep="")
     }
     ## NOTE: if the format=csv part of the URL is changed to format=txt we get
@@ -589,29 +598,31 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"), debug=ge
 {
     if (missing(file))
         stop("must supply 'file'")
-    oceDebug(debug, "read.met(file=\"", file, "\", ...) {\n", sep="", unindent=1)
+    oceDebug(debug, "read.met(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     ## We avoid some file() problems by insisting this is a string
     if (!is.character(file))
         stop("'file' must be a character string")
-    someLines <- readLines(file, 30, encoding="UTF-8")#, warn=FALSE)
+    someLines <- readLines(file, 30, encoding="UTF-8", warn=FALSE)
     if (length(someLines) == 0L)
         stop("no data in file")
     if (!is.null(type) && !(type %in% c("csv", "csv1", "csv2", "xml2")))
         stop("type='", type, "' not allowed; try 'csv', 'csv1', 'csv2' or 'xml2'")
-    oceDebug(debug, "read", length(someLines), "lines\n")
     if (is.null(type)) {
-        ## print(grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1]))
-        if (1 == length(grep('^.?"WMO Identifier",', someLines))) {
-            type <- "csv1"
-            oceDebug(debug, "examination of file contents reveals that type is 'csv1'\n")
-        } else if (grepl('^.?"Longitude.[^"]*","Latitude[^"]*","Station Name","Climate ID"', someLines[1])) {
-            type <- "csv2"
-            oceDebug(debug, "examination of file contents reveals that type is 'csv2'\n")
-        } else if (grepl(".weather.gc.ca", someLines[1])) {
-            type <- "xml2"
-            oceDebug(debug, "examination of file contents reveals that type is 'csv1'\n")
+        if (grepl("xml$", file) || 1 == grepl('xml version', someLines[1])) {
+            ## an xml file
+            if (grepl(".weather.gc.ca", someLines[1]))
+                type <- "xml2"
         } else {
-            stop("cannot determine type from file contents; the first line is '", someLines[1], "'")
+            ## must be a csv
+            if (1 == length(grep('^.?"WMO Identifier",', someLines))) {
+                type <- "csv1"
+                oceDebug(debug, "examination of file contents reveals that type is 'csv1'\n")
+            } else if (grepl('^.?"Longitude.[^"]*","Latitude[^"]*","Station Name","Climate ID"', someLines[1])) {
+                type <- "csv2"
+                oceDebug(debug, "examination of file contents reveals that type is 'csv2'\n")
+            } else {
+                stop("cannot determine type from file contents; the first line is '", someLines[1], "'")
+            }
         }
     }
     if (type == "csv" || type == "csv1")
@@ -622,7 +633,7 @@ read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"), debug=ge
         res <- read.met.xml2(file, skip=skip, tz=tz, debug=debug-1)
     else
         stop("cannot handle file type '", type, "'")
-    oceDebug(debug, "} # read.met()\n", unindent=1)
+    oceDebug(debug, "} # read.met()\n", unindent=1, style="bold")
     res
 }
 
@@ -630,12 +641,11 @@ read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
 {
     if (missing(file))
         stop("must supply 'file'")
-    oceDebug(debug, "read.metcsv2(\"", file, "\") {\n", sep="", unindent=1)
     if (!is.character(file))
         stop("'file' must be a character string")
-    oceDebug(debug, "read.met1() {\n", unindent=1)
+    oceDebug(debug, "read.met.csv2(\"", file, "\") {\n", sep="", unindent=1, style="bold")
     res <- new('met', time=1)
-    text <- readLines(file, encoding="UTF-8")#, warn=FALSE)
+    text <- readLines(file, encoding="UTF-8", warn=FALSE)
     oceDebug(debug, "file has", length(text), "lines\n")
     ##print(header[1:19])
     textItem <- function(text, name, numeric=TRUE) {
@@ -671,7 +681,10 @@ read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     res@metadata$filename <- file
     ## Use stringsAsFactors=TRUE to compact weather conditions somewhat ... note that flags are converted to character type
     ## later on, when they are moved from 'data' into 'metadata$flags'.
+    owarn <- options()$warn
+    options(warn=-1)
     rawData <- read.csv(text=text, skip=skip, encoding="UTF-8", header=TRUE, stringsAsFactors=TRUE)
+    options(warn=owarn)
     names <- names(rawData)
     ## FIXME: handle daily data, if the column names differ
     if ("Day" %in% names && "Time" %in% names) {
@@ -846,7 +859,7 @@ read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     }
     res@data <- res@data[order(names(res@data))] # put in alphabetical order for easier scanning in summary() views
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # read.met1()\n", unindent=1)
+    oceDebug(debug, "} # read.met1()\n", unindent=1, style="bold")
     res
 }
 
@@ -854,14 +867,17 @@ read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
 {
     if (!is.character(file))
         stop("'file' must be a character string")
-    oceDebug(debug, "read.met.csv2(\"", file, "\") {\n", sep="", unindent=1)
+    oceDebug(debug, "read.met.csv2(\"", file, "\") {\n", sep="", unindent=1, style="bold")
     ## Sample first two lines (as of 2019 oct 12)
     ## "Longitude (x)","Latitude (y)","Station Name","Climate ID","Date/Time","Year","Month","Day","Time","Temp (°C)","Temp Flag","Dew Point Temp (°C)","Dew Point Temp Flag","Rel Hum (%)","Rel Hum Flag","Wind Dir (10s deg)","Wind Dir Flag","Wind Spd (km/h)","Wind Spd Flag","Visibility (km)","Visibility Flag","Stn Press (kPa)","Stn Press Flag","Hmdx","Hmdx Flag","Wind Chill","Wind Chill Flag","Weather"
     ## "-94.97","74.72","RESOLUTE BAY A","2403497","2019-10-01 00:00","2019","10","01","00:00","-3.2","","-4.6","","90","","18","","36","","","M","100.35","","","","-11","","NA"
     res <- new('met', time=1)
-    text <- readLines(file, 1, encoding="UTF-8")#, warn=FALSE)
+    owarn <- options()$warn
+    options(warn=-1)
+    text <- readLines(file, 1, encoding="UTF-8", warn=FALSE)
     dataNames <- strsplit(gsub('"', '', text[1]), ",")[[1]]
     data <- read.csv(file, skip=1, encoding="UTF-8", header=FALSE)
+    options(warn=owarn)
     if ("Dew Point Temp (\u00B0C)" %in% dataNames) {
         res@metadata$units$dewPoint <- list(unit=expression(degree*C), scale="ITS-90")
         res@metadata$dataNamesOriginal$dewPoint <- "Dew Point Temp (\u00B0C)"
@@ -899,7 +915,12 @@ read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
         res@metadata$dataNamesOriginal$temperature <- "Temp (\u00B0C)"
         dataNames[dataNames == "Temp (\u00B0C)"] <- "temperature"
     }
-    if ("Visibility (km)" %in% dataNames) {
+    if ("Mean Temp (\u00B0C)" %in% dataNames) {
+        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$dataNamesOriginal$temperature <- "Mean Temp (\u00B0C)"
+        dataNames[dataNames == "Mean Temp (\u00B0C)"] <- "temperature"
+    }
+     if ("Visibility (km)" %in% dataNames) {
         res@metadata$units$visibility <- list(unit=expression(km), scale="")
         res@metadata$dataNamesOriginal$visibility <- "Visibility (km)"
         dataNames[dataNames == "Visibility (km)"] <- "visibility"
@@ -914,18 +935,33 @@ read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
         res@metadata$dataNamesOriginal$weather <- "Weather"
         dataNames[dataNames == "Weather"] <- "weather"
     }
+    ##> print(dataNames)
+    ##> head(data)
+    ##> str(data)
+    ##> browser()
     names(data) <- dataNames
+    ##> print("DANNY")
+    ##> print(dataNames)
     res@data <- data
     ## climateIdentifier
     if ("Climate ID" %in% dataNames) {
         res@metadata$climateIdentifier <- data[["Climate ID"]][1]
         res@data[["Climate ID"]] <- NULL
     }
+    ## dataNames <- names(data)
+    nsamples <- dim(data)[1]
+    oceDebug(debug, vectorShow(nsamples))
     ## Time
-    hour <- as.numeric(lapply(as.character(data$Time), function(x) strsplit(x, ":")[[1]][1]))
-    minute <- as.numeric(lapply(as.character(data$Time), function(x) strsplit(x, ":")[[1]][2]))
+    if ("Time" %in% dataNames) {
+        hour <- as.numeric(lapply(as.character(data$Time), function(x) strsplit(x, ":")[[1]][1]))
+        minute <- as.numeric(lapply(as.character(data$Time), function(x) strsplit(x, ":")[[1]][2]))
+    } else {
+        hour <- rep(0, nsamples)
+        minute <- rep(0, nsamples)
+    }
     second <- 0
-    time <- ISOdatetime(data[["Year"]], data[["Month"]], data[["Day"]], hour, minute, second, tz=tz)
+    day <- if ("Day" %in% dataNames) data[["Day"]] else 1
+    time <- ISOdatetime(data[["Year"]], data[["Month"]], day, hour, minute, second, tz=tz)
     res@data$time <- time
     res@data[["Date/Time"]] <- NULL
     res@data[["Year"]] <- NULL
@@ -989,13 +1025,13 @@ read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     }
     res@data <- res@data[order(names(res@data))] # put in alphabetical order for easier scanning in summary() views
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # read.met.csv2()\n", unindent=1)
+    oceDebug(debug, "} # read.met.csv2()\n", unindent=1, style="bold")
     res
 }
 
 read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "read.met.xml2(file=\"", file, "\", ...) {\n", sep="", unindent=1)
+    oceDebug(debug, "read.met.xml2(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     if (!requireNamespace("XML", quietly=TRUE))
         stop('must install.packages("XML") to read rsk data')
     xml <- XML::xmlToList(XML::xmlParse(file)) # a list
@@ -1034,7 +1070,7 @@ read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     ## Fill in data. The names of items are found with
     ##     str(stationData[[1]], 1)
     n <- length(stationData)
-    oceDebug(debug, "number of data, n=", n)
+    oceDebug(debug, "number of data, n=", n, "\n")
     ## Get time-series data
     ##message("item 244 is ok, but item 245 has no pressure, viz.")
     ##str(stationData[[244]]$stnpress)
@@ -1079,8 +1115,6 @@ read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     res@data$u[zero] <- 0
     res@data$v[zero] <- 0
 
-
-
     res@data$visibility <- extract("visibility")
     res@metadata$dataNamesOriginal$visibility  <- "visibility"
 
@@ -1100,10 +1134,16 @@ read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     res@metadata$dataNamesOriginal$weather  <- "weather"
 
     ## Time
-    year <- as.numeric(lapply(stationData, function(sd) sd[[".attrs"]][["year"]]))
-    month <- as.numeric(lapply(stationData, function(sd) sd[[".attrs"]][["month"]]))
-    day <- as.numeric(lapply(stationData, function(sd) sd[[".attrs"]][["day"]]))
-    hour <- as.numeric(lapply(stationData, function(sd) sd[[".attrs"]][["hour"]]))
+    attrsNames <- names(stationData[[1]][[".attrs"]])
+    oceDebug(debug, vectorShow(attrsNames, postscript=" (names relating to time)"))
+    year <- if ("year" %in% attrsNames) as.numeric(lapply(stationData, function(sd) sd[[".attrs"]][["year"]]))
+        else 2000
+    month <- if ("month" %in% attrsNames) as.numeric(lapply(stationData, function(sd) sd[[".attrs"]][["month"]]))
+        else 1
+    day <- if ("day" %in% attrsNames) as.numeric(lapply(stationData, function(sd) sd[[".attrs"]][["day"]]))
+        else 1
+    hour <- if ("hour" %in% attrsNames) as.numeric(lapply(stationData, function(sd) sd[[".attrs"]][["hour"]]))
+        else 0
     res@data$time <- ISOdatetime(year, month, day, hour, 0, 0, tz="UTC")
     res@metadata$dataNamesOriginal$time  <- "-"
     res@data <- res@data[order(names(res@data))] # put in alphabetical order for easier scanning in summary() views
@@ -1111,7 +1151,7 @@ read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
                                              paste("read.met.xml2(file=\"", file, "\"",
                                                    ", skip=", if(is.null(skip)) "NULL" else skip,
                                                    ", tz=\"", tz, "\")", sep=""))
-    oceDebug(debug, "} # read.met.xml2()\n", unindent=1)
+    oceDebug(debug, "} # read.met.xml2()\n", unindent=1, style="bold")
     res
 }
 
