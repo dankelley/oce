@@ -8,13 +8,13 @@
 #' modern literature on XBTs in general.
 #'
 #' @references
-#' 1. Sippican, Inc. “Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
-#' Manual (P/N 308195, Rev. A),” 2003.
+#' 1. Sippican, Inc. "Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
+#' Manual (P/N 308195, Rev. A)," 2003.
 #' https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
 #'
 #' 2. Cheng, Lijing, John Abraham, Gustavo Goni, Timothy Boyer, Susan Wijffels, Rebecca
-#' Cowley, Viktor Gouretski, et al. “XBT Science: Assessment of Instrumental Biases and Errors.”
-#' Bulletin of the American Meteorological Society 97, no. 6 (June 2016): 924–33.
+#' Cowley, Viktor Gouretski, et al. "XBT Science: Assessment of Instrumental Biases and Errors."
+#' Bulletin of the American Meteorological Society 97, no. 6 (June 2016): 924-33.
 #' https://doi.org/10.1175/BAMS-D-15-00031.1.
 #'
 #' @templateVar class xbt
@@ -53,8 +53,8 @@ setClass("xbt", contains="oce")
 #' plot(xbt)
 #'
 #' @references
-#' 1. Sippican, Inc. “Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
-#' Manual (P/N 308195, Rev. A),” 2003.
+#' 1. Sippican, Inc. "Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
+#' Manual (P/N 308195, Rev. A)," 2003.
 #' https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
 #'
 #' @family datasets provided with oce
@@ -301,8 +301,8 @@ as.xbt <- function(z, temperature, longitude=NA, latitude=NA, filename="", seque
 #' @family things related to xbt data
 #'
 #' @references
-#' 1. Sippican, Inc. “Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
-#' Manual (P/N 308195, Rev. A),” 2003.
+#' 1. Sippican, Inc. "Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
+#' Manual (P/N 308195, Rev. A)," 2003.
 #' https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
 #'
 #' @author Dan Kelley

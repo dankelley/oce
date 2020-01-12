@@ -151,7 +151,7 @@ variants.)
 \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
 \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
 \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
-\code{sigma-}\enc{é}{e}     \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
+\code{sigma-}\enc{é}{e} \tab \code{sigmaTheta}         \tab kg/m^3               \tab 5 \cr
 \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
 \code{specc}       \tab \code{conductivity}                 \tab uS/cm                \tab   \cr
 \code{sva}         \tab \code{specificVolumeAnomaly}        \tab 1e-8 m^3/kg;         \tab   \cr

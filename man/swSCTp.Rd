@@ -67,7 +67,7 @@ computation of fundamental properties of seawater. \emph{Unesco Technical
 Papers in Marine Science}, \emph{44}, 53 pp.
 \item K. Hill, T. Dauphinee, and D. Woods. \dQuote{The Extension of the Practical
 Salinity Scale 1978 to Low Salinities.} IEEE Journal of Oceanic Engineering 11,
-no. 1 (January 1986): 109–12. https://doi.org/10.1109/JOE.1986.1145154.
+no. 1 (January 1986): 109-12. https://doi.org/10.1109/JOE.1986.1145154.
 \item \code{gsw_from_SP} online documentation, available at
 \verb{http://www.teos-10.org/pubs/gsw/html/gsw_C_from_SP.html}
 }
