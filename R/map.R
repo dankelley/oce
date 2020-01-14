@@ -5,6 +5,8 @@
     function(new) if (!missing(new)) val <<- new else val
 })
 
+longlatProj <- sf::st_crs("+proj=longlat")$proj4string
+
 .Projection <- local({
     ## Tave state, in a way that emulates mapproj.
     ## The 'type' can be 'none' or 'proj4' (previously, 'mapproj' was also allowed)
@@ -81,7 +83,7 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
     }
     ## }}}
     ## {{{ NEW 'sf' method
-    if (!FALSE&&packageVersion("sf") >= "0.8.1") {
+    if (packageVersion("sf") >= "0.8.1") {
         na <- which(!is.finite(xy[,1]))
         xy[na, ] <- 0
         ## sf_project() with proj=lcc fails at S. pole. We will never need things
@@ -97,12 +99,12 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
             oceDebug(debug, "after moving poles:", vectorShow(xy))
         }
         if (inv) {
-            capture.output({XYSF <- try(unname(sf::sf_project(sf::st_crs(proj), sf::st_crs("+proj=longlat"), xy, keep=TRUE)),
+            capture.output({XYSF <- try(unname(sf::sf_project(proj, longlatProj, xy, keep=TRUE)),
                 silent=TRUE)})
             ## XYSF <- try(unname(sf::sf_project(sf::st_crs(proj), sf::st_crs("+proj=longlat"), xy, keep=TRUE)),
             ##     silent=TRUE)
         } else {
-            capture.output({XYSF <- try(unname(sf::sf_project(sf::st_crs("+proj=longlat"), sf::st_crs(proj), xy, keep=TRUE)),
+            capture.output({XYSF <- try(unname(sf::sf_project(longlatProj, proj, xy, keep=TRUE)),
                 silent=TRUE)})
             ## XYSF <- try(unname(sf::sf_project(sf::st_crs("+proj=longlat"), sf::st_crs(proj), xy, keep=TRUE)),
             ##     silent=TRUE)
@@ -512,10 +514,14 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
         for (lon in longitude) {
             if (debug) oceDebug(debug, "check longitude", lon, "for axis on side=1\n")
             ## Seek a point at this lon that matches the lon-lat relationship on side=1
-            message("time to find location for lon=", lon, " is")
-            print(system.time({
-            o <- optimize(function(lat) abs(lonlat2map(lon, lat, debug=debug-1)$y-usr[3]), lower=-89.9999, upper=89.9999)
-            }))
+            if (debug>0) {
+                message("time to find location for lon=", lon, " is")
+                print(system.time({
+                    o <- optimize(function(lat) abs(lonlat2map(lon, lat, debug=debug-1)$y-usr[3]), lower=-89.9999, upper=89.9999)
+                }))
+            } else {
+                o <- optimize(function(lat) abs(lonlat2map(lon, lat, debug=debug-1)$y-usr[3]), lower=-89.9999, upper=89.9999)
+            }
             if (is.na(o$objective) || o$objective > 0.01*axisSpan) {
                 if (debug) oceDebug(debug, "  longitude", lon, "is unmappable\n")
                 next
@@ -1579,13 +1585,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     debug=getOption("oceDebug"),
                     ...)
 {
-    dots <- list(...)
-    gridOrig <- grid
-    if (1 == length(grid))
-        grid <- rep(grid, 2)
-    if (!missing(projection) && inherits(projection, "CRS")) {
-        projection <- projection@projargs
-    }
     oceDebug(debug, "mapPlot(longitude, latitude,",
              argShow(longitudelim),
              argShow(latitudelim),
@@ -1593,7 +1592,19 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
              argShow(projection),
              argShow(grid),
              "...) {\n", sep="", unindent=1, style="bold")
-    if (missing(longitude)) {
+    dots <- list(...)
+    gridOrig <- grid
+    if (1 == length(grid))
+        grid <- rep(grid, 2)
+    if (!missing(projection) && inherits(projection, "CRS")) {
+        projection <- projection@projargs
+    }
+    if (packageVersion("sf") >= "0.8.1") {
+        oceDebug(debug, "original projection '", projection, "' converted to '", sep="")
+        projection <- sf::st_crs(projection)$proj4string
+        oceDebug(debug, projection, "'\n", sep="")
+    }
+   if (missing(longitude)) {
         data("coastlineWorld", package="oce", envir=environment())
         longitude <- get("coastlineWorld")
     }
@@ -2765,7 +2776,7 @@ map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
     if (n != length(y))
         stop("lengths of x and y must match, but they are ", n, " and ", length(y))
     ## Pass same debug level to oceProject(), since this is just a wrapper.
-    XY <- oceProject(xy=cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE, debug=debug)
+    XY <- oceProject(xy=cbind(x, y), proj=.Projection()$projection, inv=TRUE, debug=debug)
     list(longitude=XY[, 1], latitude=XY[, 2])
 }
 
@@ -3655,7 +3666,7 @@ lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceD
     n <- length(longitude)
     if (n != length(latitude))
         stop("lengths of longitude and latitude must match, but they are ", n, " and ", length(latitude))
-    XY <- oceProject(xy=cbind(longitude, latitude), proj=as.character(projection), inv=FALSE, debug=debug-1)
+    XY <- oceProject(xy=cbind(longitude, latitude), proj=projection, inv=FALSE, debug=debug-1)
     .Projection(list(type="proj4", projection=projection))
     oceDebug(debug, "} # lonlat2map()\n", unindent=1, sep="", style="bold")
     list(x=XY[, 1], y=XY[, 2])
