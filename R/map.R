@@ -81,7 +81,7 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
     }
     ## }}}
     ## {{{ NEW 'sf' method
-    if (packageVersion("sf") >= "0.8.1") {
+    if (!FALSE&&packageVersion("sf") >= "0.8.1") {
         na <- which(!is.finite(xy[,1]))
         xy[na, ] <- 0
         ## sf_project() with proj=lcc fails at S. pole. We will never need things
@@ -97,9 +97,15 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
             oceDebug(debug, "after moving poles:", vectorShow(xy))
         }
         if (inv) {
-            capture.output({XYSF <- try(unname(sf::sf_project(proj, "+proj=longlat", xy, keep=TRUE)), silent=TRUE)})
+            capture.output({XYSF <- try(unname(sf::sf_project(sf::st_crs(proj), sf::st_crs("+proj=longlat"), xy, keep=TRUE)),
+                silent=TRUE)})
+            ## XYSF <- try(unname(sf::sf_project(sf::st_crs(proj), sf::st_crs("+proj=longlat"), xy, keep=TRUE)),
+            ##     silent=TRUE)
         } else {
-            capture.output({XYSF <- try(unname(sf::sf_project("+proj=longlat", proj, xy, keep=TRUE)), silent=TRUE)})
+            capture.output({XYSF <- try(unname(sf::sf_project(sf::st_crs("+proj=longlat"), sf::st_crs(proj), xy, keep=TRUE)),
+                silent=TRUE)})
+            ## XYSF <- try(unname(sf::sf_project(sf::st_crs("+proj=longlat"), sf::st_crs(proj), xy, keep=TRUE)),
+            ##     silent=TRUE)
         }
         oceDebug(debug, "about to test equality of XY and XYSF\n")
         if (inherits(XYSF, "try-error")) {
@@ -113,7 +119,7 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
             }
         }
     } else {
-        oceDebug(debug, "oceProject() skipping sf test, because sf version (", packageVersion("sf"), ") predates 0.8.1\n", sep="")
+        oceDebug(debug, paste("oceProject() skipping sf test, because sf version (", packageVersion("sf"), ") predates 0.8.1\n", sep="")) 
     }
     ## }}}
     options(warn=owarn)
@@ -500,14 +506,18 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
     axisSpan <- max(usr[2]-usr[1], usr[4]-usr[3])
     if (1 %in% side) {
         oceDebug(debug, "drawing axis on side 1\n")
+        oceDebug(debug, vectorShow(longitude))
         AT <- NULL
         LAB <- NULL
         for (lon in longitude) {
-            if (debug > 3) oceDebug(debug, "check longitude", lon, "for axis on side=1\n")
+            if (debug) oceDebug(debug, "check longitude", lon, "for axis on side=1\n")
             ## Seek a point at this lon that matches the lon-lat relationship on side=1
-            o <- optimize(function(lat) abs(lonlat2map(lon, lat)$y-usr[3]), lower=-89.9999, upper=89.9999)
+            message("time to find location for lon=", lon, " is")
+            print(system.time({
+            o <- optimize(function(lat) abs(lonlat2map(lon, lat, debug=debug-1)$y-usr[3]), lower=-89.9999, upper=89.9999)
+            }))
             if (is.na(o$objective) || o$objective > 0.01*axisSpan) {
-                if (debug > 3) oceDebug(debug, "  longitude", lon, "is unmappable\n")
+                if (debug) oceDebug(debug, "  longitude", lon, "is unmappable\n")
                 next
             }
             ## Check that the point matches lat, as well as lon (this matters for full-globe)
@@ -520,9 +530,9 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
                     ##mtext(label, side=1, at=x)
                     AT <- c(AT, x)
                     LAB <- c(LAB, label)
-                    if (debug > 3) oceDebug(debug, "  ", label, "intersects side 1\n")
+                    if (debug) oceDebug(debug, "  ", label, "intersects side 1\n")
                 } else {
-                    if (debug > 3) oceDebug(debug, "    ", lon, "E does not intersect side 1\n")
+                    if (debug) oceDebug(debug, "    ", lon, "E does not intersect side 1\n")
                 }
             } else {
                 ## oceDebug(debug, "skipping off-globe point\n")
