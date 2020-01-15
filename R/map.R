@@ -2117,26 +2117,30 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
             }
             lines(x, y, lty=lty, lwd=lwd, col=col)
             ## {{{ find side=1 and side=2 latitude label from graticle
-            curve <- sf::st_linestring(cbind(x, y))
-            usr <- par("usr")
-            axis1 <- sf::st_linestring(cbind(usr[1:2], rep(usr[3], 2)))
-            I <- sf::st_intersection(curve, axis1)
-            oceDebug(debug, "length(I)=", length(I), " (intersection to axis(1))\n", style="red")
-            if (length(I) > 0) {
-                Imatrix <- as.matrix(I)
-                if (debug > 0) {
-                    print(Imatrix)
-                    points(Imatrix[1,1], Imatrix[1,2], col=2, pch=20, cex=2)
+            ok <- is.finite(x) & is.finite(y)
+            if (any(ok)) {
+                curve <- sf::st_linestring(cbind(x[ok], y[ok]))
+                usr <- par("usr")
+                axis1 <- sf::st_linestring(cbind(usr[1:2], rep(usr[3], 2)))
+                I <- sf::st_intersection(curve, axis1)
+                oceDebug(debug, "length(I)=", length(I), " (intersection to axis(1))\n", style="red")
+                if (length(I) > 0) {
+                    Imatrix <- as.matrix(I)
+                    if (debug > 0) {
+                        if (debug > 1)
+                            print(Imatrix)
+                        points(Imatrix[,1], Imatrix[,2], col=2, pch=20, cex=2)
+                    }
                 }
-            }
-            axis2 <- sf::st_linestring(cbind(rep(usr[1],2), usr[3:4]))
-            I <- sf::st_intersection(curve, axis2)
-            oceDebug(debug, "length(I)=", length(I), " (intersection to axis(2))\n", style="red")
-            if (length(I) > 0) {
-                Imatrix <- as.matrix(I)
-                if (debug > 0) {
-                    print(Imatrix)
-                    points(Imatrix[1,1], Imatrix[1,2], col=2, pch=20, cex=2)
+                axis2 <- sf::st_linestring(cbind(rep(usr[1],2), usr[3:4]))
+                I <- sf::st_intersection(curve, axis2)
+                oceDebug(debug, "length(I)=", length(I), " (intersection to axis(2))\n", style="red")
+                if (length(I) > 0) {
+                    Imatrix <- as.matrix(I)
+                    if (debug > 0) {
+                        print(Imatrix)
+                        points(Imatrix[1,1], Imatrix[1,2], col=2, pch=20, cex=2)
+                    }
                 }
             }
             ## }}}
@@ -2178,31 +2182,33 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                 oceDebug(debug, "longitude graticule", l, "E has ", length(x), "segments\n")
                 lines(x, y, lty=lty, lwd=lwd, col=col)
                 ## {{{ find side=1 and side=2 longitude label from graticle
-                curve <- sf::st_linestring(cbind(x, y))
-                usr <- par("usr")
-                axis1 <- sf::st_linestring(cbind(usr[1:2], rep(usr[3], 2)))
-                I <- sf::st_intersection(curve, axis1)
-                oceDebug(debug, "length(I)=", length(I), " (intersection to axis(1))\n", style="red")
-                if (length(I) > 0) {
-                    Imatrix <- as.matrix(I)
-                    if (debug > 0) {
-                        print(Imatrix)
-                        points(Imatrix[1,1], Imatrix[1,2], col=3, pch=20, cex=2)
+                ok <- is.finite(x) & is.finite(y)
+                if (any(ok)) {
+                    curve <- sf::st_linestring(cbind(x[ok], y[ok]))
+                    usr <- par("usr")
+                    axis1 <- sf::st_linestring(cbind(usr[1:2], rep(usr[3], 2)))
+                    I <- sf::st_intersection(curve, axis1)
+                    oceDebug(debug, "length(I)=", length(I), " (intersection to axis(1))\n", style="red")
+                    if (length(I) > 0) {
+                        Imatrix <- as.matrix(I)
+                        if (debug > 0) {
+                            print(Imatrix)
+                            points(Imatrix[1,1], Imatrix[1,2], col=3, pch=20, cex=2)
+                        }
                     }
-                }
-                axis2 <- sf::st_linestring(cbind(rep(usr[1],2), usr[3:4]))
-                I <- sf::st_intersection(curve, axis2)
-                oceDebug(debug, "length(I)=", length(I), " (intersection to axis(2))\n", style="red")
-                if (length(I) > 0) {
-                    Imatrix <- as.matrix(I)
-                    if (debug > 0) {
-                        print(Imatrix)
-                        points(Imatrix[1,1], Imatrix[1,2], col=3, pch=20, cex=2)
+                    axis2 <- sf::st_linestring(cbind(rep(usr[1],2), usr[3:4]))
+                    I <- sf::st_intersection(curve, axis2)
+                    oceDebug(debug, "length(I)=", length(I), " (intersection to axis(2))\n", style="red")
+                    if (length(I) > 0) {
+                        Imatrix <- as.matrix(I)
+                        if (debug > 0) {
+                            if (debug > 1)
+                                print(Imatrix)
+                            points(Imatrix[,1], Imatrix[,2], col=3, pch=20, cex=2)
+                        }
                     }
                 }
                 ## }}}
-
-                ##points(x, y, col=3, cex=1/2)
             }
         }
     }
