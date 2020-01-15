@@ -512,16 +512,13 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
         AT <- NULL
         LAB <- NULL
         for (lon in longitude) {
-            if (debug) oceDebug(debug, "check longitude", lon, "for axis on side=1\n")
+            ##if (debug) oceDebug(debug, "check longitude", lon, "for axis on side=1\n")
             ## Seek a point at this lon that matches the lon-lat relationship on side=1
-            if (debug>0) {
-                message("time to find location for lon=", lon, " is")
-                print(system.time({
-                    o <- optimize(function(lat) abs(lonlat2map(lon, lat, debug=debug-1)$y-usr[3]), lower=-89.9999, upper=89.9999)
-                }))
-            } else {
-                o <- optimize(function(lat) abs(lonlat2map(lon, lat, debug=debug-1)$y-usr[3]), lower=-89.9999, upper=89.9999)
-            }
+            tol <- diff(par("usr")[3:4])/111e3 / 2000 # 1/2000 of y span in deg
+            elapsedTime <- system.time({
+                o <- optimize(function(lat) abs(lonlat2map(lon, lat, debug=debug-1)$y-usr[3]), lower=-89.9999, upper=89.9999, tol=tol)
+            })[[3]]
+            oceDebug(debug, sprintf("with tol=%.5f deg, it took %.3f seconds to find lon=%.2fE label location on lower axis\n", tol, elapsedTime, lon))
             if (is.na(o$objective) || o$objective > 0.01*axisSpan) {
                 if (debug) oceDebug(debug, "  longitude", lon, "is unmappable\n")
                 next
@@ -536,12 +533,12 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
                     ##mtext(label, side=1, at=x)
                     AT <- c(AT, x)
                     LAB <- c(LAB, label)
-                    if (debug) oceDebug(debug, "  ", label, "intersects side 1\n")
+                    oceDebug(debug, "  ", label, "intersects side 1\n")
                 } else {
-                    if (debug) oceDebug(debug, "    ", lon, "E does not intersect side 1\n")
+                    oceDebug(debug, "  ", lon, "E does not intersect side 1\n")
                 }
             } else {
-                ## oceDebug(debug, "skipping off-globe point\n")
+                oceDebug(debug, "skipping off-globe point\n")
             }
         }
         if (!is.null(AT)) {
@@ -3642,7 +3639,7 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 #' @family functions related to maps
 lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "lonlat2map() {\n", unindent=1, sep="", style="bold")
+    ##oceDebug(debug, "lonlat2map() {\n", unindent=1, sep="", style="bold")
     if (missing(longitude))
         stop("must supply longitude")
     if (is.list(longitude)) {
@@ -3668,6 +3665,6 @@ lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceD
         stop("lengths of longitude and latitude must match, but they are ", n, " and ", length(latitude))
     XY <- oceProject(xy=cbind(longitude, latitude), proj=projection, inv=FALSE, debug=debug-1)
     .Projection(list(type="proj4", projection=projection))
-    oceDebug(debug, "} # lonlat2map()\n", unindent=1, sep="", style="bold")
+    ## oceDebug(debug, "} # lonlat2map()\n", unindent=1, sep="", style="bold")
     list(x=XY[, 1], y=XY[, 2])
 }
