@@ -81,7 +81,9 @@ the first and third elements to zero.}
 amount of debugging information, or to 2 to get more.}
 }
 \description{
-Plot axis labels on an existing map.
+Plot axis labels on an existing map. The positions of the labels are determined
+with \code{\link[=optimize]{optimize()}}, calling \code{\link[=oceProject]{oceProject()}} repeatedly, which is a slow process.
+See \dQuote{Historical notes}.
 }
 \details{
 This function is still in development, and the argument list as well as the
@@ -89,6 +91,14 @@ action taken are both subject to change, hence the brevity of this help page.
 
 Note that if a grid line crosses the axis twice, only one label will be drawn.
 }
+\section{Historical notes}{
+
+Until January 2020, \code{\link[=mapPlot]{mapPlot()}} used \link{mapAxis}, but this had speed problems, and
+so a change was made to \code{\link[=mapPlot]{mapPlot()}}.  Starting in late January 2020, \code{\link[=mapGrid]{mapGrid()}}
+started returning positions for axis labels, as determined by a much faster scheme
+of finding positions as intersections of longitude and latitude lines with the axes.
+}
+
 \examples{
 \donttest{
 library(oce)

@@ -376,7 +376,15 @@ badFillFix2 <- function(x, y, xorig, yorig)
 
 #' Add Axis Labels to an Existing Map
 #'
-#' Plot axis labels on an existing map.
+#' Plot axis labels on an existing map. The positions of the labels are determined
+#' with [optimize()], calling [oceProject()] repeatedly, which is a slow process.
+#' See \dQuote{Historical notes}.
+#'
+#' @section Historical notes:
+#' Until January 2020, [mapPlot()] used [mapAxis], but this had speed problems, and
+#' so a change was made to [mapPlot()].  Starting in late January 2020, [mapGrid()]
+#' started returning positions for axis labels, as determined by a much faster scheme
+#' of finding positions as intersections of longitude and latitude lines with the axes.
 #'
 #' @param side the side at which labels are to be drawn.  If not provided,
 #' sides 1 and 2 will be used (i.e. bottom and left-hand sides).
@@ -1906,21 +1914,41 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 oceDebug(debug, "limits not given (or inferred) near map.R:1546 -- set grid=", paste(grid, collapse=" "), "\n")
             }
         }
+        axisLabels <- NULL
         if (drawGrid) {
             oceDebug(debug, "about to call mapGrid(), using grid=c(", paste(grid, collapse=","), ")\n")
-            mapGrid(dlongitude=grid[1], dlatitude=grid[2], polarCircle=polarCircle,
-                    longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
+            axisLabels <- mapGrid(dlongitude=grid[1], dlatitude=grid[2], polarCircle=polarCircle,
+                                  longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
         }
         if (axes) {
-            if (is.logical(lonlabels)) {
-                mapAxis(side=1, longitude=.axis()$longitude, latitude=FALSE, cex.axis=if (lonlabels) cex.axis else 0, mgp=mgp, debug=debug-1)
-            } else if (!is.null(lonlabels)) {
-                mapAxis(side=1, longitude=lonlabels, latitude=FALSE, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
-            }
-            if (is.logical(latlabels)) {
-                mapAxis(side=2, latitude=.axis()$latitude, longitude=FALSE, cex.axis=if (latlabels) cex.axis else 0, mgp=mgp, debug=debug-1)
-            } else if (!is.null(latlabels)) {
-                mapAxis(side=2, latitude=latlabels, longitude=FALSE, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
+            if (!is.null(axisLabels)) {
+                if (nrow(axisLabels) > 0) {
+                    axisLabels1 <- subset(axisLabels, axisLabels$side==1)
+                    if (nrow(axisLabels1) > 0) {
+                        ##> message("next is axisLabels1$at:");print(axisLabels1$at)
+                        ##> message("next is axisLabels1$value:");print(axisLabels1$value)
+                        ##> message("next is fixneg(axisLabels1$value)");print(fixneg(paste0(axisLabels1$value,"E")))
+                        axis(side=1, at=axisLabels1$at, labels=fixneg(paste0(axisLabels1$value,"E")), mgp=mgp)
+                    }
+                    axisLabels2 <- subset(axisLabels, axisLabels$side==2)
+                    if (nrow(axisLabels2) > 0) {
+                        ##> message("next is axisLabels2$at:");print(axisLabels2$at)
+                        ##> message("next is axisLabels2$value:");print(axisLabels2$value)
+                        ##> message("next is fixneg(axisLabels2$value)");print(fixneg(paste0(axisLabels2$value,"N")))
+                        axis(side=2, at=axisLabels2$at, labels=fixneg(paste0(axisLabels2$value,"N")), mgp=mgp)
+                    }
+                }
+            } else {
+                if (is.logical(lonlabels)) {
+                    mapAxis(side=1, longitude=.axis()$longitude, latitude=FALSE, cex.axis=if (lonlabels) cex.axis else 0, mgp=mgp, debug=debug-1)
+                } else if (!is.null(lonlabels)) {
+                    mapAxis(side=1, longitude=lonlabels, latitude=FALSE, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
+                }
+                if (is.logical(latlabels)) {
+                    mapAxis(side=2, latitude=.axis()$latitude, longitude=FALSE, cex.axis=if (latlabels) cex.axis else 0, mgp=mgp, debug=debug-1)
+                } else if (!is.null(latlabels)) {
+                    mapAxis(side=2, latitude=latlabels, longitude=FALSE, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
+                }
             }
         }
         if (tissot)
@@ -1989,6 +2017,11 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #' mapGrid(15, 15, polarCircle=15)
 #'}
 #'
+#' @return A [data.frame], returned silently, containing `"side"`, `"value"`, `"type"`, and `"at"`.
+#' As of January, 2020, this is used within [mapPlot()] to draw axes on the bottom and left
+#' sides of the plot area, circumventing a previous (much slower) scheme in which
+#' [mapAxis] had been called.
+#'
 #' @author Dan Kelley
 #'
 #' @seealso A map must first have been created with [mapPlot()].
@@ -2008,6 +2041,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
     debug <- min(3, max(0, debug)) # trim to range 0 to 3
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
+    rval <- list(side=NULL, value=NULL, type=NULL, at=NULL)
     boxLonLat <- usrLonLat(debug=debug-1)
     if (!missing(longitude) && is.null(longitude) && !missing(latitude) && is.null(latitude))
         return()
@@ -2121,9 +2155,9 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
             if (any(ok)) {
                 curve <- sf::st_linestring(cbind(x[ok], y[ok]))
                 usr <- par("usr")
-                axis1 <- sf::st_linestring(cbind(usr[1:2], rep(usr[3], 2)))
-                I <- sf::st_intersection(curve, axis1)
-                oceDebug(debug, "length(I)=", length(I), " (intersection to axis(1))\n", style="red")
+                axis2 <- sf::st_linestring(cbind(rep(usr[1],2), usr[3:4]))
+                I <- sf::st_intersection(curve, axis2)
+                oceDebug(debug, "length(I)=", length(I), " for intersection to axis(2)\n", style="red")
                 if (length(I) > 0) {
                     Imatrix <- as.matrix(I)
                     if (debug > 0) {
@@ -2131,17 +2165,25 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                             print(Imatrix)
                         points(Imatrix[,1], Imatrix[,2], col=2, pch=20, cex=2)
                     }
-                }
-                axis2 <- sf::st_linestring(cbind(rep(usr[1],2), usr[3:4]))
-                I <- sf::st_intersection(curve, axis2)
-                oceDebug(debug, "length(I)=", length(I), " (intersection to axis(2))\n", style="red")
-                if (length(I) > 0) {
-                    Imatrix <- as.matrix(I)
-                    if (debug > 0) {
-                        print(Imatrix)
-                        points(Imatrix[1,1], Imatrix[1,2], col=2, pch=20, cex=2)
+                    for (ii in dim(Imatrix)[1]) {
+                        ##> message(" ... rval side=2 lat=", l, " at=", Imatrix[ii,2])
+                        rval$side <- c(rval$side, 2)
+                        rval$value <- c(rval$value, l)
+                        rval$type <- c(rval$type, "latitude")
+                        rval$at <- c(rval$at, Imatrix[ii, 2])
                     }
                 }
+                ##> ## latitude on side 1
+                ##> axis2 <- sf::st_linestring(cbind(rep(usr[1],2), usr[3:4]))
+                ##> I <- sf::st_intersection(curve, axis2)
+                ##> oceDebug(debug, "length(I)=", length(I), " (intersection to axis(2))\n", style="red")
+                ##> if (length(I) > 0) {
+                ##>     Imatrix <- as.matrix(I)
+                ##>     if (debug > 0) {
+                ##>         print(Imatrix)
+                ##>         points(Imatrix[1,1], Imatrix[1,2], col=2, pch=20, cex=2)
+                ##>     }
+                ##> }
             }
             ## }}}
         }
@@ -2188,31 +2230,41 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     usr <- par("usr")
                     axis1 <- sf::st_linestring(cbind(usr[1:2], rep(usr[3], 2)))
                     I <- sf::st_intersection(curve, axis1)
-                    oceDebug(debug, "length(I)=", length(I), " (intersection to axis(1))\n", style="red")
-                    if (length(I) > 0) {
-                        Imatrix <- as.matrix(I)
-                        if (debug > 0) {
-                            print(Imatrix)
-                            points(Imatrix[1,1], Imatrix[1,2], col=3, pch=20, cex=2)
-                        }
-                    }
-                    axis2 <- sf::st_linestring(cbind(rep(usr[1],2), usr[3:4]))
-                    I <- sf::st_intersection(curve, axis2)
-                    oceDebug(debug, "length(I)=", length(I), " (intersection to axis(2))\n", style="red")
+                    oceDebug(debug, "length(I)=", length(I), " for intersection to axis(1)\n", style="red")
                     if (length(I) > 0) {
                         Imatrix <- as.matrix(I)
                         if (debug > 0) {
                             if (debug > 1)
                                 print(Imatrix)
-                            points(Imatrix[,1], Imatrix[,2], col=3, pch=20, cex=2)
+                            points(Imatrix[1,1], Imatrix[1,2], col=3, pch=20, cex=2)
+                        }
+                        for (ii in dim(Imatrix)[1]) {
+                            ##> message(" ... rval side=1 lon=", l, " at=", Imatrix[ii,1])
+                            rval$side <- c(rval$side, 1)
+                            rval$value <- c(rval$value, l)
+                            rval$type <- c(rval$type, "longitude")
+                            rval$at <- c(rval$at, Imatrix[ii, 1])
                         }
                     }
+                    ##> ## latitude on side 1
+                    ##> axis2 <- sf::st_linestring(cbind(rep(usr[1],2), usr[3:4]))
+                    ##> I <- sf::st_intersection(curve, axis2)
+                    ##> oceDebug(debug, "length(I)=", length(I), " (intersection to axis(2))\n", style="red")
+                    ##> if (length(I) > 0) {
+                    ##>     Imatrix <- as.matrix(I)
+                    ##>     if (debug > 0) {
+                    ##>         if (debug > 1)
+                    ##>             print(Imatrix)
+                    ##>         points(Imatrix[,1], Imatrix[,2], col=3, pch=20, cex=2)
+                    ##>     }
+                    ##> }
                 }
                 ## }}}
             }
         }
     }
     oceDebug(debug, "} # mapGrid()\n", unindent=1, sep="", style="bold")
+    invisible(as.data.frame(rval))
 }
 
 

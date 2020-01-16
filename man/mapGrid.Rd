@@ -54,6 +54,12 @@ amount of debugging information, 2 to go two function levels deep, or
 3 to go all the way to the core functions. Any value above 3 will be
 truncated to 3.}
 }
+\value{
+A \link{data.frame}, returned silently, containing \code{"side"}, \code{"value"}, \code{"type"}, and \code{"at"}.
+As of January, 2020, this is used within \code{\link[=mapPlot]{mapPlot()}} to draw axes on the bottom and left
+sides of the plot area, circumventing a previous (much slower) scheme in which
+\link{mapAxis} had been called.
+}
 \description{
 Plot longitude and latitude grid on an existing map.
 }
