@@ -256,9 +256,8 @@ Interrupted Goode homolosine              \tab \code{igh}      \tab -\cr
 Kavraisky V                               \tab \code{kav5}     \tab - \cr
 Kavraisky VII                             \tab \code{kav7}     \tab - \cr
 Lambert azimuthal equal area              \tab \code{laea}     \tab - \cr
-Longitude and latitude                    \tab \code{lonlat}   \tab - \cr
-Longitude and latitude                    \tab \code{longlat}   \tab - \cr
-Longitude and latitude                    \tab \code{latlon}   \tab - \cr
+Longitude and latitude                    \tab \code{longlat}  \tab - \cr
+Longitude and latitude                    \tab \code{latlong}  \tab - \cr
 Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2}, \code{lat_0}\cr
 Lambert equal area conic                  \tab \code{leac}     \tab \code{lat_1}, \code{south}\cr
 Loximuthal                                \tab \code{loxim}    \tab\cr

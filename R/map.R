@@ -1388,9 +1388,8 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' Kavraisky VII                             \tab `kav7`     \tab - \cr
 ## Krovak                                    \tab `krovak`   \tab - \cr
 #' Lambert azimuthal equal area              \tab `laea`     \tab - \cr
-#' Longitude and latitude                    \tab `lonlat`   \tab - \cr
-#' Longitude and latitude                    \tab `longlat`   \tab - \cr
-#' Longitude and latitude                    \tab `latlon`   \tab - \cr
+#' Longitude and latitude                    \tab `longlat`  \tab - \cr
+#' Longitude and latitude                    \tab `latlong`  \tab - \cr
 #' Lambert conformal conic                   \tab `lcc`      \tab `lat_1`, `lat_2`, `lat_0`\cr
 #' Lambert equal area conic                  \tab `leac`     \tab `lat_1`, `south`\cr
 ## Lee oblated stereographic                 \tab `lee_os`   \tab\cr
@@ -1604,9 +1603,22 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (!missing(projection) && inherits(projection, "CRS")) {
         projection <- projection@projargs
     }
+    if (grepl("latlon( |$)", projection)) {
+        warning("converting old name 'latlong' to new name 'latlong'\n")
+        projection <- gsub("latlon", "latlong", projection)
+    }
+    if (grepl("lonlat", projection)) {
+        warning("converting old name 'lonlat' to new name 'longlat'\n")
+        projection <- gsub("lonlat", "longlat", projection)
+    }
     if (packageVersion("sf") >= "0.8.1") {
-        oceDebug(debug, "original projection '", projection, "' converted to '", sep="")
-        projection <- sf::st_crs(projection)$proj4string
+        tmp <- sf::st_crs(projection)$proj4string
+        if (is.na(tmp)) {
+            oceDebug(debug, "original projection '", projection, "' not converted, owing to an error with sf::st_crs()", sep="")
+        } else {
+            oceDebug(debug, "original projection '", projection, "' converted to '", tmp, "'", sep="")
+            projection <- tmp
+        }
         oceDebug(debug, projection, "'\n", sep="")
     }
    if (missing(longitude)) {
