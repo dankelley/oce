@@ -28,6 +28,7 @@ for k in proj.keys():
     except RuntimeError as e:
         not_supported.add(k)
 
+print('This information comes from a python script based on code provided at https://stackoverflow.com/questions/47019616/gdal-doesnt-recognize-bipolar-conic-western-hemisphere-projection\n')
 print('{0} total projections, {1} supported, {2} not supported'
       .format(len(proj), len(supported), len(not_supported)))
 print('\nSupported: ' + ', '.join(sorted(supported)))

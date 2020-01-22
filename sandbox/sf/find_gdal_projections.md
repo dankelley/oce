@@ -1,3 +1,5 @@
+This information comes from a python script based on code provided at https://stackoverflow.com/questions/47019616/gdal-doesnt-recognize-bipolar-conic-western-hemisphere-projection
+
 162 total projections, 46 supported, 116 not supported
 
 Supported: aea, aeqd, bonne, cass, cea, eck1, eck2, eck3, eck4, eck5, eck6, eqc, eqdc, etmerc, gall, geos, gnom, goode, gstmerc, igh, krovak, laea, lcc, merc, mill, moll, nzmg, omerc, ortho, poly, robin, sinu, somerc, stere, sterea, tmerc, tpeqd, utm, vandg, wag1, wag2, wag3, wag4, wag5, wag6, wag7
