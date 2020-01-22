@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+# This python code is based on code provided at
+# https://stackoverflow.com/questions/47019616/gdal-doesnt-recognize-bipolar-conic-western-hemisphere-projection
+# with the only difference being in formatting.
+
 from osgeo import osr
 from subprocess import Popen, PIPE
 
@@ -25,5 +30,5 @@ for k in proj.keys():
 
 print('{0} total projections, {1} supported, {2} not supported'
       .format(len(proj), len(supported), len(not_supported)))
-print('Supported: ' + ', '.join(sorted(supported)))
-print('Not supported: ' + ', '.join(sorted(not_supported)))
+print('\nSupported: ' + ', '.join(sorted(supported)))
+print('\nNot supported: ' + ', '.join(sorted(not_supported)))
