@@ -21,7 +21,7 @@
 #' * `altitude`, in degrees above the horizon,  ranging from -90 to 90.
 #' * `diameter`, soolar diameter, in degrees.
 #' * `distance` to sun, in astronomical units.
-#' \if{html}{\figure{starCoords.png options:width=400px}{starCoords.png}}
+#' \if{html}{\figure{starCoords.png}{options:width=400px}}
 #'
 #' @seealso The equivalent function for the moon is [moonAngle()].
 #'

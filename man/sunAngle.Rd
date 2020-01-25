@@ -26,7 +26,7 @@ A list containing the following:
 \item \code{altitude}, in degrees above the horizon,  ranging from -90 to 90.
 \item \code{diameter}, soolar diameter, in degrees.
 \item \code{distance} to sun, in astronomical units.
-\if{html}{\figure{starCoords.png options:width=400px}{starCoords.png}}
+\if{html}{\figure{starCoords.png}{options:width=400px}}
 }
 }
 \description{
