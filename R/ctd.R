@@ -3590,10 +3590,13 @@ setMethod(f="plot",
                                   data("coastlineWorld", package="oce", envir=environment())
                                   coastline <- get("coastlineWorld")
                               }
-                          } else {
-                              if (!inherits(coastline, "coastline"))
-                                  stop("'coastline' must be a coastline object, or a string naming one")
                           }
+                          ## impose the right class, to overcome a bug in ocedata_0.1.6
+                          if (!inherits(coastline, "coastline"))
+                              class(coastline) <- structure("coastline", package="ocedata")
+                          ## ensure that the object holds (or seems to hold) coastline data
+                          if (2 != (c("longitude", "latitude") %in% names(coastline@data)))
+                              stop("'coastline' must be a coastline object, or a string naming one")
                           if (!missing(clongitude) && !missing(clatitude) && !missing(span)) {
                               plot(coastline,
                                    clongitude=clongitude, clatitude=clatitude, span=span,

@@ -1,5 +1,6 @@
 1.1-2
 
+* accommodate new ocedata (needed to meet new CRAN dependency rule)
 * add `oceRenameData()` and `oceRenamemetadata()`; deprecate `renameData()`
 * improve axis control for `mapPlot()` and `plot,coastline-method`.
 * remove `addColumn()`, `ctdAddColumn()`, `ctdUpdateHeader()`,
