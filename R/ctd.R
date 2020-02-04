@@ -3595,7 +3595,7 @@ setMethod(f="plot",
                           if (!inherits(coastline, "coastline"))
                               class(coastline) <- structure("coastline", package="ocedata")
                           ## ensure that the object holds (or seems to hold) coastline data
-                          if (2 != (c("longitude", "latitude") %in% names(coastline@data)))
+                          if (2 != sum((c("longitude", "latitude") %in% names(coastline@data))))
                               stop("'coastline' must be a coastline object, or a string naming one")
                           if (!missing(clongitude) && !missing(clatitude) && !missing(span)) {
                               plot(coastline,
