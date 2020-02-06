@@ -20,7 +20,7 @@
 \item{x}{a \linkS4class{sealevel} object.}
 
 \item{which}{a numerical or string vector indicating desired plot types,
-with possibilities 1 or \code{"all"} for a time-series of all the data, 2 or
+with possibilities 1 or \code{"all"} for a time-series of all the elevations, 2 or
 \code{"month"} for a time-series of just the first month, 3 or
 \code{"spectrum"} for a power spectrum (truncated to frequencies below 0.1
 cycles per hour, or 4 or \code{"cumulativespectrum"} for a cumulative
@@ -55,6 +55,15 @@ drawn.  If there is just one panel, then the value of \code{par} used in
 the plot.  For multi-panel plots, \code{par} is returned to the value it had
 before the call.
 }
+\section{Historical Note}{
+
+Until 2020-02-06, sea-level plots had the mean value removed, and indicated
+with a tick mark and margin note on the right-hand side of the plot.
+This behaviour was confusing. The change did not go through the usual
+deprecation process, because the margin-note behaviour had not
+been documented.
+}
+
 \examples{
 library(oce)
 data(sealevel)
