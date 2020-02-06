@@ -10,7 +10,7 @@
 #'
 #' @return A [POSIXct()]-style object holding the present time, in the
 #' indicated timezone.
-## NOTE: we need to define this here so setClass() knows about it;
+## NOTE: we need to define this here so [setClass()] knows about it;
 ## NOTE: having it in NAMESPACE is not sufficient.
 presentTime <- function(tz="UTC")
 {
@@ -43,14 +43,15 @@ presentTime <- function(tz="UTC")
 #' str(new("oce"))
 #'
 #' @family classes provided by oce
-setClass("oce",
-         representation(metadata="list",
-                        data="list",
-                        processingLog="list"),
-         prototype=list(metadata=list(units=list(), flags=list()),
-                        data=list(),
-                        processingLog=list(time=presentTime(), value="Create oce object"))
-         )
+setClass("oce", slots=c(metadata="list", data="list", processingLog="list"))
+
+setMethod("initialize", "oce",
+         function(.Object) {
+             .Object@metadata <- list(units=list(), flags=list())
+             .Object@data <- list()
+             .Object@processingLog <- list(time=presentTime(), value="Create oce object")
+             .Object
+         })
 
 #' Summarize an oce Object
 #'
