@@ -362,7 +362,12 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' including `mho/m`, `mmho/cm`, and `mmHo`. As the
 #' units for conductivity are important for derived quantities
 #' (e.g. salinity), such units are converted to standard units
-#' (e.g. `S/m` and `mS/cm`), with a warning.
+#' (e.g. `S/m` and `mS/cm`).  (This was once done with a warning,
+#' but on 2020-02-07 the warning was removed, since it did not
+#' indicate a problem with the file or the data scanning; rather,
+#' it was a simple matter of nudging towards uniformity in a way
+#' that ought to confuse no users, akin to converting `m**3` to
+#' `m^3`, which is also done here without warning.)
 #'
 #' @section Consistency warning:
 #' There are disagreements on variable names. For example, the ``DFO
@@ -562,15 +567,15 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         } else if (1 == length(grep("^\\s*m\\^-1/sr\\s*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(1/m/sr), scale="")
         } else if (1 == length(grep("^\\s*mho[s]{0,1}/m\\s*$", ODFunits[i], ignore.case=TRUE))) {
-            warning('Changed unit mho/m to S/m for conductivity')
+            ##20200207 warning('Changed unit mho/m to S/m for conductivity')
             list(unit=expression(S/m), scale="")
         #} else if (1 == length(grep("^\\s*micro[ ]?mols/m2/s\\s*$", ODFunits[i], ignore.case=TRUE))) {
         #    list(unit=expression(mu*mol/m^2/s), scale="")
         } else if (1 == length(grep("^\\s*mmho[s]?/cm\\s*$", ODFunits[i], ignore.case=TRUE))) {
-            warning('Changed unit mmho/cm to mS/cm for conductivity')
+            ##20200207 warning('Changed unit mmho/cm to mS/cm for conductivity')
             list(unit=expression(mS/cm), scale="")
         } else if (ODFunits[i] == "mmHo") {
-            warning('Changed unit mmHo to S/m for conductivity')
+            ##20200207 warning('Changed unit mmHo to S/m for conductivity')
             list(unit=expression(S/m), scale="")
         ##} else if (ODFunits[i] == "[(]*none[)]$") {
         } else if (1 == length(grep("^[(]*none[)]*$", ODFunits[i], ignore.case=TRUE))) {
