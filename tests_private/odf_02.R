@@ -20,6 +20,6 @@ for (file in files) {
 if (i > 0) {
     cat("Successfully checked", i, "ODF files in ", dir, "\n")
 } else {
-    cat("Found no ODF fies in ", dir, "\n")
+    cat("Found no ODF fies in", dir, "\n")
 }
 
