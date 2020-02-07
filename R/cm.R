@@ -76,10 +76,9 @@ setMethod(f="[[<-",
 
 setMethod(f="initialize",
           signature="cm",
-          definition=function(.Object,
-                              time=NULL, u=NULL, v=NULL, units) {
-                              ## filename="(unknown)",
-                              ## sample, direction, conductivity, salinity, temperature, pressure) {
+          definition=function(.Object, time=NULL, u=NULL, v=NULL, units, ...) {
+              .Object <- callNextMethod(.Object, ...)
+              ## sample, direction, conductivity, salinity, temperature, pressure) {
               if (missing(units)) {
                   .Object@metadata$units <- list(u=list(unit=expression(m/s), scale=""),
                                                  v=list(unit=expression(m/s), scale=""))

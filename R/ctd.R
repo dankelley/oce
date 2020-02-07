@@ -364,6 +364,7 @@ setMethod("initializeFlagScheme",
 #' @param deploymentType optional character string indicating the type of deployment, which may
 #' be `"unknown"`, `"profile"`, `"towyo"`, or `"thermosalinograph"`.
 #' If this is not set, the value defaults to `"unknown"`.
+#' @param ... Ignored.
 #'
 #' @family things related to ctd data
 #'
@@ -387,9 +388,8 @@ setMethod("initializeFlagScheme",
 #' @aliases initialize,ctd-method
 setMethod(f="initialize",
           signature="ctd",
-          definition=function(.Object, pressure, salinity, temperature, conductivity,
-                              units,
-                              pressureType, deploymentType) {
+          definition=function(.Object, pressure, salinity, temperature, conductivity, units, pressureType, deploymentType, ...) {
+              .Object <- callNextMethod(.Object, ...)
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$pressure <- if (missing(pressure)) NULL else pressure
               .Object@data$temperature <- if (missing(temperature)) NULL else temperature

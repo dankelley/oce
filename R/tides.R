@@ -25,7 +25,8 @@ setClass("tidem", contains="oce")
 
 setMethod(f="initialize",
           signature="tidem",
-          definition=function(.Object) {
+          definition=function(.Object, ...) {
+              .Object <- callNextMethod(.Object, ...)
               .Object@metadata$version <- ""
               .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'tidem' object"

@@ -239,7 +239,8 @@ setMethod(f="[[<-",
 
 setMethod(f="initialize",
           signature="argo",
-          definition=function(.Object, time, id, longitude, latitude, salinity, temperature, pressure, filename, dataMode) {
+          definition=function(.Object, time, id, longitude, latitude, salinity, temperature, pressure, filename, dataMode, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(time)) .Object@data$time <- time
               if (!missing(id)) .Object@metadata$id <- id
               if (!missing(longitude)) .Object@data$longitude <- longitude
@@ -1068,7 +1069,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         v
     }
 
-    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n", sep="")
+    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), " [phase 1]\n", sep="")
     res@metadata$id <- if (maybeLC("PLATFORM_NUMBER", lc) %in% varNames)
         as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PLATFORM_NUMBER", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "PLATFORM_NUMBER")
@@ -1091,21 +1092,21 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     res@metadata$projectName <- if (maybeLC("PROJECT_NAME", lc) %in% varNames)
         as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PROJECT_NAME", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "PROJECT_NAME")
-    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n")
+    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), " [phase 2]\n")
     res@metadata$PIName <- if (maybeLC("PI_NAME", lc) %in% varNames)
         as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PI_NAME", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "PI_NAME")
-    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n")
+    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), " [phase 3]\n")
     res@metadata$stationParameters <- if (maybeLC("STATION_PARAMETERS", lc) %in% varNames)
         trimString(ncdf4::ncvar_get(file, maybeLC("STATION_PARAMETERS", lc))) else NULL
     varNames <- varNamesOmit(varNames, "STATION_PARAMETERS")
     oceDebug(debug-1, "STATION_PARAMETERS\n")
-    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n")
+    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), " [phase 4]\n")
     res@metadata$cycleNumber <- if (maybeLC("CYCLE_NUMBER", lc) %in% varNames)
         as.vector(ncdf4::ncvar_get(file, maybeLC("CYCLE_NUMBER", lc))) else NULL
     varNames <- varNamesOmit(varNames, "CYCLE_NUMBER")
     oceDebug(debug-1, "CYCLE_NUMBER\n")
-    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n")
+    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), " [phase 5]\n")
     res@metadata$direction <- if (maybeLC("DIRECTION", lc) %in% varNames)
         as.vector(ncdf4::ncvar_get(file, maybeLC("DIRECTION", lc))) else NULL
     varNames <- varNamesOmit(varNames, "DIRECTION")
@@ -1208,9 +1209,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     varNames <- varNamesOmit(varNames, "POSITIONING_SYSTEM")
     oceDebug(debug-1, "POSITIONING_SYSTEM\n")
     oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n")
-
     stationParameters <- unique(as.vector(res@metadata$stationParameters)) # will be PRES, TEMP etc
-
     ## Handle units before getting the data. (We must do it here, because when
     ## we read the data, we remove entries from varNames ... that is how
     ## we know what is left over at the end, to be shoved into metadata.)

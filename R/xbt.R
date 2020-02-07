@@ -120,7 +120,8 @@ setMethod(f="[[<-",
 setMethod(f="initialize",
           signature="xbt",
           ## the only thing we know for sure is that temperature will be given
-          definition=function(.Object, z=NULL, depth=NULL, temperature=NULL, units) {
+          definition=function(.Object, z=NULL, depth=NULL, temperature=NULL, units, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!is.null(depth) && !is.null(z))
                   stop("cannot initialize XBT with both depth and z")
               if (missing(units)) {

@@ -105,7 +105,8 @@ NULL
 
 setMethod(f="initialize",
           signature="sealevel",
-          definition=function(.Object, elevation, time) {
+          definition=function(.Object, elevation, time, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(elevation))
                   .Object@data$elevation <- elevation
               if (!missing(time))

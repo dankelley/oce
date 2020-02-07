@@ -22,7 +22,8 @@ setClass("lobo", contains="oce")
 
 setMethod(f="initialize",
           signature="lobo",
-          definition=function(.Object, time, u, v, salinity, temperature, airtemperature, pressure, nitrate, fluorescence, filename) {
+          definition=function(.Object, time, u, v, salinity, temperature, airtemperature, pressure, nitrate, fluorescence, filename, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(time)) .Object@data$time <- time
               if (!missing(u)) {
                   .Object@data$u <- u
