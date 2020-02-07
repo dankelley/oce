@@ -41,7 +41,8 @@ setClass("odf", contains="oce")
 
 setMethod(f="initialize",
           signature="odf",
-          definition=function(.Object, time, filename="") {
+          definition=function(.Object, time, filename="", ...) {
+              .Object <- callNextMethod(.Object, ...)
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$time <- if (missing(time)) NULL else time
               .Object@metadata$filename <- filename

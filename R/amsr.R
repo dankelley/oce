@@ -54,7 +54,8 @@ setClass("amsr", contains="satellite")
 
 setMethod(f="initialize",
           signature="amsr",
-          definition=function(.Object, filename) {
+          definition=function(.Object, filename, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(filename))
                   .Object@metadata$filename <- filename
               .Object@processingLog$time <- presentTime()

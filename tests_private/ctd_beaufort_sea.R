@@ -5,7 +5,7 @@ options(warn=2)                        # die on warning, to catch unrecognized S
 Sys.setenv(TZ="America/Halifax")       # without a TZ, problems on macos high-sierra beta
 
 years <- 2003:2012
-path <- paste("/data/arctic/beaufort/", years, sep="")
+path <- paste("~/data/arctic/beaufort/", years, sep="")
 files <- list.files(path=path, pattern=".cnv", full.names=TRUE)
 nfiles <- length(files)
 if (!interactive()) png('ctd_beaufort_sea_%03d.png')
@@ -17,7 +17,7 @@ for (i in seq_along(files)) {
     testthat::expect_true("temperature" %in% names(d[['data']]))
     summary(d)                         # so we can look ... hard to do, though
     cat("time starts: ", paste(d[["time"]][1:3], collapse=", "), "\n", sep="")
-    if (files[i] == "/data/arctic/beaufort/2007/d200720_049.cnv" && "gsw" == options()$oceEOS)
+    if (files[i] == "~/data/arctic/beaufort/2007/d200720_049.cnv" && "gsw" == options()$oceEOS)
         expect_error(plot(d), "need at least two non-NA values to interpolate") # weird file, with just 1 level
     else
         plot(d)

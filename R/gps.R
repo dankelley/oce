@@ -26,7 +26,8 @@ setClass("gps", contains="oce")
 
 setMethod(f="initialize",
           signature="gps",
-          definition=function(.Object, longitude, latitude, filename="") {
+          definition=function(.Object, longitude, latitude, filename="", ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(longitude)) .Object@data$longitude <- as.numeric(longitude)
               if (!missing(latitude)) .Object@data$latitude <- as.numeric(latitude)
               .Object@metadata$filename <- filename

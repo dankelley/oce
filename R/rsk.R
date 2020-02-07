@@ -61,7 +61,8 @@ NULL
 
 setMethod(f="initialize",
           signature="rsk",
-          definition=function(.Object, time, pressure, temperature, filename="") {
+          definition=function(.Object, time, pressure, temperature, filename="", ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(time)) .Object@data$time <- time
               if (!missing(pressure)) .Object@data$pressure <- pressure
               if (!missing(temperature)) .Object@data$temperature <- temperature

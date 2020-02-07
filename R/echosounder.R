@@ -87,7 +87,8 @@ NULL
 
 setMethod(f="initialize",
           signature="echosounder",
-          definition=function(.Object, filename="") {
+          definition=function(.Object, filename="", ...) {
+              .Object <- callNextMethod(.Object, ...)
               .Object@metadata$filename <- filename
               .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'echosounder' object"

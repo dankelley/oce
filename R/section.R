@@ -87,7 +87,8 @@ NULL
 
 setMethod(f="initialize",
           signature="section",
-          definition=function(.Object, filename="", sectionId="") {
+          definition=function(.Object, filename="", sectionId="", ...) {
+              .Object <- callNextMethod(.Object, ...)
               .Object@metadata$units <- NULL # senseless keeping these from oce()
               .Object@metadata$flags <- NULL # senseless keeping these from oce()
               .Object@metadata$filename <- filename
