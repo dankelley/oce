@@ -364,6 +364,7 @@ setMethod("initializeFlagScheme",
 #' @param deploymentType optional character string indicating the type of deployment, which may
 #' be `"unknown"`, `"profile"`, `"towyo"`, or `"thermosalinograph"`.
 #' If this is not set, the value defaults to `"unknown"`.
+#' @param ... Ignored.
 #'
 #' @family things related to ctd data
 #'
@@ -387,9 +388,8 @@ setMethod("initializeFlagScheme",
 #' @aliases initialize,ctd-method
 setMethod(f="initialize",
           signature="ctd",
-          definition=function(.Object, pressure, salinity, temperature, conductivity,
-                              units,
-                              pressureType, deploymentType) {
+          definition=function(.Object, pressure, salinity, temperature, conductivity, units, pressureType, deploymentType, ...) {
+              .Object <- callNextMethod(.Object, ...)
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$pressure <- if (missing(pressure)) NULL else pressure
               .Object@data$temperature <- if (missing(temperature)) NULL else temperature
@@ -3590,10 +3590,13 @@ setMethod(f="plot",
                                   data("coastlineWorld", package="oce", envir=environment())
                                   coastline <- get("coastlineWorld")
                               }
-                          } else {
-                              if (!inherits(coastline, "coastline"))
-                                  stop("'coastline' must be a coastline object, or a string naming one")
                           }
+                          ## impose the right class, to overcome a bug in ocedata_0.1.6
+                          if (!inherits(coastline, "coastline"))
+                              class(coastline) <- structure("coastline", package="ocedata")
+                          ## ensure that the object holds (or seems to hold) coastline data
+                          if (2 != sum((c("longitude", "latitude") %in% names(coastline@data))))
+                              stop("'coastline' must be a coastline object, or a string naming one")
                           if (!missing(clongitude) && !missing(clatitude) && !missing(span)) {
                               plot(coastline,
                                    clongitude=clongitude, clatitude=clatitude, span=span,

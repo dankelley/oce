@@ -285,7 +285,7 @@ julianCenturyAnomaly <- function(jd)
 #' The fractional part of which is 0 for new moon, 1/4 for first
 #' quarter, 1/2 for full moon, and 3/4 for last quarter.
 #'
-#' \if{html}{\figure{starCoords.png options:width=400px}{starCoords}}
+#' \if{html}{\figure{starCoords.png}{options:width=400px}}
 #'
 #' @section Alternate formulations:
 #' Formulae provide by Meeus (1982) are used

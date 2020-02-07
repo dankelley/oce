@@ -28,7 +28,8 @@ setClass("windrose", contains="oce")
 
 setMethod(f="initialize",
           signature="windrose",
-          definition=function(.Object) {
+          definition=function(.Object, ...) {
+              .Object <- callNextMethod(.Object, ...)
               .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'windrose' object"
               return(.Object)

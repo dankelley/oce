@@ -261,7 +261,8 @@ NULL
 
 setMethod(f="initialize",
           signature="adp",
-          definition=function(.Object, time, distance, v, a, q, oceCoordinate="enu", orientation="upward") {
+          definition=function(.Object, time, distance, v, a, q, oceCoordinate="enu", orientation="upward", ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(time)) .Object@data$time <- time
               if (!missing(distance)) {
                   .Object@data$distance <- distance

@@ -12,7 +12,8 @@
   conductivity,
   units,
   pressureType,
-  deploymentType
+  deploymentType,
+  ...
 )
 }
 \arguments{
@@ -50,6 +51,8 @@ pressure over the atmospheric value, in dbar.}
 \item{deploymentType}{optional character string indicating the type of deployment, which may
 be \code{"unknown"}, \code{"profile"}, \code{"towyo"}, or \code{"thermosalinograph"}.
 If this is not set, the value defaults to \code{"unknown"}.}
+
+\item{...}{Ignored.}
 }
 \description{
 This function creates \linkS4class{ctd} objects. It is mainly

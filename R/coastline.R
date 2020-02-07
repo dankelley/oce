@@ -53,7 +53,8 @@ NULL
 
 setMethod(f="initialize",
           signature="coastline",
-          definition=function(.Object, longitude=NULL, latitude=NULL, filename="", fillable=FALSE) {
+          definition=function(.Object, longitude=NULL, latitude=NULL, filename="", fillable=FALSE, ...) {
+              .Object <- callNextMethod(.Object, ...)
               .Object@data$longitude <- longitude
               .Object@data$latitude <- latitude
               .Object@metadata$filename <- filename

@@ -87,7 +87,8 @@ NULL
 
 setMethod(f="initialize",
           signature="topo",
-          definition=function(.Object, longitude, latitude, z, filename="", units) {
+          definition=function(.Object, longitude, latitude, z, filename="", units, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(longitude)) .Object@data$longitude <- longitude
               if (!missing(latitude)) .Object@data$latitude <- latitude
               if (!missing(z)) .Object@data$z <- z

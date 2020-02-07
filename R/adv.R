@@ -79,7 +79,8 @@ NULL
 
 setMethod(f="initialize",
           signature="adv",
-          definition=function(.Object, time, v, a, q, filename) {
+          definition=function(.Object, time, v, a, q, filename, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(time)) .Object@data$time <- time
               if (!missing(v)) .Object@data$v <- v
               if (!missing(a)) .Object@data$a <- a

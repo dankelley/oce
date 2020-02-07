@@ -104,7 +104,12 @@ Some older ODF files contain non-standard units for conductivity,
 including \code{mho/m}, \code{mmho/cm}, and \code{mmHo}. As the
 units for conductivity are important for derived quantities
 (e.g. salinity), such units are converted to standard units
-(e.g. \code{S/m} and \code{mS/cm}), with a warning.
+(e.g. \code{S/m} and \code{mS/cm}).  (This was once done with a warning,
+but on 2020-02-07 the warning was removed, since it did not
+indicate a problem with the file or the data scanning; rather,
+it was a simple matter of nudging towards uniformity in a way
+that ought to confuse no users, akin to converting \code{m**3} to
+\code{m^3}, which is also done here without warning.)
 }
 
 \section{Consistency warning}{
