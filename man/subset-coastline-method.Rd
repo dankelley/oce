@@ -45,7 +45,7 @@ as in the \dQuote{Examples}.
 library(oce)
 data(coastlineWorld)
 ## Subset to a box centred on Nova Scotia, Canada
-if (requireNamespace("sp")) {
+if (requireNamespace("sf")) {
     cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
     ## The plot demonstrates that the trimming is as requested.
     plot(cl, clon=-65, clat=45, span=6000)
