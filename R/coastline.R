@@ -218,17 +218,20 @@ setMethod(f="subset",
               ## {{{ NEW 'sf' method
               oceDebug(debug, "using sf:: methodology for polygon operations\n")
               boxSF <- sf::st_polygon(list(outer=cbind(c(W,W,E,E,W), c(S,N,N,S,S))))
+              oceDebug(debug, "sf::st_polygon() call worked\n")
               ## }}}
               owarn <- options("warn")$warn
               options(warn=-1)
               na <- which(is.na(cllon))
               nseg <- length(na)
+              oceDebug(debug, "nseg=", nseg, "\n")
               nnew <- 0
               outlon <- NULL           # FIXME: remove after transition to sf::
               outlat <- NULL           # FIXME: remove after transition to sf::
               outlonSF <- NULL         # FIXME: remove after transition to sf::
               outlatSF <- NULL         # FIXME: remove after transition to sf:"
               for (iseg in 2:nseg) {
+                  oceDebug(debug, "iseg=", iseg, "\n")
                   look <- seq.int(na[iseg-1]+1, na[iseg]-1)
                   lon <- cllon[look]
                   if (any(is.na(lon))) stop("step 1: double lon NA at iseg=", iseg) # checks ok on coastlineWorld
@@ -238,23 +241,35 @@ setMethod(f="subset",
                   if (n < 1) stop("how can we have no data?")
                   if (length(lon) > 1) {
                       ## {{{ OLD 'raster' 'sp' method
+                      oceDebug(debug, "about to do old 'sp' method. length(lon)=", length(lon), "\n")
+                      print(data.frame(lon=lon,lat=lat))
+                      oceDebug(debug, "W=", W, " E=", E, " S=", S, " N=", N, "\n")
                       A <- sp::Polygon(cbind(lon, lat))
                       B <- sp::Polygons(list(A), "A")
                       C <- sp::SpatialPolygons(list(B))
-                      i <- raster::intersect(box, C)
+                      oceDebug(debug, "  created C\n")
+                      i <- try(raster::intersect(box, C))
+                      oceDebug(debug, "  created i\n")
+                      if (inherits(i, "try-error"))
+                          stop("danny")
+                      oceDebug(debug, "  got intersection\n")
                       if (!is.null(i)) {
+                          oceDebug(debug, "i is not NULL\n")
                           for (j in seq_along(i@polygons)) {
                               for (k in seq_along(i@polygons[[1]]@Polygons)) {
+                                  oceDebug(debug, "j=", j, ", k=", k, " {\n")
                                   xy <- i@polygons[[j]]@Polygons[[k]]@coords
                                   seglon <- xy[, 1]
                                   seglat <- xy[, 2]
                                   nnew <- nnew + length(seglon)
                                   outlon <- c(outlon, NA, seglon)
                                   outlat <- c(outlat, NA, seglat)
+                                  oceDebug(debug, " ... was this OK?\n")
                               }
                           }
                       }
                       ## }}}
+                      oceDebug(debug, "old 'sf' meethod was ok. Now about to do new 'sf' method\n")
                       ## {{{ NEW 'sf' method
                       CSF <- sf::st_polygon(list(outer=cbind(c(lon, lon[1]), c(lat, lat[1]))))
                       insideSF <- sf::st_intersection(boxSF, CSF)
@@ -264,6 +279,7 @@ setMethod(f="subset",
                       }
                       ## }}}
                   }
+                  oceDebug(debug, "at bottom of loop L233\n")
               }
               ## {{{ NEW 'sf' method
               if (!all.equal(outlon, outlonSF)) {
