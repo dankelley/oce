@@ -3257,12 +3257,13 @@ setMethod(f="plot",
               for (w in seq_along(which)) {
                   if (is.na(which[w])) {
                       if (whichOrig[w] %in% names(x@data)) {
+                          oceDebug(debug, "about to call plotProfile() with which=\"", whichOrig[w], "\" and col=", vectorShow(col))
                           plotProfile(x, xtype=x[[whichOrig[w]]],
                                       Slim=Slim, Tlim=Tlim, plim=plim,
                                       eos=eos,
                                       useSmoothScatter=useSmoothScatter,
                                       grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                      cex=cex[w], pch=pch[w],
+                                      col=col, cex=cex, pch=pch,
                                       type=if (!missing(type)) type[w],
                                       keepNA=keepNA, inset=inset, add=add,
                                       debug=debug-1,
@@ -4761,44 +4762,45 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #'
 #' @family functions that plot oce data
 #' @family things related to ctd data
-plotProfile <- function (x,
-                         xtype="salinity+temperature", ytype="pressure",
-                         eos=getOption("oceEOS", default="gsw"),
-                         lty=1,
-                         xlab=NULL, ylab=NULL,
-                         col='black',
-                         col.salinity="darkgreen",
-                         col.temperature="red",
-                         col.rho="blue",
-                         col.N2="brown",
-                         col.dpdt="darkgreen",
-                         col.time="darkgreen",
-                         pt.bg="transparent",
-                         grid=TRUE,
-                         col.grid="lightgray",
-                         lty.grid="dotted",
-                         Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim,
-                         xlim, ylim,
-                         lwd=par("lwd"),
-                         xaxs="r",
-                         yaxs="r",
-                         cex=1, pch=1,
-                         useSmoothScatter=FALSE,
-                         df,
-                         keepNA=FALSE,
-                         type='l',
-                         mgp=getOption("oceMgp"),
-                         mar,
-                         add=FALSE,
-                         inset=FALSE,
-                         debug=getOption("oceDebug", 0),
-                         ...)
+plotProfile <- function(x,
+                        xtype="salinity+temperature", ytype="pressure",
+                        eos=getOption("oceEOS", default="gsw"),
+                        lty=1,
+                        xlab=NULL, ylab=NULL,
+                        col='black',
+                        col.salinity="darkgreen",
+                        col.temperature="red",
+                        col.rho="blue",
+                        col.N2="brown",
+                        col.dpdt="darkgreen",
+                        col.time="darkgreen",
+                        pt.bg="transparent",
+                        grid=TRUE,
+                        col.grid="lightgray",
+                        lty.grid="dotted",
+                        Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim,
+                        xlim, ylim,
+                        lwd=par("lwd"),
+                        xaxs="r",
+                        yaxs="r",
+                        cex=1, pch=1,
+                        useSmoothScatter=FALSE,
+                        df,
+                        keepNA=FALSE,
+                        type='l',
+                        mgp=getOption("oceMgp"),
+                        mar,
+                        add=FALSE,
+                        inset=FALSE,
+                        debug=getOption("oceDebug", 0),
+                        ...)
 {
     debug <- min(debug, 3)
     oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
              "\"",
              ", xlab=", if (is.null(xlab)) "NULL" else paste('"', xlab, '"', sep=""),
-             ", debug=", debug, ", ...) {\n", sep="", unindent=1)
+             ", debug=", debug, ", ...) {\n", sep="", style="bold", unindent=1)
+    oceDebug(debug, vectorShow(col))
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (missing(mar)) {
         ## default behaviour changed 20161020 for issue #1103
@@ -4815,7 +4817,9 @@ plotProfile <- function (x,
                                 cex=1, pch=1, pt.bg="transparent",
                                 df=df, keepNA=FALSE, debug=getOption("oceDebug", 0))
     {
-        oceDebug(debug, "plotJustProfile(..., debug=", debug, ") {\n", sep="", unindent=1)
+        oceDebug(debug, "plotJustProfile(...,",
+                 argShow(col),
+                 ", debug=", debug, ") {\n", sep="", style="bold", unindent=1)
         if (is.null(xlab))
             xlab <- ""
         x <- as.vector(x) # because e.g. argo may be a 1-col matrix
@@ -4846,7 +4850,7 @@ plotProfile <- function (x,
         } else {
             lines(x, y, col=col, lwd=lwd, lty=lty)
         }
-        oceDebug(debug, "} # plotJustProfile\n", unindent=1)
+        oceDebug(debug, "} # plotJustProfile\n", style="bold", unindent=1)
     }                                  # plotJustProfile
     #if (!inherits(x, "ctd"))
     #    stop("method is only for objects of class '", "ctd", "'")
@@ -5734,5 +5738,5 @@ plotProfile <- function (x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     }
-    oceDebug(debug, "} # plotProfile()\n", unindent=1)
+    oceDebug(debug, "} # plotProfile()\n", style="bold", unindent=1)
 }

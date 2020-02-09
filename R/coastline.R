@@ -133,17 +133,15 @@ setMethod(f="[[<-",
 #' @return A `coastline` object.
 #'
 #' @examples
-#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
-#' ## Eastern Canada
-#' if (requireNamespace("raster", quietly=TRUE) && requireNamespace("rgeos", quietly=TRUE)) {
+#' ## Subset to a box centred on Nova Scotia, Canada
+#' if (requireNamespace("sp")) {
 #'     cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
 #'     ## The plot demonstrates that the trimming is as requested.
 #'     plot(cl, clon=-65, clat=45, span=6000)
 #'     rect(-80, 30, -50, 60, bg="transparent", border="red")
 #' }
-#'}
 #' @family things related to coastline data
 #' @family functions that subset oce objects
 #'
@@ -216,11 +214,18 @@ setMethod(f="subset",
               cllon <- x[["longitude"]]
               cllat <- x[["latitude"]]
               ##old norig <- length(cllon)
-              if (!requireNamespace("raster", quietly=TRUE))
-                  stop("\"raster\" package must be installed for this to work")
-              if (!requireNamespace("rgeos", quietly=TRUE))
-                  stop("\"rgeos\" package must be installed for this to work")
-              box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
+              ## {{{ NEW method (see https://github.com/dankelley/oce/issues/1657)
+              if (!requireNamespace("sf", quietly=TRUE))
+                  stop("\"sf\" package must be installed for this to work")
+              box <- sf::st_polygon(list(outer=cbind(c(W,W,E,E,W), c(S,N,N,S,S))))
+              ## }}}
+              ## {{{ OLD method maybe remove (see https://github.com/dankelley/oce/issues/1657)
+              ##OLD if (!requireNamespace("raster", quietly=TRUE))
+              ##OLD     stop("\"raster\" package must be installed for this to work")
+              ##OLD if (!requireNamespace("sp", quietly=TRUE))
+              ##OLD     stop("\"sp\" package must be installed for this to work")
+              ##OLD box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
+              ##OLD ## }}}
               owarn <- options("warn")$warn
               options(warn=-1)
               na <- which(is.na(cllon))
@@ -236,25 +241,33 @@ setMethod(f="subset",
                   if (any(is.na(lat))) stop("step 1: double lat NA at iseg=", iseg) # checks ok on coastlineWorld
                   n <- length(lon)
                   if (n < 1) stop("how can we have no data?")
-                  if (length(lon) > 1) {
-                      A <- sp::Polygon(cbind(lon, lat))
-                      B <- sp::Polygons(list(A), "A")
-                      C <- sp::SpatialPolygons(list(B))
-                      i <- raster::intersect(box, C)
-                      if (!is.null(i)) {
-                          for (j in seq_along(i@polygons)) {
-                              for (k in seq_along(i@polygons[[1]]@Polygons)) {
-                                  xy <- i@polygons[[j]]@Polygons[[k]]@coords
-                                  seglon <- xy[, 1]
-                                  seglat <- xy[, 2]
-                                  nnew <- nnew + length(seglon)
-                                  outlon <- c(outlon, NA, seglon)
-                                  outlat <- c(outlat, NA, seglat)
-                                  oceDebug(debug > 1, "iseg=", iseg, ", j=", j, ", k=", k, "\n", sep="")
-                              }
-                          }
-                      }
+                  ## was using sp and raster, but this caused assert() errors
+                  ## see https://github.com/dankelley/oce/issues/1657
+                  C <- sf::st_polygon(list(outer=cbind(c(lon, lon[1]), c(lat, lat[1]))))
+                  inside <- sf::st_intersection(box, C)
+                  if (1 == length(inside)) {
+                      outlon <- c(outlon, NA, inside[[1]][,1])
+                      outlat <- c(outlat, NA, inside[[1]][,2])
                   }
+                  ##OLD     if (length(lon) > 1) {
+                  ##OLD         A <- sp::Polygon(cbind(lon, lat))
+                  ##OLD         B <- sp::Polygons(list(A), "A")
+                  ##OLD         C <- sp::SpatialPolygons(list(B))
+                  ##OLD         i <- raster::intersect(box, C)
+                  ##OLD         if (!is.null(i)) {
+                  ##OLD             for (j in seq_along(i@polygons)) {
+                  ##OLD                 for (k in seq_along(i@polygons[[1]]@Polygons)) {
+                  ##OLD                     xy <- i@polygons[[j]]@Polygons[[k]]@coords
+                  ##OLD                     seglon <- xy[, 1]
+                  ##OLD                     seglat <- xy[, 2]
+                  ##OLD                     nnew <- nnew + length(seglon)
+                  ##OLD                     outlon <- c(outlon, NA, seglon)
+                  ##OLD                     outlat <- c(outlat, NA, seglat)
+                  ##OLD                     oceDebug(debug > 1, "iseg=", iseg, ", j=", j, ", k=", k, "\n", sep="")
+                  ##OLD                 }
+                  ##OLD             }
+                  ##OLD         }
+                  ##OLD     }
               }
               res@data$longitude <- outlon
               res@data$latitude <- outlat
