@@ -1308,8 +1308,6 @@ imagep <- function(x, y, z,
         ## nc <- ncol(z)
         ## z[, seq.int(nc, 1L)] <- z[, seq.int(1L, nc)]
         ylim <- rev(sort(ylim))
-        if (ylimGiven)
-           warning("The interaction of ylim and flipy changed on 2018 Mar 26.")
     }
     if (zclip && !zlimHistogram) {
         oceDebug(debug, "using missingColor for out-of-range values")
