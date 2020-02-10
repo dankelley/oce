@@ -3257,8 +3257,11 @@ setMethod(f="plot",
               for (w in seq_along(which)) {
                   if (is.na(which[w])) {
                       if (whichOrig[w] %in% names(x@data)) {
-                          oceDebug(debug, "about to call plotProfile() with which=\"", whichOrig[w], "\" and col=", vectorShow(col))
+                          xlab <- resizableLabel(item=whichOrig[w], axis="x",
+                                                 unit=x@metadata$units[[whichOrig[w]]], debug=debug-1)
+                          oceDebug(debug, "about to call plotProfile() with which=\"", whichOrig[w], "\" and xlab=\"", as.character(xlab), "\"\n", sep="")
                           plotProfile(x, xtype=x[[whichOrig[w]]],
+                                      xlab=xlab,# whichOrig[w],
                                       Slim=Slim, Tlim=Tlim, plim=plim,
                                       eos=eos,
                                       useSmoothScatter=useSmoothScatter,
@@ -4796,11 +4799,10 @@ plotProfile <- function(x,
                         ...)
 {
     debug <- min(debug, 3)
-    oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
-             "\"",
+    oceDebug(debug, "plotProfile(x, xtype=",
+             ifelse(is.character(xtype), paste0("\"",xtype,"\""), "(numeric)"),
              ", xlab=", if (is.null(xlab)) "NULL" else paste('"', xlab, '"', sep=""),
              ", debug=", debug, ", ...) {\n", sep="", style="bold", unindent=1)
-    oceDebug(debug, vectorShow(col))
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (missing(mar)) {
         ## default behaviour changed 20161020 for issue #1103
@@ -4951,6 +4953,7 @@ plotProfile <- function(x,
     if (!add)
         par(mar=mar, mgp=mgp)
     if (length(xtype) == length(y) && length(y) > 1) {
+        oceDebug(debug, "case 1\n")
         if ('axes' %in% names(list(...))) {
             plot(xtype, y, xlab="", ylab=yname, type=type, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, lty=lty, cex=cex, pch=pch, ...)
             if (list(...)$axes) {
@@ -5692,8 +5695,8 @@ plotProfile <- function(x,
         }
         ## lines(salinity, y, col=col.salinity, lwd=if (length(lwd)>1)lwd[2] else lwd[1])
     } else {
-        oceDebug(debug, "plotting a general xtype, i.e. not a special case\n")
         ## Not a special case.
+        oceDebug(debug, "plotting a general xtype, i.e. not a special case\n")
         w <- which(names(x@data) == xtype)
         if (length(w) < 1)
             stop("unknown xtype value (\"", xtype, "\")")
@@ -5716,7 +5719,7 @@ plotProfile <- function(x,
             if (is.character(label) && label == "sigmaTheta")
                 label <- resizableLabel("sigmaTheta", "x", debug=debug-1)
             label <- resizableLabel(label, "x", unit=x@metadata$units[[xtype]], debug=debug-1)
-            oceDebug(debug, "x name computed as \"", label, "\"\n", sep="")
+            oceDebug(debug, "x name computed as \"", paste0(as.character(label)), "\"\n", sep="")
             mtext(label, side=3, line=axisNameLoc, cex=par("cex"))
             axis(2)
             box()
