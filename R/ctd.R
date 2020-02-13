@@ -3723,16 +3723,16 @@ setMethod(f="plot",
                           ## draw some text in top margin
                           if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
                               mtext(x@metadata$station,
-                                    side=3, adj=0, cex=0.8*par("cex"), line=0.5)
+                                    side=3, adj=0, cex=par("cex"), line=0.5)
                           }
                           if (!is.null(x@metadata$startTime) && 4 < nchar(x@metadata$startTime, "bytes")) {
                               mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%M:%S"),
-                                    side=3, adj=1, cex=0.8*par("cex"), line=0.5)
+                                    side=3, adj=1, cex=par("cex"), line=0.5)
                           } else if (!is.null(x@data$time)) {
                               goodTimes <- which(!is.na(x@data$time))
                               if (length(goodTimes)) {
                                   mtext(format(x@data$time[goodTimes[1]], "%Y-%m-%d %H:%M:%S"),
-                                        side=3, adj=1, cex=0.8*par("cex"), line=0.5)
+                                        side=3, adj=1, cex=par("cex"), line=0.5)
                               }
                           }
                       }
