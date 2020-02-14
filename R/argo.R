@@ -1548,12 +1548,17 @@ as.argo <- function(time, longitude, latitude,
 #' library(oce)
 #' data(argo)
 #' tc <- cut(argo[["time"]], "year")
+#' # Example 1: plot map, which reveals float trajectory.
 #' plot(argo, pch=as.integer(tc))
 #' year <- substr(levels(tc), 1, 4)
 #' data(topoWorld)
 #' contour(topoWorld[['longitude']], topoWorld[['latitude']],
 #'         topoWorld[['z']], add=TRUE)
 #' legend("bottomleft", pch=seq_along(year), legend=year, bg="white", cex=3/4)
+#'
+#' # Example 2: plot map, TS, T(z) and S(z). Note the use
+#' # of handleFlags(), to skip over questionable data.
+#' plot(handleFLags(argo), which=c(1, 4, 6, 5))
 #'
 #' @references \url{http://www.argo.ucsd.edu/}
 #'
@@ -1564,7 +1569,7 @@ as.argo <- function(time, longitude, latitude,
 #' @aliases plot.argo
 setMethod(f="plot",
           signature=signature("argo"),
-          definition=function (x, which = 1, level,
+          definition=function (x, which=1, level,
                                coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
                                            "coastlineWorldFine", "none"),
                                cex=1, pch=1, type='p', col, fill=FALSE,
@@ -1607,6 +1612,7 @@ setMethod(f="plot",
                             longitude=longitude, latitude=latitude,
                             units=list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
                                        conductivity=list(list=expression(), scale=""))) # guess on units
+              whichOrig <- which
               which <- oce.pmatch(which,
                                   list("trajectory"=1,
                                        "map"=1,
@@ -1615,8 +1621,21 @@ setMethod(f="plot",
                                        "TS"=4,
                                        "salinity profile"=5,
                                        "temperature profile"=6))
-              if (is.na(which))
-                  stop("In plot,argo-method() :\n  unrecognized value of which", call.=FALSE)
+              if (any(is.na(which)))
+                  stop("In plot,argo-method() :\n  unrecognized value(s) of which: ", paste(whichOrig[is.na(which)], collapse=", "), call.=FALSE)
+              lw <- length(which)
+              par(mgp=mgp)
+              if (lw == 2) {
+                  par(mfcol=c(2, 1))
+              } else if (lw == 3) {
+                  par(mfcol=c(3, 1))
+              } else if (lw == 4) {
+                  par(mfrow=c(2, 2))
+              } else if (lw != 1) {
+                  nnn <- floor(sqrt(lw))
+                  par(mfcol=c(nnn, ceiling(lw/nnn)))
+                  rm(nnn)
+              }
               for (w in 1:nw) {
                   if (which[w] == 1) {
                       oceDebug(debug, "which[", w, "] ==1, so plotting a map\n")
