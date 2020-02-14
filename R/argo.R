@@ -1558,7 +1558,7 @@ as.argo <- function(time, longitude, latitude,
 #'
 #' # Example 2: plot map, TS, T(z) and S(z). Note the use
 #' # of handleFlags(), to skip over questionable data.
-#' plot(handleFLags(argo), which=c(1, 4, 6, 5))
+#' plot(handleFlags(argo), which=c(1, 4, 6, 5))
 #'
 #' @references \url{http://www.argo.ucsd.edu/}
 #'

@@ -114,7 +114,7 @@ legend("bottomleft", pch=seq_along(year), legend=year, bg="white", cex=3/4)
 
 # Example 2: plot map, TS, T(z) and S(z). Note the use
 # of handleFlags(), to skip over questionable data.
-plot(handleFLags(argo), which=c(1, 4, 6, 5))
+plot(handleFlags(argo), which=c(1, 4, 6, 5))
 
 }
 \references{
