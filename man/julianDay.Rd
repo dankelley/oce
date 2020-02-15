@@ -71,7 +71,8 @@ Other things related to astronomy:
 \code{\link{julianCenturyAnomaly}()},
 \code{\link{moonAngle}()},
 \code{\link{siderealTime}()},
-\code{\link{sunAngle}()}
+\code{\link{sunAngle}()},
+\code{\link{sunDeclinationRightAscension}()}
 
 Other things related to time: 
 \code{\link{ctimeToSeconds}()},

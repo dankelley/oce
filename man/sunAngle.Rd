@@ -24,7 +24,7 @@ A list containing the following:
 \item \code{time} the time
 \item \code{azimuth}, in degrees eastward of north, from 0 to 360.
 \item \code{altitude}, in degrees above the horizon,  ranging from -90 to 90.
-\item \code{diameter}, soolar diameter, in degrees.
+\item \code{diameter}, solar diameter, in degrees.
 \item \code{distance} to sun, in astronomical units.
 \if{html}{\figure{starCoords.png}{options:width=400px}}
 }
@@ -87,7 +87,8 @@ Other things related to astronomy:
 \code{\link{julianCenturyAnomaly}()},
 \code{\link{julianDay}()},
 \code{\link{moonAngle}()},
-\code{\link{siderealTime}()}
+\code{\link{siderealTime}()},
+\code{\link{sunDeclinationRightAscension}()}
 }
 \author{
 Dan Kelley

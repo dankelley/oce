@@ -33,7 +33,7 @@ test_that("Moon", {
           ## in formulae.
           ## NB. this block also tests eclipticalToEquatorial(), julianDay(),
           ## and julianCenturyAnomaly().
-          t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
+          t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC")
           m <- moonAngle(t, 0, 0) # lat and lon arbitrary
           expect_equal(m$lambda, 133.162659, tolerance=0.0002)
           expect_equal(m$beta, -3.229127, tolerance=0.0002)
@@ -80,3 +80,22 @@ test_that("Sun", {
           ## Character time
           expect_identical(s, sunAngle("1992-04-12 00:00:00", 0, 0))
 })
+
+test_that("Sun Declination and Right Ascension", {
+          ## Example 24.a in Meeus (1991) (page 158 PDF, 153 print)
+          ## This is *apparent* declination and right ascension
+          time <- as.POSIXct("1992-10-13 00:00:00", tz="UTC")
+          a <- sunDeclinationRightAscension(time, apparent=TRUE)
+          expect_equal(a$declination, -7.78507,
+                       tol=            0.00004, scale=1)
+          expect_equal(a$rightAscension, -161.61919,
+                       tol=                 0.00003, scale=1)
+          b <- sunDeclinationRightAscension(time)
+          ## check against previous results, to protect aginst code-drift errors
+          ## This is *actual* declination and right ascension
+          expect_equal(b$declination, -7.785464443,
+                       tol=            0.000000001, scale=1)
+          expect_equal(b$rightAscension, -161.6183305,
+                       tol=                 0.0000001, scale=1)
+})
+

@@ -47,7 +47,8 @@ Other things related to astronomy:
 \code{\link{julianDay}()},
 \code{\link{moonAngle}()},
 \code{\link{siderealTime}()},
-\code{\link{sunAngle}()}
+\code{\link{sunAngle}()},
+\code{\link{sunDeclinationRightAscension}()}
 }
 \author{
 Dan Kelley, based on formulae in references 1 and 2.

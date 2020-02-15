@@ -115,7 +115,8 @@ Other things related to astronomy:
 \code{\link{julianCenturyAnomaly}()},
 \code{\link{julianDay}()},
 \code{\link{siderealTime}()},
-\code{\link{sunAngle}()}
+\code{\link{sunAngle}()},
+\code{\link{sunDeclinationRightAscension}()}
 }
 \author{
 Dan Kelley, based on formulae in Meeus (1982).
