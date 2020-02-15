@@ -21,11 +21,15 @@
 #' * `altitude`, in degrees above the horizon,  ranging from -90 to 90.
 #' * `diameter`, solar diameter, in degrees.
 #' * `distance` to sun, in astronomical units.
+#' * `declination` angle in degrees, computed with [sunDeclinationRightAscension()].
+#' * `rightAscension` angle in degrees, computed with [sunDeclinationRightAscension()].
 #' \if{html}{\figure{starCoords.png}{options:width=400px}}
 #'
-#' @seealso The equivalent function for the moon is [moonAngle()].
+#' @seealso The corresponding function for the moon is [moonAngle()].
 #'
-#' @references Based on Fortran code retrieved from
+#' @references Regarding `declination` and `rightAscension`, see
+#' references in the documentation for [sunDeclinationRightAscension()].
+#' The other items are based on Fortran code retrieved from
 #' ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f on
 #' 2009-11-1.  Comments in that code list as references:
 #'
