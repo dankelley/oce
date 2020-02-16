@@ -541,7 +541,7 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 #'
 #' Carry out nodal modulation calculations for [tidem()]. This function is based directly
 #' on `t_vuf` in the `T_TIDE` Matlab package (Pawlowicz et al., 2002),
-#' which inherits from on the Fortran code described by Foreman (1978).
+#' which inherits from the Fortran code described by Foreman (1978).
 #'
 #' @param t The time in [POSIXct()] format.  (It is *very* important to
 #' use `tz="GMT"` in constructing `t`.)
@@ -555,8 +555,8 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 #' items named `v`, `u` and `f` as described in the `T_TIDE` documentation,
 #' as well in Pawlowicz et al. (2002) and Foreman (1978).
 #'
-#' @author Dan Kelley translated this from `t_astron` from the `T_TIDE`
-#' package (see Pawlowicz et al. 2002).
+#' @author Dan Kelley translated this from the `t_astron` function
+#' of the `T_TIDE` Matlab package (see Pawlowicz et al. 2002).
 #'
 #' @examples
 #' ## Look up values for the M2 constituent in Halifax Harbour, Canada.
@@ -566,11 +566,11 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 #'
 #' @references
 #'
-#' Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+#' * Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
 #' Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
 #' Sciences, Patricia Bay.
 #'
-#' Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+#' * Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
 #' harmonic analysis including error estimates in MATLAB using `T_TIDE`.
 #' Computers and Geosciences, 28, 929-937.
 #'
