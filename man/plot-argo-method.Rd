@@ -104,12 +104,17 @@ Plot a summary diagram for argo data.
 library(oce)
 data(argo)
 tc <- cut(argo[["time"]], "year")
+# Example 1: plot map, which reveals float trajectory.
 plot(argo, pch=as.integer(tc))
 year <- substr(levels(tc), 1, 4)
 data(topoWorld)
 contour(topoWorld[['longitude']], topoWorld[['latitude']],
         topoWorld[['z']], add=TRUE)
 legend("bottomleft", pch=seq_along(year), legend=year, bg="white", cex=3/4)
+
+# Example 2: plot map, TS, T(z) and S(z). Note the use
+# of handleFlags(), to skip over questionable data.
+plot(handleFlags(argo), which=c(1, 4, 6, 5))
 
 }
 \references{

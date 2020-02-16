@@ -135,17 +135,15 @@ setMethod(f="[[<-",
 #' @return A `coastline` object.
 #'
 #' @examples
-#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
-#' ## Eastern Canada
-#' if (requireNamespace("raster", quietly=TRUE) && requireNamespace("rgeos", quietly=TRUE)) {
+#' ## Subset to a box centred on Nova Scotia, Canada
+#' if (requireNamespace("sf")) {
 #'     cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
 #'     ## The plot demonstrates that the trimming is as requested.
 #'     plot(cl, clon=-65, clat=45, span=6000)
 #'     rect(-80, 30, -50, 60, bg="transparent", border="red")
 #' }
-#'}
 #' @family things related to coastline data
 #' @family functions that subset oce objects
 #'
@@ -208,18 +206,9 @@ setMethod(f="subset",
               res <- x
               cllon <- x[["longitude"]]
               cllat <- x[["latitude"]]
-              if (!requireNamespace("raster", quietly=TRUE))
-                  stop("\"raster\" package must be installed for this to work")
-              if (!requireNamespace("rgeos", quietly=TRUE))
-                  stop("\"rgeos\" package must be installed for this to work")
-              ## {{{ OLD 'raster' 'sp' method
-              box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
-              ## }}}
-              ## {{{ NEW 'sf' method
-              oceDebug(debug, "using sf:: methodology for polygon operations\n")
-              boxSF <- sf::st_polygon(list(outer=cbind(c(W,W,E,E,W), c(S,N,N,S,S))))
-              oceDebug(debug, "sf::st_polygon() call worked\n")
-              ## }}}
+              if (!requireNamespace("sf", quietly=TRUE))
+                  stop("\"sf\" package must be installed for this to work")
+              box <- sf::st_polygon(list(outer=cbind(c(W,W,E,E,W), c(S,N,N,S,S))))
               owarn <- options("warn")$warn
               options(warn=-1)
               na <- which(is.na(cllon))
@@ -239,58 +228,14 @@ setMethod(f="subset",
                   if (any(is.na(lat))) stop("step 1: double lat NA at iseg=", iseg) # checks ok on coastlineWorld
                   n <- length(lon)
                   if (n < 1) stop("how can we have no data?")
-                  if (length(lon) > 1) {
-                      ## {{{ OLD 'raster' 'sp' method
-                      oceDebug(debug, "about to do old 'sp' method. length(lon)=", length(lon), "\n")
-                      print(data.frame(lon=lon,lat=lat))
-                      oceDebug(debug, "W=", W, " E=", E, " S=", S, " N=", N, "\n")
-                      A <- sp::Polygon(cbind(lon, lat))
-                      B <- sp::Polygons(list(A), "A")
-                      C <- sp::SpatialPolygons(list(B))
-                      oceDebug(debug, "  created C\n")
-                      i <- try(raster::intersect(box, C))
-                      oceDebug(debug, "  created i\n")
-                      if (inherits(i, "try-error"))
-                          stop("danny")
-                      oceDebug(debug, "  got intersection\n")
-                      if (!is.null(i)) {
-                          oceDebug(debug, "i is not NULL\n")
-                          for (j in seq_along(i@polygons)) {
-                              for (k in seq_along(i@polygons[[1]]@Polygons)) {
-                                  oceDebug(debug, "j=", j, ", k=", k, " {\n")
-                                  xy <- i@polygons[[j]]@Polygons[[k]]@coords
-                                  seglon <- xy[, 1]
-                                  seglat <- xy[, 2]
-                                  nnew <- nnew + length(seglon)
-                                  outlon <- c(outlon, NA, seglon)
-                                  outlat <- c(outlat, NA, seglat)
-                                  oceDebug(debug, " ... was this OK?\n")
-                              }
-                          }
-                      }
-                      ## }}}
-                      oceDebug(debug, "old 'sf' meethod was ok. Now about to do new 'sf' method\n")
-                      ## {{{ NEW 'sf' method
-                      CSF <- sf::st_polygon(list(outer=cbind(c(lon, lon[1]), c(lat, lat[1]))))
-                      insideSF <- sf::st_intersection(boxSF, CSF)
-                      if (1 == length(insideSF)) {
-                          outlonSF <- c(outlonSF, NA, insideSF[[1]][,1])
-                          outlatSF <- c(outlatSF, NA, insideSF[[1]][,2])
-                      }
-                      ## }}}
+                  ## was using sp and raster, but this caused assert() errors
+                  ## see https://github.com/dankelley/oce/issues/1657
+                  C <- sf::st_polygon(list(outer=cbind(c(lon, lon[1]), c(lat, lat[1]))))
+                  inside <- sf::st_intersection(box, C)
+                  if (1 == length(inside)) {
+                      outlon <- c(outlon, NA, inside[[1]][,1])
+                      outlat <- c(outlat, NA, inside[[1]][,2])
                   }
-                  oceDebug(debug, "at bottom of loop L233\n")
-              }
-              ## {{{ NEW 'sf' method
-              if (!all.equal(outlon, outlonSF)) {
-                  warning("subset,coastline() error: longitude disagreement between trial 'sf' method and old method. Please post an issue on www.github.com/dankelley/oce/issues\n")
-              } else {
-                  oceDebug(debug, "sf:: method agrees with old method on longitude\n")
-              }
-              if (!all.equal(outlat, outlatSF)) {
-                  warning("subset,coastline() error: latitude disagreement between trial 'sf' method and old method. Please post an issue on www.github.com/dankelley/oce/issues\n")
-              } else {
-                  oceDebug(debug, "sf:: method agrees with old method on latitude\n")
               }
               ## }}}
               res@data$longitude <- outlon

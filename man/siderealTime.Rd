@@ -39,7 +39,8 @@ Other things related to astronomy:
 \code{\link{julianCenturyAnomaly}()},
 \code{\link{julianDay}()},
 \code{\link{moonAngle}()},
-\code{\link{sunAngle}()}
+\code{\link{sunAngle}()},
+\code{\link{sunDeclinationRightAscension}()}
 }
 \author{
 Dan Kelley

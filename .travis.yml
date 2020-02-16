@@ -20,6 +20,7 @@ r_packages:
     - ncdf4
     - covr
     - sf
+    - sp
 env:
     global:
         - _R_CHECK_FORCE_SUGGESTS_=False

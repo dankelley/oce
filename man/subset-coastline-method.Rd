@@ -43,16 +43,14 @@ and \code{latitude} may be abbreviated as \code{lon} and \code{lat},
 as in the \dQuote{Examples}.
 }
 \examples{
-\donttest{
 library(oce)
 data(coastlineWorld)
-## Eastern Canada
-if (requireNamespace("raster", quietly=TRUE) && requireNamespace("rgeos", quietly=TRUE)) {
+## Subset to a box centred on Nova Scotia, Canada
+if (requireNamespace("sf")) {
     cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
     ## The plot demonstrates that the trimming is as requested.
     plot(cl, clon=-65, clat=45, span=6000)
     rect(-80, 30, -50, 60, bg="transparent", border="red")
-}
 }
 }
 \seealso{

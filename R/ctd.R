@@ -3257,12 +3257,16 @@ setMethod(f="plot",
               for (w in seq_along(which)) {
                   if (is.na(which[w])) {
                       if (whichOrig[w] %in% names(x@data)) {
+                          xlab <- resizableLabel(item=whichOrig[w], axis="x",
+                                                 unit=x@metadata$units[[whichOrig[w]]], debug=debug-1)
+                          oceDebug(debug, "about to call plotProfile() with which=\"", whichOrig[w], "\" and xlab=\"", as.character(xlab), "\"\n", sep="")
                           plotProfile(x, xtype=x[[whichOrig[w]]],
+                                      xlab=xlab,# whichOrig[w],
                                       Slim=Slim, Tlim=Tlim, plim=plim,
                                       eos=eos,
                                       useSmoothScatter=useSmoothScatter,
                                       grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                      cex=cex[w], pch=pch[w],
+                                      col=col, cex=cex, pch=pch,
                                       type=if (!missing(type)) type[w],
                                       keepNA=keepNA, inset=inset, add=add,
                                       debug=debug-1,
@@ -3452,7 +3456,8 @@ setMethod(f="plot",
                              grid=grid, col.grid="lightgray", lty.grid="dotted",
                              eos=eos,
                              lwd.rho=lwd.rho, lty.rho=lty.rho,
-                             useSmoothScatter=useSmoothScatter, pch=pch, cex=cex,
+                             useSmoothScatter=useSmoothScatter,
+                             col=col, pch=pch, cex=cex,
                              type=if (!missing(type)) type[w],
                              inset=inset,
                              add=add,
@@ -3718,16 +3723,16 @@ setMethod(f="plot",
                           ## draw some text in top margin
                           if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
                               mtext(x@metadata$station,
-                                    side=3, adj=0, cex=0.8*par("cex"), line=0.5)
+                                    side=3, adj=0, cex=par("cex"), line=0.5)
                           }
                           if (!is.null(x@metadata$startTime) && 4 < nchar(x@metadata$startTime, "bytes")) {
                               mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%M:%S"),
-                                    side=3, adj=1, cex=0.8*par("cex"), line=0.5)
+                                    side=3, adj=1, cex=par("cex"), line=0.5)
                           } else if (!is.null(x@data$time)) {
                               goodTimes <- which(!is.na(x@data$time))
                               if (length(goodTimes)) {
                                   mtext(format(x@data$time[goodTimes[1]], "%Y-%m-%d %H:%M:%S"),
-                                        side=3, adj=1, cex=0.8*par("cex"), line=0.5)
+                                        side=3, adj=1, cex=par("cex"), line=0.5)
                               }
                           }
                       }
@@ -4760,44 +4765,44 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #'
 #' @family functions that plot oce data
 #' @family things related to ctd data
-plotProfile <- function (x,
-                         xtype="salinity+temperature", ytype="pressure",
-                         eos=getOption("oceEOS", default="gsw"),
-                         lty=1,
-                         xlab=NULL, ylab=NULL,
-                         col='black',
-                         col.salinity="darkgreen",
-                         col.temperature="red",
-                         col.rho="blue",
-                         col.N2="brown",
-                         col.dpdt="darkgreen",
-                         col.time="darkgreen",
-                         pt.bg="transparent",
-                         grid=TRUE,
-                         col.grid="lightgray",
-                         lty.grid="dotted",
-                         Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim,
-                         xlim, ylim,
-                         lwd=par("lwd"),
-                         xaxs="r",
-                         yaxs="r",
-                         cex=1, pch=1,
-                         useSmoothScatter=FALSE,
-                         df,
-                         keepNA=FALSE,
-                         type='l',
-                         mgp=getOption("oceMgp"),
-                         mar,
-                         add=FALSE,
-                         inset=FALSE,
-                         debug=getOption("oceDebug", 0),
-                         ...)
+plotProfile <- function(x,
+                        xtype="salinity+temperature", ytype="pressure",
+                        eos=getOption("oceEOS", default="gsw"),
+                        lty=1,
+                        xlab=NULL, ylab=NULL,
+                        col='black',
+                        col.salinity="darkgreen",
+                        col.temperature="red",
+                        col.rho="blue",
+                        col.N2="brown",
+                        col.dpdt="darkgreen",
+                        col.time="darkgreen",
+                        pt.bg="transparent",
+                        grid=TRUE,
+                        col.grid="lightgray",
+                        lty.grid="dotted",
+                        Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim,
+                        xlim, ylim,
+                        lwd=par("lwd"),
+                        xaxs="r",
+                        yaxs="r",
+                        cex=1, pch=1,
+                        useSmoothScatter=FALSE,
+                        df,
+                        keepNA=FALSE,
+                        type='l',
+                        mgp=getOption("oceMgp"),
+                        mar,
+                        add=FALSE,
+                        inset=FALSE,
+                        debug=getOption("oceDebug", 0),
+                        ...)
 {
     debug <- min(debug, 3)
-    oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
-             "\"",
+    oceDebug(debug, "plotProfile(x, xtype=",
+             ifelse(is.character(xtype), paste0("\"",xtype,"\""), "(numeric)"),
              ", xlab=", if (is.null(xlab)) "NULL" else paste('"', xlab, '"', sep=""),
-             ", debug=", debug, ", ...) {\n", sep="", unindent=1)
+             ", debug=", debug, ", ...) {\n", sep="", style="bold", unindent=1)
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (missing(mar)) {
         ## default behaviour changed 20161020 for issue #1103
@@ -4814,7 +4819,9 @@ plotProfile <- function (x,
                                 cex=1, pch=1, pt.bg="transparent",
                                 df=df, keepNA=FALSE, debug=getOption("oceDebug", 0))
     {
-        oceDebug(debug, "plotJustProfile(..., debug=", debug, ") {\n", sep="", unindent=1)
+        oceDebug(debug, "plotJustProfile(...,",
+                 argShow(col),
+                 ", debug=", debug, ") {\n", sep="", style="bold", unindent=1)
         if (is.null(xlab))
             xlab <- ""
         x <- as.vector(x) # because e.g. argo may be a 1-col matrix
@@ -4845,7 +4852,7 @@ plotProfile <- function (x,
         } else {
             lines(x, y, col=col, lwd=lwd, lty=lty)
         }
-        oceDebug(debug, "} # plotJustProfile\n", unindent=1)
+        oceDebug(debug, "} # plotJustProfile\n", style="bold", unindent=1)
     }                                  # plotJustProfile
     #if (!inherits(x, "ctd"))
     #    stop("method is only for objects of class '", "ctd", "'")
@@ -4946,6 +4953,7 @@ plotProfile <- function (x,
     if (!add)
         par(mar=mar, mgp=mgp)
     if (length(xtype) == length(y) && length(y) > 1) {
+        oceDebug(debug, "case 1\n")
         if ('axes' %in% names(list(...))) {
             plot(xtype, y, xlab="", ylab=yname, type=type, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, lty=lty, cex=cex, pch=pch, ...)
             if (list(...)$axes) {
@@ -5687,8 +5695,8 @@ plotProfile <- function (x,
         }
         ## lines(salinity, y, col=col.salinity, lwd=if (length(lwd)>1)lwd[2] else lwd[1])
     } else {
-        oceDebug(debug, "plotting a general xtype, i.e. not a special case\n")
         ## Not a special case.
+        oceDebug(debug, "plotting a general xtype, i.e. not a special case\n")
         w <- which(names(x@data) == xtype)
         if (length(w) < 1)
             stop("unknown xtype value (\"", xtype, "\")")
@@ -5711,7 +5719,7 @@ plotProfile <- function (x,
             if (is.character(label) && label == "sigmaTheta")
                 label <- resizableLabel("sigmaTheta", "x", debug=debug-1)
             label <- resizableLabel(label, "x", unit=x@metadata$units[[xtype]], debug=debug-1)
-            oceDebug(debug, "x name computed as \"", label, "\"\n", sep="")
+            oceDebug(debug, "x name computed as \"", paste0(as.character(label)), "\"\n", sep="")
             mtext(label, side=3, line=axisNameLoc, cex=par("cex"))
             axis(2)
             box()
@@ -5733,5 +5741,5 @@ plotProfile <- function (x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     }
-    oceDebug(debug, "} # plotProfile()\n", unindent=1)
+    oceDebug(debug, "} # plotProfile()\n", style="bold", unindent=1)
 }
