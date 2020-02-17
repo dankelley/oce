@@ -543,19 +543,19 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 #' on `t_vuf` in the `T_TIDE` Matlab package (Pawlowicz et al., 2002),
 #' which inherits from the Fortran code described by Foreman (1978).
 #'
-#' @param t The time in [POSIXct()] format.  (It is *very* important to
-#' use `tz="GMT"` in constructing `t`.)
+#' @param t a single time in [POSIXct()] format, with timezone `"UTC"`.
 #'
-#' @param j Indices of tidal constituents to use.
+#' @param j integer vector, giving indices of tidal constituents to use.
 #'
-#' @param latitude Optional numerical value containing the latitude in degrees North.
-#' (For proper calculations, this really ought to be supplied.)
+#' @param latitude optional numerical value containing the latitude in degrees North.
+#' If not provided, `u` in the return value will be a vector consisting of
+#' repeated 0 value, and `f` will be a vector of repeated 1 value.
 #'
 #' @return A `list` containing
 #' items named `v`, `u` and `f` as described in the `T_TIDE` documentation,
 #' as well in Pawlowicz et al. (2002) and Foreman (1978).
 #'
-#' @author Dan Kelley translated this from the `t_astron` function
+#' @author Dan Kelley translated this from the `t_vuf` function
 #' of the `T_TIDE` Matlab package (see Pawlowicz et al. 2002).
 #'
 #' @examples
@@ -565,7 +565,6 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 #' tidemVuf(t=as.POSIXct("2008-01-22 18:50:24"), j=j, lat=44.63)
 #'
 #' @references
-#'
 #' * Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
 #' Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
 #' Sciences, Patricia Bay.
@@ -578,6 +577,8 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 tidemVuf <- function(t, j, latitude=NULL)
 {
     debug <- 0
+    if (length(t) > 1)
+        stop("t must be a single POSIXct item")
     data("tidedata", package="oce", envir=environment())
     tidedata <- get("tidedata")#, pos=globalenv())
 
@@ -653,8 +654,7 @@ tidemVuf <- function(t, j, latitude=NULL)
         u <- u[j]
         v <- v[j]
         f <- f[j]
-    }
-    else {
+    } else {
         v <- v[j]
         u <- rep(0, length(j))
         f <- rep(1, length(j))
@@ -671,8 +671,8 @@ tidemVuf <- function(t, j, latitude=NULL)
 #' Astronomical Calculations for Tidem
 #'
 #' Do some astronomical calculations for [tidem()].  This function is based directly
-#' on `t_astron` in the `T_TIDE` Matlab package (see Pawlowicz et al.
-#' 2002).
+#' on `t_astron` in the `T_TIDE` Matlab package (see Pawlowicz et al. 2002),
+#' which inherits from the Fortran code described by Foreman (1978).
 #'
 #' @param t Either a time in `POSIXct` format (with `"UTC"` timezone,
 #' or else odd behaviours may result),
@@ -682,27 +682,32 @@ tidemVuf <- function(t, j, latitude=NULL)
 #' @return A `list` containing items named
 #' `astro` and `ader` (see the `T_TIDE` documentation).
 #'
-#' @author Dan Kelley translated this from `t_astron` in the `T_TIDE`
-#' package.
+#' @author Dan Kelley translated this from the `t_astron` function
+#' of the `T_TIDE` Matlab package (see Pawlowicz et al. 2002).
 #'
 #' @examples
 #' tidemAstron(as.POSIXct("2008-01-22 18:50:24"))
 #'
 #' @references
+#' * Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+#' Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
+#' Sciences, Patricia Bay.
 #'
-#' Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+#' * Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
 #' harmonic analysis including error estimates in MATLAB using `T_TIDE`.
 #' Computers and Geosciences, 28, 929-937.
 #'
 #' @family things related to tides
 tidemAstron <- function(t)
 {
+    if (length(t) > 1)
+        stop("t must be a single POSIXct item")
     debug <- FALSE
     if (is.numeric(t))
         t <- numberAsPOSIXct(t, tz="UTC")
     d <- as.numeric(difftime(t, ISOdatetime(1899, 12, 31, 12, 0, 0, tz="UTC"), units="days"))
     D <- d / 10000
-    a <- matrix(c(1, d, D^2, D^3), 4, 1)
+    a <- matrix(c(1.0, d, D^2, D^3), ncol=1)
 
     oceDebug(debug, "d=", formatC(d, digits=10), "D=", D, "a=", a, "\n")
 
@@ -723,7 +728,7 @@ tidemAstron <- function(t)
 
     tau <- rem + astro[2, 1] - astro[1, 1]
     astro <- c(tau, astro)
-    da <- matrix(c(0, 1, 2e-4*D, 3e-4*D^2), 4, 1)
+    da <- matrix(c(0.0, 1.0, 2e-4*D, 3e-4*D^2), 4, 1)
     ader <- (scHcPcNpPp %*% da) / 360
     dtau <- 1 + ader[2, 1] - ader[1, 1]
     ader <- c(dtau, ader)

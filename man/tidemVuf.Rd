@@ -7,13 +7,13 @@
 tidemVuf(t, j, latitude = NULL)
 }
 \arguments{
-\item{t}{The time in \code{\link[=POSIXct]{POSIXct()}} format.  (It is \emph{very} important to
-use \code{tz="GMT"} in constructing \code{t}.)}
+\item{t}{a single time in \code{\link[=POSIXct]{POSIXct()}} format, with timezone \code{"UTC"}.}
 
-\item{j}{Indices of tidal constituents to use.}
+\item{j}{integer vector, giving indices of tidal constituents to use.}
 
-\item{latitude}{Optional numerical value containing the latitude in degrees North.
-(For proper calculations, this really ought to be supplied.)}
+\item{latitude}{optional numerical value containing the latitude in degrees North.
+If not provided, \code{u} in the return value will be a vector consisting of
+repeated 0 value, and \code{f} will be a vector of repeated 1 value.}
 }
 \value{
 A \code{list} containing
@@ -57,7 +57,7 @@ Other things related to tides:
 \code{\link{webtide}()}
 }
 \author{
-Dan Kelley translated this from the \code{t_astron} function
+Dan Kelley translated this from the \code{t_vuf} function
 of the \code{T_TIDE} Matlab package (see Pawlowicz et al. 2002).
 }
 \concept{things related to tides}
