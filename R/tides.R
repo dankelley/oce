@@ -420,6 +420,11 @@ setMethod(f="plot",
 #' @return An object of [tidem-class], with only minimal
 #' contents.
 #'
+#' @section Known issues:
+#' There are two known differences between [tidem()] and the Matlab
+#' `T_TIDE` package, as listed in references 3 and 4. Work on these
+#' issues is planned for the summer of 2020.
+#'
 #' @examples
 #' # Simulate a tide table with output from tidem().
 #' data(sealevelTuktoyaktuk)
@@ -458,12 +463,18 @@ setMethod(f="plot",
 #' oce.plot.ts(sealevelTuktoyaktuk[["time"]], p2, ylim=ylim)
 #'
 #' @references
-#' Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+#' 1. Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
 #' Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
 #' Sciences, Patricia Bay.
 #'
-#' Wikipedia, "Theory of Tides." https://en.wikipedia.org/wiki/Theory_of_tides
+#' 2. Wikipedia, "Theory of Tides." https://en.wikipedia.org/wiki/Theory_of_tides
 #' Downloaded Aug 17, 2019.
+#'
+#' 3. Github issue 1653: tidem() and t_tide do not produce identical results
+#' https://github.com/dankelley/oce/issues/1653
+#'
+#' 4. Github issue 1654: predict(tidem()) uses all constituents, unlike T_TIDE
+#' https://github.com/dankelley/oce/issues/1654
 #'
 #' @family things related to tides
 as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oceDebug"))
