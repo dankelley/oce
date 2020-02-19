@@ -728,7 +728,7 @@ tidemAstron <- function(t)
 
     tau <- rem + astro[2, 1] - astro[1, 1]
     astro <- c(tau, astro)
-    da <- matrix(c(0.0, 1.0, 2e-4*D, 3e-4*D^2), 4, 1)
+    da <- matrix(c(0.0, 1.0, 2e-4*D, 3e-4*D^2), nrow=4, ncol=1)
     ader <- (scHcPcNpPp %*% da) / 360
     dtau <- 1 + ader[2, 1] - ader[1, 1]
     ader <- c(dtau, ader)
