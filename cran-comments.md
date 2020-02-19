@@ -1,32 +1,30 @@
 ## Test environments
 
-* local R-3.6.0 MacOS install OK
-* win-builder R-release 3.6.0 (2019-04-26) OK
-* win-builder R-devel (unstable) (2019-06-11 r76701) OK
-* win-builder R-oldrelease R 3.5.3 (2019-03-11) 1 NOTE (large subdirs)
+* local MacOS R-3.6.2 CMD (BUILD, INSTALL, CHECK) OK
+? win-builder R-release 3.6.0 (2019-04-26) OK
+? win-builder R-devel (unstable) (2019-06-11 r76701) OK
+? win-builder R-oldrelease R 3.5.3 (2019-03-11) 1 NOTE (large subdirs)
 
 ## R CMD check results
 
-There were no ERRORs or WARNINGs.  (There were warnings from the Fortran
-compiler, owing to the existence of comments beyond the 72nd column in
-src/magdec.f, which derives from code provided by IAGA, the Int'l Asoc. of
-Geomagnetism and Aeronomy and that is kept in the original form for easier
-tracing of its provenance.)
+* There were no ERRORs or WARNINGs.
 
-There was 1 NOTE, as follows.
+* There was 1 NOTE, as follows.
 
-* checking installed package size ... NOTE
-  installed size is  9.4Mb
-  sub-directories of 1Mb or more:
-    doc    2.5Mb
-    help   2.6Mb
-    R      2.3Mb
+> checking installed package size ... NOTE
+> installed size is  9.3Mb
+> sub-directories of 1Mb or more:
+>   R      2.4Mb
+>   doc    2.3Mb
+>   help   2.7Mb
 
 
 
 0 errors | 0 warnings | 1 note
 
 ## Reverse dependencies
+
+??
 
 > revdepcheck::revdep_check()
 ── INIT ────────────────────────────────────────────── Computing revdeps ──

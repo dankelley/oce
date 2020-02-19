@@ -1,19 +1,21 @@
-1.1-2
+1.2-0
 
-* accommodate new ocedata (needed to meet new CRAN dependency rule)
-* add `oceRenameData()` and `oceRenamemetadata()`; deprecate `renameData()`
-* improve axis control for `mapPlot()` and `plot,coastline-method`.
-* remove `addColumn()`, `ctdAddColumn()`, `ctdUpdateHeader()`,
-  `findInOrdered()`, `mapMeridians()`, `mapZones()`, and `oce.as.POSIXlt()`,
-   all of which have been marked as "Deprecated" for the past two CRAN
-   releases.
-* `read.met()` handle the new Environment Canada data format
-* handle upcoming rgdal/R-devel changes
-* `sectionSmooth()` detects grids that extend beyond data range
-* `read.adp.rdi()` trims time vector if it exceeds other data lengths
-* `geodDist()` defaults 2nd location correctly when `alongPath=FALSE`
-* improve vignettes
-* fix itemized-list documentation problem pointed out by Kurt Hornik
+* Address argument doc/code warning that blocked CRAN acceptance.
+* Accommodate new ocedata (needed to meet new CRAN dependency rule).
+* Add `oceRenameData()` and `oceRenamemetadata()`.
+* Deprecate `renameData()`.
+* Improve axis control for `mapPlot()` and `plot,coastline-method`.
+* Remove `addColumn()`, `ctdAddColumn()`, `ctdUpdateHeader()`,
+  `findInOrdered()`, `mapMeridians()`, `mapZones()`, and
+  `oce.as.POSIXlt()`, all of which have been marked as
+  "Deprecated" for the past two CRAN releases.
+* Make `read.met()` handle a new Environment Canada data format.
+* Handle some upcoming rgdal/R-devel changes.
+* Make `sectionSmooth()` detect grids extending beyond data range.
+* Make `read.adp.rdi()` trim time if it longer than other data.
+* Make `geodDist()` default 2nd location correctly when `alongPath=FALSE`.
+* Improve vignettes.
+* Fix itemized-list documentation problem pointed out by Kurt Hornik.
 
 1.1-1
 

@@ -17,7 +17,8 @@ read.adp.sontek.serial(
   orientation,
   monitor = FALSE,
   processingLog,
-  debug = getOption("oceDebug")
+  debug = getOption("oceDebug"),
+  ...
 )
 }
 \arguments{
@@ -71,7 +72,8 @@ better for normal calls by a user.)}
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
 
-\item{\dots}{additional arguments, passed to called routines.}
+\item{\dots}{optional additional arguments that some (but not all)
+\verb{read.adp.*()} functions pass to lower-level functions.}
 }
 \value{
 An \linkS4class{adp} object.

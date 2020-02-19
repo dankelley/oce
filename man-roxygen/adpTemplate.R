@@ -39,7 +39,8 @@
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #'
-#' @param \dots additional arguments, passed to called routines.
+#' @param \dots optional additional arguments that some (but not all)
+#' `read.adp.*()` functions pass to lower-level functions.
 #'
 #' @return An [adp-class] object.
 #' The contents of that object make sense for the particular instrument
