@@ -1,16 +1,16 @@
 Package: oce
 Type: Package
 Title: Analysis of Oceanographic Data
-Version: 1.1-1
+Version: 1.2-0
 Authors@R: c(
     person(given="Dan", family="Kelley", email="Dan.Kelley@Dal.Ca", role=c("aut", "cre"), comment=c(ORCID="https://orcid.org/0000-0001-7808-5911")),
     person(given="Clark", family="Richards", email="clark.richards@gmail.com", role=c("aut"), comment=c(ORCID="https://orcid.org/0000-0002-7833-206X")),
     person(given="Chantelle", family="Layton", email="chantelle.layton@dal.ca", role=c("ctb"), comment=c(ORCID="https://orcid.org/0000-0002-3199-5763", "curl() coauthor")),
     person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field subroutine"))
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
-Depends: R (>= 2.15), utils, methods, testthat, gsw
-Suggests: akima, automap, DBI, foreign, knitr, lubridate, marmap, ncdf4, ocedata,
-    rgdal (>= 1.4.3), rmarkdown, RSQLite, R.utils, sp, tiff
+Depends: R (>= 2.15), gsw, methods, testthat, utils
+Suggests: akima, automap, DBI, foreign, knitr, lubridate, ncdf4, ocedata,
+    raster (>= 1.4.3), rgeos, rgdal, rmarkdown, RSQLite, R.utils, sf, sp, tiff, XML
 BugReports: https://github.com/dankelley/oce/issues
 Description: Supports the analysis of Oceanographic data, including 'ADCP'
     measurements, measurements made with 'argo' floats, 'CTD' measurements,
@@ -25,7 +25,8 @@ License: GPL (>= 2)
 Encoding: UTF-8
 URL: https://dankelley.github.io/oce
 LazyData: false
-RoxygenNote: 6.1.1
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.0.2
 BuildVignettes: true
 VignetteBuilder: knitr
 NeedsCompilation: yes

@@ -1,13 +1,13 @@
 library(oce)
-metFile <- download.met(6358, 2003, 9, destdir=".")
+metFile <- download.met(id=6358, year=2003, month=9, destdir=".", type="xml")
 met <- read.met(metFile)
 met <- oceSetData(met, "time", met[["time"]] + 4 * 3600, note="add 4h to local time to get UTC time")
 
-if (utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
+##if (utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
     save(met, file="met.rda", version=2)
     tools::resaveRdaFiles("met.rda", version=2)
-} else {
-    save(met, file="met.rda")
-    tools::resaveRdaFiles("met.rda")
-}
+##} else {
+##    save(met, file="met.rda")
+##    tools::resaveRdaFiles("met.rda")
+##}
 

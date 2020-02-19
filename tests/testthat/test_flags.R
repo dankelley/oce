@@ -1,14 +1,75 @@
 library(oce)
 context("Flags")
 
-extensive <- TRUE
-
 test_that("argument existence", {
           data(ctd)
           expect_error(initializeFlagScheme(ctd, mapping=list(unknown=1, good=2, bad=3)),
                        "must supply 'name'")
           expect_error(initializeFlagScheme(ctd, name="unknown"),
                        "must supply 'mapping' for new scheme named \"unknown\"")
+})
+
+test_that("handleFlags() with flags/data in sublist", {
+          o <- new("oce")
+          o@data[["A"]] <- list(x=1:3, y=11:13)
+          o@metadata$flags[["A"]] <- list(x=c(2,4,2), y=c(2,4,2))
+          of <- handleFlags(o, flags=c(4), actions=c("NA"), where="A")
+          expect_equal(of[["data"]]$A$x, c(1,NA,3))
+          expect_equal(of[["data"]]$A$y, c(11,NA,13))
+})
+
+test_that("handleFlags() with unnamed list flags", {
+          ## Does handleFlags work with both variable-specific and overall flags?
+          data(section)
+          ## STN100: multiple flags
+          STN100 <- section[["station", 100]]
+          deep <- STN100[["pressure"]] > 1500
+          flag <- ifelse(deep, 7, 2) # flag deep data as bad
+          for (flagName in names(STN100@metadata$flags))
+              STN100@metadata$flags[[flagName]] <- flag
+          STN100f <- handleFlags(STN100)
+          ## Test just those data that have flags in original object
+          for (field in c("salinity", "salinityBottle", "oxygen", "silicate",
+                          "nitrite", "NO2+NO3", "phosphate")) {
+              expect_equal(STN100f[[field]][!deep], STN100[[field]][!deep])
+              expect_true(all(is.na(STN100f[[field]][deep])))
+          }
+          ## Test *all* data
+          stn100 <- section[["station", 100]]
+          stn100@metadata$flags <- list(flag)
+          stn100f <- handleFlags(stn100)
+          for (field in names(stn100@data)) { # Note: this is *all* the data
+              expect_equal(stn100f[[field]][!deep], stn100[[field]][!deep])
+              expect_true(all(is.na(stn100f[[field]][deep])))
+          }
+          expect_equal(stn100[["data"]], STN100[["data"]])
+})
+
+test_that("handleFlags() with unnamed vector flags", {
+          ## Does handleFlags work with both variable-specific and overall flags?
+          data(section)
+          ## STN100: multiple flags
+          STN100 <- section[["station", 100]]
+          deep <- STN100[["pressure"]] > 1500
+          flag <- ifelse(deep, 7, 2) # flag deep data as bad
+          for (flagName in names(STN100@metadata$flags))
+              STN100@metadata$flags[[flagName]] <- flag
+          STN100f <- handleFlags(STN100)
+          ## Test just those data that have flags in original object
+          for (field in c("salinity", "salinityBottle", "oxygen", "silicate",
+                          "nitrite", "NO2+NO3", "phosphate")) {
+              expect_equal(STN100f[[field]][!deep], STN100[[field]][!deep])
+              expect_true(all(is.na(STN100f[[field]][deep])))
+          }
+          ## Test *all* data
+          stn100 <- section[["station", 100]]
+          stn100@metadata$flags <- flag
+          stn100f <- handleFlags(stn100)
+          for (field in names(stn100@data)) { # Note: this is *all* the data
+              expect_equal(stn100f[[field]][!deep], stn100[[field]][!deep])
+              expect_true(all(is.na(stn100f[[field]][deep])))
+          }
+          expect_equal(stn100[["data"]], STN100[["data"]])
 })
 
 test_that("predefined flag schemes", {
@@ -95,22 +156,6 @@ test_that("handleFLags with ctd data", {
                        sum(ctd[['salinityFlag']] == 4 | ctd[['salinityFlag']] == 5, na.rm=TRUE))
 })
 
-## test_that("handleFLags with ctd data (negative numeric flag)", {
-##           data(section)
-##           ## stn 100 has a few points with salinityFlag==3
-##           for (i in if(extensive)seq_along(section[["station"]]) else 100) {
-##               ctd <- section[["station", i]]
-##               a <- handleFlags(ctd, flags=list(salinity=c(1, 3:9)))
-##               expect_error(handleFlags(ctd, flags=list(salinity=-2)),
-##                            "must use initializeFlagScheme\\(\\) before using negative flags")
-##               b <- initializeFlagScheme(a, "WHP bottle")
-##               b <- handleFlags(b, flags=list(salinity=-2))
-##               expect_equal(a[["data"]], b[["data"]])
-##               c <- handleFlags(b, flags=list(salinity="-no_problems_noted"))
-##               expect_equal(a[["data"]], c[["data"]])
-##           }
-## })
-
 test_that("handleFLags with the built-in argo dataset", {
           data(argo)
           argoNew <- handleFlags(argo, flags=list(salinity=c(0, 3:9)))
@@ -137,17 +182,6 @@ test_that("handleFLags with the built-in argo dataset", {
           expect_equal(sum(argoNew3[['salinity']]==30, na.rm=TRUE),
                        sum(argo[['salinityFlag']] == 4 | argo[['salinityFlag']] == 5, na.rm=TRUE))
 })
-
-## test_that("handleFLags with the built-in argo dataset (named flags)", {
-##           data(argo)
-##           a <- handleFlags(argo,
-##                            flags=list(salinity=c("not_assessed","probably_bad","bad",
-##                                                  "averaged","interpolated","missing")))
-##           b <- handleFlags(argo,
-##                            flags=list(salinity=c(0, 3, 4,
-##                                                  7, 8, 9)))
-##           expect_equal(a[["salinity"]], b[["salinity"]])
-## })
 
 test_that("handleFLags with the built-in section dataset", {
           data(section)
@@ -198,11 +232,6 @@ test_that("odf flag with subset() (issue 1410)", {
 test_that("adp flag with subset() (issue 1410)", {
           data(adp)
           v <- adp[["v"]]
-          ## I'm fixing this in the 'develop' branch, which as of
-          ## the moment has not merged the 'dk' branch's ability to
-          ## set flags, so we do this the old fashioned way. And,
-          ## what the heck, there's no harm in keeping it this way,
-          ## as an extra check on things.
           f <- array(FALSE, dim=dim(v))
           updraft <- adp[["v"]][,,4] > 0
           updraft[is.na(updraft)] <- FALSE # I don't like NA flags
@@ -244,7 +273,7 @@ test_that("alter flag scheme", {
           data(section)
           ctd <- section[["station", 1]]
           expect_equal(c(1, 3:9), defaultFlags(ctd))
-          expect_warning(ctd <- initializeFlagScheme(ctd, "will give error"),
+          ctd <- expect_warning(initializeFlagScheme(ctd, "will give error"),
                          "cannot alter a flagScheme that is already is place")
           ctd[["flagScheme"]] <- NULL
           ctd <- initializeFlagScheme(ctd, "argo")
@@ -261,5 +290,4 @@ test_that("handleFlags default flags (ctd)", {
           expect_equal(C1@data, C2@data)
           expect_equal(C1@metadata, C2@metadata)
 })
-
 

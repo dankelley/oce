@@ -4,10 +4,24 @@
 \alias{read.adp.ad2cp}
 \title{Read an AD2CP File}
 \usage{
-read.adp.ad2cp(file, from = 1, to = 0, by = 1,
-  tz = getOption("oceTz"), longitude = NA, latitude = NA,
-  orientation, distance, plan, type, monitor = FALSE, despike = FALSE,
-  processingLog, debug = getOption("oceDebug"), ...)
+read.adp.ad2cp(
+  file,
+  from = 1,
+  to = 0,
+  by = 1,
+  tz = getOption("oceTz"),
+  longitude = NA,
+  latitude = NA,
+  orientation,
+  distance,
+  plan,
+  type,
+  monitor = FALSE,
+  despike = FALSE,
+  processingLog,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{file}{A connection or a character string giving the name of the file to load.}
@@ -36,7 +50,7 @@ to other adp-reading functions.}
 \item{distance}{Ignored by \code{read.adp.ad2cp}, and provided only for similarity
 to other adp-reading functions.}
 
-\item{plan}{Optional integer specifying which 'plan' to focus on (see [1]
+\item{plan}{Optional integer specifying which 'plan' to focus on (see reference 1
 for the meaning of 'plan').  If this is not given, it defaults to the most
 common plan in the requested subset of the data.}
 
@@ -48,13 +62,13 @@ of knowing the type is for inferring the slantwise beam angle, which is usd in t
 conversion from beam coordinates to xyz coordinates. If \code{type} is
 provided, it must be one of \code{"Signature250"}, \code{"Signature500"},
 or \code{"Signature1000"}; the first of these has a 20 degree
-slant-beam angle, while the others each have 20 degrees (see [2],
-section 2 on page 6). Note that \code{\link{oceSetMetadata}}
+slant-beam angle, while the others each have 20 degrees (see reference 2,
+section 2 on page 6). Note that \code{\link[=oceSetMetadata]{oceSetMetadata()}}
 can be used to alter the slantwise beam angle of an existing object,
 and this will alter any later conversion from beam to xyz coordinates.}
 
 \item{monitor}{Logical value indicating whether the progress in reading
-the file is to be illustrated by calling \code{\link{txtProgressBar}}.}
+the file is to be illustrated by calling \code{\link[=txtProgressBar]{txtProgressBar()}}.}
 
 \item{despike}{Ignored by this function, and provided only for similarity
 to other adp-reading functions.}
@@ -71,14 +85,14 @@ or to 2 to get more.}
 \description{
 This function may be incomplete in some important ways,
 because AD2CP data formats are not described clearly enough
-in references [1], [2] and [3] to be certain of how to handle
+in references 1, 2 and 3 to be certain of how to handle
 the range of file configurations that may be possible. The code
 has been tested with a small number of files that are available
 to the author, but these do not cover some cases that users might
 require, e.g. involving echosounder and altimeter data streams.
 Please be on the lookout for problems and contact
 the author if you need help. Also, note that some of the standard
-\code{read.adp.*} arguments are handled differently with
+\verb{read.adp.*} arguments are handled differently with
 this function, e.g. \code{by} must equal 1, because skipping
 records makes little sense with blended multiple streams;
 see the \dQuote{Arguments} section for other limitations
@@ -91,41 +105,56 @@ d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
 
 }
 \references{
-1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
-
-2. Nortek AS. \dQuote{Operations Manual - Signature250, 500 and 1000.} Nortek AS, September 21, 2018.
-
-3. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018. (This revision of
-[1] is useful in including new information about instrument orientation. Note that
-most of the comments within the \code{read.adp.ad2cp} code refer to [1], which has different
-page numbers than [3].)
+\enumerate{
+\item Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
+\item Nortek AS. \dQuote{Operations Manual - Signature250, 500 and 1000.} Nortek AS, September 21, 2018.
+\item Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018. (This revision of
+reference 1 is useful in including new information about instrument orientation. Note that
+most of the comments within the \code{read.adp.ad2cp} code refer to reference 1, which has different
+page numbers than reference 3.)
+}
 }
 \seealso{
-Other things related to adp data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}},
-  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
-  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
-  \code{\link{as.adp}}, \code{\link{beamName}},
-  \code{\link{beamToXyzAdpAD2CP}},
-  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
-  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
-  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}},
-  \code{\link{handleFlags,adp-method}},
-  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
-  \code{\link{read.adp.nortek}},
-  \code{\link{read.adp.rdi}},
-  \code{\link{read.adp.sontek.serial}},
-  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
-  \code{\link{read.aquadoppHR}},
-  \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdpAD2CP}},
-  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+Other things related to adp data: 
+\code{\link{[[,adp-method}},
+\code{\link{[[<-,adp-method}},
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{adp-class}},
+\code{\link{adpEnsembleAverage}()},
+\code{\link{adp_rdi.000}},
+\code{\link{adp}},
+\code{\link{as.adp}()},
+\code{\link{beamName}()},
+\code{\link{beamToXyzAdpAD2CP}()},
+\code{\link{beamToXyzAdp}()},
+\code{\link{beamToXyzAdv}()},
+\code{\link{beamToXyz}()},
+\code{\link{beamUnspreadAdp}()},
+\code{\link{binmapAdp}()},
+\code{\link{enuToOtherAdp}()},
+\code{\link{enuToOther}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{is.ad2cp}()},
+\code{\link{plot,adp-method}},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.rdi}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{subset,adp-method}},
+\code{\link{subtractBottomVelocity}()},
+\code{\link{summary,adp-method}},
+\code{\link{toEnuAdp}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdpAD2CP}()},
+\code{\link{xyzToEnuAdp}()},
+\code{\link{xyzToEnu}()}
 }
 \author{
 Dan Kelley

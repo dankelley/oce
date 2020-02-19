@@ -9,7 +9,7 @@ argoNames2oceNames(names, ignore.case = TRUE)
 \arguments{
 \item{names}{vector of character strings containing names in the Argo convention.}
 
-\item{ignore.case}{a logical value passed to \code{\link{gsub}}, indicating whether to
+\item{ignore.case}{a logical value passed to \code{\link[=gsub]{gsub()}}, indicating whether to
 ignore the case of input strings. The default is set to \code{TRUE} because some data
 files use lower-case names, despite the fact that the Argo documentation specifies
 upper-case.}
@@ -19,31 +19,32 @@ A character vector of the same length as \code{names}, but with
 replacements having been made for all known quantities.
 }
 \description{
-This function is used internally by \code{\link{read.argo}} to convert Argo-convention
+This function is used internally by \code{\link[=read.argo]{read.argo()}} to convert Argo-convention
 data names to oce-convention names. Users should not call this directly, since
 its return value may be changed at any moment (e.g. to include units as well
 as names).
 }
 \details{
 The inference of names was done
-by inspection of some data files, using [1] as a reference. It should be noted,
+by inspection of some data files, based on reference 1. It should be noted,
 however, that the data files examined contain some names that are not
-undocumented in [1], and others that are listed only in its changelog,
+undocumented in reference 1, and others that are listed only in its changelog,
 with no actual definitions being given. For example, the files had six distinct
 variable names that seem to relate to phase in the oxygen sensor, but
 these are not translated by the present function because these
-variable names are not defined in [1], or not defined uniquely
-in [2].
+variable names are not defined in reference 1, or not defined uniquely
+in reference 2.
 
 The names are converted with
-\code{\link{gsub}}, using the \code{ignore.case} argument of the present
+\code{\link[=gsub]{gsub()}}, using the \code{ignore.case} argument of the present
 function.
 The procedure
 is to first handle the items listed in the following table, with string
 searches anchored to the start of the string. After that,
 the qualifiers
-\code{_ADJUSTED}, \code{_ERROR} and \code{_QC},
+\verb{_ADJUSTED}, \verb{_ERROR} and \verb{_QC},
 are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
+
 \tabular{ll}{
 \strong{Argo name} \tab \strong{oce name}\cr
 \code{BBP} \tab \code{bbp}\cr
@@ -100,22 +101,25 @@ are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 }
 }
 \references{
-1. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-\url{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-(but note that this is a draft; newer versions may have
-replaced this by now).
-
-2. Argo list of parameters in an excel spreadsheet, available at
+\enumerate{
+\item Argo User's Manual Version 3.3, Nov 89th, 2019, available at
+\url{https://archimer.ifremer.fr/doc/00187/29825/}
+\item Argo list of parameters in an excel spreadsheet, available at
 \url{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
 }
+}
 \seealso{
-Other things related to argo data: \code{\link{[[,argo-method}},
-  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
-  \code{\link{argoGrid}}, \code{\link{argo}},
-  \code{\link{as.argo}},
-  \code{\link{handleFlags,argo-method}},
-  \code{\link{plot,argo-method}}, \code{\link{read.argo}},
-  \code{\link{subset,argo-method}},
-  \code{\link{summary,argo-method}}
+Other things related to argo data: 
+\code{\link{[[,argo-method}},
+\code{\link{[[<-,argo-method}},
+\code{\link{argo-class}},
+\code{\link{argoGrid}()},
+\code{\link{argo}},
+\code{\link{as.argo}()},
+\code{\link{handleFlags,argo-method}},
+\code{\link{plot,argo-method}},
+\code{\link{read.argo}()},
+\code{\link{subset,argo-method}},
+\code{\link{summary,argo-method}}
 }
 \concept{things related to argo data}

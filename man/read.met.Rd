@@ -4,21 +4,32 @@
 \alias{read.met}
 \title{Read a met File}
 \usage{
-read.met(file, type = NULL, skip, tz = getOption("oceTz"),
-  debug = getOption("oceDebug"))
+read.met(
+  file,
+  type = NULL,
+  skip = NULL,
+  tz = getOption("oceTz"),
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{file}{a connection or a character string giving the name of the file
-to load.}
+\item{file}{a character string naming a file that holds met data.}
 
-\item{type}{if \code{NULL}, then the first line is studied, in order to
-determine the file type.  If \code{type="msc"}, then a file as formatted by
-Environment Canada is assumed.}
+\item{type}{if \code{NULL}, which is the default, then an attempt is
+made to infer the type from the file contents. If this fails, it
+will be necessary for the user to provide a value for the \code{type}
+argument.  The permitted choices are: (a) \code{"csv"} or \code{"csv1"} for an
+old CSV format no longer provided as of October 2019,
+(b) \code{"csv2"} for a CSV format noticed on the Environment Canada
+website in October 2019 (but note that the paired metadata file
+is ignored), and (c) \code{"xml2"} for an XML format that was noticed
+on the Environment Canada website in October 2019.}
 
-\item{skip}{optional number of lines of header that occur before the actual
-data.  If this is not supplied, \code{read.met} scans the file until it
-finds a line starting with \code{"Date/Time"}, and considers all lines above
-that to be header.}
+\item{skip}{number of lines of header that occur before the actual
+data.  This is ignored unless \code{type} is \code{"csv"} or \code{"csv1"}, in which case
+a non-\code{NULL} value of \code{skip} is taken as the number of lines preceding
+the columnar data ... and this is only needed if \code{\link[=read.met]{read.met()}} cannot
+find a line starting with \code{"Date/Time"}.}
 
 \item{tz}{timezone assumed for time data}
 
@@ -26,49 +37,58 @@ that to be header.}
 amount of debugging information, or to 2 to get more.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"met"}, of which the
-\code{data} slot contains vectors \code{time}, \code{temperature},
-\code{pressure}, \code{u}, and \code{v}.  The velocity components have units
-m/s and are the components of the vector of wind direction.  In other words,
-the oceanographic convention on velocity is employed, not the meteorological
-one; the weather forecaster's "North wind" has positive \code{v} and zero
-\code{u}.  In addition to these things, \code{data} also contains
-\code{wind} (in km/h), taken straight from the data file.
+A \linkS4class{met} object.
 }
 \description{
-Reads a comma-separated value file in the format used by the Environment
-Canada [1].  The agency does not publish a format for these
-files, so this function was based on a study of a few sample files, and it
-may fail for other files, if Environment Canada changes the format.
+Reads some meteorological file formats used by the Environment
+Canada (see reference 1).  Since the agency does not publish the
+data formats, this function had to be based on some sample files, and it
+is likely to fail if Environment Canada changes their file format. For
+example, a change was required in October 2019, to accommodate changes
+to the file format noticed at that time (see the notes on the \code{type} argument).
 }
-\section{Note}{
- There seem to be several similar formats in use, so this
-function may not work in all cases.
-}
-
 \examples{
+# The old csv format (no longer supplied by Environment Canada as of Oct 2019)
+csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
+
+# The new "csv2" format (provided by Environment Canada as of Oct 2019)
+csv2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
+
+# "xml2" format
+if (requireNamespace("XML", quietly=TRUE))
+    xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
+
 \dontrun{
 library(oce)
 # Recreate data(met) and plot u(t) and v(t)
 metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
 met <- read.met(metFile)
 met <- oceSetData(met, "time", met[["time"]]+4*3600,
-                 note="add 4h to local time to get UTC time")
-plot(met, which=3:4)
+                  note="add 4h to local time to get UTC time")
+plot(met)
 }
 
 }
 \references{
-1. Environment Canada website for Historical Climate Data
+\enumerate{
+\item Environment Canada website for Historical Climate Data
 \url{http://climate.weather.gc.ca/index_e.html}
 }
+}
 \seealso{
-Other things related to met data: \code{\link{[[,met-method}},
-  \code{\link{[[<-,met-method}}, \code{\link{as.met}},
-  \code{\link{download.met}}, \code{\link{met-class}},
-  \code{\link{met}}, \code{\link{plot,met-method}},
-  \code{\link{subset,met-method}},
-  \code{\link{summary,met-method}}
+Other things related to met data: 
+\code{\link{[[,met-method}},
+\code{\link{[[<-,met-method}},
+\code{\link{as.met}()},
+\code{\link{download.met}()},
+\code{\link{met-class}},
+\code{\link{met}},
+\code{\link{plot,met-method}},
+\code{\link{subset,met-method}},
+\code{\link{summary,met-method}},
+\code{\link{test_met_csv1.csv}},
+\code{\link{test_met_csv2.csv}},
+\code{\link{test_met_xml2.xml}}
 }
 \author{
 Dan Kelley

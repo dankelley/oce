@@ -4,8 +4,7 @@
 \alias{swPressure}
 \title{Water pressure}
 \usage{
-swPressure(depth, latitude = 45, eos = getOption("oceEOS", default =
-  "gsw"))
+swPressure(depth, latitude = 45, eos = getOption("oceEOS", default = "gsw"))
 }
 \arguments{
 \item{depth}{distance below the surface in metres.}
@@ -20,14 +19,14 @@ equator.}
 Pressure in dbar.
 }
 \description{
-Compute seawater pressure from depth by inverting \code{\link{swDepth}}
-using \code{\link{uniroot}}.
+Compute seawater pressure from depth by inverting \code{\link[=swDepth]{swDepth()}}
+using \code{\link[=uniroot]{uniroot()}}.
 }
 \details{
 If \code{eos="unesco"} this is done by numerical inversion of
-\code{\link{swDepth}} is done using \code{\link{uniroot}}. If
-\code{eos="gsw"}, it is done using \code{\link[gsw]{gsw_p_from_z}} in the
-\code{gsw} package.
+\code{\link[=swDepth]{swDepth()}} is done using \code{\link[=uniroot]{uniroot()}}. If
+\code{eos="gsw"}, it is done using \code{\link[gsw:gsw_p_from_z]{gsw::gsw_p_from_z()}} in the
+\CRANpkg{gsw} package.
 }
 \examples{
 swPressure(9712.653, 30, eos="unesco") # 10000
@@ -40,27 +39,42 @@ properties of seawater, 1983. \emph{Unesco Tech. Pap. in Mar. Sci.}, No. 44,
 53 pp.
 }
 \seealso{
-Other functions that calculate seawater properties: \code{\link{T68fromT90}},
-  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
-  \code{\link{swAbsoluteSalinity}},
-  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
-  \code{\link{swBeta}}, \code{\link{swCSTp}},
-  \code{\link{swConservativeTemperature}},
-  \code{\link{swDepth}}, \code{\link{swDynamicHeight}},
-  \code{\link{swLapseRate}}, \code{\link{swN2}},
-  \code{\link{swRho}}, \code{\link{swRrho}},
-  \code{\link{swSCTp}}, \code{\link{swSTrho}},
-  \code{\link{swSigma0}}, \code{\link{swSigma1}},
-  \code{\link{swSigma2}}, \code{\link{swSigma3}},
-  \code{\link{swSigma4}}, \code{\link{swSigmaTheta}},
-  \code{\link{swSigmaT}}, \code{\link{swSigma}},
-  \code{\link{swSoundAbsorption}},
-  \code{\link{swSoundSpeed}}, \code{\link{swSpecificHeat}},
-  \code{\link{swSpice}}, \code{\link{swTFreeze}},
-  \code{\link{swTSrho}},
-  \code{\link{swThermalConductivity}},
-  \code{\link{swTheta}}, \code{\link{swViscosity}},
-  \code{\link{swZ}}
+Other functions that calculate seawater properties: 
+\code{\link{T68fromT90}()},
+\code{\link{T90fromT48}()},
+\code{\link{T90fromT68}()},
+\code{\link{swAbsoluteSalinity}()},
+\code{\link{swAlphaOverBeta}()},
+\code{\link{swAlpha}()},
+\code{\link{swBeta}()},
+\code{\link{swCSTp}()},
+\code{\link{swConservativeTemperature}()},
+\code{\link{swDepth}()},
+\code{\link{swDynamicHeight}()},
+\code{\link{swLapseRate}()},
+\code{\link{swN2}()},
+\code{\link{swRho}()},
+\code{\link{swRrho}()},
+\code{\link{swSCTp}()},
+\code{\link{swSTrho}()},
+\code{\link{swSigma0}()},
+\code{\link{swSigma1}()},
+\code{\link{swSigma2}()},
+\code{\link{swSigma3}()},
+\code{\link{swSigma4}()},
+\code{\link{swSigmaTheta}()},
+\code{\link{swSigmaT}()},
+\code{\link{swSigma}()},
+\code{\link{swSoundAbsorption}()},
+\code{\link{swSoundSpeed}()},
+\code{\link{swSpecificHeat}()},
+\code{\link{swSpice}()},
+\code{\link{swTFreeze}()},
+\code{\link{swTSrho}()},
+\code{\link{swThermalConductivity}()},
+\code{\link{swTheta}()},
+\code{\link{swViscosity}()},
+\code{\link{swZ}()}
 }
 \author{
 Dan Kelley

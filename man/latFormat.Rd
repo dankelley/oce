@@ -18,7 +18,7 @@ A character string.
 Format a latitude, using "S" for negative latitude.
 }
 \seealso{
-\code{\link{lonFormat}} and \code{\link{latlonFormat}}.
+\code{\link[=lonFormat]{lonFormat()}} and \code{\link[=latlonFormat]{latlonFormat()}}.
 }
 \author{
 Dan Kelley

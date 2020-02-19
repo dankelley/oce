@@ -24,7 +24,7 @@ A list containing \code{declination}, \code{inclination}, and
 \description{
 Implements the 12th generation International Geomagnetic Reference Field
 (IGRF), based on a reworked version of a Fortran program downloaded from a
-NOAA website [1].
+NOAA website (see reference 1).
 }
 \details{
 The code (subroutine \code{igrf12syn}) seems to have
@@ -34,7 +34,7 @@ December 2014 by the IAGA Working Group V-MOD.  Other comments in that code
 suggest that the valid time interval is from years 1900 to 2020,
 with only the values from 1945 to 2010 being considered definitive.
 
-Reference [2] suggest that a new version to the underlying source
+Reference 2 suggests that a new version to the underlying source
 code might be expected in 2019 or 2020, but a check on January 31,
 2019, showed that version 12, as incorporated in oce since
 2015, remains the active version.
@@ -69,16 +69,18 @@ mapContour(lon, lat, dec, levels=0, col='black', lwd=2)
 
 }
 \references{
-1. The underlying Fortran code is from \code{igrf12.f}, downloaded the NOAA
+\enumerate{
+\item The underlying Fortran code is from \code{igrf12.f}, downloaded the NOAA
 website (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
-2015.
-
-2. Witze, Alexandra. \dQuote{Earth’s Magnetic Field Is Acting up and Geologists Don’t Know Why.}
+\item 
+\item Witze, Alexandra. \dQuote{Earth's Magnetic Field Is Acting up and Geologists Don't Know Why.}
 Nature 565 (January 9, 2019): 143.
 \url{https://doi.org/10.1038/d41586-019-00007-1}.
 }
+}
 \seealso{
-Other things related to magnetism: \code{\link{applyMagneticDeclination}}
+Other things related to magnetism: 
+\code{\link{applyMagneticDeclination}()}
 }
 \author{
 Dan Kelley wrote the R code and a fortran wrapper to the

@@ -26,8 +26,8 @@ range from -180 to 180 degrees.
 }
 \description{
 Trace along the plot box, converting from xy coordinates to lonlat
-coordinates. The results are used by \code{\link{mapGrid}}
-and \code{\link{mapAxis}} to ignore out-of-frame grid
+coordinates. The results are used by \code{\link[=mapGrid]{mapGrid()}}
+and \code{\link[=mapAxis]{mapAxis()}} to ignore out-of-frame grid
 lines and axis labels.
 }
 \details{
@@ -39,19 +39,30 @@ the return value has each of the numerical quantities set to \code{NA},
 and \code{ok} set to \code{FALSE}.
 }
 \seealso{
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
-  \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

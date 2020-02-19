@@ -6,7 +6,7 @@
 \title{LOBO Dataset}
 \source{
 The data were downloaded from a web interface at Satlantic LOBO web
-server and then read with \code{\link{read.lobo}}.
+server and then read with \code{\link[=read.lobo]{read.lobo()}}.
 }
 \description{
 This is sample lobo dataset obtained in the Northwest Arm of Halifax by
@@ -22,22 +22,36 @@ plot(lobo)
 
 }
 \seealso{
-Other datasets provided with oce: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
-  \code{\link{landsat}}, \code{\link{lisst}},
-  \code{\link{met}}, \code{\link{ocecolors}},
-  \code{\link{rsk}}, \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}}
+Other datasets provided with oce: 
+\code{\link{adp}},
+\code{\link{adv}},
+\code{\link{argo}},
+\code{\link{cm}},
+\code{\link{coastlineWorld}},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{echosounder}},
+\code{\link{landsat}},
+\code{\link{lisst}},
+\code{\link{met}},
+\code{\link{ocecolors}},
+\code{\link{rsk}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{section}},
+\code{\link{topoWorld}},
+\code{\link{wind}},
+\code{\link{xbt}}
 
-Other things related to lobo data: \code{\link{[[,lobo-method}},
-  \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},
-  \code{\link{lobo-class}}, \code{\link{plot,lobo-method}},
-  \code{\link{read.lobo}},
-  \code{\link{subset,lobo-method}},
-  \code{\link{summary,lobo-method}}
+Other things related to lobo data: 
+\code{\link{[[,lobo-method}},
+\code{\link{[[<-,lobo-method}},
+\code{\link{as.lobo}()},
+\code{\link{lobo-class}},
+\code{\link{plot,lobo-method}},
+\code{\link{read.lobo}()},
+\code{\link{subset,lobo-method}},
+\code{\link{summary,lobo-method}}
 }
 \author{
 Dan Kelley

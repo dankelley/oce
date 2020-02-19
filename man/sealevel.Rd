@@ -8,7 +8,7 @@
 The data were created as \preformatted{ sealevel <-
 read.oce("490-01-JAN-2003_slev.csv") sealevel <- oce.edit(sealevel,
 "longitude", -sealevel[["longitude"]], reason="Fix longitude hemisphere") }
-where the csv file was downloaded from [1]. Note the correction of longitude
+where the csv file was downloaded from reference 1. Note the correction of longitude
 sign, which is required because the data file has no indication that this is
 the western hemisphere.
 }
@@ -18,28 +18,42 @@ Nova Scotia, Canada.  For reasons that are not mentioned on the data archive
 website, the record ends on the 8th of October.
 }
 \references{
-1. Fisheries and Oceans Canada \url{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/index-eng.html}
+\enumerate{
+\item Fisheries and Oceans Canada \url{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/index-eng.html}
+}
 }
 \seealso{
-Other datasets provided with oce: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
-  \code{\link{landsat}}, \code{\link{lisst}},
-  \code{\link{lobo}}, \code{\link{met}},
-  \code{\link{ocecolors}}, \code{\link{rsk}},
-  \code{\link{sealevelTuktoyaktuk}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}}
+Other datasets provided with oce: 
+\code{\link{adp}},
+\code{\link{adv}},
+\code{\link{argo}},
+\code{\link{cm}},
+\code{\link{coastlineWorld}},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{echosounder}},
+\code{\link{landsat}},
+\code{\link{lisst}},
+\code{\link{lobo}},
+\code{\link{met}},
+\code{\link{ocecolors}},
+\code{\link{rsk}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{section}},
+\code{\link{topoWorld}},
+\code{\link{wind}},
+\code{\link{xbt}}
 
-Other things related to sealevel data: \code{\link{[[,sealevel-method}},
-  \code{\link{[[<-,sealevel-method}},
-  \code{\link{as.sealevel}},
-  \code{\link{plot,sealevel-method}},
-  \code{\link{read.sealevel}},
-  \code{\link{sealevel-class}},
-  \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{subset,sealevel-method}},
-  \code{\link{summary,sealevel-method}}
+Other things related to sealevel data: 
+\code{\link{[[,sealevel-method}},
+\code{\link{[[<-,sealevel-method}},
+\code{\link{as.sealevel}()},
+\code{\link{plot,sealevel-method}},
+\code{\link{read.sealevel}()},
+\code{\link{sealevel-class}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{subset,sealevel-method}},
+\code{\link{summary,sealevel-method}}
 }
 \author{
 Dan Kelley

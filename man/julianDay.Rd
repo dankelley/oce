@@ -4,13 +4,21 @@
 \alias{julianDay}
 \title{Convert a POSIXt time to a Julian day}
 \usage{
-julianDay(t, year = NA, month = NA, day = NA, hour = NA,
-  min = NA, sec = NA, tz = "UTC")
+julianDay(
+  t,
+  year = NA,
+  month = NA,
+  day = NA,
+  hour = NA,
+  min = NA,
+  sec = NA,
+  tz = "UTC"
+)
 }
 \arguments{
 \item{t}{a time, in POSIXt format, e.g. as created by
-\code{\link{as.POSIXct}}, \code{\link{as.POSIXlt}}, or
-\code{\link{numberAsPOSIXct}}.  If this is provided, the other arguments are
+\code{\link[=as.POSIXct]{as.POSIXct()}}, \code{\link[=as.POSIXlt]{as.POSIXlt()}}, or
+\code{\link[=numberAsPOSIXct]{numberAsPOSIXct()}}.  If this is provided, the other arguments are
 ignored.}
 
 \item{year}{year, to be provided along with \code{month}, etc., if \code{t}
@@ -34,13 +42,13 @@ Meeus.
 }
 \description{
 Convert a POSIXt time to a Julian day, using the method provided in
-Chapter 3 of Meeus (1982).  It should be noted that
+Chapter 3 of reference 1.  It should be noted that
 Meeus and other astronomical treatments use fractional days, whereas the
 present code follows the R convention of specifying days in whole numbers,
 with hours, minutes, and seconds also provided as necessary.  Conversion is
 simple, as illustrated in the example for 1977 April 26.4, for which Meeus
 calculates julian day 2443259.9.  Note that the R documentation for
-\code{\link{julian}} suggests another formula, but the point of the present
+\code{\link[=julian]{julian()}} suggests another formula, but the point of the present
 function is to match the other Meeus formulae, so that suggestion is ignored
 here.
 }
@@ -51,21 +59,28 @@ expect_equal(julianDay(t), 2443259.9) # example from Meeus
 
 }
 \references{
-Meeus, Jean, 1982.  Astronomical formulae for Calculators.
+\enumerate{
+\item Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages
 }
+}
 \seealso{
-Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
-  \code{\link{equatorialToLocalHorizontal}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{moonAngle}}, \code{\link{siderealTime}},
-  \code{\link{sunAngle}}
+Other things related to astronomy: 
+\code{\link{eclipticalToEquatorial}()},
+\code{\link{equatorialToLocalHorizontal}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{moonAngle}()},
+\code{\link{siderealTime}()},
+\code{\link{sunAngle}()},
+\code{\link{sunDeclinationRightAscension}()}
 
-Other things related to time: \code{\link{ctimeToSeconds}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{numberAsHMS}}, \code{\link{numberAsPOSIXct}},
-  \code{\link{secondsToCtime}},
-  \code{\link{unabbreviateYear}}
+Other things related to time: 
+\code{\link{ctimeToSeconds}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{numberAsHMS}()},
+\code{\link{numberAsPOSIXct}()},
+\code{\link{secondsToCtime}()},
+\code{\link{unabbreviateYear}()}
 }
 \author{
 Dan Kelley

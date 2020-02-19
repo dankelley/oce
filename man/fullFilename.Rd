@@ -15,7 +15,7 @@ Full file name
 \description{
 Determines the full name of a file, including the path.  Used by many
 \code{read.X} routines, where \code{X} is the name of a class of object.
-This is a wrapper around \code{\link{normalizePath}}, with warnings turned
+This is a wrapper around \code{\link[=normalizePath]{normalizePath()}}, with warnings turned
 off so that messages are not printed for unfound files (e.g. URLs).
 }
 \author{

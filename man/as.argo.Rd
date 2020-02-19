@@ -4,56 +4,72 @@
 \alias{as.argo}
 \title{Coerce Data Into an Argo Dataset}
 \usage{
-as.argo(time, longitude, latitude, salinity, temperature, pressure,
-  units = NULL, id, filename = "", missingValue)
+as.argo(
+  time,
+  longitude,
+  latitude,
+  salinity,
+  temperature,
+  pressure,
+  units = NULL,
+  id,
+  filename = "",
+  missingValue
+)
 }
 \arguments{
-\item{time}{vector of POSIXct times.}
+\item{time}{a vector of POSIXct times.}
 
-\item{longitude}{vector of longitudes.}
+\item{longitude}{a vector of longitudes.}
 
-\item{latitude}{vector of latitudes.}
+\item{latitude}{a vector of latitudes.}
 
-\item{salinity}{vector of salinities.}
+\item{salinity}{a vector of salinities.}
 
-\item{temperature}{vector of temperatures.}
+\item{temperature}{a vector of temperatures.}
 
-\item{pressure}{vector of pressures.}
+\item{pressure}{a vector of pressures.}
 
-\item{units}{optional list containing units. If \code{NULL}, the default,
+\item{units}{an optional list containing units. If \code{NULL}, the default,
 then \code{"degree east"} is used for \code{longitude},
 \code{"degree north"} for \code{latitude},
 \code{""} for \code{salinity},
 \code{"ITS-90"} for \code{temperature}, and
 \code{"dbar"} for \code{pressure}.}
 
-\item{id}{identifier.}
+\item{id}{an identifier for the argo float, typically a number, but stored within
+the object in a character form. (For example, the dataset retrieved with \code{data(argo)}
+has an \code{id} of \code{"6900388"}.)}
 
-\item{filename}{source filename.}
+\item{filename}{a source filename, which defaults to an empty string.}
 
-\item{missingValue}{Optional missing value, indicating data values that should be
+\item{missingValue}{an optional missing value, indicating data values that should be
 taken as \code{NA}.}
 }
 \value{
-An object of \code{\link{argo-class}}.
+An \linkS4class{argo} object.
 }
 \description{
 Coerce a dataset into an argo dataset. This is not the right way to
 read official argo datasets, which are provided in NetCDF format and may
-be read with \code{\link{read.argo}}.
+be read with \code{\link[=read.argo]{read.argo()}}.
 }
 \seealso{
-The documentation for \code{\link{argo-class}} explains the structure of argo
+The documentation for the \linkS4class{argo} class explains the structure of argo
 objects, and also outlines the other functions dealing with them.
 
-Other things related to argo data: \code{\link{[[,argo-method}},
-  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
-  \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
-  \code{\link{argo}},
-  \code{\link{handleFlags,argo-method}},
-  \code{\link{plot,argo-method}}, \code{\link{read.argo}},
-  \code{\link{subset,argo-method}},
-  \code{\link{summary,argo-method}}
+Other things related to argo data: 
+\code{\link{[[,argo-method}},
+\code{\link{[[<-,argo-method}},
+\code{\link{argo-class}},
+\code{\link{argoGrid}()},
+\code{\link{argoNames2oceNames}()},
+\code{\link{argo}},
+\code{\link{handleFlags,argo-method}},
+\code{\link{plot,argo-method}},
+\code{\link{read.argo}()},
+\code{\link{subset,argo-method}},
+\code{\link{summary,argo-method}}
 }
 \author{
 Dan Kelley

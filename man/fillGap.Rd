@@ -7,7 +7,7 @@
 fillGap(x, method = c("linear"), rule = 1)
 }
 \arguments{
-\item{x}{an \code{oce} object.}
+\item{x}{an \linkS4class{oce} object.}
 
 \item{method}{to use; see \dQuote{Details}.}
 

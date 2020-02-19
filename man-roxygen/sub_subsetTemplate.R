@@ -1,40 +1,44 @@
 #' @description
-#' The \code{[[<-} method works for all \code{oce} objects, i.e.
-#' objects inheriting from \code{\link{oce-class}}.  The purpose,
-#' as with the related extraction method, \code{\link{[[}},
-#' is to insulate users from the internal details of \code{oce}
+#' The \code{[[<-} method works for all [oce-class] objects.
+#' The purpose, as with the related extraction method, \code{[[},
+#' is to insulate users from the internal details of [oce-class]
 #' objects, by looking for items within the various storage
 #' slots of the object. Items not actually stored can also be
 #' replaced, including units and data-quality
 #' flags.
 #'
 #' @details
-#' As with \code{\link{[[}} method, the procedure
-#' works in steps.
+#' As with \code{[[} method, the procedure works in steps.
 #'
-#' First, the \code{metadata} slot of \code{x} is checked to
-#' see whether it contains something named with \code{i}.
-#' If so, then the named item is replaced with \code{value}.
+#' First, the `metadata` slot of `x` is checked to
+#' see whether it contains something named with `i`.
+#' If so, then the named item is replaced with `value`.
 #'
-#' Otherwise, if the string value of \code{i} ends in \code{Unit}, then the
+#' Otherwise, if the string value of `i` ends in `Unit`, then the
 #' characters preceding that are taken as the name of a variable, and
-#' the \code{metadata} slot of \code{x} is updated to store that unit, e.g.
-#' \preformatted{    x[["temperatureUnits"]] <- list(unit=expression(degree*F),scale="")}
+#' the `metadata` slot of `x` is updated to store that unit, e.g.
+#'```
+#' x[["temperatureUnits"]] <- list(unit=expression(degree*F),scale="")
+#'```
 #'
-#' Similarly, if \code{i} ends in \code{Flag}, then quality-control
-#' flags are set up as defined by \code{result}, e.g.
-#' \preformatted{    x[["temperatureFlags"]] <- c(2,4,2,2)}
-#'
-#' Otherwise, a partial string match is sought among the names of items
-#' in the \code{data} slot of \code{x}. (This is done with \code{\link{pmatch}}.)
-#' The first item found (if any) is then updated to hold the value \code{result}.
+#' Similarly, if `i` ends in `Flag`, then quality-control
+#' flags are set up as defined by `result`, e.g.
+#' ```
+#' o[["temperatureFlags"]] <- c(2,4,2,2)
+#' ```
+#' Otherwise, [pmatch()] is used for a partial-string match with
+#' the names of the items that are in the `data` slot of `x`.
+#' The first item found (if any) is then updated to hold the value `result`.
 #'
 #' If none of these conditions is met, a warning is issued.
 #'
-#' @param i The item to replace.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
-#' @param value The value to be placed into \code{x}, somewhere.
+#' @param i character value naming the item to replace.
+#'
+#' @param j optional additional information on the `i` item.
+#'
+#' @param ... optional additional information (ignored).
+#'
+#' @param value The value to be placed into `x`, somewhere.
 #'
 #' @family functions that replace parts of oce objects
 

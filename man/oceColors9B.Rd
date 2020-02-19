@@ -11,10 +11,10 @@ oceColors9B(n)
 \item{n}{number of colors}
 }
 \description{
-The results are similar to those of \code{\link{oceColorsJet}}, but
+The results are similar to those of \code{\link[=oceColorsJet]{oceColorsJet()}}, but
 with white hues in the centre, rather than green ones. The scheme
 may be useful in displaying signed quantities, and thus is somewhat
-analogous to \code{\link{oceColorsTwo}}, except that they (average)
+analogous to \code{\link[=oceColorsTwo]{oceColorsTwo()}}, except that they (average)
 eye may be more able to distinguish colors with \code{oceColors9B}.
 }
 \examples{
@@ -23,23 +23,26 @@ imagep(volcano, col=oceColors9B(128),
        zlab="oceColors9B")
 }
 \seealso{
-Other things related to colors: \code{\link{colormap}},
-  \code{\link{oceColorsCDOM}},
-  \code{\link{oceColorsChlorophyll}},
-  \code{\link{oceColorsClosure}},
-  \code{\link{oceColorsDensity}},
-  \code{\link{oceColorsFreesurface}},
-  \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
-  \code{\link{oceColorsOxygen}},
-  \code{\link{oceColorsPAR}},
-  \code{\link{oceColorsPalette}},
-  \code{\link{oceColorsPhase}},
-  \code{\link{oceColorsSalinity}},
-  \code{\link{oceColorsTemperature}},
-  \code{\link{oceColorsTurbidity}},
-  \code{\link{oceColorsTwo}},
-  \code{\link{oceColorsVelocity}},
-  \code{\link{oceColorsViridis}},
-  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
+Other things related to colors: 
+\code{\link{colormap}()},
+\code{\link{oceColorsCDOM}()},
+\code{\link{oceColorsChlorophyll}()},
+\code{\link{oceColorsClosure}()},
+\code{\link{oceColorsDensity}()},
+\code{\link{oceColorsFreesurface}()},
+\code{\link{oceColorsGebco}()},
+\code{\link{oceColorsJet}()},
+\code{\link{oceColorsOxygen}()},
+\code{\link{oceColorsPAR}()},
+\code{\link{oceColorsPalette}()},
+\code{\link{oceColorsPhase}()},
+\code{\link{oceColorsSalinity}()},
+\code{\link{oceColorsTemperature}()},
+\code{\link{oceColorsTurbidity}()},
+\code{\link{oceColorsTwo}()},
+\code{\link{oceColorsVelocity}()},
+\code{\link{oceColorsViridis}()},
+\code{\link{oceColorsVorticity}()},
+\code{\link{ocecolors}}
 }
 \concept{things related to colors}

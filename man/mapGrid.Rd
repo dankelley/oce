@@ -4,10 +4,19 @@
 \alias{mapGrid}
 \title{Add a Longitude and Latitude Grid to a Map}
 \usage{
-mapGrid(dlongitude = 15, dlatitude = 15, longitude, latitude,
-  col = "darkgray", lty = "solid", lwd = 0.5 * par("lwd"),
-  polarCircle = 0, longitudelim, latitudelim,
-  debug = getOption("oceDebug"))
+mapGrid(
+  dlongitude = 15,
+  dlatitude = 15,
+  longitude,
+  latitude,
+  col = "darkgray",
+  lty = "solid",
+  lwd = 0.5 * par("lwd"),
+  polarCircle = 0,
+  longitudelim,
+  latitudelim,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{dlongitude}{increment in longitude, ignored if \code{longitude}
@@ -35,7 +44,7 @@ extending from the poles, within which zones are not drawn.}
 for the grid. If this is not supplied, grid lines are drawn for the
 whole globe, which can yield excessively slow drawing speeds for
 small-region plots. This, and \code{latitudelim}, are both set by
-\code{\link{mapPlot}} if the arguments of the same name are passed to
+\code{\link[=mapPlot]{mapPlot()}} if the arguments of the same name are passed to
 that function.}
 
 \item{latitudelim}{similar to \code{longitudelim}.}
@@ -47,7 +56,7 @@ amount of debugging information, or to 2 to get more.}
 Plot longitude and latitude grid on an existing map.
 }
 \details{
-This is somewhat analogous to \code{\link{grid}}, except that the
+This is somewhat analogous to \code{\link[=grid]{grid()}}, except that the
 first two arguments of the latter supply the number of lines in the grid,
 whereas the present function has increments for the first two arguments.
 }
@@ -55,7 +64,7 @@ whereas the present function has increments for the first two arguments.
 
 At the moment, the function cannot determine which lines might
 work with labels on axes, but this could perhaps be added later, making
-this more analogous with \code{\link{grid}}.
+this more analogous with \code{\link[=grid]{grid()}}.
 }
 
 \examples{
@@ -70,20 +79,32 @@ mapGrid(15, 15, polarCircle=15)
 
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapImage}},
-  \code{\link{mapLines}}, \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
-  \code{\link{usrLonLat}}, \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

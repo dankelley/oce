@@ -17,8 +17,10 @@ try({
     if (1 == length(grep("Serial No.", lines))) {
         i <- grep("Serial No.", lines)
         items <- strsplit(lines[i], "\t")[[1]]
-        grab <- function(name, default)
-            if (length(w<-which(items==name))) items[w+1] else default
+        grab <- function(name, default) {
+            w < -which(items==name)
+            if (length(w)) items[w+1] else default
+        }
         type <- grab("Type:", type)
         serialNumber <- grab("Serial No.", serialNumber)
         version <- grab("Version:", version)

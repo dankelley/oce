@@ -11,17 +11,17 @@ This class stores G1SST model-satellite products.
 G1SST is an acronym for global 1-km sea surface temperature, a product
 that combines satellite data with the model output. It is provided by
 the JPO ROMS (Regional Ocean Modelling System) modelling group.
-See the JPL website [1] to learn more about the data, and see
-the \code{\link{read.g1sst}} documentation for an example
+See the JPL website (reference 1) to learn more about the data, and see
+the \code{\link[=read.g1sst]{read.g1sst()}} documentation for an example
 of downloading and plotting.
 
 It is important not to regard G1SST data in the same category as,
-say, \code{\link{amsr-class}} data, because the two products
+say, \linkS4class{amsr} data, because the two products
 differ greatly with respect to cloud cover. The satellite used by
-\code{\link{amsr-class}} has the ability to sense water temperature
+\linkS4class{amsr} has the ability to sense water temperature
 even if there is cloud cover, whereas \code{g1sst} fills in cloud
 gaps with model simulations.  It can be helpful to consult
-[1] for a given time, clicking and then unclicking the radio button
+reference 1 for a given time, clicking and then unclicking the radio button
 that turns off the model-based filling of cloud gaps.
 }
 \section{Slots}{
@@ -29,57 +29,75 @@ that turns off the model-based filling of cloud gaps.
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{g1sst} objects is a
-\code{\link{list}} containing the main data for the object.
+\link{list} containing the main data for the object.
 {}}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{g1sst} objects is a \code{\link{list}} containing
+for \code{g1sst} objects is a \link{list} containing
 information about the \code{data} or about the object itself.
 {}}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{g1sst} objects is a
-\code{\link{list}} with entries describing the creation and evolution
+\link{list} with entries describing the creation and evolution
 of the object. The contents are updated by various \code{oce} functions to
 keep a record of processing steps.  Object summaries and
-\code{\link{processingLogShow}} both display the log.}
+\code{\link[=processingLogShow]{processingLogShow()}} both display the log.}
 }}
 
 \section{Modifying slot contents}{
 
 
 Although the \code{[[<-} operator may permit modification of the contents
-of \code{g1sst} objects (see \code{\link{[[<-,g1sst-method}}),
-it is better to use \code{\link{oceSetData}}
-and \code{\link{oceSetMetadata}}, because that will save an entry
-in the \code{processingLog} to describe the change.
+of \linkS4class{g1sst} objects (see \code{\link{[[<-,g1sst-method}}),
+it is better to use \code{\link[=oceSetData]{oceSetData()}} and \code{\link[=oceSetMetadata]{oceSetMetadata()}},
+because those functions save an entry in the \code{processingLog}
+that describes the change.
 }
 
 \section{Retrieving slot contents}{
 
 
-The full contents of the \code{data} and \code{metadata} slots of a \code{g1sst}
-object named \code{g1sst} may be retrieved in the standard R way. For example,
-\code{slot(g1sst, "data")} and \code{slot(g1sst, "metadata")} return
-the \code{data} and \code{metadata} slots, respectively. The
-\code{\link{[[,g1sst-method}} operator can also be used to access slots,
-with \code{g1sst[["data"]]} and \code{g1sst[["metadata"]]}, respectively.
-Furthermore, \code{\link{[[,g1sst-method}} can be used to retrieve
-named items (and potentially some derived items) within the
-\code{metadata} and \code{data} slots, the former taking precedence
-over the latter in the lookup. It is also possible
-to find items more directly, using \code{\link{oceGetData}} and
-\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+The full contents of the \code{data} and \code{metadata} slots of a \linkS4class{g1sst}
+object may be retrieved in the standard R way using \code{\link[=slot]{slot()}}. For
+example \code{slot(o,"data")} returns the \code{data} slot of an object named \code{o},
+and similarly \code{slot(o,"metadata")} returns
+the \code{metadata} slot.
+
+The slots may also be obtained with the \code{\link{[[,g1sst-method}}
+operator, as e.g. \code{o[["data"]]} and \code{o[["metadata"]]}, respectively.
+
+The \code{\link{[[,g1sst-method}} operator can also
+be used to retrieve items from within the \code{data} and \code{metadata} slots.
+For example, \code{o[["temperature"]]} can be used to retrieve temperature
+from an object containing that quantity. The rule is that a named
+quantity is sought first within the object's \code{metadata} slot,
+with the \code{data} slot being checked only if \code{metadata} does not
+contain the item. This \code{[[} method can also be used to get
+certain derived quantities, if the object contains sufficient
+information to calculate them. For example, an object that holds
+(practical) salinity, temperature and pressure, along with
+longitude and latitudee, has sufficient information to compute
+Absolute Salinity, and so \code{o[["SA"]]} will yield the
+calculated Absolute Salinity.
+
+It is also possible to find items more directly, using \code{\link[=oceGetData]{oceGetData()}} and
+\code{\link[=oceGetMetadata]{oceGetMetadata()}}, but neither of these functions can
+retrieve derived items.
 }
 
 \references{
-1. JPO OurOcean Portal \code{https://ourocean.jpl.nasa.gov/SST/}
+\enumerate{
+\item JPO OurOcean Portal \verb{https://ourocean.jpl.nasa.gov/SST/}
 (link worked in 2016 but was seen to fail 2017 Feb 2).
 }
+}
 \seealso{
-Other things related to satellite data: \code{\link{plot,satellite-method}},
-  \code{\link{read.g1sst}}, \code{\link{satellite-class}},
-  \code{\link{summary,satellite-method}}
+Other things related to satellite data: 
+\code{\link{plot,satellite-method}},
+\code{\link{read.g1sst}()},
+\code{\link{satellite-class}},
+\code{\link{summary,satellite-method}}
 }
 \author{
 Dan Kelley

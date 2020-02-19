@@ -4,10 +4,20 @@
 \alias{as.echosounder}
 \title{Coerce Data into an Echosounder Object}
 \usage{
-as.echosounder(time, depth, a, src = "", sourceLevel = 220,
-  receiverSensitivity = -55.4, transmitPower = 0,
-  pulseDuration = 400, beamwidthX = 6.5, beamwidthY = 6.5,
-  frequency = 41800, correction = 0)
+as.echosounder(
+  time,
+  depth,
+  a,
+  src = "",
+  sourceLevel = 220,
+  receiverSensitivity = -55.4,
+  transmitPower = 0,
+  pulseDuration = 400,
+  beamwidthX = 6.5,
+  beamwidthY = 6.5,
+  frequency = 41800,
+  correction = 0
+)
 }
 \arguments{
 \item{time}{times of pings}
@@ -18,32 +28,31 @@ as.echosounder(time, depth, a, src = "", sourceLevel = 220,
 
 \item{src}{optional string indicating data source}
 
-\item{sourceLevel}{source level, in dB (uPa at 1m), denoted \code{sl} in [1
-p15], where it is in units 0.1dB (uPa at 1m)}
+\item{sourceLevel}{source level, in dB (uPa at 1m), denoted \code{sl} in
+reference 1 p15, where it is in units 0.1dB (uPa at 1m)}
 
 \item{receiverSensitivity}{receiver sensivitity of the main element, in
-dB(counts/uPa), denoted \code{rs} in [1 p15], where it is in units of
+dB(counts/uPa), denoted \code{rs} in reference 1 p15, where it is in units of
 0.1dB(counts/uPa)}
 
 \item{transmitPower}{transmit power reduction factor, in dB, denoted
-\code{tpow} in [1 p10], where it is in units 0.1 dB.}
+\code{tpow} in reference 1 p10, where it is in units 0.1 dB.}
 
 \item{pulseDuration}{duration of transmitted pulse in us}
 
 \item{beamwidthX}{x-axis -3dB one-way beamwidth in deg, denoted \code{bwx}
-in [1 p16], where the unit is 0.2 deg}
+in reference 1 p16, where the unit is 0.2 deg}
 
 \item{beamwidthY}{y-axis -3dB one-way beamwidth in deg, denoted \code{bwx}
-in [1 p16], where the unit is 0.2 deg}
+in reference 1 p16, where the unit is 0.2 deg}
 
-\item{frequency}{transducer frequency in Hz, denoted \code{fq} in [1 p16]}
+\item{frequency}{transducer frequency in Hz, denoted \code{fq} in reference 1 p16}
 
 \item{correction}{user-defined calibration correction in dB, denoted
-\code{corr} in [1 p14], where the unit is 0.01dB.}
+\code{corr} in reference 1 p14, where the unit is 0.01dB.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"echosounder"}; for
-details of this data type, see \code{\link{echosounder-class}}).
+An \linkS4class{echosounder} object.
 }
 \description{
 Coerces a dataset into a echosounder dataset.
@@ -54,14 +63,16 @@ are taken from the \code{echosounder} dataset, and they are unlikely to make
 sense generally.
 }
 \seealso{
-Other things related to echosounder data: \code{\link{[[,echosounder-method}},
-  \code{\link{[[<-,echosounder-method}},
-  \code{\link{echosounder-class}},
-  \code{\link{echosounder}}, \code{\link{findBottom}},
-  \code{\link{plot,echosounder-method}},
-  \code{\link{read.echosounder}},
-  \code{\link{subset,echosounder-method}},
-  \code{\link{summary,echosounder-method}}
+Other things related to echosounder data: 
+\code{\link{[[,echosounder-method}},
+\code{\link{[[<-,echosounder-method}},
+\code{\link{echosounder-class}},
+\code{\link{echosounder}},
+\code{\link{findBottom}()},
+\code{\link{plot,echosounder-method}},
+\code{\link{read.echosounder}()},
+\code{\link{subset,echosounder-method}},
+\code{\link{summary,echosounder-method}}
 }
 \author{
 Dan Kelley

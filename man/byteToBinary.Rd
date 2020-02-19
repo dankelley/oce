@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{byteToBinary}
 \alias{byteToBinary}
-\title{Format bytes as binary [defunct]}
+\title{Format bytes as binary \link{defunct}}
 \usage{
 byteToBinary(x, endian = "big")
 }
@@ -10,8 +10,7 @@ byteToBinary(x, endian = "big")
 \item{x}{an integer to be interpreted as a byte.}
 
 \item{endian}{character string indicating the endian-ness ("big" or
-"little"). \strong{This argument will be removed in the upcoming CRAN
-release.}}
+"little"). \strong{WARNING:} This argument will be removed soon.}
 }
 \value{
 A character string representing the bit strings for the elements of

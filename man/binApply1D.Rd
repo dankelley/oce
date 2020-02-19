@@ -13,7 +13,7 @@ binApply1D(x, f, xbreaks, FUN, ...)
 supplied}
 
 \item{xbreaks}{values of x at the boundaries between bins; calculated using
-\code{\link{pretty}} if not supplied.}
+\code{\link[=pretty]{pretty()}} if not supplied.}
 
 \item{FUN}{function to apply to the data}
 
@@ -27,8 +27,8 @@ A list with the following elements: the breaks in x and y
 }
 \description{
 The function \code{FUN} is applied to \code{f} in bins specified by
-\code{xbreaks}.  (If \code{FUN} is \code{\link{mean}},
-consider using \code{\link{binMean2D}} instead, since it should be faster.)
+\code{xbreaks}.  (If \code{FUN} is \code{\link[=mean]{mean()}},
+consider using \code{\link[=binMean2D]{binMean2D()}} instead, since it should be faster.)
 }
 \examples{
 library(oce)
@@ -42,12 +42,16 @@ plotProfile(ctd, "salinity", col='gray', type='n')
 polygon(c(q1$result, rev(q3$result)),
 c(q1$xmids, rev(q1$xmids)), col='gray')
 points(S, p, pch=20)
+
 }
 \seealso{
-Other bin-related functions: \code{\link{binApply2D}},
-  \code{\link{binAverage}}, \code{\link{binCount1D}},
-  \code{\link{binCount2D}}, \code{\link{binMean1D}},
-  \code{\link{binMean2D}}
+Other bin-related functions: 
+\code{\link{binApply2D}()},
+\code{\link{binAverage}()},
+\code{\link{binCount1D}()},
+\code{\link{binCount2D}()},
+\code{\link{binMean1D}()},
+\code{\link{binMean2D}()}
 }
 \author{
 Dan Kelley

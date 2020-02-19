@@ -35,15 +35,19 @@ mapLines(l$longitude, l$latitude, col='red', lwd=2)
 
 }
 \references{
-1. \code{http://williams.best.vwh.net/avform.htm#Intermediate}
+\enumerate{
+\item \verb{http://williams.best.vwh.net/avform.htm#Intermediate}
 (link worked for years but failed 2017-01-16).
 }
+}
 \seealso{
-Other functions relating to geodesy: \code{\link{geodDist}},
-  \code{\link{geodXyInverse}}, \code{\link{geodXy}}
+Other functions relating to geodesy: 
+\code{\link{geodDist}()},
+\code{\link{geodXyInverse}()},
+\code{\link{geodXy}()}
 }
 \author{
 Dan Kelley, based on code from Clark Richards, in turn based on
-formulae provided by Ed Williams [1].
+formulae provided by Ed Williams (see reference 1)].
 }
 \concept{functions relating to geodesy}

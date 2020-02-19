@@ -7,22 +7,23 @@
 processingLogItem(value = "")
 }
 \arguments{
-\item{value}{A string that will be used for the item.k}
+\item{value}{A string that will be used for the item.}
 }
 \value{
-A \code{\link{list}} containing \code{time}, which is
-the time in UTC (calculated with \code{\link{presentTime}})
+A \code{\link[=list]{list()}} containing \code{time}, which is
+the time in UTC (calculated with \code{\link[=presentTime]{presentTime()}})
 at the moment the function is called and
 \code{value}, a string that is set to the argument of the same name.
 }
 \description{
 A function is used internally to initialize processing logs.
-Users will probably prefer to use \code{\link{processingLogAppend}}
+Users will probably prefer to use \code{\link[=processingLogAppend]{processingLogAppend()}}
 instead.
 }
 \seealso{
-Other things related to processing logs: \code{\link{processingLog<-}},
-  \code{\link{processingLogAppend}},
-  \code{\link{processingLogShow}}
+Other things related to processing logs: 
+\code{\link{processingLog<-}()},
+\code{\link{processingLogAppend}()},
+\code{\link{processingLogShow}()}
 }
 \concept{things related to processing logs}

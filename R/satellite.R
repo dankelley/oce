@@ -3,15 +3,19 @@
 #' Class to Store Satellite Data
 #'
 #' This class holds satellite data of various types, including
-#' \code{\link{amsr-class}} and \code{\link{g1sst-class}}.
+#' [amsr-class] and [g1sst-class].
+#'
 #' @author Dan Kelley and Chantelle Layton
+#'
 #' @concept satellite
+#'
 #' @family things related to satellite data
 setClass("satellite", contains="oce")
 
 setMethod(f="initialize",
           signature="satellite",
-          definition=function(.Object, filename, subclass) {
+          definition=function(.Object, filename, subclass, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(filename))
                   .Object@metadata$filename <- filename
               .Object@processingLog$time <- presentTime()
@@ -22,10 +26,14 @@ setMethod(f="initialize",
 
 #' Summarize a satellite object
 #'
-#' @param object The object to be summarized.
+#' @param object a [satellite-class] object.
+#'
 #' @param ... Ignored.
+#'
 #' @author Dan Kelley
+#'
 #' @concept satellite
+#'
 #' @family things related to satellite data
 setMethod(f="summary",
           signature="satellite",
@@ -56,19 +64,26 @@ setMethod(f="summary",
 
 #' Plot a satellite object
 #'
-#' For an example using \code{g1sst} data, see \code{\link{read.g1sst}}.
+#' For an example using `g1sst` data, see [read.g1sst()].
 #'
-#' @param x An object inheriting from \code{\link{satellite-class}}.
+#' @param x a [satellite-class] object.
+#'
 #' @param y String indicating the quantity to be plotted.
+#'
 #' @param asp Optional aspect ratio for plot.
+#'
 #' @param debug A debugging flag, integer.
-#' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
-#' \code{col} to control colors.
+#'
+#' @param ... extra arguments passed to [imagep()], e.g. set
+#' `col` to control colors.
 #'
 #' @concept satellite
+#'
 #' @author Dan Kelley
+#'
 #' @family things related to satellite data
 #' @family functions that plot oce data
+#'
 #' @aliases plot.satellite
 setMethod(f="plot",
           signature=signature("satellite"),

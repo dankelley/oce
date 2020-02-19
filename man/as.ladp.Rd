@@ -4,8 +4,20 @@
 \alias{as.ladp}
 \title{Coerce data into an ladp object}
 \usage{
-as.ladp(longitude, latitude, station, time, pressure, u, v, uz, vz,
-  salinity, temperature, ...)
+as.ladp(
+  longitude,
+  latitude,
+  station,
+  time,
+  pressure,
+  u,
+  v,
+  uz,
+  vz,
+  salinity,
+  temperature,
+  ...
+)
 }
 \arguments{
 \item{longitude}{longitude in degrees east, or an \code{oce} object that
@@ -16,7 +28,7 @@ other arguments.}
 
 \item{station}{number or string indicating station ID.}
 
-\item{time}{time at the start of the profile, constructed by e.g. \code{\link{as.POSIXct}}.}
+\item{time}{time at the start of the profile, constructed by e.g. \code{\link[=as.POSIXct]{as.POSIXct()}}.}
 
 \item{pressure}{pressure in decibars, through the water column.}
 
@@ -35,17 +47,19 @@ other arguments.}
 \item{\dots}{optional additional data columns.}
 }
 \value{
-An object of \code{\link{ladp-class}}.
+An \linkS4class{ladp} object.
 }
 \description{
 This function assembles vectors of pressure and velocity, possibly also with
 shears, salinity, temperature, etc.
 }
 \seealso{
-Other things related to ladp data: \code{\link{[[,ladp-method}},
-  \code{\link{[[<-,ladp-method}}, \code{\link{ladp-class}},
-  \code{\link{plot,ladp-method}},
-  \code{\link{summary,ladp-method}}
+Other things related to ladp data: 
+\code{\link{[[,ladp-method}},
+\code{\link{[[<-,ladp-method}},
+\code{\link{ladp-class}},
+\code{\link{plot,ladp-method}},
+\code{\link{summary,ladp-method}}
 }
 \author{
 Dan Kelley

@@ -6,45 +6,37 @@
 \title{Class to Store Echosounder Data}
 \description{
 This class stores echosounder data. Echosounder objects may be
-read with \code{\link{read.echosounder}},
-summarized with \code{\link{summary,echosounder-method}},
-and plotted with \code{\link{plot,echosounder-method}}.
-The \code{\link{findBottom}}
+read with \code{\link[=read.echosounder]{read.echosounder()}},
+summarized with \code{\link[=summary,echosounder-method]{summary,echosounder-method()}},
+and plotted with \code{\link[=plot,echosounder-method]{plot,echosounder-method()}}.
+The \code{\link[=findBottom]{findBottom()}}
 function infers the ocean bottom from tracing the strongest reflector from
 ping to ping.
 }
 \details{
 \itemize{
-
 \item An infrequently updated record of the intrument position, in
 \code{timeSlow}, \code{longitudeSlow} and \code{latitudeSlow}.  These are
-used in plotting maps with \code{\link{plot,echosounder-method}}.
-
+used in plotting maps with \code{\link[=plot,echosounder-method]{plot,echosounder-method()}}.
 \item An interpolated record of the instrument position, in \code{time},
 \code{longitude}, and \code{latitude}.  Linear interpolation is used to
 infer the longitude and latitude from the variables listed above.
-
 \item \code{depth}, vector of depths of echo samples (measured positive
 downwards in the water column).  This is calculated from the inter-sample
 time interval and the sound speed provided as the \code{soundSpeed} argument
-to \code{\link{read.echosounder}}, so altering the value of the latter will
-alter the echosounder plots provided by \code{\link{plot,echosounder-method}}.
-
+to \code{\link[=read.echosounder]{read.echosounder()}}, so altering the value of the latter will
+alter the echosounder plots provided by \code{\link[=plot,echosounder-method]{plot,echosounder-method()}}.
 \item The echosounder signal amplitude \code{a}, a matrix whose number of
 rows matches the length of \code{time}, etc., and number of columns equal to
 the length of \code{depth}.  Thus, for example, \code{a[100,]} represents
 the depth-dependent amplitude at the time of the 100th ping.
-
 \item A matrix named \code{b} exists for dual-beam and split-beam cases.
 For dual-beam data, this is the wide-beam data, whereas \code{a} is the
 narrow-beam data.  For split-beam data, this is the x-angle data.
-
 \item A matrix named \code{c} exists for split-beam data, containing the
 y-angle data.
-
 \item In addition to these matrices, ad-hoc calculated matrices named
 \code{Sv} and \code{TS} may be accessed as explained in the next section.
-
 }
 }
 \section{Slots}{
@@ -52,58 +44,74 @@ y-angle data.
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{echosounder} objects is a
-\code{\link{list}} containing the main data for the object.
+\link{list} containing the main data for the object.
 {}}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{echosounder} objects is a \code{\link{list}} containing
+for \code{echosounder} objects is a \link{list} containing
 information about the \code{data} or about the object itself.
 {}}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{echosounder} objects is a
-\code{\link{list}} with entries describing the creation and evolution
+\link{list} with entries describing the creation and evolution
 of the object. The contents are updated by various \code{oce} functions to
 keep a record of processing steps.  Object summaries and
-\code{\link{processingLogShow}} both display the log.}
+\code{\link[=processingLogShow]{processingLogShow()}} both display the log.}
 }}
 
 \section{Modifying slot contents}{
 
 
 Although the \code{[[<-} operator may permit modification of the contents
-of \code{echosounder} objects (see \code{\link{[[<-,echosounder-method}}),
-it is better to use \code{\link{oceSetData}}
-and \code{\link{oceSetMetadata}}, because that will save an entry
-in the \code{processingLog} to describe the change.
+of \linkS4class{echosounder} objects (see \code{\link{[[<-,echosounder-method}}),
+it is better to use \code{\link[=oceSetData]{oceSetData()}} and \code{\link[=oceSetMetadata]{oceSetMetadata()}},
+because those functions save an entry in the \code{processingLog}
+that describes the change.
 }
 
 \section{Retrieving slot contents}{
 
 
-The full contents of the \code{data} and \code{metadata} slots of a \code{echosounder}
-object named \code{echosounder} may be retrieved in the standard R way. For example,
-\code{slot(echosounder, "data")} and \code{slot(echosounder, "metadata")} return
-the \code{data} and \code{metadata} slots, respectively. The
-\code{\link{[[,echosounder-method}} operator can also be used to access slots,
-with \code{echosounder[["data"]]} and \code{echosounder[["metadata"]]}, respectively.
-Furthermore, \code{\link{[[,echosounder-method}} can be used to retrieve
-named items (and potentially some derived items) within the
-\code{metadata} and \code{data} slots, the former taking precedence
-over the latter in the lookup. It is also possible
-to find items more directly, using \code{\link{oceGetData}} and
-\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+The full contents of the \code{data} and \code{metadata} slots of a \linkS4class{echosounder}
+object may be retrieved in the standard R way using \code{\link[=slot]{slot()}}. For
+example \code{slot(o,"data")} returns the \code{data} slot of an object named \code{o},
+and similarly \code{slot(o,"metadata")} returns
+the \code{metadata} slot.
+
+The slots may also be obtained with the \code{\link{[[,echosounder-method}}
+operator, as e.g. \code{o[["data"]]} and \code{o[["metadata"]]}, respectively.
+
+The \code{\link{[[,echosounder-method}} operator can also
+be used to retrieve items from within the \code{data} and \code{metadata} slots.
+For example, \code{o[["temperature"]]} can be used to retrieve temperature
+from an object containing that quantity. The rule is that a named
+quantity is sought first within the object's \code{metadata} slot,
+with the \code{data} slot being checked only if \code{metadata} does not
+contain the item. This \code{[[} method can also be used to get
+certain derived quantities, if the object contains sufficient
+information to calculate them. For example, an object that holds
+(practical) salinity, temperature and pressure, along with
+longitude and latitudee, has sufficient information to compute
+Absolute Salinity, and so \code{o[["SA"]]} will yield the
+calculated Absolute Salinity.
+
+It is also possible to find items more directly, using \code{\link[=oceGetData]{oceGetData()}} and
+\code{\link[=oceGetMetadata]{oceGetMetadata()}}, but neither of these functions can
+retrieve derived items.
 }
 
 \seealso{
-Other things related to echosounder data: \code{\link{[[,echosounder-method}},
-  \code{\link{[[<-,echosounder-method}},
-  \code{\link{as.echosounder}}, \code{\link{echosounder}},
-  \code{\link{findBottom}},
-  \code{\link{plot,echosounder-method}},
-  \code{\link{read.echosounder}},
-  \code{\link{subset,echosounder-method}},
-  \code{\link{summary,echosounder-method}}
+Other things related to echosounder data: 
+\code{\link{[[,echosounder-method}},
+\code{\link{[[<-,echosounder-method}},
+\code{\link{as.echosounder}()},
+\code{\link{echosounder}},
+\code{\link{findBottom}()},
+\code{\link{plot,echosounder-method}},
+\code{\link{read.echosounder}()},
+\code{\link{subset,echosounder-method}},
+\code{\link{summary,echosounder-method}}
 }
 \author{
 Dan Kelley

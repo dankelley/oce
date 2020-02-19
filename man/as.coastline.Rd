@@ -19,26 +19,27 @@ Equator.}
 filled polygon.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"coastline"} (for
-details, see \code{\link{read.coastline}}).
+a \linkS4class{coastline} object.
 }
 \description{
 Coerces a sequence of longitudes and latitudes into a coastline dataset.
-This may be used when \code{\link{read.coastline}} cannot read a file, or
+This may be used when \code{\link[=read.coastline]{read.coastline()}} cannot read a file, or
 when the data have been manipulated.
 }
 \seealso{
-Other things related to coastline data: \code{\link{[[,coastline-method}},
-  \code{\link{[[<-,coastline-method}},
-  \code{\link{coastline-class}},
-  \code{\link{coastlineBest}}, \code{\link{coastlineCut}},
-  \code{\link{coastlineWorld}},
-  \code{\link{download.coastline}},
-  \code{\link{plot,coastline-method}},
-  \code{\link{read.coastline.openstreetmap}},
-  \code{\link{read.coastline.shapefile}},
-  \code{\link{subset,coastline-method}},
-  \code{\link{summary,coastline-method}}
+Other things related to coastline data: 
+\code{\link{[[,coastline-method}},
+\code{\link{[[<-,coastline-method}},
+\code{\link{coastline-class}},
+\code{\link{coastlineBest}()},
+\code{\link{coastlineCut}()},
+\code{\link{coastlineWorld}},
+\code{\link{download.coastline}()},
+\code{\link{plot,coastline-method}},
+\code{\link{read.coastline.openstreetmap}()},
+\code{\link{read.coastline.shapefile}()},
+\code{\link{subset,coastline-method}},
+\code{\link{summary,coastline-method}}
 }
 \author{
 Dan Kelley

@@ -4,15 +4,20 @@
 \alias{equatorialToLocalHorizontal}
 \title{Convert equatorial to local horizontal coordinate}
 \usage{
-equatorialToLocalHorizontal(rightAscension, declination, t, longitude,
-  latitude)
+equatorialToLocalHorizontal(
+  rightAscension,
+  declination,
+  t,
+  longitude,
+  latitude
+)
 }
 \arguments{
 \item{rightAscension}{right ascension, e.g. calculated with
-\code{\link{eclipticalToEquatorial}}.}
+\code{\link[=eclipticalToEquatorial]{eclipticalToEquatorial()}}.}
 
 \item{declination}{declination, e.g. calculated with
-\code{\link{eclipticalToEquatorial}}.}
+\code{\link[=eclipticalToEquatorial]{eclipticalToEquatorial()}}.}
 
 \item{t}{time of observation.}
 
@@ -28,23 +33,28 @@ degrees).
 \description{
 Convert from equatorial coordinates to local horizontal coordinates, i.e.
 azimuth and altitude.
-The method is taken from equations 8.5 and 8.6 of [1], or, equivalently,
-from equations 12.5 and 12.6 of [2].
+The method is taken from equations 8.5 and 8.6 of reference 1, or, equivalently,
+from equations 12.5 and 12.6 of reference 2.
 }
 \references{
-1. Meeus, Jean, 1982. Astronomical formulae for Calculators.
+\enumerate{
+\item Meeus, Jean, 1982. Astronomical formulae for Calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages.
-
-2. Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
+\item Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
 USA. 429 pages.
 }
+}
 \seealso{
-Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{julianDay}}, \code{\link{moonAngle}},
-  \code{\link{siderealTime}}, \code{\link{sunAngle}}
+Other things related to astronomy: 
+\code{\link{eclipticalToEquatorial}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{julianDay}()},
+\code{\link{moonAngle}()},
+\code{\link{siderealTime}()},
+\code{\link{sunAngle}()},
+\code{\link{sunDeclinationRightAscension}()}
 }
 \author{
-Dan Kelley, based on formulae in [1] and [2].
+Dan Kelley, based on formulae in refeences 1 and 2.
 }
 \concept{things related to astronomy}

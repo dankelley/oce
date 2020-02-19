@@ -7,15 +7,15 @@
 binCount2D(x, y, xbreaks, ybreaks, flatten = FALSE)
 }
 \arguments{
-\item{x}{Vector of numerical values.}
+\item{x}{vector of numerical values.}
 
-\item{y}{Vector of numerical values.}
+\item{y}{vector of numerical values.}
 
 \item{xbreaks}{Vector of values of \code{x} at the boundaries between bins, calculated using
-\code{\link{pretty}(x)} if not supplied.}
+[\verb{pretty``]}(x)` if not supplied.}
 
 \item{ybreaks}{Vector of values of \code{y} at the boundaries between bins, calculated using
-\code{\link{pretty}(y)} if not supplied.}
+\code{\link{pretty}}\code{(y)} if not supplied.}
 
 \item{flatten}{A logical value indicating whether
 the return value also contains equilength
@@ -35,10 +35,13 @@ Count the number of elements of a given matrix z=z(x,y) that fall within
 successive pairs of breaks in x and y.
 }
 \seealso{
-Other bin-related functions: \code{\link{binApply1D}},
-  \code{\link{binApply2D}}, \code{\link{binAverage}},
-  \code{\link{binCount1D}}, \code{\link{binMean1D}},
-  \code{\link{binMean2D}}
+Other bin-related functions: 
+\code{\link{binApply1D}()},
+\code{\link{binApply2D}()},
+\code{\link{binAverage}()},
+\code{\link{binCount1D}()},
+\code{\link{binMean1D}()},
+\code{\link{binMean2D}()}
 }
 \author{
 Dan Kelley

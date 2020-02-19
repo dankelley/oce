@@ -4,25 +4,30 @@
 \alias{swSoundSpeed}
 \title{Seawater sound speed}
 \usage{
-swSoundSpeed(salinity, temperature = NULL, pressure = NULL,
-  longitude = NULL, latitude = NULL, eos = getOption("oceEOS",
-  default = "gsw"))
+swSoundSpeed(
+  salinity,
+  temperature = NULL,
+  pressure = NULL,
+  longitude = NULL,
+  latitude = NULL,
+  eos = getOption("oceEOS", default = "gsw")
+)
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}
-and \code{pressure} must be provided) \strong{or} an \code{oce} object, in
+and \code{pressure} must be provided) \emph{or} an \code{oce} object, in
 which case \code{salinity}, \code{temperature} (in the ITS-90 scale; see
 next item), etc. are inferred from the object.}
 
-\item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
+\item{temperature}{\emph{in-situ} temperature (\eqn{^\circ}{deg}C), defined
 on the ITS-90 scale.  This scale is used by GSW-style calculation (as
 requested by setting \code{eos="gsw"}), and is the value contained within
 \code{ctd} objects (and probably most other objects created with data
 acquired in the past decade or two). Since the UNESCO-style calculation is
 based on IPTS-68, the temperature is converted within the present function,
-using \code{\link{T68fromT90}}.}
+using \code{\link[=T68fromT90]{T68fromT90()}}.}
 
-\item{pressure}{pressure [dbar]}
+\item{pressure}{pressure (dbar)}
 
 \item{longitude}{longitude of observation (only used if \code{eos="gsw"};
 see \sQuote{Details}).}
@@ -30,11 +35,11 @@ see \sQuote{Details}).}
 \item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
 \sQuote{Details}).}
 
-\item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
-[3,4].}
+\item{eos}{equation of state, either \code{"unesco"} (references 1 and 2)
+or \code{"gsw"} (references 3 and 4).}
 }
 \value{
-Sound speed [m/s].
+Sound speed (m/s).
 }
 \description{
 Compute the seawater speed of sound.
@@ -42,8 +47,8 @@ Compute the seawater speed of sound.
 \details{
 If \code{eos="unesco"}, the sound speed is calculated using the formulation
 in section 9 of Fofonoff and Millard (1983). If \code{eos="gsw"}, then the
-\code{\link[gsw]{gsw_sound_speed}} function from the
-\code{gsw} package is used.
+\code{\link[gsw:gsw_sound_speed]{gsw::gsw_sound_speed()}} function from the
+\CRANpkg{gsw} package is used.
 }
 \examples{
 swSoundSpeed(40, T90fromT68(40), 10000) # 1731.995 (p48 of Fofonoff + Millard 1983)
@@ -51,30 +56,47 @@ swSoundSpeed(40, T90fromT68(40), 10000) # 1731.995 (p48 of Fofonoff + Millard 19
 }
 \references{
 Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
-computation of fundamental properties of seawater. \emph{Unesco Technical
-Papers in Marine Science}, \bold{44}, 53 pp.  (See section 9.)
+computation of fundamental properties of seawater.
+\emph{Unesco Technical Papers in Marine Science},
+\emph{44}, 53 pp.  (See section 9.)
 }
 \seealso{
-Other functions that calculate seawater properties: \code{\link{T68fromT90}},
-  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
-  \code{\link{swAbsoluteSalinity}},
-  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
-  \code{\link{swBeta}}, \code{\link{swCSTp}},
-  \code{\link{swConservativeTemperature}},
-  \code{\link{swDepth}}, \code{\link{swDynamicHeight}},
-  \code{\link{swLapseRate}}, \code{\link{swN2}},
-  \code{\link{swPressure}}, \code{\link{swRho}},
-  \code{\link{swRrho}}, \code{\link{swSCTp}},
-  \code{\link{swSTrho}}, \code{\link{swSigma0}},
-  \code{\link{swSigma1}}, \code{\link{swSigma2}},
-  \code{\link{swSigma3}}, \code{\link{swSigma4}},
-  \code{\link{swSigmaTheta}}, \code{\link{swSigmaT}},
-  \code{\link{swSigma}}, \code{\link{swSoundAbsorption}},
-  \code{\link{swSpecificHeat}}, \code{\link{swSpice}},
-  \code{\link{swTFreeze}}, \code{\link{swTSrho}},
-  \code{\link{swThermalConductivity}},
-  \code{\link{swTheta}}, \code{\link{swViscosity}},
-  \code{\link{swZ}}
+Other functions that calculate seawater properties: 
+\code{\link{T68fromT90}()},
+\code{\link{T90fromT48}()},
+\code{\link{T90fromT68}()},
+\code{\link{swAbsoluteSalinity}()},
+\code{\link{swAlphaOverBeta}()},
+\code{\link{swAlpha}()},
+\code{\link{swBeta}()},
+\code{\link{swCSTp}()},
+\code{\link{swConservativeTemperature}()},
+\code{\link{swDepth}()},
+\code{\link{swDynamicHeight}()},
+\code{\link{swLapseRate}()},
+\code{\link{swN2}()},
+\code{\link{swPressure}()},
+\code{\link{swRho}()},
+\code{\link{swRrho}()},
+\code{\link{swSCTp}()},
+\code{\link{swSTrho}()},
+\code{\link{swSigma0}()},
+\code{\link{swSigma1}()},
+\code{\link{swSigma2}()},
+\code{\link{swSigma3}()},
+\code{\link{swSigma4}()},
+\code{\link{swSigmaTheta}()},
+\code{\link{swSigmaT}()},
+\code{\link{swSigma}()},
+\code{\link{swSoundAbsorption}()},
+\code{\link{swSpecificHeat}()},
+\code{\link{swSpice}()},
+\code{\link{swTFreeze}()},
+\code{\link{swTSrho}()},
+\code{\link{swThermalConductivity}()},
+\code{\link{swTheta}()},
+\code{\link{swViscosity}()},
+\code{\link{swZ}()}
 }
 \author{
 Dan Kelley

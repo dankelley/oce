@@ -20,7 +20,7 @@ A character string.
 Format a latitude-longitude pair, using "S" for negative latitudes, etc.
 }
 \seealso{
-\code{\link{latFormat}} and \code{\link{lonFormat}}.
+\code{\link[=latFormat]{latFormat()}} and \code{\link[=lonFormat]{lonFormat()}}.
 }
 \author{
 Dan Kelley

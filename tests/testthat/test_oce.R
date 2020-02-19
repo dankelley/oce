@@ -193,36 +193,40 @@ test_that("head_sealevel", {
           }
 })
 
-test_that("head_section", {
-          data(section)
-          for (n in c(-10, 10)) {
-            h <- head(section, n)
-            expect_equal(h@metadata$stationId, head(section@metadata$stationId, n))
-            expect_equal(h@metadata$longitude, head(section@metadata$longitude, n))
-            expect_equal(h@metadata$latitude, head(section@metadata$latitude, n))
-            expect_equal(h@metadata$time, head(section@metadata$time, n))
-            expect_equal(h@data$station, head(section@data$station, n))
+test_that("head_section",
+          {
+            data(section)
+            for (n in c(-10, 10)) {
+              h <- head(section, n)
+              expect_equal(h@metadata$stationId, head(section@metadata$stationId, n))
+              expect_equal(h@metadata$longitude, head(section@metadata$longitude, n))
+              expect_equal(h@metadata$latitude, head(section@metadata$latitude, n))
+              expect_equal(h@metadata$time, head(section@metadata$time, n))
+              expect_equal(h@data$station, head(section@data$station, n))
+            }
           }
-})
+)
 
-test_that("oceApprox", {
-          ## Test for same values after rewriting the C code in C++.
-          d <- data.frame(x=seq(0, 1, length.out=20), y=seq(0, 100, length.out=20))
-          da <- oceApprox(d$x, d$y, c(0.4, 0.5, 0.6))
-          expect_equal(da, c(40, 50, 60))
-          if (require(ocedata)) {
-            data(RRprofile, package="ocedata")
-            zz <- seq(0, 2000, 2)
-            a1 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "rr")
-            a2 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "unesco")
-            expect_equal(head(a1), c(2.95, 2.95, 2.95, 2.95, 2.95, 2.95))
-            expect_equal(tail(a1), c(3.491641285, 3.490851919, 3.490063336,
-                                     3.489275206, 3.488487181, 3.487698885))
-            expect_equal(head(a2), c(2.95, 2.95, 2.95, 2.95, 2.95, 2.95))
-            expect_equal(tail(a2), c(3.517629418, 3.516250649, 3.514868001,
-                                     3.513481474, 3.512091068, 3.487698885))
-          }
-})
+if (requireNamespace("ocedata", quietly=TRUE)) {
+  test_that("oceApprox",
+            {
+              ## Test for same values after rewriting the C code in C++.
+              d <- data.frame(x=seq(0, 1, length.out=20), y=seq(0, 100, length.out=20))
+              da <- oceApprox(d$x, d$y, c(0.4, 0.5, 0.6))
+              expect_equal(da, c(40, 50, 60))
+              data(RRprofile, package="ocedata")
+              zz <- seq(0, 2000, 2)
+              a1 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "rr")
+              a2 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "unesco")
+              expect_equal(head(a1), c(2.95, 2.95, 2.95, 2.95, 2.95, 2.95))
+              expect_equal(tail(a1), c(3.491641285, 3.490851919, 3.490063336,
+                                       3.489275206, 3.488487181, 3.487698885))
+              expect_equal(head(a2), c(2.95, 2.95, 2.95, 2.95, 2.95, 2.95))
+              expect_equal(tail(a2), c(3.517629418, 3.516250649, 3.514868001,
+                                       3.513481474, 3.512091068, 3.487698885))
+            }
+  )
+}
 
 test_that("tail_adp", {
           data(adp)

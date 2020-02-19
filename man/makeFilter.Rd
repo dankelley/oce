@@ -4,28 +4,33 @@
 \alias{makeFilter}
 \title{Make a digital filter}
 \usage{
-makeFilter(type = c("blackman-harris", "rectangular", "hamming", "hann"),
-  m, asKernel = TRUE)
+makeFilter(
+  type = c("blackman-harris", "rectangular", "hamming", "hann"),
+  m,
+  asKernel = TRUE
+)
 }
 \arguments{
 \item{type}{a string indicating the type of filter to use.  (See Harris
-(1978) for a comparison of these and similar filters.)  \itemize{ \item
-\code{"blackman-harris"} yields a modified raised-cosine filter designated
+(1978) for a comparison of these and similar filters.)
+\itemize{
+\item \code{"blackman-harris"} yields a modified raised-cosine filter designated
 as "4-Term (-92 dB) Blackman-Harris" by Harris (1978; coefficients given in
 the table on page 65).  This is also called "minimum 4-sample Blackman
 Harris" by that author, in his Table 1, which lists figures of merit as
 follows: highest side lobe level -92dB; side lobe fall off -6 db/octave;
 coherent gain 0.36; equivalent noise bandwidth 2.00 bins; 3.0-dB bandwidth
 1.90 bins; scallop loss 0.83 dB; worst case process loss 3.85 dB; 6.0-db
-bandwidth 2.72 bins; overlap correlation 46 percent for 75\% overlap and 3.8
-for 50\% overlap.  Note that the equivalent noise bandwidth is the width of
+bandwidth 2.72 bins; overlap correlation 46 percent for 75\\% overlap and 3.8
+for 50\\% overlap.  Note that the equivalent noise bandwidth is the width of
 a spectral peak, so that a value of 2 indicates a cutoff frequency of
-\code{1/m}, where \code{m} is as given below.  \item \code{"rectangular"}
-for a flat filter.  (This is just for convenience.  Note that
-\code{\link{kernel}("daniell",....)} gives the same result, in kernel form.)
+\code{1/m}, where \code{m} is as given below.
+\item \code{"rectangular"} for a flat filter.  (This is just for convenience.  Note that
+\code{\link{kernel}}\verb{("daniell",....)} gives the same result, in kernel form.)
 \code{"hamming"} for a Hamming filter (a raised-cosine that does not taper
-to zero at the ends) \item \code{"hann"} (a raised cosine that tapers to
-zero at the ends).  }}
+to zero at the ends)
+\item \code{"hann"} (a raised cosine that tapers to zero at the ends).
+}}
 
 \item{m}{length of filter.  This should be an odd number, for any
 non-rectangular filter.}
@@ -36,25 +41,24 @@ the return value.}
 \value{
 If \code{asKernel} is \code{FALSE}, this returns a list of filter
 coefficients, symmetric about the midpoint and summing to 1.  These may be
-used with \code{\link{filter}}, which should be provided with argument
+used with \code{\link[=filter]{filter()}}, which should be provided with argument
 \code{circular=TRUE} to avoid phase offsets.  If \code{asKernel} is
 \code{TRUE}, the return value is a smoothing kernel, which can be applied to
-a timeseries with \code{\link{kernapply}}, whose bandwidth can be determined
-with \code{\link{bandwidth.kernel}}, and which has both print and plot
+a timeseries with \code{\link[=kernapply]{kernapply()}}, whose bandwidth can be determined
+with \code{\link[=bandwidth.kernel]{bandwidth.kernel()}}, and which has both print and plot
 methods.
 }
 \description{
-The filter is suitable for use by \code{\link{filter}},
-\code{\link{convolve}} or (for the \code{asKernal=TRUE} case) with
-\code{\link{kernapply}}.  Note that \code{\link{convolve}} should be faster
-than \code{\link{filter}}, but it cannot be used if the time series has
+The filter is suitable for use by \code{\link[=filter]{filter()}},
+\code{\link[=convolve]{convolve()}} or (for the \code{asKernal=TRUE} case) with
+\code{\link[=kernapply]{kernapply()}}.  Note that \code{\link[=convolve]{convolve()}} should be faster
+than \code{\link[=filter]{filter()}}, but it cannot be used if the time series has
 missing values.  For the Blackman-Harris filter, the half-power frequency is
 at \code{1/m} cycles per time unit, as shown in the \dQuote{Examples}
-section.  When using \code{\link{filter}} or \code{\link{kernapply}} with
+section.  When using \code{\link[=filter]{filter()}} or \code{\link[=kernapply]{kernapply()}} with
 these filters, use \code{circular=TRUE}.
 }
 \examples{
-
 library(oce)
 
 # 1. Demonstrate step-function response

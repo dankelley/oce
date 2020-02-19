@@ -4,22 +4,28 @@
 \alias{swTheta}
 \title{Seawater potential temperature}
 \usage{
-swTheta(salinity, temperature = NULL, pressure = NULL,
-  referencePressure = 0, longitude = NULL, latitude = NULL,
-  eos = getOption("oceEOS", default = "gsw"))
+swTheta(
+  salinity,
+  temperature = NULL,
+  pressure = NULL,
+  referencePressure = 0,
+  longitude = NULL,
+  latitude = NULL,
+  eos = getOption("oceEOS", default = "gsw")
+)
 }
 \arguments{
-\item{salinity}{either salinity [PSU] (in which case \code{temperature} and
-\code{pressure} must be provided) \strong{or} an \code{oce} object (in which
+\item{salinity}{either salinity (PSU) (in which case \code{temperature} and
+\code{pressure} must be provided) \emph{or} an \code{oce} object (in which
 case \code{salinity}, etc. are inferred from the object).}
 
-\item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
+\item{temperature}{\emph{in-situ} temperature (\eqn{^\circ}{deg}C), defined
 on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
-\code{\link{swRho}}, and the examples below.}
+\code{\link[=swRho]{swRho()}}, and the examples below.}
 
-\item{pressure}{pressure [dbar]}
+\item{pressure}{pressure (dbar)}
 
-\item{referencePressure}{reference pressure [dbar]}
+\item{referencePressure}{reference pressure (dbar)}
 
 \item{longitude}{longitude of observation (only used if \code{eos="gsw"};
 see \sQuote{Details}).}
@@ -27,11 +33,11 @@ see \sQuote{Details}).}
 \item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
 \sQuote{Details}).}
 
-\item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
-[3,4].}
+\item{eos}{equation of state, either \code{"unesco"} (references 1 and 2) or \code{"gsw"}
+(references 3 and 4).}
 }
 \value{
-Potential temperature [\eqn{^\circ}{deg}C] of seawater, referenced
+Potential temperature (\eqn{^\circ}{deg}C) of seawater, referenced
 to pressure \code{referencePressure}.
 }
 \description{
@@ -40,9 +46,10 @@ in the UNESCO system, and \code{pt} in the GSW system.
 }
 \details{
 Different formulae are used depending on the equation of state. If \code{eos}
-is \code{"unesco"}, the method of Fofonoff \emph{et al.} (1983) is used [1,2].
-Otherwise, \code{swTheta} uses \code{\link[gsw]{gsw_pt_from_t}} from
-the \code{gsw} package.
+is \code{"unesco"}, the method of Fofonoff \emph{et al.} (1983) is used
+(see references 1 and 2).
+Otherwise, \code{swTheta} uses \code{\link[gsw:gsw_pt_from_t]{gsw::gsw_pt_from_t()}} from
+the CRANpkg{gsw} package.
 
 If the first argument is a \code{ctd} or \code{section} object, then values
 for salinity, etc., are extracted from it, and used for the calculation, and
@@ -64,42 +71,57 @@ legend("bottomright", lty=1:2,
 
 }
 \references{
-[1] Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
-fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
-Science}, \bold{44}, 53 pp
-
-[2] Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
+\enumerate{
+\item Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
+fundamental properties of seawater.
+\emph{Unesco Technical Papers in Marine Science}, \emph{44}, 53 pp
+\item Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
 York, 662 pp.
-
-[3] IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
+\item IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
 seawater-2010: Calculation and use of thermodynamic properties.  Technical
 Report 56, Intergovernmental Oceanographic Commission, Manuals and Guide.
-
-[4] McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
+\item McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
 the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
 ISBN 978-0-646-55621-5.
 }
+}
 \seealso{
-Other functions that calculate seawater properties: \code{\link{T68fromT90}},
-  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
-  \code{\link{swAbsoluteSalinity}},
-  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
-  \code{\link{swBeta}}, \code{\link{swCSTp}},
-  \code{\link{swConservativeTemperature}},
-  \code{\link{swDepth}}, \code{\link{swDynamicHeight}},
-  \code{\link{swLapseRate}}, \code{\link{swN2}},
-  \code{\link{swPressure}}, \code{\link{swRho}},
-  \code{\link{swRrho}}, \code{\link{swSCTp}},
-  \code{\link{swSTrho}}, \code{\link{swSigma0}},
-  \code{\link{swSigma1}}, \code{\link{swSigma2}},
-  \code{\link{swSigma3}}, \code{\link{swSigma4}},
-  \code{\link{swSigmaTheta}}, \code{\link{swSigmaT}},
-  \code{\link{swSigma}}, \code{\link{swSoundAbsorption}},
-  \code{\link{swSoundSpeed}}, \code{\link{swSpecificHeat}},
-  \code{\link{swSpice}}, \code{\link{swTFreeze}},
-  \code{\link{swTSrho}},
-  \code{\link{swThermalConductivity}},
-  \code{\link{swViscosity}}, \code{\link{swZ}}
+Other functions that calculate seawater properties: 
+\code{\link{T68fromT90}()},
+\code{\link{T90fromT48}()},
+\code{\link{T90fromT68}()},
+\code{\link{swAbsoluteSalinity}()},
+\code{\link{swAlphaOverBeta}()},
+\code{\link{swAlpha}()},
+\code{\link{swBeta}()},
+\code{\link{swCSTp}()},
+\code{\link{swConservativeTemperature}()},
+\code{\link{swDepth}()},
+\code{\link{swDynamicHeight}()},
+\code{\link{swLapseRate}()},
+\code{\link{swN2}()},
+\code{\link{swPressure}()},
+\code{\link{swRho}()},
+\code{\link{swRrho}()},
+\code{\link{swSCTp}()},
+\code{\link{swSTrho}()},
+\code{\link{swSigma0}()},
+\code{\link{swSigma1}()},
+\code{\link{swSigma2}()},
+\code{\link{swSigma3}()},
+\code{\link{swSigma4}()},
+\code{\link{swSigmaTheta}()},
+\code{\link{swSigmaT}()},
+\code{\link{swSigma}()},
+\code{\link{swSoundAbsorption}()},
+\code{\link{swSoundSpeed}()},
+\code{\link{swSpecificHeat}()},
+\code{\link{swSpice}()},
+\code{\link{swTFreeze}()},
+\code{\link{swTSrho}()},
+\code{\link{swThermalConductivity}()},
+\code{\link{swViscosity}()},
+\code{\link{swZ}()}
 }
 \author{
 Dan Kelley

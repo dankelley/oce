@@ -17,5 +17,9 @@ for (file in files) {
              "'; value is ", min(d[["u"]], na.rm=TRUE), "; did read.oce() catch the NullValue?")
     i <- i + 1
 }
-cat("Successfully checked", i, "ODF files in various subdirectories of ", dir, "\n")
+if (i > 0) {
+    cat("Successfully checked", i, "ODF files in ", dir, "\n")
+} else {
+    cat("Found no ODF fies in", dir, "\n")
+}
 

@@ -4,8 +4,18 @@
 \alias{download.met}
 \title{Download and Cache a met File}
 \usage{
-download.met(id, year, month, deltat, destdir = ".", destfile,
-  debug = getOption("oceDebug"))
+download.met(
+  id,
+  year,
+  month,
+  deltat,
+  type = "xml",
+  destdir = ".",
+  destfile,
+  force = FALSE,
+  quiet = FALSE,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{id}{A number giving the "Station ID" of the station of interest. If not
@@ -23,6 +33,9 @@ month.}
 desired dataset. This may be \code{"hour"} or \code{"month"}.
 If \code{deltat} is not given, it defaults to \code{"hour"}.}
 
+\item{type}{String indicating which type of file to download, either
+\code{"xml"} (the default) for an XML file or \code{"csv"} for a CSV file.}
+
 \item{destdir}{Optional string indicating the directory in which to store
 downloaded files. If not supplied, \code{"."} is used, i.e. the data file
 is stored in the present working directory.}
@@ -32,6 +45,12 @@ If not supplied, the file name is constructed from the other
 parameters of the function call, so subsequent calls with the same
 parameters will yield the same result, thus providing the key
 to the caching scheme.}
+
+\item{force}{Logical value indicating whether to force a download, even
+if the file already exists locally.}
+
+\item{quiet}{Logical value passed to \code{\link[=download.file]{download.file()}}; a \code{TRUE} value
+silences output.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -45,14 +64,17 @@ by specifying higher \code{debug} values.}
 String indicating the full pathname to the downloaded file.
 }
 \description{
-Data are downloaded from \url{http://climate.weather.gc.ca} and cached locally.
+Data are downloaded from the Environment Canada's historical data
+website and cached locally.
 }
 \details{
-The data are downloaded with \code{\link[utils]{download.file}}
-pointed to the Environment Canada website [1]
+The data are downloaded from
+\url{https://climate.weather.gc.ca/historical_data/search_historic_data_e.html}
+using \code{\link[utils:download.file]{utils::download.file()}}
+pointed to the Environment Canada website (reference 1)
 using queries that had to be devised by reverse-engineering, since the agency
 does not provide documentation about how to construct queries. Caution: the
-query format changes from time to time, so \code{download.met} may work one
+query format changes from time to time, so \code{\link[=download.met]{download.met()}} may work one
 day, and fail the next.
 
 The constructed query contains Station ID, as provided in the \code{id} argument.
@@ -63,16 +85,16 @@ Station ID is subject to change over time. (Whether this applies to existing
 data is unclear.)
 
 Given these difficulties with Station ID, users are advised to consult
-the Environment Canada website [1] before downloading any data,
+the Environment Canada website (reference 1) before downloading any data,
 and to check it from time to time
 during the course of a research project, to see if the Station ID has changed.
 Another approach would be to use Gavin Simpson's
-\code{canadaHCD} package [2] to look up Station IDs. This package maintains
+\code{canadaHCD} package (reference 2) to look up Station IDs. This package maintains
 a copy of the Environment Canada listing of stations, and its
 \code{find_station} function provides an easy way to determine Station IDs.
 After that, its \code{hcd_hourly} function (and related functions) make
 it easy to read data. These data can then be converted to the
-\code{met} class with \code{\link{as.met}}, although doing so leaves
+\code{met} class with \code{\link[=as.met]{as.met()}}, although doing so leaves
 many important metadata blank.
 }
 \examples{
@@ -86,25 +108,34 @@ met <- read.met(metFile)
 
 }
 \references{
-1. Environment Canada website for Historical Climate Data
+\enumerate{
+\item Environment Canada website for Historical Climate Data
 \url{http://climate.weather.gc.ca/index_e.html}
-
-2. Gavin Simpon's \code{canadaHCD} package on GitHub
+\item Gavin Simpon's \code{canadaHCD} package on GitHub
 \url{https://github.com/gavinsimpson/canadaHCD}
 }
+}
 \seealso{
-The work is done with \code{\link[utils]{download.file}}.
+The work is done with \code{\link[utils:download.file]{utils::download.file()}}.
 
-Other functions that download files: \code{\link{download.amsr}},
-  \code{\link{download.coastline}},
-  \code{\link{download.topo}}
+Other functions that download files: 
+\code{\link{download.amsr}()},
+\code{\link{download.coastline}()},
+\code{\link{download.topo}()}
 
-Other things related to met data: \code{\link{[[,met-method}},
-  \code{\link{[[<-,met-method}}, \code{\link{as.met}},
-  \code{\link{met-class}}, \code{\link{met}},
-  \code{\link{plot,met-method}}, \code{\link{read.met}},
-  \code{\link{subset,met-method}},
-  \code{\link{summary,met-method}}
+Other things related to met data: 
+\code{\link{[[,met-method}},
+\code{\link{[[<-,met-method}},
+\code{\link{as.met}()},
+\code{\link{met-class}},
+\code{\link{met}},
+\code{\link{plot,met-method}},
+\code{\link{read.met}()},
+\code{\link{subset,met-method}},
+\code{\link{summary,met-method}},
+\code{\link{test_met_csv1.csv}},
+\code{\link{test_met_csv2.csv}},
+\code{\link{test_met_xml2.xml}}
 }
 \author{
 Dan Kelley

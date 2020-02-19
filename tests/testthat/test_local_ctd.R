@@ -1,5 +1,5 @@
 library(oce)
-context("CTD")
+context("local CTD")
 test_that("ice-tethered profiler", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               itp <- read.ctd.itp("local_data/itp99grd0000.dat")
@@ -50,8 +50,8 @@ test_that("various ctd files", {
               for (file in files) {
                   ##> cat(file, "\n")
                   if (file == "18HU20130507_00235_00001_ct1.csv")
-                      expect_warning(d <- read.oce(paste("local_data", file, sep="/")),
-                                     "missingValue inferred as -999 from S and T minima")
+                      d <- expect_warning(read.oce(paste("local_data", file, sep="/")),
+                                          "missingValue inferred as -999 from S and T minima")
                   else
                       d <- read.oce(paste("local_data", file, sep="/"))
                   ##> ## summarizing and plotting can depend on the data, so try both

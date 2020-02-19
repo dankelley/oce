@@ -5,7 +5,7 @@
 #'
 #' This class is for data stored in a format used at Canadian
 #' Department of Fisheries and Oceans laboratories. It is somewhat
-#' similar to the \code{\link{bremen-class}}, in the sense
+#' similar to the [bremen-class], in the sense
 #' that it does not apply just to a particular instrument.
 #'
 #' @templateVar class odf
@@ -22,14 +22,14 @@
 #'
 #' @references
 #'
-#' [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
+#' 1. Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
 #' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
 #' in June 2011.)
 #'
-#' [2] The St Lawrence Global Observatory website has information on ODF format at
+#' 2. The St Lawrence Global Observatory website has information on ODF format at
 #' \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
 #'
-#' [3] List of variable codes:
+#' 3. List of variable codes:
 #' \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}
 #' (checked 2018-02-11); only a subset are handled.
 #'
@@ -39,15 +39,10 @@
 #' @family classes provided by oce
 setClass("odf", contains="oce")
 
-## [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
-##
-## [2] An older document is: \url{https://slgo.ca/app-sgdo/en/pdf/docs_reference/Format_ODF.pdf} (checked 2018-02-11)
-## [3] List of variable codes: \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html} (checked 2018-02-11); only
-## a subset are handled.
-
 setMethod(f="initialize",
           signature="odf",
-          definition=function(.Object, time, filename="") {
+          definition=function(.Object, time, filename="", ...) {
+              .Object <- callNextMethod(.Object, ...)
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$time <- if (missing(time)) NULL else time
               .Object@metadata$filename <- filename
@@ -57,9 +52,12 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-#' @title Extract Something From an ODF Object
-#' @param x an odf object, i.e. one inheriting from \code{\link{odf-class}}.
+#' Extract Something From an ODF Object
+#'
+#' @param x an [odf-class] object.
+#'
 #' @template sub_subTemplate
+#'
 #' @family things related to odf data
 setMethod(f="[[",
           signature(x="odf", i="ANY", j="ANY"),
@@ -68,8 +66,11 @@ setMethod(f="[[",
           })
 
 #' @title Replace Parts of an ODF Object
-#' @param x an \code{odf} object, i.e. inheriting from \code{\link{odf-class}}
+#'
+#' @param x an [odf-class] object.
+#'
 #' @template sub_subsetTemplate
+#'
 #' @family things related to odf data
 setMethod(f="[[<-",
           signature(x="odf", i="ANY", j="ANY"),
@@ -77,22 +78,25 @@ setMethod(f="[[<-",
               callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
-#' @title Subset an ODF object
+#' Subset an ODF object
 #'
-#' @description
-#' This function is somewhat analogous to \code{\link{subset.data.frame}}.
+#' This function is somewhat analogous to [subset.data.frame()].
 #'
-#' @details
 #' It seems likely that users will first convert the odf object into
 #' another class (e.g. ctd) and use the subset method of that class;
 #' note that some of those methods interpret the \dots argument.
 #'
-#' @param x an \code{odf} object.
-#' @param subset a condition to be applied to the \code{data} portion of
-#' \code{x}.  See \sQuote{Details}.
+#' @param x an [odf-class] object.
+#'
+#' @param subset a condition to be applied to the `data` portion of
+#' `x`.  See \sQuote{Details}.
+#'
 #' @param \dots ignored.
-#' @return A new \code{odf} object.
+#'
+#' @return An [odf-class] object.
+#'
 #' @author Dan Kelley
+#'
 #' @family things related to odf data
 #' @family functions that subset oce objects
 setMethod(f="subset",
@@ -119,23 +123,22 @@ setMethod(f="subset",
           })
 
 
-#' @title Plot an ODF Object
+#' Plot an ODF Object
 #'
-#' @description
 #' Plot data contained within an ODF object,
-#' using \code{\link{oce.plot.ts}} to create panels of time-series plots for
-#' all the columns contained in the \code{odf} object (or just those that
-#' contain at least one finite value, if \code{blanks} is \code{FALSE}).
-#' If the object's \code{data} slot does not contain \code{time}, then
-#' \code{\link{pairs}} is used to plot all the elements in the \code{data}
+#' using [oce.plot.ts()] to create panels of time-series plots for
+#' all the columns contained in the `odf` object (or just those that
+#' contain at least one finite value, if `blanks` is `FALSE`).
+#' If the object's `data` slot does not contain `time`, then
+#' [pairs()] is used to plot all the elements in the `data`
 #' slot that contain at least one finite value.
 #' These actions are both
 #' crude and there are no arguments to control the behaviour, but this
 #' function is really just a stop-gap measure, since in practical work
-#' \code{odf} objects are usually cast to other types, and those types
+#' [odf-class] objects are usually cast to other types, and those types
 #' tend to have more useful plots.
 #'
-#' @param x A \code{odf} object, e.g. one inheriting from \code{\link{odf-class}}.
+#' @param x an [odf-class] object.
 #'
 #' @param blanks A logical value that indicates whether to include dummy
 #' plots for data items that lack any finite values.
@@ -143,8 +146,10 @@ setMethod(f="subset",
 #' @template debugTemplate
 #'
 #' @author Dan Kelley
+#'
 #' @family functions that plot oce data
 #' @family things related to odf data
+#'
 #' @aliases plot.odf
 setMethod(f="plot",
           signature=signature("odf"),
@@ -205,18 +210,20 @@ setMethod(f="plot",
           })
 
 
-#' @title Summarize an ODF Object
+#' Summarize an ODF Object
 #'
-#' @description
 #' Pertinent summary information is presented, including the station name,
 #' sampling location, data ranges, etc.
 #'
-#' @param object an object of class \code{"odf"}, usually, a result of a call
-#' to \code{\link{read.odf}} or \code{\link{read.oce}}.
+#' @param object an [odf-class] object.
+#'
 #' @param \dots further arguments passed to or from other methods.
-#' @return A matrix containing statistics of the elements of the \code{data}
+#'
+#' @return A matrix containing statistics of the elements of the `data`
 #' slot.
+#'
 #' @author Dan Kelley
+#'
 #' @family things related to odf data
 setMethod(f="summary",
           signature="odf",
@@ -286,98 +293,107 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
     }
 }
 
-#' @title Translate from ODF Names to Oce Names
+#' Translate from ODF Names to Oce Names
 #'
-#' @description
 #' Translate data names in the ODF convention to similar names in the Oce convention.
 #'
-#' @details
 #' The following table gives the regular expressions that define recognized
 #' ODF names, along with the translated names as used in oce objects.
-#' If an item is repeated, then the second one has a \code{2} appended
+#' If an item is repeated, then the second one has a `2` appended
 #' at the end, etc.  Note that quality-control columns (with names starting with
-#' \code{"QQQQ"}) are not handled with regular expressions. Instead, if such
+#' `"QQQQ"`) are not handled with regular expressions. Instead, if such
 #' a flag is found in the i-th column, then a name is constructed by taking
-#' the name of the (i-1)-th column and appending \code{"Flag"}.
+#' the name of the (i-1)-th column and appending `"Flag"`.
 #' \tabular{lll}{
-#'     \strong{Regexp} \tab \strong{Result}           \tab \strong{Notes}                                             \cr
-#'     \code{ALTB_*.*} \tab \code{altimeter}          \tab                                                            \cr
-#'     \code{ATTU_*.*} \tab \code{attenuation}        \tab                                                            \cr
-#'     \code{BATH_*.*} \tab \code{barometricDepth}    \tab Barometric depth (of sensor? of water column?)             \cr
-#'     \code{BEAM_*.*} \tab \code{a}                  \tab Used in \code{adp} objects                                 \cr
-#'     \code{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                                 \cr
-#'     \code{CRAT_*.*} \tab \code{conductivity}       \tab Conductivity ratio                                         \cr
-#'     \code{COND_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)               \cr
-#'     \code{CNDC_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)               \cr
-#'     \code{DCHG_*.*} \tab \code{discharge}          \tab                                                            \cr
-#'     \code{DEPH_*.*} \tab \code{pressure}           \tab Sensor depth below sea level                               \cr
-#'     \code{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
-#'     \code{EWCT_*.*} \tab \code{u}                  \tab Used in \code{adp} and \code{cm} objects                   \cr
-#'     \code{FFFF_*.*} \tab \code{flagArchaic}        \tab Old flag name, replaced by \code{QCFF}                     \cr
-#'     \code{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                                 \cr
-#'     \code{GEOP}     \tab \code{geopotential}       \tab                                                            \cr
-#'     \code{HCDM}     \tab \code{directionMagnetic}  \tab                                                            \cr
-#'     \code{HCDT}     \tab \code{directionTrue}      \tab                                                            \cr
-#'     \code{HCSP}     \tab \code{speedHorizontal}    \tab                                                            \cr
-#'     \code{LATD_*.*} \tab \code{latitude}           \tab                                                            \cr
-#'     \code{LOND_*.*} \tab \code{longitude}          \tab                                                            \cr
-#'     \code{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                                 \cr
-#'     \code{NONE_*.*} \tab \code{noWMOcode}          \tab                                                            \cr
-#'     \code{OCUR_*.*} \tab \code{oxygenCurrent}      \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{OSAT_*.*} \tab \code{oxygenSaturation}   \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{OTMP_*.*} \tab \code{oxygenTemperature}  \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{OXYV_*.*} \tab \code{oxygenVoltage}      \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{PHPH_*.*} \tab \code{pH}                 \tab                                                            \cr
-#'     \code{POTM_*.*} \tab \code{theta}              \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{PRES_*.*} \tab \code{pressure}           \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{PSAL_*.*} \tab \code{salinity}           \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{PSAR_*.*} \tab \code{par}                \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{QCFF_*.*} \tab \code{flag}               \tab Overall flag                                               \cr
-#'     \code{REFR_*.*} \tab \code{reference}          \tab                                                            \cr
-#'     \code{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{SNCN_*.*} \tab \code{scanCounter}        \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{SPAR_*.*} \tab \code{SPAR}               \tab                                                            \cr
-#'     \code{SPVA_*.*} \tab \code{specificVolumeAnomaly} \tab                                                         \cr
-#'     \code{SYTM_*.*} \tab \code{time}               \tab Used in many objects                                       \cr
-#'     \code{TE90_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{TOTP_*.*} \tab \code{pressureAbsolute}   \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{UNKN_*.*} \tab \code{-}                  \tab The result is context-dependent                            \cr
-#'     \code{VAIS_*.*} \tab \code{BVFrequency}        \tab                                                            \cr
-#'     \code{VCSP_*.*} \tab \code{w}                  \tab Used in \code{adp} objects                                 \cr
+#'  **Regexp** \tab **Result**           \tab **Notes**                                      \cr
+#'  `ALTB_*.*` \tab `altimeter`          \tab                                                \cr
+#'  `ATTU_*.*` \tab `attenuation`        \tab                                                \cr
+#'  `BATH_*.*` \tab `barometricDepth`    \tab Barometric depth (of sensor? of water column?) \cr
+#'  `BEAM_*.*` \tab `a`                  \tab Used in `adp` objects                          \cr
+#'  `CNTR_*.*` \tab `scan`               \tab Used in `ctd` objects                          \cr
+#'  `CRAT_*.*` \tab `conductivity`       \tab Conductivity ratio                             \cr
+#'  `COND_*.*` \tab `conductivity`       \tab Conductivity in mS/cm or S/m (unit detected)   \cr
+#'  `CNDC_*.*` \tab `conductivity`       \tab Conductivity in mS/cm or S/m (unit detected)   \cr
+#'  `DCHG_*.*` \tab `discharge`          \tab                                                \cr
+#'  `DEPH_*.*` \tab `pressure`           \tab Sensor depth below sea level                   \cr
+#'  `DOXY_*.*` \tab `oxygen`             \tab Used mainly in `ctd` objects                   \cr
+#'  `ERRV_*.*` \tab `error`              \tab Used in `adp` objects                          \cr
+#'  `EWCT_*.*` \tab `u`                  \tab Used in `adp` and `cm` objects                 \cr
+#'  `FFFF_*.*` \tab `flagArchaic`        \tab Old flag name, replaced by `QCFF`              \cr
+#'  `FLOR_*.*` \tab `fluorometer`        \tab Used mainly in `ctd` objects                   \cr
+#'  `FWETLABS` \tab `fwetlabs`           \tab Used in ??                                     \cr
+#'  `GEOP`     \tab `geopotential`       \tab                                                \cr
+#'  `HCDM`     \tab `directionMagnetic`  \tab                                                \cr
+#'  `HCDT`     \tab `directionTrue`      \tab                                                \cr
+#'  `HCSP`     \tab `speedHorizontal`    \tab                                                \cr
+#'  `LATD_*.*` \tab `latitude`           \tab                                                \cr
+#'  `LOND_*.*` \tab `longitude`          \tab                                                \cr
+#'  `NSCT_*.*` \tab `v`                  \tab Used in `adp` objects                          \cr
+#'  `NONE_*.*` \tab `noWMOcode`          \tab                                                \cr
+#'  `OCUR_*.*` \tab `oxygenCurrent`      \tab Used mainly in `ctd` objects                   \cr
+#'  `OSAT_*.*` \tab `oxygenSaturation`   \tab Used mainly in `ctd` objects                   \cr
+#'  `OTMP_*.*` \tab `oxygenTemperature`  \tab Used mainly in `ctd` objects                   \cr
+#'  `OXYV_*.*` \tab `oxygenVoltage`      \tab Used mainly in `ctd` objects                   \cr
+#'  `PHPH_*.*` \tab `pH`                 \tab                                                \cr
+#'  `POTM_*.*` \tab `theta`              \tab Used mainly in `ctd` objects                   \cr
+#'  `PRES_*.*` \tab `pressure`           \tab Used mainly in `ctd` objects                   \cr
+#'  `PSAL_*.*` \tab `salinity`           \tab Used mainly in `ctd` objects                   \cr
+#'  `PSAR_*.*` \tab `par`                \tab Used mainly in `ctd` objects                   \cr
+#'  `QCFF_*.*` \tab `flag`               \tab Overall flag                                   \cr
+#'  `REFR_*.*` \tab `reference`          \tab                                                \cr
+#'  `SIGP_*.*` \tab `sigmaTheta`         \tab Used mainly in `ctd` objects                   \cr
+#'  `SIGT_*.*` \tab `sigmat`             \tab Used mainly in `ctd` objects                   \cr
+#'  `SNCN_*.*` \tab `scanCounter`        \tab Used mainly in `ctd` objects                   \cr
+#'  `SPAR_*.*` \tab `SPAR`               \tab                                                \cr
+#'  `SPVA_*.*` \tab `specificVolumeAnomaly` \tab                                             \cr
+#'  `SYTM_*.*` \tab `time`               \tab Used in many objects                           \cr
+#'  `TE90_*.*` \tab `temperature`        \tab Used mainly in `ctd` objects                   \cr
+#'  `TEMP_*.*` \tab `temperature`        \tab Used mainly in `ctd` objects                   \cr
+#'  `TOTP_*.*` \tab `pressureAbsolute`   \tab Used mainly in `ctd` objects                   \cr
+#'  `UNKN_*.*` \tab `-`                  \tab The result is context-dependent                \cr
+#'  `VAIS_*.*` \tab `BVFrequency`        \tab                                                \cr
+#'  `VCSP_*.*` \tab `w`                  \tab Used in `adp` objects                          \cr
 #' }
 #' Any code not shown in the list is transferred to the oce object without renaming, apart from
 #' the adjustment of suffix numbers. The following code have been seen in data files from
-#' the Bedford Institute of Oceanography: \code{ALTB}, \code{PHPH} and \code{QCFF}.
+#' the Bedford Institute of Oceanography: `ALTB`, `PHPH` and `QCFF`.
 #'
 #' @section A note on unit conventions:
 #' Some older ODF files contain non-standard units for conductivity,
-#' including \code{mho/m}, \code{mmho/cm}, and \code{mmHo}. As the
+#' including `mho/m`, `mmho/cm`, and `mmHo`. As the
 #' units for conductivity are important for derived quantities
 #' (e.g. salinity), such units are converted to standard units
-#' (e.g. \code{S/m} and \code{mS/cm}), with a warning.
+#' (e.g. `S/m` and `mS/cm`).  (This was once done with a warning,
+#' but on 2020-02-07 the warning was removed, since it did not
+#' indicate a problem with the file or the data scanning; rather,
+#' it was a simple matter of nudging towards uniformity in a way
+#' that ought to confuse no users, akin to converting `m**3` to
+#' `m^3`, which is also done here without warning.)
 #'
 #' @section Consistency warning:
 #' There are disagreements on variable names. For example, the ``DFO
-#' Common Data Dictionary'' [1]
+#' Common Data Dictionary'' (reference 1)
 #' has unit millmole/m^3 for NODC and MEDS, but it has unit mL/L for BIO and IML.
 #'
 #' @param ODFnames Vector of strings holding ODF names.
+#'
 #' @param ODFunits Vector of strings holding ODF units.
+#'
 #' @param columns Optional list containing name correspondances, as described for
-#' \code{\link{read.ctd.odf}}.
+#' [read.ctd.odf()].
+#'
 #' @param PARAMETER_HEADER Optional list containing information on the data variables.
 #' @template debugTemplate
+#'
 #' @return A vector of strings.
+#'
 #' @author Dan Kelley
+#'
 #' @family functions that interpret variable names and units from headers
 #'
 #' @references
 #' 1. The Department of Fisheries and Oceans Common Data Dictionary may be
-#' available at \code{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
+#' available at `http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY`)
 #' although that link seems to be unreliable. As of September 2017, the
 #' link \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
 #' seems to be a good place to start.
@@ -552,15 +568,15 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         } else if (1 == length(grep("^\\s*m\\^-1/sr\\s*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(1/m/sr), scale="")
         } else if (1 == length(grep("^\\s*mho[s]{0,1}/m\\s*$", ODFunits[i], ignore.case=TRUE))) {
-            warning('Changed unit mho/m to S/m for conductivity')
+            ##20200207 warning('Changed unit mho/m to S/m for conductivity')
             list(unit=expression(S/m), scale="")
         #} else if (1 == length(grep("^\\s*micro[ ]?mols/m2/s\\s*$", ODFunits[i], ignore.case=TRUE))) {
         #    list(unit=expression(mu*mol/m^2/s), scale="")
         } else if (1 == length(grep("^\\s*mmho[s]?/cm\\s*$", ODFunits[i], ignore.case=TRUE))) {
-            warning('Changed unit mmho/cm to mS/cm for conductivity')
+            ##20200207 warning('Changed unit mmho/cm to mS/cm for conductivity')
             list(unit=expression(mS/cm), scale="")
         } else if (ODFunits[i] == "mmHo") {
-            warning('Changed unit mmHo to S/m for conductivity')
+            ##20200207 warning('Changed unit mmHo to S/m for conductivity')
             list(unit=expression(S/m), scale="")
         ##} else if (ODFunits[i] == "[(]*none[)]$") {
         } else if (1 == length(grep("^[(]*none[)]*$", ODFunits[i], ignore.case=TRUE))) {
@@ -640,34 +656,38 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
 }
 
 
-#' @title Create ODF object from the output of \code{ODF::read_ODF()}
+#' Create ODF object from the output of `ODF::read_ODF()`.
 #'
-#' @description
-#' As of August 11, 2015, \code{ODF::read_ODF} returns a list with 9 elements,
-#' one named \code{DATA}, which is a \code{\link{data.frame}} containing the
+#' As of August 11, 2015, `ODF::read_ODF` returns a list with 9 elements,
+#' one named `DATA`, which is a [data.frame()] containing the
 #' columnar data, the others being headers of various sorts.  The present
 #' function constructs an oce object from such data, facilitating processing
 #' and plotting with the general oce functions.
 #' This involves storing the 8 headers verbatim in the
-#' \code{odfHeaders} in the \code{metadata} slot, and also
+#' `odfHeaders` in the `metadata` slot, and also
 #' copying some of the header
-#' information into more standard names (e.g.  \code{metadata@@longitude} is a
-#' copy of \code{metadata@@odfHeader$EVENT_HEADER$INITIAL_LATITUDE}).  As for
-#' the \code{DATA}, they are stored in the \code{data} slot, after renaming
-#' from ODF to oce convention using \code{\link{ODFNames2oceNames}}.
+#' information into more standard names (e.g.  `metadata@@longitude` is a
+#' copy of `metadata@@odfHeader$EVENT_HEADER$INITIAL_LATITUDE`).  As for
+#' the `DATA`, they are stored in the `data` slot, after renaming
+#' from ODF to oce convention using [ODFNames2oceNames()].
 #'
-#' @param ODF A list as returned by \code{read_ODF} in the \code{ODF} package
+#' @param ODF A list as returned by `read_ODF` in the `ODF` package
+#'
 #' @param coerce A logical value indicating whether to coerce the return value
 #' to an appropriate object type, if possible.
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
+#'
 #' @return An oce object, possibly coerced to a subtype.
 #'
-#' @section Caution: This function may change as the \code{ODF} package
-#' changes.  Since \code{ODF} has not been released yet, this should not affect
-#' any users except those involved in the development of \code{oce} and
-#' \code{ODF}.
+#' @section Caution: This function may change as the `ODF` package
+#' changes.  Since `ODF` has not been released yet, this should not affect
+#' any users except those involved in the development of `oce` and
+#' `ODF`.
+#'
 #' @author Dan Kelley
+#'
 #' @family things related to odf data
 ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 {
@@ -757,10 +777,12 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 }
 
 #' Create a list of ODF header metadata
+#'
 #' @param header Vector of character strings, holding the header
+#'
 #' @return A list holding the metadata, with item names matching
 #' those in the ODF header, except that duplicates are transformed
-#' through the use of \code{\link{unduplicateNames}}.
+#' through the use of [unduplicateNames()].
 #'
 #' @family things related to odf data
 ODFListFromHeader <- function(header)
@@ -812,32 +834,30 @@ ODFListFromHeader <- function(header)
 }
 
 
-#' @title Read an ODF file
+#' Read an ODF file
 #'
-#' @description
 #' ODF (Ocean Data Format) is a
 #' format developed at the Bedford Institute of Oceanography and also used
 #' at other Canadian Department of Fisheries and Oceans (DFO) facilities
-#' (see [1] and [2]).
+#' (see references 1 and 2).
 #' It can hold various types of time-series data, which includes a variety
-#' of instrument types. Thus, \code{read.odf}
-#' is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2018,
-#' \code{read.odf} is still in development, with features being added as a
+#' of instrument types. Thus, [read.odf()]
+#' is used by `read.ctd.odf` for CTD data, etc. As of mid-2018,
+#' [read.odf()] is still in development, with features being added as a
 #' project with DFO makes available more files.
 #'
-#' @details
 #' Note that some elements of the metadata are particular to ODF objects,
-#' e.g. \code{depthMin}, \code{depthMax} and \code{sounding}, which
-#' are inferred from ODF items named \code{MIN_DEPTH}, \code{MAX_DEPTH}
-#' and \code{SOUNDING}, respectively. In addition, the more common metadata
-#' item \code{waterDepth}, which is used in \code{ctd} objects to refer to
-#' the total water depth, is set to \code{sounding} if that is finite,
-#' or to \code{maxDepth} otherwise.
+#' e.g. `depthMin`, `depthMax` and `sounding`, which
+#' are inferred from ODF items named `MIN_DEPTH`, `MAX_DEPTH`
+#' and `SOUNDING`, respectively. In addition, the more common metadata
+#' item `waterDepth`, which is used in `ctd` objects to refer to
+#' the total water depth, is set to `sounding` if that is finite,
+#' or to `maxDepth` otherwise.
 #'
-#' The function \code{\link{ODFNames2oceNames}} is used to translate
-#' data names from the ODF file to standard \code{oce} names, and
+#' The function [ODFNames2oceNames()] is used to translate
+#' data names from the ODF file to standard `oce` names, and
 #' handles conversion for a few non-standard units. The documentation
-#' of \code{\link{ODFNames2oceNames}} should be consulted for more
+#' of [ODFNames2oceNames()] should be consulted for more
 #' details.
 #'
 #'
@@ -846,18 +866,18 @@ ODFListFromHeader <- function(header)
 #' Some metadata items may be specific to certain instruments, and
 #' certain research groups. It can be important for analysts to be aware of
 #' the conventions used in datasets that are under study.
-#' For example, as of June 2018, \code{adp}
+#' For example, as of June 2018, `adp`
 #' objects created at the Bedford Institute of Oceanography may
-#' have a metadata item named \code{depthOffBottom} (called
-#' \code{DEPTH_OFF_BOTTOM} in ODF files), which is not typically
-#' present in \code{ctd} files. This item illustrates the renaming
+#' have a metadata item named `depthOffBottom` (called
+#' `DEPTH_OFF_BOTTOM` in ODF files), which is not typically
+#' present in `ctd` files. This item illustrates the renaming
 #' convention, from the CAMEL_CASE used in ODF files to the snakeCase
 #' used in oce. Bearing this conversion in mind, users should not
-#' find it difficult to understand the meaning of items that \code{read.odf}
-#' stores within the \code{metadata} slot. Users should bear in mind
+#' find it difficult to understand the meaning of items that [read.odf()]
+#' stores within the `metadata` slot. Users should bear in mind
 #' that the intirety of the ODF header is saved as list by
-#' calling the function with \code{header="list"}, after which
-#' e.g. \code{\link{str}(rval[["header"]])} or \code{\link{View}(rval[["header"]])}
+#' calling the function with `header="list"`, after which
+#' e.g. [str]`(rval[["header"]])` or [View]`(rval[["header"]])`
 #' can be used to isolate any information of interest (but bear in mind
 #' that suffices are used to disambiguate sibling items of identical
 #' name in the ODF header).
@@ -886,63 +906,66 @@ ODFListFromHeader <- function(header)
 #'
 #' @param file the file containing the data.
 #'
-#' @param columns An optional \code{\link{list}} that can be used to convert unrecognized
+#' @param columns An optional [list] that can be used to convert unrecognized
 #' data names to resultant variable names.  For example,
-#' \code{columns=list(salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))}
-#' states that a short-name of \code{"salt"} represents salinity, and that the unit is
-#' as indicated. This is passed to \code{\link{cnvName2oceName}} or \code{\link{ODFNames2oceNames}},
+#' `columns=list(salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))`
+#' states that a short-name of `"salt"` represents salinity, and that the unit is
+#' as indicated. This is passed to [cnvName2oceName()] or [ODFNames2oceNames()],
 #' as appropriate, and takes precedence over the lookup table in that function.
 #'
 #' @param header An indication of whether, or how, to store the entire
-#' ODF file header in the \code{metadata} slot of the returned object.
-#' There are three choices for the \code{header} argument.
-#' (1) If it is \code{NULL}, then the ODF header is not stored in
-#' the \code{metadata} slot (although some of its contents are).
-#' (2) If it is \code{"character"}, the header is stored within
-#' the \code{metadata} as a vector named \code{header}, comprising
+#' ODF file header in the `metadata` slot of the returned object.
+#' There are three choices for the `header` argument.
+#' (1) If it is `NULL`, then the ODF header is not stored in
+#' the `metadata` slot (although some of its contents are).
+#' (2) If it is `"character"`, the header is stored within
+#' the `metadata` as a vector named `header`, comprising
 #' a character string for each line of the header within the ODF file.
-#' (3) If it is \code{"list"}, then the \code{metadata} slot of the
-#' returned object will contain a \code{list} named \code{header} that
+#' (3) If it is `"list"`, then the `metadata` slot of the
+#' returned object will contain a `list` named `header` that
 #' has lists as its entries. (The sub-lists are in the form of
 #' key-value pairs.) The naming of list entries is patterned on
-#' that in the ODF header, except that \code{\link{unduplicateNames}}
+#' that in the ODF header, except that [unduplicateNames()]
 #' is used to transform repeated names by adding numerical suffices.
-#' Note: on June 6, 2019, the default value of \code{header} was
-#' changed from \code{NULL} to \code{"list"}; in addition, the resultant
+#' Note: on June 6, 2019, the default value of `header` was
+#' changed from `NULL` to `"list"`; in addition, the resultant
 #' list was made to contain every single item in the ODF header, with
-#' \code{\link{unduplicateNames}} being used to append integers to
+#' [unduplicateNames()] being used to append integers to
 #' distinguish between repeated names in the ODF format.
 #'
 #' @template debugTemplate
 #'
-#' @return An object of class \code{oce}. It is up to a calling function to determine what to do with this object.
+#' @return An [oce-class] object.
 #'
 #' @section Caution:
-#' ODF files do not store information on the temperature or salinity scale, and \code{read.odf}
+#' ODF files do not store information on the temperature or salinity scale, and [read.odf()]
 #' assumes these to be ITS-90 and PSS-78, respectively. These scales may be incorrect for old
 #' data files. Note that the temperature scale can be converted from old scales
-#' using \code{\link{T90fromT68}} and \code{\link{T90fromT48}}, although the change will be in
+#' using [T90fromT68()] and [T90fromT48()], although the change will be in
 #' a fraction of a millidegree, which probably exceeds reasonable confidence in old data.
 #'
-#' @seealso \code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
+#' @seealso [ODF2oce()] will be an alternative to this, once (or perhaps if) a `ODF`
 #' package is released by the Canadian Department of Fisheries and Oceans.
 #'
 #' @references
-#' \itemize{
 #'
-#' \item [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
+#' 1. Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
 #' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
 #' in June 2011.)
 #'
-#' \item [2] The St Lawrence Global Observatory website has information on ODF format at
-#' \url{https://slgo.ca/app-sgdo/en/docs_reference/documents.html} (link checked
-#' 2018-06-06) and this is perhaps the best resource to learn more.
-#'
-#'}
+#' 2. The St Lawrence Global Observatory website has information on ODF format at
+#' \url{https://slgo.ca/app-sgdo/en/docs_reference/documents.html}
+#' and this is perhaps the best resource to learn more.
 #'
 #' @family things related to odf data
 read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebug"))
 {
+    if (missing(file))
+        stop("must supply 'file', a character value holding the name of an ODF file")
+    if (length(file) > 1)
+        stop("can only handle one file at a time (the length of 'file' is ", length(file), ", not 1)")
+    if (is.character(file) && 0 == file.info(file)$size)
+        stop("the file named '", file, "' is empty, and so cannot be read")
     oceDebug(debug, "read.odf(\"", file, "\", ...) {\n", unindent=1, sep="")
     if (!is.null(header)) {
         if (!is.character(header))

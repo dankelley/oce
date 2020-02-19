@@ -10,10 +10,10 @@ rskToc(dir, from, to, debug = getOption("oceDebug"))
 \item{dir}{name of a directory containing a single table-of-contents file, with
 \code{.TBL} at the end of its file name.}
 
-\item{from}{optional \code{\link{POSIXct}} time, indicating the beginning of a
+\item{from}{optional \code{\link[=POSIXct]{POSIXct()}} time, indicating the beginning of a
 data interval of interest.  This must have timezone \code{"UTC"}.}
 
-\item{to}{optional \code{\link{POSIXct}} time, indicating the end of a data
+\item{to}{optional \code{\link[=POSIXct]{POSIXct()}} time, indicating the end of a data
 interval of interest.  This must have timezone \code{"UTC"}.}
 
 \item{debug}{optional integer to control debugging, with positive values
@@ -21,7 +21,7 @@ indicating to print information about the processing.}
 }
 \value{
 A list with two elements: \code{filename}, a vector of file names, and
-\code{startTime}, a vector of \code{\link{POSIXct}} times indicating the (real)
+\code{startTime}, a vector of \code{\link[=POSIXct]{POSIXct()}} times indicating the (real)
 times of the first datum in the corresponding files.
 }
 \description{
@@ -35,7 +35,7 @@ to parse these lines to get day and hour information, i.e.  179 and 023 in the
 line above.  Then, recognizing that it is common to change the names of such
 files, the rest of the file-name information in the line is ignored, and instead
 a new file name is constructed based on the data files that are found in the
-directory.  (In other words, the \code{"\\day179\\SL08A"} portion of the line is
+directory.  (In other words, the \code{"\\\\day179\\\\SL08A"} portion of the line is
 replaced.)  Once the file list is complete, with all times put into R format,
 then (optionally) the list is trimmed to the time interval indicated by
 \code{from} and \code{to}.  It is important that \code{from} and \code{to} be in
@@ -52,12 +52,17 @@ print(table)
 
 }
 \seealso{
-Other things related to rsk data: \code{\link{[[,rsk-method}},
-  \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
-  \code{\link{plot,rsk-method}}, \code{\link{read.rsk}},
-  \code{\link{rsk-class}}, \code{\link{rskPatm}},
-  \code{\link{rsk}}, \code{\link{subset,rsk-method}},
-  \code{\link{summary,rsk-method}}
+Other things related to rsk data: 
+\code{\link{[[,rsk-method}},
+\code{\link{[[<-,rsk-method}},
+\code{\link{as.rsk}()},
+\code{\link{plot,rsk-method}},
+\code{\link{read.rsk}()},
+\code{\link{rsk-class}},
+\code{\link{rskPatm}()},
+\code{\link{rsk}},
+\code{\link{subset,rsk-method}},
+\code{\link{summary,rsk-method}}
 }
 \author{
 Dan Kelley

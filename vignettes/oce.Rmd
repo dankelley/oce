@@ -1,5 +1,5 @@
 ---
-title: "Introduction to Oce"
+title: "1. Introduction to Oce"
 author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911) and Clark Richards (https://orcid.org/0000-0002-7833-206X)"
 date: "`r Sys.Date()`"
 output:
@@ -12,23 +12,20 @@ output:
     dpi: 72
     dev.args: list(pointsize=11)
 vignette: >
-  %\VignetteIndexEntry{Introduction to Oce}
+  %\VignetteIndexEntry{1. Introduction to Oce}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-<!-- HOW TO BUILD THE VIGNETTE. -->
-<!-- 1. edit this file in vignettes/oce.Rmd -->
-<!-- 2. in an R console, use setwd() or otherwise move to the oce -->
-<!--    directory, and then execute -->
-<!--      devtools::build_vignettes() -->
-<!-- 3. build oce. In the shell, you might use -->
-<!--      cd oce ; echo "devtools::document(roclets=c('rd','collate','vignette'))" | R --no-save -->
-<!--      CMD build --compact-vignettes="qpdf" oce -->
-<!--      R CMD check oce_1.1-0.tar.gz -->
-<!--      R CMD INSTALL oce_1.1-0.tar.gz -->
-<!--    where the version number might need updating, or in an R console you might use -->
-<!--      devtools::install(build_vignettes=TRUE) -->
+<!-- HOW TO BUILD AND VIEW THE OCE VIGNETTES. -->
+<!-- 1. Edit this file in vignettes/oce.Rmd -->
+<!-- 2. Do not bother trying to build vignettes in RStudio. Instead, ->
+<!--    in a unix shell, type the following: -->
+<!--        R CMD build --compact-vignettes="qpdf" oce -->
+<!--        R CMD install oce_1.1-2.tar.gz -->
+<!--    where the version number may need adjustment in the second command. -->
+<!-- 3. To see the results, type the following in an R console: -->
+<!--       browseVignettes("oce") -->
 
 
 ```{r, echo = FALSE}
@@ -68,7 +65,8 @@ the data objects (see next section).
 
 As illustrated in Figure 1, each `oce` object contains three slots:
 
-* `data`, a list containing the actual data, e.g., for a CTD object, this will
+* `data`, a list containing the actual data, e.g., for a CTD object (see
+  also the [vignette about CTD data](ctd.html)), this will
   contain `pressure`, `temperature`, etc.
 * `metadata`, a list containing information about the data, such as units,
   data-quality flags, sampling locations, etc.
@@ -110,7 +108,7 @@ retrieves the temperature. For obvious reasons, the method of derived-quantity a
 
 # Modifying data in oce objects
 
-There are several schemes for modifying the data within `oce` objects. By analogy with the `[[` notation of the previous section, e.g. the following 
+There are several schemes for modifying the data within `oce` objects. By analogy with the `[[` notation of the previous section, e.g. the following
 ```{r eval=FALSE}
 data(ctd)
 ctd[["temperatureAboveFreezing"]] <- ctd[["temperature"]] - swTFreeze(ctd)
@@ -251,131 +249,10 @@ e. Draw a blank $T$-$S$ diagram with $S$ from 30 to 40 PSU and $T$ from -2 to 20
 
 # CTD data
 
-## Example with pre-trimmed data
-
-Many of the object types supported by `oce` come with built-in data.  For an
-example, `data(ctd)` yields a CTD profile that has been trimmed to just the
-downcast portion of the sampling.  (See the next section to learn how to do
-this trimming.)  A summary and plot (Figure 2) are created as follows.
-
-```{r fig.cap="**Figure 2.** An overview of a ctd dataset.", fig.width=6, fig.height=6, dpi=72, dev.args=list(pointsize=14), message=FALSE}
-library(oce)
-data(ctd)
-summary(ctd)
-plot(ctd)
-```
-
-Accessing the data within this `ctd` object can be done directly, e.g.
-`ctd@data$pressure` holds the pressure record, but it is usually better to use
-an accessor function that is provided with `oce`. This function is named `[[`,
-and it takes a character string as an argument, e.g. `ctd[["pressure"]]` yields
-the pressure column. The accessor notation is preferable to direct access
-because it is simpler for the user. For example, several `oce` objects store
-the data in single-byte or two-byte chunks, to match the raw format used by the
-instruments, and the accessor function takes care of translating these values
-to what are sometimes called "science" units.
-
-**Exercise 2.** Plot a profile of $\sigma_\theta$ and $N^2$, for the data in
-the pycnocline. (Hint: use `subset()`.)
-
-## Example with raw data
-
-Practicing Oceanographers may be wondering how the CTD cast used in the
-preceding section was trimmed of equilibration-phase and upcast-phase data.
-Spurious data from these phases must be trimmed as a first step in processing.
-For example, consider the following code.
-```{r fig.cap="**Figure 3.** Scanwise plot of the `ctdRaw` sample data set.  Note the spike at the start, the equilibration phase before the downcast, and the spurious freshening signal near the start of the upcast.", fig.width=5, fig.height=3, dpi=72, dev.args=list(pointsize=12)}
-data(ctdRaw)
-plotScan(ctdRaw)
-```
-
-This produces a two-panel plot (Figure 3) of the data as a time-series,
-revealing not just the desired downcast, but also an earlier equilibration
-phase and a later upcast.  The x-axis in Figure 3 is the scan number, which is
-a convenient index for extraction of the downcast portion of the profile by an
-essentially manual method, e.g. proceeding with a sequence of commands such as
-
-```{r eval=FALSE}
-plotScan(ctdTrim(ctdRaw, "range",
-                 parameters=list(item="scan", from=140, to=250)))
-plotScan(ctdTrim(ctdRaw, "range",
-                 parameters=list(item="scan", from=150, to=250)))
-```
-
-This method of making decisions based on plotted information is probably the
-most robust method of trimming data.  However, for quick work, users may be
-satisfied with the results of automatic downcast detection, e.g.
-```{r eval=FALSE}
-ctdTrimmed <- ctdTrim(ctdRaw)
-```
-
-It should be noted that `ctdTrim()` inserts entries into the object's log file,
-so that the details of how the trimming was done are recorded together with the
-data.
-
-Once the profile has been trimmed, one may wish to use `ctd.decimate()` to smooth
-the data and interpolate the smoothed results to uniformly-spaced pressure
-values.
-
-Taking these things together, a quick visual examination of a CTD file takes
-just one line of code:
-```{r eval=FALSE}
-plot(ctdDecimate(ctdTrim(read.ctd("stn123.cnv"))))
-```
-
-## Example with WOCE archive data
-
-The package has a harder time scanning the headers of data files in the WOCE
-archive format than it does in the Seabird format illustrated in the previous
-examples. This is mainly because front-line researchers tend to work in the
-Seabird format, and partly because the WOCE format is odd. For example, the
-first line of a WOCE file is of the form `CTD,20060609WHPOSIODAM` (or
-`BOTTLE,...`).  Scanning the item to the left of the comma is not difficult
-(although there are variants to the two shown, e.g. `CTDO` sometimes occurs).
-The part to the right of the comma is more difficult.  The first part is a date
-(`yyyymmdd`) so that is no problem.  But then things start to get tricky.  In
-the example provided, this text contains the division of the institute (WHPO),
-the institute itself (SIO), and initial of the investigator (DAM). The problem
-is that no dividers separate these items, and that there seem to be no
-standards for the item lengths. Rather than spend a great deal of time coding
-special cases (e.g. scanning to see if the string `WHOI` occurs in the header
-line), the approach taken with `oce` is to ignore such issues relating to
-quirky headers, on the assumption that users can scan human-written headers
-with high skill.
-
-Quite commonly, CTD profiles taken during a cruise are collected together in a
-sequence of files in a given directory.  For a real-world example, one might
-visit the website mentioned in the code provided below, download and expand the
-zip file, enter the directory thus formed, and run the code to get an overall
-TS plot for all the CTD stations of this cruise. (Caution: the link seems to
-change from time to time.)
-
-```{r eval=FALSE}
-library(oce)
-# http://cchdo.ucsd.edu/data/7971/ar18_58JH19941029_ct1.zip
-# setwd("~/Downloads/ar18_58JH19941029_ct1")
-files <- system("ls *.csv", intern=TRUE)
-for (i in 1:length(files)) {
-    x <- read.ctd(files[i])
-    if (i == 1) {
-        plotTS(x, Slim=c(31, 35.5), Tlim=c(-2, 10), type='o')
-    } else {
-        points(x[["salinity"]], x[["potential temperature"]])
-        lines(x[["salinity"]], x[["potential temperature"]])
-    }
-}
-```
-The `[[` notation is explained in Section 3, but this example conveys the gist,
-that it permits accessing data, or derived data, from within an object.
-
-In the above, lines connect the points within a given profile. This can be a
-useful method for a quick scan looking for outliers. Another is to colour-code
-the profiles, although this gets confusing with large datasets, in which case
-the method of the following exercise might be useful.
-
-**Exercise 3. (advanced)** Make a multi-file plot summarizing the TS
-relationship, with each file showing the overall relationship in gray and the
-individual profile in black.
+The `read.oce` function recognizes a wide variety of CTD data formats, and the
+associated `plot` function can produce many types of graphical display. In
+addition, there are several functions that aid in the analysis of such data.
+See the [ctd vignette](ctd.html) for more on dealing with CTD data.
 
 
 # Section plots
@@ -407,114 +284,25 @@ GSg <- sectionGrid(GS, p=seq(0, 1600, 25))
 plot(GSg, which=c(1,99), map.xlim=c(-85,-(64+13/60)))
 ```
 
-**Exercise 4.** Draw a $T$-$S$ diagram for the section data, using black
+**Exercise 2.** Draw a $T$-$S$ diagram for the section data, using black
 symbols to the east of 30W and gray symbols to the west, thus highlighting
 Mediterranean-derived waters. Use `handleFlags()` (see [using data-quality
 flags](flags.html)) to discard questionable data, and use the accessor function
 `[[`.
 
-**Exercise 5.** Plot dynamic height and geostrophic velocity across the Gulf
+**Exercise 3.** Plot dynamic height and geostrophic velocity across the Gulf
 Stream. (Hint: use the `swDynamicHeight()` function.)
 
 # Maps
 
-## About projections
-
-There are several ways to handle map projections in R and other systems. Oce
-uses the `rgdal` package to calculate the details of map projections.  A wide
-group of functions is provided for plotting maps.  The first step is to call
-`mapPlot()` to construct the map, after which points can be added with
-`mapPoints()`, lines with `mapLines()`, etc. For example, the following plots a
-world coastline in the Winkel Tripel projection, with the cruise track
-for the `section` dataset in red.
-```{r fig.cap="**Figure 5.** World in Robinson projection, with the `section` profile sites indicated.", fig.width=4, fig.height=2.6, dpi=72}
-library(oce)
-data(coastlineWorld)
-par(mar=rep(0, 4))
-mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
-data(section)
-lon <- section[["longitude", "byStation"]]
-lat <- section[["latitude", "byStation"]]
-mapLines(lon, lat, col='red', cex=0.5)
-```
-```{r echo=FALSE}
-data(coastlineWorld)
-par(mar=rep(1, 4))
-```
-
-There are far too many projections to illustrate here. See
-<http://dankelley.github.io/r/2015/04/03/oce-proj.html>
-for a blog item that provides examples of the available projections. Note that
-some have a problem with spurious horizontal lines. This can result from
-coastline segments that cross the edge of the plotting area, and getting rid of
-this is tricky enough to be the heart of the longest-lived bug in the `oce`
-issue list, i.e. <https://github.com/dankelley/oce/issues/388>. In some instances the function `coastlineCut()` can help, but it is provisional and subject to change.
-
-
-## Popular world-view projections
-
-A few common projections are worth highlighting. In addition to the Robinson
-projection shown in Figure 5, it is also common to employ Mollweide
-(`projection="+proj=moll"`), Eckert IV (`projection="+eck4"`) or Winkel Tripel
-(`projection="+proj=wintri"`) for world-wide views. An attractive feature of
-the Winkel Tripel projection is familiarity, since it is used by the National
-Geographical Society, but its lack of a formal inverse can cause problems for
-plotting in `oce` unless the operating system has a recent version of the
-`gdal` library that is used for calculating projections.
-
-Before moving on to other projections, it may be helpful to show how to plot
-gridded data with projection, illustrated in Figure 6 with bathymetry near
-eastern Canada.
-
-```{r fig.cap="**Figure 6.** World bathymetry in Molleweide projection.", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
-par(mar=c(1.5, 1, 1.5, 1))
-data(topoWorld)
-topo <- decimate(topoWorld, 2) # coarsen grid: 4X faster plot
-lon <- topo[["longitude"]]
-lat <- topo[["latitude"]]
-z <- topo[["z"]]
-cm <- colormap(name="gmt_globe")
-drawPalette(colormap=cm)
-mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE, col="lightgray")
-mapImage(lon, lat, z, colormap=cm)
-```
-
-## Popular mid-latitude projections
-
-Mid-latitude regions are sometimes represented with Lambert Conformal Conic projection,
-e.g. Figure 7 was produced as follows.
-```{r fig.cap="**Figure 7.** North Atlantic in Lambert Conformal Conic projection.", fig.width=5, fig.height=3, dpi=72}
-par(mar=c(2, 2, 1, 1))
-lonlim <- c(-80, 0)
-latlim <- c(20, 60)
-mapPlot(coastlineWorld, projection="+proj=lcc +lat_1=30 +lat_2=50 +lon_0=-40",
-        col="lightgray", longitudelim=lonlim, latitudelim=latlim)
-```
-
-Other common mid-latitude projections include Mercator and Albers Equal-Area
-Conic, produced as follows.
-```{r , fig.keep="none"}
-mapPlot(coastlineWorld, projection="+proj=merc",
-        col="lightgray", longitudelim=lonlim, latitudelim=latlim)
-mapPlot(coastlineWorld, projection="+proj=aea +lat_1=30 +lat_2=70 +lon_0=-40",
-        col="lightgray", longitudelim=lonlim, latitudelim=latlim)
-```
-
-## Popular high-latitude projections
-
-High-latitude regions are often represented with stereopolar projections, e.g.
-Figure 8 was produced with the following.
-```{r fig.cap="**Figure 8.** Arctic coastlines in stereopolar projection.", fig.width=3, fig.height=3, dpi=72}
-par(mar=c(2, 2, 1, 1))
-mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-        col="lightgray", longitudelim=c(-80,0), latitudelim=c(70, 110))
-```
-
+Oce has several functions that facilitate the drawing of maps. A variety of
+projections are provided, with the mathematics of projection being handled
+behind the scenes with the `rgdal` package. An introduction to drawing maps is
+provided with `?mapPlot`, and the [map projection
+vignette](map_projections.html) provides much more detail.
 
 
 # Sea-level data
-
-## Time-domain analysis
 
 The following code graphs a built-in dataset of sea-level time series (Figure
 9).  The top panel provides an overview of the entire data set. The second
@@ -532,17 +320,16 @@ data(sealevel)
 plot(sealevel)
 ```
 
-**Exercise 6.** Illustrate Halifax sea-level variations during Hurricane Juan,
+**Exercise 4.** Illustrate Halifax sea-level variations during Hurricane Juan,
 near the end of September, 2003.
 
-## Tidal-harmonic analysis
 
 A preliminary version of tidal analysis is provided by the `tidem` function
 provided in this version of the package, but readers are cautioned that the
 results are certain to change in a future version.  (The problems involve
 phase and the inference of satellite nodes.)
 
-**Exercise 7.** Plot the de-tided Halifax sea level during Autumn 2003, to see
+**Exercise 5.** Plot the de-tided Halifax sea level during Autumn 2003, to see
 whether Hurricane Juan is visible. (Hint: use `predict` with the results from
 `tidem`.)
 
@@ -595,168 +382,12 @@ should be written in various languages.
 
 # Extending oce
 
-## Initializing oce objects
-
-Oce handles a wide variety of data types, creating sub-classes the inherit from
-the base class that is named `oce`. However, even if a dataset does not fit
-within these sub-classes, it is still possible to use some of the features of
-`oce`, such as (FILL IN ... accessors, plotting, summaries ??).
-
-For example, suppose that there is a dataset that contains two variables, `mm`
-and `ss`, that have been measured at times `t`. Suppose that the data are
-recorded at a fixed location. To illustrate how to deal with such data, we
-first create some fake data:
-```{r}
-lon <- -60
-lat <- -30
-t <- seq(as.POSIXct("2017-08-30"), as.POSIXct("2017-09-01"), by="15 min")
-tsec <- as.numeric(t)
-u <- sin(tsec * 2 * pi / (3600 * 12.4206))
-v <- 0.5 * cos(tsec * 2 * pi / (3600 * 12.4206))
-```
-```{r echo=FALSE, eval=FALSE}
-plot(t, u, type="l")
-lines(t, v, col=2)
-```
-
-These may be inserted into an `oce` object as follows. First, create the object.
-```{R}
-o <- new("oce")
-```
-This contains slots without data:
-```{R}
-str(o)
-```
-
-As noted previously, it's possible to insert `t`, `u`, and `v` directly into
-the `data` slot, but it's better to use `oceSetData` to do that, because it 
-can set up units, and it leaves a trail in the processing log.
-```{R}
-o <- oceSetData(o, "t", t, list(unit=expression(s), scale=""))
-o <- oceSetData(o, "u", u, list(unit=expression(m/s), scale=""))
-o <- oceSetData(o, "v", v, list(unit=expression(m/s), scale=""))
-```
-
-Astute readers will realize that these data are akin to tidal velocities, and
-so might agree with the author that `lon` and `lat` belong in the `metadata`
-slot, not the `data` slot. 
-```{R}
-o <- oceSetMetadata(o, "longitude", lon)
-o <- oceSetMetadata(o, "latitude", lat)
-```
-
-At this stage, `o` is a full-fledged `oce` object. It may be summarized with
-```{r}
-summary(o)
-```
-and individual data components may be extracted with the `[[` notation
-```{r}
-o[["latitude"]]                        # from metadata
-head(o[["t"]])                         # from data
-head(o[["u"]])
-head(o[["v"]])
-```
-
-A crude plot can be done with
-```{r fig.cap="**Figure 11.** Crude plot of constructed `oce` object.", fig.width=4, fig.height=4, dpi=72}
-plot(o)
-```
-
-Note that the plot uses the `pairs` function to show how all elements of the
-`data` slot vary with each other. To customize the plot, a new object class
-should be created, as in the next section.
-
-
-## Creating new oce object classes
-
-Let's call this new object class `uv`. With this, inventing a new object
-sub-class is as simple as invoking
-```{r}
-setClass("uv", contains="oce")
-```
-
-For most objects, it makes sense to define three specialized methods: one to
-create new objects (called `"initialize"`), one to plot them (`"plot"`), and
-one to summarize them (`"summary"`).
-
-The initialization can be handled with
-```{r}
-setMethod(f="initialize",
-          signature="uv",
-          definition=function(.Object, time, u, v, longitude, latitude) {
-              if (missing(time)) stop("must provide 'time'")
-              ## repeat the above also for u, v, longitude, and latitude
-              .Object@metadata$units$u <- list(unit=expression(m/s), scale="")
-              .Object@metadata$units$v <- list(unit=expression(m/s), scale="")
-              .Object@metadata$longitude <- longitude
-              .Object@metadata$latitude <- latitude
-              .Object@data$time <- time
-              .Object@data$u <- u
-              .Object@data$v <- v
-              .Object@processingLog$time <- presentTime()
-              .Object@processingLog$value <- "create 'uv' object"
-              return(.Object)
-          })
-```
-This is fairly arcane, but simply copying and pasting this will be enough to get the
-reader started. Let's try it:
-```{r}
-oo <- new("uv", t, u, v, lon, lat)
-```
-
-Next, customize `summary` for this new class:
-```{r}
-setMethod(f="summary",
-          signature="uv",
-          definition=function(object, ...) {
-              cat("uv Summary\n-----------\n\n", ...)
-              cat(paste("* Location:           ",
-                        sprintf("%.5f N", object@metadata$latitude), ", ",
-                        sprintf("%.5f E", object@metadata$longitude), "\n", sep=''))
-              callNextMethod()
-          })
-```
-The `callNextMethod` will summarize the entries in the `data` slot adequately for this case. Let's try it:
-```{r}
-summary(oo)
-```
-
-Finally, let's make a custom method for `plot`. This is usually the most
-complicated part of handling any new object class, because there are usually
-many ways to look at data. (Some `oce` objects have over a dozen specialized
-plot styles.) Let's suppose there are only two desired plot styles: one showing
-timeseries of `u` and `v` in a two panel plot, and the other showing how `u`
-and `v` covary.
-
-```{r}
-setMethod(f="plot",
-          signature=signature("uv"),
-          definition=function(x, which=1, ...)
-          {
-              if (which == 1) {
-                  oce.plot.ts(x[["time"]], x[["u"]], ylab="u [m/s]", ...)
-              } else if (which == 2) {
-                  oce.plot.ts(x[["time"]], x[["v"]], ylab="v [m/s]", ...)
-              } else if (which == 3) {
-                  plot(x[["u"]], x[["v"]], xlab="u [m/s]", ylab="v [m/s]", ...)
-              }
-          })
-```
-
-```{r echo=FALSE}
-par(mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0)) # thin margins
-```
-
-An now, we can try it out
-```{r fig.cap="**Figure 12.** Time-series u(t) plot of newly-constructed `uv` object.", fig.width=4, fig.height=4, dpi=72}
-par(mfrow=c(2,1))
-plot(oo, which=1)
-plot(oo, which=2)
-```
-```{r fig.cap="**Figure 13.** Hodograph plot of newly-constructed `uv` object.", fig.width=4, fig.height=4, dpi=72}
-plot(oo, which=3, asp=1)
-```
-
+The oce object structure can be used as a basis for new object types. This has
+the advantage the basic operations of oce will carry over to the new types. For
+example, the accessing operator `[[` and `summary` function will work as
+expected, and so will such aspects as the handling of data-quality flags and
+units.  More details on setting up classes that inherit from oce are provided
+in [the subclassing vignette](6.  Subclassing oce objects).
 
 
 # The future of oce
@@ -787,7 +418,7 @@ being changed on a given day.  Official CRAN releases derive from the `master`
 branch, and are done when the code is considered to be of reasonable stability
 and quality.  This is all in a common pattern for open-source software.
 
-# Answers to exercises
+# Solutions to exercises
 
 **Exercise 1.** Seawater properties. In the UNESCO system we
 may write
@@ -803,65 +434,7 @@ and in the Gibbs SeaWater system, we use `eos="gws"` and must supply
 `longitude` and `latitude` arguments to the `sw*()` calls and also
 to the `as.ctd()` call.
 
-**Exercise 2.** Plot a profile of $\sigma_\theta$ and $N^2$, for the data in
-the pycnocline. (Hint: use `subset()`.)
-
-Although one may argue as to the limits of the pycnocline, for illustration let
-us say it is in 5 dbar to 12 dbar range.  One way to do this is
-
-```{r fig.width=5, fig.height=5, fig.keep="none"}
-library(oce)
-data(ctd)
-pycnocline <- ctdTrim(ctd, "range",
-                      parameters=list(item="pressure", from=5, to=12))
-plotProfile(pycnocline, which="density+N2")
-```
-
-Another is
-```{r fig.width=5, fig.height=5, fig.keep="none"}
-library(oce)
-data(ctd)
-pycnocline <- subset(ctd, 5 <= pressure & pressure <= 12)
-plotProfile(pycnocline, which="density+N2")
-```
-
-**Exercise 3.** Make a multi-file plot summarizing the TS relationship, with
-each file showing the overall relationship in gray and the individual profile
-in black. (This is an advanced exercise requiring some R skills.)
-
-The code provided below creates 91 PNG files, with names `ar18_01.png`,
-`ar18_02.png`, etc. Loading these in a view that permits quick paging through
-this file list is an easy way to spot suspicious data, since each plot has the
-station number at the top.  (Users trying this example should bear in mind that
-this is a fairly large dataset, so the processing will take up to a minute.)
-
-```{r eval=FALSE}
-library(oce)
-# http://cchdo.ucsd.edu/data/7971/ar18_58JH19941029_ct1.zip
-# setwd("~/Downloads/ar18_58JH19941029_ct1")
-files <- system("ls *.csv", intern=TRUE)
-n <- length(files)
-ctds <- vector("list", n) # to hold the CTD objects
-station <- vector("list", n)
-for (i in 1:n) {
-    ctds[[i]] <- read.ctd(files[i])
-    station[[i]] <- ctds[[i]][["station"]]
-}
-S <- unlist(lapply(1:n, function(i) ctds[[i]][["salinity"]]))
-T <- unlist(lapply(1:n, function(i) ctds[[i]][["temperature"]]))
-p <- unlist(lapply(1:n, function(i) ctds[[i]][["pressure"]]))
-overall <- as.ctd(S, T, p)
-png("ar18_%02d.png")
-for (i in 1:n) {
-    plotTS(overall, col='gray')
-    lines(ctds[[i]][["salinity"]], ctds[[i]][["potential temperature"]])
-    mtext(station[i], side=3, line=0)
-}
-dev.off()
-```
-
-
-**Exercise 4.** Draw a $T$-$S$ diagram for the section data, using black
+**Exercise 2.** Draw a $T$-$S$ diagram for the section data, using black
 symbols to the east of 30W and gray symbols to the west, thus highlighting
 Mediterranean-derived waters.  Use `handleFlags()` (see [using data-quality
 flags](flags.html)) to discard questionable data, and use the accessor function
@@ -879,7 +452,7 @@ col <- ifelse(s[["longitude"]] > -30, "black", "gray")
 plotTS(ctd, col=col, eos="gsw")
 ```
 
-**Exercise 5.** Plot dynamic height and geostrophic velocity across the Gulf
+**Exercise 3.** Plot dynamic height and geostrophic velocity across the Gulf
 Stream. (Hint: use the `swDynamicHeight` function.)
 
 (Try `?swDynamicHeight` for hints on smoothing.)
@@ -901,7 +474,7 @@ grid()
 abline(h=0, col='red')
 ```
 
-**Exercise 6.** Halifax sea-level during Hurricane Juan, near the end of
+**Exercise 4.** Halifax sea-level during Hurricane Juan, near the end of
 September, 2003.
 
 A web search will tell you that Hurricane Juan hit about midnight, 2003-sep-28.
@@ -917,7 +490,7 @@ abline(v=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
 mtext("Juan", at=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
 ```
 
-**Exercise 7.** Plot the de-tided Halifax sea level during Autumn 2003, to see
+**Exercise 5.** Plot the de-tided Halifax sea level during Autumn 2003, to see
 whether Hurricane Juan is visible. (Hint: use `predict` with the results from
 `tidem`.)
 
@@ -931,23 +504,4 @@ oce.plot.ts(sealevel[['time']], sealevel[['elevation']] - predict(m),
 ```
 
 The spike reveals a surge of about 1.5m, on the 29th of September, 2003.
-
-**Exercise 8.** Manipulating flags.
-```r
-library(oce)
-d <- read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
-
-## The following is in the .cnv file:
-# Processing Notes:  Flag word has 3 columns: Temperature, Conductivity, and Oxygen
-# Processing Notes:  Flag_code:  0 = no QC; 2 = good; 6 = interpolated, or replaced by dual sensor or upcast value;
-
-flag <- d[['flag']]
-flag1 <- floor(flag/100)
-flag2 <- floor((flag-100*flag1)/10)
-flag3 <- floor((flag-100*flag1-10*flag2))
-d[["flags"]]$temperature <- flag1
-d[["flags"]]$conductivity <- flag2
-d[["flags"]]$oxygen <- flag3
-```
-
 

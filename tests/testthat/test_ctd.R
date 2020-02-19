@@ -366,7 +366,7 @@ test_that("salinity accessor computes value from conductivity", {
           ctd@metadata$units$salinity <- NULL
           ## add new
           ctd2 <- oceSetData(ctd, name="conductivity", value=C, unit=list(unit=expression(), scale="PSS-78"))
-          expect_warning(S <- ctd2[["salinity"]], "constructed salinity from temperature, conductivity-ratio and pressure")
+          S <- expect_warning(ctd2[["salinity"]], "constructed salinity from temperature, conductivity-ratio and pressure")
           expect_equal(Sorig, S, tolerance=0.0001)
 })
 
@@ -555,5 +555,11 @@ test_that("as.ctd() handles multiple longitude and latitude", {
               expect_equal(length(ctd[["metadata"]]$latitude), 1)
             }
           }
+})
+
+test_that("lon360() works", {
+          data(ctd)
+          ctdShifted <- lon360(ctd)
+          expect_equal(360 + ctd[["longitude"]], ctdShifted[["longitude"]])
 })
 

@@ -15,7 +15,23 @@ standard <- c("Z0", "SA", "SSA", "MSM", "MM", "MSF", "MF", "ALP1", "2Q1", "SIG1"
 unresolvable <- c("SA", "PI1", "S1", "PSI1", "GAM2", "H1", "H2", "T2", "R2")
 resolvable <- standard[!(standard %in% unresolvable)]
 
-test_that("tidemAstron() agrees with T_TIDE", {
+test_that("invalid constituent name is detected",
+          {
+            m <- expect_error(tidem(sealevel, constituents="unknown"),
+                                "'unknown' is not a known tidal constituent")
+            m <- expect_silent(tidem(sealevel, constituents=c("M2", "S2")))
+            expect_output(summary(m, constituent="M2"), "Call:")
+            expect_output(expect_warning(summary(m, constituent=c("M2", "unknown")),
+                                         "the following constituents are not handled: 'unknown'"),
+                          "Call:")
+            expect_warning(expect_error(summary(m, constituent="unknown"),
+                                        "no known constituents were provided"),
+                           "the following constituents are not handled: 'unknown'")
+          }
+)
+
+test_that("tidemAstron() agrees with T_TIDE",
+          {
           ## a test value from tidem with data(sealevelTuktoyaktuk)
           ctime <- numberAsPOSIXct(721574.000000, "matlab")
           a <- tidemAstron(ctime)
@@ -23,9 +39,11 @@ test_that("tidemAstron() agrees with T_TIDE", {
                                   0.47352449224491977020, 0.34168253766652512127, 0.78477994483145496751))
           expect_equal(a$ader, c(0.96613680796658762961, 0.03660110133318876524, 0.00273790929977641003,
                                  0.00030945458977503856, 0.00014709398916752078, 0.00000013079800385981))
-})
+          }
+)
 
-test_that("tidemVuf() agrees with T_TIDE", {
+test_that("tidemVuf() agrees with T_TIDE",
+          {
           ## a test value from tidem with data(sealevelTuktoyaktuk)
           t <- numberAsPOSIXct(721574, "matlab")
           latitude <- 69.45
@@ -71,37 +89,76 @@ test_that("tidemVuf() agrees with T_TIDE", {
                               1.06440598041227074688, 1.04138175242110064822, 1.01885556285168443758,
                               1.00831312849471199655, 1.08678359633272991758, 1.10963166967591941869,
                               1.00475518907274086189, 0.86273520229848033036))
-})
+          }
+)
 
-test_that("tidem constituents match previous versions", {
+test_that("tidem constituents match previous versions",
+          {
+          m <- expect_output(tidem(sealevel), "the tidal record is too short to fit for constituents")
+          nameExpected <- c("Z0", "SSA", "MSM", "MM", "MSF", "MF", "ALP1", "2Q1", "SIG1", "Q1", "RHO1", "O1", "TAU1",
+                            "BET1", "NO1", "CHI1", "P1", "K1", "PHI1", "THE1", "J1", "SO1", "OO1", "UPS1", "OQ2",
+                            "EPS2", "2N2", "MU2", "N2", "NU2", "M2", "MKS2", "LDA2", "L2", "S2", "K2", "MSN2", "ETA2",
+                            "MO3", "M3", "SO3", "MK3", "SK3", "MN4", "M4", "SN4", "MS4", "MK4", "S4", "SK4", "2MK5",
+                            "2SK5", "2MN6", "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8")
+          expect_equal(m[["name"]], nameExpected)
+          amplitudeExpected <- c(0.981726026948275, 0.0231120676250417, 0.00140006225693582, 0.00663853819693045,
+                                 0.00745395229071014, 0.0108423130558645, 0.00446157918446234, 0.00281566910578963,
+                                 0.00500528298165795, 0.00225633758542224, 0.00687335963931585, 0.0445580351701794,
+                                 0.00752399221873183, 0.00196300749657538, 0.00597938799085181, 0.00203819136867481,
+                                 0.0284640561578009, 0.0999180418904084, 0.00178914911263196, 0.00362251100068132,
+                                 0.00537919967694433, 0.00160359553803719, 0.00379934676589881, 0.00171255305464996,
+                                 0.00216847454896681, 0.00571278901124493, 0.0187693769736588, 0.016022726878358,
+                                 0.137842580014825, 0.0256601572406377, 0.603079326697343, 0.00133915747473446,
+                                 0.00876240589152753, 0.0217222462387855, 0.125778285527591, 0.0349926762754095,
+                                 0.00220982903284968, 0.00083893864415224, 0.00130054650555345, 0.00140741431875248,
+                                 0.0010408092076497, 0.00255136537688709, 0.0030861879324414, 0.0163623512074873,
+                                 0.0375601328413247, 0.00436099955739125, 0.0186294733631031, 0.00453447632254121,
+                                 0.00359043859975019, 0.000797758792921601, 0.00214528113087127, 0.00101597759514933,
+                                 0.00359973331843245, 0.00534334123140572, 0.00273724213778086, 0.00103718497501477,
+                                 0.000957878360945973, 0.000475127236372995, 0.00114864012363512, 0.000342820770777957)
+          expect_equal(m[["amplitude"]], amplitudeExpected)
+          phaseExpected <- c(0, 206.139498607823, 272.254674100838, 198.978271969872, 217.9167254883, 340.144074327625,
+                             267.62317978639, 207.078413795351, 101.464421527257, 65.5357202442784, 342.302188914025,
+                             96.2458456476212, 238.605269178581, 236.76128576666, 129.983948949739, 324.497774422381,
+                             119.927278917839, 120.487940952987, 233.836931342051, 62.979342886154, 147.439067140747,
+                             284.820518391198, 120.570371868767, 187.212410971879, 13.0043721493048, 331.840534847604,
+                             310.626542816525, 333.717321201237, 330.236927471862, 328.051268922409, 350.368725117048,
+                             328.535205043259, 3.00739883479745, 342.78169723488, 24.0579944118162, 19.431341600067,
+                             268.869845196679, 43.2013207892101, 197.315487664139, 240.016324425789, 260.382546065061,
+                             298.590107017218, 83.2822727979654, 220.098055909548, 270.047584648956, 2.35078120331345,
+                             48.4371100114011, 53.3159599661074, 208.043855367935, 193.84737099018, 21.3566757362311,
+                             236.164405145889, 114.684391797473, 118.84782486352, 161.303558539216, 169.886911046411,
+                             233.604836704444, 283.264844300455, 107.186639217795, 8.34416515384646)
+          expect_equal(m[["phase"]], phaseExpected)
+          expect_equal(fivenum(predict(m)), c(0.02920363602, 0.59938759547, 0.97986651174, 1.38237184987,
+                                              1.93382321126))
+          }
+)
+
+test_that("prediction works with newdata and without newdata",
+          {
           m <- expect_output(tidem(sealevel),
                              "the tidal record is too short to fit for constituents")
-          expect_equal(m[["name"]],
-                       c("Z0", "SSA", "MSM", "MM", "MSF", "MF", "ALP1", "2Q1", "SIG1", "Q1", "RHO1", "O1", "TAU1",
-                         "BET1", "NO1", "CHI1", "P1", "K1", "PHI1", "THE1", "J1", "SO1", "OO1", "UPS1", "OQ2", "EPS2",
-                         "2N2", "MU2", "N2", "NU2", "M2", "MKS2", "LDA2", "L2", "S2", "K2", "MSN2", "ETA2", "MO3", "M3",
-                         "SO3", "MK3", "SK3", "MN4", "M4", "SN4", "MS4", "MK4", "S4", "SK4", "2MK5", "2SK5", "2MN6",
-                         "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8"))
-          pred <- predict(m)
-          expect_equal(head(pred),
-                       c(1.2585560919, 0.8802843930, 0.5232325011, 0.2580047070, 0.1294293992, 0.1792193507))
-          expect_equal(tail(pred),
-                       c(0.3759657495, 0.6840384853, 1.0624378422, 1.3928432064, 1.5948142147, 1.6367626002))
-          expect_equal(fivenum(pred),
-                       c(0.02920363602, 0.59938759547, 0.97986651174, 1.38237184987, 1.93382321126))
-})
+          p1 <- predict(m)
+          p2 <- predict(m, newdata=sealevel[["time"]])
+          expect_equal(p1, p2)
+          }
+)
 
-test_that("tailoring of constituents", {
+test_that("tailoring of constituents",
+          {
           ## check names; note that "Z0" goes in by default
           tide3 <- tidem(sealevel, constituents = c("M2", "K2"))
-          expect_equal(tide3[["data"]]$name, c("Z0", "M2", "K2"))
+          expect_equal(tide3[["data"]]$name, c("M2", "K2"))
           ## check that we can remove constituents
           tide5 <- expect_output(tidem(sealevel, constituents = c("standard", "-M2")),
                                  "the tidal record is too short to fit for constituents")
           expect_equal(tide5[["data"]]$name, resolvable[resolvable != "M2"])
-})
+          }
+)
 
-test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
+test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test",
+          {
           foreman <- read.table("tide_foreman.dat.gz", header=TRUE, stringsAsFactors=FALSE)
           ttide <- read.table("tide_ttide.dat.gz", skip=9, header=TRUE, stringsAsFactors=FALSE)
           ## switch T_TIDE to Foreman names (which tidem() also uses)
@@ -153,5 +210,6 @@ test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
           ## for one thing.
           expect_lt(max(abs(foreman$A - ttide$amplitude)), 0.000201)
           expect_lt(max(abs(foreman$G - ttide$phase)), 0.121)
-})
+          }
+)
 

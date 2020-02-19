@@ -25,8 +25,7 @@ will be calculated as the maximum value of \code{x}}
 spanned by \code{rlow} and \code{rhigh}.}
 }
 \value{
-A new vector, which has minimum \code{lim[1]} and maximum
-\code{lim[2]}.
+A new vector, which has minimum \code{lim[1]} and maximum \code{lim[2]}.
 }
 \description{
 This is helpful in e.g. developing a color scale for an image plot.  It is

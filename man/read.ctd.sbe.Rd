@@ -4,36 +4,43 @@
 \alias{read.ctd.sbe}
 \title{Read a Seabird CTD File}
 \usage{
-read.ctd.sbe(file, columns = NULL, station = NULL, missingValue,
-  deploymentType = "unknown", monitor = FALSE,
-  debug = getOption("oceDebug"), processingLog, ...)
+read.ctd.sbe(
+  file,
+  columns = NULL,
+  station = NULL,
+  missingValue,
+  deploymentType = "unknown",
+  monitor = FALSE,
+  debug = getOption("oceDebug"),
+  processingLog,
+  ...
+)
 }
 \arguments{
-\item{file}{A connection or a character string giving the name of the file to
-load.  For \code{read.ctd.sbe()} and \code{read.ctd.woce()}, this may be a
+\item{file}{a connection or a character string giving the name of the file to
+load.  For \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} and \code{\link[=read.ctd.woce]{read.ctd.woce()}}, this may be a
 wildcard (e.g. \code{"*.cnv"} or \code{"*.csv"}) in which case the return
 value is a vector containing CTD objects created by reading the files from
-\code{\link{list.files}} with \code{pattern} set to the specified wildcard
+\code{\link[=list.files]{list.files()}} with \code{pattern} set to the specified wildcard
 pattern.}
 
-\item{columns}{An optional \code{\link{list}} that can be used to convert unrecognized
+\item{columns}{an optional \link{list} that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
-\code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}. For example,
-if a data file named salinity as \code{"SAL"}, then using
-\preformatted{
-d <- read.ctd(f, columns=list(
+\code{\link[=read.ctd.sbe]{read.ctd.sbe()}} and \code{\link[=read.ctd.odf]{read.ctd.odf()}}. For example,
+if a data file named salinity as \code{"SAL"}, then using\preformatted{d <- read.ctd(f, columns=list(
     salinity=list(name="SAL",
                   unit=list(unit=expression(),
                   scale="PSS-78"))))
 }
-would assign the \code{"SAL"} column to the \code{salinity} entry in the data
-slot of the CTD object returned by the \code{read.*} function.}
 
-\item{station}{Optional character string containing an identifying name or
+would assign the \code{"SAL"} column to the \code{salinity} entry in the data
+slot of the CTD object returned by the \verb{read.*} function.}
+
+\item{station}{optional character string containing an identifying name or
 number for the station. This can be useful if the routine cannot determine the
 name automatically, or if another name is preferred.}
 
-\item{missingValue}{Optional missing-value flag; data matching this value will
+\item{missingValue}{optional missing-value flag; data matching this value will
 be set to \code{NA} upon reading. If this is provided, then it overrules any
 missing-value flag found in the data. For Seabird (\code{.cnv}) files, there is
 usually no need to set \code{missingValue}, because it can be inferred from the
@@ -55,26 +62,26 @@ the device is installed on a fixed mooring, \code{"thermosalinograph"} (or
 near-surface properties, or \code{"towyo"} if the device is repeatedly
 lowered and raised.}
 
-\item{monitor}{Boolean, set to \code{TRUE} to provide an indication of
+\item{monitor}{boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}
 
-\item{debug}{An integer specifying whether debugging information is
+\item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
 be printed.}
 
-\item{processingLog}{If provided, the action item to be stored in the log.
+\item{processingLog}{if provided, the action item to be stored in the log.
 This is typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.}
 
 \item{...}{additional arguments, passed to called routines.}
 }
 \value{
-An object of \code{\link{ctd-class}}. The details of the contents
-depend on the source file. The \code{metadata} slot is particularly 
+a \linkS4class{ctd} object. The details of the contents
+depend on the source file. The \code{metadata} slot is particularly
 variable across data formats, because the meta-information provided
-in those formats varies widely.
+in those formats varies so widely.
 }
 \description{
 Read a Seabird CTD File
@@ -90,11 +97,11 @@ will be used in any future processing that accesses \code{temperature}. This
 is for convenience of processing, and it does not pose a limitation, because the
 data from the second sensor are also available as e.g. \code{x[["temperature1"]]},
 where \code{x} is the name of the returned value.  For the details of the
-mapping from \code{.cnv} names to \code{ctd} names, see \code{\link{cnvName2oceName}}.
+mapping from \code{.cnv} names to \code{ctd} names, see \code{\link[=cnvName2oceName]{cnvName2oceName()}}.
 
 The original data names as stored in \code{file} are stored within the \code{metadata}
 slot as \code{dataNamesOriginal}, and are displayed with \code{summary} alongside the
-numerical summary. See the Appendix VI of [2] for the meanings of these
+numerical summary. See the Appendix VI of reference 2 for the meanings of these
 names (in the "Short Name" column of the table spanning pages 161 through 172).
 }
 \section{A note on sampling times}{
@@ -102,7 +109,7 @@ names (in the "Short Name" column of the table spanning pages 161 through 172).
 Until November of 2018,
 there was a possibility for great confusion in the storage
 of the time entries within the \code{data} slot, because \code{read.ctd.sbe}
-renamed each of the ten variants of time (see [2] for a list)
+renamed each of the ten variants of time (see reference 2 for a list)
 as \code{"time"} in the \code{data} slot of the returned value.
 For CTD profiles, this was perhaps not a great problem, but it could
 lead to great confusion for moored data. Therefore, a change to \code{read.ctd.sbe} was
@@ -111,17 +118,19 @@ the CNV file header (which is stored as \code{startTime} in the object
 \code{metadata} slot), along with specific time columns as follows
 (and as documented, with uneven clarity, in the
 SBE Seasoft data processing manual, revision 7.26.8, Appendix VI):
-\code{timeS} (seconds elapsed since \code{start_time}),
-\code{timeM} (minutes elapsed since \code{start_time}),
-\code{timeH} (hours elapsed since \code{start_time}),
-\code{timeJ} (Julian days since the start of the year of the first observation),
-\code{timeN} (NMEA-based time, in seconds past Jan 1, 1970),
-\code{timeQ} (NMEA-based time, in seconds past Jan 1, 2000),
-\code{timeK} (NMEA-based time, in seconds past Jan 1, 2000),
-\code{timeJV2} (as \code{timeJ}),
-\code{timeSCP} (as \code{timeJ}),
-and
-\code{timeY} (computer time, in seconds past Jan 1, 1970).
+\tabular{rl}{
+\strong{Item} \tab \strong{Meaning}\cr
+\code{timeS}   \tab seconds elapsed since \code{start_time}\cr
+\code{timeM}   \tab minutes elapsed since \code{start_time}\cr
+\code{timeH}   \tab hours elapsed since \code{start_time}\cr
+\code{timeJ}   \tab Julian days since the start of the year of the first observation\cr
+\code{timeN}   \tab NMEA-based time, in seconds past Jan 1, 1970\cr
+\code{timeQ}   \tab NMEA-based time, in seconds past Jan 1, 2000\cr
+\code{timeK}   \tab NMEA-based time, in seconds past Jan 1, 2000\cr
+\code{timeJV2} \tab as \code{timeJ}\cr
+\code{timeSCP} \tab as \code{timeJ}\cr
+\code{timeY}   \tab computer time, in seconds past Jan 1, 1970\cr
+}
 NOTE: not all of these times have been tested properly, and so users
 are asked to report incorrect times, so that \code{read.ctd.sbe} can
 be improved.
@@ -137,7 +146,7 @@ Modern-day data will have \code{"ITS-90"} for that scale, and old data may have
 \code{"IPTS-68"}. The point of saving the scale in this way is so that the various
 formulas that deal with water properties can account for the scale, e.g. converting
 from numerical values saved on the \code{"IPTS-68"} scale to the newer scale, using
-\code{\link{T90fromT68}} before doing calculations that are expressed in
+\code{\link[=T90fromT68]{T90fromT68()}} before doing calculations that are expressed in
 terms of the \code{"ITS-90"} scale. This is taken care of by retrieving temperatures
 with the accessor function, e.g. writing \code{A[["temperature"]]} will either
 retrieve the stored values (if the scale is ITS-90) or converted values (if
@@ -157,13 +166,13 @@ d <- read.ctd(f, columns=list(
 
 }
 \references{
-1. The Sea-Bird SBE 19plus profiler is described at
-\code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
+\enumerate{
+\item The Sea-Bird SBE 19plus profiler is described at
+\verb{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
 information is given in the Sea-Bird data-processing manual
 (next item).
-
-2. A SBE data processing manual was once at
-\code{http://www.seabird.com/document/sbe-data-processing-manual},
+\item A SBE data processing manual was once at
+\verb{http://www.seabird.com/document/sbe-data-processing-manual},
 but as of summer 2018, this no longer seems to be provided by SeaBird.
 A web search will turn up copies of the manual that have been put
 online by various research groups and data-archiving agencies.
@@ -171,29 +180,53 @@ As of 2018-07-05, the latest version was named
 \code{SBEDataProcessing_7.26.4.pdf} and had release date 12/08/2017,
 and this was the reference version used in coding \code{oce}.
 }
+}
 \seealso{
-Other things related to ctd data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
-  \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
-  \code{\link{initialize,ctd-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{plotTS}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+Other things related to ctd data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{[[,ctd-method}},
+\code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{ctd-class}},
+\code{\link{ctd.cnv}},
+\code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfiles}()},
+\code{\link{ctdRaw}},
+\code{\link{ctdTrim}()},
+\code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{initialize,ctd-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{plot,ctd-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{plotTS}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()},
+\code{\link{setFlags,ctd-method}},
+\code{\link{subset,ctd-method}},
+\code{\link{summary,ctd-method}},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()},
+\code{\link{write.ctd}()}
+
+Other functions that read ctd data: 
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()}
 }
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{functions that read ctd data}
 \concept{things related to ctd data}

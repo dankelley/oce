@@ -17,13 +17,10 @@ All other names yield a return value equal to the value of the
 is not a recognized string.}
 }
 \value{
-A list with elements \code{unit}, an \code{\link{expression}},
+A list with elements \code{unit}, an \code{\link[=expression]{expression()}},
 and \code{scale}, a string.
 }
 \description{
-Convert a String to a Unit
-}
-\details{
 This function is not presently used by any \code{oce} functions, and is
 provided as a convenience function for users.
 }

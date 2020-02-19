@@ -1,5 +1,5 @@
 ---
-title: "Map Projections in Oce"
+title: "4. Using map projections"
 author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911)"
 date: "`r Sys.Date()`"
 output:
@@ -12,7 +12,7 @@ output:
     dpi: 72
     dev.args: list(pointsize=11)
 vignette: >
-  %\VignetteIndexEntry{Map projections in oce}
+  %\VignetteIndexEntry{4. Using map projections}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -50,6 +50,16 @@ problems on the oce developer's computers, including infinite loops and core
 dumps. See the help for the oce function `mapPlot` for a
 list of the available projections, and some advice on choosing them.
 
+There are far too many projections to illustrate here. See
+<http://dankelley.github.io/r/2015/04/03/oce-proj.html> for a blog item that
+provides examples of the available projections. Note that some have a problem
+with spurious horizontal lines. This can result from coastline segments that
+cross the edge of the plotting area, and getting rid of this is tricky enough
+to be the heart of the longest-lived bug in the `oce` issue list, i.e.
+<https://github.com/dankelley/oce/issues/388>. In some instances the function
+`coastlineCut()` can help, but it is provisional and subject to change.
+
+
 # Avoiding projections for limited-area plots
 
 For map views that span only a few tens or hundreds of kilometers, it may be
@@ -59,19 +69,18 @@ the plot.
 
 To see the need for setting the aspect ratio, consider the following view of
 eastern North America.
-shape.
 
 ```{r}
 library(oce)
-data(coastlineWorldFine, package="ocedata")
-lon <- coastlineWorldFine[["longitude"]]
-lat <- coastlineWorldFine[["latitude"]]
+data(coastlineWorld)
+lon <- coastlineWorld[["longitude"]]
+lat <- coastlineWorld[["latitude"]]
 par(mar=c(4, 4, 0.5, 0.5))
 plot(lon, lat, type="l",
-     xlim=c(-80, -50), ylim=c(40, 50))
+     xlim=c(-130, -50), ylim=c(40, 50))
 ```
 
-Readers familiar with this region will see immediately that the coastline
+Readers familiar with this region will notice that the coastline
 shapes are distorted.  The solution to this problem is to set
 the `asp` argument of `plot()` to a value that will compensate
 for meridional convergence at the poles, as below.
@@ -79,7 +88,7 @@ for meridional convergence at the poles, as below.
 ```{r}
 par(mar=c(4, 4, 0.5, 0.5))
 plot(lon, lat, type="l",
-     xlim=c(-80, -50), ylim=c(40, 50), asp=1/cos(45*pi/180))
+     xlim=c(-130, -50), ylim=c(40, 50), asp=1/cos(45*pi/180))
 ```
 
 Although the above approach is not exactly taxing, the effort of setting the
@@ -87,18 +96,17 @@ aspect ratio and setting line-type plots can be spared by using the generic
 `plot()` function for `coastline` objects, as follows.
 
 ```{r}
-plot(coastlineWorldFine,
-     longitudelim=c(-69, -57), latitudelim=c(43, 47))
+plot(coastlineWorld,
+     longitudelim=c(-130, -50), latitudelim=c(40, 50))
 ```
 
-Irrespective of shape distortion, the graphs shown above share a common
-stength: the axes for longitude and latitude are orthogonal, and the scale
-along each axis is linear. This makes it easy for readers to identify the
-location of features of the diagrams. However, using linear axes on large-scale
-views leads to distortions of coastline shapes and relative feature sizes, and
-motivates the use of map projections. (Readers who question the previous
-sentence are again encouraged to consult some of the references in the
-bibliography.)
+The graphs shown above share a common stength: the axes for longitude and
+latitude are orthogonal, and the scale along each axis is linear. This makes it
+easy for readers to identify the location of features of the diagrams. However,
+using linear axes on large-scale views leads to distortions of coastline shapes
+and relative feature sizes, and motivates the use of map projections. (Readers
+who question the previous sentence are again encouraged to consult some of the
+references in the bibliography.)
 
 # Choosing a map projection
 
@@ -115,7 +123,7 @@ data(coastlineWorld)
 The function used to produce maps with projections is
 `mapPlot`, and with default arguments it produces
 
-```{r fig.height=3}
+```{r fig.cap="World coastline with default (Molleweide) projection.", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld)
 ```
@@ -126,8 +134,9 @@ references in the bibliography), which is set by the default value
 the Robinson projection, which has been used by Rand McNally, the National
 Geographic Society, and other groups.
 
-**Exercise 1.** Plot the world with a Robinson projection, using gray shading
-for land.
+**Exercise 1.** Plot the world with a Robinson projection, using gray shading for land.
+
+**Exercise 2.** Plot an image of world topography with the Molleweide projection.
 
 ## Polar views
 
@@ -135,9 +144,9 @@ In both these views (and in most world-spanning projections) there is
 substantial distortion at high latitudes. The Stereographic projection offers a
 solution to this problem, e.g. in the following (which employs a trick on the
 latitude limit, specifying an image point on the other side of the planet, with
-the pole in between)
+the pole in between).
 
-```{r}
+```{r fig.cap="Polar view with stereographic projection.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld, longitudelim=c(-130, 50), latitudelim=c(60, 120),
        projection="+proj=stere +lat_0=90", col='gray')
@@ -149,7 +158,7 @@ pole. See the table in the documentation for `mapPlot` for a
 listing of arguments, and for citations to external resources that explain what
 they mean.
 
-**Exercise 2.** Draw a view of Antarctica and the Southern Ocean.
+**Exercise 3.** Draw a view of Antarctica and the Southern Ocean.
 
 
 ## Mid-latitude views
@@ -164,9 +173,9 @@ mapPlot(coastlineWorld,
          projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
 ```
 
-**Exercise 3.** Plot the eastern North Atlantic using a Mercator projection.
+**Exercise 4.** Plot the eastern North Atlantic using a Mercator projection.
 
-**Exercise 4.** Plot the eastern North Atlantic using an Albers Equal-Area
+**Exercise 5.** Plot the eastern North Atlantic using an Albers Equal-Area
 Conic projection.
 
 
@@ -185,22 +194,41 @@ Each of these requires a map to have been drawn first with
 enough to base-R functions that readers can decide how to accomplish
 common tasks.
 
-**Exercise 5.** Plot the world in Mollweide projection, superimposing sea
-surface temperature as contours.
+**Exercise 6.** Plot the world with the Goode projection, superimposing sea surface temperature as contours.
 
 
 
 # Solutions to exercises
 
-**Exercise 1.** Plot the world with a Robinson projection, using gray shading
-for land.
+**Exercise 1.** Plot the world with a Robinson projection, using gray shading for land.
 
-```{r fig.height=3}
+```{r fig.cap="World coastline with Robinson projection.", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
 par(mar=rep(0.5, 4))
 mapPlot(coastlineWorld, col="lightgray", projection="+proj=robin")
 ```
 
-**Exercise 2.** Draw a view of Antarctica and the Southern Ocean.
+**Exercise 2.** Plot an image of world topography with the Molleweide projection.
+
+Note that some adjustment of the margins is required to fit the colorbar.
+
+```{r fig.cap="World topography with Molleweide projection.", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
+par(mar=c(1.5, 1, 1.5, 1))
+data(topoWorld)
+topo <- decimate(topoWorld, 2) # coarsen grid: 4X faster plot
+lon <- topo[["longitude"]]
+lat <- topo[["latitude"]]
+z <- topo[["z"]]
+cm <- colormap(name="gmt_globe")
+drawPalette(colormap=cm)
+mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE, col="lightgray")
+mapImage(lon, lat, z, colormap=cm)
+```
+
+
+
+
+
+**Exercise 3.** Draw a view of Antarctica and the Southern Ocean.
 ```{r}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld, longitudelim=c(-180, 180), latitudelim=c(-130, -50),
@@ -208,16 +236,16 @@ mapPlot(coastlineWorld, longitudelim=c(-180, 180), latitudelim=c(-130, -50),
 ```
 
 
-**Exercise 3.** Plot the eastern North Atlantic using a Mercator projection.
+**Exercise 4.** Plot the eastern North Atlantic using a Mercator projection.
 
-```{r}
+```{r fig.cap="Eastern North Atlantic with Mercator projection.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
-mapPlot(coastlineWorldFine, col="lightgray",
+mapPlot(coastlineWorld, col="lightgray",
         projection="+proj=merc",
         longitudelim=c(-80, -40), latitudelim=c(20, 60))
 ```
 
-**Exercise 4.** Plot the eastern North Atlantic using an Albers Equal-Area
+**Exercise 5.** Plot the eastern North Atlantic using an Albers Equal-Area
 Conic projection.
 
 In the solution given below, note how the `lon_0` argument is set to be at the
@@ -232,21 +260,24 @@ diagram.
 
 
 
-```{r}
+```{r fig.cap="Eastern North Atlantic with Albers equal-area projection.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
-mapPlot(coastlineWorldFine, col="lightgray",
+mapPlot(coastlineWorld, col="lightgray",
         projection="+proj=aea +lat_1=30 +lat_2=50 +lon_0=-60",
         longitudelim=c(-80, -40), latitudelim=c(20, 60))
 ```
 
-**Exercise 5.** Plot the world in Mollweide projection, superimposing sea
-surface temperature as contours.
+**Exercise 6.** Plot the world with the Goode projection, superimposing sea surface temperature as contours.
 
-```{r fig.height=3}
+Note that the temperature is provided by the `ocedata` package.
+
+```{r fig.cap="SST contours with the Goode projection", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
 par(mar=rep(0.5, 4))
-data(levitus, package="ocedata")
-mapPlot(coastlineWorld, col="lightgray")
-mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+mapPlot(coastlineWorld, projection="+proj=goode", col="lightgray")
+if (requireNamespace("ocedata", quietly=TRUE)) {
+    data(levitus, package="ocedata")
+    mapContour(levitus[['longitude']], levitus[['latitude']], levitus[['SST']])
+}
 ```
 
 

@@ -7,43 +7,57 @@
 tidemVuf(t, j, latitude = NULL)
 }
 \arguments{
-\item{t}{The time in \code{POSIXct} format.  (It is \strong{very} important to
-use \code{tz="GMT"} in constructing \code{t}.)}
+\item{t}{a single time in \code{\link[=POSIXct]{POSIXct()}} format, with timezone \code{"UTC"}.}
 
-\item{j}{Indices of tidal constituents to use.}
+\item{j}{integer vector, giving indices of tidal constituents to use.}
 
-\item{latitude}{Optional numerical value containing the latitude in degrees North.}
+\item{latitude}{optional numerical value containing the latitude in degrees North.
+If not provided, \code{u} in the return value will be a vector consisting of
+repeated 0 value, and \code{f} will be a vector of repeated 1 value.}
 }
 \value{
-A \code{\link[base]{list}} containing
-items named \code{v}, \code{u} and \code{f} (see the \code{T_TIDE}
-documentation).
+A \code{list} containing
+items named \code{v}, \code{u} and \code{f} as described in the \code{T_TIDE} documentation,
+as well in Pawlowicz et al. (2002) and Foreman (1978).
 }
 \description{
-Do nodal modulation calculations for \code{\link{tidem}}. This function is based directly
-on \code{t_vuf} in the \code{T_TIDE} Matlab package [1].
+Carry out nodal modulation calculations for \code{\link[=tidem]{tidem()}}. This function is based directly
+on \code{t_vuf} in the \code{T_TIDE} Matlab package (Pawlowicz et al., 2002),
+which inherits from the Fortran code described by Foreman (1978).
 }
 \examples{
-tidemVuf(as.POSIXct("2008-01-22 18:50:24"), 43, 45.0)
+## Look up values for the M2 constituent in Halifax Harbour, Canada.
+data("tidedata")
+j  <- which(tidedata$const$name=="M2")
+tidemVuf(t=as.POSIXct("2008-01-22 18:50:24"), j=j, lat=44.63)
 
 }
 \references{
-1. Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+\itemize{
+\item Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
+Sciences, Patricia Bay.
+\item Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
 harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 Computers and Geosciences, 28, 929-937.
 }
+}
 \seealso{
-Other things related to tides: \code{\link{[[,tidem-method}},
-  \code{\link{[[<-,tidem-method}}, \code{\link{as.tidem}},
-  \code{\link{plot,tidem-method}},
-  \code{\link{predict.tidem}},
-  \code{\link{summary,tidem-method}},
-  \code{\link{tidedata}}, \code{\link{tidem-class}},
-  \code{\link{tidemAstron}}, \code{\link{tidem}},
-  \code{\link{webtide}}
+Other things related to tides: 
+\code{\link{[[,tidem-method}},
+\code{\link{[[<-,tidem-method}},
+\code{\link{as.tidem}()},
+\code{\link{plot,tidem-method}},
+\code{\link{predict.tidem}()},
+\code{\link{summary,tidem-method}},
+\code{\link{tidedata}},
+\code{\link{tidem-class}},
+\code{\link{tidemAstron}()},
+\code{\link{tidem}},
+\code{\link{webtide}()}
 }
 \author{
-Dan Kelley translated this from \code{t_astron} from the \code{T_TIDE}
-package.
+Dan Kelley translated this from the \code{t_vuf} function
+of the \code{T_TIDE} Matlab package (see Pawlowicz et al. 2002).
 }
 \concept{things related to tides}

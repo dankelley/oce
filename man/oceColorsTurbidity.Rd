@@ -16,12 +16,12 @@ A vector of color specificications.
 \description{
 Create a set of colors for displaying turbidity values,
 based on the scheme devised by Kristen M. Thyng
-in her \code{cmcolor} Python package, which is available at
-\url{https://github.com/kthyng/cmocean}. The
+in her \code{cmcolor} Python package
+(available at https://github.com/kthyng/cmocean). The
 color specifications were downloaded for use here
 on 2015-09-29. To avoid changes in \code{oce} scripts,
 more recent changes to \code{cmcolor} have not been
-tracked; \code{\link{oceColorsClosure}}
+tracked; \code{\link[=oceColorsClosure]{oceColorsClosure()}}
 has an example of how to incorporate such changes.
 }
 \examples{
@@ -31,23 +31,27 @@ imagep(volcano, col=oceColorsTurbidity(128),
 
 }
 \seealso{
-Other things related to colors: \code{\link{colormap}},
-  \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
-  \code{\link{oceColorsChlorophyll}},
-  \code{\link{oceColorsClosure}},
-  \code{\link{oceColorsDensity}},
-  \code{\link{oceColorsFreesurface}},
-  \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
-  \code{\link{oceColorsOxygen}},
-  \code{\link{oceColorsPAR}},
-  \code{\link{oceColorsPalette}},
-  \code{\link{oceColorsPhase}},
-  \code{\link{oceColorsSalinity}},
-  \code{\link{oceColorsTemperature}},
-  \code{\link{oceColorsTwo}},
-  \code{\link{oceColorsVelocity}},
-  \code{\link{oceColorsViridis}},
-  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
+Other things related to colors: 
+\code{\link{colormap}()},
+\code{\link{oceColors9B}()},
+\code{\link{oceColorsCDOM}()},
+\code{\link{oceColorsChlorophyll}()},
+\code{\link{oceColorsClosure}()},
+\code{\link{oceColorsDensity}()},
+\code{\link{oceColorsFreesurface}()},
+\code{\link{oceColorsGebco}()},
+\code{\link{oceColorsJet}()},
+\code{\link{oceColorsOxygen}()},
+\code{\link{oceColorsPAR}()},
+\code{\link{oceColorsPalette}()},
+\code{\link{oceColorsPhase}()},
+\code{\link{oceColorsSalinity}()},
+\code{\link{oceColorsTemperature}()},
+\code{\link{oceColorsTwo}()},
+\code{\link{oceColorsVelocity}()},
+\code{\link{oceColorsViridis}()},
+\code{\link{oceColorsVorticity}()},
+\code{\link{ocecolors}}
 }
 \author{
 Krysten M. Thyng (Python version), Dan Kelley (R transliteration)

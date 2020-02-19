@@ -1,14 +1,16 @@
 #' @title Create colors suitable for <%=colorItem%> fields
+#'
 #' @aliases oce.colors<%=colorItemUC%> oceColors<%=colorItemUC%>
+#'
 #' @description
 #' Create a set of colors for displaying <%=colorItem%> values,
 #' based on the scheme devised by Kristen M. Thyng
-#' in her \code{cmcolor} Python package, which is available at
-#' \url{https://github.com/kthyng/cmocean}. The
+#' in her `cmcolor` Python package
+#' (available at https://github.com/kthyng/cmocean). The
 #' color specifications were downloaded for use here
-#' on 2015-09-29. To avoid changes in \code{oce} scripts,
-#' more recent changes to \code{cmcolor} have not been
-#' tracked; \code{\link{oceColorsClosure}}
+#' on 2015-09-29. To avoid changes in `oce` scripts,
+#' more recent changes to `cmcolor` have not been
+#' tracked; [oceColorsClosure()]
 #' has an example of how to incorporate such changes.
 #'
 #' @return A vector of color specificications.

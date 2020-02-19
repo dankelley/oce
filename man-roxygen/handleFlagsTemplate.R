@@ -1,49 +1,62 @@
-#' @description Data-quality flags are stored in the \code{metadata}
-#' slot of \code{\link{oce-class}} objects in a
-#' \code{\link{list}} named \code{flags}.
+#' @description Data-quality flags are stored in the `metadata`
+#' slot of [oce-class] objects in a
+#' [list] named `flags`.
 #' The present function (a generic that has specialized versions
 #' for various data classes) provides a way to
-#' manipulate the core data based on
-#' the data-quality flags. For example, a common operation is to replace suspicious
-#' or erroneous data with \code{NA}.
+#' manipulate the contents of the `data` slot, based on
+#' such data-quality flags. For example, a common operation is to replace
+#' erroneous data with `NA`.
 #'
-#' If \code{metadata$flags} in the object supplied as the first argument
+#' If `metadata$flags` in the first argument
 #' is empty, then that object is returned, unaltered.
-#' Otherwise, \code{handleFlags} analyses the data-quality flags within
-#' the object, in relation to the \code{flags} argument, and interprets
-#' the \code{action} argument to select an action to be applied to matched
-#' data.
+#' Otherwise, `handleFlags` analyses the data-quality flags within
+#' the object, in context of the `flags` argument, and then interprets
+#' the `action` argument to select an action that is to be applied
+#' to the matched data.
 #'
-#' @param flags A \code{\link{list}} specifying flag values upon which
-#' actions will be taken. This can take two forms. In the first, the
+#' @param flags A [list] specifying flag values upon which
+#' actions will be taken. This can take two forms.
+#'
+#' * In the first form, the
 #' list has named elements each containing a vector of integers. For example,
-#' salinities flagged with values of 1 or 3 through 9 would be specified
-#' by \code{flags=list(salinity=c(1,3:9))}. Several data items can be specified,
-#' e.g. \code{flags=list(salinity=c(1,3:9), temperature=c(1,3:9))} indicates
+#' salinities flagged with values of 1 or 3:9 would be specified
+#' by `flags=list(salinity=c(1,3:9))`. Several data items can be specified,
+#' e.g. `flags=list(salinity=c(1,3:9), temperature=c(1,3:9))` indicates
 #' that the actions are to take place for both salinity and temperature.
-#' In the second form, \code{flags} is a list with unnamed vectors, and
-#' this means to apply the actions to all the data entries; thus,
-#' \code{flags=list(c(1,3:9))} means to apply not just to salinity and temperature,
-#' but also to everything else that is in the \code{data} slot. If \code{flags}
-#' is not provided, then \code{\link{defaultFlags}} is called, to try to
-#' determine a conservative default.
 #'
-#' @param actions An optional \code{\link{list}} that contains items with
-#' names that match those in the \code{flags} argument.  If \code{actions}
+#' * In the second form, `flags` is a list holding a single *unnamed* vector, and
+#' this means to apply the actions to *all* the data entries.  For example,
+#' `flags=list(c(1,3:9))` means to apply not just to salinity and temperature,
+#' but to everything within the `data` slot.
+#'
+#' If `flags` is not provided, then [defaultFlags()] is called, to try to
+#' determine a reasonable default.
+#'
+#' @param actions an optional [list] that contains items with
+#' names that match those in the `flags` argument.  If `actions`
 #' is not supplied, the default will be to set all values identified by
-#' \code{flags} to \code{NA}; this can also be specified by
-#' specifying \code{actions=list("NA")}. It is also possible to specify
+#' `flags` to `NA`; this can also be specified by
+#' specifying `actions=list("NA")`. It is also possible to specify
 #' functions that calculate replacement values. These are provided
-#' with \code{object} as the single argument, and must return a
+#' with `object` as the single argument, and must return a
 #' replacement for the data item in question.
-#' See \dQuote{Details} for the default that is used if \code{actions} is not supplied.
+#' See \dQuote{Details} for the default that is used if `actions` is not supplied.
+#'
+#' @param where an optional character value that permits the function to work with
+#' objects that store flags in e.g. `object@metadata$flags$where`
+#' instead of in `object@metadata$flags`, and data within
+#' `object@data$where` instead of within `object@data`. The
+#' default value of `NULL` means to look withing `object@metadata`
+#' itself, and this is the default within `oce`.  (The purpose of `where`
+#' is to make `oce` extensible by other packages, which may choose to store
+#' data two levels deep in the `data` slot.)
 #'
 #' @param debug An optional integer specifying the degree of debugging, with
 #' value 0 meaning to skip debugging and 1 or higher meaning to print some
 #' information about the arguments and the data. It is usually a good idea to set
 #' this to 1 for initial work with a dataset, to see which flags are being
 #' handled for each data item. If not supplied, this defaults to the value of
-#' \code{\link{getOption}("oceDebug")}.
+#' [`getOption`]`("oceDebug")`.
 #'
 #' @family functions relating to data-quality flags
 

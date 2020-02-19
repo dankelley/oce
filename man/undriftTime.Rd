@@ -7,7 +7,7 @@
 undriftTime(x, slowEnd = 0, tname = "time")
 }
 \arguments{
-\item{x}{an object of \code{\link{oce-class}}.}
+\item{x}{an \linkS4class{oce} object.}
 
 \item{slowEnd}{number of seconds to add to final instrument time, to get the
 correct time of the final sample.  This will be a positive number, for a

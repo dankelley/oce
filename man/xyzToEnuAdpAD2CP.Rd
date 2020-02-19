@@ -7,7 +7,7 @@
 xyzToEnuAdpAD2CP(x, declination = 0, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{An \code{adp} object created by \code{\link{read.adp.ad2cp}}.}
+\item{x}{an \linkS4class{adp} object created by \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}.}
 
 \item{declination}{IGNORED at present, but will be used at some later time.}
 
@@ -36,37 +36,53 @@ that is not tested yet. Plus, as noted, the declination is ignored.
 }
 
 \references{
-1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
-
-2. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018.
+\enumerate{
+\item Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
+\item Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018.
 https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
 }
+}
 \seealso{
-Other things related to adp data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}},
-  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
-  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
-  \code{\link{as.adp}}, \code{\link{beamName}},
-  \code{\link{beamToXyzAdpAD2CP}},
-  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
-  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
-  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}},
-  \code{\link{handleFlags,adp-method}},
-  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
-  \code{\link{read.adp.ad2cp}},
-  \code{\link{read.adp.nortek}},
-  \code{\link{read.adp.rdi}},
-  \code{\link{read.adp.sontek.serial}},
-  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
-  \code{\link{read.aquadoppHR}},
-  \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+Other things related to adp data: 
+\code{\link{[[,adp-method}},
+\code{\link{[[<-,adp-method}},
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{adp-class}},
+\code{\link{adpEnsembleAverage}()},
+\code{\link{adp_rdi.000}},
+\code{\link{adp}},
+\code{\link{as.adp}()},
+\code{\link{beamName}()},
+\code{\link{beamToXyzAdpAD2CP}()},
+\code{\link{beamToXyzAdp}()},
+\code{\link{beamToXyzAdv}()},
+\code{\link{beamToXyz}()},
+\code{\link{beamUnspreadAdp}()},
+\code{\link{binmapAdp}()},
+\code{\link{enuToOtherAdp}()},
+\code{\link{enuToOther}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{is.ad2cp}()},
+\code{\link{plot,adp-method}},
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.rdi}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{subset,adp-method}},
+\code{\link{subtractBottomVelocity}()},
+\code{\link{summary,adp-method}},
+\code{\link{toEnuAdp}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdp}()},
+\code{\link{xyzToEnu}()}
 }
 \author{
 Dan Kelley

@@ -4,26 +4,32 @@
 \alias{swSoundAbsorption}
 \title{Seawater sound absorption in dB/m}
 \usage{
-swSoundAbsorption(frequency, salinity, temperature, pressure, pH = 8,
-  formulation = c("fisher-simmons", "francois-garrison"))
+swSoundAbsorption(
+  frequency,
+  salinity,
+  temperature,
+  pressure,
+  pH = 8,
+  formulation = c("fisher-simmons", "francois-garrison")
+)
 }
 \arguments{
 \item{frequency}{The frequency of sound, in Hz.}
 
 \item{salinity}{either practical salinity (in which case \code{temperature}
-and \code{pressure} must be provided) \strong{or} an \code{oce} object, in
+and \code{pressure} must be provided) \emph{or} an \code{oce} object, in
 which case \code{salinity}, \code{temperature} (in the ITS-90 scale; see
 next item), etc. are inferred from the object.}
 
-\item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
+\item{temperature}{\emph{in-situ} temperature (\eqn{^\circ}{deg}C), defined
 on the ITS-90 scale.  This scale is used by GSW-style calculation (as
 requested by setting \code{eos="gsw"}), and is the value contained within
 \code{ctd} objects (and probably most other objects created with data
 acquired in the past decade or two). Since the UNESCO-style calculation is
 based on IPTS-68, the temperature is converted within the present function,
-using \code{\link{T68fromT90}}.}
+using \code{\link[=T68fromT90]{T68fromT90()}}.}
 
-\item{pressure}{pressure [dbar]}
+\item{pressure}{pressure (dbar)}
 
 \item{pH}{seawater pH}
 
@@ -39,7 +45,7 @@ Compute the sound absorption of seawater, in dB/m
 \details{
 Salinity and pH are ignored in this formulation.  Several formulae may be
 found in the literature, and they give results differing by 10 percent, as
-shown at [3] for example.  For this reason, it is likely that more
+shown in reference 3 for example.  For this reason, it is likely that more
 formulations will be added to this function, and entirely possible that the
 default may change.
 }
@@ -57,36 +63,52 @@ legend("topleft", lty=c("solid", "dashed"), legend=c("S=35", "S=0"))
 
 }
 \references{
-1. F. H. Fisher and V. P. Simmons, 1977.  Sound absorption in
+\enumerate{
+\item F. H. Fisher and V. P. Simmons, 1977.  Sound absorption in
 sea water.  J. Acoust. Soc. Am., 62(3), 558-564.
-
-2. R. E. Francois and G. R. Garrison, 1982.  Sound absorption based on
+\item R. E. Francois and G. R. Garrison, 1982.  Sound absorption based on
 ocean measurements.  Part II: Boric acid contribution and equation for total
 absorption.  J. Acoust. Soc. Am., 72(6):1879-1890.
-
-3. \url{http://resource.npl.co.uk/acoustics/techguides/seaabsorption/}
+\item \url{http://resource.npl.co.uk/acoustics/techguides/seaabsorption/}
+}
 }
 \seealso{
-Other functions that calculate seawater properties: \code{\link{T68fromT90}},
-  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
-  \code{\link{swAbsoluteSalinity}},
-  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
-  \code{\link{swBeta}}, \code{\link{swCSTp}},
-  \code{\link{swConservativeTemperature}},
-  \code{\link{swDepth}}, \code{\link{swDynamicHeight}},
-  \code{\link{swLapseRate}}, \code{\link{swN2}},
-  \code{\link{swPressure}}, \code{\link{swRho}},
-  \code{\link{swRrho}}, \code{\link{swSCTp}},
-  \code{\link{swSTrho}}, \code{\link{swSigma0}},
-  \code{\link{swSigma1}}, \code{\link{swSigma2}},
-  \code{\link{swSigma3}}, \code{\link{swSigma4}},
-  \code{\link{swSigmaTheta}}, \code{\link{swSigmaT}},
-  \code{\link{swSigma}}, \code{\link{swSoundSpeed}},
-  \code{\link{swSpecificHeat}}, \code{\link{swSpice}},
-  \code{\link{swTFreeze}}, \code{\link{swTSrho}},
-  \code{\link{swThermalConductivity}},
-  \code{\link{swTheta}}, \code{\link{swViscosity}},
-  \code{\link{swZ}}
+Other functions that calculate seawater properties: 
+\code{\link{T68fromT90}()},
+\code{\link{T90fromT48}()},
+\code{\link{T90fromT68}()},
+\code{\link{swAbsoluteSalinity}()},
+\code{\link{swAlphaOverBeta}()},
+\code{\link{swAlpha}()},
+\code{\link{swBeta}()},
+\code{\link{swCSTp}()},
+\code{\link{swConservativeTemperature}()},
+\code{\link{swDepth}()},
+\code{\link{swDynamicHeight}()},
+\code{\link{swLapseRate}()},
+\code{\link{swN2}()},
+\code{\link{swPressure}()},
+\code{\link{swRho}()},
+\code{\link{swRrho}()},
+\code{\link{swSCTp}()},
+\code{\link{swSTrho}()},
+\code{\link{swSigma0}()},
+\code{\link{swSigma1}()},
+\code{\link{swSigma2}()},
+\code{\link{swSigma3}()},
+\code{\link{swSigma4}()},
+\code{\link{swSigmaTheta}()},
+\code{\link{swSigmaT}()},
+\code{\link{swSigma}()},
+\code{\link{swSoundSpeed}()},
+\code{\link{swSpecificHeat}()},
+\code{\link{swSpice}()},
+\code{\link{swTFreeze}()},
+\code{\link{swTSrho}()},
+\code{\link{swThermalConductivity}()},
+\code{\link{swTheta}()},
+\code{\link{swViscosity}()},
+\code{\link{swZ}()}
 }
 \author{
 Dan Kelley

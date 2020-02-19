@@ -4,16 +4,11 @@
 #' Class to Store Current Meter Data
 #'
 #' This class stores current meter data, e.g. from an Interocean/S4 device
-#' or an Aanderaa/RCM device.  A file
-#' containing Interocean/S4 data may be read with \code{\link{read.cm}}.
-#' Alternatively, \code{\link{as.cm}} can be used to create \code{cm} objects.
-#' Objects of this class can be
-#' plotted with \code{\link{plot,cm-method}} or summarized with
-#' \code{\link{summary,cm-method}}.
+#' or an Aanderaa/RCM device.
 #'
 #' @templateVar class cm
 #'
-#' @templateVar dataExample The key items stored in this slot are \code{time}, \code{u} and \code{v}.
+#' @templateVar dataExample The key items stored in this slot are `time`, `u` and `v`.
 #'
 #' @templateVar metadataExample {}
 #'
@@ -23,23 +18,25 @@
 #'
 #' @template slot_get
 #'
-#' @author Dan Kelley
-#'
 #' @family things related to cm data
 #' @family classes provided by oce
+#'
+#' @author Dan Kelley
 setClass("cm", contains="oce")
 
-#' @title A CM Record
+#' A Current Meter (cm) Object
 #'
-#' @description
-#' The result of using \code{\link{read.cm}} on a current meter file holding measurements made with an
-#' Interocean S4 device.  See \code{\link{read.cm}} for some general cautionary notes on reading such
+#' The result of using [read.cm()] on a current meter file holding measurements made with an
+#' Interocean S4 device.  See [read.cm()] for some general cautionary notes on reading such
 #' files. Note that the salinities in this sample dataset are known to be incorrect, perhaps
 #' owing to a lack of calibration of an old instrument that had not been used in a long time.
 #'
 #' @name cm
+#'
 #' @docType data
+#'
 #' @usage data(cm)
+#'
 #' @examples
 #'\dontrun{
 #' library(oce)
@@ -51,8 +48,9 @@ setClass("cm", contains="oce")
 #' @family things related to cm data
 NULL
 
-#' @title Extract Something From a CM Object
-#' @param x A cm object, i.e. one inheriting from \code{\link{cm-class}}.
+#' Extract Something From a CM Object
+#'
+#' @param x a [cm-class] object.
 #'
 #' @template sub_subTemplate
 #'
@@ -63,9 +61,12 @@ setMethod(f="[[",
               callNextMethod()         # [[
           })
 
-#' @title Replace Parts of a CM Object
-#' @param x An \code{cm} object, i.e. inheriting from \code{\link{cm-class}}
+#' Replace Parts of a CM Object
+#'
+#' @param x a [cm-class] object.
+#'
 #' @template sub_subsetTemplate
+#'
 #' @family things related to cm data
 setMethod(f="[[<-",
           signature(x="cm", i="ANY", j="ANY"),
@@ -75,10 +76,9 @@ setMethod(f="[[<-",
 
 setMethod(f="initialize",
           signature="cm",
-          definition=function(.Object,
-                              time=NULL, u=NULL, v=NULL, units) {
-                              ## filename="(unknown)",
-                              ## sample, direction, conductivity, salinity, temperature, pressure) {
+          definition=function(.Object, time=NULL, u=NULL, v=NULL, units, ...) {
+              .Object <- callNextMethod(.Object, ...)
+              ## sample, direction, conductivity, salinity, temperature, pressure) {
               if (missing(units)) {
                   .Object@metadata$units <- list(u=list(unit=expression(m/s), scale=""),
                                                  v=list(unit=expression(m/s), scale=""))
@@ -106,22 +106,21 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-#' @title Summarize a CM Object
+#' Summarize a CM Object
 #'
-#' @description
-#' Summarizes some of the data in a \code{cm} object, presenting such information
+#' Summarizes some of the data in a `cm` object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
 #'
-#' @param object A \code{cm} object, i.e. one inheriting from \code{\link{cm-class}}.
+#' @param object A [cm-class] object.
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @seealso The documentation for \code{\link{cm-class}} explains the structure
-#' of \code{cm} objects, and also outlines the other functions dealing with them.
-#'
-#' @author Dan Kelley
+#' @seealso The documentation for the [cm-class] class explains the structure
+#' of `cm` objects, and also outlines the other functions dealing with them.
 #'
 #' @family things related to cm data
+#'
+#' @author Dan Kelley
 setMethod(f="summary",
           signature="cm",
           definition=function(object, ...) {
@@ -135,19 +134,18 @@ setMethod(f="summary",
           })
 
 
-#' @title Subset a CM Object
+#' Subset a CM Object
 #'
-#' @description
-#' This function is somewhat analogous to \code{\link{subset.data.frame}}.
+#' This function is somewhat analogous to [subset.data.frame()].
 #'
-#' @param x a \code{cm} object, i.e. inheriting from \code{\link{cm-class}}.
+#' @param x a [cm-class] object.
 #'
-#' @param subset a condition to be applied to the \code{data} portion of \code{x}.
+#' @param subset a condition to be applied to the `data` portion of `x`.
 #' See \sQuote{Details}.
 #'
 #' @param ... ignored.
 #'
-#' @return A new \code{cm} object.
+#' @return A new `cm` object.
 #'
 #' @examples
 #' library(oce)
@@ -155,9 +153,10 @@ setMethod(f="summary",
 #' plot(cm)
 #' plot(subset(cm, time < mean(range(cm[['time']]))))
 #'
-#' @author Dan Kelley
 #' @family things related to cm data
 #' @family functions that subset oce objects
+#'
+#' @author Dan Kelley
 setMethod(f="subset",
           signature="cm",
           definition=function(x, subset, ...) {
@@ -198,27 +197,39 @@ setMethod(f="subset",
 
 
 #' Coerce data into a CM object
-#' @param time A vector of times of observation, or an \code{oce} object that holds \code{time},
-#' in addition to either both \code{u} and \code{v}, or both \code{directionTrue}
-#' and \code{speedHorizontal}.
+#'
+#' @param time A vector of times of observation, or an `oce` object that holds `time`,
+#' in addition to either both `u` and `v`, or both `directionTrue`
+#' and `speedHorizontal`.
+#'
 #' @param u either a numerical vector containing the eastward component of velocity, in m/s,
-#' or an \code{oce} object that can can be coerced into a \code{cm} object. In the second
+#' or an `oce` object that can can be coerced into a `cm` object. In the second
 #' case, the other arguments to the present function are ignored.
+#'
 #' @param v vector containing the northward component of velocity in m/s.
+#'
 #' @param pressure vector containing pressure in dbar. Ignored if the first argument
-#' contains an \code{oce} object holding pressure.
+#' contains an `oce` object holding pressure.
+#'
 #' @param conductivity Optional vector of conductivity.
-#' Ignored if the first argument contains an \code{oce} object holding pressure.
+#' Ignored if the first argument contains an `oce` object holding pressure.
+#'
 #' @param salinity Optional vector of salinity, assumed to be Practical Salinity.
-#' Ignored if the first argument contains an \code{oce} object holding salinity
+#' Ignored if the first argument contains an `oce` object holding salinity
+#'
 #' @param temperature Optional vector of temperature.
-#' Ignored if the first argument contains an \code{oce} object holding temperature
+#' Ignored if the first argument contains an `oce` object holding temperature
+#'
 #' @param longitude Optional longitude in degrees East.
-#' Ignored if the first argument contains an \code{oce} object holding longitude.
+#' Ignored if the first argument contains an `oce` object holding longitude.
+#'
 #' @param latitude Latitude in degrees North.
-#' Ignored if the first argument contains an \code{oce} object holding latitude.
+#' Ignored if the first argument contains an `oce` object holding latitude.
+#'
 #' @param filename Optional source file name
+#'
 #' @template debugTemplate
+#'
 #' @family things related to cm data
 as.cm <- function(time, u=NULL, v=NULL,
                   pressure=NULL, conductivity=NULL, temperature=NULL, salinity=NULL,
@@ -326,47 +337,41 @@ as.cm <- function(time, u=NULL, v=NULL,
 }
 
 
-#' @title Read a CM file
+#' Read a CM file
 #'
-#' @description
-#' Read a current-meter data file, producing an object of \code{\link{cm-class}}.
+#' Read a current-meter data file, producing a [cm-class] object.
 #'
-#' @details
 #' There function has been tested on only a single file, and the data-scanning
 #' algorithm was based on visual inspection of that file.  Whether it will work
 #' generally is an open question. It should be noted that the sample file had
 #' several odd characteristics, some of which are listed below.
-#' \itemize{
 #'
-#'   \item  The file contained two columns named \code{"Cond"}, which was guessed
-#'   to stand for conductivity. Since only the first contained data, the second was
-#'   ignored, but this may not be the case for all files.
+#' * file contained two columns named `"Cond"`, which was guessed
+#' to stand for conductivity. Since only the first contained data, the second was
+#' ignored, but this may not be the case for all files.
 #'
-#'   \item The unit for \code{"Cond"} was stated in the file to be \code{"mS"},
-#'   which makes no sense, so the unit was assumed to be mS/cm.
+#' * The unit for `"Cond"` was stated in the file to be `"mS"`,
+#' which makes no sense, so the unit was assumed to be mS/cm.
 #'
-#'   \item The file contained a column named \code{"T-Temp"}, which is not
-#'   something the author has seen in his career. It was assumed to stand for
-#'   in-situ temperature.
+#' * The file contained a column named `"T-Temp"`, which is not
+#' something the author has seen in his career. It was assumed to stand for
+#' in-situ temperature.
 #'
-#'   \item The file contained a column named \code{"Depth"}, which is not something
-#'   an instrument can measure. Presumably it was calculated from pressure (with
-#'   what atmospheric offset, though?) and so pressure was inferred from it using
-#'   \code{\link{swPressure}}.
+#' * The file contained a column named `"Depth"`, which is not something
+#' an instrument can measure. Presumably it was calculated from pressure (with
+#' what atmospheric offset, though?) and so pressure was inferred from it using
+#' [swPressure()].
 #'
-#'   \item The file contained several columns that lacked names. These were
-#'   ignored.
+#' * The file contained several columns that lacked names. These were ignored.
 #'
-#'   \item The file contained several columns that seem to be derived from the
-#'   actual measured data, such as \code{"Speed"}, \code{"Dir"}, \code{"N-S Dist"},
-#'   etc. These are ignored.
+#' * The file contained several columns that seem to be derived from the
+#' actual measured data, such as `"Speed"`, `"Dir"`, `"N-S Dist"`,
+#' etc. These are ignored.
 #'
-#'   \item The file contained several columns that were basically a mystery to the
-#'   author, e.g. \code{"Hx"}, \code{"Hy"}, \code{"Vref"}, etc. These were ignored.
+#' * The file contained several columns that were basically a mystery to the
+#' author, e.g. `"Hx"`, `"Hy"`, `"Vref"`, etc. These were ignored.
 #'
-#' }
-#'
-#' Based on such considerations, \code{read.cm.s4()} reads only the columns that
+#' Based on such considerations, [read.cm()] reads only the columns that
 #' were reasonably well-understood based on the sample file. Users who need more
 #' columns should contact the author. And a user who could produce a document
 #' explaining the data format would be especially appreciated!
@@ -375,18 +380,18 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' load.
 #'
 #' @param from index number of the first measurement to be read, or the time of
-#' that measurement, as created with \code{\link{as.POSIXct}} (hint: use
-#' \code{tz="UTC"}).
+#' that measurement, as created with [as.POSIXct()] (hint: use
+#' `tz="UTC"`).
 #'
 #' @param to indication of the last measurement to read, in a format matching that
-#' of \code{from}.
+#' of `from`.
 #'
 #' @param by an indication of the stride length to use while walking through the
-#' file. If this is an integer, then \code{by-1} measurements are skipped between
+#' file. If this is an integer, then `by-1` measurements are skipped between
 #' each pair of profiles that is read. This may not make much sense, if the data
-#' are not equi-spaced in time.  If \code{by} is a string representing a time
+#' are not equi-spaced in time.  If `by` is a string representing a time
 #' interval, in colon-separated format, then this interval is divided by the
-#' sampling interval, to get the stride length. \emph{BUG:} if the data are not
+#' sampling interval, to get the stride length. *BUG:* if the data are not
 #' equi-spaced, then odd results will occur.
 #'
 #' @param longitude optional signed number indicating the longitude in degrees
@@ -407,29 +412,28 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' parameter is typically only provided for internal calls; the default that it
 #' provides is better for normal calls by a user.
 #'
-#' @param ... Optional arguments passed to plotting functions.
+#' @return An [cm-class] object.
 #'
-#' @return An object of \code{\link{cm-class}}.
-#' The \code{data} slot will contain all the data in the file, with names
+#' The `data` slot will contain all the data in the file, with names
 #' determined from the tokens in line 3 in that file, passed through
-#' \code{\link{make.names}}, except that
-#' \code{Vnorth} is renamed \code{v} (after conversion from cm/s to m/s),
-#' \code{Veast} is renamed \code{u} (after conversion from cm/s to m/s),
-#' \code{Cond} is renamed \code{conductivity},
-#' \code{T.Temp} is renamed \code{temperature}
+#' [make.names()], except that
+#' `Vnorth` is renamed `v` (after conversion from cm/s to m/s),
+#' `Veast` is renamed `u` (after conversion from cm/s to m/s),
+#' `Cond` is renamed `conductivity`,
+#' `T.Temp` is renamed `temperature`
 #' and
-#' \code{Sal} is renamed \code{salinity}, and a new
-#' column named \code{time} (a POSIX time) is constructed
+#' `Sal` is renamed `salinity`, and a new
+#' column named `time` (a POSIX time) is constructed
 #' from the information in the file header, and another named
-#' \code{pressure} is constructed from the column named \code{Depth}.
+#' `pressure` is constructed from the column named `Depth`.
 #' At least in the single file studied in the creation of this function,
 #' there are some columns that are unnamed in line 3 of the header;
-#' these yield data items with names \code{X}, \code{X.1}, etc.
+#' these yield data items with names `X`, `X.1`, etc.
 #'
 #' @section Historical note:
 #' Prior to late July, 2016, the direction of current flow was stored in the
 #' return value, but it is no longer stored, since it can be derived from the
-#' \code{u} and \code{v} values.
+#' `u` and `v` values.
 #'
 #' @examples
 #'\dontrun{
@@ -439,20 +443,16 @@ as.cm <- function(time, u=NULL, v=NULL,
 #'   plot(cm)
 #'}
 #'
+#' @family things related to cm data
 #'
 #' @author Dan Kelley
-#' @family things related to cm data
-##
-## @references
-## Culkin, F., and Norman D. Smith, 1980. Determination of the concentration of
-## potassium chloride solution having the same electrical conductivity, at 15 C and
-## infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
-## 19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering}, \bold{5}, pp 22-23.
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     type=c("s4"),
                     longitude=NA, latitude=NA,
-                    debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
+                    debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     oceDebug(debug, "read.cm(file=\"", file,
               "\", from=", format(from),
               ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, "type=", type, ", ...) {\n", sep="", unindent=1)
@@ -460,15 +460,17 @@ read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (type == "s4")
         read.cm.s4(file=file, from=from, to=to, by=by, tz=tz,
                    longitude=longitude, latitude=latitude,
-                   debug=debug-1, monitor=monitor, processingLog=processingLog, ...)
+                   debug=debug-1, monitor=monitor, processingLog=processingLog)
     else
         stop("unknown type of current meter")
 }
 
 read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                        longitude=NA, latitude=NA,
-                       debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
+                       debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     if (debug > 1)
         debug <- 1
     oceDebug(debug, "read.cm.s4(file=\"", file,
@@ -610,7 +612,6 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         if (length(grep("^X[.0-9]*$", dname)))
             res@metadata$dataNamesOriginal[[dname]] <- "-"
     }
-    message("B")
     res@data <- d
     ## res <- new("cm", sample=as.numeric(sample[keep]), time=time[keep],
     ##            u=u[keep], v=v[keep], direction=direction[keep],
@@ -641,50 +642,46 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' Creates a multi-panel summary plot of data measured by a current meter.
 #'
-#' The panels are controlled by the \code{which} argument, as follows.
+#' The panels are controlled by the `which` argument, as follows.
 #'
-#' \itemize{
+#' * `which=1` or `which="u"` for a time-series graph of eastward
+#' velocity, `u`, as a function of time.
 #'
-#'   \item \code{which=1} or \code{which="u"} for a time-series graph of eastward
-#'   velocity, \code{u}, as a function of time.
+#' * `which=2` or `which="v"` for a time-series graph of
+#' northward velocity, `u`, as a function of time.
 #'
-#'   \item \code{which=2} or \code{which="v"} for a time-series graph of
-#'   northward velocity, \code{u}, as a function of time.
+#' * `which=3` or `"progressive vector"` for progressive-vector
+#' plot
 #'
-#'   \item \code{which=3} or \code{"progressive vector"} for progressive-vector
-#'   plot
+#' * `which=4` or `"uv"` for a plot of `v` versus `u`.
+#' (Dots are used for small datasets, and smoothScatter for large ones.)
 #'
-#'   \item \code{which=4} or \code{"uv"} for a plot of \code{v} versus \code{u}.
-#'   (Dots are used for small datasets, and smoothScatter for large ones.)
+#' * `which=5` or `"uv+ellipse"` as the `"uv"` case, but
+#' with an added indication of the tidal ellipse, calculated from the eigen
+#' vectors of the covariance matrix.
 #'
-#'   \item \code{which=5} or \code{"uv+ellipse"} as the \code{"uv"} case, but
-#'   with an added indication of the tidal ellipse, calculated from the eigen
-#'   vectors of the covariance matrix.
+#' * `which=6` or `"uv+ellipse+arrow"` as the `"uv+ellipse"`
+#' case, but with an added arrow indicating the mean current.
 #'
-#'   \item \code{which=6} or \code{"uv+ellipse+arrow"} as the \code{"uv+ellipse"}
-#'   case, but with an added arrow indicating the mean current.
+#' * `which=7` or `"pressure"` for pressure
 #'
-#'   \item \code{which=7} or \code{"pressure"} for pressure
+#' * `which=8` or `"salinity"` for salinity
 #'
-#'   \item \code{which=8} or \code{"salinity"} for salinity
+#' * `which=9` or `"temperature"` for temperature
 #'
-#'   \item \code{which=9} or \code{"temperature"} for temperature
+#' * `which=10` or `"TS"` for a TS diagram
 #'
-#'   \item \code{which=10} or \code{"TS"} for a TS diagram
+#' * `which=11` or `"conductivity"` for conductivity
 #'
-#'   \item \code{which=11} or \code{"conductivity"} for conductivity
+#' * `which=20` or `"direction"` for the direction of flow
 #'
-#'   \item \code{which=20} or \code{"direction"} for the direction of flow
-#'
-#' }
-#'
-#' @param x an \code{cm} object, e.g. as read by \code{\link{read.cm}}.
+#' @param x a [cm-class] object.
 #'
 #' @param which list of desired plot types.  These are graphed in panels running
 #' down from the top of the page.  See \dQuote{Details} for the meanings of various
-#' values of \code{which}.
+#' values of `which`.
 #'
-#' @param type type of plot, as for \code{\link{plot}}.
+#' @param type type of plot, as for [plot()].
 #'
 #' @param drawTimeRange boolean that applies to panels with time as the horizontal
 #' axis, indicating whether to draw the time range in the top-left margin of the
@@ -693,22 +690,22 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @param drawZeroLine boolean that indicates whether to draw zero lines on
 #' velocities.
 #'
-#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for
-#' \code{par(mar)}, computed from this.  The default is tighter than the R default,
+#' @param mgp 3-element numerical vector to use for `par(mgp)`, and also for
+#' `par(mar)`, computed from this.  The default is tighter than the R default,
 #' in order to use more space for the data and less for the axes.
 #'
-#' @param mar value to be used with \code{\link{par}("mar")}.
+#' @param mar value to be used with [`par`]`("mar")`.
 #'
 #' @param small an integer indicating the size of data set to be considered
 #' "small", to be plotted with points or lines using the standard
-#' \code{\link{plot}} function.  Data sets with more than \code{small} points will
-#' be plotted with \code{\link{smoothScatter}} instead.
+#' [plot()] function.  Data sets with more than `small` points will
+#' be plotted with [smoothScatter()] instead.
 #'
 #' @param main main title for plot, used just on the top panel, if there are
 #' several panels.
 #'
-#' @param tformat optional argument passed to \code{\link{oce.plot.ts}}, for plot
-#' types that call that function.  (See \code{\link{strptime}} for the format
+#' @param tformat optional argument passed to [oce.plot.ts()], for plot
+#' types that call that function.  (See [strptime()] for the format
 #' used.)
 #'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate amount
@@ -722,11 +719,12 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'   summary(cm)
 #'   plot(cm)
 #'
-#' @author Dan Kelley
-#'
 #' @family functions that plot oce data
 #' @family things related to cm data
+#'
 #' @aliases plot.cm
+#'
+#' @author Dan Kelley
 setMethod(f="plot",
           signature=signature("cm"),
           definition=function(x,
@@ -895,3 +893,4 @@ setMethod(f="plot",
               oceDebug(debug, "} # plot.cm()\n", unindent=1)
               invisible()
           })
+

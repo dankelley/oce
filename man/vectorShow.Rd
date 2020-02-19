@@ -4,28 +4,42 @@
 \alias{vectorShow}
 \title{Show some values from a vector}
 \usage{
-vectorShow(v, msg, digits = 5, n = 2L)
+vectorShow(v, msg, postscript, digits = 5, n = 2L)
 }
 \arguments{
 \item{v}{the vector.}
 
-\item{msg}{a message to show, introducing the vector.  If not provided, then
-a message is created from \code{v}.}
+\item{msg}{optional character value indicating a message to show,
+introducing the vector.  If not provided, then
+a message is created from \code{v}. If \code{msg} is a non-empty string,
+then that string is pasted together with a colon (unless \code{msg} already
+contains a colon), before pasting a summary of data values.}
+
+\item{postscript}{optional character value indicating an optional message
+to append at the end of the return value.}
 
 \item{digits}{for numerical values of \code{v}, this is the number of digits
-to use, in formatting the numbers with \code{\link{format}}; otherwise,
+to use, in formatting the numbers with \code{\link[=format]{format()}}; otherwise,
 \code{digits} is ignored.}
 
-\item{n}{number of elements to at start and end. If \code{n}
+\item{n}{number of elements to show at start and end. If \code{n}
 is negative, then all the elements are shown.}
 }
 \value{
-A string, suitable for using in \code{\link{cat}} or
-\code{\link{oceDebug}}.
+A string ending in a newline character, suitable for
+display with \code{\link[=cat]{cat()}} or \code{\link[=oceDebug]{oceDebug()}}.
 }
 \description{
-This is similar to \code{\link{str}}, but it shows data at the first and
+This is similar to \code{\link[=str]{str()}}, but it shows data at the first and
 last of the vector, which can be quite helpful in debugging.
+}
+\examples{
+vectorShow(pi)
+vectorShow(volcano)
+knot2mps <- 0.5144444 
+vectorShow(knot2mps, postscript="knots per m/s")
+vectorShow("January", msg="The first month is")
+
 }
 \author{
 Dan Kelley

@@ -4,27 +4,36 @@
 \alias{handleFlags}
 \title{Handle flags in oce objects}
 \usage{
-handleFlags(object, flags = NULL, actions = NULL,
-  debug = getOption("oceDebug"))
+handleFlags(
+  object,
+  flags = NULL,
+  actions = NULL,
+  where = NULL,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{object}{An object of \code{\link{oce}}.}
+\item{object}{an \linkS4class{oce} object.}
 
-\item{flags}{A \code{\link{list}} specifying flag values upon which
-actions will be taken. This can take two forms. In the first, the
+\item{flags}{A \link{list} specifying flag values upon which
+actions will be taken. This can take two forms.
+\itemize{
+\item In the first form, the
 list has named elements each containing a vector of integers. For example,
-salinities flagged with values of 1 or 3 through 9 would be specified
+salinities flagged with values of 1 or 3:9 would be specified
 by \code{flags=list(salinity=c(1,3:9))}. Several data items can be specified,
 e.g. \code{flags=list(salinity=c(1,3:9), temperature=c(1,3:9))} indicates
 that the actions are to take place for both salinity and temperature.
-In the second form, \code{flags} is a list with unnamed vectors, and
-this means to apply the actions to all the data entries; thus,
+\item In the second form, \code{flags} is a list holding a single \emph{unnamed} vector, and
+this means to apply the actions to \emph{all} the data entries.  For example,
 \code{flags=list(c(1,3:9))} means to apply not just to salinity and temperature,
-but also to everything else that is in the \code{data} slot. If \code{flags}
-is not provided, then \code{\link{defaultFlags}} is called, to try to
-determine a conservative default.}
+but to everything within the \code{data} slot.
+}
 
-\item{actions}{An optional \code{\link{list}} that contains items with
+If \code{flags} is not provided, then \code{\link[=defaultFlags]{defaultFlags()}} is called, to try to
+determine a reasonable default.}
+
+\item{actions}{an optional \link{list} that contains items with
 names that match those in the \code{flags} argument.  If \code{actions}
 is not supplied, the default will be to set all values identified by
 \code{flags} to \code{NA}; this can also be specified by
@@ -34,51 +43,63 @@ with \code{object} as the single argument, and must return a
 replacement for the data item in question.
 See \dQuote{Details} for the default that is used if \code{actions} is not supplied.}
 
+\item{where}{an optional character value that permits the function to work with
+objects that store flags in e.g. \code{object@metadata$flags$where}
+instead of in \code{object@metadata$flags}, and data within
+\code{object@data$where} instead of within \code{object@data}. The
+default value of \code{NULL} means to look withing \code{object@metadata}
+itself, and this is the default within \code{oce}.  (The purpose of \code{where}
+is to make \code{oce} extensible by other packages, which may choose to store
+data two levels deep in the \code{data} slot.)}
+
 \item{debug}{An optional integer specifying the degree of debugging, with
 value 0 meaning to skip debugging and 1 or higher meaning to print some
 information about the arguments and the data. It is usually a good idea to set
 this to 1 for initial work with a dataset, to see which flags are being
 handled for each data item. If not supplied, this defaults to the value of
-\code{\link{getOption}("oceDebug")}.}
+\code{\link{getOption}}\code{("oceDebug")}.}
 }
 \description{
 Data-quality flags are stored in the \code{metadata}
-slot of \code{\link{oce-class}} objects in a
-\code{\link{list}} named \code{flags}.
+slot of \linkS4class{oce} objects in a
+\link{list} named \code{flags}.
 The present function (a generic that has specialized versions
 for various data classes) provides a way to
-manipulate the core data based on
-the data-quality flags. For example, a common operation is to replace suspicious
-or erroneous data with \code{NA}.
+manipulate the contents of the \code{data} slot, based on
+such data-quality flags. For example, a common operation is to replace
+erroneous data with \code{NA}.
 
-If \code{metadata$flags} in the object supplied as the first argument
+If \code{metadata$flags} in the first argument
 is empty, then that object is returned, unaltered.
 Otherwise, \code{handleFlags} analyses the data-quality flags within
-the object, in relation to the \code{flags} argument, and interprets
-the \code{action} argument to select an action to be applied to matched
-data.
+the object, in context of the \code{flags} argument, and then interprets
+the \code{action} argument to select an action that is to be applied
+to the matched data.
 }
 \details{
 Each specialized variant of this function has its own defaults
 for \code{flags} and \code{actions}.
 }
 \seealso{
-Other functions relating to data-quality flags: \code{\link{defaultFlags}},
-  \code{\link{handleFlags,adp-method}},
-  \code{\link{handleFlags,argo-method}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{initializeFlagScheme,oce-method}},
-  \code{\link{initializeFlagScheme,section-method}},
-  \code{\link{initializeFlagSchemeInternal}},
-  \code{\link{initializeFlagScheme}},
-  \code{\link{initializeFlags,adp-method}},
-  \code{\link{initializeFlags,oce-method}},
-  \code{\link{initializeFlagsInternal}},
-  \code{\link{initializeFlags}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
+Other functions relating to data-quality flags: 
+\code{\link{defaultFlags}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{handleFlags,argo-method}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{handleFlags,oce-method}},
+\code{\link{handleFlags,section-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{initializeFlagScheme,oce-method}},
+\code{\link{initializeFlagScheme,section-method}},
+\code{\link{initializeFlagSchemeInternal}()},
+\code{\link{initializeFlagScheme}()},
+\code{\link{initializeFlags,adp-method}},
+\code{\link{initializeFlags,oce-method}},
+\code{\link{initializeFlagsInternal}()},
+\code{\link{initializeFlags}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{setFlags,ctd-method}},
+\code{\link{setFlags,oce-method}},
+\code{\link{setFlags}()}
 }
 \concept{functions relating to data-quality flags}

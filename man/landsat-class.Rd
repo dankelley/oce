@@ -6,7 +6,7 @@
 \title{Class to Store landsat Data}
 \description{
 This class holds landsat data. Such are available at several
-websites (e.g. [1]).
+websites (e.g. reference 1).
 Although the various functions may work for other satellites, the
 discussion here focusses on Landsat 8 and Landsat 7.
 }
@@ -15,47 +15,61 @@ discussion here focusses on Landsat 8 and Landsat 7.
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{landsat} objects is a
-\code{\link{list}} containing the main data for the object.
+\link{list} containing the main data for the object.
 {}}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{landsat} objects is a \code{\link{list}} containing
+for \code{landsat} objects is a \link{list} containing
 information about the \code{data} or about the object itself.
 {}}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{landsat} objects is a
-\code{\link{list}} with entries describing the creation and evolution
+\link{list} with entries describing the creation and evolution
 of the object. The contents are updated by various \code{oce} functions to
 keep a record of processing steps.  Object summaries and
-\code{\link{processingLogShow}} both display the log.}
+\code{\link[=processingLogShow]{processingLogShow()}} both display the log.}
 }}
 
 \section{Modifying slot contents}{
 
 
 Although the \code{[[<-} operator may permit modification of the contents
-of \code{landsat} objects (see \code{\link{[[<-,landsat-method}}),
-it is better to use \code{\link{oceSetData}}
-and \code{\link{oceSetMetadata}}, because that will save an entry
-in the \code{processingLog} to describe the change.
+of \linkS4class{landsat} objects (see \code{\link{[[<-,landsat-method}}),
+it is better to use \code{\link[=oceSetData]{oceSetData()}} and \code{\link[=oceSetMetadata]{oceSetMetadata()}},
+because those functions save an entry in the \code{processingLog}
+that describes the change.
 }
 
 \section{Retrieving slot contents}{
 
 
-The full contents of the \code{data} and \code{metadata} slots of a \code{landsat}
-object named \code{landsat} may be retrieved in the standard R way. For example,
-\code{slot(landsat, "data")} and \code{slot(landsat, "metadata")} return
-the \code{data} and \code{metadata} slots, respectively. The
-\code{\link{[[,landsat-method}} operator can also be used to access slots,
-with \code{landsat[["data"]]} and \code{landsat[["metadata"]]}, respectively.
-Furthermore, \code{\link{[[,landsat-method}} can be used to retrieve
-named items (and potentially some derived items) within the
-\code{metadata} and \code{data} slots, the former taking precedence
-over the latter in the lookup. It is also possible
-to find items more directly, using \code{\link{oceGetData}} and
-\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+The full contents of the \code{data} and \code{metadata} slots of a \linkS4class{landsat}
+object may be retrieved in the standard R way using \code{\link[=slot]{slot()}}. For
+example \code{slot(o,"data")} returns the \code{data} slot of an object named \code{o},
+and similarly \code{slot(o,"metadata")} returns
+the \code{metadata} slot.
+
+The slots may also be obtained with the \code{\link{[[,landsat-method}}
+operator, as e.g. \code{o[["data"]]} and \code{o[["metadata"]]}, respectively.
+
+The \code{\link{[[,landsat-method}} operator can also
+be used to retrieve items from within the \code{data} and \code{metadata} slots.
+For example, \code{o[["temperature"]]} can be used to retrieve temperature
+from an object containing that quantity. The rule is that a named
+quantity is sought first within the object's \code{metadata} slot,
+with the \code{data} slot being checked only if \code{metadata} does not
+contain the item. This \code{[[} method can also be used to get
+certain derived quantities, if the object contains sufficient
+information to calculate them. For example, an object that holds
+(practical) salinity, temperature and pressure, along with
+longitude and latitudee, has sufficient information to compute
+Absolute Salinity, and so \code{o[["SA"]]} will yield the
+calculated Absolute Salinity.
+
+It is also possible to find items more directly, using \code{\link[=oceGetData]{oceGetData()}} and
+\code{\link[=oceGetMetadata]{oceGetMetadata()}}, but neither of these functions can
+retrieve derived items.
 }
 
 \section{Data storage}{
@@ -75,8 +89,8 @@ Landsat data files typically occupy approximately a
 gigabyte of storage.  That means that corresponding Oce objects are about
 the same size, and this can pose significant problems on computers with
 less than 8GB of memory.  It is sensible to specify bands of interest when
-reading data with \code{\link{read.landsat}}, and also to use
-\code{\link{landsatTrim}} to isolate geographical regions that need
+reading data with \code{\link[=read.landsat]{read.landsat()}}, and also to use
+\code{\link[=landsatTrim]{landsatTrim()}} to isolate geographical regions that need
 processing.
 
 Experts may need to get direct access to the data, and this is easy because
@@ -90,7 +104,7 @@ object would have the same items, but \code{msb} would be just the value
 \code{0x00}.
 
 Derived bands, which may be added to a landsat object with
-\code{\link{landsatAdd}}, are not stored in byte matrices.  Instead they
+\code{\link[=landsatAdd]{landsatAdd()}}, are not stored in byte matrices.  Instead they
 are stored in numerical matrices, which means that they use 4X more storage
 space for Landsat-8 images, and 8X more storage space for other satellites.
 A computer needs at least 8GB of RAM to work with such data.
@@ -99,7 +113,7 @@ A computer needs at least 8GB of RAM to work with such data.
 \section{Landsat 8}{
 
 
-The Landsat 8 satellite has 11 frequency bands, listed below (see [2]).
+The Landsat 8 satellite has 11 frequency bands, listed below (see reference 2]).
 \preformatted{
 .------------------------------------------------------------------------------.
 | Band | Band                      | Band         | Wavelength    | Resolution |
@@ -122,16 +136,16 @@ In addition to the above, setting \code{band="terralook"} may be used as
 an abbreviation for \code{band=c("red", "green", "nir")}.
 
 Band 8 is panchromatic, and has the highest resolution.  For convenience of
-programming, \code{\link{read.landsat}} subsamples the \code{tirs1} and
+programming, \code{\link[=read.landsat]{read.landsat()}} subsamples the \code{tirs1} and
 \code{tirs2} bands to the 30m resolution of the other bands.  See Reference
-[3] for information about the evolution of Landsat 8 calibration
+3 for information about the evolution of Landsat 8 calibration
 coefficients, which as of summer 2014 are still subject to change.
 }
 
 \section{Landsat 7}{
 
 
-Band information is as follows (from [8]).  The names are not official, but
+Band information is as follows (from reference 8).  The names are not official, but
 are set up to roughly correspond with Landsat-8 names, according to wavelength.
 An exception is the Landsat-7 bands named \code{tirs1} and \code{tirs2}, which
 are at two different gain settings, with identical wavelength span for
@@ -158,56 +172,49 @@ and \code{tirs2} combined.  This may seem confusing, but it lets code like
 }
 
 \references{
-1. See the USGS "glovis" web site.
-
-2. see landsat.gsfc.nasa.gov/?page_id=5377
-
-3. see landsat.usgs.gov/calibration_notices.php
-
-4. \url{http://dankelley.github.io/r/2014/07/01/landsat.html}
-
-5. \url{http://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/}
-
-6. see landsat.usgs.gov/Landsat8_Using_Product.php
-
-7. see landsathandbook.gsfc.nasa.gov/pdfs/Landsat7_Handbook.pdf
-
-8. see landsat.usgs.gov/band_designations_landsat_satellites.php
-
-9. Yu, X. X. Guo and Z. Wu., 2014. Land Surface Temperature Retrieval from
+\enumerate{
+\item See the USGS "glovis" web site.
+\item see landsat.gsfc.nasa.gov/?page_id=5377
+\item see landsat.usgs.gov/calibration_notices.php
+\item \url{http://dankelley.github.io/r/2014/07/01/landsat.html}
+\item \url{http://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/}
+\item see landsat.usgs.gov/Landsat8_Using_Product.php
+\item see landsathandbook.gsfc.nasa.gov/pdfs/Landsat7_Handbook.pdf
+\item see landsat.usgs.gov/band_designations_landsat_satellites.php
+\item Yu, X. X. Guo and Z. Wu., 2014. Land Surface Temperature Retrieval from
 Landsat 8 TIRS-Comparison between Radiative Transfer Equation-Based Method,
 Split Window Algorithm and Single Channel Method, \emph{Remote Sensing}, 6,
 9829-9652.  \url{http://www.mdpi.com/2072-4292/6/10/9829}
-
-10. Rajeshwari, A., and N. D. Mani, 2014.  Estimation of land surface
-temperature of Dindigul district using Landsat 8 data.  \emph{International
-    Journal of Research in Engineering and Technology}, 3(5), 122-126.
-\code{http://www.academia.edu/7655089/ESTIMATION_OF_LAND_SURFACE_TEMPERATURE_OF_DINDIGUL_DISTRICT_USING_LANDSAT_8_DATA}
-
-11. Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
+\item Rajeshwari, A., and N. D. Mani, 2014.  Estimation of land surface
+temperature of Dindigul district using Landsat 8 data. \emph{International
+Journal of Research in Engineering and Technology}, 3(5), 122-126.
+\verb{http://www.academia.edu/7655089/ESTIMATION_OF_LAND_SURFACE_TEMPERATURE_OF_DINDIGUL_DISTRICT_USING_LANDSAT_8_DATA}
+\item Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
 Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.
 \url{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
 }
+}
 \seealso{
-Data from AMSR satellites are handled with \code{\link{amsr-class}}.
+Data from AMSR satellites are handled with \linkS4class{amsr}.
 
-A file containing Landsat data may be read with \code{\link{read.landsat}} or
-\code{\link{read.oce}}, and one such file is provided by the \CRANpkg{ocedata}
+A file containing Landsat data may be read with \code{\link[=read.landsat]{read.landsat()}} or
+\code{\link[=read.oce]{read.oce()}}, and one such file is provided by the \CRANpkg{ocedata}
 package as a dataset named \code{landsat}.
 
-Plots may be made with \code{\link{plot,landsat-method}}.  Since plotting can be quite
+Plots may be made with \code{\link[=plot,landsat-method]{plot,landsat-method()}}.  Since plotting can be quite
 slow, decimation is available both in the plotting function and as the separate
-function \code{\link{decimate}}.  Images may be subsetted with
-\code{\link{landsatTrim}}.
+function \code{\link[=decimate]{decimate()}}.  Images may be subsetted with
+\code{\link[=landsatTrim]{landsatTrim()}}.
 
-\code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
-
-Other things related to landsat data: \code{\link{[[,landsat-method}},
-  \code{\link{[[<-,landsat-method}},
-  \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
-  \code{\link{landsat}}, \code{\link{plot,landsat-method}},
-  \code{\link{read.landsat}},
-  \code{\link{summary,landsat-method}}
+Other things related to landsat data: 
+\code{\link{[[,landsat-method}},
+\code{\link{[[<-,landsat-method}},
+\code{\link{landsatAdd}()},
+\code{\link{landsatTrim}()},
+\code{\link{landsat}},
+\code{\link{plot,landsat-method}},
+\code{\link{read.landsat}()},
+\code{\link{summary,landsat-method}}
 }
 \author{
 Dan Kelley and Clark Richards

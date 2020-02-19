@@ -2,13 +2,14 @@
 
 #' Translate Oce Data Names to WHP Data Names
 #'
-#' Translate oce-style names to WOCE names, using \code{\link{gsub}}
-#' to match patterns. For example, the pattern \code{"oxygen"}
-#' is taken to mean \code{"CTDOXY"}.
+#' Translate oce-style names to WOCE names, using [gsub()]
+#' to match patterns. For example, the pattern `"oxygen"`
+#' is taken to mean `"CTDOXY"`.
 #'
 #' @param names vector of strings holding oce-style names.
 #'
 #' @return vector of strings holding WHP-style names.
+#'
 #' @author Dan Kelley
 #'
 #' @references
@@ -53,14 +54,14 @@ oceNames2whpNames <- function(names)
 #' Translate oce unit to WHP unit
 #'
 #' Translate oce units to WHP-style strings,
-#' to match patterns. For example, the pattern \code{"oxygen"}
-#' is taken to mean \code{"CTDOXY"}.
+#' to match patterns.
 #'
 #' @param units vector of expressions for units in oce notation.
 #'
 #' @param scales vector of strings for scales in oce notation.
 #'
 #' @return vector of strings holding WOCE-style names.
+#'
 #' @author Dan Kelley
 #'
 #' @references
@@ -134,13 +135,14 @@ oceUnits2whpUnits <- function(units, scales)
 
 #' Translate WOCE Data Names to Oce Data Names
 #'
-#' Translate WOCE-style names to \code{oce} names, using \code{\link{gsub}}
-#' to match patterns. For example, the pattern \code{"CTDOXY.*"} is taken
-#' to mean \code{oxygen}.
+#' Translate WOCE-style names to `oce` names, using [gsub()]
+#' to match patterns. For example, the pattern `"CTDOXY.*"` is taken
+#' to mean `oxygen`.
 #'
 #' @param names vector of strings holding WOCE-style names.
 #'
-#' @return vector of strings holding \code{oce}-style names.
+#' @return vector of strings holding `oce`-style names.
+#'
 #' @author Dan Kelley
 #'
 #' @references
@@ -187,7 +189,7 @@ woceNames2oceNames <- function(names)
 
 #' Translate WOCE units to oce units
 #'
-#' Translate WOCE-style units to \code{oce} units.
+#' Translate WOCE-style units to `oce` units.
 #'
 #' @param woceUnit string holding a WOCE unit
 #'
@@ -226,27 +228,30 @@ woceUnit2oceUnit <- function(woceUnit)
 }
 
 
-#' Read a WOCE-type CTD file with First Word "CTD"
+#' Read a WOCE-exchange CTD File
+#'
+#' This reads WOCE exchange files that start with the string `"CTD"`.
+#' There are two variants: one in which the first 4 characters are
+#' `"CTD,"` and the other in which the first 3 characters are
+#' again `"CTD"` but no other non-whitespace characers occur on
+#' the line.
 #'
 #' @template readCtdTemplate
 #'
-#' @author Dan Kelley
-#'
-#' @details
-#' \code{read.ctd.woce()} reads files stored in the exchange format used
-#' by the World Ocean Circulation Experiment (WOCE), in which the first 4
-#' characters are ``\code{CTD,}''. It also also in a rarer format with
-#' the first 3 characters are \code{CTD}'' followed by a blank or the end
-#' of the line.
-#'
 #' @references
 #' The WOCE-exchange format is described at
-#' \code{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
+#' `http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm`,
 #' and a sample file is at
 #' \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
+#'
+#' @family functions that read ctd data
+#'
+#' @author Dan Kelley
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                           monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     if (length(grep("\\*", file))) {
         oceDebug(debug, "read.ctd.woce(file=\"", file, "\") { # will read a series of files\n", unindent=1)
         files <- list.files(pattern=file)
@@ -645,19 +650,20 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, deploy
     res
 }
 
-#' Read a WOCE-type CTD file with First Word "EXPOCODE"
+#' Read a WOCE-exchange EXPOCODE File
+#'
+#' This reads WOCE exchange files that start with the string `"EXPOCODE"`.
 #'
 #' @template readCtdTemplate
 #'
-#' @author Dan Kelley
+#' @family functions that read ctd data
 #'
-#' @details
-#' \code{read.ctd.woce.other()} reads files stored in the exchange format used
-#' by the World Ocean Circulation Experiment (WOCE), in which the first
-#' word in the file is \code{EXPOCODE}.
+#' @author Dan Kelley
 read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                                 monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
+    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
     ##EXPOCODE 06MT18/1      WHP-ID A1E    DATE 090591
     ##STNNBR    558 CASTNO   1 NO.RECORDS=   83
     ##INSTRUMENT NO. NB3 SAMPLING RATE  31.25 HZ

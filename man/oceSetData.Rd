@@ -2,12 +2,12 @@
 % Please edit documentation in R/accessors.R
 \name{oceSetData}
 \alias{oceSetData}
-\title{Set Something in the data Slot of an oce Object}
+\title{Set Something in an oce data Slot}
 \usage{
 oceSetData(object, name, value, unit, originalName, note = "")
 }
 \arguments{
-\item{object}{an \code{oce} object}
+\item{object}{an \linkS4class{oce} object.}
 
 \item{name}{String indicating the name of the item to be set.}
 
@@ -30,24 +30,23 @@ in an overly verbose processing log; in such cases, it might help
 to add a note by e.g. \code{processingLog(a) <- "QC (memo dek-2018-01/31)"}}
 }
 \description{
-Set Something in the data Slot of an oce Object
+Set Something in an oce data Slot
 }
 \details{
 There are three possibilities for \code{unit}:
-\itemize{
-\item \emph{Case 1.} \code{unit} is a named or unnamed \code{\link{list}}
-that contains two items.
+\enumerate{
+\item \code{unit} is a named or unnamed \code{\link[=list]{list()}} that contains two items.
 If the list is named, the names must be
 \code{unit} and \code{scale}. If the list is unnamed, the stated names are assigned
 to the items, in the stated order. Either way, the \code{unit}
-item must be an \code{\link{expression}} that specifies the unit,
+item must be an \code{\link[=expression]{expression()}} that specifies the unit,
 and the \code{scale} item must be a string that describes the scale. For
 example, modern temperatures have
 \code{unit=list(unit=expression(degree*C), scale="ITS-90")}.
-\item \emph{Case 2.} \code{unit} is an \code{\link{expression}} giving the unit as above. In this
+\item \code{unit} is an \code{\link[=expression]{expression()}} giving the unit as above. In this
 case, the scale will be set to \code{""}.
-\item \emph{Case 3.} \code{unit} is a character string that is converted
-into an expression with \code{\link{parse}(text=unit)},
+\item \code{unit} is a character string that is converted
+into an expression with \link{parse}\code{(text=unit)},
 and the scale set to \code{""}.
 }
 }
@@ -59,4 +58,15 @@ feet <- swDepth(ctd) / 0.3048
 ctd <- oceSetData(ctd, name="depthInFeet", value=feet, expression("feet"))
 fathoms <- feet / 6
 ctd <- oceSetData(ctd, "depthInFathoms", fathoms, "fathoms")
+
 }
+\seealso{
+Other things related to the data slot: 
+\code{\link{oceDeleteData}()},
+\code{\link{oceGetData}()},
+\code{\link{oceRenameData}()}
+}
+\author{
+Dan Kelley
+}
+\concept{things related to the data slot}

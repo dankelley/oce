@@ -6,12 +6,12 @@
 \title{Class to Store Bremen-formatted Data}
 \description{
 This class is for data stored in a format used at Bremen.
-It is somewhat similar to the \code{\link{odf-class}}, in the sense
+It is somewhat similar to the \linkS4class{odf}, in the sense
 that it does not apply just to a particular instrument.
 Although some functions are provided for dealing with these
 data (see \dQuote{Details}), the most common action is to read the
-data with \code{\link{read.bremen}}, and then to coerce the object to
-another storage class (e.g. using \code{\link{as.ctd}} for CTD-style
+data with \code{\link[=read.bremen]{read.bremen()}}, and then to coerce the object to
+another storage class (e.g. using \code{\link[=as.ctd]{as.ctd()}} for CTD-style
 data) so that specialized functions can be used thereafter.
 }
 \section{Slots}{
@@ -19,65 +19,89 @@ data) so that specialized functions can be used thereafter.
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{bremen} objects is a
-\code{\link{list}} containing the main data for the object.
+\link{list} containing the main data for the object.
 {}}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{bremen} objects is a \code{\link{list}} containing
+for \code{bremen} objects is a \link{list} containing
 information about the \code{data} or about the object itself.
 {}}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{bremen} objects is a
-\code{\link{list}} with entries describing the creation and evolution
+\link{list} with entries describing the creation and evolution
 of the object. The contents are updated by various \code{oce} functions to
 keep a record of processing steps.  Object summaries and
-\code{\link{processingLogShow}} both display the log.}
+\code{\link[=processingLogShow]{processingLogShow()}} both display the log.}
 }}
 
 \section{Modifying slot contents}{
 
 
 Although the \code{[[<-} operator may permit modification of the contents
-of \code{bremen} objects (see \code{\link{[[<-,bremen-method}}),
-it is better to use \code{\link{oceSetData}}
-and \code{\link{oceSetMetadata}}, because that will save an entry
-in the \code{processingLog} to describe the change.
+of \linkS4class{bremen} objects (see \code{\link{[[<-,bremen-method}}),
+it is better to use \code{\link[=oceSetData]{oceSetData()}} and \code{\link[=oceSetMetadata]{oceSetMetadata()}},
+because those functions save an entry in the \code{processingLog}
+that describes the change.
 }
 
 \section{Retrieving slot contents}{
 
 
-The full contents of the \code{data} and \code{metadata} slots of a \code{bremen}
-object named \code{bremen} may be retrieved in the standard R way. For example,
-\code{slot(bremen, "data")} and \code{slot(bremen, "metadata")} return
-the \code{data} and \code{metadata} slots, respectively. The
-\code{\link{[[,bremen-method}} operator can also be used to access slots,
-with \code{bremen[["data"]]} and \code{bremen[["metadata"]]}, respectively.
-Furthermore, \code{\link{[[,bremen-method}} can be used to retrieve
-named items (and potentially some derived items) within the
-\code{metadata} and \code{data} slots, the former taking precedence
-over the latter in the lookup. It is also possible
-to find items more directly, using \code{\link{oceGetData}} and
-\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+The full contents of the \code{data} and \code{metadata} slots of a \linkS4class{bremen}
+object may be retrieved in the standard R way using \code{\link[=slot]{slot()}}. For
+example \code{slot(o,"data")} returns the \code{data} slot of an object named \code{o},
+and similarly \code{slot(o,"metadata")} returns
+the \code{metadata} slot.
+
+The slots may also be obtained with the \code{\link{[[,bremen-method}}
+operator, as e.g. \code{o[["data"]]} and \code{o[["metadata"]]}, respectively.
+
+The \code{\link{[[,bremen-method}} operator can also
+be used to retrieve items from within the \code{data} and \code{metadata} slots.
+For example, \code{o[["temperature"]]} can be used to retrieve temperature
+from an object containing that quantity. The rule is that a named
+quantity is sought first within the object's \code{metadata} slot,
+with the \code{data} slot being checked only if \code{metadata} does not
+contain the item. This \code{[[} method can also be used to get
+certain derived quantities, if the object contains sufficient
+information to calculate them. For example, an object that holds
+(practical) salinity, temperature and pressure, along with
+longitude and latitudee, has sufficient information to compute
+Absolute Salinity, and so \code{o[["SA"]]} will yield the
+calculated Absolute Salinity.
+
+It is also possible to find items more directly, using \code{\link[=oceGetData]{oceGetData()}} and
+\code{\link[=oceGetMetadata]{oceGetMetadata()}}, but neither of these functions can
+retrieve derived items.
 }
 
 \seealso{
-Other classes provided by oce: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{cm-class}}, \code{\link{coastline-class}},
-  \code{\link{ctd-class}}, \code{\link{lisst-class}},
-  \code{\link{lobo-class}}, \code{\link{met-class}},
-  \code{\link{oce-class}}, \code{\link{odf-class}},
-  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
+Other classes provided by oce: 
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{argo-class}},
+\code{\link{cm-class}},
+\code{\link{coastline-class}},
+\code{\link{ctd-class}},
+\code{\link{lisst-class}},
+\code{\link{lobo-class}},
+\code{\link{met-class}},
+\code{\link{oce-class}},
+\code{\link{odf-class}},
+\code{\link{rsk-class}},
+\code{\link{sealevel-class}},
+\code{\link{section-class}},
+\code{\link{topo-class}},
+\code{\link{windrose-class}},
+\code{\link{xbt-class}}
 
-Other things related to bremen data: \code{\link{[[,bremen-method}},
-  \code{\link{[[<-,bremen-method}},
-  \code{\link{plot,bremen-method}},
-  \code{\link{read.bremen}},
-  \code{\link{summary,bremen-method}}
+Other things related to bremen data: 
+\code{\link{[[,bremen-method}},
+\code{\link{[[<-,bremen-method}},
+\code{\link{plot,bremen-method}},
+\code{\link{read.bremen}()},
+\code{\link{summary,bremen-method}}
 }
 \author{
 Dan Kelley

@@ -4,8 +4,17 @@
 \alias{as.lobo}
 \title{Coerce Data into a Lobo Object}
 \usage{
-as.lobo(time, u, v, salinity, temperature, pressure, nitrate, fluorescence,
-  filename = "")
+as.lobo(
+  time,
+  u,
+  v,
+  salinity,
+  temperature,
+  pressure,
+  nitrate,
+  fluorescence,
+  filename = ""
+)
 }
 \arguments{
 \item{time}{vector of times of observation}
@@ -27,18 +36,21 @@ as.lobo(time, u, v, salinity, temperature, pressure, nitrate, fluorescence,
 \item{filename}{source filename}
 }
 \value{
-An object of \code{\link{lobo-class}}.
+A \linkS4class{lobo} object.
 }
 \description{
 Coerce a dataset into a lobo dataset.
 }
 \seealso{
-Other things related to lobo data: \code{\link{[[,lobo-method}},
-  \code{\link{[[<-,lobo-method}}, \code{\link{lobo-class}},
-  \code{\link{lobo}}, \code{\link{plot,lobo-method}},
-  \code{\link{read.lobo}},
-  \code{\link{subset,lobo-method}},
-  \code{\link{summary,lobo-method}}
+Other things related to lobo data: 
+\code{\link{[[,lobo-method}},
+\code{\link{[[<-,lobo-method}},
+\code{\link{lobo-class}},
+\code{\link{lobo}},
+\code{\link{plot,lobo-method}},
+\code{\link{read.lobo}()},
+\code{\link{subset,lobo-method}},
+\code{\link{summary,lobo-method}}
 }
 \author{
 Dan Kelley

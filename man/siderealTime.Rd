@@ -8,8 +8,8 @@ siderealTime(t)
 }
 \arguments{
 \item{t}{a time, in POSIXt format, e.g. as created by
-\code{\link{as.POSIXct}}, \code{\link{as.POSIXlt}}, or
-\code{\link{numberAsPOSIXct}}.  If this is provided, the other arguments are
+\code{\link[=as.POSIXct]{as.POSIXct()}}, \code{\link[=as.POSIXlt]{as.POSIXlt()}}, or
+\code{\link[=numberAsPOSIXct]{numberAsPOSIXct()}}.  If this is provided, the other arguments are
 ignored.}
 }
 \value{
@@ -17,7 +17,7 @@ A sidereal time, in hours in the range from 0 to 24.
 }
 \description{
 Convert a POSIXt time to a sidereal time, using
-the method in Chapter 7 of Meeus (1982).  The small correction
+the method in Chapter 7 of reference 1.  The small correction
 that he discusses after his equation 7.1 is not applied here.
 }
 \examples{
@@ -27,15 +27,20 @@ print(siderealTime(t))
 
 }
 \references{
-Meeus, Jean, 1982.  Astronomical formulae for Calculators.
+\enumerate{
+\item Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages
 }
+}
 \seealso{
-Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
-  \code{\link{equatorialToLocalHorizontal}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{julianDay}}, \code{\link{moonAngle}},
-  \code{\link{sunAngle}}
+Other things related to astronomy: 
+\code{\link{eclipticalToEquatorial}()},
+\code{\link{equatorialToLocalHorizontal}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{julianDay}()},
+\code{\link{moonAngle}()},
+\code{\link{sunAngle}()},
+\code{\link{sunDeclinationRightAscension}()}
 }
 \author{
 Dan Kelley

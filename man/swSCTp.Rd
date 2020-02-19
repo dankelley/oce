@@ -4,19 +4,24 @@
 \alias{swSCTp}
 \title{Practical salinity from electrical conductivity, temperature and pressure}
 \usage{
-swSCTp(conductivity, temperature = NULL, pressure = NULL,
-  conductivityUnit, eos = getOption("oceEOS", default = "gsw"))
+swSCTp(
+  conductivity,
+  temperature = NULL,
+  pressure = NULL,
+  conductivityUnit,
+  eos = getOption("oceEOS", default = "gsw")
+)
 }
 \arguments{
 \item{conductivity}{a measure of conductivity (see also \code{conductivityUnit})
 or an \code{oce} object holding hydrographic information. In the second case,
 all the other arguments to \code{swSCTp} are ignored.}
 
-\item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
+\item{temperature}{\emph{in-situ} temperature (\eqn{^\circ}{deg}C), defined
 on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
-\code{\link{swRho}}.}
+\code{\link[=swRho]{swRho()}}.}
 
-\item{pressure}{pressure [dbar].}
+\item{pressure}{pressure (dbar).}
 
 \item{conductivityUnit}{string indicating the unit used for conductivity.
 This may be \code{"ratio"} or \code{""} (meaning conductivity ratio),
@@ -38,7 +43,7 @@ response times.  Two variants are provided. First, if \code{eos} is
 \code{"unesco"}, then salinity is calculated using
 the UNESCO algorithm described by Fofonoff and Millard (1983) as in
 reference 1. Second, if \code{eos} is \code{"gsw"}, then the
-Gibbs-SeaWater formulation is used, via \code{\link[gsw]{gsw_SP_from_C}}
+Gibbs-SeaWater formulation is used, via \code{\link[gsw:gsw_SP_from_C]{gsw::gsw_SP_from_C()}}
 in the \CRANpkg{gsw} package. The latter starts with the same formula
 as the former, but if this yields a Practical Salinity less than 2,
 then the result is instead calculated using
@@ -56,43 +61,58 @@ swSCTp(0.02, 10, 100, eos="unesco") # 0.6011721
 
 }
 \references{
-1. Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
+\enumerate{
+\item Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
 computation of fundamental properties of seawater. \emph{Unesco Technical
-Papers in Marine Science}, \bold{44}, 53 pp.
-
-2.  K. Hill, T. Dauphinee, and D. Woods. \dQuote{The Extension of the Practical
+Papers in Marine Science}, \emph{44}, 53 pp.
+\item K. Hill, T. Dauphinee, and D. Woods. \dQuote{The Extension of the Practical
 Salinity Scale 1978 to Low Salinities.} IEEE Journal of Oceanic Engineering 11,
-no. 1 (January 1986): 109–12. https://doi.org/10.1109/JOE.1986.1145154.
-
-3. \code{gsw_from_SP} online documentation, available at
-\code{http://www.teos-10.org/pubs/gsw/html/gsw_C_from_SP.html}
+no. 1 (January 1986): 109-12. https://doi.org/10.1109/JOE.1986.1145154.
+\item \code{gsw_from_SP} online documentation, available at
+\verb{http://www.teos-10.org/pubs/gsw/html/gsw_C_from_SP.html}
+}
 }
 \seealso{
 For thermal (as opposed to electrical) conductivity, see
-\code{\link{swThermalConductivity}}.  For computation of electrical
-conductivity from salinity, see \code{\link{swCSTp}}.
+\code{\link[=swThermalConductivity]{swThermalConductivity()}}.  For computation of electrical
+conductivity from salinity, see \code{\link[=swCSTp]{swCSTp()}}.
 
-Other functions that calculate seawater properties: \code{\link{T68fromT90}},
-  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
-  \code{\link{swAbsoluteSalinity}},
-  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
-  \code{\link{swBeta}}, \code{\link{swCSTp}},
-  \code{\link{swConservativeTemperature}},
-  \code{\link{swDepth}}, \code{\link{swDynamicHeight}},
-  \code{\link{swLapseRate}}, \code{\link{swN2}},
-  \code{\link{swPressure}}, \code{\link{swRho}},
-  \code{\link{swRrho}}, \code{\link{swSTrho}},
-  \code{\link{swSigma0}}, \code{\link{swSigma1}},
-  \code{\link{swSigma2}}, \code{\link{swSigma3}},
-  \code{\link{swSigma4}}, \code{\link{swSigmaTheta}},
-  \code{\link{swSigmaT}}, \code{\link{swSigma}},
-  \code{\link{swSoundAbsorption}},
-  \code{\link{swSoundSpeed}}, \code{\link{swSpecificHeat}},
-  \code{\link{swSpice}}, \code{\link{swTFreeze}},
-  \code{\link{swTSrho}},
-  \code{\link{swThermalConductivity}},
-  \code{\link{swTheta}}, \code{\link{swViscosity}},
-  \code{\link{swZ}}
+Other functions that calculate seawater properties: 
+\code{\link{T68fromT90}()},
+\code{\link{T90fromT48}()},
+\code{\link{T90fromT68}()},
+\code{\link{swAbsoluteSalinity}()},
+\code{\link{swAlphaOverBeta}()},
+\code{\link{swAlpha}()},
+\code{\link{swBeta}()},
+\code{\link{swCSTp}()},
+\code{\link{swConservativeTemperature}()},
+\code{\link{swDepth}()},
+\code{\link{swDynamicHeight}()},
+\code{\link{swLapseRate}()},
+\code{\link{swN2}()},
+\code{\link{swPressure}()},
+\code{\link{swRho}()},
+\code{\link{swRrho}()},
+\code{\link{swSTrho}()},
+\code{\link{swSigma0}()},
+\code{\link{swSigma1}()},
+\code{\link{swSigma2}()},
+\code{\link{swSigma3}()},
+\code{\link{swSigma4}()},
+\code{\link{swSigmaTheta}()},
+\code{\link{swSigmaT}()},
+\code{\link{swSigma}()},
+\code{\link{swSoundAbsorption}()},
+\code{\link{swSoundSpeed}()},
+\code{\link{swSpecificHeat}()},
+\code{\link{swSpice}()},
+\code{\link{swTFreeze}()},
+\code{\link{swTSrho}()},
+\code{\link{swThermalConductivity}()},
+\code{\link{swTheta}()},
+\code{\link{swViscosity}()},
+\code{\link{swZ}()}
 }
 \author{
 Dan Kelley

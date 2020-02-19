@@ -4,11 +4,10 @@
 \alias{applyMagneticDeclination}
 \title{Earth magnetic declination}
 \usage{
-applyMagneticDeclination(x, declination = 0,
-  debug = getOption("oceDebug"))
+applyMagneticDeclination(x, declination = 0, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{an oce object.}
+\item{x}{an \linkS4class{oce} object.}
 
 \item{declination}{magnetic declination (to be added to the heading)}
 
@@ -27,13 +26,16 @@ set up, so that the velocities as recorded are already.  Other times, the
 data need to be adjusted.  This function is for the latter case.
 }
 \references{
-1. \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
+\enumerate{
+\item \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
+}
 }
 \seealso{
-Use \code{\link{magneticField}} to determine the declination,
+Use \code{\link[=magneticField]{magneticField()}} to determine the declination,
 inclination and intensity at a given spot on the world, at a given time.
 
-Other things related to magnetism: \code{\link{magneticField}}
+Other things related to magnetism: 
+\code{\link{magneticField}()}
 }
 \author{
 Dan Kelley

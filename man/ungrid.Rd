@@ -20,11 +20,10 @@ A list containing three vectors: \code{x}, the grid x values,
 \description{
 Extract the grid points from a grid, returning columns.
 This is useful for e.g. gridding large datasets, in which the first step
-might be to use \code{\link{binMean2D}}, followed by
-\code{\link{interpBarnes}}.
+might be to use \code{\link[=binMean2D]{binMean2D()}}, followed by
+\code{\link[=interpBarnes]{interpBarnes()}}.
 }
 \examples{
-
 library(oce)
 data(wind)
 u <- interpBarnes(wind$x, wind$y, wind$z)

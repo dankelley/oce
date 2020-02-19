@@ -4,12 +4,16 @@
 \alias{swAbsoluteSalinity}
 \title{Seawater absolute salinity, in GSW formulation}
 \usage{
-swAbsoluteSalinity(salinity, pressure = NULL, longitude = NULL,
-  latitude = NULL)
+swAbsoluteSalinity(
+  salinity,
+  pressure = NULL,
+  longitude = NULL,
+  latitude = NULL
+)
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}
-and \code{pressure} must be provided) \strong{or} an \code{oce} object (in
+and \code{pressure} must be provided) \emph{or} an \code{oce} object (in
 which case \code{salinity}, etc. are inferred from the object).}
 
 \item{pressure}{pressure in dbar.}
@@ -22,12 +26,9 @@ which case \code{salinity}, etc. are inferred from the object).}
 Absolute Salinity in \eqn{g/kg}{g/kg}.
 }
 \description{
-Compute seawater absolute salinity, according to the GSW/TEOS-10
-formulation.
-}
-\details{
-The absolute salinity is calculated using the GSW function
-\code{\link[gsw]{gsw_SA_from_SP}}.  Typically, this is a fraction of a unit
+Compute the seawater Absolute Salinity, according to the GSW/TEOS-10
+formulation with \code{\link[gsw:gsw_SA_from_SP]{gsw::gsw_SA_from_SP()}} in the CRANpkg{gsw} package.
+Typically, this is a fraction of a unit
 higher than practical salinity as defined in the UNESCO formulae.
 }
 \examples{
@@ -44,30 +45,46 @@ SCOR/IAPSO WG127, ISBN 978-0-646-55621-5.
 }
 \seealso{
 The related TEOS-10 quantity ``conservative temperature'' may be
-computed with \code{\link{swConservativeTemperature}}.  For a ctd object,
+computed with \code{\link[=swConservativeTemperature]{swConservativeTemperature()}}.  For a ctd object,
 absolute salinity may also be recovered by indexing as e.g.
 \code{ctd[["absoluteSalinity"]]} or \code{ctd[["SA"]]}.
 
-Other functions that calculate seawater properties: \code{\link{T68fromT90}},
-  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
-  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
-  \code{\link{swBeta}}, \code{\link{swCSTp}},
-  \code{\link{swConservativeTemperature}},
-  \code{\link{swDepth}}, \code{\link{swDynamicHeight}},
-  \code{\link{swLapseRate}}, \code{\link{swN2}},
-  \code{\link{swPressure}}, \code{\link{swRho}},
-  \code{\link{swRrho}}, \code{\link{swSCTp}},
-  \code{\link{swSTrho}}, \code{\link{swSigma0}},
-  \code{\link{swSigma1}}, \code{\link{swSigma2}},
-  \code{\link{swSigma3}}, \code{\link{swSigma4}},
-  \code{\link{swSigmaTheta}}, \code{\link{swSigmaT}},
-  \code{\link{swSigma}}, \code{\link{swSoundAbsorption}},
-  \code{\link{swSoundSpeed}}, \code{\link{swSpecificHeat}},
-  \code{\link{swSpice}}, \code{\link{swTFreeze}},
-  \code{\link{swTSrho}},
-  \code{\link{swThermalConductivity}},
-  \code{\link{swTheta}}, \code{\link{swViscosity}},
-  \code{\link{swZ}}
+Other functions that calculate seawater properties: 
+\code{\link{T68fromT90}()},
+\code{\link{T90fromT48}()},
+\code{\link{T90fromT68}()},
+\code{\link{swAlphaOverBeta}()},
+\code{\link{swAlpha}()},
+\code{\link{swBeta}()},
+\code{\link{swCSTp}()},
+\code{\link{swConservativeTemperature}()},
+\code{\link{swDepth}()},
+\code{\link{swDynamicHeight}()},
+\code{\link{swLapseRate}()},
+\code{\link{swN2}()},
+\code{\link{swPressure}()},
+\code{\link{swRho}()},
+\code{\link{swRrho}()},
+\code{\link{swSCTp}()},
+\code{\link{swSTrho}()},
+\code{\link{swSigma0}()},
+\code{\link{swSigma1}()},
+\code{\link{swSigma2}()},
+\code{\link{swSigma3}()},
+\code{\link{swSigma4}()},
+\code{\link{swSigmaTheta}()},
+\code{\link{swSigmaT}()},
+\code{\link{swSigma}()},
+\code{\link{swSoundAbsorption}()},
+\code{\link{swSoundSpeed}()},
+\code{\link{swSpecificHeat}()},
+\code{\link{swSpice}()},
+\code{\link{swTFreeze}()},
+\code{\link{swTSrho}()},
+\code{\link{swThermalConductivity}()},
+\code{\link{swTheta}()},
+\code{\link{swViscosity}()},
+\code{\link{swZ}()}
 }
 \author{
 Dan Kelley

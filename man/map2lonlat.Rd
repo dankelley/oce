@@ -24,15 +24,13 @@ values indicating points that are off the globe as displayed.
 \description{
 Convert from x-y coordinates to longitude and latitude. This is normally called
 internally within oce; see \sQuote{Bugs}.
-}
-\details{
-A projection must already have been set up, by a call to \code{\link{mapPlot}}
-or \code{\link{lonlat2map}}. It should be noted that not all projections are
+A projection must already have been set up, by a call to \code{\link[=mapPlot]{mapPlot()}}
+or \code{\link[=lonlat2map]{lonlat2map()}}. It should be noted that not all projections are
 handled well; see \sQuote{Bugs}.
 }
 \section{Bugs}{
 
-\code{oce} uses \code{\link[rgdal]{project}} in the \CRANpkg{rgdal}
+\code{oce} uses \code{\link[rgdal:project]{rgdal::project()}} in the \CRANpkg{rgdal}
 package to handle projections. Only those projections that have inverses are
 permitted within \code{oce}, and even those can sometimes yield errors, owing
 to limitations in \CRANpkg{rgdal}. On i386/windows machines, the version
@@ -52,22 +50,34 @@ if (canProject) {
 
 }
 \seealso{
-\code{\link{lonlat2map}} does the inverse operation.
+\code{\link[=lonlat2map]{lonlat2map()}} does the inverse operation.
 
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{mapArrows}},
-  \code{\link{mapAxis}}, \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
-  \code{\link{usrLonLat}}, \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

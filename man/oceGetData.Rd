@@ -2,12 +2,12 @@
 % Please edit documentation in R/accessors.R
 \name{oceGetData}
 \alias{oceGetData}
-\title{Get Something from the data Slot of an oce Object}
+\title{Get Something from an oce data Slot}
 \usage{
 oceGetData(object, name)
 }
 \arguments{
-\item{object}{an \code{oce} object}
+\item{object}{an \linkS4class{oce} object.}
 
 \item{name}{String indicating the name of the item to be found.}
 }
@@ -16,3 +16,13 @@ In contrast to the various \code{[[} functions, this is
 guaranteed to look only within the \code{data} slot. If
 the named item is not found, \code{NULL} is returned.
 }
+\seealso{
+Other things related to the data slot: 
+\code{\link{oceDeleteData}()},
+\code{\link{oceRenameData}()},
+\code{\link{oceSetData}()}
+}
+\author{
+Dan Kelley
+}
+\concept{things related to the data slot}

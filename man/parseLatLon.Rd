@@ -22,7 +22,7 @@ The following formats are understood (for, e.g. latitude) \preformatted{ *
 NMEA Latitude = 47 54.760 N ** Latitude: 47 53.27 N }
 }
 \seealso{
-Used by \code{\link{read.ctd}}.
+Used by \code{\link[=read.ctd]{read.ctd()}}.
 }
 \author{
 Dan Kelley

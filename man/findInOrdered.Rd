@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{findInOrdered}
 \alias{findInOrdered}
-\title{Find indices of times in an ordered vector [defunct]}
+\title{Find indices of times in an ordered vector (defunct)}
 \usage{
 findInOrdered(x, f)
 }
@@ -13,13 +13,6 @@ findInOrdered(x, f)
 }
 \description{
 \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
-}
-\seealso{
-Other functions that will be removed soon: \code{\link{addColumn}},
-  \code{\link{ctdAddColumn}},
-  \code{\link{ctdUpdateHeader}},
-  \code{\link{mapMeridians}}, \code{\link{mapZones}},
-  \code{\link{oce.as.POSIXlt}}
 }
 \author{
 Dan Kelley

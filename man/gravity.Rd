@@ -14,7 +14,7 @@ equator.}
 to \code{FALSE}, radians are used.}
 }
 \value{
-Acceleration due to gravity [\eqn{m^2/s}{m^2/s}].
+Acceleration due to gravity, in \eqn{m^2/s}{m^2/s}.
 }
 \description{
 Compute \eqn{g}{g}, the acceleration due to gravity, as a function of
@@ -30,8 +30,7 @@ g <- gravity(45) # 9.8
 Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
 Press, New York, 662 pp.
 
-\strong{Caution:} Fofonoff and Millard (1983 UNESCO) use a different
-formula.
+\strong{Caution:} Fofonoff and Millard (1983 UNESCO) use a different formula.
 }
 \author{
 Dan Kelley

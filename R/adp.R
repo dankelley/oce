@@ -8,9 +8,9 @@
 #'
 #' @templateVar class adp
 #'
-#' @templateVar dataExample The key items stored in this slot include \code{time}, \code{distance}, and \code{v}, along with angles \code{heading}, \code{pitch} and \code{roll}.
+#' @templateVar dataExample The key items stored in this slot include `time`, `distance`, and `v`, along with angles `heading`, `pitch` and `roll`.
 #'
-#' @templateVar metadataExample Examples that are of common interest include \code{oceCoordinate}, \code{orientation}, \code{frequency}, and \code{beamAngle}.
+#' @templateVar metadataExample Examples that are of common interest include `oceCoordinate`, `orientation`, `frequency`, and `beamAngle`.
 #'
 #' @template slot_summary
 #'
@@ -18,19 +18,19 @@
 #'
 #' @template slot_get
 #'
-#' @section Reading/creating \code{adp} objects:
+#' @section Reading/creating `adp` objects:
 #'
-#' The \code{metadata} slot contains various
+#' The `metadata` slot contains various
 #' items relating to the dataset, including source file name, sampling rate,
 #' velocity resolution, velocity maximum value, and so on.  Some of these are
 #' particular to particular instrument types, and prudent researchers will take
 #' a moment to examine the whole contents of the metadata, either in summary
-#' form (with \code{str(adp[["metadata"]])}) or in detail (with
-#' \code{adp[["metadata"]]}).  Perhaps the most useful general properties are
-#' \code{adp[["bin1Distance"]]} (the distance, in metres, from the sensor to
-#' the bottom of the first bin), \code{adp[["cellSize"]]} (the cell height, in
-#' metres, in the vertical direction, \emph{not} along the beam), and
-#' \code{adp[["beamAngle"]]} (the angle, in degrees, between beams and an
+#' form (with `str(adp[["metadata"]])`) or in detail (with
+#' `adp[["metadata"]]`).  Perhaps the most useful general properties are
+#' `adp[["bin1Distance"]]` (the distance, in metres, from the sensor to
+#' the bottom of the first bin), `adp[["cellSize"]]` (the cell height, in
+#' metres, in the vertical direction, *not* along the beam), and
+#' `adp[["beamAngle"]]` (the angle, in degrees, between beams and an
 #' imaginary centre line that bisects all beam pairs).
 #'
 #' The diagram provided below indicates the coordinate-axis and beam-numbering
@@ -40,8 +40,8 @@
 #' \if{html}{\figure{adp_beams.png}{options: width=400px alt="Figure: adp_beams.png"}}
 #'
 #' The bin geometry of a four-beam profiler is illustrated below, for
-#' \code{adp[["beamAngle"]]} equal to 20 degrees, \code{adp[["bin1Distance"]]}
-#' equal to 2m, and \code{adp[["cellSize"]]} equal to 1m.   In the diagram, the
+#' `adp[["beamAngle"]]` equal to 20 degrees, `adp[["bin1Distance"]]`
+#' equal to 2m, and `adp[["cellSize"]]` equal to 1m.   In the diagram, the
 #' viewer is in the plane containing two beams that are not shown, so the two
 #' visible beams are separated by 40 degrees.  Circles indicate the centres of
 #' the range-gated bins within the beams.  The lines enclosing those circles
@@ -50,15 +50,15 @@
 #'
 #' \if{html}{\figure{adpgeometry2.png}{options: width=400px alt="Figure: adpgeometry2.png"}}
 #'
-#' Note that \code{adp[["oceCoordinate"]]} stores the present coordinate system
-#' of the object, and it has possible values \code{"beam"}, \code{"xyz"}, \code{"sfm"} or
-#' \code{"enu"}.  (This should not be confused with
-#' \code{adp[["originalCoordinate"]]}, which stores the coordinate system used
+#' Note that `adp[["oceCoordinate"]]` stores the present coordinate system
+#' of the object, and it has possible values `"beam"`, `"xyz"`, `"sfm"` or
+#' `"enu"`.  (This should not be confused with
+#' `adp[["originalCoordinate"]]`, which stores the coordinate system used
 #' in the original data file.)
 #'
-#' The \code{data} slot holds some standardized items, and
+#' The `data` slot holds some standardized items, and
 #' many that vary from instrument to instrument.  One standard item is
-#' \code{adp[["v"]]}, a three-dimensional numeric array of velocities in
+#' `adp[["v"]]`, a three-dimensional numeric array of velocities in
 #' m/s.  In this matrix, the first index indicates time, the second bin
 #' number, and the third beam number. The meaning of beams number depends on
 #' whether the object is in beam coordinates, frame coordinates, or earth
@@ -74,12 +74,12 @@
 #' imagep(t, d, eastward, missingColor="gray")
 #' }
 #' plots an image of the eastward component of velocity as a function of time (the x axis)
-#' and distance from sensor (y axis), since the \code{adp} dataset is
+#' and distance from sensor (y axis), since the `adp` dataset is
 #' in earth coordinates. Note the semidurnal tidal signal, and the pattern of missing
 #' data at the ocean surface (gray blotches at the top).
 #'
 #' Corresponding to the velocity array are two arrays of type raw, and
-#' identical dimension, accessed by \code{adp[["a"]]} and \code{adp[["q"]]},
+#' identical dimension, accessed by `adp[["a"]]` and `adp[["q"]]`,
 #' holding measures of signal strength and data quality quality,
 #' respectively.  (The exact meanings of these depend on the particular type
 #' of instrument, and it is assumed that users will be familiar enough with
@@ -87,111 +87,107 @@
 #' terms of data-quality assessment, etc.)
 #'
 #' In addition to the arrays, there are time-based vectors.  The vector
-#' \code{adp[["time"]]} (of length equal to the first index of
-#' \code{adp[["v"]]}, etc.) holds times of observation.  Depending on type of
+#' `adp[["time"]]` (of length equal to the first index of
+#' `adp[["v"]]`, etc.) holds times of observation.  Depending on type of
 #' instrument and its configuration, there may also be corresponding vectors
-#' for sound speed (\code{adp[["soundSpeed"]]}), pressure
-#' (\code{adp[["pressure"]]}), temperature (\code{adp[["temperature"]]}),
-#' heading (\code{adp[["heading"]]}) pitch (\code{adp[["pitch"]]}), and roll
-#' (\code{adp[["roll"]]}), depending on the setup of the instrument.
+#' for sound speed (`adp[["soundSpeed"]]`), pressure
+#' (`adp[["pressure"]]`), temperature (`adp[["temperature"]]`),
+#' heading (`adp[["heading"]]`) pitch (`adp[["pitch"]]`), and roll
+#' (`adp[["roll"]]`), depending on the setup of the instrument.
 #'
 #' The precise meanings of the data items depend on the instrument type.  All
-#' instruments have \code{v} (for velocity), \code{q} (for a measure of data
-#' quality) and \code{a} (for a measure of backscatter amplitude, also called
+#' instruments have `v` (for velocity), `q` (for a measure of data
+#' quality) and `a` (for a measure of backscatter amplitude, also called
 #' echo intensity).
-#' Teledyne-RDI profilers have an additional item \code{g} (for
+#' Teledyne-RDI profilers have an additional item `g` (for
 #' percent-good).
 #'
 #' VmDas-equipped Teledyne-RDI profilers additional navigation data, with
-#' details listed in the table below; note that the RDI documentation [2] and
+#' details listed in the table below; note that the RDI documentation (reference 2) and
 #' the RDI gui use inconsistent names for most items.
 #'
 #' \tabular{lll}{
-#'   \strong{Oce name}\tab \strong{RDI doc name}\tab \strong{RDI GUI name}\cr
-#'   \code{avgSpeed}\tab Avg Speed\tab Speed/Avg/Mag\cr
-#'   \code{avgMagnitudeVelocityEast}\tab Avg Mag Vel East\tab ?\cr
-#'   \code{avgMagnitudeVelocityNorth}\tab Avg Mag Vel North\tab ?\cr
-#'   \code{avgTrackMagnetic}\tab Avg Track Magnetic\tab Speed/Avg/Dir (?)\cr
-#'   \code{avgTrackTrue}\tab Avg Track True\tab Speed/Avg/Dir (?)\cr
-#'   \code{avgTrueVelocityEast}\tab Avg True Vel East\tab ?\cr
-#'   \code{avgTrueVelocityNorth}\tab Avg True Vel North\tab ?\cr
-#'   \code{directionMadeGood}\tab Direction Made Good\tab Speed/Made Good/Dir\cr
-#'   \code{firstLatitude}\tab First latitude\tab Start Lat\cr
-#'   \code{firstLongitude}\tab First longitude\tab Start Lon\cr
-#'   \code{firstTime}\tab UTC Time of last fix\tab End Time\cr
-#'   \code{lastLatitude}\tab Last latitude\tab End Lat\cr
-#'   \code{lastLongitude}\tab Last longitude\tab End Lon\cr
-#'   \code{lastTime}\tab UTC Time of last fix\tab End Time\cr
-#'   \code{numberOfHeadingSamplesAveraged}\tab Number heading samples averaged\tab ?\cr
-#'   \code{numberOfMagneticTrackSamplesAveraged}\tab Number of magnetic track samples averaged\tab ? \cr
-#'   \code{numberOfPitchRollSamplesAvg}\tab Number of magnetic track samples averaged\tab ? \cr
-#'   \code{numberOfSpeedSamplesAveraged}\tab Number of speed samples averaged\tab ? \cr
-#'   \code{numberOfTrueTrackSamplesAvg}\tab Number of true track samples averaged\tab ? \cr
-#'   \code{primaryFlags}\tab Primary Flags\tab ?\cr
-#'   \code{shipHeading}\tab Heading\tab ?\cr
-#'   \code{shipPitch}\tab Pitch\tab ?\cr
-#'   \code{shipRoll}\tab Roll\tab ?\cr
-#'   \code{speedMadeGood}\tab Speed Made Good\tab Speed/Made Good/Mag\cr
-#'   \code{speedMadeGoodEast}\tab Speed MG East\tab ?\cr
-#'   \code{speedMadeGoodNorth}\tab Speed MG North\tab ?\cr
+#'   **Oce name**\tab **RDI doc name**\tab **RDI GUI name**\cr
+#'   `avgSpeed`\tab Avg Speed\tab Speed/Avg/Mag\cr
+#'   `avgMagnitudeVelocityEast`\tab Avg Mag Vel East\tab ?\cr
+#'   `avgMagnitudeVelocityNorth`\tab Avg Mag Vel North\tab ?\cr
+#'   `avgTrackMagnetic`\tab Avg Track Magnetic\tab Speed/Avg/Dir (?)\cr
+#'   `avgTrackTrue`\tab Avg Track True\tab Speed/Avg/Dir (?)\cr
+#'   `avgTrueVelocityEast`\tab Avg True Vel East\tab ?\cr
+#'   `avgTrueVelocityNorth`\tab Avg True Vel North\tab ?\cr
+#'   `directionMadeGood`\tab Direction Made Good\tab Speed/Made Good/Dir\cr
+#'   `firstLatitude`\tab First latitude\tab Start Lat\cr
+#'   `firstLongitude`\tab First longitude\tab Start Lon\cr
+#'   `firstTime`\tab UTC Time of last fix\tab End Time\cr
+#'   `lastLatitude`\tab Last latitude\tab End Lat\cr
+#'   `lastLongitude`\tab Last longitude\tab End Lon\cr
+#'   `lastTime`\tab UTC Time of last fix\tab End Time\cr
+#'   `numberOfHeadingSamplesAveraged`\tab Number heading samples averaged\tab ?\cr
+#'   `numberOfMagneticTrackSamplesAveraged`\tab Number of magnetic track samples averaged\tab ? \cr
+#'   `numberOfPitchRollSamplesAvg`\tab Number of magnetic track samples averaged\tab ? \cr
+#'   `numberOfSpeedSamplesAveraged`\tab Number of speed samples averaged\tab ? \cr
+#'   `numberOfTrueTrackSamplesAvg`\tab Number of true track samples averaged\tab ? \cr
+#'   `primaryFlags`\tab Primary Flags\tab ?\cr
+#'   `shipHeading`\tab Heading\tab ?\cr
+#'   `shipPitch`\tab Pitch\tab ?\cr
+#'   `shipRoll`\tab Roll\tab ?\cr
+#'   `speedMadeGood`\tab Speed Made Good\tab Speed/Made Good/Mag\cr
+#'   `speedMadeGoodEast`\tab Speed MG East\tab ?\cr
+#'   `speedMadeGoodNorth`\tab Speed MG North\tab ?\cr
 #' }
 #'
 #' For Teledyne-RDI profilers, there are four three-dimensional arrays
 #' holding beamwise data.  In these, the first index indicates time, the
 #' second bin number, and the third beam number (or coordinate number, for
-#' data in \code{xyz}, \code{sfm}, \code{enu} or \code{other} coordinate systems).  In
+#' data in `xyz`, `sfm`, `enu` or `other` coordinate systems).  In
 #' the list below, the quoted phrases are quantities as defined in Figure 9
 #' of reference 1.
 #'
-#' \itemize{
-#'
-#'   \item \code{v} is ``velocity'' in m/s, inferred from two-byte signed
+#' * `v` is ``velocity'' in m/s, inferred from two-byte signed
 #'   integer values (multiplied by the scale factor that is stored in
-#'   \code{velocityScale} in the metadata).
+#'   `velocityScale` in the metadata).
 #'
-#'   \item \code{q} is ``correlation magnitude'' a one-byte quantity stored
-#'   as type \code{raw} in the object. The values may range from 0 to 255.
+#' * `q` is ``correlation magnitude'' a one-byte quantity stored
+#'   as type `raw` in the object. The values may range from 0 to 255.
 #'
-#'   \item \code{a} is ``backscatter amplitude``, also known as ``echo
-#'   intensity'' a one-byte quantity stored as type \code{raw} in the object.
+#' * `a` is ``backscatter amplitude``, also known as ``echo
+#'   intensity'' a one-byte quantity stored as type `raw` in the object.
 #'   The values may range from 0 to 255.
 #'
-#'   \item \code{g} is ``percent good'' a one-byte quantity stored as \code{raw}
+#' * `g` is ``percent good'' a one-byte quantity stored as `raw`
 #'   in the object.  The values may range from 0 to 100.
 #'
-#' }
-#'
-#' Finally, there is a vector \code{adp[["distance"]]} that indicates the bin
+#' Finally, there is a vector `adp[["distance"]]` that indicates the bin
 #' distances from the sensor, measured in metres along an imaginary centre
 #' line bisecting beam pairs.  The length of this vector equals
-#' \code{dim(adp[["v"]])[2]}.
+#' `dim(adp[["v"]])[2]`.
 #'
 #' @section Teledyne-RDI Sentinel V ADCPs: As of 2016-09-27 there is
 #'     provisional support for the TRDI "SentinelV" ADCPs, which are 5
 #'     beam ADCPs with a vertical centre beam. Relevant vertical beam
-#'     fields are called \code{adp[["vv"]]}, \code{adp[["va"]]},
-#'     \code{adp[["vq"]]}, and \code{adp[["vg"]]} in analogy with the
+#'     fields are called `adp[["vv"]]`, `adp[["va"]]`,
+#'     `adp[["vq"]]`, and `adp[["vg"]]` in analogy with the
 #'     standard 4-beam fields.
 #'
-#' @section Accessing and altering information within \code{\link{adp-class}} objects:
-#' \emph{Extracting values} Matrix data may be accessed as illustrated
-#' above, e.g.  or an adp object named \code{adv}, the data are provided by
-#' \code{adp[["v"]]}, \code{adp[["a"]]}, and \code{adp[["q"]]}.  As a
+#' @section Accessing and altering information within [adp-class] objects:
+#' *Extracting values* Matrix data may be accessed as illustrated
+#' above, e.g.  or an adp object named `adv`, the data are provided by
+#' `adp[["v"]]`, `adp[["a"]]`, and `adp[["q"]]`.  As a
 #' convenience, the last two of these can be accessed as numeric (as opposed to
-#' raw) values by e.g.  \code{adp[["a", "numeric"]]}.  The vectors are accessed
-#' in a similar way, e.g. \code{adp[["heading"]]}, etc.  Quantities in the
-#' \code{metadata} slot are also available by name, e.g.
-#' \code{adp[["velocityResolution"]]}, etc.
+#' raw) values by e.g.  `adp[["a", "numeric"]]`.  The vectors are accessed
+#' in a similar way, e.g. `adp[["heading"]]`, etc.  Quantities in the
+#' `metadata` slot are also available by name, e.g.
+#' `adp[["velocityResolution"]]`, etc.
 #'
-#' \emph{Assigning values.} This follows the standard form, e.g. to increase
-#' all velocity data by 1 cm/s, use \code{adp[["v"]] <- 0.01 + adp[["v"]]}.
+#' *Assigning values.* This follows the standard form, e.g. to increase
+#' all velocity data by 1 cm/s, use `adp[["v"]] <- 0.01 + adp[["v"]]`.
 #'
-#' \emph{Overview of contents} The \code{show} method (e.g.
-#' \code{show(d)}) displays information about an ADP object named \code{d}.
+#' *Overview of contents* The `show` method (e.g.
+#' `show(d)`) displays information about an ADP object named `d`.
 #'
 #' @section Dealing with suspect data:
 #' There are many possibilities for confusion
-#' with \code{adp} devices, owing partly to the flexibility that manufacturers
+#' with `adp` devices, owing partly to the flexibility that manufacturers
 #' provide in the setup.  Prudent users will undertake many tests before trusting
 #' the details of the data.  Are mean currents in the expected direction, and of
 #' the expected magnitude, based on other observations or physical constraints?
@@ -202,30 +198,31 @@
 #' time wasted.
 #'
 #' @section References:
-#' 1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
-#' format.} P/N 957-6156-00 (November 2007).
+#' 1. Teledyne-RDI, 2007.
+#' *WorkHorse commands and output data format.*
+#' P/N 957-6156-00 (November 2007).
 #'
-#' 2. Teledyne-RDI, 2012. \emph{VmDas User's Guide, Ver. 1.46.5}.
+#' 2. Teledyne-RDI, 2012. *VmDas User's Guide, Ver. 1.46.5*.
 #'
 #' @seealso
 #' A file containing ADP data is usually recognized by Oce, and so
-#' \code{\link{read.oce}} will usually read the data.  If not, one may use the
-#' general ADP function \code{\link{read.adp}} or specialized variants
-#' \code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}},
-#' \code{\link{read.adp.ad2cp}},
-#' \code{\link{read.adp.sontek}} or \code{\link{read.adp.sontek.serial}}.
+#' [read.oce()] will usually read the data.  If not, one may use the
+#' general ADP function [read.adp()] or specialized variants
+#' [read.adp.rdi()], [read.adp.nortek()],
+#' [read.adp.ad2cp()],
+#' [read.adp.sontek()] or [read.adp.sontek.serial()].
 #'
-#' ADP data may be plotted with \code{\link{plot,adp-method}}, which is a
-#' generic function so it may be called simply as \code{plot}.
+#' ADP data may be plotted with [plot,adp-method()], which is a
+#' generic function so it may be called simply as `plot`.
 #'
 #' Statistical summaries of ADP data are provided by the generic function
-#' \code{summary}, while briefer overviews are provided with \code{show}.
+#' `summary`, while briefer overviews are provided with `show`.
 #'
 #' Conversion from beam to xyz coordinates may be done with
-#' \code{\link{beamToXyzAdp}}, and from xyz to enu (east north up) may be done
-#' with \code{\link{xyzToEnuAdp}}.  \code{\link{toEnuAdp}} may be used to
+#' [beamToXyzAdp()], and from xyz to enu (east north up) may be done
+#' with [xyzToEnuAdp()].  [toEnuAdp()] may be used to
 #' transfer either beam or xyz to enu.  Enu may be converted to other coordinates
-#' (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
+#' (e.g. aligned with a coastline) with [enuToOtherAdp()].
 #'
 #' @family classes provided by oce
 #' @family things related to adp data
@@ -264,7 +261,8 @@ NULL
 
 setMethod(f="initialize",
           signature="adp",
-          definition=function(.Object, time, distance, v, a, q, oceCoordinate="enu", orientation="upward") {
+          definition=function(.Object, time, distance, v, a, q, oceCoordinate="enu", orientation="upward", ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(time)) .Object@data$time <- time
               if (!missing(distance)) {
                   .Object@data$distance <- distance
@@ -291,15 +289,19 @@ setMethod(f="initialize",
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle Flags in adp Objects
+#'
 #' @details
-#' If \code{flags} and \code{actions} are not provided, the
+#' If `flags` and `actions` are not provided, the
 #' default is to consider a flag value of 1 to indicate bad data,
 #' and 0 to indicate good data. Note that it only makes sense to use
-#' velocity (\code{v}) flags, because other flags are, at least
-#' for some instruments, stored as \code{raw} quantities, and such
-#' quantities may not be set to \code{NA}.
-#' @param object A \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' velocity (`v`) flags, because other flags are, at least
+#' for some instruments, stored as `raw` quantities, and such
+#' quantities may not be set to `NA`.
+#'
+#' @param object an [adp-class] object.
+#'
 #' @template handleFlagsTemplate
+#'
 #' @examples
 #' # Flag low "goodness" or high "error beam" values.
 #' library(oce)
@@ -322,9 +324,8 @@ setMethod(f="initialize",
 #' plot(adpClean, which="u1")
 #'
 #' @family things related to adp data
-setMethod("handleFlags",
-          c(object="adp", flags="ANY", actions="ANY", debug="ANY"),
-          function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
+setMethod("handleFlags", signature=c(object="adp", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
+          definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               ## Flag=1 means bad velocity; 0 means good
               if (is.null(flags)) {
@@ -338,7 +339,7 @@ setMethod("handleFlags",
               }
               if (any(names(actions)!=names(flags)))
                   stop("names of flags and actions must match")
-              handleFlagsInternal(object, flags, actions, debug)
+              handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug)
           })
 
 #' @templateVar class adp
@@ -358,7 +359,7 @@ setMethod("initializeFlags",
 
 
 #' @templateVar class adp
-#' @templateVar note The only flag that may be set is \code{v}, for the array holding velocity. See \dQuote{Indexing rules}, noting that adp data are stored in 3D arrays; Example 1 shows using a data frame for \code{i}, while Example 2 shows using an array.
+#' @templateVar note The only flag that may be set is `v`, for the array holding velocity. See \dQuote{Indexing rules}, noting that adp data are stored in 3D arrays; Example 1 shows using a data frame for `i`, while Example 2 shows using an array.
 #' @template setFlagsTemplate
 #' @examples
 #' library(oce)
@@ -404,17 +405,21 @@ setMethod("setFlags",
 
 #' Summarize an ADP Object
 #'
-#' Summarize data in an \code{adp} object.
+#' Summarize data in an `adp` object.
 #'
 #' Pertinent summary information is presented.
 #'
 #' @aliases summary.adp summary,adp,missing-method summary,adp-method
-#' @param object an object of class \code{"adp"}, usually, a result of a call
-#' to \code{\link{read.oce}}, \code{\link{read.adp.rdi}}, or
-#' \code{\link{read.adp.nortek}}.
+#'
+#' @param object an object of class `"adp"`, usually, a result of a call
+#' to [read.oce()], [read.adp.rdi()], or
+#' [read.adp.nortek()].
+#'
 #' @param \dots further arguments passed to or from other methods.
-#' @return A matrix containing statistics of the elements of the \code{data}
+#'
+#' @return A matrix containing statistics of the elements of the `data`
 #' slot.
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to adp data
@@ -510,6 +515,9 @@ setMethod(f="summary",
               ##             1 / subsampleDeltat))
               metadataNames <- names(object@metadata)
               cat("* Frequency:         ", object[["frequency"]], "kHz\n", ...)
+              if ("ensembleNumber" %in% names(object@metadata)) {
+                  cat(paste("* Ensemble Numbers:  ", vectorShow(object@metadata$ensembleNumber, msg="")))
+              }
               isAD2CP <- is.ad2cp(object)
               if (!isAD2CP) {
                   if ("numberOfCells" %in% metadataNames) {
@@ -528,7 +536,16 @@ setMethod(f="summary",
                       if (is.null(oceCoordinate)) "?" else oceCoordinate, "[presently]\n", ...)
                   numberOfBeams <- object[["numberOfBeams"]]
                   beamAngle <- object[["beamAngle"]]
+                  ## As of Aug 10, 2019, orientation may be a vector, so we summarize
+                  ## a table of values, if so.
                   orientation <- object[["orientation"]]
+                  if (length(orientation) > 1) {
+                      torientation <- table(orientation)
+                      orientation <- paste(unlist(lapply(names(torientation),
+                                                         function(x)
+                                                           paste(x, torientation[[x]], sep=":"))),
+                                           collapse=", ")
+                  }
                   beamUnspreaded <- object[["oceBeamUnspreaded"]]
                   cat("* Beams::\n")
                   cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "\n")
@@ -558,7 +575,7 @@ setMethod(f="summary",
                           cat("    Cell size:          ", object[["cellSize", rt]], "\n")
                           numberOfBeams <- object[["numberOfBeams", rt]]
                           cat("    Number of beams:    ", numberOfBeams, "\n")
-                          cat("    Beam angle:         ", if (numberOfBeams == 1) 0 else object[["beamAngle", rt]], "\n")
+                          cat("    Beam angle:         ", if (numberOfBeams == 1) 0 else object[["beamAngle"]], "\n")
                           cat("    Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
                       }
                   }
@@ -590,7 +607,7 @@ setMethod(f="concatenate",
 
 #' @title Extract Something from an adp Object
 #'
-#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param x an [adp-class] object.
 #'
 #' @examples
 #' data(adp)
@@ -602,14 +619,14 @@ setMethod(f="concatenate",
 #'
 #' @template sub_subTemplate
 #'
-#' @section Details of the specialized \code{adp} method:
+#' @section Details of the specialized `adp` method:
 #'
 #' In addition to the usual extraction of elements by name, some shortcuts
-#' are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly
-#' for the other velocity components. The \code{a} and \code{q}
-#' data can be retrieved in \code{\link{raw}} form or numeric
+#' are also provided, e.g. `x[["u1"]]` retrieves `v[,1]`, and similarly
+#' for the other velocity components. The `a` and `q`
+#' data can be retrieved in [raw()] form or numeric
 #' form (see examples). The coordinate system may be
-#' retrieved with e.g. \code{x[["coordinate"]]}.
+#' retrieved with e.g. `x[["coordinate"]]`.
 #'
 #' @author Dan Kelley
 #'
@@ -845,13 +862,14 @@ setMethod(f="[[",
               }
           })
 
-#' @title Replace Parts of an ADP Object
-#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
-#' @template sub_subsetTemplate
+#' Replace Parts of an ADP Object
 #'
-#' @details
 #' In addition to the usual insertion of elements by name, note
-#' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
+#' that e.g. `pitch` gets stored into `pitchSlow`.
+#'
+#' @param x an [adp-class] object.
+#'
+#' @template sub_subsetTemplate
 #'
 #' @author Dan Kelley
 #'
@@ -912,29 +930,41 @@ setValidity("adp",
 #' Subset an ADP Object
 #'
 #' Subset an adp (acoustic Doppler profile) object, in a manner that is function
-#' is somewhat analogous to \code{\link{subset.data.frame}}. For any data type,
-#' subsetting can be by \code{time} or \code{distance}, but these may not be
-#' combined; use a sequence of calls to subset by both. For the special
-#' case of AD2CP data (see \code{\link{read.adp.ad2cp}}), it is possible to subset
-#' to the "average" data records with \code{subset="average"}, to the
-#' "burst" records with \code{subset="burst"}, or to the "interleavedBurst"
-#' with \code{subset="interleavedBurst"}; note that no warning is issued,
+#' is somewhat analogous to [subset.data.frame()].
+#'
+#' For any data type,
+#' subsetting can be by `time`, `ensembleNumber`, or `distance`.
+#' These may not be combined, but it is easy to use a string of calls to
+#' carry out combined operations, e.g.
+#' `subset(subset(adp,distance<d0), time<t0)`
+#'
+#' For the special
+#' case of AD2CP data (see [read.adp.ad2cp()]), it is possible to subset
+#' to the "average" data records with `subset="average"`, to the
+#' "burst" records with `subset="burst"`, or to the "interleavedBurst"
+#' with `subset="interleavedBurst"`; note that no warning is issued,
 #' if this leaves an object with no useful data.
 #'
-#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param x an [adp-class] object.
 #'
-#' @param subset A condition to be applied to the \code{data} portion of
-#' \code{x}.  See \sQuote{Details}.
+#' @param subset A condition to be applied to the `data` portion of
+#' `x`.  See \sQuote{Details}.
 #'
 #' @param ... Ignored.
 #'
-#' @return A new \code{\link{adp-class}} object.
+#' @return An [adp-class] object.
 #'
 #' @examples
 #' library(oce)
 #' data(adp)
-#' # First part of time series
-#' plot(subset(adp, time < mean(range(adp[['time']]))))
+#' # 1. Look at first part of time series, organized by time
+#' earlyTime <- subset(adp, time < mean(range(adp[['time']])))
+#' plot(earlyTime)
+#'
+#' # 2. Look at first ten ensembles (AKA profiles)
+#' en <- adp[["ensembleNumber"]]
+#' firstTen <- subset(adp, ensembleNumber < en[11])
+#' plot(firstTen)
 #'
 #' @author Dan Kelley
 #'
@@ -951,11 +981,22 @@ setMethod(f="subset",
                   debug <- dots$debug
               if (missing(subset))
                   stop("must give 'subset'")
-              if (length(grep("time", subsetString))) {
-                  oceDebug(debug, "subsetting an adp by time\n")
-                  if (length(grep("distance", subsetString)))
-                      stop("cannot subset by both time and distance; split into multiple calls")
-                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+              if (grepl("time", subsetString) || grepl("ensembleNumber", subsetString)) {
+                  if (grepl("time", subsetString)) {
+                      oceDebug(debug, "subsetting an adp by time\n")
+                      if (length(grep("distance", subsetString)))
+                          stop("cannot subset by both time and distance; split into multiple calls")
+                      keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  } else if (grepl("ensembleNumber", subsetString)) {
+                      oceDebug(debug, "subsetting an adp by ensembleNumber\n")
+                      if (length(grep("distance", subsetString)))
+                          stop("cannot subset by both ensembleNumber and distance; split into multiple calls")
+                      if (!"ensembleNumber" %in% names(x@metadata))
+                          stop("cannot subset by ensembleNumber because this adp object lacks that information")
+                      keep <- eval(substitute(subset), x@metadata, parent.frame(2))
+                  } else {
+                      stop("internal coding error -- please report to developers")
+                  }
                   names <- names(x@data)
                   haveDia <- "timeDia" %in% names
                   if (haveDia) {
@@ -968,7 +1009,13 @@ setMethod(f="subset",
                   if (sum(keep) < 2)
                       stop("must keep at least 2 profiles")
                   res <- x
-                  ## FIXME: are we handling slow timescale data?
+                  ## Update those metadata that have one value per ensemble
+                  mnames <- names(x@metadata)
+                  for (name in c("ensembleNumber", "orientation")) {
+                      if (name %in% mnames)
+                          res@metadata[[name]] <- x@metadata[[name]][keep]
+                  }
+                  ## FIXME: check to see if we handling slow timescale data properly
                   for (name in names(x@data)) {
                       if (length(grep("Dia$", name))) {
                           if ("distance" == name)
@@ -1079,22 +1126,29 @@ setMethod(f="subset",
 #' Create an ADP Object
 #'
 #' @details
-#' Construct an object of \code{\link{adp-class}}.  Only a basic
-#' subset of the typical \code{data} slot is represented in the arguments
+#' Construct an [adp-class] object.  Only a basic
+#' subset of the typical `data` slot is represented in the arguments
 #' to this function, on the assumption that typical usage in reading data
-#' is to set up a nearly-blank \code{\link{adp-class}} object, the \code{data}
+#' is to set up a nearly-blank [adp-class] object, the `data`
 #' slot of which is then inserted.  However, in some testing situations it
-#' can be useful to set up artificial \code{adp} objects, so the other
+#' can be useful to set up artificial `adp` objects, so the other
 #' arguments may be useful.
 #'
 #' @param time of observations in POSIXct format
+#'
 #' @param distance to centre of bins
+#'
 #' @param v array of velocities, with first index for time, second for bin number, and third for beam number
-#' @param a amplitude, a \code{\link{raw}} array with dimensions matching \code{u}
-#' @param q quality, a \code{\link{raw}} array with dimensions matching \code{u}
-#' @param orientation a string indicating sensor orientation, e.g. \code{"upward"} and \code{"downward"}
-#' @param coordinate a string indicating the coordinate system, \code{"enu"}, \code{"beam"}, \code{"xy"}, or \code{"other"}
-#' @return An object of \code{\link{adp-class}}.
+#'
+#' @param a amplitude, a [raw()] array with dimensions matching `u`
+#'
+#' @param q quality, a [raw()] array with dimensions matching `u`
+#'
+#' @param orientation a string indicating sensor orientation, e.g. `"upward"` and `"downward"`
+#'
+#' @param coordinate a string indicating the coordinate system, `"enu"`, `"beam"`, `"xy"`, or `"other"`
+#'
+#' @return An [adp-class] object.
 #'
 #' @examples
 #' data(adp)
@@ -1176,15 +1230,19 @@ as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coor
 
 #' Get names of Acoustic-Doppler Beams
 #'
-#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param x an [adp-class] object.
+#'
 #' @param which an integer indicating beam number.
+#'
 #' @return A character string containing a reasonable name for the beam, of the
-#' form \code{"beam 1"}, etc., for beam coordinates, \code{"east"}, etc. for
-#' enu coordinates, \code{"u"}, etc. for \code{"xyz"}, or \code{"u'"}, etc.,
-#' for \code{"other"} coordinates.  The coordinate system is determined
-#' with \code{x[["coordinate"]]}.
+#' form `"beam 1"`, etc., for beam coordinates, `"east"`, etc. for
+#' enu coordinates, `"u"`, etc. for `"xyz"`, or `"u'"`, etc.,
+#' for `"other"` coordinates.  The coordinate system is determined
+#' with `x[["coordinate"]]`.
+#'
 #' @author Dan Kelley
-#' @seealso This is used by \code{\link{read.oce}}.
+#'
+#' @seealso This is used by [read.oce()].
 #' @family things related to adp data
 #' @family things related to adv data
 beamName <- function(x, which)
@@ -1210,24 +1268,23 @@ beamName <- function(x, which)
 
 #' Read an ADP File
 #'
-#' Read an ADP data file, producing an \code{adp} object, i.e. one inheriting
-#' from \code{\link{adp-class}}.
+#' Read an ADP data file, producing an [adp-class] object.
 #'
 #' Several file types can be handled.  Some of
 #' these functions are wrappers that map to device names, e.g.
-#' \code{read.aquadoppProfiler} does its work by calling
-#' \code{read.adp.nortek}; in this context, it is worth noting that the
+#' `read.aquadoppProfiler` does its work by calling
+#' `read.adp.nortek`; in this context, it is worth noting that the
 #' ``aquadopp'' instrument is a one-cell profiler that might just as well have
-#' been documented under the heading \code{\link{read.adv}}.
+#' been documented under the heading [read.adv()].
 #'
 #' @param manufacturer an optional character string indicating the manufacturer, used by
-#' the general function \code{read.adp} to select a subsidiary function to use. If this
-#' is not given, then \code{\link{oceMagic}} is used to try to infer the type. If this
-#' is provided, then the value \code{"rdi"} will cause \code{\link{read.adp.rdi}}
-#' to be used, \code{"nortek"} will cause \code{\link{read.adp.nortek}} to be used,
-#' and \code{"sontek"} will cause \code{\link{read.adp.sontek}} to be used.
+#' the general function `read.adp` to select a subsidiary function to use. If this
+#' is not given, then [oceMagic()] is used to try to infer the type. If this
+#' is provided, then the value `"rdi"` will cause [read.adp.rdi()]
+#' to be used, `"nortek"` will cause [read.adp.nortek()] to be used,
+#' and `"sontek"` will cause [read.adp.sontek()] to be used.
 #'
-#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' @param despike if `TRUE`, [despike()] will be used to clean
 #' anomalous spikes in heading, etc.
 #' @template adpTemplate
 #'
@@ -1256,6 +1313,8 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
         by <- 1
     if (!toGiven)
         to <- 0
+    if (is.character(file) && 0 == file.info(file)$size)
+        stop("empty file")
 
     if (missing(manufacturer)) {
         oceDebug(debug, "using read.oce() since 'manufacturer' argument is missing\n")
@@ -1293,218 +1352,219 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' Create a summary plot of data measured by an acoustic doppler profiler.
 #'
 #' The plot may have one or more panels, with the content being controlled by
-#' the \code{which} argument.
+#' the `which` argument.
 #'
-#' \itemize{
-#'
-#' \item \code{which=1:4} (or \code{which="u1"} to \code{"u4"}) yield a
-#' distance-time image plot of a velocity component.  If \code{x} is in
-#' \code{beam} coordinates (signalled by
-#' \code{metadata$oce.coordinate=="beam"}), this will be the beam velocity,
-#' labelled \code{b[1]} etc.  If \code{x} is in xyz coordinates (sometimes
+#' * `which=1:4` (or `which="u1"` to `"u4"`) yield a
+#' distance-time image plot of a velocity component.  If `x` is in
+#' `beam` coordinates (signalled by
+#' `metadata$oce.coordinate=="beam"`), this will be the beam velocity,
+#' labelled `b[1]` etc.  If `x` is in xyz coordinates (sometimes
 #' called frame coordinates, or ship coordinates), it will be the velocity
-#' component to the right of the frame or ship (labelled \code{u} etc).
-#' Finally, if \code{x} is in \code{"enu"} coordinates, the image will show the
-#' the eastward component (labelled \code{east}).  If \code{x} is in
-#' \code{"other"} coordinates, it will be component corresponding to east,
-#' after rotation (labelled \code{u\'}).  Note that the coordinate is set by
-#' \code{\link{read.adp}}, or by \code{\link{beamToXyzAdp}},
-#' \code{\link{xyzToEnuAdp}}, or \code{\link{enuToOtherAdp}}.
+#' component to the right of the frame or ship (labelled `u` etc).
+#' Finally, if `x` is in `"enu"` coordinates, the image will show the
+#' the eastward component (labelled `east`).  If `x` is in
+#' `"other"` coordinates, it will be component corresponding to east,
+#' after rotation (labelled `u\'`).  Note that the coordinate is set by
+#' [read.adp()], or by [beamToXyzAdp()],
+#' [xyzToEnuAdp()], or [enuToOtherAdp()].
 #'
-#' \item \code{which=5:8} (or \code{which="a1"} to \code{"a4"}) yield
+#' * `which=5:8` (or `which="a1"` to `"a4"`) yield
 #' distance-time images of backscatter intensity of the respective beams.  (For
 #' data derived from Teledyne-RDI instruments, this is the item called ``echo
 #' intensity.'')
 #'
-#' \item \code{which=9:12} (or \code{which="q1"} to \code{"q4"}) yield
+#' * `which=9:12` (or `which="q1"` to `"q4"`) yield
 #' distance-time images of signal quality for the respective beams.  (For RDI
 #' data derived from instruments, this is the item called ``correlation
 #' magnitude.'')
 #'
-#' \item \code{which=60} or \code{which="map"} draw a map of location(s).
+#' * `which=60` or `which="map"` draw a map of location(s).
 #'
-#' \item \code{which=70:73} (or \code{which="g1"} to \code{"g4"}) yield
+#' * `which=70:73` (or `which="g1"` to `"g4"`) yield
 #' distance-time images of percent-good for the respective beams.  (For data
 #' derived from Teledyne-RDI instruments, which are the only instruments that
 #' yield this item, it is called ``percent good.'')
 #'
-#' \item \code{which=80:83} (or \code{which="vv"}, \code{which="va"},
-#' \code{which="vq"}, and \code{which="vg"}) yield distance-time
+#' * `which=80:83` (or `which="vv"`, `which="va"`,
+#' `which="vq"`, and `which="vg"`) yield distance-time
 #' images of the vertical beam fields for a 5 beam "SentinelV" ADCP
 #' from Teledyne RDI.
 #'
-#' \item \code{which="vertical"} yields a two panel distance-time
+#' * `which="vertical"` yields a two panel distance-time
 #' image of vertical beam velocity and amplitude.
 #'
-#' \item \code{which=13} (or \code{which="salinity"}) yields a time-series plot
+#' * `which=13` (or `which="salinity"`) yields a time-series plot
 #' of salinity.
 #'
-#' \item \code{which=14} (or \code{which="temperature"}) yields a time-series
+#' * `which=14` (or `which="temperature"`) yields a time-series
 #' plot of temperature.
 #'
-#' \item \code{which=15} (or \code{which="pressure"}) yields a time-series plot
+#' * `which=15` (or `which="pressure"`) yields a time-series plot
 #' of pressure.
 #'
-#' \item \code{which=16} (or \code{which="heading"}) yields a time-series plot
+#' * `which=16` (or `which="heading"`) yields a time-series plot
 #' of instrument heading.
 #'
-#' \item \code{which=17} (or \code{which="pitch"}) yields a time-series plot of
+#' * `which=17` (or `which="pitch"`) yields a time-series plot of
 #' instrument pitch.
 #'
-#' \item \code{which=18} (or \code{which="roll"}) yields a time-series plot of
+#' * `which=18` (or `which="roll"`) yields a time-series plot of
 #' instrument roll.
 #'
-#' \item \code{which=19} yields a time-series plot of distance-averaged
+#' * `which=19` yields a time-series plot of distance-averaged
 #' velocity for beam 1, rightward velocity, eastward velocity, or
 #' rotated-eastward velocity, depending on the coordinate system.
 #'
-#' \item \code{which=20} yields a time-series of distance-averaged velocity for
+#' * `which=20` yields a time-series of distance-averaged velocity for
 #' beam 2, foreward velocity, northward velocity, or rotated-northward
 #' velocity, depending on the coordinate system.
 #'
-#' \item \code{which=21} yields a time-series of distance-averaged velocity for
+#' * `which=21` yields a time-series of distance-averaged velocity for
 #' beam 3, up-frame velocity, upward velocity, or rotated-upward velocity,
 #' depending on the coordinate system.
 #'
-#' \item \code{which=22} yields a time-series of distance-averaged velocity for
-#' beam 4, for \code{beam} coordinates, or velocity estimate, for other
+#' * `which=22` yields a time-series of distance-averaged velocity for
+#' beam 4, for `beam` coordinates, or velocity estimate, for other
 #' coordinates.  (This is ignored for 3-beam data.)
 #'
-#' \item \code{which="progressiveVector"} (or \code{which=23}) yields a progressive-vector diagram in the horizontal
-#' plane, plotted with \code{asp=1}.  Normally, the depth-averaged velocity
-#' components are used, but if the \code{control} list contains an item named
-#' \code{bin}, then the depth bin will be used (with an error resulting if the
+#' * `which="progressiveVector"` (or `which=23`) yields a progressive-vector diagram in the horizontal
+#' plane, plotted with `asp=1`.  Normally, the depth-averaged velocity
+#' components are used, but if the `control` list contains an item named
+#' `bin`, then the depth bin will be used (with an error resulting if the
 #' bin is out of range).
 #'
-#' \item \code{which=24} yields a time-averaged profile of the first component
-#' of velocity (see \code{which=19} for the meaning of the component, in
+#' * `which=24` yields a time-averaged profile of the first component
+#' of velocity (see `which=19` for the meaning of the component, in
 #' various coordinate systems).
 #'
-#' \item \code{which=25} as for 24, but the second component.
+#' * `which=25` as for 24, but the second component.
 #'
-#' \item \code{which=26} as for 24, but the third component.
+#' * `which=26` as for 24, but the third component.
 #'
-#' \item \code{which=27} as for 24, but the fourth component (if that makes
+#' * `which=27` as for 24, but the fourth component (if that makes
 #' sense, for the given instrument).
 #'
-#' \item \code{which=28} or \code{"uv"} yields velocity plot in the horizontal
-#' plane, i.e. u[2] versus u[1].  If the number of data points is small, a
-#' scattergraph is used, but if it is large, \code{\link{smoothScatter}} is
+#' * `which=28` or `"uv"` yields velocity plot in the horizontal
+#' plane, i.e. `u[2]` versus `u[1]`.  If the number of data points is small, a
+#' scattergraph is used, but if it is large, [smoothScatter()] is
 #' used.
 #'
-#' \item \code{which=29} or \code{"uv+ellipse"} as the \code{"uv"} case, but
+#' * `which=29` or `"uv+ellipse"` as the `"uv"` case, but
 #' with an added indication of the tidal ellipse, calculated from the eigen
 #' vectors of the covariance matrix.
 #'
-#' \item \code{which=30} or \code{"uv+ellipse+arrow"} as the
-#' \code{"uv+ellipse"} case, but with an added arrow indicating the mean
+#' * `which=30` or `"uv+ellipse+arrow"` as the
+#' `"uv+ellipse"` case, but with an added arrow indicating the mean
 #' current.
 #'
-#' \item \code{which=40} or \code{"bottomRange"} for average bottom range from
+#' * `which=40` or `"bottomRange"` for average bottom range from
 #' all beams of the instrument.
 #'
-#' \item \code{which=41} to \code{44} (or \code{"bottomRange1"} to
-#' \code{"bottomRange4"}) for bottom range from beams 1 to 4.
+#' * `which=41` to `44` (or `"bottomRange1"` to
+#' `"bottomRange4"`) for bottom range from beams 1 to 4.
 #'
-#' \item \code{which=50} or \code{"bottomVelocity"} for average bottom velocity
+#' * `which=50` or `"bottomVelocity"` for average bottom velocity
 #' from all beams of the instrument.
 #'
-#' \item \code{which=51} to \code{54} (or \code{"bottomVelocity1"} to
-#' \code{"bottomVelocity4"}) for bottom velocity from beams 1 to 4.
+#' * `which=51` to `54` (or `"bottomVelocity1"` to
+#' `"bottomVelocity4"`) for bottom velocity from beams 1 to 4.
 #'
-#' \item \code{which=55} (or \code{"heaving"}) for time-integrated,
+#' * `which=55` (or `"heaving"`) for time-integrated,
 #' depth-averaged, vertical velocity, i.e. a time series of heaving.
 #'
-#' \item \code{which=100} (or \code{"soundSpeed"}) for a time series of sound
-#' speed.
+#' * `which=100` (or `"soundSpeed"`) for a time series of sound speed.
 #'
-#' }
 #'
 #' In addition to the above, the following shortcuts are defined:
 #'
-#' \itemize{
-#'
-#' \item \code{which="velocity"} equivalent to \code{which=1:3} or \code{1:4}
+#' * `which="velocity"` equivalent to `which=1:3` or `1:4`
 #' (depending on the device) for velocity components.
 #'
-#' \item \code{which="amplitude"} equivalent to \code{which=5:7}
-#' or \code{5:8} (depending on the device) for backscatter intensity
+#' * `which="amplitude"` equivalent to `which=5:7`
+#' or `5:8` (depending on the device) for backscatter intensity
 #' components.
 #'
-#' \item \code{which="quality"} equivalent to \code{which=9:11} or \code{9:12}
+#' * `which="quality"` equivalent to `which=9:11` or `9:12`
 #' (depending on the device) for quality components.
 #'
-#' \item \code{which="hydrography"} equivalent to \code{which=14:15}
+#' * `which="hydrography"` equivalent to `which=14:15`
 #' for temperature and pressure.
 #'
-#' \item \code{which="angles"} equivalent to \code{which=16:18} for
+#' * `which="angles"` equivalent to `which=16:18` for
 #' heading, pitch and roll.
 #'
-#' }
-#'
-#' The color scheme for image plots (\code{which} in 1:12) is provided by the
-#' \code{col} argument, which is passed to \code{\link{image}} to do the actual
+#' The color scheme for image plots (`which` in 1:12) is provided by the
+#' `col` argument, which is passed to [image()] to do the actual
 #' plotting.  See \dQuote{Examples} for some comparisons.
 #'
 #' A common quick-look plot to assess mooring movement is to use
-#' \code{which=15:18} (pressure being included to signal the tide, and tidal
+#' `which=15:18` (pressure being included to signal the tide, and tidal
 #' currents may dislodge a mooring or cause it to settle).
 #'
-#' By default, \code{plot,adp-method} uses a \code{zlim} value for the
-#' \code{\link{image}} that is constructed to contain all the data, but to be
+#' By default, `plot,adp-method` uses a `zlim` value for the
+#' [image()] that is constructed to contain all the data, but to be
 #' symmetric about zero.  This is done on a per-panel basis, and the scale is
 #' plotted at the top-right corner, along with the name of the variable being
-#' plotted. You may also supply \code{zlim} as one of the \dots{} arguments,
+#' plotted. You may also supply `zlim` as one of the \dots{} arguments,
 #' but be aware that a reasonable limit on horizontal velocity components is
 #' unlikely to be of much use for the vertical component.
 #'
 #' A good first step in the analysis of measurements made from a moored device
-#' (stored in \code{d}, say) is to do \code{plot(d, which=14:18)}.  This shows
+#' (stored in `d`, say) is to do `plot(d, which=14:18)`.  This shows
 #' time series of water properties and sensor orientation, which is helpful in
 #' deciding which data to trim at the start and end of the deployment, because
 #' they were measured on the dock or on the ship as it travelled to the mooring
 #' site.
 #'
-#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param x an [adp-class] object.
+#'
 #' @param which list of desired plot types.  These are graphed in panels
-#' running down from the top of the page.  If \code{which} is not given,
+#' running down from the top of the page.  If `which` is not given,
 #' the plot will show images of the distance-time dependence of velocity
-#' for each beam. See \dQuote{Details} for the meanings of various values of \code{which}.
-#' @param j optional string specifying a sub-class of \code{which}. For
-#' Nortek Aquadopp profilers, this may either be \code{"default"} (or missing)
-#' to get the main signal, or \code{"diagnostic"} to get a diagnostic
+#' for each beam. See \dQuote{Details} for the meanings of various values of `which`.
+#'
+#' @param j optional string specifying a sub-class of `which`. For
+#' Nortek Aquadopp profilers, this may either be `"default"` (or missing)
+#' to get the main signal, or `"diagnostic"` to get a diagnostic
 #' signal. For Nortek AD2CP profiles, this may be any one of
-#' \code{"average"} (or missing) for averaged data, \code{"burst"}
-#' for burst data, or \code{"interleaved burst"} for interleaved burst data;
+#' `"average"` (or missing) for averaged data, `"burst"`
+#' for burst data, or `"interleaved burst"` for interleaved burst data;
 #' more data types are provided by that instrument, and may be added here
 #' at some future time.
+#'
 #' @param col optional indication of color(s) to use.  If not provided, the
-#' default for images is \code{oce.colorsPalette(128,1)}, and for lines and
+#' default for images is `oce.colorsPalette(128,1)`, and for lines and
 #' points is black.
+#'
 #' @param breaks optional breaks for color scheme
-#' @param zlim a range to be used as the \code{zlim} parameter to the
-#' \code{\link{imagep}} call that is used to create the image.  If omitted,
-#' \code{zlim} is set for each panel individually, to encompass the data of the
+#'
+#' @param zlim a range to be used as the `zlim` parameter to the
+#' [imagep()] call that is used to create the image.  If omitted,
+#' `zlim` is set for each panel individually, to encompass the data of the
 #' panel and to be centred around zero.  If provided as a two-element vector,
 #' then that is used for each panel.  If provided as a two-column matrix, then
 #' each panel of the graph uses the corresponding row of the matrix; for
-#' example, setting \code{zlim=rbind(c(-1,1),c(-1,1),c(-.1,.1))} might make
-#' sense for \code{which=1:3}, so that the two horizontal velocities have one
+#' example, setting `zlim=rbind(c(-1,1),c(-1,1),c(-.1,.1))` might make
+#' sense for `which=1:3`, so that the two horizontal velocities have one
 #' scale, and the smaller vertical velocity has another.
+#'
 #' @param titles optional vector of character strings to be used as labels for
 #' the plot panels.  For images, these strings will be placed in the right hand
 #' side of the top margin.  For timeseries, these strings are ignored.  If this
-#' is provided, its length must equal that of \code{which}.
+#' is provided, its length must equal that of `which`.
+#'
 #' @param lwd if the plot is of a time-series or scattergraph format with
 #' lines, this is used in the usual way; otherwise, e.g. for image formats,
 #' this is ignored.
+#'
 #' @param type if the plot is of a time-series or scattergraph format, this is
-#' used in the usual way, e.g. \code{"l"} for lines, etc.; otherwise, as for
+#' used in the usual way, e.g. `"l"` for lines, etc.; otherwise, as for
 #' image formats, this is ignored.
+#'
 #' @param ytype character string controlling the type of the y axis for images
-#' (ignored for time series).  If \code{"distance"}, then the y axis will be
+#' (ignored for time series).  If `"distance"`, then the y axis will be
 #' distance from the sensor head, with smaller distances nearer the bottom of
-#' the graph.  If \code{"profile"}, then this will still be true for
+#' the graph.  If `"profile"`, then this will still be true for
 #' upward-looking instruments, but the y axis will be flipped for
 #' downward-looking instruments, so that in either case, the top of the graph
 #' will represent the sample nearest the sea surface.
@@ -1512,59 +1572,81 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' @param drawTimeRange boolean that applies to panels with time as the
 #' horizontal axis, indicating whether to draw the time range in the top-left
 #' margin of the plot.
+#'
 #' @param useSmoothScatter boolean that indicates whether to use
-#' \code{\link{smoothScatter}} in various plots, such as \code{which="uv"}.  If
-#' not provided a default is used, with \code{\link{smoothScatter}} being used
+#' [smoothScatter()] in various plots, such as `which="uv"`.  If
+#' not provided a default is used, with [smoothScatter()] being used
 #' if there are more than 2000 points to plot.
-#' @param missingColor color used to indicate \code{NA} values in images (see
-#' \code{\link{imagep}}); set to \code{NULL} to avoid this indication.
+#'
+#' @param missingColor color used to indicate `NA` values in images (see
+#' [imagep()]); set to `NULL` to avoid this indication.
+#'
 #' @template mgpTemplate
+#'
 #' @template marTemplate
+#'
 #' @param mai.palette margins, in inches, to be added to those calculated for
 #' the palette; alter from the default only with caution
-#' @param tformat optional argument passed to \code{\link{oce.plot.ts}}, for
-#' plot types that call that function.  (See \code{\link{strptime}} for the
+#'
+#' @param tformat optional argument passed to [oce.plot.ts()], for
+#' plot types that call that function.  (See [strptime()] for the
 #' format used.)
-#' @param marginsAsImage boolean, \code{TRUE} to put a wide margin to the right
-#' of time-series plots, even if there are no images in the \code{which} list.
+#'
+#' @param marginsAsImage boolean, `TRUE` to put a wide margin to the right
+#' of time-series plots, even if there are no images in the `which` list.
 #' (The margin is made wide if there are some images in the sequence.)
-#' @param cex size of labels on axes; see \code{\link[graphics]{par}}("cex").
-#' @param cex.axis see \code{\link[graphics]{par}}("cex.axis").
-#' @param cex.main see \code{\link[graphics]{par}}("cex.main").
-#' @param xlim optional 2-element list for \code{xlim}, or 2-column matrix, in
+#'
+#' @param cex numeric character expansion factor for plot symbols; see [par()].
+#'
+#' @param cex.axis,cex.lab character expansion factors for axis numbers and axis names; see [par()].
+#'
+#' @param xlim optional 2-element list for `xlim`, or 2-column matrix, in
 #' which case the rows are used, in order, for the panels of the graph.
-#' @param ylim optional 2-element list for \code{ylim}, or 2-column matrix, in
+#'
+#' @param ylim optional 2-element list for `ylim`, or 2-column matrix, in
 #' which case the rows are used, in order, for the panels of the graph.
+#'
 #' @param control optional list of parameters that may be used for different
-#' plot types.  Possibilities are \code{drawBottom} (a boolean that indicates
-#' whether to draw the bottom) and \code{bin} (a numeric giving the index of
+#' plot types.  Possibilities are `drawBottom` (a boolean that indicates
+#' whether to draw the bottom) and `bin` (a numeric giving the index of
 #' the bin on which to act, as explained in \dQuote{Details}).
-#' @param useLayout set to \code{FALSE} to prevent using \code{\link{layout}}
+#'
+#' @param useLayout set to `FALSE` to prevent using [layout()]
 #' to set up the plot.  This is needed if the call is to be part of a sequence
-#' set up by e.g. \code{par(mfrow)}.
-#' @param coastline a \code{coastline} object, or a character string naming
-#' one.  This is used only for \code{which="map"}.  See notes at
-#' \code{\link{plot,ctd-method}} for more information on built-in coastlines.
+#' set up by e.g. `par(mfrow)`.
+#'
+#' @param coastline a `coastline` object, or a character string naming
+#' one.  This is used only for `which="map"`.  See notes at
+#' [plot,ctd-method()] for more information on built-in coastlines.
+#'
 #' @param span approximate span of map in km
+#'
 #' @param main main title for plot, used just on the top panel, if there are
 #' several panels.
-#' @param grid if \code{TRUE}, a grid will be drawn for each panel.  (This
-#' argument is needed, because calling \code{\link{grid}} after doing a
+#'
+#' @param grid if `TRUE`, a grid will be drawn for each panel.  (This
+#' argument is needed, because calling [grid()] after doing a
 #' sequence of plots will not result in useful results for the individual
 #' panels.
+#'
 #' @param grid.col color of grid
+#'
 #' @param grid.lty line type of grid
+#'
 #' @param grid.lwd line width of grid
 #' @template debugTemplate
+#'
 #' @param \dots optional arguments passed to plotting functions.  For example,
-#' supplying \code{despike=TRUE} will cause time-series panels to be de-spiked
-#' with \code{\link{despike}}.  Another common action is to set the color for
-#' missing values on image plots, with the argument \code{missingColor} (see
-#' \code{\link{imagep}}).  Note that it is an error to give \code{breaks} in
-#' \dots{}, if the formal argument \code{zlim} was also given, because they
+#' supplying `despike=TRUE` will cause time-series panels to be de-spiked
+#' with [despike()].  Another common action is to set the color for
+#' missing values on image plots, with the argument `missingColor` (see
+#' [imagep()]).  Note that it is an error to give `breaks` in
+#' \dots{}, if the formal argument `zlim` was also given, because they
 #' could contradict each other.
-#' @return A list is silently returned, containing \code{xat} and \code{yat},
-#' values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
+#'
+#' @return A list is silently returned, containing `xat` and `yat`,
+#' values that can be used by [oce.grid()] to add a grid to the plot.
+#'
 #' @examples
 #' library(oce)
 #' data(adp)
@@ -1572,8 +1654,10 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' plot(adp, which='temperature', tformat='%H:%M')
 #'
 #' @author Dan Kelley
+#'
 #' @family functions that plot oce data
 #' @family things related to adp data
+#'
 #' @aliases plot.adp
 ## DEVELOPER NOTE: update first test in tests/testthat/test_adp.R if a new 'which' is handled
 setMethod(f="plot",
@@ -1592,7 +1676,7 @@ setMethod(f="plot",
                               mai.palette=rep(0, 4),
                               tformat,
                               marginsAsImage=FALSE,
-                              cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+                              cex=par("cex"), cex.axis=par("cex.axis"), cex.lab=par("cex.lab"),
                               xlim, ylim,
                               control,
                               useLayout=FALSE,
@@ -1603,11 +1687,24 @@ setMethod(f="plot",
                               ...)
           {
               debug <- max(0, min(debug, 4))
-              oceDebug(debug, "plot,adp-method(x,",
-                       ", which=", if (missing(which)) "(missing)" else paste(which, collapse=","),
-                       ", breaks=", if (missing(breaks)) "(missing)" else paste("c(", paste(breaks, collapse=","), ")", sep=""),
-                       ", j=", if (missing(j)) "(missing)" else paste("\"", j, "\"", sep=""), "\"",
-                       ", ...) {\n", sep="", unindent=1)
+              oceDebug(debug, "plot,adp-method(x, ",
+                       argShow(mar),
+                       "\n", sep="", unindent=1, style="bold")
+              oceDebug(debug, "                ",
+                       argShow(mgp),
+                       "\n", sep="", unindent=1, style="bold")
+              oceDebug(debug, "                ",
+                       argShow(which),
+                       "\n", sep="", unindent=1, style="bold")
+              oceDebug(debug, "                ",
+                       argShow(cex),
+                       argShow(cex.axis),
+                       argShow(cex.lab),
+                       "\n", sep="", unindent=1, style="bold")
+              oceDebug(debug, "                ",
+                       argShow(breaks),
+                       argShow(j),
+                       "...) {\n", sep="", unindent=1, style="bold")
               ## oceDebug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
               ## oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
               ## oceDebug(debug, "par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
@@ -1661,39 +1758,18 @@ setMethod(f="plot",
                   stop("In plot,adp-method() : there are no profiles in this dataset", call.=FALSE)
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
+              fac <- if (nw < 3) 1 else 0.66 # try to emulate par(mfrow)
+              ## par(cex=cex*fac, cex.axis=fac*cex.axis, cex.lab=fac*cex.lab) # BUILD-TEST FAILURE
+              ## par(cex=cex*fac)                                             # OK
+              oceDebug(debug, "adp.R:1759 cex=", cex, ", original par('cex')=", par('cex'), style="blue")
+              ##par(cex=cex*fac, cex.axis=fac*cex.axis)                         # OK
+              par(cex.axis=fac*cex.axis, cex.lab=fac*cex.lab) # OK
+              oceDebug(debug, "adp.R:1761 ... after par() call, have par('cex')=", par('cex'), style="blue")
+              rm(fac)
               numberOfBeams <- x[["numberOfBeams", j]]
               oceDebug(debug, "numberOfBeams=", numberOfBeams, " (note: j=\"", j, "\")\n", sep="")
               numberOfCells <- x[["numberOfCells", j]]
               oceDebug(debug, "numberOfCells=", numberOfCells, " (note: j=\"", j, "\")\n", sep="")
-
-              ## DELETE: ## FIXME: delete this block
-              ## DELETE: if (FALSE && "instrumentType" %in% names(x@metadata) && !is.null(x@metadata$instrumentType) && x@metadata$instrumentType == "AD2CP") {
-              ## DELETE:     warning("In plot,adp-method() : AD2CP objects are handled very crudely, ignoring most function arguments", call.=FALSE)
-              ## DELETE:     firstVelo <- which(x[["id"]] == 22)[1]
-              ## DELETE:     if (length(firstVelo)) {
-              ## DELETE:         stop("no average-mode velocity data")
-              ## DELETE:         par(mfrow=c(nw, 1))
-              ## DELETE:         distance <- x[["blankingDistance"]][firstVelo] + x[["cellSize"]][firstVelo]*seq(1, dim(v)[2])
-              ## DELETE:         for (w in which) {
-              ## DELETE:             v <- x[["v"]]
-              ## DELETE:             tt <- x[["time"]][x[["id"]]==22]
-              ## DELETE:             imagep(x=tt, y=distance, z=v[,,4], zlab="beam 4",
-              ## DELETE:                    xlab="Time", ylab=resizableLabel("distance"),
-              ## DELETE:                    zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,4])))
-              ## DELETE:             imagep(x=tt, y=distance, z=v[,,3], zlab="beam 3",
-              ## DELETE:                    xlab="Time", ylab=resizableLabel("distance"),
-              ## DELETE:                    zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,3])))
-              ## DELETE:             imagep(x=tt, y=distance, z=v[,,2], zlab="beam 2",
-              ## DELETE:                    xlab="Time", ylab=resizableLabel("distance"),
-              ## DELETE:                    zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,2])))
-              ## DELETE:             imagep(x=tt, y=distance, z=v[,,1], zlab="beam 1",
-              ## DELETE:                    xlab="Time", ylab=resizableLabel("distance"),
-              ## DELETE:                    zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,1])))
-              ## DELETE:             return(invisible())
-              ## DELETE:         }
-              ## DELETE:     }
-              ## DELETE: }
-
 
               if (nw == 1) {
                   pm <- pmatch(which, c("velocity", "amplitude", "quality", "hydrography", "angles"))
@@ -1778,9 +1854,9 @@ setMethod(f="plot",
                   main <- rep('', length.out=nw)
               else
                   main <- rep(main, length.out=nw)
-              oceDebug(debug, "later on in plot,adp-method:\n")
-              oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
-              oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
+              ## oceDebug(debug, "later on in plot,adp-method:\n")
+              ## oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
+              ## oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
 
               oceDebug(debug, "which:", which, "\n")
               whichOrig <- which
@@ -1846,6 +1922,7 @@ setMethod(f="plot",
               if (showBottom)
                   bottom <- apply(x@data$bottomRange, 1, mean, na.rm=TRUE)
               oceDebug(debug, "showBottom=", showBottom, "\n")
+              oceDebug(debug, "cex=", cex, ", par('cex')=", par('cex'), style="blue")
               if (useLayout) {
                   if (any(which %in% images) || marginsAsImage) {
                       w <- 1.5
@@ -1870,15 +1947,32 @@ setMethod(f="plot",
               ##message("numberOfCells=", numberOfCells)
               haveTimeImages <- any(which %in% images) && 1 < numberOfCells
               oceDebug(debug, 'haveTimeImages=', haveTimeImages, '(if TRUE, it means any timeseries graphs get padding on RHS)\n')
+              par(mar=mar, mgp=mgp)
+              if (haveTimeImages) {
+                  oceDebug(debug, "setting up margin spacing before plotting\n", style="italic")
+                  oceDebug(debug, "  before: ", vectorShow(par("mar")), unindent=1, style="blue")
+                  ## Since zlim not given, this just does calculations
+                  drawPalette(#cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                              debug=debug-1)
+                  oceDebug(debug, "  after: ", vectorShow(par("mar")), unindent=1, style="blue")
+              }
+              omar <- par("mar")
+              oceDebug(debug, vectorShow(omar), style="red")
+              ##oceDebug(debug, "drawTimeRange=", drawTimeRange, "\n", sep="")
+              oceDebug(debug, "cex=", cex, ", par('cex')=", par('cex'), style="blue")
               for (w in 1:nw) {
-                  oceDebug(debug, " which[", w, "]=", which[w], "; drawTimeRange=", drawTimeRange, "\n", sep="")
+                  oceDebug(debug, "plot,adp-method top of loop (before setting par('mar'))\n", style="italic")
+                  oceDebug(debug, vectorShow(par("mar")), style="blue")
+                  oceDebug(debug, vectorShow(par("mai")), style="blue")
+                  oceDebug(debug, vectorShow(omar), style="blue")
+                  par(mar=omar) # ensures all panels start with original mar
+                  oceDebug(debug, "which[", w, "]=", which[w], "\n", sep="", style="red")
                   if (which[w] %in% images) {
                       ## image types
                       skip <- FALSE
                       numberOfBeams <- x[["numberOfBeams", j]]
                       v <- x[["v"]]
                       if (which[w] %in% 1:4) {
-                          oceDebug(debug, "which[", w, "]=", which[w], "\n")
                           ## velocity
                           if (instrumentType == "aquadopp" && j == "diagnostic") {
                               oceDebug(debug, "a diagnostic velocity component image/timeseries\n")
@@ -1907,7 +2001,7 @@ setMethod(f="plot",
                           }
                           oceDebug(debug, "flipy =", flipy, "\n")
                       } else if (which[w] %in% 5:8) {
-                          oceDebug(debug, " which[", w, "]=", which[w], "; this is some type of amplitude\n", sep="")
+                          oceDebug(debug, "which[", w, "]=", which[w], "; this is some type of amplitude\n", sep="")
                           ## amplitude
                           if (j == "diagnostic" && "aDia" %in% names(x@data)) {
                               oceDebug(debug, "a diagnostic amplitude component image/timeseries\n")
@@ -1936,7 +2030,7 @@ setMethod(f="plot",
                               }
                               oceDebug(debug, "zlim: ", paste(zlim, collapse=" "), "\n")
                               zlab <- c(expression(a[1]), expression(a[2]), expression(a[3]), expression(a[4]))[which[w]-4]
-                              oceDebug(debug, "zlab: '", zlab, "'\n")
+                              oceDebug(debug, "zlab: '", as.character(zlab), "'\n")
                           }
                       } else if (which[w] %in% 9:12) {
                           oceDebug(debug, " which[",w,"]=",which[w],": quality or correlation\n",sep="")
@@ -2038,6 +2132,8 @@ setMethod(f="plot",
                       if (!skip) {
                           if (numberOfCells > 1) {
                               if (xlimGiven) {
+                                  oceDebug(debug, "about to call imagep() with xlim given: par('cex')=", par("cex"), ", cex=", cex, style="blue")
+                                  oceDebug(debug, "xlimGiven case\n")
                                   ats <- imagep(x=tt, y=x[["distance", j]], z=z,
                                                 xlim=xlim[w, ],
                                                 zlim=zlim,
@@ -2055,13 +2151,17 @@ setMethod(f="plot",
                                                 drawContours=FALSE,
                                                 missingColor=missingColor,
                                                 mgp=mgp,
-                                                mar=mar,
+                                                mar=omar,
                                                 mai.palette=mai.palette,
-                                                cex=cex * (1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
+                                                cex=1,
                                                 main=main[w],
                                                 debug=debug-1,
                                                 ...)
                               } else {
+                                  oceDebug(debug, "about to call imagep() with no xlim. cex=", cex, ", par('cex')=", par("cex"), ", par('cex.axis')=", par("cex.axis"), style="blue")
+                                  oceDebug(debug, "about to do an image plot with no xlim given, with cex=", cex, ", par(\"cex\")=", par("cex"), ", nw=", nw, ", cex sent to oce.plots=", cex*(1-min(nw/8, 1/4)), "\n")
+                                  oceDebug(debug, "   with par('mar')=c(", paste(par('mar'),collapse=","), ", mar=c(", paste(mar,collapse=","), ") and mgp=c(",paste(mgp,collapse=","),")", "\n")
+                                  oceDebug(debug, "   with time[1]=", format(tt[[1]], "%Y-%m-%d %H:%M:%S"), "\n")
                                   ats <- imagep(x=tt, y=x[["distance", j]], z=z,
                                                 zlim=zlim,
                                                 flipy=flipy,
@@ -2069,6 +2169,7 @@ setMethod(f="plot",
                                                 col=if (colGiven) col else { if (missing(breaks)) oce.colorsPalette(128, 1) else oce.colorsPalette(length(breaks)-1, 1) },
                                                 breaks=breaks,
                                                 ylab=resizableLabel("distance"),
+                                                xaxs="i",
                                                 xlab="Time",
                                                 zlab=zlab,
                                                 tformat=tformat,
@@ -2078,7 +2179,7 @@ setMethod(f="plot",
                                                 mgp=mgp,
                                                 mar=mar,
                                                 mai.palette=mai.palette,
-                                                cex=cex * (1 - min(nw / 8, 1/4)),
+                                                cex=1,
                                                 main=main[w],
                                                 debug=debug-1,
                                                 ...)
@@ -2095,12 +2196,11 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  type=type,
                                                  mgp=mgp,
-                                                 mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                                 mar=omar,
                                                  tformat=tformat,
                                                  debug=debug-1)
                               res$xat <- ats$xat
@@ -2111,11 +2211,11 @@ setMethod(f="plot",
                   } else if (which[w] %in% timeseries) {
                       ## time-series types
                       col <- if (colGiven) rep(col, length.out=nw) else rep("black", length.out=nw)
-                      oceDebug(debug, "graph", w, "is a timeseries\n")
+                      oceDebug(debug, "graph ", w, " is a timeseries\n", sep="")
                       ##par(mgp=mgp, mar=mar, cex=cex)
                       tlim <- range(x[["time", j]])
                       if (which[w] == 13) {
-                          oceDebug(debug, " which[", w, "] == 13 (salinity)\n", sep="")
+                          oceDebug(debug, "which[", w, "] == 13 (salinity)\n", sep="")
                           if (haveTimeImages) drawPalette(debug=debug-1)
                           ats <- oce.plot.ts(x[["time", j]], x[["salinity", j]],
                                              xlim=if (xlimGiven) xlim[w, ] else tlim,
@@ -2123,18 +2223,17 @@ setMethod(f="plot",
                                              xaxs="i",
                                              col=col[w],
                                              lwd=lwd[w],
-                                             cex=cex * (1 - min(nw / 8, 1/4)),
-                                             cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                             cex=1, cex.axis=1, cex.lab=1,
                                              main=main[w],
                                              ylab=resizableLabel("S"),
                                              type=type,
                                              mgp=mgp,
-                                             mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                             mar=omar,
                                              drawTimeRange=drawTimeRange,
                                              tformat=tformat,
                                              debug=debug-1)
                       } else if (which[w] == 14) {
-                          oceDebug(debug, " which[", w, "] == 14 (temperature)\n", sep="")
+                          oceDebug(debug, "which[", w, "] == 14 (temperature)\n", sep="")
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           if (j == "diagnostic" && "temperatureDia" %in% names(x@data)) {
                               ats <- oce.plot.ts(x@data$timeDia, x@data$temperatureDia,
@@ -2143,13 +2242,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=expression(paste("Diagnostic T [ ", degree, "C ]")),
                                                  type=type,
                                                  mgp=mgp,
-                                                 mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                                 mar=omar,
                                                  tformat=tformat,
                                                  debug=debug-1)
                           } else {
@@ -2159,19 +2257,18 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=expression(paste("T [ ", degree, "C ]")),
                                                  type=type,
                                                  mgp=mgp,
-                                                 mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                                 mar=omar,
                                                  tformat=tformat,
                                                  debug=debug-1)
                           }
                       } else if (which[w] == 15) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          oceDebug(debug, " which[", w, "] == 15 (pressure)\n", sep="")
+                          oceDebug(debug, "which[", w, "] == 15 (pressure)\n", sep="")
                           if (j == "diagnostic" && "pressureDia" %in% names(x@data)) {
                               ats <- oce.plot.ts(x@data$timeDia, x@data$pressureDia,
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
@@ -2179,30 +2276,34 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab="pDia",
                                                  type=type,
                                                  mgp=mgp,
-                                                 mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
                           } else {
+                              oceDebug(debug, "about to do non-diagnostic pressure plot, with cex=", cex, ", par(\"cex\")=", par("cex"), ", nw=", nw, ", cex sent to oce.plots=", cex*(1-min(nw/8, 1/4)), "\n", sep="", style="italic")
+                              oceDebug(debug, vectorShow(mar), style="blue")
+                              oceDebug(debug, vectorShow(par("mar")), style="blue")
+                              oceDebug(debug, vectorShow(par("mai")), style="blue")
+                              oceDebug(debug, vectorShow(haveTimeImages), style="blue")
+                              oceDebug(debug, "time[1]=", format(x[["time",j]][1], "%Y-%m-%d %H:%M:%S"), "\n", style="blue")
                               ats <- oce.plot.ts(x[["time", j]], x[["pressure", j]],
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=resizableLabel("p"),
                                                  type=type,
                                                  mgp=mgp,
-                                                 mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
@@ -2216,13 +2317,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab="headingDia",
                                                  type=type,
                                                  mgp=mgp,
-                                                 mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
@@ -2233,13 +2333,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=resizableLabel("heading"),
                                                  type=type,
                                                  mgp=mgp,
-                                                 mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
@@ -2253,13 +2352,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab="pitchDia",
                                                  type=type,
                                                  mgp=mgp,
-                                                 mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
@@ -2270,13 +2368,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=resizableLabel("pitch"),
                                                  type=type,
                                                  mgp=mgp,
-                                                 mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
@@ -2290,13 +2387,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab="rollDia",
                                                  type=type,
                                                  mgp=mgp,
-                                                 mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
@@ -2307,13 +2403,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=resizableLabel("roll"),
                                                  type=type,
                                                  mgp=mgp,
-                                                 mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                                 mar=omar,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
                                                  debug=debug-1)
@@ -2327,13 +2422,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=beamName(x, 1),
                                                  type=type,
                                                  mgp=mgp,
-                                                 mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                                 mar=omar,
                                                  #mai.palette=mai.palette,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
@@ -2350,13 +2444,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=beamName(x, 2),
                                                  type=type,
                                                  mgp=mgp,
-                                                 mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                                 mar=omar,
                                                  #mai.palette=mai.palette,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
@@ -2373,13 +2466,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=beamName(x, 3),
                                                  type=type,
                                                  mgp=mgp,
-                                                 mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                                 mar=omar,
                                                  #mai.palette=mai.palette,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
@@ -2396,13 +2488,12 @@ setMethod(f="plot",
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
-                                                 cex=cex * (1 - min(nw / 8, 1/4)),
-                                                 cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                                 cex=1, cex.axis=1, cex.lab=1,
                                                  main=main[w],
                                                  ylab=beamName(x, 4),
                                                  type=type,
                                                  mgp=mgp,
-                                                 mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                                 mar=omar,
                                                  #mai.palette=mai.palette,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
@@ -2420,13 +2511,12 @@ setMethod(f="plot",
                                              xaxs="i",
                                              col=col[w],
                                              lwd=lwd[w],
-                                             cex=cex * (1 - min(nw / 8, 1/4)),
-                                             cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                             cex=1, cex.axis=1, cex.lab=1,
                                              main=main[w],
                                              ylab="Heaving [m]",
                                              type=type,
                                              mgp=mgp,
-                                             mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                             mar=omar,
                                              #mai.palette=mai.palette,
                                              drawTimeRange=drawTimeRange,
                                              tformat=tformat,
@@ -2441,13 +2531,12 @@ setMethod(f="plot",
                                              xaxs="i",
                                              col=col[w],
                                              lwd=lwd[w],
-                                             cex=cex * (1 - min(nw / 8, 1/4)),
-                                             cex.axis=cex * (1 - min(nw / 8, 1/4)),
+                                             cex=1, cex.axis=1, cex.lab=1,
                                              main=main[w],
                                              ylab="Sound Speed [m/s]",
                                              type=type,
                                              mgp=mgp,
-                                             mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                             mar=omar,
                                              tformat=tformat,
                                              debug=debug-1)
                       } else if (which[w] %in% 40:44) {
@@ -2462,7 +2551,9 @@ setMethod(f="plot",
                                                      type=type,
                                                      xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                      ylim=if (ylimGiven) ylim[w, ] else range(R, na.rm=TRUE),
+                                                     cex=1, cex.axis=1, cex.lab=1,
                                                      tformat=tformat,
+                                                     mar=omar,
                                                      debug=debug-1)
                               } else {
                                   R <- x@data$br[, which[w]-40]
@@ -2471,7 +2562,9 @@ setMethod(f="plot",
                                                      type=type,
                                                      xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                      ylim=if (ylimGiven) ylim[w, ] else range(R, na.rm=TRUE),
+                                                     cex=1, cex.axis=1, cex.lab=1,
                                                      tformat=tformat,
+                                                     mar=omar,
                                                      debug=debug-1)
                               }
                           } else {
@@ -2490,6 +2583,8 @@ setMethod(f="plot",
                                                      xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                      ylim=if (ylimGiven) ylim[w, ] else range(V, na.rm=TRUE),
                                                      tformat=tformat,
+                                                     cex=1, cex.axis=1, cex.lab=1,
+                                                     mar=omar,
                                                      debug=debug-1)
                               } else {
                                   V <- x@data$bv[, which[w]-50]
@@ -2499,6 +2594,8 @@ setMethod(f="plot",
                                                      xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                      ylim=if (ylimGiven) ylim[w, ] else range(V, na.rm=TRUE),
                                                      tformat=tformat,
+                                                     cex=1, cex.axis=1, cex.lab=1,
+                                                     mar=omar,
                                                      debug=debug-1)
                               }
                           } else {
@@ -2512,7 +2609,7 @@ setMethod(f="plot",
                           ## blank plot, to get axis length same as for images
                           omar <- par("mar")
                           par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
-                          plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
+                          plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="", cex=1, cex.axis=1, cex.lab=1)
                           par(mar=omar)
                       }
                   } else if (which[w] %in% spatial) {
@@ -2555,7 +2652,10 @@ setMethod(f="plot",
                           v[is.na(v)] <- 0
                           xDist <- integrateTrapezoid(ttt, u, 'cA') / mPerKm
                           yDist<- integrateTrapezoid(ttt, v, 'cA') / mPerKm
-                          plot(xDist, yDist, xlab="km", ylab="km", type='l', asp=1, col=if (colGiven) col else "black", ...)
+                          plot(xDist, yDist, xlab="km", ylab="km", type='l', asp=1,
+                               col=if (colGiven) col else "black",
+                               cex=1, cex.axis=1, cex.lab=1,
+                               ...)
                           xaxp <- par("xaxp")
                           xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
                           yaxp <- par("yaxp")
@@ -2570,10 +2670,14 @@ setMethod(f="plot",
                               yy <- x[["distance", j]]
                               if (ytype == "profile" && x@metadata$orientation[1] == "downward" && !ylimGiven) {
                                   plot(value, yy, xlab=beamName(x, which[w]-23),
-                                       ylab=resizableLabel("distance"), type='l', ylim=rev(range(yy)), ...)
+                                       ylab=resizableLabel("distance"), type='l', ylim=rev(range(yy)),
+                                       cex=1, cex.axis=1, cex.lab=1,
+                                       ...)
                               } else {
                                   plot(value, yy, xlab=beamName(x, 1),
-                                       ylab=resizableLabel("distance"), type='l', ...)
+                                       ylab=resizableLabel("distance"), type='l',
+                                       cex=1, cex.axis=1, cex.lab=1,
+                                       ...)
                               }
                               xaxp <- par("xaxp")
                               xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
@@ -2612,6 +2716,7 @@ setMethod(f="plot",
                                    asp=1, col=if (colGiven) col else "black",
                                    xlim=if (xlimGiven) xlim[w, ] else range(u, na.rm=TRUE),
                                    ylim=if (ylimGiven) ylim[w, ] else range(v, na.rm=TRUE),
+                                   cex=1, cex.axis=1, cex.lab=1,
                                    ...)
                           } else {
                               plot(u, v,
@@ -2620,6 +2725,7 @@ setMethod(f="plot",
                                    type='n', asp=1,
                                    xlim=if (xlimGiven) xlim[w, ] else range(u, na.rm=TRUE),
                                    ylim=if (ylimGiven) ylim[w, ] else range(v, na.rm=TRUE),
+                                   cex=1, cex.axis=1, cex.lab=1,
                                    ...)
                               points(u, v, cex=cex/2, col=if (colGiven) col else "black")
                           }
@@ -2630,6 +2736,7 @@ setMethod(f="plot",
                                         asp=1,
                                         xlim=if (xlimGiven) xlim[w, ] else range(u, na.rm=TRUE),
                                         ylim=if (ylimGiven) ylim[w, ] else range(v, na.rm=TRUE),
+                                        cex=1, cex.axis=1, cex.lab=1,
                                         ...)
                       }
                       xaxp <- par("xaxp")
@@ -2638,8 +2745,10 @@ setMethod(f="plot",
                       yat <- seq(yaxp[1], yaxp[2], length.out=1+yaxp[3])
                       ats <- list(xat=xat, yat=yat)
 
-                      if (main[w] != "")
-                          mtext(main[w], adj=1)
+                      if (main[w] != "") {
+                          oceDebug(debug, "about to title the plot with character size ", cex.lab*par("cex"), "\n")
+                          mtext(main[w], adj=1, cex=cex.lab*par("cex"))
+                      }
                       if (which[w] >= 29 && which[w] < 40) {
                           ok <- !is.na(u) & !is.na(v)
                           e <- eigen(cov(data.frame(u[ok], v[ok])))
@@ -2684,7 +2793,8 @@ setMethod(f="plot",
                       if (is.character(coastline)) {
                           if (coastline == "none") {
                               if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
-                                  plot(x@metadata$longitude, x@metadata$latitude, xlab="", ylab="")
+                                  plot(x@metadata$longitude, x@metadata$latitude, xlab="", ylab="",
+                                       cex=1, cex.axis=1, cex.lab=1)
                               } else {
                                   stop("In plot,adp-method() : no latitude or longitude in object's metadata, so cannot draw map", call.=FALSE)
                               }
@@ -2709,6 +2819,9 @@ setMethod(f="plot",
                                       }  else {
                                           stop("there is no built-in coastline file of name \"", coastline, "\"")
                                       }
+                                  } else {
+                                      data("coastlineWorld", package="oce", envir=environment())
+                                      coastline <- get("coastlineWorld")
                                   }
                               }
                           }
@@ -2717,15 +2830,17 @@ setMethod(f="plot",
                               lat <- x[["firstLatitude"]]
                               lon <- x[["firstLongitude"]]
                               ##asp <- 1 / cos(mean(lat, na.rm=TRUE) * pi / 180)
-                              plot(coastline, clatitude=mean(lat, na.rm=TRUE), clongitude=mean(lon, na.rm=TRUE), span=span)
+                              plot(coastline, clatitude=mean(lat, na.rm=TRUE),
+                                   clongitude=mean(lon, na.rm=TRUE),
+                                   span=span,
+                                   cex=1, cex.axis=1, cex.lab=1)
                               points(lon, lat)
-                              #plot(lon, lat, asp=asp, xlab="Latitude", ylab="Longitude")
-                              #lines(coastline[["longitude"]], coastline[["latitude"]], col='gray')
                           } else if ("latitude" %in% names(x@metadata)) {
                               lat <- x[["latitude"]]
                               lon <- x[["longitude"]]
                               if (is.finite(lat) && is.finite(lon)) {
-                                  plot(coastline, clatitude=lat, clongitude=lon, span=50)
+                                  plot(coastline, clatitude=lat, clongitude=lon, span=50,
+                                       cex=1, cex.axis=1, cex.lab=1)
                                   points(x[["longitude"]], x[["latitude"]], cex=2*par('cex'))
                               } else {
                                   stop("In plot,adp-method() : nothing to map", call.=FALSE)
@@ -2735,17 +2850,24 @@ setMethod(f="plot",
                           }
                       }
                   } else {
-                      stop("unknown value of which (", which[w], ")")
+                      stop("In plot,adp-method() : unknown value of which (", which[w], ")", call.=FALSE)
                   }
                   if (is.logical(grid[1]) && grid[1])
                       grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
+                  oceDebug(debug, "plot,adp-method bottom of loop, before reseting par('mar'):\n", style="italic")
+                  oceDebug(debug, vectorShow(par("mar")), style="blue")
+                  oceDebug(debug, vectorShow(par("mai")), style="blue")
+                  par(mar=omar)        # prevent margin creep if we have non-images after images (issue 1632 item 2)
+                  oceDebug(debug, "...after reseting par('mar'):", style="italic")
+                  oceDebug(debug, vectorShow(par("mar")), style="blue")
+                  oceDebug(debug, vectorShow(par("mai")), style="blue")
               }
-              par(cex=opar$cex)
-              oceDebug(debug, "} # plot,adp-method()\n", unindent=1)
+              par(cex=opar$cex, cex.axis=opar$cex.axis, cex.lab=opar$cex.lab)
               if (exists("ats")) {
                   res$xat <- ats$xat
                   res$yat <- ats$yat
               }
+              oceDebug(debug, "} # plot,adp-method()\n", unindent=1, style="bold")
               invisible(res)
           })
 
@@ -2753,14 +2875,19 @@ setMethod(f="plot",
 
 #' Convert an ADP Object to ENU Coordinates
 #'
-#' @param x an \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param x an [adp-class] object.
+#'
 #' @param declination magnetic declination to be added to the heading, to get
 #' ENU with N as "true" north.
+#'
 #' @template debugTemplate
+#'
 #' @author Dan Kelley
-#' @seealso See \code{\link{read.adp}} for notes on functions relating to
-#' \code{"adp"} objects.  Also, see \code{\link{beamToXyzAdp}} and
-#' \code{\link{xyzToEnuAdp}}.
+#'
+#' @seealso See [read.adp()] for notes on functions relating to
+#' `"adp"` objects.  Also, see [beamToXyzAdp()] and
+#' [xyzToEnuAdp()].
+#'
 #' @references
 #' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 #' @family things related to adp data
@@ -2790,26 +2917,32 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 #' Compensate ADP signal strength for spherical spreading.
 #'
 #' First, beam echo intensity is converted from counts to decibels, by
-#' multiplying by \code{count2db}.  Then, the signal decrease owing to
+#' multiplying by `count2db`.  Then, the signal decrease owing to
 #' spherical spreading is compensated for by adding the term
 #' \eqn{20\log10(r)}{20*log10(r)}, where \eqn{r}{r} is the distance from the
 #' sensor head to the water from which scattering is occurring.  \eqn{r}{r} is
-#' given by \code{x[["distance"]]}.
+#' given by `x[["distance"]]`.
 #'
-#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param x an [adp-class] object.
+#'
 #' @param count2db a set of coefficients, one per beam, to convert from beam
 #' echo intensity to decibels.
+#'
 #' @param asMatrix a boolean that indicates whether to return a numeric matrix,
 #' as opposed to returning an updated object (in which the matrix is cast to a
 #' raw value).
+#'
 #' @template debugTemplate
-#' @return An object of \code{\link[base]{class}} \code{"adp"}.
+#'
+#' @return An [adp-class] object.
+#'
 #' @author Dan Kelley
+#'
 #' @references The coefficient to convert to decibels is a personal
 #' communication.  The logarithmic term is explained in textbooks on acoustics,
 #' optics, etc.
-#' @examples
 #'
+#' @examples
 #' library(oce)
 #' data(adp)
 #' plot(adp, which=5) # beam 1 echo intensity
@@ -2874,10 +3007,10 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #' Objects creating by reading RDI Teledyne, Sontek, and some Nortek
 #' instruments are handled directly. However, Nortek
 #' data stored in in the AD2CP format are handled by the specialized
-#' function \code{\link{beamToXyzAdpAD2CP}}, the documentation for which
+#' function [beamToXyzAdpAD2CP()], the documentation for which
 #' should be consulted, rather than the material given blow.
 #'
-#' For a 3-beam Nortek \code{aquadopp} object, the beams are transformed into
+#' For a 3-beam Nortek `aquadopp` object, the beams are transformed into
 #' velocities using the matrix stored in the header.
 #'
 #' For 4-beam objects (and for the slanted 4 beams of 5-beam
@@ -2885,7 +3018,7 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #' \eqn{B_2}{B1}, \eqn{B_3}{B3}, and \eqn{B_4}{B4}
 #' are converted to Cartesian velocity components \eqn{u}{u}
 #' \eqn{v}{v} and \eqn{w}{w}
-#' using formulae from section 5.5 of \emph{RD Instruments} (1998), viz. the
+#' using formulae from section 5.5 of *RD Instruments* (1998), viz. the
 #' along-beam velocity components \eqn{B_1}{B1}, \eqn{B_2}{B2}, \eqn{B_3}{B3},
 #' and \eqn{B_4}{B4} are used to calculate velocity components in a cartesian
 #' system referenced to the instrument using the following formulae:
@@ -2895,28 +3028,28 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #' error in velocity is computed as
 #' \eqn{e=d(B_1+B_2-B_3-B_4)}{e=d*(B1+B2-B3-B4)}.
 #' The geometrical factors in these formulae are:
-#' \code{c} is +1 for convex beam geometry or -1 for concave beam geometry,
+#' `c` is +1 for convex beam geometry or -1 for concave beam geometry,
 #' \eqn{a=1/(2\sin\theta)}{a=1/(2*sin(theta))}
 #' where \eqn{\theta}{theta} is the angle the beams make to the axial direction
-#' (which is available as \code{x[["beamAngle"]]}),
+#' (which is available as `x[["beamAngle"]]`),
 #' \eqn{b=1/(4\cos\theta)}{b=1/(4*cos(theta))}, and
 #' \eqn{d=a/\sqrt{2}}{d=a/sqrt(2)}.
 #'
-#' @param x an object of class \code{"adp"}.
+#' @param x an [adp-class] object.
 #'
 #' @template debugTemplate
 #'
 #' @return An object with the first 3 velocity indices having been altered to
 #' represent velocity components in xyz (or instrument) coordinates.  (For
-#' \code{rdi} data, the values at the 4th velocity index are changed to
+#' `rdi` data, the values at the 4th velocity index are changed to
 #' represent the "error" velocity.)
-#' To indicate the change, the value of \code{x[["oceCoordinate"]]} is
-#' changed from \code{beam} to \code{xyz}.
+#' To indicate the change, the value of `x[["oceCoordinate"]]` is
+#' changed from `beam` to `xyz`.
 #'
 #' @author Dan Kelley
 #'
-#' @seealso See \code{\link{read.adp}} for other functions that relate to
-#' objects of class \code{"adp"}.
+#' @seealso See [read.adp()] for other functions that relate to
+#' objects of class `"adp"`.
 #'
 #' @references
 #' 1. Teledyne RD Instruments. \dQuote{ADCP Coordinate Transformation: Formulas and
@@ -3011,15 +3144,15 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 
 #' Convert AD2CP-style adp data From Beam to XYZ Coordinates
 #'
-#' This looks at all the items in the \code{data} slot of \code{x}, to
-#' see if they contain an array named \code{v} that holds velocity.
-#' If that velocity has 4 components, and if \code{oceCoordinate} for
-#' the item is \code{"beam"}, then
+#' This looks at all the items in the `data` slot of `x`, to
+#' see if they contain an array named `v` that holds velocity.
+#' If that velocity has 4 components, and if `oceCoordinate` for
+#' the item is `"beam"`, then
 #' along-beam velocity components \eqn{B_1}{B1}
 #' \eqn{B_2}{B1}, \eqn{B_3}{B3}, and \eqn{B_4}{B4}
 #' are converted to instrument-oriented Cartesian velocity components \eqn{u}{u}
 #' \eqn{v}{v} and \eqn{w}{w}
-#' using the convex-geometry formulae from section 5.5 of reference [1],
+#' using the convex-geometry formulae from section 5.5 of reference 1,
 #' viz.
 #' \eqn{u=ca(B_1-B_2)}{u=a*(B1-B2)}, \eqn{v=ca(B_4-B_3)}{v=a*(B4-B3)},
 #' \eqn{w=-b(B_1+B_2+B_3+B_4)}{w=-b*(B1+B2+B3+B4)}. In addition to these,
@@ -3029,12 +3162,11 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 #' The geometrical factors in these formulae are:
 #' \eqn{a=1/(2\sin\theta)}{a=1/(2*sin(theta))}
 #' where \eqn{\theta}{theta} is the angle the beams make to the axial direction
-#' (which is available as \code{x[["beamAngle"]]}),
+#' (which is available as `x[["beamAngle"]]`),
 #' \eqn{b=1/(4\cos\theta)}{b=1/(4*cos(theta))}, and
 #' \eqn{d=a/\sqrt{2}}{d=a/sqrt(2)}.
 #'
-#' @param x an object of class \code{"adp"}, e.g. created by \code{\link{read.adp.ad2cp}}
-#' or by other functions that end up calling this function.
+#' @param x an [adp-class] object.
 #'
 #' @template debugTemplate
 #'
@@ -3140,11 +3272,11 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
 #' and the style of original data format. This function handles data from
 #' RDI Teledyne, Sontek, and some Nortek instruments directly. However, Nortek
 #' data stored in in the AD2CP format are handled by the specialized
-#' function \code{\link{xyzToEnuAdpAD2CP}}, the documentation for which
+#' function [xyzToEnuAdpAD2CP()], the documentation for which
 #' should be consulted, rather than the material given blow.
 #'
 #' The first step is to convert the (x,y,z) velocity components (stored in the
-#' three columns of \code{x[["v"]][,,1:3]}) into what RDI [1, pages 11 and 12]
+#' three columns of `x[["v"]][,,1:3]`) into what RDI (reference 1, pages 11 and 12)
 #' calls "ship" (or "righted") components.  For example, the z coordinate,
 #' which may point upwards or downwards depending on instrument orientation, is
 #' mapped onto a "mast" coordinate that points more nearly upwards than
@@ -3156,15 +3288,15 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
 #'
 #' The code handles every case individually, based on the table given below.
 #' The table comes from Clark Richards, a former PhD student at Dalhousie
-#' University [2], who developed it based on instrument documentation,
+#' University (reference 2), who developed it based on instrument documentation,
 #' discussion on user groups, and analysis of measurements acquired with RDI
 #' and Sontek acoustic current profilers in the SLEIWEX experiment.  In the
 #' table, (X, Y, Z) denote instrument-coordinate velocities, (S, F, M) denote
 #' ship-coordinate velocities, and (H, P, R) denote heading, pitch, and roll.
 #'
-#' \tabular{rrrrrrrrrrrr}{ \strong{Case} \tab \strong{Mfr.} \tab
-#' \strong{Instr.} \strong{Orient.} \tab \strong{H} \tab \strong{P} \tab
-#' \strong{R} \tab \strong{S} \tab \strong{F} \tab \strong{M}\cr 1 \tab RDI
+#' \tabular{rrrrrrrrrrrr}{ **Case** \tab **Mfr.** \tab
+#' **Instr.** **Orient.** \tab **H** \tab **P** \tab
+#' **R** \tab **S** \tab **F** \tab **M**\cr 1 \tab RDI
 #' \tab ADCP \tab up \tab H \tab arctan(tan(P)*cos(R)) \tab R \tab -X \tab Y
 #' \tab -Z\cr 2 \tab RDI \tab ADCP \tab down \tab H \tab arctan(tan(P)*cos(R))
 #' \tab -R \tab X \tab Y \tab Z\cr 3 \tab Nortek \tab ADP \tab up \tab H-90
@@ -3178,10 +3310,10 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
 #'
 #' Finally, a standardized rotation matrix is used to convert from ship
 #' coordinates to earth coordinates.  As described in the RDI coordinate
-#' transformation manual [1, pages 13 and 14], this matrix is based on sines
-#' and cosines of heading, pitch, and roll If \code{CH} and \code{SH} denote
+#' transformation manual (reference 1, pages 13 and 14), this matrix is based on sines
+#' and cosines of heading, pitch, and roll If `CH` and `SH` denote
 #' cosine and sine of heading (after adjusting for declination), with similar
-#' terms for pitch and roll using second letters \code{P} and \code{R}, the
+#' terms for pitch and roll using second letters `P` and `R`, the
 #' rotation matrix is
 #'
 #' \preformatted{ rbind(c( CH*CR + SH*SP*SR, SH*CP, CH*SR - SH*SP*CR), c(-SH*CR
@@ -3190,21 +3322,25 @@ beamToXyzAdpAD2CP <- function(x, debug=getOption("oceDebug"))
 #' This matrix is left-multiplied by a matrix with three rows, the top a vector
 #' of "starboard" values, the middle a vector of "forward" values, and the
 #' bottom a vector of "mast" values.  Finally, the columns of
-#' \code{data$v[,,1:3]} are filled in with the result of the matrix
+#' `data$v[,,1:3]` are filled in with the result of the matrix
 #' multiplication.
 #'
-#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param x an [adp-class] object.
+#'
 #' @param declination magnetic declination to be added to the heading after
 #' "righting" (see below), to get ENU with N as "true" north.
+#'
 #' @template debugTemplate
-#' @return An object with \code{data$v[,,1:3]} altered appropriately, and
-#' \code{x[["oceCoordinate"]]} changed from \code{xyz} to \code{enu}.
+#'
+#' @return An object with `data$v[,,1:3]` altered appropriately, and
+#' `x[["oceCoordinate"]]` changed from `xyz` to `enu`.
+#'
 #' @author Dan Kelley and Clark Richards
 #'
 ## @section Limitations:
-## For AD2CP objects, created by\code{\link{read.adp.ad2cp}},
+## For AD2CP objects, created by[read.adp.ad2cp()],
 ## the transformation to ENU coordinates is only possible if the instrument
-## orientation is \code{"AHRS"}. Other orientations may be added, if users
+## orientation is `"AHRS"`. Other orientations may be added, if users
 ## indicat a need for them, and supply the developers with test file (including
 ## at least a few expected results).
 #'
@@ -3414,23 +3550,23 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 
 #' Convert ADP2CP adp object From XYZ to ENU Coordinates
 #'
-#' \strong{This function will b in active development through the early
+#' **This function will b in active development through the early
 #' months of 2019, and both the methodology and user interface may change
 #' without notice. Only developers (or invitees) should be trying to
-#' use this function.}
+#' use this function.**
 #'
-#' @param x An \code{adp} object created by \code{\link{read.adp.ad2cp}}.
+#' @param x an [adp-class] object created by [read.adp.ad2cp()].
 #'
 #' @param declination IGNORED at present, but will be used at some later time.
 #' @template debugTemplate
 #'
-#' @return An object with \code{data$v[,,1:3]} altered appropriately, and
-#' \code{x[["oceCoordinate"]]} changed from \code{xyz} to \code{enu}.
+#' @return An object with `data$v[,,1:3]` altered appropriately, and
+#' `x[["oceCoordinate"]]` changed from `xyz` to `enu`.
 #'
 #' @author Dan Kelley
 #'
 #' @section Limitations:
-#' This only works if the instrument orientation is \code{"AHRS"}, and even
+#' This only works if the instrument orientation is `"AHRS"`, and even
 #' that is not tested yet. Plus, as noted, the declination is ignored.
 #'
 #' @references
@@ -3530,25 +3666,32 @@ xyzToEnuAdpAD2CP <- function(x, declination=0, debug=getOption("oceDebug"))
 #'
 #' The supplied angles specify rotations to be made around the axes for which
 #' heading, pitch, and roll are defined.  For example, an eastward current will
-#' point southeast if \code{heading=45} is used.
+#' point southeast if `heading=45` is used.
 #'
-#' The returned value has heading, pitch, and roll matching those of \code{x},
+#' The returned value has heading, pitch, and roll matching those of `x`,
 #' so these angles retain their meaning as the instrument orientation.
 #'
-#' NOTE: this function works similarly to \code{\link{xyzToEnuAdp}}, except
+#' NOTE: this function works similarly to [xyzToEnuAdp()], except
 #' that in the present function, it makes no difference whether the instrument
 #' points up or down, etc.
 #'
-#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param x an [adp-class] object.
+#'
 #' @param heading number or vector of numbers, giving the angle, in degrees, to
 #' be added to the heading.  See \dQuote{Details}.
-#' @param pitch as \code{heading} but for pitch.
-#' @param roll as \code{heading} but for roll.
-#' @return An object with \code{data$v[,1:3,]} altered appropriately, and
-#' \code{metadata$oce.coordinate} changed from \code{enu} to \code{other}.
+#'
+#' @param pitch as `heading` but for pitch.
+#'
+#' @param roll as `heading` but for roll.
+#'
+#' @return An object with `data$v[,1:3,]` altered appropriately, and
+#' `metadata$oce.coordinate` changed from `enu` to `other`.
+#'
 #' @author Dan Kelley
-#' @seealso See \code{\link{read.adp}} for other functions that relate to
-#' objects of class \code{"adp"}.
+#'
+#' @seealso See [read.adp()] for other functions that relate to
+#' objects of class `"adp"`.
+#'
 #' @references
 #' 1. Teledyne RD Instruments. \dQuote{ADCP Coordinate Transformation: Formulas and
 #' Calculations,} January 2010. P/N 951-6079-00.
@@ -3615,17 +3758,20 @@ display.bytes <- function(b, label="", ...)
 
 #' Subtract Bottom Velocity from ADP
 #'
-#' Subtracts bottom tracking velocities from an \code{"adp"} object. Works for
-#' all coordinate systems (\code{beam}, \code{xyz}, and \code{enu}).
+#' Subtracts bottom tracking velocities from an `"adp"` object. Works for
+#' all coordinate systems (`beam`, `xyz`, and `enu`).
 #'
-#' @param x an object of class \code{"adp"}, which contains bottom tracking
-#' velocities.
+#' @param x an [adp-class] object that contains bottom-tracking velocities.
+#'
 #' @template debugTemplate
+#'
 #' @author Dan Kelley and Clark Richards
-#' @seealso See \code{\link{read.adp}} for notes on functions relating to
-#' \code{"adp"} objects, and \code{\link{adp-class}} for notes on the ADP
+#'
+#' @seealso See [read.adp()] for notes on functions relating to
+#' `"adp"` objects, and [adp-class] for notes on the ADP
 #' object class.
-## @family things related to adp data
+#'
+#' @family things related to adp data
 subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "subtractBottomVelocity(x) {\n", unindent=1)
@@ -3652,17 +3798,23 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 #' instrument.  This only makes sense for ADP objects that are in beam
 #' coordinates.
 #'
-#' @param x an \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param x an [adp-class] object.
+#'
 #' @template debugTemplate
-#' @return An object of \code{\link[base]{class}} \code{"adp"}.
+#'
+#' @return An [adp-class] object.
+#'
 #' @section Bugs: This only works for 4-beam RDI ADP objects.
+#'
 #' @author Dan Kelley and Clark Richards
-#' @seealso See \code{\link{adp-class}} for a discussion of \code{adp} objects
+#'
+#' @seealso See [adp-class] for a discussion of `adp` objects
 #' and notes on the many functions dealing with them.
+#'
 #' @references The method was devised by Clark Richards for use in his PhD work
 #' at Department of Oceanography at Dalhousie University.
-#' @examples
 #'
+#' @examples
 #'\dontrun{
 #' library(oce)
 #' beam <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000",
@@ -3766,7 +3918,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 
 #' Ensemble Average an ADP Object in Time
 #'
-#' Ensemble averaging of \code{adp} objects is often necessary to
+#' Ensemble averaging of `adp` objects is often necessary to
 #' reduce the uncertainty in velocity estimates from single
 #' pings. Many types of ADPs can be configured to perform the
 #' ensemble averaging during the data collection, due to memory
@@ -3776,21 +3928,26 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 #' size of the data set and decreasing the uncertainty of the
 #' velocity estimates (by averaging out Doppler noise).
 #'
-#' @param x an \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param x an [adp-class] object.
+#'
 #' @param n number of pings to average together.
+#'
 #' @param leftover a logical value indicating how to proceed in cases
-#' where \code{n} does not divide evenly into the number of ensembles
-#' in \code{x}. If \code{leftover} is \code{FALSE} (the default) then any extra
-#' ensembles at the end of \code{x} are ignored. Otherwise, they are used
+#' where `n` does not divide evenly into the number of ensembles
+#' in `x`. If `leftover` is `FALSE` (the default) then any extra
+#' ensembles at the end of `x` are ignored. Otherwise, they are used
 #' to create a final ensemble in the returned value.
+#'
 #' @param na.rm a logical value indicating whether NA values should be stripped
 #' before the computation proceeds
-#' @param ... extra arguments to be passed to the \code{mean()} function.
 #'
-#' @return A reduced object of \code{\link{adp-class}} with ensembles averaged as specified. E.g. for an \code{adp} object with 100 pings and \code{n=5} the number of rows of the data arrays will be reduced by a factor of 5.
+#' @param ... extra arguments to be passed to the `mean()` function.
+#'
+#' @return A new [adp-class] object with ensembles averaged as specified. E.g. for an `adp` object with 100 pings and `n=5` the number of rows of the data arrays will be reduced by a factor of 5.
+#'
 #' @author Clark Richards and Dan Kelley
-#' @examples
 #'
+#' @examples
 #' library(oce)
 #' data(adp)
 #' adpAvg <- adpEnsembleAverage(adp, n=2)

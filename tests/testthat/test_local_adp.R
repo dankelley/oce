@@ -1,9 +1,9 @@
 library(oce)
 context("read adp data")
 
-test_that("Sontek adp", {
-          f <- "/data/archive/sleiwex/2008/moorings/m07/adp/sontek_h53/raw/adp_sontek_h53.adp"
-          if (file.exists(f)) {
+f <- "~/Dropbox/data/archive/sleiwex/2008/moorings/m07/adp/sontek_h53/raw/adp_sontek_h53.adp"
+if (file.exists(f)) {
+    test_that("Sontek adp", {
               n <- 5000
               adp <- read.oce(f, from=n+1, to=n+3)
               ## numeric time comparison is easier for these whacky times
@@ -55,8 +55,8 @@ test_that("Sontek adp", {
                                                 0.85, 0.89, 0.93, 0.97, 1.01,
                                                 1.05, 1.09, 1.13, 1.17, 1.21,
                                                 1.25, 1.29))
-          }
 })
+}
 
 
 test_that("Teledyn/RDI read (integer from,to) and check", {
@@ -93,7 +93,7 @@ test_that("Teledyn/RDI binmap", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               beam <- read.oce("local_data/adp_rdi",
                                from=1, to=10, latitude=47.88126, longitude=-69.73433)
-              expect_silent(beam2 <- binmapAdp(beam))
+              beam2 <- expect_silent(binmapAdp(beam))
               ## FIXME: add tests on the data
           }
 })

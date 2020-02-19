@@ -4,8 +4,14 @@
 \alias{as.lisst}
 \title{Coerce Data Into a LISST Object}
 \usage{
-as.lisst(data, filename = "", year = 0, tz = "UTC", longitude = NA,
-  latitude = NA)
+as.lisst(
+  data,
+  filename = "",
+  year = 0,
+  tz = "UTC",
+  longitude = NA,
+  latitude = NA
+)
 }
 \arguments{
 \item{data}{A table (or matrix) containing 42 columns, as in a LISST data
@@ -25,22 +31,23 @@ timestamps do not indicate the timezone.}
 \item{latitude}{Latitude of observation.}
 }
 \value{
-An object of \code{\link{lisst-class}}.
+A \linkS4class{lisst} object.
 }
 \description{
 Coerce data into a lisst object
 If \code{data} contains fewer than 42 columns, an error is reported.  If it
 contains more than 42 columns, only the first 42 are used.  This is used by
-\code{\link{read.lisst}}, the documentation on which explains the meanings
+\code{\link[=read.lisst]{read.lisst()}}, the documentation on which explains the meanings
 of the columns.
 }
 \seealso{
-Other things related to lisst data: \code{\link{[[,lisst-method}},
-  \code{\link{[[<-,lisst-method}},
-  \code{\link{lisst-class}},
-  \code{\link{plot,lisst-method}},
-  \code{\link{read.lisst}},
-  \code{\link{summary,lisst-method}}
+Other things related to lisst data: 
+\code{\link{[[,lisst-method}},
+\code{\link{[[<-,lisst-method}},
+\code{\link{lisst-class}},
+\code{\link{plot,lisst-method}},
+\code{\link{read.lisst}()},
+\code{\link{summary,lisst-method}}
 }
 \author{
 Dan Kelley

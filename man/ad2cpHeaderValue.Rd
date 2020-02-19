@@ -7,8 +7,7 @@
 ad2cpHeaderValue(x, key, item, numeric = TRUE, default)
 }
 \arguments{
-\item{x}{Adp object of the ad2cp variety, i.e. an object created
-by \code{\link{read.adp.ad2cp}}.}
+\item{x}{an \linkS4class{adp} object that holds AD2CP data.}
 
 \item{key}{Character value that identifies a particular line in \code{x[["text"]]}.}
 
@@ -36,7 +35,7 @@ d <- read.oce("a.ad2cp")
 # example, it would be insuficient to use a key of "BEAMCFGLIST", because that will
 # yield 4 lines, and the function is not designed to handle that.
 
-# ID,STR=\\"Signature1000\\",SN=123456
+# ID,STR=\"Signature1000\",SN=123456
 type <- ad2cpHeaderValue(d, "ID", "STR", numeric=FALSE)
 serialNumber <- ad2cpHeaderValue(d, "ID", "SN")
 
@@ -47,30 +46,45 @@ frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ", default=NA)
 
 }
 \seealso{
-Other things related to adp data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
-  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
-  \code{\link{as.adp}}, \code{\link{beamName}},
-  \code{\link{beamToXyzAdpAD2CP}},
-  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
-  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
-  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}},
-  \code{\link{handleFlags,adp-method}},
-  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
-  \code{\link{read.adp.ad2cp}},
-  \code{\link{read.adp.nortek}},
-  \code{\link{read.adp.rdi}},
-  \code{\link{read.adp.sontek.serial}},
-  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
-  \code{\link{read.aquadoppHR}},
-  \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdpAD2CP}},
-  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+Other things related to adp data: 
+\code{\link{[[,adp-method}},
+\code{\link{[[<-,adp-method}},
+\code{\link{adp-class}},
+\code{\link{adpEnsembleAverage}()},
+\code{\link{adp_rdi.000}},
+\code{\link{adp}},
+\code{\link{as.adp}()},
+\code{\link{beamName}()},
+\code{\link{beamToXyzAdpAD2CP}()},
+\code{\link{beamToXyzAdp}()},
+\code{\link{beamToXyzAdv}()},
+\code{\link{beamToXyz}()},
+\code{\link{beamUnspreadAdp}()},
+\code{\link{binmapAdp}()},
+\code{\link{enuToOtherAdp}()},
+\code{\link{enuToOther}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{is.ad2cp}()},
+\code{\link{plot,adp-method}},
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.rdi}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{subset,adp-method}},
+\code{\link{subtractBottomVelocity}()},
+\code{\link{summary,adp-method}},
+\code{\link{toEnuAdp}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdpAD2CP}()},
+\code{\link{xyzToEnuAdp}()},
+\code{\link{xyzToEnu}()}
 }
 \concept{things related to adp data}

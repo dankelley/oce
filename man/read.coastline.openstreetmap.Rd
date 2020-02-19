@@ -4,15 +4,20 @@
 \alias{read.coastline.openstreetmap}
 \title{Read a Coastline File in Openstreetmap Format}
 \usage{
-read.coastline.openstreetmap(file, lonlim = c(-180, 180),
-  latlim = c(-90, 90), debug = getOption("oceDebug"),
-  monitor = FALSE, processingLog)
+read.coastline.openstreetmap(
+  file,
+  lonlim = c(-180, 180),
+  latlim = c(-90, 90),
+  debug = getOption("oceDebug"),
+  monitor = FALSE,
+  processingLog
+)
 }
 \arguments{
 \item{file}{name of file containing coastline data (a file ending in \code{.shp})
 or a zipfile that contains such a file, with a corresponding name.
 The second scheme is useful for files downloaded from the NaturalEarth
-website [2].}
+website (see reference 2).}
 
 \item{lonlim}{numerical vectors specifying the
 west and east edges (and south and north edges) of a focus window.
@@ -36,23 +41,25 @@ the file.}
 better for normal calls by a user.)}
 }
 \value{
-An object of \code{\link{coastline-class}}
+a \linkS4class{coastline} object.
 }
 \description{
-Read coastline data stored in the openstreetmap format [1].
+Read coastline data stored in the openstreetmap format.
 }
 \seealso{
-Other things related to coastline data: \code{\link{[[,coastline-method}},
-  \code{\link{[[<-,coastline-method}},
-  \code{\link{as.coastline}},
-  \code{\link{coastline-class}},
-  \code{\link{coastlineBest}}, \code{\link{coastlineCut}},
-  \code{\link{coastlineWorld}},
-  \code{\link{download.coastline}},
-  \code{\link{plot,coastline-method}},
-  \code{\link{read.coastline.shapefile}},
-  \code{\link{subset,coastline-method}},
-  \code{\link{summary,coastline-method}}
+Other things related to coastline data: 
+\code{\link{[[,coastline-method}},
+\code{\link{[[<-,coastline-method}},
+\code{\link{as.coastline}()},
+\code{\link{coastline-class}},
+\code{\link{coastlineBest}()},
+\code{\link{coastlineCut}()},
+\code{\link{coastlineWorld}},
+\code{\link{download.coastline}()},
+\code{\link{plot,coastline-method}},
+\code{\link{read.coastline.shapefile}()},
+\code{\link{subset,coastline-method}},
+\code{\link{summary,coastline-method}}
 }
 \author{
 Dan Kelley

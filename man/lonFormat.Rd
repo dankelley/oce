@@ -18,7 +18,7 @@ A character string.
 Format a longitude, using "W" for west longitude.
 }
 \seealso{
-\code{\link{latFormat}} and \code{\link{latlonFormat}}.
+\code{\link[=latFormat]{latFormat()}} and \code{\link[=latlonFormat]{latlonFormat()}}.
 }
 \author{
 Dan Kelley

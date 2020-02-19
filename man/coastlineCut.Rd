@@ -7,17 +7,16 @@
 coastlineCut(coastline, lon_0 = 0)
 }
 \arguments{
-\item{coastline}{original coastline object}
+\item{coastline}{a \linkS4class{coastline} object.}
 
-\item{lon_0}{longitude as would be given in a \code{+lon_0=} item in a
-call to the \code{\link[rgdal]{project}} function in the
-\CRANpkg{rgdal} package.}
+\item{lon_0}{longitude as would be given in a \verb{+lon_0=} item in a
+call to the \code{\link[rgdal:project]{rgdal::project()}} function in the \CRANpkg{rgdal} package.}
 }
 \value{
 a new coastline object
 }
 \description{
-This can be helpful in preventing \code{\link{mapPlot}} from producing ugly
+This can be helpful in preventing \code{\link[=mapPlot]{mapPlot()}} from producing ugly
 horizontal lines in world maps. These lines occur when a coastline segment
 is intersected by longitude lon_0+180.  Since the coastline files in the oce
 and ocedata packages are already "cut" at longitudes of -180 and 180, the present
@@ -42,17 +41,21 @@ mapPlot(coastlineCut(coastlineWorld, lon_0=100),
 
 }
 \seealso{
-Other things related to coastline data: \code{\link{[[,coastline-method}},
-  \code{\link{[[<-,coastline-method}},
-  \code{\link{as.coastline}},
-  \code{\link{coastline-class}},
-  \code{\link{coastlineBest}},
-  \code{\link{coastlineWorld}},
-  \code{\link{download.coastline}},
-  \code{\link{plot,coastline-method}},
-  \code{\link{read.coastline.openstreetmap}},
-  \code{\link{read.coastline.shapefile}},
-  \code{\link{subset,coastline-method}},
-  \code{\link{summary,coastline-method}}
+Other things related to coastline data: 
+\code{\link{[[,coastline-method}},
+\code{\link{[[<-,coastline-method}},
+\code{\link{as.coastline}()},
+\code{\link{coastline-class}},
+\code{\link{coastlineBest}()},
+\code{\link{coastlineWorld}},
+\code{\link{download.coastline}()},
+\code{\link{plot,coastline-method}},
+\code{\link{read.coastline.openstreetmap}()},
+\code{\link{read.coastline.shapefile}()},
+\code{\link{subset,coastline-method}},
+\code{\link{summary,coastline-method}}
+}
+\author{
+Dan Kelley
 }
 \concept{things related to coastline data}

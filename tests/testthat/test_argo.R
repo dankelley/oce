@@ -4,6 +4,21 @@ data(argo)
 
 context("Argo")
 
+test_that("as.ctd works with multi-column argo", {
+          expect_silent(as.ctd(argo[["profile", 1]]))
+})
+
+test_that("as.ctd works with multi-column argo", {
+          expect_warning(as.ctd(argo[["profile", 1:5]]), "using just column 1")
+})
+
+test_that("plot works on indexed subsets", {
+          for (which in 1:6) {
+            expect_silent(plot(argo[["profile", 1]], which=which)) # failed before fixing issue 1603
+            expect_silent(plot(argo[["profile", 1:3]], which=which))
+          }
+})
+
 test_that("global attributes in metadata", {
           expect_equal(argo[["title"]], "Argo float vertical profile")
           expect_equal(argo[["institution"]], "FR GDAC")
@@ -37,6 +52,22 @@ test_that("[[,argo-method", {
 
           expect_equal(sub1[["metadata"]], sub2[["metadata"]])
           expect_equal(sub1[["data"]], sub2[["data"]])
+})
+
+test_that("subset(argo, pressure < 500))", {
+          data(argo)
+          pcut <- 500
+          top <- subset(argo, pressure < pcut)
+          # test a few fields in a few profiles
+          pressure <- argo[["pressure"]]
+          for (i in 1:5) {
+            p <- argo[["pressure"]][, i]
+            S <- argo[["salinity"]][, i]
+            T <- argo[["temperature"]][, i]
+            expect_equal(top[["pressure"]][,i], ifelse(p < pcut, p, NA))
+            expect_equal(top[["salinity"]][,i], ifelse(p < pcut, S, NA))
+            expect_equal(top[["temperature"]][,i], ifelse(p < pcut, T, NA))
+          }
 })
 
 test_that("subset(argo, within=(POLYGON))", {

@@ -4,55 +4,71 @@
 \alias{mapPolygon}
 \title{Add a Polygon to a Map}
 \usage{
-mapPolygon(longitude, latitude, density = NULL, angle = 45,
-  border = NULL, col = NA, lty = par("lty"), ...,
-  fillOddEven = FALSE)
+mapPolygon(
+  longitude,
+  latitude,
+  density = NULL,
+  angle = 45,
+  border = NULL,
+  col = NA,
+  lty = par("lty"),
+  ...,
+  fillOddEven = FALSE
+)
 }
 \arguments{
 \item{longitude}{longitudes of points to be plotted, or an object from
 which longitude and latitude can be inferred (e.g. a coastline file, or
-the return value from \code{\link{mapLocator}}), in which case the
+the return value from \code{\link[=mapLocator]{mapLocator()}}), in which case the
 following two arguments are ignored.}
 
 \item{latitude}{latitudes of points to be plotted.}
 
-\item{density}{as for \code{\link{polygon}}.}
+\item{density}{as for \code{\link[=polygon]{polygon()}}.}
 
-\item{angle}{as for \code{\link{polygon}}.}
+\item{angle}{as for \code{\link[=polygon]{polygon()}}.}
 
-\item{border}{as for \code{\link{polygon}}.}
+\item{border}{as for \code{\link[=polygon]{polygon()}}.}
 
-\item{col}{as for \code{\link{polygon}}.}
+\item{col}{as for \code{\link[=polygon]{polygon()}}.}
 
-\item{lty}{as for \code{\link{polygon}}.}
+\item{lty}{as for \code{\link[=polygon]{polygon()}}.}
 
-\item{...}{as for \code{\link{polygon}}.}
+\item{...}{as for \code{\link[=polygon]{polygon()}}.}
 
-\item{fillOddEven}{as for \code{\link{polygon}}.}
+\item{fillOddEven}{as for \code{\link[=polygon]{polygon()}}.}
 }
 \description{
-Plot a polygon on an existing map.
-}
-\details{
 Adds a polygon to an existing map, by analogy to
-\code{\link{polygon}}.  Used by \code{\link{mapImage}}.
+\code{\link[=polygon]{polygon()}}.  Used by \code{\link[=mapImage]{mapImage()}}.
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
+A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapScalebar}}, \code{\link{mapText}},
-  \code{\link{mapTissot}}, \code{\link{oceCRS}},
-  \code{\link{shiftLongitude}}, \code{\link{usrLonLat}},
-  \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

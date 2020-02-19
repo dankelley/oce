@@ -4,9 +4,18 @@
 \alias{read.section}
 \title{Read a Section File}
 \usage{
-read.section(file, directory, sectionId = "", flags, ship = "",
-  scientist = "", institute = "", missingValue = -999,
-  debug = getOption("oceDebug"), processingLog)
+read.section(
+  file,
+  directory,
+  sectionId = "",
+  flags,
+  ship = "",
+  scientist = "",
+  institute = "",
+  missingValue = -999,
+  debug = getOption("oceDebug"),
+  processingLog
+)
 }
 \arguments{
 \item{file}{A file containing a set of CTD observations.  At present, only the
@@ -36,7 +45,7 @@ is typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.}
 }
 \value{
-An object of class \code{\link{section-class}}.
+A \linkS4class{section} object.
 }
 \description{
 Read a file that contains a series of \code{ctd} profiles that make up an
@@ -64,21 +73,24 @@ to exist for years is \url{https://cchdo.ucsd.edu}, but a search on \code{"WOCE
   bottle data"} should turn up other sites, if this one ceases to exist. Only
 the so-called \emph{exchange BOT} data format can be processed by read.section()
 at this time. Data names are inferred from column headings using
-\code{\link{woceNames2oceNames}}.
+\code{\link[=woceNames2oceNames]{woceNames2oceNames()}}.
 }
 \seealso{
-Other things related to section data: \code{\link{[[,section-method}},
-  \code{\link{[[<-,section-method}},
-  \code{\link{as.section}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{initializeFlagScheme,section-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{section-class}},
-  \code{\link{sectionAddStation}},
-  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
-  \code{\link{sectionSort}}, \code{\link{section}},
-  \code{\link{subset,section-method}},
-  \code{\link{summary,section-method}}
+Other things related to section data: 
+\code{\link{[[,section-method}},
+\code{\link{[[<-,section-method}},
+\code{\link{as.section}()},
+\code{\link{handleFlags,section-method}},
+\code{\link{initializeFlagScheme,section-method}},
+\code{\link{plot,section-method}},
+\code{\link{section-class}},
+\code{\link{sectionAddStation}()},
+\code{\link{sectionGrid}()},
+\code{\link{sectionSmooth}()},
+\code{\link{sectionSort}()},
+\code{\link{section}},
+\code{\link{subset,section-method}},
+\code{\link{summary,section-method}}
 }
 \author{
 Dan Kelley

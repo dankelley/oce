@@ -7,7 +7,7 @@
 beamName(x, which)
 }
 \arguments{
-\item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
+\item{x}{an \linkS4class{adp} object.}
 
 \item{which}{an integer indicating beam number.}
 }
@@ -22,48 +22,71 @@ with \code{x[["coordinate"]]}.
 Get names of Acoustic-Doppler Beams
 }
 \seealso{
-This is used by \code{\link{read.oce}}.
+This is used by \code{\link[=read.oce]{read.oce()}}.
 
-Other things related to adp data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}},
-  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
-  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
-  \code{\link{as.adp}}, \code{\link{beamToXyzAdpAD2CP}},
-  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
-  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
-  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}},
-  \code{\link{handleFlags,adp-method}},
-  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
-  \code{\link{read.adp.ad2cp}},
-  \code{\link{read.adp.nortek}},
-  \code{\link{read.adp.rdi}},
-  \code{\link{read.adp.sontek.serial}},
-  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
-  \code{\link{read.aquadoppHR}},
-  \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdpAD2CP}},
-  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+Other things related to adp data: 
+\code{\link{[[,adp-method}},
+\code{\link{[[<-,adp-method}},
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{adp-class}},
+\code{\link{adpEnsembleAverage}()},
+\code{\link{adp_rdi.000}},
+\code{\link{adp}},
+\code{\link{as.adp}()},
+\code{\link{beamToXyzAdpAD2CP}()},
+\code{\link{beamToXyzAdp}()},
+\code{\link{beamToXyzAdv}()},
+\code{\link{beamToXyz}()},
+\code{\link{beamUnspreadAdp}()},
+\code{\link{binmapAdp}()},
+\code{\link{enuToOtherAdp}()},
+\code{\link{enuToOther}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{is.ad2cp}()},
+\code{\link{plot,adp-method}},
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.rdi}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{subset,adp-method}},
+\code{\link{subtractBottomVelocity}()},
+\code{\link{summary,adp-method}},
+\code{\link{toEnuAdp}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdpAD2CP}()},
+\code{\link{xyzToEnuAdp}()},
+\code{\link{xyzToEnu}()}
 
-Other things related to adv data: \code{\link{[[,adv-method}},
-  \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
-  \code{\link{adv}}, \code{\link{beamToXyz}},
-  \code{\link{enuToOtherAdv}}, \code{\link{enuToOther}},
-  \code{\link{plot,adv-method}},
-  \code{\link{read.adv.nortek}},
-  \code{\link{read.adv.sontek.adr}},
-  \code{\link{read.adv.sontek.serial}},
-  \code{\link{read.adv.sontek.text}},
-  \code{\link{read.adv}}, \code{\link{rotateAboutZ}},
-  \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
+Other things related to adv data: 
+\code{\link{[[,adv-method}},
+\code{\link{[[<-,adv-method}},
+\code{\link{adv-class}},
+\code{\link{adv}},
+\code{\link{beamToXyz}()},
+\code{\link{enuToOtherAdv}()},
+\code{\link{enuToOther}()},
+\code{\link{plot,adv-method}},
+\code{\link{read.adv.nortek}()},
+\code{\link{read.adv.sontek.adr}()},
+\code{\link{read.adv.sontek.serial}()},
+\code{\link{read.adv.sontek.text}()},
+\code{\link{read.adv}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{subset,adv-method}},
+\code{\link{summary,adv-method}},
+\code{\link{toEnuAdv}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdv}()},
+\code{\link{xyzToEnu}()}
 }
 \author{
 Dan Kelley
