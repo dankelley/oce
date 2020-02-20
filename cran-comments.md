@@ -4,7 +4,7 @@
   NOTE on sub-directories of 1MB or more: (R 2.4Mb, doc 2.3Mb, help 2.7Mb).
 * rhub checks failed, with problems on the build machine (out of file space,
   etc)
-* win-builder on R-devel?
+* win-builder on R-devel/ATC OK.
 * win-builder on R-release: OK.
 * win-builder on R-old-release: 1 NOTE on file size (as at first bullet,
   above).
