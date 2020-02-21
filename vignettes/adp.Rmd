@@ -236,7 +236,7 @@ adp[["originalCoordinate"]]
 adp[["oceCoordinate"]]
 ```
 and comparison with the output of `summary(adp)` reveals that the former is the
-coordiante system in which the data were originally measured, while the 
+coordinate system in which the data were originally measured, while the
 latter is the coordinate system of the transformed data. Using
 ```{r}
 processingLogShow(adp)

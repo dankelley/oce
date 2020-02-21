@@ -65,10 +65,10 @@ legend("topleft", lty=c("solid", "dashed"), legend=c("S=35", "S=0"))
 \references{
 \enumerate{
 \item F. H. Fisher and V. P. Simmons, 1977.  Sound absorption in
-sea water.  J. Acoust. Soc. Am., 62(3), 558-564.
+sea water.  Journal of the Acoustical Society of America, 62(3), 558-564.
 \item R. E. Francois and G. R. Garrison, 1982.  Sound absorption based on
 ocean measurements.  Part II: Boric acid contribution and equation for total
-absorption.  J. Acoust. Soc. Am., 72(6):1879-1890.
+absorption.  Journal of the Acoustical Society of America, 72(6):1879-1890.
 \item \url{http://resource.npl.co.uk/acoustics/techguides/seaabsorption/}
 }
 }

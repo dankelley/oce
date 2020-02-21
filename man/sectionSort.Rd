@@ -17,7 +17,7 @@ distance from the first station, \code{"longitude"}, for longitude,
 }
 \value{
 object A \linkS4class{section} object that has been smoothed,
-so its data fields will station-to-statoin variation than
+so its data fields will station-to-station variation than
 is the case for the input section, \code{x}.
 }
 \description{

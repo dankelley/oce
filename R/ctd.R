@@ -630,7 +630,7 @@ setMethod(f="summary",
 #' slot. If it is impossible to determine the sampling time, then
 #' `NULL` is returned. These time variants occur, in the
 #' present version of oce, only for data read by [read.ctd.sbe()],
-#' the documention of which explains how times are computed.
+#' the documentation of which explains how times are computed.
 #'
 #' * `z`: Vertical coordinate in metres above the surface, computed with
 #' [swZ]`(x)`.

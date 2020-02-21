@@ -68,7 +68,7 @@ eclipticalToEquatorial <- function(lambda, beta, epsilon)
 #' horizon, in degrees) and `azimuth` (angle anticlockwise from south, in
 #' degrees).
 #'
-#' @author Dan Kelley, based on formulae in refeences 1 and 2.
+#' @author Dan Kelley, based on formulae in references 1 and 2.
 #'
 #' @references
 #' 1. Meeus, Jean, 1982. Astronomical formulae for Calculators.

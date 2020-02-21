@@ -12,7 +12,7 @@
 \item{subset}{An expression indicating how to subset \code{x}. See \dQuote{Details}.}
 
 \item{...}{optional additional arguments, the only one of which is considered
-is one named \code{debug}, an integer that controlls the level of debugging. If
+is one named \code{debug}, an integer that controls the level of debugging. If
 this is not supplied, \code{debug} is assumed to be 0, meaning no debugging. If
 it is 1, the steps of determining the bounding box are shown. If it is 2 or larger,
 then additional processing steps are shown, including the extraction of every

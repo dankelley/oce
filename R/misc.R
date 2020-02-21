@@ -107,7 +107,7 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
 #' @param x vector of x values for grid (must be equi-spaced)
 #' @param y vector of y values for grid (must be equi-spaced)
 #' @param z vector of z values for grid (must be equi-spaced)
-#' @param f matrix of rank 3, with the gridd values mapping to the `x`
+#' @param f matrix of rank 3, with the gridded values mapping to the `x`
 #' values (first index of `f`), etc.
 #' @param xout vector of x values for output.
 #' @param yout vector of y values for output (length must match that of
@@ -453,7 +453,7 @@ unduplicateNames <- function(strings, style=1)
 
 #' Rename items in the data slot of an oce object (**deprecated**)
 #'
-#' This was deprecatd in December 2019, because [oceRenameData()] does
+#' This was deprecated in December 2019, because [oceRenameData()] does
 #' a better job and is more consistent with other functions that work
 #' with items in the `data` and `metadata` slots.
 ## This function may be used to rename elements within the
@@ -496,7 +496,7 @@ renameData <- function(x, old=NULL, new=NULL)
     x
 }
 
-#' Calculate a rounded bound, rounded up to matissa 1, 2, or 5
+#' Calculate a rounded bound, rounded up to mantissa 1, 2, or 5
 #'
 #' @param x a single positive number
 #'
@@ -1272,7 +1272,7 @@ ungrid <- function(x, y, grid)
 #'
 #' @param xe,ye errors on x and y coordinates of points on the existing plot,
 #' each either a single number or a vector of length identical to that of
-#' the cooresponding coordinate.
+#' the corresponding coordinate.
 #'
 #' @param percent boolean flag indicating whether `xe` and `ye` are
 #' in terms of percent of the corresponding `x` and `y` values.
@@ -1702,7 +1702,7 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 #'
 #' @param x a vector or matrix of numerical values.
 #'
-#' @return A character vector of thre values: the minimum, the mean, the
+#' @return A character vector of three values: the minimum, the mean, the
 #' maximum.
 #'
 #' @author Dan Kelley

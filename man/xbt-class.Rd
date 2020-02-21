@@ -5,7 +5,7 @@
 \alias{xbt-class}
 \title{Class to Store XBT Data}
 \description{
-This class stores expendible bathythermograph (XBT) data, e.g. from a Sippican
+This class stores expendable bathythermograph (XBT) data, e.g. from a Sippican
 device.  Reference 1 gives some information on Sippican
 devices, and reference 2 is a useful introduction to the
 modern literature on XBTs in general.
@@ -63,7 +63,7 @@ contain the item. This \code{[[} method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
-longitude and latitudee, has sufficient information to compute
+longitude and latitude, has sufficient information to compute
 Absolute Salinity, and so \code{o[["SA"]]} will yield the
 calculated Absolute Salinity.
 
@@ -85,6 +85,7 @@ https://doi.org/10.1175/BAMS-D-15-00031.1.
 }
 \seealso{
 Other things related to xbt data: 
+\code{\link{[[,xbt-method}},
 \code{\link{[[<-,xbt-method}},
 \code{\link{as.xbt}()},
 \code{\link{plot,xbt-method}},
@@ -92,7 +93,8 @@ Other things related to xbt data:
 \code{\link{read.xbt}()},
 \code{\link{subset,xbt-method}},
 \code{\link{summary,xbt-method}},
-\code{\link{xbt.edf}}
+\code{\link{xbt.edf}},
+\code{\link{xbt}}
 
 Other classes provided by oce: 
 \code{\link{adp-class}},

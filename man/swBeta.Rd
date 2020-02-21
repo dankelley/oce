@@ -40,7 +40,7 @@ Compute \eqn{\beta}{beta}, the haline contraction coefficient for seawater.
 }
 \references{
 The \code{eos="unesco"} formulae are based on the UNESCO
-equation of state, but are formulaed empirically by Trevor J. McDougall,
+equation of state, but are formulated empirically by Trevor J. McDougall,
 1987, Neutral Surfaces, Journal of Physical Oceanography, volume 17, pages
 1950-1964. The \code{eos="gsw"} formulae come from GSW; see references in
 the \code{\link[=swRho]{swRho()}} documentation.

@@ -456,7 +456,7 @@ read.lobo <- function(file, cols=7, processingLog)
 #'
 #' @param nitrate vector of nitrate observations
 #'
-#' @param fluorescence vector of fluoresence observations
+#' @param fluorescence vector of fluorescence observations
 #'
 #' @param filename source filename
 #'

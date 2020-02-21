@@ -84,10 +84,10 @@
 #'   `n2satumol/kg`\tab `nitrogenSaturation`           \tab umol/kg              \tab   \cr
 #'   `nbin`        \tab `nbin`                         \tab                      \tab   \cr
 #'   `obsscufa~`   \tab `backscatter`                  \tab NTU; Turner SCUFA    \tab   \cr
-#'   `opoxMg/L`    \tab `oxygen`                       \tab mg/l; Optode, Anderaa\tab   \cr
-#'   `opoxML/L`    \tab `oxygen`                       \tab ml/l; Optode, Anderaa\tab   \cr
-#'   `opoxMm/L`    \tab `oxygen`                       \tab umol/l; Optode, Anderaa\tab \cr
-#'   `opoxPS`      \tab `oxygen`                       \tab percent; Optode, Anderaa\tab   \cr
+#'   `opoxMg/L`    \tab `oxygen`                       \tab mg/l; Optode, Aanderaa\tab   \cr
+#'   `opoxML/L`    \tab `oxygen`                       \tab ml/l; Optode, Aanderaa\tab   \cr
+#'   `opoxMm/L`    \tab `oxygen`                       \tab umol/l; Optode, Aanderaa\tab \cr
+#'   `opoxPS`      \tab `oxygen`                       \tab percent; Optode, Aanderaa\tab   \cr
 #'   `oxsatML/L`   \tab `oxygen`                       \tab ml/l; Weiss          \tab   \cr
 #'   `oxsatMg/L`   \tab `oxygen`                       \tab mg/l; Weiss          \tab   \cr
 #'   `oxsatMm/Kg`  \tab `oxygen`                       \tab umol/kg; Weiss       \tab   \cr
@@ -358,16 +358,16 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         unit <- list(unit=expression(NTU), scale="Turner SCUFA")
     } else if (1 == length(grep("^opoxMg/L$", name, useBytes=TRUE))) {
         name <- "oxygen"
-        unit <- list(unit=expression(mg/l), scale="Optode, Anderaa")
+        unit <- list(unit=expression(mg/l), scale="Optode, Aanderaa")
     } else if (1 == length(grep("^opoxML/L$", name, useBytes=TRUE))) {
         name <- "oxygen"
-        unit <- list(unit=expression(ml/l), scale="Optode, Anderaa")
+        unit <- list(unit=expression(ml/l), scale="Optode, Aanderaa")
     } else if (1 == length(grep("^opoxMm/L$", name, useBytes=TRUE))) {
         name <- "oxygen"
-        unit <- list(unit=expression(mu*mol/l), scale="Optode, Anderaa")
+        unit <- list(unit=expression(mu*mol/l), scale="Optode, Aanderaa")
     } else if (1 == length(grep("^opoxPS$", name, useBytes=TRUE))) {
         name <- "oxygenSaturation"
-        unit <- list(unit=expression(percent), scale="Optode, Anderaa")
+        unit <- list(unit=expression(percent), scale="Optode, Aanderaa")
     } else if (1 == length(grep("^oxsatML/L$", name, useBytes=TRUE))) {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="Weiss")

@@ -46,8 +46,8 @@
 #' 2. A simple interface for viewing and downloading data is at
 #' `http://images.remss.com/amsr/amsr2_data_daily.html`.
 #'
-#' @seealso The documenation for the [landsat-class] class has
-#' more informatoin on the handling data from the Landsat-8 satellite.
+#' @seealso The documentation for the [landsat-class] class has
+#' more information on the handling data from the Landsat-8 satellite.
 #'
 #' @family things related to amsr data
 setClass("amsr", contains="satellite")
@@ -328,7 +328,7 @@ setMethod(f="subset",
 #' @param x an [amsr-class] object.
 #'
 #' @param y String indicating the name of the band to plot; if not provided,
-#' `SST` is used; see the documenation for the [amsr-class] class for a list of bands.
+#' `SST` is used; see the documentation for the [amsr-class] class for a list of bands.
 #'
 #' @param asp Optional aspect ratio for plot.
 #'

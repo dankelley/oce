@@ -2,7 +2,7 @@
 
 #' Class to Store XBT Data
 #'
-#' This class stores expendible bathythermograph (XBT) data, e.g. from a Sippican
+#' This class stores expendable bathythermograph (XBT) data, e.g. from a Sippican
 #' device.  Reference 1 gives some information on Sippican
 #' devices, and reference 2 is a useful introduction to the
 #' modern literature on XBTs in general.
@@ -58,7 +58,7 @@ setClass("xbt", contains="oce")
 #' https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
 #'
 #' @family datasets provided with oce
-#' @family things related to xbtdata
+#' @family things related to xbt data
 NULL
 
 #' Extract Something From an xbt Object
@@ -67,7 +67,7 @@ NULL
 #'
 #' @template sub_subTemplate
 #'
-#' @family things related to xbtdata
+#' @family things related to xbt data
 setMethod(f="[[",
           signature(x="xbt", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -271,7 +271,7 @@ as.xbt <- function(z, temperature, longitude=NA, latitude=NA, filename="", seque
 #' Two file types are handled: (1) the `"sippican"` format, used
 #' for Sippican XBT files, handled with [read.xbt.edf()], and (2)
 #' the `"noaa1"` format, handled with [read.xbt.noaa1()]. The first of
-#' these is recognized by [read.oce()], but the second must be calldd
+#' these is recognized by [read.oce()], but the second must be called
 #' directly with [read.xbt.noaa1()].
 #'
 #' @param file a connection or a character string giving the name of the file to
@@ -281,8 +281,8 @@ as.xbt <- function(z, temperature, longitude=NA, latitude=NA, filename="", seque
 #' `"sippican"` and `"noaa1"`.
 #'
 #' @param longitude,latitude optional signed numbers indicating the longitude in degrees
-#' East and latitude in degres North. These values are used if `type="sippican"`,
-#' but ignored if `type="noaa1"`, because those files contain location inforation.
+#' East and latitude in degrees North. These values are used if `type="sippican"`,
+#' but ignored if `type="noaa1"`, because those files contain location information.
 #'
 #' @param debug a flag that turns on debugging.  The value indicates the depth
 #' within the call stack to which debugging applies.

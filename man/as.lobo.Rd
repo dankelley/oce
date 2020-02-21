@@ -31,7 +31,7 @@ as.lobo(
 
 \item{nitrate}{vector of nitrate observations}
 
-\item{fluorescence}{vector of fluoresence observations}
+\item{fluorescence}{vector of fluorescence observations}
 
 \item{filename}{source filename}
 }

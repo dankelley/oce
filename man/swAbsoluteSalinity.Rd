@@ -27,7 +27,7 @@ Absolute Salinity in \eqn{g/kg}{g/kg}.
 }
 \description{
 Compute the seawater Absolute Salinity, according to the GSW/TEOS-10
-formulation with \code{\link[gsw:gsw_SA_from_SP]{gsw::gsw_SA_from_SP()}} in the CRANpkg{gsw} package.
+formulation with \code{\link[gsw:gsw_SA_from_SP]{gsw::gsw_SA_from_SP()}} in the \CRANpkg{gsw} package.
 Typically, this is a fraction of a unit
 higher than practical salinity as defined in the UNESCO formulae.
 }

@@ -242,8 +242,8 @@ Equidistant conic                         \tab \code{eqdc}     \tab \code{lat_1}
 Euler                                     \tab \code{euler}    \tab \code{lat_1}, \code{lat_2}\cr
 Extended transverse Mercator              \tab \code{etmerc}   \tab \code{lat_ts}, \code{lat_0}\cr
 Fahey                                     \tab \code{fahey}    \tab - \cr
-Foucaut                                   \tab \code{fouc}     \tab - \cr
-Foucaut sinusoidal                        \tab \code{fouc_s}   \tab - \cr
+Foucault                                  \tab \code{fouc}     \tab - \cr
+Foucault sinusoidal                       \tab \code{fouc_s}   \tab - \cr
 Gall stereographic                        \tab \code{gall}     \tab - \cr
 Geostationary satellite view              \tab \code{geos}     \tab \code{h}\cr
 General sinusoidal series                 \tab \code{gn_sinu}  \tab \code{m}, \code{n}\cr

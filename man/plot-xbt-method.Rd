@@ -81,6 +81,7 @@ Other functions that plot oce data:
 \code{\link{tidem-class}}
 
 Other things related to xbt data: 
+\code{\link{[[,xbt-method}},
 \code{\link{[[<-,xbt-method}},
 \code{\link{as.xbt}()},
 \code{\link{read.xbt.noaa1}()},
@@ -88,7 +89,8 @@ Other things related to xbt data:
 \code{\link{subset,xbt-method}},
 \code{\link{summary,xbt-method}},
 \code{\link{xbt-class}},
-\code{\link{xbt.edf}}
+\code{\link{xbt.edf}},
+\code{\link{xbt}}
 }
 \author{
 Dan Kelley

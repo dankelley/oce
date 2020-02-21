@@ -85,7 +85,7 @@ this value is returned invisibly.
 Get a tidal prediction from a WebTide database. This only
 works if the standalone WebTide application is installed,
 and if it is installed in a standard location. The details
-of installation are not within the oce purvue.
+of installation are not within the oce purview.
 }
 \details{
 There are two methods of using this function.

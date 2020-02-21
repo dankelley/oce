@@ -189,7 +189,7 @@ time (which is stored as \code{startTime} within the \code{metadata}
 slot. If it is impossible to determine the sampling time, then
 \code{NULL} is returned. These time variants occur, in the
 present version of oce, only for data read by \code{\link[=read.ctd.sbe]{read.ctd.sbe()}},
-the documention of which explains how times are computed.
+the documentation of which explains how times are computed.
 \item \code{z}: Vertical coordinate in metres above the surface, computed with
 \link{swZ}\code{(x)}.
 }

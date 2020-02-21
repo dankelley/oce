@@ -240,7 +240,7 @@ to introduce new ID codes with new instruments, that means that
 
 The following two-byte ID codes are recognized by \code{read.adp.rdi}
 at this time (with bytes listed in natural order, LSB byte before
-MSB). Items preceeded by an asterisk are recognized, but not handled,
+MSB). Items preceded by an asterisk are recognized, but not handled,
 and so produce a warning.
 \tabular{rrrr}{
 \tab \strong{Byte 1} \tab \strong{Byte 2} \tab \strong{Meaning}\cr

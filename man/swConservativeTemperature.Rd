@@ -40,7 +40,7 @@ etc., are extracted from it, and used for the calculation, and the
 corresponding arguments to the present function are ignored.
 
 The conservative temperature is calculated using the TEOS-10 function
-\link[gsw:gsw_CT_from_t]{gsw::gsw_CT_from_t} from the CRANpkg{gsw} package.
+\link[gsw:gsw_CT_from_t]{gsw::gsw_CT_from_t} from the \CRANpkg{gsw} package.
 }
 \examples{
 swConservativeTemperature(35,10,1000,188,4) # 9.86883
