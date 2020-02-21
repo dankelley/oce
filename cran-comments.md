@@ -2,12 +2,9 @@
 
 * local MacOS R-3.6.2 CMD (BUILD, INSTALL, CHECK): no ERRORs or WARNINGs, but 1
   NOTE on sub-directories of 1MB or more: (R 2.4Mb, doc 2.3Mb, help 2.7Mb).
-* rhub checks failed, with problems on the build machine (out of file space,
-  etc)
 * win-builder on R-devel/ATC OK.
 * win-builder on R-release: OK.
-* win-builder on R-old-release: 1 NOTE on file size (as at first bullet,
-  above).
+* win-builder on R-old-release: 1 NOTE on file size (as above).
 
 
 ## revdepcheck::revdep_check() results
@@ -32,7 +29,7 @@
 |field    |value                        |
 |:--------|:----------------------------|
 |version  |R version 3.6.2 (2019-12-12) |
-|os       |macOS Catalina 10.15.4       |
+|os       |OS X El Capitan 10.11.6      |
 |system   |x86_64, darwin15.6.0         |
 |ui       |RStudio                      |
 |language |(EN)                         |
