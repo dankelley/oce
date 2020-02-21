@@ -281,7 +281,7 @@ setClass("satellite", contains="oce") # both amsr and landsat stem from this
 #'
 #' @param x a basic [oce-class] object,
 #' but not from any subclass that derive from this base, because
-#' subclases have their own plot methods, e.g. calling `plot()` on a
+#' subclasses have their own plot methods, e.g. calling `plot()` on a
 #' [ctd-class] object dispatches to [plot,ctd-method()].
 #'
 #' @param y Ignored; only present here because S4 object for generic `plot`

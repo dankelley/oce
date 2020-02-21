@@ -49,7 +49,7 @@ Different formulae are used depending on the equation of state. If \code{eos}
 is \code{"unesco"}, the method of Fofonoff \emph{et al.} (1983) is used
 (see references 1 and 2).
 Otherwise, \code{swTheta} uses \code{\link[gsw:gsw_pt_from_t]{gsw::gsw_pt_from_t()}} from
-the CRANpkg{gsw} package.
+the \CRANpkg{gsw} package.
 
 If the first argument is a \code{ctd} or \code{section} object, then values
 for salinity, etc., are extracted from it, and used for the calculation, and

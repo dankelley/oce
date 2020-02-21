@@ -108,10 +108,10 @@ variants.)
 \code{n2satumol/kg}\tab \code{nitrogenSaturation}           \tab umol/kg              \tab   \cr
 \code{nbin}        \tab \code{nbin}                         \tab                      \tab   \cr
 \verb{obsscufa~}   \tab \code{backscatter}                  \tab NTU; Turner SCUFA    \tab   \cr
-\code{opoxMg/L}    \tab \code{oxygen}                       \tab mg/l; Optode, Anderaa\tab   \cr
-\code{opoxML/L}    \tab \code{oxygen}                       \tab ml/l; Optode, Anderaa\tab   \cr
-\code{opoxMm/L}    \tab \code{oxygen}                       \tab umol/l; Optode, Anderaa\tab \cr
-\code{opoxPS}      \tab \code{oxygen}                       \tab percent; Optode, Anderaa\tab   \cr
+\code{opoxMg/L}    \tab \code{oxygen}                       \tab mg/l; Optode, Aanderaa\tab   \cr
+\code{opoxML/L}    \tab \code{oxygen}                       \tab ml/l; Optode, Aanderaa\tab   \cr
+\code{opoxMm/L}    \tab \code{oxygen}                       \tab umol/l; Optode, Aanderaa\tab \cr
+\code{opoxPS}      \tab \code{oxygen}                       \tab percent; Optode, Aanderaa\tab   \cr
 \code{oxsatML/L}   \tab \code{oxygen}                       \tab ml/l; Weiss          \tab   \cr
 \code{oxsatMg/L}   \tab \code{oxygen}                       \tab mg/l; Weiss          \tab   \cr
 \code{oxsatMm/Kg}  \tab \code{oxygen}                       \tab umol/kg; Weiss       \tab   \cr

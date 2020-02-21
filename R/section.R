@@ -572,7 +572,7 @@ setMethod(f="show",
 #' @param ... optional arguments, of which only the first is examined. The
 #' possibilities for this argument are `indices`, which must be a
 #' vector of station indices (see Example 6), or `within`, which must be
-#' a list or data frame, contianing items named either `x` and `y`
+#' a list or data frame, containing items named either `x` and `y`
 #' or `longitude` and `latitude` (see Example 7). If `within`
 #' is given, then `subset` is ignored.
 #'
@@ -822,7 +822,7 @@ setMethod(f="subset",
 #' `"latitude"` for latitude, and `"time"`, for time.
 #'
 #' @return object A [section-class] object that has been smoothed,
-#' so its data fields will station-to-statoin variation than
+#' so its data fields will station-to-station variation than
 #' is the case for the input section, \code{x}.
 #'
 #' @examples

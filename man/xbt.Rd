@@ -47,8 +47,17 @@ Other datasets provided with oce:
 \code{\link{topoWorld}},
 \code{\link{wind}}
 
-Other things related to xbtdata: 
-\code{\link{[[,xbt-method}}
+Other things related to xbt data: 
+\code{\link{[[,xbt-method}},
+\code{\link{[[<-,xbt-method}},
+\code{\link{as.xbt}()},
+\code{\link{plot,xbt-method}},
+\code{\link{read.xbt.noaa1}()},
+\code{\link{read.xbt}()},
+\code{\link{subset,xbt-method}},
+\code{\link{summary,xbt-method}},
+\code{\link{xbt-class}},
+\code{\link{xbt.edf}}
 }
 \concept{datasets provided with oce}
-\concept{things related to xbtdata}
+\concept{things related to xbt data}

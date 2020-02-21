@@ -29,8 +29,8 @@ see \sQuote{Details}).}
 \item{saturation_fraction}{The saturation fraction of dissolved air in seawater,
 ignored if \code{eos="unesco"}).}
 
-\item{eos}{The equation of state, either \code{"unesco"} (refrences 1 and 2) or \code{"gsw"}.
-(refrences 3 and 4).}
+\item{eos}{The equation of state, either \code{"unesco"} (references 1 and 2) or \code{"gsw"}.
+(references 3 and 4).}
 }
 \value{
 Temperature (\eqn{^\circ}{deg}C), defined on the ITS-90 scale.

@@ -805,8 +805,8 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #' @param saturation_fraction The saturation fraction of dissolved air in seawater,
 #' ignored if `eos="unesco"`).
 #'
-#' @param eos The equation of state, either `"unesco"` (refrences 1 and 2) or `"gsw"`.
-#' (refrences 3 and 4).
+#' @param eos The equation of state, either `"unesco"` (references 1 and 2) or `"gsw"`.
+#' (references 3 and 4).
 #'
 #' @return Temperature (\eqn{^\circ}{deg}C), defined on the ITS-90 scale.
 #'
@@ -1071,7 +1071,7 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
 #' @author Dan Kelley
 #'
 #' @references The `eos="unesco"` formulae are based on the UNESCO
-#' equation of state, but are formulaed empirically by Trevor J. McDougall,
+#' equation of state, but are formulated empirically by Trevor J. McDougall,
 #' 1987, Neutral Surfaces, Journal of Physical Oceanography, volume 17, pages
 #' 1950-1964. The `eos="gsw"` formulae come from GSW; see references in
 #' the [swRho()] documentation.
@@ -1197,7 +1197,7 @@ swThermalConductivity <- function (salinity, temperature=NULL, pressure=NULL)
 #'
 #' If `eos="unesco"` then depth is calculated from pressure using Saunders
 #' and Fofonoff's method, with the formula refitted for 1980 UNESCO equation of
-#' state (refrence 1).  If `eos="gsw"`, then [gsw::gsw_z_from_p()] from
+#' state (reference 1).  If `eos="gsw"`, then [gsw::gsw_z_from_p()] from
 #' the \CRANpkg{gsw} package (references 2 and 3) is used.
 #'
 #' @param pressure either pressure (dbar), in which case `lat` must also
@@ -1968,11 +1968,11 @@ swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
 #'
 #' @references
 #' 1. F. H. Fisher and V. P. Simmons, 1977.  Sound absorption in
-#' sea water.  J. Acoust. Soc. Am., 62(3), 558-564.
+#' sea water.  Journal of the Acoustical Society of America, 62(3), 558-564.
 #'
 #' 2. R. E. Francois and G. R. Garrison, 1982.  Sound absorption based on
 #' ocean measurements.  Part II: Boric acid contribution and equation for total
-#' absorption.  J. Acoust. Soc. Am., 72(6):1879-1890.
+#' absorption.  Journal of the Acoustical Society of America, 72(6):1879-1890.
 #'
 #' 3. \url{http://resource.npl.co.uk/acoustics/techguides/seaabsorption/}
 #'
@@ -2190,7 +2190,7 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #'
 #' If the first argument is a `ctd` object, then salinity, temperature and
 #' pressure values are extracted from it, and used for the calculation. (For
-#' the `eos="gsw"` case, longitude and latitude are also extacted, because
+#' the `eos="gsw"` case, longitude and latitude are also extracted, because
 #' these are required for the formulation of spiciness0.
 #'
 #' Roughly speaking, seawater with a high spiciness is relatively warm and
@@ -2308,7 +2308,7 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL,
 #' is `"unesco"`, the method of Fofonoff *et al.* (1983) is used
 #' (see references 1 and 2).
 #' Otherwise, `swTheta` uses [gsw::gsw_pt_from_t()] from
-#' the CRANpkg{gsw} package.
+#' the \CRANpkg{gsw} package.
 #'
 #' If the first argument is a `ctd` or `section` object, then values
 #' for salinity, etc., are extracted from it, and used for the calculation, and
@@ -2489,7 +2489,7 @@ swViscosity <- function(salinity, temperature)
 #' corresponding arguments to the present function are ignored.
 #'
 #' The conservative temperature is calculated using the TEOS-10 function
-#' [gsw::gsw_CT_from_t] from the CRANpkg{gsw} package.
+#' [gsw::gsw_CT_from_t] from the \CRANpkg{gsw} package.
 #'
 #' @param salinity either practical salinity (in which case `temperature`
 #' and `pressure` must be provided) *or* an `oce` object (in
@@ -2561,7 +2561,7 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
 #' Seawater absolute salinity, in GSW formulation
 #'
 #' Compute the seawater Absolute Salinity, according to the GSW/TEOS-10
-#' formulation with [gsw::gsw_SA_from_SP()] in the CRANpkg{gsw} package.
+#' formulation with [gsw::gsw_SA_from_SP()] in the \CRANpkg{gsw} package.
 #' Typically, this is a fraction of a unit
 #' higher than practical salinity as defined in the UNESCO formulae.
 #'

@@ -124,7 +124,7 @@ setMethod(f="[[<-",
 #' @param subset An expression indicating how to subset `x`. See \dQuote{Details}.
 #'
 #' @param ... optional additional arguments, the only one of which is considered
-#' is one named `debug`, an integer that controlls the level of debugging. If
+#' is one named `debug`, an integer that controls the level of debugging. If
 #' this is not supplied, `debug` is assumed to be 0, meaning no debugging. If
 #' it is 1, the steps of determining the bounding box are shown. If it is 2 or larger,
 #' then additional processing steps are shown, including the extraction of every

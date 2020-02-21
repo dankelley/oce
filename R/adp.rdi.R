@@ -559,7 +559,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'
 #' The following two-byte ID codes are recognized by `read.adp.rdi`
 #' at this time (with bytes listed in natural order, LSB byte before
-#' MSB). Items preceeded by an asterisk are recognized, but not handled,
+#' MSB). Items preceded by an asterisk are recognized, but not handled,
 #' and so produce a warning.
 #'\tabular{rrrr}{
 #'   \tab **Byte 1** \tab **Byte 2** \tab **Meaning**\cr

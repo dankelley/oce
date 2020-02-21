@@ -123,7 +123,7 @@ data(coastlineWorld)
 The function used to produce maps with projections is
 `mapPlot`, and with default arguments it produces
 
-```{r fig.cap="World coastline with default (Molleweide) projection.", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
+```{r fig.cap="World coastline with default (Mollweide) projection.", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld)
 ```
@@ -136,7 +136,7 @@ Geographic Society, and other groups.
 
 **Exercise 1.** Plot the world with a Robinson projection, using gray shading for land.
 
-**Exercise 2.** Plot an image of world topography with the Molleweide projection.
+**Exercise 2.** Plot an image of world topography with the Mollweide projection.
 
 ## Polar views
 
@@ -207,11 +207,11 @@ par(mar=rep(0.5, 4))
 mapPlot(coastlineWorld, col="lightgray", projection="+proj=robin")
 ```
 
-**Exercise 2.** Plot an image of world topography with the Molleweide projection.
+**Exercise 2.** Plot an image of world topography with the Mollweide projection.
 
 Note that some adjustment of the margins is required to fit the colorbar.
 
-```{r fig.cap="World topography with Molleweide projection.", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
+```{r fig.cap="World topography with Mollweide projection.", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1, 1.5, 1))
 data(topoWorld)
 topo <- decimate(topoWorld, 2) # coarsen grid: 4X faster plot

@@ -21,8 +21,8 @@ load.}
 \code{"sippican"} and \code{"noaa1"}.}
 
 \item{longitude, latitude}{optional signed numbers indicating the longitude in degrees
-East and latitude in degres North. These values are used if \code{type="sippican"},
-but ignored if \code{type="noaa1"}, because those files contain location inforation.}
+East and latitude in degrees North. These values are used if \code{type="sippican"},
+but ignored if \code{type="noaa1"}, because those files contain location information.}
 
 \item{debug}{a flag that turns on debugging.  The value indicates the depth
 within the call stack to which debugging applies.}
@@ -38,7 +38,7 @@ An \linkS4class{xbt} object.
 Two file types are handled: (1) the \code{"sippican"} format, used
 for Sippican XBT files, handled with \code{\link[=read.xbt.edf]{read.xbt.edf()}}, and (2)
 the \code{"noaa1"} format, handled with \code{\link[=read.xbt.noaa1]{read.xbt.noaa1()}}. The first of
-these is recognized by \code{\link[=read.oce]{read.oce()}}, but the second must be calldd
+these is recognized by \code{\link[=read.oce]{read.oce()}}, but the second must be called
 directly with \code{\link[=read.xbt.noaa1]{read.xbt.noaa1()}}.
 }
 \examples{
@@ -57,6 +57,7 @@ https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual
 }
 \seealso{
 Other things related to xbt data: 
+\code{\link{[[,xbt-method}},
 \code{\link{[[<-,xbt-method}},
 \code{\link{as.xbt}()},
 \code{\link{plot,xbt-method}},
@@ -64,7 +65,8 @@ Other things related to xbt data:
 \code{\link{subset,xbt-method}},
 \code{\link{summary,xbt-method}},
 \code{\link{xbt-class}},
-\code{\link{xbt.edf}}
+\code{\link{xbt.edf}},
+\code{\link{xbt}}
 }
 \author{
 Dan Kelley

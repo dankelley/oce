@@ -13,7 +13,7 @@
 * Handle some upcoming rgdal/R-devel changes.
 * Make `sectionSmooth()` detect grids extending beyond data range.
 * Make `read.adp.rdi()` trim time if it longer than other data.
-* Make `geodDist()` default 2nd location correctly when `alongPath=FALSE`.
+* Make `geodDist()` handle second location correctly when `alongPath=FALSE`.
 * Improve vignettes.
 * Fix itemized-list documentation problem pointed out by Kurt Hornik.
 
@@ -173,7 +173,7 @@
 * swCSTp() added
 * swConductivity() now swThermalConductivity(); using Caldwell (1974).
 * many sw() functions handle eos="gsw"
-* libary(gsw) replaces teos()
+* library(gsw) replaces teos()
 * curl() added
 * handle new NOAA ascii topography dataset type
 * mapGrid() added
@@ -668,7 +668,7 @@
 * add undriftTime()
 * add tdrPatm()
 * make readTdr() gather serial no. info; show this on plot.pt()
-* switch to recommended verion-number format
+* switch to recommended version-number format
 * remove section.subset(), replaced by subset()
 * improve log items in functions that read and assemble oce objects
     http://code.google.com/p/r-oce/issues/detail?id=38

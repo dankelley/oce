@@ -241,7 +241,7 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
 #'              tol=                 0.0000001, scale=1)
 #'
 #' @references
-#' 1. Meeus, Jean H. Astronomical Algorithms. 2nd ed. Willmann-Bell, Incorporated, 1991.
+#' 1. Meeus, Jean H. Astronomical Algorithms. Second edition. Willmann-Bell, Incorporated, 1991.
 #'
 #' @family things related to astronomy
 #' @author Dan Kelley, based on formulae in Meeus (1991).

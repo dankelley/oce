@@ -54,7 +54,7 @@ then the Gibbs SeaWater formulation for "spiciness0" is used
 \details{
 If the first argument is a \code{ctd} object, then salinity, temperature and
 pressure values are extracted from it, and used for the calculation. (For
-the \code{eos="gsw"} case, longitude and latitude are also extacted, because
+the \code{eos="gsw"} case, longitude and latitude are also extracted, because
 these are required for the formulation of spiciness0.
 
 Roughly speaking, seawater with a high spiciness is relatively warm and

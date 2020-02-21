@@ -68,7 +68,7 @@ contain the item. This \code{[[} method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
-longitude and latitudee, has sufficient information to compute
+longitude and latitude, has sufficient information to compute
 Absolute Salinity, and so \code{o[["SA"]]} will yield the
 calculated Absolute Salinity.
 

@@ -1153,7 +1153,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #'
 #' @param cex numeric character expansion factor for points on plots, ignored unless
 #' `type` is `"p"`.  This may be a single number, applied to all points, or
-#' a vector of numbers to be applied to the points in seequence.  If there are
+#' a vector of numbers to be applied to the points in sequence.  If there are
 #' fewer `pch` values than there are `x` values, then the `pch` values are recycled
 #' in the standard fashion. See [par()] for more on `cex`.
 #'

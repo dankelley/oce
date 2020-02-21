@@ -1532,7 +1532,7 @@ as.argo <- function(time, longitude, latitude,
 #' in the \CRANpkg{rgdal} package; this will be familiar to many readers as
 #' the PROJ.4 notation; see [mapPlot()].
 #'
-#' @param mar value to be used with [par()]("mar").
+#' @param mar value to be used with `par('mar')`.
 #'
 #' @param tformat optional argument passed to [oce.plot.ts()], for plot
 #' types that call that function.  (See [strptime()] for the format

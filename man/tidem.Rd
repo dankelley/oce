@@ -155,7 +155,7 @@ value of \code{1e-7} in a portion of the oce test suite
 (see \code{tests/testthat/test_tidem.R} in the source).
 
 A specific example may be of help in understanding the removal of unresolvable
-constitutents. For example, the \code{data(sealevel)} dataset is of length
+constituents. For example, the \code{data(sealevel)} dataset is of length
 6718 hours, and this is too short to resolve the full list of constituents,
 with the conventional (and, really, necessary) limit of \code{rc=1}.
 From Table 1 of Foreman (1978), this timeseries is too short to resolve the

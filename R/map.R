@@ -1296,8 +1296,8 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' Euler                                     \tab `euler`    \tab `lat_1`, `lat_2`\cr
 #' Extended transverse Mercator              \tab `etmerc`   \tab `lat_ts`, `lat_0`\cr
 #' Fahey                                     \tab `fahey`    \tab - \cr
-#' Foucaut                                   \tab `fouc`     \tab - \cr
-#' Foucaut sinusoidal                        \tab `fouc_s`   \tab - \cr
+#' Foucault                                  \tab `fouc`     \tab - \cr
+#' Foucault sinusoidal                       \tab `fouc_s`   \tab - \cr
 #' Gall stereographic                        \tab `gall`     \tab - \cr
 #' Geostationary satellite view              \tab `geos`     \tab `h`\cr
 #' General sinusoidal series                 \tab `gn_sinu`  \tab `m`, `n`\cr

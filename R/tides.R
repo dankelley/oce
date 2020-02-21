@@ -858,7 +858,7 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' (see `tests/testthat/test_tidem.R` in the source).
 #'
 #' A specific example may be of help in understanding the removal of unresolvable
-#' constitutents. For example, the `data(sealevel)` dataset is of length
+#' constituents. For example, the `data(sealevel)` dataset is of length
 #' 6718 hours, and this is too short to resolve the full list of constituents,
 #' with the conventional (and, really, necessary) limit of `rc=1`.
 #' From Table 1 of Foreman (1978), this timeseries is too short to resolve the
@@ -1069,7 +1069,7 @@ tidem <- function(t, x, constituents, infer=NULL,
     }
 
     ## Check infer extensively, to prevent weird errors for e.g. an improperly-named
-    ## constitutent.
+    ## constituent.
     data("tidedata", package="oce", envir=environment())
     tidedata <- get("tidedata")#, pos=globalenv())
     tc <- tidedata$const
@@ -1215,7 +1215,7 @@ tidem <- function(t, x, constituents, infer=NULL,
         kmpr <- kmpr[-dropTerm]
     }
     oceDebug(debug, "after trimming constituents for Rayleight condition, name[1:", length(name), "]=", paste(name, collapse=" "), sep="", "\n")
-    ## Ensure that any added constitutents are in the list, i.e. prevent
+    ## Ensure that any added constituents are in the list, i.e. prevent
     ## the Rayleigh criterion from trimming them. (Before work on
     ## issue 1350, they would simply be dropped if they failed the Rayleigh
     ## criterion. Although that was a sensible choice, it was decided
@@ -1288,7 +1288,7 @@ tidem <- function(t, x, constituents, infer=NULL,
     oceDebug(debug, "name[1:", length(name), "]: ", paste(name, collapse=" "), "\n", sep="")
     rm(oindices) # clean up namespace
     if (0 == nc)
-        stop("cannot fit for any constitutents")
+        stop("cannot fit for any constituents")
     elevation <- sl[["elevation"]]
     time <- sl[["time"]]
     nt <- length(elevation)
@@ -1640,7 +1640,7 @@ predict.tidem <- function(object, newdata, ...)
         nc <- length(object@data$name)
         res <- rep(0, length(hour2pi))
         for (i in seq_len(nc)) {
-            oceDebug(debug, "accounting for constitutent[", i, "] = ", object@data$name[i], "\n", sep="")
+            oceDebug(debug, "accounting for constituent[", i, "] = ", object@data$name[i], "\n", sep="")
             omega.t <- object@data$freq[i] * hour2pi
             a <- object@data$amplitude[i] * sin(2 * pi * object@data$phase[i] / 360)
             b <- object@data$amplitude[i] * cos(2 * pi * object@data$phase[i] / 360)
@@ -1689,7 +1689,7 @@ predict.tidem <- function(object, newdata, ...)
 #' Get a tidal prediction from a WebTide database. This only
 #' works if the standalone WebTide application is installed,
 #' and if it is installed in a standard location. The details
-#' of installation are not within the oce purvue.
+#' of installation are not within the oce purview.
 #'
 #' There are two methods of using this function.
 #' *Case 1:* `action="map"`. In this case, if

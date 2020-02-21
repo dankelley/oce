@@ -167,7 +167,7 @@
 #' present version of `read.adv.nortek` infers the times of velocity
 #' observations differently, depending on whether the instrument was set to
 #' record in burst mode or continuous mode.  For burst mode, times stated in
-#' the burst headers are used, but for continous mode, times stated in the
+#' the burst headers are used, but for continuous mode, times stated in the
 #' ``vector system data'' are used.  On the advice found on a Nortek discussion
 #' board, the burst-mode times are offset by 2 seconds to allow for the
 #' instrument warm-up period.

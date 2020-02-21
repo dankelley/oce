@@ -11,7 +11,7 @@ errorbars(x, y, xe, ye, percent = FALSE, style = 0, length = 0.025, ...)
 
 \item{xe, ye}{errors on x and y coordinates of points on the existing plot,
 each either a single number or a vector of length identical to that of
-the cooresponding coordinate.}
+the corresponding coordinate.}
 
 \item{percent}{boolean flag indicating whether \code{xe} and \code{ye} are
 in terms of percent of the corresponding \code{x} and \code{y} values.}
