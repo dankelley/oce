@@ -1,3 +1,6 @@
+1.2-1
+* FIXME: add changes here
+
 1.2-0
 
 * Address argument doc/code warning that blocked CRAN acceptance.
