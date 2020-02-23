@@ -123,7 +123,7 @@ setMethod(f="subset",
           })
 
 
-#' Plot an ODF Object
+#' Plot an odf Object
 #'
 #' Plot data contained within an ODF object,
 #' using [oce.plot.ts()] to create panels of time-series plots for

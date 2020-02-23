@@ -260,7 +260,7 @@ setMethod(f="[[<-",
 
 
 
-#' Plot a Tidem Prediction
+#' Plot a tidem Object
 #'
 #' Plot a summary diagram for a tidal fit.
 #'

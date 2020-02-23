@@ -3,7 +3,7 @@
 \name{plot,section-method}
 \alias{plot,section-method}
 \alias{plot.section}
-\title{Plot a Section}
+\title{Plot a section Object}
 \usage{
 \S4method{plot}{section}(
   x,

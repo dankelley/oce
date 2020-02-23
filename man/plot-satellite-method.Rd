@@ -3,7 +3,7 @@
 \name{plot,satellite-method}
 \alias{plot,satellite-method}
 \alias{plot.satellite}
-\title{Plot a satellite object}
+\title{Plot a satellite Object}
 \usage{
 \S4method{plot}{satellite}(x, y, asp, debug = getOption("oceDebug"), ...)
 }

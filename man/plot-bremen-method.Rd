@@ -3,7 +3,7 @@
 \name{plot,bremen-method}
 \alias{plot,bremen-method}
 \alias{plot.bremen}
-\title{Plot a Bremen Object}
+\title{Plot a bremen Object}
 \usage{
 \S4method{plot}{bremen}(x, type, ...)
 }

@@ -3,7 +3,7 @@
 \name{plot,lisst-method}
 \alias{plot,lisst-method}
 \alias{plot.lisst}
-\title{Plot LISST data}
+\title{Plot a lisst Object}
 \usage{
 \S4method{plot}{lisst}(x, which = c(16, 37, 38), tformat, debug = getOption("oceDebug"), ...)
 }

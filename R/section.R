@@ -931,7 +931,7 @@ sectionAddStation <- function(section, station)
 sectionAddCtd <- sectionAddStation
 
 
-#' Plot a Section
+#' Plot a section Object
 #'
 #' Creates a summary plot for a CTD section, with one panel for each value of
 #' `which`.

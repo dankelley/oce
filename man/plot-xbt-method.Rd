@@ -3,7 +3,7 @@
 \name{plot,xbt-method}
 \alias{plot,xbt-method}
 \alias{plot.xbt}
-\title{Plot An xbt data}
+\title{Plot an xbt Object}
 \usage{
 \S4method{plot}{xbt}(
   x,

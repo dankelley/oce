@@ -3167,7 +3167,7 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
 }
 
 
-#' Filter a time-series
+#' Filter a Time Series
 #'
 #' Filter a time-series, possibly recursively
 #'

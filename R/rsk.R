@@ -343,7 +343,7 @@ as.rsk <- function(time, columns,
 }
 
 
-#' Plot Rsk Data
+#' Plot a rsk Object
 #'
 #' Rsk data may be in many forms, and it is not easy to devise a general plotting
 #' strategy for all of them. The present function is quite crude, on the

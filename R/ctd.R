@@ -2750,7 +2750,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 }
 
 
-#' Plot CTD Data
+#' Plot a ctd Object
 #'
 #' Plot CTD data, by default in a four-panel display showing (a) profiles of
 #' salinity and temperature, (b) profiles of density and the square of buoyancy

@@ -375,7 +375,7 @@ as.sealevel <- function(elevation,
 }
 
 
-#' @title Plot Sealevel Data
+#' @title Plot a sealevel Object
 #'
 #' @description
 #' Creates a plot for a sea-level dataset, in one of two varieties.  Depending

@@ -1465,7 +1465,7 @@ as.argo <- function(time, longitude, latitude,
 }
 
 
-#' Plot Argo Data
+#' Plot an argo Object
 #'
 #' Plot a summary diagram for argo data.
 #'

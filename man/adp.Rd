@@ -3,7 +3,7 @@
 \docType{data}
 \name{adp}
 \alias{adp}
-\title{ADP (acoustic-doppler profiler) dataset}
+\title{Sample adp (acoustic-doppler profiler) dataset}
 \source{
 This file came from the SLEIWEX-2008 experiment.
 }

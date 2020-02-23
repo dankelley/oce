@@ -501,7 +501,7 @@ read.xbt.noaa1 <- function(file, debug=getOption("oceDebug"), missingValue=-9.99
 }
 
 
-#' Plot An xbt data
+#' Plot an xbt Object
 #'
 #' Plots data contained in an [xbt-class] object.
 #'

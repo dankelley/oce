@@ -339,7 +339,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 }
 
 
-#' Plot a Coastline
+#' Plot a coastline Object
 #'
 #' This function plots a coastline.  An attempt is made to fill the space of
 #' the plot, and this is done by limiting either the longitude range or the

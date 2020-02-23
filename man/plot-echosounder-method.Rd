@@ -3,7 +3,7 @@
 \name{plot,echosounder-method}
 \alias{plot,echosounder-method}
 \alias{plot.echosounder}
-\title{Plot Echosounder Data}
+\title{Plot an echosounder Object}
 \usage{
 \S4method{plot}{echosounder}(
   x,

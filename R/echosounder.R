@@ -432,7 +432,7 @@ findBottom <- function(x, ignore=5, clean=despike)
 }
 
 
-#' Plot Echosounder Data
+#' Plot an echosounder Object
 #'
 #' Plot echosounder data.
 #' Simple linear approximation is used when a `newx` value is specified

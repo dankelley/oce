@@ -3,7 +3,7 @@
 \name{plot,lobo-method}
 \alias{plot,lobo-method}
 \alias{plot.lobo}
-\title{Plot LOBO data}
+\title{Plot a lobo object}
 \usage{
 \S4method{plot}{lobo}(
   x,

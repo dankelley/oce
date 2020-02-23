@@ -3,7 +3,7 @@
 \name{plot,argo-method}
 \alias{plot,argo-method}
 \alias{plot.argo}
-\title{Plot Argo Data}
+\title{Plot an argo Object}
 \usage{
 \S4method{plot}{argo}(
   x,
