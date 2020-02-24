@@ -388,7 +388,10 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, debug=getOption("oceDe
     if (0 == length(headerEnd))
         stop("programming error: increase #lines read for header")
     res <- new("xbt")
-    res@metadata$header <- l[1:headerEnd]
+    ## Convert from latin1 to UTF-8, so a degree sign does not cause problems
+    ## res@metadata$header <- l[1:headerEnd]
+    res@metadata$header <- iconv(l[1:headerEnd], from="UTF-8", to="ASCII", sub="?")
+
     date <- getHeaderItem(l, "Date of Launch")
     hms <- getHeaderItem(l, "Time of Launch")
     res@metadata$time <- as.POSIXct(paste(date, hms, sep=" "),
