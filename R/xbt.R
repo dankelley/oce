@@ -333,6 +333,21 @@ read.xbt <- function(file, type="sippican", longitude=NA, latitude=NA, debug=get
 
 #' Read a Sippican '.edf' format xbt file
 #'
+#'
+#' The function was written by inspection of a particular file, and might
+#' be wrong for other files; see \dQuote{Details} for a note on character
+#' translation.
+#'
+#' The header is converted to ASCII format prior to storage in
+#' the `metadata` slot, so that e.g. a degree sign in the original file will
+#' become a `?` character in the `header`.  This is to prevent problems
+#' with submission of `oce` to the CRAN system, which produces NOTEs
+#' about UTF-8 strings in data (on some build machines, evidently depending
+#' on the locale on those machines).  This character substitution
+#' is at odds with the `oce` philosophy of leaving data intact, so
+#' it will be reverted, if CRAN policy changes or if the developers
+#' can find a way to otherwise silence the NOTE.
+#'
 #' @param file a connection or a character string giving the name of the file to
 #' load.
 #'
