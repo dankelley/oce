@@ -3781,10 +3781,10 @@ setMethod(f="plot",
 
 #' Subset a CTD Object
 #'
-#' Return a subset of a section object.
+#' Return a subset of a [ctd-class] object.
 #'
-#' This function is used to subset data within the
-#' levels of a ctd object. There are two ways of working. If
+#' This function is used to subset data within
+#' a ctd object. There are two ways of working. If
 #' `subset` is supplied, then it is a logical expression
 #' that is evaluated within the environment of the `data`
 #' slot of the object (see Example 1). Alternatively, if the

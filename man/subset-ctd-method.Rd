@@ -18,11 +18,11 @@ possibility is that this argument be named \code{indices}. See \dQuote{Details}.
 A \linkS4class{ctd} object.
 }
 \description{
-Return a subset of a section object.
+Return a subset of a \linkS4class{ctd} object.
 }
 \details{
-This function is used to subset data within the
-levels of a ctd object. There are two ways of working. If
+This function is used to subset data within
+a ctd object. There are two ways of working. If
 \code{subset} is supplied, then it is a logical expression
 that is evaluated within the environment of the \code{data}
 slot of the object (see Example 1). Alternatively, if the
