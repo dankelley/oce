@@ -158,7 +158,7 @@ approx3d <- function(x, y, z, f, xout, yout, zout)
         stop("must have more than one x value")
     if (length(y) < 2)
         stop("must have more than one y value")
-    if (length(x) < 2)
+    if (length(z) < 2)
         stop("must have more than one z value")
     ## Are the array dimensions consistent with x, y, and z?
     if (3 != length(dim(f)))
