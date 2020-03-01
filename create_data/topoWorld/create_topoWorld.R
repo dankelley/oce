@@ -38,7 +38,10 @@ summary(topoWorldOld)
 
 summary(topoWorld)
 
-if (utils::compareVersion(R.Version()$minor, '3.6') >= 0) {
+## Save in version 2, because otherwise users with R 3.5.x and earlier will not
+## be able to use data("topoWorld")
+if (utils::compareVersion(paste0(R.Version()$major, ".", R.Version()$minor), '3.6.0') >= 0) {
+    message("saving with version=2 since R version is 3.6.0 or later")
     save(topoWorld, file="topoWorld.rda", version=2)
     tools::resaveRdaFiles('topoWorld.rda', version=2)
 } else {
