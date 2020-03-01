@@ -230,7 +230,7 @@ setMethod(f="subset",
               options(warn=-1)
               na <- which(is.na(cllon))
               nseg <- length(na)
-              nnew <- 0
+              ##OLD nnew <- 0
               outlon <- NULL
               outlat <- NULL
               for (iseg in 2:nseg) {

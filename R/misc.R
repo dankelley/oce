@@ -2251,16 +2251,16 @@ oce.spectrum <- oceSpectrum
 #' @examples
 #' vectorShow(pi)
 #' vectorShow(volcano)
-#' knot2mps <- 0.5144444 
+#' knot2mps <- 0.5144444
 #' vectorShow(knot2mps, postscript="knots per m/s")
 #' vectorShow("January", msg="The first month is")
 #'
 #' @author Dan Kelley
-vectorShow <- function(v, msg, postscript, digits=5, n=2L)
+vectorShow <- function(v, msg="", postscript="", digits=5, n=2L)
 {
     DIM <- dim(v)
     nv <- length(v)
-    if (missing(msg))
+    if (!nchar(msg))
         msg <- deparse(substitute(v))
     if (!is.null(DIM)) {
         msg <- paste(msg,
@@ -2301,7 +2301,7 @@ vectorShow <- function(v, msg, postscript, digits=5, n=2L)
             }
         }
     }
-    if (!missing(postscript))
+    if (nchar(postscript) > 0)
         res <- paste(res, postscript)
     res <- paste(res, "\n", sep="")
     res
