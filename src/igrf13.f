@@ -536,14 +536,25 @@ c
       x     = 0.0
       y     = 0.0
       z     = 0.0
+c *** oce: give several fn, three and gn initial values, to prevent
+c *** oce: warnings issued during compilation by R. (It seems likely
+c *** oce: that the original code was either using knowledge that
+c *** oce: things would always be assigned, or was using the
+c *** oce: zero-initialization property of fortran.)
+      fn = 0.0
+      three = 0.0
+      gn = 0.0
+
       if (date.lt.1900.0.or.date.gt.2030.0) go to 11
-      if (date.gt.2025.0) write (6,960) date
-  960 format (/' This version of the IGRF is intended for use up',
-     1        ' to 2025.0.'/' values for',f9.3,' will be computed',
-     2        ' but may be of reduced accuracy'/)
+c *** oce: comment out all write() lines, and associated formats***
+c      if (date.gt.2025.0) write (6,960) date
+c  960 format (/' This version of the IGRF is intended for use up',
+c     1        ' to 2025.0.'/' values for',f9.3,' will be computed',
+c     2        ' but may be of reduced accuracy'/)
       if (date.ge.2020.0) go to 1
       t     = 0.2*(date - 1900.0)                                             
-      ll    = t
+c *** oce: next line gets an int() to silence fortran warning***
+      ll    = int(t)
       one   = ll
       t     = t - one
 c
@@ -557,7 +568,7 @@ c
       else
        nmx   = 13
        nc    = nmx*(nmx+2)
-       ll    = 0.2*(date - 1995.0)
+       ll    = int(0.2*(date - 1995.0))
 c
 c     19 is the number of SH models that extend to degree 10
 c
@@ -623,7 +634,7 @@ c
       p(3)  = st
       q(1)  = 0.0
       q(3)  =  ct
-      do 10 k=2,kmx                                                       
+      do k=2,kmx                                                       
        if (n.ge.m) go to 4
        m     = 0
        n     = n + 1
@@ -668,6 +679,7 @@ c
        z     = z - (fn + 1.0)*one*p(k)
        l     = l + 1
    10 m     = m + 1
+       end do
 c
 c     conversion to coordinate system specified by itype
 c
@@ -681,9 +693,10 @@ c
 c     error return if date out of bounds
 c
    11 f     = 1.0d8
-      write (6,961) date
-  961 format (/' This subroutine will not work with a date of',
-     1        f9.3,'.  Date must be in the range 1900.0.ge.date',
-     2        '.le.2030.0. On return f = 1.0d8., x = y = z = 0.')
+c *** oce: comment out all write() lines, and associated formats***
+c      write (6,961) date
+c  961 format (/' This subroutine will not work with a date of',
+c     1        f9.3,'.  Date must be in the range 1900.0.ge.date',
+c     2        '.le.2030.0. On return f = 1.0d8., x = y = z = 0.')
       return
       end
