@@ -1326,8 +1326,13 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
         par(mai=the.mai)
         drawPalette(mai=rep(0, 4))
     }
+    ## Find data ranges. Note that x is a time, so it's either going to be NA or
+    ## sensible; thus the na.rm argument to range() is suitable for trimming bad
+    ## values.  However, for y, the finite argument is more sensible, because we
+    ## might for example be plotting log10(count), where count could be zero
+    ## sometimes (and not uncommonly, in biological data).
     xrange <- range(x, na.rm=TRUE)
-    yrange <- range(y, na.rm=TRUE)
+    yrange <- range(y, finite=TRUE)
     maybeflip <- function(y) if (flipy) rev(sort(y)) else y
     if (!is.finite(yrange[1])) {
         plot(xrange, c(0, 1), axes=FALSE, xaxs=xaxs, yaxs=yaxs,
