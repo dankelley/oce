@@ -3,7 +3,7 @@
 \name{plot,cm-method}
 \alias{plot,cm-method}
 \alias{plot.cm}
-\title{Plot CM data}
+\title{Plot a cm Object}
 \usage{
 \S4method{plot}{cm}(
   x,

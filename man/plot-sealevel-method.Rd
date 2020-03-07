@@ -3,7 +3,7 @@
 \name{plot,sealevel-method}
 \alias{plot,sealevel-method}
 \alias{plot.sealevel}
-\title{Plot Sealevel Data}
+\title{Plot a sealevel Object}
 \usage{
 \S4method{plot}{sealevel}(
   x,

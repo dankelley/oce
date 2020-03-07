@@ -11,7 +11,7 @@ oceColorsSalinity(n)
 \item{n}{number of colors to create.}
 }
 \value{
-A vector of color specificications.
+A vector of color specifications.
 }
 \description{
 Create a set of colors for displaying salinity values,

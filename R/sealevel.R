@@ -375,7 +375,7 @@ as.sealevel <- function(elevation,
 }
 
 
-#' @title Plot Sealevel Data
+#' @title Plot a sealevel Object
 #'
 #' @description
 #' Creates a plot for a sea-level dataset, in one of two varieties.  Depending
@@ -462,7 +462,7 @@ setMethod(f="plot",
               oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n", sep="", unindent=1)
               if ("adorn" %in% names(list(...)))
                   warning("In plot,adv-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
-              dots <- list(...)
+              ##> dots <- list(...)
               titlePlot<-function(x)
               {
                   title <- ""
@@ -560,7 +560,7 @@ setMethod(f="plot",
                       if (any(is.finite(xx@data$elevation))) {
                           atWeek <- seq(from=from, to=to, by="week")
                           atDay  <- seq(from=from, to=to, by="day")
-                          tmp <- max(abs(range(xx@data$elevation, na.rm=TRUE)))
+                          ##> tmp <- max(abs(range(xx@data$elevation, na.rm=TRUE)))
                           plot(xx@data$time, xx@data$elevation,
                                xlab="",
                                ylab=resizableLabel("elevation"),
@@ -657,7 +657,7 @@ setMethod(f="plot",
 #' Examination of data retrieved from what seems to be a replacement Hawaii server
 #' (https://uhslc.soest.hawaii.edu/data/?rq) in September 2019 indicated that the
 #' format had been changed to what is called Type 3 by `read.sealevel`.
-#' Web searches did not uncover documentaiton on this format, so the
+#' Web searches did not uncover documentation on this format, so the
 #' decoding scheme was developed solely through examination of
 #' data files, which means that it might be not be correct.
 #' The MEDS repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})

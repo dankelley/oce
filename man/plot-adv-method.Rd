@@ -3,7 +3,7 @@
 \name{plot,adv-method}
 \alias{plot,adv-method}
 \alias{plot.adv}
-\title{Plot ADV data}
+\title{Plot an adv Object}
 \usage{
 \S4method{plot}{adv}(
   x,

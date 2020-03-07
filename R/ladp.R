@@ -123,7 +123,7 @@ setMethod(f="[[<-",
               callNextMethod(x=x, i=i, j=j, ..., value=value) # [[<-
           })
 
-#' Plot an ladp object
+#' Plot an ladp Object
 #'
 #' Uses [plotProfile()] to create panels of depth variation of easterly
 #' and northerly velocity components.

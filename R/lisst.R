@@ -111,7 +111,7 @@ setMethod(f="summary",
 
 
 
-#' Plot LISST data
+#' Plot a lisst Object
 #'
 #' Creates a multi-panel summary plot of data measured by LISST instrument.
 #'

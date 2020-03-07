@@ -3,7 +3,7 @@
 \name{plot,coastline-method}
 \alias{plot,coastline-method}
 \alias{plot.coastline}
-\title{Plot a Coastline}
+\title{Plot a coastline Object}
 \usage{
 \S4method{plot}{coastline}(
   x,

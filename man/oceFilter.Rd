@@ -3,7 +3,7 @@
 \name{oceFilter}
 \alias{oceFilter}
 \alias{oce.filter}
-\title{Filter a time-series}
+\title{Filter a Time Series}
 \usage{
 oceFilter(x, a = 1, b, zero.phase = FALSE)
 }

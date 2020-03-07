@@ -3,7 +3,7 @@
 \name{plot,argo-method}
 \alias{plot,argo-method}
 \alias{plot.argo}
-\title{Plot Argo Data}
+\title{Plot an argo Object}
 \usage{
 \S4method{plot}{argo}(
   x,
@@ -84,7 +84,7 @@ the PROJ.4 notation; see \code{\link[=mapPlot]{mapPlot()}}.}
 \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \href{"mar"}{par()}.}
+\item{mar}{value to be used with \code{par('mar')}.}
 
 \item{tformat}{optional argument passed to \code{\link[=oce.plot.ts]{oce.plot.ts()}}, for plot
 types that call that function.  (See \code{\link[=strptime]{strptime()}} for the format

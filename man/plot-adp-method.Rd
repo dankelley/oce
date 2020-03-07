@@ -3,7 +3,7 @@
 \name{plot,adp-method}
 \alias{plot,adp-method}
 \alias{plot.adp}
-\title{Plot ADP Data}
+\title{Plot an adp Object}
 \usage{
 \S4method{plot}{adp}(
   x,

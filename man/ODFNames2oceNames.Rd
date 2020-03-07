@@ -116,7 +116,7 @@ that ought to confuse no users, akin to converting \code{m**3} to
 
 There are disagreements on variable names. For example, the ``DFO
 Common Data Dictionary'' (reference 1)
-has unit millmole/m^3 for NODC and MEDS, but it has unit mL/L for BIO and IML.
+has unit millimole/m^3 for NODC and MEDS, but it has unit mL/L for BIO and IML.
 }
 
 \references{

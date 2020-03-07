@@ -88,7 +88,7 @@ convention, from the CAMEL_CASE used in ODF files to the snakeCase
 used in oce. Bearing this conversion in mind, users should not
 find it difficult to understand the meaning of items that \code{\link[=read.odf]{read.odf()}}
 stores within the \code{metadata} slot. Users should bear in mind
-that the intirety of the ODF header is saved as list by
+that the whole ODF header is saved as a list by
 calling the function with \code{header="list"}, after which
 e.g. \link{str}\code{(rval[["header"]])} or \link{View}\code{(rval[["header"]])}
 can be used to isolate any information of interest (but bear in mind

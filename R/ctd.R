@@ -630,7 +630,7 @@ setMethod(f="summary",
 #' slot. If it is impossible to determine the sampling time, then
 #' `NULL` is returned. These time variants occur, in the
 #' present version of oce, only for data read by [read.ctd.sbe()],
-#' the documention of which explains how times are computed.
+#' the documentation of which explains how times are computed.
 #'
 #' * `z`: Vertical coordinate in metres above the surface, computed with
 #' [swZ]`(x)`.
@@ -2750,7 +2750,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 }
 
 
-#' Plot CTD Data
+#' Plot a ctd Object
 #'
 #' Plot CTD data, by default in a four-panel display showing (a) profiles of
 #' salinity and temperature, (b) profiles of density and the square of buoyancy
@@ -3781,10 +3781,10 @@ setMethod(f="plot",
 
 #' Subset a CTD Object
 #'
-#' Return a subset of a section object.
+#' Return a subset of a [ctd-class] object.
 #'
-#' This function is used to subset data within the
-#' levels of a ctd object. There are two ways of working. If
+#' This function is used to subset data within
+#' a ctd object. There are two ways of working. If
 #' `subset` is supplied, then it is a logical expression
 #' that is evaluated within the environment of the `data`
 #' slot of the object (see Example 1). Alternatively, if the

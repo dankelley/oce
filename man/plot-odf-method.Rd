@@ -3,7 +3,7 @@
 \name{plot,odf-method}
 \alias{plot,odf-method}
 \alias{plot.odf}
-\title{Plot an ODF Object}
+\title{Plot an odf Object}
 \usage{
 \S4method{plot}{odf}(x, blanks = TRUE, debug = getOption("oceDebug"))
 }

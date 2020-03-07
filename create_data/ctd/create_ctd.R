@@ -8,10 +8,14 @@ ctd <- oce.edit(ctd, "startTime",
 ##ctd@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
 ##ctd <- oce.edit(ctd, reason="set metadata$units$temperature to ITS-90", person="Dan Kelley")
 
-if (utils::compareVersion(R.Version()$minor, '3.6') >= 0) {
+## Save in version 2, because otherwise users with R 3.5.x and earlier will not
+## be able to use data("ctd")
+if (utils::compareVersion(paste0(R.Version()$major, ".", R.Version()$minor), '3.6.0') >= 0) {
+    message("saving with version=2 since R version is 3.6.0 or later")
     save(ctd, file="ctd.rda", version=2)
     tools::resaveRdaFiles('ctd.rda', version=2)
 } else {
+    message("saving without version=2 since R version is earlier than 3.6.0")
     save(ctd, file="ctd.rda")
     tools::resaveRdaFiles('ctd.rda')
 }

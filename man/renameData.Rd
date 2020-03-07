@@ -14,7 +14,7 @@ renameData(x, old = NULL, new = NULL)
 \item{new}{Vector of strings, containing old names.}
 }
 \description{
-This was deprecatd in December 2019, because \code{\link[=oceRenameData]{oceRenameData()}} does
+This was deprecated in December 2019, because \code{\link[=oceRenameData]{oceRenameData()}} does
 a better job and is more consistent with other functions that work
 with items in the \code{data} and \code{metadata} slots.
 }

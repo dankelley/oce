@@ -28,7 +28,7 @@
 #'
 #' @details
 #'
-#' * An infrequently updated record of the intrument position, in
+#' * An infrequently updated record of the instrument position, in
 #' `timeSlow`, `longitudeSlow` and `latitudeSlow`.  These are
 #' used in plotting maps with [plot,echosounder-method()].
 #'
@@ -332,7 +332,7 @@ setMethod(f="subset",
 #' @param sourceLevel source level, in dB (uPa at 1m), denoted `sl` in
 #' reference 1 p15, where it is in units 0.1dB (uPa at 1m)
 #'
-#' @param receiverSensitivity receiver sensivitity of the main element, in
+#' @param receiverSensitivity receiver sensitivity of the main element, in
 #' dB(counts/uPa), denoted `rs` in reference 1 p15, where it is in units of
 #' 0.1dB(counts/uPa)
 #'
@@ -432,7 +432,7 @@ findBottom <- function(x, ignore=5, clean=despike)
 }
 
 
-#' Plot Echosounder Data
+#' Plot an echosounder Object
 #'
 #' Plot echosounder data.
 #' Simple linear approximation is used when a `newx` value is specified
@@ -1092,7 +1092,7 @@ read.echosounder <- function(file, channel=1, soundSpeed,
             if (debug > 1) cat(" comment tuple [1 sec 4.14 p28]\n")
             ## FIXME: other info could be gleaned from the comment, if needed
             numbytes <- .C("uint16_le", buf[offset+34:35], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
-            if (debug > 1) cat('numbytes:', numbytes, ' ... NOTHING ELSE DECODED in this verion of oce.\n')
+            if (debug > 1) cat('numbytes:', numbytes, ' ... NOTHING ELSE DECODED in this version of oce.\n')
         } else {
             if (debug > 3) cat(" unknown code IGNORED\n")
         }

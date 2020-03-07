@@ -34,7 +34,10 @@ lisst <- as.lisst(data, filename="(constructed)", year=2012, "UTC")
 #plot(lisst)
 summary(lisst)
 
-if (utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
+## Save in version 2, because otherwise users with R 3.5.x and earlier will not
+## be able to use data("lisst")
+if (utils::compareVersion(paste0(R.Version()$major, ".", R.Version()$minor), '3.6.0') >= 0) {
+    message("saving with version=2 since R version is 3.6.0 or later")
     save(lisst, file="lisst.rda", version=2)
     tools::resaveRdaFiles("lisst.rda", version=2)
 } else {

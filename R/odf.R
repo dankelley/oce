@@ -123,7 +123,7 @@ setMethod(f="subset",
           })
 
 
-#' Plot an ODF Object
+#' Plot an odf Object
 #'
 #' Plot data contained within an ODF object,
 #' using [oce.plot.ts()] to create panels of time-series plots for
@@ -373,7 +373,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' @section Consistency warning:
 #' There are disagreements on variable names. For example, the ``DFO
 #' Common Data Dictionary'' (reference 1)
-#' has unit millmole/m^3 for NODC and MEDS, but it has unit mL/L for BIO and IML.
+#' has unit millimole/m^3 for NODC and MEDS, but it has unit mL/L for BIO and IML.
 #'
 #' @param ODFnames Vector of strings holding ODF names.
 #'
@@ -875,7 +875,7 @@ ODFListFromHeader <- function(header)
 #' used in oce. Bearing this conversion in mind, users should not
 #' find it difficult to understand the meaning of items that [read.odf()]
 #' stores within the `metadata` slot. Users should bear in mind
-#' that the intirety of the ODF header is saved as list by
+#' that the whole ODF header is saved as a list by
 #' calling the function with `header="list"`, after which
 #' e.g. [str]`(rval[["header"]])` or [View]`(rval[["header"]])`
 #' can be used to isolate any information of interest (but bear in mind

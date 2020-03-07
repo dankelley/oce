@@ -3,7 +3,7 @@
 \name{plot,met-method}
 \alias{plot,met-method}
 \alias{plot.met}
-\title{Plot met Data}
+\title{Plot a met Object}
 \usage{
 \S4method{plot}{met}(x, which = 1:4, mgp, mar, tformat, debug = getOption("oceDebug"))
 }

@@ -42,7 +42,7 @@
 #' @family things related to adv data
 setClass("adv", contains="oce")
 
-#' ADV (acoustic-doppler velocimeter) dataset
+#' Sample adv (acoustic-doppler velocimeter) dataset
 #'
 #' This [adv-class] object is a sampling of measurements made with a
 #' Nortek Vector acoustic Doppler velocimeter deployed as part of the St Lawrence
@@ -387,7 +387,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
 
 
-#' Plot ADV data
+#' Plot an adv Object
 #'
 #' Plot [adv-class] data.
 #'

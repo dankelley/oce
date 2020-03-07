@@ -87,7 +87,7 @@ in those formats varies so widely.
 This reads WOCE exchange files that start with the string \code{"CTD"}.
 There are two variants: one in which the first 4 characters are
 \code{"CTD,"} and the other in which the first 3 characters are
-again \code{"CTD"} but no other non-whitespace characers occur on
+again \code{"CTD"} but no other non-whitespace characters occur on
 the line.
 }
 \references{

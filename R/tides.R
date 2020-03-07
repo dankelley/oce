@@ -260,7 +260,7 @@ setMethod(f="[[<-",
 
 
 
-#' Plot a Tidem Prediction
+#' Plot a tidem Object
 #'
 #' Plot a summary diagram for a tidal fit.
 #'
@@ -420,6 +420,11 @@ setMethod(f="plot",
 #' @return An object of [tidem-class], with only minimal
 #' contents.
 #'
+#' @section Known issues:
+#' There are two known differences between [tidem()] and the Matlab
+#' `T_TIDE` package, as listed in references 3 and 4. Work on these
+#' issues is planned for the summer of 2020.
+#'
 #' @examples
 #' # Simulate a tide table with output from tidem().
 #' data(sealevelTuktoyaktuk)
@@ -458,12 +463,18 @@ setMethod(f="plot",
 #' oce.plot.ts(sealevelTuktoyaktuk[["time"]], p2, ylim=ylim)
 #'
 #' @references
-#' Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+#' 1. Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
 #' Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
 #' Sciences, Patricia Bay.
 #'
-#' Wikipedia, "Theory of Tides." https://en.wikipedia.org/wiki/Theory_of_tides
+#' 2. Wikipedia, "Theory of Tides." https://en.wikipedia.org/wiki/Theory_of_tides
 #' Downloaded Aug 17, 2019.
+#'
+#' 3. Github issue 1653: tidem() and t_tide do not produce identical results
+#' https://github.com/dankelley/oce/issues/1653
+#'
+#' 4. Github issue 1654: predict(tidem()) uses all constituents, unlike T_TIDE
+#' https://github.com/dankelley/oce/issues/1654
 #'
 #' @family things related to tides
 as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oceDebug"))
@@ -541,22 +552,22 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 #'
 #' Carry out nodal modulation calculations for [tidem()]. This function is based directly
 #' on `t_vuf` in the `T_TIDE` Matlab package (Pawlowicz et al., 2002),
-#' which inherits from on the Fortran code described by Foreman (1978).
+#' which inherits from the Fortran code described by Foreman (1978).
 #'
-#' @param t The time in [POSIXct()] format.  (It is *very* important to
-#' use `tz="GMT"` in constructing `t`.)
+#' @param t a single time in [POSIXct()] format, with timezone `"UTC"`.
 #'
-#' @param j Indices of tidal constituents to use.
+#' @param j integer vector, giving indices of tidal constituents to use.
 #'
-#' @param latitude Optional numerical value containing the latitude in degrees North.
-#' (For proper calculations, this really ought to be supplied.)
+#' @param latitude optional numerical value containing the latitude in degrees North.
+#' If not provided, `u` in the return value will be a vector consisting of
+#' repeated 0 value, and `f` will be a vector of repeated 1 value.
 #'
 #' @return A `list` containing
 #' items named `v`, `u` and `f` as described in the `T_TIDE` documentation,
 #' as well in Pawlowicz et al. (2002) and Foreman (1978).
 #'
-#' @author Dan Kelley translated this from `t_astron` from the `T_TIDE`
-#' package (see Pawlowicz et al. 2002).
+#' @author Dan Kelley translated this from the `t_vuf` function
+#' of the `T_TIDE` Matlab package (see Pawlowicz et al. 2002).
 #'
 #' @examples
 #' ## Look up values for the M2 constituent in Halifax Harbour, Canada.
@@ -565,12 +576,11 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 #' tidemVuf(t=as.POSIXct("2008-01-22 18:50:24"), j=j, lat=44.63)
 #'
 #' @references
-#'
-#' Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+#' * Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
 #' Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
 #' Sciences, Patricia Bay.
 #'
-#' Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+#' * Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
 #' harmonic analysis including error estimates in MATLAB using `T_TIDE`.
 #' Computers and Geosciences, 28, 929-937.
 #'
@@ -578,6 +588,8 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 tidemVuf <- function(t, j, latitude=NULL)
 {
     debug <- 0
+    if (length(t) > 1)
+        stop("t must be a single POSIXct item")
     data("tidedata", package="oce", envir=environment())
     tidedata <- get("tidedata")#, pos=globalenv())
 
@@ -653,8 +665,7 @@ tidemVuf <- function(t, j, latitude=NULL)
         u <- u[j]
         v <- v[j]
         f <- f[j]
-    }
-    else {
+    } else {
         v <- v[j]
         u <- rep(0, length(j))
         f <- rep(1, length(j))
@@ -671,8 +682,8 @@ tidemVuf <- function(t, j, latitude=NULL)
 #' Astronomical Calculations for Tidem
 #'
 #' Do some astronomical calculations for [tidem()].  This function is based directly
-#' on `t_astron` in the `T_TIDE` Matlab package (see Pawlowicz et al.
-#' 2002).
+#' on `t_astron` in the `T_TIDE` Matlab package (see Pawlowicz et al. 2002),
+#' which inherits from the Fortran code described by Foreman (1978).
 #'
 #' @param t Either a time in `POSIXct` format (with `"UTC"` timezone,
 #' or else odd behaviours may result),
@@ -682,27 +693,32 @@ tidemVuf <- function(t, j, latitude=NULL)
 #' @return A `list` containing items named
 #' `astro` and `ader` (see the `T_TIDE` documentation).
 #'
-#' @author Dan Kelley translated this from `t_astron` in the `T_TIDE`
-#' package.
+#' @author Dan Kelley translated this from the `t_astron` function
+#' of the `T_TIDE` Matlab package (see Pawlowicz et al. 2002).
 #'
 #' @examples
 #' tidemAstron(as.POSIXct("2008-01-22 18:50:24"))
 #'
 #' @references
+#' * Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+#' Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
+#' Sciences, Patricia Bay.
 #'
-#' Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+#' * Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
 #' harmonic analysis including error estimates in MATLAB using `T_TIDE`.
 #' Computers and Geosciences, 28, 929-937.
 #'
 #' @family things related to tides
 tidemAstron <- function(t)
 {
+    if (length(t) > 1)
+        stop("t must be a single POSIXct item")
     debug <- FALSE
     if (is.numeric(t))
         t <- numberAsPOSIXct(t, tz="UTC")
     d <- as.numeric(difftime(t, ISOdatetime(1899, 12, 31, 12, 0, 0, tz="UTC"), units="days"))
     D <- d / 10000
-    a <- matrix(c(1, d, D^2, D^3), 4, 1)
+    a <- matrix(c(1.0, d, D^2, D^3), ncol=1)
 
     oceDebug(debug, "d=", formatC(d, digits=10), "D=", D, "a=", a, "\n")
 
@@ -723,7 +739,7 @@ tidemAstron <- function(t)
 
     tau <- rem + astro[2, 1] - astro[1, 1]
     astro <- c(tau, astro)
-    da <- matrix(c(0, 1, 2e-4*D, 3e-4*D^2), 4, 1)
+    da <- matrix(c(0.0, 1.0, 2e-4*D, 3e-4*D^2), nrow=4, ncol=1)
     ader <- (scHcPcNpPp %*% da) / 360
     dtau <- 1 + ader[2, 1] - ader[1, 1]
     ader <- c(dtau, ader)
@@ -842,7 +858,7 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' (see `tests/testthat/test_tidem.R` in the source).
 #'
 #' A specific example may be of help in understanding the removal of unresolvable
-#' constitutents. For example, the `data(sealevel)` dataset is of length
+#' constituents. For example, the `data(sealevel)` dataset is of length
 #' 6718 hours, and this is too short to resolve the full list of constituents,
 #' with the conventional (and, really, necessary) limit of `rc=1`.
 #' From Table 1 of Foreman (1978), this timeseries is too short to resolve the
@@ -1053,7 +1069,7 @@ tidem <- function(t, x, constituents, infer=NULL,
     }
 
     ## Check infer extensively, to prevent weird errors for e.g. an improperly-named
-    ## constitutent.
+    ## constituent.
     data("tidedata", package="oce", envir=environment())
     tidedata <- get("tidedata")#, pos=globalenv())
     tc <- tidedata$const
@@ -1199,7 +1215,7 @@ tidem <- function(t, x, constituents, infer=NULL,
         kmpr <- kmpr[-dropTerm]
     }
     oceDebug(debug, "after trimming constituents for Rayleight condition, name[1:", length(name), "]=", paste(name, collapse=" "), sep="", "\n")
-    ## Ensure that any added constitutents are in the list, i.e. prevent
+    ## Ensure that any added constituents are in the list, i.e. prevent
     ## the Rayleigh criterion from trimming them. (Before work on
     ## issue 1350, they would simply be dropped if they failed the Rayleigh
     ## criterion. Although that was a sensible choice, it was decided
@@ -1272,7 +1288,7 @@ tidem <- function(t, x, constituents, infer=NULL,
     oceDebug(debug, "name[1:", length(name), "]: ", paste(name, collapse=" "), "\n", sep="")
     rm(oindices) # clean up namespace
     if (0 == nc)
-        stop("cannot fit for any constitutents")
+        stop("cannot fit for any constituents")
     elevation <- sl[["elevation"]]
     time <- sl[["time"]]
     nt <- length(elevation)
@@ -1624,7 +1640,7 @@ predict.tidem <- function(object, newdata, ...)
         nc <- length(object@data$name)
         res <- rep(0, length(hour2pi))
         for (i in seq_len(nc)) {
-            oceDebug(debug, "accounting for constitutent[", i, "] = ", object@data$name[i], "\n", sep="")
+            oceDebug(debug, "accounting for constituent[", i, "] = ", object@data$name[i], "\n", sep="")
             omega.t <- object@data$freq[i] * hour2pi
             a <- object@data$amplitude[i] * sin(2 * pi * object@data$phase[i] / 360)
             b <- object@data$amplitude[i] * cos(2 * pi * object@data$phase[i] / 360)
@@ -1673,7 +1689,7 @@ predict.tidem <- function(object, newdata, ...)
 #' Get a tidal prediction from a WebTide database. This only
 #' works if the standalone WebTide application is installed,
 #' and if it is installed in a standard location. The details
-#' of installation are not within the oce purvue.
+#' of installation are not within the oce purview.
 #'
 #' There are two methods of using this function.
 #' *Case 1:* `action="map"`. In this case, if

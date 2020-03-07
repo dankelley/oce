@@ -363,7 +363,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' 1. Environment Canada website for Historical Climate Data
 #' \url{http://climate.weather.gc.ca/index_e.html}
 #'
-#' 2. Gavin Simpon's `canadaHCD` package on GitHub
+#' 2. Gavin Simpson's `canadaHCD` package on GitHub
 #' \url{https://github.com/gavinsimpson/canadaHCD}
 #'
 #' @family functions that download files
@@ -1157,7 +1157,7 @@ read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
 }
 
 
-#' Plot met Data
+#' Plot a met Object
 #'
 #' Creates a multi-panel summary plot of data measured in a meteorological data
 #' set.  cast. The panels are controlled by the `which` argument.

@@ -10,7 +10,7 @@ threenum(x)
 \item{x}{a vector or matrix of numerical values.}
 }
 \value{
-A character vector of thre values: the minimum, the mean, the
+A character vector of three values: the minimum, the mean, the
 maximum.
 }
 \description{

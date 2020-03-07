@@ -29,7 +29,11 @@ for (cmoceanFile in cmoceanFiles) {
 }
 
 ## Put other colormaps above, and add to the list below.
-if (utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
+
+## Save in version 2, because otherwise users with R 3.5.x and earlier will not
+## be able to use data("ocecolors")
+if (utils::compareVersion(paste0(R.Version()$major, ".", R.Version()$minor), '3.6.0') >= 0) {
+    message("saving with version=2 since R version is 3.6.0 or later")
     save(ocecolors, file="ocecolors.rda", version=2)
     tools::resaveRdaFiles("ocecolors.rda", version=2)
 } else {

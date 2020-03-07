@@ -126,7 +126,7 @@ setMethod(f="[[<-",
 #' @param subset An expression indicating how to subset `x`. See \dQuote{Details}.
 #'
 #' @param ... optional additional arguments, the only one of which is considered
-#' is one named `debug`, an integer that controlls the level of debugging. If
+#' is one named `debug`, an integer that controls the level of debugging. If
 #' this is not supplied, `debug` is assumed to be 0, meaning no debugging. If
 #' it is 1, the steps of determining the bounding box are shown. If it is 2 or larger,
 #' then additional processing steps are shown, including the extraction of every
@@ -213,12 +213,9 @@ setMethod(f="subset",
               options(warn=-1)
               na <- which(is.na(cllon))
               nseg <- length(na)
-              oceDebug(debug, "nseg=", nseg, "\n")
-              nnew <- 0
-              outlon <- NULL           # FIXME: remove after transition to sf::
-              outlat <- NULL           # FIXME: remove after transition to sf::
-              outlonSF <- NULL         # FIXME: remove after transition to sf::
-              outlatSF <- NULL         # FIXME: remove after transition to sf:"
+              ##OLD nnew <- 0
+              outlon <- NULL
+              outlat <- NULL
               for (iseg in 2:nseg) {
                   oceDebug(debug, "iseg=", iseg, "\n")
                   look <- seq.int(na[iseg-1]+1, na[iseg]-1)
@@ -311,7 +308,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 }
 
 
-#' Plot a Coastline
+#' Plot a coastline Object
 #'
 #' This function plots a coastline.  An attempt is made to fill the space of
 #' the plot, and this is done by limiting either the longitude range or the

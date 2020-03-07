@@ -16,7 +16,7 @@ or the data to be kept within the stations.  See \dQuote{Details}.}
 \item{...}{optional arguments, of which only the first is examined. The
 possibilities for this argument are \code{indices}, which must be a
 vector of station indices (see Example 6), or \code{within}, which must be
-a list or data frame, contianing items named either \code{x} and \code{y}
+a list or data frame, containing items named either \code{x} and \code{y}
 or \code{longitude} and \code{latitude} (see Example 7). If \code{within}
 is given, then \code{subset} is ignored.}
 }

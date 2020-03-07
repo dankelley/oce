@@ -228,7 +228,7 @@
 #' @family things related to adp data
 setClass("adp", contains="oce")
 
-#' ADP (acoustic-doppler profiler) dataset
+#' Sample adp (acoustic-doppler profiler) dataset
 #'
 #' This is degraded subsample of measurements that were made with an
 #' upward-pointing ADP manufactured by Teledyne-RDI, as part of the St Lawrence
@@ -1347,7 +1347,7 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 }
 
 
-#' Plot ADP Data
+#' Plot an adp Object
 #'
 #' Create a summary plot of data measured by an acoustic doppler profiler.
 #'

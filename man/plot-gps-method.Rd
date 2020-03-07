@@ -3,7 +3,7 @@
 \name{plot,gps-method}
 \alias{plot,gps-method}
 \alias{plot.gps}
-\title{Plot a GPS Object}
+\title{Plot a gps Object}
 \usage{
 \S4method{plot}{gps}(
   x,

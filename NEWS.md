@@ -1,19 +1,24 @@
-1.1-2
+1.2-1
+* FIXME: add changes here
 
-* accommodate new ocedata (needed to meet new CRAN dependency rule)
-* add `oceRenameData()` and `oceRenamemetadata()`; deprecate `renameData()`
-* improve axis control for `mapPlot()` and `plot,coastline-method`.
-* remove `addColumn()`, `ctdAddColumn()`, `ctdUpdateHeader()`,
-  `findInOrdered()`, `mapMeridians()`, `mapZones()`, and `oce.as.POSIXlt()`,
-   all of which have been marked as "Deprecated" for the past two CRAN
-   releases.
-* `read.met()` handle the new Environment Canada data format
-* handle upcoming rgdal/R-devel changes
-* `sectionSmooth()` detects grids that extend beyond data range
-* `read.adp.rdi()` trims time vector if it exceeds other data lengths
-* `geodDist()` defaults 2nd location correctly when `alongPath=FALSE`
-* improve vignettes
-* fix itemized-list documentation problem pointed out by Kurt Hornik
+1.2-0
+
+* Address argument doc/code warning that blocked CRAN acceptance.
+* Accommodate new ocedata (needed to meet new CRAN dependency rule).
+* Add `oceRenameData()` and `oceRenamemetadata()`.
+* Deprecate `renameData()`.
+* Improve axis control for `mapPlot()` and `plot,coastline-method`.
+* Remove `addColumn()`, `ctdAddColumn()`, `ctdUpdateHeader()`,
+  `findInOrdered()`, `mapMeridians()`, `mapZones()`, and
+  `oce.as.POSIXlt()`, all of which have been marked as
+  "Deprecated" for the past two CRAN releases.
+* Make `read.met()` handle a new Environment Canada data format.
+* Handle some upcoming rgdal/R-devel changes.
+* Make `sectionSmooth()` detect grids extending beyond data range.
+* Make `read.adp.rdi()` trim time if it longer than other data.
+* Make `geodDist()` handle second location correctly when `alongPath=FALSE`.
+* Improve vignettes.
+* Fix itemized-list documentation problem pointed out by Kurt Hornik.
 
 1.1-1
 
@@ -171,7 +176,7 @@
 * swCSTp() added
 * swConductivity() now swThermalConductivity(); using Caldwell (1974).
 * many sw() functions handle eos="gsw"
-* libary(gsw) replaces teos()
+* library(gsw) replaces teos()
 * curl() added
 * handle new NOAA ascii topography dataset type
 * mapGrid() added
@@ -666,7 +671,7 @@
 * add undriftTime()
 * add tdrPatm()
 * make readTdr() gather serial no. info; show this on plot.pt()
-* switch to recommended verion-number format
+* switch to recommended version-number format
 * remove section.subset(), replaced by subset()
 * improve log items in functions that read and assemble oce objects
     http://code.google.com/p/r-oce/issues/detail?id=38

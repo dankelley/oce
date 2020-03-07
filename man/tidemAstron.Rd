@@ -18,17 +18,22 @@ A \code{list} containing items named
 }
 \description{
 Do some astronomical calculations for \code{\link[=tidem]{tidem()}}.  This function is based directly
-on \code{t_astron} in the \code{T_TIDE} Matlab package (see Pawlowicz et al.
-2002).
+on \code{t_astron} in the \code{T_TIDE} Matlab package (see Pawlowicz et al. 2002),
+which inherits from the Fortran code described by Foreman (1978).
 }
 \examples{
 tidemAstron(as.POSIXct("2008-01-22 18:50:24"))
 
 }
 \references{
-Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+\itemize{
+\item Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
+Sciences, Patricia Bay.
+\item Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
 harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 Computers and Geosciences, 28, 929-937.
+}
 }
 \seealso{
 Other things related to tides: 
@@ -45,7 +50,7 @@ Other things related to tides:
 \code{\link{webtide}()}
 }
 \author{
-Dan Kelley translated this from \code{t_astron} in the \code{T_TIDE}
-package.
+Dan Kelley translated this from the \code{t_astron} function
+of the \code{T_TIDE} Matlab package (see Pawlowicz et al. 2002).
 }
 \concept{things related to tides}

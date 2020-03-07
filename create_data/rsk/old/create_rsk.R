@@ -7,5 +7,14 @@ rsk[["filename"]] <- NA
 rsk[["serialNumber"]] <- NA
 save(rsk, file="rsk.rda")
 library(tools)
-tools::resaveRdaFiles("rsk.rda", compress="auto")
-summary(rsk)
+
+## Save in version 2, because otherwise users with R 3.5.x and earlier will not
+## be able to use data("rsk")
+if (utils::compareVersion(paste0(R.Version()$major, ".", R.Version()$minor), '3.6.0') >= 0) {
+    message("saving with version=2 since R version is 3.6.0 or later")
+    save("rsk.rda", version=2)
+    tools::resaveRdaFiles("rsk.rda", version=2)
+} else {
+    save("rsk.rda")
+    tools::resaveRdaFiles("rsk.rda")
+}

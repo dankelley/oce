@@ -86,7 +86,7 @@ See \code{\link[=points]{points()}} for the possible values for \code{pch}.}
 
 \item{cex}{numeric character expansion factor for points on plots, ignored unless
 \code{type} is \code{"p"}.  This may be a single number, applied to all points, or
-a vector of numbers to be applied to the points in seequence.  If there are
+a vector of numbers to be applied to the points in sequence.  If there are
 fewer \code{pch} values than there are \code{x} values, then the \code{pch} values are recycled
 in the standard fashion. See \code{\link[=par]{par()}} for more on \code{cex}.}
 

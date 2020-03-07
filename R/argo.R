@@ -254,10 +254,12 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+## a local function -- no need to pollute namespace with it
 maybeLC <- function(s, lower)
     if (lower) tolower(s) else s
 
-getData <- function(file, name) # a local function -- no need to pollute namesapce with it
+## a local function -- no need to pollute namespace with it
+getData <- function(file, name, quiet=FALSE)
 {
     res <- NA
     ## wrap in capture.output to silence what seems like direct printing to stdout()
@@ -267,7 +269,8 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
                        res <- try(ncdf4::ncvar_get(file, name), silent=TRUE)
                    })
     if (inherits(res, "try-error")) {
-        warning(file$filename, " has no variable named '", name, "'\n", sep='')
+        if (!quiet)
+            warning(file$filename, " has no variable named '", name, "'\n", sep='')
         res <- NULL
     }
     if (is.array(res) && 1 == length(dim(res))) res <- matrix(res) else res
@@ -1295,8 +1298,8 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         n <- item
         d <- getData(file, maybeLC(n, lc))
         varNames <- varNamesOmit(varNames, n)
-        oceDebug(debug-1, n, "\n")
-        oceDebug(debug-1, "A varNames=", paste(varNames, collapse=","), "\n")
+        oceDebug(debug, n, "\n")
+        oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
         if (!is.null(d)) {
             res@data[[argoNames2oceNames(n)]] <- d
             res@metadata$dataNamesOriginal[[argoNames2oceNames(n)]] <- n
@@ -1305,7 +1308,10 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         }
 
         n <- paste(item, maybeLC("_QC", lc), sep="")
-        d <- getData(file, maybeLC(n, lc))
+        oceDebug(debug, "about to try to get '", n, "' from netcdf file\n", sep="")
+        ##if (n == "PRES_QC") browser()
+        d <- getData(file, maybeLC(n, lc), quiet=TRUE)
+        oceDebug(debug, "... got it\n", sep="")
         varNames <- varNamesOmit(varNames, n)
         oceDebug(debug-1, n, "\n")
         oceDebug(debug-1, "B varNames=", paste(varNames, collapse=","), "\n")
@@ -1477,7 +1483,7 @@ as.argo <- function(time, longitude, latitude,
 }
 
 
-#' Plot Argo Data
+#' Plot an argo Object
 #'
 #' Plot a summary diagram for argo data.
 #'
@@ -1544,7 +1550,7 @@ as.argo <- function(time, longitude, latitude,
 #' in the \CRANpkg{rgdal} package; this will be familiar to many readers as
 #' the PROJ.4 notation; see [mapPlot()].
 #'
-#' @param mar value to be used with [par()]("mar").
+#' @param mar value to be used with `par('mar')`.
 #'
 #' @param tformat optional argument passed to [oce.plot.ts()], for plot
 #' types that call that function.  (See [strptime()] for the format

@@ -55,6 +55,6 @@ Other things related to astronomy:
 \code{\link{sunDeclinationRightAscension}()}
 }
 \author{
-Dan Kelley, based on formulae in refeences 1 and 2.
+Dan Kelley, based on formulae in references 1 and 2.
 }
 \concept{things related to astronomy}

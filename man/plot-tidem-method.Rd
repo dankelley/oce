@@ -3,7 +3,7 @@
 \name{plot,tidem-method}
 \alias{plot,tidem-method}
 \alias{plot.tidem}
-\title{Plot a Tidem Prediction}
+\title{Plot a tidem Object}
 \usage{
 \S4method{plot}{tidem}(
   x,

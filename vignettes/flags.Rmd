@@ -147,13 +147,13 @@ library(oce)
 data(ctdRaw)
 ```
 
-that contains some clearly anomolous values that are revealed clearly
+that contains some clearly anomalous values that are revealed clearly
 in a summary plot (Figure 1):
 ```{r fig.cap="Figure 1. Summary plot for raw CTD profile."}
 plot(ctdRaw)
 ```
 
-As Figure 1 shows, `ctdTrim` removes most of the anomolous
+As Figure 1 shows, `ctdTrim` removes most of the anomalous
 data by examining the variation of the pressure signal over time, it may also
 be of interest to see how well simple range checks can perform in cleaning up
 the data. Salinity certainly cannot be negative, but in an oceanographic
@@ -216,7 +216,7 @@ the numerical codes. This is very important, because there is not much
 agreement within the oceanographic community on which flag scheme to use, for
 many data types (Argo being an exception).
 
-At this stage, individidual data can be flagged with
+At this stage, individual data can be flagged with
 `setFlags`. This function can be called any number of
 times. Continuing along with our example, we may mark bad salinities with
 ```{r}

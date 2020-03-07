@@ -80,7 +80,7 @@ contain the item. This \code{[[} method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
-longitude and latitudee, has sufficient information to compute
+longitude and latitude, has sufficient information to compute
 Absolute Salinity, and so \code{o[["SA"]]} will yield the
 calculated Absolute Salinity.
 
@@ -98,8 +98,8 @@ provided at \verb{http://www.remss.com/missions/amsr/}.
 }
 }
 \seealso{
-The documenation for the \linkS4class{landsat} class has
-more informatoin on the handling data from the Landsat-8 satellite.
+The documentation for the \linkS4class{landsat} class has
+more information on the handling data from the Landsat-8 satellite.
 
 Other things related to amsr data: 
 \code{\link{[[,amsr-method}},

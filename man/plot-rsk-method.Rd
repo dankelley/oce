@@ -3,7 +3,7 @@
 \name{plot,rsk-method}
 \alias{plot,rsk-method}
 \alias{plot.rsk}
-\title{Plot Rsk Data}
+\title{Plot a rsk Object}
 \usage{
 \S4method{plot}{rsk}(
   x,
