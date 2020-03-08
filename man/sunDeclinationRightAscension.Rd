@@ -42,6 +42,7 @@ expect_equal(b$rightAscension, -161.6183305,
 }
 \seealso{
 Other things related to astronomy: 
+\code{\link{angle2hms}()},
 \code{\link{eclipticalToEquatorial}()},
 \code{\link{equatorialToLocalHorizontal}()},
 \code{\link{julianCenturyAnomaly}()},

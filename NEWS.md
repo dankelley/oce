@@ -1,5 +1,5 @@
 1.2-1
-* FIXME: add changes here
+* angle2hms() added
 
 1.2-0
 

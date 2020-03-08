@@ -785,6 +785,16 @@ mapContour <- function(longitude, latitude, z,
                         } else if (underlay == "interrupt") {
                             erase <- 1==sp::point.in.polygon(xc, yc,
                                                              xc[labelj]+XYrot[,1], yc[labelj]+XYrot[,2])
+                            polyx <- xc[labelj] + XYrot[,1]
+                            polyy <- yc[labelj] + XYrot[,2]
+                            polyNew <- sf::st_polygon(list(outer=cbind(c(polyx, polyx[1]), c(polyy, polyy[1]))))
+                            pointsNew <- sf::st_multipoint(cbind(xc, yc))
+                            insideNew <- sf::st_intersection(pointsNew, polyNew)
+                            eraseNew <- matrix(pointsNew %in% insideNew, ncol=2)[,1]
+                            ##eraseOld <- erase
+                            if (!isTRUE(all.equal(eraseNew, erase))) {
+                                warning("mapContour() error: 'erase' disagreement with trial 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n")
+                            }
                             oceDebug(debug, "ignoring", sum(erase), "points under", label, "contour\n")
                             XC <- xc
                             YC <- yc
@@ -1517,7 +1527,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     ...)
 {
     dots <- list(...)
-    gridOrig <- grid
     if (1 == length(grid))
         grid <- rep(grid, 2)
     if (!missing(projection) && inherits(projection, "CRS")) {
@@ -1528,7 +1537,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
              ", longitudelim=", if (missing(latitudelim)) "(missing)" else c("c(", paste(format(latitudelim, digits=4), collapse=","), ")"),
              ", type=\"", type, "\"",
              ", projection=\"", if (is.null(projection)) "NULL" else projection, "\"",
-             ", grid=c(", paste(gridOrig, collapse=","), ")",
+             ", grid=c(", paste(grid, collapse=","), ")",
              ", ...) {\n", sep="", unindent=1)
     if (missing(longitude)) {
         data("coastlineWorld", package="oce", envir=environment())
