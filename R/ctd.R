@@ -4160,7 +4160,8 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #'
 #' Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
 #'
-#' @param x a [ctd-class] object.
+#' @param x a [ctd-class], [argo-class] or [section-class] object, or a list
+#' containing solely [ctd-class] objects or [argo-class] objects.
 #'
 #' @param inSitu A boolean indicating whether to use in-situ temperature or
 #' (the default) potential temperature, calculated with reference pressure
@@ -4347,8 +4348,16 @@ plotTS <- function (x,
                            unlist(lapply(x, function(xi) xi[["temperature"]])),
                            unlist(lapply(x, function(xi) xi[["pressure"]])))
                 }
+            } else if (inherits(x[[1]], "argo")) {
+                message("FIXME: this ought to be done with as.ctd() so other methods can do simiarly")
+                message("FIXME: determine if 1-col or multi-col (affects latitude lookup)")
+                x <- if (eos == "gsw") {
+                    stop("FIXME: for argo (gsw)")
+                } else {
+                    stop("FIXME: for argo (unesco)")
+                }
             } else {
-                stop("If x is a list, it must be a list of ctd objects")
+                stop("If x is a list, it must hold 'ctd' or 'argo' objects")
             }
         } else {
             names <- names(x)
