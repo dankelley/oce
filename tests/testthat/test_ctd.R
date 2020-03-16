@@ -34,6 +34,25 @@ test_that("as.ctd() with specified arguments, including salinity", {
           expect_true("fluorescence" %in% names(ctd_ctd[["data"]]))
 })
 
+test_that("as.ctd() with a list of oce objects", {
+          data(ctd)
+          a1 <- ctd
+          a2 <- subset(ctd, pressure < 10)
+          a3 <- subset(ctd, pressure < 5)
+          a <- vector("list", 3)
+          a[[1]] <- a1
+          a[[2]] <- a2
+          a[[3]] <- a3
+          A <- as.ctd(a)
+          expect_equal(length(A[["salinity"]]),
+                       length(a1[["salinity"]]) + length(a2[["salinity"]]), length(a3[["salinity"]]))
+          expect_equal(length(A[["salinity"]]), length(A[["pressure"]]))
+          expect_equal(length(A[["temperature"]]), length(A[["pressure"]]))
+          expect_equal(length(A[["latitude"]]), length(A[["pressure"]]))
+          expect_equal(length(A[["longitude"]]), length(A[["pressure"]]))
+})
+
+
 test_that("ctd[[\"CT\"]] requires lon and lat", {
           a <- as.ctd(35,10,0)
           expect_error(a[["CT"]])
