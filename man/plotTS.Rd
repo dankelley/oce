@@ -43,7 +43,8 @@ plotTS(
 )
 }
 \arguments{
-\item{x}{a \linkS4class{ctd} object.}
+\item{x}{a \linkS4class{ctd}, \linkS4class{argo} or \linkS4class{section} object, or a list
+containing solely \linkS4class{ctd} objects or \linkS4class{argo} objects.}
 
 \item{inSitu}{A boolean indicating whether to use in-situ temperature or
 (the default) potential temperature, calculated with reference pressure
