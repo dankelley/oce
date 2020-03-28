@@ -1,4 +1,5 @@
 1.2-1
+* oce.plot.ts() gets 'logStyle' argument
 * angle2hms() added
 
 1.2-0

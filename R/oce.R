@@ -1135,6 +1135,16 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' [plot.default()] etc., `oce.plot.ts` does not permit
 #' logarithmic time, or `x` axis.)
 #'
+#' @param logStyle a character value that indicates how to draw the y axis, if
+#' `log="y"`.  If it is `"r"` (the default) then the conventional R style is used,
+#' in which a logarithmic transform connects y values to position on the "page"
+#' of the plot device, so that tics will be nonlinearly spaced, but not
+#' organized by integral powers of 10.  However, if it is `"decade"`, then
+#' the style will be that used in the scientific literature, in which large
+#' tick marks are used for integral powers of 10, with smaller tick marks
+#' at integral multiples of those powers, and with labels that use exponential
+#' format for values above 100 or below 0.01.
+#'
 #' @param drawTimeRange an optional indication of whether/how to draw a time range,
 #' in the top-left margin of the plot; see [oce.axis.POSIXct()] for details.
 #'
@@ -1231,7 +1241,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' oce.plot.ts(t, y, type='p', xlim=c(t[6], t[12]))
 #' # Flip the y axis
 #' oce.plot.ts(t, y, flipy=TRUE)
-oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, ylab,
+oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=FALSE, xlab, ylab,
                         drawTimeRange, fill=FALSE, col=par("col"), pch=par("pch"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.lab=par("cex.lab"), cex.main=par("cex.main"),
                         xaxs=par("xaxs"), yaxs=par("yaxs"),
@@ -1398,9 +1408,42 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
             }
             box()
             ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
-            if (drawyaxis)
-                axis(2, cex.axis=cex.axis, cex=cex.axis)
-            yat <- axis(4, labels=FALSE)
+            if (drawyaxis) {
+                if (log != "y" || logStyle == "r") {
+                    axis(2, cex.axis=cex.axis, cex=cex.axis)
+                    yat <- axis(4, labels=FALSE)
+                } else if (log == "y" && logStyle == "decade") {
+                    oce.debug(debug, "log decadal style\n")
+                    usr34 <- par("usr")[3:4]
+                    oce.debug(debug, vectorShow(usr34))
+                    lowerDecade <- floor(usr34[1])
+                    upperDecade <- floor(1 + usr34[2])
+                    oce.debug(debug, vectorShow(lowerDecade))
+                    oce.debug(debug, vectorShow(upperDecade))
+                    ## Ticks
+                    smallTickAt <- NULL
+                    bigTickAt <- NULL
+                    bigTickLabel <- NULL
+                    for (bigTick in lowerDecade:upperDecade) {
+                        bigTickAt <- c(bigTickAt, bigTick)
+                        bigTickLabel <- c(bigTickLabel,
+                                          if (bigTick < -1L || bigTick > 1L)
+                                              substitute(10^A, list(A=bigTick)) else 10^bigTick)
+
+                        smallTickAt <- c(smallTickAt, -1 + bigTick + log10(2:9))
+                        smallTickAt <- c(smallTickAt,      bigTick + log10(2:9))
+                    }
+                    bigTickInWindow <- usr34[1] <= bigTickAt & bigTickAt <= usr34[2]
+                    bigTickAt <- bigTickAt[bigTickInWindow]
+                    bigTickLabel <- as.expression(bigTickLabel[bigTickInWindow])
+                    smallTickInWindow <- usr34[1] <= smallTickAt & smallTickAt <= usr34[2]
+                    smallTickAt <- smallTickAt[smallTickInWindow]
+                    axis(side=2, at=10^bigTickAt, labels=bigTickLabel)
+                    rug(side=2, x=10^smallTickAt, tcl=0.5*par("tcl"), lwd=par("lwd"))
+                } else if (log == "y") {
+                    stop("if log=\"y\", then logStyle must be \"r\" or \"decade\", not \"", logStyle, "\"")
+                }
+            }
         }
         if (grid) {
             if (log == "y") {

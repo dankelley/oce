@@ -7,7 +7,7 @@ importFrom("graphics", ".filled.contour", "axTicks", "abline", "arrows", "axis",
            "Axis", "axis.POSIXct", "box", "contour", "frame", "grid", "hist",
            "image", "layout", "lcm", "legend", "lines", "locator", "mtext",
            "pairs", "par", "plot", "plot.new", "plot.window", "points",
-           "polygon", "rect", "segments", "smoothScatter", "strheight",
+           "polygon", "rect", "rug", "segments", "smoothScatter", "strheight",
            "strwidth", "text", "title", "xinch", "yinch")
 importFrom("grDevices", "adjustcolor", "col2rgb", "colorRamp",
            "colorRampPalette", "contourLines", "gray", "hsv", "rgb")
