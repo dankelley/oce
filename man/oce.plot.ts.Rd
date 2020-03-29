@@ -68,7 +68,8 @@ organized by integral powers of 10.  However, if it is \code{"decade"}, then
 the style will be that used in the scientific literature, in which large
 tick marks are used for integral powers of 10, with smaller tick marks
 at integral multiples of those powers, and with labels that use exponential
-format for values above 100 or below 0.01.}
+format for values above 100 or below 0.01.  The value of \code{logStyle} is passed
+to \code{\link[=oceAxis]{oceAxis()}}, which draws the axis.}
 
 \item{flipy}{Logical, with \code{TRUE} indicating that the graph
 should have the y axis reversed, i.e. with smaller values at

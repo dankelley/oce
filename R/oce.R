@@ -1143,7 +1143,8 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' the style will be that used in the scientific literature, in which large
 #' tick marks are used for integral powers of 10, with smaller tick marks
 #' at integral multiples of those powers, and with labels that use exponential
-#' format for values above 100 or below 0.01.
+#' format for values above 100 or below 0.01.  The value of `logStyle` is passed
+#' to [oceAxis()], which draws the axis.
 #'
 #' @param drawTimeRange an optional indication of whether/how to draw a time range,
 #' in the top-left margin of the plot; see [oce.axis.POSIXct()] for details.
@@ -1413,33 +1414,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
                     axis(2, cex.axis=cex.axis, cex=cex.axis)
                     yat <- axis(4, labels=FALSE)
                 } else if (log == "y" && logStyle == "decade") {
-                    oce.debug(debug, "log decadal style\n")
-                    usr34 <- par("usr")[3:4]
-                    oce.debug(debug, vectorShow(usr34))
-                    lowerDecade <- floor(usr34[1])
-                    upperDecade <- floor(1 + usr34[2])
-                    oce.debug(debug, vectorShow(lowerDecade))
-                    oce.debug(debug, vectorShow(upperDecade))
-                    ## Ticks
-                    smallTickAt <- NULL
-                    bigTickAt <- NULL
-                    bigTickLabel <- NULL
-                    for (bigTick in lowerDecade:upperDecade) {
-                        bigTickAt <- c(bigTickAt, bigTick)
-                        bigTickLabel <- c(bigTickLabel,
-                                          if (bigTick < -1L || bigTick > 1L)
-                                              substitute(10^A, list(A=bigTick)) else 10^bigTick)
-
-                        smallTickAt <- c(smallTickAt, -1 + bigTick + log10(2:9))
-                        smallTickAt <- c(smallTickAt,      bigTick + log10(2:9))
-                    }
-                    bigTickInWindow <- usr34[1] <= bigTickAt & bigTickAt <= usr34[2]
-                    bigTickAt <- bigTickAt[bigTickInWindow]
-                    bigTickLabel <- as.expression(bigTickLabel[bigTickInWindow])
-                    smallTickInWindow <- usr34[1] <= smallTickAt & smallTickAt <= usr34[2]
-                    smallTickAt <- smallTickAt[smallTickInWindow]
-                    axis(side=2, at=10^bigTickAt, labels=bigTickLabel)
-                    rug(side=2, x=10^smallTickAt, tcl=0.5*par("tcl"), lwd=par("lwd"))
+                    yat <- oceAxis(2, logStyle=logStyle, cex.axis=cex.axis, cex=cex.axis)
+                    oceAxis(4, logStyle=logStyle, labels=FALSE)
                 } else if (log == "y") {
                     stop("if log=\"y\", then logStyle must be \"r\" or \"decade\", not \"", logStyle, "\"")
                 }
@@ -2288,6 +2264,83 @@ read.netcdf <- function(file, ...)
                                               paste("read.netcdf(\"", file, "\")", sep=""))
     res
 }
+
+
+#' Draw an axis, possibly with decade-style logarithmic scaling
+#' 
+#' @param logStyle a character value that indicates how to draw the y axis, if
+#' `log="y"`.  If it is `"r"` (the default) then the conventional R style is used,
+#' in which a logarithmic transform connects y values to position on the "page"
+#' of the plot device, so that tics will be nonlinearly spaced, but not
+#' organized by integral powers of 10.  However, if it is `"decade"`, then
+#' the style will be that used in the scientific literature, in which large
+#' tick marks are used for integral powers of 10, with smaller tick marks
+#' at integral multiples of those powers, and with labels that use exponential
+#' format for values above 100 or below 0.01.
+#' @param side an integer specifying which axis to draw, with 1 for bottom axis, 2 for left axis,
+#' 3 for top axis, and 4 for right axis (as with [axis()]).
+#' @param labels either a vector of character values used for labels or a logical value indicating
+#' whether to draw such labels.  The first form only works if the coordinate is not logarithmic,
+#' and if `logStyle` is `"r"`.
+#' @param \dots other graphical parameters, passed to [axis()].
+#' 
+#' @return Numerical values at which tick marks were drawn (or would have been drawn, if `labels`
+#' specified to draw them).
+#'
+#' @examples
+#' library(oce)
+#' Ra <- 10^seq(4, 10, 0.1)
+#' Nu <- 0.085 * Ra^(1/3)
+#' plot(Ra, Nu, log="xy", axes=FALSE)
+#' box()
+#' oceAxis(1, logStyle="decade")
+#' oceAxis(2, logStyle="decade")
+#' 
+#' @author Dan Kelley
+oceAxis <- function(side, labels=TRUE, logStyle="r", ...)
+{
+    if (missing(side))
+        stop("in oceAxis() :\n  argument \"side\" is missing, with no default", call.=FALSE)
+    if (length(side) != 1)
+        stop("in oceAxis() :\n  argument \"side\" must be a single number", call.=FALSE)
+    if (!(side %in% 1:4))
+        stop("in oceAxis() :\n  argument \"side\" must be 1, 2, 3 or 4", call.=FALSE)
+    if (!(logStyle %in% c("r", "decade")))
+        stop("logStyle must be \"r\" or \"decade\", not \"", logStyle, "\"")
+    if (logStyle == "r") {
+        return(invisible(axis(side=side, labels=labels, ...)))
+    } else {
+        ## use decade axis if previous plot() call made this coordinate be logarithmic
+        if (((side %in% c(1,3)) && par("xlog")) || ((side %in% c(2,4)) && par("ylog"))) { 
+            usr <- if (side %in% c(1, 3)) par("usr")[1:2] else par("usr")[3:4]
+            lowerDecade <- floor(usr[1])
+            upperDecade <- floor(1 + usr[2])
+            smallTickAt <- NULL
+            bigTickAt <- NULL
+            bigTickLabel <- NULL
+            for (bigTick in lowerDecade:upperDecade) {
+                bigTickAt <- c(bigTickAt, bigTick)
+                bigTickLabel <- c(bigTickLabel,
+                                  if (bigTick < -1L || bigTick > 1L)
+                                      substitute(10^A, list(A=bigTick)) else 10^bigTick)
+
+                smallTickAt <- c(smallTickAt, -1 + bigTick + log10(2:9))
+                smallTickAt <- c(smallTickAt,      bigTick + log10(2:9))
+            }
+            bigTickInWindow <- usr[1] <= bigTickAt & bigTickAt <= usr[2]
+            bigTickAt <- bigTickAt[bigTickInWindow]
+            bigTickLabel <- as.expression(bigTickLabel[bigTickInWindow])
+            smallTickInWindow <- usr[1] <= smallTickAt & smallTickAt <= usr[2]
+            smallTickAt <- smallTickAt[smallTickInWindow]
+            rval <- axis(side=side, at=10^bigTickAt, labels=if(labels) bigTickLabel else FALSE)
+            rug(side=side, x=10^smallTickAt, tcl=0.5*par("tcl"), lwd=par("lwd"))
+            return(invisible(rval))
+        } else {
+            return(invisible(axis(side=side, labels=labels, ...)))
+        }
+    }
+}
+
 
 #' Create two-color palette
 #'
