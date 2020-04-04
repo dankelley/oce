@@ -1,4 +1,5 @@
 1.2-1
+* support for reading 38kHz RDI ADCP added
 * oceAxis() added
 * oce.plot.ts() gets 'logStyle' argument
 * angle2hms() added
