@@ -4,8 +4,13 @@
 \alias{ODFNames2oceNames}
 \title{Translate from ODF Names to Oce Names}
 \usage{
-ODFNames2oceNames(ODFnames, ODFunits = NULL, columns = NULL,
-  PARAMETER_HEADER = NULL, debug = getOption("oceDebug"))
+ODFNames2oceNames(
+  ODFnames,
+  ODFunits = NULL,
+  columns = NULL,
+  PARAMETER_HEADER = NULL,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{ODFnames}{Vector of strings holding ODF names.}
@@ -13,7 +18,7 @@ ODFNames2oceNames(ODFnames, ODFunits = NULL, columns = NULL,
 \item{ODFunits}{Vector of strings holding ODF units.}
 
 \item{columns}{Optional list containing name correspondances, as described for
-\code{\link{read.ctd.odf}}.}
+\code{\link[=read.ctd.odf]{read.ctd.odf()}}.}
 
 \item{PARAMETER_HEADER}{Optional list containing information on the data variables.}
 
@@ -41,53 +46,53 @@ a flag is found in the i-th column, then a name is constructed by taking
 the name of the (i-1)-th column and appending \code{"Flag"}.
 \tabular{lll}{
 \strong{Regexp} \tab \strong{Result}           \tab \strong{Notes}                                      \cr
-\code{ALTB_*.*} \tab \code{altimeter}          \tab                                                \cr
-\code{ATTU_*.*} \tab \code{attenuation}        \tab                                                \cr
-\code{BATH_*.*} \tab \code{barometricDepth}    \tab Barometric depth (of sensor? of water column?) \cr
-\code{BEAM_*.*} \tab \code{a}                  \tab Used in \code{adp} objects                          \cr
-\code{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                          \cr
-\code{CRAT_*.*} \tab \code{conductivity}       \tab Conductivity ratio                             \cr
-\code{COND_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)   \cr
-\code{CNDC_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)   \cr
-\code{DCHG_*.*} \tab \code{discharge}          \tab                                                \cr
-\code{DEPH_*.*} \tab \code{pressure}           \tab Sensor depth below sea level                   \cr
-\code{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                   \cr
-\code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                          \cr
-\code{EWCT_*.*} \tab \code{u}                  \tab Used in \code{adp} and \code{cm} objects                 \cr
-\code{FFFF_*.*} \tab \code{flagArchaic}        \tab Old flag name, replaced by \code{QCFF}              \cr
-\code{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                   \cr
+\verb{ALTB_*.*} \tab \code{altimeter}          \tab                                                \cr
+\verb{ATTU_*.*} \tab \code{attenuation}        \tab                                                \cr
+\verb{BATH_*.*} \tab \code{barometricDepth}    \tab Barometric depth (of sensor? of water column?) \cr
+\verb{BEAM_*.*} \tab \code{a}                  \tab Used in \code{adp} objects                          \cr
+\verb{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                          \cr
+\verb{CRAT_*.*} \tab \code{conductivity}       \tab Conductivity ratio                             \cr
+\verb{COND_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)   \cr
+\verb{CNDC_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)   \cr
+\verb{DCHG_*.*} \tab \code{discharge}          \tab                                                \cr
+\verb{DEPH_*.*} \tab \code{pressure}           \tab Sensor depth below sea level                   \cr
+\verb{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                   \cr
+\verb{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                          \cr
+\verb{EWCT_*.*} \tab \code{u}                  \tab Used in \code{adp} and \code{cm} objects                 \cr
+\verb{FFFF_*.*} \tab \code{flagArchaic}        \tab Old flag name, replaced by \code{QCFF}              \cr
+\verb{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                   \cr
 \code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                     \cr
 \code{GEOP}     \tab \code{geopotential}       \tab                                                \cr
 \code{HCDM}     \tab \code{directionMagnetic}  \tab                                                \cr
 \code{HCDT}     \tab \code{directionTrue}      \tab                                                \cr
 \code{HCSP}     \tab \code{speedHorizontal}    \tab                                                \cr
-\code{LATD_*.*} \tab \code{latitude}           \tab                                                \cr
-\code{LOND_*.*} \tab \code{longitude}          \tab                                                \cr
-\code{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                          \cr
-\code{NONE_*.*} \tab \code{noWMOcode}          \tab                                                \cr
-\code{OCUR_*.*} \tab \code{oxygenCurrent}      \tab Used mainly in \code{ctd} objects                   \cr
-\code{OSAT_*.*} \tab \code{oxygenSaturation}   \tab Used mainly in \code{ctd} objects                   \cr
-\code{OTMP_*.*} \tab \code{oxygenTemperature}  \tab Used mainly in \code{ctd} objects                   \cr
-\code{OXYV_*.*} \tab \code{oxygenVoltage}      \tab Used mainly in \code{ctd} objects                   \cr
-\code{PHPH_*.*} \tab \code{pH}                 \tab                                                \cr
-\code{POTM_*.*} \tab \code{theta}              \tab Used mainly in \code{ctd} objects                   \cr
-\code{PRES_*.*} \tab \code{pressure}           \tab Used mainly in \code{ctd} objects                   \cr
-\code{PSAL_*.*} \tab \code{salinity}           \tab Used mainly in \code{ctd} objects                   \cr
-\code{PSAR_*.*} \tab \code{par}                \tab Used mainly in \code{ctd} objects                   \cr
-\code{QCFF_*.*} \tab \code{flag}               \tab Overall flag                                   \cr
-\code{REFR_*.*} \tab \code{reference}          \tab                                                \cr
-\code{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objects                   \cr
-\code{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                   \cr
-\code{SNCN_*.*} \tab \code{scanCounter}        \tab Used mainly in \code{ctd} objects                   \cr
-\code{SPAR_*.*} \tab \code{SPAR}               \tab                                                \cr
-\code{SPVA_*.*} \tab \code{specificVolumeAnomaly} \tab                                             \cr
-\code{SYTM_*.*} \tab \code{time}               \tab Used in many objects                           \cr
-\code{TE90_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                   \cr
-\code{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                   \cr
-\code{TOTP_*.*} \tab \code{pressureAbsolute}   \tab Used mainly in \code{ctd} objects                   \cr
-\code{UNKN_*.*} \tab \code{-}                  \tab The result is context-dependent                \cr
-\code{VAIS_*.*} \tab \code{BVFrequency}        \tab                                                \cr
-\code{VCSP_*.*} \tab \code{w}                  \tab Used in \code{adp} objects                          \cr
+\verb{LATD_*.*} \tab \code{latitude}           \tab                                                \cr
+\verb{LOND_*.*} \tab \code{longitude}          \tab                                                \cr
+\verb{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                          \cr
+\verb{NONE_*.*} \tab \code{noWMOcode}          \tab                                                \cr
+\verb{OCUR_*.*} \tab \code{oxygenCurrent}      \tab Used mainly in \code{ctd} objects                   \cr
+\verb{OSAT_*.*} \tab \code{oxygenSaturation}   \tab Used mainly in \code{ctd} objects                   \cr
+\verb{OTMP_*.*} \tab \code{oxygenTemperature}  \tab Used mainly in \code{ctd} objects                   \cr
+\verb{OXYV_*.*} \tab \code{oxygenVoltage}      \tab Used mainly in \code{ctd} objects                   \cr
+\verb{PHPH_*.*} \tab \code{pH}                 \tab                                                \cr
+\verb{POTM_*.*} \tab \code{theta}              \tab Used mainly in \code{ctd} objects                   \cr
+\verb{PRES_*.*} \tab \code{pressure}           \tab Used mainly in \code{ctd} objects                   \cr
+\verb{PSAL_*.*} \tab \code{salinity}           \tab Used mainly in \code{ctd} objects                   \cr
+\verb{PSAR_*.*} \tab \code{par}                \tab Used mainly in \code{ctd} objects                   \cr
+\verb{QCFF_*.*} \tab \code{flag}               \tab Overall flag                                   \cr
+\verb{REFR_*.*} \tab \code{reference}          \tab                                                \cr
+\verb{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objects                   \cr
+\verb{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                   \cr
+\verb{SNCN_*.*} \tab \code{scanCounter}        \tab Used mainly in \code{ctd} objects                   \cr
+\verb{SPAR_*.*} \tab \code{SPAR}               \tab                                                \cr
+\verb{SPVA_*.*} \tab \code{specificVolumeAnomaly} \tab                                             \cr
+\verb{SYTM_*.*} \tab \code{time}               \tab Used in many objects                           \cr
+\verb{TE90_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                   \cr
+\verb{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                   \cr
+\verb{TOTP_*.*} \tab \code{pressureAbsolute}   \tab Used mainly in \code{ctd} objects                   \cr
+\verb{UNKN_*.*} \tab \code{-}                  \tab The result is context-dependent                \cr
+\verb{VAIS_*.*} \tab \code{BVFrequency}        \tab                                                \cr
+\verb{VCSP_*.*} \tab \code{w}                  \tab Used in \code{adp} objects                          \cr
 }
 Any code not shown in the list is transferred to the oce object without renaming, apart from
 the adjustment of suffix numbers. The following code have been seen in data files from
@@ -99,42 +104,52 @@ Some older ODF files contain non-standard units for conductivity,
 including \code{mho/m}, \code{mmho/cm}, and \code{mmHo}. As the
 units for conductivity are important for derived quantities
 (e.g. salinity), such units are converted to standard units
-(e.g. \code{S/m} and \code{mS/cm}), with a warning.
+(e.g. \code{S/m} and \code{mS/cm}).  (This was once done with a warning,
+but on 2020-02-07 the warning was removed, since it did not
+indicate a problem with the file or the data scanning; rather,
+it was a simple matter of nudging towards uniformity in a way
+that ought to confuse no users, akin to converting \code{m**3} to
+\code{m^3}, which is also done here without warning.)
 }
 
 \section{Consistency warning}{
 
 There are disagreements on variable names. For example, the ``DFO
 Common Data Dictionary'' (reference 1)
-has unit millmole/m^3 for NODC and MEDS, but it has unit mL/L for BIO and IML.
+has unit millimole/m^3 for NODC and MEDS, but it has unit mL/L for BIO and IML.
 }
 
 \references{
 \enumerate{
 \item The Department of Fisheries and Oceans Common Data Dictionary may be
-available at \code{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
+available at \verb{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
 although that link seems to be unreliable. As of September 2017, the
 link \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
 seems to be a good place to start.
 }
 }
 \seealso{
-Other functions that interpret variable names and units from headers: \code{\link{cnvName2oceName}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{unitFromStringRsk}},
-  \code{\link{unitFromString}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}
+Other functions that interpret variable names and units from headers: 
+\code{\link{cnvName2oceName}()},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{unitFromStringRsk}()},
+\code{\link{unitFromString}()},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()}
 
-Other things related to odf data: \code{\link{ODF2oce}},
-  \code{\link{ODFListFromHeader}},
-  \code{\link{[[,odf-method}},
-  \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
-  \code{\link{plot,odf-method}},
-  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
-  \code{\link{subset,odf-method}},
-  \code{\link{summary,odf-method}}
+Other things related to odf data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{ODF2oce}()},
+\code{\link{ODFListFromHeader}()},
+\code{\link{[[,odf-method}},
+\code{\link{[[<-,odf-method}},
+\code{\link{odf-class}},
+\code{\link{plot,odf-method}},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.odf}()},
+\code{\link{subset,odf-method}},
+\code{\link{summary,odf-method}}
 }
 \author{
 Dan Kelley

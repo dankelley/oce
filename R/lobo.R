@@ -22,7 +22,8 @@ setClass("lobo", contains="oce")
 
 setMethod(f="initialize",
           signature="lobo",
-          definition=function(.Object, time, u, v, salinity, temperature, airtemperature, pressure, nitrate, fluorescence, filename) {
+          definition=function(.Object, time, u, v, salinity, temperature, airtemperature, pressure, nitrate, fluorescence, filename, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(time)) .Object@data$time <- time
               if (!missing(u)) {
                   .Object@data$u <- u
@@ -63,7 +64,7 @@ setMethod(f="initialize",
           })
 
 
-#' LOBO Dataset
+#' Sample LOBO Dataset
 #'
 #' This is sample lobo dataset obtained in the Northwest Arm of Halifax by
 #' Satlantic.
@@ -266,7 +267,7 @@ plot.lobo.TS <- function(lobo, ...)
 }
 
 
-#' Plot LOBO data
+#' Plot a lobo object
 #'
 #' Plot a summary diagram for lobo data.
 #'
@@ -455,7 +456,7 @@ read.lobo <- function(file, cols=7, processingLog)
 #'
 #' @param nitrate vector of nitrate observations
 #'
-#' @param fluorescence vector of fluoresence observations
+#' @param fluorescence vector of fluorescence observations
 #'
 #' @param filename source filename
 #'

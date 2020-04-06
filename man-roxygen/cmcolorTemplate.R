@@ -13,7 +13,7 @@
 #' tracked; [oceColorsClosure()]
 #' has an example of how to incorporate such changes.
 #'
-#' @return A vector of color specificications.
+#' @return A vector of color specifications.
 #'
 #' @param n number of colors to create.
 #'

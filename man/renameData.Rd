@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{renameData}
 \alias{renameData}
-\title{Rename items in the data slot of an oce object}
+\title{Rename items in the data slot of an oce object (\strong{deprecated})}
 \usage{
 renameData(x, old = NULL, new = NULL)
 }
@@ -14,15 +14,7 @@ renameData(x, old = NULL, new = NULL)
 \item{new}{Vector of strings, containing old names.}
 }
 \description{
-This function may be used to rename elements within the
-\code{data} slot of \code{oce} objects. It also updates
-the processing log of the returned object, indicating
-the changes.
-}
-\examples{
-data(ctd)
-new <- renameData(ctd, "temperature", "temperature68")
-new <- oceSetData(new, name="temperature",
-                  value=T90fromT68(new[["temperature68"]]),
-                  unit=list(unit=expression(degree*C),scale="ITS=90"))
+This was deprecated in December 2019, because \code{\link[=oceRenameData]{oceRenameData()}} does
+a better job and is more consistent with other functions that work
+with items in the \code{data} and \code{metadata} slots.
 }

@@ -4,11 +4,23 @@
 \alias{as.sealevel}
 \title{Coerce Data Into a Sealevel Object}
 \usage{
-as.sealevel(elevation, time, header = NULL, stationNumber = NA,
-  stationVersion = NA, stationName = NULL, region = NULL,
-  year = NA, longitude = NA, latitude = NA, GMTOffset = NA,
-  decimationMethod = NA, referenceOffset = NA, referenceCode = NA,
-  deltat)
+as.sealevel(
+  elevation,
+  time,
+  header = NULL,
+  stationNumber = NA,
+  stationVersion = NA,
+  stationName = NULL,
+  region = NULL,
+  year = NA,
+  longitude = NA,
+  latitude = NA,
+  GMTOffset = NA,
+  decimationMethod = NA,
+  referenceOffset = NA,
+  referenceCode = NA,
+  deltat
+)
 }
 \arguments{
 \item{elevation}{a list of sea-level heights in metres, in an hourly
@@ -79,7 +91,7 @@ sl <- as.sealevel(elevation, time)
 summary(sl)
 }
 \references{
-\code{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (this link
+\verb{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (this link
 worked for years but failed at least temporarily on December 4, 2016).
 }
 \seealso{
@@ -87,15 +99,16 @@ The documentation for the \linkS4class{sealevel} class explains the
 structure of sealevel objects, and also outlines the other functions dealing
 with them.
 
-Other things related to sealevel data: \code{\link{[[,sealevel-method}},
-  \code{\link{[[<-,sealevel-method}},
-  \code{\link{plot,sealevel-method}},
-  \code{\link{read.sealevel}},
-  \code{\link{sealevel-class}},
-  \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}},
-  \code{\link{subset,sealevel-method}},
-  \code{\link{summary,sealevel-method}}
+Other things related to sealevel data: 
+\code{\link{[[,sealevel-method}},
+\code{\link{[[<-,sealevel-method}},
+\code{\link{plot,sealevel-method}},
+\code{\link{read.sealevel}()},
+\code{\link{sealevel-class}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{subset,sealevel-method}},
+\code{\link{summary,sealevel-method}}
 }
 \author{
 Dan Kelley

@@ -35,12 +35,17 @@ print(rskPatm(rsk))
 The documentation for \linkS4class{rsk} explains the structure of
 \code{rsk} objects, and also outlines the other functions dealing with them.
 
-Other things related to rsk data: \code{\link{[[,rsk-method}},
-  \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
-  \code{\link{plot,rsk-method}}, \code{\link{read.rsk}},
-  \code{\link{rsk-class}}, \code{\link{rskToc}},
-  \code{\link{rsk}}, \code{\link{subset,rsk-method}},
-  \code{\link{summary,rsk-method}}
+Other things related to rsk data: 
+\code{\link{[[,rsk-method}},
+\code{\link{[[<-,rsk-method}},
+\code{\link{as.rsk}()},
+\code{\link{plot,rsk-method}},
+\code{\link{read.rsk}()},
+\code{\link{rsk-class}},
+\code{\link{rskToc}()},
+\code{\link{rsk}},
+\code{\link{subset,rsk-method}},
+\code{\link{summary,rsk-method}}
 }
 \author{
 Dan Kelley

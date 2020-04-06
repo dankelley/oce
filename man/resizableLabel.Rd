@@ -4,8 +4,13 @@
 \alias{resizableLabel}
 \title{Provide axis names in adjustable sizes}
 \usage{
-resizableLabel(item, axis = "x", sep, unit = NULL,
-  debug = getOption("oceDebug"))
+resizableLabel(
+  item,
+  axis = "x",
+  sep,
+  unit = NULL,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{item}{code for the label.  This must be an element from the following

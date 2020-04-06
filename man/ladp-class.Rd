@@ -61,7 +61,7 @@ contain the item. This \code{[[} method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
-longitude and latitudee, has sufficient information to compute
+longitude and latitude, has sufficient information to compute
 Absolute Salinity, and so \code{o[["SA"]]} will yield the
 calculated Absolute Salinity.
 
@@ -71,10 +71,12 @@ retrieve derived items.
 }
 
 \seealso{
-Other things related to ladp data: \code{\link{[[,ladp-method}},
-  \code{\link{[[<-,ladp-method}}, \code{\link{as.ladp}},
-  \code{\link{plot,ladp-method}},
-  \code{\link{summary,ladp-method}}
+Other things related to ladp data: 
+\code{\link{[[,ladp-method}},
+\code{\link{[[<-,ladp-method}},
+\code{\link{as.ladp}()},
+\code{\link{plot,ladp-method}},
+\code{\link{summary,ladp-method}}
 }
 \author{
 Dan Kelley

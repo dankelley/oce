@@ -218,7 +218,8 @@ setMethod(f="[[",
               } else if (i == "longitude") {
                   res <- x@data$longitude
               } else {
-                  res <- callNextMethod()         # [[
+                  ##message("FIXME: [[,argo-method calling next method")
+                  res <- callNextMethod()         # [[ defined in R/AllClass.R
               }
               res
           })
@@ -238,7 +239,8 @@ setMethod(f="[[<-",
 
 setMethod(f="initialize",
           signature="argo",
-          definition=function(.Object, time, id, longitude, latitude, salinity, temperature, pressure, filename, dataMode) {
+          definition=function(.Object, time, id, longitude, latitude, salinity, temperature, pressure, filename, dataMode, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(time)) .Object@data$time <- time
               if (!missing(id)) .Object@metadata$id <- id
               if (!missing(longitude)) .Object@data$longitude <- longitude
@@ -253,10 +255,12 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+## a local function -- no need to pollute namespace with it
 maybeLC <- function(s, lower)
     if (lower) tolower(s) else s
 
-getData <- function(file, name) # a local function -- no need to pollute namesapce with it
+## a local function -- no need to pollute namespace with it
+getData <- function(file, name, quiet=FALSE)
 {
     res <- NA
     ## wrap in capture.output to silence what seems like direct printing to stdout()
@@ -266,7 +270,8 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
                        res <- try(ncdf4::ncvar_get(file, name), silent=TRUE)
                    })
     if (inherits(res, "try-error")) {
-        warning(file$filename, " has no variable named '", name, "'\n", sep='')
+        if (!quiet)
+            warning(file$filename, " has no variable named '", name, "'\n", sep='')
         res <- NULL
     }
     if (is.array(res) && 1 == length(dim(res))) res <- matrix(res) else res
@@ -366,10 +371,8 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 #' replacements having been made for all known quantities.
 #'
 #' @references
-#' 1. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-#' \url{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-#' (but note that this is a draft; newer versions may have
-#' replaced this by now).
+#' 1. Argo User's Manual Version 3.3, Nov 89th, 2019, available at
+#' \url{https://archimer.ifremer.fr/doc/00187/29825/}
 #'
 #' 2. Argo list of parameters in an excel spreadsheet, available at
 #' \url{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
@@ -449,7 +452,9 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' stored in the data, e.g. `time`,
 #' `latitude`, `longitude`, `profile`, `dataMode`,
 #' or `pressure` or by `profile` (a made-up variable)
-#' or `id` (from the `metadata` slot).
+#' or `id` (from the `metadata` slot). Note that subsetting by `pressure`
+#' preserves matrix shape, by setting discarded values to `NA`, as opposed
+#' to dropping data (as is the case with `time`, for example).
 #'
 #' @param x an [argo-class] object.
 #'
@@ -497,6 +502,7 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #'
 #' @family things related to argo data
 #' @family functions that subset oce objects
+#' @aliases subset.argo
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
@@ -533,7 +539,7 @@ setMethod(f="subset",
                   if (requireNamespace("sp", quietly=TRUE)) {
                       keep <- 1==sp::point.in.polygon(lon, lat, lonp, latp)
                   } else {
-                      stop("cannot use 'within' becaue the 'sp' package is not installed")
+                      stop("cannot use 'within' because the 'sp' package is not installed")
                   }
                   ## Metadata
                   for (name in names(x@metadata)) {
@@ -641,22 +647,24 @@ setMethod(f="subset",
                       keep <- eval(substitute(subset), tmp, parent.frame(2))
                       rm(tmp)
                   } else if (length(grep("pressure", subsetString))) {
-                      ## check that it is a "gridded" argo
-                      gridded <- ifelse(all(apply(x@data$pressure, 1, diff) == 0, na.rm=TRUE), TRUE, FALSE)
-                      if (gridded) {
-                          x@data$pressure <- x@data$pressure[, 1] ## FIXME: have to convert pressure to vector
-                          keep <- eval(substitute(subset), x@data, parent.frame(2))
-                          x@data$pressure <- res@data$pressure ## FIXME: convert back to original for subsetting below
-                      } else {
-                          stop("cannot subset ungridded argo by pressure -- use argoGrid() first", call.=FALSE)
-                      }
+                      ## issue1628 ## check that it is a "gridded" argo
+                      ## issue1628 gridded <- ifelse(all(apply(x@data$pressure, 1, diff) == 0, na.rm=TRUE), TRUE, FALSE)
+                      ## issue1628 if (gridded) {
+                      ## issue1628     x@data$pressure <- x@data$pressure[, 1] ## FIXME: have to convert pressure to vector
+                      ## issue1628     keep <- eval(substitute(subset), x@data, parent.frame(2))
+                      ## issue1628     x@data$pressure <- res@data$pressure ## FIXME: convert back to original for subsetting below
+                      ## issue1628 } else {
+                      ## issue1628     stop("cannot subset ungridded argo by pressure -- use argoGrid() first", call.=FALSE)
+                      ## issue1628 }
+                      keep <- eval(substitute(subset), x@data, parent.frame(2))
                   } else if (length(grep("dataMode", subsetString))) {
                       keep <- eval(substitute(subset), x@metadata, parent.frame(2))
                   } else {
                       stop("can only subset by time, longitude, latitude, pressure, dataMode, and not by combinations", call.=FALSE)
                   }
-                  ## Now do the subset
                   if (length(grep("pressure", subsetString))) {
+                      ## Now do the subset. Note that we preserve matrix dimensions, by setting
+                      ## discarded values to NA.
                       fieldname <- names(x@data)
                       for (field in fieldname) {
                           if (field != 'time' & field != 'longitude' & field != 'latitude') { # DEBUG: see issue 1327
@@ -665,20 +673,16 @@ setMethod(f="subset",
                               ##debug        "\n\tlength(keep)=", length(keep),
                               ##debug        "\n\tsum(keep)=", sum(keep))
                               if (is.matrix(res@data[[ifield]])) {
-                                  ##debug message("\tdim(x@data[[ifield]])=", paste(dim(x@data[[ifield]]), collapse=","))
-                                  res@data[[ifield]] <- res@data[[ifield]][keep,]
-                                  ##debugmessage("\tdim(res@data[[ifield]])=", paste(dim(res@data[[ifield]]), collapse=","))
+                                  res@data[[ifield]][!keep] <- NA
                               } else {
-                                  ##debug message("\tlength(x@data[[ifield]])=", length(x@data[[ifield]]))
-                                  res@data[[ifield]] <- res@data[[ifield]][keep]
-                                  ##debug message("\tlength(res@data[[ifield]])=", length(res@data[[ifield]]))
+                                  res@data[[ifield]][!keep] <- NA
                               }
                           }
                       }
                       fieldname <- names(x@metadata$flags)
                       for (field in fieldname) {
                           ifield <- which(field == fieldname)
-                          res@metadata$flags[[ifield]] <- res@metadata$flags[[ifield]][keep, ]
+                          res@metadata$flags[[ifield]][!keep] <- NA
                       }
                       ## res@data$salinity <- x@data$salinity[keep, ]
                       ## res@data$temperature <- x@data$temperature[keep, ]
@@ -695,7 +699,7 @@ setMethod(f="subset",
                           if (field != 'time' && field != 'longitude' && field != 'latitude' && field != 'profile') {
                               ifield <- which(field == fieldname)
                               res@data[[ifield]] <- if (is.matrix(x@data[[ifield]]))
-                                  x@data[[ifield]][, keep] else x@data[[ifield]][keep]
+                                  x@data[[ifield]][, keep, drop=FALSE] else x@data[[ifield]][keep]
                           }
                       }
                       fieldname <- names(x@metadata$flags)
@@ -732,6 +736,7 @@ setMethod(f="subset",
 #'
 #' @author Dan Kelley
 #' @family things related to argo data
+#' @aliases summary.argo
 setMethod(f="summary",
           signature="argo",
           definition=function(object, ...) {
@@ -965,10 +970,8 @@ argoDecodeFlags <- function(f) # local function
 #' @references
 #' 1. \url{http://www.argo.ucsd.edu/}
 #'
-#' 2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-#' \url{https://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-#' (but note that this is a draft; newer versions may have
-#' replaced this by now).
+#' 2. Argo User's Manual Version 3.3, Nov 89th, 2019, available at
+#' \url{https://archimer.ifremer.fr/doc/00187/29825/}
 #'
 #' 3. User's Manual (ar-um-02-01) 13 July 2010, available at
 #' \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf},
@@ -980,16 +983,16 @@ argoDecodeFlags <- function(f) # local function
 #'
 #' Some servers provide  data for floats that surfaced in a given ocean
 #' on a given day, the anonymous FTP server
-#' \url{ftp://usgodae.org/pub/outgoing/argo/geo/} being an example.
+#' \code{ftp://usgodae.org/pub/outgoing/argo/geo/} being an example.
 #'
 #' Other servers provide data on a per-float basis. A complicating
 #' factor is that these data tend to be categorized by "dac" (data
 #' archiving centre), which makes it difficult to find a particular
 #' float. For example,
-#' \url{https://www.usgodae.org/ftp/outgoing/argo/} is the top level of
+#' \code{https://www.usgodae.org/ftp/outgoing/argo/} is the top level of
 #' a such a repository. If the ID of a float is known but not the
 #' "dac", then a first step is to download the text file
-#' \url{http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
+#' \code{http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
 #' and search for the ID. The first few lines of that file are header,
 #' and after that the format is simple, with columns separated by slash
 #' (`/`). The dac is in the first such column and the float ID in the
@@ -999,13 +1002,13 @@ argoDecodeFlags <- function(f) # local function
 #' `bodc/6900388/6900388_meta.nc,846,BO,20120225005617`, from
 #' which the dac is seen to be the British Oceanographic Data Centre
 #' (`bodc`). Armed with that information, visit
-#' \url{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}
+#' \code{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}
 #' and see a directory called `profiles` that contains a NetCDF
 #' file for each profile the float made. These can be read with
 #' `read.argo`. It is also possible, and probably more common,
 #' to read a NetCDF file containing all the profiles together and for
 #' that purpose the file
-#' \url{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}
+#' \code{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}
 #' should be downloaded and provided as the `file` argument to
 #' `read.argo`.  This can be automated as in Example 2,
 #' although readers are cautioned that URL structures tend to change
@@ -1069,7 +1072,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         v
     }
 
-    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n", sep="")
+    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), " [phase 1]\n", sep="")
     res@metadata$id <- if (maybeLC("PLATFORM_NUMBER", lc) %in% varNames)
         as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PLATFORM_NUMBER", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "PLATFORM_NUMBER")
@@ -1092,21 +1095,21 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     res@metadata$projectName <- if (maybeLC("PROJECT_NAME", lc) %in% varNames)
         as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PROJECT_NAME", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "PROJECT_NAME")
-    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n")
+    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), " [phase 2]\n")
     res@metadata$PIName <- if (maybeLC("PI_NAME", lc) %in% varNames)
         as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PI_NAME", lc)))) else NULL
     varNames <- varNamesOmit(varNames, "PI_NAME")
-    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n")
+    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), " [phase 3]\n")
     res@metadata$stationParameters <- if (maybeLC("STATION_PARAMETERS", lc) %in% varNames)
         trimString(ncdf4::ncvar_get(file, maybeLC("STATION_PARAMETERS", lc))) else NULL
     varNames <- varNamesOmit(varNames, "STATION_PARAMETERS")
     oceDebug(debug-1, "STATION_PARAMETERS\n")
-    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n")
+    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), " [phase 4]\n")
     res@metadata$cycleNumber <- if (maybeLC("CYCLE_NUMBER", lc) %in% varNames)
         as.vector(ncdf4::ncvar_get(file, maybeLC("CYCLE_NUMBER", lc))) else NULL
     varNames <- varNamesOmit(varNames, "CYCLE_NUMBER")
     oceDebug(debug-1, "CYCLE_NUMBER\n")
-    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n")
+    oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), " [phase 5]\n")
     res@metadata$direction <- if (maybeLC("DIRECTION", lc) %in% varNames)
         as.vector(ncdf4::ncvar_get(file, maybeLC("DIRECTION", lc))) else NULL
     varNames <- varNamesOmit(varNames, "DIRECTION")
@@ -1209,9 +1212,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     varNames <- varNamesOmit(varNames, "POSITIONING_SYSTEM")
     oceDebug(debug-1, "POSITIONING_SYSTEM\n")
     oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n")
-
     stationParameters <- unique(as.vector(res@metadata$stationParameters)) # will be PRES, TEMP etc
-
     ## Handle units before getting the data. (We must do it here, because when
     ## we read the data, we remove entries from varNames ... that is how
     ## we know what is left over at the end, to be shoved into metadata.)
@@ -1285,8 +1286,8 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         n <- item
         d <- getData(file, maybeLC(n, lc))
         varNames <- varNamesOmit(varNames, n)
-        oceDebug(debug-1, n, "\n")
-        oceDebug(debug-1, "A varNames=", paste(varNames, collapse=","), "\n")
+        oceDebug(debug, n, "\n")
+        oceDebug(debug, "varNames=", paste(varNames, collapse=","), "\n")
         if (!is.null(d)) {
             res@data[[argoNames2oceNames(n)]] <- d
             res@metadata$dataNamesOriginal[[argoNames2oceNames(n)]] <- n
@@ -1295,7 +1296,10 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         }
 
         n <- paste(item, maybeLC("_QC", lc), sep="")
-        d <- getData(file, maybeLC(n, lc))
+        oceDebug(debug, "about to try to get '", n, "' from netcdf file\n", sep="")
+        ##if (n == "PRES_QC") browser()
+        d <- getData(file, maybeLC(n, lc), quiet=TRUE)
+        oceDebug(debug, "... got it\n", sep="")
         varNames <- varNamesOmit(varNames, n)
         oceDebug(debug-1, n, "\n")
         oceDebug(debug-1, "B varNames=", paste(varNames, collapse=","), "\n")
@@ -1369,10 +1373,10 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
                 ## FIXME: The code worked on 2019-04-13.
                 oceDebug(debug, "ncdf4::ncvar_get() error diagnosis ... name=", name, " len=",file$var[[name]]$dim[[file$var[[name]]$ndim]]$len, " (if this is 0, will not save '", name, "' to metadata)\n")
                 if (0 != file$var[[name]]$dim[[file$var[[name]]$ndim]]$len) {
-                    warning("ncvar_get() failed for \"", name, "\" (Index exceeds dimension), so it isn't stored in metadata\n")
+                    oceDebug(debug, "ncvar_get() failed for \"", name, "\" (Index exceeds dimension), so it isn't stored in metadata\n")
                 }
             } else {
-                warning("ncvar_get() failed for \"", name, "\", so it isn't stored in metadata\n")
+                oceDebug(debug, "ncvar_get() failed for \"", name, "\", so it isn't stored in metadata\n")
             }
         } else{
             ## Make a vector, if it is a single-column matrix
@@ -1400,21 +1404,23 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 #' read official argo datasets, which are provided in NetCDF format and may
 #' be read with [read.argo()].
 #'
-#' @param time vector of POSIXct times.
-#' @param longitude vector of longitudes.
-#' @param latitude vector of latitudes.
-#' @param salinity vector of salinities.
-#' @param temperature vector of temperatures.
-#' @param pressure vector of pressures.
-#' @param units optional list containing units. If `NULL`, the default,
+#' @param time a vector of POSIXct times.
+#' @param longitude a vector of longitudes.
+#' @param latitude a vector of latitudes.
+#' @param salinity a vector of salinities.
+#' @param temperature a vector of temperatures.
+#' @param pressure a vector of pressures.
+#' @param units an optional list containing units. If `NULL`, the default,
 #' then `"degree east"` is used for `longitude`,
 #' `"degree north"` for `latitude`,
 #' `""` for `salinity`,
 #' `"ITS-90"` for `temperature`, and
 #' `"dbar"` for `pressure`.
-#' @param id identifier.
-#' @param filename source filename.
-#' @param missingValue Optional missing value, indicating data values that should be
+#' @param id an identifier for the argo float, typically a number, but stored within
+#' the object in a character form. (For example, the dataset retrieved with `data(argo)`
+#' has an `id` of `"6900388"`.)
+#' @param filename a source filename, which defaults to an empty string.
+#' @param missingValue an optional missing value, indicating data values that should be
 #' taken as `NA`.
 #'
 #' @return
@@ -1465,7 +1471,7 @@ as.argo <- function(time, longitude, latitude,
 }
 
 
-#' Plot Argo Data
+#' Plot an argo Object
 #'
 #' Plot a summary diagram for argo data.
 #'
@@ -1532,7 +1538,7 @@ as.argo <- function(time, longitude, latitude,
 #' in the \CRANpkg{rgdal} package; this will be familiar to many readers as
 #' the PROJ.4 notation; see [mapPlot()].
 #'
-#' @param mar value to be used with [par()]("mar").
+#' @param mar value to be used with `par('mar')`.
 #'
 #' @param tformat optional argument passed to [oce.plot.ts()], for plot
 #' types that call that function.  (See [strptime()] for the format
@@ -1548,12 +1554,17 @@ as.argo <- function(time, longitude, latitude,
 #' library(oce)
 #' data(argo)
 #' tc <- cut(argo[["time"]], "year")
+#' # Example 1: plot map, which reveals float trajectory.
 #' plot(argo, pch=as.integer(tc))
 #' year <- substr(levels(tc), 1, 4)
 #' data(topoWorld)
 #' contour(topoWorld[['longitude']], topoWorld[['latitude']],
 #'         topoWorld[['z']], add=TRUE)
 #' legend("bottomleft", pch=seq_along(year), legend=year, bg="white", cex=3/4)
+#'
+#' # Example 2: plot map, TS, T(z) and S(z). Note the use
+#' # of handleFlags(), to skip over questionable data.
+#' plot(handleFlags(argo), which=c(1, 4, 6, 5))
 #'
 #' @references \url{http://www.argo.ucsd.edu/}
 #'
@@ -1564,7 +1575,7 @@ as.argo <- function(time, longitude, latitude,
 #' @aliases plot.argo
 setMethod(f="plot",
           signature=signature("argo"),
-          definition=function (x, which = 1, level,
+          definition=function (x, which=1, level,
                                coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
                                            "coastlineWorldFine", "none"),
                                cex=1, pch=1, type='p', col, fill=FALSE,
@@ -1579,9 +1590,10 @@ setMethod(f="plot",
               if ("adorn" %in% names(list(...)))
                   warning("In plot,argo-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               oceDebug(debug, "plot.argo(x, which=c(", paste(which, collapse=","), "),",
-                      " mgp=c(", paste(mgp, collapse=","), "),",
-                      " mar=c(", paste(mar, collapse=","), "),",
-                      " ...) {\n", sep="", unindent=1)
+                      argShow(mgp),
+                      argShow(mar),
+                      argShow(cex),
+                      " ...) {\n", sep="", unindent=1, style="bold")
               coastline <- match.arg(coastline)
               nw  <- length(which)
               if (nw > 1) {
@@ -1606,6 +1618,7 @@ setMethod(f="plot",
                             longitude=longitude, latitude=latitude,
                             units=list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
                                        conductivity=list(list=expression(), scale=""))) # guess on units
+              whichOrig <- which
               which <- oce.pmatch(which,
                                   list("trajectory"=1,
                                        "map"=1,
@@ -1614,8 +1627,21 @@ setMethod(f="plot",
                                        "TS"=4,
                                        "salinity profile"=5,
                                        "temperature profile"=6))
-              if (is.na(which))
-                  stop("In plot,argo-method() :\n  unrecognized value of which", call.=FALSE)
+              if (any(is.na(which)))
+                  stop("In plot,argo-method() :\n  unrecognized value(s) of which: ", paste(whichOrig[is.na(which)], collapse=", "), call.=FALSE)
+              lw <- length(which)
+              par(mgp=mgp)
+              if (lw == 2) {
+                  par(mfcol=c(2, 1))
+              } else if (lw == 3) {
+                  par(mfcol=c(3, 1))
+              } else if (lw == 4) {
+                  par(mfrow=c(2, 2))
+              } else if (lw != 1) {
+                  nnn <- floor(sqrt(lw))
+                  par(mfcol=c(nnn, ceiling(lw/nnn)))
+                  rm(nnn)
+              }
               for (w in 1:nw) {
                   if (which[w] == 1) {
                       oceDebug(debug, "which[", w, "] ==1, so plotting a map\n")
@@ -1722,7 +1748,7 @@ setMethod(f="plot",
                           oce.plot.ts(t, as.vector(x@data$salinity[level, ]),
                                       ylab=resizableLabel("S", "y"), type=type,
                                       col=if (missing(col)) "black" else col,
-                                      tformat=tformat, ...)
+                                      tformat=tformat, cex=cex)# , ...)
                       } else {
                           warning("no non-missing salinity data")
                       }
@@ -1744,7 +1770,7 @@ setMethod(f="plot",
                   } else if (which[w] == 4) {
                       ## TS
                       if (0 != sum(!is.na(x@data$temperature)) && 0 != sum(!is.na(x@data$salinity))) {
-                          plotTS(ctd, col=if (missing(col)) "black" else col, type=type, ...)
+                          plotTS(ctd, col=if (missing(col)) "black" else col, type=type, ..., debug=debug-1)
                      } else {
                           warning("no non-missing salinity data")
                       }
@@ -1766,7 +1792,7 @@ setMethod(f="plot",
                       stop("Unknown value of which=", which[w], "\n", call.=FALSE)
                   }
               }
-              oceDebug(debug, "} # plot.argo()\n", unindent=1)
+              oceDebug(debug, "} # plot.argo()\n", unindent=1, style="bold")
               invisible()
           })
 
@@ -1801,6 +1827,7 @@ setMethod(f="plot",
 #' @author Dan Kelley
 #'
 #' @family things related to argo data
+#' @aliases handleFlags.argo
 setMethod("handleFlags", signature=c(object="argo", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
           definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup

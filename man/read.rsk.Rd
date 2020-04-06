@@ -4,9 +4,17 @@
 \alias{read.rsk}
 \title{Read a Rsk file}
 \usage{
-read.rsk(file, from = 1, to, by = 1, type, tz = getOption("oceTz",
-  default = "UTC"), patm = FALSE, processingLog,
-  debug = getOption("oceDebug"))
+read.rsk(
+  file,
+  from = 1,
+  to,
+  by = 1,
+  type,
+  tz = getOption("oceTz", default = "UTC"),
+  patm = FALSE,
+  processingLog,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file to
@@ -80,7 +88,7 @@ pressure read from the data file is stored in the \code{data} slot of return
 value, and the \code{metadata} item \code{pressureType} is set to the string
 \code{"absolute"}.  (2) If \code{patm} is \code{TRUE}, then an estimate of
 atmospheric pressure is subtracted from the raw data. For data files in the
-SQLite format (i.e.  \code{*.rsk} files), this estimate will be the value read
+SQLite format (i.e.  \verb{*.rsk} files), this estimate will be the value read
 from the file, or the ``standard atmosphere'' value 10.1325 dbar, if the file
 lacks this information.  (3) If \code{patm} is a numerical value (or list of
 values, one for each sampling time), then `patm` is subtracted from the
@@ -105,12 +113,17 @@ and it is common to coerce \code{rsk} objects to other forms for specialized
 work, e.g. \code{\link[=as.ctd]{as.ctd()}} can be used to create CTD object, so that the
 generic plot obeys the CTD format.
 
-Other things related to rsk data: \code{\link{[[,rsk-method}},
-  \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
-  \code{\link{plot,rsk-method}}, \code{\link{rsk-class}},
-  \code{\link{rskPatm}}, \code{\link{rskToc}},
-  \code{\link{rsk}}, \code{\link{subset,rsk-method}},
-  \code{\link{summary,rsk-method}}
+Other things related to rsk data: 
+\code{\link{[[,rsk-method}},
+\code{\link{[[<-,rsk-method}},
+\code{\link{as.rsk}()},
+\code{\link{plot,rsk-method}},
+\code{\link{rsk-class}},
+\code{\link{rskPatm}()},
+\code{\link{rskToc}()},
+\code{\link{rsk}},
+\code{\link{subset,rsk-method}},
+\code{\link{summary,rsk-method}}
 }
 \author{
 Dan Kelley and Clark Richards

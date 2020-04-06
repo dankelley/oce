@@ -87,7 +87,8 @@ NULL
 
 setMethod(f="initialize",
           signature="section",
-          definition=function(.Object, filename="", sectionId="") {
+          definition=function(.Object, filename="", sectionId="", ...) {
+              .Object <- callNextMethod(.Object, ...)
               .Object@metadata$units <- NULL # senseless keeping these from oce()
               .Object@metadata$flags <- NULL # senseless keeping these from oce()
               .Object@metadata$filename <- filename
@@ -571,7 +572,7 @@ setMethod(f="show",
 #' @param ... optional arguments, of which only the first is examined. The
 #' possibilities for this argument are `indices`, which must be a
 #' vector of station indices (see Example 6), or `within`, which must be
-#' a list or data frame, contianing items named either `x` and `y`
+#' a list or data frame, containing items named either `x` and `y`
 #' or `longitude` and `latitude` (see Example 7). If `within`
 #' is given, then `subset` is ignored.
 #'
@@ -821,7 +822,7 @@ setMethod(f="subset",
 #' `"latitude"` for latitude, and `"time"`, for time.
 #'
 #' @return object A [section-class] object that has been smoothed,
-#' so its data fields will station-to-statoin variation than
+#' so its data fields will station-to-station variation than
 #' is the case for the input section, \code{x}.
 #'
 #' @examples
@@ -890,7 +891,7 @@ sectionSort <- function(section, by)
 #' @param station A ctd object holding data for the station to be added.
 #'
 #' @aliases sectionAddCtd
-#' @return An object of `\link[base]{class`} `section`.
+#' @return A [section-class] object.
 #'
 #' @examples
 #' library(oce)
@@ -930,7 +931,7 @@ sectionAddStation <- function(section, station)
 sectionAddCtd <- sectionAddStation
 
 
-#' Plot a Section
+#' Plot a section Object
 #'
 #' Creates a summary plot for a CTD section, with one panel for each value of
 #' `which`.
@@ -1071,6 +1072,9 @@ sectionAddCtd <- sectionAddStation
 #' in accordance with the resolution of the latitudes in the `topo` object.
 #' See \dQuote{Examples}.
 #'
+#' @param drawPalette Logical value indicating whether to draw a palette when `ztype="image"`
+#' ignored otherwise.
+#'
 #' @param axes Logical value indicating whether to draw axes.
 #'
 #' @param mgp A 3-element numerical vector to use for `par(mgp)`, and also for
@@ -1194,6 +1198,7 @@ setMethod(f="plot",
                               showStart=TRUE,
                               stationTicks=TRUE,
                               showBottom=TRUE,
+                              drawPalette=TRUE,
                               axes=TRUE, mgp, mar,
                               col, cex, pch,
                               labcex=1,
@@ -1480,7 +1485,8 @@ setMethod(f="plot",
                               if (is.function(zcol))
                                   zcol <- zcol(nbreaks - 1)
                               zlim <- range(zbreaks)
-                              drawPalette(zlim=range(zbreaks), breaks=zbreaks, col=zcol)
+                              if(drawPalette == TRUE) {
+                              drawPalette(zlim=range(zbreaks), breaks=zbreaks, col=zcol)}
                           }
                       }
 

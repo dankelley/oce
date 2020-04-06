@@ -4,8 +4,7 @@
 \alias{read.lisst}
 \title{Read a LISST File}
 \usage{
-read.lisst(file, year = 0, tz = "UTC", longitude = NA,
-  latitude = NA)
+read.lisst(file, year = 0, tz = "UTC", longitude = NA, latitude = NA)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -33,11 +32,13 @@ gives the opportunity to specify the year and timezone, so that times can be
 calculated properly.
 }
 \seealso{
-Other things related to lisst data: \code{\link{[[,lisst-method}},
-  \code{\link{[[<-,lisst-method}}, \code{\link{as.lisst}},
-  \code{\link{lisst-class}},
-  \code{\link{plot,lisst-method}},
-  \code{\link{summary,lisst-method}}
+Other things related to lisst data: 
+\code{\link{[[,lisst-method}},
+\code{\link{[[<-,lisst-method}},
+\code{\link{as.lisst}()},
+\code{\link{lisst-class}},
+\code{\link{plot,lisst-method}},
+\code{\link{summary,lisst-method}}
 }
 \author{
 Dan Kelley

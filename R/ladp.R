@@ -24,8 +24,8 @@ setClass("ladp", contains="oce")
 
 setMethod(f="initialize",
           signature="ladp",
-          definition=function(.Object, longitude, latitude, station, waterDepth, time,
-                              pressure, u, v, salinity, temperature, ...) {
+          definition=function(.Object, longitude, latitude, station, waterDepth, time, pressure, u, v, uz, vz, salinity, temperature, ...) {
+              .Object <- callNextMethod(.Object, ...)
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@metadata$longitude <- if (missing(longitude)) "?" else longitude
               .Object@metadata$latitude <- if (missing(latitude)) "?" else latitude
@@ -35,6 +35,8 @@ setMethod(f="initialize",
               .Object@data$pressure <- if (missing(pressure)) NULL else pressure
               .Object@data$u <- if (missing(u)) NULL else u
               .Object@data$v <- if (missing(v)) NULL else v
+              .Object@data$uz <- if (missing(uz)) NULL else uz
+              .Object@data$vz <- if (missing(vz)) NULL else vz
               .Object@data$salinity <- if (missing(salinity)) NULL else salinity
               .Object@data$temperature <- if (missing(temperature)) NULL else temperature
               dots <- list(...)
@@ -121,7 +123,7 @@ setMethod(f="[[<-",
               callNextMethod(x=x, i=i, j=j, ..., value=value) # [[<-
           })
 
-#' Plot an ladp object
+#' Plot an ladp Object
 #'
 #' Uses [plotProfile()] to create panels of depth variation of easterly
 #' and northerly velocity components.

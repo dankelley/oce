@@ -27,8 +27,7 @@ sub-sampling.}
 amount of debugging information, or to 2 to get more.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"oce"} that has been
-subsampled appropriately.
+An \linkS4class{oce} object that has been subsampled appropriately.
 }
 \description{
 Later on, other methods will be added, and \code{\link[=ctdDecimate]{ctdDecimate()}} will be

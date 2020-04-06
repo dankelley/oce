@@ -4,8 +4,13 @@
 \alias{initializeFlagScheme}
 \title{Establish a data-quality scheme for a oce object}
 \usage{
-initializeFlagScheme(object, name = NULL, mapping = NULL,
-  default = NULL, debug = 0)
+initializeFlagScheme(
+  object,
+  name = NULL,
+  mapping = NULL,
+  default = NULL,
+  debug = 0
+)
 }
 \arguments{
 \item{object}{An oce object.}
@@ -114,27 +119,30 @@ https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_d
 }
 }
 \seealso{
-Other functions relating to data-quality flags: \code{\link{defaultFlags}},
-  \code{\link{handleFlags,adp-method}},
-  \code{\link{handleFlags,argo-method}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{handleFlags,oce-method}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{handleFlags}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{initializeFlagScheme,oce-method}},
-  \code{\link{initializeFlagScheme,section-method}},
-  \code{\link{initializeFlagSchemeInternal}},
-  \code{\link{initializeFlags,adp-method}},
-  \code{\link{initializeFlags,oce-method}},
-  \code{\link{initializeFlagsInternal}},
-  \code{\link{initializeFlags}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
+Other functions relating to data-quality flags: 
+\code{\link{defaultFlags}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{handleFlags,argo-method}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{handleFlags,oce-method}},
+\code{\link{handleFlags,section-method}},
+\code{\link{handleFlags}()},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{initializeFlagScheme,oce-method}},
+\code{\link{initializeFlagScheme,section-method}},
+\code{\link{initializeFlagSchemeInternal}()},
+\code{\link{initializeFlags,adp-method}},
+\code{\link{initializeFlags,oce-method}},
+\code{\link{initializeFlagsInternal}()},
+\code{\link{initializeFlags}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{setFlags,ctd-method}},
+\code{\link{setFlags,oce-method}},
+\code{\link{setFlags}()}
 
-Other things related to oce data: \code{\link{initializeFlagScheme,oce-method}},
-  \code{\link{initializeFlagSchemeInternal}}
+Other things related to oce data: 
+\code{\link{initializeFlagScheme,oce-method}},
+\code{\link{initializeFlagSchemeInternal}()}
 }
 \concept{functions relating to data-quality flags}
 \concept{things related to oce data}

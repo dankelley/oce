@@ -3,7 +3,7 @@
 \docType{data}
 \name{adp}
 \alias{adp}
-\title{ADP (acoustic-doppler profiler) dataset}
+\title{Sample adp (acoustic-doppler profiler) dataset}
 \source{
 This file came from the SLEIWEX-2008 experiment.
 }
@@ -30,44 +30,67 @@ plot(adp, which=15:18)
 
 }
 \seealso{
-Other datasets provided with oce: \code{\link{adv}},
-  \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
-  \code{\link{landsat}}, \code{\link{lisst}},
-  \code{\link{lobo}}, \code{\link{met}},
-  \code{\link{ocecolors}}, \code{\link{rsk}},
-  \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}},
-  \code{\link{xbt}}
+Other datasets provided with oce: 
+\code{\link{adv}},
+\code{\link{argo}},
+\code{\link{cm}},
+\code{\link{coastlineWorld}},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{echosounder}},
+\code{\link{landsat}},
+\code{\link{lisst}},
+\code{\link{lobo}},
+\code{\link{met}},
+\code{\link{ocecolors}},
+\code{\link{rsk}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{section}},
+\code{\link{topoWorld}},
+\code{\link{wind}},
+\code{\link{xbt}}
 
-Other things related to adp data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}},
-  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
-  \code{\link{adpEnsembleAverage}}, \code{\link{as.adp}},
-  \code{\link{beamName}}, \code{\link{beamToXyzAdpAD2CP}},
-  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
-  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
-  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}},
-  \code{\link{handleFlags,adp-method}},
-  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
-  \code{\link{read.adp.ad2cp}},
-  \code{\link{read.adp.nortek}},
-  \code{\link{read.adp.rdi}},
-  \code{\link{read.adp.sontek.serial}},
-  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
-  \code{\link{read.aquadoppHR}},
-  \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{subset,adp-method}},
-  \code{\link{subtractBottomVelocity}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdpAD2CP}},
-  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+Other things related to adp data: 
+\code{\link{[[,adp-method}},
+\code{\link{[[<-,adp-method}},
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{adp-class}},
+\code{\link{adpEnsembleAverage}()},
+\code{\link{adp_rdi.000}},
+\code{\link{as.adp}()},
+\code{\link{beamName}()},
+\code{\link{beamToXyzAdpAD2CP}()},
+\code{\link{beamToXyzAdp}()},
+\code{\link{beamToXyzAdv}()},
+\code{\link{beamToXyz}()},
+\code{\link{beamUnspreadAdp}()},
+\code{\link{binmapAdp}()},
+\code{\link{enuToOtherAdp}()},
+\code{\link{enuToOther}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{is.ad2cp}()},
+\code{\link{plot,adp-method}},
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.rdi}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp.sontek}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{subset,adp-method}},
+\code{\link{subtractBottomVelocity}()},
+\code{\link{summary,adp-method}},
+\code{\link{toEnuAdp}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdpAD2CP}()},
+\code{\link{xyzToEnuAdp}()},
+\code{\link{xyzToEnu}()}
 }
 \concept{datasets provided with oce}
 \concept{things related to adp data}

@@ -4,7 +4,7 @@
 \alias{magneticField}
 \title{Earth magnetic declination, inclination, and intensity}
 \usage{
-magneticField(longitude, latitude, time)
+magneticField(longitude, latitude, time, version = 13)
 }
 \arguments{
 \item{longitude}{longitude in degrees east (negative for degrees west).  The
@@ -16,29 +16,39 @@ dimensions must conform to lat.}
 single value or a vector or matrix that is structured to match
 \code{longitude} and \code{latitude}. The value may a decimal year,
 a POSIXt time, or a Date time.}
+
+\item{version}{an integer that must be either 12 or 13, to specify
+the version number of the formulae. Note that 13 became the default
+on 2020 March 3, so to old code will need to specify \code{version=12}
+to work as it did before that date.}
 }
 \value{
 A list containing \code{declination}, \code{inclination}, and
 \code{intensity}.
 }
 \description{
-Implements the 12th generation International Geomagnetic Reference Field
+Implements the 12th and 13th generations of the
+International Geomagnetic Reference Field
 (IGRF), based on a reworked version of a Fortran program downloaded from a
 NOAA website (see reference 1).
 }
 \details{
-The code (subroutine \code{igrf12syn}) seems to have
+The code (subroutines \code{igrf12syn} and \code{igrf13syn}) seem to have
 been written by Susan Macmillan of the British Geological Survey.  Comments
-in the source code indicate that it employs coefficients agreed to in
-December 2014 by the IAGA Working Group V-MOD.  Other comments in that code
-suggest that the valid time interval is from years 1900 to 2020,
-with only the values from 1945 to 2010 being considered definitive.
-
-Reference 2 suggests that a new version to the underlying source
-code might be expected in 2019 or 2020, but a check on January 31,
-2019, showed that version 12, as incorporated in oce since
-2015, remains the active version.
+in the source code \code{igrf13syn} (the current default used here)
+indicate that its coefficients were agreed to in
+December 2019 by the IAGA Working Group V-MOD.  Other comments in that code
+suggest that the proposed application time interval is from years 1900 to 2025, inclusive,
+but that only dates from 1945 to 2015 are to be considered definitive.
 }
+\section{Historical Notes}{
+
+For about a decade, \code{magneticField} used the version 12 formulae provided
+by IAGA, but the code was updated on March 3, 2020, to version 13.  Example
+3 shows that the differences in declination are typicaly under 2 degrees
+(with 95 percent of the data lying between -1.7 and 0.7 degrees).
+}
+
 \examples{
 library(oce)
 # 1. Today's value at Halifax NS
@@ -67,19 +77,44 @@ mapContour(lon, lat, dec, levels=180, col='black', lwd=2, drawlabels=FALSE)
 mapContour(lon, lat, dec, levels=0, col='black', lwd=2)
 }
 
+# 3. Declination differences between versions 12 and 13
+\donttest{
+lon <- seq(-180, 180)
+lat <- seq(-90, 90)
+decDiff <- function(lon, lat) {
+    old <- magneticField(lon, lat, 2020, version=13)$declination
+    new <- magneticField(lon, lat, 2020, version=12)$declination
+    new - old
+}
+decDiff <- outer(lon, lat, decDiff)
+decDiff <- ifelse(decDiff > 180, decDiff - 360, decDiff)
+# Overall (mean) shift -0.1deg
+t.test(decDiff)
+# View histogram, narrowed to small differences
+par(mar=c(3.5, 3.5, 2, 2), mgp=c(2, 0.7, 0))
+hist(decDiff, breaks=seq(-180, 180, 0.05), xlim=c(-2, 2),
+     xlab="Declination difference [deg] from version=12 to version=13",
+     main="Predictions for year 2020")
+print(quantile(decDiff, c(0.025, 0.975)))
+# Note that the large differences are at high latitudes
+imagep(lon,lat,decDiff, zlim=c(-1,1)*max(abs(decDiff)))
+lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
+}
 }
 \references{
 \enumerate{
-\item The underlying Fortran code is from \code{igrf12.f}, downloaded the NOAA
+\item The underlying Fortran code for version 12 is from \code{igrf12.f}, downloaded the NOAA
 website (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
-\item 
-\item Witze, Alexandra. \dQuote{Earth’s Magnetic Field Is Acting up and Geologists Don’t Know Why.}
+\item That for version 13 is \code{igrf13.f}, downloadd from the NOAA website
+(\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html} on March 3, 2020.
+\item Witze, Alexandra. \dQuote{Earth's Magnetic Field Is Acting up and Geologists Don't Know Why.}
 Nature 565 (January 9, 2019): 143.
 \url{https://doi.org/10.1038/d41586-019-00007-1}.
 }
 }
 \seealso{
-Other things related to magnetism: \code{\link{applyMagneticDeclination}}
+Other things related to magnetism: 
+\code{\link{applyMagneticDeclination}()}
 }
 \author{
 Dan Kelley wrote the R code and a fortran wrapper to the

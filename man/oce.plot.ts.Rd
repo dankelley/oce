@@ -4,15 +4,42 @@
 \alias{oce.plot.ts}
 \title{Oce Variant of plot.ts}
 \usage{
-oce.plot.ts(x, y, type = "l", xlim, ylim, log = "", flipy = FALSE,
-  xlab, ylab, drawTimeRange, fill = FALSE, col = par("col"),
-  pch = par("pch"), cex = par("cex"), cex.axis = par("cex.axis"),
-  cex.main = par("cex.main"), xaxs = par("xaxs"), yaxs = par("yaxs"),
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + if (nchar(xlab) > 0) 1.5
-  else 1, mgp[1] + 1.5, mgp[2] + 1, mgp[2] + 3/4), main = "",
-  despike = FALSE, axes = TRUE, tformat, marginsAsImage = FALSE,
-  grid = FALSE, grid.col = "lightgray", grid.lty = "dotted",
-  grid.lwd = par("lwd"), debug = getOption("oceDebug"), ...)
+oce.plot.ts(
+  x,
+  y,
+  type = "l",
+  xlim,
+  ylim,
+  log = "",
+  logStyle = "r",
+  flipy = FALSE,
+  xlab,
+  ylab,
+  drawTimeRange,
+  fill = FALSE,
+  col = par("col"),
+  pch = par("pch"),
+  cex = par("cex"),
+  cex.axis = par("cex.axis"),
+  cex.lab = par("cex.lab"),
+  cex.main = par("cex.main"),
+  xaxs = par("xaxs"),
+  yaxs = par("yaxs"),
+  mgp = getOption("oceMgp"),
+  mar = c(mgp[1] + if (nchar(xlab) > 0) 1.5 else 1, mgp[1] + 1.5, mgp[2] + 1, mgp[2] +
+    3/4),
+  main = "",
+  despike = FALSE,
+  axes = TRUE,
+  tformat,
+  marginsAsImage = FALSE,
+  grid = FALSE,
+  grid.col = "lightgray",
+  grid.lty = "dotted",
+  grid.lwd = par("lwd"),
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{x}{the times of observations.}
@@ -32,6 +59,17 @@ window.}
 \code{y} axis, or \code{"y"} for logarithmic \code{y} axis.  (Unlike
 \code{\link[=plot.default]{plot.default()}} etc., \code{oce.plot.ts} does not permit
 logarithmic time, or \code{x} axis.)}
+
+\item{logStyle}{a character value that indicates how to draw the y axis, if
+\code{log="y"}.  If it is \code{"r"} (the default) then the conventional R style is used,
+in which a logarithmic transform connects y values to position on the "page"
+of the plot device, so that tics will be nonlinearly spaced, but not
+organized by integral powers of 10.  However, if it is \code{"decade"}, then
+the style will be that used in the scientific literature, in which large
+tick marks are used for integral powers of 10, with smaller tick marks
+at integral multiples of those powers, and with labels that use exponential
+format for values above 100 or below 0.01.  The value of \code{logStyle} is passed
+to \code{\link[=oceAxis]{oceAxis()}}, which draws the axis.}
 
 \item{flipy}{Logical, with \code{TRUE} indicating that the graph
 should have the y axis reversed, i.e. with smaller values at
@@ -58,13 +96,14 @@ If there are fewer \code{pch} values than there are \code{x} values, then the \c
 are recycled in the standard fashion.
 See \code{\link[=points]{points()}} for the possible values for \code{pch}.}
 
-\item{cex}{character expansion factor, used if \code{type} is \code{"p"}.
-If there are fewer \code{pch} values than there are \code{x} values, then the \code{pch} values
-are recycled in the standard fashion. See \code{\link[=par]{par()}} for more on \code{cex}.}
+\item{cex}{numeric character expansion factor for points on plots, ignored unless
+\code{type} is \code{"p"}.  This may be a single number, applied to all points, or
+a vector of numbers to be applied to the points in sequence.  If there are
+fewer \code{pch} values than there are \code{x} values, then the \code{pch} values are recycled
+in the standard fashion. See \code{\link[=par]{par()}} for more on \code{cex}.}
 
-\item{cex.axis}{character expansion factor for axes; see \code{\link[=par]{par()}}.}
-
-\item{cex.main}{see \code{\link[=par]{par()}}.}
+\item{cex.axis, cex.lab, cex.main}{numeric character expansion factors for axis numbers,
+axis names and plot titles; see \code{\link[=par]{par()}}.}
 
 \item{xaxs}{control x axis ending; see \code{\link{par}}\code{("xaxs")}.}
 

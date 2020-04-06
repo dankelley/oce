@@ -1,89 +1,98 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' oce: A Package for Oceanographic Analysis
+#' oce: A Package for Oceanographic Analysis.
 #'
+#' @description
 #' The oce package provides functions for working with
 #' Oceanographic data, for calculations that are specific
 #' to Oceanography, and for producing graphics that
 #' match the conventions of the field.
 #'
-#' @section Specialized functions:
-#' A key function is [read.oce()], which will attempt
-#' to read Oceanographic data in raw format. This uses
-#' [oceMagic()] to try to detect the file type,
-#' based on the file name and contents. If it proves impossible
-#' to detect the type, users should next try a more specialized
-#' function, e.g. [read.ctd()] for CTD files, or
-#' [read.ctd.sbe()] for Teledyne-Seabird files.
+#' @details
 #'
-#' @section Generic methods:
-#' A list of the generic methods in oce is provided by
-#' `methods(class="oce")`; a few that are used frequently
-#' are as follows.
-#' \describe{
-#' \item{[[}{Find the value of an item in the object's
-#'     `metadata` or `data` slot. If the item does
-#'     not exist, but can be calculated from the other items,
-#'     then the calculated value is returned. As an example of the
-#'     latter, consider the built-in `ctd` dataset, which does
-#'     not contain potential temperature, "`theta`". Using
-#'     `ctd[["theta"]]` therefore causes [swTheta()]
-#'     to be called, to calculate `theta`.
-#'     See \link{[[,oce-method} or type `?"[[,oce-method"`
-#'     to learn more.}
-#' \item{[[<-}{Alters the named item in the object's `metadata` or
-#'     `data` slot.  If the item does not exist, it is created.
-#'     See \link{[[<-,oce-method} or type `?"[[<-,oce-method"`
-#'     to learn more.}
-#' \item{summary}{Displays some information about the object named as an
-#'     argument, including a few elements from its `metadata` slot
-#'     and some statistics of the contents of its `data` slot.
-#'     See \link{summary,oce-method} or type `?"summary,oce-method"`
-#'     to learn more.}
-#' \item{subset}{Takes a subset of an oce object.
-#'     See \link{subset,oce-method} or type `?"subset,oce-method"`
-#'     to learn more.}
-#' }
-#'
-#'
-#' @section Oceanographic data types handled:
 #' Over a dozen specialized data types are handled by oce,
 #' with generic plots and summaries for each, along with
 #' the specialized functions needed for typical Oceanographic
 #' analysis.
 #'
-#' @section Oce object structure:
 #' See [oce-class] for a summary of the class structure
 #' and links to documentation for the many subclasses of
 #' oce objects, each aligned with a class of instrument or
-#' or type of dataset.
+#' or type of dataset.  For a more task-oriented approach,
+#' see the several vignettes that are provided with oce,
+#' and a book
+#' (Kelley, Dan E. Oceanographic Analysis with R. New York: Springer-Verlag, 2018.
+#' https://www.springer.com/us/book/9781493988426) written
+#' by one of the oce co-authors.
+#'
+#' @section Specialized Functions:
+#' A key function is [read.oce()], which will attempt
+#' to read Oceanographic data in raw format. This uses
+#' [oceMagic()] to try to detect the file type,
+#' based on the file name and contents. If this detection
+#' is not possible, users will need to go beyond [read.oce()],
+#" using a more specialized function, e.g. [read.ctd()] for CTD files,
+#' [read.ctd.sbe()] for Teledyne-Seabird files, etc.
+#'
+#' @section Generic Methods:
+#' A list of the generic methods in oce is provided by
+#' [methods]`(class="oce")`; a few that are used frequently
+#' are as follows.
+#' * `[[` Finds the value of an item in the object's
+#'    `metadata` or `data` slot. If the item does
+#'    not exist, but can be calculated from the other items,
+#'    then the calculated value is returned. As an example of the
+#'    latter, consider the built-in `ctd` dataset, which does
+#'    not contain potential temperature, "`theta`". Using
+#'    `ctd[["theta"]]` therefore causes [swTheta()]
+#'    to be called, to calculate `theta`.
+#'    See \link{[[,oce-method} or type `?"[[,oce-method"`
+#'    to learn more about general functioning, or a specialized
+#'    method like \link{[[,ctd-method} for CTD data, etc.
+#' * `[[<-` Alters the named item in the object's `metadata` or
+#'    `data` slot.  If the item does not exist, it is created.
+#'    See \link{[[<-,oce-method} or type `?"[[<-,oce-method"`
+#'    to learn more about the general methodology, or a specialized
+#'    method like \link{[[<-,ctd-method} for CTD data, etc.
+#' * `summary()` Displays some information about the object named as an
+#'    argument, including a few elements from its `metadata` slot
+#'    and some statistics of the contents of its `data` slot.
+#'    See \link{summary,oce-method} or type `?"summary,oce-method"`
+#'    to learn more about general functioning, or a specialized
+#'    method like \link{summary,ctd-method} for CTD data, etc.
+#' * `subset()` Takes a subset of an oce object.
+#'    See \link{subset,oce-method} or type `?"subset,oce-method"`
+#'    to learn more about general functioning, or a specialized
+#'    method like \link{subset,ctd-method} for CTD data, etc.
 #'
 #' @docType package
+#'
 #' @name oce
 NULL
 
 
-###################################################################################
-## IMPORTANT: Update this and test_deprecation, whenever function status changes. #
-###################################################################################
-#' Deprecated and Defunct Elements of package \sQuote{oce}
+##################################################################
+## DEVELOPER NOTE: Update this whenever function status changes. #
+##################################################################
+#' Deprecated and Defunct Elements of the oce package
 #'
 #' Certain functions and function arguments are still provided for
-#' compatibility with older versions of \sQuote{oce}, but will be removed soon.
-#' The \sQuote{oce} scheme for removing functions is similar to that used by
-#' \sQuote{Bioconductor}: items are marked as "deprecated" in one release, marked as
+#' compatibility with older versions of \CRANpkg{oce}, but will be removed soon.
+#' The \CRANpkg{oce} scheme for removing functions is similar to that used by
+#' `Bioconductor`: items are marked as "deprecated" in one release, marked as
 #' "defunct" in the next, and removed in the next after that. This goal is to provide a
 #' gentle migration path for users who keep their packages reasonably
 #' up-to-date.
 #'
-#' Several \sQuote{oce} functions are marked "deprecated" in the present
-#' release of oce. Please use the replacement functions as listed below.
-#' The next CRAN release of \sQuote{oce} will designate these functions as
-#' "defunct".
+#' The following are marked "deprecated" in the present CRAN release of \CRANpkg{oce}.
+#' Please use the replacement functions as listed below. The upcoming CRAN
+#' release of \CRANpkg{oce} will mark these as "defunct", which is the
+#' last step before outright removal.
 #'
-#' \tabular{lll}{
-#' **Deprecated** \tab **Replacement** \tab **Notes**\cr
-#' `byteToBinary` \tab [rawToBits()]   \tab Deprecated in 2016\cr
+#' \tabular{lllll}{
+#' **Deprecated**             \tab **Replacement**   \tab **Deprecated**  \tab **Defunct** \tab **Removed** \cr
+#' `byteToBinary(x,"endian")` \tab [rawToBits()]     \tab 1.1-1           \tab 1.1-3       \tab 1.1-4       \cr
+#' `renameData()`             \tab [oceRenameData()] \tab 1.1-2           \tab 1.1-3       \tab 1.1-4       \cr
 #' }
 #'
 #' The following are marked "defunct", so calling them in the
@@ -91,30 +100,29 @@ NULL
 #' function. Once a function is marked "defunct" on one CRAN release, it will
 #' be slated for outright deletion in a subsequent release.
 #'
-## In table below, I put two spaces before version number, if a build-test exists.
 #'\tabular{lll}{
-#'**Defunct**       \tab **Replacement**              \tab **Version** \cr
-#'`addColumn`       \tab [oceSetData()]               \tab  0.9.24\cr
-#'`byteToBinary`    \tab [rawToBits()]                \tab  0.9.24 'endian="little" disallowed\cr
-#'`findInOrdered`   \tab [findInterval()]             \tab  0.9.24\cr
-#'`ctdAddColumn`    \tab [oceSetData()]               \tab  0.9.24\cr
-#'`ctdUpdateHeader` \tab [oceSetMetadata()]           \tab  0.9.24\cr
-#'`mapZones`        \tab [mapGrid()]                  \tab  0.9.24\cr
-#'`mapMeridians`    \tab [mapGrid()]                  \tab  0.9.24\cr
-#'`oce.as.POSIXlt`  \tab [lubridate::parse_date_time] \tab  0.9.24\cr
-#'`oce.magic`       \tab [oceMagic()]                 \tab  0.9.24\cr
+#' **Defunct**         \tab **Replacement**                \tab **Version**\cr
+#' (none)              \tab (none)                         \tab (none)     \cr
 #'}
 #'
-#' The following were removed recently, having been marked as "deprecated"
+#' The following were removed after having been marked as "deprecated"
 #' in at least one CRAN release, and thereafter as "defunct" in at least
-#' one CRAN release.
+#' one CRAN release.  (The version number in the table is the first
+#' version to lack the named function.)
 #'
 #'\tabular{lll}{
-#'**Function**  \tab **Replacement** \tab  **Version**\cr
-#'`makeSection` \tab [as.section()]  \tab       0.9.24\cr
+#' **Function**        \tab **Replacement**                \tab **Version**\cr
+#' `addColumn()`       \tab [oceSetData()]                 \tab 1.1-2      \cr
+#' `ctdAddColumn()`    \tab [oceSetData()]                 \tab 1.1-2      \cr
+#' `ctdUpdateHeader()` \tab [oceSetMetadata()]             \tab 1.1-2      \cr
+#' `findInOrdered()`   \tab [findInterval()]               \tab 1.1-2      \cr
+#' `makeSection()`     \tab [as.section()]                 \tab 0.9.24     \cr
+#' `mapMeridians()`    \tab [mapGrid()]                    \tab 1.1-2      \cr
+#' `mapZones()`        \tab [mapGrid()]                    \tab 1.1-2      \cr
+#' `oce.as.POSIXlt()`  \tab [lubridate::parse_date_time()] \tab 1.1-2      \cr
 #'}
 #'
-#' Several \sQuote{oce} function arguments are considered "deprecated", which
+#' Several \CRANpkg{oce} function arguments are considered "deprecated", which
 #' means they will be marked "defunct" in the next CRAN release. These are normally
 #' listed in the help page for the function in question. A few that may be
 #' of general interest are also listed below.
@@ -1127,6 +1135,17 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' [plot.default()] etc., `oce.plot.ts` does not permit
 #' logarithmic time, or `x` axis.)
 #'
+#' @param logStyle a character value that indicates how to draw the y axis, if
+#' `log="y"`.  If it is `"r"` (the default) then the conventional R style is used,
+#' in which a logarithmic transform connects y values to position on the "page"
+#' of the plot device, so that tics will be nonlinearly spaced, but not
+#' organized by integral powers of 10.  However, if it is `"decade"`, then
+#' the style will be that used in the scientific literature, in which large
+#' tick marks are used for integral powers of 10, with smaller tick marks
+#' at integral multiples of those powers, and with labels that use exponential
+#' format for values above 100 or below 0.01.  The value of `logStyle` is passed
+#' to [oceAxis()], which draws the axis.
+#'
 #' @param drawTimeRange an optional indication of whether/how to draw a time range,
 #' in the top-left margin of the plot; see [oce.axis.POSIXct()] for details.
 #'
@@ -1143,13 +1162,14 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' are recycled in the standard fashion.
 #' See [points()] for the possible values for `pch`.
 #'
-#' @param cex character expansion factor, used if `type` is `"p"`.
-#' If there are fewer `pch` values than there are `x` values, then the `pch` values
-#' are recycled in the standard fashion. See [par()] for more on `cex`.
+#' @param cex numeric character expansion factor for points on plots, ignored unless
+#' `type` is `"p"`.  This may be a single number, applied to all points, or
+#' a vector of numbers to be applied to the points in sequence.  If there are
+#' fewer `pch` values than there are `x` values, then the `pch` values are recycled
+#' in the standard fashion. See [par()] for more on `cex`.
 #'
-#' @param cex.axis character expansion factor for axes; see [par()].
-#'
-#' @param cex.main see [par()].
+#' @param cex.axis,cex.lab,cex.main numeric character expansion factors for axis numbers,
+#' axis names and plot titles; see [par()].
 #'
 #' @param  flipy Logical, with `TRUE` indicating that the graph
 #' should have the y axis reversed, i.e. with smaller values at
@@ -1222,9 +1242,9 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' oce.plot.ts(t, y, type='p', xlim=c(t[6], t[12]))
 #' # Flip the y axis
 #' oce.plot.ts(t, y, flipy=TRUE)
-oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, ylab,
+oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=FALSE, xlab, ylab,
                         drawTimeRange, fill=FALSE, col=par("col"), pch=par("pch"),
-                        cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+                        cex=par("cex"), cex.axis=par("cex.axis"), cex.lab=par("cex.lab"), cex.main=par("cex.main"),
                         xaxs=par("xaxs"), yaxs=par("yaxs"),
                         mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if (nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
@@ -1252,11 +1272,17 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
     oceDebug(debug, "oce.plot.ts(...,debug=", debug,",",
              argShow(type),
              argShow(flipy),
-             argShow(log),
-             argShow(mar), #",mar=c(", paste(mar, collapse=","), ")",
-             argShow(mgp), #",mgp=c(", paste(mgp, collapse=","), ")",
-             argShow(cex[1]), #", cex[1]=", cex[1], "(length "), length(cex), "),"
-             "...) {\n", sep="", unindent=1)
+             argShow(log), "\n", sep="", unindent=1, style="bold")
+    oceDebug(debug,
+             "          ",
+             argShow(mar),
+             argShow(mgp), "\n", sep="", style="bold")
+    oceDebug(debug,
+             "          ",
+             argShow(cex),
+             argShow(cex.axis),
+             argShow(cex.lab),
+             "...) {\n", sep="", style="bold")
     if (!is.logical(flipy))
         stop("flipy must be TRUE or FALSE")
     if (!log %in% c("", "y"))
@@ -1272,9 +1298,11 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
         col <- rep(col, length.out=nx)
         pch <- rep(pch, length.out=nx)
         cex <- rep(cex, length.out=nx)
+        oceDebug(debug, "made col, pch and cex of length ", nx, " to match length(x)\n")
     }
 
     pc <- paletteCalculations(maidiff=rep(0, 4))
+    oceDebug(debug, as.character(dput(pc)), "\n", style="red")
     par(mgp=mgp, mar=mar)
     args <- list(...)
     xlimGiven <- !missing(xlim)
@@ -1305,13 +1333,17 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
         ## FIXME: obey their mar?
         the.mai <- pc$mai0
         the.mai <- clipmin(the.mai, 0)         # just in case
-        oceDebug(debug, "the.mai=", the.mai, "\n")
-
-        par(mai=the.mai, cex=cex)
+        oceDebug(debug, "the.mai=", vectorShow(the.mai))
+        par(mai=the.mai)
         drawPalette(mai=rep(0, 4))
     }
+    ## Find data ranges. Note that x is a time, so it's either going to be NA or
+    ## sensible; thus the na.rm argument to range() is suitable for trimming bad
+    ## values.  However, for y, the finite argument is more sensible, because we
+    ## might for example be plotting log10(count), where count could be zero
+    ## sometimes (and not uncommonly, in biological data).
     xrange <- range(x, na.rm=TRUE)
-    yrange <- range(y, na.rm=TRUE)
+    yrange <- range(y, finite=TRUE)
     maybeflip <- function(y) if (flipy) rev(sort(y)) else y
     if (!is.finite(yrange[1])) {
         plot(xrange, c(0, 1), axes=FALSE, xaxs=xaxs, yaxs=yaxs,
@@ -1322,25 +1354,29 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
         box()
         mtext("bad data", side=3, line=-1, cex=cex)
         warning("no valid data for '", ylab, "'", sep="")
-        oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
+        oceDebug(debug, "} # oce.plot.ts()\n", unindent=1, style="bold")
         return()
-     } else {
+    } else {
         if (fill) {
             xx <- c(x[1], x, x[length(x)])
             yy <- c(0, y, 0)
             plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
                  xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
                  ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
-                 xlab=xlab, ylab=ylab,
+                 xlab="", ylab="",
                  type=type, col=col, cex=cex, pch=pch, log=log, ...)
-            fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
+            mtext(xlab, side=1, cex=cex.lab*par("cex"), line=mgp[1])
+            mtext(ylab, side=2, cex=cex.lab*par("cex"), line=mgp[1])
+            fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should this be a formal argument?
             do.call(polygon, list(x=xx, y=yy, col=fillcol))
         } else {
             plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
                  xlim=if (missing(xlim)) NULL else xlim,
                  ylim=if (missing(ylim)) maybeflip(range(y, na.rm=TRUE)) else maybeflip(ylim),
-                 xlab=xlab, ylab=ylab,
-                 type=type, col=col, cex=cex, pch=pch, log=log, ...)
+                 xlab="", ylab="",
+                 type=type, col=col, cex=cex, cex.axis=cex.axis, cex.lab=cex.lab, pch=pch, log=log, ...)
+            ##mtext(paste("TEST: xlab at mgp[1]", xlab), side=1, cex=cex.lab*par('cex'), line=mgp[1])
+            mtext(ylab, side=2, cex=cex.lab*par('cex'), line=mgp[1])
         }
         xat <- NULL
         yat <- NULL
@@ -1353,7 +1389,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
                 xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
                                           mgp=mgp,
                                           xlim=if (missing(xlim)) range(x) else xlim,
-                                          cex.axis=cex.axis, cex.main=cex.main,
+                                          cex.axis=cex.axis, cex.main=cex.main, cex.lab=cex.lab,
                                           tformat=tformat,
                                           debug=debug-1)
                 xat <- xlabs
@@ -1373,9 +1409,17 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
             }
             box()
             ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
-            if (drawyaxis)
-                axis(2, cex.axis=cex.axis, cex=cex.axis)
-            yat <- axis(4, labels=FALSE)
+            if (drawyaxis) {
+                if (log != "y" || logStyle == "r") {
+                    axis(2, cex.axis=cex.axis, cex=cex.axis)
+                    yat <- axis(4, labels=FALSE)
+                } else if (log == "y" && logStyle == "decade") {
+                    yat <- oceAxis(2, logStyle=logStyle, cex.axis=cex.axis, cex=cex.axis)
+                    oceAxis(4, logStyle=logStyle, labels=FALSE)
+                } else if (log == "y") {
+                    stop("if log=\"y\", then logStyle must be \"r\" or \"decade\", not \"", logStyle, "\"")
+                }
+            }
         }
         if (grid) {
             if (log == "y") {
@@ -1389,91 +1433,11 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
             }
             abline(v=axTicks(1), col=grid.col, lty=grid.lty, lwd=grid.lwd)
         }
-        oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
+        oceDebug(debug, "} # oce.plot.ts()\n", unindent=1, style="bold")
         invisible(list(xat=xat, yat=yat))
     }
-}
+}                                      # oce.plot.ts()
 
-
-#' Oce Variant of as.POSIXlt (defunct)
-#'
-#' **WARNING:** This function will be removed soon; see [oce-deprecated].
-#'
-#' It was realized in December of 2016 that this function was not used within
-#' oce, and also that `\link[lubridate]{parse_date_time`} in the
-#' \CRANpkg{lubridate} package was superior and therefore a better choice for
-#' \dQuote{oce} users.
-#'
-#' @param x a date, as for `as.POSIXlt`, but also including forms in which
-#' the month name appears.
-#'
-#' @param tz the timezone, as for `as.POSIXlt`
-#'
-#' @return A POSIXlt object.
-#'
-#' @author Dan Kelley
-#'
-#' @family functions that will be removed soon
-oce.as.POSIXlt <- function(x, tz = "")
-{
-    .Defunct("lubridate::parse_date_time",
-             msg="oce.as.POSIXlt() will be removed soon. Use lubridate::parse_date_time() instead. See ?'oce-defunct'.")
-    fromchar <- function(x)
-    {
-        xx <- x[1]
-        if (is.na(xx)) {
-            j <- 1
-            while (is.na(xx) && (j <- j + 1) <= length(x))
-                xx <- x[j]
-            if (is.na(xx))
-                f <- "%Y-%m-%d"
-        }
-        ## year day hhmm
-        tokens <- strsplit(xx, " +")[[1]]
-        if (length(tokens) == 3 && nchar(tokens[3]) == 4) {
-            ## the nchar check skips [year month day]
-            return(strptime(x, format="%Y %j %H%M"))
-        }
-        if (is.na(xx) ||
-                                        # additions ...
-            ( (nchar(xx) == 8) && !is.na(strptime(xx, f <- "%Y%m%d")) ) || # 20020823
-            !is.na(strptime(xx, f <- "%B %d %Y %H:%M:%OS")) || # Aug 23 2002 or August 23 2002
-            !is.na(strptime(xx, f <- "%Y %B %d %H:%M:%OS")) || # 2002 Aug 23
-            !is.na(strptime(xx, f <- "%d %B %Y %H:%M:%OS")) || # 23 Aug 2002
-                                        # ... and now back to the standard
-            !is.na(strptime(xx, f <- "%Y-%m-%d %H:%M:%OS")) ||
-            !is.na(strptime(xx, f <- "%Y/%m/%d %H:%M:%OS")) ||
-            !is.na(strptime(xx, f <- "%Y-%m-%d %H:%M")) ||
-            !is.na(strptime(xx, f <- "%Y/%m/%d %H:%M")) ||
-            !is.na(strptime(xx, f <- "%Y-%m-%d")) ||
-            !is.na(strptime(xx, f <- "%Y/%m/%d"))) {
-            res <- strptime(x, f)
-            if (nchar(tz))
-                attr(res, "tzone") <- tz
-            return(res)
-        }
-        warning("The string \"", x, "\" is not in a known date format")
-        return(NA)
-    }
-    if (inherits(x, "POSIXlt"))
-        return(x)
-    if (inherits(x, "Date"))
-        return(as.POSIXlt(x))
-    tzone <- attr(x, "tzone")
-    if (inherits(x, "date") || inherits(x, "dates"))
-        x <- as.POSIXct(x)
-    if (is.character(x))
-        return(fromchar(unclass(x)))
-    if (is.factor(x))
-        return(fromchar(as.character(x)))
-    if (is.logical(x) && all(is.na(x)))
-        x <- as.POSIXct.default(x)
-    if (!inherits(x, "POSIXct"))
-        stop(gettextf("do not know how to convert '%s' to class \"POSIXlt\"", deparse(substitute(x))))
-    if (missing(tz) && !is.null(tzone))
-        tz <- tzone[1]
-    as.POSIXlt(x, tz)
-}
 
 
 #' Edit an Oce Object
@@ -1536,7 +1500,7 @@ oce.as.POSIXlt <- function(x, tz = "")
 #' @param debug an integer that specifies a level of debugging, with 0 or less
 #' indicating no debugging, and 1 or more indicating debugging.
 #'
-#' @return An object of `\link[base]{class`} `"oce"`, altered
+#' @return A [oce-class] object, altered
 #' appropriately, and with a log item indicating the nature of the alteration.
 #'
 #' @author Dan Kelley
@@ -1663,10 +1627,10 @@ oce.edit <- oceEdit
 #' each enclosed in double quotes.  After that line are lines for the data
 #' themselves.  The default is to separate data items by a single space
 #' character, but this can be altered by using a `sep` argument in the
-#' `...` list (see `\link[utils]{write.table`}).
+#' `...` list; see [utils::write.table()].
 #'
 #' This function is little more than a thin wrapper around
-#' `\link[utils]{write.table`}, the only difference being that row names
+#' [utils::write.table()], the only difference being that row names
 #' are omitted here, making for a file format that is more conventional in
 #' Oceanography.
 #'
@@ -1681,7 +1645,7 @@ oce.edit <- oceEdit
 #'
 #' @author Dan Kelley
 #'
-#' @seealso `\link[utils]{write.table`}, which does the actual work.
+#' @seealso `[utils::write.table()], which does the actual work.
 oce.write.table <- function (x, file="", ...)
 {
     if (!inherits(x, "oce"))
@@ -1841,6 +1805,11 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                 stop('must install.packages("ncdf4") to read a NetCDF file')
             }
         }
+        if (length(grep(".xml$", filename, ignore.case=TRUE))) {
+            firstLine <- readLines(filename, 1, encoding="UTF-8")
+            if (grepl(".weather.gc.ca", firstLine))
+                return("met/xml2")
+        }
         if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) {
             ## openstreetmap
             return("openstreetmap")
@@ -1853,11 +1822,14 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             ## gpx (e.g. Garmin GPS)
             return("gpx")
         }
-        if (length(grep(".csv$", filename, ignore.case=TRUE))) {
-            someLines <- readLines(filename, 30)
-            if (1 == length(grep("^WMO Identifier", someLines, useBytes=TRUE))) {
-                return("met") # FIXME: may be other things too ...
-            } else if (1 == length(grep("^Station_Name,", someLines, useBytes=TRUE))) {
+        if (grepl(".csv$", filename, ignore.case=TRUE)) {
+            someLines <- readLines(filename, 30, encoding="UTF-8")
+            ## print(grepl('^"Longitude \\(x\\)","Latitude \\(y\\)","Station Name","Climate ID"', someLines[1]))
+            if (1 == length(grep('^.?"WMO Identifier",', someLines))) {
+                return("met/csv1") # FIXME: may be other things too ...
+            } else if (grepl('^.?"Longitude.[^"]*","Latitude[^"]*","Station Name","Climate ID"', someLines[1])) {
+                return("met/csv2")
+            } else if (1 == length(grep("^.?Station_Name,", someLines, useBytes=TRUE))) {
                 return("sealevel")
             } else if (1 == length(grep("^CTD,", someLines, useBytes=TRUE))) {
                 return("ctd/woce/exchange")
@@ -1867,10 +1839,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                 return("unknown")
             }
         }
-        if (length(grep(".edf$", filename))) {
+        if (length(grep(".edf$", filename, ignore.case=TRUE))) {
             return("xbt/edf")
         }
- 
         file <- file(file, "r")
     }
     if (!inherits(file, "connection"))
@@ -1878,7 +1849,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     if (!isOpen(file))
         open(file, "r")
     ## Grab text at start of file.
-    lines <- readLines(file, n=2, skipNul=TRUE)
+    lines <- readLines(file, n=2, skipNul=TRUE, encoding="UTF-8")
     line <- lines[1]
     line2 <- lines[2]
     oceDebug(debug, "first line of file: ", line, "\n", sep="")
@@ -2073,15 +2044,19 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
 #' plotTS(x) # just the TS
 read.oce <- function(file, ...)
 {
-    if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
+    if (missing(file))
+        stop("must supply 'file'")
+    if (is.character(file) && "http://" != substr(file, 1, 7) && !file.exists(file))
+        stop("In read.oce() : cannot open '", file, "' because there is no such file or directory", call.=FALSE)
+    if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
         stop("empty file")
-    type <- oceMagic(file)
     dots <- list(...)
     debug <- if ("debug" %in% names(dots)) dots$debug else 0
+    type <- oceMagic(file, debug=debug-1)
     oceDebug(debug,
              "read.oce(\"", as.character(file), "\", ...) inferred type=\"", type, "\"\n",
              sep="", unindent=1)
-    if (is.character(file) && 0 == file.info(file)$size)
+    if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
         stop("empty file")
     ##> OLD: deparse is unhelpful if "file" is a variable in the calling code
     ##> OLD: processingLog <- paste(deparse(match.call()), sep="", collapse="")
@@ -2187,8 +2162,12 @@ read.oce <- function(file, ...)
         res <- read.landsat(file, ...)
     } else if (type == "netcdf") {
         res <- read.netcdf(file, ...)
-    } else if (type == "met") {
-        res <- read.met(file, ...)
+    } else if (type == "met/csv1") {
+        res <- read.met(file, type="csv1", ...)
+    } else if (type == "met/csv2") {
+        res <- read.met(file, type="csv2", ...)
+    } else if (type == "met/xml2") {
+        res <- read.met(file, type="xml2", ...)
     } else if (type == "odf") {
         res <- read.odf(file, ...)
     } else if (type == "xbt/edf") {
@@ -2285,6 +2264,83 @@ read.netcdf <- function(file, ...)
                                               paste("read.netcdf(\"", file, "\")", sep=""))
     res
 }
+
+
+#' Draw an axis, possibly with decade-style logarithmic scaling
+#' 
+#' @param logStyle a character value that indicates how to draw the y axis, if
+#' `log="y"`.  If it is `"r"` (the default) then the conventional R style is used,
+#' in which a logarithmic transform connects y values to position on the "page"
+#' of the plot device, so that tics will be nonlinearly spaced, but not
+#' organized by integral powers of 10.  However, if it is `"decade"`, then
+#' the style will be that used in the scientific literature, in which large
+#' tick marks are used for integral powers of 10, with smaller tick marks
+#' at integral multiples of those powers, and with labels that use exponential
+#' format for values above 100 or below 0.01.
+#' @param side an integer specifying which axis to draw, with 1 for bottom axis, 2 for left axis,
+#' 3 for top axis, and 4 for right axis (as with [axis()]).
+#' @param labels either a vector of character values used for labels or a logical value indicating
+#' whether to draw such labels.  The first form only works if the coordinate is not logarithmic,
+#' and if `logStyle` is `"r"`.
+#' @param \dots other graphical parameters, passed to [axis()].
+#' 
+#' @return Numerical values at which tick marks were drawn (or would have been drawn, if `labels`
+#' specified to draw them).
+#'
+#' @examples
+#' library(oce)
+#' Ra <- 10^seq(4, 10, 0.1)
+#' Nu <- 0.085 * Ra^(1/3)
+#' plot(Ra, Nu, log="xy", axes=FALSE)
+#' box()
+#' oceAxis(1, logStyle="decade")
+#' oceAxis(2, logStyle="decade")
+#' 
+#' @author Dan Kelley
+oceAxis <- function(side, labels=TRUE, logStyle="r", ...)
+{
+    if (missing(side))
+        stop("in oceAxis() :\n  argument \"side\" is missing, with no default", call.=FALSE)
+    if (length(side) != 1)
+        stop("in oceAxis() :\n  argument \"side\" must be a single number", call.=FALSE)
+    if (!(side %in% 1:4))
+        stop("in oceAxis() :\n  argument \"side\" must be 1, 2, 3 or 4", call.=FALSE)
+    if (!(logStyle %in% c("r", "decade")))
+        stop("logStyle must be \"r\" or \"decade\", not \"", logStyle, "\"")
+    if (logStyle == "r") {
+        return(invisible(axis(side=side, labels=labels, ...)))
+    } else {
+        ## use decade axis if previous plot() call made this coordinate be logarithmic
+        if (((side %in% c(1,3)) && par("xlog")) || ((side %in% c(2,4)) && par("ylog"))) { 
+            usr <- if (side %in% c(1, 3)) par("usr")[1:2] else par("usr")[3:4]
+            lowerDecade <- floor(usr[1])
+            upperDecade <- floor(1 + usr[2])
+            smallTickAt <- NULL
+            bigTickAt <- NULL
+            bigTickLabel <- NULL
+            for (bigTick in lowerDecade:upperDecade) {
+                bigTickAt <- c(bigTickAt, bigTick)
+                bigTickLabel <- c(bigTickLabel,
+                                  if (bigTick < -1L || bigTick > 1L)
+                                      substitute(10^A, list(A=bigTick)) else 10^bigTick)
+
+                smallTickAt <- c(smallTickAt, -1 + bigTick + log10(2:9))
+                smallTickAt <- c(smallTickAt,      bigTick + log10(2:9))
+            }
+            bigTickInWindow <- usr[1] <= bigTickAt & bigTickAt <= usr[2]
+            bigTickAt <- bigTickAt[bigTickInWindow]
+            bigTickLabel <- as.expression(bigTickLabel[bigTickInWindow])
+            smallTickInWindow <- usr[1] <= smallTickAt & smallTickAt <= usr[2]
+            smallTickAt <- smallTickAt[smallTickInWindow]
+            rval <- axis(side=side, at=10^bigTickAt, labels=if(labels) bigTickLabel else FALSE)
+            rug(side=side, x=10^smallTickAt, tcl=0.5*par("tcl"), lwd=par("lwd"))
+            return(invisible(rval))
+        } else {
+            return(invisible(axis(side=side, labels=labels, ...)))
+        }
+    }
+}
+
 
 #' Create two-color palette
 #'
@@ -2705,11 +2761,7 @@ oce.colorsPalette <- oceColorsPalette
 #' number in the time range, e.g. dropping the year if it is the same in the
 #' first number.
 #'
-#' @param cex size of labels on axes; see `\link[graphics]{par`}("cex").
-#'
-#' @param cex.axis see `\link[graphics]{par`}("cex.axis").
-#'
-#' @param cex.main see `\link[graphics]{par`}("cex.main").
+#' @param cex.axis,cex.lab,cex.main character expansion factors for axis numbers, axis names and plot titles; see [par()].
 #'
 #' @param mar value for `par(mar)` for axis
 #'
@@ -2730,17 +2782,17 @@ oce.colorsPalette <- oceColorsPalette
 oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
                               drawTimeRange,
                               abbreviateTimeRange=FALSE, drawFrequency=FALSE,
-                              cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+                              cex.axis=par("cex.axis"), cex.lab=par("cex.lab"), cex.main=par("cex.main"),
                               mar=par("mar"),
                               mgp=par("mgp"),
                               main="",
                               debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "oce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="", unindent=1)
-    oceDebug(debug, "mar=", mar, "\n")
-    oceDebug(debug, "mgp=", mgp, "\n")
-    oceDebug(debug, "cex[1]=", cex[1], " cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
-    oceDebug(debug, vectorShow(x, "x"))
+    oceDebug(debug, "oce.axis.POSIXct(..., debug=", debug, ",...) {\n", sep="", unindent=1, style="bold")
+    oceDebug(debug, argShow(mar), "\n", style="blue")
+    oceDebug(debug, argShow(mgp), "\n", style="blue")
+    oceDebug(debug, "cex.axis=", cex.axis, ", cex.lab=", cex.lab, ", cex.main=", cex.main, "\n", style="blue")
+    oceDebug(debug, vectorShow(x, "x"), style="blue")
     tformatGiven <- !missing(tformat)
     if (missing(drawTimeRange))
         drawTimeRange <- getOption("oceDrawTimeRange")
@@ -2994,9 +3046,9 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
               "UTC\n")
     keep <- range[1] <= (z + twiddle) & (z - twiddle) <= range[2]
     ##oceDebug(debug, vectorShow(keep, "keep"))
-    oceDebug(debug, vectorShow(z, "z before keep"))
+    oceDebug(debug>1, vectorShow(z, "z before keep"))
     z <- z[keep]
-    oceDebug(debug, vectorShow(z, "z after keep"))
+    oceDebug(debug>1, vectorShow(z, "z after keep"))
     if (!is.logical(labels)) {
         labels <- labels[keep]
     } else if (labels[1]) {
@@ -3059,24 +3111,27 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         }
         if (drawFrequency && is.finite(1/deltat))
             label <- paste(label, "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
-        oceDebug(debug, "label=", label, "\n")
-        mtext(label, side=if (side==1) 3 else 1, cex=0.9*cex.axis*par('cex'), adj=0)
+        oceDebug(debug, "label=", label, " at cex.lab=", cex.lab, "\n")
+        ## message("DANNY about to write time range with size cex.lab=", cex.lab, " resulting in ", cex.lab*par('cex'))
+        mtext(label, side=if (side==1) 3 else 1, cex=cex.lab*par('cex'), adj=0)
         oceDebug(debug, "cex.axis=", cex.axis, "; par('cex')=", par('cex'), "\n")
     }
     if (nchar(main) > 0) {
-        mtext(main, side=if (side==1) 3 else 1, cex=cex.axis*par('cex'), adj=1)
+        ## message("DANNIE about to write label with cex.lab=", cex.lab, " resulting in ", cex.lab*par('cex'))
+        mtext(main, side=if (side==1) 3 else 1, cex=cex.lab*par('cex'), adj=1)
     }
     oceDebug(debug, vectorShow(z, "z="))
     if (length(z.sub) > 0) {
-        axis(side, at = z.sub, line=0, labels = FALSE, tcl=-0.25)
+        axis(side, at=z.sub, line=0, labels=FALSE, tcl=-0.25)
         oceDebug(debug, vectorShow(z.sub, "z.sub="))
     }
     oceDebug(debug, vectorShow(labels, "labels="))
     ##ocex <- par('cex')
     ocex.axis <- par('cex.axis')
+    ocex.lab <- par('cex.lab')
     ocex.main <- par('cex.main')
     omgp <- par('mgp')
-    par(cex.axis=cex.axis, cex.main=cex.main, mgp=mgp, tcl=-0.5)
+    par(cex.axis=cex.axis, cex.lab=cex.lab, cex.main=cex.main, mgp=mgp, tcl=-0.5)
     ##axis(side, at=z, line=0, labels=labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, mar=mar, mgp=mgp)
 
     ## If the user did gave tformat, shorten the strings for aesthetic reasons.
@@ -3085,17 +3140,16 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         labels <- shortenTimeString(labels, debug=debug-1)
         oceDebug(debug, "axis labels after shortenTimeString(): '", paste(labels, "', '"), "'\n")
     }
-    axis(side, at=z, line=0, labels=labels, mgp=mgp, cex.main=cex.main, cex.axis=cex.axis, ...)
-    par(cex.axis=ocex.axis, cex.main=ocex.main, mgp=omgp)
-    oceDebug(debug, "} # oce.axis.ts()\n", unindent=1)
+    axis(side, at=z, line=0, labels=labels, mgp=mgp, cex.axis=cex.axis, cex.lab=cex.lab, cex.main=cex.main, ...)
+    par(cex.axis=ocex.axis, cex.lab=ocex.lab, cex.main=ocex.main, mgp=omgp)
+    oceDebug(debug, "} # oce.axis.POSIXct()\n", unindent=1, style="bold")
     zzz <- as.numeric(z)
     if (1 < length(zzz)) {
         xaxp <- c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz))
         par(xaxp=xaxp)
     }
     invisible(z)                       # FIXME: or z.sub?
-}
-
+}                                      # oce.axis.POSIXct()
 
 #' Convert a Numeric Time to Hour, Minute, and Second
 #'

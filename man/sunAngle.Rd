@@ -24,9 +24,11 @@ A list containing the following:
 \item \code{time} the time
 \item \code{azimuth}, in degrees eastward of north, from 0 to 360.
 \item \code{altitude}, in degrees above the horizon,  ranging from -90 to 90.
-\item \code{diameter}, soolar diameter, in degrees.
+\item \code{diameter}, solar diameter, in degrees.
 \item \code{distance} to sun, in astronomical units.
-\if{html}{\figure{starCoords.png options:width=400px}{starCoords.png}}
+\item \code{declination} angle in degrees, computed with \code{\link[=sunDeclinationRightAscension]{sunDeclinationRightAscension()}}.
+\item \code{rightAscension} angle in degrees, computed with \code{\link[=sunDeclinationRightAscension]{sunDeclinationRightAscension()}}.
+\if{html}{\figure{starCoords.png}{options:width=400px}}
 }
 }
 \description{
@@ -51,7 +53,9 @@ cat(sprintf("Infer Halifax latitude \%.2f and longitude \%.2f; distance mismatch
 
 }
 \references{
-Based on Fortran code retrieved from
+Regarding \code{declination} and \code{rightAscension}, see
+references in the documentation for \code{\link[=sunDeclinationRightAscension]{sunDeclinationRightAscension()}}.
+The other items are based on Fortran code retrieved from
 ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f on
 2009-11-1.  Comments in that code list as references:
 
@@ -79,13 +83,17 @@ University of New York), with modifications by Dr. Warren Wiscombe (NASA
 Goddard Space Flight Center).
 }
 \seealso{
-The equivalent function for the moon is \code{\link[=moonAngle]{moonAngle()}}.
+The corresponding function for the moon is \code{\link[=moonAngle]{moonAngle()}}.
 
-Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
-  \code{\link{equatorialToLocalHorizontal}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{julianDay}}, \code{\link{moonAngle}},
-  \code{\link{siderealTime}}
+Other things related to astronomy: 
+\code{\link{angle2hms}()},
+\code{\link{eclipticalToEquatorial}()},
+\code{\link{equatorialToLocalHorizontal}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{julianDay}()},
+\code{\link{moonAngle}()},
+\code{\link{siderealTime}()},
+\code{\link{sunDeclinationRightAscension}()}
 }
 \author{
 Dan Kelley

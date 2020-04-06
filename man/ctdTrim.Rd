@@ -4,8 +4,14 @@
 \alias{ctdTrim}
 \title{Trim Beginning and Ending of a CTD cast}
 \usage{
-ctdTrim(x, method, removeDepthInversions = FALSE, parameters = NULL,
-  indices = FALSE, debug = getOption("oceDebug"))
+ctdTrim(
+  x,
+  method,
+  removeDepthInversions = FALSE,
+  parameters = NULL,
+  indices = FALSE,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{x}{a \linkS4class{ctd} object.}
@@ -56,7 +62,6 @@ varies, a variety of approaches are taken to trimming the dataset.
 \item If \code{method[1]} is \code{"downcast"} then an attempt is made to keep only data for
 which the CTD is descending.  This is done in stages, with variants based on \code{method[2]}, if
 supplied.
-}
 \enumerate{
 \item The pressure data are despiked with a smooth() filter with method "3R".
 This removes wild spikes that arise from poor instrument connections, etc.
@@ -84,7 +89,6 @@ much sense, but it might help in some cases). Note that, prior to early 2016,
 method \code{"B"} was called method \code{"C"}; the old \code{"B"} method was judged useless
 and so it was removed.
 }
-\itemize{
 \item If \code{method="upcast"}, a sort of reverse of \code{"downcast"} is used. This
 was added in late April 2017 and has not been well tested yet.
 \item If \code{method="sbe"}, a method similar to that described
@@ -147,32 +151,46 @@ plot(trimmed)
 }
 \references{
 The Seabird CTD instrument is described at
-\code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
+\verb{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 
 Seasoft V2: SBE Data Processing, SeaBird Scientific, 05/26/2016
 }
 \seealso{
-Other things related to ctd data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdRaw}}, \code{\link{ctd}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{initialize,ctd-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{plotTS}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+Other things related to ctd data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{[[,ctd-method}},
+\code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{ctd-class}},
+\code{\link{ctd.cnv}},
+\code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfiles}()},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{initialize,ctd-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{plot,ctd-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{plotTS}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()},
+\code{\link{setFlags,ctd-method}},
+\code{\link{subset,ctd-method}},
+\code{\link{summary,ctd-method}},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()},
+\code{\link{write.ctd}()}
 }
 \author{
 Dan Kelley and Clark Richards

@@ -55,13 +55,18 @@ legend=c("data","model"),lwd=1)
 
 }
 \seealso{
-Other things related to tides: \code{\link{[[,tidem-method}},
-  \code{\link{[[<-,tidem-method}}, \code{\link{as.tidem}},
-  \code{\link{plot,tidem-method}},
-  \code{\link{summary,tidem-method}},
-  \code{\link{tidedata}}, \code{\link{tidem-class}},
-  \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
-  \code{\link{tidem}}, \code{\link{webtide}}
+Other things related to tides: 
+\code{\link{[[,tidem-method}},
+\code{\link{[[<-,tidem-method}},
+\code{\link{as.tidem}()},
+\code{\link{plot,tidem-method}},
+\code{\link{summary,tidem-method}},
+\code{\link{tidedata}},
+\code{\link{tidem-class}},
+\code{\link{tidemAstron}()},
+\code{\link{tidemVuf}()},
+\code{\link{tidem}},
+\code{\link{webtide}()}
 }
 \author{
 Dan Kelley

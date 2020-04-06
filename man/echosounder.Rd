@@ -14,26 +14,37 @@ scientific echosounder, as part of the St Lawrence Internal Wave Experiment
 (SLEIWEX).
 }
 \seealso{
-Other datasets provided with oce: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{landsat}},
-  \code{\link{lisst}}, \code{\link{lobo}},
-  \code{\link{met}}, \code{\link{ocecolors}},
-  \code{\link{rsk}}, \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}},
-  \code{\link{xbt}}
+Other datasets provided with oce: 
+\code{\link{adp}},
+\code{\link{adv}},
+\code{\link{argo}},
+\code{\link{cm}},
+\code{\link{coastlineWorld}},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{landsat}},
+\code{\link{lisst}},
+\code{\link{lobo}},
+\code{\link{met}},
+\code{\link{ocecolors}},
+\code{\link{rsk}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{section}},
+\code{\link{topoWorld}},
+\code{\link{wind}},
+\code{\link{xbt}}
 
-Other things related to echosounder data: \code{\link{[[,echosounder-method}},
-  \code{\link{[[<-,echosounder-method}},
-  \code{\link{as.echosounder}},
-  \code{\link{echosounder-class}},
-  \code{\link{findBottom}},
-  \code{\link{plot,echosounder-method}},
-  \code{\link{read.echosounder}},
-  \code{\link{subset,echosounder-method}},
-  \code{\link{summary,echosounder-method}}
+Other things related to echosounder data: 
+\code{\link{[[,echosounder-method}},
+\code{\link{[[<-,echosounder-method}},
+\code{\link{as.echosounder}()},
+\code{\link{echosounder-class}},
+\code{\link{findBottom}()},
+\code{\link{plot,echosounder-method}},
+\code{\link{read.echosounder}()},
+\code{\link{subset,echosounder-method}},
+\code{\link{summary,echosounder-method}}
 }
 \author{
 Dan Kelley

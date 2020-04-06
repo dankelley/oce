@@ -39,7 +39,7 @@ The fractional part of which is 0 for new moon, 1/4 for first
 quarter, 1/2 for full moon, and 3/4 for last quarter.
 }
 
-\if{html}{\figure{starCoords.png options:width=400px}{starCoords}}
+\if{html}{\figure{starCoords.png}{options:width=400px}}
 }
 \description{
 The calculations are based on formulae provided by Meeus (1982), primarily
@@ -109,11 +109,15 @@ USA. 429 pages.
 \seealso{
 The equivalent function for the sun is \code{\link[=sunAngle]{sunAngle()}}.
 
-Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
-  \code{\link{equatorialToLocalHorizontal}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{julianDay}}, \code{\link{siderealTime}},
-  \code{\link{sunAngle}}
+Other things related to astronomy: 
+\code{\link{angle2hms}()},
+\code{\link{eclipticalToEquatorial}()},
+\code{\link{equatorialToLocalHorizontal}()},
+\code{\link{julianCenturyAnomaly}()},
+\code{\link{julianDay}()},
+\code{\link{siderealTime}()},
+\code{\link{sunAngle}()},
+\code{\link{sunDeclinationRightAscension}()}
 }
 \author{
 Dan Kelley, based on formulae in Meeus (1982).

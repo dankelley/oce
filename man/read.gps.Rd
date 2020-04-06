@@ -4,8 +4,7 @@
 \alias{read.gps}
 \title{Read a GPS File}
 \usage{
-read.gps(file, type = NULL, debug = getOption("oceDebug"),
-  processingLog)
+read.gps(file, type = NULL, debug = getOption("oceDebug"), processingLog)
 }
 \arguments{
 \item{file}{name of file containing gps data.}
@@ -28,10 +27,13 @@ Reads GPX format files by simply finding all longitudes and latitudes; in
 other words, information on separate tracks, or waypoints, etc., is lost.
 }
 \seealso{
-Other things related to gps data: \code{\link{[[,gps-method}},
-  \code{\link{[[<-,gps-method}}, \code{\link{as.gps}},
-  \code{\link{gps-class}}, \code{\link{plot,gps-method}},
-  \code{\link{summary,gps-method}}
+Other things related to gps data: 
+\code{\link{[[,gps-method}},
+\code{\link{[[<-,gps-method}},
+\code{\link{as.gps}()},
+\code{\link{gps-class}},
+\code{\link{plot,gps-method}},
+\code{\link{summary,gps-method}}
 }
 \author{
 Dan Kelley

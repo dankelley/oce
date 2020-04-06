@@ -60,7 +60,7 @@ contain the item. This \code{[[} method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
-longitude and latitudee, has sufficient information to compute
+longitude and latitude, has sufficient information to compute
 Absolute Salinity, and so \code{o[["SA"]]} will yield the
 calculated Absolute Salinity.
 
@@ -70,25 +70,35 @@ retrieve derived items.
 }
 
 \seealso{
-Other classes provided by oce: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}, \code{\link{xbt-class}}
+Other classes provided by oce: 
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{argo-class}},
+\code{\link{bremen-class}},
+\code{\link{cm-class}},
+\code{\link{coastline-class}},
+\code{\link{ctd-class}},
+\code{\link{lisst-class}},
+\code{\link{lobo-class}},
+\code{\link{met-class}},
+\code{\link{oce-class}},
+\code{\link{odf-class}},
+\code{\link{rsk-class}},
+\code{\link{section-class}},
+\code{\link{topo-class}},
+\code{\link{windrose-class}},
+\code{\link{xbt-class}}
 
-Other things related to sealevel data: \code{\link{[[,sealevel-method}},
-  \code{\link{[[<-,sealevel-method}},
-  \code{\link{as.sealevel}},
-  \code{\link{plot,sealevel-method}},
-  \code{\link{read.sealevel}},
-  \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}},
-  \code{\link{subset,sealevel-method}},
-  \code{\link{summary,sealevel-method}}
+Other things related to sealevel data: 
+\code{\link{[[,sealevel-method}},
+\code{\link{[[<-,sealevel-method}},
+\code{\link{as.sealevel}()},
+\code{\link{plot,sealevel-method}},
+\code{\link{read.sealevel}()},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{subset,sealevel-method}},
+\code{\link{summary,sealevel-method}}
 }
 \author{
 Dan Kelley

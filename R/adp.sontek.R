@@ -440,7 +440,8 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                                    type=c("adp", "pcadp"),
                                    beamAngle=25, orientation,
                                    monitor=FALSE, processingLog,
-                                   debug=getOption("oceDebug"))
+                                   debug=getOption("oceDebug"),
+                                   ...)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")

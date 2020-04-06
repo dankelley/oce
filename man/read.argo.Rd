@@ -84,32 +84,32 @@ work can be required to track down the data.
 
 Some servers provide  data for floats that surfaced in a given ocean
 on a given day, the anonymous FTP server
-\url{ftp://usgodae.org/pub/outgoing/argo/geo/} being an example.
+\code{ftp://usgodae.org/pub/outgoing/argo/geo/} being an example.
 
 Other servers provide data on a per-float basis. A complicating
 factor is that these data tend to be categorized by "dac" (data
 archiving centre), which makes it difficult to find a particular
 float. For example,
-\url{https://www.usgodae.org/ftp/outgoing/argo/} is the top level of
+\code{https://www.usgodae.org/ftp/outgoing/argo/} is the top level of
 a such a repository. If the ID of a float is known but not the
 "dac", then a first step is to download the text file
-\url{http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
+\code{http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
 and search for the ID. The first few lines of that file are header,
 and after that the format is simple, with columns separated by slash
 (\code{/}). The dac is in the first such column and the float ID in the
 second. A simple search will reveal the dac.
 For example \code{data(argo)} is based on float 6900388, and the line
 containing that token is
-\code{bodc/6900388/6900388_meta.nc,846,BO,20120225005617}, from
+\verb{bodc/6900388/6900388_meta.nc,846,BO,20120225005617}, from
 which the dac is seen to be the British Oceanographic Data Centre
 (\code{bodc}). Armed with that information, visit
-\url{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}
+\code{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}
 and see a directory called \code{profiles} that contains a NetCDF
 file for each profile the float made. These can be read with
 \code{read.argo}. It is also possible, and probably more common,
 to read a NetCDF file containing all the profiles together and for
 that purpose the file
-\url{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}
+\code{https://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}
 should be downloaded and provided as the \code{file} argument to
 \code{read.argo}.  This can be automated as in Example 2,
 although readers are cautioned that URL structures tend to change
@@ -148,10 +148,8 @@ summary(argo)
 \references{
 \enumerate{
 \item \url{http://www.argo.ucsd.edu/}
-\item Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-\url{https://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-(but note that this is a draft; newer versions may have
-replaced this by now).
+\item Argo User's Manual Version 3.3, Nov 89th, 2019, available at
+\url{https://archimer.ifremer.fr/doc/00187/29825/}
 \item User's Manual (ar-um-02-01) 13 July 2010, available at
 \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf},
 which is the main document describing argo data.
@@ -161,14 +159,18 @@ which is the main document describing argo data.
 The documentation for the \linkS4class{argo} class explains the structure of argo
 objects, and also outlines the other functions dealing with them.
 
-Other things related to argo data: \code{\link{[[,argo-method}},
-  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
-  \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
-  \code{\link{argo}}, \code{\link{as.argo}},
-  \code{\link{handleFlags,argo-method}},
-  \code{\link{plot,argo-method}},
-  \code{\link{subset,argo-method}},
-  \code{\link{summary,argo-method}}
+Other things related to argo data: 
+\code{\link{[[,argo-method}},
+\code{\link{[[<-,argo-method}},
+\code{\link{argo-class}},
+\code{\link{argoGrid}()},
+\code{\link{argoNames2oceNames}()},
+\code{\link{argo}},
+\code{\link{as.argo}()},
+\code{\link{handleFlags,argo-method}},
+\code{\link{plot,argo-method}},
+\code{\link{subset,argo-method}},
+\code{\link{summary,argo-method}}
 }
 \author{
 Dan Kelley

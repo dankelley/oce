@@ -57,25 +57,37 @@ harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 Computers and Geosciences, 28, 929-937.
 }
 \seealso{
-Other datasets provided with oce: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
-  \code{\link{landsat}}, \code{\link{lisst}},
-  \code{\link{lobo}}, \code{\link{met}},
-  \code{\link{ocecolors}}, \code{\link{rsk}},
-  \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}},
-  \code{\link{xbt}}
+Other datasets provided with oce: 
+\code{\link{adp}},
+\code{\link{adv}},
+\code{\link{argo}},
+\code{\link{cm}},
+\code{\link{coastlineWorld}},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{echosounder}},
+\code{\link{landsat}},
+\code{\link{lisst}},
+\code{\link{lobo}},
+\code{\link{met}},
+\code{\link{ocecolors}},
+\code{\link{rsk}},
+\code{\link{sealevel}},
+\code{\link{section}},
+\code{\link{topoWorld}},
+\code{\link{wind}},
+\code{\link{xbt}}
 
-Other things related to sealevel data: \code{\link{[[,sealevel-method}},
-  \code{\link{[[<-,sealevel-method}},
-  \code{\link{as.sealevel}},
-  \code{\link{plot,sealevel-method}},
-  \code{\link{read.sealevel}},
-  \code{\link{sealevel-class}}, \code{\link{sealevel}},
-  \code{\link{subset,sealevel-method}},
-  \code{\link{summary,sealevel-method}}
+Other things related to sealevel data: 
+\code{\link{[[,sealevel-method}},
+\code{\link{[[<-,sealevel-method}},
+\code{\link{as.sealevel}()},
+\code{\link{plot,sealevel-method}},
+\code{\link{read.sealevel}()},
+\code{\link{sealevel-class}},
+\code{\link{sealevel}},
+\code{\link{subset,sealevel-method}},
+\code{\link{summary,sealevel-method}}
 }
 \concept{datasets provided with oce}
 \concept{things related to sealevel data}

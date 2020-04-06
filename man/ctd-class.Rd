@@ -91,7 +91,7 @@ contain the item. This \code{[[} method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
-longitude and latitudee, has sufficient information to compute
+longitude and latitude, has sufficient information to compute
 Absolute Salinity, and so \code{o[["SA"]]} will yield the
 calculated Absolute Salinity.
 
@@ -128,6 +128,16 @@ many of the contents of CTD objects may be altered with the
 and sufficiently skilled users may even manipulate the contents directly.
 }
 
+\section{Data sources}{
+
+
+Archived CTD (and other) data may be found on servers such as
+\enumerate{
+\item \url{https://cchdo.ucsd.edu/}
+\item \url{https://www.nodc.noaa.gov/woce/wdiu/}
+}
+}
+
 \examples{
 
 # 1. Create a ctd object with fake data.
@@ -141,37 +151,60 @@ ctd <- oceSetMetadata(ctd, "latitude", ctd[["latitude"]]-0.001,
 
 }
 \seealso{
-Other things related to ctd data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctd}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{initialize,ctd-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{plotTS}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+Other things related to ctd data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{[[,ctd-method}},
+\code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{ctd.cnv}},
+\code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfiles}()},
+\code{\link{ctdRaw}},
+\code{\link{ctdTrim}()},
+\code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{initialize,ctd-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{plot,ctd-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{plotTS}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()},
+\code{\link{setFlags,ctd-method}},
+\code{\link{subset,ctd-method}},
+\code{\link{summary,ctd-method}},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()},
+\code{\link{write.ctd}()}
 
-Other classes provided by oce: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{coastline-class}}, \code{\link{lisst-class}},
-  \code{\link{lobo-class}}, \code{\link{met-class}},
-  \code{\link{oce-class}}, \code{\link{odf-class}},
-  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}, \code{\link{xbt-class}}
+Other classes provided by oce: 
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{argo-class}},
+\code{\link{bremen-class}},
+\code{\link{cm-class}},
+\code{\link{coastline-class}},
+\code{\link{lisst-class}},
+\code{\link{lobo-class}},
+\code{\link{met-class}},
+\code{\link{oce-class}},
+\code{\link{odf-class}},
+\code{\link{rsk-class}},
+\code{\link{sealevel-class}},
+\code{\link{section-class}},
+\code{\link{topo-class}},
+\code{\link{windrose-class}},
+\code{\link{xbt-class}}
 }
 \author{
 Dan Kelley

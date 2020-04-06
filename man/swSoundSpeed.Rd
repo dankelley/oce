@@ -4,9 +4,14 @@
 \alias{swSoundSpeed}
 \title{Seawater sound speed}
 \usage{
-swSoundSpeed(salinity, temperature = NULL, pressure = NULL,
-  longitude = NULL, latitude = NULL, eos = getOption("oceEOS",
-  default = "gsw"))
+swSoundSpeed(
+  salinity,
+  temperature = NULL,
+  pressure = NULL,
+  longitude = NULL,
+  latitude = NULL,
+  eos = getOption("oceEOS", default = "gsw")
+)
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}
@@ -56,26 +61,42 @@ computation of fundamental properties of seawater.
 \emph{44}, 53 pp.  (See section 9.)
 }
 \seealso{
-Other functions that calculate seawater properties: \code{\link{T68fromT90}},
-  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
-  \code{\link{swAbsoluteSalinity}},
-  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
-  \code{\link{swBeta}}, \code{\link{swCSTp}},
-  \code{\link{swConservativeTemperature}},
-  \code{\link{swDepth}}, \code{\link{swDynamicHeight}},
-  \code{\link{swLapseRate}}, \code{\link{swN2}},
-  \code{\link{swPressure}}, \code{\link{swRho}},
-  \code{\link{swRrho}}, \code{\link{swSCTp}},
-  \code{\link{swSTrho}}, \code{\link{swSigma0}},
-  \code{\link{swSigma1}}, \code{\link{swSigma2}},
-  \code{\link{swSigma3}}, \code{\link{swSigma4}},
-  \code{\link{swSigmaTheta}}, \code{\link{swSigmaT}},
-  \code{\link{swSigma}}, \code{\link{swSoundAbsorption}},
-  \code{\link{swSpecificHeat}}, \code{\link{swSpice}},
-  \code{\link{swTFreeze}}, \code{\link{swTSrho}},
-  \code{\link{swThermalConductivity}},
-  \code{\link{swTheta}}, \code{\link{swViscosity}},
-  \code{\link{swZ}}
+Other functions that calculate seawater properties: 
+\code{\link{T68fromT90}()},
+\code{\link{T90fromT48}()},
+\code{\link{T90fromT68}()},
+\code{\link{swAbsoluteSalinity}()},
+\code{\link{swAlphaOverBeta}()},
+\code{\link{swAlpha}()},
+\code{\link{swBeta}()},
+\code{\link{swCSTp}()},
+\code{\link{swConservativeTemperature}()},
+\code{\link{swDepth}()},
+\code{\link{swDynamicHeight}()},
+\code{\link{swLapseRate}()},
+\code{\link{swN2}()},
+\code{\link{swPressure}()},
+\code{\link{swRho}()},
+\code{\link{swRrho}()},
+\code{\link{swSCTp}()},
+\code{\link{swSTrho}()},
+\code{\link{swSigma0}()},
+\code{\link{swSigma1}()},
+\code{\link{swSigma2}()},
+\code{\link{swSigma3}()},
+\code{\link{swSigma4}()},
+\code{\link{swSigmaTheta}()},
+\code{\link{swSigmaT}()},
+\code{\link{swSigma}()},
+\code{\link{swSoundAbsorption}()},
+\code{\link{swSpecificHeat}()},
+\code{\link{swSpice}()},
+\code{\link{swTFreeze}()},
+\code{\link{swTSrho}()},
+\code{\link{swThermalConductivity}()},
+\code{\link{swTheta}()},
+\code{\link{swViscosity}()},
+\code{\link{swZ}()}
 }
 \author{
 Dan Kelley

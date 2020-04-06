@@ -4,9 +4,13 @@
 \alias{swDynamicHeight}
 \title{Dynamic height of seawater profile}
 \usage{
-swDynamicHeight(x, referencePressure = 2000, subdivisions = 500,
-  rel.tol = .Machine$double.eps^0.25, eos = getOption("oceEOS", default
-  = "gsw"))
+swDynamicHeight(
+  x,
+  referencePressure = 2000,
+  subdivisions = 500,
+  rel.tol = .Machine$double.eps^0.25,
+  eos = getOption("oceEOS", default = "gsw")
+)
 }
 \arguments{
 \item{x}{a \linkS4class{section} object.}
@@ -85,7 +89,7 @@ lines(smu, col="blue")
 f <- coriolis(section[["station", 1]][["latitude"]])
 g <- gravity(section[["station", 1]][["latitude"]])
 v <- diff(smu$y)/diff(smu$x) * g / f / 1e3 # 1e3 converts to m
-plot(smu$x[-1], v, type='l', col="blue", xlab="distance \\[km\\]", ylab="velocity (m/s)")
+plot(smu$x[-1], v, type='l', col="blue", xlab="distance \[km\]", ylab="velocity (m/s)")
 
 # right-hand column: gulf stream region, unsmoothed
 gs <- subset(section, 102<=stationId&stationId<=124)
@@ -102,27 +106,42 @@ Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
 Press, New York, 662 pp.
 }
 \seealso{
-Other functions that calculate seawater properties: \code{\link{T68fromT90}},
-  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
-  \code{\link{swAbsoluteSalinity}},
-  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
-  \code{\link{swBeta}}, \code{\link{swCSTp}},
-  \code{\link{swConservativeTemperature}},
-  \code{\link{swDepth}}, \code{\link{swLapseRate}},
-  \code{\link{swN2}}, \code{\link{swPressure}},
-  \code{\link{swRho}}, \code{\link{swRrho}},
-  \code{\link{swSCTp}}, \code{\link{swSTrho}},
-  \code{\link{swSigma0}}, \code{\link{swSigma1}},
-  \code{\link{swSigma2}}, \code{\link{swSigma3}},
-  \code{\link{swSigma4}}, \code{\link{swSigmaTheta}},
-  \code{\link{swSigmaT}}, \code{\link{swSigma}},
-  \code{\link{swSoundAbsorption}},
-  \code{\link{swSoundSpeed}}, \code{\link{swSpecificHeat}},
-  \code{\link{swSpice}}, \code{\link{swTFreeze}},
-  \code{\link{swTSrho}},
-  \code{\link{swThermalConductivity}},
-  \code{\link{swTheta}}, \code{\link{swViscosity}},
-  \code{\link{swZ}}
+Other functions that calculate seawater properties: 
+\code{\link{T68fromT90}()},
+\code{\link{T90fromT48}()},
+\code{\link{T90fromT68}()},
+\code{\link{swAbsoluteSalinity}()},
+\code{\link{swAlphaOverBeta}()},
+\code{\link{swAlpha}()},
+\code{\link{swBeta}()},
+\code{\link{swCSTp}()},
+\code{\link{swConservativeTemperature}()},
+\code{\link{swDepth}()},
+\code{\link{swLapseRate}()},
+\code{\link{swN2}()},
+\code{\link{swPressure}()},
+\code{\link{swRho}()},
+\code{\link{swRrho}()},
+\code{\link{swSCTp}()},
+\code{\link{swSTrho}()},
+\code{\link{swSigma0}()},
+\code{\link{swSigma1}()},
+\code{\link{swSigma2}()},
+\code{\link{swSigma3}()},
+\code{\link{swSigma4}()},
+\code{\link{swSigmaTheta}()},
+\code{\link{swSigmaT}()},
+\code{\link{swSigma}()},
+\code{\link{swSoundAbsorption}()},
+\code{\link{swSoundSpeed}()},
+\code{\link{swSpecificHeat}()},
+\code{\link{swSpice}()},
+\code{\link{swTFreeze}()},
+\code{\link{swTSrho}()},
+\code{\link{swThermalConductivity}()},
+\code{\link{swTheta}()},
+\code{\link{swViscosity}()},
+\code{\link{swZ}()}
 }
 \author{
 Dan Kelley

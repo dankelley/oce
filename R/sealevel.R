@@ -105,7 +105,8 @@ NULL
 
 setMethod(f="initialize",
           signature="sealevel",
-          definition=function(.Object, elevation, time) {
+          definition=function(.Object, elevation, time, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(elevation))
                   .Object@data$elevation <- elevation
               if (!missing(time))
@@ -374,7 +375,7 @@ as.sealevel <- function(elevation,
 }
 
 
-#' @title Plot Sealevel Data
+#' @title Plot a sealevel Object
 #'
 #' @description
 #' Creates a plot for a sea-level dataset, in one of two varieties.  Depending
@@ -387,7 +388,7 @@ as.sealevel <- function(elevation,
 #' @param x a [sealevel-class] object.
 #'
 #' @param which a numerical or string vector indicating desired plot types,
-#' with possibilities 1 or `"all"` for a time-series of all the data, 2 or
+#' with possibilities 1 or `"all"` for a time-series of all the elevations, 2 or
 #' `"month"` for a time-series of just the first month, 3 or
 #' `"spectrum"` for a power spectrum (truncated to frequencies below 0.1
 #' cycles per hour, or 4 or `"cumulativespectrum"` for a cumulative
@@ -418,6 +419,13 @@ as.sealevel <- function(elevation,
 #' @seealso The documentation for the [sealevel-class] class explains the
 #' structure of sealevel objects, and also outlines the other functions dealing
 #' with them.
+#'
+#' @section Historical Note:
+#' Until 2020-02-06, sea-level plots had the mean value removed, and indicated
+#' with a tick mark and margin note on the right-hand side of the plot.
+#' This behaviour was confusing. The change did not go through the usual
+#' deprecation process, because the margin-note behaviour had not
+#' been documented.
 #'
 #' @references The example refers to Hurricane Juan, which caused a great deal
 #' of damage to Halifax in 2003.  Since this was in the era of the digital
@@ -454,7 +462,7 @@ setMethod(f="plot",
               oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n", sep="", unindent=1)
               if ("adorn" %in% names(list(...)))
                   warning("In plot,adv-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
-              dots <- list(...)
+              ##> dots <- list(...)
               titlePlot<-function(x)
               {
                   title <- ""
@@ -509,15 +517,15 @@ setMethod(f="plot",
               par(mgp=mgp)
               ##par(mar=c(mgp[1],mgp[1]+2.5,mgp[2]+0.5,mgp[2]+1))
               par(mar=mar)
-              MSL <- mean(x@data$elevation, na.rm=TRUE)
-              if ("xlim" %in% names(dots)) {
-                  xtmp <- subset(x@data$elevation, dots$xlim[1] <= x@data$time & x@data$time <= dots$xlim[2])
-                  tmp <- max(abs(range(xtmp-MSL, na.rm=TRUE)))
-              } else {
-                  tmp <- max(abs(range(x@data$elevation-MSL, na.rm=TRUE)))
-              }
-              ylim <- c(-tmp, tmp)
-              oceDebug(debug, "ylim=", ylim, "\n")
+              ##> MSL <- mean(x@data$elevation, na.rm=TRUE)
+              ##> if ("xlim" %in% names(dots)) {
+              ##>     xtmp <- subset(x@data$elevation, dots$xlim[1] <= x@data$time & x@data$time <= dots$xlim[2])
+              ##>     tmp <- max(abs(range(xtmp-MSL, na.rm=TRUE)))
+              ##> } else {
+              ##>     tmp <- max(abs(range(x@data$elevation-MSL, na.rm=TRUE)))
+              ##> }
+              ##> ylim <- c(-tmp, tmp)
+              ##> oceDebug(debug, "ylim=", ylim, "\n")
               n <- length(x@data$elevation) # do not trust value in metadata
 
               oceDebug(debug, "which:", which, "\n")
@@ -527,10 +535,10 @@ setMethod(f="plot",
               for (w in seq_along(which2)) {
                   oceDebug(debug, "plotting for code which2[", w, "] = ", which2[w], "\n", sep="")
                   if (which2[w] == 1) {
-                      plot(x@data$time, x@data$elevation-MSL,
+                      plot(x@data$time, x@data$elevation,
                            xlab="",
                            ylab=resizableLabel("elevation"),
-                           type='l', ylim=ylim, xaxs="i",
+                           type='l', xaxs="i",
                            lwd=0.5, axes=FALSE, ...)
                       tics <- oce.axis.POSIXct(1, x@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
                       box()
@@ -538,8 +546,8 @@ setMethod(f="plot",
                       yax <- axis(2)
                       abline(h=yax, col="darkgray", lty="dotted")
                       abline(v=tics, col="darkgray", lty="dotted")
-                      abline(h=0, col="darkgreen")
-                      mtext(side=4, text=sprintf("%.2f m", MSL), col="darkgreen", cex=2/3)
+                      ##> abline(h=0, col="darkgreen")
+                      ##> mtext(side=4, text=sprintf("%.2f m", MSL), col="darkgreen", cex=2/3)
                   } else if (which2[w] == 2) {
                       ## sample month
                       from <- trunc(x@data$time[1], "day")
@@ -552,12 +560,11 @@ setMethod(f="plot",
                       if (any(is.finite(xx@data$elevation))) {
                           atWeek <- seq(from=from, to=to, by="week")
                           atDay  <- seq(from=from, to=to, by="day")
-                          tmp <- max(abs(range(xx@data$elevation-MSL, na.rm=TRUE)))
-                          ylim <- c(-tmp, tmp)
-                          plot(xx@data$time, xx@data$elevation - MSL,
+                          ##> tmp <- max(abs(range(xx@data$elevation, na.rm=TRUE)))
+                          plot(xx@data$time, xx@data$elevation,
                                xlab="",
                                ylab=resizableLabel("elevation"),
-                               type='l', ylim=ylim, xaxs="i",
+                               type='l', xaxs="i",
                                axes=FALSE)
                           oce.axis.POSIXct(1, xx@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
                           yax <- axis(2)
@@ -565,14 +572,14 @@ setMethod(f="plot",
                           box()
                           abline(v=atWeek, col="darkgray", lty="dotted")
                           abline(v=atDay, col="lightgray", lty="dotted")
-                          abline(h=0, col="darkgreen")
-                          mtext(side=4, text=sprintf("%.2f m", MSL), col="darkgreen", cex=2/3)
+                          ##> abline(h=0, col="darkgreen")
+                          ##> mtext(side=4, text=sprintf("%.2f m", MSL), col="darkgreen", cex=2/3)
                       } else {
                           plot(0:1, 0:1, type="n", xlab="", ylab="", axes=FALSE)
                           box()
                           text(0.5, 0.5, "Cannot show first month, since all data are NA then")
                       }
-                  } else if (which2[w] == 3) {
+                  } else if (which2[w] == 3) { # "spectrum"
                       if (num.NA == 0) {
                           Elevation <- ts(x@data$elevation, start=1, deltat=x@metadata$deltat)
                           ##s <- spectrum(Elevation-mean(Elevation),spans=c(5, 3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
@@ -592,7 +599,7 @@ setMethod(f="plot",
                           box()
                           text(0.5, 0.5, "Some elevations are NA, so cannot calculate the spectrum")
                       }
-                  } else if (which2[w] == 4) {
+                  } else if (which2[w] == 4) { # "cumulativespectrum"
                       if (num.NA == 0) {
                           n <- length(x@data$elevation)
                           Elevation <- ts(x@data$elevation, start=1, deltat=x@metadata$deltat)
@@ -650,7 +657,7 @@ setMethod(f="plot",
 #' Examination of data retrieved from what seems to be a replacement Hawaii server
 #' (https://uhslc.soest.hawaii.edu/data/?rq) in September 2019 indicated that the
 #' format had been changed to what is called Type 3 by `read.sealevel`.
-#' Web searches did not uncover documentaiton on this format, so the
+#' Web searches did not uncover documentation on this format, so the
 #' decoding scheme was developed solely through examination of
 #' data files, which means that it might be not be correct.
 #' The MEDS repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})

@@ -62,23 +62,33 @@ setMethod(f="[[<-",
 #' during September of 2003 (the period during which Hurricane Juan struck the
 #' city).
 #'
-#' The data file was downloaded with
+#' The data file was downloaded
+#'```R
+#'metFile <- download.met(id=6358, year=2003, month=9, destdir=".", type="xml")
 #'```
-#'metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
+#' Note that using [download.met()] avoids having to navigate the
+#' the awkward Environment Canada website, but it imposes the burden
+#' of having to know the station ID number.  With the data in-hand,
+#' the object was then created (and its timezone adjusted) with
+#'```R
 #'met <- read.met(metFile)
 #'met <- oceSetData(met, "time", met[["time"]]+4*3600,
 #'                  note="add 4h to local time to get UTC time")
 #'```
-#' Using [download.met()] avoids having to navigate the
-#' the awkward Environment Canada website, but it imposes the burden
-#' of having to know the station number. See the documentation for
-#' [download.met()] for more details on station numbers.
+#'
+#' *Historical note.* The `data(met)` object was changed on October 19,
+#' 2019, based on the data provided by Environment
+#' Canada at that time. The previous version of `data(met)`,
+#' created in 2017, had been based on a data format that
+#' Environment Canada no longer provided in 2019.  See the
+#' notes on the `type` argument of [read.met()] for more on this
+#' shift in the Environment Canada data format.
 #'
 #' @name met
 #'
 #' @docType data
 #'
-#' @source Environment Canada website on February 1, 2017
+#' @source Environment Canada website on October 19, 2019.
 #'
 #' @family datasets provided with oce
 #' @family things related to met data
@@ -86,13 +96,13 @@ NULL
 
 setMethod(f="initialize",
           signature="met",
-          definition=function(.Object, time, temperature, pressure, u, v, filename="") {
+          definition=function(.Object, time, temperature, pressure, u, v, filename="", ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(time)) .Object@data$time <- time
               if (!missing(temperature)) .Object@data$temperature <-temperature
               if (!missing(pressure)) .Object@data$pressure <- pressure
               if (!missing(u)) .Object@data$u <- u
               if (!missing(v)) .Object@data$v <- v
-              .Object@metadata$filename <- filename
               .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'met' object"
               return(.Object)
@@ -115,13 +125,17 @@ setMethod(f="summary",
           signature="met",
           definition=function(object, ...) {
               cat("Met Summary\n-----------\n\n")
-              showMetadataItem(object, "filename", "Source     ", quote=TRUE)
-              showMetadataItem(object, "latitude", "Latitude     ")
-              showMetadataItem(object, "longitude", "Longitude   ")
-              showMetadataItem(object, "elevation", "Elevation   ")
+              showMetadataItem(object, "filename",          "Source                     ", quote=TRUE)
+              showMetadataItem(object, "name",              "Name                       ")
+              showMetadataItem(object, "province",          "Province                   ")
+              showMetadataItem(object, "stationOperator",   "Station Operator           ")
+              showMetadataItem(object, "latitude",          "Latitude                   ")
+              showMetadataItem(object, "longitude",         "Longitude                  ")
+              showMetadataItem(object, "elevation",         "Elevation                  ")
               showMetadataItem(object, "climateIdentifier", "Climate Identifer          ")
-              showMetadataItem(object, "WMOIdentifier", "World Met Office Identifer ")
-              showMetadataItem(object, "TCIdentifier", "Transport Canada Identifer ")
+              showMetadataItem(object, "WMOIdentifier",     "World Met Office Identifer ")
+              showMetadataItem(object, "TCIdentifier",      "Transport Canada Identifer ")
+              showMetadataItem(object, "note",              "Note                       ")
               invisible(callNextMethod()) # summary
           })
 
@@ -263,19 +277,23 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
         else if (length(v) != n) stop("length of 'v' must match length of 'time'")
         res <- new("met", time=time, temperature=temperature, pressure=pressure, u=u, v=v, filename=filename)
     }
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
 
 #' Download and Cache a met File
 #'
-#' Data are downloaded from \url{http://climate.weather.gc.ca} and cached locally.
+#' Data are downloaded from the Environment Canada's historical data
+#' website and cached locally.
 #'
-#' The data are downloaded with [utils::download.file()]
+#' The data are downloaded from
+#' \url{https://climate.weather.gc.ca/historical_data/search_historic_data_e.html}
+#' using [utils::download.file()]
 #' pointed to the Environment Canada website (reference 1)
 #' using queries that had to be devised by reverse-engineering, since the agency
 #' does not provide documentation about how to construct queries. Caution: the
-#' query format changes from time to time, so `download.met` may work one
+#' query format changes from time to time, so [download.met()] may work one
 #' day, and fail the next.
 #'
 #' The constructed query contains Station ID, as provided in the `id` argument.
@@ -313,7 +331,16 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' desired dataset. This may be `"hour"` or `"month"`.
 #' If `deltat` is not given, it defaults to `"hour"`.
 #'
+#' @param type String indicating which type of file to download, either
+#' `"xml"` (the default) for an XML file or `"csv"` for a CSV file.
+#'
 #' @template downloadDestTemplate
+#'
+#' @param force Logical value indicating whether to force a download, even
+#' if the file already exists locally.
+#'
+#' @param quiet Logical value passed to [download.file()]; a `TRUE` value
+#' silences output.
 #'
 #' @template debugTemplate
 #'
@@ -330,18 +357,19 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' met <- read.met(metFile)
 #'}
 #'
-#' @seealso The work is done with `\link[utils]{download.file`}.
+#' @seealso The work is done with [utils::download.file()].
 #'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
 #' \url{http://climate.weather.gc.ca/index_e.html}
 #'
-#' 2. Gavin Simpon's `canadaHCD` package on GitHub
+#' 2. Gavin Simpson's `canadaHCD` package on GitHub
 #' \url{https://github.com/gavinsimpson/canadaHCD}
 #'
 #' @family functions that download files
 #' @family things related to met data
-download.met <- function(id, year, month, deltat, destdir=".", destfile,
+download.met <- function(id, year, month, deltat, type="xml",
+                         destdir=".", destfile, force=FALSE, quiet=FALSE,
                          debug=getOption("oceDebug"))
 {
     if (missing(id))
@@ -351,6 +379,8 @@ download.met <- function(id, year, month, deltat, destdir=".", destfile,
         deltat <- "hour"
     deltatChoices <- c("hour", "month") # FIXME: add "day"
     deltatIndex <- pmatch(deltat, deltatChoices)
+    if (!(type %in% c("csv", "xml")))
+        stop("type '", type, "' not permitted; try 'csv' or 'xml'")
     if (is.na(deltatIndex))
         stop("deltat=\"", deltat, "\" is not supported; try \"hour\" or \"month\"")
     deltat <- deltatChoices[deltatIndex]
@@ -368,29 +398,41 @@ download.met <- function(id, year, month, deltat, destdir=".", destfile,
         }
         ## Next line is an example that worked as of Feb 2, 2017
         ## http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=6358&Year=2003&Month=9&timeframe=1&submit=Download+Data
-        url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=",
-                     id, "&Year=", year, "&Month=", month, "&timeframe=1&submit=Download+Data", sep="")
+        url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?",
+                     "format=", type,
+                     "&stationID=", id,
+                     "&Year=", year,
+                     "&Month=", month,
+                     "&timeframe=1&submit=Download+Data", sep="")
         if (missing(destfile))
-            destfile <- sprintf("met_%d_hourly_%04d_%02d_%02d.csv", id, year, month, 1)
+            destfile <- sprintf("met_%d_hourly_%04d_%02d_%02d.%s", id, year, month, 1, type)
     } else if (deltat == "month") {
         ## Next line reverse engineered from monthly data at Resolute. I don't imagine we
         ## need Year and Month and Day.
         url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?stationID=",
-                     id, "&format=csv&timeframe=3&submit=Download+Data", sep="")
+                     id, "&format=", type, "&timeframe=3&submit=Download+Data", sep="")
                      ##id, "&Year=2000&Month=1&Day=14&format=csv&timeframe=3&submit=%20Download+Data", sep="")
         if (missing(destfile))
-            destfile <- sprintf("met_%d_monthly.csv", id)
+            destfile <- sprintf("met_%d_monthly.%s", id, type)
     } else {
         stop("deltat must be \"hour\" or \"month\"")
     }
     destination <- paste(destdir, destfile, sep="/")
     oceDebug(debug, "url:", url, "\n")
-    if (1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
+    if (!force && 1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
         oceDebug(debug, "Not downloading \"", destfile, "\" because it is already present in the \"", destdir, "\" directory\n", sep="")
     } else {
-        download.file(url, destination)
+        ##?owarn <- options()$warn # this, and the capture.output, quieten the processing
+        ##?options(warn=-1)
+        capture.output({download.file(url, destination, quiet=TRUE)})
+        ##?options(warn=owarn)
         oceDebug(debug, "Downloaded file stored as '", destination, "'\n", sep="")
     }
+    ## NOTE: if the format=csv part of the URL is changed to format=txt we get
+    ## the metadata file. But dealing with that is a bit of coding, both at the
+    ## download stage and at the read.met() stage, and I don't think this is
+    ## worthwhile.  The better scheme may be for users to move to the XML
+    ## format, instead of sticking with the CSV format.
     destination
 }
 
@@ -493,22 +535,30 @@ metNames2oceNames <- function(names, scheme)
 
 #' Read a met File
 #'
-#' Reads a comma-separated value file in the format used by the Environment
-#' Canada (see reference 1).  The agency does not publish a format for these
-#' files, so this function was based on a study of a few sample files, and it
-#' may fail for other files, if Environment Canada changes the format.
+#' Reads some meteorological file formats used by the Environment
+#' Canada (see reference 1).  Since the agency does not publish the
+#' data formats, this function had to be based on some sample files, and it
+#' is likely to fail if Environment Canada changes their file format. For
+#' example, a change was required in October 2019, to accommodate changes
+#' to the file format noticed at that time (see the notes on the `type` argument).
 #'
-#' @param file a connection or a character string giving the name of the file
-#' to load.
+#' @param file a character string naming a file that holds met data.
 #'
-#' @param type if `NULL`, then the first line is studied, in order to
-#' determine the file type.  If `type="msc"`, then a file as formatted by
-#' Environment Canada is assumed.
+#' @param type if `NULL`, which is the default, then an attempt is
+#' made to infer the type from the file contents. If this fails, it
+#' will be necessary for the user to provide a value for the \code{type}
+#' argument.  The permitted choices are: (a) `"csv"` or `"csv1"` for an
+#' old CSV format no longer provided as of October 2019,
+#' (b) `"csv2"` for a CSV format noticed on the Environment Canada
+#' website in October 2019 (but note that the paired metadata file
+#' is ignored), and (c) `"xml2"` for an XML format that was noticed
+#' on the Environment Canada website in October 2019.
 #'
-#' @param skip optional number of lines of header that occur before the actual
-#' data.  If this is not supplied, `read.met` scans the file until it
-#' finds a line starting with `"Date/Time"`, and considers all lines above
-#' that to be header.
+#' @param skip number of lines of header that occur before the actual
+#' data.  This is ignored unless `type` is `"csv"` or `"csv1"`, in which case
+#' a non-`NULL` value of `skip` is taken as the number of lines preceding
+#' the columnar data ... and this is only needed if [read.met()] cannot
+#' find a line starting with `"Date/Time"`.
 #'
 #' @param tz timezone assumed for time data
 #'
@@ -520,39 +570,84 @@ metNames2oceNames <- function(names, scheme)
 #' @author Dan Kelley
 #'
 #' @examples
-#'\dontrun{
-#'library(oce)
-#'# Recreate data(met) and plot u(t) and v(t)
-#'metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
-#'met <- read.met(metFile)
-#'met <- oceSetData(met, "time", met[["time"]]+4*3600,
-#'                  note="add 4h to local time to get UTC time")
-#'plot(met, which=3:4)
-#'}
+#' # The old csv format (no longer supplied by Environment Canada as of Oct 2019)
+#' csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
+#'
+#' # The new "csv2" format (provided by Environment Canada as of Oct 2019)
+#' csv2 <- read.met(system.file("extdata", "test_met_vsn2.csv", package="oce"))
+#'
+#' # "xml2" format
+#' if (requireNamespace("XML", quietly=TRUE))
+#'     xml2 <- read.met(system.file("extdata", "test_met_xml2.xml", package="oce"))
+#'
+#' \dontrun{
+#' library(oce)
+#' # Recreate data(met) and plot u(t) and v(t)
+#' metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
+#' met <- read.met(metFile)
+#' met <- oceSetData(met, "time", met[["time"]]+4*3600,
+#'                   note="add 4h to local time to get UTC time")
+#' plot(met)
+#' }
 #'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
 #' \url{http://climate.weather.gc.ca/index_e.html}
 #'
 #' @family things related to met data
-read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOption("oceDebug"))
+read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "read.met() {\n", unindent=1)
-    if (is.character(file)) {
-        filename <- fullFilename(file)
-        file <- file(file, "r")
-        on.exit(close(file))
-    } else {
-        filename <- ""
+    if (missing(file))
+        stop("must supply 'file'")
+    oceDebug(debug, "read.met(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
+    ## We avoid some file() problems by insisting this is a string
+    if (!is.character(file))
+        stop("'file' must be a character string")
+    someLines <- readLines(file, 30, encoding="UTF-8", warn=FALSE)
+    if (length(someLines) == 0L)
+        stop("no data in file")
+    if (!is.null(type) && !(type %in% c("csv", "csv1", "csv2", "xml2")))
+        stop("type='", type, "' not allowed; try 'csv', 'csv1', 'csv2' or 'xml2'")
+    if (is.null(type)) {
+        if (grepl("xml$", file) || 1 == grepl('xml version', someLines[1])) {
+            ## an xml file
+            if (grepl(".weather.gc.ca", someLines[1]))
+                type <- "xml2"
+        } else {
+            ## must be a csv
+            if (1 == length(grep('^.?"WMO Identifier",', someLines))) {
+                type <- "csv1"
+                oceDebug(debug, "examination of file contents reveals that type is 'csv1'\n")
+            } else if (grepl('^.?"Longitude.[^"]*","Latitude[^"]*","Station Name","Climate ID"', someLines[1])) {
+                type <- "csv2"
+                oceDebug(debug, "examination of file contents reveals that type is 'csv2'\n")
+            } else {
+                stop("cannot determine type from file contents; the first line is '", someLines[1], "'")
+            }
+        }
     }
-    if (!inherits(file, "connection"))
-        stop("argument `file' must be a character string or connection")
-    if (!isOpen(file)) {
-        open(file, "r")
-        on.exit(close(file))
-    }
+    if (type == "csv" || type == "csv1")
+        res <- read.met.csv1(file, skip=skip, tz=tz, debug=debug-1)
+    else if (type == "csv2")
+        res <- read.met.csv2(file, skip=skip, tz=tz, debug=debug-1)
+    else if (type == "xml2")
+        res <- read.met.xml2(file, skip=skip, tz=tz, debug=debug-1)
+    else
+        stop("cannot handle file type '", type, "'")
+    oceDebug(debug, "} # read.met()\n", unindent=1, style="bold")
+    res
+}
+
+read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOption("oceDebug"))
+{
+    if (missing(file))
+        stop("must supply 'file'")
+    if (!is.character(file))
+        stop("'file' must be a character string")
+    oceDebug(debug, "read.met.csv2(\"", file, "\") {\n", sep="", unindent=1, style="bold")
     res <- new('met', time=1)
     text <- readLines(file, encoding="UTF-8", warn=FALSE)
+    oceDebug(debug, "file has", length(text), "lines\n")
     ##print(header[1:19])
     textItem <- function(text, name, numeric=TRUE) {
         i <- grep(name, text)
@@ -574,7 +669,7 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
     WMOIdentifier <- textItem(text, "WMO Identifier", FALSE)
     TCIdentifier <- textItem(text, "TC Identifier", FALSE)
     ##Identifier <- textItem(text, "Climate Identifier", FALSE)
-    if (missing(skip)) {
+    if (is.null(skip)) {
         skip <- grep("^\"Date/Time\"", text)[1] - 1
     }
     res@metadata$latitude <- latitude
@@ -584,10 +679,13 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
     res@metadata$climateIdentifier <- climateIdentifier
     res@metadata$WMOIdentifier <- WMOIdentifier
     res@metadata$TCIdentifier <- TCIdentifier
-    res@metadata$filename <- filename
+    res@metadata$filename <- file
     ## Use stringsAsFactors=TRUE to compact weather conditions somewhat ... note that flags are converted to character type
     ## later on, when they are moved from 'data' into 'metadata$flags'.
+    owarn <- options()$warn
+    options(warn=-1)
     rawData <- read.csv(text=text, skip=skip, encoding="UTF-8", header=TRUE, stringsAsFactors=TRUE)
+    options(warn=owarn)
     names <- names(rawData)
     ## FIXME: handle daily data, if the column names differ
     if ("Day" %in% names && "Time" %in% names) {
@@ -626,7 +724,7 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
     }
     rawData$time <- time
     res@data <- as.list(rawData)
-    pl <- paste("read.met(\"", filename, "\", type=", if (is.null(type)) "NULL" else type, ", tz=\"", tz, "\")", sep="")
+    pl <- paste("read.met(\"", file, "\", type=\"csv1\", tz=\"", tz, "\")", sep="")
     res@processingLog <- processingLogAppend(res@processingLog, pl)
     names <- names(res@data)
     res@metadata$dataNamesOriginal <- list()
@@ -652,7 +750,7 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
         res@metadata$dataNamesOriginal$humidex <- "Hmdx"
     }
     if ("humidity" %in% names) {
-        res@metadata$units$humidity <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$units$humidity <- list(unit=expression("%"), scale="")
         res@metadata$dataNamesOriginal$humidity <- "Rel Hum (%)"
     }
     if ("precipitation" %in% names) {
@@ -760,11 +858,306 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
         o <- iconv(o, "latin1", "ASCII", sub="")
         res@metadata$dataNamesOriginal[[dno]] <- o
     }
+    res@data <- res@data[order(names(res@data))] # put in alphabetical order for easier scanning in summary() views
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # read.met1()\n", unindent=1, style="bold")
+    res
+}
+
+read.met.csv2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOption("oceDebug"))
+{
+    if (!is.character(file))
+        stop("'file' must be a character string")
+    oceDebug(debug, "read.met.csv2(\"", file, "\") {\n", sep="", unindent=1, style="bold")
+    ## Sample first two lines (as of 2019 oct 12)
+    ## "Longitude (x)","Latitude (y)","Station Name","Climate ID","Date/Time","Year","Month","Day","Time","Temp (°C)","Temp Flag","Dew Point Temp (°C)","Dew Point Temp Flag","Rel Hum (%)","Rel Hum Flag","Wind Dir (10s deg)","Wind Dir Flag","Wind Spd (km/h)","Wind Spd Flag","Visibility (km)","Visibility Flag","Stn Press (kPa)","Stn Press Flag","Hmdx","Hmdx Flag","Wind Chill","Wind Chill Flag","Weather"
+    ## "-94.97","74.72","RESOLUTE BAY A","2403497","2019-10-01 00:00","2019","10","01","00:00","-3.2","","-4.6","","90","","18","","36","","","M","100.35","","","","-11","","NA"
+    res <- new('met', time=1)
+    owarn <- options()$warn
+    options(warn=-1)
+    text <- readLines(file, 1, encoding="UTF-8", warn=FALSE)
+    dataNames <- strsplit(gsub('"', '', text[1]), ",")[[1]]
+    data <- read.csv(file, skip=1, encoding="UTF-8", header=FALSE)
+    options(warn=owarn)
+    if ("Dew Point Temp (\u00B0C)" %in% dataNames) {
+        res@metadata$units$dewPoint <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$dataNamesOriginal$dewPoint <- "Dew Point Temp (\u00B0C)"
+        dataNames[dataNames == "Dew Point Temp (\u00B0C)"] <- "dewPoint"
+    }
+    if ("Hmdx" %in% dataNames) {
+        res@metadata$units$humidex <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$dataNamesOriginal$humidex <- "Hmdx"
+        dataNames[dataNames == "Hmdx"] <- "humidex"
+    }
+    if ("Longitude (x)" %in% dataNames) {
+        res@metadata$dataNamesOriginal$longitude <- "Longitude (x)"
+        dataNames[dataNames == "Longitude (x)"] <- "longitude"
+    }
+    if ("Latitude (y)" %in% dataNames) {
+        res@metadata$dataNamesOriginal$latitude <- "Latitude (y)"
+        dataNames[dataNames == "Latitude (y)"] <- "latitude"
+    }
+    if ("Rel Hum (%)" %in% dataNames) {
+        res@metadata$units$humidity <- list(unit=expression("%"), scale="")
+        res@metadata$dataNamesOriginal$humidity <- "Rel Hum (%)"
+        dataNames[dataNames == "Rel Hum (%)"] <- "humidity"
+    }
+    if ("Station Name" %in% dataNames) {
+        res@metadata$dataNamesOriginal$latitude <- "Station Name"
+        dataNames[dataNames == "Station Name"] <- "station"
+    }
+    if ("Stn Press (kPa)" %in% dataNames) {
+        res@metadata$units$pressure <- list(unit=expression(kPa), scale="")
+        res@metadata$dataNamesOriginal$pressure <- "Stn Press (kPa)"
+        dataNames[dataNames == "Stn Press (kPa)"] <- "pressure"
+    }
+    if ("Temp (\u00B0C)" %in% dataNames) {
+        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$dataNamesOriginal$temperature <- "Temp (\u00B0C)"
+        dataNames[dataNames == "Temp (\u00B0C)"] <- "temperature"
+    }
+    if ("Mean Temp (\u00B0C)" %in% dataNames) {
+        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$dataNamesOriginal$temperature <- "Mean Temp (\u00B0C)"
+        dataNames[dataNames == "Mean Temp (\u00B0C)"] <- "temperature"
+    }
+     if ("Visibility (km)" %in% dataNames) {
+        res@metadata$units$visibility <- list(unit=expression(km), scale="")
+        res@metadata$dataNamesOriginal$visibility <- "Visibility (km)"
+        dataNames[dataNames == "Visibility (km)"] <- "visibility"
+    }
+    if ("Wind Chill" %in% dataNames) {
+        res@metadata$units$windChill <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$dataNamesOriginal$windChill <- "Wind Chill"
+        dataNames[dataNames == "Wind Chill"] <- "windChill"
+    }
+    if ("Weather" %in% dataNames) {
+        res@metadata$units$weather <- list(unit=expression(), scale="")
+        res@metadata$dataNamesOriginal$weather <- "Weather"
+        dataNames[dataNames == "Weather"] <- "weather"
+    }
+    ##> print(dataNames)
+    ##> head(data)
+    ##> str(data)
+    ##> browser()
+    names(data) <- dataNames
+    ##> print("DANNY")
+    ##> print(dataNames)
+    res@data <- data
+    ## climateIdentifier
+    if ("Climate ID" %in% dataNames) {
+        res@metadata$climateIdentifier <- data[["Climate ID"]][1]
+        res@data[["Climate ID"]] <- NULL
+    }
+    ## dataNames <- names(data)
+    nsamples <- dim(data)[1]
+    oceDebug(debug, vectorShow(nsamples))
+    ## Time
+    if ("Time" %in% dataNames) {
+        hour <- as.numeric(lapply(as.character(data$Time), function(x) strsplit(x, ":")[[1]][1]))
+        minute <- as.numeric(lapply(as.character(data$Time), function(x) strsplit(x, ":")[[1]][2]))
+    } else {
+        hour <- rep(0, nsamples)
+        minute <- rep(0, nsamples)
+    }
+    second <- 0
+    day <- if ("Day" %in% dataNames) data[["Day"]] else 1
+    time <- ISOdatetime(data[["Year"]], data[["Month"]], day, hour, minute, second, tz=tz)
+    res@data$time <- time
+    res@data[["Date/Time"]] <- NULL
+    res@data[["Year"]] <- NULL
+    res@data[["Month"]] <- NULL
+    res@data[["Day"]] <- NULL
+    res@data[["Time"]] <- NULL
+    ## wind
+    if ("Wind Spd (km/h)" %in% dataNames && "Wind Dir (10s deg)" %in% dataNames) {
+        res@data$speed <- data[["Wind Spd (km/h)"]] * 1000 / 3600 # convert km/h to m/s
+        res@metadata$dataNamesOriginal$speed <- "-"
+        res@data[["Wind Spd (km/h)"]] <- NULL
+        res@data$direction <- 10 * res@data[["Wind Dir (10s deg)"]] # convert 10s of degrees to degrees
+        res@metadata$dataNamesOriginal$direction <- "-"
+        res@data[["Wind Dir (10s deg)"]] <- NULL
+        rpd <- atan2(1, 1) / 45            # radian/degree
+        theta <- rpd * (90 - res@data$direction)
+        ## Note the (-) to get from "wind from" to "wind speed towards"
+        res@data$u <- -res@data$speed * sin(theta)
+        res@data$v <- -res@data$speed * cos(theta)
+        zero <- is.na(res@data$direction) & res@data$speed == 0
+        res@data$u[zero] <- 0
+        res@data$v[zero] <- 0
+        res@metadata$units$direction  <- list(unit=expression(degree), scale="")
+        res@metadata$units$speed <- list(unit=expression(m/s), scale="")
+        res@metadata$units$u <- list(unit=expression(m/s), scale="")
+        res@metadata$units$v <- list(unit=expression(m/s), scale="")
+    }
+
+    ## Move some things to metadata, if they are uni-valued. This is so
+    ## code written for the csv1 style will work for csv2 style also.
+    if (1 == length(unique(data$longitude))) {
+        res@metadata$longitude <- data$longitude[1]
+        res@data$longitude <- NULL
+    }
+    if (1 == length(unique(data$latitude))) {
+        res@metadata$latitude <- data$latitude[1]
+        res@data$latitude <- NULL
+    }
+    if (1 == length(unique(data$station))) {
+        res@metadata$station <- as.character(data$station[1])
+        res@data$station <- NULL
+    }
+
+    ## Flags
+    res@metadata$flags <- list()
+    knownFlags <- list(dewpoint="Dew Point Temp Flag",
+                       humidex="Hmdx Flag",
+                       direction="Wind Dir Flag",
+                       humidity="Rel Hum Flag",
+                       pressure="Stn Press Flag",
+                       speed="Wind Spd Flag",
+                       temperature="Temp Flag",
+                       visibility="Visibility Flag",
+                       windChill="Wind Chill Flag"
+                       )
+    knownFlagNames <- names(knownFlags)
+    for (iflag in seq_along(knownFlags)) {
+        ##message('iflag=',iflag,'->',knownFlags[[iflag]], '; ', knownFlagNames[[iflag]])
+        res@metadata$flags[[knownFlagNames[iflag]]] <- res@data[[knownFlags[[iflag]]]]
+        res@data[[knownFlags[[iflag]]]] <- NULL
+    }
+    res@data <- res@data[order(names(res@data))] # put in alphabetical order for easier scanning in summary() views
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # read.met.csv2()\n", unindent=1, style="bold")
+    res
+}
+
+read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "read.met.xml2(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
+    if (!requireNamespace("XML", quietly=TRUE))
+        stop('must install.packages("XML") to read rsk data')
+    xml <- XML::xmlToList(XML::xmlParse(file)) # a list
+    ## The names of items in the list was discovered with
+    ##     head(names(list))
+    stationInformation <- xml$stationinformation
+    ## Isolate station data. (I bet there's a function for this.)
+    isStation <- unlist(lapply(names(xml), function(x) x=="stationdata"))
+    stationData <- xml[isStation]
+    n <- length(stationData)
+    res <- new("met")
+    res@metadata$filename <- file
+    ## Fill in station metadata. The available entries are found with
+    ##     names(stationInformation,1)
+    ## the output of which yields as follows, for a file downloaded 2019 oct 13.
+    ##     "name"
+    ##     "province"
+    ##     "stationoperator" (Not present in all files)
+    ##     "latitude"
+    ##     "longitude"
+    ##     "elevation"
+    ##     "climate_identifier"
+    ##     "wmo_identifier"
+    ##     "tc_identifier"
+    ##     "note"
+    res@metadata$name <- stationInformation$name
+    res@metadata$province <- stationInformation$province
+    res@metadata$stationOperator <- stationInformation$stationoperator
+    res@metadata$latitude <- as.numeric(stationInformation$latitude)
+    res@metadata$longitude <- as.numeric(stationInformation$longitude)
+    res@metadata$elevation <- as.numeric(stationInformation$elevation)
+    res@metadata$climateIdentifier <- stationInformation$climate_identifier
+    res@metadata$WMOIdentifier <- stationInformation$wmo_identifier
+    res@metadata$TCIdentifier <- stationInformation$tc_identifier
+    res@metadata$note <- stationInformation$note
+    ## Fill in data. The names of items are found with
+    ##     str(stationData[[1]], 1)
+    n <- length(stationData)
+    oceDebug(debug, "number of data, n=", n, "\n")
+    ## Get time-series data
+    ##message("item 244 is ok, but item 245 has no pressure, viz.")
+    ##str(stationData[[244]]$stnpress)
+    ##str(stationData[[245]]$stnpress)
+    fixNull <- function(x)
+        ifelse(is.list(x), x$text, NA)
+    extract <- function(name)
+        lapply(1:n, function(i) fixNull(stationData[[i]][[name]]))
+    res@metadata$dataNamesOriginal <- list()
+    ## "temp" "dptemp" "relhum" "winddir" "windspd"
+    ## "visibility" "stnpress" "humidex" "windchill" "weather"
+    res@data$temperature <- as.numeric(extract("temp"))
+    res@metadata$dataNamesOriginal$temperature <- "temp"
+    res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+
+    res@data$dewPoint <- as.numeric(extract("dptemp"))
+    res@metadata$dataNamesOriginal$dewPoint <- "dptemp"
+    res@metadata$units$dewPoint <- list(unit=expression(degree*C), scale="ITS-90")
+
+    res@data$humidity <- as.numeric(extract("relhum"))
+    res@metadata$dataNamesOriginal$humidity <- "relhum"
+    res@metadata$units$humidity <- list(unit=expression("%"), scale="")
+
+    res@data$direction <- 10 * as.numeric(extract("winddir")) # from 10deg to deg
+    res@metadata$dataNamesOriginal$direction <- "-"
+    res@metadata$units$direction <- list(unit=expression(degree), scale="")
+
+    res@data$speed <- as.numeric(extract("windspd")) * 1000 / 3600 # from km/h to m/s
+    res@metadata$dataNamesOriginal$speed <- "-"
+    res@metadata$units$speed <- list(unit=expression(m/s), scale="")
+
+    res@data$u <- -res@data$speed * cos(res@data$direction * pi / 180) # from met to ocean sign
+    res@metadata$dataNamesOriginal$u  <- "-"
+    res@metadata$units$u <- list(unit=expression(m/s), scale="")
+
+    res@data$v <- -res@data$speed * sin(res@data$direction * pi / 180)
+    res@metadata$dataNamesOriginal$v  <- "-"
+    res@metadata$units$v <- list(unit=expression(m/s), scale="")
+
+    ## fix up NA cases
+    zero <- is.na(res@data$direction) & res@data$speed == 0
+    res@data$u[zero] <- 0
+    res@data$v[zero] <- 0
+
+    res@data$visibility <- extract("visibility")
+    res@metadata$dataNamesOriginal$visibility  <- "visibility"
+
+    res@data$pressure <- as.numeric(extract("stnpress"))
+    res@metadata$dataNamesOriginal$pressure  <- "stnpress"
+    res@metadata$units$pressure <- list(unit=expression(kPa), scale="")
+
+    res@data$humidex <- as.numeric(extract("humidex"))
+    res@metadata$dataNamesOriginal$humidex  <- "humidex"
+    res@metadata$units$humidex <- list(unit=expression(degree*C), scale="ITS-90")
+
+    res@data$windChill <- as.numeric(extract("windchill"))
+    res@metadata$dataNamesOriginal$windChill  <- "windchill"
+    res@metadata$units$windChill <- list(unit=expression(degree*C), scale="ITS-90")
+
+    res@data$weather <- extract("weather")
+    res@metadata$dataNamesOriginal$weather  <- "weather"
+
+    ## Time
+    attrsNames <- names(stationData[[1]][[".attrs"]])
+    oceDebug(debug, vectorShow(attrsNames, postscript=" (names relating to time)"))
+    year <- if ("year" %in% attrsNames) as.numeric(lapply(stationData, function(sd) sd[[".attrs"]][["year"]]))
+        else 2000
+    month <- if ("month" %in% attrsNames) as.numeric(lapply(stationData, function(sd) sd[[".attrs"]][["month"]]))
+        else 1
+    day <- if ("day" %in% attrsNames) as.numeric(lapply(stationData, function(sd) sd[[".attrs"]][["day"]]))
+        else 1
+    hour <- if ("hour" %in% attrsNames) as.numeric(lapply(stationData, function(sd) sd[[".attrs"]][["hour"]]))
+        else 0
+    res@data$time <- ISOdatetime(year, month, day, hour, 0, 0, tz="UTC")
+    res@metadata$dataNamesOriginal$time  <- "-"
+    res@data <- res@data[order(names(res@data))] # put in alphabetical order for easier scanning in summary() views
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                             paste("read.met.xml2(file=\"", file, "\"",
+                                                   ", skip=", if(is.null(skip)) "NULL" else skip,
+                                                   ", tz=\"", tz, "\")", sep=""))
+    oceDebug(debug, "} # read.met.xml2()\n", unindent=1, style="bold")
     res
 }
 
 
-#' Plot met Data
+#' Plot a met Object
 #'
 #' Creates a multi-panel summary plot of data measured in a meteorological data
 #' set.  cast. The panels are controlled by the `which` argument.

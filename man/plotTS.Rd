@@ -4,20 +4,47 @@
 \alias{plotTS}
 \title{Plot Temperature-Salinity Diagram}
 \usage{
-plotTS(x, inSitu = FALSE, type = "p", referencePressure = 0,
-  nlevels = 6, levels, grid = TRUE, col.grid = "lightgray",
-  lty.grid = "dotted", rho1000 = FALSE, eos = getOption("oceEOS",
-  default = "gsw"), cex = par("cex"), col = par("col"),
-  pch = par("pch"), bg, pt.bg = "transparent", col.rho = "darkgray",
-  cex.rho = 3/4 * par("cex"), rotate = TRUE,
-  useSmoothScatter = FALSE, xlab, ylab, Slim, Tlim,
-  drawFreezing = TRUE, mgp = getOption("oceMgp"), mar = c(mgp[1] +
-  1.5, mgp[1] + 1.5, mgp[1], mgp[1]), lwd = par("lwd"),
-  lty = par("lty"), lwd.rho = par("lwd"), lty.rho = par("lty"),
-  add = FALSE, inset = FALSE, debug = getOption("oceDebug"), ...)
+plotTS(
+  x,
+  inSitu = FALSE,
+  type = "p",
+  referencePressure = 0,
+  nlevels = 6,
+  levels,
+  grid = TRUE,
+  col.grid = "lightgray",
+  lty.grid = "dotted",
+  rho1000 = FALSE,
+  eos = getOption("oceEOS", default = "gsw"),
+  cex = par("cex"),
+  col = par("col"),
+  pch = par("pch"),
+  bg,
+  pt.bg = "transparent",
+  col.rho = "darkgray",
+  cex.rho = 3/4 * par("cex"),
+  rotate = TRUE,
+  useSmoothScatter = FALSE,
+  xlab,
+  ylab,
+  Slim,
+  Tlim,
+  drawFreezing = TRUE,
+  mgp = getOption("oceMgp"),
+  mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1], mgp[1]),
+  lwd = par("lwd"),
+  lty = par("lty"),
+  lwd.rho = par("lwd"),
+  lty.rho = par("lty"),
+  add = FALSE,
+  inset = FALSE,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
-\item{x}{a \linkS4class{ctd} object.}
+\item{x}{a \linkS4class{ctd}, \linkS4class{argo} or \linkS4class{section} object, or a list
+containing solely \linkS4class{ctd} objects or \linkS4class{argo} objects.}
 
 \item{inSitu}{A boolean indicating whether to use in-situ temperature or
 (the default) potential temperature, calculated with reference pressure
@@ -48,12 +75,11 @@ e.g. 24}
 \item{eos}{equation of state to be used, either \code{"unesco"} or
 \code{"gsw"}.}
 
-\item{cex}{character-expansion factor for symbols, as in
-\code{\link{par}}\code{("cex")}.}
+\item{cex}{character-expansion factor for symbols, as in \link{par}\code{("cex")}.}
 
 \item{col}{color for symbols.}
 
-\item{pch}{symbol type, as in \code{\link{par}}\code{("pch")}.}
+\item{pch}{symbol type, as in \link{par}\code{("pch")}.}
 
 \item{bg}{optional color to be painted under plotting area, before
 plotting.  (This is useful for cases in which \code{inset=TRUE}.)}
@@ -81,16 +107,16 @@ data.}
 \item{drawFreezing}{logical indication of whether to draw a freezing-point
 line. This is based on zero pressure. If \code{eos="unesco"} then
 \code{\link[=swTFreeze]{swTFreeze()}} is used to compute the curve, whereas if
-\code{eos="gsw"} then \code{\link[gsw]{gsw_CT_freezing}} is used;
+\code{eos="gsw"} then \code{\link[gsw:gsw_CT_freezing]{gsw::gsw_CT_freezing()}} is used;
 in each case, zero pressure is used.}
 
-\item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also
-for \code{par(mar)}, computed from this.  The default is tighter than the R
+\item{mgp}{3-element numerical vector to use for \verb{[par](mgp)}, and also
+for \link{par}\code{(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{\link{par}}\code{("mar")}.  If set to
-\code{NULL}, then \code{par("mar")} is used.  A good choice for a TS diagram
-with a palette to the right is \code{mar=par("mar")+c(0, 0, 0, 1))}.}
+\item{mar}{value to be used with \link{par}\code{("mar")}.  If set to
+\code{NULL}, then \link{par}\code{("mar")} is used.  A good choice for a TS diagram
+with a palette to the right is \verb{mar=par("mar")+c(0, 0, 0, 1))}.}
 
 \item{lwd}{line width of lines or symbols.}
 
@@ -131,51 +157,69 @@ plotTS(ctd)
 \code{\link[=summary,ctd-method]{summary,ctd-method()}} summarizes the information, while
 \code{\link[=read.ctd]{read.ctd()}} scans it from a file.
 
-Other functions that plot oce data: \code{\link{plot,adp-method}},
-  \code{\link{plot,adv-method}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,argo-method}},
-  \code{\link{plot,bremen-method}},
-  \code{\link{plot,cm-method}},
-  \code{\link{plot,coastline-method}},
-  \code{\link{plot,ctd-method}},
-  \code{\link{plot,gps-method}},
-  \code{\link{plot,ladp-method}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{plot,lisst-method}},
-  \code{\link{plot,lobo-method}},
-  \code{\link{plot,met-method}},
-  \code{\link{plot,odf-method}},
-  \code{\link{plot,rsk-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{plot,sealevel-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{plot,tidem-method}},
-  \code{\link{plot,topo-method}},
-  \code{\link{plot,windrose-method}},
-  \code{\link{plot,xbt-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+Other functions that plot oce data: 
+\code{\link{plot,adp-method}},
+\code{\link{plot,adv-method}},
+\code{\link{plot,amsr-method}},
+\code{\link{plot,argo-method}},
+\code{\link{plot,bremen-method}},
+\code{\link{plot,cm-method}},
+\code{\link{plot,coastline-method}},
+\code{\link{plot,ctd-method}},
+\code{\link{plot,gps-method}},
+\code{\link{plot,ladp-method}},
+\code{\link{plot,landsat-method}},
+\code{\link{plot,lisst-method}},
+\code{\link{plot,lobo-method}},
+\code{\link{plot,met-method}},
+\code{\link{plot,odf-method}},
+\code{\link{plot,rsk-method}},
+\code{\link{plot,satellite-method}},
+\code{\link{plot,sealevel-method}},
+\code{\link{plot,section-method}},
+\code{\link{plot,tidem-method}},
+\code{\link{plot,topo-method}},
+\code{\link{plot,windrose-method}},
+\code{\link{plot,xbt-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{tidem-class}}
 
-Other things related to ctd data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
-  \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
-  \code{\link{initialize,ctd-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{read.ctd.itp}},
-  \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+Other things related to ctd data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{[[,ctd-method}},
+\code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{ctd-class}},
+\code{\link{ctd.cnv}},
+\code{\link{ctdDecimate}()},
+\code{\link{ctdFindProfiles}()},
+\code{\link{ctdRaw}},
+\code{\link{ctdTrim}()},
+\code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{initialize,ctd-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{plot,ctd-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()},
+\code{\link{setFlags,ctd-method}},
+\code{\link{subset,ctd-method}},
+\code{\link{summary,ctd-method}},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()},
+\code{\link{write.ctd}()}
 }
 \author{
 Dan Kelley

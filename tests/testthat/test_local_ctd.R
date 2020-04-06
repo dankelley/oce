@@ -1,5 +1,5 @@
 library(oce)
-context("CTD")
+context("local CTD")
 test_that("ice-tethered profiler", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               itp <- read.ctd.itp("local_data/itp99grd0000.dat")

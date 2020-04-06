@@ -60,7 +60,7 @@ contain the item. This \code{[[} method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
-longitude and latitudee, has sufficient information to compute
+longitude and latitude, has sufficient information to compute
 Absolute Salinity, and so \code{o[["SA"]]} will yield the
 calculated Absolute Salinity.
 
@@ -70,22 +70,34 @@ retrieve derived items.
 }
 
 \seealso{
-Other classes provided by oce: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{lisst-class}}, \code{\link{met-class}},
-  \code{\link{oce-class}}, \code{\link{odf-class}},
-  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}, \code{\link{xbt-class}}
+Other classes provided by oce: 
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{argo-class}},
+\code{\link{bremen-class}},
+\code{\link{cm-class}},
+\code{\link{coastline-class}},
+\code{\link{ctd-class}},
+\code{\link{lisst-class}},
+\code{\link{met-class}},
+\code{\link{oce-class}},
+\code{\link{odf-class}},
+\code{\link{rsk-class}},
+\code{\link{sealevel-class}},
+\code{\link{section-class}},
+\code{\link{topo-class}},
+\code{\link{windrose-class}},
+\code{\link{xbt-class}}
 
-Other things related to lobo data: \code{\link{[[,lobo-method}},
-  \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},
-  \code{\link{lobo}}, \code{\link{plot,lobo-method}},
-  \code{\link{read.lobo}},
-  \code{\link{subset,lobo-method}},
-  \code{\link{summary,lobo-method}}
+Other things related to lobo data: 
+\code{\link{[[,lobo-method}},
+\code{\link{[[<-,lobo-method}},
+\code{\link{as.lobo}()},
+\code{\link{lobo}},
+\code{\link{plot,lobo-method}},
+\code{\link{read.lobo}()},
+\code{\link{subset,lobo-method}},
+\code{\link{summary,lobo-method}}
 }
 \author{
 Dan Kelley

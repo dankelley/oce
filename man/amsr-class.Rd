@@ -80,7 +80,7 @@ contain the item. This \code{[[} method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
-longitude and latitudee, has sufficient information to compute
+longitude and latitude, has sufficient information to compute
 Absolute Salinity, and so \code{o[["SA"]]} will yield the
 calculated Absolute Salinity.
 
@@ -92,22 +92,24 @@ retrieve derived items.
 \references{
 \enumerate{
 \item Information on the satellite, how to cite the data, etc. is
-provided at \code{http://www.remss.com/missions/amsr/}.
+provided at \verb{http://www.remss.com/missions/amsr/}.
 \item A simple interface for viewing and downloading data is at
-\code{http://images.remss.com/amsr/amsr2_data_daily.html}.
+\verb{http://images.remss.com/amsr/amsr2_data_daily.html}.
 }
 }
 \seealso{
-The documenation for the \linkS4class{landsat} class has
-more informatoin on the handling data from the Landsat-8 satellite.
+The documentation for the \linkS4class{landsat} class has
+more information on the handling data from the Landsat-8 satellite.
 
-Other things related to amsr data: \code{\link{[[,amsr-method}},
-  \code{\link{[[<-,amsr-method}},
-  \code{\link{composite,amsr-method}},
-  \code{\link{download.amsr}},
-  \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
-  \code{\link{subset,amsr-method}},
-  \code{\link{summary,amsr-method}}
+Other things related to amsr data: 
+\code{\link{[[,amsr-method}},
+\code{\link{[[<-,amsr-method}},
+\code{\link{composite,amsr-method}},
+\code{\link{download.amsr}()},
+\code{\link{plot,amsr-method}},
+\code{\link{read.amsr}()},
+\code{\link{subset,amsr-method}},
+\code{\link{summary,amsr-method}}
 }
 \author{
 Dan Kelley and Chantelle Layton

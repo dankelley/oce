@@ -4,10 +4,21 @@
 \alias{read.adp.sontek}
 \title{Read a Sontek ADP File}
 \usage{
-read.adp.sontek(file, from = 1, to, by = 1, tz = getOption("oceTz"),
-  longitude = NA, latitude = NA, type = c("adp", "pcadp"),
-  monitor = FALSE, despike = FALSE, processingLog,
-  debug = getOption("oceDebug"), ...)
+read.adp.sontek(
+  file,
+  from = 1,
+  to,
+  by = 1,
+  tz = getOption("oceTz"),
+  longitude = NA,
+  latitude = NA,
+  type = c("adp", "pcadp"),
+  monitor = FALSE,
+  despike = FALSE,
+  processingLog,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -56,7 +67,8 @@ better for normal calls by a user.)}
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
 
-\item{\dots}{additional arguments, passed to called routines.}
+\item{\dots}{optional additional arguments that some (but not all)
+\verb{read.adp.*()} functions pass to lower-level functions.}
 }
 \value{
 An \linkS4class{adp} object.
@@ -74,32 +86,46 @@ Read a Sontek acoustic-Doppler profiler file (see reference 1).
 }
 }
 \seealso{
-Other things related to adp data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}},
-  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
-  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
-  \code{\link{as.adp}}, \code{\link{beamName}},
-  \code{\link{beamToXyzAdpAD2CP}},
-  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
-  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
-  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}},
-  \code{\link{handleFlags,adp-method}},
-  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
-  \code{\link{read.adp.ad2cp}},
-  \code{\link{read.adp.nortek}},
-  \code{\link{read.adp.rdi}},
-  \code{\link{read.adp.sontek.serial}},
-  \code{\link{read.adp}}, \code{\link{read.aquadoppHR}},
-  \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{subset,adp-method}},
-  \code{\link{subtractBottomVelocity}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdpAD2CP}},
-  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+Other things related to adp data: 
+\code{\link{[[,adp-method}},
+\code{\link{[[<-,adp-method}},
+\code{\link{ad2cpHeaderValue}()},
+\code{\link{adp-class}},
+\code{\link{adpEnsembleAverage}()},
+\code{\link{adp_rdi.000}},
+\code{\link{adp}},
+\code{\link{as.adp}()},
+\code{\link{beamName}()},
+\code{\link{beamToXyzAdpAD2CP}()},
+\code{\link{beamToXyzAdp}()},
+\code{\link{beamToXyzAdv}()},
+\code{\link{beamToXyz}()},
+\code{\link{beamUnspreadAdp}()},
+\code{\link{binmapAdp}()},
+\code{\link{enuToOtherAdp}()},
+\code{\link{enuToOther}()},
+\code{\link{handleFlags,adp-method}},
+\code{\link{is.ad2cp}()},
+\code{\link{plot,adp-method}},
+\code{\link{read.adp.ad2cp}()},
+\code{\link{read.adp.nortek}()},
+\code{\link{read.adp.rdi}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.adp}()},
+\code{\link{read.aquadoppHR}()},
+\code{\link{read.aquadoppProfiler}()},
+\code{\link{read.aquadopp}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{subset,adp-method}},
+\code{\link{subtractBottomVelocity}()},
+\code{\link{summary,adp-method}},
+\code{\link{toEnuAdp}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdpAD2CP}()},
+\code{\link{xyzToEnuAdp}()},
+\code{\link{xyzToEnu}()}
 }
 \author{
 Dan Kelley and Clark Richards

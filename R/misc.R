@@ -11,51 +11,6 @@ abbreviateVector <- function(x)
 }
 
 
-#' Add a Column to the data Slot of an oce object (defunct)
-#'
-#' **WARNING:** This function will be removed soon; see [oce-defunct].
-#'
-#' Use [oceSetData()] instead of the present function.
-#'
-#' @param x a [ctd-class] object.
-#'
-#' @param data the data.  The length of this item must match that of the
-#' existing data entries in the `data` slot).
-#'
-#' @param name the name of the column.
-#'
-#' @return A [oce-class] object.
-#'
-#' @author Dan Kelley
-#'
-#' @seealso Please use [oceSetData()] instead of the present function.
-#' @family functions that will be removed soon
-addColumn <- function (x, data, name)
-{
-    .Defunct("oceSetData",
-             msg="addColumn() is disallowed and will be removed soon. Use oceSetData() instead. See ?'oce-defunct'.")
-    if (!inherits(x, "oce"))
-        stop("method is only for oce objects")
-    if (missing(data))
-        stop("must supply data")
-    if (missing(name))
-        stop("must supply name")
-    n <- length(data)
-    nd <- length(x@data)
-    if (n != length(data))
-        stop("data length is ", n, " but it must be ", nd, " to match existing data")
-    if (inherits(x, "ctd")) {
-        ## res <- ctdAddColumn(x, data, name) # FIXME: supply units
-        res <- oceSetData(x, name=name, value=data) # FIXME: supply units
-    } else {
-        res <- x
-        res@data[[name]] <- data
-    }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    res
-}
-
-
 #' Convert angles from 0:360 to -180:180
 #'
 #' This is mostly used for instrument heading angles, in cases where the
@@ -152,7 +107,7 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
 #' @param x vector of x values for grid (must be equi-spaced)
 #' @param y vector of y values for grid (must be equi-spaced)
 #' @param z vector of z values for grid (must be equi-spaced)
-#' @param f matrix of rank 3, with the gridd values mapping to the `x`
+#' @param f matrix of rank 3, with the gridded values mapping to the `x`
 #' values (first index of `f`), etc.
 #' @param xout vector of x values for output.
 #' @param yout vector of y values for output (length must match that of
@@ -203,7 +158,7 @@ approx3d <- function(x, y, z, f, xout, yout, zout)
         stop("must have more than one x value")
     if (length(y) < 2)
         stop("must have more than one y value")
-    if (length(x) < 2)
+    if (length(z) < 2)
         stop("must have more than one z value")
     ## Are the array dimensions consistent with x, y, and z?
     if (3 != length(dim(f)))
@@ -496,12 +451,15 @@ unduplicateNames <- function(strings, style=1)
 }
 
 
-#' Rename items in the data slot of an oce object
+#' Rename items in the data slot of an oce object (**deprecated**)
 #'
-#' This function may be used to rename elements within the
-#' `data` slot of `oce` objects. It also updates
-#' the processing log of the returned object, indicating
-#' the changes.
+#' This was deprecated in December 2019, because [oceRenameData()] does
+#' a better job and is more consistent with other functions that work
+#' with items in the `data` and `metadata` slots.
+## This function may be used to rename elements within the
+## `data` slot of `oce` objects. It also updates
+## the processing log of the returned object, indicating
+## the changes.
 #'
 #' @param x an [oce-class] object.
 #'
@@ -509,14 +467,15 @@ unduplicateNames <- function(strings, style=1)
 #'
 #' @param new Vector of strings, containing old names.
 #'
-#' @examples
-#' data(ctd)
-#' new <- renameData(ctd, "temperature", "temperature68")
-#' new <- oceSetData(new, name="temperature",
-#'                   value=T90fromT68(new[["temperature68"]]),
-#'                   unit=list(unit=expression(degree*C),scale="ITS=90"))
+## @examples
+## data(ctd)
+## new <- renameData(ctd, "temperature", "temperature68")
+## new <- oceSetData(new, name="temperature",
+##                   value=T90fromT68(new[["temperature68"]]),
+##                   unit=list(unit=expression(degree*C),scale="ITS=90"))
 renameData <- function(x, old=NULL, new=NULL)
 {
+    .Deprecated("oceRenameData", msg="Superceded by oceRenameData(), as of December 2019")
     if (is.null(old)) stop("need to supply old")
     if (is.null(new)) stop("need to supply new")
     n <- length(old)
@@ -537,7 +496,7 @@ renameData <- function(x, old=NULL, new=NULL)
     x
 }
 
-#' Calculate a rounded bound, rounded up to matissa 1, 2, or 5
+#' Calculate a rounded bound, rounded up to mantissa 1, 2, or 5
 #'
 #' @param x a single positive number
 #'
@@ -887,7 +846,7 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
 #' library(oce)
 #'\donttest{
 #' ## secchi depths in lat and lon bins
-#' if (require(ocedata)) {
+#' if (requireNamespace("ocedata", quietly=TRUE)) {
 #'     data(secchi, package="ocedata")
 #'     ## Note that zlim is provided to the colormap(), to prevent a few
 #'     ## points from setting a very wide scale.
@@ -1313,7 +1272,7 @@ ungrid <- function(x, y, grid)
 #'
 #' @param xe,ye errors on x and y coordinates of points on the existing plot,
 #' each either a single number or a vector of length identical to that of
-#' the cooresponding coordinate.
+#' the corresponding coordinate.
 #'
 #' @param percent boolean flag indicating whether `xe` and `ye` are
 #' in terms of percent of the corresponding `x` and `y` values.
@@ -1743,7 +1702,7 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 #'
 #' @param x a vector or matrix of numerical values.
 #'
-#' @return A character vector of thre values: the minimum, the mean, the
+#' @return A character vector of three values: the minimum, the mean, the
 #' maximum.
 #'
 #' @author Dan Kelley
@@ -2270,34 +2229,54 @@ oce.spectrum <- oceSpectrum
 #'
 #' @param v the vector.
 #'
-#' @param msg a message to show, introducing the vector.  If not provided, then
+#' @param msg optional character value indicating a message to show,
+#' introducing the vector.  If not provided, then
 #' a message is created from `v`. If `msg` is a non-empty string,
 #' then that string is pasted together with a colon (unless `msg` already
 #' contains a colon), before pasting a summary of data values.
+#'
+#' @param postscript optional character value indicating an optional message
+#' to append at the end of the return value.
 #'
 #' @param digits for numerical values of `v`, this is the number of digits
 #' to use, in formatting the numbers with [format()]; otherwise,
 #' `digits` is ignored.
 #'
-#' @param n number of elements to at start and end. If `n`
+#' @param n number of elements to show at start and end. If `n`
 #' is negative, then all the elements are shown.
 #'
-#' @return A string, suitable for using in [cat()] or
-#' [oceDebug()].
+#' @return A string ending in a newline character, suitable for
+#' display with [cat()] or [oceDebug()].
+#'
+#' @examples
+#' vectorShow(pi)
+#' vectorShow(volcano)
+#' knot2mps <- 0.5144444
+#' vectorShow(knot2mps, postscript="knots per m/s")
+#' vectorShow("January", msg="The first month is")
 #'
 #' @author Dan Kelley
-vectorShow <- function(v, msg=NULL, digits=5, n=2L)
+vectorShow <- function(v, msg="", postscript="", digits=5, n=2L)
 {
+    DIM <- dim(v)
     nv <- length(v)
-    if (is.null(msg))
+    if (!nchar(msg))
         msg <- deparse(substitute(v))
-    if (is.null(msg))
-        msg <- ""
-    if (nchar(msg) && !grepl(":", msg)) {
+    if (!is.null(DIM)) {
+        msg <- paste(msg,
+                     paste("[",
+                           paste(unlist(lapply(DIM, function(x) paste("1:",x,sep=""))),collapse=", "),
+                           "]",
+                           sep=""))
+    } else if (nv > 1) {
+        msg <- paste(msg, paste("[1:", nv, "]", sep=""))
+    }
+    if (nchar(msg) && !grepl(":$", msg)) {
         msg <- paste0(msg, ": ")
     }
+    res <- msg
     if (nv == 0) {
-        paste(msg, "(empty vector)\n")
+        res <- paste(res, "(empty vector)\n")
     } else {
         if (n < 0 || nv <= 2*n) {
             showAll <- TRUE
@@ -2307,24 +2286,25 @@ vectorShow <- function(v, msg=NULL, digits=5, n=2L)
         }
         if (is.numeric(v)) {
             if (showAll) {
-                paste(msg, paste(format(v, digits=digits), collapse=", "),
-                      if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
+                res <- paste(msg, paste(format(v, digits=digits), collapse=", "), sep="")
             } else {
-                paste(msg, paste(format(v[1:n], digits=digits), collapse=", "),
-                      ", ..., ", paste(format(v[nv-seq.int(n-1, 0)], digits=digits), collapse=", "),
-                      if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
+                res <- paste(msg, paste(format(v[1:n], digits=digits), collapse=", "),
+                             ", ..., ", paste(format(v[nv-seq.int(n-1, 0)], digits=digits), collapse=", "),
+                             sep="")
             }
         } else {
             if (showAll) {
-                paste(msg, paste(v, collapse=", "),
-                      if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
+                res <- paste(msg, paste(v, collapse=", "), sep="")
             } else {
-                paste(msg, paste(v[1:n], collapse=", "),
-                      ", ..., ", paste(v[nv-seq.int(n-1, 0)], collapse=", "),
-                      if (nv > 1) paste(" (length ", nv, ")\n", sep="") else "\n", sep="")
+                res <- paste(msg, paste(v[1:n], collapse=", "),
+                             ", ..., ", paste(v[nv-seq.int(n-1, 0)], collapse=", "), sep="")
             }
         }
     }
+    if (nchar(postscript) > 0)
+        res <- paste(res, postscript)
+    res <- paste(res, "\n", sep="")
+    res
 }
 
 
@@ -2399,7 +2379,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
     oceDebug(debug, "resizableLabel(item=\"", item,
              "\", axis=\"", axis,
              "\", sep=\"", if (missing(sep)) "(missing)" else sep, "\", ...) {\n",
-            sep="", unindent=1)
+            sep="", unindent=1, style="bold")
     if (missing(item))
         stop("must provide 'item'")
     if (axis != "x" && axis != "y")
@@ -2678,7 +2658,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
     ##cat("fraction=", fraction, "\n")
     #print(full)
     #print(abbreviated)
-    oceDebug(debug, "} # resizableLabel\n", unindent=1)
+    oceDebug(debug, "} # resizableLabel\n", unindent=1, style="bold")
     if (fraction < 1) full else abbreviated
 }
 
@@ -2861,6 +2841,49 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
     res
 }
 
+#' Alter longitudes from -180:180 to 0:360 convention
+#'
+#' For numerical input, including vectors, matrices and arrays,
+#' [lon360()] simply calls [ifelse()] to add 360 to any negative values. For
+#' [section-class] objects, it changes `longitude` in the `metadata` slot
+#' and then calls itself to handle the [ctd-class] objects stored as
+#' as the entries in `station` within the `data` slot.
+#' For this [ctd-class] object, and indeed for all non-[section-class]
+#' objects, [lon360()] changes `longitude` values in the
+#' `metadata` slot (if present) and also in the `data` slot (again, if
+#' present). This function is not useful for dealing with coastline
+#' data; see [coastlineCut()] for such data.
+#'
+#' @param x either a numeric vector or array, or an [oce-class] object.
+#'
+#' @examples
+#' lon360(c(179, -179))
+lon360 <- function(x)
+{
+    if (missing(x))
+        stop("must provide 'x'")
+    shift <- function(X) ifelse(X < 0, 360 + X, X)
+    res <- x
+    if (inherits(x, "section")) {
+        ## Shift section-level metadata.
+        res@metadata$longitude <- shift(x@metadata$longitude)
+        ## Shift each station, by calling lon360() on that (CTD) object.
+        for (istn in seq_along(x[["station"]]))
+            res@data$station[[istn]] <- lon360(x@data$station[[istn]])
+        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    } else if (inherits(x, "oce")) {
+        if ("longitude" %in% names(x[["metadata"]]))
+            res@metadata$longitude <- shift(res@metadata$longitude)
+        if ("longitude" %in% names(x[["data"]]))
+            res@data$longitude <- shift(res@data$longitude)
+        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    } else if (is.numeric(x)) {
+        res <- shift(x)
+    } else {
+        stop("x must be a numeric value of an oce object")
+    }
+    res
+}
 
 #' Determine time offset from timezone
 #'
@@ -3144,7 +3167,7 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
 }
 
 
-#' Filter a time-series
+#' Filter a Time Series
 #'
 #' Filter a time-series, possibly recursively
 #'
@@ -3619,8 +3642,7 @@ fillGap <- function(x, method=c("linear"), rule=1)
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #'
-#' @return An object of `\link[base]{class`} `"oce"` that has been
-#' subsampled appropriately.
+#' @return An [oce-class] object that has been subsampled appropriately.
 #'
 #' @section Bugs: Only a preliminary version of this function is provided in
 #' the present package.  It only works for objects of class `echosounder`,
@@ -3834,8 +3856,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 #' @param \dots parameters to be supplied to [smooth()], which does
 #' the actual work.
 #'
-#' @return An object of `\link[base]{class`} `"oce"` that has been
-#' smoothed appropriately.
+#' @return An [oce-class] object that has been smoothed appropriately.
 #'
 #' @author Dan Kelley
 #'
@@ -4178,21 +4199,18 @@ integerToAscii <- function(i)
 
 #' Earth magnetic declination, inclination, and intensity
 #'
-#' Implements the 12th generation International Geomagnetic Reference Field
+#' Implements the 12th and 13th generations of the
+#' International Geomagnetic Reference Field
 #' (IGRF), based on a reworked version of a Fortran program downloaded from a
 #' NOAA website (see reference 1).
 #'
-#' The code (subroutine `igrf12syn`) seems to have
+#' The code (subroutines `igrf12syn` and `igrf13syn`) seem to have
 #' been written by Susan Macmillan of the British Geological Survey.  Comments
-#' in the source code indicate that it employs coefficients agreed to in
-#' December 2014 by the IAGA Working Group V-MOD.  Other comments in that code
-#' suggest that the valid time interval is from years 1900 to 2020,
-#' with only the values from 1945 to 2010 being considered definitive.
-#'
-#' Reference 2 suggests that a new version to the underlying source
-#' code might be expected in 2019 or 2020, but a check on January 31,
-#' 2019, showed that version 12, as incorporated in oce since
-#' 2015, remains the active version.
+#' in the source code `igrf13syn` (the current default used here)
+#' indicate that its coefficients were agreed to in
+#' December 2019 by the IAGA Working Group V-MOD.  Other comments in that code
+#' suggest that the proposed application time interval is from years 1900 to 2025, inclusive,
+#' but that only dates from 1945 to 2015 are to be considered definitive.
 #'
 #' @param longitude longitude in degrees east (negative for degrees west).  The
 #' dimensions must conform to lat.
@@ -4204,6 +4222,11 @@ integerToAscii <- function(i)
 #' `longitude` and `latitude`. The value may a decimal year,
 #' a POSIXt time, or a Date time.
 #'
+#' @param version an integer that must be either 12 or 13, to specify
+#' the version number of the formulae. Note that 13 became the default
+#' on 2020 March 3, so to old code will need to specify `version=12`
+#' to work as it did before that date.
+#'
 #' @return A list containing `declination`, `inclination`, and
 #' `intensity`.
 #'
@@ -4212,11 +4235,18 @@ integerToAscii <- function(i)
 #' British Geological Survey and distributed ``without limitation'' (email from
 #' SM to DK dated June 5, 2015).
 #'
+#' @section Historical Notes:
+#' For about a decade, `magneticField` used the version 12 formulae provided
+#' by IAGA, but the code was updated on March 3, 2020, to version 13.  Example
+#' 3 shows that the differences in declination are typicaly under 2 degrees
+#' (with 95 percent of the data lying between -1.7 and 0.7 degrees).
+#'
 #' @references
-#' 1. The underlying Fortran code is from `igrf12.f`, downloaded the NOAA
+#' 1. The underlying Fortran code for version 12 is from `igrf12.f`, downloaded the NOAA
 #' website (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
-#' 2015.
-#' 2. Witze, Alexandra. \dQuote{Earth’s Magnetic Field Is Acting up and Geologists Don’t Know Why.}
+#' 2015. That for version 13 is `igrf13.f`, downloadd from the NOAA website
+#' (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html} on March 3, 2020.
+#' 2. Witze, Alexandra. \dQuote{Earth's Magnetic Field Is Acting up and Geologists Don't Know Why.}
 #' Nature 565 (January 9, 2019): 143.
 #' \url{https://doi.org/10.1038/d41586-019-00007-1}.
 #'
@@ -4248,8 +4278,31 @@ integerToAscii <- function(i)
 #' mapContour(lon, lat, dec, levels=0, col='black', lwd=2)
 #'}
 #'
+#' # 3. Declination differences between versions 12 and 13
+#'\donttest{
+#' lon <- seq(-180, 180)
+#' lat <- seq(-90, 90)
+#' decDiff <- function(lon, lat) {
+#'     old <- magneticField(lon, lat, 2020, version=13)$declination
+#'     new <- magneticField(lon, lat, 2020, version=12)$declination
+#'     new - old
+#' }
+#' decDiff <- outer(lon, lat, decDiff)
+#' decDiff <- ifelse(decDiff > 180, decDiff - 360, decDiff)
+#' # Overall (mean) shift -0.1deg
+#' t.test(decDiff)
+#' # View histogram, narrowed to small differences
+#' par(mar=c(3.5, 3.5, 2, 2), mgp=c(2, 0.7, 0))
+#' hist(decDiff, breaks=seq(-180, 180, 0.05), xlim=c(-2, 2),
+#'      xlab="Declination difference [deg] from version=12 to version=13",
+#'      main="Predictions for year 2020")
+#' print(quantile(decDiff, c(0.025, 0.975)))
+#' # Note that the large differences are at high latitudes
+#' imagep(lon,lat,decDiff, zlim=c(-1,1)*max(abs(decDiff)))
+#' lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
+#'}
 #' @family things related to magnetism
-magneticField <- function(longitude, latitude, time)
+magneticField <- function(longitude, latitude, time, version=13)
 {
     if (missing(longitude) || missing(latitude) || missing(time))
         stop("must provide longitude, latitude, and time")
@@ -4258,9 +4311,9 @@ magneticField <- function(longitude, latitude, time)
         stop("dimensions of longitude and latitude must agree")
     n <- length(latitude)
     if (inherits(time, "Date"))
-        time <- as.POSIXct(time)
+        time <- as.POSIXct(time, tz="UTC")
     if (inherits(time, "POSIXt")) {
-        d <- as.POSIXlt(time)
+        d <- as.POSIXlt(time, tz="UTC")
         year <- d$year+1900
         yearday <- d$yday
         time <- year + yearday / 365.25 # ignore leap year issue (formulae not daily)
@@ -4281,12 +4334,17 @@ magneticField <- function(longitude, latitude, time)
     ##alt <- 0.0                          # altitude in km
     elong <- ifelse(longitude < 0, 360 + longitude, longitude)
     colat <- 90 - latitude
+    iversion <- as.integer(version)
+    if (!(iversion %in% c(12L, 13L)))
+        stop("version must be 12 or 13, but it is ", iversion)
+    ## message("time:", time, " (", as.numeric(time), ")")
     r <- .Fortran("md_driver",
                   as.double(colat), as.double(elong), as.double(time),
                   as.integer(n),
                   declination=double(n),
                   inclination=double(n),
-                  intensity=double(n))
+                  intensity=double(n),
+                  as.integer(iversion))
     declination <- r$declination
     inclination <- r$inclination
     intensity <- r$intensity
@@ -4528,31 +4586,81 @@ ctimeToSeconds <- function(ctime)
 #' are treated like 4.
 #'
 #' @param \dots items to be supplied to [cat()], which does the
-#' printing.  Almost always, this should include a trailing newline.
+#' printing.  Note that no newline will be printed unless \dots
+#' contains a string with a newline character (as in the example).
 #'
-#' @param unindent Number of levels to un-indent, e.g. for start and end lines
-#' from a called function.
+#' @param style either a string or a function. If a string,
+#' it must be `"plain"` (the default) for plain text,
+#' `"bold"`, `"italic"`, `"red"`, `"green"` or `"blue"` (with
+#' obvious meanings).
+#' If `style` is a function, it must prepend and postpend the text
+#' with control codes, as in the cyan-coloured example; note that
+#' \CRANpkg{crayon} provides many functions that work well for `style`.
+#'
+#' @param unindent integer giving the number of levels to un-indent,
+#' e.g. for start and end lines from a called function.
 #'
 #' @author Dan Kelley
 #'
 #' @examples
-#' foo <- function(debug)
-#' {
-#'    oceDebug(debug, "in function foo\n")
-#' }
-#' debug <- 1
-#' oceDebug(debug, "in main")
-#' foo(debug=debug-1)
-oceDebug <- function(debug=0, ..., unindent=0)
+#' oceDebug(debug=1, "Example", 1, "Plain text")
+#' oceDebug(debug=1, "Example", 2, "Bold", style="bold")
+#' oceDebug(debug=1, "Example", 3, "Italic", style="italic")
+#' oceDebug(debug=1, "Example", 4, "Red", style="red")
+#' oceDebug(debug=1, "Example", 5, "Green", style="green")
+#' oceDebug(debug=1, "Example", 6, "Blue", style="blue")
+#' mycyan <- function(...) paste("\033[36m", paste(..., sep=" "), "\033[0m", sep="")
+#' oceDebug(debug=1, "Example", 7, "User-set cyan", style=mycyan)
+oceDebug <- function(debug=0, ..., style="plain", unindent=0)
 {
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     if (debug > 0) {
         n <- 5 - debug - unindent
-        if (n > 0)
-            cat(paste(rep("  ", n), collapse=""))
-        cat(...)
+        if (is.character(style) && style == "plain") {
+            if (n > 0)
+                cat(paste(rep("  ", n), collapse=""))
+            cat(...)
+        } else if (is.character(style) && style == "bold") {
+            cat("\033[1m")
+            if (n > 0)
+                cat(paste(rep("  ", n), collapse=""))
+            cat(...)
+            cat("\033[0m")
+        } else if (is.character(style) && style == "italic") {
+            cat("\033[3m")
+            if (n > 0)
+                cat(paste(rep("  ", n), collapse=""))
+            cat(...)
+            cat("\033[0m")
+        } else if (is.character(style) && style == "red") {
+            cat("\033[31m")
+            if (n > 0)
+                cat(paste(rep("  ", n), collapse=""))
+            cat(...)
+            cat("\033[0m")
+        } else if (is.character(style) && style == "green") {
+            cat("\033[32m")
+            if (n > 0)
+                cat(paste(rep("  ", n), collapse=""))
+            cat(...)
+            cat("\033[0m")
+        } else if (is.character(style) && style == "blue") {
+            cat("\033[34m")
+            if (n > 0)
+                cat(paste(rep("  ", n), collapse=""))
+            cat(...)
+            cat("\033[0m")
+        } else if (is.function(style)) {
+            if (n > 0)
+                cat(style(paste(rep("  ", n), collapse="")))
+            cat(style(...))
+        } else { # fallback
+            if (n > 0)
+                cat(paste(rep("  ", n), collapse=""))
+            cat(...)
+        }
+        flush.console()
     }
-    flush.console()
     invisible()
 }
 oce.debug <- oceDebug

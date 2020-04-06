@@ -4,8 +4,14 @@
 \alias{ctdDecimate}
 \title{Decimate a CTD profile}
 \usage{
-ctdDecimate(x, p = 1, method = "boxcar", rule = 1, e = 1.5,
-  debug = getOption("oceDebug"))
+ctdDecimate(
+  x,
+  p = 1,
+  method = "boxcar",
+  rule = 1,
+  e = 1.5,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{x}{a \linkS4class{ctd} object.}
@@ -26,7 +32,7 @@ with the \code{rule} argument specified here)
 \item \code{"approxML"} as \code{"approx"},
 except that a mixed layer is assumed to apply above the top data value; this
 is done by setting the \code{yleft} argument to \code{\link[=approx]{approx()}}, and
-by calling that function with \code{rule=c(2,1))}
+by calling that function with \verb{rule=c(2,1))}
 \item \code{"lm"} (based on local
 regression, with \code{e} setting the size of the local region);
 \item \code{"rr"} for the Reiniger and Ross method, carried out with \code{\link[=oce.approx]{oce.approx()}};
@@ -118,34 +124,48 @@ application to oceanographic data.  \emph{Deep Sea Research}, \strong{15},
 \item Oguma, Sachiko, Toru Suzuki, Yutaka Nagata, Hidetoshi Watanabe, Hatsuyo Yamaguchi,
 and Kimio Hanawa. \dQuote{Interpolation Scheme for Standard Depth Data Applicable for Areas
 with a Complex Hydrographical Structure.} Journal of Atmospheric and Oceanic Technology
-21, no. 4 (April 1, 2004): 704–15.
+21, no. 4 (April 1, 2004): 704-15.
 }
 }
 \seealso{
 The documentation for \linkS4class{ctd} explains the structure of
 CTD objects, and also outlines the other functions dealing with them.
 
-Other things related to ctd data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctd}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{initialize,ctd-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{plotTS}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+Other things related to ctd data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{[[,ctd-method}},
+\code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{ctd-class}},
+\code{\link{ctd.cnv}},
+\code{\link{ctdFindProfiles}()},
+\code{\link{ctdRaw}},
+\code{\link{ctdTrim}()},
+\code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{initialize,ctd-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{plot,ctd-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{plotTS}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()},
+\code{\link{setFlags,ctd-method}},
+\code{\link{subset,ctd-method}},
+\code{\link{summary,ctd-method}},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()},
+\code{\link{write.ctd}()}
 }
 \author{
 Dan Kelley

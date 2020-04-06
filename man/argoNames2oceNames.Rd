@@ -42,7 +42,7 @@ The procedure
 is to first handle the items listed in the following table, with string
 searches anchored to the start of the string. After that,
 the qualifiers
-\code{_ADJUSTED}, \code{_ERROR} and \code{_QC},
+\verb{_ADJUSTED}, \verb{_ERROR} and \verb{_QC},
 are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 
 \tabular{ll}{
@@ -102,22 +102,24 @@ are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 }
 \references{
 \enumerate{
-\item Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-\url{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-(but note that this is a draft; newer versions may have
-replaced this by now).
+\item Argo User's Manual Version 3.3, Nov 89th, 2019, available at
+\url{https://archimer.ifremer.fr/doc/00187/29825/}
 \item Argo list of parameters in an excel spreadsheet, available at
 \url{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
 }
 }
 \seealso{
-Other things related to argo data: \code{\link{[[,argo-method}},
-  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
-  \code{\link{argoGrid}}, \code{\link{argo}},
-  \code{\link{as.argo}},
-  \code{\link{handleFlags,argo-method}},
-  \code{\link{plot,argo-method}}, \code{\link{read.argo}},
-  \code{\link{subset,argo-method}},
-  \code{\link{summary,argo-method}}
+Other things related to argo data: 
+\code{\link{[[,argo-method}},
+\code{\link{[[<-,argo-method}},
+\code{\link{argo-class}},
+\code{\link{argoGrid}()},
+\code{\link{argo}},
+\code{\link{as.argo}()},
+\code{\link{handleFlags,argo-method}},
+\code{\link{plot,argo-method}},
+\code{\link{read.argo}()},
+\code{\link{subset,argo-method}},
+\code{\link{summary,argo-method}}
 }
 \concept{things related to argo data}

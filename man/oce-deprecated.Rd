@@ -3,25 +3,26 @@
 \name{oce-deprecated}
 \alias{oce-deprecated}
 \alias{oce-defunct}
-\title{Deprecated and Defunct Elements of package \sQuote{oce}}
+\title{Deprecated and Defunct Elements of the oce package}
 \description{
 Certain functions and function arguments are still provided for
-compatibility with older versions of \sQuote{oce}, but will be removed soon.
-The \sQuote{oce} scheme for removing functions is similar to that used by
-\sQuote{Bioconductor}: items are marked as "deprecated" in one release, marked as
+compatibility with older versions of \CRANpkg{oce}, but will be removed soon.
+The \CRANpkg{oce} scheme for removing functions is similar to that used by
+\code{Bioconductor}: items are marked as "deprecated" in one release, marked as
 "defunct" in the next, and removed in the next after that. This goal is to provide a
 gentle migration path for users who keep their packages reasonably
 up-to-date.
 }
 \details{
-Several \sQuote{oce} functions are marked "deprecated" in the present
-release of oce. Please use the replacement functions as listed below.
-The next CRAN release of \sQuote{oce} will designate these functions as
-"defunct".
+The following are marked "deprecated" in the present CRAN release of \CRANpkg{oce}.
+Please use the replacement functions as listed below. The upcoming CRAN
+release of \CRANpkg{oce} will mark these as "defunct", which is the
+last step before outright removal.
 
-\tabular{lll}{
-\strong{Deprecated} \tab \strong{Replacement} \tab \strong{Notes}\cr
-\code{byteToBinary} \tab \code{\link[=rawToBits]{rawToBits()}}   \tab Deprecated in 2016\cr
+\tabular{lllll}{
+\strong{Deprecated}             \tab \strong{Replacement}   \tab \strong{Deprecated}  \tab \strong{Defunct} \tab \strong{Removed} \cr
+\code{byteToBinary(x,"endian")} \tab \code{\link[=rawToBits]{rawToBits()}}     \tab 1.1-1           \tab 1.1-3       \tab 1.1-4       \cr
+\code{renameData()}             \tab \code{\link[=oceRenameData]{oceRenameData()}} \tab 1.1-2           \tab 1.1-3       \tab 1.1-4       \cr
 }
 
 The following are marked "defunct", so calling them in the
@@ -30,28 +31,28 @@ function. Once a function is marked "defunct" on one CRAN release, it will
 be slated for outright deletion in a subsequent release.
 
 \tabular{lll}{
-\strong{Defunct}       \tab \strong{Replacement}              \tab \strong{Version} \cr
-\code{addColumn}       \tab \code{\link[=oceSetData]{oceSetData()}}               \tab  0.9.24\cr
-\code{byteToBinary}    \tab \code{\link[=rawToBits]{rawToBits()}}                \tab  0.9.24 'endian="little" disallowed\cr
-\code{findInOrdered}   \tab \code{\link[=findInterval]{findInterval()}}             \tab  0.9.24\cr
-\code{ctdAddColumn}    \tab \code{\link[=oceSetData]{oceSetData()}}               \tab  0.9.24\cr
-\code{ctdUpdateHeader} \tab \code{\link[=oceSetMetadata]{oceSetMetadata()}}           \tab  0.9.24\cr
-\code{mapZones}        \tab \code{\link[=mapGrid]{mapGrid()}}                  \tab  0.9.24\cr
-\code{mapMeridians}    \tab \code{\link[=mapGrid]{mapGrid()}}                  \tab  0.9.24\cr
-\code{oce.as.POSIXlt}  \tab \link[lubridate:parse_date_time]{lubridate::parse_date_time} \tab  0.9.24\cr
-\code{oce.magic}       \tab \code{\link[=oceMagic]{oceMagic()}}                 \tab  0.9.24\cr
+\strong{Defunct}         \tab \strong{Replacement}                \tab \strong{Version}\cr
+(none)              \tab (none)                         \tab (none)     \cr
 }
 
-The following were removed recently, having been marked as "deprecated"
+The following were removed after having been marked as "deprecated"
 in at least one CRAN release, and thereafter as "defunct" in at least
-one CRAN release.
+one CRAN release.  (The version number in the table is the first
+version to lack the named function.)
 
 \tabular{lll}{
-\strong{Function}  \tab \strong{Replacement} \tab  \strong{Version}\cr
-\code{makeSection} \tab \code{\link[=as.section]{as.section()}}  \tab       0.9.24\cr
+\strong{Function}        \tab \strong{Replacement}                \tab \strong{Version}\cr
+\code{addColumn()}       \tab \code{\link[=oceSetData]{oceSetData()}}                 \tab 1.1-2      \cr
+\code{ctdAddColumn()}    \tab \code{\link[=oceSetData]{oceSetData()}}                 \tab 1.1-2      \cr
+\code{ctdUpdateHeader()} \tab \code{\link[=oceSetMetadata]{oceSetMetadata()}}             \tab 1.1-2      \cr
+\code{findInOrdered()}   \tab \code{\link[=findInterval]{findInterval()}}               \tab 1.1-2      \cr
+\code{makeSection()}     \tab \code{\link[=as.section]{as.section()}}                 \tab 0.9.24     \cr
+\code{mapMeridians()}    \tab \code{\link[=mapGrid]{mapGrid()}}                    \tab 1.1-2      \cr
+\code{mapZones()}        \tab \code{\link[=mapGrid]{mapGrid()}}                    \tab 1.1-2      \cr
+\code{oce.as.POSIXlt()}  \tab \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}} \tab 1.1-2      \cr
 }
 
-Several \sQuote{oce} function arguments are considered "deprecated", which
+Several \CRANpkg{oce} function arguments are considered "deprecated", which
 means they will be marked "defunct" in the next CRAN release. These are normally
 listed in the help page for the function in question. A few that may be
 of general interest are also listed below.

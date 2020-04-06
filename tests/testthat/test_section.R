@@ -275,3 +275,10 @@ test_that("sectionSmooth profile count", {
           }
 })
 
+test_that("lon360 works as intended", {
+          data(section)
+          sectionShifted <- lon360(section)
+          expect_equal(360 + section[["longitude"]], sectionShifted[["longitude"]])
+          expect_equal(c(179, 181), lon360(c(179, -179)))
+})
+

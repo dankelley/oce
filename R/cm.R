@@ -76,10 +76,9 @@ setMethod(f="[[<-",
 
 setMethod(f="initialize",
           signature="cm",
-          definition=function(.Object,
-                              time=NULL, u=NULL, v=NULL, units) {
-                              ## filename="(unknown)",
-                              ## sample, direction, conductivity, salinity, temperature, pressure) {
+          definition=function(.Object, time=NULL, u=NULL, v=NULL, units, ...) {
+              .Object <- callNextMethod(.Object, ...)
+              ## sample, direction, conductivity, salinity, temperature, pressure) {
               if (missing(units)) {
                   .Object@metadata$units <- list(u=list(unit=expression(m/s), scale=""),
                                                  v=list(unit=expression(m/s), scale=""))
@@ -639,7 +638,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 }
 
 
-#' Plot CM data
+#' Plot a cm Object
 #'
 #' Creates a multi-panel summary plot of data measured by a current meter.
 #'

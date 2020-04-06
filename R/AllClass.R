@@ -10,7 +10,7 @@
 #'
 #' @return A [POSIXct()]-style object holding the present time, in the
 #' indicated timezone.
-## NOTE: we need to define this here so setClass() knows about it;
+## NOTE: we need to define this here so [setClass()] knows about it;
 ## NOTE: having it in NAMESPACE is not sufficient.
 presentTime <- function(tz="UTC")
 {
@@ -43,14 +43,15 @@ presentTime <- function(tz="UTC")
 #' str(new("oce"))
 #'
 #' @family classes provided by oce
-setClass("oce",
-         representation(metadata="list",
-                        data="list",
-                        processingLog="list"),
-         prototype=list(metadata=list(units=list(), flags=list()),
-                        data=list(),
-                        processingLog=list(time=presentTime(), value="Create oce object"))
-         )
+setClass("oce", slots=c(metadata="list", data="list", processingLog="list"))
+
+setMethod("initialize", "oce",
+         function(.Object) {
+             .Object@metadata <- list(units=list(), flags=list())
+             .Object@data <- list()
+             .Object@processingLog <- list(time=presentTime(), value="Create oce object")
+             .Object
+         })
 
 #' Summarize an oce Object
 #'
@@ -280,7 +281,7 @@ setClass("satellite", contains="oce") # both amsr and landsat stem from this
 #'
 #' @param x a basic [oce-class] object,
 #' but not from any subclass that derive from this base, because
-#' subclases have their own plot methods, e.g. calling `plot()` on a
+#' subclasses have their own plot methods, e.g. calling `plot()` on a
 #' [ctd-class] object dispatches to [plot,ctd-method()].
 #'
 #' @param y Ignored; only present here because S4 object for generic `plot`
@@ -318,7 +319,7 @@ setMethod(f="plot",
 #' versions for most sub-classes, e.g. [subset,ctd-method()]
 #' for `ctd` objects.
 #'
-#' @param x an [oce-class] object
+#' @param x an [oce-class] object.
 #'
 #' @param subset a logical expression indicating how to take the subset; the form depends on the sub-class.
 #'
@@ -379,7 +380,7 @@ setMethod(f="subset",
 #'
 #' @template sub_subTemplate
 #'
-#' @param x an [oce-class] object
+#' @param x an [oce-class] object.
 ## @param i The item to extract.
 ## @param j Optional additional information on the `i` item.
 ## @param ... Optional additional information (ignored).
@@ -387,9 +388,12 @@ setMethod(f="subset",
 #' @seealso
 #' Many `oce` object classes have specialized versions
 #' of `[[` that handle the details in specialized way.
+#'
+#' @author Dan Kelley
 setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              ##DEBUG debug <- 1               # DEVELOPER: set manually to test code
               if (i == "metadata") {
                   return(x@metadata)
               } else if (i == "data") {
@@ -415,20 +419,28 @@ setMethod(f="[[",
               } else if (i == "spice") {
                   return(swSpice(x))
               } else {
+                  ##DEBUG oceDebug(debug, "[[ at base level. i='", i, "'\n", sep="", unindent=1, style="bold")
                   if (missing(j) || j == "") {
+                      ##DEBUG oceDebug(debug, "j missing or empty ...\n")
                       ## Since 'j' is not provided, we must search for 'i'. We look first
                       ## in the metadata slot, but if it's not there, we look in the
                       ## data slot. In the 'data' case, we also permit partial-match names,
                       ## as well as non-partial matching to the original names, as
                       ## contained in a data file.
-                      if (i %in% names(x@metadata))
+                      if (i %in% names(x@metadata)) {
+                          ##DEBUG oceDebug(debug, "[[ base case 1\n")
                           return(x@metadata[[i]])
+                      }
                       ## partial match allowed in data, but not in original-name of data
                       index <- pmatch(i, names(x@data))
                       if (!is.na(index[1])) {
+                          ##DEBUG oceDebug(debug, "[[ base case 2\n")
                           return(x@data[[index]])
                       } else if (i %in% x@metadata$dataNamesOriginal) {
-                          return(x@data[[which(i==x@metadata$dataNamesOriginal)[1]]])
+                          w <- which(i==x@metadata$dataNamesOriginal)
+                          name <- names(x@metadata$dataNamesOriginal)[w]
+                          ##DEBUG oceDebug(debug, "[[ base case 3. w=", w, ", name='", name, "'\n", sep="")
+                          return(x@data[[name]])
                       } else {
                           return(NULL)
                       }
@@ -460,6 +472,7 @@ setMethod(f="[[",
 #' @param x an [oce-class] object.
 #'
 #' @template sub_subsetTemplate
+#' @author Dan Kelley
 setMethod(f="[[<-",
           signature(x="oce", i="ANY", j="ANY"),
           function(x, i, j, ..., value) {
@@ -566,10 +579,11 @@ setMethod(f="show",
               }
           })
 
+
 #' @title Create a composite object by averaging across good data
 #'
-#' @param object Either a [list] of [oce-class]-class objects, in
-#' which case this is the only argument, or a single [oce-class]-class object,
+#' @param object either a [list] of [oce-class] objects, in
+#' which case this is the only argument, or a single [oce-class] object,
 #' in which case at least one other argument (an object of the same size)
 #' must be supplied.
 #'
@@ -592,7 +606,7 @@ setGeneric("composite",
 #' action is to call
 #' [composite,amsr-method()].
 #'
-#' @param object A [list] of [oce-class]-class objects.
+#' @param object a [list] of [oce-class] objects.
 #'
 #' @template compositeTemplate
 setMethod("composite",
@@ -615,7 +629,7 @@ setMethod("composite",
 #' Each specialized variant of this function has its own defaults
 #' for `flags` and `actions`.
 #'
-#' @param object An object of [oce-class] class.
+#' @param object an [oce-class] object.
 #'
 #' @template handleFlagsTemplate
 setGeneric("handleFlags", function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
@@ -639,7 +653,7 @@ setMethod("handleFlags", signature=c(object="vector", flags="ANY", actions="ANY"
 #
 #' Base-level handling of flags.
 #
-#' @param object An object of [oce-class] class.
+#' @param object an [oce-class] object.
 #
 #' @template handleFlagsTemplate
 setMethod("handleFlags", signature=c(object="oce", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
@@ -669,9 +683,9 @@ setMethod("handleFlags", signature=c(object="oce", flags="ANY", actions="ANY", w
 #' `ctd` objects, [handleFlags,adp-method] for `adp` objects,
 #' etc.
 #'
-#' @param object An object of [oce-class] class.
+#' @param object an [oce-class] object.
 #'
-#' @param flags A named [list] of numeric values.
+#' @param flags a named [list] of numeric values.
 #'
 #' @param actions A character vector indicating actions to be carried out for the corresponding
 #' `flags` values. This will be lengthened with [rep()] if necessary, to be
@@ -1108,13 +1122,13 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, defaul
 
 #' Concatenate oce objects
 #'
-#' @param object An object of [oce-class] class.
+#' @param object an [oce-class] object.
 #'
-#' @param ... Optional additional objects of [oce-class] class.
+#' @param ... optional additional [oce-class] objects.
 #'
 #' @return An object of class corresponding to that of `object`.
 #'
-#' @family functions that concatenate oce objects.
+#' @family functions that concatenate oce objects
 setGeneric("concatenate",
            function(object, ...) {
                standardGeneric("concatenate")
@@ -1204,11 +1218,11 @@ setMethod("concatenate",
 
 #' Concatenate a list of oce objects
 #'
-#' @param object A list holding objects of the [oce-class] class.
+#' @param object a [list] of [oce-class] objects.
 #'
 #' @return An object of class corresponding to that in `object`.
 #'
-#' @family functions that concatenate [oce] objects.
+#' @family functions that concatenate oce objects
 setMethod("concatenate",
           c(object="list"),
           function(object) {

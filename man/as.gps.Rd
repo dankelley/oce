@@ -26,10 +26,13 @@ This may be used when \code{\link[=read.gps]{read.gps()}} cannot read a file, or
 data have been manipulated.
 }
 \seealso{
-Other things related to gps data: \code{\link{[[,gps-method}},
-  \code{\link{[[<-,gps-method}}, \code{\link{gps-class}},
-  \code{\link{plot,gps-method}}, \code{\link{read.gps}},
-  \code{\link{summary,gps-method}}
+Other things related to gps data: 
+\code{\link{[[,gps-method}},
+\code{\link{[[<-,gps-method}},
+\code{\link{gps-class}},
+\code{\link{plot,gps-method}},
+\code{\link{read.gps}()},
+\code{\link{summary,gps-method}}
 }
 \author{
 Dan Kelley

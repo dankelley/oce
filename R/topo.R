@@ -87,7 +87,8 @@ NULL
 
 setMethod(f="initialize",
           signature="topo",
-          definition=function(.Object, longitude, latitude, z, filename="", units) {
+          definition=function(.Object, longitude, latitude, z, filename="", units, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(longitude)) .Object@data$longitude <- longitude
               if (!missing(latitude)) .Object@data$latitude <- latitude
               if (!missing(z)) .Object@data$z <- z
@@ -282,8 +283,10 @@ setMethod(f="subset",
 #'                           resolution=1, destdir="~/data/topo")
 #' topo <- read.topo(topoFile)
 #' imagep(topo, zlim=c(-400, 400), drawTriangles=TRUE)
-#' data(coastlineWorldFine, package="ocedata")
-#' lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
+#' if (requireNamespace("ocedata", quietly=TRUE)) {
+#'     data(coastlineWorldFine, package="ocedata")
+#'     lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
+#' }
 #'}
 #'
 #' @section Webserver history:
@@ -294,7 +297,7 @@ setMethod(f="subset",
 #' for `server`, should `download.topo` fail because of
 #' a fail to download the data. Another
 #' hint is to look at the source code for
-#' [marmap::getNOAA.bathy()] in the `marmap` package,
+#' `getNOAA.bathy()` in the `marmap` package,
 #' which is also forced to track the moving target that is NOAA.
 #'
 #' * August 2016.
@@ -423,7 +426,7 @@ topoInterpolate <- function(longitude, latitude, topo)
 }
 
 
-#' Plot a Topo Object
+#' Plot a topo Object
 #'
 #' This plots contours of topographic elevation.  The plot aspect ratio is set
 #' based on the middle latitude in the plot.  The line properties, such as

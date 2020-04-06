@@ -28,7 +28,7 @@
 #'
 #' @details
 #'
-#' * An infrequently updated record of the intrument position, in
+#' * An infrequently updated record of the instrument position, in
 #' `timeSlow`, `longitudeSlow` and `latitudeSlow`.  These are
 #' used in plotting maps with [plot,echosounder-method()].
 #'
@@ -87,7 +87,8 @@ NULL
 
 setMethod(f="initialize",
           signature="echosounder",
-          definition=function(.Object, filename="") {
+          definition=function(.Object, filename="", ...) {
+              .Object <- callNextMethod(.Object, ...)
               .Object@metadata$filename <- filename
               .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'echosounder' object"
@@ -331,7 +332,7 @@ setMethod(f="subset",
 #' @param sourceLevel source level, in dB (uPa at 1m), denoted `sl` in
 #' reference 1 p15, where it is in units 0.1dB (uPa at 1m)
 #'
-#' @param receiverSensitivity receiver sensivitity of the main element, in
+#' @param receiverSensitivity receiver sensitivity of the main element, in
 #' dB(counts/uPa), denoted `rs` in reference 1 p15, where it is in units of
 #' 0.1dB(counts/uPa)
 #'
@@ -431,7 +432,7 @@ findBottom <- function(x, ignore=5, clean=despike)
 }
 
 
-#' Plot Echosounder Data
+#' Plot an echosounder Object
 #'
 #' Plot echosounder data.
 #' Simple linear approximation is used when a `newx` value is specified
@@ -553,7 +554,7 @@ setMethod(f="plot",
                               drawTimeRange=FALSE, drawPalette=TRUE,
                               radius, coastline,
                               mgp=getOption("oceMgp"),
-                              mar=c(mgp[1]+1, mgp[1]+1, mgp[1]+1, mgp[1]+1),
+                              mar=c(mgp[1], mgp[1]+1.5, mgp[2]+1/2, 1/2),
                               atTop, labelsTop,
                               tformat,
                               debug=getOption("oceDebug"),
@@ -562,7 +563,7 @@ setMethod(f="plot",
               dots <- list(...)
               res <- list(xat=NULL, yat=NULL)
               dotsNames <- names(dots)
-              oceDebug(debug, "plot() { # for echosounder\n", unindent=1)
+              oceDebug(debug, "plot() { # for echosounder\n", unindent=1, style="bold")
               if ("adorn" %in% names(list(...)))
                   warning("In plot,echosounder-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               opar <- par(no.readonly = TRUE)
@@ -578,10 +579,10 @@ setMethod(f="plot",
                   else
                       lay <- layout(matrix(1:2, nrow=2, byrow=TRUE))
               }
-
-              oceDebug(debug, "which:", which, "\n")
+              oceDebug(debug, "which before converting to numbers: c(", paste(which, collapse=","), ")\n")
+              whichOrig <- which
               which <- oce.pmatch(which, list("zt image"=1, "zx image"=2, map=3))
-              oceDebug(debug, "which:", which, "\n")
+              oceDebug(debug, "which after converting to numbers: c(", paste(which, collapse=","), ")\n")
               for (w in seq_along(which)) {
                   oceDebug(debug, "this which:", which[w], "\n")
                   if (which[w] == 1) {
@@ -621,7 +622,9 @@ setMethod(f="plot",
                                         mgp=mgp, mar=mar,
                                         tformat=tformat,
                                         drawPalette=drawPalette,
-                                        debug=debug-1, ...)
+                                        debug=debug-1,
+                                        zlab=beam[w],
+                                        ...)
                           axisBottom <- par('usr')[3]
                           waterDepth <- c(axisBottom, -waterDepth, axisBottom)
                           time <-  x[["time"]]
@@ -690,7 +693,8 @@ setMethod(f="plot",
                                     tformat=tformat,
                                     col=col,
                                     drawPalette=drawPalette,
-                                    debug=debug-1)
+                                    debug=debug-1,
+                                    zlab=beam[w])
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "white"
@@ -748,9 +752,16 @@ setMethod(f="plot",
                           }
                       }
                       lines(lon, lat, col=if (!is.function(col)) col else "black", lwd=lwd)
+                  } else {
+                      stop("In plot,echosounder-method : unknown value of which (",
+                           if (is.character(whichOrig[w])) {
+                               paste("\"", whichOrig[w], "\"", sep="")
+                           }  else {
+                               whichOrig[w]
+                           }, "); try 1, 2 or 3, or, equivalently, \"zt image\", \"zx image\" or \"map\"", call.=FALSE)
                   }
               }
-              oceDebug(debug, "} # plot.echosounder()\n", unindent=1)
+              oceDebug(debug, "} # plot.echosounder()\n", unindent=1, style="bold")
               invisible(res)
           })
 
@@ -812,7 +823,7 @@ read.echosounder <- function(file, channel=1, soundSpeed,
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
-    oceDebug(debug, "read.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="", unindent=1)
+    oceDebug(debug, "read.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="", unindent=1, style="bold")
     ##ofile <- file
     filename <- NULL
     if (is.character(file)) {
@@ -907,11 +918,24 @@ read.echosounder <- function(file, channel=1, soundSpeed,
         N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
         code1 <- buf[offset+3]
         code2 <- buf[offset+4]
-        code <- readBin(buf[offset+3:4], "integer", size=2, n=1, endian="small", signed=FALSE)
+        ## Next line said 'endian="small"' prior to 2019-12-18, an error kindly pointed out
+        ## to Dan Kelley in a private email. However, this was not used here, except for an
+        ## erroneous use (where the test should have been on code2). But note that we do not
+        ## actually *use* the 'code' defined previously
+        ## See https://github.com/dankelley/oce/issues/1634
+        ## code <- readBin(buf[offset+3:4], "integer", size=2, n=1, endian="little", signed=FALSE)
         if (debug > 3) cat("buf[", 3+offset, "] = code1 = 0x", code1, sep="")
+        if (debug > 3) cat("buf[", 4+offset, "] = code2 = 0x", code2, sep="")
+        ## Interpret code1 and code2, which signal beam type.  These are listed in [1 table 3.5],
+        ## as follows (note that the table lists in little-endian ordering, so the first two
+        ## digits are code2 here, and the second two digits are code1 here.
+        ## * 0x0015 (code1=0x00 code2=0x15): single-beam ping
+        ## * 0x001c (code1=0x00 code2=0x1c): dual-bam ping
+        ## * 0x001d (code1=0x00 code2=0x1d): split-beam ping
+        ##
         ## The ordering of the code1 tests is not too systematic here; frequently-encountered
         ## codes are placed first, but then it's a bit random.
-        if (code1 == 0x15 || code1 == 0x1c || code1 == 0x1d) {
+        if (code2 == 0x00 && (code1 == 0x15 || code1 == 0x1c || code1 == 0x1d)) {
             ## single-beam, dual-beam, or split-beam tuple
             thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4L, n=1L, endian="little")
@@ -931,12 +955,15 @@ read.echosounder <- function(file, channel=1, soundSpeed,
                 ## Note the time reversal in the assignment to the data matrix 'a'
                 ## FIXME: is it faster to flip the data matrix later?
                 if (code1 == 0x15) {
+                    ## In [1 table 3.5] this case is listed as "0x0015 Single-Beam Ping"
                     tmp <- do_biosonics_ping(buf[offset+16+1:(2*ns)], samplesPerPing, ns, 0)
                     beamType <- "single-beam"
                 } else if (code1 == 0x1c) {
+                    ## In [1 table 3.5] this case is listed as "0x001C Dual-Beam Ping"
                     tmp <- do_biosonics_ping(buf[offset+16+1:(4*ns)], samplesPerPing, ns, 1)
                     beamType <- "dual-beam"
                 } else if (code1 == 0x1d) {
+                    ## In [1 table 3.5] this case is listed as "0x001D Split-Beam Ping"
                     ## e.g. 01-Fish.dt4 sample file from Biosonics
                     tmp <- do_biosonics_ping(buf[offset+16+1:(4*ns)], samplesPerPing, ns, 2)
                     beamType <- "split-beam"
@@ -955,7 +982,8 @@ read.echosounder <- function(file, channel=1, soundSpeed,
                        " ping=", pingNumber, " ns=", ns, " channel=", thisChannel, " IGNORED since wrong channel)\n", sep="")
                 }
             }
-        } else if (code1 == 0x0f || code == 0x20) {
+        } else if (code2 == 0x00 && (code1 == 0x0f || code1 == 0x20)) {
+            ## In [1 table 3.5] these cases are listed as "0x000F or 0x0020 Time"
             ## time
             timeSec <- readBin(buf[offset+4 + 1:4], what="integer", endian="little", size=4, n=1)
             timeSubSec <- .C("biosonics_ss", buf[offset+10], res=numeric(1), NAOK=TRUE, PACKAGE="oce")$res
@@ -964,7 +992,8 @@ read.echosounder <- function(file, channel=1, soundSpeed,
             ## centisecond = ss & 0x7F [1 sec 4.7]
             timeLast <- timeSec + timeSubSec # used for positioning
             if (debug > 3) cat(sprintf(" time calendar: %s   elapsed %.2f\n", timeFull+as.POSIXct("1970-01-01 00:00:00", tz="UTC"), timeElapsedSec))
-        } else if (code1 == 0x0e) {
+        } else if (code2 == 0x00 && code1 == 0x0e) {
+            ## In [1 table 3.5] this case is listed as "0x000E Position"
             ## position
             lat <- readBin(buf[offset + 4 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
             lon <- readBin(buf[offset + 8 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
@@ -1063,7 +1092,7 @@ read.echosounder <- function(file, channel=1, soundSpeed,
             if (debug > 1) cat(" comment tuple [1 sec 4.14 p28]\n")
             ## FIXME: other info could be gleaned from the comment, if needed
             numbytes <- .C("uint16_le", buf[offset+34:35], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
-            if (debug > 1) cat('numbytes:', numbytes, ' ... NOTHING ELSE DECODED in this verion of oce.\n')
+            if (debug > 1) cat('numbytes:', numbytes, ' ... NOTHING ELSE DECODED in this version of oce.\n')
         } else {
             if (debug > 3) cat(" unknown code IGNORED\n")
         }
@@ -1192,5 +1221,6 @@ read.echosounder <- function(file, channel=1, soundSpeed,
                                              paste("read.echosounder(\"", filename, "\", channel=", channel, ", soundSpeed=",
                                                    if (missing(soundSpeed)) "(missing)" else soundSpeed, ", tz=\"", tz, "\", debug=", debug, ", processingLog)", sep=""))
     .C("biosonics_free_storage", PACKAGE="oce") # clear temporary storage space
+    oceDebug(debug, "} read.echosounder()\n", sep="", unindent=1, style="bold")
     res
 }

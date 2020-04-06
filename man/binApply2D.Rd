@@ -40,7 +40,7 @@ consider using \code{\link[=binMean2D]{binMean2D()}} instead, since it should be
 library(oce)
 \donttest{
 ## secchi depths in lat and lon bins
-if (require(ocedata)) {
+if (requireNamespace("ocedata", quietly=TRUE)) {
     data(secchi, package="ocedata")
     ## Note that zlim is provided to the colormap(), to prevent a few
     ## points from setting a very wide scale.
@@ -61,10 +61,13 @@ if (require(ocedata)) {
 
 }
 \seealso{
-Other bin-related functions: \code{\link{binApply1D}},
-  \code{\link{binAverage}}, \code{\link{binCount1D}},
-  \code{\link{binCount2D}}, \code{\link{binMean1D}},
-  \code{\link{binMean2D}}
+Other bin-related functions: 
+\code{\link{binApply1D}()},
+\code{\link{binAverage}()},
+\code{\link{binCount1D}()},
+\code{\link{binCount2D}()},
+\code{\link{binMean1D}()},
+\code{\link{binMean2D}()}
 }
 \author{
 Dan Kelley

@@ -368,3 +368,29 @@ test_that("non-CTD object accessors for derived properties", {
           expect_equal(spice, swSpice(general))
 })
 
+test_that("swRho handles matrix and array data", {
+          data(ctd)
+          lon <- ctd[["longitude"]]
+          lat <- ctd[["latitude"]]
+          S <- ctd[["salinity"]][1:20]
+          T <- ctd[["temperature"]][1:20]
+          p <- ctd[["pressure"]][1:20]
+          Sm <- matrix(S, nrow=10)
+          Tm <- matrix(T, nrow=10)
+          pm <- matrix(p, nrow=10)
+          Sa <- array(S, dim=c(2, 2, 5))
+          Ta <- array(T, dim=c(2, 2, 5))
+          pa <- array(p, dim=c(2, 2, 5))
+          ## 'unesco' equation of state
+          rho <- swRho(S, T, p, eos="unesco")
+          expect_equal(swRho(Sm, Tm, pm, eos="unesco"),
+                       matrix(rho, nrow=10))
+          expect_equal(swRho(Sa, Ta, pa, eos="unesco"),
+                       array(rho, dim=c(2, 2, 5)))
+          ## 'gsw' equation of state
+          rho <- swRho(S, T, p, longitude=lon, latitude=lat, eos="gsw")
+          expect_equal(swRho(Sm, Tm, pm, longitude=lon, latitude=lat, eos="gsw"),
+                       matrix(rho, nrow=10))
+          expect_equal(swRho(Sa, Ta, pa, longitude=lon, latitude=lat, eos="gsw"),
+                       array(rho, dim=c(2, 2, 5)))
+})

@@ -4,8 +4,7 @@
 \alias{applyMagneticDeclination}
 \title{Earth magnetic declination}
 \usage{
-applyMagneticDeclination(x, declination = 0,
-  debug = getOption("oceDebug"))
+applyMagneticDeclination(x, declination = 0, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{an \linkS4class{oce} object.}
@@ -35,7 +34,8 @@ data need to be adjusted.  This function is for the latter case.
 Use \code{\link[=magneticField]{magneticField()}} to determine the declination,
 inclination and intensity at a given spot on the world, at a given time.
 
-Other things related to magnetism: \code{\link{magneticField}}
+Other things related to magnetism: 
+\code{\link{magneticField}()}
 }
 \author{
 Dan Kelley

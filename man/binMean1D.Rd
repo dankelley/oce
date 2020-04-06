@@ -37,10 +37,13 @@ lines(TT$result, TT$xmids, col='red')
 
 }
 \seealso{
-Other bin-related functions: \code{\link{binApply1D}},
-  \code{\link{binApply2D}}, \code{\link{binAverage}},
-  \code{\link{binCount1D}}, \code{\link{binCount2D}},
-  \code{\link{binMean2D}}
+Other bin-related functions: 
+\code{\link{binApply1D}()},
+\code{\link{binApply2D}()},
+\code{\link{binAverage}()},
+\code{\link{binCount1D}()},
+\code{\link{binCount2D}()},
+\code{\link{binMean2D}()}
 }
 \author{
 Dan Kelley

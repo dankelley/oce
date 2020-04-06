@@ -13,7 +13,7 @@ sectionAddStation(section, station)
 \item{station}{A ctd object holding data for the station to be added.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{section}.
+A \linkS4class{section} object.
 }
 \description{
 Add a CTD profile to an existing section.
@@ -40,17 +40,21 @@ sectionAddStation(section, ctd3)
 
 }
 \seealso{
-Other things related to section data: \code{\link{[[,section-method}},
-  \code{\link{[[<-,section-method}},
-  \code{\link{as.section}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{initializeFlagScheme,section-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{read.section}}, \code{\link{section-class}},
-  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
-  \code{\link{sectionSort}}, \code{\link{section}},
-  \code{\link{subset,section-method}},
-  \code{\link{summary,section-method}}
+Other things related to section data: 
+\code{\link{[[,section-method}},
+\code{\link{[[<-,section-method}},
+\code{\link{as.section}()},
+\code{\link{handleFlags,section-method}},
+\code{\link{initializeFlagScheme,section-method}},
+\code{\link{plot,section-method}},
+\code{\link{read.section}()},
+\code{\link{section-class}},
+\code{\link{sectionGrid}()},
+\code{\link{sectionSmooth}()},
+\code{\link{sectionSort}()},
+\code{\link{section}},
+\code{\link{subset,section-method}},
+\code{\link{summary,section-method}}
 }
 \author{
 Dan Kelley

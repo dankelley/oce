@@ -15,7 +15,7 @@ ping to ping.
 }
 \details{
 \itemize{
-\item An infrequently updated record of the intrument position, in
+\item An infrequently updated record of the instrument position, in
 \code{timeSlow}, \code{longitudeSlow} and \code{latitudeSlow}.  These are
 used in plotting maps with \code{\link[=plot,echosounder-method]{plot,echosounder-method()}}.
 \item An interpolated record of the instrument position, in \code{time},
@@ -92,7 +92,7 @@ contain the item. This \code{[[} method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
-longitude and latitudee, has sufficient information to compute
+longitude and latitude, has sufficient information to compute
 Absolute Salinity, and so \code{o[["SA"]]} will yield the
 calculated Absolute Salinity.
 
@@ -102,14 +102,16 @@ retrieve derived items.
 }
 
 \seealso{
-Other things related to echosounder data: \code{\link{[[,echosounder-method}},
-  \code{\link{[[<-,echosounder-method}},
-  \code{\link{as.echosounder}}, \code{\link{echosounder}},
-  \code{\link{findBottom}},
-  \code{\link{plot,echosounder-method}},
-  \code{\link{read.echosounder}},
-  \code{\link{subset,echosounder-method}},
-  \code{\link{summary,echosounder-method}}
+Other things related to echosounder data: 
+\code{\link{[[,echosounder-method}},
+\code{\link{[[<-,echosounder-method}},
+\code{\link{as.echosounder}()},
+\code{\link{echosounder}},
+\code{\link{findBottom}()},
+\code{\link{plot,echosounder-method}},
+\code{\link{read.echosounder}()},
+\code{\link{subset,echosounder-method}},
+\code{\link{summary,echosounder-method}}
 }
 \author{
 Dan Kelley

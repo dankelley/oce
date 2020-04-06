@@ -23,26 +23,37 @@ website, the record ends on the 8th of October.
 }
 }
 \seealso{
-Other datasets provided with oce: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
-  \code{\link{landsat}}, \code{\link{lisst}},
-  \code{\link{lobo}}, \code{\link{met}},
-  \code{\link{ocecolors}}, \code{\link{rsk}},
-  \code{\link{sealevelTuktoyaktuk}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}},
-  \code{\link{xbt}}
+Other datasets provided with oce: 
+\code{\link{adp}},
+\code{\link{adv}},
+\code{\link{argo}},
+\code{\link{cm}},
+\code{\link{coastlineWorld}},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{echosounder}},
+\code{\link{landsat}},
+\code{\link{lisst}},
+\code{\link{lobo}},
+\code{\link{met}},
+\code{\link{ocecolors}},
+\code{\link{rsk}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{section}},
+\code{\link{topoWorld}},
+\code{\link{wind}},
+\code{\link{xbt}}
 
-Other things related to sealevel data: \code{\link{[[,sealevel-method}},
-  \code{\link{[[<-,sealevel-method}},
-  \code{\link{as.sealevel}},
-  \code{\link{plot,sealevel-method}},
-  \code{\link{read.sealevel}},
-  \code{\link{sealevel-class}},
-  \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{subset,sealevel-method}},
-  \code{\link{summary,sealevel-method}}
+Other things related to sealevel data: 
+\code{\link{[[,sealevel-method}},
+\code{\link{[[<-,sealevel-method}},
+\code{\link{as.sealevel}()},
+\code{\link{plot,sealevel-method}},
+\code{\link{read.sealevel}()},
+\code{\link{sealevel-class}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{subset,sealevel-method}},
+\code{\link{summary,sealevel-method}}
 }
 \author{
 Dan Kelley

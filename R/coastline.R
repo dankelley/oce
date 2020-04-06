@@ -51,7 +51,8 @@ NULL
 
 setMethod(f="initialize",
           signature="coastline",
-          definition=function(.Object, longitude=NULL, latitude=NULL, filename="", fillable=FALSE) {
+          definition=function(.Object, longitude=NULL, latitude=NULL, filename="", fillable=FALSE, ...) {
+              .Object <- callNextMethod(.Object, ...)
               .Object@data$longitude <- longitude
               .Object@data$latitude <- latitude
               .Object@metadata$filename <- filename
@@ -101,9 +102,9 @@ setMethod(f="[[<-",
 #' Subset a Coastline Object
 #'
 #' Subsets a coastline object according to limiting values for longitude
-#' and latitude. The \CRANpkg{raster} package must be installed for this
-#' to work, because it relies on the [raster::intersect()] function
-#' from that package.
+#' and latitude. This uses functions in the \CRANpkg{raster} package
+#' for some calculations, and so it will fail unless that package is
+#' installed.
 #'
 #' As illustrated in the \dQuote{Examples}, `subset` must be an
 #' expression that indicates limits on `latitude` and
@@ -123,7 +124,7 @@ setMethod(f="[[<-",
 #' @param subset An expression indicating how to subset `x`. See \dQuote{Details}.
 #'
 #' @param ... optional additional arguments, the only one of which is considered
-#' is one named `debug`, an integer that controlls the level of debugging. If
+#' is one named `debug`, an integer that controls the level of debugging. If
 #' this is not supplied, `debug` is assumed to be 0, meaning no debugging. If
 #' it is 1, the steps of determining the bounding box are shown. If it is 2 or larger,
 #' then additional processing steps are shown, including the extraction of every
@@ -132,15 +133,15 @@ setMethod(f="[[<-",
 #' @return A `coastline` object.
 #'
 #' @examples
-#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
-#' ## Eastern Canada
-#' cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
-#' ## The plot demonstrates that the trimming is as requested.
-#' plot(cl, clon=-65, clat=45, span=6000)
-#' rect(-80, 30, -50, 60, bg="transparent", border="red")
-#'}
+#' ## Subset to a box centred on Nova Scotia, Canada
+#' if (requireNamespace("sf")) {
+#'     cl <- subset(coastlineWorld, -80<lon & lon<-50 & 30<lat & lat<60)
+#'     ## The plot demonstrates that the trimming is as requested.
+#'     plot(cl, clon=-65, clat=45, span=6000)
+#'     rect(-80, 30, -50, 60, bg="transparent", border="red")
+#' }
 #' @family things related to coastline data
 #' @family functions that subset oce objects
 #'
@@ -150,8 +151,6 @@ setMethod(f="subset",
           definition=function(x, subset, ...) {
               if (missing(subset))
                   stop("must give 'subset'")
-              if (!requireNamespace("raster"))
-                  stop("must install.packages(\"raster\") for coastline subset to work")
               dots <- list(...)
               debug <- dots$debug
               if (is.null(debug))
@@ -215,12 +214,23 @@ setMethod(f="subset",
               cllon <- x[["longitude"]]
               cllat <- x[["latitude"]]
               ##old norig <- length(cllon)
-              box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
+              ## {{{ NEW method (see https://github.com/dankelley/oce/issues/1657)
+              if (!requireNamespace("sf", quietly=TRUE))
+                  stop("\"sf\" package must be installed for this to work")
+              box <- sf::st_polygon(list(outer=cbind(c(W,W,E,E,W), c(S,N,N,S,S))))
+              ## }}}
+              ## {{{ OLD method maybe remove (see https://github.com/dankelley/oce/issues/1657)
+              ##OLD if (!requireNamespace("raster", quietly=TRUE))
+              ##OLD     stop("\"raster\" package must be installed for this to work")
+              ##OLD if (!requireNamespace("sp", quietly=TRUE))
+              ##OLD     stop("\"sp\" package must be installed for this to work")
+              ##OLD box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
+              ##OLD ## }}}
               owarn <- options("warn")$warn
               options(warn=-1)
               na <- which(is.na(cllon))
               nseg <- length(na)
-              nnew <- 0
+              ##OLD nnew <- 0
               outlon <- NULL
               outlat <- NULL
               for (iseg in 2:nseg) {
@@ -231,25 +241,33 @@ setMethod(f="subset",
                   if (any(is.na(lat))) stop("step 1: double lat NA at iseg=", iseg) # checks ok on coastlineWorld
                   n <- length(lon)
                   if (n < 1) stop("how can we have no data?")
-                  if (length(lon) > 1) {
-                      A <- sp::Polygon(cbind(lon, lat))
-                      B <- sp::Polygons(list(A), "A")
-                      C <- sp::SpatialPolygons(list(B))
-                      i <- raster::intersect(box, C)
-                      if (!is.null(i)) {
-                          for (j in seq_along(i@polygons)) {
-                              for (k in seq_along(i@polygons[[1]]@Polygons)) {
-                                  xy <- i@polygons[[j]]@Polygons[[k]]@coords
-                                  seglon <- xy[, 1]
-                                  seglat <- xy[, 2]
-                                  nnew <- nnew + length(seglon)
-                                  outlon <- c(outlon, NA, seglon)
-                                  outlat <- c(outlat, NA, seglat)
-                                  oceDebug(debug > 1, "iseg=", iseg, ", j=", j, ", k=", k, "\n", sep="")
-                              }
-                          }
-                      }
+                  ## was using sp and raster, but this caused assert() errors
+                  ## see https://github.com/dankelley/oce/issues/1657
+                  C <- sf::st_polygon(list(outer=cbind(c(lon, lon[1]), c(lat, lat[1]))))
+                  inside <- sf::st_intersection(box, C)
+                  if (1 == length(inside)) {
+                      outlon <- c(outlon, NA, inside[[1]][,1])
+                      outlat <- c(outlat, NA, inside[[1]][,2])
                   }
+                  ##OLD     if (length(lon) > 1) {
+                  ##OLD         A <- sp::Polygon(cbind(lon, lat))
+                  ##OLD         B <- sp::Polygons(list(A), "A")
+                  ##OLD         C <- sp::SpatialPolygons(list(B))
+                  ##OLD         i <- raster::intersect(box, C)
+                  ##OLD         if (!is.null(i)) {
+                  ##OLD             for (j in seq_along(i@polygons)) {
+                  ##OLD                 for (k in seq_along(i@polygons[[1]]@Polygons)) {
+                  ##OLD                     xy <- i@polygons[[j]]@Polygons[[k]]@coords
+                  ##OLD                     seglon <- xy[, 1]
+                  ##OLD                     seglat <- xy[, 2]
+                  ##OLD                     nnew <- nnew + length(seglon)
+                  ##OLD                     outlon <- c(outlon, NA, seglon)
+                  ##OLD                     outlat <- c(outlat, NA, seglat)
+                  ##OLD                     oceDebug(debug > 1, "iseg=", iseg, ", j=", j, ", k=", k, "\n", sep="")
+                  ##OLD                 }
+                  ##OLD             }
+                  ##OLD         }
+                  ##OLD     }
               }
               res@data$longitude <- outlon
               res@data$latitude <- outlat
@@ -321,7 +339,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 }
 
 
-#' Plot a Coastline
+#' Plot a coastline Object
 #'
 #' This function plots a coastline.  An attempt is made to fill the space of
 #' the plot, and this is done by limiting either the longitude range or the
@@ -385,11 +403,10 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' `clongitude` and `clatitude` are supplied
 #' (or inferred from `projection`).
 #'
-#' @param lonlabel,latlabel,sides optional vectors of longitude and latitude to
-#' label on the indicated sides of plot, passed to
-#' [plot,coastline-method()].  Using these arguments permits reasonably
-#' simple customization.  If they are are not provided, reasonable defaults
-#' will be used.
+#' @param lonlabels,latlabels optional vectors of longitude and latitude to
+#' label on the sides of plot, passed to [mapPlot()] to control
+#' axis labelling, for plots done with map projections (i.e. for
+#' cases in which `projection` is not `NULL`).
 #'
 #' @param projection optional map projection to use (see
 #' the [mapPlot()] argument of the same name).
@@ -423,10 +440,12 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #'
 #' @param type indication of type; may be `"polygon"`, for a filled polygon,
 #' `"p"` for points, `"l"` for line segments, or `"o"` for points
-#' overlain with line segments.
+#' overlain with line segments. See `color` for a note on how
+#' the the value of `type` alters the meaning of the `color`
+#' argument.
 #'
-#' @param border color of coastlines and international borders (ignored unless
-#' `type="polygon"`.
+#' @param border color used to indicate land (if `type="polygon"`) or
+#' the coastline and international borders (if `type="l"`).
 #'
 #' @param col either the color for filling polygons (if `type="polygon"`)
 #' or the color of the points and line segments (if `type="p"`,
@@ -507,7 +526,7 @@ setMethod(f="plot",
                                xlab="", ylab="", showHemi=TRUE,
                                asp,
                                clongitude, clatitude, span,
-                               lonlabel=NULL, latlabel=NULL, sides=NULL,
+                               lonlabels=TRUE, latlabels=TRUE,
                                projection=NULL,
                                expand=1,
                                mgp=getOption("oceMgp"), mar=c(mgp[1]+1, mgp[1]+1, 1, 1),
@@ -616,7 +635,7 @@ setMethod(f="plot",
                           showHemi=showHemi,
                           mgp=mgp, mar=mar,
                           bg="white", border=border, col=col, type=type, axes=TRUE, ## FIXME: use bg and col here; delete fill
-                          lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                          lonlabels=lonlabels, latlabels=latlabels,
                           projection=projection,
                           debug=debug-1, ...)
                   oceDebug(debug, "} # plot.coastline()\n", unindent=1)

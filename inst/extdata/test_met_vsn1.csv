@@ -1,0 +1,23 @@
+"Station Name","HALIFAX STANFIELD INT'L A"
+"Province","NOVA SCOTIA"
+"Latitude","44.88"
+"Longitude","-63.50"
+"Elevation","145.40"
+"Climate Identifier","8202250"
+"WMO Identifier","71395"
+"TC Identifier","YHZ"
+"All times are specified in Local Standard Time (LST). Add 1 hour to adjust for Daylight Saving Time where and when it is observed."
+
+"Legend"
+"E","Estimated"
+"M","Missing"
+"NA","Not Available"
+"á","Partner data that is not subject to review by the National Climate Archives"
+
+"Date/Time","Year","Month","Day","Time","Data Quality","Temp (∞C)","Temp Flag","Dew Point Temp (∞C)","Dew Point Temp Flag","Rel Hum (%)","Rel Hum Flag","Wind Dir (10s deg)","Wind Dir Flag","Wind Spd (km/h)","Wind Spd Flag","Visibility (km)","Visibility Flag","Stn Press (kPa)","Stn Press Flag","Hmdx","Hmdx Flag","Wind Chill","Wind Chill Flag","Weather"
+"2003-09-01 00:00","2003","09","01","00:00"," ","12.1","","8.2","","77","","29","","7","","32.2","","100.61","","","","","","Mainly Clear"
+"2003-09-01 01:00","2003","09","01","01:00"," ","11.8","","7.8","","76","","29","","7","","32.2","","100.59","","","","","","Mainly Clear"
+"2003-09-01 02:00","2003","09","01","02:00"," ","11.4","","6.9","","74","","27","","6","","32.2","","100.55","","","","","","Mainly Clear"
+"2003-09-01 03:00","2003","09","01","03:00"," ","10.9","","6.2","","73","","23","","6","","32.2","","100.54","","","","","","Clear"
+"2003-09-01 04:00","2003","09","01","04:00"," ","10.9","","6.8","","76","","22","","6","","32.2","","100.52","","","","","","Mainly Clear"
+

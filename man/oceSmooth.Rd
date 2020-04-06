@@ -14,8 +14,7 @@ oceSmooth(x, ...)
 the actual work.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"oce"} that has been
-smoothed appropriately.
+An \linkS4class{oce} object that has been smoothed appropriately.
 }
 \description{
 Each data element is smoothed as a timeseries. For ADP data, this is done

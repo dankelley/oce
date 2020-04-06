@@ -61,7 +61,8 @@ NULL
 
 setMethod(f="initialize",
           signature="rsk",
-          definition=function(.Object, time, pressure, temperature, filename="") {
+          definition=function(.Object, time, pressure, temperature, filename="", ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(time)) .Object@data$time <- time
               if (!missing(pressure)) .Object@data$pressure <- pressure
               if (!missing(temperature)) .Object@data$temperature <- temperature
@@ -342,7 +343,7 @@ as.rsk <- function(time, columns,
 }
 
 
-#' Plot Rsk Data
+#' Plot a rsk Object
 #'
 #' Rsk data may be in many forms, and it is not easy to devise a general plotting
 #' strategy for all of them. The present function is quite crude, on the

@@ -233,7 +233,7 @@ woceUnit2oceUnit <- function(woceUnit)
 #' This reads WOCE exchange files that start with the string `"CTD"`.
 #' There are two variants: one in which the first 4 characters are
 #' `"CTD,"` and the other in which the first 3 characters are
-#' again `"CTD"` but no other non-whitespace characers occur on
+#' again `"CTD"` but no other non-whitespace characters occur on
 #' the line.
 #'
 #' @template readCtdTemplate

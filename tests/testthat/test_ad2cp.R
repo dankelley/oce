@@ -42,8 +42,6 @@ test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burs
                            "since 'plan' was not given, using the most common value, namely 0")
             nnn <- c("average", "burst", "interleavedBurst")
             expect_equal(c(TRUE, TRUE, FALSE), nnn %in% names(d1@data))
-            expect_equal(c(TRUE, FALSE, FALSE), nnn %in% names(subset(d1, "average")@data))
-            expect_equal(c(FALSE, TRUE, FALSE), nnn %in% names(subset(d1, "burst")@data))
             expect_equal(sort(names(d1[["burst"]])),
                          sort(c("a", "accelerometerx", "accelerometery",
                            "accelerometerz", "AHRS", "blankingDistance", "cellSize",
@@ -345,7 +343,6 @@ test_that("read.adp() on a private AD2CP file that has only 'burst' data", {
                            "since 'plan' was not given, using the most common value, namely 0")
             nnn <- c("average", "burst", "interleavedBurst")
             expect_equal(c(FALSE, TRUE, FALSE), nnn %in% names(d2@data))
-            expect_equal(c(FALSE, FALSE, FALSE), nnn %in% names(subset(d2, "average")@data))
             expect_equal("beam", d2[["oceCoordinate"]])
             expect_equal(sort(names(d2[["burst"]])),
                          c("a", "accelerometerx", "accelerometery",
@@ -472,37 +469,37 @@ test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedB
             ## t[grep('CY=',t)[1]]
             expect_equal("beam", d3[["oceCoordinate"]])
             expect_error(plot(d3, j="average"), "ad2cp object does not contain data item 'average'")
-            plot(d3)
-            plot(d3, j="burst") # as above, since object holds 'average' data
-            plot(d3, which="velocity") # as above, since which='velocity' is default
-            plot(d3, which="amplitude")
-            plot(d3, which="quality")
-            plot(d3, j="burst")
-            plot(d3, which="velocity", j="burst")
-            plot(d3, which="amplitude", j="burst")
-            plot(d3, which="quality", j="burst")
+            expect_silent(plot(d3))
+            expect_silent(plot(d3, j="burst")) # as above, since object holds 'average' data
+            expect_silent(plot(d3, which="velocity")) # as above, since which='velocity' is default
+            expect_silent(plot(d3, which="amplitude"))
+            expect_silent(plot(d3, which="quality"))
+            expect_silent(plot(d3, j="burst"))
+            expect_silent(plot(d3, which="velocity", j="burst"))
+            expect_silent(plot(d3, which="amplitude", j="burst"))
+            expect_silent(plot(d3, which="quality", j="burst"))
             par(mfrow=c(1, 1)) # use single-panel since interleavedBurst is just 1 beam
-            plot(d3, j="interleavedBurst")
-            plot(d3, which="velocity", j="interleavedBurst") # as above
-            plot(d3, which="amplitude", j="interleavedBurst")
-            plot(d3, which="quality", j="interleavedBurst")
+            expect_silent(plot(d3, j="interleavedBurst"))
+            expect_silent(plot(d3, which="velocity", j="interleavedBurst")) # as above
+            expect_silent(plot(d3, which="amplitude", j="interleavedBurst"))
+            expect_silent(plot(d3, which="quality", j="interleavedBurst"))
             ## Compare beams in three coordinate systems, with 6 plots over two pages
             par(mfcol=c(3, 2))
             zlim <- c(-2, 2)
-            plot(d3, which=1, zlim=zlim, drawTimeRange=FALSE)
-            plot(d3, which=2, zlim=zlim, drawTimeRange=FALSE)
-            plot(d3, which=3, zlim=zlim, drawTimeRange=FALSE)
-            plot(d3, which='a1', zlim=c(0, 255), drawTimeRange=FALSE)
-            plot(d3, which='a2', zlim=c(0, 255), drawTimeRange=FALSE)
-            plot(d3, which='a3', zlim=c(0, 255), drawTimeRange=FALSE)
+            expect_silent(plot(d3, which=1, zlim=zlim, drawTimeRange=FALSE))
+            expect_silent(plot(d3, which=2, zlim=zlim, drawTimeRange=FALSE))
+            expect_silent(plot(d3, which=3, zlim=zlim, drawTimeRange=FALSE))
+            expect_silent(plot(d3, which='a1', zlim=c(0, 255), drawTimeRange=FALSE))
+            expect_silent(plot(d3, which='a2', zlim=c(0, 255), drawTimeRange=FALSE))
+            expect_silent(plot(d3, which='a3', zlim=c(0, 255), drawTimeRange=FALSE))
             d3xyz <- beamToXyz(d3)
-            plot(d3xyz, which=1, zlim=zlim, drawTimeRange=FALSE)
-            plot(d3xyz, which=2, zlim=zlim, drawTimeRange=FALSE)
-            plot(d3xyz, which=3, zlim=zlim/4, drawTimeRange=FALSE)
-            d3enu <- xyzToEnu(d3xyz)
-            plot(d3enu, which=1, zlim=zlim, drawTimeRange=FALSE)
-            plot(d3enu, which=2, zlim=zlim, drawTimeRange=FALSE)
-            plot(d3enu, which=3, zlim=zlim/4, drawTimeRange=FALSE)
+            expect_silent(plot(d3xyz, which=1, zlim=zlim, drawTimeRange=FALSE))
+            expect_silent(plot(d3xyz, which=2, zlim=zlim, drawTimeRange=FALSE))
+            expect_silent(plot(d3xyz, which=3, zlim=zlim/4, drawTimeRange=FALSE))
+            d3enu <- expect_silent(xyzToEnu(d3xyz))
+            expect_silent(plot(d3enu, which=1, zlim=zlim, drawTimeRange=FALSE))
+            expect_silent(plot(d3enu, which=2, zlim=zlim, drawTimeRange=FALSE))
+            expect_silent(plot(d3enu, which=3, zlim=zlim/4, drawTimeRange=FALSE))
           }
 })
 

@@ -4,9 +4,13 @@
 \alias{read.coastline}
 \title{Read a Coastline File}
 \usage{
-read.coastline(file, type = c("R", "S", "mapgen", "shapefile",
-  "openstreetmap"), debug = getOption("oceDebug"), monitor = FALSE,
-  processingLog)
+read.coastline(
+  file,
+  type = c("R", "S", "mapgen", "shapefile", "openstreetmap"),
+  debug = getOption("oceDebug"),
+  monitor = FALSE,
+  processingLog
+)
 }
 \arguments{
 \item{file}{name of file containing coastline data.}

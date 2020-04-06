@@ -7,7 +7,7 @@
 \description{
 This class is for data stored in a format used at Canadian
 Department of Fisheries and Oceans laboratories. It is somewhat
-similar to the \code{\link{bremen-class}}, in the sense
+similar to the \linkS4class{bremen}, in the sense
 that it does not apply just to a particular instrument.
 }
 \section{Slots}{
@@ -63,7 +63,7 @@ contain the item. This \code{[[} method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
-longitude and latitudee, has sufficient information to compute
+longitude and latitude, has sufficient information to compute
 Absolute Salinity, and so \code{o[["SA"]]} will yield the
 calculated Absolute Salinity.
 
@@ -85,25 +85,37 @@ in June 2011.)
 }
 }
 \seealso{
-Other things related to odf data: \code{\link{ODF2oce}},
-  \code{\link{ODFListFromHeader}},
-  \code{\link{ODFNames2oceNames}},
-  \code{\link{[[,odf-method}},
-  \code{\link{[[<-,odf-method}},
-  \code{\link{plot,odf-method}},
-  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
-  \code{\link{subset,odf-method}},
-  \code{\link{summary,odf-method}}
+Other things related to odf data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{ODF2oce}()},
+\code{\link{ODFListFromHeader}()},
+\code{\link{ODFNames2oceNames}()},
+\code{\link{[[,odf-method}},
+\code{\link{[[<-,odf-method}},
+\code{\link{plot,odf-method}},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.odf}()},
+\code{\link{subset,odf-method}},
+\code{\link{summary,odf-method}}
 
-Other classes provided by oce: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}, \code{\link{xbt-class}}
+Other classes provided by oce: 
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{argo-class}},
+\code{\link{bremen-class}},
+\code{\link{cm-class}},
+\code{\link{coastline-class}},
+\code{\link{ctd-class}},
+\code{\link{lisst-class}},
+\code{\link{lobo-class}},
+\code{\link{met-class}},
+\code{\link{oce-class}},
+\code{\link{rsk-class}},
+\code{\link{sealevel-class}},
+\code{\link{section-class}},
+\code{\link{topo-class}},
+\code{\link{windrose-class}},
+\code{\link{xbt-class}}
 }
 \author{
 Dan Kelley

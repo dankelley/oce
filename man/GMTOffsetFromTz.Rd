@@ -25,7 +25,8 @@ library(oce)
 cat("Atlantic Standard Time is ", GMTOffsetFromTz("AST"), "hours after UTC")
 }
 \seealso{
-Other functions relating to time: \code{\link{decodeTime}}
+Other functions relating to time: 
+\code{\link{decodeTime}()}
 }
 \author{
 Dan Kelley

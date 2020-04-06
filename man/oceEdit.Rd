@@ -5,8 +5,15 @@
 \alias{oce.edit}
 \title{Edit an Oce Object}
 \usage{
-oceEdit(x, item, value, action, reason = "", person = "",
-  debug = getOption("oceDebug"))
+oceEdit(
+  x,
+  item,
+  value,
+  action,
+  reason = "",
+  person = "",
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{x}{an \linkS4class{oce} object.  The exact action of \code{\link[=oceEdit]{oceEdit()}} depends
@@ -31,7 +38,7 @@ action on the object.}
 indicating no debugging, and 1 or more indicating debugging.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"oce"}, altered
+A \linkS4class{oce} object, altered
 appropriately, and with a log item indicating the nature of the alteration.
 }
 \description{
@@ -44,7 +51,6 @@ There are several ways to use this function.
 \item If both an \code{item} and \code{value} are supplied, then
 either the object's metadata or data slot may be altered. There are
 two ways in which this can be done.
-}
 \itemize{
 \item Case 1A. If the \code{item} string does not contain an
 \code{@} character, then the \code{metadata} slot is examined
@@ -59,7 +65,6 @@ must be either \code{"metadata"} or \code{"data"}, and it names the slot
 in which the change is done. In contrast with case 1A, this will
 \emph{create} a new item, if it is not already in existence.
 }
-\enumerate{
 \item If \code{item} and \code{value} are not supplied, then \code{action} must
 be supplied.  This is a character string specifying some action to be
 performed on the object, e.g. a manipulation of a column.  The action must

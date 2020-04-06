@@ -58,14 +58,18 @@ imagep(t, z, t(g[['salinity']]), ylim=c(-100,0))
 
 }
 \seealso{
-Other things related to argo data: \code{\link{[[,argo-method}},
-  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
-  \code{\link{argoNames2oceNames}}, \code{\link{argo}},
-  \code{\link{as.argo}},
-  \code{\link{handleFlags,argo-method}},
-  \code{\link{plot,argo-method}}, \code{\link{read.argo}},
-  \code{\link{subset,argo-method}},
-  \code{\link{summary,argo-method}}
+Other things related to argo data: 
+\code{\link{[[,argo-method}},
+\code{\link{[[<-,argo-method}},
+\code{\link{argo-class}},
+\code{\link{argoNames2oceNames}()},
+\code{\link{argo}},
+\code{\link{as.argo}()},
+\code{\link{handleFlags,argo-method}},
+\code{\link{plot,argo-method}},
+\code{\link{read.argo}()},
+\code{\link{subset,argo-method}},
+\code{\link{summary,argo-method}}
 }
 \author{
 Dan Kelley and Clark Richards

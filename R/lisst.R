@@ -70,7 +70,8 @@ NULL
 
 setMethod(f="initialize",
           signature="lisst",
-          definition=function(.Object, filename="", longitude=NA, latitude=NA) {
+          definition=function(.Object, filename="", longitude=NA, latitude=NA, ...) {
+              .Object <- callNextMethod(.Object, ...)
               .Object@metadata$filename <- filename
               .Object@metadata$longitude <- longitude
               .Object@metadata$latitude <- latitude
@@ -110,7 +111,7 @@ setMethod(f="summary",
 
 
 
-#' Plot LISST data
+#' Plot a lisst Object
 #'
 #' Creates a multi-panel summary plot of data measured by LISST instrument.
 #'

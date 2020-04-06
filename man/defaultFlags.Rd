@@ -33,30 +33,32 @@ as listed below.
 \code{c(0,2,3,4,5,6,7,8,9)}, i.e. all flags except \code{good}.
 \item for \code{DFO}, the default is
 \code{c(0,2,3,4,5,8,9)}, i.e. all flags except \code{appears_correct}.
-\item for \code{WHP bottle}, the default is
+\item for \verb{WHP bottle}, the default is
 \code{c(1,3,4,5,6,7,8,9)}, i.e. all flags except \code{no_problems_noted}.
-\item for \code{WHP ctd}, the default is
+\item for \verb{WHP ctd}, the default is
 \code{c(1,3,4,5,6,7,9)}, i.e. all flags except \code{acceptable}.
 }
 }
 \seealso{
-Other functions relating to data-quality flags: \code{\link{handleFlags,adp-method}},
-  \code{\link{handleFlags,argo-method}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{handleFlags,oce-method}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{handleFlags}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{initializeFlagScheme,oce-method}},
-  \code{\link{initializeFlagScheme,section-method}},
-  \code{\link{initializeFlagSchemeInternal}},
-  \code{\link{initializeFlagScheme}},
-  \code{\link{initializeFlags,adp-method}},
-  \code{\link{initializeFlags,oce-method}},
-  \code{\link{initializeFlagsInternal}},
-  \code{\link{initializeFlags}},
-  \code{\link{setFlags,adp-method}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
+Other functions relating to data-quality flags: 
+\code{\link{handleFlags,adp-method}},
+\code{\link{handleFlags,argo-method}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{handleFlags,oce-method}},
+\code{\link{handleFlags,section-method}},
+\code{\link{handleFlags}()},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{initializeFlagScheme,oce-method}},
+\code{\link{initializeFlagScheme,section-method}},
+\code{\link{initializeFlagSchemeInternal}()},
+\code{\link{initializeFlagScheme}()},
+\code{\link{initializeFlags,adp-method}},
+\code{\link{initializeFlags,oce-method}},
+\code{\link{initializeFlagsInternal}()},
+\code{\link{initializeFlags}()},
+\code{\link{setFlags,adp-method}},
+\code{\link{setFlags,ctd-method}},
+\code{\link{setFlags,oce-method}},
+\code{\link{setFlags}()}
 }
 \concept{functions relating to data-quality flags}

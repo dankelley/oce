@@ -27,15 +27,16 @@ The documentation for \linkS4class{echosounder} explains the
 structure of \code{echosounder} objects, and also outlines the other
 functions dealing with them.
 
-Other things related to echosounder data: \code{\link{[[,echosounder-method}},
-  \code{\link{[[<-,echosounder-method}},
-  \code{\link{as.echosounder}},
-  \code{\link{echosounder-class}},
-  \code{\link{echosounder}},
-  \code{\link{plot,echosounder-method}},
-  \code{\link{read.echosounder}},
-  \code{\link{subset,echosounder-method}},
-  \code{\link{summary,echosounder-method}}
+Other things related to echosounder data: 
+\code{\link{[[,echosounder-method}},
+\code{\link{[[<-,echosounder-method}},
+\code{\link{as.echosounder}()},
+\code{\link{echosounder-class}},
+\code{\link{echosounder}},
+\code{\link{plot,echosounder-method}},
+\code{\link{read.echosounder}()},
+\code{\link{subset,echosounder-method}},
+\code{\link{summary,echosounder-method}}
 }
 \author{
 Dan Kelley

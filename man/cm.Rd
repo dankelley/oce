@@ -22,24 +22,37 @@ plot(cm)
 }
 }
 \seealso{
-Other datasets provided with oce: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
-  \code{\link{landsat}}, \code{\link{lisst}},
-  \code{\link{lobo}}, \code{\link{met}},
-  \code{\link{ocecolors}}, \code{\link{rsk}},
-  \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}},
-  \code{\link{xbt}}
+Other datasets provided with oce: 
+\code{\link{adp}},
+\code{\link{adv}},
+\code{\link{argo}},
+\code{\link{coastlineWorld}},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{echosounder}},
+\code{\link{landsat}},
+\code{\link{lisst}},
+\code{\link{lobo}},
+\code{\link{met}},
+\code{\link{ocecolors}},
+\code{\link{rsk}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{section}},
+\code{\link{topoWorld}},
+\code{\link{wind}},
+\code{\link{xbt}}
 
-Other things related to cm data: \code{\link{[[,cm-method}},
-  \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
-  \code{\link{cm-class}}, \code{\link{plot,cm-method}},
-  \code{\link{read.cm}}, \code{\link{rotateAboutZ}},
-  \code{\link{subset,cm-method}},
-  \code{\link{summary,cm-method}}
+Other things related to cm data: 
+\code{\link{[[,cm-method}},
+\code{\link{[[<-,cm-method}},
+\code{\link{as.cm}()},
+\code{\link{cm-class}},
+\code{\link{plot,cm-method}},
+\code{\link{read.cm}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{subset,cm-method}},
+\code{\link{summary,cm-method}}
 }
 \concept{datasets provided with oce}
 \concept{things related to cm data}

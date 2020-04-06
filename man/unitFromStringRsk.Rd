@@ -21,12 +21,13 @@ of the data contained within a few sample files; unusual sensors may
 not be handled properly.
 }
 \seealso{
-Other functions that interpret variable names and units from headers: \code{\link{ODFNames2oceNames}},
-  \code{\link{cnvName2oceName}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{unitFromString}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}
+Other functions that interpret variable names and units from headers: 
+\code{\link{ODFNames2oceNames}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{unitFromString}()},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()}
 }
 \concept{functions that interpret variable names and units from headers}

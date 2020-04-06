@@ -524,7 +524,7 @@ swCSTp <- function(salinity, temperature=15, pressure=0,
 #'
 #' 2.  K. Hill, T. Dauphinee, and D. Woods. \dQuote{The Extension of the Practical
 #' Salinity Scale 1978 to Low Salinities.} IEEE Journal of Oceanic Engineering 11,
-#' no. 1 (January 1986): 109–12. https://doi.org/10.1109/JOE.1986.1145154.
+#' no. 1 (January 1986): 109-12. https://doi.org/10.1109/JOE.1986.1145154.
 #'
 #' 3. `gsw_from_SP` online documentation, available at
 #' `http://www.teos-10.org/pubs/gsw/html/gsw_C_from_SP.html`
@@ -805,8 +805,8 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #' @param saturation_fraction The saturation fraction of dissolved air in seawater,
 #' ignored if `eos="unesco"`).
 #'
-#' @param eos The equation of state, either `"unesco"` (refrences 1 and 2) or `"gsw"`.
-#' (refrences 3 and 4).
+#' @param eos The equation of state, either `"unesco"` (references 1 and 2) or `"gsw"`.
+#' (references 3 and 4).
 #'
 #' @return Temperature (\eqn{^\circ}{deg}C), defined on the ITS-90 scale.
 #'
@@ -875,7 +875,6 @@ swTFreeze <- function(salinity, pressure=NULL,
     } else {
         l <- lookWithin(list(salinity=salinity, pressure=pressure))
     }
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     if (eos == "gsw") {
         ## Note that l$pressure is used for computing SA, but not for gsw_t_freezing().
@@ -885,7 +884,8 @@ swTFreeze <- function(salinity, pressure=NULL,
         res <- (-.0575+1.710523e-3*sqrt(abs(l$salinity))-2.154996e-4*l$salinity)*l$salinity-7.53e-4*l$pressure
         res <- T90fromT68(res)
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -1019,7 +1019,6 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
     } else {
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
     }
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     if (is.null(l$temperature))
         stop("must provide temperature")
@@ -1039,7 +1038,8 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
                    as.double(l$salinity), as.double(theta), as.double(l$pressure),
                    value=double(nS), NAOK=TRUE, PACKAGE="oce")$value
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -1071,7 +1071,7 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
 #' @author Dan Kelley
 #'
 #' @references The `eos="unesco"` formulae are based on the UNESCO
-#' equation of state, but are formulaed empirically by Trevor J. McDougall,
+#' equation of state, but are formulated empirically by Trevor J. McDougall,
 #' 1987, Neutral Surfaces, Journal of Physical Oceanography, volume 17, pages
 #' 1950-1964. The `eos="gsw"` formulae come from GSW; see references in
 #' the [swRho()] documentation.
@@ -1100,7 +1100,6 @@ swBeta <- function(salinity, temperature=NULL, pressure=0,
     } else {
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
     }
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     nt <- length(l$temperature)
@@ -1118,7 +1117,8 @@ swBeta <- function(salinity, temperature=NULL, pressure=0,
                    as.double(l$salinity), as.double(theta), as.double(l$pressure),
                    value=double(nS), NAOK=TRUE, PACKAGE="oce")$value
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -1197,7 +1197,7 @@ swThermalConductivity <- function (salinity, temperature=NULL, pressure=NULL)
 #'
 #' If `eos="unesco"` then depth is calculated from pressure using Saunders
 #' and Fofonoff's method, with the formula refitted for 1980 UNESCO equation of
-#' state (refrence 1).  If `eos="gsw"`, then [gsw::gsw_z_from_p()] from
+#' state (reference 1).  If `eos="gsw"`, then [gsw::gsw_z_from_p()] from
 #' the \CRANpkg{gsw} package (references 2 and 3) is used.
 #'
 #' @param pressure either pressure (dbar), in which case `lat` must also
@@ -1495,7 +1495,6 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
     } else {
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
     }
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     if (is.null(l$temperature))
@@ -1516,7 +1515,8 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
         ## the 1e4 is to convert from 1/Pa to 1/dbar
         res<- 1e4 * gsw::gsw_adiabatic_lapse_rate_from_CT(SA=SA, CT=CT, p=l$pressure)
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }                                      # swLapseRate
 
@@ -1625,7 +1625,6 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL,
         stop("must provide temperature")
     if (is.null(l$pressure))
         stop("must provide pressure")
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     nt <- length(l$temperature)
@@ -1644,7 +1643,8 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL,
         CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
         res <- gsw::gsw_rho(SA, CT, p=l$pressure)
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -1780,7 +1780,6 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
         stop("must provide temperature")
     if (is.null(pressure))
         stop("must provide pressure")
-    Smatrix <- is.matrix(salinity)
     dim <- dim(salinity)
     nS <- length(salinity)
     nt <- length(temperature)
@@ -1803,7 +1802,8 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
         SA <- gsw::gsw_SA_from_SP(SP=salinity, p=pressure, longitude=longitude, latitude=latitude)
         res <- gsw::gsw_pot_rho_t_exact(SA=SA, t=temperature, p=pressure, p_ref=referencePressure) - 1000
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -1968,11 +1968,11 @@ swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
 #'
 #' @references
 #' 1. F. H. Fisher and V. P. Simmons, 1977.  Sound absorption in
-#' sea water.  J. Acoust. Soc. Am., 62(3), 558-564.
+#' sea water.  Journal of the Acoustical Society of America, 62(3), 558-564.
 #'
 #' 2. R. E. Francois and G. R. Garrison, 1982.  Sound absorption based on
 #' ocean measurements.  Part II: Boric acid contribution and equation for total
-#' absorption.  J. Acoust. Soc. Am., 72(6):1879-1890.
+#' absorption.  Journal of the Acoustical Society of America, 72(6):1879-1890.
 #'
 #' 3. \url{http://resource.npl.co.uk/acoustics/techguides/seaabsorption/}
 #'
@@ -2081,7 +2081,6 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
     } else {
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
     }
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     if (is.null(l$temperature))
         stop("must provide temperature")
@@ -2101,7 +2100,8 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
         CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
         res <- gsw::gsw_sound_speed(SA=SA, CT=CT, p=l$pressure)
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -2159,7 +2159,6 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
     }
     if (is.null(l$temperature))
         stop("must provide temperature")
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     nt <- length(l$temperature)
@@ -2174,7 +2173,8 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
         res <- gsw::gsw_cp_t_exact(SA=SA, t=l$temperature, p=l$pressure)
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -2190,7 +2190,7 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #'
 #' If the first argument is a `ctd` object, then salinity, temperature and
 #' pressure values are extracted from it, and used for the calculation. (For
-#' the `eos="gsw"` case, longitude and latitude are also extacted, because
+#' the `eos="gsw"` case, longitude and latitude are also extracted, because
 #' these are required for the formulation of spiciness0.
 #'
 #' Roughly speaking, seawater with a high spiciness is relatively warm and
@@ -2246,11 +2246,11 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #' 1. Flament, P. \dQuote{A State Variable for Characterizing Water Masses and Their
 #' Diffusive Stability: Spiciness.} Progress in Oceanography, Observations of the
 #' 1997-98 El Nino along the West Coast of North America, 54, no. 1
-#' (July 1, 2002):493–501.
+#' (July 1, 2002):493-501.
 #' \url{https://doi.org/10.1016/S0079-6611(02)00065-4}
 #'
 #' 2.McDougall, Trevor J., and Oliver A. Krzysik. \dQuote{Spiciness.}
-#' Journal of Marine Research 73, no. 5 (September 1, 2015): 141–52.
+#' Journal of Marine Research 73, no. 5 (September 1, 2015): 141-52.
 #' \url{https://doi.org/10.1357/002224015816665589}
 #'
 #' @family functions that calculate seawater properties
@@ -2276,7 +2276,6 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL,
     }
     if (eos == "gsw" && is.null(pressure))
         stop("must provide pressure")
-    Smatrix <- is.matrix(salinity)
     dim <- dim(salinity)
     nS <- length(salinity)
     nt <- length(temperature)
@@ -2294,7 +2293,8 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL,
         CT <- gsw::gsw_CT_from_t(SA=SA, t=temperature, p=pressure)
         res <- gsw::gsw_spiciness0(SA, CT)
     }
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -2308,7 +2308,7 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL,
 #' is `"unesco"`, the method of Fofonoff *et al.* (1983) is used
 #' (see references 1 and 2).
 #' Otherwise, `swTheta` uses [gsw::gsw_pt_from_t()] from
-#' the CRANpkg{gsw} package.
+#' the \CRANpkg{gsw} package.
 #'
 #' If the first argument is a `ctd` or `section` object, then values
 #' for salinity, etc., are extracted from it, and used for the calculation, and
@@ -2398,7 +2398,6 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
     } else {
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure))
     }
-    Smatrix <- is.matrix(salinity)
     dim <- dim(salinity)
     nS <- length(salinity)
     nt <- length(temperature)
@@ -2422,7 +2421,7 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
                   value=double(nS), NAOK=TRUE, PACKAGE="oce")$value
         res <- T90fromT68(res)
     }
-    if (Smatrix)
+    if (!is.null(dim))
         dim(res) <- dim
     res
 }
@@ -2490,7 +2489,7 @@ swViscosity <- function(salinity, temperature)
 #' corresponding arguments to the present function are ignored.
 #'
 #' The conservative temperature is calculated using the TEOS-10 function
-#' [gsw::gsw_CT_from_t] from the CRANpkg{gsw} package.
+#' [gsw::gsw_CT_from_t] from the \CRANpkg{gsw} package.
 #'
 #' @param salinity either practical salinity (in which case `temperature`
 #' and `pressure` must be provided) *or* an `oce` object (in
@@ -2541,7 +2540,6 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
         stop("must supply latitude")
     l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                          longitude=longitude, latitude=latitude))
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     nt <- length(l$temperature)
@@ -2554,7 +2552,8 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
     good <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature[!bad], p=l$pressure[!bad])
     res <- rep(NA, nS)
     res[!bad] <- good
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }
 
@@ -2562,7 +2561,7 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
 #' Seawater absolute salinity, in GSW formulation
 #'
 #' Compute the seawater Absolute Salinity, according to the GSW/TEOS-10
-#' formulation with [gsw::gsw_SA_from_SP()] in the CRANpkg{gsw} package.
+#' formulation with [gsw::gsw_SA_from_SP()] in the \CRANpkg{gsw} package.
 #' Typically, this is a fraction of a unit
 #' higher than practical salinity as defined in the UNESCO formulae.
 #'
@@ -2612,7 +2611,6 @@ swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=NULL, latitude
     if (is.null(latitude))
         stop("must supply latitude")
     l <- lookWithin(list(salinity=salinity, pressure=pressure, longitude=longitude, latitude=latitude))
-    Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
     np <- length(l$pressure)
@@ -2621,6 +2619,7 @@ swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=NULL, latitude
     good <- gsw::gsw_SA_from_SP(l$salinity[!bad], l$pressure[!bad], l$longitude[!bad], l$latitude[!bad])
     res <- rep(NA, nS)
     res[!bad] <- good
-    if (Smatrix) dim(res) <- dim
+    if (!is.null(dim))
+        dim(res) <- dim
     res
 }

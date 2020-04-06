@@ -13,7 +13,7 @@ approx3d(x, y, z, f, xout, yout, zout)
 
 \item{z}{vector of z values for grid (must be equi-spaced)}
 
-\item{f}{matrix of rank 3, with the gridd values mapping to the \code{x}
+\item{f}{matrix of rank 3, with the gridded values mapping to the \code{x}
 values (first index of \code{f}), etc.}
 
 \item{xout}{vector of x values for output.}

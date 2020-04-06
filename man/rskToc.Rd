@@ -35,7 +35,7 @@ to parse these lines to get day and hour information, i.e.  179 and 023 in the
 line above.  Then, recognizing that it is common to change the names of such
 files, the rest of the file-name information in the line is ignored, and instead
 a new file name is constructed based on the data files that are found in the
-directory.  (In other words, the \code{"\\day179\\SL08A"} portion of the line is
+directory.  (In other words, the \code{"\\\\day179\\\\SL08A"} portion of the line is
 replaced.)  Once the file list is complete, with all times put into R format,
 then (optionally) the list is trimmed to the time interval indicated by
 \code{from} and \code{to}.  It is important that \code{from} and \code{to} be in
@@ -52,12 +52,17 @@ print(table)
 
 }
 \seealso{
-Other things related to rsk data: \code{\link{[[,rsk-method}},
-  \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
-  \code{\link{plot,rsk-method}}, \code{\link{read.rsk}},
-  \code{\link{rsk-class}}, \code{\link{rskPatm}},
-  \code{\link{rsk}}, \code{\link{subset,rsk-method}},
-  \code{\link{summary,rsk-method}}
+Other things related to rsk data: 
+\code{\link{[[,rsk-method}},
+\code{\link{[[<-,rsk-method}},
+\code{\link{as.rsk}()},
+\code{\link{plot,rsk-method}},
+\code{\link{read.rsk}()},
+\code{\link{rsk-class}},
+\code{\link{rskPatm}()},
+\code{\link{rsk}},
+\code{\link{subset,rsk-method}},
+\code{\link{summary,rsk-method}}
 }
 \author{
 Dan Kelley

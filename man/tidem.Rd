@@ -4,8 +4,16 @@
 \alias{tidem}
 \title{Fit a Tidal Model to a Timeseries}
 \usage{
-tidem(t, x, constituents, infer = NULL, latitude = NULL, rc = 1,
-  regress = lm, debug = getOption("oceDebug"))
+tidem(
+  t,
+  x,
+  constituents,
+  infer = NULL,
+  latitude = NULL,
+  rc = 1,
+  regress = lm,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{t}{A \code{sealevel} object created with
@@ -147,7 +155,7 @@ value of \code{1e-7} in a portion of the oce test suite
 (see \code{tests/testthat/test_tidem.R} in the source).
 
 A specific example may be of help in understanding the removal of unresolvable
-constitutents. For example, the \code{data(sealevel)} dataset is of length
+constituents. For example, the \code{data(sealevel)} dataset is of length
 6718 hours, and this is too short to resolve the full list of constituents,
 with the conventional (and, really, necessary) limit of \code{rc=1}.
 From Table 1 of Foreman (1978), this timeseries is too short to resolve the
@@ -188,8 +196,9 @@ Pawlowicz.
 set by Foreman (1978). This convention is slightly different
 from that used in the T-TIDE package of Pawlowicz et al.
 (2002), with Foreman's \code{UPS1} and \code{M8} becoming
-\code{UPSI} and \code{MS} in T-TIDE. As a convenience,
-\code{tidem} converts from these T-TIDE names to the
+\code{UPSI} and \code{MS} in T-TIDE. To permit the use of either notation,
+\code{\link[=tidem]{tidem()}} uses \code{\link[=tidemConstituentNameFix]{tidemConstituentNameFix()}} to
+convert from T-TIDE names to the
 Foreman names, issuing warnings when doing so.
 }
 
@@ -245,14 +254,18 @@ harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 Computers and Geosciences, 28, 929-937.
 }
 \seealso{
-Other things related to tides: \code{\link{[[,tidem-method}},
-  \code{\link{[[<-,tidem-method}}, \code{\link{as.tidem}},
-  \code{\link{plot,tidem-method}},
-  \code{\link{predict.tidem}},
-  \code{\link{summary,tidem-method}},
-  \code{\link{tidedata}}, \code{\link{tidem-class}},
-  \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
-  \code{\link{webtide}}
+Other things related to tides: 
+\code{\link{[[,tidem-method}},
+\code{\link{[[<-,tidem-method}},
+\code{\link{as.tidem}()},
+\code{\link{plot,tidem-method}},
+\code{\link{predict.tidem}()},
+\code{\link{summary,tidem-method}},
+\code{\link{tidedata}},
+\code{\link{tidem-class}},
+\code{\link{tidemAstron}()},
+\code{\link{tidemVuf}()},
+\code{\link{webtide}()}
 }
 \author{
 Dan Kelley

@@ -14,7 +14,8 @@ setClass("satellite", contains="oce")
 
 setMethod(f="initialize",
           signature="satellite",
-          definition=function(.Object, filename, subclass) {
+          definition=function(.Object, filename, subclass, ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(filename))
                   .Object@metadata$filename <- filename
               .Object@processingLog$time <- presentTime()
@@ -61,7 +62,7 @@ setMethod(f="summary",
               invisible(callNextMethod()) # summary
           })
 
-#' Plot a satellite object
+#' Plot a satellite Object
 #'
 #' For an example using `g1sst` data, see [read.g1sst()].
 #'

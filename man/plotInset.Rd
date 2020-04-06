@@ -4,8 +4,15 @@
 \alias{plotInset}
 \title{Plot an Inset Diagram}
 \usage{
-plotInset(xleft, ybottom, xright, ytop, expr, mar = c(2, 2, 1, 1),
-  debug = getOption("oceDebug"))
+plotInset(
+  xleft,
+  ybottom,
+  xright,
+  ytop,
+  expr,
+  mar = c(2, 2, 1, 1),
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{xleft}{location of left-hand of the inset diagram, in the existing

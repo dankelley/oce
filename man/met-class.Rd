@@ -66,7 +66,7 @@ contain the item. This \code{[[} method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
-longitude and latitudee, has sufficient information to compute
+longitude and latitude, has sufficient information to compute
 Absolute Salinity, and so \code{o[["SA"]]} will yield the
 calculated Absolute Salinity.
 
@@ -76,22 +76,38 @@ retrieve derived items.
 }
 
 \seealso{
-Other classes provided by oce: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{oce-class}}, \code{\link{odf-class}},
-  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}, \code{\link{xbt-class}}
+Other classes provided by oce: 
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{argo-class}},
+\code{\link{bremen-class}},
+\code{\link{cm-class}},
+\code{\link{coastline-class}},
+\code{\link{ctd-class}},
+\code{\link{lisst-class}},
+\code{\link{lobo-class}},
+\code{\link{oce-class}},
+\code{\link{odf-class}},
+\code{\link{rsk-class}},
+\code{\link{sealevel-class}},
+\code{\link{section-class}},
+\code{\link{topo-class}},
+\code{\link{windrose-class}},
+\code{\link{xbt-class}}
 
-Other things related to met data: \code{\link{[[,met-method}},
-  \code{\link{[[<-,met-method}}, \code{\link{as.met}},
-  \code{\link{download.met}}, \code{\link{met}},
-  \code{\link{plot,met-method}}, \code{\link{read.met}},
-  \code{\link{subset,met-method}},
-  \code{\link{summary,met-method}}
+Other things related to met data: 
+\code{\link{[[,met-method}},
+\code{\link{[[<-,met-method}},
+\code{\link{as.met}()},
+\code{\link{download.met}()},
+\code{\link{met}},
+\code{\link{plot,met-method}},
+\code{\link{read.met}()},
+\code{\link{subset,met-method}},
+\code{\link{summary,met-method}},
+\code{\link{test_met_csv1.csv}},
+\code{\link{test_met_csv2.csv}},
+\code{\link{test_met_xml2.xml}}
 }
 \author{
 Dan Kelley

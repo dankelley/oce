@@ -9,6 +9,22 @@ library(oce)
 context("Astronomical")
 
 RPD <- atan2(1, 1) / 45            # radians per degree
+
+test_that("Angles", {
+          ## A randomly-chosen example on page 99 of Meeus (1991).
+          ## Hundreds of other cases could be found in that book, or his
+          ## earlier one, but the fomulae is self-evident so a single
+          ## value ought to be enough to ensure against editing errors that
+          ## might accidentally alter degree2hms().
+          hms <- angle2hms(177.74208)
+          expect_equal(hms$hourDecimal, 177.74208 * 24 / 360)
+          expect_equal(hms$hour, 11)
+          expect_equal(hms$minute, 50)
+          expect_equal(hms$second, 58.0992)
+          expect_equal(hms$string, "11h50m58s.10")
+})
+
+
 test_that("Times", {
           ## [1] chapter 3 page 24-25
           ## FIXME: previously this had the unintelligble tz="ET" but it is *exact* as is
@@ -33,7 +49,7 @@ test_that("Moon", {
           ## in formulae.
           ## NB. this block also tests eclipticalToEquatorial(), julianDay(),
           ## and julianCenturyAnomaly().
-          t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
+          t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC")
           m <- moonAngle(t, 0, 0) # lat and lon arbitrary
           expect_equal(m$lambda, 133.162659, tolerance=0.0002)
           expect_equal(m$beta, -3.229127, tolerance=0.0002)
@@ -80,3 +96,22 @@ test_that("Sun", {
           ## Character time
           expect_identical(s, sunAngle("1992-04-12 00:00:00", 0, 0))
 })
+
+test_that("Sun Declination and Right Ascension", {
+          ## Example 24.a in Meeus (1991) (page 158 PDF, 153 print)
+          ## This is *apparent* declination and right ascension
+          time <- as.POSIXct("1992-10-13 00:00:00", tz="UTC")
+          a <- sunDeclinationRightAscension(time, apparent=TRUE)
+          expect_equal(a$declination, -7.78507,
+                       tol=            0.00004, scale=1)
+          expect_equal(a$rightAscension, -161.61919,
+                       tol=                 0.00003, scale=1)
+          b <- sunDeclinationRightAscension(time)
+          ## check against previous results, to protect aginst code-drift errors
+          ## This is *actual* declination and right ascension
+          expect_equal(b$declination, -7.785464443,
+                       tol=            0.000000001, scale=1)
+          expect_equal(b$rightAscension, -161.6183305,
+                       tol=                 0.0000001, scale=1)
+})
+

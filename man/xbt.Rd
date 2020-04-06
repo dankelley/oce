@@ -8,7 +8,7 @@
 data(xbt)
 }
 \description{
-The result of using \code{\link[=read.xbt]{read.xbt()}} on a Sippican file created by extracting the near-surface
+An \linkS4class{xbt} object created by using \code{\link[=read.xbt]{read.xbt()}} on a Sippican file created by extracting the near-surface
 fraction of the sample provided in Section 5.5.6 of reference 1.
 }
 \examples{
@@ -20,24 +20,44 @@ plot(xbt)
 }
 \references{
 \enumerate{
-\item Sippican, Inc. “Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
-Manual (P/N 308195, Rev. A),” 2003.
+\item Sippican, Inc. "Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
+Manual (P/N 308195, Rev. A)," 2003.
 https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
 }
 }
 \seealso{
-Other datasets provided with oce: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
-  \code{\link{landsat}}, \code{\link{lisst}},
-  \code{\link{lobo}}, \code{\link{met}},
-  \code{\link{ocecolors}}, \code{\link{rsk}},
-  \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}, \code{\link{wind}}
+Other datasets provided with oce: 
+\code{\link{adp}},
+\code{\link{adv}},
+\code{\link{argo}},
+\code{\link{cm}},
+\code{\link{coastlineWorld}},
+\code{\link{ctdRaw}},
+\code{\link{ctd}},
+\code{\link{echosounder}},
+\code{\link{landsat}},
+\code{\link{lisst}},
+\code{\link{lobo}},
+\code{\link{met}},
+\code{\link{ocecolors}},
+\code{\link{rsk}},
+\code{\link{sealevelTuktoyaktuk}},
+\code{\link{sealevel}},
+\code{\link{section}},
+\code{\link{topoWorld}},
+\code{\link{wind}}
 
-Other things related to xbtdata: \code{\link{[[,xbt-method}}
+Other things related to xbt data: 
+\code{\link{[[,xbt-method}},
+\code{\link{[[<-,xbt-method}},
+\code{\link{as.xbt}()},
+\code{\link{plot,xbt-method}},
+\code{\link{read.xbt.noaa1}()},
+\code{\link{read.xbt}()},
+\code{\link{subset,xbt-method}},
+\code{\link{summary,xbt-method}},
+\code{\link{xbt-class}},
+\code{\link{xbt.edf}}
 }
 \concept{datasets provided with oce}
-\concept{things related to xbtdata}
+\concept{things related to xbt data}

@@ -4,8 +4,16 @@
 \alias{despike}
 \title{Remove spikes from a time series}
 \usage{
-despike(x, reference = c("median", "smooth", "trim"), n = 4, k = 7,
-  min = NA, max = NA, replace = c("reference", "NA"), skip)
+despike(
+  x,
+  reference = c("median", "smooth", "trim"),
+  n = 4,
+  k = 7,
+  min = NA,
+  max = NA,
+  replace = c("reference", "NA"),
+  skip
+)
 }
 \arguments{
 \item{x}{a vector of (time-series) values, a list of vectors, a data frame,

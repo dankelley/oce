@@ -4,10 +4,23 @@
 \alias{mapImage}
 \title{Add an Image to a Map}
 \usage{
-mapImage(longitude, latitude, z, zlim, zclip = FALSE, breaks, col,
-  colormap, border = NA, lwd = par("lwd"), lty = par("lty"),
-  missingColor = NA, filledContour = FALSE, gridder = "binMean2D",
-  debug = getOption("oceDebug"))
+mapImage(
+  longitude,
+  latitude,
+  z,
+  zlim,
+  zclip = FALSE,
+  breaks,
+  col,
+  colormap,
+  border = NA,
+  lwd = par("lwd"),
+  lty = par("lty"),
+  missingColor = NA,
+  filledContour = FALSE,
+  gridder = "binMean2D",
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{longitude}{vector of longitudes corresponding to \code{z} matrix.}
@@ -77,7 +90,7 @@ The data are on a regular grid in lon-lat space, but not in the projected
 x-y space.  This means that \code{\link[=image]{image()}} cannot be used.  Instead,
 there are two approaches, depending on the value of \code{filledContour}.
 
-If \code{filledContour} is \code{FALSE}, the image \code{pixels'' are with [polygon()], which can be prohibitively slow for fine grids. However, if `filledContour` is `TRUE` or a numerical value, then the }pixels'' are remapped into a regular grid and then displayed with
+If \code{filledContour} is \code{FALSE}, the image \verb{pixels'' are with [polygon()], which can be prohibitively slow for fine grids. However, if `filledContour` is `TRUE` or a numerical value, then the }pixels'' are remapped into a regular grid and then displayed with
 \code{\link[=.filled.contour]{.filled.contour()}}.  The remapping starts by converting the
 regular lon-lat grid to an irregular x-y grid using
 \code{\link[=lonlat2map]{lonlat2map()}}.  This irregular grid is then interpolated onto a
@@ -134,16 +147,18 @@ mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
 ## 3. Levitus SST
 par(mfrow=c(1,1))
-data(levitus, package='ocedata')
-lon <- levitus$longitude
-lat <- levitus$latitude
-SST <- levitus$SST
-par(mar=rep(1, 4))
-Tlim <- c(-2, 30)
-drawPalette(Tlim, col=oce.colorsJet)
-mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
-mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
-mapPolygon(coastlineWorld, col='gray')
+if (requireNamespace("ocedata", quietly=TRUE)) {
+    data(levitus, package='ocedata')
+    lon <- levitus$longitude
+    lat <- levitus$latitude
+    SST <- levitus$SST
+    par(mar=rep(1, 4))
+    Tlim <- c(-2, 30)
+    drawPalette(Tlim, col=oce.colorsJet)
+    mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
+    mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
+    mapPolygon(coastlineWorld, col='gray')
+}
 
 ## 4. Topography without drawing a coastline first
 data(topoWorld)
@@ -162,19 +177,30 @@ mapImage(topoWorld, colormap=cm)
 \seealso{
 A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
-Other functions related to maps: \code{\link{formatPosition}},
-  \code{\link{lonlat2map}}, \code{\link{lonlat2utm}},
-  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
-  \code{\link{mapAxis}}, \code{\link{mapContour}},
-  \code{\link{mapCoordinateSystem}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapLines}}, \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
-  \code{\link{usrLonLat}}, \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley

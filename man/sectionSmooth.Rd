@@ -4,9 +4,24 @@
 \alias{sectionSmooth}
 \title{Smooth a Section}
 \usage{
-sectionSmooth(section, method = "spline", x, xg, yg, xgl, ygl, xr, yr,
-  df, gamma = 0.5, iterations = 2, trim = 0, pregrid = FALSE,
-  debug = getOption("oceDebug"), ...)
+sectionSmooth(
+  section,
+  method = "spline",
+  x,
+  xg,
+  yg,
+  xgl,
+  ygl,
+  xr,
+  yr,
+  df,
+  gamma = 0.5,
+  iterations = 2,
+  trim = 0,
+  pregrid = FALSE,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{section}{A \code{section} object containing the section to be smoothed.
@@ -111,7 +126,7 @@ the smoothing.
 \item If \code{method} is a function, then that function is applied to
 the (distance, pressure) data for each variable at a grid defined by
 \code{xg}, \code{xgl}, \code{yg} and \code{ygl}. The function must
-be of the form \code{function(x,y,F,xg,xr,yg,yr)}, and must
+be of the form \verb{function(x,y,F,xg,xr,yg,yr)}, and must
 return a matrix of the gridded result, with first index indicating
 the "grid" station number and second index indicating "grid" pressure.
 The \code{x} value that is supplied to this function is set as
@@ -162,18 +177,21 @@ if (requireNamespace("automap",quietly=TRUE)&&requireNamespace("sp",quietly=TRUE
 
 }
 \seealso{
-Other things related to section data: \code{\link{[[,section-method}},
-  \code{\link{[[<-,section-method}},
-  \code{\link{as.section}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{initializeFlagScheme,section-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{read.section}}, \code{\link{section-class}},
-  \code{\link{sectionAddStation}},
-  \code{\link{sectionGrid}}, \code{\link{sectionSort}},
-  \code{\link{section}},
-  \code{\link{subset,section-method}},
-  \code{\link{summary,section-method}}
+Other things related to section data: 
+\code{\link{[[,section-method}},
+\code{\link{[[<-,section-method}},
+\code{\link{as.section}()},
+\code{\link{handleFlags,section-method}},
+\code{\link{initializeFlagScheme,section-method}},
+\code{\link{plot,section-method}},
+\code{\link{read.section}()},
+\code{\link{section-class}},
+\code{\link{sectionAddStation}()},
+\code{\link{sectionGrid}()},
+\code{\link{sectionSort}()},
+\code{\link{section}},
+\code{\link{subset,section-method}},
+\code{\link{summary,section-method}}
 }
 \author{
 Dan Kelley

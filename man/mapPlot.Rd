@@ -4,13 +4,33 @@
 \alias{mapPlot}
 \title{Draw a Map}
 \usage{
-mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg,
-  fill, border = NULL, col = NULL, clip = TRUE, type = "polygon",
-  axes = TRUE, cex, cex.axis = 1, mgp = c(0, 0.5, 0),
-  drawBox = TRUE, showHemi = TRUE, polarCircle = 0,
-  lonlabel = NULL, latlabel = NULL, sides = NULL,
-  projection = "+proj=moll", tissot = FALSE, trim = TRUE,
-  debug = getOption("oceDebug"), ...)
+mapPlot(
+  longitude,
+  latitude,
+  longitudelim,
+  latitudelim,
+  grid = TRUE,
+  bg,
+  fill,
+  border = NULL,
+  col = NULL,
+  clip = TRUE,
+  type = "polygon",
+  axes = TRUE,
+  cex,
+  cex.axis = 1,
+  mgp = c(0, 0.5, 0),
+  drawBox = TRUE,
+  showHemi = TRUE,
+  polarCircle = 0,
+  lonlabels = TRUE,
+  latlabels = TRUE,
+  projection = "+proj=moll",
+  tissot = FALSE,
+  trim = TRUE,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{longitude}{either a vector of longitudes of points to be plotted, or
@@ -73,7 +93,8 @@ overlain with line segments.}
 
 \item{axes}{logical value indicating whether to draw longitude and latitude
 values in the lower and left margin, respectively.  This may not work well
-for some projections or scales.}
+for some projections or scales.  See also \code{lonlabels} and \code{latlabels}, which
+offer more granular control of labelling.}
 
 \item{cex}{character expansion factor for plot symbols,
 used if \code{type='p'} or any other value that yields symbols.}
@@ -92,11 +113,24 @@ axis tick labels.}
 \item{polarCircle}{a number indicating the number of degrees of latitude
 extending from the poles, within which zones are not drawn.}
 
-\item{lonlabel, latlabel, sides}{Optional vectors of longitude and latitude
-to label on the indicated sides of plot, passed to
-\code{\link[=plot,coastline-method]{plot,coastline-method()}}.  Using these arguments permits reasonably
-simple customization.  If they are are not provided, reasonable defaults
-will be used.}
+\item{lonlabels}{An optional logical value or numeric vector that controls
+the labelling of longitude values using \code{\link[=mapAxis]{mapAxis()}}. There are
+four possibilities for the value of \code{lonlabels}:
+(1) If \code{lonlabels} is \code{TRUE} (the default), then reasonable values are inferred
+and axes are drawn accordingly with both ticks and longitudes
+alongside those ticks;
+(2) if \code{lonlabels} is \code{FALSE}, then ticks are drawn by but not numbers;
+(3) if \code{lonlabels} is \code{NULL}, then no axis ticks or numbers are are drawn; and
+(4) if \code{lonlabels} is  a vector of finite numerical values, then tick marks
+are placed  at those longitudes, and labels are put alongside them.
+In cases 1 and 4, overdrawing of numbers is avoided,
+so some ticks may not have numbers alongside them.
+See also \code{latlabels}, and note that setting \code{axes=FALSE}
+ensures that no longitude or latitude axes will be drawn regardless
+of the values of \code{lonlabels} and \code{latlabels}.}
+
+\item{latlabels}{As \code{lonlabels}, but for latitude, on the left
+plot axis.}
 
 \item{projection}{optional indication of projection, in one of two
 forms. First, it may be a character string in the "CRS" format that is
@@ -208,8 +242,8 @@ Equidistant conic                         \tab \code{eqdc}     \tab \code{lat_1}
 Euler                                     \tab \code{euler}    \tab \code{lat_1}, \code{lat_2}\cr
 Extended transverse Mercator              \tab \code{etmerc}   \tab \code{lat_ts}, \code{lat_0}\cr
 Fahey                                     \tab \code{fahey}    \tab - \cr
-Foucaut                                   \tab \code{fouc}     \tab - \cr
-Foucaut sinusoidal                        \tab \code{fouc_s}   \tab - \cr
+Foucault                                  \tab \code{fouc}     \tab - \cr
+Foucault sinusoidal                       \tab \code{fouc_s}   \tab - \cr
 Gall stereographic                        \tab \code{gall}     \tab - \cr
 Geostationary satellite view              \tab \code{geos}     \tab \code{h}\cr
 General sinusoidal series                 \tab \code{gn_sinu}  \tab \code{m}, \code{n}\cr
@@ -467,12 +501,12 @@ Professional Paper: 1395 (available at
 \url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
 \item Wikipedia page \url{https://en.wikipedia.org/wiki/List_of_map_projections}
 \item Radical Cartography website
-\code{http://www.radicalcartography.net/?projectionref} (This URL worked
+\verb{http://www.radicalcartography.net/?projectionref} (This URL worked
 prior to Nov 16, 2016, but was found to fail on that date.)
 \item The \code{PROJ.4} website is \url{http://trac.osgeo.org/proj}, and it is
 the place to start to learn about the code.
 \item \code{PROJ.4} projection details were once at
-\code{http://www.remotesensing.org/geotiff/proj_list/} but it was
+\verb{http://www.remotesensing.org/geotiff/proj_list/} but it was
 discovered on Dec 18, 2016, that this link no longer exists. Indeed, there
 seems to have been significant reorganization of websites related to this.
 The base website seems to be \url{https://trac.osgeo.org/geotiff/} and that
@@ -493,20 +527,30 @@ clicks using \code{\link[=mapLocator]{mapLocator()}}.  Great circle paths can be
 with \code{\link[=geodGc]{geodGc()}}.  See reference 8 for a demonstration of the available map
 projections (with graphs).
 
-Other functions related to maps: \code{\link{formatPosition}},
-  \code{\link{lonlat2map}}, \code{\link{lonlat2utm}},
-  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
-  \code{\link{mapAxis}}, \code{\link{mapContour}},
-  \code{\link{mapCoordinateSystem}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPoints}}, \code{\link{mapPolygon}},
-  \code{\link{mapScalebar}}, \code{\link{mapText}},
-  \code{\link{mapTissot}}, \code{\link{oceCRS}},
-  \code{\link{shiftLongitude}}, \code{\link{usrLonLat}},
-  \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapCoordinateSystem}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Dan Kelley and Clark Richards

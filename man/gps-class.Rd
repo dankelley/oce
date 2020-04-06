@@ -61,7 +61,7 @@ contain the item. This \code{[[} method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
-longitude and latitudee, has sufficient information to compute
+longitude and latitude, has sufficient information to compute
 Absolute Salinity, and so \code{o[["SA"]]} will yield the
 calculated Absolute Salinity.
 
@@ -71,10 +71,13 @@ retrieve derived items.
 }
 
 \seealso{
-Other things related to gps data: \code{\link{[[,gps-method}},
-  \code{\link{[[<-,gps-method}}, \code{\link{as.gps}},
-  \code{\link{plot,gps-method}}, \code{\link{read.gps}},
-  \code{\link{summary,gps-method}}
+Other things related to gps data: 
+\code{\link{[[,gps-method}},
+\code{\link{[[<-,gps-method}},
+\code{\link{as.gps}()},
+\code{\link{plot,gps-method}},
+\code{\link{read.gps}()},
+\code{\link{summary,gps-method}}
 }
 \author{
 Dan Kelley

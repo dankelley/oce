@@ -12,19 +12,23 @@ ODFListFromHeader(header)
 \value{
 A list holding the metadata, with item names matching
 those in the ODF header, except that duplicates are transformed
-through the use of \code{\link{unduplicateNames}}.
+through the use of \code{\link[=unduplicateNames]{unduplicateNames()}}.
 }
 \description{
 Create a list of ODF header metadata
 }
 \seealso{
-Other things related to odf data: \code{\link{ODF2oce}},
-  \code{\link{ODFNames2oceNames}},
-  \code{\link{[[,odf-method}},
-  \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
-  \code{\link{plot,odf-method}},
-  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
-  \code{\link{subset,odf-method}},
-  \code{\link{summary,odf-method}}
+Other things related to odf data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{ODF2oce}()},
+\code{\link{ODFNames2oceNames}()},
+\code{\link{[[,odf-method}},
+\code{\link{[[<-,odf-method}},
+\code{\link{odf-class}},
+\code{\link{plot,odf-method}},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.odf}()},
+\code{\link{subset,odf-method}},
+\code{\link{summary,odf-method}}
 }
 \concept{things related to odf data}

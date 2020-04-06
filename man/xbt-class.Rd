@@ -5,8 +5,10 @@
 \alias{xbt-class}
 \title{Class to Store XBT Data}
 \description{
-This class stores expendible bathythermograph (XBT) data, e.g. from a Sippican
-device.
+This class stores expendable bathythermograph (XBT) data, e.g. from a Sippican
+device.  Reference 1 gives some information on Sippican
+devices, and reference 2 is a useful introduction to the
+modern literature on XBTs in general.
 }
 \section{Slots}{
 
@@ -14,7 +16,7 @@ device.
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{xbt} objects is a
 \link{list} containing the main data for the object.
-The key items stored in this slot are \code{depth}, \code{temperature} and \code{soundSpeed}.}
+The key items stored in this slot are \code{depth} (or \code{z}) and \code{temperature}, although some datasets also have \code{soundSpeed}.  Note that \code{depth} and \code{z} are inferred from time in water, using an empirical formula for instrument descent rate, and that \code{soundSpeed} is #' calculated using a fixed  practical salinity of 35. Note that the \code{[[} accessor will compute any of \code{depth}, \code{z} or \code{pressure}, based on whatever is in the data object.  Similarly, \code{soundspeed} will compute sound speed (assuming a practical salinity of 35), if that that item is present in the \code{data} slot.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
 for \code{xbt} objects is a \link{list} containing
@@ -61,7 +63,7 @@ contain the item. This \code{[[} method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
-longitude and latitudee, has sufficient information to compute
+longitude and latitude, has sufficient information to compute
 Absolute Salinity, and so \code{o[["SA"]]} will yield the
 calculated Absolute Salinity.
 
@@ -70,22 +72,48 @@ It is also possible to find items more directly, using \code{\link[=oceGetData]{
 retrieve derived items.
 }
 
+\references{
+\enumerate{
+\item Sippican, Inc. "Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
+Manual (P/N 308195, Rev. A)," 2003.
+https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
+\item Cheng, Lijing, John Abraham, Gustavo Goni, Timothy Boyer, Susan Wijffels, Rebecca
+Cowley, Viktor Gouretski, et al. "XBT Science: Assessment of Instrumental Biases and Errors."
+Bulletin of the American Meteorological Society 97, no. 6 (June 2016): 924-33.
+https://doi.org/10.1175/BAMS-D-15-00031.1.
+}
+}
 \seealso{
-Other things related to xbt data: \code{\link{[[<-,xbt-method}},
-  \code{\link{plot,xbt-method}}, \code{\link{read.xbt}},
-  \code{\link{subset,xbt-method}},
-  \code{\link{summary,xbt-method}}
+Other things related to xbt data: 
+\code{\link{[[,xbt-method}},
+\code{\link{[[<-,xbt-method}},
+\code{\link{as.xbt}()},
+\code{\link{plot,xbt-method}},
+\code{\link{read.xbt.noaa1}()},
+\code{\link{read.xbt}()},
+\code{\link{subset,xbt-method}},
+\code{\link{summary,xbt-method}},
+\code{\link{xbt.edf}},
+\code{\link{xbt}}
 
-Other classes provided by oce: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
+Other classes provided by oce: 
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{argo-class}},
+\code{\link{bremen-class}},
+\code{\link{cm-class}},
+\code{\link{coastline-class}},
+\code{\link{ctd-class}},
+\code{\link{lisst-class}},
+\code{\link{lobo-class}},
+\code{\link{met-class}},
+\code{\link{oce-class}},
+\code{\link{odf-class}},
+\code{\link{rsk-class}},
+\code{\link{sealevel-class}},
+\code{\link{section-class}},
+\code{\link{topo-class}},
+\code{\link{windrose-class}}
 }
 \author{
 Dan Kelley

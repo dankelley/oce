@@ -1,7 +1,7 @@
 library(oce)
 options(warn=1) # print warnings as they occur
 
-dir <- "/data/Barrow Strait Data"
+dir <- paste(system("echo $HOME", intern=TRUE), "data/Barrow Strait Data", sep="/")
 files <- system(sprintf("find '%s' -name '*.ODF'", dir), intern=TRUE)
 
 i <- 0
@@ -17,5 +17,9 @@ for (file in files) {
              "'; value is ", min(d[["u"]], na.rm=TRUE), "; did read.oce() catch the NullValue?")
     i <- i + 1
 }
-cat("Successfully checked", i, "ODF files in various subdirectories of ", dir, "\n")
+if (i > 0) {
+    cat("Successfully checked", i, "ODF files in ", dir, "\n")
+} else {
+    cat("Found no ODF fies in", dir, "\n")
+}
 

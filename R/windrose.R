@@ -28,7 +28,8 @@ setClass("windrose", contains="oce")
 
 setMethod(f="initialize",
           signature="windrose",
-          definition=function(.Object) {
+          definition=function(.Object, ...) {
+              .Object <- callNextMethod(.Object, ...)
               .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'windrose' object"
               return(.Object)
@@ -181,9 +182,8 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 }
 
 
-#' @title Plot Windrose data
+#' Plot a windrose Object
 #'
-#' @description
 #' Plot a [windrose-class] object.
 #'
 #' @param x a [windrose-class] object.

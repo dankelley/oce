@@ -29,7 +29,7 @@ files.
 \details{
 The three permitted file types are as follows: (1) an ascii type described
 by NOAA as "?"; (2) a NetCDF format described by NOAA as "GMT NetCDF"
-(recognized by the presence of a variable named \code{), and (3) another NetCDF format described by NOAA as "NetCDF" (recognized by the presence of a variable called }). Files in each of these formats
+(recognized by the presence of a variable named \verb{), and (3) another NetCDF format described by NOAA as "NetCDF" (recognized by the presence of a variable called }). Files in each of these formats
 can be downloaded with \code{\link[=download.topo]{download.topo()}}.
 }
 \examples{
@@ -41,14 +41,17 @@ plot(topographyMaritimes)
 
 }
 \seealso{
-Other things related to topo data: \code{\link{[[,topo-method}},
-  \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
-  \code{\link{download.topo}},
-  \code{\link{plot,topo-method}},
-  \code{\link{subset,topo-method}},
-  \code{\link{summary,topo-method}},
-  \code{\link{topo-class}}, \code{\link{topoInterpolate}},
-  \code{\link{topoWorld}}
+Other things related to topo data: 
+\code{\link{[[,topo-method}},
+\code{\link{[[<-,topo-method}},
+\code{\link{as.topo}()},
+\code{\link{download.topo}()},
+\code{\link{plot,topo-method}},
+\code{\link{subset,topo-method}},
+\code{\link{summary,topo-method}},
+\code{\link{topo-class}},
+\code{\link{topoInterpolate}()},
+\code{\link{topoWorld}}
 }
 \author{
 Dan Kelley

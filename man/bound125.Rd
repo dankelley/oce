@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{bound125}
 \alias{bound125}
-\title{Calculate a rounded bound, rounded up to matissa 1, 2, or 5}
+\title{Calculate a rounded bound, rounded up to mantissa 1, 2, or 5}
 \usage{
 bound125(x)
 }
@@ -13,5 +13,5 @@ bound125(x)
 for positive x, a value exceeding x that has mantissa 1, 2, or 5; otherwise, x
 }
 \description{
-Calculate a rounded bound, rounded up to matissa 1, 2, or 5
+Calculate a rounded bound, rounded up to mantissa 1, 2, or 5
 }

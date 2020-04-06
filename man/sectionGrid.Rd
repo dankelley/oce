@@ -4,8 +4,14 @@
 \alias{sectionGrid}
 \title{Grid a Section in Pressure Space}
 \usage{
-sectionGrid(section, p, method = "approx", trim = TRUE,
-  debug = getOption("oceDebug"), ...)
+sectionGrid(
+  section,
+  p,
+  method = "approx",
+  trim = TRUE,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{section}{A \code{section} object containing the section to be gridded.}
@@ -78,24 +84,27 @@ standardDepths5 <- sectionGrid(GS, p=standardDepths(5))
 plot(default, which="temperature", ztype="image", ylim=c(200,0))
 mtext("default sectionGrid()")
 plot(approxML, which="temperature", ztype="image", ylim=c(200,0))
-mtext("sectionGrid(..., method=\\"approxML\\")")
+mtext("sectionGrid(..., method=\"approxML\")")
 plot(standardDepths5, which="temperature", ztype="image", ylim=c(200,0))
 mtext("sectionGrid(..., p=standardDepths(5))")
 
 }
 \seealso{
-Other things related to section data: \code{\link{[[,section-method}},
-  \code{\link{[[<-,section-method}},
-  \code{\link{as.section}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{initializeFlagScheme,section-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{read.section}}, \code{\link{section-class}},
-  \code{\link{sectionAddStation}},
-  \code{\link{sectionSmooth}}, \code{\link{sectionSort}},
-  \code{\link{section}},
-  \code{\link{subset,section-method}},
-  \code{\link{summary,section-method}}
+Other things related to section data: 
+\code{\link{[[,section-method}},
+\code{\link{[[<-,section-method}},
+\code{\link{as.section}()},
+\code{\link{handleFlags,section-method}},
+\code{\link{initializeFlagScheme,section-method}},
+\code{\link{plot,section-method}},
+\code{\link{read.section}()},
+\code{\link{section-class}},
+\code{\link{sectionAddStation}()},
+\code{\link{sectionSmooth}()},
+\code{\link{sectionSort}()},
+\code{\link{section}},
+\code{\link{subset,section-method}},
+\code{\link{summary,section-method}}
 }
 \author{
 Dan Kelley

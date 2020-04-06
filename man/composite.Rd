@@ -7,8 +7,8 @@
 composite(object, ...)
 }
 \arguments{
-\item{object}{Either a \link{list} of \linkS4class{oce}-class objects, in
-which case this is the only argument, or a single \linkS4class{oce}-class object,
+\item{object}{either a \link{list} of \linkS4class{oce} objects, in
+which case this is the only argument, or a single \linkS4class{oce} object,
 in which case at least one other argument (an object of the same size)
 must be supplied.}
 
@@ -21,7 +21,8 @@ makes sense for the object class, i.e. taking into account
 the particular bad-data codes of that particular class.
 }
 \seealso{
-Other functions that create composite objects: \code{\link{composite,amsr-method}},
-  \code{\link{composite,list-method}}
+Other functions that create composite objects: 
+\code{\link{composite,amsr-method}},
+\code{\link{composite,list-method}}
 }
 \concept{functions that create composite objects}

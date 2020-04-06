@@ -387,7 +387,7 @@ the advantage the basic operations of oce will carry over to the new types. For
 example, the accessing operator `[[` and `summary` function will work as
 expected, and so will such aspects as the handling of data-quality flags and
 units.  More details on setting up classes that inherit from oce are provided
-in [the subclassing vignette](6.  Subclassing oce objects).
+in [the subclassing vignette](subclassing.html).
 
 
 # The future of oce

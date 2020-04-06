@@ -4,8 +4,7 @@
 \alias{as.tidem}
 \title{Create tidem object from fitted harmonic data}
 \usage{
-as.tidem(tRef, latitude, name, amplitude, phase,
-  debug = getOption("oceDebug"))
+as.tidem(tRef, latitude, name, amplitude, phase, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{tRef}{a POSIXt value indicating the mean time of the
@@ -56,6 +55,13 @@ why Foreman (1978) did not handle this constituent. A warning is
 issued if this or any other unhandled constituent is provided
 in the \code{name} argument to \code{as.tidem()}.
 }
+\section{Known issues}{
+
+There are two known differences between \code{\link[=tidem]{tidem()}} and the Matlab
+\code{T_TIDE} package, as listed in references 3 and 4. Work on these
+issues is planned for the summer of 2020.
+}
+
 \examples{
 # Simulate a tide table with output from tidem().
 data(sealevelTuktoyaktuk)
@@ -95,21 +101,30 @@ oce.plot.ts(sealevelTuktoyaktuk[["time"]], p2, ylim=ylim)
 
 }
 \references{
-Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
+\enumerate{
+\item Foreman, M. G. G., 1978. Manual for Tidal Currents Analysis and Prediction.
 Pacific Marine Science Report. British Columbia, Canada: Institute of Ocean
 Sciences, Patricia Bay.
-
-Wikipedia, "Theory of Tides." https://en.wikipedia.org/wiki/Theory_of_tides
+\item Wikipedia, "Theory of Tides." https://en.wikipedia.org/wiki/Theory_of_tides
 Downloaded Aug 17, 2019.
+\item Github issue 1653: tidem() and t_tide do not produce identical results
+https://github.com/dankelley/oce/issues/1653
+\item Github issue 1654: predict(tidem()) uses all constituents, unlike T_TIDE
+https://github.com/dankelley/oce/issues/1654
+}
 }
 \seealso{
-Other things related to tides: \code{\link{[[,tidem-method}},
-  \code{\link{[[<-,tidem-method}},
-  \code{\link{plot,tidem-method}},
-  \code{\link{predict.tidem}},
-  \code{\link{summary,tidem-method}},
-  \code{\link{tidedata}}, \code{\link{tidem-class}},
-  \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
-  \code{\link{tidem}}, \code{\link{webtide}}
+Other things related to tides: 
+\code{\link{[[,tidem-method}},
+\code{\link{[[<-,tidem-method}},
+\code{\link{plot,tidem-method}},
+\code{\link{predict.tidem}()},
+\code{\link{summary,tidem-method}},
+\code{\link{tidedata}},
+\code{\link{tidem-class}},
+\code{\link{tidemAstron}()},
+\code{\link{tidemVuf}()},
+\code{\link{tidem}},
+\code{\link{webtide}()}
 }
 \concept{things related to tides}

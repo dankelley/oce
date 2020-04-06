@@ -3,6 +3,8 @@ Meta
 doc
 ^vignettes/figure$
 ^build$
+*.odf
+*.ODF
 _site
 TAGS
 *.o
@@ -29,7 +31,6 @@ autom4te.cache
 *.csv
 *.out
 oce_[a-zA-Z]*.Rproj
-
 revdep
 f34*gz
 *.o.tmp

@@ -1,4 +1,6 @@
 ^sandbox$
+^.*.odf$
+^.*.ODF$
 ^R/check_urls\.R$
 ^doc$
 ^Meta$
@@ -13,7 +15,6 @@
 .RData
 .travis.yml
 ^.*.nc$
-^.*.csv$
 ^create_data$
 ^README_developers.md$
 ^.*.swo$
@@ -45,3 +46,4 @@ R/check_urls.R
 ^CRAN-RELEASE$
 ^Rplot*.png$
 
+^appveyor\.yml$

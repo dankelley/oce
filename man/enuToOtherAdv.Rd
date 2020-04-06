@@ -4,8 +4,13 @@
 \alias{enuToOtherAdv}
 \title{Convert ENU to Other Coordinate}
 \usage{
-enuToOtherAdv(x, heading = 0, pitch = 0, roll = 0,
-  debug = getOption("oceDebug"))
+enuToOtherAdv(
+  x,
+  heading = 0,
+  pitch = 0,
+  roll = 0,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{x}{an \linkS4class{adv} object.}
@@ -43,20 +48,28 @@ that in the present function, it makes no difference whether the instrument
 points up or down, etc.
 }
 \seealso{
-Other things related to adv data: \code{\link{[[,adv-method}},
-  \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
-  \code{\link{adv}}, \code{\link{beamName}},
-  \code{\link{beamToXyz}}, \code{\link{enuToOther}},
-  \code{\link{plot,adv-method}},
-  \code{\link{read.adv.nortek}},
-  \code{\link{read.adv.sontek.adr}},
-  \code{\link{read.adv.sontek.serial}},
-  \code{\link{read.adv.sontek.text}},
-  \code{\link{read.adv}}, \code{\link{rotateAboutZ}},
-  \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
-  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
-  \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
+Other things related to adv data: 
+\code{\link{[[,adv-method}},
+\code{\link{[[<-,adv-method}},
+\code{\link{adv-class}},
+\code{\link{adv}},
+\code{\link{beamName}()},
+\code{\link{beamToXyz}()},
+\code{\link{enuToOther}()},
+\code{\link{plot,adv-method}},
+\code{\link{read.adv.nortek}()},
+\code{\link{read.adv.sontek.adr}()},
+\code{\link{read.adv.sontek.serial}()},
+\code{\link{read.adv.sontek.text}()},
+\code{\link{read.adv}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{subset,adv-method}},
+\code{\link{summary,adv-method}},
+\code{\link{toEnuAdv}()},
+\code{\link{toEnu}()},
+\code{\link{velocityStatistics}()},
+\code{\link{xyzToEnuAdv}()},
+\code{\link{xyzToEnu}()}
 }
 \author{
 Dan Kelley

@@ -113,6 +113,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         else if (bits == "011") frequency <-  600
         else if (bits == "100") frequency <- 1200
         else if (bits == "101") frequency <- 2400
+        else if (bits == "110") frequency <- 38
         else stop("unknown freq. bit code:", bits, " (expect 000 for 75kHz, 001 for 150kHz, etc)")
     }
     oceDebug(debug, "bits:", bits, "so frequency=", frequency, "\n")
@@ -559,7 +560,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'
 #' The following two-byte ID codes are recognized by `read.adp.rdi`
 #' at this time (with bytes listed in natural order, LSB byte before
-#' MSB). Items preceeded by an asterisk are recognized, but not handled,
+#' MSB). Items preceded by an asterisk are recognized, but not handled,
 #' and so produce a warning.
 #'\tabular{rrrr}{
 #'   \tab **Byte 1** \tab **Byte 2** \tab **Meaning**\cr

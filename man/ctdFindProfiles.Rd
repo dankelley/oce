@@ -4,10 +4,19 @@
 \alias{ctdFindProfiles}
 \title{Find Profiles within a Tow-Yow CTD Record}
 \usage{
-ctdFindProfiles(x, cutoff = 0.5, minLength = 10, minHeight = 0.1 *
-  diff(range(x[["pressure"]])), smoother = smooth.spline,
-  direction = c("descending", "ascending"), breaks, arr.ind = FALSE,
-  distinct, debug = getOption("oceDebug"), ...)
+ctdFindProfiles(
+  x,
+  cutoff = 0.5,
+  minLength = 10,
+  minHeight = 0.1 * diff(range(x[["pressure"]])),
+  smoother = smooth.spline,
+  direction = c("descending", "ascending"),
+  breaks,
+  arr.ind = FALSE,
+  distinct,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{x}{a \linkS4class{ctd} object.}
@@ -124,27 +133,41 @@ profiles <- ctdFindProfiles(ctd, breaks=breaks)
 The documentation for \linkS4class{ctd} explains the structure
 of CTD objects, and also outlines the other functions dealing with them.
 
-Other things related to ctd data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctd}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{initialize,ctd-method}},
-  \code{\link{initializeFlagScheme,ctd-method}},
-  \code{\link{oceNames2whpNames}},
-  \code{\link{oceUnits2whpUnits}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{plotTS}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}},
-  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
+Other things related to ctd data: 
+\code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{[[,ctd-method}},
+\code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd}()},
+\code{\link{cnvName2oceName}()},
+\code{\link{ctd-class}},
+\code{\link{ctd.cnv}},
+\code{\link{ctdDecimate}()},
+\code{\link{ctdRaw}},
+\code{\link{ctdTrim}()},
+\code{\link{ctd}},
+\code{\link{d200321-001.ctd}},
+\code{\link{d201211_0011.cnv}},
+\code{\link{handleFlags,ctd-method}},
+\code{\link{initialize,ctd-method}},
+\code{\link{initializeFlagScheme,ctd-method}},
+\code{\link{oceNames2whpNames}()},
+\code{\link{oceUnits2whpUnits}()},
+\code{\link{plot,ctd-method}},
+\code{\link{plotProfile}()},
+\code{\link{plotScan}()},
+\code{\link{plotTS}()},
+\code{\link{read.ctd.itp}()},
+\code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.sbe}()},
+\code{\link{read.ctd.woce.other}()},
+\code{\link{read.ctd.woce}()},
+\code{\link{read.ctd}()},
+\code{\link{setFlags,ctd-method}},
+\code{\link{subset,ctd-method}},
+\code{\link{summary,ctd-method}},
+\code{\link{woceNames2oceNames}()},
+\code{\link{woceUnit2oceUnit}()},
+\code{\link{write.ctd}()}
 }
 \author{
 Dan Kelley and Clark Richards

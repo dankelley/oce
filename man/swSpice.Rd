@@ -4,9 +4,14 @@
 \alias{swSpice}
 \title{Seawater spiciness}
 \usage{
-swSpice(salinity, temperature = NULL, pressure = NULL,
-  longitude = NULL, latitude = NULL, eos = getOption("oceEOS",
-  default = "gsw"))
+swSpice(
+  salinity,
+  temperature = NULL,
+  pressure = NULL,
+  longitude = NULL,
+  latitude = NULL,
+  eos = getOption("oceEOS", default = "gsw")
+)
 }
 \arguments{
 \item{salinity}{either salinity (PSU) (in which case \code{temperature} and
@@ -49,7 +54,7 @@ then the Gibbs SeaWater formulation for "spiciness0" is used
 \details{
 If the first argument is a \code{ctd} object, then salinity, temperature and
 pressure values are extracted from it, and used for the calculation. (For
-the \code{eos="gsw"} case, longitude and latitude are also extacted, because
+the \code{eos="gsw"} case, longitude and latitude are also extracted, because
 these are required for the formulation of spiciness0.
 
 Roughly speaking, seawater with a high spiciness is relatively warm and
@@ -76,35 +81,51 @@ mtext("black=unesco, red=gsw")
 \item Flament, P. \dQuote{A State Variable for Characterizing Water Masses and Their
 Diffusive Stability: Spiciness.} Progress in Oceanography, Observations of the
 1997-98 El Nino along the West Coast of North America, 54, no. 1
-(July 1, 2002):493–501.
+(July 1, 2002):493-501.
 \url{https://doi.org/10.1016/S0079-6611(02)00065-4}
 }
 
 2.McDougall, Trevor J., and Oliver A. Krzysik. \dQuote{Spiciness.}
-Journal of Marine Research 73, no. 5 (September 1, 2015): 141–52.
+Journal of Marine Research 73, no. 5 (September 1, 2015): 141-52.
 \url{https://doi.org/10.1357/002224015816665589}
 }
 \seealso{
-Other functions that calculate seawater properties: \code{\link{T68fromT90}},
-  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
-  \code{\link{swAbsoluteSalinity}},
-  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
-  \code{\link{swBeta}}, \code{\link{swCSTp}},
-  \code{\link{swConservativeTemperature}},
-  \code{\link{swDepth}}, \code{\link{swDynamicHeight}},
-  \code{\link{swLapseRate}}, \code{\link{swN2}},
-  \code{\link{swPressure}}, \code{\link{swRho}},
-  \code{\link{swRrho}}, \code{\link{swSCTp}},
-  \code{\link{swSTrho}}, \code{\link{swSigma0}},
-  \code{\link{swSigma1}}, \code{\link{swSigma2}},
-  \code{\link{swSigma3}}, \code{\link{swSigma4}},
-  \code{\link{swSigmaTheta}}, \code{\link{swSigmaT}},
-  \code{\link{swSigma}}, \code{\link{swSoundAbsorption}},
-  \code{\link{swSoundSpeed}}, \code{\link{swSpecificHeat}},
-  \code{\link{swTFreeze}}, \code{\link{swTSrho}},
-  \code{\link{swThermalConductivity}},
-  \code{\link{swTheta}}, \code{\link{swViscosity}},
-  \code{\link{swZ}}
+Other functions that calculate seawater properties: 
+\code{\link{T68fromT90}()},
+\code{\link{T90fromT48}()},
+\code{\link{T90fromT68}()},
+\code{\link{swAbsoluteSalinity}()},
+\code{\link{swAlphaOverBeta}()},
+\code{\link{swAlpha}()},
+\code{\link{swBeta}()},
+\code{\link{swCSTp}()},
+\code{\link{swConservativeTemperature}()},
+\code{\link{swDepth}()},
+\code{\link{swDynamicHeight}()},
+\code{\link{swLapseRate}()},
+\code{\link{swN2}()},
+\code{\link{swPressure}()},
+\code{\link{swRho}()},
+\code{\link{swRrho}()},
+\code{\link{swSCTp}()},
+\code{\link{swSTrho}()},
+\code{\link{swSigma0}()},
+\code{\link{swSigma1}()},
+\code{\link{swSigma2}()},
+\code{\link{swSigma3}()},
+\code{\link{swSigma4}()},
+\code{\link{swSigmaTheta}()},
+\code{\link{swSigmaT}()},
+\code{\link{swSigma}()},
+\code{\link{swSoundAbsorption}()},
+\code{\link{swSoundSpeed}()},
+\code{\link{swSpecificHeat}()},
+\code{\link{swTFreeze}()},
+\code{\link{swTSrho}()},
+\code{\link{swThermalConductivity}()},
+\code{\link{swTheta}()},
+\code{\link{swViscosity}()},
+\code{\link{swZ}()}
 }
 \author{
 Dan Kelley coded this, merely an interface to the code described

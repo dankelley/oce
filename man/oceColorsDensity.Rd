@@ -11,7 +11,7 @@ oceColorsDensity(n)
 \item{n}{number of colors to create.}
 }
 \value{
-A vector of color specificications.
+A vector of color specifications.
 }
 \description{
 Create a set of colors for displaying density values,
@@ -31,23 +31,27 @@ imagep(volcano, col=oceColorsDensity(128),
 
 }
 \seealso{
-Other things related to colors: \code{\link{colormap}},
-  \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
-  \code{\link{oceColorsChlorophyll}},
-  \code{\link{oceColorsClosure}},
-  \code{\link{oceColorsFreesurface}},
-  \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
-  \code{\link{oceColorsOxygen}},
-  \code{\link{oceColorsPAR}},
-  \code{\link{oceColorsPalette}},
-  \code{\link{oceColorsPhase}},
-  \code{\link{oceColorsSalinity}},
-  \code{\link{oceColorsTemperature}},
-  \code{\link{oceColorsTurbidity}},
-  \code{\link{oceColorsTwo}},
-  \code{\link{oceColorsVelocity}},
-  \code{\link{oceColorsViridis}},
-  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
+Other things related to colors: 
+\code{\link{colormap}()},
+\code{\link{oceColors9B}()},
+\code{\link{oceColorsCDOM}()},
+\code{\link{oceColorsChlorophyll}()},
+\code{\link{oceColorsClosure}()},
+\code{\link{oceColorsFreesurface}()},
+\code{\link{oceColorsGebco}()},
+\code{\link{oceColorsJet}()},
+\code{\link{oceColorsOxygen}()},
+\code{\link{oceColorsPAR}()},
+\code{\link{oceColorsPalette}()},
+\code{\link{oceColorsPhase}()},
+\code{\link{oceColorsSalinity}()},
+\code{\link{oceColorsTemperature}()},
+\code{\link{oceColorsTurbidity}()},
+\code{\link{oceColorsTwo}()},
+\code{\link{oceColorsVelocity}()},
+\code{\link{oceColorsViridis}()},
+\code{\link{oceColorsVorticity}()},
+\code{\link{ocecolors}}
 }
 \author{
 Krysten M. Thyng (Python version), Dan Kelley (R transliteration)

@@ -4,19 +4,25 @@
 \alias{read.xbt}
 \title{Read an xbt file}
 \usage{
-read.xbt(file, type = "sippican", longitude = NA, latitude = NA,
-  debug = getOption("oceDebug"), processingLog)
+read.xbt(
+  file,
+  type = "sippican",
+  longitude = NA,
+  latitude = NA,
+  debug = getOption("oceDebug"),
+  processingLog
+)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file to
 load.}
 
-\item{type}{character string indicating type of file (only \code{"sippican"} is permitted).}
+\item{type}{character string indicating type of file, with valid choices being
+\code{"sippican"} and \code{"noaa1"}.}
 
-\item{longitude}{optional signed number indicating the longitude in degrees
-East.}
-
-\item{latitude}{optional signed number indicating the latitude in degrees North.}
+\item{longitude, latitude}{optional signed numbers indicating the longitude in degrees
+East and latitude in degrees North. These values are used if \code{type="sippican"},
+but ignored if \code{type="noaa1"}, because those files contain location information.}
 
 \item{debug}{a flag that turns on debugging.  The value indicates the depth
 within the call stack to which debugging applies.}
@@ -29,8 +35,11 @@ provides is better for normal calls by a user.}
 An \linkS4class{xbt} object.
 }
 \description{
-In this version, only one type of file is handled, namely the \code{.edf} format, used
-for Sippican XBT files.  This is handled by calling \code{\link[=read.xbt.edf]{read.xbt.edf()}}.
+Two file types are handled: (1) the \code{"sippican"} format, used
+for Sippican XBT files, handled with \code{\link[=read.xbt.edf]{read.xbt.edf()}}, and (2)
+the \code{"noaa1"} format, handled with \code{\link[=read.xbt.noaa1]{read.xbt.noaa1()}}. The first of
+these is recognized by \code{\link[=read.oce]{read.oce()}}, but the second must be called
+directly with \code{\link[=read.xbt.noaa1]{read.xbt.noaa1()}}.
 }
 \examples{
 library(oce)
@@ -41,16 +50,23 @@ plot(xbt)
 }
 \references{
 \enumerate{
-\item Sippican, Inc. “Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
-Manual (P/N 308195, Rev. A),” 2003.
+\item Sippican, Inc. "Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
+Manual (P/N 308195, Rev. A)," 2003.
 https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
 }
 }
 \seealso{
-Other things related to xbt data: \code{\link{[[<-,xbt-method}},
-  \code{\link{plot,xbt-method}},
-  \code{\link{subset,xbt-method}},
-  \code{\link{summary,xbt-method}}, \code{\link{xbt-class}}
+Other things related to xbt data: 
+\code{\link{[[,xbt-method}},
+\code{\link{[[<-,xbt-method}},
+\code{\link{as.xbt}()},
+\code{\link{plot,xbt-method}},
+\code{\link{read.xbt.noaa1}()},
+\code{\link{subset,xbt-method}},
+\code{\link{summary,xbt-method}},
+\code{\link{xbt-class}},
+\code{\link{xbt.edf}},
+\code{\link{xbt}}
 }
 \author{
 Dan Kelley

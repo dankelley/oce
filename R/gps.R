@@ -26,7 +26,8 @@ setClass("gps", contains="oce")
 
 setMethod(f="initialize",
           signature="gps",
-          definition=function(.Object, longitude, latitude, filename="") {
+          definition=function(.Object, longitude, latitude, filename="", ...) {
+              .Object <- callNextMethod(.Object, ...)
               if (!missing(longitude)) .Object@data$longitude <- as.numeric(longitude)
               if (!missing(latitude)) .Object@data$latitude <- as.numeric(latitude)
               .Object@metadata$filename <- filename
@@ -83,7 +84,7 @@ setMethod(f="[[<-",
           })
 
 
-#' Plot a GPS Object
+#' Plot a gps Object
 #'
 #' This function plots a gps object.  An attempt is made to use the whole space
 #' of the plot, and this is done by limiting either the longitude range or the

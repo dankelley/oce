@@ -30,30 +30,43 @@ works if the lines of constant latitude are horizontal on the plot.
 \examples{
 \donttest{
 library(oce)
-data(coastlineWorldFine, package='ocedata')
-HfxLon <- -63.5752
-HfxLat <- 44.6488
-mapPlot(coastlineWorldFine, proj='+proj=merc',
-        longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
-        col='lightgrey')
-mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
+if (requireNamespace("ocedata", quietly=TRUE)) {
+    data(coastlineWorldFine, package='ocedata')
+    HfxLon <- -63.5752
+    HfxLat <- 44.6488
+    mapPlot(coastlineWorldFine, proj='+proj=merc',
+            longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
+            col='lightgrey')
+    mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
+   }
 }
 
 }
 \seealso{
-Other functions related to maps: \code{\link{formatPosition}},
-  \code{\link{lonlat2map}}, \code{\link{lonlat2utm}},
-  \code{\link{map2lonlat}}, \code{\link{mapArrows}},
-  \code{\link{mapAxis}}, \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
-  \code{\link{usrLonLat}}, \code{\link{utm2lonlat}}
+Other functions related to maps: 
+\code{\link{formatPosition}()},
+\code{\link{lonlat2map}()},
+\code{\link{lonlat2utm}()},
+\code{\link{map2lonlat}()},
+\code{\link{mapArrows}()},
+\code{\link{mapAxis}()},
+\code{\link{mapContour}()},
+\code{\link{mapDirectionField}()},
+\code{\link{mapGrid}()},
+\code{\link{mapImage}()},
+\code{\link{mapLines}()},
+\code{\link{mapLocator}()},
+\code{\link{mapLongitudeLatitudeXY}()},
+\code{\link{mapPlot}()},
+\code{\link{mapPoints}()},
+\code{\link{mapPolygon}()},
+\code{\link{mapScalebar}()},
+\code{\link{mapText}()},
+\code{\link{mapTissot}()},
+\code{\link{oceCRS}()},
+\code{\link{shiftLongitude}()},
+\code{\link{usrLonLat}()},
+\code{\link{utm2lonlat}()}
 }
 \author{
 Chantelle Layton

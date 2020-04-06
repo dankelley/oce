@@ -4,15 +4,51 @@
 \alias{imagep}
 \title{Plot an Image with a Color Palette}
 \usage{
-imagep(x, y, z, xlim, ylim, zlim, zclip = FALSE, flipy = FALSE,
-  xlab = "", ylab = "", zlab = "", zlabPosition = c("top", "side"),
-  decimate = TRUE, breaks, col, colormap, labels = NULL, at = NULL,
-  drawContours = FALSE, drawPalette = TRUE, drawTriangles = FALSE,
-  tformat, drawTimeRange = getOption("oceDrawTimeRange"),
-  filledContour = FALSE, missingColor = NULL, useRaster,
-  mgp = getOption("oceMgp"), mar, mai.palette, xaxs = "i",
-  yaxs = "i", asp = NA, cex = par("cex"), axes = TRUE, main = "",
-  axisPalette, add = FALSE, debug = getOption("oceDebug"), ...)
+imagep(
+  x,
+  y,
+  z,
+  xlim,
+  ylim,
+  zlim,
+  zclip = FALSE,
+  flipy = FALSE,
+  xlab = "",
+  ylab = "",
+  zlab = "",
+  zlabPosition = c("top", "side"),
+  las.palette = 0,
+  decimate = TRUE,
+  breaks,
+  col,
+  colormap,
+  labels = NULL,
+  at = NULL,
+  drawContours = FALSE,
+  drawPalette = TRUE,
+  drawTriangles = FALSE,
+  tformat,
+  drawTimeRange = getOption("oceDrawTimeRange"),
+  filledContour = FALSE,
+  missingColor = NULL,
+  useRaster,
+  mgp = getOption("oceMgp"),
+  mar,
+  mai.palette,
+  xaxs = "i",
+  yaxs = "i",
+  asp = NA,
+  cex = par("cex"),
+  cex.axis = cex,
+  cex.lab = cex,
+  cex.main = cex,
+  axes = TRUE,
+  main = "",
+  axisPalette,
+  add = FALSE,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{x, y}{These have different meanings in different modes of operation.
@@ -74,6 +110,10 @@ a conventional axis with smaller values at the bottom.)}
 \item{zlabPosition}{String indicating where to put the label for the z axis,
 either at the top-right of the main image, or on the side, in the axis
 for the palette.}
+
+\item{las.palette}{Parameter controlling the orientation of labels on the
+image palette, passed as the \code{las} argument to \code{\link[=drawPalette]{drawPalette()}}.  See the
+documentation for \code{\link[=drawPalette]{drawPalette()}} for details.}
 
 \item{decimate}{Controls whether the image will be decimated before plotting,
 in three possible cases.
@@ -178,13 +218,17 @@ default) then \code{asp} is redefined to be the reciprocal of the
 mean latitude in \code{x}, as a way to reduce geographical distortion.
 Otherwise, if \code{asp} is not \code{NA}, then it is used directly.}
 
-\item{cex}{Size of labels on axes and palette; see \code{\link{par}}\code{("cex")}.}
+\item{cex}{numeric character expansion factor, used for \code{cex.axis}, \code{cex.lab} and \code{cex.main},
+if those values are not supplied.}
+
+\item{cex.axis, cex.lab, cex.main}{numeric character expansion factors for axis numbers,
+axis names and plot titles; see \code{\link[=par]{par()}}.}
 
 \item{axes}{Logical, set \code{TRUE} to get axes on the main image.}
 
 \item{main}{Title for plot.}
 
-\item{axisPalette}{Optional replacement function for \code{axis()}, passed to
+\item{axisPalette}{Optional replacement function for \code{\link[=axis]{axis()}}, passed to
 \code{\link[=drawPalette]{drawPalette()}}.}
 
 \item{add}{Logical value indicating whether to add to an existing plot.

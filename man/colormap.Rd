@@ -4,9 +4,21 @@
 \alias{colormap}
 \title{Calculate color map}
 \usage{
-colormap(z = NULL, zlim, zclip = FALSE, breaks, col = oceColorsJet,
-  name, x0, x1, col0, col1, blend = 0, missingColor,
-  debug = getOption("oceDebug"))
+colormap(
+  z = NULL,
+  zlim,
+  zclip = FALSE,
+  breaks,
+  col = oceColorsJet,
+  name,
+  x0,
+  x1,
+  col0,
+  col1,
+  blend = 0,
+  missingColor,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{z}{an optional vector or other set of numerical values to be examined.
@@ -36,7 +48,7 @@ painted with the nearest in-range color.}
 through \code{blend} are all ignored (see \dQuote{Details}).  If it is
 provided, then it may either be a vector of break points, or a single number
 indicating the desired number of break points to be computed with
-\code{\link{pretty}}\code{(z,breaks)1.  In either case of non-missing }breaks\code{, the resultant break points must number 1 plus the number of colors (see }col`).}
+\code{\link{pretty}}\verb{(z,breaks)1.  In either case of non-missing }breaks\verb{, the resultant break points must number 1 plus the number of colors (see }col`).}
 
 \item{col}{either a vector of colors or a function taking a numerical value
 as its single argument and returning a vector of colors.  The value of
@@ -113,7 +125,7 @@ There are three ways of specifying color schemes, and \code{colormap} works
 by checking for each condition in turn.
 \itemize{
 \item \strong{Case A.} Supply \code{z} but nothing else.  In this case,
-\code{breaks} will be set to \code{[}pretty\code{]}(z,10)` and things are
+\code{breaks} will be set to \code{[}pretty\verb{]}(z,10)` and things are
 otherwise as in case B.
 \item \strong{Case B.} Supply \code{breaks}.  In this case, \code{breaks} and
 \code{col} are used together to specify a color scheme.  If \code{col} is a
@@ -192,14 +204,12 @@ imagep(topoWorld, breaks=cm$breaks, col=cm$col)
 cm <- colormap(x0=c(-8000, -4000,   0,  100),
                x1=c(-4000,     0, 100, 5000),
                col0=c("violet","blue","white","tan"),
-               col1=c("blue","white","tan","yelloe"),
-               blend=c(100, 8, 0))
+               col1=c("blue","white","tan","yellow"))
 lon <- topoWorld[['longitude']]
 lat <- topoWorld[['latitude']]
 z <- topoWorld[['z']]
 imagep(lon, lat, z, breaks=cm$breaks, col=cm$col)
 contour(lon, lat, z, levels=0, add=TRUE)
-message("colormap() example 4 is broken")
 
 ## Example 5. visualize GMT style color map
 cm <- colormap(name="gmt_globe", debug=4)
@@ -219,32 +229,35 @@ plot(x, y, pch=21, bg=cm$colfunction(z), cex=3)
 }
 \references{
 Information on GMT software is given at
-\code{http://gmt.soest.hawaii.edu} (link worked for years but failed
+\verb{http://gmt.soest.hawaii.edu} (link worked for years but failed
 2015-12-12).  Diagrams showing the GMT color schemes are at
-\code{http://www.geos.ed.ac.uk/it/howto/GMT/CPT/palettes.html} (link worked
+\verb{http://www.geos.ed.ac.uk/it/howto/GMT/CPT/palettes.html} (link worked
 for years but failed 2015-12-08), and numerical specifications for some
 color maps are at \url{http://www.beamreach.org/maps/gmt/share/cpt},
 \url{http://soliton.vm.bytemark.co.uk/pub/cpt-city}, and other sources.
 }
 \seealso{
-Other things related to colors: \code{\link{oceColors9B}},
-  \code{\link{oceColorsCDOM}},
-  \code{\link{oceColorsChlorophyll}},
-  \code{\link{oceColorsClosure}},
-  \code{\link{oceColorsDensity}},
-  \code{\link{oceColorsFreesurface}},
-  \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
-  \code{\link{oceColorsOxygen}},
-  \code{\link{oceColorsPAR}},
-  \code{\link{oceColorsPalette}},
-  \code{\link{oceColorsPhase}},
-  \code{\link{oceColorsSalinity}},
-  \code{\link{oceColorsTemperature}},
-  \code{\link{oceColorsTurbidity}},
-  \code{\link{oceColorsTwo}},
-  \code{\link{oceColorsVelocity}},
-  \code{\link{oceColorsViridis}},
-  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
+Other things related to colors: 
+\code{\link{oceColors9B}()},
+\code{\link{oceColorsCDOM}()},
+\code{\link{oceColorsChlorophyll}()},
+\code{\link{oceColorsClosure}()},
+\code{\link{oceColorsDensity}()},
+\code{\link{oceColorsFreesurface}()},
+\code{\link{oceColorsGebco}()},
+\code{\link{oceColorsJet}()},
+\code{\link{oceColorsOxygen}()},
+\code{\link{oceColorsPAR}()},
+\code{\link{oceColorsPalette}()},
+\code{\link{oceColorsPhase}()},
+\code{\link{oceColorsSalinity}()},
+\code{\link{oceColorsTemperature}()},
+\code{\link{oceColorsTurbidity}()},
+\code{\link{oceColorsTwo}()},
+\code{\link{oceColorsVelocity}()},
+\code{\link{oceColorsViridis}()},
+\code{\link{oceColorsVorticity}()},
+\code{\link{ocecolors}}
 }
 \author{
 Dan Kelley

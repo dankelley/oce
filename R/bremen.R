@@ -31,7 +31,8 @@ setClass("bremen", contains="oce") # 20150528 may be called "geomar" or somethin
 
 setMethod(f="initialize",
           signature="bremen",
-          definition=function(.Object, filename="") {
+          definition=function(.Object, filename="", ...) {
+              .Object <- callNextMethod(.Object, ...)
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@metadata$filename <- filename
               .Object@processingLog$time <- presentTime()
@@ -65,7 +66,7 @@ setMethod(f="[[<-",
               callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
-#' Plot a Bremen Object
+#' Plot a bremen Object
 #'
 #' Plot a [bremen-class] object.
 #' If the first argument seems to be a CTD dataset, this uses [plot,ctd-method()];

@@ -4,9 +4,18 @@
 \alias{window.oce}
 \title{Window an Oce Object by Time or Distance}
 \usage{
-\method{window}{oce}(x, start = NULL, end = NULL, frequency = NULL,
-  deltat = NULL, extend = FALSE, which = c("time", "distance"),
-  indexReturn = FALSE, debug = getOption("oceDebug"), ...)
+\method{window}{oce}(
+  x,
+  start = NULL,
+  end = NULL,
+  frequency = NULL,
+  deltat = NULL,
+  extend = FALSE,
+  which = c("time", "distance"),
+  indexReturn = FALSE,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{x}{an \linkS4class{oce} object.}

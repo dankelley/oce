@@ -77,7 +77,7 @@ contain the item. This \code{[[} method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
-longitude and latitudee, has sufficient information to compute
+longitude and latitude, has sufficient information to compute
 Absolute Salinity, and so \code{o[["SA"]]} will yield the
 calculated Absolute Salinity.
 
@@ -88,14 +88,16 @@ retrieve derived items.
 
 \references{
 \enumerate{
-\item JPO OurOcean Portal \code{https://ourocean.jpl.nasa.gov/SST/}
+\item JPO OurOcean Portal \verb{https://ourocean.jpl.nasa.gov/SST/}
 (link worked in 2016 but was seen to fail 2017 Feb 2).
 }
 }
 \seealso{
-Other things related to satellite data: \code{\link{plot,satellite-method}},
-  \code{\link{read.g1sst}}, \code{\link{satellite-class}},
-  \code{\link{summary,satellite-method}}
+Other things related to satellite data: 
+\code{\link{plot,satellite-method}},
+\code{\link{read.g1sst}()},
+\code{\link{satellite-class}},
+\code{\link{summary,satellite-method}}
 }
 \author{
 Dan Kelley

@@ -6,13 +6,23 @@
 \source{
 The WebTide software may be downloaded for free at the
 Department of Fisheries and Oceans (Canada) website at
-\code{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php}
+\verb{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php}
 (checked February 2016 and May 2017).
 }
 \usage{
-webtide(action = c("map", "predict"), longitude, latitude, node, time,
-  basedir = getOption("webtide"), region = "nwatl", plot = TRUE,
-  tformat, debug = getOption("oceDebug"), ...)
+webtide(
+  action = c("map", "predict"),
+  longitude,
+  latitude,
+  node,
+  time,
+  basedir = getOption("webtide"),
+  region = "nwatl",
+  plot = TRUE,
+  tformat,
+  debug = getOption("oceDebug"),
+  ...
+)
 }
 \arguments{
 \item{action}{An indication of the action, either \code{action="map"} to
@@ -75,7 +85,7 @@ this value is returned invisibly.
 Get a tidal prediction from a WebTide database. This only
 works if the standalone WebTide application is installed,
 and if it is installed in a standard location. The details
-of installation are not within the oce purvue.
+of installation are not within the oce purview.
 }
 \details{
 There are two methods of using this function.
@@ -125,14 +135,18 @@ webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
 
 }
 \seealso{
-Other things related to tides: \code{\link{[[,tidem-method}},
-  \code{\link{[[<-,tidem-method}}, \code{\link{as.tidem}},
-  \code{\link{plot,tidem-method}},
-  \code{\link{predict.tidem}},
-  \code{\link{summary,tidem-method}},
-  \code{\link{tidedata}}, \code{\link{tidem-class}},
-  \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
-  \code{\link{tidem}}
+Other things related to tides: 
+\code{\link{[[,tidem-method}},
+\code{\link{[[<-,tidem-method}},
+\code{\link{as.tidem}()},
+\code{\link{plot,tidem-method}},
+\code{\link{predict.tidem}()},
+\code{\link{summary,tidem-method}},
+\code{\link{tidedata}},
+\code{\link{tidem-class}},
+\code{\link{tidemAstron}()},
+\code{\link{tidemVuf}()},
+\code{\link{tidem}}
 }
 \author{
 Dan Kelley

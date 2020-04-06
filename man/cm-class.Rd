@@ -61,7 +61,7 @@ contain the item. This \code{[[} method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
-longitude and latitudee, has sufficient information to compute
+longitude and latitude, has sufficient information to compute
 Absolute Salinity, and so \code{o[["SA"]]} will yield the
 calculated Absolute Salinity.
 
@@ -71,23 +71,35 @@ retrieve derived items.
 }
 
 \seealso{
-Other things related to cm data: \code{\link{[[,cm-method}},
-  \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
-  \code{\link{cm}}, \code{\link{plot,cm-method}},
-  \code{\link{read.cm}}, \code{\link{rotateAboutZ}},
-  \code{\link{subset,cm-method}},
-  \code{\link{summary,cm-method}}
+Other things related to cm data: 
+\code{\link{[[,cm-method}},
+\code{\link{[[<-,cm-method}},
+\code{\link{as.cm}()},
+\code{\link{cm}},
+\code{\link{plot,cm-method}},
+\code{\link{read.cm}()},
+\code{\link{rotateAboutZ}()},
+\code{\link{subset,cm-method}},
+\code{\link{summary,cm-method}}
 
-Other classes provided by oce: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{bremen-class}},
-  \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}, \code{\link{xbt-class}}
+Other classes provided by oce: 
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{argo-class}},
+\code{\link{bremen-class}},
+\code{\link{coastline-class}},
+\code{\link{ctd-class}},
+\code{\link{lisst-class}},
+\code{\link{lobo-class}},
+\code{\link{met-class}},
+\code{\link{oce-class}},
+\code{\link{odf-class}},
+\code{\link{rsk-class}},
+\code{\link{sealevel-class}},
+\code{\link{section-class}},
+\code{\link{topo-class}},
+\code{\link{windrose-class}},
+\code{\link{xbt-class}}
 }
 \author{
 Dan Kelley

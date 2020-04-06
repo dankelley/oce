@@ -597,14 +597,12 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #' cm <- colormap(x0=c(-8000, -4000,   0,  100),
 #'                x1=c(-4000,     0, 100, 5000),
 #'                col0=c("violet","blue","white","tan"),
-#'                col1=c("blue","white","tan","yelloe"),
-#'                blend=c(100, 8, 0))
+#'                col1=c("blue","white","tan","yellow"))
 #' lon <- topoWorld[['longitude']]
 #' lat <- topoWorld[['latitude']]
 #' z <- topoWorld[['z']]
 #' imagep(lon, lat, z, breaks=cm$breaks, col=cm$col)
 #' contour(lon, lat, z, levels=0, add=TRUE)
-#' message("colormap() example 4 is broken")
 #'
 #' ## Example 5. visualize GMT style color map
 #' cm <- colormap(name="gmt_globe", debug=4)
@@ -687,15 +685,13 @@ colormap <- function(z=NULL,
         } else {
             zcol <- "black"
         }
-        if (missing(missingColor))
-            missingColor <- "gray"
         res <- list(x0=x0, x1=x1, col0=col0, col1=col1,
                      missingColor=missingColor,
                      zclip=FALSE,
                      zlim=if (!missing(zlim)) zlim else range(breaks),
                      breaks=breaks,
                      col=col,
-                     zcol="black")
+                     zcol=zcol)
         class(res) <- c("list", "colormap")
         return(res)
     }
