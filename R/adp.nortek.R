@@ -1303,7 +1303,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
         ##?     stop("the 'echosounder' data records do not all have the same number of beams")
         ## FIXME: read other fields to the following list.
         echosounder <- list(i=1,
-                        numberOfCells=ncellsEchosounder2,
+                        numberOfCells=ncellsEchosounder2[p$echosounder][1],
                         numberOfBeams=1, # FIXME: is this right?
                         originalCoordinate=coordinateSystem[p$echosounder[1]],
                         oceCoordinate=coordinateSystem[p$echosounder[1]],
