@@ -2047,11 +2047,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             text$text[[text$i]] <- t
             text$i <- text$i + 1
             ##oceDebug(debug, "added to text; now, text$i=", text$i, "\n")
-
         } else {
-
-            stop("unknown key 0x", key, "; only 0x15 through 0x0x1f, plus 0xa0, are permitted")
-
+            stop("unknown key 0x", as.raw(key), "; only 0x15 through 0x1f, plus 0xa0, are permitted")
         }
         if (monitor)
             setTxtProgressBar(progressBar, ch)

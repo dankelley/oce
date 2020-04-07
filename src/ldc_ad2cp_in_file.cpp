@@ -1,5 +1,5 @@
 /* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
-#define DEBUG 2
+//#define DEBUG 2
 
 #include <Rcpp.h>
 using namespace Rcpp;
