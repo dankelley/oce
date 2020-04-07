@@ -1,5 +1,4 @@
 /* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
-//#define DEBUG 2
 
 #include <Rcpp.h>
 using namespace Rcpp;
@@ -121,8 +120,12 @@ unsigned short cs(unsigned char *data, unsigned short size)
 
 
 // [[Rcpp::export]]
-List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by)
+List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector DEBUG)
 {
+  int broken_end = 0;
+  int debug = DEBUG[0];
+  if (debug < 0)
+    debug = 0;
   std::string fn = Rcpp::as<std::string>(filename(0));
   FILE *fp = fopen(fn.c_str(), "rb");
   if (!fp)
@@ -137,18 +140,16 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   if (by[0] < 0)
     ::Rf_error("'by' must be positive but it is %d", by[0]);
   //unsigned int by_value = by[0];
-#if defined(DEBUG)
-  Rprintf("to=%d\n", to_value);
-  // Rprintf("from=%d, to=%d, by=%d\n", from_value, to_value, by_value);
-#endif
+  if (debug)
+    Rprintf("do_ldc_ad2cp_in_file(filename='%s', from=%d, to=%d, by=%d)\n",
+        fn.c_str(), from[0], to[0], by[0]);
 
   // FIXME: should we just get this from R? and do we even need it??
   fseek(fp, 0L, SEEK_END);
   unsigned long int fileSize = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
-#if defined(DEBUG)
-  Rprintf("fileSize=%d\n", fileSize);
-#endif
+  if (debug)
+    Rprintf("  fileSize=%d\n", fileSize);
   unsigned int chunk = 0;
   unsigned int cindex = 0;
 
@@ -165,10 +166,6 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       ::Rf_error("this file does not contain a single 0x", SYNC, " byte");
       break;
     }
-    // // Extremely low-level debugging.
-    // #if defined(DEBUG) && DEBUG > 3
-    //     Rprintf("< c=0x%x\n", c);
-    // #endif
     if (SYNC == c) {
       fseek(fp, -1, SEEK_CUR);
       break;
@@ -196,16 +193,14 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   unsigned int *id_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
   while (chunk < to_value) {// FIXME: use whole file here
     if (chunk > nchunk - 1) {
-#if defined(DEBUG)
-      Rprintf("about to increase buffer size from %d\n", nchunk);
-#endif
+      if (debug)
+        Rprintf("  about to increase buffer size from %d\n", nchunk);
       nchunk = (unsigned int) floor(chunk * 1.4); // increase buffer size by sqrt(2)
       index_buf = (unsigned int*)Realloc(index_buf, nchunk, unsigned int);
       length_buf = (unsigned int*)Realloc(length_buf, nchunk, unsigned int);
       id_buf = (unsigned int*)Realloc(id_buf, nchunk, unsigned int);
-#if defined(DEBUG)
-      Rprintf("successfully increased buffer size to %d\n", nchunk);
-#endif
+      if (debug)
+        Rprintf("  successfully increased buffer size to %d\n", nchunk);
     }
     size_t bytes_read;
     // read/check sync byte
@@ -242,11 +237,10 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     if (2 != fread(&bytes2, 1, 2, fp))
       ::Rf_error("cannot read header.header_checksum at cindex=%d\n", cindex);
     header.header_checksum = bytes2[0] + 256 * bytes2[1];
-#if defined(DEBUG) && DEBUG > 1
-    Rprintf("at cindex=%4d chunk=%4d: sync=0x%02x size=%d id=0x%02x family=0x%02x dataSize=%d dataChecksum=%d haderChecksum=%d\n",
-        cindex, chunk, header.sync, header.header_size, header.id, header.family, header.data_size,
-        header.data_checksum, header.header_checksum);
-#endif
+    if (debug && debug > 1)
+      Rprintf("  at cindex=%4d chunk=%4d: sync=0x%02x size=%d id=0x%02x family=0x%02x dataSize=%d dataChecksum=%d haderChecksum=%d\n",
+          cindex, chunk, header.sync, header.header_size, header.id, header.family, header.data_size,
+          header.data_checksum, header.header_checksum);
     cindex = cindex + header.header_size;
     index_buf[chunk] = cindex;
     length_buf[chunk] = header.data_size;
@@ -258,8 +252,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
         break;
       }
     }
-    if (!found)
-      Rprintf("warning: odd header.id (0x%02x) at chunk %d, cindex=%d\n", header.id, chunk, cindex);
+    //if (!found)
+    //  Rprintf("warning: ldc_ad2cp_in_file() found odd header.id (0x%02x) at chunk %d, cindex=%d\n", header.id, chunk, cindex);
     id_buf[chunk] = header.id;
     // Check the header checksum.
     //FIXME: unsigned short hbufcs = cs(hbuf, header.header_size-2); // FIXME: -2 probably wrong now
@@ -276,7 +270,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     bytes_read = fread(dbuf, 1, header.data_size, fp);
     // Check that we got all the data
     if (bytes_read != header.data_size) {
-      Rprintf("warning: ran out of file on data chunk near cindex=%d; wanted %d bytes but got only %d\n",
+      Rprintf("warning: ldc_ad2cp_in_file() ran out of file on data chunk near cindex=%d; wanted %d bytes but got only %d\n",
           cindex, header.data_size, bytes_read);
       break;
     }
@@ -284,8 +278,9 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     unsigned short dbufcs;
     dbufcs = cs(dbuf, header.data_size);
     if (dbufcs != header.data_checksum) {
-      Rprintf("warning: at cindex=%d, data checksum is %d but it should be %d\n",
+      Rprintf("warning: ldc_ad2cp_in_file() at cindex=%d, data checksum is %d but it should be %d\n",
           cindex, dbufcs, header.data_checksum);
+      broken_end = 1;
     }
     cindex += header.data_size;
     chunk++;
@@ -299,5 +294,10 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   Free(index_buf);
   Free(length_buf);
   Free(id_buf);
-  return(List::create(Named("index")=index, Named("length")=length, Named("id")=id));
+  if (debug)
+    Rprintf("} # do_ldc_ad2cp_in_file\n");
+  return(List::create(Named("index")=index,
+        Named("length")=length,
+        Named("id")=id,
+        Named("brokenEnd")=broken_end));
 }
