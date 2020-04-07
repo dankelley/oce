@@ -57,28 +57,29 @@ int ID_ALLOWED[NID_ALLOWED]={21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 160};
 
 Table 6.1 (header definition):
 
-+-----------------+--------------------+------------------------------------------------------+
-| Sync            | 8 bits             | Always 0xA5                                          |
-+-----------------|--------------------|------------------------------------------------------+
-| Header Size     | 8 bits (unsigned)  | Size (number of bytes) of the Header.                |
-+-----------------|--------------------|------------------------------------------------------+
-| ID              | 8 bits             | Defines type of the following Data Record            |
-|                 |                    | 0x16=21  – Burst Data Record.                        |
-|                 |                    | 0x16=22  – Average Data Record.                      |
-|                 |                    | 0x17=23  – Bottom Track Data Record.                 |
-|                 |                    | 0x18=24  – Interleaved Burst Data Record (beam 5).   |
-|                 |                    | 0xA0=160 - String Data Record, eg. GPS NMEA data,    |
-|                 |                    |            comment from the FWRITE command.          |
-+-----------------|--------------------|------------------------------------------------------|
-| Family          | 8 bits             | Defines the Instrument Family. 0x10 – AD2CP Family   |
-+-----------------|--------------------|------------------------------------------------------+
-| Data Size       | 16 bits (unsigned) | Size (number of bytes) of the following Data Record. |
-+-----------------|--------------------|------------------------------------------------------+
-| Data Checksum   | 16 bits            | Checksum of the following Data Record.               |
-+-----------------|--------------------|------------------------------------------------------+
-| Header Checksum | 16 bits            | Checksum of all fields of the Header                 |
-|                 |                    | (excepts the Header Checksum itself).                |
-+-----------------+--------------------+------------------------------------------------------+
++-----------------+------------------------+------------------------------------------------------+
+| Sync            | 8 bits                 | Always 0xA5                                          |
++-----------------|------------------------|------------------------------------------------------+
+| Header Size     | 8 bits (unsigned)      | Size (number of bytes) of the Header.                |
++-----------------|------------------------|------------------------------------------------------+
+| ID              | 8 bits                 | Defines type of the following Data Record            |
+|                 |                        | 0x16=21  – Burst Data Record.                        |
+|                 |                        | 0x16=22  – Average Data Record.                      |
+|                 |                        | 0x17=23  – Bottom Track Data Record.                 |
+|                 |                        | 0x18=24  – Interleaved Burst Data Record (beam 5).   |
+|                 |                        | 0xA0=160 - String Data Record, eg. GPS NMEA data,    |
+|                 |                        |            comment from the FWRITE command.          |
++-----------------|------------------------|------------------------------------------------------|
+| Family          | 8 bits                 | Defines the Instrument Family. 0x10 – AD2CP Family   |
++-----------------|------------------------|------------------------------------------------------+
+| Data Size       | 16 bits (unsigned)     | Size (number of bytes) of the following Data Record. |
+|                 | OR 32 bits (unsigned)  |                                                      |
++-----------------|------------------------|------------------------------------------------------+
+| Data Checksum   | 16 bits                | Checksum of the following Data Record.               |
++-----------------|------------------------|------------------------------------------------------+
+| Header Checksum | 16 bits                | Checksum of all fields of the Header                 |
+|                 |                        | (excepts the Header Checksum itself).                |
++-----------------+------------------------+------------------------------------------------------+
 
 Note that the code examples in [1] suggest that the checksums are also unsigned, although
 that is not stated in the table. I think the same can be said of [2]. But I may be wrong,
@@ -176,7 +177,17 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   }
   // The table in [1 sec 6.1] says header pieces are 10 bytes
   // long, so once we get an 0xA5, we'll try to get 9 more bytes.
-  unsigned char hbuf[HEADER_SIZE]; // header buffer
+  unsigned char bytes2[2]; // for data_size
+  unsigned char bytes4[4]; // for data_size
+  struct header {
+    unsigned char sync;
+    unsigned char header_size;
+    unsigned char id;
+    unsigned char family;
+    unsigned long data_size; // may be 2 bytes or 4 bytes in header
+    unsigned short data_checksum;
+    unsigned short header_checksum;
+  } header;
   unsigned int dbuflen = 10000; // may be increased later
   unsigned char *dbuf = (unsigned char *)Calloc((size_t)dbuflen, unsigned char);
   unsigned int nchunk = 100000;
@@ -188,7 +199,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
 #if defined(DEBUG)
       Rprintf("about to increase buffer size from %d\n", nchunk);
 #endif
-      nchunk = (unsigned int) chunk * 2; // double buffer size
+      nchunk = (unsigned int) floor(chunk * 1.4); // increase buffer size by sqrt(2)
       index_buf = (unsigned int*)Realloc(index_buf, nchunk, unsigned int);
       length_buf = (unsigned int*)Realloc(length_buf, nchunk, unsigned int);
       id_buf = (unsigned int*)Realloc(id_buf, nchunk, unsigned int);
@@ -196,79 +207,87 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       Rprintf("successfully increased buffer size to %d\n", nchunk);
 #endif
     }
-    int id;
-    unsigned int dataSize;
-    unsigned short dataChecksum, headerChecksum;
     size_t bytes_read;
-    bytes_read = fread(hbuf, 1, HEADER_SIZE, fp);
-    if (bytes_read != HEADER_SIZE) {
-      if (cindex != fileSize)
-        Rprintf("warning: cannot read record starting at byte %d of a %d-byte file. This may mean that the file is incomplete.\n", cindex, fileSize);
+    // read/check sync byte
+    if (1 != fread(&header.sync, 1, 1, fp))
+      ::Rf_error("cannot read header.sync at cindex=%d\n", cindex);
+    if (header.sync != SYNC)
+      ::Rf_error("expected header.sync to be 0x%02x but it was 0x%02x at byte %d", SYNC, header.sync, cindex);
+    if (1 != fread(&header.header_size, 1, 1, fp))
+      ::Rf_error("cannot read header_size at cindex=%d\n", cindex);
+    if (header.header_size < 2)
+      ::Rf_error("impossible header.header_size %d at cindex=%d\n", header.header_size, cindex);
+    if (1 != fread(&header.id, 1, 1, fp))
+      ::Rf_error("cannot read header.id at cindex=%d\n", cindex);
+    if (1 != fread(&header.family, 1, 1, fp))
+      ::Rf_error("cannot read header.family at cindex=%d\n", cindex);
+    unsigned char header_buffer[2];
+    if (header.header_size == 10) {
+      if (2 != fread(bytes2, 1, 2, fp))
+        ::Rf_error("cannot read bytes2 (for 16 bit header_size) at cindex=%d\n", cindex);
+      header.data_size = bytes2[0] + 256 * bytes2[1];
+    } else if (header.header_size == 12) {
+      if (4 != fread(bytes4, 1, 4, fp))
+        ::Rf_error("cannot read bytes4 (for 32 bit header_size) at cindex=%d\n", cindex);
+      header.data_size = bytes4[0] +
+        256 * (bytes4[1] +
+            256 * (bytes4[2] +
+              256 * bytes4[3]));
+    } else {
+      ::Rf_error("header_size must be 10 or 12 at cindex=%d\n", cindex);
+    }
+    if (2 != fread(&bytes2, 1, 2, fp))
+      ::Rf_error("cannot read header.data_checksum at cindex=%d\n", cindex);
+    header.data_checksum = bytes2[0] + 256 * bytes2[1];
+    if (2 != fread(&bytes2, 1, 2, fp))
+      ::Rf_error("cannot read header.header_checksum at cindex=%d\n", cindex);
+    header.header_checksum = bytes2[0] + 256 * bytes2[1];
+#if defined(DEBUG) && DEBUG > 1
+    Rprintf("at cindex=%4d chunk=%4d: sync=0x%02x size=%d id=0x%02x family=0x%02x dataSize=%d dataChecksum=%d haderChecksum=%d\n",
+        cindex, chunk, header.sync, header.header_size, header.id, header.family, header.data_size,
+        header.data_checksum, header.header_checksum);
+#endif
+    cindex = cindex + header.header_size;
+    index_buf[chunk] = cindex;
+    length_buf[chunk] = header.data_size;
+
+    int found = 0;
+    for (int idi = 0; idi < NID_ALLOWED; idi++) {
+      if (header.id == ID_ALLOWED[idi]) {
+        found = 1;
+        break;
+      }
+    }
+    if (!found)
+      Rprintf("warning: odd header.id (0x%02x) at chunk %d, cindex=%d\n", header.id, chunk, cindex);
+    id_buf[chunk] = header.id;
+    // Check the header checksum.
+    //FIXME: unsigned short hbufcs = cs(hbuf, header.header_size-2); // FIXME: -2 probably wrong now
+    //FIXME: if (hbufcs != header.header_checksum) {
+    //FIXME:   Rprintf("warning: at cindex=%d, header checksum is %d but it should be %d\n",
+    //FIXME:       cindex, hbufcs, header.header_checksum);
+    //FIXME: }
+    // Increase size of data buffer, if required.
+    if (header.data_size > dbuflen) { // expand the buffer if required
+      dbuflen = header.data_size;
+      dbuf = (unsigned char *)Realloc(dbuf, dbuflen, unsigned char);
+    }
+    // Read the data
+    bytes_read = fread(dbuf, 1, header.data_size, fp);
+    // Check that we got all the data
+    if (bytes_read != header.data_size) {
+      Rprintf("warning: ran out of file on data chunk near cindex=%d; wanted %d bytes but got only %d\n",
+          cindex, header.data_size, bytes_read);
       break;
     }
-    cindex += bytes_read;
-#if defined(DEBUG) && DEBUG > 1
-      Rprintf("at cindex=%4d, buf: 0x%02x 0x%02x=%d=size=10? 0x%02x=type 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\n",
-          cindex, hbuf[0], hbuf[1], hbuf[1], hbuf[2], hbuf[3], hbuf[4],
-          hbuf[5], hbuf[6], hbuf[7], hbuf[8], hbuf[9]);
-#endif
-    // It's prudent to check.
-    if (hbuf[0] != SYNC) {
-      ::Rf_error("coding error in reading the header at cindex=%d; expecting 0x%x but found 0x%x\n",
-          cindex, SYNC, hbuf[0]);
+    // Compare data checksum to the value stated in the header
+    unsigned short dbufcs;
+    dbufcs = cs(dbuf, header.data_size);
+    if (dbufcs != header.data_checksum) {
+      Rprintf("warning: at cindex=%d, data checksum is %d but it should be %d\n",
+          cindex, dbufcs, header.data_checksum);
     }
-    // Check that it's an actual header
-    if (hbuf[1] == HEADER_SIZE && hbuf[3] == FAMILY) {
-      id = (int)hbuf[2];
-      dataSize = hbuf[4] + 256 * hbuf[5];
-      dataChecksum = hbuf[6] + 256 * hbuf[7];
-      headerChecksum = hbuf[8] + 256 * hbuf[9];
-#if defined(DEBUG)
-      Rprintf("  dataSize=%d dataChecksum=%d saved to chunk %d (id: %d); note that buf[2]=0x%02x\n",
-          dataSize, dataChecksum, chunk, id);
-#endif
-      index_buf[chunk] = cindex;
-      length_buf[chunk] = dataSize;
-
-      int found = 0;
-      for (int idi = 0; idi < NID_ALLOWED; idi++) {
-        if (id == ID_ALLOWED[idi]) {
-          found = 1;
-          break;
-        }
-      }
-      if (!found)
-        Rprintf("warning: odd id (%d) at chunk %d, index=%d\n", id, chunk, cindex);
-      id_buf[chunk] = id;
-      // Check the header checksum.
-      unsigned short hbufcs = cs(hbuf, HEADER_SIZE-2);
-      if (hbufcs != headerChecksum) {
-        Rprintf("warning: at cindex=%d, header checksum is %d but it should be %d\n",
-            cindex, hbufcs, headerChecksum);
-      }
-      // Increase size of data buffer, if required.
-      if (dataSize > dbuflen) { // expand the buffer if required
-        dbuflen = dataSize;
-        dbuf = (unsigned char *)Realloc(dbuf, dbuflen, unsigned char);
-      }
-      // Read the data
-      bytes_read = fread(dbuf, 1, dataSize, fp);
-      // Check that we got all the data
-      if (bytes_read != dataSize)
-        ::Rf_error("ran out of file on data chunk near cindex=%d; wanted %d bytes but got only %d\n",
-            cindex, dataSize, bytes_read);
-      // Compare data checksum to the value stated in the header
-      unsigned short dbufcs;
-      dbufcs = cs(dbuf, dataSize);
-      if (dbufcs != dataChecksum) {
-        Rprintf("warning: at cindex=%d, data checksum is %d but it should be %d\n",
-            cindex, dbufcs, dataChecksum);
-      }
-      cindex += dataSize;
-    } else {
-      Rprintf("Warning: skipped chunk at cindex=%d, since expected buf[1]==%d and buf[3]==0x%02x,\n  but got %d and 0x%02x.  For more on the expected format, see table 6.1 of\n  N305-007-Integrators-Guide-AD2CP_1018.pdf.\n",
-          cindex, HEADER_SIZE, FAMILY, hbuf[1], hbuf[3]);
-    }
+    cindex += header.data_size;
     chunk++;
   }
   IntegerVector index(chunk), length(chunk), id(chunk);
