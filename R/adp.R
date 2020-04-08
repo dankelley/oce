@@ -550,7 +550,8 @@ setMethod(f="summary",
                   cat("* Beams::\n")
                   cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "\n")
                   cat("    Slantwise Angle: ", if (is.null(beamAngle)) "?" else beamAngle , "\n")
-                  cat("    Orientation:     ", if (is.null(orientation)) "?" else orientation, "\n")
+                  if (numberOfBeams > 0)
+                      cat("    Orientation:     ", if (is.null(orientation)) "?" else orientation, "\n")
                   cat("    Unspreaded:      ", if (is.null(beamUnspreaded)) "?" else beamUnspreaded, "\n")
               }
               transformationMatrix <- object[["transformationMatrix"]]
