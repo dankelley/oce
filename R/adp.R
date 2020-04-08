@@ -577,7 +577,8 @@ setMethod(f="summary",
                           numberOfBeams <- object[["numberOfBeams", rt]]
                           cat("    Number of beams:    ", numberOfBeams, "\n")
                           cat("    Beam angle:         ", if (numberOfBeams == 1) 0 else object[["beamAngle"]], "\n")
-                          cat("    Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
+                          if (numberOfBeams > 1)
+                              cat("    Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
                       }
                   }
                   processingLogShow(object)
