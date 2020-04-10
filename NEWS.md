@@ -1,4 +1,5 @@
 1.2-1
+* read.ctd.sbe() can read .btl files
 * support for reading 38kHz RDI ADCP added
 * oceAxis() added
 * oce.plot.ts() gets 'logStyle' argument
