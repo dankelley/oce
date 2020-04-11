@@ -42,7 +42,8 @@ oce.plot.ts(
 )
 }
 \arguments{
-\item{x}{the times of observations.}
+\item{x}{the times of observations.  If this is not a \link{POSIXt} object, then an
+attempt is made to convert it to one using \code{\link[=as.POSIXct]{as.POSIXct()}}.}
 
 \item{y}{the observations.}
 

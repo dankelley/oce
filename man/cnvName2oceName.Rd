@@ -21,7 +21,7 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-a list containing \code{name} (the oce name), \code{nameOriginal} (the SBE name) and \code{unit}.
+\code{\link[=read.ctd.sbe]{read.ctd.sbe()}} returns a list containing \code{name} (the oce name), \code{nameOriginal} (the SBE name) and \code{unit}.
 }
 \description{
 This function is used by \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} to infer data names

@@ -1117,7 +1117,8 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' remove any possible confusion.
 #' The time axis is drawn with [oce.axis.POSIXct()].
 #'
-#' @param x the times of observations.
+#' @param x the times of observations.  If this is not a [POSIXt] object, then an
+#' attempt is made to convert it to one using [as.POSIXct()].
 #'
 #' @param y the observations.
 #'
@@ -1171,7 +1172,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' @param cex.axis,cex.lab,cex.main numeric character expansion factors for axis numbers,
 #' axis names and plot titles; see [par()].
 #'
-#' @param  flipy Logical, with `TRUE` indicating that the graph
+#' @param flipy Logical, with `TRUE` indicating that the graph
 #' should have the y axis reversed, i.e. with smaller values at
 #' the bottom of the page.
 #'
@@ -1260,6 +1261,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
         stop("x cannot be a function")
     if ("adorn" %in% names(list(...)))
         warning("the 'adorn' argument was removed in November 2017")
+    if (!inherits(x, "POSIXt"))
+        x <- as.POSIXct(x)
     if (missing(xlab))
         xlab <- ""
     if (missing(ylab))
