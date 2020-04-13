@@ -1534,7 +1534,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
         progressBar <- txtProgressBar(max=N, style=3, title="Reading profiles")
     unknownKeys <- list()
     for (ch in 1:N) {
-        oceDebug(debug>3, "d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
+        ## oceDebug(debug>3, "d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
         key <- d$id[ch]
         i <- d$index[ch]
 

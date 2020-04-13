@@ -59,7 +59,7 @@ Table 6.1 (header definition):
 +-----------------+------------------------+------------------------------------------------------+
 | Sync            | 8 bits                 | Always 0xA5                                          |
 +-----------------|------------------------|------------------------------------------------------+
-| Header Size     | 8 bits (unsigned)      | Size (number of bytes) of the Header.                |
+| Header Size     | 8 bits (unsigned)      | Size (number of bytes) of the Header (10 or 12?      |
 +-----------------|------------------------|------------------------------------------------------+
 | ID              | 8 bits                 | Defines type of the following Data Record            |
 |                 |                        | 0x16=21  – Burst Data Record.                        |
@@ -148,7 +148,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   if (debug)
     Rprintf("  fileSize=%d\n", fileSize);
   unsigned int chunk = 0;
-  unsigned int cindex = 0;
+  unsigned int cindex = 0, cindex_last_good = 0;
   int checksum_failures = 0;
 
   // Ensure that the first byte we point to equals SYNC.
@@ -160,7 +160,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   int c;
   while (1) {
     c = getc(fp);
-    if (EOF == c) {
+    if (c == EOF) {
       ::Rf_error("this file does not contain a single 0x", SYNC, " byte");
       break;
     }
@@ -189,83 +189,66 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   unsigned int *index_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
   unsigned int *length_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
   unsigned int *id_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
-  int early_end = 0;
+  int early_EOF = 0;
+  int reset_cindex = 0; // set to 1 if we skipped to find a new header start, after a bad checksum
   while (chunk < to_value) { // FIXME: use whole file here
+    if (checksum_failures > 100)
+      ::Rf_error("more than 100 checksum errors");
     if (chunk > nchunk - 1) {
       if (debug)
-        Rprintf("  increasing 'index_buf' size from %d\n", nchunk);
+        Rprintf("  increasing 'index_buf' size from %d", nchunk);
       nchunk = (unsigned int) floor(chunk * 1.4); // increase buffer size by sqrt(2)
       index_buf = (unsigned int*)Realloc(index_buf, nchunk, unsigned int);
       length_buf = (unsigned int*)Realloc(length_buf, nchunk, unsigned int);
       id_buf = (unsigned int*)Realloc(id_buf, nchunk, unsigned int);
       if (debug)
-        Rprintf("  successfully increased buffer size to %d\n", nchunk);
+        Rprintf("  to %d\n", nchunk);
     }
     size_t bytes_read;
     // read/check sync byte
     if (1 != fread(&header.sync, 1, 1, fp))
-      ::Rf_error("cannot read header.sync at cindex=%d (%.4g%% through file)\n",
+      ::Rf_error("cannot read header.sync at cindex=%d (%.5g%% through file)\n",
           cindex, 100.0*cindex/fileSize);
-    if (header.sync != SYNC) {
-      Rprintf("warning: expected header.sync to be 0x%02x but it was 0x%02x at cindex=%d (%.4g%% through file) ... skipping to next 0x%02x chacter...\n",
-          SYNC, header.sync, cindex, 100.0*cindex/fileSize, SYNC);
-      // Skip to next sync char, hoping it's not just a random byte
-      while (1) {
-        c = getc(fp);
-        if (EOF == c) {
-          Rprintf("... got to end of file while searching for a sync character (0x%02x)\n", SYNC);
-          early_end = 1;
-          break;
-        }
-        if (SYNC == c) {
-          fseek(fp, -1, SEEK_CUR);
-          Rprintf("... got a sync character (0x%02x) at cindex=%d (%.4g%% through file) so trying to continue from there\n",
-              SYNC, cindex, 100.0*cindex/fileSize);
-          break;
-        }
-        cindex++;
-      }
-    }
-    if (early_end == 1)
-      break; // give up on further processing
+    if (header.sync != SYNC)
+      ::Rf_error("expected header.sync to be 0x%02x but it was 0x%02x at cindex=%d (%.5g%% through file) ... skipping to next 0x%02x chacter...\n", SYNC, header.sync, cindex, 100.0*cindex/fileSize, SYNC);
     if (1 != fread(&header.header_size, 1, 1, fp))
       ::Rf_error("cannot read header_size at cindex=%d\n", cindex);
     if (header.header_size < 2)
-      ::Rf_error("impossible header.header_size %d at cindex=%d (%.4g%% through file)\n",
+      ::Rf_error("impossible header.header_size %d at cindex=%d (%.5g%% through file)\n",
           header.header_size, cindex, 100.0*cindex/fileSize);
     if (1 != fread(&header.id, 1, 1, fp))
-      ::Rf_error("cannot read header.id at cindex=%d (%.4%% through file)\n",
+      ::Rf_error("cannot read header.id at cindex=%d (%.5%% through file)\n",
           cindex, 100.0*cindex/fileSize);
     if (1 != fread(&header.family, 1, 1, fp))
-      ::Rf_error("cannot read header.family at cindex=%d (%.4%% through file)\n",
+      ::Rf_error("cannot read header.family at cindex=%d (%.5%% through file)\n",
           cindex, 100.0*cindex/fileSize);
+    unsigned char family = header.family; // used in recovery attempt, if a checksum error occurs
     unsigned char header_buffer[2];
     if (header.header_size == 10) {
       if (2 != fread(bytes2, 1, 2, fp))
-        ::Rf_error("cannot read bytes2 (for 16 bit header_size) at cindex=%d (%.4g%% through file)\n",
+        ::Rf_error("cannot read bytes2 (for 16 bit header_size) at cindex=%d (%.5g%% through file)\n",
             cindex, 100.0*cindex/fileSize);
       header.data_size = bytes2[0] + 256 * bytes2[1];
     } else if (header.header_size == 12) {
       if (4 != fread(bytes4, 1, 4, fp))
-        ::Rf_error("cannot read bytes4 (for 32 bit header_size) at cindex=%d (%.4g%% through file)\n",
+        ::Rf_error("cannot read bytes4 (for 32 bit header_size) at cindex=%d (%.5g%% through file)\n",
             cindex, 100.0*cindex/fileSize);
       header.data_size = bytes4[0] + 256 * (bytes4[1] + 256 * (bytes4[2] + 256 * bytes4[3]));
     } else {
-      ::Rf_error("header_size is %d, but it must be 10 or 12 at cindex=%d (%.4g%% through file)\n",
+      ::Rf_error("header_size is %d, but it must be 10 or 12 at cindex=%d (%.5g%% through file)\n",
           header.header_size, cindex, 100.0*cindex/fileSize);
     }
     if (2 != fread(&bytes2, 1, 2, fp))
-      ::Rf_error("cannot read header.data_checksum at cindex=%d (%.4g%% through file)\n",
+      ::Rf_error("cannot read header.data_checksum at cindex=%d (%.5g%% through file)\n",
           cindex, 100.0*cindex/fileSize);
     header.data_checksum = bytes2[0] + 256 * bytes2[1];
     if (2 != fread(&bytes2, 1, 2, fp))
-      ::Rf_error("cannot read header.header_checksum at cindex=%d (%.4g%% through file)\n",
+      ::Rf_error("cannot read header.header_checksum at cindex=%d (%.5g%% through file)\n",
           cindex, 100.0*cindex/fileSize);
     header.header_checksum = bytes2[0] + 256 * bytes2[1];
     if (debug && debug > 1)
-      Rprintf("  at cindex=%4d (%.4g%% through file) chunk=%4d: size=%d id=0x%02x dataSize=%d dataChecksum=%d headerChecksum=%d\n",
-          cindex, 100.0*cindex/fileSize, chunk, header.header_size, header.id, header.data_size,
-          header.data_checksum, header.header_checksum);
+      Rprintf("cindex:%d[%d](%.5g%%) chunk:%4d size:%d id:0x%02x dataSize:%d\n",
+          cindex, ftell(fp)-header.header_size, 100.0*cindex/fileSize, chunk, header.header_size, header.id, header.data_size);
     cindex = cindex + header.header_size;
     index_buf[chunk] = cindex;
     length_buf[chunk] = header.data_size;
@@ -282,29 +265,89 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     // Increase size of data buffer, if required.
     if (header.data_size > dbuflen) { // expand the buffer if required
       if (debug)
-        Rprintf("  increasing 'dbuf' size from %d to %d at cindex=%d (%.4g%% through file)\n",
-            dbuflen, header.data_size, cindex, 100.0*cindex/fileSize);
+        Rprintf("Increasing 'dbuf' size from %d to %d at cindex:%d[%d](%.5g%%)\n",
+            dbuflen, header.data_size, cindex, ftell(fp), 100.0*cindex/fileSize);
       dbuflen = header.data_size;
       dbuf = (unsigned char *)Realloc(dbuf, dbuflen, unsigned char);
     }
     // Read the data
     bytes_read = fread(dbuf, 1, header.data_size, fp);
+    cindex += header.data_size;
     // Check that we got all the data
     if (bytes_read != header.data_size) {
-      Rprintf("warning: ldc_ad2cp_in_file() got to end of file near cindex=%d (%.4g%% through file); wanted %d bytes but got only %d\n",
+      Rprintf("warning: ldc_ad2cp_in_file() got to end of file near cindex=%d (%.5g%% through file); wanted %d bytes but got only %d\n",
           cindex, 100.0*cindex/fileSize, header.data_size, bytes_read);
       break; // give up
     }
     // Compare data checksum to the value stated in the header
     unsigned short dbufcs;
     dbufcs = cs(dbuf, header.data_size);
-    if (dbufcs != header.data_checksum) {
-      Rprintf("warning: ldc_ad2cp_in_file() at cindex=%d (%.4g%% through file), data checksum is %d but it should be %d\n",
-          cindex, 100.0*cindex/fileSize, dbufcs, header.data_checksum);
+    if (dbufcs == header.data_checksum) {
+      cindex_last_good = cindex - header.header_size - header.data_size;
+      reset_cindex = 0;
+    } else {
       checksum_failures++;
+      Rprintf("bad data checksum (expected 0x%02x but got 0x%02x) at cindex:%d[%d] (%.5g%% through file)\n",
+          header.data_checksum, dbufcs, cindex, ftell(fp), 100.0*cindex/fileSize);
+      while (1) {
+        c = getc(fp);
+        cindex++;
+        if (c == EOF) {
+          Rprintf("... got to end of file while searching for a sync character (0x%02x)\n", SYNC);
+          early_EOF = 1;
+          break;
+        }
+        if (c == SYNC) {
+          unsigned int trial_cindex = cindex; // so we can reset to here if this trial works
+          Rprintf("... got a sync character (0x%02x) at cindex=%d (%.5g%% through file)\n",
+              SYNC, cindex, 100.0*cindex/fileSize);
+          // header size (should be 10 or 12)
+          int trial_header_size = getc(fp);
+          cindex++;
+          if (trial_header_size == EOF) {
+            Rprintf("... got to end of file while searching for a header-size character at cindex=%d\n",
+                cindex);
+            early_EOF = 1;
+            break;
+          }
+          if (trial_header_size != 10 && trial_header_size != 12) {
+            Rprintf("    BUT header-size is %d, not 10 or 12 as expected\n", trial_header_size);
+            continue;
+          }
+          Rprintf("        proper header-size character (either 10 or 20 decimal)\n");
+          // Skip over the id byte, which has many possibilities we know of (and perhaps more),
+          // so it is a bit hard to check for correctness.
+          c = getc(fp);
+          cindex++;
+          if (c == EOF) {
+            Rprintf("got to end of file while searching for a the 'id' byte\n");
+            early_EOF = 1;
+            break;
+          }
+          // family: assume it's the same for the whole file.
+          c = getc(fp);
+          cindex++;
+          if (c == EOF) {
+            Rprintf("got to end of file while searching for a the 'family' byte\n");
+            early_EOF = 1;
+            break;
+          }
+          if (c == family) {
+            Rprintf("            family=%d is consistent with previous family\n",
+                family, cindex);
+            cindex -= 4;
+            fseek(fp, -4, SEEK_CUR);
+            Rprintf("            All seems OK, so resetting to cindex=%d[%d]\n", cindex, ftell(fp));
+            break;
+          }
+        }
+      }
+      if (early_EOF == 1)
+        break; // give up on further processing
     }
-    cindex += header.data_size;
-    chunk++;
+    if (!reset_cindex) {
+      chunk++;
+    }
   }
   IntegerVector index(chunk), length(chunk), id(chunk);
   for (unsigned int i = 0; i < chunk; i++) {
@@ -321,6 +364,6 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
         Named("length")=length,
         Named("id")=id,
         Named("checksumFailures")=checksum_failures,
-        Named("earlyEnd")=early_end));
+        Named("earlyEOF")=early_EOF));
 }
 
