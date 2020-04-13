@@ -137,7 +137,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   if (by[0] < 0)
     ::Rf_error("'by' must be positive but it is %d", by[0]);
   //unsigned int by_value = by[0];
-  if (1+debug)
+  if (debug)
     Rprintf("do_ldc_ad2cp_in_file(filename='%s', from=%d, to=%d, by=%d)\n",
         fn.c_str(), from[0], to[0], by[0]);
 
