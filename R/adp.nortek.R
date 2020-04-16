@@ -340,7 +340,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             ##    user$blankingDistance <- 0
             ##}
             ##cat("adp.nortek.R:245 user$blankingDistance", user$blankingDistance, "\n")
-            oceDebug(1+debug, "blankingDistance=", user$blankingDistance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
+            oceDebug(debug, "blankingDistance=", user$blankingDistance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
             user$swVersion <- readBin(buf[o+73:74], "integer", n=1, size=2, endian="little") / 10000
             oceDebug(debug, "swVersion=", user$swVersion, "\n")
             user$salinity <- readBin(buf[o+75:76], "integer", n=1, size=2, endian="little") * 0.1
@@ -641,8 +641,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     nav <- do_ldc_ad2cp_in_file(filename, from, to, by, debug-1)
     d <- list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
     if (0x10 != d$buf[d$index[1]+1]) # 0x10 = AD2CP (p38 integrators guide)
-        stop("this file is not in AD2CP format, since the first byte is not 0x10")
-    oceDebug(debug, "focussing on ", length(d$index), " data records\n")
+        stop("expecting byte value 0x10 at index ", d$index[1]+1, ", but got 0x", d$buf[d$index[1]+1])
+    oceDebug(debug, "focussing on ", length(d$index), " data records\n", sep="")
     Nmax <- length(d$index)
     if (to > Nmax) {
         warning("using to=", Nmax, " based on file contents")
@@ -850,14 +850,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 
     ## Nortek docs [2 p51] say bit 1 (in 0-offset notation) in 'status' indicates blankingDistance
     ## unit, either 0 for m or 1 for cm. (Above, it was read and converted to m, assuming cm.)
-    if (debug > 0) {
-        cat(vectorShow(status[2,]))
-        cat(vectorShow(blankingDistance))
-    }
+    oceDebug(debug, vectorShow(status[2,]))
+    oceDebug(debug, vectorShow(blankingDistance))
     blankingDistance <- blankingDistance * ifelse(status[2, ] == 0x01, 1, 0.1)
-    if (debug > 0)
-        cat(vectorShow(blankingDistance))
-
     ensemble <- readBin(d$buf[pointer4+73], "integer", size=4, n=N, endian="little")
 
     ## Limitations
@@ -866,8 +861,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
         cat("developer-aimed information:\n")
         print(unique(activeConfiguration))
         print(table(activeConfiguration))
-        stop("This file has ",
-             nconfiguration, " active configurations, but read.adp.ad2cp() can only handle one. Please contact the oce developers if you need to work with this file.")
+        stop("This file has ", nconfiguration, " active configurations, but read.adp.ad2cp() can only handle one. Please contact the oce developers if you need to work with this file.")
     }
 
     ## Record-type keys and phrases in documentation [1, sec 6.1, page 47]
@@ -2076,7 +2070,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
         msg <- ""
         for (kn in names(unknownKeys))
             msg <- paste0(msg, "   key=", kn, " found ", unknownKeys[[kn]], " times\n")
-        warning("only keys 0x15 through 0x1f, plus 0xa0, are permitted, but found other keys as follows:\n", msg)
+        warning("data records with 'id' that is not yet handled:\n", msg)
     }
 
     ## Prepare data

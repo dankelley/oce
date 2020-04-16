@@ -20,6 +20,20 @@ using namespace Rcpp;
 #define NID_ALLOWED 11
 int ID_ALLOWED[NID_ALLOWED]={21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 160};
 
+// #define numberKnownIds 5
+// const int ids[numberKnownIds] = {0xa0, 0x15, 0x16, 0x17, 0x18}; 
+// const char *meanings[numberKnownIds] = {"String", "Burst Data", "Average Data", "Bottom-Track", "Interleaved Burst"};
+// const char *unknownString = "unknown";
+// 
+// const char *id_meaning(int code)
+// {
+//   for (int i=0; i < numberKnownIds; i++) {
+//     if (code == ids[i]) {
+//       return(meanings[i]);
+//     }
+//   }
+//   return(unknownString);
+// }
 
 /*
 
@@ -56,29 +70,37 @@ int ID_ALLOWED[NID_ALLOWED]={21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 160};
 
 Table 6.1 (header definition):
 
-+-----------------+------------------------+------------------------------------------------------+
-| Sync            | 8 bits                 | Always 0xA5                                          |
-+-----------------|------------------------|------------------------------------------------------+
-| Header Size     | 8 bits (unsigned)      | Size (number of bytes) of the Header (10 or 12?      |
-+-----------------|------------------------|------------------------------------------------------+
-| ID              | 8 bits                 | Defines type of the following Data Record            |
-|                 |                        | 0x16=21  – Burst Data Record.                        |
-|                 |                        | 0x16=22  – Average Data Record.                      |
-|                 |                        | 0x17=23  – Bottom Track Data Record.                 |
-|                 |                        | 0x18=24  – Interleaved Burst Data Record (beam 5).   |
-|                 |                        | 0xA0=160 - String Data Record, eg. GPS NMEA data,    |
-|                 |                        |            comment from the FWRITE command.          |
-+-----------------|------------------------|------------------------------------------------------|
-| Family          | 8 bits                 | Defines the Instrument Family. 0x10 – AD2CP Family   |
-+-----------------|------------------------|------------------------------------------------------+
-| Data Size       | 16 bits (unsigned)     | Size (number of bytes) of the following Data Record. |
-|                 | OR 32 bits (unsigned)  |                                                      |
-+-----------------|------------------------|------------------------------------------------------+
-| Data Checksum   | 16 bits                | Checksum of the following Data Record.               |
-+-----------------|------------------------|------------------------------------------------------+
-| Header Checksum | 16 bits                | Checksum of all fields of the Header                 |
-|                 |                        | (excepts the Header Checksum itself).                |
-+-----------------+------------------------+------------------------------------------------------+
++-----------------+-----------------------+-------------------------------------------------------------+
+| Sync            | 8 bits                | Always 0xA5                                                 |
++-----------------|-----------------------|-------------------------------------------------------------+
+| Header Size     | 8 bits (unsigned)     | Size (number of bytes) of the Header (10 or 12?             |
++-----------------|-----------------------|-------------------------------------------------------------+
+| ID              | 8 bits                | Defines type of the following Data Record                   |
+|                 |                       | 0x15 - Burst Data Record.                                   |
+|                 |                       | 0x16 - Average Data Record.                                 |
+|                 |                       | 0x17 - Bottom Track Data Record.                            |
+|                 |                       | 0x18 - Interleaved Burst Data Record (beam 5).              |
+|                 |                       | 0xA0 - String Data Record, eg. GPS NMEA data,               |
+|                 |                       |        comment from the FWRITE command.                     |
+|                 |                       | 0x1A - Burst Altimeter Raw Record.                          |
+|                 |                       | 0x1B - DVL Bottom Track Record.                             |
+|                 |                       | 0x1C - Echo Sounder Record.                                 |
+|                 |                       | 0x1D - DVL Water Track Record.                              |
+|                 |                       | 0x1E - Altimeter Record.                                    |
+|                 |                       | 0x1F - Avg Altimeter Raw Record.                            |
+|                 |                       | 0x23 - EchoSounder raw sample data record                   |
+|                 |                       | 0x24 - EchoSounder raw synthetic transmit pulse data record |
++-----------------|-----------------------|-------------------------------------------------------------|
+| Family          | 8 bits                | Defines the Instrument Family. 0x10 – AD2CP Family          |
++-----------------|-----------------------|-------------------------------------------------------------+
+| Data Size       | 16 bits (unsigned)    | Size (number of bytes) of the following Data Record.        |
+|                 | OR 32 bits (unsigned) |                                                             |
++-----------------|-----------------------|-------------------------------------------------------------+
+| Data Checksum   | 16 bits               | Checksum of the following Data Record.                      |
++-----------------|-----------------------|-------------------------------------------------------------+
+| Header Checksum | 16 bits               | Checksum of all fields of the Header                        |
+|                 |                       | (excepts the Header Checksum itself).                       |
++-----------------+-----------------------+-------------------------------------------------------------+
 
 Note that the code examples in [1] suggest that the checksums are also unsigned, although
 that is not stated in the table. I think the same can be said of [2]. But I may be wrong,
@@ -137,16 +159,16 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   if (by[0] < 0)
     ::Rf_error("'by' must be positive but it is %d", by[0]);
   //unsigned int by_value = by[0];
-  if (debug)
-    Rprintf("do_ldc_ad2cp_in_file(filename='%s', from=%d, to=%d, by=%d)\n",
-        fn.c_str(), from[0], to[0], by[0]);
 
   // Find file size, and return to start
   fseek(fp, 0L, SEEK_END);
   unsigned long int fileSize = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
-  if (debug)
+  if (debug) {
+    Rprintf("do_ldc_ad2cp_in_file(filename='%s', from=%d, to=%d, by=%d)\n",
+        fn.c_str(), from[0], to[0], by[0]);
     Rprintf("  fileSize=%d\n", fileSize);
+  }
   unsigned int chunk = 0;
   unsigned int cindex = 0, cindex_last_good = 0;
   int checksum_failures = 0;
@@ -207,48 +229,66 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     size_t bytes_read;
     // read/check sync byte
     if (1 != fread(&header.sync, 1, 1, fp))
-      ::Rf_error("cannot read header.sync at cindex=%d (%.5g%% through file)\n",
+      ::Rf_error("cannot read header.sync at cindex=%d (%7.4f%% through file)\n",
           cindex, 100.0*cindex/fileSize);
     if (header.sync != SYNC)
-      ::Rf_error("expected header.sync to be 0x%02x but it was 0x%02x at cindex=%d (%.5g%% through file) ... skipping to next 0x%02x chacter...\n", SYNC, header.sync, cindex, 100.0*cindex/fileSize, SYNC);
+      ::Rf_error("expected header.sync to be 0x%02x but it was 0x%02x at cindex=%d (%7.4f%% through file) ... skipping to next 0x%02x chacter...\n", SYNC, header.sync, cindex, 100.0*cindex/fileSize, SYNC);
     if (1 != fread(&header.header_size, 1, 1, fp))
       ::Rf_error("cannot read header_size at cindex=%d\n", cindex);
     if (header.header_size < 2)
-      ::Rf_error("impossible header.header_size %d at cindex=%d (%.5g%% through file)\n",
+      ::Rf_error("impossible header.header_size %d at cindex=%d (%7.4f%% through file)\n",
           header.header_size, cindex, 100.0*cindex/fileSize);
     if (1 != fread(&header.id, 1, 1, fp))
-      ::Rf_error("cannot read header.id at cindex=%d (%.5%% through file)\n",
+      ::Rf_error("cannot read header.id at cindex=%d (%7.4f%% through file)\n",
           cindex, 100.0*cindex/fileSize);
     if (1 != fread(&header.family, 1, 1, fp))
-      ::Rf_error("cannot read header.family at cindex=%d (%.5%% through file)\n",
+      ::Rf_error("cannot read header.family at cindex=%d (%7.4f%% through file)\n",
           cindex, 100.0*cindex/fileSize);
     unsigned char family = header.family; // used in recovery attempt, if a checksum error occurs
     unsigned char header_buffer[2];
     if (header.header_size == 10) {
       if (2 != fread(bytes2, 1, 2, fp))
-        ::Rf_error("cannot read bytes2 (for 16 bit header_size) at cindex=%d (%.5g%% through file)\n",
+        ::Rf_error("cannot read bytes2 (for 16 bit header_size) at cindex=%d (%7.4f%% through file)\n",
             cindex, 100.0*cindex/fileSize);
       header.data_size = bytes2[0] + 256 * bytes2[1];
     } else if (header.header_size == 12) {
       if (4 != fread(bytes4, 1, 4, fp))
-        ::Rf_error("cannot read bytes4 (for 32 bit header_size) at cindex=%d (%.5g%% through file)\n",
+        ::Rf_error("cannot read bytes4 (for 32 bit header_size) at cindex=%d (%7.4f%% through file)\n",
             cindex, 100.0*cindex/fileSize);
       header.data_size = bytes4[0] + 256 * (bytes4[1] + 256 * (bytes4[2] + 256 * bytes4[3]));
     } else {
-      ::Rf_error("header_size is %d, but it must be 10 or 12 at cindex=%d (%.5g%% through file)\n",
+      ::Rf_error("header_size is %d, but it must be 10 or 12 at cindex=%d (%7.4f%% through file)\n",
           header.header_size, cindex, 100.0*cindex/fileSize);
     }
     if (2 != fread(&bytes2, 1, 2, fp))
-      ::Rf_error("cannot read header.data_checksum at cindex=%d (%.5g%% through file)\n",
+      ::Rf_error("cannot read header.data_checksum at cindex=%d (%7.4f%% through file)\n",
           cindex, 100.0*cindex/fileSize);
     header.data_checksum = bytes2[0] + 256 * bytes2[1];
     if (2 != fread(&bytes2, 1, 2, fp))
-      ::Rf_error("cannot read header.header_checksum at cindex=%d (%.5g%% through file)\n",
+      ::Rf_error("cannot read header.header_checksum at cindex=%d (%7.4f%% through file)\n",
           cindex, 100.0*cindex/fileSize);
     header.header_checksum = bytes2[0] + 256 * bytes2[1];
-    if (debug && debug > 1)
-      Rprintf("cindex:%d[%d](%.5g%%) chunk:%4d size:%d id:0x%02x dataSize:%d\n",
-          cindex, ftell(fp)-header.header_size, 100.0*cindex/fileSize, chunk, header.header_size, header.id, header.data_size);
+    if (debug && debug > 1) {
+      Rprintf("Chunk %d at cindex=%d (%.4f%% through file) size=%d dataSize=%d id=0x%02x ",
+          chunk, cindex, 100.0*cindex/fileSize, header.header_size, header.data_size, header.id);
+      if (header.id == 0xa0) Rprintf("(String)\n");
+      else if (header.id == 0x15) Rprintf("(Burst data record)\n");
+      else if (header.id == 0x16) Rprintf("(Average data record)\n");
+      else if (header.id == 0x17) Rprintf("(Bottom-track data record)\n");
+      else if (header.id == 0x18) Rprintf("(Interleaved burst (beam 5) data record)\n");
+      else if (header.id == 0x1A) Rprintf("(Burst altimeter raw record)\n");
+      else if (header.id == 0x1B) Rprintf("(DVL bottom track record)\n");
+      else if (header.id == 0x1C) Rprintf("(Echo Sounder record)\n");
+      else if (header.id == 0x1D) Rprintf("(DVL water track record)\n");
+      else if (header.id == 0x1E) Rprintf("(Altimeter record)\n");
+      else if (header.id == 0x1F) Rprintf("(Avg altimeter raw record)\n");
+      else if (header.id == 0x23) Rprintf("(Echo Sounder raw sample data record)\n");
+      else if (header.id == 0x24) Rprintf("(Echo Sounder raw synthetic transmit pulse data record)\n");
+      else Rprintf("(Unrecognized ID)\n");
+      if (cindex != ftell(fp) - header.header_size)
+        Rprintf("Bug: cindex (%d) is not equal to ftell()-header_size (%d)\n",
+            cindex, ftell(fp)-header.header_size);
+    }
     cindex = cindex + header.header_size;
     index_buf[chunk] = cindex;
     length_buf[chunk] = header.data_size;
@@ -265,20 +305,23 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     // Increase size of data buffer, if required.
     if (header.data_size > dbuflen) { // expand the buffer if required
       if (debug)
-        Rprintf("Increasing 'dbuf' size from %d to %d at cindex:%d[%d](%.5g%%)\n",
-            dbuflen, header.data_size, cindex, ftell(fp), 100.0*cindex/fileSize);
+        Rprintf("Increasing 'dbuf' size from %d to %d at cindex:%d (%.4f%%)\n",
+            dbuflen, header.data_size, cindex, 100.0*cindex/fileSize);
+      if (cindex != ftell(fp))
+        Rprintf("  *BUG*: cindex is out of synch with ftell()\n");
+
       dbuflen = header.data_size;
       dbuf = (unsigned char *)Realloc(dbuf, dbuflen, unsigned char);
     }
     // Read the data
     bytes_read = fread(dbuf, 1, header.data_size, fp);
-    cindex += header.data_size;
     // Check that we got all the data
     if (bytes_read != header.data_size) {
-      Rprintf("warning: ldc_ad2cp_in_file() got to end of file near cindex=%d (%.5g%% through file); wanted %d bytes but got only %d\n",
-          cindex, 100.0*cindex/fileSize, header.data_size, bytes_read);
+      Rprintf("warning: ldc_ad2cp_in_file() got to end of file after cindex=%d (%7.4f%% through file); wanted %d bytes but got only %d\n",
+          cindex-header.header_size, 100.0*cindex/fileSize, header.data_size, bytes_read);
       break; // give up
     }
+    cindex += header.data_size;
     // Compare data checksum to the value stated in the header
     unsigned short dbufcs;
     dbufcs = cs(dbuf, header.data_size);
@@ -287,8 +330,11 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       reset_cindex = 0;
     } else {
       checksum_failures++;
-      Rprintf("bad data checksum (expected 0x%02x but got 0x%02x) at cindex:%d[%d] (%.5g%% through file)\n",
-          header.data_checksum, dbufcs, cindex, ftell(fp), 100.0*cindex/fileSize);
+      Rprintf("Data checksum error (expected 0x%02x but got 0x%02x) at index=%d (%7.4f%% through file)\n",
+          header.data_checksum, dbufcs, cindex, 100.0*cindex/fileSize);
+      if (cindex != ftell(fp))
+        Rprintf("  *BUG*: cindex is out of synch with ftell()\n");
+
       while (1) {
         c = getc(fp);
         cindex++;
@@ -299,22 +345,22 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
         }
         if (c == SYNC) {
           unsigned int trial_cindex = cindex; // so we can reset to here if this trial works
-          Rprintf("... got a sync character (0x%02x) at cindex=%d (%.5g%% through file)\n",
-              SYNC, cindex, 100.0*cindex/fileSize);
+          //.Rprintf("... got a sync character (0x%02x) at cindex=%d (%7.4f%% through file)\n",
+          //.    SYNC, cindex, 100.0*cindex/fileSize);
           // header size (should be 10 or 12)
           int trial_header_size = getc(fp);
           cindex++;
           if (trial_header_size == EOF) {
-            Rprintf("... got to end of file while searching for a header-size character at cindex=%d\n",
+            Rprintf("    got to end of file while searching for a header-size character at cindex=%d\n",
                 cindex);
             early_EOF = 1;
             break;
           }
           if (trial_header_size != 10 && trial_header_size != 12) {
-            Rprintf("    BUT header-size is %d, not 10 or 12 as expected\n", trial_header_size);
+            //.Rprintf("    header-size is %d, not 10 or 12 as expected\n", trial_header_size);
             continue;
           }
-          Rprintf("        proper header-size character (either 10 or 20 decimal)\n");
+          //. Rprintf("        proper header-size character (either 10 or 20 decimal)\n");
           // Skip over the id byte, which has many possibilities we know of (and perhaps more),
           // so it is a bit hard to check for correctness.
           c = getc(fp);
@@ -333,11 +379,12 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
             break;
           }
           if (c == family) {
-            Rprintf("            family=%d is consistent with previous family\n",
-                family, cindex);
+            //. Rprintf("            family=%d is consistent with previous family\n", family, cindex);
             cindex -= 4;
             fseek(fp, -4, SEEK_CUR);
-            Rprintf("            All seems OK, so resetting to cindex=%d[%d]\n", cindex, ftell(fp));
+            Rprintf("   ... skipped forward to a possible header at index=%d\n", cindex);
+            if (cindex != ftell(fp))
+              Rprintf("  *BUG*: cindex is out of synch with ftell()\n");
             break;
           }
         }
