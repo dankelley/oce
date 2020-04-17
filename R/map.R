@@ -790,7 +790,8 @@ mapContour <- function(longitude, latitude, z,
                             polyNew <- sf::st_polygon(list(outer=cbind(c(polyx, polyx[1]), c(polyy, polyy[1]))))
                             pointsNew <- sf::st_multipoint(cbind(xc, yc))
                             insideNew <- sf::st_intersection(pointsNew, polyNew)
-                            eraseNew <- matrix(pointsNew %in% insideNew, ncol=2)[,1]
+                            tmpMatrix <- matrix(pointsNew %in% insideNew, ncol=2)
+                            eraseNew <- tmpMatrix[,1] & tmpMatrix[,2] # could also use an apply op, but this is simple
                             ##eraseOld <- erase
                             if (!isTRUE(all.equal(eraseNew, erase))) {
                                 warning("mapContour() error: 'erase' disagreement with trial 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n")
