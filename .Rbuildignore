@@ -2,7 +2,6 @@
 ^.*.odf$
 ^.*.ODF$
 ^R/check_urls\.R$
-^doc$
 ^Meta$
 ^revdep$
 ^cran-comments.md$
@@ -47,3 +46,4 @@ R/check_urls.R
 ^Rplot*.png$
 
 ^appveyor\.yml$
+^doc$
