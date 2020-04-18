@@ -22,7 +22,7 @@ extern SEXP _oce_do_gradient(SEXP, SEXP, SEXP);
 extern SEXP _oce_do_interp_barnes(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_landsat_transpose_flip(SEXP);
 extern SEXP _oce_do_landsat_numeric_to_bytes(SEXP, SEXP);
-extern SEXP _oce_do_ldc_ad2cp_in_file(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _oce_do_ldc_ad2cp_in_file(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_ldc_rdi_in_file(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_ldc_sontek_adp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_oceApprox(SEXP, SEXP, SEXP, SEXP);
@@ -55,7 +55,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_oce_do_gradient", (DL_FUNC) &_oce_do_gradient, 3},
     {"_oce_do_landsat_transpose_flip", (DL_FUNC) &_oce_do_landsat_transpose_flip, 1},
     {"_oce_do_landsat_numeric_to_bytes", (DL_FUNC) &_oce_do_landsat_numeric_to_bytes, 2},
-    {"_oce_do_ldc_ad2cp_in_file", (DL_FUNC) &_oce_do_ldc_ad2cp_in_file, 4},
+    {"_oce_do_ldc_ad2cp_in_file", (DL_FUNC) &_oce_do_ldc_ad2cp_in_file, 5},
     {"_oce_do_ldc_rdi_in_file", (DL_FUNC) &_oce_do_ldc_rdi_in_file, 6},
     {"_oce_do_ldc_sontek_adp", (DL_FUNC) &_oce_do_ldc_sontek_adp, 6},
     {"_oce_do_oceApprox", (DL_FUNC) &_oce_do_oceApprox, 4},

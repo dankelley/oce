@@ -550,7 +550,8 @@ setMethod(f="summary",
                   cat("* Beams::\n")
                   cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "\n")
                   cat("    Slantwise Angle: ", if (is.null(beamAngle)) "?" else beamAngle , "\n")
-                  cat("    Orientation:     ", if (is.null(orientation)) "?" else orientation, "\n")
+                  if (numberOfBeams > 0)
+                      cat("    Orientation:     ", if (is.null(orientation)) "?" else orientation, "\n")
                   cat("    Unspreaded:      ", if (is.null(beamUnspreaded)) "?" else beamUnspreaded, "\n")
               }
               transformationMatrix <- object[["transformationMatrix"]]
@@ -576,7 +577,8 @@ setMethod(f="summary",
                           numberOfBeams <- object[["numberOfBeams", rt]]
                           cat("    Number of beams:    ", numberOfBeams, "\n")
                           cat("    Beam angle:         ", if (numberOfBeams == 1) 0 else object[["beamAngle"]], "\n")
-                          cat("    Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
+                          if (numberOfBeams > 1)
+                              cat("    Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
                       }
                   }
                   processingLogShow(object)
