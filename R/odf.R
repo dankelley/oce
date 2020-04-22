@@ -933,6 +933,16 @@ ODFListFromHeader <- function(header)
 #' [unduplicateNames()] being used to append integers to
 #' distinguish between repeated names in the ODF format.
 #'
+#' @param headerExclude either a character value holding a regular
+#' expression that is used with [grep()] to remove lines from the
+#' header before processing, or `NULL` (the default), meaning
+#' not to exclude any such lines.  The purpose of this argument
+#' is to solve problems with some files, which can have
+#' thousands of lines that indicate details that are may be of
+#' little value in processing.  For example, some files have thousands
+#' of lines that would be excluded by using
+#' `headerExclude="PROCESS='Nulled the .* value"` in the funcion call.
+#'
 #' @template debugTemplate
 #'
 #' @return An [oce-class] object.
@@ -958,7 +968,7 @@ ODFListFromHeader <- function(header)
 #' and this is perhaps the best resource to learn more.
 #'
 #' @family things related to odf data
-read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebug"))
+read.odf <- function(file, columns=NULL, header="list", headerExclude=NULL, debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file', a character value holding the name of an ODF file")
@@ -966,7 +976,7 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
         stop("can only handle one file at a time (the length of 'file' is ", length(file), ", not 1)")
     if (is.character(file) && 0 == file.info(file)$size)
         stop("the file named '", file, "' is empty, and so cannot be read")
-    oceDebug(debug, "read.odf(\"", file, "\", ...) {\n", unindent=1, sep="")
+    oceDebug(debug, "read.odf(\"", file, "\", headerExclude=", if (is.null(headerExclude)) "NULL" else "'", headerExclude, "', ...) {\n", unindent=1, sep="")
     if (!is.null(header)) {
         if (!is.character(header))
             stop("the header argument must be NULL, \"character\", or \"list\"")
@@ -988,22 +998,21 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
         open(file, "r")
         on.exit(close(file))
     }
-    ## Try to find the header/data separator in first 1000 lines
-    ## but if not there (as in a huge file) then look at the whole file.
-    lines <- readLines(file, 1000, encoding="latin1") # issue 1430 re encoding
-    pushBack(lines, file) # we used to read.table(text=lines, ...) but it is VERY slow
-    dataStart <- grep("^[ ]*-- DATA --[ ]*$", lines) # issue 1430 re leading/trailing spaces
-    if (!length(dataStart)) {
-        lines <- readLines(file, encoding="UTF-8")
-        dataStart <- grep("^[ ]*-- DATA --[ ]*$", lines) # issue 1430 re leading/trailing spaces
-        if (!length(dataStart)) {
-            stop("cannot locate a line containing '-- DATA --'")
-        }
-        pushBack(lines, file)
+    ## Read the full file.   (In a previous version, we only read the first 1000 lines
+    ## at the start, and later read the whole thing if we didn't find the DATA line.)
+    lines <- readLines(file, encoding="latin1") # issue 1430 re encoding
+    ## Trim excluded lines.
+    if (!is.null(headerExclude)) {
+        oceDebug(debug, "About to exclude header lines. Initially, had", length(lines), "lines\n")
+        lines <- lines[grep(headerExclude, lines, invert=TRUE)]
+        oceDebug(debug, "After exclusion, had", length(lines), "lines\n")
     }
-    if (length(dataStart) < 1)
+    ## Locate the header/data separator
+    dataStart <- grep("^[ ]*-- DATA --[ ]*$", lines) # issue 1430 re leading/trailing spaces
+    if (!length(dataStart))
         stop("ODF files must contain a line with \"-- DATA --\"")
     res <- new("odf")
+
     nlines <- length(lines)
     ## Make a list holding all the information in the header. Note that this is entirely
     ## separate from e.g. inference of longitude and latitude from a header.
@@ -1037,12 +1046,14 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
             }
             ## Use regexp to find lhs and rhs. This is better than using strsplit on '=' because some
             ## rhs have '=' in them.
-            oceDebug(debug > 2, "h[", i, "]='", h[i], "'\n", sep="")
+            ##> oceDebug(debug > 2, "h[", i, "]='", h[i], "'\n", sep="")
             lhs <- gsub("^[ ]*([^=]*)=(.*)$","\\1", h[i])
-            oceDebug(debug > 2, "  lhs='", lhs, "' (before renaming to remove duplicates)\n", sep="")
+            ##> oceDebug(debug > 2, "  lhs='", lhs, "' (before renaming to remove duplicates)\n", sep="")
             ok <- TRUE
             if (lhs %in% lhsUsed) {
                 ok <- FALSE
+                ## This is slow, of O(N^2), since with N data, we will get to O(N) in the next loop,
+                ## and the enclosing loop will also operatre O(N) times.
                 for (trial in 2:10000) {
                     if (!(paste(lhs, trial, sep="") %in% lhsUsed)) {
                         lhs <- paste(lhs, trial, sep="")
@@ -1323,8 +1334,8 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
             res@metadata$waterDepth <- res@metadata$depthMax[1]
     }
     res@metadata$type <- findInHeader("INST_TYPE", lines)
-    if (length(grep("sea", res@metadata$type, ignore.case=TRUE)))
-        res@metadata$type <- "SBE"
+    ##if (length(grep("sea", res@metadata$type, ignore.case=TRUE)))
+    ##    res@metadata$type <- "SBE"
     res@metadata$serialNumber <- findInHeader("SERIAL_NUMBER", lines)
     res@metadata$model <- findInHeader("MODEL", lines)
     if (is.null(header)) {
@@ -1381,7 +1392,7 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
     ##> ## fix issue 768
     ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
     ## issue1226 data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
-    data <- scan(file, what="character", skip=dataStart, quiet=TRUE)
+    data <- scan(text=lines, what="character", skip=dataStart, quiet=TRUE)
     data <- matrix(data, ncol=length(namesUnits$names), byrow=TRUE)
     data <- as.data.frame(data, stringsAsFactors=FALSE)
     ## some files have text string (e.g. dates)
