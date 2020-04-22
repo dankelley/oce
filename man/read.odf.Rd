@@ -4,7 +4,13 @@
 \alias{read.odf}
 \title{Read an ODF file}
 \usage{
-read.odf(file, columns = NULL, header = "list", debug = getOption("oceDebug"))
+read.odf(
+  file,
+  columns = NULL,
+  header = "list",
+  headerExclude = NULL,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{file}{the file containing the data.}
@@ -35,6 +41,16 @@ changed from \code{NULL} to \code{"list"}; in addition, the resultant
 list was made to contain every single item in the ODF header, with
 \code{\link[=unduplicateNames]{unduplicateNames()}} being used to append integers to
 distinguish between repeated names in the ODF format.}
+
+\item{headerExclude}{either a character value holding a regular
+expression that is used with \code{\link[=grep]{grep()}} to remove lines from the
+header before processing, or \code{NULL} (the default), meaning
+not to exclude any such lines.  The purpose of this argument
+is to solve problems with some files, which can have
+thousands of lines that indicate details that are may be of
+little value in processing.  For example, some files have thousands
+of lines that would be excluded by using
+\code{headerExclude="PROCESS='Nulled the .* value"} in the funcion call.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
