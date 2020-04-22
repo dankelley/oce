@@ -35,3 +35,5 @@ revdep
 f34*gz
 *.o.tmp
 *.tmp.R
+dan[0-9]*
+
