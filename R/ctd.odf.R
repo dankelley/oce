@@ -4,7 +4,7 @@
 #'
 #' @template readCtdTemplate
 #'
-#' @param headerExclude either a character value holding a regular
+#' @param exclude either a character value holding a regular
 #' expression that is used with [grep()] to remove lines from the
 #' header before processing, or `NULL` (the default), meaning
 #' not to exclude any such lines.  The purpose of this argument
@@ -12,7 +12,7 @@
 #' thousands of lines that indicate details that are may be of
 #' little value in processing.  For example, some files have thousands
 #' of lines that would be excluded by using
-#' `headerExclude="PROCESS='Nulled the .* value"` in the funcion call.
+#' `exclude="PROCESS='Nulled the .* value"` in the funcion call.
 ##'
 #' @author Dan Kelley
 #'
@@ -31,11 +31,11 @@
 #' @family things related to odf data
 #' @family functions that read ctd data
 read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
-                         monitor=FALSE, headerExclude=NULL, debug=getOption("oceDebug"), processingLog, ...)
+                         monitor=FALSE, exclude=NULL, debug=getOption("oceDebug"), processingLog, ...)
 {
     oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {\n", sep="", unindent=1)
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
-    odf <- read.odf(file=file, columns=columns, headerExclude=headerExclude, debug=debug-1)
+    odf <- read.odf(file=file, columns=columns, exclude=exclude, debug=debug-1)
     res <- as.ctd(odf, debug=debug-1)
     ## replace any missingValue with NA
     if (!missing(missingValue) && !is.null(missingValue)) {
