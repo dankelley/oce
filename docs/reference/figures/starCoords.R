@@ -1,0 +1,31 @@
+if (!interactive())
+    png("starCoords.png", width=3.5, height=2.5, unit="in", res=140, pointsize=8)
+ellipse <- function(xc, yc, a, b, thetaStart=0, thetaEnd=2*pi,
+                    lwd=par('lwd'), col="black", lty=1)
+{
+    theta <- seq(thetaStart, thetaEnd, length.out=100)
+    x <- xc + a * cos(theta)
+    y <- yc + b * sin(theta)
+    lines(x, y, lwd=lwd, col=col, lty=lty)
+}
+par(mar=rep(0, 4), lwd=2, cex=1)
+plot(c(-0.8, 0.8), c(-0.4, 1.1), asp=1, type='n')
+lines(c(0, 1), c(0, 0))
+text(1, 0, "N", pos=4)
+text(0, -0.3, "E", pos=1)
+text(-1, 0, "S", pos=2)
+text(0, 1, "Zenith", pos=3)
+ellipse(0, 0, 1, 0.3, 0, pi, col="gray")
+ellipse(0, 0, 1, 0.3, pi, 2*pi)
+#ellipse(0, 0, 1, 0.3)
+ellipse(0, -0.25, 0.5, 1.25, 0.5*pi, 1*pi) # arc holding star
+ellipse(0, 0, 1, 1, 0, pi)
+points(-0.41, 0.49, pch=20, cex=2)
+lines(c(0, -0.41), c(0, 0.49))
+lines(c(0, -0.51), c(0, -0.25))
+ellipse(0.01, 0, 0.2, 0.34, 0.82*pi, 1.08*pi, col='black', lwd=1.5*par('lwd'))
+text(-0.33, 0.05, "Altitude")
+ellipse(0, 0, 0.3, 0.1, 1.3*pi, 2*pi, lwd=1.5*par('lwd'))
+text(0.1, -0.15, "Azimuth")
+if (!interactive()) dev.off()
+
