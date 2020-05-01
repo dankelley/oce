@@ -228,7 +228,7 @@
 #' @family things related to adp data
 setClass("adp", contains="oce")
 
-#' ADP (acoustic-doppler profiler) dataset
+#' Sample adp (acoustic-doppler profiler) dataset
 #'
 #' This is degraded subsample of measurements that were made with an
 #' upward-pointing ADP manufactured by Teledyne-RDI, as part of the St Lawrence
@@ -550,7 +550,8 @@ setMethod(f="summary",
                   cat("* Beams::\n")
                   cat("    Number:          ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "\n")
                   cat("    Slantwise Angle: ", if (is.null(beamAngle)) "?" else beamAngle , "\n")
-                  cat("    Orientation:     ", if (is.null(orientation)) "?" else orientation, "\n")
+                  if (numberOfBeams > 0)
+                      cat("    Orientation:     ", if (is.null(orientation)) "?" else orientation, "\n")
                   cat("    Unspreaded:      ", if (is.null(beamUnspreaded)) "?" else beamUnspreaded, "\n")
               }
               transformationMatrix <- object[["transformationMatrix"]]
@@ -576,7 +577,8 @@ setMethod(f="summary",
                           numberOfBeams <- object[["numberOfBeams", rt]]
                           cat("    Number of beams:    ", numberOfBeams, "\n")
                           cat("    Beam angle:         ", if (numberOfBeams == 1) 0 else object[["beamAngle"]], "\n")
-                          cat("    Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
+                          if (numberOfBeams > 1)
+                              cat("    Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
                       }
                   }
                   processingLogShow(object)
@@ -1347,7 +1349,7 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 }
 
 
-#' Plot ADP Data
+#' Plot an adp Object
 #'
 #' Create a summary plot of data measured by an acoustic doppler profiler.
 #'

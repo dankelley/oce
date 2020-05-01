@@ -3,7 +3,7 @@
 \name{plot,ladp-method}
 \alias{plot,ladp-method}
 \alias{plot.ladp}
-\title{Plot an ladp object}
+\title{Plot an ladp Object}
 \usage{
 \S4method{plot}{ladp}(x, which = c("u", "v"), ...)
 }

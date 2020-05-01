@@ -638,7 +638,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 }
 
 
-#' Plot CM data
+#' Plot a cm Object
 #'
 #' Creates a multi-panel summary plot of data measured by a current meter.
 #'

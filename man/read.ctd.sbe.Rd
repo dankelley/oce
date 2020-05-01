@@ -10,6 +10,7 @@ read.ctd.sbe(
   station = NULL,
   missingValue,
   deploymentType = "unknown",
+  btl = FALSE,
   monitor = FALSE,
   debug = getOption("oceDebug"),
   processingLog,
@@ -62,6 +63,12 @@ the device is installed on a fixed mooring, \code{"thermosalinograph"} (or
 near-surface properties, or \code{"towyo"} if the device is repeatedly
 lowered and raised.}
 
+\item{btl}{a logical value, with \code{TRUE} indicating that this is a \code{.BTL} file and \code{FALSE}
+(the default) indicating a \code{.CNV} file.  Note that if \code{btl} is \code{TRUE}, the data column
+names are taken directly from the file (without e.g. translating to \code{"Sal00"}
+to \code{"salinity"}.  Also, the "avg" and "sdev" columns are blended together, with
+all the latter named as in the file, but with \code{"_sdev"} appended.}
+
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}
 
@@ -99,10 +106,14 @@ data from the second sensor are also available as e.g. \code{x[["temperature1"]]
 where \code{x} is the name of the returned value.  For the details of the
 mapping from \code{.cnv} names to \code{ctd} names, see \code{\link[=cnvName2oceName]{cnvName2oceName()}}.
 
-The original data names as stored in \code{file} are stored within the \code{metadata}
+The names of the elements in the \code{data} slot of the returned value depend on
+the file type, as signalled by the \code{btl} argument.  For the default case of \code{.cnv} files,
+the original data names as stored in \code{file} are stored within the \code{metadata}
 slot as \code{dataNamesOriginal}, and are displayed with \code{summary} alongside the
-numerical summary. See the Appendix VI of reference 2 for the meanings of these
+numerical summary; see the Appendix VI of reference 2 for the meanings of these
 names (in the "Short Name" column of the table spanning pages 161 through 172).
+However, for the case of \code{.btl} files, the column names are as described
+in the documentation entry for the \code{btl} argument.
 }
 \section{A note on sampling times}{
 

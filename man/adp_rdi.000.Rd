@@ -4,9 +4,9 @@
 \encoding{UTF-8}
 \name{adp_rdi.000}
 \alias{adp_rdi.000}
-\title{Sample RDI Teledyne adp dataset in format}
+\title{Sample adp (acoustic-doppler profiler) file in RDI format}
 \description{
-Sample RDI Teledyne adp dataset in format
+Sample adp (acoustic-doppler profiler) file in RDI format
 }
 \examples{
 \dontrun{

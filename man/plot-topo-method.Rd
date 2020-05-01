@@ -3,7 +3,7 @@
 \name{plot,topo-method}
 \alias{plot,topo-method}
 \alias{plot.topo}
-\title{Plot a Topo Object}
+\title{Plot a topo Object}
 \usage{
 \S4method{plot}{topo}(
   x,

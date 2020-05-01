@@ -126,9 +126,23 @@ curl http://www.cgd.ucar.edu/cas/catalog/climind/SOI.signal.ascii > SOI.signal.a
 ```
 cp ../../../create_data/lobo/lobo.dat  .
 ```
+
 # 12. a broken ctd file
 
-CTD_98911_1P_1_DN.txt is from an ODF file that CR had. It has p, temperature,
+`CTD_98911_1P_1_DN.txt` is from an ODF file that CR had. It has p, temperature,
 and theta, but no salinity or conductivity. It is worth testing because it's
 odd, basically.
+
+# 13. Nortek Signature adp file in ad2cp format
+
+`ad2cp_01.ad2cp` is the first 20,000 bytes of a source file generously provided
+by github user @krillthor, who started issue 1676 and provided tests that
+helped greatly during the code improvements motivated by that issue.  It was
+created with
+
+```
+head -c 50000 X.ad2cp > ad2cp_01.ad2cp
+```
+
+where `X.ad2cp` is a stand-in for the original file name.
 

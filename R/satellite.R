@@ -62,7 +62,7 @@ setMethod(f="summary",
               invisible(callNextMethod()) # summary
           })
 
-#' Plot a satellite object
+#' Plot a satellite Object
 #'
 #' For an example using `g1sst` data, see [read.g1sst()].
 #'

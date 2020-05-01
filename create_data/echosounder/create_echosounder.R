@@ -54,12 +54,12 @@ if (!interactive()) png("echosounder-old.png")
 plot(echosounderOLD, drawBottom=TRUE, despike=TRUE, which="zx image")
 if (!interactive()) dev.off()
 
-## Force to save in version 2, because otherwise users with R 3.5.x and
-## earlier will not be able to use data("echosounder")
-if (TRUE || utils::compareVersion(R.Version()$minor, "3.6") >= 0) {
+## Save in version 2, because otherwise users with R 3.5.x and earlier will not
+## be able to use data("echosounder")
+if (utils::compareVersion(paste0(R.Version()$major, ".", R.Version()$minor), '3.6.0') >= 0) {
+    message("saving with version=2 since R version is 3.6.0 or later")
     save(echosounder, file="echosounder.rda", version=2)
     tools::resaveRdaFiles("echosounder.rda", version=2)
-    message("saving in version 2, so R<3.6 can handle data(echosounder)")
 } else {
     save(echosounder, file="echosounder.rda")
     tools::resaveRdaFiles("echosounder.rda")

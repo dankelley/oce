@@ -20,7 +20,7 @@
 NULL
 
 
-#' Sample RDI Teledyne adp dataset in format
+#' Sample adp (acoustic-doppler profiler) file in RDI format
 #'
 #' @name adp_rdi.000
 #'

@@ -11,6 +11,7 @@ oce.plot.ts(
   xlim,
   ylim,
   log = "",
+  logStyle = "r",
   flipy = FALSE,
   xlab,
   ylab,
@@ -41,7 +42,8 @@ oce.plot.ts(
 )
 }
 \arguments{
-\item{x}{the times of observations.}
+\item{x}{the times of observations.  If this is not a \link{POSIXt} object, then an
+attempt is made to convert it to one using \code{\link[=as.POSIXct]{as.POSIXct()}}.}
 
 \item{y}{the observations.}
 
@@ -58,6 +60,17 @@ window.}
 \code{y} axis, or \code{"y"} for logarithmic \code{y} axis.  (Unlike
 \code{\link[=plot.default]{plot.default()}} etc., \code{oce.plot.ts} does not permit
 logarithmic time, or \code{x} axis.)}
+
+\item{logStyle}{a character value that indicates how to draw the y axis, if
+\code{log="y"}.  If it is \code{"r"} (the default) then the conventional R style is used,
+in which a logarithmic transform connects y values to position on the "page"
+of the plot device, so that tics will be nonlinearly spaced, but not
+organized by integral powers of 10.  However, if it is \code{"decade"}, then
+the style will be that used in the scientific literature, in which large
+tick marks are used for integral powers of 10, with smaller tick marks
+at integral multiples of those powers, and with labels that use exponential
+format for values above 100 or below 0.01.  The value of \code{logStyle} is passed
+to \code{\link[=oceAxis]{oceAxis()}}, which draws the axis.}
 
 \item{flipy}{Logical, with \code{TRUE} indicating that the graph
 should have the y axis reversed, i.e. with smaller values at

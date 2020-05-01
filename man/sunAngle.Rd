@@ -86,6 +86,7 @@ Goddard Space Flight Center).
 The corresponding function for the moon is \code{\link[=moonAngle]{moonAngle()}}.
 
 Other things related to astronomy: 
+\code{\link{angle2hms}()},
 \code{\link{eclipticalToEquatorial}()},
 \code{\link{equatorialToLocalHorizontal}()},
 \code{\link{julianCenturyAnomaly}()},

@@ -3,7 +3,7 @@
 \docType{data}
 \name{lobo}
 \alias{lobo}
-\title{LOBO Dataset}
+\title{Sample LOBO Dataset}
 \source{
 The data were downloaded from a web interface at Satlantic LOBO web
 server and then read with \code{\link[=read.lobo]{read.lobo()}}.

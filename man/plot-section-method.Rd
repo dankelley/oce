@@ -3,7 +3,7 @@
 \name{plot,section-method}
 \alias{plot,section-method}
 \alias{plot.section}
-\title{Plot a Section}
+\title{Plot a section Object}
 \usage{
 \S4method{plot}{section}(
   x,
@@ -81,8 +81,9 @@ by \code{at}.}
 that an index is \emph{not} a station number, e.g. to show the first 4
 stations, use \code{station.indices=1:4}.}
 
-\item{coastline}{String giving the coastline to be used in a station map
-The permitted choices are \code{"best"} (the default) to pick
+\item{coastline}{Either a \linkS4class{coastline} object to be used,
+or a string.  In the second case, the permitted
+choices are \code{"best"} (the default) to pick
 a variant that suits the scale, \code{"coastlineWorld"} for the coarse
 version that is provided by \CRANpkg{oce},
 \code{"coastlineWorldMedium"} or \code{"coastlineWorldFine"} for two

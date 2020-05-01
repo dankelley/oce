@@ -426,7 +426,7 @@ topoInterpolate <- function(longitude, latitude, topo)
 }
 
 
-#' Plot a Topo Object
+#' Plot a topo Object
 #'
 #' This plots contours of topographic elevation.  The plot aspect ratio is set
 #' based on the middle latitude in the plot.  The line properties, such as

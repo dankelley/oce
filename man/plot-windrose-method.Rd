@@ -3,7 +3,7 @@
 \name{plot,windrose-method}
 \alias{plot,windrose-method}
 \alias{plot.windrose}
-\title{Plot Windrose data}
+\title{Plot a windrose Object}
 \usage{
 \S4method{plot}{windrose}(
   x,

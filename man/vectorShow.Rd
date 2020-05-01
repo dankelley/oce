@@ -4,7 +4,7 @@
 \alias{vectorShow}
 \title{Show some values from a vector}
 \usage{
-vectorShow(v, msg, postscript, digits = 5, n = 2L)
+vectorShow(v, msg = "", postscript = "", digits = 5, n = 2L)
 }
 \arguments{
 \item{v}{the vector.}
@@ -36,7 +36,7 @@ last of the vector, which can be quite helpful in debugging.
 \examples{
 vectorShow(pi)
 vectorShow(volcano)
-knot2mps <- 0.5144444 
+knot2mps <- 0.5144444
 vectorShow(knot2mps, postscript="knots per m/s")
 vectorShow("January", msg="The first month is")
 

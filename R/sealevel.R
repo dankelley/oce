@@ -375,7 +375,7 @@ as.sealevel <- function(elevation,
 }
 
 
-#' @title Plot Sealevel Data
+#' @title Plot a sealevel Object
 #'
 #' @description
 #' Creates a plot for a sea-level dataset, in one of two varieties.  Depending
@@ -462,7 +462,7 @@ setMethod(f="plot",
               oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n", sep="", unindent=1)
               if ("adorn" %in% names(list(...)))
                   warning("In plot,adv-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
-              dots <- list(...)
+              ##> dots <- list(...)
               titlePlot<-function(x)
               {
                   title <- ""
@@ -560,7 +560,7 @@ setMethod(f="plot",
                       if (any(is.finite(xx@data$elevation))) {
                           atWeek <- seq(from=from, to=to, by="week")
                           atDay  <- seq(from=from, to=to, by="day")
-                          tmp <- max(abs(range(xx@data$elevation, na.rm=TRUE)))
+                          ##> tmp <- max(abs(range(xx@data$elevation, na.rm=TRUE)))
                           plot(xx@data$time, xx@data$elevation,
                                xlab="",
                                ylab=resizableLabel("elevation"),

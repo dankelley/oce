@@ -3,7 +3,7 @@
 \name{plot,ctd-method}
 \alias{plot,ctd-method}
 \alias{plot.ctd}
-\title{Plot CTD Data}
+\title{Plot a ctd Object}
 \usage{
 \S4method{plot}{ctd}(
   x,

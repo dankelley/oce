@@ -1157,7 +1157,7 @@ read.met.xml2 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
 }
 
 
-#' Plot met Data
+#' Plot a met Object
 #'
 #' Creates a multi-panel summary plot of data measured in a meteorological data
 #' set.  cast. The panels are controlled by the `which` argument.

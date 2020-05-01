@@ -1347,7 +1347,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                     warning("not storing '", field, "' because it is in an unknown format")
                 }
             }
+            ## argo
         } else {
+            ## oce object, not argo
             for (field in names(d)) {
                 if (field != "time") {
                     res@data[[field]] <- d[[field]]
@@ -1384,41 +1386,70 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             }
         }
     } else if (is.list(salinity) || is.data.frame(salinity)) {
+        if (length(salinity) == 0)
+            stop("first argument cannot be a zero-length list or data frame")
         oceDebug(debug, "salinity is a list or data frame\n")
         ## 2. coerce a data-frame or list
         x <- salinity
-        names <- names(x)
-        ## Permit oce-style names or WOCE-style names for the three key variables (FIXME: handle more)
-        if (3 == sum(c("salinity", "temperature", "pressure") %in% names)) {
-            res@data$pressure <- x$pressure
-            res@data$salinity <- x$salinity
-            res@data$temperature <- x$temperature
-            res@metadata$units <- units
-            ##1108 res@metadata$pressureType <- pressureType
-            res@metadata$pressureType <- "sea"
-        } else if (3 == sum(c("PSAL", "TEMP", "PRES") %in% names)) {
-            res@data$pressure <- x$PRES
-            res@data$salinity <- x$PSAL
-            res@data$temperature <- x$TEMP
-            res@metadata$units <- units
-            ##1108 res@metadata$pressureType <- pressureType
-            res@metadata$pressureType <- "sea"
+        if (is.list(x) && inherits(x[[1]], "oce")) {
+            oceDebug(debug, "list made up of oce objects (all expected to be in same form as first)\n")
+            ## Copy data over
+            dataNames <- names(x[[1]]@data)
+            oceDebug(debug, 'copying data entries: "', paste(dataNames, collapse='", "'), '"\n', sep="")
+            for (name in dataNames) {
+                res@data[[name]] <- unlist(lapply(x, function(xx) xx[[name]]))
+            }
+            ## If longitude and latitude are not in 'data', the next will copy from metadata (if present there)
+            if (!("longitude" %in% dataNames))
+                res@data$longitude <- unlist(lapply(x, function(xx) rep(xx[["longitude"]], length.out=length(xx[["salinity"]]))))
+            if (!("latitude" %in% dataNames))
+                res@data$latitude <- unlist(lapply(x, function(xx) rep(xx[["latitude"]], length.out=length(xx[["salinity"]]))))
+            ## Flags
+            if ("flags" %in% names(x[[1]]@metadata)) {
+                flagNames <- names(x[[1]]@metadata$flags)
+                oceDebug(debug, 'copying flag entries: "', paste(flagNames, collapse='", "'), '"\n', sep="")
+                for (name in flagNames) {
+                    res@metadata$flags[[name]] <- unlist(lapply(x, function(xx) xx@metadata$flags[[name]]))
+                }
+                res@metadata$flagScheme <- x[[1]]@metadata$flagScheme
+            }
+            ## Units
+            res@metadata$units <- x[[1]]@metadata$units
         } else {
-            stop("the first argument must contain salinity, temperature, and pressure")
+            oceDebug(debug, "list or data frame not made up of oce objects (as tested by first entry)\n")
+            names <- names(x)
+            ## Permit oce-style names or WOCE-style names for the three key variables (FIXME: handle more)
+            if (3 == sum(c("salinity", "temperature", "pressure") %in% names)) {
+                res@data$pressure <- x$pressure
+                res@data$salinity <- x$salinity
+                res@data$temperature <- x$temperature
+                res@metadata$units <- units
+                ##1108 res@metadata$pressureType <- pressureType
+                res@metadata$pressureType <- "sea"
+            } else if (3 == sum(c("PSAL", "TEMP", "PRES") %in% names)) {
+                res@data$pressure <- x$PRES
+                res@data$salinity <- x$PSAL
+                res@data$temperature <- x$TEMP
+                res@metadata$units <- units
+                ##1108 res@metadata$pressureType <- pressureType
+                res@metadata$pressureType <- "sea"
+            } else {
+                stop("the first argument must contain salinity, temperature, and pressure")
+            }
+            if ("longitude" %in% names)
+                res@metadata$longitude <- if (1 == length(longitude)) longitude else x$longitude
+            if ("latitude" %in% names)
+                res@metadata$latitude <- if (1 == length(latitude)) latitude else x$latitude
+            if ("conductivity" %in% names) res@data$conductivity <- x$conductivity
+            if ("COND" %in% names) res@data$conductivity <- x$COND # FIXME accept other WOCE names
+            if ("quality" %in% names) res@data$quality <- x$quality
+            if ("oxygen" %in% names) res@data$oxygen <- x$oxygen
+            if ("nitrate" %in% names) res@data$nitrate <- x$nitrate
+            if ("nitrite" %in% names) res@data$nitrite <- x$nitrite
+            if ("phosphate" %in% names) res@data$phosphate <- x$phosphate
+            if ("silicate" %in% names) res@data$silicate <- x$silicate
+            if ("time" %in% names) res@data$time <- x$time
         }
-        if ("longitude" %in% names)
-            res@metadata$longitude <- if (1 == length(longitude)) longitude else x$longitude
-        if ("latitude" %in% names)
-            res@metadata$latitude <- if (1 == length(latitude)) latitude else x$latitude
-        if ("conductivity" %in% names) res@data$conductivity <- x$conductivity
-        if ("COND" %in% names) res@data$conductivity <- x$COND # FIXME accept other WOCE names
-        if ("quality" %in% names) res@data$quality <- x$quality
-        if ("oxygen" %in% names) res@data$oxygen <- x$oxygen
-        if ("nitrate" %in% names) res@data$nitrate <- x$nitrate
-        if ("nitrite" %in% names) res@data$nitrite <- x$nitrite
-        if ("phosphate" %in% names) res@data$phosphate <- x$phosphate
-        if ("silicate" %in% names) res@data$silicate <- x$silicate
-        if ("time" %in% names) res@data$time <- x$time
     } else {
         oceDebug(debug, "salinity, temperature, pressure (etc) supplied\n")
         ## 3. explicit mode
@@ -1575,6 +1606,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         res@metadata$longitude <- NULL
         res@metadata$latitude <- NULL
     }
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
     res
 }
@@ -2750,7 +2782,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 }
 
 
-#' Plot CTD Data
+#' Plot a ctd Object
 #'
 #' Plot CTD data, by default in a four-panel display showing (a) profiles of
 #' salinity and temperature, (b) profiles of density and the square of buoyancy
@@ -3781,10 +3813,10 @@ setMethod(f="plot",
 
 #' Subset a CTD Object
 #'
-#' Return a subset of a section object.
+#' Return a subset of a [ctd-class] object.
 #'
-#' This function is used to subset data within the
-#' levels of a ctd object. There are two ways of working. If
+#' This function is used to subset data within
+#' a ctd object. There are two ways of working. If
 #' `subset` is supplied, then it is a logical expression
 #' that is evaluated within the environment of the `data`
 #' slot of the object (see Example 1). Alternatively, if the
@@ -4160,7 +4192,8 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #'
 #' Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
 #'
-#' @param x a [ctd-class] object.
+#' @param x a [ctd-class], [argo-class] or [section-class] object, or a list
+#' containing solely [ctd-class] objects or [argo-class] objects.
 #'
 #' @param inSitu A boolean indicating whether to use in-situ temperature or
 #' (the default) potential temperature, calculated with reference pressure
@@ -4347,8 +4380,16 @@ plotTS <- function (x,
                            unlist(lapply(x, function(xi) xi[["temperature"]])),
                            unlist(lapply(x, function(xi) xi[["pressure"]])))
                 }
+            } else if (inherits(x[[1]], "argo")) {
+                message("FIXME: this ought to be done with as.ctd() so other methods can do simiarly")
+                message("FIXME: determine if 1-col or multi-col (affects latitude lookup)")
+                x <- if (eos == "gsw") {
+                    stop("FIXME: for argo (gsw)")
+                } else {
+                    stop("FIXME: for argo (unesco)")
+                }
             } else {
-                stop("If x is a list, it must be a list of ctd objects")
+                stop("If x is a list, it must hold 'ctd' or 'argo' objects")
             }
         } else {
             names <- names(x)
@@ -5718,8 +5759,8 @@ plotProfile <- function(x,
             label <- as.character(xtype)
             if (is.character(label) && label == "sigmaTheta")
                 label <- resizableLabel("sigmaTheta", "x", debug=debug-1)
-            label <- resizableLabel(label, "x", unit=x@metadata$units[[xtype]], debug=debug-1)
-            oceDebug(debug, "x name computed as \"", paste0(as.character(label)), "\"\n", sep="")
+            ##issue1684/2020-04-20 label <- resizableLabel(label, "x", unit=x@metadata$units[[xtype]], debug=debug-1)
+            ##issue1684/2020-04-20 oceDebug(debug, "x name computed as \"", paste0(as.character(label)), "\"\n", sep="")
             mtext(label, side=3, line=axisNameLoc, cex=par("cex"))
             axis(2)
             box()

@@ -931,7 +931,7 @@ sectionAddStation <- function(section, station)
 sectionAddCtd <- sectionAddStation
 
 
-#' Plot a Section
+#' Plot a section Object
 #'
 #' Creates a summary plot for a CTD section, with one panel for each value of
 #' `which`.
@@ -993,8 +993,9 @@ sectionAddCtd <- sectionAddStation
 #' that an index is *not* a station number, e.g. to show the first 4
 #' stations, use `station.indices=1:4`.
 #'
-#' @param coastline String giving the coastline to be used in a station map
-#' The permitted choices are `"best"` (the default) to pick
+#' @param coastline Either a [coastline-class] object to be used,
+#' or a string.  In the second case, the permitted
+#' choices are `"best"` (the default) to pick
 #' a variant that suits the scale, `"coastlineWorld"` for the coarse
 #' version that is provided by \CRANpkg{oce},
 #' `"coastlineWorldMedium"` or `"coastlineWorldFine"` for two
@@ -1215,9 +1216,10 @@ setMethod(f="plot",
               ytype <- match.arg(ytype, c("depth", "pressure"))
               ztype <- match.arg(ztype, c("contour", "image", "points"))
               drawPoints <- ztype == "points"
-              coastline <- match.arg(coastline,
-                                     c("best", "coastlineWorld", "coastlineWorldMedium",
-                                       "coastlineWorldFine", "none"))
+              if (!inherits(coastline, "coastline"))
+                  coastline <- match.arg(coastline,
+                                         c("best", "coastlineWorld", "coastlineWorldMedium",
+                                           "coastlineWorldFine", "none"))
               if (missing(mgp))
                   mgp <- getOption("oceMgp")
               if (missing(mar))
@@ -1335,46 +1337,54 @@ setMethod(f="plot",
                           latr <- latm + sqrt(2) * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
                       } else {
                           ## FIXME: the sqrt(2) below helps in a test case ... not sure it make sense though --DK
-                          lonr <- lonm + span / 111.1 * c(-0.5, 0.5) / cos(2*pi/180*latm) / sqrt(2)
+                          lonr <- lonm + span / 111.1 * c(-0.5, 0.5) / cos(pi/180*latm) / sqrt(2)
                           latr <- latm + span / 111.1 * c(-0.5, 0.5) / sqrt(2)
+                          ##DEBUG message("KELLEY span=", span)
+                          ##DEBUG message("KELLEY lonm=", lonm, " lonr=", paste(lonr, collapse=", "))
+                          ##DEBUG message("KELLEY latm=", latm, " latr=", paste(latr, collapse=", "))
                       }
 
                       ## FIXME: this coastline code is reproduced in section.R; it should be DRY
                       haveCoastline <- FALSE
-                      if (!is.character(coastline))
-                          stop("coastline must be a character string")
-                      haveOcedata <- requireNamespace("ocedata", quietly=TRUE)
-                      if (coastline == "best") {
-                          if (haveOcedata) {
-                              bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
-                              oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
-                              if (bestcoastline == "coastlineWorld") {
-                                  data(list=bestcoastline, package="oce", envir=environment())
-                              } else {
-                                  data(list=bestcoastline, package="ocedata", envir=environment())
-                              }
-                              coastline <- get(bestcoastline)
-                          } else {
-                              oceDebug(debug, "using \"coastlineWorld\" because ocedata package not installed\n")
-                              data("coastlineWorld", package="oce", envir=environment())
-                              coastline <- get("coastlineWorld")
-                          }
+                      if (inherits(coastline, "coastline")) {
                           haveCoastline <- TRUE
+                          oceDebug(debug, "using coastline object given as an argument\n")
                       } else {
-                          if (coastline != "none") {
-                              if (coastline == "coastlineWorld") {
+                          if (!is.character(coastline))
+                              stop("coastline must be a character string")
+                          haveOcedata <- requireNamespace("ocedata", quietly=TRUE)
+                          if (coastline == "best") {
+                              if (haveOcedata) {
+                                  bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
+                                  oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
+                                  if (bestcoastline == "coastlineWorld") {
+                                      data(list=bestcoastline, package="oce", envir=environment())
+                                  } else {
+                                      data(list=bestcoastline, package="ocedata", envir=environment())
+                                  }
+                                  coastline <- get(bestcoastline)
+                              } else {
+                                  oceDebug(debug, "using \"coastlineWorld\" because ocedata package not installed\n")
                                   data("coastlineWorld", package="oce", envir=environment())
                                   coastline <- get("coastlineWorld")
-                              } else if (haveOcedata && coastline == "coastlineWorldFine") {
-                                  data("coastlineWorldFine", package="ocedata", envir=environment())
-                                  coastline <- get("coastlineWorldFine")
-                              } else if (haveOcedata && coastline == "coastlineWorldMedium") {
-                                  data("coastlineWorldMedium", package="ocedata", envir=environment())
-                                  coastline <- get("coastlineWorldMedium")
-                              }  else {
-                                  stop("there is no built-in coastline file of name \"", coastline, "\"")
                               }
                               haveCoastline <- TRUE
+                          } else {
+                              if (coastline != "none") {
+                                  if (coastline == "coastlineWorld") {
+                                      data("coastlineWorld", package="oce", envir=environment())
+                                      coastline <- get("coastlineWorld")
+                                  } else if (haveOcedata && coastline == "coastlineWorldFine") {
+                                      data("coastlineWorldFine", package="ocedata", envir=environment())
+                                      coastline <- get("coastlineWorldFine")
+                                  } else if (haveOcedata && coastline == "coastlineWorldMedium") {
+                                      data("coastlineWorldMedium", package="ocedata", envir=environment())
+                                      coastline <- get("coastlineWorldMedium")
+                                  }  else {
+                                      stop("there is no built-in coastline file of name \"", coastline, "\"")
+                                  }
+                                  haveCoastline <- TRUE
+                              }
                           }
                       }
 
@@ -1403,7 +1413,7 @@ setMethod(f="plot",
                           }
                           return()
                       } else {
-                         if (!is.null(map.xlim)) {
+                          if (!is.null(map.xlim)) {
                               map.xlim <- sort(map.xlim)
                               plot(lonr, latr, xlim=map.xlim, asp=asp, type='n',
                                    xlab=gettext("Longitude", domain="R-oce"),
@@ -1414,6 +1424,9 @@ setMethod(f="plot",
                                    xlab=gettext("Longitude", domain="R-oce"),
                                    ylab=gettext("Latitude", domain="R-oce"))
                           } else {
+                              ##DEBUG message("CCC lonr=", paste(lonr, collapse=","))
+                              ##DEBUG message("CCC latr=", paste(latr, collapse=","))
+                              ##DEBUG message("CCC asp=", paste(asp, collapse=","))
                               plot(lonr, latr, asp=asp, type='n',
                                    xlab=gettext("Longitude", domain="R-oce"),
                                    ylab=gettext("Latitude", domain="R-oce"))
