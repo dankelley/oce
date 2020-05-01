@@ -47,3 +47,6 @@ R/check_urls.R
 
 ^appveyor\.yml$
 ^doc$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
