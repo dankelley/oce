@@ -213,7 +213,7 @@ independent variable (e.g. latitude and longitude).</p>
 <span class='no'>earth</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='read.amsr.html'>read.amsr</a></span>(<span class='st'>"f34_20160102v7.2.gz"</span>) <span class='co'># not provided with oce</span>
 <span class='no'>fclat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>earth</span> , <span class='fl'>45</span><span class='kw'>&lt;=</span><span class='no'>latitude</span> <span class='kw'>&amp;</span> <span class='no'>latitude</span> <span class='kw'>&lt;=</span> <span class='fl'>49</span>)
 <span class='no'>fc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>fclat</span> , <span class='no'>longitude</span> <span class='kw'>&lt;=</span> -<span class='fl'>47</span> <span class='kw'>&amp;</span> <span class='no'>longitude</span> <span class='kw'>&lt;=</span> -<span class='fl'>43</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>fc</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>fc</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

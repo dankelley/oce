@@ -154,7 +154,7 @@ location.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ctd</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(
   <span class='no'>x</span>,
   <span class='no'>which</span>,
   <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"fg"</span>),
@@ -185,8 +185,6 @@ location.</p>
   <span class='kw'>lonlabels</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>latlabels</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>projection</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>parameters</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>orientation</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>latlon.pch</span> <span class='kw'>=</span> <span class='fl'>20</span>,
   <span class='kw'>latlon.cex</span> <span class='kw'>=</span> <span class='fl'>1.5</span>,
   <span class='kw'>latlon.col</span> <span class='kw'>=</span> <span class='st'>"red"</span>,
@@ -416,16 +414,6 @@ or at higher latitudes.  Finally, if this is a string in the format used by
 <code><a href='mapPlot.html'>mapPlot()</a></code>, then it is is passed to that function.</p></td>
     </tr>
     <tr>
-      <th>parameters</th>
-      <td><p>a <strong>deprecated</strong> argument that has been ignored
-since February 2016; see <a href='oce-deprecated.html'>oce-deprecated</a>.</p></td>
-    </tr>
-    <tr>
-      <th>orientation</th>
-      <td><p>a <strong>deprecated</strong> argument that has been ignored
-since February 2016; see <a href='oce-deprecated.html'>oce-deprecated</a>.</p></td>
-    </tr>
-    <tr>
       <th>latlon.pch</th>
       <td><p>Symbol code for sample location (ignored if no map plotted).</p></td>
     </tr>
@@ -454,7 +442,7 @@ plotted).</p></td>
     <tr>
       <th>useSmoothScatter</th>
       <td><p>Boolean, set to <code>TRUE</code> to use
-<code><a href='https://rdrr.io/r/graphics/smoothScatter.html'>smoothScatter()</a></code> instead of <code><a href='https://rdrr.io/r/graphics/plot.html'>plot()</a></code> to draw the plot.</p></td>
+<code><a href='https://rdrr.io/r/graphics/smoothScatter.html'>smoothScatter()</a></code> instead of <code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code> to draw the plot.</p></td>
     </tr>
     <tr>
       <th>df</th>
@@ -470,7 +458,7 @@ which will yield breaks in the lines.</p></td>
     <tr>
       <th>type</th>
       <td><p>The type of plot to draw, using the same scheme as
-<code><a href='https://rdrr.io/r/graphics/plot.html'>plot()</a></code>. If supplied, this is increased to be the
+<code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code>. If supplied, this is increased to be the
 same length as <code>which</code>, if necessary, and then supplied to
 each of the individual plot calls. If it is not supplied,
 then those plot calls use defaults (e.g. using a line for
@@ -619,13 +607,13 @@ objects, and also outlines the other functions dealing with them.</p>
     <pre class="examples"><div class='input'><span class='co'>## 1. simple plot</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>ctd</span>)</div><div class='img'><img src='plot-ctd-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>ctd</span>)</div><div class='img'><img src='plot-ctd-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'>## 2. how to customize depth contours</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>2</span>))
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>section</span>)
 <span class='no'>stn</span> <span class='kw'>&lt;-</span> <span class='no'>section</span><span class='kw'>[[</span><span class='st'>"station"</span>, <span class='fl'>105</span>]]
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>stn</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>'map'</span>, <span class='kw'>drawIsobaths</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>stn</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>'map'</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>topoWorld</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>stn</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>'map'</span>, <span class='kw'>drawIsobaths</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>stn</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>'map'</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>topoWorld</span>)
 <span class='no'>tlon</span> <span class='kw'>&lt;-</span> <span class='no'>topoWorld</span><span class='kw'>[[</span><span class='st'>"longitude"</span>]]
 <span class='no'>tlat</span> <span class='kw'>&lt;-</span> <span class='no'>topoWorld</span><span class='kw'>[[</span><span class='st'>"latitude"</span>]]
 <span class='no'>tdep</span> <span class='kw'>&lt;-</span> -<span class='no'>topoWorld</span><span class='kw'>[[</span><span class='st'>"z"</span>]]

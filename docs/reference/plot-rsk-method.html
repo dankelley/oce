@@ -160,7 +160,7 @@ strategy for all of them. The present function is quite crude, on the
 assumption that users will understand their own datasets, and that they can
 devise plots that are best-suited to their applications.  Sometimes, the
 sensible scheme is to coerce the object into another form, e.g. using
-<code><a href='https://rdrr.io/r/graphics/plot.html'>plot(as.ctd(rsk))</a></code> if the object contains CTD-like data.  Other times,
+<code><a href='https://rdrr.io/r/base/plot.html'>plot(as.ctd(rsk))</a></code> if the object contains CTD-like data.  Other times,
 users should extract data from the <code>rsk</code> object and construct plots
 themselves. The idea is to use the present function mainly to get an overview,
 and for that reason, the default plot type (set by <code>which</code>) is a set of
@@ -170,7 +170,7 @@ time-series plots, because the one thing that is definitely known about
     </div>
 
     <pre class="usage"><span class='co'># S4 method for rsk</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(
   <span class='no'>x</span>,
   <span class='kw'>which</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>,
   <span class='no'>tlim</span>,
@@ -249,7 +249,7 @@ time).</p></td>
     <tr>
       <th>useSmoothScatter</th>
       <td><p>a boolean to cause <code><a href='https://rdrr.io/r/graphics/smoothScatter.html'>smoothScatter()</a></code> to be
-used for profile plots, instead of <code><a href='https://rdrr.io/r/graphics/plot.html'>plot()</a></code>.</p></td>
+used for profile plots, instead of <code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code>.</p></td>
     </tr>
     <tr>
       <th>mgp</th>
@@ -329,11 +329,11 @@ the temperature field.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>rsk</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>rsk</span>) <span class='co'># default timeseries plot of all data fields</span></div><div class='img'><img src='plot-rsk-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>rsk</span>) <span class='co'># default timeseries plot of all data fields</span></div><div class='img'><img src='plot-rsk-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'>## A multipanel plot of just pressure and temperature with ylim</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>))
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>rsk</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"pressure"</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>10</span>, <span class='fl'>30</span>))
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>rsk</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"temperature"</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>4</span>))</div><div class='img'><img src='plot-rsk-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>rsk</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"pressure"</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>10</span>, <span class='fl'>30</span>))
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>rsk</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"temperature"</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>4</span>))</div><div class='img'><img src='plot-rsk-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -2008,34 +2008,34 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #' of CTD objects, and also outlines the other functions dealing with them.
 #'
 #' @examples
-#'\dontrun{
 #' library(oce)
-#' ## Example 1.
-#' d <- read.csv("towyow.csv", header=TRUE)
-#' towyow <- as.ctd(d$salinity, d$temperature, d$pressure)
+#' if (file.exists("towyow.csv")) {
+#'     ## Example 1.
+#'     d <- read.csv("towyow.csv", header=TRUE)
+#'     towyow <- as.ctd(d$salinity, d$temperature, d$pressure)
 #'
-#' casts <- ctdFindProfiles(towyow)
-#' par(mfrow=c(length(casts), 3))
-#' for (cast in casts) {
-#'   plotProfile(cast, "salinity")
-#'   plotProfile(cast, "temperature")
-#'   plotTS(cast, type='o')
-#'}
+#'     casts <- ctdFindProfiles(towyow)
+#'     par(mfrow=c(length(casts), 3))
+#'     for (cast in casts) {
+#'       plotProfile(cast, "salinity")
+#'       plotProfile(cast, "temperature")
+#'       plotTS(cast, type='o')
+#'     }
 #'
-#' ## Example 2.
-#' ## Using a moving average to smooth pressure, instead of the default
-#' ## smooth.spline() method. This avoids a tendency of smooth.spline()
-#' ## to smooth out the profiles in a tow-yo with many (dozens or more) cycles.
-#' movingAverage <- function(x, n = 11, ...)
-#' {
-#'    f <- rep(1/n, n)
-#'    stats::filter(x, f, ...)
-#' }
-#' casts <- ctdFindProfiles(towyo, smoother=movingAverage)
+#'     ## Example 2.
+#'     ## Using a moving average to smooth pressure, instead of the default
+#'     ## smooth.spline() method. This avoids a tendency of smooth.spline()
+#'     ## to smooth out the profiles in a tow-yo with many (dozens or more) cycles.
+#'     movingAverage <- function(x, n = 11, ...)
+#'     {
+#'        f <- rep(1/n, n)
+#'        stats::filter(x, f, ...)
+#'     }
+#'     casts <- ctdFindProfiles(towyo, smoother=movingAverage)
 #'
-#' ## Example 3: glider data, with profiles separated by >10dbar jump.
-#' breaks <- which(diff(ctd[["pressure"]]) > 10))
-#' profiles <- ctdFindProfiles(ctd, breaks=breaks)
+##     ## Example 3: glider data, with profiles separated by >10dbar jump.
+##     breaks <- which(diff(ctd[["pressure"]]) > 10))
+##     profiles <- ctdFindProfiles(ctd, breaks=breaks)
 #' }
 #'
 #' @author Dan Kelley and Clark Richards
@@ -2978,11 +2978,11 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' or at higher latitudes.  Finally, if this is a string in the format used by
 #' [mapPlot()], then it is is passed to that function.
 #'
-#' @param parameters a **deprecated** argument that has been ignored
-#' since February 2016; see [oce-deprecated].
-#'
-#' @param orientation a **deprecated** argument that has been ignored
-#' since February 2016; see [oce-deprecated].
+## @param parameters a **deprecated** argument that has been ignored
+## since February 2016; see [oce-deprecated].
+##
+## @param orientation a **deprecated** argument that has been ignored
+## since February 2016; see [oce-deprecated].
 #'
 #' @param latlon.pch Symbol code for sample location (ignored if no map plotted).
 #'
@@ -3094,7 +3094,7 @@ setMethod(f="plot",
                               lonlim, latlim, # FIXME: maybe should be deprecated 2014-01-07
                               drawIsobaths=FALSE, clongitude, clatitude, span, showHemi=TRUE,
                               lonlabels=TRUE, latlabels=TRUE,
-                              projection=NULL, parameters=NULL, orientation=NULL,
+                              projection=NULL,
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                               cex=1, cex.axis=par('cex.axis'),
                               pch=1,
@@ -3113,10 +3113,6 @@ setMethod(f="plot",
                   stop("method is only for objects of class 'ctd'")
               if ("adorn" %in% names(list(...)))
                   warning("In plot,ctd-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
-              if (!is.null(parameters))
-                  warning("'parameters' is a deprecated argument that is ignored; see ?'oce-deprecated'")
-              if (!is.null(orientation))
-                  warning("'orientation' is a deprecated argument that is ignored; see ?'oce-deprecated'")
               eos <- match.arg(eos, c("unesco", "gsw"))
               if (!missing(fill)) {
                   ## permit call as documented before 2016-02-03
@@ -3637,7 +3633,7 @@ setMethod(f="plot",
                           if (!missing(clongitude) && !missing(clatitude) && !missing(span)) {
                               plot(coastline,
                                    clongitude=clongitude, clatitude=clatitude, span=span,
-                                   projection=projection, # parameters=parameters, orientation=orientation,
+                                   projection=projection,
                                    border=borderCoastline, col=colCoastline,
                                    mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                    lonlabels=lonlabels, latlabels=latlabels,
@@ -3658,11 +3654,10 @@ setMethod(f="plot",
                                       oceDebug(debug, "clongitude=", clon, "\n")
                                       oceDebug(debug, "span=", span, "\n")
                                       oceDebug(debug, "projection=", projection, "\n")
-                                      ## oceDebug(debug, "parameters=", parameters, "\n")
                                       oceDebug(debug, "ok, about to call plot(coastline)\n")
                                       plot(coastline,
                                            clongitude=standardizeLongitude(clon), clatitude=mean(latlim.c), span=span,
-                                           projection=projection, # parameters=parameters, orientation=orientation,
+                                           projection=projection,
                                            border=borderCoastline, col=colCoastline,
                                            mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                            lonlabels=lonlabels, latlabels=latlabels,
@@ -3673,7 +3668,7 @@ setMethod(f="plot",
                                       clat <- mean(latlim)
                                       plot(coastline,
                                            clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
-                                           projection=projection, # parameters=parameters, orientation=orientation,
+                                           projection=projection,
                                            border=borderCoastline, col=colCoastline,
                                            mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                            lonlabels=lonlabels, latlabels=latlabels,
@@ -3691,7 +3686,7 @@ setMethod(f="plot",
                                       clat <- mean(latlim.c)
                                       plot(coastline,
                                            clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
-                                           projection=projection, #parameters=parameters, orientation=orientation,
+                                           projection=projection,
                                            border=borderCoastline, col=colCoastline,
                                            mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                            lonlabels=lonlabels, latlabels=latlabels,
@@ -3702,7 +3697,7 @@ setMethod(f="plot",
                                       plot(coastline,
                                            clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
                                            border=borderCoastline, col=colCoastline,
-                                           projection=projection, #parameters=parameters, orientation=orientation,
+                                           projection=projection,
                                            mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                            lonlabels=lonlabels, latlabels=latlabels,
                                            debug=debug-1)
