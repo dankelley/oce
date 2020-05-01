@@ -264,7 +264,35 @@ Press, New York, 662 pp.</p>
 <code><a href='swZ.html'>swZ</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>section</span>)
+
+<span class='co'># Dynamic height and geostrophy</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfcol</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>,<span class='fl'>2</span>))
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>4.5</span>,<span class='fl'>4.5</span>,<span class='fl'>2</span>,<span class='fl'>1</span>))
+
+<span class='co'># Left-hand column: whole section</span>
+<span class='co'># (The smoothing lowers Gulf Stream speed greatly)</span>
+<span class='no'>westToEast</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>section</span>, <span class='fl'>1</span><span class='kw'>&lt;=</span><span class='no'>stationId</span><span class='kw'>&amp;</span><span class='no'>stationId</span><span class='kw'>&lt;=</span><span class='fl'>123</span>)
+<span class='no'>dh</span> <span class='kw'>&lt;-</span> <span class='fu'>swDynamicHeight</span>(<span class='no'>westToEast</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>dh</span>$<span class='no'>distance</span>, <span class='no'>dh</span>$<span class='no'>height</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'p'</span>, <span class='kw'>xlab</span><span class='kw'>=</span><span class='st'>""</span>, <span class='kw'>ylab</span><span class='kw'>=</span><span class='st'>"dyn. height [m]"</span>)
+<span class='no'>ok</span> <span class='kw'>&lt;-</span> !<span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='no'>dh</span>$<span class='no'>height</span>)
+<span class='no'>smu</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/supsmu.html'>supsmu</a></span>(<span class='no'>dh</span>$<span class='no'>distance</span>, <span class='no'>dh</span>$<span class='no'>height</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='no'>smu</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"blue"</span>)
+<span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='coriolis.html'>coriolis</a></span>(<span class='no'>section</span><span class='kw'>[[</span><span class='st'>"station"</span>, <span class='fl'>1</span>]]<span class='kw'>[[</span><span class='st'>"latitude"</span>]])
+<span class='no'>g</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='gravity.html'>gravity</a></span>(<span class='no'>section</span><span class='kw'>[[</span><span class='st'>"station"</span>, <span class='fl'>1</span>]]<span class='kw'>[[</span><span class='st'>"latitude"</span>]])
+<span class='no'>v</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/diff.html'>diff</a></span>(<span class='no'>smu</span>$<span class='no'>y</span>)/<span class='fu'><a href='https://rdrr.io/r/base/diff.html'>diff</a></span>(<span class='no'>smu</span>$<span class='no'>x</span>) * <span class='no'>g</span> / <span class='no'>f</span> / <span class='fl'>1e3</span> <span class='co'># 1e3 converts to m</span>
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>smu</span>$<span class='no'>x</span>[-<span class='fl'>1</span>], <span class='no'>v</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'l'</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"blue"</span>, <span class='kw'>xlab</span><span class='kw'>=</span><span class='st'>"distance [km]"</span>, <span class='kw'>ylab</span><span class='kw'>=</span><span class='st'>"velocity (m/s)"</span>)
+
+<span class='co'># right-hand column: gulf stream region, unsmoothed</span>
+<span class='no'>gs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>section</span>, <span class='fl'>102</span><span class='kw'>&lt;=</span><span class='no'>stationId</span><span class='kw'>&amp;</span><span class='no'>stationId</span><span class='kw'>&lt;=</span><span class='fl'>124</span>)
+<span class='no'>dh.gs</span> <span class='kw'>&lt;-</span> <span class='fu'>swDynamicHeight</span>(<span class='no'>gs</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>dh.gs</span>$<span class='no'>distance</span>, <span class='no'>dh.gs</span>$<span class='no'>height</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'b'</span>, <span class='kw'>xlab</span><span class='kw'>=</span><span class='st'>""</span>, <span class='kw'>ylab</span><span class='kw'>=</span><span class='st'>"dyn. height [m]"</span>)
+<span class='no'>v</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/diff.html'>diff</a></span>(<span class='no'>dh.gs</span>$<span class='no'>height</span>)/<span class='fu'><a href='https://rdrr.io/r/base/diff.html'>diff</a></span>(<span class='no'>dh.gs</span>$<span class='no'>distance</span>) * <span class='no'>g</span> / <span class='no'>f</span> / <span class='fl'>1e3</span>
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>dh.gs</span>$<span class='no'>distance</span>[-<span class='fl'>1</span>], <span class='no'>v</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'l'</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"blue"</span>,
+  <span class='kw'>xlab</span><span class='kw'>=</span><span class='st'>"distance [km]"</span>, <span class='kw'>ylab</span><span class='kw'>=</span><span class='st'>"velocity (m/s)"</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -162,7 +162,7 @@ plot, and with <code>bg="white"</code>.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for gps</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(
   <span class='no'>x</span>,
   <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>""</span>,
   <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>""</span>,
@@ -171,8 +171,6 @@ plot, and with <code>bg="white"</code>.</p>
   <span class='no'>clatitude</span>,
   <span class='no'>span</span>,
   <span class='no'>projection</span>,
-  <span class='kw'>parameters</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>orientation</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>expand</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='kw'>mgp</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceMgp"</span>),
   <span class='kw'>mar</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='no'>mgp</span>[<span class='fl'>1</span>] + <span class='fl'>1</span>, <span class='no'>mgp</span>[<span class='fl'>1</span>] + <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
@@ -236,16 +234,6 @@ that gps shapes near the centre of the plot are preserved.  If a projection
 is provided, the coordinate system will bear an indirect relationship to
 longitude and longitude, and further adornment of the plot must be done with
 e.g.  <code><a href='mapPoints.html'>mapPoints()</a></code> instead of <code><a href='https://rdrr.io/r/graphics/points.html'>points()</a></code>.</p></td>
-    </tr>
-    <tr>
-      <th>parameters</th>
-      <td><p>optional parameters to map projection (see
-<code><a href='mapPlot.html'>mapPlot()</a></code> for details).</p></td>
-    </tr>
-    <tr>
-      <th>orientation</th>
-      <td><p>optional orientation of map projection (see
-<code><a href='mapPlot.html'>mapPlot()</a></code> for details).</p></td>
     </tr>
     <tr>
       <th>expand</th>

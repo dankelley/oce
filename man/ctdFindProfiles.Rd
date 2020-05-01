@@ -98,34 +98,31 @@ Generally, one is well-advised to use the present function for a quick look at t
 relying on e.g. \code{\link[=plotScan]{plotScan()}} to identify profiles visually, for a final product.
 }
 \examples{
-\dontrun{
 library(oce)
-## Example 1.
-d <- read.csv("towyow.csv", header=TRUE)
-towyow <- as.ctd(d$salinity, d$temperature, d$pressure)
+if (file.exists("towyow.csv")) {
+    ## Example 1.
+    d <- read.csv("towyow.csv", header=TRUE)
+    towyow <- as.ctd(d$salinity, d$temperature, d$pressure)
 
-casts <- ctdFindProfiles(towyow)
-par(mfrow=c(length(casts), 3))
-for (cast in casts) {
-  plotProfile(cast, "salinity")
-  plotProfile(cast, "temperature")
-  plotTS(cast, type='o')
-}
+    casts <- ctdFindProfiles(towyow)
+    par(mfrow=c(length(casts), 3))
+    for (cast in casts) {
+      plotProfile(cast, "salinity")
+      plotProfile(cast, "temperature")
+      plotTS(cast, type='o')
+    }
 
-## Example 2.
-## Using a moving average to smooth pressure, instead of the default
-## smooth.spline() method. This avoids a tendency of smooth.spline()
-## to smooth out the profiles in a tow-yo with many (dozens or more) cycles.
-movingAverage <- function(x, n = 11, ...)
-{
-   f <- rep(1/n, n)
-   stats::filter(x, f, ...)
-}
-casts <- ctdFindProfiles(towyo, smoother=movingAverage)
+    ## Example 2.
+    ## Using a moving average to smooth pressure, instead of the default
+    ## smooth.spline() method. This avoids a tendency of smooth.spline()
+    ## to smooth out the profiles in a tow-yo with many (dozens or more) cycles.
+    movingAverage <- function(x, n = 11, ...)
+    {
+       f <- rep(1/n, n)
+       stats::filter(x, f, ...)
+    }
+    casts <- ctdFindProfiles(towyo, smoother=movingAverage)
 
-## Example 3: glider data, with profiles separated by >10dbar jump.
-breaks <- which(diff(ctd[["pressure"]]) > 10))
-profiles <- ctdFindProfiles(ctd, breaks=breaks)
 }
 
 }

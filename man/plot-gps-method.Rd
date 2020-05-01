@@ -14,8 +14,6 @@
   clatitude,
   span,
   projection,
-  parameters = NULL,
-  orientation = NULL,
   expand = 1,
   mgp = getOption("oceMgp"),
   mar = c(mgp[1] + 1, mgp[1] + 1, 1, 1),
@@ -63,12 +61,6 @@ that gps shapes near the centre of the plot are preserved.  If a projection
 is provided, the coordinate system will bear an indirect relationship to
 longitude and longitude, and further adornment of the plot must be done with
 e.g.  \code{\link[=mapPoints]{mapPoints()}} instead of \code{\link[=points]{points()}}.}
-
-\item{parameters}{optional parameters to map projection (see
-\code{\link[=mapPlot]{mapPlot()}} for details).}
-
-\item{orientation}{optional orientation of map projection (see
-\code{\link[=mapPlot]{mapPlot()}} for details).}
 
 \item{expand}{numerical factor for the expansion of plot limits, showing
 area outside the plot, e.g. if showing a ship track as a gps, and then an

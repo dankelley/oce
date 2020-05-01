@@ -506,7 +506,7 @@ Advanced users who want to diagnose the problem further might find it helpful to
 examine the original data file using other tools. To this end, <code>read.adp.rdi</code>
 inserts an element named <code>ensembleInFile</code> into the <code>metadata</code> slot.
 This gives the starting byte number of each inferred ensemble within the original data
-file.  For example, if <code>d</code> is an object read with <code>read.adp.rdi</code>, then using</p><pre><span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>d</span><span class='kw'>[[</span><span class='st'>"time"</span>]][-<span class='fl'>1</span>], <span class='fu'><a href='https://rdrr.io/r/base/diff.html'>diff</a></span>(<span class='no'>d</span><span class='kw'>[[</span><span class='st'>"ensembleInFile"</span>]]))</pre>
+file.  For example, if <code>d</code> is an object read with <code>read.adp.rdi</code>, then using</p><pre><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>d</span><span class='kw'>[[</span><span class='st'>"time"</span>]][-<span class='fl'>1</span>], <span class='fu'><a href='https://rdrr.io/r/base/diff.html'>diff</a></span>(<span class='no'>d</span><span class='kw'>[[</span><span class='st'>"ensembleInFile"</span>]]))</pre>
 
 <p>can be a good way to narrow in on problems.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
@@ -579,7 +579,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 #&gt; * Instrument:         adcp
 #&gt; * Serial number:      unknown
 #&gt; * Firmware version:   16.28
-#&gt; * Source filename:    ``/tmp/RtmpqwfCOo/temp_libpath35866b160b40/oce/extdata/adp_rdi.000``
+#&gt; * Source filename:    ``/private/var/folders/rx/k1x_t_q12zb9hbjr4ldxmjc80000gn/T/RtmpXHB9eJ/temp_libpath6dc3746e5fd/oce/extdata/adp_rdi.000``
 #&gt; * Location:           unknown latitude, unknown longitude
 #&gt; * Number of profiles: 9 
 #&gt; * Number of cells:    84 
@@ -633,7 +633,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 #&gt;     contaminationSensor         159      159    159      9   0            -
 #&gt; 
 #&gt; * Processing Log
-#&gt;     - 2020-05-01 13:12:16 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</div><div class='input'>
+#&gt;     - 2020-05-01 18:58:42 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
