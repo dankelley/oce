@@ -1,11 +1,15 @@
-1.2-1
-* read.ctd.sbe() can read .btl files
-* support for reading 38kHz RDI ADCP added
-* oceAxis() added
-* oce.plot.ts() gets 'logStyle' argument
-* angle2hms() added
+# oce (development version)
 
-1.2-0
+## 1.2.1
+
+* Update reader-oriented website on github.
+* Extend `read.ctd.sbe()` to read `.btl` files.
+* Extend `read.adp.rdi()` to read 38kHz RDI adp files.
+* Add `oceAxis()`.
+* Add `oce.plot.ts()`argument `logStyle`.
+* Add `angle2hms()`.
+
+## 1.2.0
 
 * Address argument doc/code warning that blocked CRAN acceptance.
 * Accommodate new ocedata (needed to meet new CRAN dependency rule).
@@ -16,56 +20,56 @@
   `findInOrdered()`, `mapMeridians()`, `mapZones()`, and
   `oce.as.POSIXlt()`, all of which have been marked as
   "Deprecated" for the past two CRAN releases.
-* Make `read.met()` handle a new Environment Canada data format.
+* Extend `read.met()` to read a new Environment Canada data format.
 * Handle some upcoming rgdal/R-devel changes.
-* Make `sectionSmooth()` detect grids extending beyond data range.
-* Make `read.adp.rdi()` trim time if it longer than other data.
-* Make `geodDist()` handle second location correctly when `alongPath=FALSE`.
+* Extend `sectionSmooth()` to handle grids beyond data range.
+* Extend `read.adp.rdi()` to trim `time` if it longer than other data.
+* Improve `geodDist()` to handle second location correctly when `alongPath=FALSE`.
 * Improve vignettes.
 * Fix itemized-list documentation problem pointed out by Kurt Hornik.
 
-1.1-1
+## 1.1-1
 
-* fix "link-time-optimization" issues for CRAN submission
+* Address "link-time-optimization" issues for CRAN submission.
 
-1.1-0
+## 1.1-0
 
 * fix argument error in a .C() call
-* read.odf() stores ODF header as a list in metadata
-* presentTime() added
-* vignette on subclassing oce added
-* sectionSmooth() handles output grid better, and offers 2 new methods
-* read.ctd.sbe() handles more column names
-* i386/windows gets map projections
-* imagep() handles combined flipy and ylim arguments differently
+* Extend `read.odf()` to store ODF header as a list in `metadata`.
+* Add `presentTime()`.
+* Add vignette on subclassing oce.
+* Extend `sectionSmooth()` to handle output grid better, and offer 2 new methods.
+* Extend `read.ctd.sbe()` to handle more column names.
+* Extend mapping code to support i386/windows.
+* Extend `imagep()` to handle combined `flipy` and `ylim` arguments better.
 
-1.0-1
+## 1.0-1
 
 * Renamed 0.9-24, released with OAR book publication.
 
-0.9-24
+## 0.9-24
 
-* read.odf() stores ODF header in metadata
-* remove makeSection()
-* make defunct: addColumn byteToBinary ctdAddColumn ctdUpdateHeader findInOrdered
-* make defunct: mapZones mapMeridians oce.as.POSIXlt oce.magic
-* byteToBinary(., endian="little") designated as defunct
-* as.tidem() added
-* read.odf() handles multiple NULL_VALUEs
-* flag improvements
-* rotateAboutZ() added
-* concatenate() added
-* read.woa() added
-* colormap() value has new item 'colfunction'
+* Extend `read.odf()` to store ODF header in `metadata`.
+* Remove `makeSection()`, after its deprecate/defunct period ended.
+* Make defunct: `addColumn()`, `byteToBinary()`, ` ctdAddColumn()`,
+  `ctdUpdateHeader()`, `findInOrdered(), `mapZones()`, `mapMeridians()`,
+`oce.as.POSIXlt()`, and `oce.magic()`
+* Add `as.tidem()`.
+* Extend `read.odf()` to handle multiple `NULL_VALUE`s.
+* Improve `handleFlags()`.
+* Add `rotateAboutZ()`.
+* Add `concatenate()`.
+* Add `read.woa()`.
+* Extend `colormap()` to include `colfunction` in return value.
 
-0.9-23
+## 0.9-23
 
 * tidem() permits inferred constituents
 * tidem() follows T_TIDE phase convention
 * adorn argument removed from plot functions (after being defunct 1+ year)
 * deprecate findInOrdered()
 
-0.9-22
+## 0.9-22
 
 * plot,section-method() can use external bathymetry
 * lowpass() added
@@ -73,7 +77,7 @@
 * deprecate byteToBinary()
 * address a CRAN NOTE about UTF-8 strings in data
 
-0.9-21
+## 0.9-21
 
 * adpEnsembleAverage() added
 * mapCoordinateSystem() added
@@ -89,7 +93,7 @@
 * address R_registerRoutines build-time warning
 * fix memory-usage error in coastlineCut()
 
-0.9-20
+## 0.9-20
 
 * remove observatory object type (changed format, seldom-used type)
 * remove pangaea object type (undocumented format, seldom-used type)
@@ -107,7 +111,7 @@
 * mapPlot() and mapAxis() get cex.axis parameter
 * subset(amsr) added; various other amsr improvements
 
-0.9-19
+## 0.9-19
 
 * deprecate 'adorn' in plot functions
 * make read.ctd() obey missingValue (renamed)
@@ -124,7 +128,7 @@
 * make read.argo() read all documented data and metadata fields
 * add trimString()
 
-0.9-18
+## 0.9-18
 
 * improve plot.coastline() and mapPlot()
 * add support for G1SST satellite
@@ -155,16 +159,16 @@
 * rgdal package used instead of local PROJ.4 source code
 * mapproj-style map projections eliminated
 
-0.9-17
+## 0.9-17
 
 * remove an exit() call in a C function
 
-0.9-16
+## 0.9-16
 
 * cite PROJ.4 contributors in DESCRIPTION
 * address package-build warnings; improve DESCRIPTION (thanks, BR)
 
-0.9-15
+## 0.9-15
 
 * plot.echosounder() gets new argument 'drawPalette'
 * data(landsat) taken from ocedata (and shrunk)
@@ -197,7 +201,7 @@
 * utm2lonlat() and lonlat2utm() added
 * data(met) changed to time of Hurricane Juan
 
-0.9-14
+## 0.9-14
 
 * fix compile-time warning
 * colormap() added, and functionality added to imagep() and drawPalette()
@@ -250,15 +254,15 @@
 * remove oceBisect(), which merely reproduces uniroot()
 * move large/specialized datasets to library(ocedata)
 
-0.9-13
+## 0.9-13
 
 * prepare for an upcoming release of R-devel
 
-0.9-12
+## 0.9-12
 
 * move vignette source directory
 
-0.9-11
+## 0.9-11
 
 * numberAsPOSIXct() now handles types "sas" and "spss"
 * data(turbulence) added
@@ -269,21 +273,21 @@
 * swSoundAbsorption()
 * read.adp: improve doc regarding variable orientation of RDI files
 
-0.9-10
+## 0.9-10
 
 * improve line breaks in some help pages (thanks, B. Ripley)
 
-0.9-9
+## 0.9-9
 
 * mapPlot() uses ... graphical parameters (e.g. cex) in labelling axes
 * fix recent bug in reading CNV files (issue 318)
 * plotTS(..., mar=NULL) now avoids setting par(mar)
 
-0.9-8
+## 0.9-8
 
 * fix memory error in teos handler (thanks, B. Ripley)
 
-0.9-7
+## 0.9-7
 
 * make ctdTrim() work in R 3.0
 * support for adp vmdas nav data (coded by Clark Richards)
@@ -296,17 +300,17 @@
 * mapContour(): permit first argument to be a 'topo' object
 * mapPlot(): add arguments axes, bg, fill, and drawBox
 
-0.9-6
+## 0.9-6
 
 * address compilation error on Windows-64 platform
 * make some long-running operations more interruptible
 * oceApprox(): permit equal x values [issue 279]
 
-0.9-5
+## 0.9-5
 
 * halve package check time
 
-0.9-4
+## 0.9-4
 
 * as.section() added
 * add data(endeavour)
@@ -336,7 +340,7 @@
 * plotProfile(ytype='z'): fix bug in y label
 * improve error message if TEOS-10 is missing
 
-0.9-3
+## 0.9-3
 
 * example(riley): remove error in R-devel
 * plot.ctd(..., which=7) improvement
@@ -344,11 +348,11 @@
 * as.ctd(): accept TEOS-10 values SA and CT
 * make TEOS routines more resistant to unphysical values
 
-0.9-2
+## 0.9-2
 
 * remove unwanted files during build process
 
-0.9-1
+## 0.9-1
 
 * pwelch(): fix bug in frequency
 * tidem(): add argument 'regress'
@@ -361,7 +365,7 @@
 * errorBars() added
 * numberAsPOSIXct() add a leap second for July 2012
 
-0.8-10
+## 0.8-10
 
 * plot.topo(): automatic cut-point shift
 * add support for Nortek aquadopp-profiler instruments
@@ -371,11 +375,11 @@
 * oce.as.raw() added
 * binmap() added
 
-0.8-9
+## 0.8-9
 
 * make the newly-added TEOS-10 functions compile on Windows
 
-0.8-8
+## 0.8-8
 
 * data(cm) added
 * plot.coastline(): improve argument 'geographical'
@@ -387,7 +391,7 @@
 * add teos() as an interface to the TEOS-10 library
 * add moonAngle() plus other astronomy functions, e.g. julianDay()
 
-0.8-7
+## 0.8-7
 
 * plotInset(): remove 'bg' and 'fg' arguments
 * plotTS(): add 'bg' argument
@@ -402,11 +406,11 @@
 * imagep(): add argument 'missingColor'
 * imagep() and drawPalette(): add arguments 'labels' and 'at'
 
-0.8-6
+## 0.8-6
 
 * imagep(): permit POSIXt type for zlim
 
-0.8-5
+## 0.8-5
 
 * reconstruct data(ctd) so plot will focus maps better
 * plotInset() added
@@ -416,7 +420,7 @@
 * oce.plot.ts(): obey arguments xaxt and yaxt
 * improve support for shapefile coastlines
 
-0.8-4
+## 0.8-4
 
 * replace 'center' argument for plotting topography and coastline with
   clatitude and clongitude
@@ -424,27 +428,27 @@
 * fullFilename(): handle URLs properly
 * ADV objects: add access to slow variables (e.g. headingSlow)
 
-0.8-3
+## 0.8-3
 
 * add 'met' class
 * subset.oce() handles section objects
 * draw.section(): permit xtype="latitude" or "longitude"
 * imagep() has drawPalette="space" option
 
-0.8-2
+## 0.8-2
 
 * fix bug in read.coastline(), reversing lon and lat [issue162]
 * fix bug in S4 adp validity checker
 * geodDist(): add argument 'alongPath'
 * remove compilation warning about doc for summary.ctd()
 
-0.8-1
+## 0.8-1
 
 * switch to S4 classes, and add new accessors and 'show' functions.
 * add support for RBR 'rsk' files
 * plot.section() now uses 'col' if supplied
 
-0.7-1
+## 0.7-1
 
 * improve oce.colorsJet()
 * improve plotProfile() vertical range with missing data
@@ -463,7 +467,7 @@
 * fix bugs reported in issues 150, 151, 153, 155, 156
 * imagep(): change default drawContours to FALSE
 
-0.6-1
+## 0.6-1
 
 * add 'adv' dataset
 * generalize swN2() by adding new arg 'derivs'
@@ -472,14 +476,14 @@
 * rename to plotTS() and plotScan() to avoid S3 check warnings
 * switch makeFilter's argument asKernel to TRUE
 
-0.5-1
+## 0.5-1
 
 * add support for ARGO drifters
 * latitude() and longitude(): new argument to repeat byDepth
 * addCtdColumn(): replace if column already exists
 * add CTD accessors for lat, lon, pressure, salinity, temperature
 
-0.4-1
+## 0.4-1
 
 * plot.sealevel(): only show 3 panels, for clarity
 * plot.ctd(): add argument 'type'
@@ -488,7 +492,7 @@
 * read.adv.nortek(): handle extra analog data
 * add CTD accessors longitude(), latitude(), time(), elevation(), etc
 
-0.3-1
+## 0.3-1
 
 * add read.oce.odf()
 * add findInOrdered
@@ -504,13 +508,13 @@
 * flatten data objects to be 1 level thick (for future matlab exports)
 * add threenum() added, and use it in all summaries (for speed)
 
-0.2-3
+## 0.2-3
 
 * head.adp() added
 * tail.adp() added
 * extract() added
 
-0.2-2
+## 0.2-2
 
 * velocityStatistics() added
 * new names: oceApprox() integerToAscii() rangeLimit() ctdRaw
@@ -518,11 +522,11 @@
 * numberAsPOSIXct(): add type 'argos'
 * rename beamAttenuateAdp() as beamUnattenuateAdp()
 
-0.2-1
+## 0.2-1
 
 * camel-case function and argument names (and the NEWS file)
 
-0.1-83
+## 0.1-83
 
 * add binAverage()
 * fillGap(): add 'rule' argument (analogous to same for approx())
@@ -532,7 +536,7 @@
 * read.adp.rdi() uses checksums
 * number.as.POSIXct(type="gps"): account for leap seconds
 
-0.1-82
+## 0.1-82
 
 * remove warning that occurs for R 2.13.0 (alpha)
 * number.as.POSIXct(): accept GPS times
@@ -569,7 +573,7 @@
 * plot.ctd() and plot.profile(): add 'use.smoothScatter' argument
 * coriolis(): improve omega value
 
-0.1-81
+## 0.1-81
 
 * add despike()
 * add range.limit()
@@ -604,24 +608,24 @@
   mismatched x and y]
 * fix google-code issue 52 [plot.section() draws incorrect bottom shape]
 
-0.1-80
+## 0.1-80
 
 * add sun.angle [not tested yet; needs R reformulation]
 * fix google-code issue 51 [summary.section() does not report water depth]
 * fix google-code issue 50 [non-bug relating to sun elevation]
 * fix google-code issue 49 [demo(TS) broken]
 
-0.1-79
+## 0.1-79
 
 * fix google-code issue 48 [oce.plot.sticks() ignored page ratio]
 * fix google-code issue 47 [cannot read new MEDS sealevel format]
 
-0.1-78
+## 0.1-78
 
 * add data(RRprofile)
 * to plot.TS(), add arguments lwd.rho and lty.rho
 
-0.1-77
+## 0.1-77
 
 * refactor adp code wrt transformation matrices
 * add matrix.smooth()
@@ -652,7 +656,7 @@
 * rework summary() for all existing objects
 * as.sealevel(): rename sampling.interval as deltat
 
-0.1-76
+## 0.1-76
 
 * sw.N2(): make it tolerate NAs; adjust df to make result smoother
 * add makeFilter()
@@ -669,7 +673,7 @@
 * add oce.write.table()
 * add fillGap()
 
-0.1-75
+## 0.1-75
 
 * add addColumn()
 * add undriftTime()
@@ -696,7 +700,7 @@
     http://code.google.com/p/r-oce/issues/detail?id=36
 * rename rbrpt functions to tdr functions, improving generality
 
-0.1.74
+## 0.1.74
 
 * add argument "src" to as.ctd()
   http://code.google.com/p/r-oce/issues/detail?id=22
@@ -715,7 +719,7 @@
 * give plot.section() ability to control contour levels and labels
 * give plot.section() tics for station-location
 
-0.1.73
+## 0.1.73
 
 * plot.topo() narrows autoscale to xlim-ylim region, if provided
 * add plot.ctd() 'textpanel' option, and put the profiles in the same row
@@ -730,11 +734,11 @@
 * fix bug in size of salinity axis label for plot.ctd()
 * use pch=21 for TS plots (so data density is more visible)
 
-0.1.72
+## 0.1.72
 
 * add interp.barnes()
 
-0.1.71
+## 0.1.71
 
 * fix bug in makeSection (ignored the list, if a list provided)
   http://code.google.com/p/r-oce/issues/detail?id=18&q=label:Type-Defect
@@ -744,7 +748,7 @@
 * add gebcoColors() ... renamed oce.colorsGebco() in version 0.1.77
 * make plot.section() check that pressures coincide
 
-0.1.70
+## 0.1.70
 
 * plot.TS(): make isopycnal list work better for nearly-fresh water
 * trimCtd(): improve equilibration-phase deletion
@@ -762,7 +766,7 @@
 * make all objects inherit from a new class "oce"
 * fix google-code issue 12: read.sealevel() had a hard-wired filename
 
-0.1.69
+## 0.1.69
 
 * modify documentation slightly
 * start a migration to more uniform object structures
@@ -777,25 +781,25 @@
 * add "station" item to "ctd" object
 * change as.CTD() to produce sigma.theta instead of sigma
 
-0.1.68
+## 0.1.68
 
 * add coastline.world; increase resolution of coastline.maritimes
 * plot.TS() no longer rotates the RH margin isopycnal labels
 
-0.1.67
+## 0.1.67
 
 * allow swRho() and similar take matrices as arguments for S, T, etc
 
-0.1.66
+## 0.1.66
 
 * fix bug in plot.TS() that prevented it from showing some isopycnals
 
-0.1.65
+## 0.1.65
 
 * switch to UNESCO formulation for sw potential temperature by default
 * prevent warnings with C90 compiler on some machines
 
-0.1.64
+## 0.1.64
 
 * add read.oce(), a generic function for reading several oceanographic files
 * make read.ctd() understand WOCE-exchange files
@@ -812,274 +816,275 @@
 * add plot.section()
 * add data(section)
 
-0.1.63
+## 0.1.63
 
 * add swSoundSpeed()
 
-0.1.62
+## 0.1.62
 
 * add historyAppend() (later named processingLogAppend()) and related code
 * improve ctdTrim()
 
-0.1.61
+## 0.1.61
 
 * add rudimentary read/summary/plot functions for lobo datasets
 
-0.1.60
+## 0.1.60
 
 * add vignette; address some build-stage warning messages
 
-0.1.59
+## 0.1.59
 
 * set up data files to permit latin1 encoding of some content
 
-0.1.58
+## 0.1.58
 
 * rename all seawater-related functions to e.g. swTheta(), to allow
   for atmospheric analogs
 
-0.1.57
+## 0.1.57
 
 * make as.CTD() accept length(p)=1, e.g. for surface plots
 
-0.1.56
+## 0.1.56
 
 * make read.coastline() handle S files
 
-0.1.55
+## 0.1.55
 
 * keep swTheta() from complaining if length(p) = 1
 
-0.1.54
+## 0.1.54
 
 * add swAlpha() and swBeta()
 
-0.1.53
+## 0.1.53
 
 * add swAlphaOverBeta()
 
-0.1.52
+## 0.1.52
 
 * document the use of df in swN2(), plot.ctd(), etc.
 
-0.1.51
+## 0.1.51
 
 * permit swRho() (and similar) to take NAs in args (bug B32)
 
-0.1.50
+## 0.1.50
 
 * permit swRho() and descendants to take scalar pressure.
 
-0.1.49
+## 0.1.49
 
 * add as.CTD()
 
-0.1.48
+## 0.1.48
 
 * add "UNESCO1983" formulation to swTheta() as an alternative
 
-0.1.47
+## 0.1.47
 
 * speed up swTheta() by moving vector work from R to C
 
-0.1.46
+## 0.1.46
 
 * make geodDist() accept a vector for location 1 and a scalar for location 2
 
-0.1.45
+## 0.1.45
 
 * make read.coastline() understand matlab and Splus formats
 
-0.1.44
+## 0.1.44
 
 * make plot.coastline() scale lat and lon correctly
 
-0.1.43
+## 0.1.43
 
 * add read.coastline(), summary.coastline(), and plot.coastline()
 
-0.1.42
+## 0.1.42
 
 * add as.sealevel()
 
-0.1.41
+## 0.1.41
 
 * add read.sealevel(), summary.sealevel(), and plot.sealevel()
 
-0.1.40
+## 0.1.40
 
 * add name option to plot.ctd.scan()
 
-0.1.39
+## 0.1.39
 
 * add lapse.rate()
 
-0.1.38
+## 0.1.38
 
 * fix B27 (header not updated for columns added during read.ctd)
 
-0.1.37
+## 0.1.37
 
 * rename as ctdTrim()
 * rename to ctdWrite()
 
-0.1.36
+## 0.1.36
 
 * add write.ctd()
 * add ctdAddColumn()
 * add ctdUpdateHeader()
 
-0.1.35
+## 0.1.35
 
 * add plot.ctd.scan()
 
-0.1.34
+## 0.1.34
 
 * make read.ctd() calculate S if missing but C, T, and p are given
 * add swSCTp()
 
-0.1.33
+## 0.1.33
 
 * add swConductivity()
 
-0.1.32
+## 0.1.32
 
 * rename to swRho()
 
-0.1.31
+## 0.1.31
 
 * use namespace
 
-0.1.30
+## 0.1.30
 
 * add oce.viscosity()
 
-0.1.29
+## 0.1.29
 
 * fix B23 (not done yet)
 * fix B22 (not done within oce; done at system level)
 
-0.1.28
+## 0.1.28
 
 * add pressure method to trimCtd()
 
-0.1.27
+## 0.1.27
 
 * vectorize swRho() since it was too slow on large datasets
 
-0.1.26
+## 0.1.26
 
 * make demo(oce.ctd) print data
 
-0.1.25
+## 0.1.25
 
 * fix some documentation errors that the 2.0.0 CHECK noticed
 
-0.1.24
+## 0.1.24
 
 * profiles have correct y-axis
 * OSX port, but must first do e.g. export PKG_LIBS="-L/sw/lib"
 
-0.1.23
+## 0.1.23
 
 * OSX port (you must first do export PKG_LIBS="-L/sw/lib")
 
-0.1.22
+## 0.1.22
 
 * add trim.ctd()
 
-0.1.21
+## 0.1.21
 
 * permit lat/lon with the "N"-type indicator at start
 
-0.1.20
+## 0.1.20
 
 * fix bug B16 (label the isopycnals on TS diagram)
 
-0.1.19
+## 0.1.19
 
 * make read.ctd handle more file types
 
-0.1.18
+## 0.1.18
 
 * add oceCoriolis, oceDepth, oceGravity, oceTFreeze
 
-0.1.17
+## 0.1.17
 
 * add oceSpecificHeat oce.N2; fix bug B18
 
-0.1.16
+## 0.1.16
 
 * get data(ctd) working
 
-0.1.15
+## 0.1.15
 
 * add oceSTRho
 
-0.1.14
+## 0.1.14
 
 * fix bug B15 (maybe)
 
-0.1.13
+## 0.1.13
 
 * add oceTSRho
 
-0.1.12
+## 0.1.12
 
 * fix bugs B10, B11, and B13
 
-0.1.11
+## 0.1.11
 
 * fix bugs B6, B7, and B12
 
-0.1.10
+## 0.1.10
 
 * add geodDist()
 * add plot.ctd(), which is rudimentary for now
 * fix bug B8
 
-0.1.9
+## 0.1.9
 
 * add spice() function
 
-0.1.8
+## 0.1.8
 
 * permit all eos functions to handle missing values
 * fix bug B4
 
-0.1.7
+## 0.1.7
 
 * add summary(ctd) method.
 * make read.ctd() return an object of type ctd.
 * get tests/ working.
 
-0.1.6
+## 0.1.6
 
 * create tests/oce.test1.R
 
-0.1.5
+## 0.1.5
 
 * add oceSigma(), oceSigmaT(), oceSigmaTheta()
 
-0.1.4
+## 0.1.4
 
 * permit various EOS functions to handle lists
 * fix bug B3
 
-0.1.3
+## 0.1.3
 
 * add ocerho()
 
-0.1.2
+## 0.1.2
 
 * fix file-path bug
 * fix bug B2
 
-0.1.1
+## 0.1.1
 
 * add theta()
 * fix bug B1
 
-0.1.0
+## 0.1.0
 
 * add read.ctd()
+
