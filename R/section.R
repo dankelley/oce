@@ -3267,6 +3267,16 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
 #'
 #' @return A [section-class] object with a spine added.
 #'
+#' @examples
+#' library(oce)
+#' data(section)
+#' sectionWest <- subset(section, longitude < -60)
+#' spine <- list(longitude=c(-77, -69.2, -55), latitude=c(39.7, 36.25, 36.25))
+#' s <- addSpine(sectionWest, spine)
+#' par(mfrow=c(2, 1))
+#' plot(s, xtype="distance", which="temperature")
+#' plot(s, xtype="spine", which="temperature")
+#'
 #' @author Dan Kelley
 addSpine <- function(section, spine, debug=getOption("oceDebug"))
 {
