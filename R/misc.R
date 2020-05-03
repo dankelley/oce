@@ -2390,7 +2390,9 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
                      "oxygen", "oxygen saturation", "oxygen mL/L", "oxygen umol/L", "oxygen umol/kg",
                      "phosphate", "silicate", "tritium", "spice",
                      "fluorescence", "p", "z", "distance", "distance km",
-                     "along-track distance km", "heading", "pitch", "roll", "u",
+                     "along-spine distance km",
+                     "along-track distance km",
+                     "heading", "pitch", "roll", "u",
                      "v", "w", "speed", "direction", "eastward", "northward",
                      "depth", "elevation", "latitude", "longitude", "frequency cph",
                      "sound speed", "spectral density m2/cph")
@@ -2583,6 +2585,9 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
         abbreviated <- full <- bquote(.(var)*.(L)*m*.(R))
     } else if (item == "distance km") {
         var <- gettext("Distance", domain="R-oce")
+        abbreviated <- full <- bquote(.(var)*.(L)*km*.(R))
+    } else if (item == "along-spine distance km") {
+        var <- gettext("Along-spine Distance", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*km*.(R))
     } else if (item == "along-track distance km") {
         var <- gettext("Along-track Distance", domain="R-oce")

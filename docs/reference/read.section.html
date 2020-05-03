@@ -214,8 +214,13 @@ provided, the section ID is determined by examination of the file header.</p></t
     </tr>
     <tr>
       <th>debug</th>
-      <td><p>Logical. If <code>TRUE</code>, print some information that might be
-helpful during debugging.</p></td>
+      <td><p>an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many <code>oce</code> functions. Generally, setting <code>debug=0</code>
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+<code>debug</code> first, so that a user can often obtain deeper debugging
+by specifying higher <code>debug</code> values.</p></td>
     </tr>
     <tr>
       <th>processingLog</th>

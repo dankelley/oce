@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Read a Sippican '.edf' format xbt file — read.xbt.edf • oce</title>
+<title>Add a spine to a section object — addSpine • oce</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,10 @@
 
 
 
-<meta property="og:title" content="Read a Sippican '.edf' format xbt file — read.xbt.edf" />
-<meta property="og:description" content="The function was written by inspection of a particular file, and might
-be wrong for other files; see &amp;#8220;Details&amp;#8221; for a note on character
-translation." />
+<meta property="og:title" content="Add a spine to a section object — addSpine" />
+<meta property="og:description" content="The purpose of this is to permit plotting with xtype=&quot;spine&quot;, so that
+the section plot will display the distance of stations projected
+onto the spine." />
 
 
 
@@ -140,91 +140,56 @@ translation." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Read a Sippican '.edf' format xbt file</h1>
-    <small class="dont-index">Source: <a href='https://github.com/dankelley/oce/blob/master/R/xbt.R'><code>R/xbt.R</code></a></small>
-    <div class="hidden name"><code>read.xbt.edf.Rd</code></div>
+    <h1>Add a spine to a section object</h1>
+    <small class="dont-index">Source: <a href='https://github.com/dankelley/oce/blob/master/R/section.R'><code>R/section.R</code></a></small>
+    <div class="hidden name"><code>addSpine.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The function was written by inspection of a particular file, and might
-be wrong for other files; see &#8220;Details&#8221; for a note on character
-translation.</p>
+    <p>The purpose of this is to permit plotting with <code>xtype="spine"</code>, so that
+the section plot will display the distance of stations projected
+onto the spine.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>read.xbt.edf</span>(
-  <span class='no'>file</span>,
-  <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>),
-  <span class='no'>processingLog</span>
-)</pre>
+    <pre class="usage"><span class='fu'>addSpine</span>(<span class='no'>section</span>, <span class='no'>spine</span>, <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>))</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>file</th>
-      <td><p>a connection or a character string giving the name of the file to
-load.</p></td>
+      <th>section</th>
+      <td><p>a <a href='section-class.html'>section</a> object.</p></td>
     </tr>
     <tr>
-      <th>longitude</th>
-      <td><p>optional signed number indicating the longitude in degrees
-East.</p></td>
-    </tr>
-    <tr>
-      <th>latitude</th>
-      <td><p>optional signed number indicating the latitude in degrees North.</p></td>
+      <th>spine</th>
+      <td><p>either a list or a data frame, containing numeric items named
+<code>longitude</code> and <code>latitude</code>, defining a path along the spine.</p></td>
     </tr>
     <tr>
       <th>debug</th>
-      <td><p>a flag that turns on debugging.  The value indicates the depth
-within the call stack to which debugging applies.</p></td>
-    </tr>
-    <tr>
-      <th>processingLog</th>
-      <td><p>if provided, the action item to be stored in the log.  This
-parameter is typically only provided for internal calls; the default that it
-provides is better for normal calls by a user.</p></td>
+      <td><p>an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many <code>oce</code> functions. Generally, setting <code>debug=0</code>
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+<code>debug</code> first, so that a user can often obtain deeper debugging
+by specifying higher <code>debug</code> values.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An <a href='xbt-class.html'>xbt</a> object.</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>The header is converted to ASCII format prior to storage in
-the <code>metadata</code> slot, so that e.g. a degree sign in the original file will
-become a <code>?</code> character in the <code>header</code>.  This is to prevent problems
-with submission of <code>oce</code> to the CRAN system, which produces NOTEs
-about UTF-8 strings in data (on some build machines, evidently depending
-on the locale on those machines).  This character substitution
-is at odds with the <code>oce</code> philosophy of leaving data intact, so
-it will be reverted, if CRAN policy changes or if the developers
-can find a way to otherwise silence the NOTE.</p>
+    <p>A <a href='section-class.html'>section</a> object with a spine added.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='no'>xbt</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='read.oce.html'>read.oce</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"xbt.edf"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"oce"</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>xbt</span>)</div><div class='output co'>#&gt; xbt summary
-#&gt; -----------
-#&gt; 
-#&gt; * File source:        "/private/var/folders/rx/k1x_t_q12zb9hbjr4ldxmjc80000gn/T/RtmpE86Im4/temp_libpathe2b05344d4aa/oce/extdata/xbt.edf"
-#&gt; * Serial Number:      0
-#&gt; * Longitude:          4.005
-#&gt; * Latitude:           -4
-#&gt; * Time:               2000-10-10 08:49:38
-#&gt; * Data Overview
-#&gt; 
-#&gt;                                Min.   Mean   Max. Dim. NAs   OriginalName
-#&gt;     depth [m]                   5.4 7.0333    8.7    6   0          Depth
-#&gt;     temperature [°C, ITS-90]   20.9 20.905  20.91    6   0    Temperature
-#&gt;     soundSpeed [m/s]         1575.3 1575.3 1575.4    6   0 Sound Velocity
-#&gt; 
-#&gt; * Processing Log
-#&gt;     - 2020-05-03 19:04:36 UTC: `create 'xbt' object`
-#&gt;     - 2020-05-03 19:04:36 UTC: `read.xbt.edf(file = file)`</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>xbt</span>)</div><div class='img'><img src='read.xbt.edf-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>section</span>)
+<span class='no'>sectionWest</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>section</span>, <span class='no'>longitude</span> <span class='kw'>&lt;</span> -<span class='fl'>60</span>)
+<span class='no'>spine</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>longitude</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>77</span>, -<span class='fl'>69.2</span>, -<span class='fl'>55</span>), <span class='kw'>latitude</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>39.7</span>, <span class='fl'>36.25</span>, <span class='fl'>36.25</span>))
+<span class='no'>s</span> <span class='kw'>&lt;-</span> <span class='fu'>addSpine</span>(<span class='no'>sectionWest</span>, <span class='no'>spine</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>))
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>s</span>, <span class='kw'>xtype</span><span class='kw'>=</span><span class='st'>"distance"</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"temperature"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>s</span>, <span class='kw'>xtype</span><span class='kw'>=</span><span class='st'>"spine"</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"temperature"</span>)</div><div class='img'><img src='addSpine-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
