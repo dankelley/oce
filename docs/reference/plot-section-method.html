@@ -291,9 +291,10 @@ the mean latitude exceeds 70N and <code>mollweide</code> otherwise.</p></td>
       <th>xtype</th>
       <td><p>Type of x axis, for contour plots, either <code>"distance"</code> for
 distance (in km) to the first point in the section, <code>"track"</code> for distance
-along the cruise track, <code>"longitude"</code>, <code>"latitude"</code>, or
-<code>"time"</code>.  Note that if the x values are not in order, they will be put in
-order (which may make no sense) and a warning will be printed.</p></td>
+along the cruise track, <code>"longitude"</code>, <code>"latitude"</code>,
+<code>"time"</code> or <code>"spine"</code> (distance along a spine that was added
+with <code><a href='addSpine.html'>addSpine()</a></code>).  Note that if the x values are not in order, they will be put in
+order, and since tha might not make physical sense, a warning will be issued.</p></td>
     </tr>
     <tr>
       <th>ytype</th>
