@@ -110,9 +110,10 @@ the mean latitude exceeds 70N and \code{mollweide} otherwise.}
 
 \item{xtype}{Type of x axis, for contour plots, either \code{"distance"} for
 distance (in km) to the first point in the section, \code{"track"} for distance
-along the cruise track, \code{"longitude"}, \code{"latitude"}, or
-\code{"time"}.  Note that if the x values are not in order, they will be put in
-order (which may make no sense) and a warning will be printed.}
+along the cruise track, \code{"longitude"}, \code{"latitude"},
+\code{"time"} or \code{"spine"} (distance along a spine that was added
+with \code{\link[=addSpine]{addSpine()}}).  Note that if the x values are not in order, they will be put in
+order, and since tha might not make physical sense, a warning will be issued.}
 
 \item{ytype}{Type of y axis for contour plots, either \code{"pressure"} for
 pressure (in dbar, with zero at the surface) or \code{"depth"} for depth (in m

@@ -15,11 +15,10 @@ Sections can be read with \code{\link[=read.section]{read.section()}} or created
 
 Sections may be sorted with \code{\link[=sectionSort]{sectionSort()}}, subsetted with
 \code{\link[=subset,section-method]{subset,section-method()}}, smoothed with \code{\link[=sectionSmooth]{sectionSmooth()}}, and
-gridded with \code{\link[=sectionGrid]{sectionGrid()}}.  Gridded sections may be plotted with
-\code{\link[=plot,section-method]{plot,section-method()}}.
-
-Statistical summaries are provided by \code{\link[=summary,section-method]{summary,section-method()}}, while
-overviews are provided by \code{show}.
+gridded with \code{\link[=sectionGrid]{sectionGrid()}}.  A "spine" may be added to a section
+with \code{\link[=addSpine]{addSpine()}}.  Sections may be summarized with
+\code{\link[=summary,section-method]{summary,section-method()}} and plotted
+with \code{\link[=plot,section-method]{plot,section-method()}}.
 
 The sample dataset \code{\link[=section]{section()}} contains data along WOCE line A03.
 }
