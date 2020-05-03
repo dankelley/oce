@@ -2,6 +2,7 @@
 
 ## 1.2.1
 
+* Add `addSpine()`.
 * Update reader-oriented website on github.
 * Extend `read.ctd.sbe()` to read `.btl` files.
 * Extend `read.adp.rdi()` to read 38kHz RDI adp files.

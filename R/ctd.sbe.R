@@ -1099,11 +1099,9 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploym
         lastLine <- length(lines)
         iodd <- seq(dataHeaderStartLine + 2, lastLine, 2)
         ieven <- seq(dataHeaderStartLine + 3, lastLine, 2)
-        oddLines <- lines[iodd]
         ## Check that we have the rows interpreted correctly by examining the final column.
         if (any(!grepl("^.*\\(avg\\)$", lines[iodd])))
             stop("odd-numbered data lines in .btl files must end with `(avg)`, but lines ", paste(grep("(avg)$", lines[iodd], invert=TRUE), collapse=","), " do not")
-        evenLines <- lines[ieven]
         if (any(!grepl("^.*\\(sdev\\)$", lines[ieven])))
             stop("even-numbered data lines in .btl files must end with `(sdev)`, but lines ", paste(grep("(sdev)$", lines[ieven], invert=TRUE), collapse=","), " do not")
         ## It's a multistep process, working with this odd paired-line format.  We

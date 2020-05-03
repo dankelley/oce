@@ -11,11 +11,10 @@
 #'
 #' Sections may be sorted with [sectionSort()], subsetted with
 #' [subset,section-method()], smoothed with [sectionSmooth()], and
-#' gridded with [sectionGrid()].  Gridded sections may be plotted with
-#' [plot,section-method()].
-#'
-#' Statistical summaries are provided by [summary,section-method()], while
-#' overviews are provided by `show`.
+#' gridded with [sectionGrid()].  A "spine" may be added to a section
+#' with [addSpine()].  Sections may be summarized with
+#' [summary,section-method()] and plotted
+#' with [plot,section-method()].
 #'
 #' The sample dataset [section()] contains data along WOCE line A03.
 #'
@@ -208,7 +207,7 @@ setMethod(f="summary",
               cat("* ID:     \"", object@metadata$sectionId, "\"\n", sep="")
               ##stn.sum <- matrix(nrow=numStations, ncol=5)
               if (numStations > 0) {
-                  cat("Overview of stations\n```\n")
+                  cat("* Overview of stations\n")
                   cat(sprintf("%5s %5s %8s %8s %7s %5s\n", "Index", "ID", "Lon", "Lat", "Levels", "Depth"))
                   for (i in seq_len(numStations)) {
                       ##stn <- object@data$station[[i]]
@@ -217,12 +216,11 @@ setMethod(f="summary",
                           thisStn@metadata$station else ""
                       depth <- if (!is.finite(thisStn@metadata$waterDepth) || 0 == thisStn@metadata$waterDepth)
                           max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
-                      cat(sprintf("%5d %5s %8.3f %8.3f %7.0f %5.0f\n",
+                      cat(sprintf("%5d %5s %8.4f %8.4f %7.0f %5.0f\n",
                                   i, id,
                                   thisStn[["longitude"]][1], thisStn[["latitude"]][1],
                                   length(thisStn@data$pressure), depth))
                   }
-                  cat("```\n")
                   names <- names(object@data$station[[1]]@metadata$flags)
                   if (!is.null(names)) {
                       cat("* Data-quality flags\n")
@@ -247,6 +245,19 @@ setMethod(f="summary",
                   }
               } else {
                   cat("* No stations\n")
+              }
+              if ("spine" %in% names(object@metadata)) {
+                  if (2 == length(object@metadata$spine) &&
+                      2 == sum(c("latitude", "longitude") %in% names(object@metadata$spine))) {
+                      spine <- object@metadata$spine
+                      cat("* Section spine\n")
+                      cat(sprintf("    %8s %8s\n", "Lon", "Lat"))
+                      for (i in seq_along(spine$longitude)) {
+                          cat(sprintf("    %8.4f %8.4f\n", spine$longitude[i], spine$latitude[i]))
+                      }
+                  } else {
+                      warning("malformed section spine")
+                  }
               }
               processingLogShow(object)
               invisible()
@@ -845,8 +856,8 @@ sectionSort <- function(section, by)
     if (missing(by)) {
         by <- "stationId"
     } else {
-        byChoices <- c("stationId", "distance", "longitude", "latitude", "time")
-        iby <- pmatch(by, byChoices, nomatch=0)
+        byChoices <- c("stationId", "distance", "longitude", "latitude", "time", "spine")
+        iby <- match(by, byChoices, nomatch=0)
         if (0 == iby)
             stop('unknown by value "', by, '"; should be one of: ', paste(byChoices, collapse=" "))
         by <- byChoices[iby]
@@ -864,6 +875,8 @@ sectionSort <- function(section, by)
         ## FIXME: should check to see if startTime exists first?
         times <- unlist(lapply(section@data$station, function(x) x@metadata$startTime))
         o <- order(times)
+    } else if (by == "spine") {
+        stop("not implemented for spine")
     } else {
         o <- seq_along(section[["station"]]) ## cannot ever get here, actually
     }
@@ -1022,9 +1035,10 @@ sectionAddCtd <- sectionAddStation
 #'
 #' @param xtype Type of x axis, for contour plots, either `"distance"` for
 #' distance (in km) to the first point in the section, `"track"` for distance
-#' along the cruise track, `"longitude"`, `"latitude"`, or
-#' `"time"`.  Note that if the x values are not in order, they will be put in
-#' order (which may make no sense) and a warning will be printed.
+#' along the cruise track, `"longitude"`, `"latitude"`,
+#' `"time"` or `"spine"` (distance along a spine that was added
+#' with [addSpine()]).  Note that if the x values are not in order, they will be put in
+#' order, and since tha might not make physical sense, a warning will be issued.
 #'
 #' @param longitude0,latitude0 Location of the point from which distance is measured.
 #' These values are ignored unless `xtype` is `"distance"`.
@@ -1212,7 +1226,7 @@ setMethod(f="plot",
               debug <- if (debug > 4) 4 else floor(0.5 + debug)
               if (missing(eos))
                   eos <- getOption("oceEOS", default="gsw")
-              xtype <- match.arg(xtype, c("distance", "track", "longitude", "latitude", "time"))
+              xtype <- match.arg(xtype, c("distance", "track", "longitude", "latitude", "time", "spine"))
               ytype <- match.arg(ytype, c("depth", "pressure"))
               ztype <- match.arg(ztype, c("contour", "image", "points"))
               drawPoints <- ztype == "points"
@@ -1305,6 +1319,7 @@ setMethod(f="plot",
               {
                   oceDebug(debug, "plotSubsection(variable=\"", variable,
                            "\", eos=\"", eos,
+                           "\", which.xtype=\"", which.xtype,
                            "\", ztype=\"", ztype,
                            "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
                            "\", span=", if (missing(span)) "(missing)" else span,
@@ -1476,7 +1491,7 @@ setMethod(f="plot",
                       ##> message("zAllMissing=", zAllMissing)
                       ##> message("drawPoints=", drawPoints)
                       ##> message("ztype='", ztype, "'")
-                      if ( (drawPoints || ztype == "image") && !zAllMissing ) {
+                      if ((drawPoints || ztype == "image") && !zAllMissing) {
                           ##> message("is.null(zbreaks)=", is.null(zbreaks))
                           if (is.null(zbreaks)) {
                               if (is.null(zlim)) {
@@ -1528,7 +1543,8 @@ setMethod(f="plot",
                                              resizableLabel("along-track distance km"),
                                              gettext("Longitude", domain="R-oce"),
                                              gettext("Latitude", domain="R-oce"),
-                                             gettext("Time", domain="R-oce"))
+                                             gettext("Time", domain="R-oce"),
+                                             resizableLabel("along-spine distance km"))
                           }
                           plot(xxrange, yyrange,
                                xaxs="i", yaxs="i",
@@ -1839,13 +1855,11 @@ setMethod(f="plot",
                   par(mar=omar)
                   oceDebug(debug, "} # plotSubsection()\n", unindent=1)
               }                        # plotSubsection()
-              ##if (!inherits(x, "section"))
-              ##    stop("method is only for objects of class '", "section", "'")
               opar <- par(no.readonly = TRUE)
               if (length(which) > 1) on.exit(par(opar))
-              which.xtype <- pmatch(xtype, c("distance", "track", "longitude", "latitude", "time"), nomatch=0)
+              which.xtype <- match(xtype, c("distance", "track", "longitude", "latitude", "time", "spine"), nomatch=0)
               if (0 == which.xtype)
-                  stop('xtype must be one of: "distance", "track", "longitude", "latitude" or "time"')
+                  stop('xtype must be one of: "distance", "track", "longitude", "latitude", "time", or "spine", not "', xtype, '" as provided')
               which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
               if (missing(stationIndices)) {
                   numStations <- length(x@data$station)
@@ -1881,11 +1895,11 @@ setMethod(f="plot",
                                                             mean(x@data$station[[j]][["longitude"]], na.rm=TRUE),
                                                             mean(x@data$station[[j]][["latitude"]], na.rm=TRUE))
                           }
-                      } else if (which.xtype == 3) {
+                      } else if (which.xtype == 3) { # longitude
                           xx[ix] <- mean(x@data$station[[j]][["longitude"]], na.rm=TRUE)
-                      } else if (which.xtype == 4) {
+                      } else if (which.xtype == 4) { # latitude
                           xx[ix] <- mean(x@data$station[[j]][["latitude"]], na.rm=TRUE)
-                      } else if (which.xtype == 5) {
+                      } else if (which.xtype == 5) { # time
                           ## use ix as a desparate last measure, if there are no times.
                           if (!is.null(x@data$station[[j]]@metadata$startTime)) {
                               xx[ix] <- as.POSIXct(x@data$station[[j]]@metadata$startTime)
@@ -1897,16 +1911,44 @@ setMethod(f="plot",
                                   warning("In plot,section-method() :\n  section stations do not contain startTime; using integers for time axis",
                                           call.=FALSE)
                           }
-                      } else {
-                          stop('unknown xtype; it must be one of: "distance", "track", "longitude", "latitude", or "time"')
                       }
                   }
               } else {
                   xx <- at
               }
               ##> message("which.xtype: ", which.xtype)
-              if (which.xtype==5)
+              if (which.xtype == 5) {
                   xx <- numberAsPOSIXct(xx)
+              } else if (which.xtype == 6) {
+                  ## see https://github.com/dankelley/oce-issues/blob/master/16xx/1678
+                  if (!("spine" %in% names(x@metadata))) {
+                      stop("In plot,section-metod() :\n  this section has no spine; use addSpine() to add a spine", call.=FALSE)
+                  }
+                  spine <- x@metadata$spine
+                  ## Parametric lon=lon(s), at=lat(s)
+                  s <- seq(0, 1, length.out=length(spine$longitude))
+                  lonfun <- approxfun(spine$longitude ~ s)
+                  latfun <- approxfun(spine$latitude ~ s)
+                  ## Create many points on the spine
+                  spineSegments <- 1000
+                  ss <- seq(0, 1, length.out=spineSegments)
+                  stnLon <- x[["longitude", "byStation"]]
+                  stnLat <- x[["latitude", "byStation"]]
+                  closest <- rep(NA, length=length(stnLon))
+                  ## find distance (used in following loop; uses global 'i')
+                  for (i in seq_along(stnLon)) {
+                      closest[i] <- which.min(sapply(ss,
+                                                     function(t) {
+                                                         lonSpine <- lonfun(t)
+                                                         latSpine <- latfun(t)
+                                                         geodDist(lonSpine, latSpine, stnLon[i], stnLat[i])
+                                                     }))
+                  }
+                  ## Map points back to the spine
+                  longitudeRemapped <- lonfun(ss[closest])
+                  latitudeRemapped <- latfun(ss[closest])
+                  xx <- geodDist(longitudeRemapped, latitudeRemapped, alongPath=TRUE)
+              }
               ## Grid is regular (so need only first station) unless which=="data"
               ## FIXME: why checking just first which[] value?
               if (which.ytype == 1) {
@@ -2075,8 +2117,7 @@ setMethod(f="plot",
 #'
 #' @param missingValue Numerical value used to indicate missing data.
 #'
-#' @param debug Logical. If `TRUE`, print some information that might be
-#' helpful during debugging.
+#' @template debugTemplate
 #'
 #' @param processingLog If provided, the action item to be stored in the log.  This
 #' is typically only provided for internal calls; the default that it provides is
@@ -3212,3 +3253,52 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
+
+#' Add a spine to a section object
+#'
+#' The purpose of this is to permit plotting with `xtype="spine"`, so that
+#' the section plot will display the distance of stations projected
+#' onto the spine.
+#'
+#' @param section a [section-class] object.
+#' @param spine either a list or a data frame, containing numeric items named
+#' `longitude` and `latitude`, defining a path along the spine.
+#' @template debugTemplate
+#'
+#' @return A [section-class] object with a spine added.
+#'
+#' @examples
+#' library(oce)
+#' data(section)
+#' sectionWest <- subset(section, longitude < -60)
+#' spine <- list(longitude=c(-77, -69.2, -55), latitude=c(39.7, 36.25, 36.25))
+#' s <- addSpine(sectionWest, spine)
+#' par(mfrow=c(2, 1))
+#' plot(s, xtype="distance", which="temperature")
+#' plot(s, xtype="spine", which="temperature")
+#'
+#' @author Dan Kelley
+addSpine <- function(section, spine, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "addSpine(..., spine=", argShow(spine), ") {\n", sep="", style="bold", unindent=1)
+    if (missing(section))
+        stop("must provide 'section' argument")
+    if (!inherits(section, "section"))
+        stop("'section' must be a section object, e.g. created by read.section() or as.section()")
+    if (missing(spine))
+        stop("must provide 'spine' argument")
+    res <- section
+    if (2 == length(spine) && 2 == sum(c("latitude", "longitude") %in% names(spine))) {
+        if (length(spine$longitude) != length(spine$latitude))
+            stop("unequal lengths of spine longitude (", length(spine$longitude),
+                 ") and latitude (", length(spine$latitude), ")")
+        if (length(spine$longitude) < 2)
+            stop("length of spine longitude must exceed 2, but it is ", length(spine$longitude))
+        res@metadata$spine <- spine
+    } else {
+        stop("'spine' must be a list or data frame containing two items, named 'longitude' and 'latitude'")
+    }
+    oceDebug(debug, "} # addSpine()\n", sep="", style="bold", unindent=1)
+    res
+}
+
