@@ -247,7 +247,7 @@ setMethod(f="summary",
                   cat("* No stations\n")
               }
               if ("spine" %in% names(object@metadata)) {
-                  if (2 == length(object@metadata$spine) && 
+                  if (2 == length(object@metadata$spine) &&
                       2 == sum(c("latitude", "longitude") %in% names(object@metadata$spine))) {
                       spine <- object@metadata$spine
                       cat("* Section spine\n")
@@ -1544,7 +1544,7 @@ setMethod(f="plot",
                                              gettext("Longitude", domain="R-oce"),
                                              gettext("Latitude", domain="R-oce"),
                                              gettext("Time", domain="R-oce"),
-                                             resizableLabel("along-track distance km"))
+                                             resizableLabel("along-spine distance km"))
                           }
                           plot(xxrange, yyrange,
                                xaxs="i", yaxs="i",
