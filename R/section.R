@@ -1087,6 +1087,20 @@ sectionAddCtd <- sectionAddStation
 #' in accordance with the resolution of the latitudes in the `topo` object.
 #' See \dQuote{Examples}.
 #'
+#' @param showBottom a value indicating whether (and how) to indicate the
+#' ocean bottom on cross-section views.  There are three possibilities.
+#' (a) If `showBottom` is `FALSE`, then the bottom is not rendered.  If it
+#' is `TRUE`, then the  bottom is rendered with a gray polygon.
+#' (b) If `showBottom` is the character value `"polygon"`, then a polygon is drawn,
+#' and similarly lines are drawn for `"lines"`, and points for `"points"`.
+#' (c) If `showBottom` is a [topo-class] object, then the station locations are
+#' interpolated to that topography and the results are shown with a polygon.
+#' See \dQuote{Examples}.
+#'
+#' @param showSpine logical value used if `which="map"`.  If `showSpine` is
+#' `TRUE` and `section` has had a spine added wih [addSpine()], then
+#' the spine is drawn in blue.
+#'
 #' @param drawPalette Logical value indicating whether to draw a palette when `ztype="image"`
 #' ignored otherwise.
 #'
@@ -1213,6 +1227,7 @@ setMethod(f="plot",
                               showStart=TRUE,
                               stationTicks=TRUE,
                               showBottom=TRUE,
+                              showSpine=TRUE,
                               drawPalette=TRUE,
                               axes=TRUE, mgp, mar,
                               col, cex, pch,
@@ -1421,12 +1436,15 @@ setMethod(f="plot",
                               oceDebug(debug, "using", projection, "projection (specified)\n")
                           }
                           mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim, projection=projection, col='gray')
+                          spine <- x[["spine"]]
+                          if (showSpine && !is.null(spine))
+                              mapLines(spine$longitude, spine$latitude, col="blue", lwd=1.4*par("lwd"))
                           mapPoints(x[['longitude', 'byStation']], x[['latitude', 'byStation']],
                                     col=col, pch=3, lwd=1/2)
                           if (xtype == "distance" && showStart) {
                               mapPoints(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
                           }
-                          return()
+                          return()     ## NOTE early return
                       } else {
                           if (!is.null(map.xlim)) {
                               map.xlim <- sort(map.xlim)
@@ -1460,6 +1478,10 @@ setMethod(f="plot",
                               lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
                           }
                       }
+                      spine <- x[["spine"]]
+                      if (showSpine && !is.null(spine))
+                          lines(spine$longitude, spine$latitude, col="blue", lwd=1.4*par("lwd"))
+
                       ## add station data
                       lines(lon, lat, col="lightgray")
                       ## replot with shifted longitude
@@ -3272,9 +3294,10 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
 #' data(section)
 #' sectionWest <- subset(section, longitude < -60)
 #' spine <- list(longitude=c(-77, -69.2, -55), latitude=c(39.7, 36.25, 36.25))
-#' s <- addSpine(sectionWest, spine)
-#' plot(s, xtype="distance", which="temperature")
-#' plot(s, xtype="spine", which="temperature")
+#' sectionWithSpine <- addSpine(sectionWest, spine)
+#' plot(sectionWithSpine, which="map")
+#' plot(sectionWithSpine, xtype="distance", which="temperature")
+#' plot(sectionWithSpine, xtype="spine", which="temperature")
 #'
 #' @author Dan Kelley
 addSpine <- function(section, spine, debug=getOption("oceDebug"))

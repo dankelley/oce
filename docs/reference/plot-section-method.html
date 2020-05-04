@@ -182,6 +182,7 @@ which." />
   <span class='kw'>showStart</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>stationTicks</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>showBottom</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>showSpine</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>drawPalette</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='no'>mgp</span>,
@@ -348,18 +349,21 @@ at this spot.</p></td>
     </tr>
     <tr>
       <th>showBottom</th>
-      <td><p>An indication of whether (and how) to indicate the ocean bottom.
-If <code>FALSE</code>, then the bottom is not rendered. If <code>TRUE</code>, then it
-is rendered with a gray polygon. If <code>showBottom</code> is a character string,
-then there are three possibilities: is the string is <code>"polygon"</code> then
-a polygon is drawn, if it is <code>"lines"</code> then a line is drawn, and if it
-is <code>"points"</code> then points are drawn. If <code>showBottom</code> is
-a <a href='topo-class.html'>topo</a> object,
-then the station locations are
+      <td><p>a value indicating whether (and how) to indicate the
+ocean bottom on cross-section views.  There are three possibilities.
+(a) If <code>showBottom</code> is <code>FALSE</code>, then the bottom is not rendered.  If it
+is <code>TRUE</code>, then the  bottom is rendered with a gray polygon.
+(b) If <code>showBottom</code> is the character value <code>"polygon"</code>, then a polygon is drawn,
+and similarly lines are drawn for <code>"lines"</code>, and points for <code>"points"</code>.
+(c) If <code>showBottom</code> is a <a href='topo-class.html'>topo</a> object, then the station locations are
 interpolated to that topography and the results are shown with a polygon.
-In this last case, the interpolation is set at a grid that is roughly
-in accordance with the resolution of the latitudes in the <code>topo</code> object.
 See &#8220;Examples&#8221;.</p></td>
+    </tr>
+    <tr>
+      <th>showSpine</th>
+      <td><p>logical value used if <code>which="map"</code>.  If <code>showSpine</code> is
+<code>TRUE</code> and <code>section</code> has had a spine added wih <code><a href='addSpine.html'>addSpine()</a></code>, then
+the spine is drawn in blue.</p></td>
     </tr>
     <tr>
       <th>drawPalette</th>

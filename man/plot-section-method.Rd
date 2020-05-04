@@ -37,6 +37,7 @@
   showStart = TRUE,
   stationTicks = TRUE,
   showBottom = TRUE,
+  showSpine = TRUE,
   drawPalette = TRUE,
   axes = TRUE,
   mgp,
@@ -149,18 +150,19 @@ locations with ticks at the top margin of cross-section plots. Setting this
 parameter to \code{FALSE} frees the user up to do their own labelling
 at this spot.}
 
-\item{showBottom}{An indication of whether (and how) to indicate the ocean bottom.
-If \code{FALSE}, then the bottom is not rendered. If \code{TRUE}, then it
-is rendered with a gray polygon. If \code{showBottom} is a character string,
-then there are three possibilities: is the string is \code{"polygon"} then
-a polygon is drawn, if it is \code{"lines"} then a line is drawn, and if it
-is \code{"points"} then points are drawn. If \code{showBottom} is
-a \linkS4class{topo} object,
-then the station locations are
+\item{showBottom}{a value indicating whether (and how) to indicate the
+ocean bottom on cross-section views.  There are three possibilities.
+(a) If \code{showBottom} is \code{FALSE}, then the bottom is not rendered.  If it
+is \code{TRUE}, then the  bottom is rendered with a gray polygon.
+(b) If \code{showBottom} is the character value \code{"polygon"}, then a polygon is drawn,
+and similarly lines are drawn for \code{"lines"}, and points for \code{"points"}.
+(c) If \code{showBottom} is a \linkS4class{topo} object, then the station locations are
 interpolated to that topography and the results are shown with a polygon.
-In this last case, the interpolation is set at a grid that is roughly
-in accordance with the resolution of the latitudes in the \code{topo} object.
 See \dQuote{Examples}.}
+
+\item{showSpine}{logical value used if \code{which="map"}.  If \code{showSpine} is
+\code{TRUE} and \code{section} has had a spine added wih \code{\link[=addSpine]{addSpine()}}, then
+the spine is drawn in blue.}
 
 \item{drawPalette}{Logical value indicating whether to draw a palette when \code{ztype="image"}
 ignored otherwise.}
