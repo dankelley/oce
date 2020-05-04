@@ -148,7 +148,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for adp</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(
   <span class='no'>x</span>,
   <span class='no'>which</span>,
   <span class='no'>j</span>,
@@ -520,7 +520,7 @@ plotted. You may also supply <code>zlim</code> as one of the ... arguments,
 but be aware that a reasonable limit on horizontal velocity components is
 unlikely to be of much use for the vertical component.</p>
 <p>A good first step in the analysis of measurements made from a moored device
-(stored in <code>d</code>, say) is to do <code><a href='https://rdrr.io/r/base/plot.html'>plot(d, which=14:18)</a></code>.  This shows
+(stored in <code>d</code>, say) is to do <code><a href='https://rdrr.io/r/graphics/plot.html'>plot(d, which=14:18)</a></code>.  This shows
 time series of water properties and sensor orientation, which is helpful in
 deciding which data to trim at the start and end of the deployment, because
 they were measured on the dock or on the ship as it travelled to the mooring
@@ -598,7 +598,7 @@ site.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>adp</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>adp</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='fl'>1</span>:<span class='fl'>3</span>)</div><div class='img'><img src='plot-adp-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>adp</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>'temperature'</span>, <span class='kw'>tformat</span><span class='kw'>=</span><span class='st'>'%H:%M'</span>)</div><div class='img'><img src='plot-adp-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>adp</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='fl'>1</span>:<span class='fl'>3</span>)</div><div class='img'><img src='plot-adp-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>adp</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>'temperature'</span>, <span class='kw'>tformat</span><span class='kw'>=</span><span class='st'>'%H:%M'</span>)</div><div class='img'><img src='plot-adp-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
