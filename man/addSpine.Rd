@@ -33,9 +33,10 @@ library(oce)
 data(section)
 sectionWest <- subset(section, longitude < -60)
 spine <- list(longitude=c(-77, -69.2, -55), latitude=c(39.7, 36.25, 36.25))
-s <- addSpine(sectionWest, spine)
-plot(s, xtype="distance", which="temperature")
-plot(s, xtype="spine", which="temperature")
+sectionWithSpine <- addSpine(sectionWest, spine)
+plot(sectionWithSpine, which="map")
+plot(sectionWithSpine, xtype="distance", which="temperature")
+plot(sectionWithSpine, xtype="spine", which="temperature")
 
 }
 \author{
