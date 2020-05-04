@@ -339,16 +339,16 @@ values, computed based on two arguments: <code>data</code> (a
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctdRaw</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>ctdRaw</span>) <span class='co'># barely recognizable, due to pre- and post-cast junk</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='fu'>ctdTrim</span>(<span class='no'>ctdRaw</span>)) <span class='co'># looks like a real profile ...</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='fu'><a href='ctdDecimate.html'>ctdDecimate</a></span>(<span class='fu'>ctdTrim</span>(<span class='no'>ctdRaw</span>),<span class='kw'>method</span><span class='kw'>=</span><span class='st'>"boxcar"</span>)) <span class='co'># ... smoothed</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>ctdRaw</span>) <span class='co'># barely recognizable, due to pre- and post-cast junk</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='fu'>ctdTrim</span>(<span class='no'>ctdRaw</span>)) <span class='co'># looks like a real profile ...</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='fu'><a href='ctdDecimate.html'>ctdDecimate</a></span>(<span class='fu'>ctdTrim</span>(<span class='no'>ctdRaw</span>),<span class='kw'>method</span><span class='kw'>=</span><span class='st'>"boxcar"</span>)) <span class='co'># ... smoothed</span>
 <span class='co'># Demonstrate use of a function. The scan limits were chosen</span>
 <span class='co'># by using locator(2) on a graph made by plotScan(ctdRaw).</span>
 <span class='no'>trimByIndex</span><span class='kw'>&lt;-</span><span class='kw'>function</span>(<span class='no'>data</span>, <span class='no'>parameters</span>) {
   <span class='no'>parameters</span>[<span class='fl'>1</span>] <span class='kw'>&lt;</span> <span class='no'>data</span>$<span class='no'>scan</span> <span class='kw'>&amp;</span> <span class='no'>data</span>$<span class='no'>scan</span> <span class='kw'>&lt;</span> <span class='no'>parameters</span>[<span class='fl'>2</span>]
 }
 <span class='no'>trimmed</span> <span class='kw'>&lt;-</span> <span class='fu'>ctdTrim</span>(<span class='no'>ctdRaw</span>, <span class='no'>trimByIndex</span>, <span class='kw'>parameters</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>130</span>, <span class='fl'>380</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>trimmed</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>trimmed</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

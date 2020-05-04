@@ -94,10 +94,12 @@
 
       
 
-      </header><script src="flags_files/header-attrs-2.1/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>5. Dealing with data-quality flags</h1>
+      <h1 data-toc-skip><ol start="5" style="list-style-type: decimal">
+<li>Dealing with data-quality flags</li>
+</ol></h1>
                         <h4 class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
             <h4 class="date">2020-05-04</h4>
@@ -112,7 +114,7 @@
 <!-- HOW TO BUILD THE VIGNETTE. -->
 <!-- Look in oce.Rmd for instructions. -->
 <p><strong>Abstract.</strong> This vignette explains the basics of working with data-quality flags in oce. As in the vignette about working with <a href="adp.html">adp data</a>, the material is organized to reflect typical workflow. See the main oce <a href="oce.html">vignette</a> for general information about oce. The sample code provided here relies on the oce package, loaded as follows.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
 <span class="co">#&gt; Loading required package: gsw</span>
 <span class="co">#&gt; Loading required package: testthat</span></pre></body></html></div>
 <div id="overview" class="section level1">
@@ -129,7 +131,7 @@
 <h2 class="hasAnchor">
 <a href="#flag-conventions" class="anchor"></a>Flag conventions</h2>
 <p>A frustrating aspect of oceanographic analysis is that different data archiving agencies employ different systems for flags. For example, the <a href="https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm">World Hydrographic Programme</a> designates good bottle/CTD data with a flag value of 2, whereas the <a href="https://data.nodc.noaa.gov/woa/WOD/CODES/TXT/Definition_of_Quality_Flags.txt">World Ocean Database</a> uses 0 for good data.</p>
-<p>Analysts must be aware of the scheme used for a particular dataset. It is also good to be on the lookout for particular values in data, because oceanographers sometimes set suspicious values to non-physical values that are easy to recognize, e.g. -999, -99.99, or similar, and sometimes these coded values may contradict formal flags, when both are present.</p>
+<p>Analysts must be aware of the scheme used for a particular dataset. It is also good to be on the lookout for particular values in data, because oceanographers sometimes set suspicious values to non-physical values that are easy to recognize, e.g. -999, -99.99, or similar, and sometimes these coded values may contradict formal flags, when both are present.</p>
 </div>
 <div id="flag-storage" class="section level2">
 <h2 class="hasAnchor">
@@ -139,7 +141,7 @@
 <div id="flag-inspection" class="section level2">
 <h2 class="hasAnchor">
 <a href="#flag-inspection" class="anchor"></a>Flag inspection</h2>
-<p>It is possible to inspect flags using e.g.  to see flags corresponding to , but a simpler notation is also provided, with e.g.  returning the flags for the salinity data. (Note the  suffix in this notation; without that, the salinity data would be returned.)</p>
+<p>It is possible to inspect flags using e.g.  to see flags corresponding to , but a simpler notation is also provided, with e.g.  returning the flags for the salinity data. (Note the  suffix in this notation; without that, the salinity data would be returned.)</p>
 </div>
 <div id="flag-creation" class="section level2">
 <h2 class="hasAnchor">
@@ -167,10 +169,10 @@
 <a href="#ctd-range-checks" class="anchor"></a>CTD range checks</h2>
 <p>(This section is an expansion of Example 1 shown by <code><a href="../reference/setFlags-ctd-method.html">?"setFlags,ctd-method"</a></code>.)</p>
 <p>The oce package provides a dataset</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">ctdRaw</span>)</pre></body></html></div>
 <p>that contains some clearly anomalous values that are revealed clearly in a summary plot (Figure 1):</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">ctdRaw</span>)</pre></body></html></div>
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">ctdRaw</span>)</pre></body></html></div>
 <div class="figure">
 <img src="flags_files/figure-html/unnamed-chunk-4-1.png" alt="Figure 1. Summary plot for raw CTD profile." width="700"><p class="caption">
 Figure 1. Summary plot for raw CTD profile.
@@ -178,33 +180,33 @@ Figure 1. Summary plot for raw CTD profile.
 </div>
 <p>As Figure 1 shows, <code>ctdTrim</code> removes most of the anomalous data by examining the variation of the pressure signal over time, it may also be of interest to see how well simple range checks can perform in cleaning up the data. Salinity certainly cannot be negative, but in an oceanographic setting it is common to relax that criterion somewhat, perhaps insisting that Absolute Salinity <span class="math inline">\(S_A\)</span> exceed <span class="math inline">\(25\)</span>g/kg. This value might work in other situations as well, and the same could be said of an upper limit of <span class="math inline">\(40\)</span>g/kg. Similarly, it might make sense to bound temperature between, say, <span class="math inline">\(-2^\circ\)</span>C and <span class="math inline">\(40^\circ\)</span>C for application throughout much of the world ocean.</p>
 <p>These criteria can be supplied to <code>setFlags</code> in various ways, but the simplest is to create logical vectors, e.g.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">badS</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span>(<span class="no">ctdRaw</span><span class="kw">[[</span><span class="st">"data"</span>]], <span class="no">salinity</span> <span class="kw">&lt;</span> <span class="fl">25</span> <span class="kw">|</span> <span class="fl">40</span> <span class="kw">&lt;</span> <span class="no">salinity</span>)
+<div class="sourceCode"><html><body><pre class="r"><span class="no">badS</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span>(<span class="no">ctdRaw</span><span class="kw">[[</span><span class="st">"data"</span>]], <span class="no">salinity</span> <span class="kw">&lt;</span> <span class="fl">25</span> <span class="kw">|</span> <span class="fl">40</span> <span class="kw">&lt;</span> <span class="no">salinity</span>)
 <span class="no">badT</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span>(<span class="no">ctdRaw</span><span class="kw">[[</span><span class="st">"data"</span>]], <span class="no">temperature</span> <span class="kw">&lt;</span> -<span class="fl">2</span> <span class="kw">|</span> <span class="fl">40</span> <span class="kw">&lt;</span> <span class="no">temperature</span>)</pre></body></html></div>
 <p>In the above, <code>with</code> has been used to avoid inserting <code>salinity</code> and <code>temperature</code> in the namespace, but it would also be common to use e.g.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">S</span> <span class="kw">&lt;-</span> <span class="no">ctdRaw</span><span class="kw">[[</span><span class="st">"salinity"</span>]]
+<div class="sourceCode"><html><body><pre class="r"><span class="no">S</span> <span class="kw">&lt;-</span> <span class="no">ctdRaw</span><span class="kw">[[</span><span class="st">"salinity"</span>]]
 <span class="no">T</span> <span class="kw">&lt;-</span> <span class="no">ctdRaw</span><span class="kw">[[</span><span class="st">"temperature"</span>]]
 <span class="no">bad</span> <span class="kw">&lt;-</span> (<span class="no">S</span> <span class="kw">&lt;</span> <span class="fl">25</span> <span class="kw">|</span> <span class="fl">40</span> <span class="kw">&lt;</span> <span class="no">S</span>) <span class="kw">||</span> (<span class="no">T</span> <span class="kw">&lt;</span> -<span class="fl">2</span> <span class="kw">|</span> <span class="fl">40</span> <span class="kw">&lt;</span> <span class="no">T</span>)</pre></body></html></div>
 <p>Since the goal here is to illustrate setting multiple flags, the <code>badS</code> and <code>badT</code> values will be used. The first step is to copy the original data, so that the flag operations will not alter <code>ctdRaw</code>:</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">qc</span> <span class="kw">&lt;-</span> <span class="no">ctdRaw</span></pre></body></html></div>
+<div class="sourceCode"><html><body><pre class="r"><span class="no">qc</span> <span class="kw">&lt;-</span> <span class="no">ctdRaw</span></pre></body></html></div>
 <p>Work flow is best documented if a flag scheme is established, and the “WHP CTD exchange” scheme is a reasonable choice; using</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">qc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/initializeFlagScheme.html">initializeFlagScheme</a></span>(<span class="no">qc</span>, <span class="st">"WHP CTD"</span>)</pre></body></html></div>
+<div class="sourceCode"><html><body><pre class="r"><span class="no">qc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/initializeFlagScheme.html">initializeFlagScheme</a></span>(<span class="no">qc</span>, <span class="st">"WHP CTD"</span>)</pre></body></html></div>
 <p>stores a note on the scheme in the <code>metadata</code> slot of <code>qc</code>. Importantly, however, it does <em>not</em> store any flag values. The next step is to initialize flag values. For example, to set up flag storage for salinity and temperature, use e.g.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">qc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/initializeFlags.html">initializeFlags</a></span>(<span class="no">qc</span>, <span class="st">"salinity"</span>, <span class="fl">2</span>)
+<div class="sourceCode"><html><body><pre class="r"><span class="no">qc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/initializeFlags.html">initializeFlags</a></span>(<span class="no">qc</span>, <span class="st">"salinity"</span>, <span class="fl">2</span>)
 <span class="no">qc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/initializeFlags.html">initializeFlags</a></span>(<span class="no">qc</span>, <span class="st">"temperature"</span>, <span class="fl">2</span>)</pre></body></html></div>
 <p>to create storage, and initialize all entries to the <code>"acceptable"</code> value (which, for this flag scheme, is the number <code>2</code>). Once storage has been initialized for a given variable, further calls to <code>initializeFlags</code> will have no effect, apart from a warning.</p>
 <p>Note that it is entirely possible to use <code>initializeFlags</code> with a numerical value for its third argument. One advantage of using <code>initializeFlagScheme</code> is that it clarifies code, but the bigger advantage is that it embeds the scheme within the object, so that a second analyst could examine it later and be clear on the meanings of the numerical codes. This is very important, because there is not much agreement within the oceanographic community on which flag scheme to use, for many data types (Argo being an exception).</p>
 <p>At this stage, individual data can be flagged with <code>setFlags</code>. This function can be called any number of times. Continuing along with our example, we may mark bad salinities with</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">qc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/setFlags.html">setFlags</a></span>(<span class="no">qc</span>, <span class="st">"salinity"</span>, <span class="no">badS</span>, <span class="kw">value</span><span class="kw">=</span><span class="st">"bad"</span>)</pre></body></html></div>
+<div class="sourceCode"><html><body><pre class="r"><span class="no">qc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/setFlags.html">setFlags</a></span>(<span class="no">qc</span>, <span class="st">"salinity"</span>, <span class="no">badS</span>, <span class="kw">value</span><span class="kw">=</span><span class="st">"bad"</span>)</pre></body></html></div>
 <p>We can see that the flag got inserted by using <code><a href="https://rdrr.io/r/base/summary.html">summary(qc)</a></code>, but for brevity here another method is:</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">qc</span><span class="kw">[[</span><span class="st">"flags"</span>]])
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">qc</span><span class="kw">[[</span><span class="st">"flags"</span>]])
 <span class="co">#&gt; [1] "salinity"    "temperature"</span></pre></body></html></div>
 <p>Now, temperature flags may be inserted with</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">qc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/setFlags.html">setFlags</a></span>(<span class="no">qc</span>, <span class="st">"temperature"</span>, <span class="no">badT</span>, <span class="kw">value</span><span class="kw">=</span><span class="st">"bad"</span>)</pre></body></html></div>
+<div class="sourceCode"><html><body><pre class="r"><span class="no">qc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/setFlags.html">setFlags</a></span>(<span class="no">qc</span>, <span class="st">"temperature"</span>, <span class="no">badT</span>, <span class="kw">value</span><span class="kw">=</span><span class="st">"bad"</span>)</pre></body></html></div>
 <p>Readers ought to use <code><a href="https://rdrr.io/r/base/summary.html">summary(qc)</a></code> to get more details of how flags were handled, and how many bad salinities and temperatures were flagged.</p>
-<p>If <code>qc</code> is plotted with <code><a href="https://rdrr.io/r/base/plot.html">plot(qc)</a></code>, the results will match those of <code><a href="https://rdrr.io/r/base/plot.html">plot(ctdRaw)</a></code>. This is because setting flags has no effect on plots, because it alters <em>flags</em> but not <em>data</em>. One more step is required to test whether this procedure has cleaned up the data significantly: we must “handle” the flags, using</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">qch</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/handleFlags.html">handleFlags</a></span>(<span class="no">qc</span>, <span class="kw">flags</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>:<span class="fl">9</span>)))</pre></body></html></div>
+<p>If <code>qc</code> is plotted with <code><a href="https://rdrr.io/r/graphics/plot.html">plot(qc)</a></code>, the results will match those of <code><a href="https://rdrr.io/r/graphics/plot.html">plot(ctdRaw)</a></code>. This is because setting flags has no effect on plots, because it alters <em>flags</em> but not <em>data</em>. One more step is required to test whether this procedure has cleaned up the data significantly: we must “handle” the flags, using</p>
+<div class="sourceCode"><html><body><pre class="r"><span class="no">qch</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/handleFlags.html">handleFlags</a></span>(<span class="no">qc</span>, <span class="kw">flags</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>:<span class="fl">9</span>)))</pre></body></html></div>
 <p>Comparing Figure 1 with the summary plot for <code>qch</code> (Figure 2), constructed with</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">qch</span>)</pre></body></html></div>
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">qch</span>)</pre></body></html></div>
 <div class="figure">
 <img src="flags_files/figure-html/unnamed-chunk-14-1.png" alt="Figure 2. Summary plot for range-checked CTD profile." width="700"><p class="caption">
 Figure 2. Summary plot for range-checked CTD profile.
@@ -218,7 +220,7 @@ Figure 2. Summary plot for range-checked CTD profile.
 <p>(This section is an expansion of Example 2 shown by <code><a href="../reference/setFlags-ctd-method.html">?"setFlags,ctd-method"</a></code>.)</p>
 <p>The <code>ctd</code> dataset provided by the <code>oce</code> package is similar to <code>ctdRaw</code>, except that only downcast data are provided. Even so, there are still some points that might be considered suspicious. A common way to find such points is to plot TS diagrams, looking for decreases in density with depth.</p>
 <p>Running the following code in an interactive session will demonstrate a simple way to use a TS diagram to identify suspicious data. Pasting this into an R console will show a plot with lines between measurements made at successive depths. Clicking on any point will flag it, and so the point will then disappear on the plot. Clicking to the right of the plot frame will exit the procedure, after which <code>qc</code> is a ctd object with flags as set, and data set to <code>NA</code> where these flags indicate bad data.</p>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="kw">eos</span><span class="kw">=</span><span class="st">"gsw"</span>)
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="kw">eos</span><span class="kw">=</span><span class="st">"gsw"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">ctd</span>)
 <span class="no">qc</span> <span class="kw">&lt;-</span> <span class="no">ctd</span>
 <span class="no">qc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/initializeFlagScheme.html">initializeFlagScheme</a></span>(<span class="no">qc</span>, <span class="st">"WHP CTD"</span>)
@@ -245,7 +247,7 @@ Figure 2. Summary plot for range-checked CTD profile.
 <a href="#hydrographic-sections" class="anchor"></a>Hydrographic sections</h2>
 <p>The flag-handling functions work for a variety of oce objects. For example, sections, which are built up from a sequence of ctd profiles, are handled easily with functions of the <em>same names</em> as for the ctd case.</p>
 <p>As a simple example, the following shows how to clean up the “A03” Atlantic section that is provided with oce.</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">section</span>)
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">section</span>)
 <span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/handleFlags.html">handleFlags</a></span>(<span class="no">section</span>, <span class="kw">flags</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>:<span class="fl">9</span>)))
 <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mfrow</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fl">1</span>))
 <span class="fu"><a href="../reference/plotTS.html">plotTS</a></span>(<span class="no">section</span>)
@@ -258,7 +260,7 @@ Figure 2. Summary plot for range-checked CTD profile.
 <h1 class="hasAnchor">
 <a href="#acoustic-doppler-profiler-data" class="anchor"></a>Acoustic-Doppler profiler data</h1>
 <p>By now, the reader should be able to understand the following use of data-quality flags for the <code>adp</code> dataset. Note that there is only a small difference (at 8h and 20h) between the (gray) bad data as identified by the instrument and those identified by the scheme illustrated here; look near 8h and 20h. However, altering the values for <code>G</code> and <code>V4</code> will reveal that the schemes do differ.</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">adp</span>)
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">adp</span>)
 <span class="no">v</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"v"</span>]]
 <span class="no">i2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html">array</a></span>(<span class="fl">FALSE</span>, <span class="kw">dim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">v</span>)) <span class="co"># construct array to match 'v'</span>
 <span class="no">g</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"g"</span>, <span class="st">"numeric"</span>]]
@@ -270,8 +272,8 @@ Figure 2. Summary plot for range-checked CTD profile.
 <span class="no">adpQC2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/setFlags.html">setFlags</a></span>(<span class="no">adpQC2</span>, <span class="st">"v"</span>, <span class="no">i2</span>, <span class="fl">3</span>)
 <span class="no">adpClean2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/handleFlags.html">handleFlags</a></span>(<span class="no">adpQC2</span>, <span class="kw">flags</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="fl">3</span>), <span class="kw">actions</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"NA"</span>))
 <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mfrow</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>,<span class="fl">1</span>))
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">adp</span>, <span class="kw">which</span><span class="kw">=</span><span class="st">"u1"</span>)                  <span class="co"># original</span>
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">adpClean2</span>, <span class="kw">which</span><span class="kw">=</span><span class="st">"u1"</span>)            <span class="co"># altered</span></pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">adp</span>, <span class="kw">which</span><span class="kw">=</span><span class="st">"u1"</span>)                  <span class="co"># original</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">adpClean2</span>, <span class="kw">which</span><span class="kw">=</span><span class="st">"u1"</span>)            <span class="co"># altered</span></pre></body></html></div>
 <p><img src="flags_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
 <p>Note, in the above, that <code>initializeFlagScheme</code> has not been used, because the author is unaware of any common notation for such data. The values used for <code>G</code> and <code>V4</code> were provided by colleagues at the Bedford Institute of Oceanography.</p>
 </div>

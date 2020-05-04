@@ -158,7 +158,7 @@ before the call.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for sealevel</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(
   <span class='no'>x</span>,
   <span class='kw'>which</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>,
   <span class='kw'>drawTimeRange</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDrawTimeRange"</span>),
@@ -288,7 +288,7 @@ with them.</p>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>sealevel</span>)
 <span class='co'>## local Halifax time is UTC + 4h</span>
 <span class='no'>juan</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.POSIXlt.html'>as.POSIXct</a></span>(<span class='st'>"2003-09-29 00:15:00"</span>, <span class='kw'>tz</span><span class='kw'>=</span><span class='st'>"UTC"</span>)+<span class='fl'>4</span>*<span class='fl'>3600</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>sealevel</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>xlim</span><span class='kw'>=</span><span class='no'>juan</span>+<span class='fl'>86400</span>*<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>7</span>, <span class='fl'>7</span>))</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span>(<span class='kw'>v</span><span class='kw'>=</span><span class='no'>juan</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'red'</span>)</div><div class='img'><img src='plot-sealevel-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>sealevel</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>xlim</span><span class='kw'>=</span><span class='no'>juan</span>+<span class='fl'>86400</span>*<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>7</span>, <span class='fl'>7</span>))</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span>(<span class='kw'>v</span><span class='kw'>=</span><span class='no'>juan</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'red'</span>)</div><div class='img'><img src='plot-sealevel-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
