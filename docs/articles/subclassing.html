@@ -136,7 +136,7 @@
 <span class="co">#&gt;   .. ..$ flags: list()</span>
 <span class="co">#&gt;   ..@ data         : list()</span>
 <span class="co">#&gt;   ..@ processingLog:List of 2</span>
-<span class="co">#&gt;   .. ..$ time : POSIXct[1:1], format: "2020-05-04 10:37:24"</span>
+<span class="co">#&gt;   .. ..$ time : POSIXct[1:1], format: "2020-05-04 12:12:32"</span>
 <span class="co">#&gt;   .. ..$ value: chr "Create oce object"</span></pre></body></html></div>
 <p>As noted previously, it’s possible to insert <code>t</code>, <code>u</code>, and <code>v</code> directly into the <code>data</code> slot, but it’s better to use <code>oceSetData</code> to do that, because it can set up units, and it leaves a trail in the processing log.</p>
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">o</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/oceSetData.html">oceSetData</a></span>(<span class="no">o</span>, <span class="st">"t"</span>, <span class="no">t</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">unit</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span>(<span class="no">s</span>), <span class="kw">scale</span><span class="kw">=</span><span class="st">""</span>))
@@ -155,12 +155,12 @@
 <span class="co">#&gt;     v [m/s]   -0.49996 -0.0048211    0.49998  193   0            -</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; * Processing Log</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:24 UTC: `Create oce object`</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:24 UTC: `oceSetData(object = o, name = "t", value = t, unit = list(unit = expression(s),     scale = ""))`</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:24 UTC: `oceSetData(object = o, name = "u", value = u, unit = list(unit = expression(m/s),     scale = ""))`</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:24 UTC: `oceSetData(object = o, name = "v", value = v, unit = list(unit = expression(m/s),     scale = ""))`</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:24 UTC: `oceSetMetadata(object = o, name = "longitude", value = lon)`</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:24 UTC: `oceSetMetadata(object = o, name = "latitude", value = lat)`</span></pre></body></html></div>
+<span class="co">#&gt;     - 2020-05-04 12:12:32 UTC: `Create oce object`</span>
+<span class="co">#&gt;     - 2020-05-04 12:12:32 UTC: `oceSetData(object = o, name = "t", value = t, unit = list(unit = expression(s),     scale = ""))`</span>
+<span class="co">#&gt;     - 2020-05-04 12:12:32 UTC: `oceSetData(object = o, name = "u", value = u, unit = list(unit = expression(m/s),     scale = ""))`</span>
+<span class="co">#&gt;     - 2020-05-04 12:12:32 UTC: `oceSetData(object = o, name = "v", value = v, unit = list(unit = expression(m/s),     scale = ""))`</span>
+<span class="co">#&gt;     - 2020-05-04 12:12:32 UTC: `oceSetMetadata(object = o, name = "longitude", value = lon)`</span>
+<span class="co">#&gt;     - 2020-05-04 12:12:32 UTC: `oceSetMetadata(object = o, name = "latitude", value = lat)`</span></pre></body></html></div>
 <p>and individual data components may be extracted with the <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> notation</p>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">o</span><span class="kw">[[</span><span class="st">"latitude"</span>]]                        <span class="co"># from metadata</span>
 <span class="co">#&gt; [1] -30</span>
@@ -230,7 +230,7 @@
 <span class="co">#&gt;     v [m/s] -0.49996 -0.0048211 0.49998  193   0            -</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; * Processing Log</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:25 UTC: `create 'uv' object`</span>
+<span class="co">#&gt;     - 2020-05-04 12:12:32 UTC: `create 'uv' object`</span>
 <span class="co">#&gt; NULL</span></pre></body></html></div>
 <p>Finally, let’s make a custom method for <code>plot</code>. This is usually the most complicated part of handling any new object class, because there are usually many ways to look at data. (Some <code>oce</code> objects have over a dozen specialized plot styles.) Let’s suppose there are only two desired plot styles: one showing timeseries of <code>u</code> and <code>v</code> in a two panel plot, and the other showing how <code>u</code> and <code>v</code> covary.</p>
 <div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu">setMethod</span>(<span class="kw">f</span><span class="kw">=</span><span class="st">"plot"</span>,
@@ -294,7 +294,7 @@
 <span class="co">#&gt;   .. ..$ flags: list()</span>
 <span class="co">#&gt;   ..@ data         : list()</span>
 <span class="co">#&gt;   ..@ processingLog:List of 2</span>
-<span class="co">#&gt;   .. ..$ time : POSIXct[1:1], format: "2020-05-04 10:37:25"</span>
+<span class="co">#&gt;   .. ..$ time : POSIXct[1:1], format: "2020-05-04 12:12:33"</span>
 <span class="co">#&gt;   .. ..$ value: chr "Create oce object"</span></pre></body></html></div>
 <p>Notice that <code>w</code> three <code>oce</code> “slots”, named <code>metadata</code>, <code>data</code> and <code>processingLog</code>. These are inherited from <code>oce</code>. The first is meant to hold information about the data, such as a file-name, an instrument number, a location of sampling, etc. The second is meant to hold actual data or measurements. And the third, not normally accessed by the user directly, holds information about the object’s evolution (note that the object considers itself an <code>oce</code> object). The names of these three slots are usually enough to keep them straight in the analyst’s head, although it can sometimes be difficult deciding whether something belongs in <code>metadata</code> or <code>data</code>.</p>
 <p>The <code>oce</code> system also provides its objects with certain operators and functions. For example, <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> can be used to retrieve the slots, items within the slots, and (in some cases) values that may be calculated from the contents of the slots (e.g. <code>ctd</code> and similar objects related to hydrography can return calculated potential temperature or Conservative Temperature, even though neither is typically stored in such datasets).</p>
@@ -323,7 +323,7 @@
 <span class="co">#&gt;   .. ..$ station: chr "STN01"</span>
 <span class="co">#&gt;   ..@ data         : list()</span>
 <span class="co">#&gt;   ..@ processingLog:List of 2</span>
-<span class="co">#&gt;   .. ..$ time : POSIXct[1:1], format: "2020-05-04 10:37:25"</span>
+<span class="co">#&gt;   .. ..$ time : POSIXct[1:1], format: "2020-05-04 12:12:33"</span>
 <span class="co">#&gt;   .. ..$ value: chr "Create oce object"</span></pre></body></html></div>
 <p>However, there is a better way to insert metadata, with the <code>oceSetMetadata</code> function, e.g.</p>
 <div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">w</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/oceSetMetadata.html">oceSetMetadata</a></span>(<span class="no">w</span>, <span class="st">"serialNumber"</span>, <span class="fl">1234</span>)</pre></body></html></div>
@@ -348,14 +348,14 @@
 <span class="co">#&gt; * Time ranges from 2019-01-01 to 2019-01-01 00:00:30 with 100 samples and mean increment 0.3030303 s</span>
 <span class="co">#&gt; * Data Overview</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt;                  Min.     Mean   Max. Dim. NAs OriginalName</span>
-<span class="co">#&gt;     elevation -1.0045 0.001009 1.0064  100   0            -</span>
+<span class="co">#&gt;                  Min.       Mean   Max. Dim. NAs OriginalName</span>
+<span class="co">#&gt;     elevation -1.0192 -0.0019272 1.0059  100   0            -</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; * Processing Log</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:25 UTC: `Create oce object`</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:25 UTC: `oceSetMetadata(object = w, name = "serialNumber", value = 1234)`</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:25 UTC: `oceSetData(object = w, name = "time", value = t)`</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:25 UTC: `oceSetData(object = w, name = "elevation", value = e)`</span></pre></body></html></div>
+<span class="co">#&gt;     - 2020-05-04 12:12:33 UTC: `Create oce object`</span>
+<span class="co">#&gt;     - 2020-05-04 12:12:33 UTC: `oceSetMetadata(object = w, name = "serialNumber", value = 1234)`</span>
+<span class="co">#&gt;     - 2020-05-04 12:12:33 UTC: `oceSetData(object = w, name = "time", value = t)`</span>
+<span class="co">#&gt;     - 2020-05-04 12:12:33 UTC: `oceSetData(object = w, name = "elevation", value = e)`</span></pre></body></html></div>
 <p>This produces a useful summary not just of the data, but also of how the object was constructed. But we can do better. In some crazy world, someone might consider measuring elevation in feet, not metres, and so we ought to specify the unit. The way to do this is with the <code>unit</code> argument of <code>oceSetData</code>. This is a somewhat tricky argument, as a study of the result of <code><a href="../reference/oceSetData.html">?oceSetData</a></code> will reveal. For now, we just show a common way, without explanation, writing</p>
 <div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="no">w</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/oceSetData.html">oceSetData</a></span>(<span class="no">w</span>, <span class="st">"elevation"</span>, <span class="no">e</span>, <span class="kw">unit</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">unit</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span>(<span class="no">m</span>),<span class="kw">scale</span><span class="kw">=</span><span class="st">""</span>))</pre></body></html></div>
 <p>This over-rides the existing definition. Now, let’s look at the summary:</p>
@@ -363,15 +363,15 @@
 <span class="co">#&gt; * Time ranges from 2019-01-01 to 2019-01-01 00:00:30 with 100 samples and mean increment 0.3030303 s</span>
 <span class="co">#&gt; * Data Overview</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt;                      Min.     Mean   Max. Dim. NAs OriginalName</span>
-<span class="co">#&gt;     elevation [m] -1.0045 0.001009 1.0064  100   0            -</span>
+<span class="co">#&gt;                      Min.       Mean   Max. Dim. NAs OriginalName</span>
+<span class="co">#&gt;     elevation [m] -1.0192 -0.0019272 1.0059  100   0            -</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; * Processing Log</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:25 UTC: `Create oce object`</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:25 UTC: `oceSetMetadata(object = w, name = "serialNumber", value = 1234)`</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:25 UTC: `oceSetData(object = w, name = "time", value = t)`</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:25 UTC: `oceSetData(object = w, name = "elevation", value = e)`</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:25 UTC: `oceSetData(object = w, name = "elevation", value = e, unit = list(unit = expression(m),     scale = ""))`</span></pre></body></html></div>
+<span class="co">#&gt;     - 2020-05-04 12:12:33 UTC: `Create oce object`</span>
+<span class="co">#&gt;     - 2020-05-04 12:12:33 UTC: `oceSetMetadata(object = w, name = "serialNumber", value = 1234)`</span>
+<span class="co">#&gt;     - 2020-05-04 12:12:33 UTC: `oceSetData(object = w, name = "time", value = t)`</span>
+<span class="co">#&gt;     - 2020-05-04 12:12:33 UTC: `oceSetData(object = w, name = "elevation", value = e)`</span>
+<span class="co">#&gt;     - 2020-05-04 12:12:33 UTC: `oceSetData(object = w, name = "elevation", value = e, unit = list(unit = expression(m),     scale = ""))`</span></pre></body></html></div>
 <p>Notice that we now have a unit on the elevation, but we  have an indication that the value of that quantity was defined twice. This processing-log feature is one of the big advantages of using <code>oceSetData</code> over direct insertion into an object.</p>
 </div>
 <div id="adding-specialized-functions" class="section level2">
@@ -427,11 +427,11 @@
 <span class="co">#&gt; * Time ranges from 2019-01-01 to 2019-01-01 00:00:30 with 100 samples and mean increment 0.3030303 s</span>
 <span class="co">#&gt; * Data Overview</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt;                      Min.     Mean   Max. Dim. NAs OriginalName</span>
-<span class="co">#&gt;     elevation [m] -1.0045 0.001009 1.0064  100   0            -</span>
+<span class="co">#&gt;                      Min.       Mean   Max. Dim. NAs OriginalName</span>
+<span class="co">#&gt;     elevation [m] -1.0192 -0.0019272 1.0059  100   0            -</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; * Processing Log</span>
-<span class="co">#&gt;     - 2020-05-04 10:37:25 UTC: `create 'wave' object`</span></pre></body></html></div>
+<span class="co">#&gt;     - 2020-05-04 12:12:33 UTC: `create 'wave' object`</span></pre></body></html></div>
 <p>Notice that the units now appear, without complication to the user. Oh, and this object now knows that it is a <code>wave</code> object, not an <code>oce</code> object  our little class is getting smarter by the minute!</p>
 </div>
 <div id="specializing-the-operator" class="section level2">
@@ -452,9 +452,9 @@
 <p>The important thing to focus on is the <code>if</code> block in the function definition. Called as e.g. <code>w[["peak"]]</code> causes <code>i</code> to equal <code>"peak"</code>, and so the return value will be the maximum elevation. However, in all other instances, the return values is provided by <code>callNextMethod()</code>, and what that does is to dig one level deeper for a way to handle <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code>. At that deeper level, it finds the <code>oce</code> definition, the details of which can be found with <code><a href="../reference/sub-sub-oce-method.html">?"[[,oce-method"</a></code>.</p>
 <p>The test</p>
 <div class="sourceCode" id="cb39"><html><body><pre class="r"><span class="no">w</span><span class="kw">[[</span><span class="st">"peak"</span>]]
-<span class="co">#&gt; [1] 1.006439</span>
+<span class="co">#&gt; [1] 1.005878</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="no">w</span><span class="kw">[[</span><span class="st">"elevation"</span>]])
-<span class="co">#&gt;  num [1:100] 0.00471 0.1884 0.36928 0.53831 0.6995 ...</span></pre></body></html></div>
+<span class="co">#&gt;  num [1:100] 0.0171 0.1914 0.372 0.5449 0.6893 ...</span></pre></body></html></div>
 <p>verifies that our new code works for getting the peak value, and that it falls back to the <code>oce</code> code for other calls.</p>
 </div>
 </div>
