@@ -3293,7 +3293,7 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
 #' library(oce)
 #' data(section)
 #' sectionWest <- subset(section, longitude < -60)
-#' spine <- list(longitude=c(-77, -69.2, -55), latitude=c(39.7, 36.25, 36.25))
+#' spine <- list(longitude=c(-74.5, -69.2, -55), latitude=c(38.6, 36.25, 36.25))
 #' sectionWithSpine <- addSpine(sectionWest, spine)
 #' plot(sectionWithSpine, which="map")
 #' plot(sectionWithSpine, xtype="distance", which="temperature")
