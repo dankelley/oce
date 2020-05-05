@@ -154,7 +154,7 @@ as appropriate.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for coastline</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(
   <span class='no'>x</span>,
   <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>""</span>,
   <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>""</span>,
@@ -444,9 +444,9 @@ dealing with them.</p>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>))
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>coastlineWorld</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>coastlineWorld</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: In plot,coastline-method() : should trim poles</span></div><div class='img'><img src='plot-coastline-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>clongitude</span><span class='kw'>=</span>-<span class='fl'>63.6</span>, <span class='kw'>clatitude</span><span class='kw'>=</span><span class='fl'>44.6</span>, <span class='kw'>span</span><span class='kw'>=</span><span class='fl'>1000</span>)</div><div class='img'><img src='plot-coastline-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>coastlineWorld</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: In plot,coastline-method() : should trim poles</span></div><div class='img'><img src='plot-coastline-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>clongitude</span><span class='kw'>=</span>-<span class='fl'>63.6</span>, <span class='kw'>clatitude</span><span class='kw'>=</span><span class='fl'>44.6</span>, <span class='kw'>span</span><span class='kw'>=</span><span class='fl'>1000</span>)</div><div class='img'><img src='plot-coastline-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'>## Canada in Lambert projection</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>clongitude</span><span class='kw'>=</span>-<span class='fl'>95</span>, <span class='kw'>clatitude</span><span class='kw'>=</span><span class='fl'>65</span>, <span class='kw'>span</span><span class='kw'>=</span><span class='fl'>5500</span>,
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>clongitude</span><span class='kw'>=</span>-<span class='fl'>95</span>, <span class='kw'>clatitude</span><span class='kw'>=</span><span class='fl'>65</span>, <span class='kw'>span</span><span class='kw'>=</span><span class='fl'>5500</span>,
      <span class='kw'>grid</span><span class='kw'>=</span><span class='fl'>10</span>, <span class='kw'>projection</span><span class='kw'>=</span><span class='st'>'+proj=laea +lon_0=-100 +lat_0=55'</span>)</div><div class='img'><img src='plot-coastline-method-3.png' alt='' width='700' height='433' /></div><div class='input'># }
 
 </div></pre>

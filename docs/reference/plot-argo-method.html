@@ -148,7 +148,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for argo</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(
   <span class='no'>x</span>,
   <span class='kw'>which</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='no'>level</span>,
@@ -323,13 +323,13 @@ used.)</p></td>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>argo</span>)
 <span class='no'>tc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cut.html'>cut</a></span>(<span class='no'>argo</span><span class='kw'>[[</span><span class='st'>"time"</span>]], <span class='st'>"year"</span>)
 <span class='co'># Example 1: plot map, which reveals float trajectory.</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>argo</span>, <span class='kw'>pch</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span>(<span class='no'>tc</span>))</div><div class='input'><span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/substr.html'>substr</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span>(<span class='no'>tc</span>), <span class='fl'>1</span>, <span class='fl'>4</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>argo</span>, <span class='kw'>pch</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span>(<span class='no'>tc</span>))</div><div class='input'><span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/substr.html'>substr</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span>(<span class='no'>tc</span>), <span class='fl'>1</span>, <span class='fl'>4</span>)
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>topoWorld</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span>(<span class='no'>topoWorld</span><span class='kw'>[[</span><span class='st'>'longitude'</span>]], <span class='no'>topoWorld</span><span class='kw'>[[</span><span class='st'>'latitude'</span>]],
         <span class='no'>topoWorld</span><span class='kw'>[[</span><span class='st'>'z'</span>]], <span class='kw'>add</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span>(<span class='st'>"bottomleft"</span>, <span class='kw'>pch</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_along</a></span>(<span class='no'>year</span>), <span class='kw'>legend</span><span class='kw'>=</span><span class='no'>year</span>, <span class='kw'>bg</span><span class='kw'>=</span><span class='st'>"white"</span>, <span class='kw'>cex</span><span class='kw'>=</span><span class='fl'>3</span>/<span class='fl'>4</span>)</div><div class='img'><img src='plot-argo-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Example 2: plot map, TS, T(z) and S(z). Note the use</span>
 <span class='co'># of handleFlags(), to skip over questionable data.</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='fu'><a href='handleFlags.html'>handleFlags</a></span>(<span class='no'>argo</span>), <span class='kw'>which</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>4</span>, <span class='fl'>6</span>, <span class='fl'>5</span>))</div><div class='img'><img src='plot-argo-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='fu'><a href='handleFlags.html'>handleFlags</a></span>(<span class='no'>argo</span>), <span class='kw'>which</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>4</span>, <span class='fl'>6</span>, <span class='fl'>5</span>))</div><div class='img'><img src='plot-argo-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
