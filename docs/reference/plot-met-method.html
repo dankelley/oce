@@ -150,7 +150,7 @@ set.  cast. The panels are controlled by the <code>which</code> argument.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for met</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>which</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>4</span>, <span class='no'>mgp</span>, <span class='no'>mar</span>, <span class='no'>tformat</span>, <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>))</pre>
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>which</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>4</span>, <span class='no'>mgp</span>, <span class='no'>mar</span>, <span class='no'>tformat</span>, <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>))</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -253,7 +253,7 @@ be made to the plot.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>met</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>met</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='fl'>3</span>:<span class='fl'>4</span>)</div><div class='img'><img src='plot-met-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>met</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='fl'>3</span>:<span class='fl'>4</span>)</div><div class='img'><img src='plot-met-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'>## Wind speed and direction during Hurricane Juan</span>
 <span class='co'>## Compare with the final figure in a white paper by Chris Fogarty</span>
 <span class='co'>## (available at http://www.novaweather.net/Hurricane_Juan_files/McNabs_plot.pdf</span>
@@ -264,9 +264,9 @@ be made to the plot.</p>
 <span class='no'>dt</span> <span class='kw'>&lt;-</span> <span class='fl'>12</span> * <span class='fl'>3600</span>
 <span class='no'>juan</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>met</span>, <span class='no'>t0</span> - <span class='no'>dt</span> <span class='kw'>&lt;=</span> <span class='no'>time</span> <span class='kw'>&amp;</span> <span class='no'>time</span> <span class='kw'>&lt;=</span> <span class='no'>t0</span> + <span class='no'>dt</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>,<span class='fl'>1</span>))
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>juan</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='fl'>5</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>juan</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='fl'>5</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span>(<span class='kw'>v</span><span class='kw'>=</span><span class='no'>t0</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>juan</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='fl'>6</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span>(<span class='kw'>v</span><span class='kw'>=</span><span class='no'>t0</span>)</div><div class='img'><img src='plot-met-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>juan</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='fl'>6</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span>(<span class='kw'>v</span><span class='kw'>=</span><span class='no'>t0</span>)</div><div class='img'><img src='plot-met-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
