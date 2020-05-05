@@ -41,3 +41,65 @@ just by watching as others do such things.  Oceanography is a collaborative
 discipline, so it makes sense that the evolution of Oce be similarly
 collaborative.
 
+## Examples
+
+### CTD
+```R
+library(oce)
+data(ctd)
+plot(ctd, which=c(1,2,3,5), fill="lightgray")
+```
+![Sample CTD plot.](oce-demo-1.png)
+
+### Acoustic Doppler profiler
+```R
+library(oce)
+data(adp)
+plot(adp)
+```
+![Sample adp plot.](oce-demo-2.png)
+
+### Sealevel and tides
+```R
+library(oce)
+library(oce)
+data(sealevelHalifax)
+m <- tidem(sealevelHalifax)
+par(mfrow=c(2,1))
+plot(sealevelHalifax, which=1)
+plot(m)
+```
+![Sample sealevel plot.](oce-demo-3.png)
+
+
+### Echosounder
+```R
+library(oce)
+data(echosounder)
+plot(echosounder, which=2, drawTimeRange=TRUE, drawBottom=TRUE)
+```
+![Sample echosounder plot.](oce-demo-4.png)
+
+
+### Map
+```R
+library(oce)
+par(mar=rep(0.5, 4))
+data(endeavour, package="ocedata")
+data(coastlineWorld, package="oce")
+mapPlot(coastlineWorld, type='l', fill='gray')
+mapPoints(endeavour$longitude, endeavour$latitude, pch=20, col='red')
+```
+![Sample map plot.](oce-demo-5.png)
+
+
+### Landsat image
+```R
+library(ocedata)
+library(oce)
+data(landsat)
+plot(landsat)
+```
+![Sample landsat image plot.](oce-demo-6.png)
+
+

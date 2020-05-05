@@ -50,3 +50,5 @@ R/check_urls.R
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^oce-demo-*png$
+
