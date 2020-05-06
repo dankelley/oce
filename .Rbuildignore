@@ -51,4 +51,5 @@ R/check_urls.R
 ^docs$
 ^pkgdown$
 ^oce-demo-*png$
+^oce-logo-*png$
 
