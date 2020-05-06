@@ -1,7 +1,3 @@
----
-output: github_document
----
-
 # **oce** <img src="oce-logo-3.png" align="right" alt="" width="120" />
 
 [![Build Status](https://travis-ci.org/dankelley/oce.svg?branch=develop)](https://travis-ci.org/dankelley/oce)
