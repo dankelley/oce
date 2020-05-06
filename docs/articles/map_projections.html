@@ -94,13 +94,15 @@
 
       
 
-      </header><script src="map_projections_files/header-attrs-2.1/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>4. Using map projections</h1>
+      <h1 data-toc-skip><ol start="4" style="list-style-type: decimal">
+<li>Using map projections</li>
+</ol></h1>
                         <h4 class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 class="date">2020-05-05</h4>
+            <h4 class="date">2020-05-06</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/master/vignettes/map_projections.Rmd"><code>vignettes/map_projections.Rmd</code></a></small>
       <div class="hidden name"><code>map_projections.Rmd</code></div>
@@ -124,23 +126,23 @@
 <a href="#avoiding-projections-for-limited-area-plots" class="anchor"></a>Avoiding projections for limited-area plots</h1>
 <p>For map views that span only a few tens or hundreds of kilometers, it may be sufficient to plot directly, in rectilinear longitude-latitude space, but with an appropriate aspect ratio so that circular islands will appear circular in the plot.</p>
 <p>To see the need for setting the aspect ratio, consider the following view of eastern North America.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
 <span class="co">#&gt; Loading required package: gsw</span>
 <span class="co">#&gt; Loading required package: testthat</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">coastlineWorld</span>)
 <span class="no">lon</span> <span class="kw">&lt;-</span> <span class="no">coastlineWorld</span><span class="kw">[[</span><span class="st">"longitude"</span>]]
 <span class="no">lat</span> <span class="kw">&lt;-</span> <span class="no">coastlineWorld</span><span class="kw">[[</span><span class="st">"latitude"</span>]]
 <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">lon</span>, <span class="no">lat</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">"l"</span>,
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">lon</span>, <span class="no">lat</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">"l"</span>,
      <span class="kw">xlim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">130</span>, -<span class="fl">50</span>), <span class="kw">ylim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">40</span>, <span class="fl">50</span>))</pre></body></html></div>
 <p><img src="map_projections_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
-<p>Readers familiar with this region will notice that the coastline shapes are distorted. The solution to this problem is to set the <code>asp</code> argument of <code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code> to a value that will compensate for meridional convergence at the poles, as below.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">lon</span>, <span class="no">lat</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">"l"</span>,
+<p>Readers familiar with this region will notice that the coastline shapes are distorted. The solution to this problem is to set the <code>asp</code> argument of <code><a href="https://rdrr.io/r/graphics/plot.html">plot()</a></code> to a value that will compensate for meridional convergence at the poles, as below.</p>
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">lon</span>, <span class="no">lat</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">"l"</span>,
      <span class="kw">xlim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">130</span>, -<span class="fl">50</span>), <span class="kw">ylim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">40</span>, <span class="fl">50</span>), <span class="kw">asp</span><span class="kw">=</span><span class="fl">1</span>/<span class="fu"><a href="https://rdrr.io/r/base/Trig.html">cos</a></span>(<span class="fl">45</span>*<span class="no">pi</span>/<span class="fl">180</span>))</pre></body></html></div>
 <p><img src="map_projections_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
-<p>Although the above approach is not exactly taxing, the effort of setting the aspect ratio and setting line-type plots can be spared by using the generic <code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code> function for <code>coastline</code> objects, as follows.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">coastlineWorld</span>,
+<p>Although the above approach is not exactly taxing, the effort of setting the aspect ratio and setting line-type plots can be spared by using the generic <code><a href="https://rdrr.io/r/graphics/plot.html">plot()</a></code> function for <code>coastline</code> objects, as follows.</p>
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">coastlineWorld</span>,
      <span class="kw">longitudelim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">130</span>, -<span class="fl">50</span>), <span class="kw">latitudelim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">40</span>, <span class="fl">50</span>))
 <span class="co">#&gt; Warning: In plot,coastline-method() : converting longitudelim and latitudelim to clongitude=-90, clatitude=45 and span=6098</span></pre></body></html></div>
 <p><img src="map_projections_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
@@ -153,9 +155,9 @@
 <h2 class="hasAnchor">
 <a href="#world-views" class="anchor"></a>World views</h2>
 <p>It makes sense to switch to a coarser coastline file for the examples to follow, because plotting a detailed coastline in a world view leads to a scribbling effect that obscures the large-scale coastline shapes.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">coastlineWorld</span>)</pre></body></html></div>
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">coastlineWorld</span>)</pre></body></html></div>
 <p>The function used to produce maps with projections is <code>mapPlot</code>, and with default arguments it produces</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))
 <span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span>(<span class="no">coastlineWorld</span>)</pre></body></html></div>
 <div class="figure">
 <img src="map_projections_files/figure-html/unnamed-chunk-6-1.png" alt="World coastline with default (Mollweide) projection." width="360"><p class="caption">
@@ -170,7 +172,7 @@ World coastline with default (Mollweide) projection.
 <h2 class="hasAnchor">
 <a href="#polar-views" class="anchor"></a>Polar views</h2>
 <p>In both these views (and in most world-spanning projections) there is substantial distortion at high latitudes. The Stereographic projection offers a solution to this problem, e.g. in the following (which employs a trick on the latitude limit, specifying an image point on the other side of the planet, with the pole in between).</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))
 <span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span>(<span class="no">coastlineWorld</span>, <span class="kw">longitudelim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">130</span>, <span class="fl">50</span>), <span class="kw">latitudelim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">60</span>, <span class="fl">120</span>),
        <span class="kw">projection</span><span class="kw">=</span><span class="st">"+proj=stere +lat_0=90"</span>, <span class="kw">col</span><span class="kw">=</span><span class="st">'gray'</span>)</pre></body></html></div>
 <div class="figure">
@@ -185,7 +187,7 @@ Polar view with stereographic projection.
 <h2 class="hasAnchor">
 <a href="#mid-latitude-views" class="anchor"></a>Mid-latitude views</h2>
 <p>The Lambert Conformal view is often used in maps that span wide longitudal ranges, e.g. a map of Canada may be produced as follows.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))
 <span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span>(<span class="no">coastlineWorld</span>,
          <span class="kw">longitudelim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">130</span>,-<span class="fl">55</span>), <span class="kw">latitudelim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">35</span>, <span class="fl">60</span>),
          <span class="kw">projection</span><span class="kw">=</span><span class="st">"+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100"</span>, <span class="kw">col</span><span class="kw">=</span><span class="st">'gray'</span>)</pre></body></html></div>
@@ -204,7 +206,7 @@ Polar view with stereographic projection.
 <h1 class="hasAnchor">
 <a href="#solutions-to-exercises" class="anchor"></a>Solutions to exercises</h1>
 <p><strong>Exercise 1.</strong> Plot the world with a Robinson projection, using gray shading for land.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">0.5</span>, <span class="fl">4</span>))
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">0.5</span>, <span class="fl">4</span>))
 <span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span>(<span class="no">coastlineWorld</span>, <span class="kw">col</span><span class="kw">=</span><span class="st">"lightgray"</span>, <span class="kw">projection</span><span class="kw">=</span><span class="st">"+proj=robin"</span>)</pre></body></html></div>
 <div class="figure">
 <img src="map_projections_files/figure-html/unnamed-chunk-9-1.png" alt="World coastline with Robinson projection." width="360"><p class="caption">
@@ -213,7 +215,7 @@ World coastline with Robinson projection.
 </div>
 <p><strong>Exercise 2.</strong> Plot an image of world topography with the Mollweide projection.</p>
 <p>Note that some adjustment of the margins is required to fit the colorbar.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1.5</span>, <span class="fl">1</span>, <span class="fl">1.5</span>, <span class="fl">1</span>))
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1.5</span>, <span class="fl">1</span>, <span class="fl">1.5</span>, <span class="fl">1</span>))
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">topoWorld</span>)
 <span class="no">topo</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/decimate.html">decimate</a></span>(<span class="no">topoWorld</span>, <span class="fl">2</span>) <span class="co"># coarsen grid: 4X faster plot</span>
 <span class="no">lon</span> <span class="kw">&lt;-</span> <span class="no">topo</span><span class="kw">[[</span><span class="st">"longitude"</span>]]
@@ -229,12 +231,12 @@ World topography with Mollweide projection.
 </p>
 </div>
 <p><strong>Exercise 3.</strong> Draw a view of Antarctica and the Southern Ocean.</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))
 <span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span>(<span class="no">coastlineWorld</span>, <span class="kw">longitudelim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">180</span>, <span class="fl">180</span>), <span class="kw">latitudelim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">130</span>, -<span class="fl">50</span>),
        <span class="kw">projection</span><span class="kw">=</span><span class="st">"+proj=stere +lat_0=-90"</span>, <span class="kw">col</span><span class="kw">=</span><span class="st">'gray'</span>, <span class="kw">grid</span><span class="kw">=</span><span class="fl">15</span>)</pre></body></html></div>
 <p><img src="map_projections_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
 <p><strong>Exercise 4.</strong> Plot the eastern North Atlantic using a Mercator projection.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))
 <span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span>(<span class="no">coastlineWorld</span>, <span class="kw">col</span><span class="kw">=</span><span class="st">"lightgray"</span>,
         <span class="kw">projection</span><span class="kw">=</span><span class="st">"+proj=merc"</span>,
         <span class="kw">longitudelim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">80</span>, -<span class="fl">40</span>), <span class="kw">latitudelim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">20</span>, <span class="fl">60</span>))</pre></body></html></div>
@@ -245,7 +247,7 @@ Eastern North Atlantic with Mercator projection.
 </div>
 <p><strong>Exercise 5.</strong> Plot the eastern North Atlantic using an Albers Equal-Area Conic projection.</p>
 <p>In the solution given below, note how the <code>lon_0</code> argument is set to be at the central value of <code>longitudelim</code>. This makes the <span class="math inline">\(60^\circ\)</span>W line be vertical on the plot. The settings for <code>lat_1</code> and <code>lat_2</code> are the locations at which the cone intersects the earth, so distortion is minimized at those latitudes. Note how the lines of constant longitude are changed, compared with those in the Mercator view. It may be informative to compare the relative ratio of the area of Nova Scotia (at <span class="math inline">\(45^\circ\)</span>N) and Ungava Bay (at <span class="math inline">\(60^\circ\)</span>N) in this Albers Equal-Area projection, and the Mercator projection shown in the previous diagram.</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))
 <span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span>(<span class="no">coastlineWorld</span>, <span class="kw">col</span><span class="kw">=</span><span class="st">"lightgray"</span>,
         <span class="kw">projection</span><span class="kw">=</span><span class="st">"+proj=aea +lat_1=30 +lat_2=50 +lon_0=-60"</span>,
         <span class="kw">longitudelim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">80</span>, -<span class="fl">40</span>), <span class="kw">latitudelim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">20</span>, <span class="fl">60</span>))</pre></body></html></div>
@@ -256,7 +258,7 @@ Eastern North Atlantic with Albers equal-area projection.
 </div>
 <p><strong>Exercise 6.</strong> Plot the world with the Goode projection, superimposing sea surface temperature as contours.</p>
 <p>Note that the temperature is provided by the <code>ocedata</code> package.</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">0.5</span>, <span class="fl">4</span>))
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">0.5</span>, <span class="fl">4</span>))
 <span class="fu"><a href="../reference/mapPlot.html">mapPlot</a></span>(<span class="no">coastlineWorld</span>, <span class="kw">projection</span><span class="kw">=</span><span class="st">"+proj=goode"</span>, <span class="kw">col</span><span class="kw">=</span><span class="st">"lightgray"</span>)
 <span class="kw">if</span> (<span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"ocedata"</span>, <span class="kw">quietly</span><span class="kw">=</span><span class="fl">TRUE</span>)) {
     <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">levitus</span>, <span class="kw">package</span><span class="kw">=</span><span class="st">"ocedata"</span>)
