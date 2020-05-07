@@ -44,12 +44,11 @@ R/check_urls.R
 ^cran-comments\.md$
 ^CRAN-RELEASE$
 ^Rplot*.png$
-
 ^appveyor\.yml$
 ^doc$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-^oce-demo-*png$
-^oce-logo-*png$
+^oce-demo-[0-9].png$
+^oce-logo-[0-9].png$
 

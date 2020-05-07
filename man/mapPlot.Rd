@@ -33,16 +33,16 @@ mapPlot(
 )
 }
 \arguments{
-\item{longitude}{either a vector of longitudes of points to be plotted, or
+\item{longitude}{either a numeric vector of longitudes of points to be plotted, or
 something (an \code{oce} object, a list, or a data frame) from which both
 longitude and latitude may be inferred (in which case the \code{latitude}
 argument is ignored).  If \code{longitude} is missing, both it and
 \code{latitude} are taken from \code{\link[=coastlineWorld]{coastlineWorld()}}.}
 
-\item{latitude}{vector of latitudes of points to be plotted (ignored
+\item{latitude}{numeric vector of latitudes of points to be plotted (ignored
 if the first argument contains both latitude and longitude).}
 
-\item{longitudelim}{optional vector of length two, indicating the
+\item{longitudelim}{optional numeric vector of length two, indicating the
 longitude limits of the plot. This value is used in the selection of
 longitude lines that are shown (and possibly
 labelled on the axes). In some cases, e.g. for polar views,

@@ -7,12 +7,12 @@
 mapLongitudeLatitudeXY(longitude, latitude)
 }
 \arguments{
-\item{longitude}{vector of the longitudes of points, or an object from which
+\item{longitude}{numeric vector of the longitudes of points, or an object from which
 both latitude and longitude can be inferred (e.g. a coastline file, or the
 return value from \code{\link[=mapLocator]{mapLocator()}}), in which case the following
 two arguments are ignored.}
 
-\item{latitude}{vector of latitudes of points, needed only if they cannot
+\item{latitude}{numeric vector of latitudes of points, needed only if they cannot
 be inferred from the first argument.}
 }
 \value{
