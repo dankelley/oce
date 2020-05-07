@@ -287,15 +287,15 @@ with them.</p>
 #&gt; * Location:            Lat and lon unknown 
 #&gt; * number of observations:   8761 
 #&gt; *    "      non-missing:    8761 
-#&gt; * Time ranges from 0-01-01 to 0-12-31 with 8761 samples and mean increment 1 hour
+#&gt; * Time ranges from 0000-01-01 to 0000-12-31 with 8761 samples and mean increment 1 hour
 #&gt; * Data Overview
 #&gt; 
 #&gt;                   Min.       Mean Max. Dim. NAs OriginalName
 #&gt;     elevation [m]   -2 0.00089588    2 8761   0            -
 #&gt; 
 #&gt; * Processing Log
-#&gt;     - 2020-05-06 17:32:57 UTC: `create 'sealevel' object`
-#&gt;     - 2020-05-06 17:32:57 UTC: `as.sealevel(elevation = elevation)`</div><div class='input'>
+#&gt;     - 2020-05-07 11:54:32 UTC: `create 'sealevel' object`
+#&gt;     - 2020-05-07 11:54:32 UTC: `as.sealevel(elevation = elevation)`</div><div class='input'>
 <span class='co'># As above, but start at the Y2K time.</span>
 <span class='no'>time</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.POSIXlt.html'>as.POSIXct</a></span>(<span class='st'>"2000-01-01"</span>) + <span class='no'>h</span> * <span class='fl'>3600</span>
 <span class='no'>sl</span> <span class='kw'>&lt;-</span> <span class='fu'>as.sealevel</span>(<span class='no'>elevation</span>, <span class='no'>time</span>)
@@ -313,8 +313,8 @@ with them.</p>
 #&gt;     elevation [m]   -2 0.00089588    2 8761   0            -
 #&gt; 
 #&gt; * Processing Log
-#&gt;     - 2020-05-06 17:32:57 UTC: `create 'sealevel' object`
-#&gt;     - 2020-05-06 17:32:57 UTC: `as.sealevel(elevation = elevation, time = time)`</div></pre>
+#&gt;     - 2020-05-07 11:54:32 UTC: `create 'sealevel' object`
+#&gt;     - 2020-05-07 11:54:32 UTC: `as.sealevel(elevation = elevation, time = time)`</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

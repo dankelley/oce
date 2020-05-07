@@ -156,14 +156,14 @@ present projection.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>longitude</th>
-      <td><p>vector of the longitudes of points, or an object from which
+      <td><p>numeric vector of the longitudes of points, or an object from which
 both latitude and longitude can be inferred (e.g. a coastline file, or the
 return value from <code><a href='mapLocator.html'>mapLocator()</a></code>), in which case the following
 two arguments are ignored.</p></td>
     </tr>
     <tr>
       <th>latitude</th>
-      <td><p>vector of latitudes of points, needed only if they cannot
+      <td><p>numeric vector of latitudes of points, needed only if they cannot
 be inferred from the first argument.</p></td>
     </tr>
     </table>
@@ -209,7 +209,7 @@ be inferred from the first argument.</p></td>
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>), <span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>2</span>, <span class='fl'>4</span>))
 <span class='fu'><a href='mapPlot.html'>mapPlot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>projection</span><span class='kw'>=</span><span class='st'>"+proj=moll"</span>) <span class='co'># sets a projection</span>
 <span class='no'>xy</span> <span class='kw'>&lt;-</span> <span class='fu'>mapLongitudeLatitudeXY</span>(<span class='no'>coastlineWorld</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>xy</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'l'</span>, <span class='kw'>asp</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='img'><img src='mapLongitudeLatitudeXY-1.png' alt='' width='700' height='433' /></div><div class='input'># }
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>xy</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'l'</span>, <span class='kw'>asp</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='img'><img src='mapLongitudeLatitudeXY-1.png' alt='' width='700' height='433' /></div><div class='input'># }
 
 </div></pre>
   </div>

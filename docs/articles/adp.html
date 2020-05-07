@@ -94,15 +94,13 @@
 
       
 
-      </header><div class="row">
+      </header><script src="adp_files/header-attrs-2.1/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip><ol start="3" style="list-style-type: decimal">
-<li>Analysis of acoustic-Doppler data</li>
-</ol></h1>
+      <h1 data-toc-skip>3. Analysis of acoustic-Doppler data</h1>
                         <h4 class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 class="date">2020-05-06</h4>
+            <h4 class="date">2020-05-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/master/vignettes/adp.Rmd"><code>vignettes/adp.Rmd</code></a></small>
       <div class="hidden name"><code>adp.Rmd</code></div>
@@ -114,7 +112,7 @@
 <!-- HOW TO BUILD THE VIGNETTE. -->
 <!-- Look in oce.Rmd for instructions. -->
 <p><strong>Abstract.</strong> This vignette explains the basics of using the oce package to handle measurements made by acoustic Doppler profilers. As in the related vignette about working with <a href="flags.html">data-quality flags</a>, the material is organized to reflect typical workflow. See <a href="oce.html">the main oce vignette</a> for general information about oce. The sample code provided here relies on the oce package, loaded as follows.</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
 <span class="co">#&gt; Loading required package: gsw</span>
 <span class="co">#&gt; Loading required package: testthat</span></pre></body></html></div>
 <div id="reading-adp-files" class="section level1">
@@ -122,17 +120,17 @@
 <a href="#reading-adp-files" class="anchor"></a>Reading adp files</h1>
 <p>Acoustic Doppler profiling instruments are called ADCPs by some manufacturers and ADPs by others. The class name <code>adp</code> is used in oce, to handle both types. It is important to realize that there are <em>many</em> data formats for data of this type, and that the files are normally in a dense binary format that cannot be read with a text editor. It is necessary to use software to work with such files. Although oce can handle many file formats, and although its authors do their best to keep up with changes to file formats (at least for popular instruments), users will sometimes be forced to use manufacturer software to read the data, or at least convert to a format that can be manually read into R, and then converted to an <code>adp</code> object using the <code><a href="../reference/as.adp.html">as.adp()</a></code> function.</p>
 <p>Suppose <code>f</code> is a character string naming a data file. In many cases,</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">d</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span>(<span class="no">f</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">d</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span>(<span class="no">f</span>)</pre></body></html></div>
 <p>will read the file, because <code>read.oce</code> will look inside the file to try to guess the format. If this does not work, one ought to try e.g.</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">d</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/read.adp.html">read.adp</a></span>(<span class="no">f</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">d</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/read.adp.html">read.adp</a></span>(<span class="no">f</span>)</pre></body></html></div>
 <p>which, again, will try to determine which subtype of adp file has been provided. If that fails, it might help to try a specialized function, such as <code><a href="../reference/read.adp.rdi.html">read.adp.rdi()</a></code> for an RDI file, <code><a href="../reference/read.adp.nortek.html">read.adp.nortek()</a></code> for a Nortek file, or <code><a href="../reference/read.adp.sontek.html">read.adp.sontek()</a></code> for a Sontek file. (Actually, each of these can handle a variety of sub-formats).</p>
 <p>If any of these <code>read.</code> functions is called with just a single argument naming the file, then the entire dataset will be read in. This can be slow for large files (e.g. taking of order 0.1s per Mb), and so it can help to use the <code>by</code> argument, e.g. for a 138Mb file on the author’s computer,</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">f</span> <span class="kw">&lt;-</span> <span class="st">"/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"</span>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">f</span> <span class="kw">&lt;-</span> <span class="st">"/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"</span>
 <span class="no">dall</span>  <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span>(<span class="no">f</span>)</pre></body></html></div>
 <p>takes 15.2s of user time, but</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">d100</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span>(<span class="no">f</span>, <span class="kw">by</span><span class="kw">=</span><span class="fl">100</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">d100</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span>(<span class="no">f</span>, <span class="kw">by</span><span class="kw">=</span><span class="fl">100</span>)</pre></body></html></div>
 <p>takes 0.2s. It is also possible to window the data, using the <code>from</code> and <code>to</code> arguments, which (like <code>by</code>) can be integers that count ensembles (or “profiles”) or a POSIX time (see <code><a href="../reference/read.adp.html">?read.adp</a></code>). For example, the adp dataset provided by oce was read with</p>
-<div class="sourceCode"><html><body><pre class="r">read.oce(f, from=as.POSIXct("2008-06-26", tz="UTC")`,
+<div class="sourceCode" id="cb6"><html><body><pre class="r">read.oce(f, from=as.POSIXct("2008-06-26", tz="UTC")`,
             to=as.POSIXct("2008-06-27", tz="UTC"),
             by="60:00"
             latitude=47.88126, longitude=-69.73433)</pre></body></html></div>
@@ -142,7 +140,7 @@
 <h1 class="hasAnchor">
 <a href="#summarizing-adp-data" class="anchor"></a>Summarizing adp data</h1>
 <p>The generic function <code>summary</code> provides a useful overview of an adp data object. For example,</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">adp</span>)
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">adp</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">adp</span>)</pre></body></html></div>
 <p>(results not shown the goal is to encourage the user to try this!) shows the sort of information normally present in an RDI file. Other manufacturer types will have somewhat different summaries, because both the metadata and the data differ from instrument to instrument. In all cases, there will be a vector holding time (named <code>time</code>), another holding the distance from instrument to the centre of a measurement bin, measured along a line equidistant between the beams (named <code>distance</code>), along with an array holding velocity (named <code>v</code>). (Other arrays may include, as in this RDI case, <code>q</code> for data quality, <code>a</code> for backscatter amplitude, and <code>g</code> for percentage goodness.)</p>
 <p>Note that the summary reveals that instrument had been set up to record in <code>beam</code> coordinates, but that processing had been done to convert to <code>enu</code> (east-north-up) coordinates.</p>
@@ -153,7 +151,7 @@
 <a href="#changing-coordinate-systems" class="anchor"></a>Changing coordinate systems</h1>
 <p>It is critical for analysts to be aware of the coordinate system of an adp dataset, simply because those systems are so different. In what oce calls the <code>beam</code> system, velocities in each of the acoustic beams are measured along the slant angle of the beam. These data may be combined (using a transformation matrix which is part of the metadata displayed with the <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> function) into what oce calls a <code>xyz</code> system that is Cartesian and fixed to the instrument. Since instruments record heading, pitch, and roll, the <code>xyz</code> velocities can be converted easily to <code>enu</code> velocities.</p>
 <p>In some applications, the scientific focus is primarily on the enu data, but it is a good idea to calculate and study the data at all stages of processing. Thus, although the <code><a href="../reference/toEnu.html">toEnu()</a></code> function will convert data measured in any coordinate system into an enu variant, many analysts will do something along the lines of</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">beam</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span>(<span class="no">f</span>)
+<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">beam</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span>(<span class="no">f</span>)
 <span class="no">xyx</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/beamToXyz.html">beamToXyz</a></span>(<span class="no">beam</span>)
 <span class="no">enu</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/xyzToEnu.html">xyzToEnu</a></span>(<span class="no">xyz</span>, <span class="kw">declination</span><span class="kw">=</span>-<span class="fl">18.1</span>)</pre></body></html></div>
 <p>where the declination illustrated is the value used in creating the <code><a href="https://rdrr.io/r/utils/data.html">data(adp)</a></code> dataset. (Compensating for declination is necessary because compasses are calibrated at a particular place and time, and compasses have no way of “knowing” the local angle between true north and magnetic north.)</p>
@@ -161,8 +159,8 @@
 <div id="plotting" class="section level1">
 <h1 class="hasAnchor">
 <a href="#plotting" class="anchor"></a>Plotting</h1>
-<p>The generic <code><a href="https://rdrr.io/r/graphics/plot.html">plot()</a></code> function is specialized to handle adp objects in a variety of simple but helpful ways. The type of plot is determined by the <code>which</code> argument. The default for <code>which</code> is to create a multi-panel image plot that shows time-space dependence for each velocity component. The number of panels depends on the number of beams used by the instrument, and each one has a label indicating the component name. For example,</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">adp</span>)</pre></body></html></div>
+<p>The generic <code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code> function is specialized to handle adp objects in a variety of simple but helpful ways. The type of plot is determined by the <code>which</code> argument. The default for <code>which</code> is to create a multi-panel image plot that shows time-space dependence for each velocity component. The number of panels depends on the number of beams used by the instrument, and each one has a label indicating the component name. For example,</p>
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">adp</span>)</pre></body></html></div>
 <p><img src="adp_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <p>has velocity panels named <code>east</code>, <code>north</code> and <code>up</code>, along with one named <code>error</code>, which is an estimate of the velocity-inference error.</p>
 <p>Options to this plot variant can be used to control how distance from instrument is shown (which can be useful in visualizing data from upward- and downward-aligned instruments), what colours are used to represent the signals, etc.</p>
@@ -173,7 +171,7 @@
 <h1 class="hasAnchor">
 <a href="#subsetting" class="anchor"></a>Subsetting</h1>
 <p>Adp data can be subsetted in a wide variety of ways, e.g.</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span>(<span class="no">adp</span>, <span class="no">distance</span><span class="kw">&lt;</span><span class="fl">20</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span>(<span class="no">adp</span>, <span class="no">distance</span><span class="kw">&lt;</span><span class="fl">20</span>))</pre></body></html></div>
 <p><img src="adp_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
 <p>plots only data within 20m of the instrument. See <code><a href="../reference/subset-adp-method.html">?"subset,adp-method"</a></code> for more on subsetting.</p>
 <p><strong>Exercise 3.</strong> Plot the adp data for the first half of the sampling interval.</p>
@@ -183,13 +181,13 @@
 <a href="#accessing-data-within-adp-objects" class="anchor"></a>Accessing data within adp objects</h1>
 <p>All oce objects share a common framework, with so-called “slots” for metadata, data, and processing log. It is possible to examine, and modify, the elements of each of these slots using base R constructs, but it is usually better to use oce accessor functions. The details are provided with <code><a href="../reference/sub-sub-adp-method.html">?"[[,adp-method"</a></code> and <code><a href="../reference/sub-subset-adp-method.html">?"[[&lt;-,adp-method"</a></code>, but a few examples should suffice to sketch the general pattern.</p>
 <p>For example,</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">time</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"time"</span>]]
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">time</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"time"</span>]]
 <span class="no">distance</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"distance"</span>]]</pre></body></html></div>
 <p>extracts the times and distances of the profiles within <code><a href="https://rdrr.io/r/utils/data.html">data(adp)</a></code>, while the array holding the velocities is extract with</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">v</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"v"</span>]]</pre></body></html></div>
+<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">v</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"v"</span>]]</pre></body></html></div>
 <p>Altering values uses the <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> to the left of the assignment operator, but this is not commonly required in simple work, so it is best for readers to focus first on accessing data. The exercises may help with this.</p>
 <p>Some of the fields contained in <code>adp</code> objects, particularly the amplitude, correlation, and percent good fields (<code>a</code>, <code>q</code>, and <code>g</code>) are stored as <code>raw</code>-type. This is done primarly to save memory space, as expanded all of those fields into <code>numeric</code> types can be slow and they get large quickly. However, to actually work with the numbers, users can extract a “numeric” version by supplying the second argument to the <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> function, e.g.</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">a</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"a"</span>, <span class="st">"numeric"</span>]]</pre></body></html></div>
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">a</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"a"</span>, <span class="st">"numeric"</span>]]</pre></body></html></div>
 <p>This has the advantage of returning an object with the same matrix dimensions as the original (note that functions like <code><a href="https://rdrr.io/r/base/numeric.html">as.numeric()</a></code> typically discard dimension information, thereby converting an array to a vector).</p>
 <p><strong>Exercise 4.</strong> Plot a time series of mid-depth and depth-averaged eastward velocities.</p>
 <p><strong>Exercise 5.</strong> Perform an eigen analysis of eastward and northward velocity.</p>
@@ -201,14 +199,14 @@
 <p><strong>Exercise 1.</strong> Determine the name of the <code>metadata</code> item that holds the coordinate system of an adp object.</p>
 <p><strong>Solution.</strong></p>
 <p>With adp as loaded in the text, we may the names in the metadata with:</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">adp</span><span class="kw">[[</span><span class="st">"metadata"</span>]]))</pre></body></html></div>
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">adp</span><span class="kw">[[</span><span class="st">"metadata"</span>]]))</pre></body></html></div>
 <p>(results not shown), after which a keen eye will notice that two elements relate to coordinates:</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">adp</span><span class="kw">[[</span><span class="st">"originalCoordinate"</span>]]
+<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">adp</span><span class="kw">[[</span><span class="st">"originalCoordinate"</span>]]
 <span class="co">#&gt; [1] "beam"</span>
 <span class="no">adp</span><span class="kw">[[</span><span class="st">"oceCoordinate"</span>]]
 <span class="co">#&gt; [1] "enu"</span></pre></body></html></div>
 <p>and comparison with the output of <code><a href="https://rdrr.io/r/base/summary.html">summary(adp)</a></code> reveals that the former is the coordinate system in which the data were originally measured, while the latter is the coordinate system of the transformed data. Using</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="../reference/processingLogShow.html">processingLogShow</a></span>(<span class="no">adp</span>)
+<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="../reference/processingLogShow.html">processingLogShow</a></span>(<span class="no">adp</span>)
 <span class="co">#&gt; * Processing Log</span>
 <span class="co">#&gt;     - 2019-08-12 15:29:36 UTC: `read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000", ...)`</span>
 <span class="co">#&gt;     - 2019-08-12 15:29:36 UTC: `beamToXyzAdp(x = beam)`</span>
@@ -216,15 +214,15 @@
 <p>reveals the steps in the data transformation.</p>
 <p><strong>Exercise 2.</strong> Create a u-v scatterplot.</p>
 <p><strong>Solution.</strong></p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">adp</span>, <span class="kw">which</span><span class="kw">=</span><span class="st">"uv"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">adp</span>, <span class="kw">which</span><span class="kw">=</span><span class="st">"uv"</span>)</pre></body></html></div>
 <p><img src="adp_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
 <p><strong>Exercise 3.</strong> Plot the adp data for the first half of the sampling interval.</p>
 <p><strong>Solution.</strong></p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span>(<span class="no">adp</span>, <span class="no">time</span> <span class="kw">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html">median</a></span>(<span class="no">adp</span><span class="kw">[[</span><span class="st">"time"</span>]])))</pre></body></html></div>
+<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span>(<span class="no">adp</span>, <span class="no">time</span> <span class="kw">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html">median</a></span>(<span class="no">adp</span><span class="kw">[[</span><span class="st">"time"</span>]])))</pre></body></html></div>
 <p><img src="adp_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
 <p><strong>Exercise 4.</strong> Plot a time series of mid-depth and depth-averaged eastward velocities.</p>
 <p><strong>Solution.</strong></p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">time</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"time"</span>]]
+<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">time</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"time"</span>]]
 <span class="no">v</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"v"</span>]]
 <span class="co"># The second index is for bin number, the third for beam number</span>
 <span class="no">midIndex</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">v</span>)[<span class="fl">2</span>]/<span class="fl">2</span>
@@ -237,10 +235,10 @@
 <span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span>(<span class="st">"top"</span>, <span class="kw">lwd</span><span class="kw">=</span><span class="fl">1</span>, <span class="kw">col</span><span class="kw">=</span><span class="fl">1</span>:<span class="fl">2</span>,
        <span class="kw">legend</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"At"</span>, <span class="no">distance</span>, <span class="st">"m"</span>), <span class="st">"Depth Avg"</span>))</pre></body></html></div>
 <p><img src="adp_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
-<p>Here, <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code> is used instead of the basic R function <code><a href="https://rdrr.io/r/graphics/plot.html">plot()</a></code>, because it provides a margin note on the detailed time interval.</p>
+<p>Here, <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code> is used instead of the basic R function <code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code>, because it provides a margin note on the detailed time interval.</p>
 <p><strong>Exercise 5.</strong> Perform an eigen analysis of eastward and northward velocity.</p>
 <p><strong>Solution.</strong></p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">u</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"v"</span>]][,,<span class="fl">1</span>]
+<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">u</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"v"</span>]][,,<span class="fl">1</span>]
 <span class="no">v</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"v"</span>]][,,<span class="fl">2</span>]
 <span class="no">ok</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html">is.finite</a></span>(<span class="no">u</span>) <span class="kw">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html">is.finite</a></span>(<span class="no">v</span>) <span class="co"># remove NA values</span>
 <span class="no">u</span> <span class="kw">&lt;-</span> <span class="no">u</span>[<span class="no">ok</span>]
@@ -255,9 +253,9 @@
 <span class="co">#&gt; [1,] 0.5441538 -0.8389855</span>
 <span class="co">#&gt; [2,] 0.8389855  0.5441538</span></pre></body></html></div>
 <p>Note that this action is equivalent to principal component analysis, and it might be wiser to use</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">pr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html">prcomp</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="no">u</span>,<span class="no">v</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">pr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html">prcomp</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="no">u</span>,<span class="no">v</span>))</pre></body></html></div>
 <p>to do the analysis, which yields the same principal axes</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">pr</span>
+<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">pr</span>
 <span class="co">#&gt; Standard deviations (1, .., p=2):</span>
 <span class="co">#&gt; [1] 0.6953428 0.1247818</span>
 <span class="co">#&gt; </span>
@@ -268,15 +266,15 @@
 <p>but has the advantage of having associated methods, including for plotting.</p>
 <p><strong>Exercise 6.</strong> Plot a time series of pressure variations, to reveal tidal height.</p>
 <p><strong>Solution.</strong></p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">time</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"time"</span>]]
+<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">time</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"time"</span>]]
 <span class="no">pressure</span> <span class="kw">&lt;-</span> <span class="no">adp</span><span class="kw">[[</span><span class="st">"pressure"</span>]]
 <span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span>(<span class="no">time</span>, <span class="no">pressure</span>)</pre></body></html></div>
 <p><img src="adp_files/figure-html/unnamed-chunk-24-1.png" width="700"></p>
 <p>As a matter of interest, a tidal analysis may be done with</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">m</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/tidem.html">tidem</a></span>(<span class="fu"><a href="../reference/as.sealevel.html">as.sealevel</a></span>(<span class="no">pressure</span>, <span class="no">time</span>))
+<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="no">m</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/tidem.html">tidem</a></span>(<span class="fu"><a href="../reference/as.sealevel.html">as.sealevel</a></span>(<span class="no">pressure</span>, <span class="no">time</span>))
 <span class="co">#&gt; Note: the tidal record is too short to fit for constituents:  SA SSA MSM MM MSF MF ALP1 2Q1 SIG1 Q1 RHO1 O1 TAU1 BET1 NO1 CHI1 PI1 P1 S1 PSI1 PHI1 THE1 J1 SO1 OO1 UPS1 OQ2 EPS2 2N2 MU2 N2 NU2 GAM2 H1 H2 MKS2 LDA2 L2 T2 S2 R2 K2 MSN2 ETA2 MO3 M3 SO3 MK3 SK3 MN4 M4 SN4 MS4 MK4 S4 SK4 2SK5 2MN6 M6 2MS6 2MK6 2SM6 MSK6 M8</span></pre></body></html></div>
 <p>where the list of undetermined tidal constituents is long, because this tidal record is so short (see <code><a href="../reference/tidem.html">?tidem</a></code>). The fitted constituents are as follows</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">m</span>)
+<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">m</span>)
 <span class="co">#&gt; tidem summary</span>
 <span class="co">#&gt; -------------</span>
 <span class="co">#&gt; </span>
@@ -294,11 +292,11 @@
 <span class="co">#&gt; ---</span>
 <span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
 <span class="co">#&gt; * Processing Log</span>
-<span class="co">#&gt;     - 2020-05-06 17:39:25 UTC: `create 'tidem' object`</span>
-<span class="co">#&gt;     - 2020-05-06 17:39:25 UTC: `tidem(t = as.sealevel(pressure, time))`</span></pre></body></html></div>
+<span class="co">#&gt;     - 2020-05-07 11:57:59 UTC: `create 'tidem' object`</span>
+<span class="co">#&gt;     - 2020-05-07 11:57:59 UTC: `tidem(t = as.sealevel(pressure, time))`</span></pre></body></html></div>
 <p>(Note that it fitted for M2, but not S2, because the Rayleigh criterion prevents inferring both, and the conventional tidal analysis favours M2 over S2 if the time series is too short to fit for more than one semi-diurnal constituent.)</p>
 <p>A useful step might be to draw a tidal fit along with the data. It makes sense to construct a finer time grid, to get a smooth curve, as in the following (see <code><a href="../reference/predict.tidem.html">?predict.tidem</a></code>).</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span>(<span class="no">time</span>, <span class="no">pressure</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">"p"</span>, <span class="kw">col</span><span class="kw">=</span><span class="st">"blue"</span>)
+<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span>(<span class="no">time</span>, <span class="no">pressure</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">"p"</span>, <span class="kw">col</span><span class="kw">=</span><span class="st">"blue"</span>)
 <span class="no">timePredict</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span>(<span class="no">time</span>), <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">time</span>), <span class="kw">length.out</span><span class="kw">=</span><span class="fl">200</span>)
 <span class="no">pressurePredict</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">m</span>, <span class="no">timePredict</span>)
 <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html">lines</a></span>(<span class="no">timePredict</span>, <span class="no">pressurePredict</span>, <span class="kw">col</span><span class="kw">=</span><span class="st">"red"</span>)</pre></body></html></div>

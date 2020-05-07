@@ -94,15 +94,13 @@
 
       
 
-      </header><div class="row">
+      </header><script src="oce_files/header-attrs-2.1/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip><ol style="list-style-type: decimal">
-<li>Introduction to Oce</li>
-</ol></h1>
+      <h1 data-toc-skip>1. Introduction to Oce</h1>
                         <h4 class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="uri">https://orcid.org/0000-0001-7808-5911</a>) and Clark Richards (<a href="https://orcid.org/0000-0002-7833-206X" class="uri">https://orcid.org/0000-0002-7833-206X</a>)</h4>
             
-            <h4 class="date">2020-05-06</h4>
+            <h4 class="date">2020-05-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/master/vignettes/oce.Rmd"><code>vignettes/oce.Rmd</code></a></small>
       <div class="hidden name"><code>oce.Rmd</code></div>
@@ -130,7 +128,7 @@
 <h1 class="hasAnchor">
 <a href="#architecture-of-oce-objects" class="anchor"></a>Architecture of oce objects</h1>
 <div class="figure">
-<img src="ctd-object.png" alt="Figure 1. Basic layout of a CTD object. All oce objects contain slots named data, metadata, and processingLog, with the contents depending on the type of data."><p class="caption"><strong>Figure 1.</strong> Basic layout of a CTD object. All <code>oce</code> objects contain slots named <code>data</code>, <code>metadata</code>, and <code>processingLog</code>, with the contents depending on the type of data.</p>
+<img src="ctd-object.png" alt=""><p class="caption"><strong>Figure 1.</strong> Basic layout of a CTD object. All <code>oce</code> objects contain slots named <code>data</code>, <code>metadata</code>, and <code>processingLog</code>, with the contents depending on the type of data.</p>
 </div>
 <p>The need to scan diverse data files was one motivation for the creation of <code>oce</code>, but an equal goal was to make it easy to work with the data once they are in the system. This was accomplished partly by the provision of specialized and generic (overloaded) functions to work with the data, and partly by providing accessor methods that make it convenient to reach inside the data objects (see next section).</p>
 <p>As illustrated in Figure 1, each <code>oce</code> object contains three slots:</p>
@@ -146,43 +144,43 @@
 <div id="accessing-data-in-oce-objects" class="section level1">
 <h1 class="hasAnchor">
 <a href="#accessing-data-in-oce-objects" class="anchor"></a>Accessing data in oce objects</h1>
-<p>For detailed analysis, users may want to access data <em>within</em> oce objects. While it is possible to descend through the object using the “slot” and “list” notation (e.g. <code>d@data$salinity</code> yields the salinity within an oce object named <code>d</code>), this approach is not recommended. It is better to use the <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> notation, which derives from the generic “Extract” method for accessing parts of an object. A general introduction is provided by</p>
-<div class="sourceCode"><html><body><pre class="r">?<span class="no">`[[,oce-method`</span></pre></body></html></div>
+<p>For detailed analysis, users may want to access data <em>within</em> oce objects. While it is possible to descend through the object using the “slot” and “list” notation (e.g. <code>d@data$salinity</code> yields the salinity within an oce object named <code>d</code>), this approach is not recommended. It is better to use the <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> notation, which derives from the generic “Extract” method for accessing parts of an object. A general introduction is provided by</p>
+<div class="sourceCode" id="cb1"><html><body><pre class="r">?<span class="no">`[[,oce-method`</span></pre></body></html></div>
 <p>and details are provided for individual object classes with e.g.</p>
-<div class="sourceCode"><html><body><pre class="r">?<span class="no">`[[,ctd-method`</span></pre></body></html></div>
+<div class="sourceCode" id="cb2"><html><body><pre class="r">?<span class="no">`[[,ctd-method`</span></pre></body></html></div>
 <p>for the <code>ctd</code> class. The notation is very simple. For example, suppose that <code>d</code> is an object that stores <code>salinity</code> in either its <code>data</code> slot or <code>metadata</code> slot. Then,</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">S</span> <span class="kw">&lt;-</span> <span class="no">d</span><span class="kw">[[</span><span class="st">'salinity'</span>]]</pre></body></html></div>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">S</span> <span class="kw">&lt;-</span> <span class="no">d</span><span class="kw">[[</span><span class="st">'salinity'</span>]]</pre></body></html></div>
 <p>will extract the salinity.</p>
 <p>The <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> method first looks in the <code>metadata</code> slot, but if the item is not found there, it proceeds to look in the <code>data</code> slot. This two-step scheme is helpful because it frees the user from having to know where data are stored, e.g. in a <code>ctd</code> object, <code>latitude</code> might be stored in the <code>metadata</code> (for a conventional CTD cast) or in the <code>data</code> slot (for the slantwise sampling of a glider).</p>
 <p>In addition to accessing data within an object, the <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> notation also permits the extraction of <em>derived</em> information. There are two reasons for this.</p>
 <ol style="list-style-type: decimal">
 <li>It can give valuable performance enhancements in some cases, e.g. the data in the <code>landsat</code> class are stored in two byte-level arrays, which yields a marked improvement over the 8-byte arrays that R generally uses on a 64-bit machine. The <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> assembles these byte-scale chunks into a conventional R numerical matrix, which can be quite convenient for users who wish to operate on the data without learning how to assemble the bytes.</li>
-<li>It provides a uniformity of notation that can be helpful to users. In <code>oce</code>, objects derived from data files tend to hold just the information in those files, not derived information. For example, For example, CTD datasets often provide in-situ temperature but not potential temperature (since the latter is not measured). The in-situ temperature is found with e.g. <code>d[["temperature"]]</code>, and so it seems natural to write <code>d[["theta"]]</code> to get the potential temperature. If this is done, then the <code>ctd</code> version of <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> first looks in the data slot, and returns <code>theta</code> if it is found there, as may sometimes be the case (depending on the choice of the person who created the dataset). However, if it is not found, then <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> calls <code><a href="../reference/swTheta.html">swTheta()</a></code> to calculate the value, and returns the result.</li>
+<li>It provides a uniformity of notation that can be helpful to users. In <code>oce</code>, objects derived from data files tend to hold just the information in those files, not derived information. For example, For example, CTD datasets often provide in-situ temperature but not potential temperature (since the latter is not measured). The in-situ temperature is found with e.g. <code>d[["temperature"]]</code>, and so it seems natural to write <code>d[["theta"]]</code> to get the potential temperature. If this is done, then the <code>ctd</code> version of <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> first looks in the data slot, and returns <code>theta</code> if it is found there, as may sometimes be the case (depending on the choice of the person who created the dataset). However, if it is not found, then <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> calls <code><a href="../reference/swTheta.html">swTheta()</a></code> to calculate the value, and returns the result.</li>
 </ol>
 <p>Finally, it is also possible to extract the entirety of either the <code>metadata</code> or <code>data</code> slot, e.g.</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">data</span> <span class="kw">&lt;-</span> <span class="no">d</span><span class="kw">[[</span><span class="st">'data'</span>]]</pre></body></html></div>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">data</span> <span class="kw">&lt;-</span> <span class="no">d</span><span class="kw">[[</span><span class="st">'data'</span>]]</pre></body></html></div>
 <p>yields the full data slot, which is a list with elements that can be accessed in the conventional way, e.g. for a <code>ctd</code> object,</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">data</span>$<span class="no">temperature</span></pre></body></html></div>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">data</span>$<span class="no">temperature</span></pre></body></html></div>
 <p>retrieves the temperature. For obvious reasons, the method of derived-quantity access (e.g. the <code>theta</code> of the example above) will not work.</p>
 </div>
 <div id="modifying-data-in-oce-objects" class="section level1">
 <h1 class="hasAnchor">
 <a href="#modifying-data-in-oce-objects" class="anchor"></a>Modifying data in oce objects</h1>
 <p>There are several schemes for modifying the data within <code>oce</code> objects. By analogy with the <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> notation of the previous section, e.g. the following</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">ctd</span>)
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">ctd</span>)
 <span class="no">ctd</span><span class="kw">[[</span><span class="st">"temperatureAboveFreezing"</span>]] <span class="kw">&lt;-</span> <span class="no">ctd</span><span class="kw">[[</span><span class="st">"temperature"</span>]] - <span class="fu"><a href="../reference/swTFreeze.html">swTFreeze</a></span>(<span class="no">ctd</span>)</pre></body></html></div>
 <p>will store the excess over freezing temperature into the <code>ctd</code> object.</p>
 <p>Further information on this notation is provided by</p>
-<div class="sourceCode"><html><body><pre class="r">?<span class="st">"[[&lt;-,oce-method"</span></pre></body></html></div>
+<div class="sourceCode" id="cb7"><html><body><pre class="r">?<span class="st">"[[&lt;-,oce-method"</span></pre></body></html></div>
 <p>The above works only within the <code>data</code> slot. To store within the <code>metadata</code> slot, consider using e.g.</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">ctd</span><span class="kw">[[</span><span class="st">"metadata"</span>]]$<span class="no">scientist</span> <span class="kw">&lt;-</span> <span class="st">"Dalhousie Oceanography 4120/5120 Class of 2003"</span></pre></body></html></div>
+<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">ctd</span><span class="kw">[[</span><span class="st">"metadata"</span>]]$<span class="no">scientist</span> <span class="kw">&lt;-</span> <span class="st">"Dalhousie Oceanography 4120/5120 Class of 2003"</span></pre></body></html></div>
 <p>sets the “scientist”.</p>
 <p>For archival work, it is important to store reasons for changing things in an object. Two functions are provided for this purpose: <code>oceSetData</code> and <code>oceSetMetadata</code>. For example, a better way to change the scientist might be to write</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">ctd</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/oceSetMetadata.html">oceSetMetadata</a></span>(<span class="no">ctd</span>, <span class="kw">name</span><span class="kw">=</span><span class="st">"scientist"</span>,
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">ctd</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/oceSetMetadata.html">oceSetMetadata</a></span>(<span class="no">ctd</span>, <span class="kw">name</span><span class="kw">=</span><span class="st">"scientist"</span>,
                       <span class="kw">value</span><span class="kw">=</span><span class="st">"Dalhousie Oceanography 4120/5120 Class of 2003"</span>,
                       <span class="kw">note</span><span class="kw">=</span><span class="st">"give credit where it's due"</span>)</pre></body></html></div>
 <p>and a better way to store <code>temperatureAboveFreezing</code> would be</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">ctd</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/oceSetData.html">oceSetData</a></span>(<span class="no">ctd</span>, <span class="kw">name</span><span class="kw">=</span><span class="st">"temperatureAboveFreezing"</span>,
+<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">ctd</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/oceSetData.html">oceSetData</a></span>(<span class="no">ctd</span>, <span class="kw">name</span><span class="kw">=</span><span class="st">"temperatureAboveFreezing"</span>,
                       <span class="kw">value</span><span class="kw">=</span><span class="no">ctd</span><span class="kw">[[</span><span class="st">"temperature"</span>]] - <span class="fu"><a href="../reference/swTFreeze.html">swTFreeze</a></span>(<span class="no">ctd</span>),
                       <span class="kw">unit</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">unit</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span>(<span class="no">degree</span>*<span class="no">C</span>), <span class="kw">scale</span><span class="kw">=</span><span class="st">"ITS-90"</span>),
                       <span class="kw">originalName</span><span class="kw">=</span><span class="st">"-"</span>,
@@ -193,11 +191,11 @@
 <h1 class="hasAnchor">
 <a href="#oce-functions" class="anchor"></a>Oce functions</h1>
 <p>The uniformity of the various <code>oce</code> objects helps users build skill in examining and modifying objects. Fine-scale control is provided throughout <code>oce</code>, but the best way to learn is to start with simplest tools and their defaults. For example, the following will read a CTD file named <code>"station1.cnv"</code>, summarize the contents, and plot an overview of the data, with profiles, a TS diagram, and a map (Figure 2).</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
 <span class="no">d</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span>(<span class="st">"station1.cnv"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">d</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">d</span>)</pre></body></html></div>
-<p>The reader should stop now and try this on a file of their own. The pattern will work with a fairly wide variety of file types, because <code><a href="../reference/read.oce.html">read.oce()</a></code> examines the file name and contents to try to discover what it is. For an example, if <code><a href="../reference/read.oce.html">read.oce()</a></code> is given the name of a file created by an Acoustic Doppler Profiler, it will return an object inheriting from class <code>"adp"</code>, so the <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.html">plot()</a></code> calls will be tailored to that type, e.g. the graph will show images of time-distance variation in each of the measured velocity components.</p>
+<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">d</span>)</pre></body></html></div>
+<p>The reader should stop now and try this on a file of their own. The pattern will work with a fairly wide variety of file types, because <code><a href="../reference/read.oce.html">read.oce()</a></code> examines the file name and contents to try to discover what it is. For an example, if <code><a href="../reference/read.oce.html">read.oce()</a></code> is given the name of a file created by an Acoustic Doppler Profiler, it will return an object inheriting from class <code>"adp"</code>, so the <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> and <code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code> calls will be tailored to that type, e.g. the graph will show images of time-distance variation in each of the measured velocity components.</p>
 <p><strong>Notes on oce function names.</strong></p>
 <ol style="list-style-type: decimal">
 <li><p>As just illustrated, the general function to read a dataset ends in <code>.oce</code>, and the name is a signal that the returned object is of class <code>oce</code>. Depending on the file contents, <code>d</code> will also have an additional class, e.g. if the file contains CTD data, then the object would inherit from two classes, <code>oce</code> and <code>ctd</code>, with the second being used to tailor the graphics by passing control to the <code>ctd</code> variant of the generic <code>plot</code> function (use <code><a href="../reference/plot-ctd-method.html">help("plot,ctd-method")</a></code> to learn more).</p></li>
@@ -264,7 +262,7 @@
 </ul>
 <p>Details and examples are provided in the documentation of these functions.</p>
 <p>The following exercise may be of help to readers who prefer to learn by doing. (Answers are provided at the end of this document.)</p>
-<p><strong>Exercise 1.</strong> a. What is the density of a seawater parcel at pressure 100 dbar, with salinity 34 PSU and temperature 10<span class="math inline">\(^\circ\)</span>C? b. What temperature would the parcel have if raised adiabatically to the surface? c. What density would it have if raised adiabatically to the surface? d. What density would it have if lowered about 100m, increasing the pressure to 200 dbar? e. Draw a blank <span class="math inline">\(T\)</span>-<span class="math inline">\(S\)</span> diagram with <span class="math inline">\(S\)</span> from 30 to 40 PSU and <span class="math inline">\(T\)</span> from -2 to 20<span class="math inline">\(^\circ\)</span>C.</p>
+<p><strong>Exercise 1.</strong> a. What is the density of a seawater parcel at pressure 100 dbar, with salinity 34 PSU and temperature 10<span class="math inline">\(^\circ\)</span>C? b. What temperature would the parcel have if raised adiabatically to the surface? c. What density would it have if raised adiabatically to the surface? d. What density would it have if lowered about 100m, increasing the pressure to 200 dbar? e. Draw a blank <span class="math inline">\(T\)</span>-<span class="math inline">\(S\)</span> diagram with <span class="math inline">\(S\)</span> from 30 to 40 PSU and <span class="math inline">\(T\)</span> from -2 to 20<span class="math inline">\(^\circ\)</span>C.</p>
 </div>
 <div id="ctd-data" class="section level1">
 <h1 class="hasAnchor">
@@ -275,17 +273,17 @@
 <h1 class="hasAnchor">
 <a href="#section-plots" class="anchor"></a>Section plots</h1>
 <p>The commands</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">section</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">section</span>, <span class="kw">which</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">99</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">section</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">section</span>, <span class="kw">which</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">99</span>))</pre></body></html></div>
 <p>will plot a summary diagram containing sections of <span class="math inline">\(T\)</span>, <span class="math inline">\(S\)</span>, and <span class="math inline">\(\sigma_\theta\)</span>, along with a chart indicating station locations. In addition to such overview diagrams, the <code>section</code> variant of the generic <code>plot</code> function can also create individual plots of individual properties (use <code><a href="../reference/plot-section-method.html">help("plot,section-method")</a></code> to learn more).</p>
 <p>Some section datasets are supplied in a pre-gridded format, but it is also common to have different pressure levels at each station. For such cases, <code><a href="../reference/sectionGrid.html">sectionGrid()</a></code> may be used, e.g. the following produces Figure 4. The ship was travelling westward from the Mediterranean towards North America, taking 124 stations in total; the <code>stationId</code> value selects the last few stations of the section, during which the ship headed toward the northwest, crossing isobaths (and perhaps, the Gulf Stream) at nearly right angles.</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
 <span class="co">#&gt; Loading required package: gsw</span>
 <span class="co">#&gt; Loading required package: testthat</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">section</span>)
 <span class="no">GS</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span>(<span class="no">section</span>, <span class="fl">102</span> <span class="kw">&lt;=</span> <span class="no">stationId</span> <span class="kw">&amp;</span> <span class="no">stationId</span> <span class="kw">&lt;=</span> <span class="fl">124</span>)
 <span class="no">GSg</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sectionGrid.html">sectionGrid</a></span>(<span class="no">GS</span>, <span class="kw">p</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fl">1600</span>, <span class="fl">25</span>))
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">GSg</span>, <span class="kw">which</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">99</span>), <span class="kw">map.xlim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">85</span>,-(<span class="fl">64</span>+<span class="fl">13</span>/<span class="fl">60</span>)))</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">GSg</span>, <span class="kw">which</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">99</span>), <span class="kw">map.xlim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">85</span>,-(<span class="fl">64</span>+<span class="fl">13</span>/<span class="fl">60</span>)))</pre></body></html></div>
 <div class="figure">
 <img src="oce_files/figure-html/unnamed-chunk-13-1.png" alt="**Figure 4.** Portion of the CTD section designated A03, showing the Gulf Sream region.  The square on the cruise track corresponds to zero distance on the section." width="288"><p class="caption">
 <strong>Figure 4.</strong> Portion of the CTD section designated A03, showing the Gulf Sream region. The square on the cruise track corresponds to zero distance on the section.
@@ -303,9 +301,9 @@
 <h1 class="hasAnchor">
 <a href="#sea-level-data" class="anchor"></a>Sea-level data</h1>
 <p>The following code graphs a built-in dataset of sea-level time series (Figure 9). The top panel provides an overview of the entire data set. The second panel is narrowed to the most recent month, which should reveal spring-neap cycles if the tide is mixed. The third panel is a log spectrum, with a few tidal constituents indicated. The <code>section</code> variant of the generic <code>plot</code> function provides other possibilities for plotting, including a cumulative spectrum that can be quite informative (use <code><a href="../reference/plot-sealevel-method.html">help("plot,sealevel-method")</a></code> to learn more).</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">sealevel</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">sealevel</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">sealevel</span>)</pre></body></html></div>
 <div class="figure">
 <img src="oce_files/figure-html/unnamed-chunk-14-1.png" alt="**Figure 9.** Sea-level timeseries measured in 2003 in Halifax Harbour." width="360"><p class="caption">
 <strong>Figure 9.</strong> Sea-level timeseries measured in 2003 in Halifax Harbour.
@@ -319,9 +317,9 @@
 <h1 class="hasAnchor">
 <a href="#acoustic-doppler-profiler-data" class="anchor"></a>Acoustic Doppler Profiler data</h1>
 <p>The following commands produce Figure 10, showing one velocity component of currents measured in the St Lawrence Estuary Internal Wave Experiment. This plot type is just one of many provided by the <code>adp</code> variant of the generic <code>plot</code> function (see <code><a href="../reference/plot-adp-method.html">?"plot,adp-method"</a></code>). See <a href="adp.html">the adp vignette</a> for much more on acoustic Doppler profiler data.</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">adp</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">adp</span>, <span class="kw">which</span><span class="kw">=</span><span class="fl">1</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">adp</span>, <span class="kw">which</span><span class="kw">=</span><span class="fl">1</span>)
 <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html">lines</a></span>(<span class="no">adp</span><span class="kw">[[</span><span class="st">'time'</span>]], <span class="no">adp</span><span class="kw">[[</span><span class="st">'pressure'</span>]], <span class="kw">lwd</span><span class="kw">=</span><span class="fl">2</span>)</pre></body></html></div>
 <div class="figure">
 <img src="oce_files/figure-html/unnamed-chunk-15-1.png" alt="**Figure 10.** Measurements made with a bottom-mounted ADP in the St Lawrence Estuary. The line near the surface indicates pressure measured by the ADP." width="288"><p class="caption">
@@ -338,10 +336,10 @@
 <h1 class="hasAnchor">
 <a href="#working-in-non-english-languages" class="anchor"></a>Working in non-English languages</h1>
 <p>Many of the <code>oce</code> plotting functions produce axis labels that can be displayed in languages other than English. At the time of writing, French, German, Spanish, and Mandarin are supported in at least a rudimentary way. Setting the language can be done at the general system level, or within R, as indicated below (results not shown).</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html">Sys.setenv</a></span>(<span class="kw">LANGUAGE</span><span class="kw">=</span><span class="st">"fr"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">ctd</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">ctd</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">ctd</span>)</pre></body></html></div>
 <p>Most of the translated items were found by online dictionaries, and so they may be incorrect for oceanographic usage. Readers can help out in the translation effort, if they have knowledge of how nautical words such as <em>Pitch</em> and <em>Roll</em> and technical terms such as <em>Absolute Salinity</em> and <em>Potential Temperature</em> should be written in various languages.</p>
 </div>
 <div id="extending-oce" class="section level1">
@@ -358,13 +356,13 @@
 <div id="development-website" class="section level1">
 <h1 class="hasAnchor">
 <a href="#development-website" class="anchor"></a>Development website</h1>
-<p>The site <a href="http://github.com/dankelley/oce" class="uri">http://github.com/dankelley/oce</a> provides a window on the development that goes on between the CRAN releases of the package. Readers are requested to visit the site to report bugs, to suggest new features, or just to see how <code>oce</code> development is coming along. Note that the <code>development</code> branch is used by the authors in their work, and is updated so frequently that it must be considered unstable, at least in those spots being changed on a given day. Official CRAN releases derive from the <code>master</code> branch, and are done when the code is considered to be of reasonable stability and quality. This is all in a common pattern for open-source software.</p>
+<p>The site <a href="http://github.com/dankelley/oce">http://github.com/dankelley/oce</a> provides a window on the development that goes on between the CRAN releases of the package. Readers are requested to visit the site to report bugs, to suggest new features, or just to see how <code>oce</code> development is coming along. Note that the <code>development</code> branch is used by the authors in their work, and is updated so frequently that it must be considered unstable, at least in those spots being changed on a given day. Official CRAN releases derive from the <code>master</code> branch, and are done when the code is considered to be of reasonable stability and quality. This is all in a common pattern for open-source software.</p>
 </div>
 <div id="solutions-to-exercises" class="section level1">
 <h1 class="hasAnchor">
 <a href="#solutions-to-exercises" class="anchor"></a>Solutions to exercises</h1>
 <p><strong>Exercise 1.</strong> Seawater properties. In the UNESCO system we may write</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
 <span class="fu"><a href="../reference/swRho.html">swRho</a></span>(<span class="fl">34</span>, <span class="fl">10</span>, <span class="fl">100</span>, <span class="kw">eos</span><span class="kw">=</span><span class="st">"unesco"</span>)
 <span class="co">#&gt; [1] 1026.624</span>
 <span class="fu"><a href="../reference/swTheta.html">swTheta</a></span>(<span class="fl">34</span>, <span class="fl">10</span>, <span class="fl">100</span>, <span class="kw">eos</span><span class="kw">=</span><span class="st">"unesco"</span>)
@@ -377,7 +375,7 @@
 <p>and in the Gibbs SeaWater system, we use <code>eos="gws"</code> and must supply <code>longitude</code> and <code>latitude</code> arguments to the <code>sw*()</code> calls and also to the <code><a href="../reference/as.ctd.html">as.ctd()</a></code> call.</p>
 <p><strong>Exercise 2.</strong> Draw a <span class="math inline">\(T\)</span>-<span class="math inline">\(S\)</span> diagram for the section data, using black symbols to the east of 30W and gray symbols to the west, thus highlighting Mediterranean-derived waters. Use <code><a href="../reference/handleFlags.html">handleFlags()</a></code> (see <a href="flags.html">using data-quality flags</a>) to discard questionable data, and use the accessor function <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code>.</p>
 <p>We will use the Gibbs SeaWater system, so <code><a href="../reference/as.ctd.html">as.ctd()</a></code> needs location information.</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">section</span>)
 <span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/handleFlags.html">handleFlags</a></span>(<span class="no">section</span>, <span class="kw">flags</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>:<span class="fl">9</span>)))
 <span class="no">ctd</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/as.ctd.html">as.ctd</a></span>(<span class="no">s</span><span class="kw">[[</span><span class="st">"salinity"</span>]], <span class="no">s</span><span class="kw">[[</span><span class="st">"temperature"</span>]], <span class="no">s</span><span class="kw">[[</span><span class="st">"pressure"</span>]],
@@ -386,33 +384,33 @@
 <span class="fu"><a href="../reference/plotTS.html">plotTS</a></span>(<span class="no">ctd</span>, <span class="kw">col</span><span class="kw">=</span><span class="no">col</span>, <span class="kw">eos</span><span class="kw">=</span><span class="st">"gsw"</span>)</pre></body></html></div>
 <p><strong>Exercise 3.</strong> Plot dynamic height and geostrophic velocity across the Gulf Stream. (Hint: use the <code>swDynamicHeight</code> function.)</p>
 <p>(Try <code><a href="../reference/swDynamicHeight.html">?swDynamicHeight</a></code> for hints on smoothing.)</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">section</span>)
 <span class="no">GS</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span>(<span class="no">section</span>, <span class="fl">102</span> <span class="kw">&lt;=</span> <span class="no">stationId</span> <span class="kw">&amp;</span> <span class="no">stationId</span> <span class="kw">&lt;=</span> <span class="fl">124</span>)
 <span class="no">dh</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/swDynamicHeight.html">swDynamicHeight</a></span>(<span class="no">GS</span>)
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties)): collapsing to unique</span>
-<span class="co">#&gt; 'x' values</span>
+<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
+<span class="co">#&gt; collapsing to unique 'x' values</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mfrow</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>,<span class="fl">1</span>), <span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">1</span>, <span class="fl">1</span>), <span class="kw">mgp</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fl">0.7</span>, <span class="fl">0</span>))
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">dh</span>$<span class="no">distance</span>, <span class="no">dh</span>$<span class="no">height</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">"l"</span>, <span class="kw">xlab</span><span class="kw">=</span><span class="st">""</span>, <span class="kw">ylab</span><span class="kw">=</span><span class="st">"Dyn. Height [m]"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">dh</span>$<span class="no">distance</span>, <span class="no">dh</span>$<span class="no">height</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">"l"</span>, <span class="kw">xlab</span><span class="kw">=</span><span class="st">""</span>, <span class="kw">ylab</span><span class="kw">=</span><span class="st">"Dyn. Height [m]"</span>)
 <span class="fu"><a href="https://rdrr.io/r/graphics/grid.html">grid</a></span>()
 <span class="co"># 1e3 metres per kilometre</span>
 <span class="no">latMean</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">GS</span><span class="kw">[[</span><span class="st">"latitude"</span>]])
 <span class="no">f</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/coriolis.html">coriolis</a></span>(<span class="no">latMean</span>)
 <span class="no">g</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/gravity.html">gravity</a></span>(<span class="no">latMean</span>)
 <span class="no">v</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html">diff</a></span>(<span class="no">dh</span>$<span class="no">height</span>)/<span class="fu"><a href="https://rdrr.io/r/base/diff.html">diff</a></span>(<span class="no">dh</span>$<span class="no">distance</span>) * <span class="no">g</span> / <span class="no">f</span> / <span class="fl">1e3</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">dh</span>$<span class="no">distance</span>[-<span class="fl">1</span>], <span class="no">v</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">"l"</span>, <span class="kw">xlab</span><span class="kw">=</span><span class="st">"Distance [km]"</span>, <span class="kw">ylab</span><span class="kw">=</span><span class="st">"Velocity [m/s]"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">dh</span>$<span class="no">distance</span>[-<span class="fl">1</span>], <span class="no">v</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">"l"</span>, <span class="kw">xlab</span><span class="kw">=</span><span class="st">"Distance [km]"</span>, <span class="kw">ylab</span><span class="kw">=</span><span class="st">"Velocity [m/s]"</span>)
 <span class="fu"><a href="https://rdrr.io/r/graphics/grid.html">grid</a></span>()
 <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="kw">h</span><span class="kw">=</span><span class="fl">0</span>, <span class="kw">col</span><span class="kw">=</span><span class="st">'red'</span>)</pre></body></html></div>
 <p><strong>Exercise 4.</strong> Halifax sea-level during Hurricane Juan, near the end of September, 2003.</p>
 <p>A web search will tell you that Hurricane Juan hit about midnight, 2003-sep-28. The first author can verify that the strongest winds occurred a bit after midnight – that was the time he moved to a room without windows, in fear of flying glass.</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">sealevel</span>)
 <span class="co"># Focus on 2003-Sep-28 to 29th, the time when Hurricane Juan caused flooding</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">sealevel</span>,<span class="kw">which</span><span class="kw">=</span><span class="fl">1</span>,<span class="kw">xlim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html">as.POSIXct</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"2003-09-24"</span>,<span class="st">"2003-10-05"</span>), <span class="kw">tz</span><span class="kw">=</span><span class="st">"UTC"</span>))
+<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">sealevel</span>,<span class="kw">which</span><span class="kw">=</span><span class="fl">1</span>,<span class="kw">xlim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html">as.POSIXct</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"2003-09-24"</span>,<span class="st">"2003-10-05"</span>), <span class="kw">tz</span><span class="kw">=</span><span class="st">"UTC"</span>))
 <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="kw">v</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html">as.POSIXct</a></span>(<span class="st">"2003-09-29 04:00:00"</span>, <span class="kw">tz</span><span class="kw">=</span><span class="st">"UTC"</span>), <span class="kw">col</span><span class="kw">=</span><span class="st">"red"</span>)
 <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html">mtext</a></span>(<span class="st">"Juan"</span>, <span class="kw">at</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html">as.POSIXct</a></span>(<span class="st">"2003-09-29 04:00:00"</span>, <span class="kw">tz</span><span class="kw">=</span><span class="st">"UTC"</span>), <span class="kw">col</span><span class="kw">=</span><span class="st">"red"</span>)</pre></body></html></div>
 <p><strong>Exercise 5.</strong> Plot the de-tided Halifax sea level during Autumn 2003, to see whether Hurricane Juan is visible. (Hint: use <code>predict</code> with the results from <code>tidem</code>.)</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">sealevel</span>)
 <span class="no">m</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/tidem.html">tidem</a></span>(<span class="no">sealevel</span>)
 <span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span>(<span class="no">sealevel</span><span class="kw">[[</span><span class="st">'time'</span>]], <span class="no">sealevel</span><span class="kw">[[</span><span class="st">'elevation'</span>]] - <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">m</span>),

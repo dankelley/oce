@@ -188,7 +188,7 @@ or contours to an existing map.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>longitude</th>
-      <td><p>either a vector of longitudes of points to be plotted, or
+      <td><p>either a numeric vector of longitudes of points to be plotted, or
 something (an <code>oce</code> object, a list, or a data frame) from which both
 longitude and latitude may be inferred (in which case the <code>latitude</code>
 argument is ignored).  If <code>longitude</code> is missing, both it and
@@ -196,12 +196,12 @@ argument is ignored).  If <code>longitude</code> is missing, both it and
     </tr>
     <tr>
       <th>latitude</th>
-      <td><p>vector of latitudes of points to be plotted (ignored
+      <td><p>numeric vector of latitudes of points to be plotted (ignored
 if the first argument contains both latitude and longitude).</p></td>
     </tr>
     <tr>
       <th>longitudelim</th>
-      <td><p>optional vector of length two, indicating the
+      <td><p>optional numeric vector of length two, indicating the
 longitude limits of the plot. This value is used in the selection of
 longitude lines that are shown (and possibly
 labelled on the axes). In some cases, e.g. for polar views,

@@ -272,10 +272,10 @@ number, or a logical vector, again indicating which stations to keep.</p>
 <span class='co'># Example 7. Subset by a polygon determined with locator()</span>
 <span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>))
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>section</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"map"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>section</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"map"</span>)
 <span class='no'>bdy</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/locator.html'>locator</a></span>(<span class='fl'>4</span>) <span class='co'># choose a polygon near N. America</span>
 <span class='no'>GS</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>section</span>, <span class='kw'>within</span><span class='kw'>=</span><span class='no'>bdy</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>GS</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"map"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>GS</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"map"</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
