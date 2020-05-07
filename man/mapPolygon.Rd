@@ -17,12 +17,12 @@ mapPolygon(
 )
 }
 \arguments{
-\item{longitude}{longitudes of points to be plotted, or an object from
+\item{longitude}{numeric vector of longitudes of points to be plotted, or an object from
 which longitude and latitude can be inferred (e.g. a coastline file, or
 the return value from \code{\link[=mapLocator]{mapLocator()}}), in which case the
 following two arguments are ignored.}
 
-\item{latitude}{latitudes of points to be plotted.}
+\item{latitude}{numeric vector of latitudes of points to be plotted.}
 
 \item{density}{as for \code{\link[=polygon]{polygon()}}.}
 

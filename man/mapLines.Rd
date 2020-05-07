@@ -7,7 +7,7 @@
 mapLines(longitude, latitude, greatCircle = FALSE, ...)
 }
 \arguments{
-\item{longitude}{vector of longitudes of points to be plotted, or an
+\item{longitude}{numeric vector of longitudes of points to be plotted, or an
 object from which longitude and latitude can be inferred (e.g. a coastline
 file, or the return value from \code{\link[=mapLocator]{mapLocator()}}), in which case the
 following two arguments are ignored.}

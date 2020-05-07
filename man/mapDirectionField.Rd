@@ -17,9 +17,9 @@ mapDirectionField(
 )
 }
 \arguments{
-\item{longitude, latitude}{vectors of the starting points for arrows.}
+\item{longitude, latitude}{numeric vectors of the starting points for arrows.}
 
-\item{u, v}{components of a vector to be shown as a direction
+\item{u, v}{numeric vectors of the components of a vector to be shown as a direction
 field.}
 
 \item{scale}{latitude degrees per unit of \code{u} or \code{v}.}

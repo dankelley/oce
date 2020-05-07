@@ -30,7 +30,7 @@ mapAxis(
 \item{side}{the side at which labels are to be drawn.  If not provided,
 sides 1 and 2 will be used (i.e. bottom and left-hand sides).}
 
-\item{longitude}{either a logical value or a vector of longitudes. There
+\item{longitude}{either a logical value or a numeric vector of longitudes. There
 are three possible cases:
 (1) If \code{longitude=TRUE} (the default) then ticks and nearby numbers will occur at the
 longitude grid established by the previous call to \code{\link[=mapPlot]{mapPlot()}};

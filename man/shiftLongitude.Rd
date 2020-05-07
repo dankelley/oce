@@ -7,7 +7,7 @@
 shiftLongitude(longitudes)
 }
 \arguments{
-\item{longitudes}{a numerical vector of longitudes}
+\item{longitudes}{numerical vector of longitudes.}
 }
 \value{
 vector of longitudes, shifted to the desired range.

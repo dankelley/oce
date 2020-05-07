@@ -239,7 +239,7 @@ oceCRS <- function(region)
 #' simply by subtracting 180 from each longitude, if any longitude
 #' in the vector exceeds 180.
 #'
-#' @param longitudes a numerical vector of longitudes
+#' @param longitudes numerical vector of longitudes.
 #'
 #' @return vector of longitudes, shifted to the desired range.
 #'
@@ -331,7 +331,7 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' @param side the side at which labels are to be drawn.  If not provided,
 #' sides 1 and 2 will be used (i.e. bottom and left-hand sides).
 #'
-#' @param longitude either a logical value or a vector of longitudes. There
+#' @param longitude either a logical value or a numeric vector of longitudes. There
 #' are three possible cases:
 #' (1) If `longitude=TRUE` (the default) then ticks and nearby numbers will occur at the
 #' longitude grid established by the previous call to [mapPlot()];
@@ -585,11 +585,11 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
 #'
 #' Plot contours on an existing map.
 #'
-#' @param longitude vector of longitudes of points to be plotted, or an object of
+#' @param longitude numeric vector of longitudes of points to be plotted, or an object of
 #' class `topo` (see [topo-class]), in which case
 #' `longitude`, `latitude` and `z` are inferred from that object.
 #'
-#' @param latitude vector of latitudes of points to be plotted.
+#' @param latitude numeric vector of latitudes of points to be plotted.
 #'
 #' @param z matrix to be contoured. The number of rows and columns in `z`
 #' must equal the lengths of `longitude` and `latitude`, respectively.
@@ -828,9 +828,9 @@ mapContour <- function(longitude, latitude, z,
 #' This is a preliminary version of this function. It only
 #' works if the lines of constant latitude are horizontal on the plot.
 #'
-#' @param latitude numeric value of latitude in degrees.
+#' @param longitude numeric vector of longitudes in degrees.
 #'
-#' @param longitude numeric value of longitude in degrees.
+#' @param latitude numeric vector of latitudes in degrees.
 #'
 #' @param L axis length in km.
 #'
@@ -888,9 +888,9 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #' `latitude` are the coordinates along the matrices, and are thus stored in
 #' vectors with lengths that match appropriately.
 #'
-#' @param longitude,latitude vectors of the starting points for arrows.
+#' @param longitude,latitude numeric vectors of the starting points for arrows.
 #'
-#' @param u,v components of a vector to be shown as a direction
+#' @param u,v numeric vectors of the components of a vector to be shown as a direction
 #'     field.
 #'
 #' @param scale latitude degrees per unit of `u` or `v`.
@@ -965,12 +965,12 @@ mapDirectionField <- function(longitude, latitude, u, v,
 #' present projection.
 #'
 #'
-#' @param longitude vector of the longitudes of points, or an object from which
+#' @param longitude numeric vector of the longitudes of points, or an object from which
 #' both latitude and longitude can be inferred (e.g. a coastline file, or the
 #' return value from [mapLocator()]), in which case the following
 #' two arguments are ignored.
 #'
-#' @param latitude vector of latitudes of points, needed only if they cannot
+#' @param latitude numeric vector of latitudes of points, needed only if they cannot
 #' be inferred from the first argument.
 #'
 #' @details
@@ -1035,16 +1035,16 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' datum shifts; references 3 and 4 are less detailed and perhaps better for novices.
 #' See reference 8 for a gallery of projections.
 #'
-#' @param longitude either a vector of longitudes of points to be plotted, or
+#' @param longitude either a numeric vector of longitudes of points to be plotted, or
 #' something (an `oce` object, a list, or a data frame) from which both
 #' longitude and latitude may be inferred (in which case the `latitude`
 #' argument is ignored).  If `longitude` is missing, both it and
 #' `latitude` are taken from [coastlineWorld()].
 #'
-#' @param latitude vector of latitudes of points to be plotted (ignored
+#' @param latitude numeric vector of latitudes of points to be plotted (ignored
 #' if the first argument contains both latitude and longitude).
 #'
-#' @param longitudelim optional vector of length two, indicating the
+#' @param longitudelim optional numeric vector of length two, indicating the
 #' longitude limits of the plot. This value is used in the selection of
 #' longitude lines that are shown (and possibly
 #' labelled on the axes). In some cases, e.g. for polar views,
@@ -1883,10 +1883,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #' @param dlatitude increment in latitude, ignored if `latitude`
 #' is supplied, but otherwise determines the latitude sequence.
 #'
-#' @param longitude vector of longitudes, or `NULL` to prevent drawing
+#' @param longitude numeric vector of longitudes, or `NULL` to prevent drawing
 #' longitude lines.
 #'
-#' @param latitude vector of latitudes, or `NULL` to prevent drawing
+#' @param latitude numeric vector of latitudes, or `NULL` to prevent drawing
 #' latitude lines.
 #'
 #' @param col color of lines
@@ -2206,9 +2206,9 @@ mapScalebar <- function(x, y=NULL, length,
 #'
 #' Plot text on an existing map, by analogy to [text()].
 #'
-#' @param longitude vector of longitudes of text to be plotted.
+#' @param longitude numeric vector of longitudes of text to be plotted.
 #'
-#' @param latitude vector of latitudes of text to be plotted.
+#' @param latitude numeric vector of latitudes of text to be plotted.
 #'
 #' @param labels vector of labels of text to be plotted.
 #'
@@ -2326,7 +2326,7 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 #'
 #' Plot lines on an existing map, by analogy to [lines()].
 #'
-#' @param longitude vector of longitudes of points to be plotted, or an
+#' @param longitude numeric vector of longitudes of points to be plotted, or an
 #' object from which longitude and latitude can be inferred (e.g. a coastline
 #' file, or the return value from [mapLocator()]), in which case the
 #' following two arguments are ignored.
@@ -2401,7 +2401,7 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 #' arguments are ignored.  This objects that are possible include those of type
 #' `coastline`.
 #'
-#' @param latitude Latitudes of points to be plotted.
+#' @param latitude numeric vctor of latitudes of points to be plotted.
 #'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
@@ -2726,12 +2726,12 @@ map2lonlat <- function(x, y, init=NULL)
 #' Adds a polygon to an existing map, by analogy to
 #' [polygon()].  Used by [mapImage()].
 #'
-#' @param longitude longitudes of points to be plotted, or an object from
+#' @param longitude numeric vector of longitudes of points to be plotted, or an object from
 #' which longitude and latitude can be inferred (e.g. a coastline file, or
 #' the return value from [mapLocator()]), in which case the
 #' following two arguments are ignored.
 #'
-#' @param latitude latitudes of points to be plotted.
+#' @param latitude numeric vector of latitudes of points to be plotted.
 #'
 #' @param density as for [polygon()].
 #'
@@ -2815,11 +2815,11 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' If a [png()] device is to be used, it is advised to supply
 #' arguments `type="cairo"` and `antialias="none"`; see reference 1.
 #'
-#' @param longitude vector of longitudes corresponding to `z` matrix.
+#' @param longitude numeric vector of longitudes corresponding to `z` matrix.
 #'
-#' @param latitude vector of latitudes corresponding to `z` matrix.
+#' @param latitude numeric vector of latitudes corresponding to `z` matrix.
 #'
-#' @param z matrix to be represented as an image.
+#' @param z numeric matrix to be represented as an image.
 #'
 #' @param zlim limit for z (color).
 #'
@@ -3308,11 +3308,11 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
 
 #' Convert Longitude and Latitude to UTM
 #'
-#' @param longitude decimal longitude.  May also be a list containing items
+#' @param longitude numeric vector of decimal longitude.  May also be a list containing items
 #' named `longitude` and `latitude`, in which case the indicated
 #' values are used, and next argument is ignored.
 #'
-#' @param latitude decimal latitude (ignored if `longitude` is a list
+#' @param latitude numeric vector of decimal latitude (ignored if `longitude` is a list
 #' containing both coordinates)
 #'
 #' @param zone optional indication of UTM zone.  Normally this is inferred from
@@ -3542,11 +3542,11 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 #' because otherwise, if a new projection is called for, it will ruin any
 #' additions to the existing plot.
 #'
-#' @param longitude a vector containing decimal longitudes, or a list
+#' @param longitude a numeric vector containing decimal longitudes, or a list
 #' containing items named `longitude` and `latitude`, in which case
 #' the indicated values are used, and next argument is ignored.
 #'
-#' @param latitude a vector containing decimal latitude (ignored if
+#' @param latitude a numeric vector containing decimal latitude (ignored if
 #' `longitude` is a list, as described above).
 #'
 #' @param projection optional indication of projection.  This must be character

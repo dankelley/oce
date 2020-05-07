@@ -20,11 +20,11 @@ mapContour(
 )
 }
 \arguments{
-\item{longitude}{vector of longitudes of points to be plotted, or an object of
+\item{longitude}{numeric vector of longitudes of points to be plotted, or an object of
 class \code{topo} (see \linkS4class{topo}), in which case
 \code{longitude}, \code{latitude} and \code{z} are inferred from that object.}
 
-\item{latitude}{vector of latitudes of points to be plotted.}
+\item{latitude}{numeric vector of latitudes of points to be plotted.}
 
 \item{z}{matrix to be contoured. The number of rows and columns in \code{z}
 must equal the lengths of \code{longitude} and \code{latitude}, respectively.}
