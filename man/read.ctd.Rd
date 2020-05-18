@@ -26,11 +26,19 @@ value is a vector containing CTD objects created by reading the files from
 pattern.}
 
 \item{type}{If \code{NULL}, then the first line is studied, in order to
-determine the file type.  If \code{type="SBE19"}, then a \emph{Seabird 19}, or
-similar, CTD format is assumed. If \code{type="WOCE"} then a WOCE-exchange file
-is assumed.  If \code{type="ITP"} then an ice-tethered profiler file is
-assumed.  If \code{type="ODF"} an ODF file is assumed.  If \code{type="ODV"} an
-ascii-ODV file is assumed.}
+determine the file type, and control is dispatched to a specialized
+function to handle that type.  Otherwise, \code{type} must be a string.
+If \code{type="SBE19"} then a Seabird file format is assumed,
+and control is dispatched to \code{\link[=read.ctd.sbe]{read.ctd.sbe()}}.
+If \code{type="WOCE"} then a WOCE-exchange file is assumed,
+and control is dispatched to \code{\link[=read.ctd.woce]{read.ctd.woce()}}.
+If \code{type="ITP"} then an ice-tethered profiler file is assumed,
+and control is dispatched to \code{\link[=read.ctd.itp]{read.ctd.itp()}}.
+If \code{type="ODF"} then an ODF file (used by the Canadian Department of
+Fisheries and Ocean) is assumed,
+and control is dispatched to \code{\link[=read.ctd.odf]{read.ctd.odf()}}.
+Finally, if \code{type="ODV"} then an ODV file (used by Ocean Data View software) is assumed,
+and control is dispatched to \code{\link[=read.ctd.odv]{read.ctd.odv()}}.}
 
 \item{columns}{an optional \link{list} that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
@@ -94,14 +102,6 @@ in those formats varies so widely.
 \description{
 Read a General CTD File
 }
-\details{
-\code{read.ctd()} is a base function that in turn calls specialized functions, e.g.
-\code{\link[=read.ctd.odf]{read.ctd.odf()}} for the ODF data used in Fisheries and Oceans (Canada),
-\code{\link[=read.ctd.woce]{read.ctd.woce()}} for data in World Ocean Circulation Experiment format,
-\code{\link[=read.ctd.woce.other]{read.ctd.woce.other()}} for a variant of WOCE data,
-\code{\link[=read.ctd.itp]{read.ctd.itp()}} for ice-tethered-profiler data, or
-\code{\link[=read.ctd.sbe]{read.ctd.sbe()}} for Seabird data.
-}
 \seealso{
 Other things related to ctd data: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
@@ -129,6 +129,7 @@ Other things related to ctd data:
 \code{\link{plotTS}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.odv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.woce.other}()},
 \code{\link{read.ctd.woce}()},
