@@ -1114,7 +1114,7 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, defaul
                                                    gsub(" ", "", paste(as.character(deparse(mapping)),
                                                                                      sep="", collapse="")),
                                                    ")",
-                                                   ", default=c(", paste(default, collapse=","), ")",
+                                                   ", default=c(", paste(default, collapse=","), "))",
                                                    sep=""))
     oceDebug(debug, "} # initializeFlagSchemeInternal", sep="", unindent=1)
     res
