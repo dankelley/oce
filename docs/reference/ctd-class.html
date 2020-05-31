@@ -365,9 +365,14 @@ and sufficiently skilled users may even manipulate the contents directly.</p>
 #&gt;     pressure [dbar]             1    2    3    3   0            -
 #&gt; 
 #&gt; * Processing Log
+<<<<<<< HEAD
+#&gt;     - 2020-05-07 11:54:44 UTC: `create 'ctd' object`
+#&gt;     - 2020-05-07 11:54:44 UTC: `as.ctd(salinity = 35 + 1:3/10, temperature = 10 - 1:3/10, pressure = 1:3)`</div><div class='input'>
+=======
 #&gt; 
 #&gt;     - 2020-05-31 14:09:39 UTC: `create 'ctd' object`
 #&gt;     - 2020-05-31 14:09:39 UTC: `as.ctd(salinity = 35 + 1:3/10, temperature = 10 - 1:3/10, pressure = 1:3)`</div><div class='input'>
+>>>>>>> develop
 <span class='co'># 2. Fix a typo in a station latitude (fake! it's actually okay)</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
 <span class='no'>ctd</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='oceSetMetadata.html'>oceSetMetadata</a></span>(<span class='no'>ctd</span>, <span class='st'>"latitude"</span>, <span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"latitude"</span>]]-<span class='fl'>0.001</span>,
