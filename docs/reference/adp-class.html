@@ -157,7 +157,7 @@ used by analogy to ADVs.</p>
 
     
 
-<dl'>
+<dl>
 <dt><code>data</code></dt><dd><p>As with all <code>oce</code> objects, the <code>data</code> slot
 for <code>adp</code> objects is a
 <a href='https://rdrr.io/r/base/list.html'>list</a> containing the main data for the object.
@@ -260,9 +260,9 @@ the eastward component of velocity.
 Thus, for example,</p><pre>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>adp</span>)
-<span class='no'>t</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='no'>adp</span><span class='kw'>[[</span><span class='st'>'time'</span>]]
-<span class='no'>d</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='no'>adp</span><span class='kw'>[[</span><span class='st'>'distance'</span>]]
-<span class='no'>eastward</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='no'>adp</span><span class='kw'>[[</span><span class='st'>'v'</span>]][,,<span class='fl'>1</span>]
+<span class='no'>t</span> <span class='kw'>&lt;-</span> <span class='no'>adp</span><span class='kw'>[[</span><span class='st'>'time'</span>]]
+<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='no'>adp</span><span class='kw'>[[</span><span class='st'>'distance'</span>]]
+<span class='no'>eastward</span> <span class='kw'>&lt;-</span> <span class='no'>adp</span><span class='kw'>[[</span><span class='st'>'v'</span>]][,,<span class='fl'>1</span>]
 <span class='fu'><a href='imagep.html'>imagep</a></span>(<span class='no'>t</span>, <span class='no'>d</span>, <span class='no'>eastward</span>, <span class='kw'>missingColor</span><span class='kw'>=</span><span class='st'>"gray"</span>)</pre><p>plots an image of the eastward component of velocity as a function of time (the x axis)
 and distance from sensor (y axis), since the <code>adp</code> dataset is
 in earth coordinates. Note the semidurnal tidal signal, and the pattern of missing
@@ -484,7 +484,7 @@ transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

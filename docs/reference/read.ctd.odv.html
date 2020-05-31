@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Write a CTD Data Object as a CSV File — write.ctd • oce</title>
+<title>Read an ODV-type CTD File — read.ctd.odv • oce</title>
 
 
 <!-- jquery -->
@@ -39,12 +39,8 @@
 
 
 
-<meta property="og:title" content="Write a CTD Data Object as a CSV File — write.ctd" />
-<meta property="og:description" content="Writes a comma-separated file containing the data frame stored in
-the data slot of the first argument.  The file is suitable
-for reading with a spreadsheet, or
-with read.csv().  This output file will contain
-some of the metadata in x, if metadata is TRUE." />
+<meta property="og:title" content="Read an ODV-type CTD File — read.ctd.odv" />
+<meta property="og:description" content="Read an ODV-type CTD File" />
 
 
 
@@ -142,64 +138,140 @@ some of the metadata in x, if metadata is TRUE." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Write a CTD Data Object as a CSV File</h1>
-    <small class="dont-index">Source: <a href='https://github.com/dankelley/oce/blob/master/R/ctd.R'><code>R/ctd.R</code></a></small>
-    <div class="hidden name"><code>write.ctd.Rd</code></div>
+    <h1>Read an ODV-type CTD File</h1>
+    <small class="dont-index">Source: <a href='https://github.com/dankelley/oce/blob/master/R/ctd.odv.R'><code>R/ctd.odv.R</code></a></small>
+    <div class="hidden name"><code>read.ctd.odv.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Writes a comma-separated file containing the data frame stored in
-the <code>data</code> slot of the first argument.  The file is suitable
-for reading with a spreadsheet, or
-with <code><a href='https://rdrr.io/r/utils/read.table.html'>read.csv()</a></code>.  This output file will contain
-some of the metadata in <code>x</code>, if <code>metadata</code> is <code>TRUE</code>.</p>
+    <p>Read an ODV-type CTD File</p>
     </div>
 
-    <pre class="usage"><span class='fu'>write.ctd</span>(<span class='no'>object</span>, <span class='no'>file</span>, <span class='kw'>metadata</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>flags</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='st'>"csv"</span>)</pre>
+    <pre class="usage"><span class='fu'>read.ctd.odv</span>(
+  <span class='no'>file</span>,
+  <span class='kw'>columns</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>station</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>missingValue</span>,
+  <span class='no'>deploymentType</span>,
+  <span class='kw'>monitor</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>),
+  <span class='no'>processingLog</span>,
+  <span class='no'>...</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
-      <td><p>a <a href='ctd-class.html'>ctd</a> object.</p></td>
-    </tr>
-    <tr>
       <th>file</th>
-      <td><p>Either a character string (the file name) or a connection. If not
-provided, <code>file</code> defaults to <code><a href='https://rdrr.io/r/base/showConnections.html'>stdout()</a></code>.</p></td>
+      <td><p>a connection or a character string giving the name of the file to
+load.  For <code><a href='read.ctd.sbe.html'>read.ctd.sbe()</a></code> and <code><a href='read.ctd.woce.html'>read.ctd.woce()</a></code>, this may be a
+wildcard (e.g. <code>"*.cnv"</code> or <code>"*.csv"</code>) in which case the return
+value is a vector containing CTD objects created by reading the files from
+<code><a href='https://rdrr.io/r/base/list.files.html'>list.files()</a></code> with <code>pattern</code> set to the specified wildcard
+pattern.</p></td>
     </tr>
     <tr>
-      <th>metadata</th>
-      <td><p>a logical value indicating whether to put some selected
-metadata elements at the start of the output file.</p></td>
+      <th>columns</th>
+      <td><p>an optional <a href='https://rdrr.io/r/base/list.html'>list</a> that can be used to convert unrecognized
+data names to resultant variable names.  This is used only by
+<code><a href='read.ctd.sbe.html'>read.ctd.sbe()</a></code> and <code><a href='read.ctd.odf.html'>read.ctd.odf()</a></code>. For example,
+if a data file named salinity as <code>"SAL"</code>, then using</p><pre><span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='read.ctd.html'>read.ctd</a></span>(<span class='no'>f</span>, <span class='kw'>columns</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
+    <span class='kw'>salinity</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>name</span><span class='kw'>=</span><span class='st'>"SAL"</span>,
+                  <span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span>(),
+                  <span class='kw'>scale</span><span class='kw'>=</span><span class='st'>"PSS-78"</span>))))</pre>
+
+<p>would assign the <code>"SAL"</code> column to the <code>salinity</code> entry in the data
+slot of the CTD object returned by the <code>read.*</code> function.</p></td>
     </tr>
     <tr>
-      <th>flags</th>
-      <td><p>a logical value indicating whether to show data-quality flags
-as well as data.</p></td>
+      <th>station</th>
+      <td><p>optional character string containing an identifying name or
+number for the station. This can be useful if the routine cannot determine the
+name automatically, or if another name is preferred.</p></td>
     </tr>
     <tr>
-      <th>format</th>
-      <td><p>string indicating the format to use. This may be <code>"csv"</code>
-for a simple CSV format, or <code>"whp"</code> for the World Hydrographic
-Program format, described in reference 1 and exemplified in reference 2.</p></td>
+      <th>missingValue</th>
+      <td><p>optional missing-value flag; data matching this value will
+be set to <code>NA</code> upon reading. If this is provided, then it overrules any
+missing-value flag found in the data. For Seabird (<code>.cnv</code>) files, there is
+usually no need to set <code>missingValue</code>, because it can be inferred from the
+header (typically as -9.990e-29). Set <code>missingValue=NULL</code> to turn off
+missing-value detection, even in <code>.cnv</code> files that contain missing-value
+codes in their headers. If <code>missingValue</code> is not specified,
+then an attempt is made to infer such a value from the data, by testing
+whether salinity and/or temperature has a minimum that is under -8 in value;
+this should catch common values in files, without false positives. A warning
+will be issued in this case, and a note inserted in the processing log of
+the return value.</p></td>
+    </tr>
+    <tr>
+      <th>deploymentType</th>
+      <td><p>character string indicating the type of deployment. Use
+<code>"unknown"</code> if this is not known, <code>"profile"</code> for a profile (in
+which the data were acquired during a downcast, while the device was lowered
+into the water column, perhaps also including an upcast; <code>"moored"</code> if
+the device is installed on a fixed mooring, <code>"thermosalinograph"</code> (or
+<code>"tsg"</code>) if the device is mounted on a moving vessel, to record
+near-surface properties, or <code>"towyo"</code> if the device is repeatedly
+lowered and raised.</p></td>
+    </tr>
+    <tr>
+      <th>monitor</th>
+      <td><p>boolean, set to <code>TRUE</code> to provide an indication of
+progress.  This is useful if <code>filename</code> is a wildcard.</p></td>
+    </tr>
+    <tr>
+      <th>debug</th>
+      <td><p>an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many <code>oce</code> functions. Generally, setting <code>debug=0</code>
+turns off the printing, while higher values suggest that more information
+be printed.</p></td>
+    </tr>
+    <tr>
+      <th>processingLog</th>
+      <td><p>if provided, the action item to be stored in the log.
+This is typically only provided for internal calls; the default that it provides is
+better for normal calls by a user.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional arguments, passed to called routines.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>a <a href='ctd-class.html'>ctd</a> object. The details of the contents
+depend on the source file. The <code>metadata</code> slot is particularly
+variable across data formats, because the meta-information provided
+in those formats varies so widely.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p><code>read.ctd.odv()</code> attempts to read files stored in ODV format,
+used by some European data providers. This works only crudely, as of
+2020-05-17. In particular, the translation from ODV parameter names to oce
+names is <em>very</em> limited.  For example, only one of the dozens of possibilities
+for variants of phosphate is handled at the moment, and that is because
+this was the variant supplied in a test file sent to the author on
+2020-05-16.  It is unlikely that full support of ODV files will
+become available in <code>read.ctd.odv()</code>, given the lack of a comprehensive source
+listing ODV variable names and their meanings, and low user
+interest.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     
 <ol>
-<li><p>https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm</p></li>
-<li><p>https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv</p></li>
+<li><p><a href='https://www.bodc.ac.uk/resources/delivery_formats/odv_format/'>https://www.bodc.ac.uk/resources/delivery_formats/odv_format/</a> describes
+the <code>ODV</code> format.</p></li>
+<li><p><a href='https://vocab.nerc.ac.uk/collection/P07/current/'>https://vocab.nerc.ac.uk/collection/P07/current/</a> may be
+worth consulting for variable names.</p></li>
 </ol>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>The documentation for <a href='ctd-class.html'>ctd</a> explains the structure
-of CTD objects.</p>
-<p>Other things related to ctd data: 
+    <div class='dont-index'><p>Other things related to ctd data: 
 <code><a href='CTD_BCD2014666_008_1_DN.ODF.gz.html'>CTD_BCD2014666_008_1_DN.ODF.gz</a></code>,
 <code><a href='sub-sub-ctd-method.html'>[[,ctd-method</a></code>,
 <code>[[&lt;-,ctd-method</code>,
@@ -225,7 +297,6 @@ of CTD objects.</p>
 <code><a href='plotTS.html'>plotTS</a>()</code>,
 <code><a href='read.ctd.itp.html'>read.ctd.itp</a>()</code>,
 <code><a href='read.ctd.odf.html'>read.ctd.odf</a>()</code>,
-<code><a href='read.ctd.odv.html'>read.ctd.odv</a>()</code>,
 <code><a href='read.ctd.sbe.html'>read.ctd.sbe</a>()</code>,
 <code><a href='read.ctd.woce.other.html'>read.ctd.woce.other</a>()</code>,
 <code><a href='read.ctd.woce.html'>read.ctd.woce</a>()</code>,
@@ -234,16 +305,9 @@ of CTD objects.</p>
 <code><a href='subset-ctd-method.html'>subset,ctd-method</a></code>,
 <code><a href='summary-ctd-method.html'>summary,ctd-method</a></code>,
 <code><a href='woceNames2oceNames.html'>woceNames2oceNames</a>()</code>,
-<code><a href='woceUnit2oceUnit.html'>woceUnit2oceUnit</a>()</code></p></div>
+<code><a href='woceUnit2oceUnit.html'>woceUnit2oceUnit</a>()</code>,
+<code><a href='write.ctd.html'>write.ctd</a>()</code></p></div>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
-<span class='fu'>write.ctd</span>(<span class='no'>ctd</span>, <span class='st'>"ctd.csv"</span>)
-<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span>(<span class='st'>"ctd.csv"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='fu'><a href='as.ctd.html'>as.ctd</a></span>(<span class='no'>d</span>$<span class='no'>salinity</span>, <span class='no'>d</span>$<span class='no'>temperature</span>, <span class='no'>d</span>$<span class='no'>pressure</span>))
-}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

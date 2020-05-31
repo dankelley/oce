@@ -100,7 +100,7 @@
       <h1 data-toc-skip>2. Analysis of CTD data</h1>
                         <h4 class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="uri">https://orcid.org/0000-0001-7808-5911</a>) and Clark Richards (<a href="https://orcid.org/0000-0002-7833-206X" class="uri">https://orcid.org/0000-0002-7833-206X</a>)</h4>
             
-            <h4 class="date">2020-05-05</h4>
+            <h4 class="date">2020-05-31</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/master/vignettes/ctd.Rmd"><code>vignettes/ctd.Rmd</code></a></small>
       <div class="hidden name"><code>ctd.Rmd</code></div>
@@ -142,7 +142,7 @@
 <span class="co">#&gt; * Cruise:              Halifax Harbour</span>
 <span class="co">#&gt; * Vessel:              Divcom3</span>
 <span class="co">#&gt; * Station:             Stn 2</span>
-<span class="co">#&gt; * Location:            44.684N  63.644W </span>
+<span class="co">#&gt; * Location:            44.684N  63.644W</span>
 <span class="co">#&gt; * Data Overview</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt;                                 Min.   Mean   Max. Dim. NAs OriginalName</span>
@@ -155,6 +155,7 @@
 <span class="co">#&gt;     flag                           0      0      0  181   0         flag</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; * Processing Log</span>
+<span class="co">#&gt; </span>
 <span class="co">#&gt;     - 2018-11-14 20:03:47 UTC: `create 'ctd' object`</span>
 <span class="co">#&gt;     - 2018-11-14 20:03:47 UTC: `read.ctd.sbe(file = file, debug = 10, processingLog = processingLog)`</span>
 <span class="co">#&gt;     - 2018-11-14 20:03:47 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`</span>
@@ -269,7 +270,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

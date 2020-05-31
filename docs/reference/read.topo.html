@@ -40,9 +40,9 @@
 
 
 <meta property="og:title" content="Read a Topo File — read.topo" />
-<meta property="og:description" content="Read a file that contains topographic data in the ETOPO dataset, as provided by
+<meta property="og:description" content="Read a file that contains topographic data in the ETOPO dataset, as was once provided by
 the NOAA website (see download.topo() for a good server for such
-files." />
+files. (As of May, 2020, there does not seem to be a way to download these" />
 
 
 
@@ -146,9 +146,9 @@ files." />
     </div>
 
     <div class="ref-description">
-    <p>Read a file that contains topographic data in the ETOPO dataset, as provided by
+    <p>Read a file that contains topographic data in the ETOPO dataset, as was once provided by
 the NOAA website (see <code><a href='download.topo.html'>download.topo()</a></code> for a good server for such
-files.</p>
+files. (As of May, 2020, there does not seem to be a way to download these</p>
     </div>
 
     <pre class="usage"><span class='fu'>read.topo</span>(<span class='no'>file</span>, <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>))</pre>
@@ -178,10 +178,17 @@ by specifying higher <code>debug</code> values.</p></td>
     <p>A <a href='topo-class.html'>topo</a> object that.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The three permitted file types are as follows: (1) an ascii type described
-by NOAA as "?"; (2) a NetCDF format described by NOAA as "GMT NetCDF"
-(recognized by the presence of a variable named <code>), and (3) another NetCDF format described by NOAA as "NetCDF" (recognized by the presence of a variable called </code>). Files in each of these formats
-can be downloaded with <code><a href='download.topo.html'>download.topo()</a></code>.</p>
+    <p>The three permitted file types are as follows.</p><ol>
+<li><p>An ascii type
+in which line 1 holds a label (which is ignored), whitespace, and then
+the number of columns in the matrix (i.e. the number of longitude values),
+line 2 is similar but for latitude, line 3 is similar but for the westernmost
+longitude, line 4 is similar but for southernmost latitude, line 5
+is similar but for cell size, and lines after that hold the grid.</p></li>
+<li><p>A NetCDF format that was once described by NOAA as "GMT NetCDF".</p></li>
+<li><p>A NetCDF format that was once described by NOAA as "NetCDF".</p></li>
+</ol>
+
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to topo data: 
@@ -217,7 +224,7 @@ can be downloaded with <code><a href='download.topo.html'>download.topo()</a></c
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>
