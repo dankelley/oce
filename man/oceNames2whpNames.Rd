@@ -19,7 +19,8 @@ is taken to mean \code{"CTDOXY"}.
 }
 \references{
 Several online sources list WHP names. An example is
-\url{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
+\verb{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
+(a link that was noticed to be failing on May 31, 2020).
 }
 \seealso{
 Other things related to ctd data: 

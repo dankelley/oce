@@ -27,11 +27,12 @@
 #' in June 2011.)
 #'
 #' 2. The St Lawrence Global Observatory website has information on ODF format at
-#' \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
+#' `https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html`
+#' (a link that was noticed to be failing on May 31, 2020).
 #'
-#' 3. List of variable codes:
-#' \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}
-#' (checked 2018-02-11); only a subset are handled.
+#' 3. A list of variable codes (only a subset handled) is at:
+#' `https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html`
+#' (a link that was noticed to be failing on May 31, 2020).
 #'
 #'
 #' @author Dan Kelley
@@ -395,8 +396,10 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' 1. The Department of Fisheries and Oceans Common Data Dictionary may be
 #' available at `http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY`)
 #' although that link seems to be unreliable. As of September 2017, the
-#' link \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
-#' seems to be a good place to start.
+#' link `https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html`
+#' seemed to be a good place to start,
+#' but it was noticed to be failing on May 31, 2020.
+#'
 #' @family things related to odf data
 ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
                               columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
@@ -964,7 +967,8 @@ ODFListFromHeader <- function(header)
 #' in June 2011.)
 #'
 #' 2. The St Lawrence Global Observatory website has information on ODF format at
-#' \url{https://slgo.ca/app-sgdo/en/docs_reference/documents.html}
+#' `https://slgo.ca/app-sgdo/en/docs_reference/documents.html`
+#' (a link that was noticed to be failing on May 31, 2020)
 #' and this is perhaps the best resource to learn more.
 #'
 #' @family things related to odf data
