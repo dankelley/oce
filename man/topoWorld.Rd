@@ -8,7 +8,7 @@
 This is created with \code{\link[=read.topo]{read.topo()}}, using a file downloaded with
 \preformatted{
 topoFile <- download.topo(west=-180, east=180, south=-90, north=90,
-                         resolution=30, format="netcdf", destdir=".")
+                         resolution=30, destdir=".")
 }
 }
 \usage{
