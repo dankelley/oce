@@ -175,18 +175,26 @@ pattern.</p></td>
     <tr>
       <th>type</th>
       <td><p>If <code>NULL</code>, then the first line is studied, in order to
-determine the file type.  If <code>type="SBE19"</code>, then a <em>Seabird 19</em>, or
-similar, CTD format is assumed. If <code>type="WOCE"</code> then a WOCE-exchange file
-is assumed.  If <code>type="ITP"</code> then an ice-tethered profiler file is
-assumed.  If <code>type="ODF"</code> an ODF file is assumed.  If <code>type="ODV"</code> an
-ascii-ODV file is assumed.</p></td>
+determine the file type, and control is dispatched to a specialized
+function to handle that type.  Otherwise, <code>type</code> must be a string.
+If <code>type="SBE19"</code> then a Seabird file format is assumed,
+and control is dispatched to <code><a href='read.ctd.sbe.html'>read.ctd.sbe()</a></code>.
+If <code>type="WOCE"</code> then a WOCE-exchange file is assumed,
+and control is dispatched to <code><a href='read.ctd.woce.html'>read.ctd.woce()</a></code>.
+If <code>type="ITP"</code> then an ice-tethered profiler file is assumed,
+and control is dispatched to <code><a href='read.ctd.itp.html'>read.ctd.itp()</a></code>.
+If <code>type="ODF"</code> then an ODF file (used by the Canadian Department of
+Fisheries and Ocean) is assumed,
+and control is dispatched to <code><a href='read.ctd.odf.html'>read.ctd.odf()</a></code>.
+Finally, if <code>type="ODV"</code> then an ODV file (used by Ocean Data View software) is assumed,
+and control is dispatched to <code><a href='read.ctd.odv.html'>read.ctd.odv()</a></code>.</p></td>
     </tr>
     <tr>
       <th>columns</th>
       <td><p>an optional <a href='https://rdrr.io/r/base/list.html'>list</a> that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
 <code><a href='read.ctd.sbe.html'>read.ctd.sbe()</a></code> and <code><a href='read.ctd.odf.html'>read.ctd.odf()</a></code>. For example,
-if a data file named salinity as <code>"SAL"</code>, then using</p><pre><span class='no'>d</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='fu'>read.ctd</span>(<span class='no'>f</span>, <span class='kw'>columns</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
+if a data file named salinity as <code>"SAL"</code>, then using</p><pre><span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>read.ctd</span>(<span class='no'>f</span>, <span class='kw'>columns</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
     <span class='kw'>salinity</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>name</span><span class='kw'>=</span><span class='st'>"SAL"</span>,
                   <span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span>(),
                   <span class='kw'>scale</span><span class='kw'>=</span><span class='st'>"PSS-78"</span>))))</pre>
@@ -257,14 +265,6 @@ better for normal calls by a user.</p></td>
 depend on the source file. The <code>metadata</code> slot is particularly
 variable across data formats, because the meta-information provided
 in those formats varies so widely.</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p><code>read.ctd()</code> is a base function that in turn calls specialized functions, e.g.
-<code><a href='read.ctd.odf.html'>read.ctd.odf()</a></code> for the ODF data used in Fisheries and Oceans (Canada),
-<code><a href='read.ctd.woce.html'>read.ctd.woce()</a></code> for data in World Ocean Circulation Experiment format,
-<code><a href='read.ctd.woce.other.html'>read.ctd.woce.other()</a></code> for a variant of WOCE data,
-<code><a href='read.ctd.itp.html'>read.ctd.itp()</a></code> for ice-tethered-profiler data, or
-<code><a href='read.ctd.sbe.html'>read.ctd.sbe()</a></code> for Seabird data.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to ctd data: 
@@ -293,6 +293,7 @@ in those formats varies so widely.</p>
 <code><a href='plotTS.html'>plotTS</a>()</code>,
 <code><a href='read.ctd.itp.html'>read.ctd.itp</a>()</code>,
 <code><a href='read.ctd.odf.html'>read.ctd.odf</a>()</code>,
+<code><a href='read.ctd.odv.html'>read.ctd.odv</a>()</code>,
 <code><a href='read.ctd.sbe.html'>read.ctd.sbe</a>()</code>,
 <code><a href='read.ctd.woce.other.html'>read.ctd.woce.other</a>()</code>,
 <code><a href='read.ctd.woce.html'>read.ctd.woce</a>()</code>,
@@ -324,7 +325,7 @@ in those formats varies so widely.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

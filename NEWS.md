@@ -2,6 +2,7 @@
 
 ## 1.2.1
 
+* Add `read.ctd.odv()`, in preliminary form.
 * Add `addSpine()`.
 * Update reader-oriented website on github.
 * Extend `read.ctd.sbe()` to read `.btl` files.

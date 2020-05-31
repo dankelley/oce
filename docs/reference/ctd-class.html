@@ -201,7 +201,7 @@ common use in data files, namely PSS-78.</p>
 
     
 
-<dl'>
+<dl>
 <dt><code>data</code></dt><dd><p>As with all <code>oce</code> objects, the <code>data</code> slot
 for <code>ctd</code> objects is a
 <a href='https://rdrr.io/r/base/list.html'>list</a> containing the main data for the object.
@@ -319,6 +319,7 @@ and sufficiently skilled users may even manipulate the contents directly.</p>
 <code><a href='plotTS.html'>plotTS</a>()</code>,
 <code><a href='read.ctd.itp.html'>read.ctd.itp</a>()</code>,
 <code><a href='read.ctd.odf.html'>read.ctd.odf</a>()</code>,
+<code><a href='read.ctd.odv.html'>read.ctd.odv</a>()</code>,
 <code><a href='read.ctd.sbe.html'>read.ctd.sbe</a>()</code>,
 <code><a href='read.ctd.woce.other.html'>read.ctd.woce.other</a>()</code>,
 <code><a href='read.ctd.woce.html'>read.ctd.woce</a>()</code>,
@@ -364,8 +365,14 @@ and sufficiently skilled users may even manipulate the contents directly.</p>
 #&gt;     pressure [dbar]             1    2    3    3   0            -
 #&gt; 
 #&gt; * Processing Log
+<<<<<<< HEAD
 #&gt;     - 2020-05-07 11:54:44 UTC: `create 'ctd' object`
 #&gt;     - 2020-05-07 11:54:44 UTC: `as.ctd(salinity = 35 + 1:3/10, temperature = 10 - 1:3/10, pressure = 1:3)`</div><div class='input'>
+=======
+#&gt; 
+#&gt;     - 2020-05-31 14:09:39 UTC: `create 'ctd' object`
+#&gt;     - 2020-05-31 14:09:39 UTC: `as.ctd(salinity = 35 + 1:3/10, temperature = 10 - 1:3/10, pressure = 1:3)`</div><div class='input'>
+>>>>>>> develop
 <span class='co'># 2. Fix a typo in a station latitude (fake! it's actually okay)</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
 <span class='no'>ctd</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='oceSetMetadata.html'>oceSetMetadata</a></span>(<span class='no'>ctd</span>, <span class='st'>"latitude"</span>, <span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"latitude"</span>]]-<span class='fl'>0.001</span>,
@@ -385,7 +392,7 @@ and sufficiently skilled users may even manipulate the contents directly.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

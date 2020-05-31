@@ -486,9 +486,9 @@ setMethod(f="summary",
                                                                    mean(object@data$longitude, na.rm=TRUE),
                                                                    digits=5), "\n")
               } else if ("longitude" %in% names(object@metadata) && !is.na(object@metadata$longitude)) {
-                  cat("* Location:           ",       latlonFormat(object@metadata$latitude,
+                  cat("* Location:            ",       latlonFormat(object@metadata$latitude,
                                                                    object@metadata$longitude,
-                                                                   digits=5), "\n")
+                                                                   digits=5), "\n", sep="")
               }
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
@@ -4020,19 +4020,19 @@ plotScan <- function(x, which=1, xtype="scan", flipy=FALSE,
 #' @author Dan Kelley
 #'
 #' @param type If `NULL`, then the first line is studied, in order to
-#' determine the file type.  If `type="SBE19"`, then a *Seabird 19*, or
-#' similar, CTD format is assumed. If `type="WOCE"` then a WOCE-exchange file
-#' is assumed.  If `type="ITP"` then an ice-tethered profiler file is
-#' assumed.  If `type="ODF"` an ODF file is assumed.  If `type="ODV"` an
-#' ascii-ODV file is assumed.
-#'
-#' @details
-#' `read.ctd()` is a base function that in turn calls specialized functions, e.g.
-#' [read.ctd.odf()] for the ODF data used in Fisheries and Oceans (Canada),
-#' [read.ctd.woce()] for data in World Ocean Circulation Experiment format,
-#' [read.ctd.woce.other()] for a variant of WOCE data,
-#' [read.ctd.itp()] for ice-tethered-profiler data, or
-#' [read.ctd.sbe()] for Seabird data.
+#' determine the file type, and control is dispatched to a specialized
+#' function to handle that type.  Otherwise, `type` must be a string.
+#' If `type="SBE19"` then a Seabird file format is assumed,
+#' and control is dispatched to [read.ctd.sbe()].
+#' If `type="WOCE"` then a WOCE-exchange file is assumed,
+#' and control is dispatched to [read.ctd.woce()].
+#' If `type="ITP"` then an ice-tethered profiler file is assumed,
+#' and control is dispatched to [read.ctd.itp()].
+#' If `type="ODF"` then an ODF file (used by the Canadian Department of
+#' Fisheries and Ocean) is assumed,
+#' and control is dispatched to [read.ctd.odf()].
+#' Finally, if `type="ODV"` then an ODV file (used by Ocean Data View software) is assumed,
+#' and control is dispatched to [read.ctd.odv()].
 #'
 #' @family functions that read ctd data
 read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
@@ -4040,6 +4040,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
+    oceDebug(debug, "read.ctd(..., type=", if (is.null(type)) "NULL" else "\"", type, "\") {\n", sep="")
     ## Special case: ruskin files are handled by read.rsk()
     if (is.character(file) && length(grep(".rsk$", file))) {
         return(read.rsk(file=file, debug=debug))
@@ -4079,8 +4080,8 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
             type <- "SBE19"
         } else if (!is.na(pmatch(type, "WOCE"))) {
             type <- "WOCE"
-        } else {
-            stop("type must be SBE19, WOCE, ODF, ODV, or ITP, not ", type)
+        ##issue_1696 } else {
+        ##issue_1696     stop("type must be SBE19, WOCE, ODF, ODV, or ITP, not ", type)
         }
     }                                   # FIXME: should just use oce.magic() here
     res <- switch(type,
@@ -4094,6 +4095,9 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
                                    missingValue=missingValue, deploymentType=deploymentType,
                                    monitor=monitor, debug=debug, processingLog=processingLog, ...),
                   ITP=read.ctd.itp(file, columns=columns, station=station,
+                                   missingValue=missingValue, deploymentType=deploymentType,
+                                   monitor=monitor, debug=debug, processingLog=processingLog, ...),
+                  ODV=read.ctd.odv(file, columns=columns, station=station,
                                    missingValue=missingValue, deploymentType=deploymentType,
                                    monitor=monitor, debug=debug, processingLog=processingLog, ...))
     res
@@ -4159,27 +4163,6 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
 
 time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 
-
-## #' Read an ODV-type CTD File
-## #'
-## #' @template readCtdTemplate
-## #'
-## #' @author Dan Kelley
-## #'
-## #' @details
-## #' `read.ctd.odf()` reads files stored in ODV format, used by some European data providers.
-## #'
-## #' @references
-## #' The `ODV` format is described in a file stored on the website of the British
-## #' Oceanographic Data Center, `bodc.ac.uk`, in a directory named
-## #' `data/codes_and_formats/odv_format`. (The URL is not provided here
-## #' because it is unreliable, which causes problems with CRAN submission of the
-## #' oce package.)
-## read.ctd.odv <- function(file, columns=NULL, station=NULL, missingValue, monitor=FALSE,
-##                          debug=getOption("oceDebug"), processingLog, ...)
-## {
-##     stop("FIXME: make read.ctd.odv() work")
-## }
 
 
 

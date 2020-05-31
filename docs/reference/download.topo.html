@@ -40,15 +40,14 @@
 
 
 <meta property="og:title" content="Download and Cache a topo File — download.topo" />
-<meta property="og:description" content="Data are downloaded (from https://maps.ngdc.noaa.gov/viewers/wcs-client/, by
-default) and a string containing the full path to the downloaded file is returned.
-Typically, this return value is used with read.topo() to read the
-data. Subsequent calls to download.topo
+<meta property="og:description" content="Topographic data are downloaded from a data server that holds the ETOPO1
+dataset (Amante, C. and B.W. Eakins, 2009), and saved as a netCDF file whose
+name specifies the data request, if a file of that name is not already
+present on the local file system.  The return value is the name of the data
+file, and it's typical use is as the filename for a call to read.topo().
+Given the rules on file naming, subsequent calls to download.topo()
 with identical parameters will simply return the name of the cached file,
-assuming the user has not deleted it in the meantime.
-For convenience, if destfile is not
-given, then download.topo will construct a filename from the other arguments,
-rounding longitude and latitude limits to 0.01 degrees." />
+assuming the user has not deleted it in the meantime." />
 
 
 
@@ -152,15 +151,14 @@ rounding longitude and latitude limits to 0.01 degrees." />
     </div>
 
     <div class="ref-description">
-    <p>Data are downloaded (from <samp>https://maps.ngdc.noaa.gov/viewers/wcs-client/</samp>, by
-default) and a string containing the full path to the downloaded file is returned.
-Typically, this return value is used with <code><a href='read.topo.html'>read.topo()</a></code> to read the
-data. Subsequent calls to <code>download.topo</code>
+    <p>Topographic data are downloaded from a data server that holds the ETOPO1
+dataset (Amante, C. and B.W. Eakins, 2009), and saved as a netCDF file whose
+name specifies the data request, if a file of that name is not already
+present on the local file system.  The return value is the name of the data
+file, and it's typical use is as the filename for a call to <code><a href='read.topo.html'>read.topo()</a></code>.
+Given the rules on file naming, subsequent calls to <code>download.topo()</code>
 with identical parameters will simply return the name of the cached file,
-assuming the user has not deleted it in the meantime.
-For convenience, if <code>destfile</code> is not
-given, then <code>download.topo</code> will construct a filename from the other arguments,
-rounding longitude and latitude limits to 0.01 degrees.</p>
+assuming the user has not deleted it in the meantime.</p>
     </div>
 
     <pre class="usage"><span class='fu'>download.topo</span>(
@@ -168,11 +166,11 @@ rounding longitude and latitude limits to 0.01 degrees.</p>
   <span class='no'>east</span>,
   <span class='no'>south</span>,
   <span class='no'>north</span>,
-  <span class='no'>resolution</span>,
-  <span class='no'>destdir</span>,
+  <span class='kw'>resolution</span> <span class='kw'>=</span> <span class='fl'>4</span>,
+  <span class='kw'>destdir</span> <span class='kw'>=</span> <span class='st'>"."</span>,
   <span class='no'>destfile</span>,
   <span class='no'>format</span>,
-  <span class='no'>server</span>,
+  <span class='kw'>server</span> <span class='kw'>=</span> <span class='st'>"https://gis.ngdc.noaa.gov"</span>,
   <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
 )</pre>
 
@@ -189,10 +187,8 @@ rounding longitude and latitude limits to 0.01 degrees.</p>
     </tr>
     <tr>
       <th>resolution</th>
-      <td><p>Optional grid spacing, in minutes. If not supplied,
-a default value of 4 (corresponding to 7.4km, or 4 nautical
-miles) is used. Note that (as of August 2016) the original data are on
-a 1-minute grid, which limits the possibilities for <code>resolution</code>.</p></td>
+      <td><p>numeric value of grid spacing, in geographical minutes.
+The default value of 4 minutes corresponds to 4 nautical miles, or 7.4km.</p></td>
     </tr>
     <tr>
       <th>destdir</th>
@@ -210,15 +206,14 @@ to the caching scheme.</p></td>
     </tr>
     <tr>
       <th>format</th>
-      <td><p>Optional string indicating the type of file to download. If
-not supplied, this defaults to <code>"gmt"</code>. See &#8220;Details&#8221;.</p></td>
+      <td><p>Deprecated, and ignored, as of June 2020.</p></td>
     </tr>
     <tr>
       <th>server</th>
-      <td><p>Optional string indicating the server from which to get the data.
-If not supplied, the default
-<samp>"https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"</samp>
-will be used.</p></td>
+      <td><p>character value specifying the base from which a
+download URL will be constructed.  It is unlikely that any value
+other than the default will work, unless it is a similarly-constructed
+mirrored site.</p></td>
     </tr>
     <tr>
       <th>debug</th>
@@ -237,60 +232,25 @@ by specifying higher <code>debug</code> values.</p></td>
     <p>String indicating the full pathname to the downloaded file.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The data are downloaded with <code><a href='https://rdrr.io/r/utils/download.file.html'>utils::download.file()</a></code>, using a URL
-devised from reverse engineering web-based queries constructed by
-the default <code>server</code> used here. Note that the data source is "etopo1",
-which is a 1 arc-second file (see references 1 and 2).</p>
-<p>Three values are permitted for <code>format</code>,
-each named after the
-targets of menu items on the
-NOAA website (as of August 2016): (1) <code>"aaigrid"</code> (for
-the menu item "ArcGIS ASCII Grid"), which
-yields a text file, (2) <code>"netcdf"</code> (the default,
-for the menu item named
-"NetCDF"), which yields a NetCDF file
-and (3) <code>"gmt"</code> (for the menu item named
-"GMT NetCDF"), which yields a NetCDF file in
-another format. All of these file formats are
-recognized by <code><a href='read.topo.html'>read.topo()</a></code>.
-(The NOAA server has more options, and if
-<code><a href='read.topo.html'>read.topo()</a></code> is extended to handle them, they will
-also be added here.)</p>
-    <h2 class="hasAnchor" id="webserver-history"><a class="anchor" href="#webserver-history"></a>Webserver history</h2>
-
-    
-
-<p>All versions of <code>download.topo</code> to date have used a NOAA server as
-the data source, but the URL has not been static. A list of the
-servers that have been used is provided below,
-in hopes that it can help users to make guesses
-for <code>server</code>, should <code>download.topo</code> fail because of
-a fail to download the data. Another
-hint is to look at the source code for
-<code>getNOAA.bathy()</code> in the <code>marmap</code> package,
-which is also forced to track the moving target that is NOAA.</p><ul>
-<li><p>August 2016.
-<samp>http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy</samp></p></li>
-<li><p>December 2016.
-<samp>http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz</samp></p></li>
-<li><p>June-September 2017.
-<samp>https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz</samp></p></li>
-</ul>
-
+    <p>For years, the server used by <code>download.topo()</code> was capable of
+returning netCDF files, but this was found to fail in late May of 2020.
+Luckily, the <code><a href='https://rdrr.io/pkg/marmap/man/getNOAA.bathy.html'>marmap::getNOAA.bathy()</a></code> function in the <a href='https://CRAN.R-project.org/package=marmap'><span class="pkg">marmap</span></a>
+package was updated to handle the changes in the server, and
+<code>download.topo()</code> was able to pattern its URL construction on that function.
+The server also now has an API, which might suggest it will be less subject
+to change in the future.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     
-<ol>
-<li><p><code>https://www.ngdc.noaa.gov/mgg/global/global.html</code></p></li>
+<ul>
 <li><p>Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
 Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum
 NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M</p></li>
-</ol>
+</ul>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>The work is done with <code><a href='https://rdrr.io/r/utils/download.file.html'>utils::download.file()</a></code>.</p>
-<p>Other functions that download files: 
+    <div class='dont-index'><p>Other functions that download files: 
 <code><a href='download.amsr.html'>download.amsr</a>()</code>,
 <code><a href='download.coastline.html'>download.coastline</a>()</code>,
 <code><a href='download.met.html'>download.met</a>()</code></p>
@@ -309,7 +269,7 @@ NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='no'>topoFile</span> <span class='kw'>&lt;-</span> <span class='fu'>download.topo</span>(<span class='kw'>west</span><span class='kw'>=</span>-<span class='fl'>64</span>, <span class='kw'>east</span><span class='kw'>=</span>-<span class='fl'>60</span>, <span class='kw'>south</span><span class='kw'>=</span><span class='fl'>43</span>, <span class='kw'>north</span><span class='kw'>=</span><span class='fl'>46</span>,
+<span class='no'>topoFile</span> <span class='kw'>&lt;-</span> <span class='fu'>download.topo</span>(<span class='kw'>west</span><span class='kw'>=</span>-<span class='fl'>66</span>, <span class='kw'>east</span><span class='kw'>=</span>-<span class='fl'>60</span>, <span class='kw'>south</span><span class='kw'>=</span><span class='fl'>43</span>, <span class='kw'>north</span><span class='kw'>=</span><span class='fl'>47</span>,
                           <span class='kw'>resolution</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>destdir</span><span class='kw'>=</span><span class='st'>"~/data/topo"</span>)
 <span class='no'>topo</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='read.topo.html'>read.topo</a></span>(<span class='no'>topoFile</span>)
 <span class='fu'><a href='imagep.html'>imagep</a></span>(<span class='no'>topo</span>, <span class='kw'>zlim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>400</span>, <span class='fl'>400</span>), <span class='kw'>drawTriangles</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
@@ -333,7 +293,7 @@ NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

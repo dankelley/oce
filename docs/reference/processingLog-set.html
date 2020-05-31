@@ -172,14 +172,20 @@
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
 <span class='fu'><a href='processingLogShow.html'>processingLogShow</a></span>(<span class='no'>ctd</span>)</div><div class='output co'>#&gt; * Processing Log
+#&gt; 
 #&gt;     - 2018-11-14 20:03:47 UTC: `create 'ctd' object`
 #&gt;     - 2018-11-14 20:03:47 UTC: `read.ctd.sbe(file = file, debug = 10, processingLog = processingLog)`
 #&gt;     - 2018-11-14 20:03:47 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`</div><div class='input'><span class='fu'>processingLog</span>(<span class='no'>ctd</span>) <span class='kw'>&lt;-</span> <span class='st'>"test"</span>
 <span class='fu'><a href='processingLogShow.html'>processingLogShow</a></span>(<span class='no'>ctd</span>)</div><div class='output co'>#&gt; * Processing Log
+#&gt; 
 #&gt;     - 2018-11-14 20:03:47 UTC: `create 'ctd' object`
 #&gt;     - 2018-11-14 20:03:47 UTC: `read.ctd.sbe(file = file, debug = 10, processingLog = processingLog)`
 #&gt;     - 2018-11-14 20:03:47 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`
+<<<<<<< HEAD
 #&gt;     - 2020-05-07 11:56:37 UTC: `test`</div><div class='input'>
+=======
+#&gt;     - 2020-05-31 14:11:53 UTC: `test`</div><div class='input'>
+>>>>>>> develop
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -196,7 +202,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

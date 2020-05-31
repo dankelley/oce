@@ -1,0 +1,100 @@
+//
+//<sdn_reference xlink:href="http://seadata.bsh.de/cgi-csr/XML/xmlDownload_V2.pl?edmo=486&identifier=6530010" xlink:role="isObservedBy" xlink:type="SDN:L23::CSR"/>
+//<sdn_reference xlink:href="http://vocab.nerc.ac.uk/collection/C17/current/06M2" xlink:role="isObservedBy" xlink:type="SDN:L23::NVS2CON"/>
+//<sdn_reference xlink:href="http://seadatanet.maris2.nl/v_cdi_v3/print_xml.asp?edmo=486&identifier=FI35200653001_00001_H10" xlink:role="isDescribedBy" xlink:type="SDN:L23::CDI" sdn:scope="486:FI35200653001_00001_H10"/>
+//<sdn_reference xlink:href="http://seadatanet.maris2.nl/v_cdi_v3/print_xml.asp?edmo=486&identifier=FI35200653001_00002_H10" xlink:role="isDescribedBy" xlink:type="SDN:L23::CDI" sdn:scope="486:FI35200653001_00002_H10"/>
+//<sdn_reference xlink:href="http://seadatanet.maris2.nl/v_cdi_v3/print_xml.asp?edmo=486&identifier=FI35200653001_00003_H10" xlink:role="isDescribedBy" xlink:type="SDN:L23::CDI" sdn:scope="486:FI35200653001_00003_H10"/>
+//<sdn_reference xlink:href="http://seadatanet.maris2.nl/v_cdi_v3/print_xml.asp?edmo=486&identifier=FI35200653001_00004_H10" xlink:role="isDescribedBy" xlink:type="SDN:L23::CDI" sdn:scope="486:FI35200653001_00004_H10"/>
+//<sdn_reference xlink:href="http://seadatanet.maris2.nl/v_cdi_v3/print_xml.asp?edmo=486&identifier=FI35200653001_00005_H10" xlink:role="isDescribedBy" xlink:type="SDN:L23::CDI" sdn:scope="486:FI35200653001_00005_H10"/>
+//<sdn_reference xlink:href="http://seadatanet.maris2.nl/v_cdi_v3/print_xml.asp?edmo=486&identifier=FI35200653001_00006_H10" xlink:role="isDescribedBy" xlink:type="SDN:L23::CDI" sdn:scope="486:FI35200653001_00006_H10"/>
+//<sdn_reference xlink:href="http://seadatanet.maris2.nl/v_cdi_v3/print_xml.asp?edmo=486&identifier=FI35200653001_00007_H10" xlink:role="isDescribedBy" xlink:type="SDN:L23::CDI" sdn:scope="486:FI35200653001_00007_H10"/>
+//<sdn_reference xlink:href="http://seadatanet.maris2.nl/v_cdi_v3/print_xml.asp?edmo=486&identifier=FI35200653001_00008_H10" xlink:role="isDescribedBy" xlink:type="SDN:L23::CDI" sdn:scope="486:FI35200653001_00008_H10"/>
+//<sdn_reference xlink:href="http://seadatanet.maris2.nl/v_cdi_v3/print_xml.asp?edmo=486&identifier=FI35200653001_00009_H10" xlink:role="isDescribedBy" xlink:type="SDN:L23::CDI" sdn:scope="486:FI35200653001_00009_H10"/>
+//<sdn_reference xlink:href="http://seadatanet.maris2.nl/v_cdi_v3/print_xml.asp?edmo=486&identifier=FI35200653001_00010_H10" xlink:role="isDescribedBy" xlink:type="SDN:L23::CDI" sdn:scope="486:FI35200653001_00010_H10"/>
+//SDN_parameter_mapping
+//<subject>SDN:LOCAL:DEPH</subject><object>SDN:P01::ADEPZZ01</object><units>SDN:P06::ULAA</units>
+//<subject>SDN:LOCAL:PRES</subject><object>SDN:P01::PRESPR01</object><units>SDN:P06::UPDB</units>
+//<subject>SDN:LOCAL:TEMP</subject><object>SDN:P01::TEMPPR01</object><units>SDN:P06::UPAA</units>
+//<subject>SDN:LOCAL:PSAL</subject><object>SDN:P01::PSLTZZ01</object><units>SDN:P06::UUUU</units>
+//<subject>SDN:LOCAL:DOX2</subject><object>SDN:P01::DOXMZZXX</object><units>SDN:P06::KGUM</units>
+//
+Cruise	Station	Type	YYYY-MM-DDThh:mm:ss.sss	Longitude [degrees_east]	Latitude [degrees_north]	LOCAL_CDI_ID	EDMO_code	Bot. Depth [m]	DEPH [m]	QV:SEADATANET	PRES [decibar=10000 pascals]	QV:SEADATANET	TEMP [Celsius degree]	QV:SEADATANET	PSAL [P.S.U.]	QV:SEADATANET	DOX2 [micromole/kg]	QV:SEADATANET
+OVIDE 3	001	C	2006-05-24T14:28:00.000	-010.700000	+38.433333 	FI35200653001_00001_H10	486	4915.0	   1.0	1	   1.0	1	16.512	1	36.198	1	233.500	1
+									   2.0	1	   2.0	1	16.512	1	36.198	1	233.500	1
+									   3.0	1	   3.0	1	16.512	1	36.198	1	233.500	1
+									   4.0	1	   4.0	1	16.512	1	36.198	1	233.500	1
+									   5.0	1	   5.0	1	16.512	1	36.198	1	233.500	1
+									   6.0	1	   6.0	1	16.512	1	36.198	1	233.500	1
+									   6.9	1	   7.0	1	16.512	1	36.198	1	233.500	1
+									   7.9	1	   8.0	1	16.512	1	36.198	1	233.500	1
+									   8.9	1	   9.0	1	16.512	1	36.198	1	233.500	1
+									   9.9	1	  10.0	1	16.512	1	36.198	1	233.500	1
+									  10.9	1	  11.0	1	16.512	1	36.198	1	233.500	1
+									  11.9	1	  12.0	1	16.512	1	36.198	1	233.500	1
+									  12.9	1	  13.0	1	16.512	1	36.198	1	233.500	1
+									  13.9	1	  14.0	1	16.512	1	36.198	1	233.500	1
+									  14.9	1	  15.0	1	16.512	1	36.198	1	233.500	1
+									  15.9	1	  16.0	1	16.512	1	36.198	1	233.500	1
+									  16.9	1	  17.0	1	16.512	1	36.198	1	233.500	1
+									  17.9	1	  18.0	1	16.512	1	36.198	1	233.500	1
+									  18.9	1	  19.0	1	16.512	1	36.198	1	233.500	1
+									  19.8	1	  20.0	1	16.496	1	36.197	1	236.300	1
+									  20.8	1	  21.0	1	16.492	1	36.197	1	236.500	1
+									  21.8	1	  22.0	1	16.464	1	36.197	1	236.300	1
+									  22.8	1	  23.0	1	16.417	1	36.207	1	236.900	1
+									  23.8	1	  24.0	1	16.380	1	36.219	1	235.800	1
+									  24.8	1	  25.0	1	16.351	1	36.225	1	235.000	1
+									  25.8	1	  26.0	1	16.333	1	36.228	1	236.800	1
+									  26.8	1	  27.0	1	16.353	1	36.223	1	237.600	1
+									  27.8	1	  28.0	1	16.346	1	36.225	1	237.800	1
+									  28.8	1	  29.0	1	16.336	1	36.226	1	238.500	1
+									  29.8	1	  30.0	1	16.328	1	36.226	1	238.800	1
+									  30.8	1	  31.0	1	16.300	1	36.226	1	238.600	1
+									  31.8	1	  32.0	1	16.259	1	36.224	1	237.600	1
+									  32.7	1	  33.0	1	16.234	1	36.222	1	238.800	1
+									  33.7	1	  34.0	1	16.191	1	36.217	1	239.900	1
+									  34.7	1	  35.0	1	16.166	1	36.211	1	240.700	1
+									  35.7	1	  36.0	1	16.160	1	36.209	1	240.500	1
+									  36.7	1	  37.0	1	16.144	1	36.207	1	239.700	1
+									  37.7	1	  38.0	1	16.110	1	36.207	1	240.100	1
+									  38.7	1	  39.0	1	16.109	1	36.212	1	240.900	1
+									  39.7	1	  40.0	1	16.107	1	36.218	1	241.800	1
+									  40.7	1	  41.0	1	16.095	1	36.220	1	241.800	1
+									  41.7	1	  42.0	1	16.072	1	36.219	1	241.300	1
+									  42.7	1	  43.0	1	16.045	1	36.219	1	241.000	1
+									  43.7	1	  44.0	1	16.035	1	36.220	1	241.200	1
+									  44.7	1	  45.0	1	16.032	1	36.222	1	241.500	1
+									  45.6	1	  46.0	1	16.031	1	36.223	1	241.600	1
+									  46.6	1	  47.0	1	16.028	1	36.223	1	241.400	1
+									  47.6	1	  48.0	1	15.998	1	36.222	1	241.300	1
+									  48.6	1	  49.0	1	15.922	1	36.219	1	241.500	1
+									  49.6	1	  50.0	1	15.842	1	36.212	1	241.800	1
+									  50.6	1	  51.0	1	15.749	1	36.198	1	242.100	1
+									  51.6	1	  52.0	1	15.672	1	36.182	1	241.900	1
+									  52.6	1	  53.0	1	15.636	1	36.173	1	241.200	1
+									  53.6	1	  54.0	1	15.559	1	36.168	1	240.000	1
+									  54.6	1	  55.0	1	15.431	1	36.161	1	239.800	1
+									  55.6	1	  56.0	1	15.367	1	36.148	1	239.900	1
+									  56.6	1	  57.0	1	15.317	1	36.139	1	240.100	1
+									  57.6	1	  58.0	1	15.254	1	36.130	1	240.300	1
+									  58.5	1	  59.0	1	15.195	1	36.122	1	240.300	1
+									  59.5	1	  60.0	1	15.119	1	36.111	1	239.900	1
+									  60.5	1	  61.0	1	15.020	1	36.100	1	239.400	1
+									  61.5	1	  62.0	1	14.910	1	36.089	1	239.100	1
+									  62.5	1	  63.0	1	14.809	1	36.080	1	239.100	1
+									  63.5	1	  64.0	1	14.754	1	36.076	1	239.200	1
+									  64.5	1	  65.0	1	14.711	1	36.075	1	239.300	1
+									  65.5	1	  66.0	1	14.654	1	36.076	1	239.500	1
+									  66.5	1	  67.0	1	14.597	1	36.075	1	239.800	1
+									  67.5	1	  68.0	1	14.558	1	36.071	1	239.900	1
+									  68.5	1	  69.0	1	14.523	1	36.069	1	239.700	1
+									  69.5	1	  70.0	1	14.474	1	36.069	1	239.100	1
+									  70.5	1	  71.0	1	14.437	1	36.067	1	238.300	1
+									  71.4	1	  72.0	1	14.422	1	36.065	1	237.500	1
+									  72.4	1	  73.0	1	14.387	1	36.064	1	236.800	1
+									  73.4	1	  74.0	1	14.331	1	36.062	1	236.200	1
+									  74.4	1	  75.0	1	14.309	1	36.063	1	235.900	1
+									  75.4	1	  76.0	1	14.303	1	36.068	1	236.000	1
+									  76.4	1	  77.0	1	14.283	1	36.069	1	236.400	1
+									  77.4	1	  78.0	1	14.256	1	36.065	1	236.900	1
+									  78.4	1	  79.0	1	14.231	1	36.060	1	237.300	1

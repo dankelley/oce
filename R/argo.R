@@ -1213,48 +1213,85 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     oceDebug(debug-1, "POSITIONING_SYSTEM\n")
     oceDebug(debug-1, "varNames=", paste(varNames, collapse=","), "\n")
     stationParameters <- unique(as.vector(res@metadata$stationParameters)) # will be PRES, TEMP etc
+
     ## Handle units before getting the data. (We must do it here, because when
     ## we read the data, we remove entries from varNames ... that is how
     ## we know what is left over at the end, to be shoved into metadata.)
+    ## FIXME: it would be nice to automate this more, to handle cases not handled
+    ## in the hardwired code below.
+
+    ## Oxygen: DOXY DOXY_ADJUSTED DOXY_ADJUSTED_ERROR
+    if (maybeLC("DOXY", lc) %in% varNames) {
+        attTMP <- ncdf4::ncatt_get(file, maybeLC("DOXY", lc), "units")
+        if (attTMP$hasatt) {
+            if (attTMP$value == "micromole/kg") {
+                res@metadata$units$oxygen <- list(unit=expression(mu*mol/kg),scale="")
+            } else {
+                warning("skipping oxygen unit '", attTMP$value, "' because only understood unit is 'micromole/kg'", sep="")
+            }
+        }
+    }
+    if (maybeLC("DOXY_ADJUSTED", lc) %in% varNames) {
+        ## print(ncdf4::ncatt_get(file, maybeLC("DOXY", lc), "long_name"))
+        attTMP <- ncdf4::ncatt_get(file, maybeLC("DOXY_ADJUSTED", lc), "units")
+        if (attTMP$hasatt) {
+            if (attTMP$value == "micromole/kg") {
+                res@metadata$units$oxygenAdjusted <- list(unit=expression(mu*mol/kg),scale="")
+            } else {
+                warning("skipping oxygenAdjusted unit '", attTMP$value, "' because only understood unit is 'micromole/kg'", sep="")
+            }
+        }
+    }
+    if (maybeLC("DOXY_ADJUSTED_ERROR", lc) %in% varNames) {
+        ## print(ncdf4::ncatt_get(file, maybeLC("DOXY", lc), "long_name"))
+        attTMP <- ncdf4::ncatt_get(file, maybeLC("DOXY_ADJUSTED_ERROR", lc), "units")
+        if (attTMP$hasatt) {
+            if (attTMP$value == "micromole/kg") {
+                res@metadata$units$oxygenAdjustedError <- list(unit=expression(mu*mol/kg),scale="")
+            } else {
+                warning("skipping oxygenAdjustedError unit '", attTMP$value, "' because only understood unit is 'micromole/kg'", sep="")
+            }
+        }
+    }
+
+    ## Temperature: TEMP, TEMP_ADJUSTED, TEMP_ADJUSTED_ERROR
     if (maybeLC("TEMP", lc) %in% varNames) {
-        ## leave some code in case we get a newer scale
         if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, maybeLC("TEMP", lc), "long_name")$value, ignore.case=TRUE)))
             res@metadata$units$temperature <- list(unit=expression(degree *C), scale="ITS-90")
         else res@metadata$units$temperature <- list(unit=expression(degree *C), scale="ITS-90")
     }
     if (maybeLC("TEMP_ADJUSTED", lc) %in% varNames) {
-        ## leave some code in case we get a newer scale
         if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, maybeLC("TEMP_ADJUSTED", lc), "long_name")$value, ignore.case=TRUE)))
             res@metadata$units$temperatureAdjusted <- list(unit=expression(degree *C), scale="ITS-90")
         else res@metadata$units$temperatureAdjusted <- list(unit=expression(degree *C), scale="ITS-90")
     }
     if (maybeLC("TEMP_ADJUSTED_ERROR", lc) %in% varNames) {
-        ## leave some code in case we get a newer scale
         if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, maybeLC("TEMP_ADJUSTED_ERROR", lc), "long_name")$value, ignore.case=TRUE)))
             res@metadata$units$temperatureAdjustedError <- list(unit=expression(degree *C), scale="ITS-90")
         else res@metadata$units$temperatureAdjustedError <- list(unit=expression(degree *C), scale="ITS-90")
     }
+
+    ## salinity: PSAL, PSAL_ADJUSTED, PSAL_ADJUSTED_ERROR
     if (maybeLC("PSAL", lc) %in% varNames) {
-        ## leave some code in case we get a newer scale
         if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, maybeLC("PSAL", lc), "long_name")$value, ignore.case=TRUE)))
             res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
         else
             res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
     }
     if (maybeLC("PSAL_ADJUSTED", lc) %in% varNames) {
-        ## leave some code in case we get a newer scale
         if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, maybeLC("PSAL_ADJUSTED", lc), "long_name")$value, ignore.case=TRUE)))
             res@metadata$units$salinityAdjusted <- list(unit=expression(), scale="PSS-78")
         else
             res@metadata$units$salinityAdjusted <- list(unit=expression(), scale="PSS-78")
     }
     if (maybeLC("PSAL_ADJUSTED_ERROR", lc) %in% varNames) {
-        ## leave some code in case we get a newer scale
         if (1 == length(grep(maybeLC("PRACTICAL", lc), ncdf4::ncatt_get(file, maybeLC("PSAL_ADJUSTED_ERROR", lc), "long_name")$value, ignore.case=TRUE)))
             res@metadata$units$salinityAdjustedError <- list(unit=expression(), scale="PSS-78")
         else
             res@metadata$units$salinityAdjustedError <- list(unit=expression(), scale="PSS-78")
     }
+
+    ## pressure: PRES, PRES_ADJUSTED, PRES_ADJUSTED_ERROR
     if (maybeLC("PRES", lc) %in% varNames) {
         if (1 == length(grep("decibar", ncdf4::ncatt_get(file, maybeLC("PRES", lc), "units")$value, ignore.case=TRUE)))
             res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
@@ -1273,6 +1310,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         else
             res@metadata$units$pressureAdjustedError<- list(unit=expression(dbar), scale="")
     }
+
     ## Fix up names of flags. This became required with changes made to argoNames2oceNames() in Dec 17-18, 2016. Arguably, I
     ## should find out why the change occurred, but fixing the names now is just as easy, and might be clearer to the reader.
     names(res@metadata$flags) <- gsub("QC$", "", names(res@metadata$flags))

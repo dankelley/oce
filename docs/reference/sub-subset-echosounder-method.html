@@ -195,10 +195,10 @@ see whether it contains something named with <code>i</code>.
 If so, then the named item is replaced with <code>value</code>.</p>
 <p>Otherwise, if the string value of <code>i</code> ends in <code>Unit</code>, then the
 characters preceding that are taken as the name of a variable, and
-the <code>metadata</code> slot of <code>x</code> is updated to store that unit, e.g.</p><pre><span class='no'>x</span><span class='kw'>[[</span><span class='st'>"temperatureUnits"</span>]] <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span>(<span class='no'>degree</span>*<span class='no'>F</span>),<span class='kw'>scale</span><span class='kw'>=</span><span class='st'>""</span>)</pre>
+the <code>metadata</code> slot of <code>x</code> is updated to store that unit, e.g.</p><pre><span class='no'>x</span><span class='kw'>[[</span><span class='st'>"temperatureUnits"</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span>(<span class='no'>degree</span>*<span class='no'>F</span>),<span class='kw'>scale</span><span class='kw'>=</span><span class='st'>""</span>)</pre>
 
 <p>Similarly, if <code>i</code> ends in <code>Flag</code>, then quality-control
-flags are set up as defined by <code>result</code>, e.g.</p><pre><span class='no'>o</span><span class='kw'>[[</span><span class='st'>"temperatureFlags"</span>]] <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>,<span class='fl'>4</span>,<span class='fl'>2</span>,<span class='fl'>2</span>)</pre>
+flags are set up as defined by <code>result</code>, e.g.</p><pre><span class='no'>o</span><span class='kw'>[[</span><span class='st'>"temperatureFlags"</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>,<span class='fl'>4</span>,<span class='fl'>2</span>,<span class='fl'>2</span>)</pre>
 
 <p>Otherwise, <code><a href='https://rdrr.io/r/base/pmatch.html'>pmatch()</a></code> is used for a partial-string match with
 the names of the items that are in the <code>data</code> slot of <code>x</code>.
@@ -256,7 +256,7 @@ The first item found (if any) is then updated to hold the value <code>result</co
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>
