@@ -2484,6 +2484,28 @@ oceColorsClosure <- function(spec) {
     }
 }
 
+#' Create colors similar to the google turbo scheme
+#'
+#' This uses the coefficients published (with Apache license) by google;
+#' see reference 1.
+#'
+#' @aliases oce.colorsTurbo oceColorsTurbo
+#'
+#' @param n number of colors to create.
+#'
+#' @references
+#' 1. \url{https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html}
+#'
+#' @author Dan Kelley
+#'
+#' @examples
+#' library(oce)
+#' imagep(volcano, col=oceColorsTurbo(128),
+#'        zlab="oceColorsTurbo")
+#' @family things related to colors
+oceColorsTurbo <- oce.colorsTurbo <- oceColorsClosure("turbo")
+
+
 #' Create colors similar to the matlab Viridis scheme
 #'
 #' This is patterned on a matlab/python scheme (reference 1) that blends
@@ -2692,7 +2714,6 @@ oceColorsPalette <- function(n, which=1)
     else character(0)
 }
 oce.colorsPalette <- oceColorsPalette
-
 
 #' Oce Version of axis.POSIXct
 #'

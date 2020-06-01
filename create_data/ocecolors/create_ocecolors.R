@@ -8,36 +8,30 @@
 ## 4. R/oce.R is reduced by 256 lines for each color palette moved here, which makes
 ##    it a lot easier to read and modify.
 
-## Data files should be in the format of viridis.dat, i.e. a header line followed
-## by R/G/B values in the 0-1 range. There is no need to gzip the files, because they
-## do not go into the R package as stored on CRAN.
+## Data files should be in the format of viridis.dat, i.e. three columns of
+## space-separated R, G, and B data.  There is no need to gzip the files,
+## because they do not go into the R package as stored on CRAN.
+##
+## Procedure:
+##    make
+##    make install
 
-## Viridis
-rgb <- read.table("viridis.dat")
-ocecolors <- list(viridis=rgb(r=rgb$V1, g=rgb$V2, b=rgb$V3))
-
-## cmocean colors
-
+## cmocean
 cmoceanFiles <- c("CDOM-rgb.txt", "Chlorophyll-rgb.txt", "Density-rgb.txt",
                   "Freesurface-rgb.txt", "Oxygen-rgb.txt", "PAR-rgb.txt",
                   "Phase-rgb.txt", "Salinity-rgb.txt", "Temperature-rgb.txt",
                   "Turbidity-rgb.txt", "Velocity-rgb.txt", "Vorticity-rgb.txt")
-for (cmoceanFile in cmoceanFiles) {
-    oceName <- tolower(gsub("-rgb.txt", "", cmoceanFile))
-    rgb <- read.table(paste("cmocean", cmoceanFile, sep="/"), header=FALSE)
+files <- c("turbo.txt", "viridis.txt", cmoceanFiles)
+ocecolors <- list()
+for (file in files) {
+    oceName <- tolower(gsub(".txt$", "", gsub("-rgb", "", file)))
+    rgb <- read.table(file, header=FALSE)
+    message("oceName '", oceName, "', file '", file, "'\n")
+    message("    first line: ", paste(rgb[1,], collapse=" "))
+    message("    first line: ", paste(255*rgb[1,], collapse=" "))
     ocecolors[[oceName]] <- rgb(r=rgb$V1, g=rgb$V2, b=rgb$V3)
 }
 
-## Put other colormaps above, and add to the list below.
-
-## Save in version 2, because otherwise users with R 3.5.x and earlier will not
-## be able to use data("ocecolors")
-if (utils::compareVersion(paste0(R.Version()$major, ".", R.Version()$minor), '3.6.0') >= 0) {
-    message("saving with version=2 since R version is 3.6.0 or later")
-    save(ocecolors, file="ocecolors.rda", version=2)
-    tools::resaveRdaFiles("ocecolors.rda", version=2)
-} else {
-    save(ocecolors, file="ocecolors.rda")
-    tools::resaveRdaFiles("ocecolors.rda")
-}
+save(ocecolors, file="ocecolors.rda", version=2)
+tools::resaveRdaFiles("ocecolors.rda", version=2)
 
