@@ -47,6 +47,7 @@ Other things related to colors:
 \code{\link{oceColorsPhase}()},
 \code{\link{oceColorsSalinity}()},
 \code{\link{oceColorsTemperature}()},
+\code{\link{oceColorsTurbo}()},
 \code{\link{oceColorsTwo}()},
 \code{\link{oceColorsVelocity}()},
 \code{\link{oceColorsViridis}()},

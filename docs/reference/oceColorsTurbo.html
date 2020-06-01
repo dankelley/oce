@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Base Class for oce Objects — oce-class • oce</title>
+<title>Create colors similar to the google turbo scheme — oceColorsTurbo • oce</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,9 @@
 
 
 
-<meta property="og:title" content="Base Class for oce Objects — oce-class" />
-<meta property="og:description" content="This is mainly used within oce to create sub-classes, although
-users can use new(&quot;oce&quot;) to create a blank oce
-object, if desired." />
+<meta property="og:title" content="Create colors similar to the google turbo scheme — oceColorsTurbo" />
+<meta property="og:description" content="This uses the coefficients published (with Apache license) by google;
+see reference 1." />
 
 
 
@@ -140,68 +139,63 @@ object, if desired." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Base Class for oce Objects</h1>
-    <small class="dont-index">Source: <a href='https://github.com/dankelley/oce/blob/master/R/AllClass.R'><code>R/AllClass.R</code></a></small>
-    <div class="hidden name"><code>oce-class.Rd</code></div>
+    <h1>Create colors similar to the google turbo scheme</h1>
+    <small class="dont-index">Source: <a href='https://github.com/dankelley/oce/blob/master/R/oce.R'><code>R/oce.R</code></a></small>
+    <div class="hidden name"><code>oceColorsTurbo.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This is mainly used within oce to create sub-classes, although
-users can use <code>new("oce")</code> to create a blank <code>oce</code>
-object, if desired.</p>
+    <p>This uses the coefficients published (with Apache license) by google;
+see reference 1.</p>
     </div>
 
+    <pre class="usage"><span class='fu'>oceColorsTurbo</span>(<span class='no'>n</span>)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>n</th>
+      <td><p>number of colors to create.</p></td>
+    </tr>
+    </table>
 
-    <h2 class="hasAnchor" id="slots"><a class="anchor" href="#slots"></a>Slots</h2>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     
+<ol>
+<li><p><a href='https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html'>https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html</a></p></li>
+</ol>
 
-<dl>
-<dt><code>metadata</code></dt><dd><p>A list containing information about the data. The
-contents vary across sub-classes, e.g. an <a href='adp-class.html'>adp</a>
-object has information about beam patterns, which obviously would
-not make sense for a <a href='ctd-class.html'>ctd</a> object In addition,
-all classes have items named <code>units</code> and <code>flags</code>, used
-to store information on the units of the data, and the data quality.</p></dd>
-
-<dt><code>data</code></dt><dd><p>A list containing the data.</p></dd>
-
-<dt><code>processingLog</code></dt><dd><p>A list containing time-stamped processing steps,
-typically stored in the object by oce functions.</p></dd>
-
-</dl>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other classes provided by oce: 
-<code><a href='adp-class.html'>adp-class</a></code>,
-<code><a href='adv-class.html'>adv-class</a></code>,
-<code><a href='argo-class.html'>argo-class</a></code>,
-<code><a href='bremen-class.html'>bremen-class</a></code>,
-<code><a href='cm-class.html'>cm-class</a></code>,
-<code><a href='coastline-class.html'>coastline-class</a></code>,
-<code><a href='ctd-class.html'>ctd-class</a></code>,
-<code><a href='lisst-class.html'>lisst-class</a></code>,
-<code><a href='lobo-class.html'>lobo-class</a></code>,
-<code><a href='met-class.html'>met-class</a></code>,
-<code><a href='odf-class.html'>odf-class</a></code>,
-<code><a href='rsk-class.html'>rsk-class</a></code>,
-<code><a href='sealevel-class.html'>sealevel-class</a></code>,
-<code><a href='section-class.html'>section-class</a></code>,
-<code><a href='topo-class.html'>topo-class</a></code>,
-<code><a href='windrose-class.html'>windrose-class</a></code>,
-<code><a href='xbt-class.html'>xbt-class</a></code></p></div>
+    <div class='dont-index'><p>Other things related to colors: 
+<code><a href='colormap.html'>colormap</a>()</code>,
+<code><a href='oceColors9B.html'>oceColors9B</a>()</code>,
+<code><a href='oceColorsCDOM.html'>oceColorsCDOM</a>()</code>,
+<code><a href='oceColorsChlorophyll.html'>oceColorsChlorophyll</a>()</code>,
+<code><a href='oceColorsClosure.html'>oceColorsClosure</a>()</code>,
+<code><a href='oceColorsDensity.html'>oceColorsDensity</a>()</code>,
+<code><a href='oceColorsFreesurface.html'>oceColorsFreesurface</a>()</code>,
+<code><a href='oceColorsGebco.html'>oceColorsGebco</a>()</code>,
+<code><a href='oceColorsJet.html'>oceColorsJet</a>()</code>,
+<code><a href='oceColorsOxygen.html'>oceColorsOxygen</a>()</code>,
+<code><a href='oceColorsPAR.html'>oceColorsPAR</a>()</code>,
+<code><a href='oceColorsPalette.html'>oceColorsPalette</a>()</code>,
+<code><a href='oceColorsPhase.html'>oceColorsPhase</a>()</code>,
+<code><a href='oceColorsSalinity.html'>oceColorsSalinity</a>()</code>,
+<code><a href='oceColorsTemperature.html'>oceColorsTemperature</a>()</code>,
+<code><a href='oceColorsTurbidity.html'>oceColorsTurbidity</a>()</code>,
+<code><a href='oceColorsTwo.html'>oceColorsTwo</a>()</code>,
+<code><a href='oceColorsVelocity.html'>oceColorsVelocity</a>()</code>,
+<code><a href='oceColorsViridis.html'>oceColorsViridis</a>()</code>,
+<code><a href='oceColorsVorticity.html'>oceColorsVorticity</a>()</code>,
+<code><a href='ocecolors.html'>ocecolors</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='fu'>new</span>(<span class='st'>"oce"</span>))</div><div class='output co'>#&gt; Formal class 'oce' [package "oce"] with 3 slots
-#&gt;   ..@ metadata     :List of 2
-#&gt;   .. ..$ units: list()
-#&gt;   .. ..$ flags: list()
-#&gt;   ..@ data         : list()
-#&gt;   ..@ processingLog:List of 2
-#&gt;   .. ..$ time : POSIXct[1:1], format: "2020-06-01 17:07:24"
-#&gt;   .. ..$ value: chr "Create oce object"</div><div class='input'>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
+<span class='fu'><a href='imagep.html'>imagep</a></span>(<span class='no'>volcano</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='fu'>oceColorsTurbo</span>(<span class='fl'>128</span>),
+       <span class='kw'>zlab</span><span class='kw'>=</span><span class='st'>"oceColorsTurbo"</span>)</div><div class='img'><img src='oceColorsTurbo-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
