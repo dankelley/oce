@@ -150,7 +150,8 @@ points(ctd[['salinity']][bad],ctd[['theta']][bad],col='red',pch=20)
 Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
 in June 2011.)
 \item The St Lawrence Global Observatory website has information on ODF format at
-\url{https://slgo.ca/app-sgdo/en/docs_reference/documents.html}
+\verb{https://slgo.ca/app-sgdo/en/docs_reference/documents.html}
+(a link that was noticed to be failing on May 31, 2020)
 and this is perhaps the best resource to learn more.
 }
 }

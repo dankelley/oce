@@ -78,10 +78,11 @@ retrieve derived items.
 Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
 in June 2011.)
 \item The St Lawrence Global Observatory website has information on ODF format at
-\url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
-\item List of variable codes:
-\url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}
-(checked 2018-02-11); only a subset are handled.
+\verb{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
+(a link that was noticed to be failing on May 31, 2020).
+\item A list of variable codes (only a subset handled) is at:
+\verb{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}
+(a link that was noticed to be failing on May 31, 2020).
 }
 }
 \seealso{
