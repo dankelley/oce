@@ -1109,7 +1109,7 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, defaul
         res@metadata$flagScheme <- list(name=name, mapping=mapping)
     }
     res@processingLog <- processingLogAppend(res@processingLog,
-                                             paste("DAN initializeFlagScheme(object, name=\"", name,
+                                             paste("initializeFlagScheme(object, name=\"", name,
                                                    "\", mapping=",
                                                    gsub(" ", "", paste(as.character(deparse(mapping)),
                                                                                      sep="", collapse="")),
