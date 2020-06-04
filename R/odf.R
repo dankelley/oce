@@ -22,18 +22,17 @@
 #'
 #' @references
 #'
-#' 1. Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
-#' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
-#' in June 2011.)
+#' 1. Anthony W. Isenor and David Kellow, 2011. \emph{ODF Format Specification
+#' Version 2.0}. (This is a .doc file obtained in June 2011 by Dan Kelley,
+#' which no longer seems to be made available at any DFO website.)
 #'
-#' 2. The St Lawrence Global Observatory website has information on ODF format at
-#' `https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html`
-#' (a link that was noticed to be failing on May 31, 2020).
+#' 2. (Unknown authors), October 2014. \emph{ODF Format Description (MLI)},
+#' \url{https://ogsl.ca/wp-content/uploads/ODF_format_desc_en_0.pdf},
+#' (Link verified on June 4, 2020.)
 #'
-#' 3. A list of variable codes (only a subset handled) is at:
-#' `https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html`
-#' (a link that was noticed to be failing on May 31, 2020).
-#'
+#' 3. A sample ODF file in the MLI format is available at
+#' \url{https://ogsl.ca/wp-content/uploads/ODF_file_example_en_0.pdf}.
+#' (Link verified on June 4, 2020.)
 #'
 #' @author Dan Kelley
 #' @family things related to odf data
@@ -393,12 +392,9 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' @family functions that interpret variable names and units from headers
 #'
 #' @references
-#' 1. The Department of Fisheries and Oceans Common Data Dictionary may be
-#' available at `http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY`)
-#' although that link seems to be unreliable. As of September 2017, the
-#' link `https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html`
-#' seemed to be a good place to start,
-#' but it was noticed to be failing on May 31, 2020.
+#'
+#' For sources that describe the ODF format, see the documentation
+#' for the [odf-class].
 #'
 #' @family things related to odf data
 ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
@@ -962,14 +958,8 @@ ODFListFromHeader <- function(header)
 #'
 #' @references
 #'
-#' 1. Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
-#' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
-#' in June 2011.)
-#'
-#' 2. The St Lawrence Global Observatory website has information on ODF format at
-#' `https://slgo.ca/app-sgdo/en/docs_reference/documents.html`
-#' (a link that was noticed to be failing on May 31, 2020)
-#' and this is perhaps the best resource to learn more.
+#' For sources that describe the ODF format, see the documentation
+#' for the [odf-class].
 #'
 #' @family things related to odf data
 read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getOption("oceDebug"))

@@ -120,14 +120,8 @@ has unit millimole/m^3 for NODC and MEDS, but it has unit mL/L for BIO and IML.
 }
 
 \references{
-\enumerate{
-\item The Department of Fisheries and Oceans Common Data Dictionary may be
-available at \verb{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
-although that link seems to be unreliable. As of September 2017, the
-link \verb{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
-seemed to be a good place to start,
-but it was noticed to be failing on May 31, 2020.
-}
+For sources that describe the ODF format, see the documentation
+for the \linkS4class{odf}.
 }
 \seealso{
 Other functions that interpret variable names and units from headers: 
