@@ -1071,7 +1071,7 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, defaul
                 stop("cannot redefine the mapping for existing scheme named \"", name, "\"")
             if (name == "argo") {
                 mapping <- list(not_assessed=0, passed_all_tests=1, probably_good=2,
-                                probably_bad=3, bad=4, averaged=7,
+                                probably_bad=3, bad=4, changed=5, averaged=7,
                                 interpolated=8, missing=9)
                 if (is.null(default))
                     default <- c(0, 2, 3, 4, 7, 8, 9) # retain passed_all_tests
@@ -1109,7 +1109,7 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, defaul
         res@metadata$flagScheme <- list(name=name, mapping=mapping)
     }
     res@processingLog <- processingLogAppend(res@processingLog,
-                                             paste("initializeFlagScheme(object, name=\"", name,
+                                             paste("DAN initializeFlagScheme(object, name=\"", name,
                                                    "\", mapping=",
                                                    gsub(" ", "", paste(as.character(deparse(mapping)),
                                                                                      sep="", collapse="")),

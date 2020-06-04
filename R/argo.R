@@ -1377,11 +1377,11 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
             }
         }
     }
-    oceDebug(debug-1, "after processing stationParameters, flag names are: ",
+    oceDebug(debug, "after processing stationParameters, flag names are: ",
              paste(names(res@metadata$flags), collapse=" "), "\n")
     if (length(res@metadata$flags))
         names(res@metadata$flags) <- gsub("QC$", "", names(res@metadata$flags))
-    oceDebug(debug-1, "after trimming QC, flag names are: ",
+    oceDebug(debug, "after trimming QC, flag names are: ",
              paste(names(res@metadata$flags), collapse=" "), "\n")
     res@metadata$filename <- filename
 
@@ -1428,9 +1428,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     }
 
     ## Record a log item
-    res@processingLog <- if (is.character(file))
-        processingLogAppend(res@processingLog, paste("read.argo(\"", file, "\")", sep=""))
-    else processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste("read.argo(file=\"", filename, "\")", sep=""))
     res <- initializeFlagScheme(res, "argo")
     oceDebug(debug, "} # read.argo()\n", sep="", unindent=1)
     res
