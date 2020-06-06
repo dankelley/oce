@@ -1,5 +1,4 @@
 Package: oce
-Type: Package
 Title: Analysis of Oceanographic Data
 Version: 1.2-1
 Authors@R: c(
@@ -32,3 +31,5 @@ VignetteBuilder: knitr
 NeedsCompilation: yes
 LinkingTo: Rcpp
 Imports: Rcpp
+Packaged: Dan Kelley
+

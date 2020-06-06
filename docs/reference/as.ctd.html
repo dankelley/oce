@@ -446,9 +446,9 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p>
 #&gt; 
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2020-06-01 17:06:01 UTC: `create 'ctd' object`
-#&gt;     - 2020-06-01 17:06:01 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`
-#&gt;     - 2020-06-01 17:06:01 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`</div><div class='input'>
+#&gt;     - 2020-06-05 22:19:42.443 UTC: `create 'ctd' object`
+#&gt;     - 2020-06-05 22:19:42.444 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`
+#&gt;     - 2020-06-05 22:19:42.446 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`</div><div class='input'>
 <span class='co'>## 2. fake data, with supplied units (which are the defaults, actually)</span>
 <span class='no'>ctd</span> <span class='kw'>&lt;-</span> <span class='fu'>as.ctd</span>(<span class='no'>salinity</span>, <span class='no'>temperature</span>, <span class='no'>pressure</span>,
     <span class='kw'>units</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>salinity</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span>(), <span class='kw'>scale</span><span class='kw'>=</span><span class='st'>"PSS-78"</span>),
