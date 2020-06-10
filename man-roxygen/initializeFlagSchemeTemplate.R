@@ -22,10 +22,17 @@
 #' documentation):
 #'
 #' * `name="argo"` defaults `mapping` to
+#' OLD (prior to June 10, 2020)
 #' ```
 #' list(not_assessed=0, passed_all_tests=1, probably_good=2,
 #'      probably_bad=3, bad=4, averaged=7,
 #'      interpolated=8, missing=9)
+#'```
+#' NEW (post June 10, 2020)
+#'```
+#' list(not_assessed=0, passed_all_tests=1, probably_good=2,
+#'      probably_bad=3, bad=4, changed=5, not_used_6=6, not_used_7=7,
+#'      estimated=8, missing=9)
 #' ```
 #' See reference 1 for a deeper explanation of the meanings of these codes.
 #'
@@ -94,8 +101,11 @@
 #' @return An object with the `metadata` slot containing `flagScheme`.
 #'
 #' @references
-#' 1. The codes for `"Argo"` are defined at
-#' http://www.oceannetworks.ca/data-tools/data-quality
+#' 1. The codes for `"argo"` are derived from information in Table 4.1
+#' of Wong, Annie, Robert Keeley, Thierry Carval, and Argo Data Management Team
+#' (8 January 2020), "Argo Quality Control Manual for CTD and Trajectory Data, Version 3.3,"
+#' available at \url{https://archimer.ifremer.fr/doc/00228/33951/}
+#' as of June 2020.
 #'
 #' 2. The codes for `"BODC"` are defined at
 #' http://seadatanet.maris2.nl/v_bodc_vocab_v2/browse.asp?order=conceptid&formname=search&screen=0&lib=l20

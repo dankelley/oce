@@ -1053,7 +1053,7 @@ setMethod("initializeFlagScheme",
           })
 
 #' @templateVar class oce
-#' @templateVar details This is a low-level internal function used by user-accessible functions.
+#' @templateVar details This is a low-level internal function used mainly by experts.
 #' @template initializeFlagSchemeTemplate
 initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, default=NULL, debug=0)
 {
@@ -1070,11 +1070,26 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, defaul
             if (!is.null(mapping))
                 stop("cannot redefine the mapping for existing scheme named \"", name, "\"")
             if (name == "argo") {
-                mapping <- list(not_assessed=0, passed_all_tests=1, probably_good=2,
-                                probably_bad=3, bad=4, changed=5, averaged=7,
-                                interpolated=8, missing=9)
-                if (is.null(default))
-                    default <- c(0, 2, 3, 4, 7, 8, 9) # retain passed_all_tests
+                ## The argo mapping and default were changed in June 2020,
+                ## to accomodate new understanding of argo flags, developed
+                ## by Jaimie Harbin for the argoCanada/argoFloats project.  See
+                ## https://github.com/ArgoCanada/argoFloats/issues/133
+                ## https://github.com/dankelley/oce/issues/1705
+                mapping <- list(not_assessed=0,
+                                passed_all_tests=1,
+                                probably_good=2,
+                                probably_bad=3,
+                                bad=4,
+                                changed=5,
+                                not_used_6=6,
+                                not_used_7=7, # until 2020-jun-10, named 'averaged'
+                                estimated=8,  # until 2020-jun-10, named 'interpolated'
+                                missing=9)
+                if (is.null(default)) {
+                    ## until 2020-jun-10, next was more cautious, namely
+                    ## default <- c(0, 2, 3, 4, 7, 8, 9) # retain passed_all_tests
+                    default <- c(0, 3, 4, 9)
+                }
             } else  if (name == "BODC") {
                 mapping <- list(no_quality_control=0, good=1, probably_good=2,
                                 probably_bad=3, bad=4, changed=5, below_detection=6,
