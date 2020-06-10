@@ -77,10 +77,10 @@ test_that("predefined flag schemes", {
           data(ctd)
           a <- initializeFlagScheme(ctd, "argo")
           expect_equal(a[["flagScheme"]],
-                       list(name="argo",
-                            mapping=list(not_assessed=0, passed_all_tests=1, probably_good=2,
-                                         probably_bad=3, bad=4, changed=5, averaged=7,
-                                         interpolated=8, missing=9)))
+                       list(name = "argo",
+                            mapping=list(not_assessed=0, passed_all_tests=1,
+                                         probably_good=2, probably_bad=3, bad=4, changed=5,
+                                         not_used_6=6, not_used_7=7, estimated=8, missing=9)))
           a <- initializeFlagScheme(ctd, "BODC")
           expect_equal(a[["flagScheme"]],
                        list(name="BODC",
