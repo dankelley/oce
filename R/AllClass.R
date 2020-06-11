@@ -877,7 +877,7 @@ defaultFlags <- function(object)
     if (is.null(scheme))
         return(NULL)
     if (scheme == "argo")
-        return(0, 3, 4, 9) # prior to 2020-june-11, was c(0, 2, 3, 4, 7, 8, 9)
+        return(c(0, 3, 4, 9)) # prior to 2020-june-11, was c(0, 2, 3, 4, 7, 8, 9)
     if (scheme == "BODC")
         return(c(0, 2, 3, 4, 5, 6, 7, 8, 9)) # retain good
     if (scheme == "DFO")
