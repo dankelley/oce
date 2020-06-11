@@ -2780,9 +2780,9 @@ latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
             res[i] <- "Lat and lon unknown"
         else
             res[i] <- paste(format(abs(lat[i]), digits=digits),
-                             if (lat[i] > 0) "N  " else "S  ",
+                             if (lat[i] > 0) gettext("N", domain="R-oce") else gettext("S", domain="R-oce"),
                              format(abs(lon[i]), digits=digits),
-                             if (lon[i] > 0) "E" else "W",
+                             if (lon[i] > 0) gettext("E", domain="R-oce") else gettext("W", domain="R-oce"),
                              sep="")
     }
     res
@@ -2812,7 +2812,7 @@ latFormat <- function(lat, digits=max(6, getOption("digits") - 1))
             res[i] <-  ""
         else
             res[i] <- paste(format(abs(lat[i]), digits=digits),
-                             if (lat[i] > 0) "N" else "S", sep="")
+                             if (lat[i] > 0) gettext("N", domain="R-oce") else gettext("S", domain="R-oce"), sep="")
     }
     res
 }
@@ -2841,7 +2841,7 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
             res[i] <- ""
         else
             res[i] <- paste(format(abs(lon[i]), digits=digits),
-                             if (lon[i] > 0) "E" else "S",
+                             if (lon[i] > 0) gettext("E", domain="R-oce") else gettext("W", domain="R-oce"),
                              sep="")
     res
 }
