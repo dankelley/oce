@@ -253,18 +253,18 @@ shiftLongitude <- function(longitudes) {
 fixneg <- function(v)
 {
     res <- v
-    for (i in seq_along(v)) {
-        if (res[i] == "0N") {
+    for (i in seq_along(res)) {
+        message("res[i]='", res[i], "' ...")
+        if (grepl("^0[A-Z]$", res[i])) {
             res[i] <- "0"
-        } else if (res[i] == "0E") {
-            res[i] <- "0"
-        } else if ("-" == substr(v[i], 1, 1)) {
+        } else if ("-" == substr(res[i], 1, 1)) {
             ##cat("res[i]=", res[i], "\n")
-            res[i] <- gsub("^-", "", v[i])
-            res[i] <- gsub("E", "W", res[i])
-            res[i] <- gsub("N", "S", res[i])
+            res[i] <- gsub("^-", "", res[i])
+            res[i] <- gsub("E", gettext("W", domain="R-oce"), res[i])
+            res[i] <- gsub("N", gettext("S", domain="R-oce"), res[i])
             ##cat(" -> res[i]=", res[i], "\n")
         }
+        message('  ... "', res[i], "'")
     }
     res
 }
@@ -473,7 +473,7 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
             x <- P$x
             if (is.finite(P$y) && (abs(P$y - usr[3]) < 0.01 * (usr[4] - usr[3]))) {
                 if (!is.na(x) && usr[1] < x && x < usr[2]) {
-                    label <- fixneg(paste(lon, "E", sep=""))
+                    label <- fixneg(paste0(lon, gettext("E", domain="R-oce")))
                     ##mtext(label, side=1, at=x)
                     AT <- c(AT, x)
                     LAB <- c(LAB, label)
@@ -546,7 +546,7 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
                 y <- P$y
                 if (is.finite(P$x) && (abs(P$x - usr[1]) < 0.01 * (usr[2] - usr[1]))) {
                     if (!is.na(y) && usr[3] < y && y < usr[4]) {
-                        label <- fixneg(paste(lat, "N", sep=""))
+                        label <- fixneg(paste0(lat, gettext("N", domain="R-oce")))
                         AT <- c(AT, y)
                         LAB <- c(LAB, label)
                         if (debug > 3) oceDebug(debug, "  ", label, " intersects side 2\n", sep="")

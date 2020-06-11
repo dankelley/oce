@@ -877,7 +877,7 @@ defaultFlags <- function(object)
     if (is.null(scheme))
         return(NULL)
     if (scheme == "argo")
-        return(c(0, 2, 3, 4, 7, 8, 9)) # retain passed_all_tests
+        return(0, 3, 4, 9) # prior to 2020-june-11, was c(0, 2, 3, 4, 7, 8, 9)
     if (scheme == "BODC")
         return(c(0, 2, 3, 4, 5, 6, 7, 8, 9)) # retain good
     if (scheme == "DFO")
@@ -1121,7 +1121,7 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, defaul
             if (is.null(mapping))
                 stop("must supply 'mapping' for new scheme named \"", name, "\"")
         }
-        res@metadata$flagScheme <- list(name=name, mapping=mapping)
+        res@metadata$flagScheme <- list(name=name, mapping=mapping, default=default)
     }
     res@processingLog <- processingLogAppend(res@processingLog,
                                              paste("initializeFlagScheme(object, name=\"", name,
