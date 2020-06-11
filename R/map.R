@@ -254,7 +254,7 @@ fixneg <- function(v)
 {
     res <- v
     for (i in seq_along(res)) {
-        message("res[i]='", res[i], "' ...")
+        ##message("res[i]='", res[i], "' ...")
         if (grepl("^0[A-Z]$", res[i])) {
             res[i] <- "0"
         } else if ("-" == substr(res[i], 1, 1)) {
@@ -264,7 +264,7 @@ fixneg <- function(v)
             res[i] <- gsub("N", gettext("S", domain="R-oce"), res[i])
             ##cat(" -> res[i]=", res[i], "\n")
         }
-        message('  ... "', res[i], "'")
+        ##message('  ... "', res[i], "'")
     }
     res
 }
