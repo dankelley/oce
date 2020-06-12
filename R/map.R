@@ -349,8 +349,9 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' on axes.  The choices are:
 #' 1 for signed numbers without additional labels;
 #' 2 (the default) for unsigned numbers followed by letters indicating the hemisphere;
-#' 3 for signed numbers followed by a degree sign; and
-#' 4 for unsigned numbers followed by a degree sign.
+#' 3 for signed numbers followed by a degree sign;
+#' 4 for unsigned numbers followed by a degree sign; and
+#' 5 for unsigned numbers followed by a degree sign and letters indicating the hemisphere.
 #'
 #' @param tick parameter passed to [axis()].
 #'
@@ -372,8 +373,9 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' on axes.  The choices are:
 #' 1 for signed numbers without additional labels;
 #' 2 (the default) for unsigned numbers followed by letters indicating the hemisphere;
-#' 3 for signed numbers followed by a degree sign; and
-#' 4 for unsigned numbers followed by a degree sign.
+#' 3 for signed numbers followed by a degree sign;
+#' 4 for unsigned numbers followed by a degree sign; and
+#' 5 for unsigned numbers followed by a degree sign and letters indicating the hemisphere.
 #'
 #' @param col axis color, passed to [axis()].
 #'
@@ -437,8 +439,8 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
              ") { \n", unindent=1, sep="")
     if (length(axisStyle) != 1)
        stop("axisStyle must be of length 1")
-    if (!(axisStyle %in% 1:4))
-        stop("invalid axis style ", paste(axisStyle, collapse=","), "; must be 1, 2, 3 or 4")
+    if (!(axisStyle %in% 1:5))
+        stop("invalid axis style ", paste(axisStyle, collapse=","), "; must be 1, 2, 3, 4 or 5")
     boxLonLat <- usrLonLat()
     axis <- .axis()
     #if (debug > 0) print(axis)
@@ -514,6 +516,8 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
                 labels <- if (cex.axis>0) paste0(LAB, "\u00B0") else rep("", length(AT))
             } else if (axisStyle == 4) {
                 labels <- if (cex.axis>0) paste0(abs(LAB), "\u00B0") else rep("", length(AT))
+            } else if (axisStyle == 5) {
+                labels <- if (cex.axis>0) paste0(abs(LAB), "\u00B0", gettext("E", domain="R-oce")) else rep("", length(AT))
             }
             axis(side=1, at=AT, labels=labels,
                  mgp=mgp, tick=tick, line=line, pos=pos, outer=outer, font=font,
@@ -595,6 +599,8 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
                 labels <- if (cex.axis>0) paste0(LAB, "\u00B0") else rep("", length(AT))
             } else if (axisStyle == 4) {
                 labels <- if (cex.axis>0) paste0(abs(LAB), "\u00B0") else rep("", length(AT))
+            } else if (axisStyle == 5) {
+                labels <- if (cex.axis>0) paste0(abs(LAB), "\u00B0", gettext("N", domain="R-oce")) else rep("", length(AT))
             }
             axis(side=2, at=AT, labels=labels,
                  mgp=mgp, tick=tick, line=line, pos=pos, outer=outer, font=font,
