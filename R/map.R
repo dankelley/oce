@@ -520,7 +520,11 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
                 labels <- if (cex.axis>0) {
                     paste0(abs(LAB),
                            "\u00B0",
-                           unlist(LAB, if (l<0) gettext("W", domain="R-oce") else gettext("E", domain="R-oce")))
+                           unlist(lapply(LAB,
+                                         function(l)
+                                             if (l < 0) gettext("W", domain="R-oce")
+                                             else if (l > 0) gettext("E", domain="R-oce")
+                                             else "")))
                 } else {
                     rep("", length(AT))
                 }
@@ -609,7 +613,11 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
                 labels <- if (cex.axis>0) {
                     paste0(abs(LAB),
                            "\u00B0",
-                           unlist(LAB, if (l<0) gettext("S", domain="R-oce") else gettext("N", domain="R-oce")))
+                           unlist(lapply(LAB,
+                                         function(l)
+                                             if (l < 0) gettext("S", domain="R-oce")
+                                             else if (l > 0) gettext("N", domain="R-oce")
+                                             else "")))
                 } else {
                     rep("", length(AT))
                 }
