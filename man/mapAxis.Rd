@@ -8,6 +8,7 @@ mapAxis(
   side = 1:2,
   longitude = TRUE,
   latitude = TRUE,
+  axisStyle = 1,
   tick = TRUE,
   line = NA,
   pos = NA,
@@ -43,6 +44,12 @@ so some longitude values might get ticks but not numbers. To get ticks
 but not numbers, set \code{cex.axis=0}.}
 
 \item{latitude}{similar to \code{longitude} but for latitude.}
+
+\item{axisStyle}{an integer specifying the style of labels for the numbers
+on axes.  The choices are:
+0 for signed numbers without labels;
+2 for signed numbers with a degree symbol to the right; and
+3 for unsigned numbers with a degree symbol to the right.}
 
 \item{tick}{parameter passed to \code{\link[=axis]{axis()}}.}
 
