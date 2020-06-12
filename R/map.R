@@ -497,9 +497,9 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
                     ##mtext(label, side=1, at=x)
                     AT <- c(AT, x)
                     LAB <- c(LAB, lon)
-                    if (debug > 3) oceDebug(debug, "  ", label, "intersects side 1\n")
+                    if (debug > 3) oceDebug(debug, "  ", lon, "intersects side 1\n", sep="")
                 } else {
-                    if (debug > 3) oceDebug(debug, "    ", lon, "E does not intersect side 1\n")
+                    if (debug > 3) oceDebug(debug, "    ", lon, "E does not intersect side 1\n", sep="")
                 }
             } else {
                 ## oceDebug(debug, "skipping off-globe point\n")
@@ -576,7 +576,7 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
                         ##label <- fixneg(paste0(lat, gettext("N", domain="R-oce")))
                         AT <- c(AT, y)
                         LAB <- c(LAB, lat)
-                        if (debug > 3) oceDebug(debug, "  ", label, " intersects side 2\n", sep="")
+                        if (debug > 3) oceDebug(debug, "  ", lat, " intersects side 2\n", sep="")
                     } else {
                         if (debug > 3) oceDebug(debug, "  ", lat, "N does not intersect side 2\n", sep="")
                     }
