@@ -51,7 +51,7 @@ on axes.  The choices are:
 2 (the default) for unsigned numbers followed by letters indicating the hemisphere;
 3 for signed numbers followed by a degree sign;
 4 for unsigned numbers followed by a degree sign; and
-5 for unsigned numbers followed by a degree sign and letters indicating the hemisphere.}
+5 for signed numbers followed by a degree sign and letters indicating the hemisphere.}
 
 \item{tick}{parameter passed to \code{\link[=axis]{axis()}}.}
 
