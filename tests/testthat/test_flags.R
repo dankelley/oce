@@ -122,11 +122,15 @@ test_that("user-created flag scheme", {
                                                default=c(1, 3, 4, 5, 6, 7, 9)))
 })
 
-test_that("cannot alter existing flag scheme", {
+test_that("cannot alter existing flag scheme (unless using update arg)", {
           data(ctd)
-          a <- initializeFlagScheme(ctd, "myscheme", list(unknown=1, good=2, bad=3))
-          expect_warning(initializeFlagScheme(a, "WHP CTD"),
-                         "cannot alter a flagScheme that is already is place")
+          ctd1 <- initializeFlagScheme(ctd, "myscheme", list(unknown=1, good=2, bad=3))
+          expect_warning(defaultFlags(ctd1), "unable to determine default flags")
+          ctd2 <- expect_warning(initializeFlagScheme(ctd1, "WHP CTD"),
+                                 "cannot alter a flagScheme that is already is place")
+          expect_warning(defaultFlags(ctd2), "unable to determine default flags")
+          ctd3 <- expect_silent(initializeFlagScheme(ctd1, "WHP CTD", update=TRUE))
+          expect_equal(c(1,3,4,5,6,7,9), defaultFlags(ctd3))
 })
 
 test_that("ctd flag scheme action", {
@@ -264,7 +268,8 @@ test_that("initializeFlagScheme with section", {
                        list(name="WHP bottle",
                             mapping=list(no_information=1, no_problems_noted=2, leaking=3,
                                          did_not_trip=4, not_reported=5, discrepency=6,
-                                         unknown_problem=7, did_not_trip=8, no_sample=9)))
+                                         unknown_problem=7, did_not_trip=8, no_sample=9),
+                            default=c(1,3,4,5,6,7,8,9)))
 })
 
 test_that("handleFlags default flags (section)", {

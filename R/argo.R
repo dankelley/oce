@@ -252,6 +252,7 @@ setMethod(f="initialize",
               .Object@metadata$dataMode <- if (missing(dataMode)) "" else dataMode
               .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'argo' object"
+              .Object <- initializeFlagScheme(.Object, "argo")
               return(.Object)
           })
 
@@ -1426,10 +1427,8 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
             res@metadata[[name]] <- value
         }
     }
-
     ## Record a log item
     res@processingLog <- processingLogAppend(res@processingLog, paste("read.argo(file=\"", filename, "\")", sep=""))
-    res <- initializeFlagScheme(res, "argo")
     oceDebug(debug, "} # read.argo()\n", sep="", unindent=1)
     res
 }

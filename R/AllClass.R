@@ -227,7 +227,11 @@ setMethod(f="summary",
                       cat("* Data-quality Flag Scheme\n\n")
                       cat("    name    \"", object@metadata$flagScheme$name, "\"\n", sep="")
                       cat("    mapping ", gsub(" = ", "=", as.character(deparse(object@metadata$flagScheme$mapping,
-                                                                                   width.cutoff=400))), "\n\n", sep="")
+                                                                                   width.cutoff=400))), "\n", sep="")
+                      if ("default" %in% names(object@metadata$flagScheme))
+                          cat("    default ", gsub(" = ", "=", as.character(deparse(object@metadata$flagScheme$default,
+                                                                                    width.cutoff=400))), "\n", sep="")
+                      cat("\n")
                   }
                   cat("* Data-quality Flags\n\n")
                   if (length(names(flags))) {
@@ -1037,7 +1041,7 @@ initializeFlagsInternal <- function(object, name=NULL, value=NULL, debug=getOpti
 #' @templateVar details There are no pre-defined `scheme`s for this object class.
 #'
 #' @template initializeFlagSchemeTemplate
-setGeneric("initializeFlagScheme", function(object, name=NULL, mapping=NULL, default=NULL, debug=0) {
+setGeneric("initializeFlagScheme", function(object, name=NULL, mapping=NULL, default=NULL, update=NULL, debug=0) {
            standardGeneric("initializeFlagScheme")
          })
 
@@ -1047,21 +1051,21 @@ setGeneric("initializeFlagScheme", function(object, name=NULL, mapping=NULL, def
 #'
 #' @template initializeFlagSchemeTemplate
 setMethod("initializeFlagScheme",
-          signature=c(object="oce", name="ANY", mapping="ANY", default="ANY", debug="ANY"),
-          definition=function(object, name, mapping, default, debug) {
-              initializeFlagSchemeInternal(object, name, mapping, default, debug)
+          signature=c(object="oce", name="ANY", mapping="ANY", default="ANY", update="ANY", debug="ANY"),
+          definition=function(object, name, mapping, default, update, debug) {
+              initializeFlagSchemeInternal(object, name, mapping, default, update, debug)
           })
 
 #' @templateVar class oce
 #' @templateVar details This is a low-level internal function used mainly by experts.
 #' @template initializeFlagSchemeTemplate
-initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, default=NULL, debug=0)
+initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, default=NULL, update=NULL, debug=0)
 {
     oceDebug(debug, "initializeFlagSchemeInternal(object, name=\"", name, "\", debug=", debug, ") {", sep="", unindent=1)
     if (is.null(name))
         stop("must supply 'name'")
     res <- object
-    if (!is.null(object@metadata$flagScheme)) {
+    if (!is.null(object@metadata$flagScheme) && !(is.logical(update) && update)) {
         warning("cannot alter a flagScheme that is already is place")
     } else {
         ## DEVELOPER NOTE: keep in synch with tests/testthat/test_flags.R and man-roxygen/initializeFlagScheme.R

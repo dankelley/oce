@@ -9,20 +9,23 @@
   name = NULL,
   mapping = NULL,
   default = NULL,
+  update = NULL,
   debug = getOption("oceDebug")
 )
 }
 \arguments{
 \item{object}{An oce object.}
 
-\item{name}{Character value naming the scheme. If this refers
-to a pre-defined scheme, then \code{mapping} must not be provided.}
+\item{name}{a character value naming the scheme. If this refers
+to a pre-defined scheme, then \code{mapping} must not be provided,
+because doing so would contradict the pre-defined scheme, defeating
+its purpose of providing concreteness and clarity.}
 
-\item{mapping}{A list of named items describing the mapping from
+\item{mapping}{a list of named items describing the mapping from
 flag meaning to flag numerical value, e.g \code{list(good=1, bad=2)}
 might be used for a hypothetical class.}
 
-\item{default}{Integer vector of flag values that are not considered
+\item{default}{an integer vector of flag values that are not considered
 to be good. If this is not provided, but if \code{name} is \code{"argo"},
 \code{"BODC"},
 \code{"DFO"},
@@ -33,7 +36,12 @@ For example, for \code{name="WHP CTD"}, the setting will be
 \code{c(1,3,4,5,6,7,9)}, leaving only value \code{2}, which corresponds
 with "acceptable" in the notation used for that flag scheme.}
 
-\item{debug}{Integer set to 0 for quiet action or to 1 for some debugging.}
+\item{update}{a logical value indicating whether the scheme provided is
+to update an existing scheme.  The default value, \code{FALSE}, prevents such
+an attempt to alter an existing flag scheme, if one is already embedded
+in \code{object}.}
+
+\item{debug}{an integer set to 0 for quiet action or to 1 for some debugging.}
 }
 \value{
 An object with the \code{metadata} slot containing \code{flagScheme}.
@@ -64,7 +72,7 @@ OLD (prior to June 10, 2020)
      interpolated=8, missing=9)
 }
 
-NEW (post June 10, 2020)\preformatted{list(not_assessed=0, passed_all_tests=1, probably_good=2,
+NEW (after June 10, 2020)\preformatted{list(not_assessed=0, passed_all_tests=1, probably_good=2,
      probably_bad=3, bad=4, changed=5, not_used_6=6, not_used_7=7,
      estimated=8, missing=9)
 }
