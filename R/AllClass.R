@@ -218,22 +218,24 @@ setMethod(f="summary",
                       cat("\n")
                   }
               }
+              ## Flag scheme (may exist even if no flags are set)
+              if (!is.null(object@metadata$flagScheme)) {
+                  cat("* Data-quality Flag Scheme\n\n")
+                  cat("    name    \"", object@metadata$flagScheme$name, "\"\n", sep="")
+                  cat("    mapping ", gsub(" = ", "=", as.character(deparse(object@metadata$flagScheme$mapping,
+                                                                            width.cutoff=400))), "\n", sep="")
+                  if ("default" %in% names(object@metadata$flagScheme)) {
+                      cat("    default ", gsub(" = ", "=", as.character(deparse(object@metadata$flagScheme$default,
+                                                                                width.cutoff=400))), "\n", sep="")
+                  }
+                  cat("\n")
+              }
               ## Get flags specifically from metadata; using [["flags"]] could extract
               ## it from data, if present there and not in metadata (as e.g. with
               ## the data("ctd") that is provided with oce).
               flags <- object@metadata$flags
               if (length(flags)) {
-                  if (!is.null(object@metadata$flagScheme)) {
-                      cat("* Data-quality Flag Scheme\n\n")
-                      cat("    name    \"", object@metadata$flagScheme$name, "\"\n", sep="")
-                      cat("    mapping ", gsub(" = ", "=", as.character(deparse(object@metadata$flagScheme$mapping,
-                                                                                   width.cutoff=400))), "\n", sep="")
-                      if ("default" %in% names(object@metadata$flagScheme))
-                          cat("    default ", gsub(" = ", "=", as.character(deparse(object@metadata$flagScheme$default,
-                                                                                    width.cutoff=400))), "\n", sep="")
-                      cat("\n")
-                  }
-                  cat("* Data-quality Flags\n\n")
+                 cat("* Data-quality Flags\n\n")
                   if (length(names(flags))) {
                       width <- 1 + max(nchar(names(flags)))
                       for (name in names(flags)) {
