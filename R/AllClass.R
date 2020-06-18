@@ -851,7 +851,9 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
 #' as listed below.
 #'
 #' * for `argo`, the default is
-#' `c(0,2,3,4,7,8,9)`, i.e. all flags except `passed_all_tests`.
+#' `c(0,3,4,6,7,9)`, meaning to act upon `not_assessed` (0), `probably_bad` (3),
+#' `bad` (4), `not_used_6` (6), `not_used_7` (7) and `missing` (9).  See Section
+#' 3.2.2 of Carval et al. (2019).
 #'
 #' * for `BODC`, the default is
 #' `c(0,2,3,4,5,6,7,8,9)`, i.e. all flags except `good`.
@@ -871,6 +873,12 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
 #' `metadata` slot lacks a `flagScheme` as set by [initializeFlagScheme()],
 #' or if it has a scheme that is not in the list provide in \dQuote{Description}.
 #'
+#' @references
+#'
+#' * Carval, Thierry, Bob Keeley, Yasushi Takatsuki, Takashi Yoshida, Stephen Loch Loch,
+#' Claudia Schmid, and Roger Goldsmith. Argo User’s Manual V3.3. Ifremer, 2019.
+#' \url{https://doi.org/10.13155/29825}.
+#'
 #' @family functions relating to data-quality flags
 defaultFlags <- function(object)
 {
@@ -883,7 +891,7 @@ defaultFlags <- function(object)
     if (is.null(scheme))
         return(NULL)
     if (scheme == "argo")
-        return(c(0, 3, 4, 9)) # prior to 2020-june-11, was c(0, 2, 3, 4, 7, 8, 9)
+        return(c(0, 3, 4, 6, 7, 9)) # prior to 2020-june-11, was c(0, 2, 3, 4, 7, 8, 9)
     if (scheme == "BODC")
         return(c(0, 2, 3, 4, 5, 6, 7, 8, 9)) # retain good
     if (scheme == "DFO")
