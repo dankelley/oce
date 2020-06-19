@@ -71,7 +71,7 @@ past 1859-11-17T00:00:00 UTC. See reference 5.
 numberAsPOSIXct(0)                     # unix time 0
 numberAsPOSIXct(1, type="matlab")      # matlab time 1
 numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day, zero hour UTC
-numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
+numberAsPOSIXct(cbind(2013, 1), type="yearday") # start of 2013
 
 ## Epic time, one hour into Canada Day of year 2018. In computing the
 ## Julian day, note that this starts at noon.
