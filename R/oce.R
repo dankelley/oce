@@ -3341,7 +3341,7 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
     } else if (type == "yearday") {
         if (2 != ncol(t))
             stop("'t' must have two columns, one for year, the other for yearday")
-        return(ISOdatetime(t[, 1], 1, 1, 0, 0, 0, tz=tz) + 1 + t[, 2] * 24 * 3600)
+        return(ISOdatetime(t[, 1], 1, 1, 0, 0, 0, tz=tz) + 1 + (t[, 2] - 1) * 24 * 3600)
     } else if (type == "argo") {
         return(t * 86400 + as.POSIXct("1900-01-01 00:00:00", tz="UTC"))
     } else if (type == "excel") {
