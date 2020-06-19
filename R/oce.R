@@ -3313,7 +3313,7 @@ numberAsHMS <- function(t, default=0)
 #' numberAsPOSIXct(0)                     # unix time 0
 #' numberAsPOSIXct(1, type="matlab")      # matlab time 1
 #' numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day, zero hour UTC
-#' numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
+#' numberAsPOSIXct(cbind(2013, 1), type="yearday") # start of 2013
 #'
 #' ## Epic time, one hour into Canada Day of year 2018. In computing the
 #' ## Julian day, note that this starts at noon.
@@ -3341,7 +3341,7 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
     } else if (type == "yearday") {
         if (2 != ncol(t))
             stop("'t' must have two columns, one for year, the other for yearday")
-        return(ISOdatetime(t[, 1], 1, 1, 0, 0, 0, tz=tz) + 1 + (t[, 2] - 1) * 24 * 3600)
+        return(ISOdatetime(t[, 1], 1, 1, 0, 0, 0, tz=tz) + (t[, 2] - 1) * 24 * 3600)
     } else if (type == "argo") {
         return(t * 86400 + as.POSIXct("1900-01-01 00:00:00", tz="UTC"))
     } else if (type == "excel") {
