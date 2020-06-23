@@ -362,11 +362,12 @@ test_that("runlm", {
 
 
 test_that("snakeToCamel", {
-          expect_equal(snakeToCamel("HISTORY_PARAMETER"),   "historyParameter")
-          expect_equal(snakeToCamel("PARAMETER_DATA_MODE"), "parameterDataMode")
-          expect_equal(snakeToCamel("HISTORY_QCTEST"),      "historyQCTest")
-          expect_equal(snakeToCamel("PROFILE_DOXY_QC"),     "profileDoxyQC")
-          expect_equal(snakeToCamel("PARAMETER"),           "parameter")
+          expect_equal(snakeToCamel("PARAMETER_DATA_MODE"),   "parameterDataMode")
+          expect_equal(snakeToCamel("PARAMETER"),             "parameter")
+          expect_equal(snakeToCamel("HISTORY_QCTEST"),        "historyQctest")
+          expect_equal(snakeToCamel("HISTORY_QCTEST", "QC"),  "historyQCTest")
+          expect_equal(snakeToCamel("PROFILE_DOXY_QC"),       "profileDoxyQc")
+          expect_equal(snakeToCamel("PROFILE_DOXY_QC", "QC"), "profileDoxyQC")
 })
 
 test_that("time-series filtering", {

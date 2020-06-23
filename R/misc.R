@@ -329,8 +329,9 @@ shortenTimeString <- function(t, debug=getOption("oceDebug"))
 
 #' Convert each of a vector of strings from SNAKE_CASE to camelCase
 #'
-#' This function is mainly for use by [read.argo()], but it may be helpful
-#' in other contexts as well.
+#' `snakeToCamel` converts "snake-case" characters such as `"NOVA_SCOTIA"`
+#' to "camel-case" values, such as `"NovaScotia"`.  It was written for
+#' use by [read.argo()], but it also may prove helpful in other contexts.
 #'
 #' The basic procedure is to chop the string up into substrings separated by
 #' the underline character, then to upper-case the first letter of
@@ -339,26 +340,39 @@ shortenTimeString <- function(t, debug=getOption("oceDebug"))
 #'
 #' However, there are exceptions.  First, any upper-case string that contains no
 #' underlines is converted to lower case, but any mixed-case string with no
-#' underlines is returned as-is (see the second example). Second,
+#' underlines is returned as-is (see the second example). Second, if
+#' the `specialCases` argument contains `"QC"`, then the
 #' `QC` is passed through directly (since it is an acronym) and
-#' if the first letter of remaining text is upper-cased (see the last
-#' two examples).
+#' if the first letter of remaining text is upper-cased (contrast
+#' see the four examples).
 #'
 #' @param s A vector of character values.
+#'
+#' @param specialCases A vector of character values that tell which
+#' special-cases to apply, or `NULL` (the default) to turn off special
+#' cases.  The only permitted special case at the moment is `"QC"` (see
+#' \dQuote{Details}) but the idea of this argument is that other cases
+#' can be added later, if needed.
+#'
 #' @return A vector of character values
+#'
 #' @examples
 #' library(oce)
-#' snakeToCamel("PARAMETER_DATA_MODE") # "parameterDataMode"
-#' snakeToCamel("PARAMETER")           # "parameter"
-#' snakeToCamel("HISTORY_QCTEST")      # "historyQCTest"
-#' snakeToCamel("PROFILE_DOXY_QC")     # "profileDoxyQC"
+#' snakeToCamel("PARAMETER_DATA_MODE")   # "parameterDataMode"
+#' snakeToCamel("PARAMETER")             # "parameter"
+#' snakeToCamel("HISTORY_QCTEST")        # "historyQctest"
+#' snakeToCamel("HISTORY_QCTEST", "QC")  # "historyQCTest"
+#' snakeToCamel("PROFILE_DOXY_QC")       # "profileDoxyQc"
+#' snakeToCamel("PROFILE_DOXY_QC", "QC") # "profileDoxyQC"
 #' @author Dan Kelley
-snakeToCamel <- function(s)
+snakeToCamel <- function(s, specialCases=NULL)
 {
     ns <- length(s)
-    s <- gsub("QCTEST", "Q_C_TEST", s) # for e.g. HISTORY_QCTEST
-    s <- gsub("QC$", "Q_C", s)         # for e.g. PROFILE_DOXY_QC
-    s <- gsub("Qc$", "QC", s)          # for e.g. positionQc (converted previously)
+    if ("QC" %in% specialCases) {
+        s <- gsub("QCTEST", "Q_C_TEST", s) # for e.g. HISTORY_QCTEST
+        s <- gsub("QC$", "Q_C", s)         # for e.g. PROFILE_DOXY_QC
+        s <- gsub("Qc$", "QC", s)          # for e.g. positionQc (converted previously)
+    }
     if (ns < 1)
         stop("'s' must be a vector of character values")
     res <- vector("character", length=ns)
