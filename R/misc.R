@@ -224,6 +224,16 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
     res
 }
 
+#' Get first finite value in a vector or array, or NULL if none
+#' @param v A numerical vector or array.
+firstFinite <- function(v)
+{
+    if (!is.vector(v))
+        v <- as.vector(v)
+    first <- which(is.finite(v))
+    if (length(first) > 0) v[first[1]] else NULL
+}
+
 #' Read a World Ocean Atlas NetCDF File
 #'
 #' @param file character string naming the file
@@ -317,15 +327,62 @@ shortenTimeString <- function(t, debug=getOption("oceDebug"))
     tc
 }
 
-#' Get first finite value in a vector or array, or NULL if none
-#' @param v A numerical vector or array.
-firstFinite <- function(v)
+#' Convert each of a vector of strings from SNAKE_CASE to camelCase
+#'
+#' This function is mainly for use by [read.argo()], but it may be helpful
+#' in other contexts as well.
+#'
+#' The basic procedure is to chop the string up into substrings separated by
+#' the underline character, then to upper-case the first letter of
+#' all substrings except the first, and then to paste the substrings
+#' together.
+#'
+#' However, there are exceptions.  First, any upper-case string that contains no
+#' underlines is converted to lower case, but any mixed-case string with no
+#' underlines is returned as-is (see the second example). Second,
+#' `QC` is passed through directly (since it is an acronym) and
+#' if the first letter of remaining text is upper-cased (see the last
+#' two examples).
+#'
+#' @param s A vector of character values.
+#' @return A vector of character values
+#' @examples
+#' library(oce)
+#' snakeToCamel("PARAMETER_DATA_MODE") # "parameterDataMode"
+#' snakeToCamel("PARAMETER")           # "parameter"
+#' snakeToCamel("HISTORY_QCTEST")      # "historyQCTest"
+#' snakeToCamel("PROFILE_DOXY_QC")     # "profileDoxyQC"
+#' @author Dan Kelley
+snakeToCamel <- function(s)
 {
-    if (!is.vector(v))
-        v <- as.vector(v)
-    first <- which(is.finite(v))
-    if (length(first) > 0) v[first[1]] else NULL
+    ns <- length(s)
+    s <- gsub("QCTEST", "Q_C_TEST", s) # for e.g. HISTORY_QCTEST
+    s <- gsub("QC$", "Q_C", s)         # for e.g. PROFILE_DOXY_QC
+    s <- gsub("Qc$", "QC", s)          # for e.g. positionQc (converted previously)
+    if (ns < 1)
+        stop("'s' must be a vector of character values")
+    res <- vector("character", length=ns)
+    for (is in seq(1L, length(s))) {
+        if (!grepl("_", s[is])) {
+            ## Handle the single-word case. If all upper-case, convert to lower,
+            ## but otherwise, leave it as it is.
+            res[is] <- if (s[is] == toupper(s[is])) tolower(s[is]) else s[is]
+        } else {
+            ## Handle the multi-word case. Start by making it lower case.
+            s[is] <- tolower(s[is])
+            ## Now, split and then work through the words
+            w <- strsplit(s[is], "_")[[1]]
+            nw <- length(w)
+            res[is] <- w[1]
+            for (iw in 2:nw) {
+                wl <- tolower(w[iw])
+                res[is] <- paste0(res[is], toupper(substring(wl,1,1)), substring(wl,2))
+            }
+        }
+    }
+    res
 }
+
 
 #' Decode units, from strings
 #'

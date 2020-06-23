@@ -289,7 +289,7 @@ getData <- function(file, name, quiet=FALSE)
 #' The inference of names was done
 #' by inspection of some data files, based on reference 1. It should be noted,
 #' however, that the data files examined contain some names that are not
-#' undocumented in reference 1, and others that are listed only in its changelog,
+#' documented in reference 1, and others that are listed only in its changelog,
 #' with no actual definitions being given. For example, the files had six distinct
 #' variable names that seem to relate to phase in the oxygen sensor, but
 #' these are not translated by the present function because these
@@ -428,7 +428,6 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
     names <- gsub("_ERROR", "Error", names, ignore.case=ignore.case)
     names
 }
-
 
 #' Subset an Argo Object
 #'
@@ -918,11 +917,14 @@ argoDecodeFlags <- function(f) # local function
 #'
 #' Once a predefined series of items are inferred and stored in either the
 #' `metadata` or `data` slot, `read.argo` then reads all
-#' non-empty variables in the file, storing them in the `metadata`
-#' slot, using with the original ('snake case') name that is used in
-#' the data file. (Note that the sample dataset accessed with `data(argo)`
-#' lacks metadata items with names starting with `HISTORY_`, because
-#' those are zero-length in the source file.)
+#' non-empty variables in the file, after renaming them with [snakeToCamel()].
+#'
+#' @section Historical note on metadata variable names:
+#' Until 2020 June 23, some metadata items were stored in SNAKE_CASE, but this
+#' caused problems with variable names that were not present in argo
+#' files containing metadata that were unknown to the author when he
+#' originally coded this function. The admixture of SNAKE_CASE and
+#' camelCase names was a cause of confusion to users.
 #'
 #' @param file a character string giving the name of the file to load.
 #'
@@ -1166,7 +1168,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     res@data$time <- t0 + res@metadata$juld * 86400
     rm(list=c("t0s", "t0")) # no longer needed
 
-    res@metadata$juldQc <- if (maybeLC("JULD_QC", lc) %in% varNames)
+    res@metadata$juldQC <- if (maybeLC("JULD_QC", lc) %in% varNames)
         as.vector(ncdf4::ncvar_get(file, maybeLC("JULD_QC", lc))) else NULL
     varNames <- varNamesOmit(varNames, "JULD_QC")
     oceDebug(debug-1, "JULD_QC\n")
@@ -1203,7 +1205,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
                 list(unit=expression(degree*E), scale="") else list(unit=expression(degree*W), scale="")
     }
 
-    res@metadata$positionQc <- if (maybeLC("POSITION_QC", lc) %in% varNames)
+    res@metadata$positionQC <- if (maybeLC("POSITION_QC", lc) %in% varNames)
         as.vector(ncdf4::ncvar_get(file, maybeLC("POSITION_QC", lc))) else NULL
     varNames <- varNamesOmit(varNames, "POSITION_QC")
     oceDebug(debug-1, "POSITION_QC\n")

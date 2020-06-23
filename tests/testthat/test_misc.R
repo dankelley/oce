@@ -263,7 +263,7 @@ test_that("magneticField version 12 (why not perfect?)", {
           ## test values from http://www.geomag.bgs.ac.uk/data_service/models_compass/wmm_calc.html
           ## UPDATE March 3, 2020: I cannot test these old values because that
           ## page now only works for present and future dates (and it's quite
-          ## hard to figur out, frankly).
+          ## hard to figure out, frankly).
           expect_equal(-17.976, magneticField(-63.562,44.640,2013, version=12)$declination,
                        scale=1, tolerance=0.001)
           expect_equal(67.562, magneticField(-63.562,44.640,2013, version=12)$inclination,
@@ -358,6 +358,15 @@ test_that("runlm", {
                               1.750206410, 1.883084287, 1.982749722,
                               2.045628037, 2.079573603))
           expect_equal(r$L, 4)
+})
+
+
+test_that("snakeToCamel", {
+          expect_equal(snakeToCamel("HISTORY_PARAMETER"),   "historyParameter")
+          expect_equal(snakeToCamel("PARAMETER_DATA_MODE"), "parameterDataMode")
+          expect_equal(snakeToCamel("HISTORY_QCTEST"),      "historyQCTest")
+          expect_equal(snakeToCamel("PROFILE_DOXY_QC"),     "profileDoxyQC")
+          expect_equal(snakeToCamel("PARAMETER"),           "parameter")
 })
 
 test_that("time-series filtering", {

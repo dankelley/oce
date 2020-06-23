@@ -71,12 +71,17 @@ and \code{pressureAdjusted} in the \code{metadata$flags} slot.
 
 Once a predefined series of items are inferred and stored in either the
 \code{metadata} or \code{data} slot, \code{read.argo} then reads all
-non-empty variables in the file, storing them in the \code{metadata}
-slot, using with the original ('snake case') name that is used in
-the data file. (Note that the sample dataset accessed with \code{data(argo)}
-lacks metadata items with names starting with \code{HISTORY_}, because
-those are zero-length in the source file.)
+non-empty variables in the file, after renaming them with \code{\link[=snakeToCamel]{snakeToCamel()}}.
 }
+\section{Historical note on metadata variable names}{
+
+Until 2020 June 23, some metadata items were stored in SNAKE_CASE, but this
+caused problems with variable names that were not present in argo
+files containing metadata that were unknown to the author when he
+originally coded this function. The admixture of SNAKE_CASE and
+camelCase names was a cause of confusion to users.
+}
+
 \section{Data sources}{
 
 Argo data are made available at several websites. A bit of detective

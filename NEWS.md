@@ -2,6 +2,7 @@
 
 ## 1.2.1
 
+* `read.argo()` converts all metadata names to camelCase, as was documented.
 * Add `read.ctd.odv()`, in preliminary form.
 * Add `addSpine()`.
 * Update reader-oriented website on github.
