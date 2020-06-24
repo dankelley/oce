@@ -3371,7 +3371,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ##. message("DEBUGGING: defined global var 'dan'")
     }
     oceDebug(debug, "} # mapImage()\n", unindent=1)
-    invisible()
+    invisible(NULL)
 }
 
 

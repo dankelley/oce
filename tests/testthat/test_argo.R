@@ -21,12 +21,12 @@ test_that("plot works on indexed subsets", {
 
 test_that("global attributes in metadata", {
           expect_equal(argo[["title"]], "Argo float vertical profile")
-          expect_equal(argo[["institution"]], "FR GDAC")
+          expect_equal(argo[["institution"]], "")
           expect_equal(argo[["source"]], "Argo float")
-          expect_equal(argo[["history"]], "2017-07-07T15:50:34Z creation")
+          expect_equal(argo[["history"]], "2015-01-10T03:05:00Z creation")
           expect_equal(argo[["references"]], "http://www.argodatamgt.org/Documentation")
-          expect_equal(argo[["userManualVersion"]], "3.1")
-          expect_equal(argo[["conventions"]], "Argo-3.1 CF-1.6")
+          expect_equal(argo[["userManualVersion"]], "3.03")
+          expect_equal(argo[["conventions"]], "Argo-3.0 CF-1.6")
           expect_equal(argo[["featureType"]], "trajectoryProfile")
 })
 

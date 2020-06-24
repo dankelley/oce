@@ -629,7 +629,7 @@ setMethod(f="plot",
                   }
               }
               oceDebug(debug, "} # plot.sealevel()\n", unindent=1)
-              invisible()
+              invisible(NULL)
           })
 
 

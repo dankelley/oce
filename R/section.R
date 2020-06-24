@@ -266,7 +266,7 @@ setMethod(f="summary",
                   }
               }
               processingLogShow(object)
-              invisible()
+              invisible(NULL)
           })
 
 

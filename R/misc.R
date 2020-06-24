@@ -4737,7 +4737,7 @@ oceDebug <- function(debug=0, ..., style="plain", unindent=0)
         }
         flush.console()
     }
-    invisible()
+    invisible(NULL)
 }
 oce.debug <- oceDebug
 

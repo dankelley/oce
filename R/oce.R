@@ -2298,7 +2298,7 @@ read.netcdf <- function(file, ...)
 #' box()
 #' oceAxis(1, logStyle="decade")
 #' oceAxis(2, logStyle="decade")
-#' 
+#'
 #' @author Dan Kelley
 oceAxis <- function(side, labels=TRUE, logStyle="r", ...)
 {
@@ -3544,7 +3544,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     ## then adjust 'new' appropriately.
     par(usr=opar$usr, mai=opar$mai, cex=opar$cex, lwd=opar$lwd, lty=opar$lty, bg=opar$bg)
     oceDebug(debug, "} # plotInset()\n", unindent=1)
-    invisible()
+    invisible(NULL)
 }
 
 

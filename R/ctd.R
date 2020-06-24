@@ -3241,7 +3241,7 @@ setMethod(f="plot",
               ## as created by as.section() or read.section().
               if (0 == length(x[["salinity"]])) {
                   warning("no data to plot in this object")
-                  return(invisible())
+                  return(invisible(NULL))
               }
               last.good <- which(rev(is.na(x[["salinity"]]))==FALSE)[1]
               if (!is.na(last.good) && length(last.good) > 0) {
@@ -3802,7 +3802,7 @@ setMethod(f="plot",
                   }
               }
               oceDebug(debug, "} # plot,ctd-method()\n", unindent=1)
-              invisible()
+              invisible(NULL)
           })
 
 
@@ -4851,7 +4851,7 @@ plotProfile <- function(x,
             y <- y[keep]
             if (length(x) < 1 || length(y) < 1) {
                 warning("no good data to plot")
-                return(invisible())
+                return(invisible(NULL))
             }
         }
         if (type == 'l') {
@@ -4926,7 +4926,7 @@ plotProfile <- function(x,
     ##1137                    sigmaTheta=g[1]*min(ylim) <= x[["sigmaTheta"]] & x[["sigmaTheta"]] <= g[2]*max(ylim))
     if (0 == sum(examineIndices) && ytype == 'z' && ylim[1] >= 0 && ylim[2] >= 0) {
         warning("nothing is being plotted, because z is always negative and ylim specified a positive interval")
-        return(invisible())
+        return(invisible(NULL))
     }
     if (!is.list(x@data))
         x@data <- as.list(x@data)
@@ -5131,7 +5131,7 @@ plotProfile <- function(x,
         salinity <- if (eos == "gsw" || xtype == "SA") swAbsoluteSalinity(x) else x[["salinity"]]
         if (!any(is.finite(salinity))) {
             warning("no valid salinity data")
-            return(invisible())
+            return(invisible(NULL))
         }
         if (missing(Slim)) {
             if ("xlim" %in% names(dots)) Slim <- dots$xlim else Slim <- range(salinity, na.rm=TRUE)
@@ -5185,7 +5185,7 @@ plotProfile <- function(x,
         }
         if (!any(is.finite(conductivity))) {
             warning("no valid conductivity data")
-            return(invisible())
+            return(invisible(NULL))
         }
         if (missing(Clim)) {
             if ("xlim" %in% names(dots)) Clim <- dots$xlim else Clim <- range(conductivity, na.rm=TRUE)
@@ -5380,7 +5380,7 @@ plotProfile <- function(x,
         unit <- x@metadata$units[["temperature"]]
         if (!any(is.finite(temperature))) {
             warning("no valid temperature data")
-            return(invisible())
+            return(invisible(NULL))
         }
         if (missing(Tlim)) {
             if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(temperature, na.rm=TRUE)
@@ -5550,7 +5550,7 @@ plotProfile <- function(x,
         sig0 <- swSigma0(x)
         if (!any(is.finite(sig0))) {
             warning("no valid sigma-0 data")
-            return(invisible())
+            return(invisible(NULL))
         }
         look <- if (keepNA) seq_along(y) else !is.na(sig0) & !is.na(y)
         if (missing(densitylim))
@@ -5587,7 +5587,7 @@ plotProfile <- function(x,
         look <- if (keepNA) seq_along(y) else !is.na(N2) & !is.na(y)
         if (0 == sum(look)) {
             warning("no valid N2 data")
-            return(invisible())
+            return(invisible(NULL))
         }
         plot(N2[look], y[look], lty=lty,
              xlim=N2lim, ylim=ylim, cex=cex, pch=pch,
@@ -5669,11 +5669,11 @@ plotProfile <- function(x,
         temperature <- if (eos == "gsw") swConservativeTemperature(x) else x[["temperature"]]
         if (!any(is.finite(salinity))) {
             warning("no valid salinity data")
-            return(invisible())
+            return(invisible(NULL))
         }
         if (!any(is.finite(temperature))) {
             warning("no valid temperature data")
-            return(invisible())
+            return(invisible(NULL))
         }
         if (missing(Slim)) Slim <- range(salinity, na.rm=TRUE)
         if (missing(Tlim)) Tlim <- range(temperature, na.rm=TRUE)

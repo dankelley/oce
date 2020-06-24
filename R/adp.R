@@ -582,7 +582,7 @@ setMethod(f="summary",
                       }
                   }
                   processingLogShow(object)
-                  invisible()
+                  invisible(NULL)
               } else {
                   invisible(callNextMethod()) # summary
               }

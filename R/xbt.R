@@ -609,6 +609,6 @@ setMethod(f="plot",
                   }
               }
               oceDebug(debug, "} # plot.xbt()\n", unindent=1)
-              invisible()
+              invisible(NULL)
           })
 
