@@ -759,7 +759,7 @@ setMethod(f="plot",
                   legend(location, lwd=lwd[o], lty=lty[o], bg="white", legend=legend[o], col=col[o])
               }
               oceDebug(debug, "} # plot.topo()\n", unindent=1)
-              invisible()
+              invisible(NULL)
           })
 
 

@@ -162,18 +162,24 @@ setMethod("handleFlags", signature=c(object="section", flags="ANY", actions="ANY
 #' str(station1[["flagScheme"]])
 #'}
 setMethod("initializeFlagScheme",
-          c(object="section", name="ANY", mapping="ANY", default="ANY", debug="ANY"),
-          function(object, name=NULL, mapping=NULL, default=NULL, debug=getOption("oceDebug")) {
+          c(object="section", name="ANY", mapping="ANY", default="ANY", update="ANY", debug="ANY"),
+          function(object, name=NULL, mapping=NULL, default=NULL, update=NULL, debug=getOption("oceDebug")) {
               res <- object
               for (i in seq_along(object@data$station)) {
-                  res@data$station[[i]] <- initializeFlagScheme(object@data$station[[i]], name, mapping, default, debug=debug-1)
+                  res@data$station[[i]] <- initializeFlagScheme(object@data$station[[i]],
+                                                                name=name,
+                                                                mapping=mapping,
+                                                                default=default,
+                                                                update=update,
+                                                                debug=debug-1)
               }
               res@processingLog <-
                   processingLogAppend(res@processingLog,
                                       paste("initializeFlagScheme(object",
-                                            ", name=\"", name,
-                                            "\", mapping=",
-                                            gsub("[ ]*", "", paste(as.character(deparse(mapping)))), ")", sep=""))
+                                            ", name=\"", name, "\"",
+                                            ", mapping=", gsub("[ ]*", "", paste(as.character(deparse(mapping)))), ")",
+                                            ", default=", gsub("[ ]*", "", paste(as.character(deparse(default)))), ")",
+                                            sep=""))
               res
           })
 
@@ -260,7 +266,7 @@ setMethod(f="summary",
                   }
               }
               processingLogShow(object)
-              invisible()
+              invisible(NULL)
           })
 
 

@@ -525,7 +525,7 @@ setMethod(f="plot",
                   }
               }
               oceDebug(debug, "} # plot.rsk()\n", unindent=1)
-              invisible()
+              invisible(NULL)
           })
 
 

@@ -62,12 +62,16 @@ two-column matrix, with the first column being the julian Day (as defined in
 \code{\link[=julianDay]{julianDay()}}, for example), and with the second column being the
 millisecond within that day. See reference 4.
 }
+
+\code{"vms"} handles a convention used in the VMS operating system and
+for Modified Julian Day, in which \code{t} is the number of seconds
+past 1859-11-17T00:00:00 UTC. See reference 5.
 }
 \examples{
 numberAsPOSIXct(0)                     # unix time 0
 numberAsPOSIXct(1, type="matlab")      # matlab time 1
 numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day, zero hour UTC
-numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
+numberAsPOSIXct(cbind(2013, 1), type="yearday") # start of 2013
 
 ## Epic time, one hour into Canada Day of year 2018. In computing the
 ## Julian day, note that this starts at noon.
@@ -85,6 +89,7 @@ numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
 \item EPIC times: software and manuals at \url{https://www.pmel.noaa.gov/epic/download/index.html#epslib};
 see also Denbo, Donald W., and Nancy N. Soreide. \dQuote{EPIC.} Oceanography 9 (1996).
 https://doi.org/10.5670/oceanog.1996.10.
+\item VMS times: https://en.wikipedia.org/wiki/Epoch_(computing)
 }
 }
 \seealso{

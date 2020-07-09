@@ -253,18 +253,18 @@ shiftLongitude <- function(longitudes) {
 fixneg <- function(v)
 {
     res <- v
-    for (i in seq_along(v)) {
-        if (res[i] == "0N") {
+    for (i in seq_along(res)) {
+        ##message("res[i]='", res[i], "' ...")
+        if (grepl("^0[A-Z]$", res[i])) {
             res[i] <- "0"
-        } else if (res[i] == "0E") {
-            res[i] <- "0"
-        } else if ("-" == substr(v[i], 1, 1)) {
+        } else if ("-" == substr(res[i], 1, 1)) {
             ##cat("res[i]=", res[i], "\n")
-            res[i] <- gsub("^-", "", v[i])
-            res[i] <- gsub("E", "W", res[i])
-            res[i] <- gsub("N", "S", res[i])
+            res[i] <- gsub("^-", "", res[i])
+            res[i] <- gsub("E", gettext("W", domain="R-oce"), res[i])
+            res[i] <- gsub("N", gettext("S", domain="R-oce"), res[i])
             ##cat(" -> res[i]=", res[i], "\n")
         }
+        ##message('  ... "', res[i], "'")
     }
     res
 }
@@ -345,6 +345,14 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #'
 #' @param latitude similar to `longitude` but for latitude.
 #'
+#' @param axisStyle an integer specifying the style of labels for the numbers
+#' on axes.  The choices are:
+#' 1 for signed numbers without additional labels;
+#' 2 (the default) for unsigned numbers followed by letters indicating the hemisphere;
+#' 3 for signed numbers followed by a degree sign;
+#' 4 for unsigned numbers followed by a degree sign; and
+#' 5 for signed numbers followed by a degree sign and letters indicating the hemisphere.
+#'
 #' @param tick parameter passed to [axis()].
 #'
 #' @param line parameter passed to [axis()].
@@ -360,6 +368,14 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' @param lwd axis line width, passed to [axis()]).
 #'
 #' @param lwd.ticks tick line width, passed to [axis()].
+#'
+#' @param axisStyle an integer specifying the style of labels for the numbers
+#' on axes.  The choices are:
+#' 1 for signed numbers without additional labels;
+#' 2 (the default) for unsigned numbers followed by letters indicating the hemisphere;
+#' 3 for signed numbers followed by a degree sign;
+#' 4 for unsigned numbers followed by a degree sign; and
+#' 5 for signed numbers followed by a degree sign and letters indicating the hemisphere.
 #'
 #' @param col axis color, passed to [axis()].
 #'
@@ -407,6 +423,7 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #'
 #' @family functions related to maps
 mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
+                    axisStyle=1,
                     tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
                     lty="solid", lwd=1, lwd.ticks=lwd, col=NULL, col.ticks=NULL,
                     hadj=NA, padj=NA, tcl=-0.3, cex.axis=1,
@@ -418,7 +435,12 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
     oceDebug(debug, "mapAxis(side=c(", paste(side, collapse=","), ")",
              ", longitude=", if (length(longitude)) c(longitude[1], "...") else "NULL",
              ", latitude=", if (length(latitude)) c(latitude[1], "...") else "NULL",
+             ", axisStyle=", axisStyle,
              ") { \n", unindent=1, sep="")
+    if (length(axisStyle) != 1)
+       stop("axisStyle must be of length 1")
+    if (!(axisStyle %in% 1:5))
+        stop("invalid axis style ", paste(axisStyle, collapse=","), "; must be 1, 2, 3, 4 or 5")
     boxLonLat <- usrLonLat()
     axis <- .axis()
     #if (debug > 0) print(axis)
@@ -473,22 +495,41 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
             x <- P$x
             if (is.finite(P$y) && (abs(P$y - usr[3]) < 0.01 * (usr[4] - usr[3]))) {
                 if (!is.na(x) && usr[1] < x && x < usr[2]) {
-                    label <- fixneg(paste(lon, "E", sep=""))
+                    ##label <- fixneg(paste0(lon, gettext("E", domain="R-oce")))
                     ##mtext(label, side=1, at=x)
                     AT <- c(AT, x)
-                    LAB <- c(LAB, label)
-                    if (debug > 3) oceDebug(debug, "  ", label, "intersects side 1\n")
+                    LAB <- c(LAB, lon)
+                    if (debug > 3) oceDebug(debug, "  ", lon, "intersects side 1\n", sep="")
                 } else {
-                    if (debug > 3) oceDebug(debug, "    ", lon, "E does not intersect side 1\n")
+                    if (debug > 3) oceDebug(debug, "    ", lon, "E does not intersect side 1\n", sep="")
                 }
             } else {
                 ## oceDebug(debug, "skipping off-globe point\n")
             }
         }
         if (!is.null(AT)) {
-            ## prevent calling axis() with cex.axis=0, by just giving empty labels then
-            oceDebug(debug, "calling axis(1) with cex.axis=", cex.axis, "\n")
-            axis(side=1, at=AT, labels=if (cex.axis>0) fixneg(LAB) else rep("", length(AT)),
+            if (axisStyle == 1) {
+                labels <- if (cex.axis>0) LAB else rep("", length(AT))
+            } else if (axisStyle == 2) {
+                labels <- if (cex.axis>0) fixneg(paste0(LAB, gettext("E", domain="R-oce"))) else rep("", length(AT))
+            } else if (axisStyle == 3) {
+                labels <- if (cex.axis>0) paste0(LAB, "\u00B0") else rep("", length(AT))
+            } else if (axisStyle == 4) {
+                labels <- if (cex.axis>0) paste0(abs(LAB), "\u00B0") else rep("", length(AT))
+            } else if (axisStyle == 5) {
+                labels <- if (cex.axis>0) {
+                    paste0(abs(LAB),
+                           "\u00B0",
+                           unlist(lapply(LAB,
+                                         function(l)
+                                             if (l < 0) gettext("W", domain="R-oce")
+                                             else if (l > 0) gettext("E", domain="R-oce")
+                                             else "")))
+                } else {
+                    rep("", length(AT))
+                }
+            }
+            axis(side=1, at=AT, labels=labels,
                  mgp=mgp, tick=tick, line=line, pos=pos, outer=outer, font=font,
                  lty=lty, lwd=lwd, lwd.ticks=lwd.ticks, col=col, col.ticks=col.ticks,
                  hadj=hadj, padj=padj, tcl=tcl, cex.axis=if (cex.axis>0) cex.axis else 1)
@@ -546,10 +587,10 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
                 y <- P$y
                 if (is.finite(P$x) && (abs(P$x - usr[1]) < 0.01 * (usr[2] - usr[1]))) {
                     if (!is.na(y) && usr[3] < y && y < usr[4]) {
-                        label <- fixneg(paste(lat, "N", sep=""))
+                        ##label <- fixneg(paste0(lat, gettext("N", domain="R-oce")))
                         AT <- c(AT, y)
-                        LAB <- c(LAB, label)
-                        if (debug > 3) oceDebug(debug, "  ", label, " intersects side 2\n", sep="")
+                        LAB <- c(LAB, lat)
+                        if (debug > 3) oceDebug(debug, "  ", lat, " intersects side 2\n", sep="")
                     } else {
                         if (debug > 3) oceDebug(debug, "  ", lat, "N does not intersect side 2\n", sep="")
                     }
@@ -560,9 +601,28 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
         }
         #browser()
         if (!is.null(AT)) {
-            oceDebug(debug, "calling axis(2) with cex.axis=", cex.axis, "\n")
-            ## prevent calling axis() with cex.axis=0, by just giving empty labels then
-            axis(side=2, at=AT, labels=if (cex.axis>0) fixneg(LAB) else rep("", length(AT)),
+            if (axisStyle == 1) {
+                labels <- if (cex.axis>0) LAB else rep("", length(AT))
+            } else if (axisStyle == 2) {
+                labels <- if (cex.axis>0) fixneg(paste0(LAB, gettext("N", domain="R-oce"))) else rep("", length(AT))
+            } else if (axisStyle == 3) {
+                labels <- if (cex.axis>0) paste0(LAB, "\u00B0") else rep("", length(AT))
+            } else if (axisStyle == 4) {
+                labels <- if (cex.axis>0) paste0(abs(LAB), "\u00B0") else rep("", length(AT))
+            } else if (axisStyle == 5) {
+                labels <- if (cex.axis>0) {
+                    paste0(abs(LAB),
+                           "\u00B0",
+                           unlist(lapply(LAB,
+                                         function(l)
+                                             if (l < 0) gettext("S", domain="R-oce")
+                                             else if (l > 0) gettext("N", domain="R-oce")
+                                             else "")))
+                } else {
+                    rep("", length(AT))
+                }
+            }
+            axis(side=2, at=AT, labels=labels,
                  mgp=mgp, tick=tick, line=line, pos=pos, outer=outer, font=font,
                  lty=lty, lwd=lwd, lwd.ticks=lwd.ticks, col=col, col.ticks=col.ticks,
                  hadj=hadj, padj=padj, tcl=tcl, cex.axis=if (cex.axis>0) cex.axis else 1)
@@ -1093,10 +1153,17 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' `"p"` for points, `"l"` for line segments, or `"o"` for points
 #' overlain with line segments.
 #'
-#' @param axes logical value indicating whether to draw longitude and latitude
+#' @param axes a logical value indicating whether to draw longitude and latitude
 #' values in the lower and left margin, respectively.  This may not work well
-#' for some projections or scales.  See also `lonlabels` and `latlabels`, which
-#' offer more granular control of labelling.
+#' for some projections or scales.  See also `axisStyle`, `lonlabels`
+#' and `latlabels`, which offer more granular control of labelling.
+#'
+#' @param axisStyle an integer specifying the style of labels for the numbers
+#' on axes.  The choices are:
+#' 0 for signed numbers without labels;
+#' 1 (the default) for unsigned numbers followed by letters that indicate the hemisphere;
+#' 2 for signed numbers with a degree symbol to the right; and
+#' 3 for unsigned numbers with a degree symbol to the right.
 #'
 #' @param cex character expansion factor for plot symbols,
 #' used if `type='p'` or any other value that yields symbols.
@@ -1521,7 +1588,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     border=NULL, col=NULL,
                     clip=TRUE,
                     type='polygon',
-                    axes=TRUE, cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
+                    axes=TRUE, axisStyle=1,
+                    cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
                     polarCircle=0, lonlabels=TRUE, latlabels=TRUE,
                     projection="+proj=moll", tissot=FALSE, trim=TRUE,
                     debug=getOption("oceDebug"),
@@ -1536,6 +1604,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     oceDebug(debug, "mapPlot(longitude, latitude",
              ", longitudelim=", if (missing(longitudelim)) "(missing)" else c("c(", paste(format(longitudelim, digits=4), collapse=","), ")"),
              ", longitudelim=", if (missing(latitudelim)) "(missing)" else c("c(", paste(format(latitudelim, digits=4), collapse=","), ")"),
+             ", axes=", axes,
+             ", axisStyle=", axisStyle,
              ", type=\"", type, "\"",
              ", projection=\"", if (is.null(projection)) "NULL" else projection, "\"",
              ", grid=c(", paste(grid, collapse=","), ")",
@@ -1851,14 +1921,14 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         if (axes) {
             if (is.logical(lonlabels)) {
-                mapAxis(side=1, longitude=.axis()$longitude, latitude=FALSE, cex.axis=if (lonlabels) cex.axis else 0, mgp=mgp, debug=debug-1)
+                mapAxis(side=1, longitude=.axis()$longitude, latitude=FALSE, cex.axis=if (lonlabels) cex.axis else 0, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
             } else if (!is.null(lonlabels)) {
-                mapAxis(side=1, longitude=lonlabels, latitude=FALSE, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
+                mapAxis(side=1, longitude=lonlabels, latitude=FALSE, cex.axis=cex.axis, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
             }
             if (is.logical(latlabels)) {
-                mapAxis(side=2, latitude=.axis()$latitude, longitude=FALSE, cex.axis=if (latlabels) cex.axis else 0, mgp=mgp, debug=debug-1)
+                mapAxis(side=2, latitude=.axis()$latitude, longitude=FALSE, cex.axis=if (latlabels) cex.axis else 0, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
             } else if (!is.null(latlabels)) {
-                mapAxis(side=2, latitude=latlabels, longitude=FALSE, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
+                mapAxis(side=2, latitude=latlabels, longitude=FALSE, cex.axis=cex.axis, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
             }
         }
         if (tissot)
@@ -3301,7 +3371,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ##. message("DEBUGGING: defined global var 'dan'")
     }
     oceDebug(debug, "} # mapImage()\n", unindent=1)
-    invisible()
+    invisible(NULL)
 }
 
 

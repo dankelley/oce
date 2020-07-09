@@ -77,48 +77,60 @@ test_that("predefined flag schemes", {
           data(ctd)
           a <- initializeFlagScheme(ctd, "argo")
           expect_equal(a[["flagScheme"]],
-                       list(name="argo",
-                            mapping=list(not_assessed=0, passed_all_tests=1, probably_good=2,
-                                         probably_bad=3, bad=4, averaged=7,
-                                         interpolated=8, missing=9)))
+                       list(name = "argo",
+                            mapping=list(not_assessed=0, passed_all_tests=1,
+                                         probably_good=2, probably_bad=3, bad=4, changed=5,
+                                         not_used_6=6, not_used_7=7, estimated=8, missing=9),
+                            default=c(0, 3, 4, 9)))
           a <- initializeFlagScheme(ctd, "BODC")
           expect_equal(a[["flagScheme"]],
                        list(name="BODC",
                             mapping=list(no_quality_control=0, good=1, probably_good=2,
                                          probably_bad=3, bad=4, changed=5, below_detection=6,
-                                         in_excess=7, interpolated=8, missing=9)))
+                                         in_excess=7, interpolated=8, missing=9),
+                            default=c(0, 2, 3, 4, 5, 6, 7, 8, 9)))
           a <- initializeFlagScheme(ctd, "DFO")
           expect_equal(a[["flagScheme"]],
                        list(name="DFO",
                             mapping=list(no_quality_control=0, appears_correct=1, appears_inconsistent=2,
                                          doubtful=3, erroneous=4, changed=5,
-                                         qc_by_originator=8, missing=9)))
+                                         qc_by_originator=8, missing=9),
+                            default=c(0, 2, 3, 4, 5, 8, 9)))
           a <- initializeFlagScheme(ctd, "WHP bottle")
           expect_equal(a[["flagScheme"]],
                        list(name="WHP bottle",
                             mapping=list(no_information=1, no_problems_noted=2, leaking=3,
                                          did_not_trip=4, not_reported=5, discrepency=6,
-                                         unknown_problem=7, did_not_trip=8, no_sample=9)))
+                                         unknown_problem=7, did_not_trip=8, no_sample=9),
+                            default=c(1, 3, 4, 5, 6, 7, 8, 9)))
           a <- initializeFlagScheme(ctd, "WHP CTD")
           expect_equal(a[["flagScheme"]],
                        list(name="WHP CTD",
                             mapping=list(not_calibrated=1, acceptable=2, questionable=3,
                                          bad=4, not_reported=5, interpolated=6,
-                                         despiked=7, missing=9)))
+                                         despiked=7, missing=9),
+                            default=c(1, 3, 4, 5, 6, 7, 9)))
 })
 
 test_that("user-created flag scheme", {
           data(ctd)
-          a <- initializeFlagScheme(ctd, "myscheme", list(unknown=1, good=2, bad=3))
+          a <- initializeFlagScheme(ctd, "myscheme",
+                                    mapping=list(unknown=1, good=2, bad=3),
+                                    default=c(1, 3, 4, 5, 6, 7, 9))
           expect_equal(a[["flagScheme"]], list(name="myscheme",
-                                               mapping=list(unknown=1, good=2, bad=3)))
+                                               mapping=list(unknown=1, good=2, bad=3),
+                                               default=c(1, 3, 4, 5, 6, 7, 9)))
 })
 
-test_that("cannot alter existing flag scheme", {
+test_that("cannot alter existing flag scheme (unless using update arg)", {
           data(ctd)
-          a <- initializeFlagScheme(ctd, "myscheme", list(unknown=1, good=2, bad=3))
-          expect_warning(initializeFlagScheme(a, "WHP CTD"),
-                         "cannot alter a flagScheme that is already is place")
+          ctd1 <- initializeFlagScheme(ctd, "myscheme", list(unknown=1, good=2, bad=3))
+          expect_warning(defaultFlags(ctd1), "unable to determine default flags")
+          ctd2 <- expect_warning(initializeFlagScheme(ctd1, "WHP CTD"),
+                                 "cannot alter a flagScheme that is already is place")
+          expect_warning(defaultFlags(ctd2), "unable to determine default flags")
+          ctd3 <- expect_silent(initializeFlagScheme(ctd1, "WHP CTD", update=TRUE))
+          expect_equal(c(1,3,4,5,6,7,9), defaultFlags(ctd3))
 })
 
 test_that("ctd flag scheme action", {
@@ -256,7 +268,8 @@ test_that("initializeFlagScheme with section", {
                        list(name="WHP bottle",
                             mapping=list(no_information=1, no_problems_noted=2, leaking=3,
                                          did_not_trip=4, not_reported=5, discrepency=6,
-                                         unknown_problem=7, did_not_trip=8, no_sample=9)))
+                                         unknown_problem=7, did_not_trip=8, no_sample=9),
+                            default=c(1,3,4,5,6,7,8,9)))
 })
 
 test_that("handleFlags default flags (section)", {
@@ -277,7 +290,7 @@ test_that("alter flag scheme", {
                          "cannot alter a flagScheme that is already is place")
           ctd[["flagScheme"]] <- NULL
           ctd <- initializeFlagScheme(ctd, "argo")
-          expect_equal(c(0, 2, 3, 4, 7, 8, 9), defaultFlags(ctd))
+          expect_equal(c(0, 3, 4, 9), defaultFlags(ctd))
 })
 
 test_that("handleFlags default flags (ctd)", {

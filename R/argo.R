@@ -60,10 +60,10 @@ setClass("argo", contains="oce")
 #' plot(argo, which="trajectory")
 #'}
 #'
-#' @source This file was downloaded using the unix command
-#'\preformatted{
-#' ftp ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc
-#'} issued on 2017 July 7.
+#' @source The netcdf file used by [read.argo()] to create this [argo-class]
+#' object was downloaded from
+#'\url{ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc}
+#' on 2020 June 24.
 #'
 #' @family datasets provided with oce
 #' @family things related to argo data
@@ -252,6 +252,7 @@ setMethod(f="initialize",
               .Object@metadata$dataMode <- if (missing(dataMode)) "" else dataMode
               .Object@processingLog$time <- presentTime()
               .Object@processingLog$value <- "create 'argo' object"
+              .Object <- initializeFlagScheme(.Object, "argo")
               return(.Object)
           })
 
@@ -288,7 +289,7 @@ getData <- function(file, name, quiet=FALSE)
 #' The inference of names was done
 #' by inspection of some data files, based on reference 1. It should be noted,
 #' however, that the data files examined contain some names that are not
-#' undocumented in reference 1, and others that are listed only in its changelog,
+#' documented in reference 1, and others that are listed only in its changelog,
 #' with no actual definitions being given. For example, the files had six distinct
 #' variable names that seem to relate to phase in the oxygen sensor, but
 #' these are not translated by the present function because these
@@ -427,7 +428,6 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
     names <- gsub("_ERROR", "Error", names, ignore.case=ignore.case)
     names
 }
-
 
 #' Subset an Argo Object
 #'
@@ -867,24 +867,16 @@ argoDecodeFlags <- function(f) # local function
 
 #' Read an Argo Data File
 #'
-#' `read.argo` is used to read an Argo file, producing an object of type
-#' `argo`. The file must be in the ARGO-style NetCDF format described at
+#' `read.argo` is used to read an Argo file, producing an [argo-class] object.
+#' The file must be in the ARGO-style NetCDF format described
 #' in the Argo documentation (see references 2 and 3).
 #'
 #' @details
 #'
-#' Items are inferred from the data file in a straightforward way, using
-#' [ncdf4::ncvar_get()], converting from one-column matrices
-#' to vectors, and trimming leading and trailing blank space in character
-#' values, using [trimString()].
-#'
-#' Items are renamed from the argo ('snake case') forms to oce ('camel
-#' case') forms with [argoNames2oceNames()]. For example,
-#' `FIRMWARE_VERSION` in the data file is renamed as
-#' `firmwareVersion` in the return value.
-#' Note that some files use upper-case for items, while other files
-#' use lower-case for the same things; `read.argo` attempts
-#' to ignore this variation.
+#' Items are extracted from the data file using
+#' [ncdf4::ncvar_get()], after which one-column matrices
+#' are converted to vectors, and leading and trailing blank space in character
+#' values is removed using [trimString()].
 #'
 #' See the Argo documentation (see references 2 and 3) for some details on what files contain.
 #' Many items listed in section 2.2.3 of reference 3 are read from the
@@ -895,10 +887,8 @@ argoDecodeFlags <- function(f) # local function
 #' The following global attributes stored within the netcdf file are stored in the
 #' `metadata` slot: `title`, `institution`, `source`,
 #' `history`, `references`, `userManualVersion`, `conventions`,
-#' and `featureType`. These names are identical to those in the netcdf
-#' file, except that `userManualVersion` is named
-#' `user_manual_version` in the file, and `conventions` is
-#' named `Conventions` in the file.
+#' and `featureType`. These names are derived from those in the netcdf
+#' file, as explained in the \dQuote{Variable renaming convention} section below.
 #'
 #' It is assumed that the profile data are as listed in the NetCDF variable
 #' called `STATION_PARAMETERS`. Each item can have variants, as
@@ -907,28 +897,40 @@ argoDecodeFlags <- function(f) # local function
 #' then `PRES` (pressure) data are sought in the file, along with
 #' `PRES_QC`, `PRES_ADJUSTED`, `PRES_ADJUSTED_QC`, and
 #' `PRES_ERROR`. The same pattern works for other profile data. The variables
-#' are stored with different names within the resultant [argo-class]
-#' object, to match with `oce` conventions. Thus, `PRES` gets renamed
-#' `pressure`, while `PRES_ADJUSTED` gets renamed `pressureAdjusted`,
-#' and `PRES_ERROR` gets renamed `pressureError`; all of these are
-#' stored in the `data` slot. Meanwhile, the quality-control flags
-#' `PRES_QC` and `PRES_ADJUSTED_QC` are stored as `pressure`
-#' and `pressureAdjusted` in the `metadata$flags` slot.
+#' are stored with names created as explained in the
+#' \dQuote{Variable renaming convention} section below. Note that
+#' flags, which are stored variables ending in `"_QC"` in the netcdf
+#' fil, are stored in the `flags` item within the `metadata` slot
+#' of the returned object; thus, for example,
+#' `PRES_QC` is stored as `pressure` in `flags`.
 #'
-#' Once a predefined series of items are inferred and stored in either the
-#' `metadata` or `data` slot, `read.argo` then reads all
-#' non-empty variables in the file, storing them in the `metadata`
-#' slot, using with the original ('snake case') name that is used in
-#' the data file. (Note that the sample dataset accessed with `data(argo)`
-#' lacks metadata items with names starting with `HISTORY_`, because
-#' those are zero-length in the source file.)
+#' @section Variable renaming convention:
+#' Argo netcdf files employ a `"SNAKE_CASE"` naming scheme (sometimes
+#' using lower case) that is inconsistent with the `"camelCase"` scheme
+#' used in oce. Since argo objects are just a small part of oce, a decision
+#' was made to rename argo items. For example, `"CYCLE_NUMBER"` in the netcdf file
+#' becomes `"cycleNumber"` in the oce object returned by `read.argo`.
+#' The conversion for objects in the `data` slot often also involves
+#' expanding on argo abbreviations, e.g. `"PSAL"` becomes `"salinity"`.
+#' The renaming work is carried out with [argoNames2oceNames()] for
+#' handles both name expansion for several dozen special cases,
+#' and with [snakeToCamel()] with the `specialCase` argument
+#' set to `"QC"`. While this results in variable names that should make
+#' sense in the general oce context (where, for example, salinity is expected
+#' to be stored in a variable named `"salinity"`), it may be confusing
+#' to argo experts who are just starting to use oce.  Such people might
+#' find it helpful to use e.g. `sort(names(x[["metadata"]]))` to get a list
+#' of all items in the `metadata` slot (or similar with `"data"`), since working
+#' in reverse may be easier than simply guessing at what names oce has chosen.
+#' (Note that prior to 2020 June 24, some metadata items were stored in
+#' `"SNAKE_CASE"`.)
 #'
-#' @param file a character string giving the name of the file to load.
+#' @param file A character string giving the name of the file to load.
 #'
-#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate amount
+#' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
 #'
-#' @param processingLog if provided, the action item to be stored in the log.
+#' @param processingLog If provided, the action item to be stored in the log.
 #' (Typically only provided for internal calls; the default that it provides is
 #' better for normal calls by a user.)
 #'
@@ -981,7 +983,7 @@ argoDecodeFlags <- function(f) # local function
 #' Argo data are made available at several websites. A bit of detective
 #' work can be required to track down the data.
 #'
-#' Some servers provide  data for floats that surfaced in a given ocean
+#' Some servers provide data for floats that surfaced in a given ocean
 #' on a given day, the anonymous FTP server
 #' \code{ftp://usgodae.org/pub/outgoing/argo/geo/} being an example.
 #'
@@ -1165,7 +1167,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     res@data$time <- t0 + res@metadata$juld * 86400
     rm(list=c("t0s", "t0")) # no longer needed
 
-    res@metadata$juldQc <- if (maybeLC("JULD_QC", lc) %in% varNames)
+    res@metadata$juldQC <- if (maybeLC("JULD_QC", lc) %in% varNames)
         as.vector(ncdf4::ncvar_get(file, maybeLC("JULD_QC", lc))) else NULL
     varNames <- varNamesOmit(varNames, "JULD_QC")
     oceDebug(debug-1, "JULD_QC\n")
@@ -1202,7 +1204,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
                 list(unit=expression(degree*E), scale="") else list(unit=expression(degree*W), scale="")
     }
 
-    res@metadata$positionQc <- if (maybeLC("POSITION_QC", lc) %in% varNames)
+    res@metadata$positionQC <- if (maybeLC("POSITION_QC", lc) %in% varNames)
         as.vector(ncdf4::ncvar_get(file, maybeLC("POSITION_QC", lc))) else NULL
     varNames <- varNamesOmit(varNames, "POSITION_QC")
     oceDebug(debug-1, "POSITION_QC\n")
@@ -1377,13 +1379,15 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
             }
         }
     }
-    oceDebug(debug-1, "after processing stationParameters, flag names are: ",
+    oceDebug(debug, "after processing stationParameters, flag names are: ",
              paste(names(res@metadata$flags), collapse=" "), "\n")
     if (length(res@metadata$flags))
         names(res@metadata$flags) <- gsub("QC$", "", names(res@metadata$flags))
-    oceDebug(debug-1, "after trimming QC, flag names are: ",
+    oceDebug(debug, "after trimming QC, flag names are: ",
              paste(names(res@metadata$flags), collapse=" "), "\n")
     res@metadata$filename <- filename
+
+    #cat("@L1391 varnames: ", paste(sort(varNames), sep=" "), "\n")
 
     ## Now, insert any unprocessed items from varNames into metadata. We
     ## need to check for access failures because we get the error
@@ -1395,7 +1399,8 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     ## "HISTORY_START_PRES", "HISTORY_STOP_PRES",
     ## "HISTORY_PREVIOUS_VALUE", "HISTORY_QCTEST"
     for (name in varNames) {
-        oceDebug(debug, "about to try to insert \"", name, "\" into metadata\n", sep="")
+        ocename <- snakeToCamel(name, specialCases=c("QC"))
+        oceDebug(debug, "about to try to insert \"", name, "\" as \"", ocename, "\" into metadata\n", sep="")
         value <- NA
         o <- capture.output(
                             {
@@ -1423,15 +1428,11 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
             ## Trim leading/trailing whitespace, if it is a string
             if (is.character(value))
                 value <- trimString(value)
-            res@metadata[[name]] <- value
+            res@metadata[[ocename]] <- value
         }
     }
-
     ## Record a log item
-    res@processingLog <- if (is.character(file))
-        processingLogAppend(res@processingLog, paste("read.argo(\"", file, "\")", sep=""))
-    else processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    res <- initializeFlagScheme(res, "argo")
+    res@processingLog <- processingLogAppend(res@processingLog, paste("read.argo(file=\"", filename, "\")", sep=""))
     oceDebug(debug, "} # read.argo()\n", sep="", unindent=1)
     res
 }
@@ -1831,7 +1832,7 @@ setMethod(f="plot",
                   }
               }
               oceDebug(debug, "} # plot.argo()\n", unindent=1, style="bold")
-              invisible()
+              invisible(NULL)
           })
 
 ## DEVELOPERS: please pattern functions and documentation on the 'ctd' code, for uniformity.
@@ -1849,18 +1850,11 @@ setMethod(f="plot",
 #' @examples
 #' library(oce)
 #' data(argo)
-#' # 1. Default: set to NA any data that is not flagged with
-#' # code value 1 (meaning `"passed_all_tests"`)
-#' argoNew <- handleFlags(argo, flags=c(0, 2:9))
+#' argoNew <- handleFlags(argo)
 #' # Demonstrate replacement, looking at the second profile
-#' f <- argo[["salinityFlag"]][,2] # first column with a flag=4 entry
+#' f <- argo[["salinityFlag"]][,2]
 #' df <- data.frame(flag=f, orig=argo[["salinity"]][,2], new=argoNew[["salinity"]][,2])
 #' df[11:15,] # notice line 13
-#'
-#' # 2. A less restrictive case: focussing just on salinity,
-#' # retain only data with flags 1 (meaning `"passed_all_tests"`)
-#' # and 2 (`"probably_good"`).
-#' argoNew <- handleFlags(argo, flags=list(salinity=c(0, 3:9)))
 #'
 #' @author Dan Kelley
 #'

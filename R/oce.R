@@ -2298,7 +2298,7 @@ read.netcdf <- function(file, ...)
 #' box()
 #' oceAxis(1, logStyle="decade")
 #' oceAxis(2, logStyle="decade")
-#' 
+#'
 #' @author Dan Kelley
 oceAxis <- function(side, labels=TRUE, logStyle="r", ...)
 {
@@ -3276,6 +3276,10 @@ numberAsHMS <- function(t, default=0)
 #' [julianDay()], for example), and with the second column being the
 #' millisecond within that day. See reference 4.
 #'
+#' `"vms"` handles a convention used in the VMS operating system and
+#' for Modified Julian Day, in which `t` is the number of seconds
+#' past 1859-11-17T00:00:00 UTC. See reference 5.
+#'
 #' @param t an integer corresponding to a time, in a way that depends on
 #' `type`.
 #'
@@ -3303,11 +3307,13 @@ numberAsHMS <- function(t, default=0)
 #' see also Denbo, Donald W., and Nancy N. Soreide. \dQuote{EPIC.} Oceanography 9 (1996).
 #' https://doi.org/10.5670/oceanog.1996.10.
 #'
+#' 5. VMS times: https://en.wikipedia.org/wiki/Epoch_(computing)
+#'
 #' @examples
 #' numberAsPOSIXct(0)                     # unix time 0
 #' numberAsPOSIXct(1, type="matlab")      # matlab time 1
 #' numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day, zero hour UTC
-#' numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
+#' numberAsPOSIXct(cbind(2013, 1), type="yearday") # start of 2013
 #'
 #' ## Epic time, one hour into Canada Day of year 2018. In computing the
 #' ## Julian day, note that this starts at noon.
@@ -3320,7 +3326,7 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
     if (missing(type)) {
         type <- "unix"
     } else {
-        typeAllowed <- c("unix", "matlab", "gps", "argo", "excel", "ncep1", "ncep2", "sas", "spss", "yearday", "epic")
+        typeAllowed <- c("unix", "matlab", "gps", "argo", "excel", "ncep1", "ncep2", "sas", "spss", "yearday", "epic", "vms")
         type <- pmatch(type, typeAllowed, nomatch=NA)
         if (is.na(type))
             stop("only permitted type values are: \"", paste(typeAllowed, collapse="\", \""), "\".", sep="")
@@ -3335,7 +3341,7 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
     } else if (type == "yearday") {
         if (2 != ncol(t))
             stop("'t' must have two columns, one for year, the other for yearday")
-        return(ISOdatetime(t[, 1], 1, 1, 0, 0, 0, tz=tz) + 1 + t[, 2] * 24 * 3600)
+        return(ISOdatetime(t[, 1], 1, 1, 0, 0, 0, tz=tz) + (t[, 2] - 1) * 24 * 3600)
     } else if (type == "argo") {
         return(t * 86400 + as.POSIXct("1900-01-01 00:00:00", tz="UTC"))
     } else if (type == "excel") {
@@ -3394,6 +3400,8 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
             stop("for epic times, 't' must be a two-column matrix, with first column the julian day, and second the millisecond within that day")
         r <- do_epic_time_to_ymdhms(t[,1], t[,2])
         t <- ISOdatetime(r$year, r$month, r$day, r$hour, r$minute, r$second, tz=tz)
+    } else if (type == "vms") {
+        t <- as.POSIXct(t, origin="1858-11-17", tz=tz)
     } else {
         stop("unknown type '", type, "'")
     }
@@ -3536,7 +3544,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     ## then adjust 'new' appropriately.
     par(usr=opar$usr, mai=opar$mai, cex=opar$cex, lwd=opar$lwd, lty=opar$lty, bg=opar$bg)
     oceDebug(debug, "} # plotInset()\n", unindent=1)
-    invisible()
+    invisible(NULL)
 }
 
 

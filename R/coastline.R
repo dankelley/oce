@@ -591,7 +591,7 @@ setMethod(f="plot",
                   mapPlot(x[["longitude"]], x[["latitude"]], projection=projection,
                           longitudelim=longitudelim, latitudelim=latitudelim,
                           bg=col, col=if (missing(fill)) "lightgray" else fill, border=border, debug=debug-1)
-                  return(invisible())
+                  return(invisible(NULL))
               }
               if (!missing(clongitude))
                   if (clongitude > 180) clongitude <- clongitude - 360
@@ -639,7 +639,7 @@ setMethod(f="plot",
                           projection=projection,
                           debug=debug-1, ...)
                   oceDebug(debug, "} # plot.coastline()\n", unindent=1)
-                  return(invisible())
+                  return(invisible(NULL))
               }
               geographical <- round(geographical)
               if (geographical < 0 || geographical > 3)
@@ -851,7 +851,7 @@ setMethod(f="plot",
               ##box()
               oceDebug(debug, "par('usr')=", par('usr'), "\n")
               oceDebug(debug, "} # plot.coastline()\n", unindent=1)
-              invisible()
+              invisible(NULL)
           })
 
 #' Download a coastline File

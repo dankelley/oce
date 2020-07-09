@@ -405,7 +405,7 @@ setMethod(f="plot",
               ##box()
               oceDebug(debug, "par('usr')=", par('usr'), "\n")
               oceDebug(debug, "} # plot.gps()\n", unindent=1)
-              invisible()
+              invisible(NULL)
           })
 
 

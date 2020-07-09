@@ -2,12 +2,14 @@ language: r
 warnings_are_errors: false
 sudo: required
 dist: trusty
+cache: packages
 after_success: travis_wait 30 Rscript -e 'library(covr); codecov(type="all")'
 
 addons:
     apt:
         packages:
             - libgdal-dev
+            - libudunits2-dev
             - libproj-dev
             - libnetcdf-dev
             - netcdf-bin

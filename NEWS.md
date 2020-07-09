@@ -2,6 +2,9 @@
 
 ## 1.2.1
 
+* Update `data(argo)` to have camelCase names.
+* Update `read.argo()` to use camelCase in all metadata
+* Add `snakeToCamel()` to convert variable names in e.g. argo netcdf files.
 * Add `read.ctd.odv()`, in preliminary form.
 * Add `addSpine()`.
 * Update reader-oriented website on github.

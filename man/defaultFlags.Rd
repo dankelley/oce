@@ -28,7 +28,9 @@ as listed below.
 \details{
 \itemize{
 \item for \code{argo}, the default is
-\code{c(0,2,3,4,7,8,9)}, i.e. all flags except \code{passed_all_tests}.
+\code{c(0,3,4,6,7,9)}, meaning to act upon \code{not_assessed} (0), \code{probably_bad} (3),
+\code{bad} (4), \code{not_used_6} (6), \code{not_used_7} (7) and \code{missing} (9).  See Section
+3.2.2 of Carval et al. (2019).
 \item for \code{BODC}, the default is
 \code{c(0,2,3,4,5,6,7,8,9)}, i.e. all flags except \code{good}.
 \item for \code{DFO}, the default is
@@ -37,6 +39,13 @@ as listed below.
 \code{c(1,3,4,5,6,7,8,9)}, i.e. all flags except \code{no_problems_noted}.
 \item for \verb{WHP ctd}, the default is
 \code{c(1,3,4,5,6,7,9)}, i.e. all flags except \code{acceptable}.
+}
+}
+\references{
+\itemize{
+\item Carval, Thierry, Bob Keeley, Yasushi Takatsuki, Takashi Yoshida, Stephen Loch Loch,
+Claudia Schmid, and Roger Goldsmith. Argo User’s Manual V3.3. Ifremer, 2019.
+\url{https://doi.org/10.13155/29825}.
 }
 }
 \seealso{

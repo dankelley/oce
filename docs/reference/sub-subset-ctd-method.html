@@ -296,9 +296,9 @@ The first item found (if any) is then updated to hold the value <code>result</co
 #&gt; 
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2018-11-14 20:03:47 UTC: `create 'ctd' object`
-#&gt;     - 2018-11-14 20:03:47 UTC: `read.ctd.sbe(file = file, debug = 10, processingLog = processingLog)`
-#&gt;     - 2018-11-14 20:03:47 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`</div><div class='input'><span class='co'># Move the CTD profile a nautical mile north.</span>
+#&gt;     - 2018-11-14 20:03:47.049 UTC: `create 'ctd' object`
+#&gt;     - 2018-11-14 20:03:47.093 UTC: `read.ctd.sbe(file = file, debug = 10, processingLog = processingLog)`
+#&gt;     - 2018-11-14 20:03:47.102 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`</div><div class='input'><span class='co'># Move the CTD profile a nautical mile north.</span>
 <span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"latitude"</span>]] <span class='kw'>&lt;-</span> <span class='fl'>1</span>/<span class='fl'>60</span> + <span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"latitude"</span>]] <span class='co'># acts in metadata</span>
 <span class='co'># Increase the salinity by 0.01.</span>
 <span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]] <span class='kw'>&lt;-</span> <span class='fl'>0.01</span> + <span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]] <span class='co'># acts in data</span>
@@ -329,9 +329,9 @@ The first item found (if any) is then updated to hold the value <code>result</co
 #&gt; 
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2018-11-14 20:03:47 UTC: `create 'ctd' object`
-#&gt;     - 2018-11-14 20:03:47 UTC: `read.ctd.sbe(file = file, debug = 10, processingLog = processingLog)`
-#&gt;     - 2018-11-14 20:03:47 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`</div><div class='input'>
+#&gt;     - 2018-11-14 20:03:47.049 UTC: `create 'ctd' object`
+#&gt;     - 2018-11-14 20:03:47.093 UTC: `read.ctd.sbe(file = file, debug = 10, processingLog = processingLog)`
+#&gt;     - 2018-11-14 20:03:47.102 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

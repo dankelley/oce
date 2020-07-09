@@ -17,6 +17,7 @@ mapPlot(
   clip = TRUE,
   type = "polygon",
   axes = TRUE,
+  axisStyle = 1,
   cex,
   cex.axis = 1,
   mgp = c(0, 0.5, 0),
@@ -91,10 +92,17 @@ that domain.}
 \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
 overlain with line segments.}
 
-\item{axes}{logical value indicating whether to draw longitude and latitude
+\item{axes}{a logical value indicating whether to draw longitude and latitude
 values in the lower and left margin, respectively.  This may not work well
-for some projections or scales.  See also \code{lonlabels} and \code{latlabels}, which
-offer more granular control of labelling.}
+for some projections or scales.  See also \code{axisStyle}, \code{lonlabels}
+and \code{latlabels}, which offer more granular control of labelling.}
+
+\item{axisStyle}{an integer specifying the style of labels for the numbers
+on axes.  The choices are:
+0 for signed numbers without labels;
+1 (the default) for unsigned numbers followed by letters that indicate the hemisphere;
+2 for signed numbers with a degree symbol to the right; and
+3 for unsigned numbers with a degree symbol to the right.}
 
 \item{cex}{character expansion factor for plot symbols,
 used if \code{type='p'} or any other value that yields symbols.}

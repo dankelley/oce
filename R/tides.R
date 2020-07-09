@@ -213,7 +213,7 @@ setMethod(f="summary",
                   printCoefmat(f, digits=3)
               }
               processingLogShow(object)
-              invisible()
+              invisible(NULL)
           })
 
 #' Extract Something From a Tidem Object
