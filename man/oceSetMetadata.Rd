@@ -24,6 +24,11 @@ in an overly verbose processing log; in which case, it might helpful
 to use \link{processingLog<-} to add a summary entry to the object's
 processing log.}
 }
+\value{
+An \linkS4class{oce} object, the \code{metadata} slot of which has
+been altered either by adding a new item or modifying an existing
+item.
+}
 \description{
 Create a copy of an object in which some element of its
 \code{metadata} slot has been altered, or added.
