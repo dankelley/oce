@@ -92,6 +92,10 @@ oceDeleteData <- function(object, name)
 #' in an overly verbose processing log; in such cases, it might help
 #' to add a note by e.g. `processingLog(a) <- "QC (memo dek-2018-01/31)"`
 #'
+#' @return An [oce-class] object, the `data` slot of which has
+#' been altered either by adding a new item or modifying an existing
+#' item.
+#'
 #' @examples
 #' data(ctd)
 #' Tf <- swTFreeze(ctd)
@@ -343,6 +347,10 @@ oceDeleteMetadata <- function(object, name)
 #' in an overly verbose processing log; in which case, it might helpful
 #' to use [processingLog<-] to add a summary entry to the object's
 #' processing log.
+#'
+#' @return An [oce-class] object, the `metadata` slot of which has
+#' been altered either by adding a new item or modifying an existing
+#' item.
 #'
 #' @examples
 #' # Add an estimate of MLD (mixed layer depth) to a ctd object
