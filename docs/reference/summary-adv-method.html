@@ -198,7 +198,7 @@
 #&gt; * Instrument:             vector, serial number ``(serial number redacted)``
 #&gt; * Source filename:        ``(file name redacted)``
 #&gt; * Location:               47.87943 N ,  -69.72533 E 
-#&gt; * Time ranges from 2008-07-01 00:00:00.07 to 2008-07-01 00:00:59.955 with 480 samples and mean increment 0.1250001 s
+#&gt; * Time ranges from 2008-07-01 00:00:00 to 2008-07-01 00:00:59 with 480 samples and mean increment 0.1250001 s
 #&gt; * Data Overview
 #&gt; 
 #&gt;                                Min.       Mean       Max.  Dim. NAs OriginalName
@@ -217,13 +217,13 @@
 #&gt; 
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2015-12-23 17:53:39.605 UTC: `read.oce(file = "/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec",     from = as.POSIXct("2008-06-25 00:00:00", tz = "UTC"), to = as.POSIXct("2008-07-06 00:00:00",         tz = "UTC"), latitude = 47.87943, longitude = -69.72533)`
-#&gt;     - 2015-12-23 17:53:54.476 UTC: `retime(x = m05VectorBeam, a = 0.58, b = 6.3892e-07, t0 = as.POSIXct("2008-07-01 00:00:00",     tz = "UTC"))`
-#&gt;     - 2015-12-23 17:53:55.474 UTC: `subset(x, subset=as.POSIXct("2008-06-25 13:00:00", tz = "UTC") &lt;= time &amp; time &lt;=      as.POSIXct("2008-07-03 00:50:00", tz = "UTC"))`
-#&gt;     - 2015-12-23 17:53:55.475 UTC: `oceEdit(x = m05VectorBeam, item = "transformationMatrix", value = rbind(c(11033,     -5803, -5238), c(347, -9622, 9338), c(-1418, -1476, -1333))/4096,     reason = "Nortek email 2011-02-14", person = "DEK")`
-#&gt;     - 2015-12-23 17:53:55.902 UTC: `use aquadoppHR heading; despike own pitch and roll`
-#&gt;     - 2015-12-23 17:54:11.754 UTC: `beamToXyzAdv(x = x)`
-#&gt;     - 2015-12-23 17:54:34.827 UTC: `xyzToEnu(x, declination=-18.099, horizontalCase=TRUE, sensorOrientiation=upward, debug=0)`</div><div class='input'>
+#&gt;     - 2015-12-23 17:53:39 UTC: `read.oce(file = "/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec",     from = as.POSIXct("2008-06-25 00:00:00", tz = "UTC"), to = as.POSIXct("2008-07-06 00:00:00",         tz = "UTC"), latitude = 47.87943, longitude = -69.72533)`
+#&gt;     - 2015-12-23 17:53:54 UTC: `retime(x = m05VectorBeam, a = 0.58, b = 6.3892e-07, t0 = as.POSIXct("2008-07-01 00:00:00",     tz = "UTC"))`
+#&gt;     - 2015-12-23 17:53:55 UTC: `subset(x, subset=as.POSIXct("2008-06-25 13:00:00", tz = "UTC") &lt;= time &amp; time &lt;=      as.POSIXct("2008-07-03 00:50:00", tz = "UTC"))`
+#&gt;     - 2015-12-23 17:53:55 UTC: `oceEdit(x = m05VectorBeam, item = "transformationMatrix", value = rbind(c(11033,     -5803, -5238), c(347, -9622, 9338), c(-1418, -1476, -1333))/4096,     reason = "Nortek email 2011-02-14", person = "DEK")`
+#&gt;     - 2015-12-23 17:53:55 UTC: `use aquadoppHR heading; despike own pitch and roll`
+#&gt;     - 2015-12-23 17:54:11 UTC: `beamToXyzAdv(x = x)`
+#&gt;     - 2015-12-23 17:54:34 UTC: `xyzToEnu(x, declination=-18.099, horizontalCase=TRUE, sensorOrientiation=upward, debug=0)`</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

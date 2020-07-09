@@ -168,6 +168,7 @@ or contours to an existing map.</p>
   <span class='kw'>clip</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"polygon"</span>,
   <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>axisStyle</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='no'>cex</span>,
   <span class='kw'>cex.axis</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='kw'>mgp</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0</span>),
@@ -268,10 +269,19 @@ overlain with line segments.</p></td>
     </tr>
     <tr>
       <th>axes</th>
-      <td><p>logical value indicating whether to draw longitude and latitude
+      <td><p>a logical value indicating whether to draw longitude and latitude
 values in the lower and left margin, respectively.  This may not work well
-for some projections or scales.  See also <code>lonlabels</code> and <code>latlabels</code>, which
-offer more granular control of labelling.</p></td>
+for some projections or scales.  See also <code>axisStyle</code>, <code>lonlabels</code>
+and <code>latlabels</code>, which offer more granular control of labelling.</p></td>
+    </tr>
+    <tr>
+      <th>axisStyle</th>
+      <td><p>an integer specifying the style of labels for the numbers
+on axes.  The choices are:
+0 for signed numbers without labels;
+1 (the default) for unsigned numbers followed by letters that indicate the hemisphere;
+2 for signed numbers with a degree symbol to the right; and
+3 for unsigned numbers with a degree symbol to the right.</p></td>
     </tr>
     <tr>
       <th>cex</th>

@@ -40,7 +40,8 @@
 
 
 <meta property="og:title" content="Set Something in an oce metadata Slot — oceSetMetadata" />
-<meta property="og:description" content="Set Something in an oce metadata Slot" />
+<meta property="og:description" content="Create a copy of an object in which some element of its
+metadata slot has been altered, or added." />
 
 
 
@@ -144,7 +145,8 @@
     </div>
 
     <div class="ref-description">
-    <p>Set Something in an oce metadata Slot</p>
+    <p>Create a copy of an object in which some element of its
+<code>metadata</code> slot has been altered, or added.</p>
     </div>
 
     <pre class="usage"><span class='fu'>oceSetMetadata</span>(<span class='no'>object</span>, <span class='no'>name</span>, <span class='no'>value</span>, <span class='kw'>note</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
@@ -158,7 +160,7 @@
     </tr>
     <tr>
       <th>name</th>
-      <td><p>String indicating the name of the item to be set.</p></td>
+      <td><p>String indicating the name of the <code>metadata</code> item to be set.</p></td>
     </tr>
     <tr>
       <th>value</th>
@@ -168,13 +170,14 @@
       <th>note</th>
       <td><p>Either empty (the default), a character string, or <code>NULL</code>,
 to control additions made to the processing log of the return value. If
-<code>note=""</code> then the an entry is created based on deparsing the function call.
+<code>note=""</code> then an entry is created based on deparsing the function call.
 If <code>note</code> is a non-empty string, then that string gets added added
 to the processing log. Finally, if <code>note=NULL</code>, then nothing is
 added to the processing log.  This last form is useful in cases where
 <code>oceSetData</code> is to be called many times in succession, resulting
-in an overly verbose processing log; in such cases, it might help
-to add a note by e.g. <code>processingLog(a) &lt;- "QC (memo dek-2018-01/31)"</code></p></td>
+in an overly verbose processing log; in which case, it might helpful
+to use processingLog&lt;- to add a summary entry to the object's
+processing log.</p></td>
     </tr>
     </table>
 
@@ -185,6 +188,13 @@ to add a note by e.g. <code>processingLog(a) &lt;- "QC (memo dek-2018-01/31)"</c
 <code><a href='oceGetMetadata.html'>oceGetMetadata</a>()</code>,
 <code><a href='oceRenameMetadata.html'>oceRenameMetadata</a>()</code></p></div>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># Add an estimate of MLD (mixed layer depth) to a ctd object</span>
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
+<span class='no'>ctdWithMLD</span> <span class='kw'>&lt;-</span> <span class='fu'>oceSetMetadata</span>(<span class='no'>ctd</span>, <span class='st'>"MLD"</span>, <span class='fl'>3</span>)
+<span class='no'>ctdWithMLD</span><span class='kw'>[[</span><span class='st'>"MLD"</span>]] <span class='co'># 3</span></div><div class='output co'>#&gt; [1] 3</div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

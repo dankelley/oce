@@ -192,42 +192,43 @@
 #&gt; 
 #&gt; * Source:              "/Users/kelley/git/oce/create_data/argo/6900388_prof.nc"
 #&gt; * id:                  "6900388"
-#&gt; * Profiles:            210 delayed; 13 adjusted; 0 realtime
-#&gt; * Time ranges from 2005-10-29 13:57:42 to 2011-11-27 05:11:40 with 223 samples and mean increment 9.998355 day
+#&gt; * Profiles:            210 delayed; 0 adjusted; 13 realtime
+#&gt; * Time ranges from 2005-10-29 13:57:42 to 2011-11-27 17:58:39 with 223 samples and mean increment 10.00075 day
 #&gt; * Data Overview
 #&gt; 
 #&gt;                                             Min.    Mean    Max.   Dim. NAs        OriginalName
 #&gt;     latitude [°N]                         48.743  56.715  64.335    223   0            LATITUDE
 #&gt;     longitude [°E]                        -60.52 -37.077 -21.385    223   0           LONGITUDE
 #&gt;     pressure [dbar]                          3.5  521.31  6534.6 56x223 106                PRES
-#&gt;     pressureAdjusted [dbar]                  3.5  519.53  1778.9 56x223 161       PRES_ADJUSTED
+#&gt;     pressureAdjusted [dbar]                  3.6  520.34  1778.9 56x223 874       PRES_ADJUSTED
 #&gt;     pressureAdjustedError [dbar]             2.4     2.4     2.4 56x223 874 PRES_ADJUSTED_ERROR
 #&gt;     salinity [PSS-78]                          0  34.911  47.899 56x223 106                PSAL
-#&gt;     salinityAdjusted [PSS-78]              32.85  34.936  35.842 56x223 140       PSAL_ADJUSTED
+#&gt;     salinityAdjusted [PSS-78]              32.85  34.935  35.842 56x223 840       PSAL_ADJUSTED
 #&gt;     salinityAdjustedError [PSS-78]          0.01    0.01    0.01 56x223 840 PSAL_ADJUSTED_ERROR
 #&gt;     temperature [°C, ITS-90]              -1.564  6.1216  55.997 56x223 106                TEMP
-#&gt;     temperatureAdjusted [°C, ITS-90]      -1.564  6.1016  14.914 56x223 126       TEMP_ADJUSTED
+#&gt;     temperatureAdjusted [°C, ITS-90]      -1.564  6.0916  14.914 56x223 837       TEMP_ADJUSTED
 #&gt;     temperatureAdjustedError [°C, ITS-90]  0.002   0.002   0.002 56x223 837 TEMP_ADJUSTED_ERROR
 #&gt; 
 #&gt; * Data-quality Flag Scheme
 #&gt; 
 #&gt;     name    "argo"
-#&gt;     mapping list(not_assessed=0, passed_all_tests=1, probably_good=2, probably_bad=3, bad=4, averaged=7, interpolated=8, missing=9)
+#&gt;     mapping list(not_assessed=0, passed_all_tests=1, probably_good=2, probably_bad=3, bad=4, changed=5, not_used_6=6, not_used_7=7, estimated=8, missing=9)
+#&gt;     default c(0, 3, 4, 9)
 #&gt; 
 #&gt; * Data-quality Flags
 #&gt; 
 #&gt;     pressure:            "1" 12327, "4" 55
-#&gt;     pressureAdjusted:    "2" 12327, "4" 55
+#&gt;     pressureAdjusted:    "2" 11614
 #&gt;     salinity:            "1" 12348, "4" 34
-#&gt;     salinityAdjusted:    "1" 700, "2" 11648, "4" 34
+#&gt;     salinityAdjusted:    "2" 11648
 #&gt;     temperature:         "1" 12362, "4" 20
-#&gt;     temperatureAdjusted: "1" 711, "2" 11651, "4" 20
+#&gt;     temperatureAdjusted: "2" 11651
 #&gt; 
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2019-04-13 18:40:22.034 UTC: `create 'argo' object`
-#&gt;     - 2019-04-13 18:40:22.238 UTC: `read.argo(file = file)`
-#&gt;     - 2019-04-13 18:40:22.239 UTC: `initializeFlagScheme(object, name="argo", mapping=list(not_assessed=0,passed_all_tests=1,probably_good=2,probably_bad=3,bad=4,averaged=7,interpolated=8,missing=9))`</div><div class='input'>
+#&gt;     - 2020-06-24 16:56:43 UTC: `create 'argo' object`
+#&gt;     - 2020-06-24 16:56:43 UTC: `initializeFlagScheme(object, name="argo", mapping=list(not_assessed=0,passed_all_tests=1,probably_good=2,probably_bad=3,bad=4,changed=5,not_used_6=6,not_used_7=7,estimated=8,missing=9)), default=c(0,3,4,9))`
+#&gt;     - 2020-06-24 16:56:43 UTC: `read.argo(file="/Users/kelley/git/oce/create_data/argo/6900388_prof.nc")`</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
