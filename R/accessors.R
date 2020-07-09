@@ -51,8 +51,11 @@ oceDeleteData <- function(object, name)
 
 #' Set Something in an oce data Slot
 #'
-#' @details
-#' There are three possibilities for `unit`:
+#' Create a copy of an object in which some element of its
+#' `data` slot has been altered, or added.
+#'
+#' The trickest argument to set is the `unit`.  There are three
+#' possibilitis for this:
 #' 1. `unit` is a named or unnamed [list()] that contains two items.
 #' If the list is named, the names must be
 #' `unit` and `scale`. If the list is unnamed, the stated names are assigned
@@ -69,7 +72,7 @@ oceDeleteData <- function(object, name)
 #'
 #' @param object an [oce-class] object.
 #'
-#' @param name String indicating the name of the item to be set.
+#' @param name String indicating the name of the `data` item to be set.
 #'
 #' @param value Value for the item.
 #'
@@ -321,21 +324,32 @@ oceDeleteMetadata <- function(object, name)
 
 #' Set Something in an oce metadata Slot
 #'
+#' Create a copy of an object in which some element of its
+#' `metadata` slot has been altered, or added.
+#'
 #' @param object an [oce-class] object.
 #'
-#' @param name String indicating the name of the item to be set.
+#' @param name String indicating the name of the `metadata` item to be set.
 #'
 #' @param value Value for the item.
 #'
 #' @param note Either empty (the default), a character string, or `NULL`,
 #' to control additions made to the processing log of the return value. If
-#' `note=""` then the an entry is created based on deparsing the function call.
+#' `note=""` then an entry is created based on deparsing the function call.
 #' If `note` is a non-empty string, then that string gets added added
 #' to the processing log. Finally, if `note=NULL`, then nothing is
 #' added to the processing log.  This last form is useful in cases where
 #' `oceSetData` is to be called many times in succession, resulting
-#' in an overly verbose processing log; in such cases, it might help
-#' to add a note by e.g. `processingLog(a) <- "QC (memo dek-2018-01/31)"`
+#' in an overly verbose processing log; in which case, it might helpful
+#' to use [processingLog<-] to add a summary entry to the object's
+#' processing log.
+#'
+#' @examples
+#' # Add an estimate of MLD (mixed layer depth) to a ctd object
+#' library(oce)
+#' data(ctd)
+#' ctdWithMLD <- oceSetMetadata(ctd, "MLD", 3)
+#' ctdWithMLD[["MLD"]] # 3
 #'
 #' @author Dan Kelley
 #'
