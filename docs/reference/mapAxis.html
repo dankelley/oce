@@ -151,6 +151,7 @@
   <span class='kw'>side</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>2</span>,
   <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>axisStyle</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='kw'>tick</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>line</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
   <span class='kw'>pos</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
@@ -194,6 +195,16 @@ but not numbers, set <code>cex.axis=0</code>.</p></td>
     <tr>
       <th>latitude</th>
       <td><p>similar to <code>longitude</code> but for latitude.</p></td>
+    </tr>
+    <tr>
+      <th>axisStyle</th>
+      <td><p>an integer specifying the style of labels for the numbers
+on axes.  The choices are:
+1 for signed numbers without additional labels;
+2 (the default) for unsigned numbers followed by letters indicating the hemisphere;
+3 for signed numbers followed by a degree sign;
+4 for unsigned numbers followed by a degree sign; and
+5 for signed numbers followed by a degree sign and letters indicating the hemisphere.</p></td>
     </tr>
     <tr>
       <th>tick</th>

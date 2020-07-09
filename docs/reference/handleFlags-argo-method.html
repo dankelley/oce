@@ -287,11 +287,9 @@ handled for each data item. If not supplied, this defaults to the value of
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>argo</span>)
-<span class='co'># 1. Default: set to NA any data that is not flagged with</span>
-<span class='co'># code value 1 (meaning `"passed_all_tests"`)</span>
-<span class='no'>argoNew</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='handleFlags.html'>handleFlags</a></span>(<span class='no'>argo</span>, <span class='kw'>flags</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>2</span>:<span class='fl'>9</span>))
+<span class='no'>argoNew</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='handleFlags.html'>handleFlags</a></span>(<span class='no'>argo</span>)
 <span class='co'># Demonstrate replacement, looking at the second profile</span>
-<span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='no'>argo</span><span class='kw'>[[</span><span class='st'>"salinityFlag"</span>]][,<span class='fl'>2</span>] <span class='co'># first column with a flag=4 entry</span>
+<span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='no'>argo</span><span class='kw'>[[</span><span class='st'>"salinityFlag"</span>]][,<span class='fl'>2</span>]
 <span class='no'>df</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>flag</span><span class='kw'>=</span><span class='no'>f</span>, <span class='kw'>orig</span><span class='kw'>=</span><span class='no'>argo</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]][,<span class='fl'>2</span>], <span class='kw'>new</span><span class='kw'>=</span><span class='no'>argoNew</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]][,<span class='fl'>2</span>])
 <span class='no'>df</span>[<span class='fl'>11</span>:<span class='fl'>15</span>,] <span class='co'># notice line 13</span></div><div class='output co'>#&gt;    flag   orig    new
 #&gt; 11    1 35.207 35.207
@@ -299,10 +297,7 @@ handled for each data item. If not supplied, this defaults to the value of
 #&gt; 13    4 35.209     NA
 #&gt; 14    1 35.207 35.207
 #&gt; 15    1 35.207 35.207</div><div class='input'>
-<span class='co'># 2. A less restrictive case: focussing just on salinity,</span>
-<span class='co'># retain only data with flags 1 (meaning `"passed_all_tests"`)</span>
-<span class='co'># and 2 (`"probably_good"`).</span>
-<span class='no'>argoNew</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='handleFlags.html'>handleFlags</a></span>(<span class='no'>argo</span>, <span class='kw'>flags</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>salinity</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>3</span>:<span class='fl'>9</span>)))</div></pre>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

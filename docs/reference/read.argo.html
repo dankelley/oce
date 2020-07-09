@@ -40,8 +40,8 @@
 
 
 <meta property="og:title" content="Read an Argo Data File — read.argo" />
-<meta property="og:description" content="read.argo is used to read an Argo file, producing an object of type
-argo. The file must be in the ARGO-style NetCDF format described at
+<meta property="og:description" content="read.argo is used to read an Argo file, producing an argo object.
+The file must be in the ARGO-style NetCDF format described
 in the Argo documentation (see references 2 and 3)." />
 
 
@@ -146,8 +146,8 @@ in the Argo documentation (see references 2 and 3)." />
     </div>
 
     <div class="ref-description">
-    <p><code>read.argo</code> is used to read an Argo file, producing an object of type
-<code>argo</code>. The file must be in the ARGO-style NetCDF format described at
+    <p><code>read.argo</code> is used to read an Argo file, producing an <a href='argo-class.html'>argo</a> object.
+The file must be in the ARGO-style NetCDF format described
 in the Argo documentation (see references 2 and 3).</p>
     </div>
 
@@ -158,16 +158,16 @@ in the Argo documentation (see references 2 and 3).</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>file</th>
-      <td><p>a character string giving the name of the file to load.</p></td>
+      <td><p>A character string giving the name of the file to load.</p></td>
     </tr>
     <tr>
       <th>debug</th>
-      <td><p>a flag that turns on debugging.  Set to 1 to get a moderate amount
+      <td><p>A flag that turns on debugging.  Set to 1 to get a moderate amount
 of debugging information, or to 2 to get more.</p></td>
     </tr>
     <tr>
       <th>processingLog</th>
-      <td><p>if provided, the action item to be stored in the log.
+      <td><p>If provided, the action item to be stored in the log.
 (Typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.)</p></td>
     </tr>
@@ -182,17 +182,10 @@ better for normal calls by a user.)</p></td>
     <p>An <a href='argo-class.html'>argo</a> object.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Items are inferred from the data file in a straightforward way, using
-<code><a href='https://rdrr.io/pkg/ncdf4/man/ncvar_get.html'>ncdf4::ncvar_get()</a></code>, converting from one-column matrices
-to vectors, and trimming leading and trailing blank space in character
-values, using <code><a href='trimString.html'>trimString()</a></code>.</p>
-<p>Items are renamed from the argo ('snake case') forms to oce ('camel
-case') forms with <code><a href='argoNames2oceNames.html'>argoNames2oceNames()</a></code>. For example,
-<code>FIRMWARE_VERSION</code> in the data file is renamed as
-<code>firmwareVersion</code> in the return value.
-Note that some files use upper-case for items, while other files
-use lower-case for the same things; <code>read.argo</code> attempts
-to ignore this variation.</p>
+    <p>Items are extracted from the data file using
+<code><a href='https://rdrr.io/pkg/ncdf4/man/ncvar_get.html'>ncdf4::ncvar_get()</a></code>, after which one-column matrices
+are converted to vectors, and leading and trailing blank space in character
+values is removed using <code><a href='trimString.html'>trimString()</a></code>.</p>
 <p>See the Argo documentation (see references 2 and 3) for some details on what files contain.
 Many items listed in section 2.2.3 of reference 3 are read from the
 file and stored in the <code>metadata</code> slot, with the exception of
@@ -201,10 +194,8 @@ file and stored in the <code>metadata</code> slot, with the exception of
 <p>The following global attributes stored within the netcdf file are stored in the
 <code>metadata</code> slot: <code>title</code>, <code>institution</code>, <code>source</code>,
 <code>history</code>, <code>references</code>, <code>userManualVersion</code>, <code>conventions</code>,
-and <code>featureType</code>. These names are identical to those in the netcdf
-file, except that <code>userManualVersion</code> is named
-<code>user_manual_version</code> in the file, and <code>conventions</code> is
-named <code>Conventions</code> in the file.</p>
+and <code>featureType</code>. These names are derived from those in the netcdf
+file, as explained in the &#8220;Variable renaming convention&#8221; section below.</p>
 <p>It is assumed that the profile data are as listed in the NetCDF variable
 called <code>STATION_PARAMETERS</code>. Each item can have variants, as
 described in Sections 2.3.4 of reference 3.
@@ -212,27 +203,42 @@ For example, if <code>"PRES"</code> is found in <code>STATION_PARAMETERS</code>,
 then <code>PRES</code> (pressure) data are sought in the file, along with
 <code>PRES_QC</code>, <code>PRES_ADJUSTED</code>, <code>PRES_ADJUSTED_QC</code>, and
 <code>PRES_ERROR</code>. The same pattern works for other profile data. The variables
-are stored with different names within the resultant <a href='argo-class.html'>argo</a>
-object, to match with <code>oce</code> conventions. Thus, <code>PRES</code> gets renamed
-<code>pressure</code>, while <code>PRES_ADJUSTED</code> gets renamed <code>pressureAdjusted</code>,
-and <code>PRES_ERROR</code> gets renamed <code>pressureError</code>; all of these are
-stored in the <code>data</code> slot. Meanwhile, the quality-control flags
-<code>PRES_QC</code> and <code>PRES_ADJUSTED_QC</code> are stored as <code>pressure</code>
-and <code>pressureAdjusted</code> in the <code>metadata$flags</code> slot.</p>
-<p>Once a predefined series of items are inferred and stored in either the
-<code>metadata</code> or <code>data</code> slot, <code>read.argo</code> then reads all
-non-empty variables in the file, storing them in the <code>metadata</code>
-slot, using with the original ('snake case') name that is used in
-the data file. (Note that the sample dataset accessed with <code><a href='https://rdrr.io/r/utils/data.html'>data(argo)</a></code>
-lacks metadata items with names starting with <code>HISTORY_</code>, because
-those are zero-length in the source file.)</p>
+are stored with names created as explained in the
+&#8220;Variable renaming convention&#8221; section below. Note that
+flags, which are stored variables ending in <code>"_QC"</code> in the netcdf
+fil, are stored in the <code>flags</code> item within the <code>metadata</code> slot
+of the returned object; thus, for example,
+<code>PRES_QC</code> is stored as <code>pressure</code> in <code>flags</code>.</p>
+    <h2 class="hasAnchor" id="variable-renaming-convention"><a class="anchor" href="#variable-renaming-convention"></a>Variable renaming convention</h2>
+
+    
+
+<p>Argo netcdf files employ a <code>"SNAKE_CASE"</code> naming scheme (sometimes
+using lower case) that is inconsistent with the <code>"camelCase"</code> scheme
+used in oce. Since argo objects are just a small part of oce, a decision
+was made to rename argo items. For example, <code>"CYCLE_NUMBER"</code> in the netcdf file
+becomes <code>"cycleNumber"</code> in the oce object returned by <code>read.argo</code>.
+The conversion for objects in the <code>data</code> slot often also involves
+expanding on argo abbreviations, e.g. <code>"PSAL"</code> becomes <code>"salinity"</code>.
+The renaming work is carried out with <code><a href='argoNames2oceNames.html'>argoNames2oceNames()</a></code> for
+handles both name expansion for several dozen special cases,
+and with <code><a href='snakeToCamel.html'>snakeToCamel()</a></code> with the <code>specialCase</code> argument
+set to <code>"QC"</code>. While this results in variable names that should make
+sense in the general oce context (where, for example, salinity is expected
+to be stored in a variable named <code>"salinity"</code>), it may be confusing
+to argo experts who are just starting to use oce.  Such people might
+find it helpful to use e.g. <code><a href='https://rdrr.io/r/base/sort.html'>sort(names(x[["metadata"]]))</a></code> to get a list
+of all items in the <code>metadata</code> slot (or similar with <code>"data"</code>), since working
+in reverse may be easier than simply guessing at what names oce has chosen.
+(Note that prior to 2020 June 24, some metadata items were stored in
+<code>"SNAKE_CASE"</code>.)</p>
     <h2 class="hasAnchor" id="data-sources"><a class="anchor" href="#data-sources"></a>Data sources</h2>
 
     
 
 <p>Argo data are made available at several websites. A bit of detective
 work can be required to track down the data.</p>
-<p>Some servers provide  data for floats that surfaced in a given ocean
+<p>Some servers provide data for floats that surfaced in a given ocean
 on a given day, the anonymous FTP server
 <code>ftp://usgodae.org/pub/outgoing/argo/geo/</code> being an example.</p>
 <p>Other servers provide data on a per-float basis. A complicating
