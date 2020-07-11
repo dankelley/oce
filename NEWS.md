@@ -1,17 +1,16 @@
 # oce (development version)
 
-## 1.2.1
+## 1.3.0
 
-* Update `data(argo)` to have camelCase names.
-* Update `read.argo()` to use camelCase in all metadata
+* Change `read.argo()` and `data(argo)` to use camelCase in all metadata.
 * Add `snakeToCamel()` to convert variable names in e.g. argo netcdf files.
-* Add `read.ctd.odv()`, in preliminary form.
+* Add `read.ctd.odv()`.
 * Add `addSpine()`.
-* Update reader-oriented website on github.
+* Update reader-oriented website on github using `pkgdown`.
 * Extend `read.ctd.sbe()` to read `.btl` files.
 * Extend `read.adp.rdi()` to read 38kHz RDI adp files.
 * Add `oceAxis()`.
-* Add `oce.plot.ts()`argument `logStyle`.
+* Add `oce.plot.ts()` argument `logStyle`.
 * Add `angle2hms()`.
 
 ## 1.2.0
