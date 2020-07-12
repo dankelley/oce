@@ -975,7 +975,7 @@ setValidity("adp",
 setMethod(f="subset",
           signature="adp",
           definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res <- x
               dots <- list(...)
               debug <- getOption("oceDebug")
@@ -988,14 +988,15 @@ setMethod(f="subset",
                       oceDebug(debug, "subsetting an adp by time\n")
                       if (length(grep("distance", subsetString)))
                           stop("cannot subset by both time and distance; split into multiple calls")
-                      keep <- eval(substitute(subset), x@data, parent.frame(2))
+                      keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   } else if (grepl("ensembleNumber", subsetString)) {
                       oceDebug(debug, "subsetting an adp by ensembleNumber\n")
                       if (length(grep("distance", subsetString)))
                           stop("cannot subset by both ensembleNumber and distance; split into multiple calls")
                       if (!"ensembleNumber" %in% names(x@metadata))
                           stop("cannot subset by ensembleNumber because this adp object lacks that information")
-                      keep <- eval(substitute(subset), x@metadata, parent.frame(2))
+                      ## FIXME: in other places, e.g. AllClass.R:350, we have parent.frame().  What is right?
+                      keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@metadata, enclos=parent.frame(2))
                   } else {
                       stop("internal coding error -- please report to developers")
                   }
@@ -1058,7 +1059,8 @@ setMethod(f="subset",
                   oceDebug(debug, "subsetting an adp by distance\n")
                   if (length(grep("time", subsetString)))
                       stop("cannot subset by both time and distance; split into multiple calls")
-                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  ## keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   oceDebug(debug, vectorShow(keep, "keeping bins:"), "\n")
                   if (sum(keep) < 2)
                       stop("must keep at least 2 bins")
@@ -1083,7 +1085,8 @@ setMethod(f="subset",
                                paste(dim(res@metadata$flags$v), collapse="x"), "\n")
                   }
               } else if (length(grep("pressure", subsetString))) {
-                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  ## keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   res <- x
                   res@data$v <- res@data$v[keep, , ]
                   res@data$a <- res@data$a[keep, , ]
@@ -2995,8 +2998,8 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
             res@data$a[, , beam] <- as.raw(tmp)
         }
         res@metadata$oceBeamUnspreaded <- TRUE
-        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     }
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(expr=match.call()), sep="", collapse=""))
     oceDebug(debug, "} # beamUnspreadAdp()\n", unindent=1)
     res
 }
@@ -3139,7 +3142,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
     } else {
         stop("adp type must be either \"rdi\" or \"nortek\" or \"sontek\"")
     }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(expr=match.call()), sep="", collapse=""))
     oceDebug(debug, "} # beamToXyzAdp()\n", unindent=1)
     res
 }
@@ -3737,7 +3740,7 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
         res@data$bv[, 3] <- other$up
     }
     res@metadata$oceCoordinate <- "other"
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(expr=match.call()), sep="", collapse=""))
     res
 }
 
@@ -3788,7 +3791,7 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
         res@data$v[, , beam] <- x[["v"]][, , beam] - x@data$bv[, beam]
     }
     oceDebug(debug, "} # subtractBottomVelocity()\n", unindent=1)
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(expr=match.call()), sep="", collapse=""))
     res
 }
 

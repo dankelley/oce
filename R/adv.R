@@ -278,7 +278,7 @@ setMethod(f="[[<-",
 setMethod(f="subset",
           signature="adv",
           definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res <- x
               dots <- list(...)
               debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
@@ -289,7 +289,8 @@ setMethod(f="subset",
                   stop("must specify a 'subset'")
               if (length(grep("time", subsetString))) {
                   oceDebug(debug, "subsetting an adv object by time\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
+                  ## keep <- eval(substitute(subset), x@data, parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
+                  keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   sum.keep <- sum(keep)
                   if (sum.keep < 2)
                       stop("must keep at least 2 profiles")
@@ -298,10 +299,11 @@ setMethod(f="subset",
                   res <- x
                   names <- names(x@data)
                   haveSlow <- "timeSlow" %in% names
-                  keep <- eval(substitute(subset), x@data, parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
+                  ##keep <- eval(substitute(subset), x@data, parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
+                  keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   if (haveSlow) {
                       subsetStringSlow <- gsub("time", "timeSlow", subsetString)
-                      keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame(2))
+                      keepSlow <- eval(parse(text=subsetStringSlow), x@data, parent.frame(2))
                   }
                   if ("timeBurst" %in% names) {
                       subsetStringBurst <- gsub("time", "timeBurst", subsetString)

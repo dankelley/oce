@@ -347,7 +347,7 @@ setMethod(f="subset",
           definition=function(x, subset, ...) {
               if (missing(subset))
                   stop("must give 'subset'")
-              keep <- eval(substitute(subset), x@data, parent.frame())
+              keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame())
               ##message("percent keep ", round(sum(keep)/length(keep)*100, 2), "%")
               res <- x
               for (i in seq_along(x@data))

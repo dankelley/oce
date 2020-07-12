@@ -3844,7 +3844,7 @@ setMethod(f="plot",
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               dots <- list(...)
               dotsNames <- names(dots)
               indicesGiven <- length(dots) && ("indices" %in% dotsNames)
@@ -3859,7 +3859,7 @@ setMethod(f="subset",
                   for (i in seq_along(x@metadata$flags)) {
                       res@metadata$flags[[i]] <- x@metadata$flags[[i]][indices]
                   }
-                  subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+                  subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
                   res@processingLog <- processingLogAppend(res@processingLog,
                                                            paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
                   return(res)
@@ -3868,7 +3868,7 @@ setMethod(f="subset",
               res@metadata <- x@metadata
               res@processingLog <- x@processingLog
               ## FIXME: next 2 lines used to be in the loop but I don't see why, so moved out
-              r <- eval(substitute(subset), x@data, parent.frame(2))
+              r <- eval(substitute(expr=subset, env=environment()), x@data, parent.frame(2))
               r <- r & !is.na(r)
               for (i in seq_along(x@data)) {
                   res@data[[i]] <- x@data[[i]][r]
@@ -3877,7 +3877,7 @@ setMethod(f="subset",
                   res@metadata$flags[[i]] <- x@metadata$flags[[i]][r]
               }
               names(res@data) <- names(x@data)
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res@processingLog <- processingLogAppend(res@processingLog,
                                                        paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               res

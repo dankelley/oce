@@ -506,7 +506,7 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res <- x
               dots <- list(...)
               dotsNames <- names(dots)
@@ -592,7 +592,7 @@ setMethod(f="subset",
                                                            paste("subset(x, within) kept ", sum(keep), " of ",
                                                                  length(keep), " stations", sep=""))
               } else {
-                  if (is.character(substitute(subset))) {
+                  if (is.character(substitute(expr=subset, env=environment()))) {
                   if (subset != "adjusted")
                       stop("if subset is a string, it must be \"adjusted\"")
                   dataNames <- names(x@data)
@@ -629,22 +629,22 @@ setMethod(f="subset",
                                                            paste("subset.argo(x, subset=\"",
                                                                  as.character(subset), "\")", sep=""))
               } else {
-                  subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+                  subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
                   res <- x
                   if (length(grep("time", subsetString)) ||
                       length(grep("longitude", subsetString)) || length(grep("latitude", subsetString))) {
-                      keep <- eval(substitute(subset), x@data, parent.frame(2))
+                      keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   } else if (length(grep("id", subsetString))) {
                       ## add id into the data, then do as usual
                       tmp <- x@data
                       tmp$id <- x@metadata$id
-                      keep <- eval(substitute(subset), tmp, parent.frame(2))
+                      keep <- eval(expr=substitute(expr=subset, env=environment()), envir=tmp, enclos=parent.frame(2))
                       rm(tmp)
                   } else if (length(grep("profile", subsetString))) {
                       ## add profile into the data, then do as usual
                       tmp <- x@data
                       tmp$profile <- seq_along(x@data$time)
-                      keep <- eval(substitute(subset), tmp, parent.frame(2))
+                      keep <- eval(expr=substitute(expr=subset, env=environment()), envir=tmp, enclos=parent.frame(2))
                       rm(tmp)
                   } else if (length(grep("pressure", subsetString))) {
                       ## issue1628 ## check that it is a "gridded" argo
@@ -656,9 +656,9 @@ setMethod(f="subset",
                       ## issue1628 } else {
                       ## issue1628     stop("cannot subset ungridded argo by pressure -- use argoGrid() first", call.=FALSE)
                       ## issue1628 }
-                      keep <- eval(substitute(subset), x@data, parent.frame(2))
+                      keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   } else if (length(grep("dataMode", subsetString))) {
-                      keep <- eval(substitute(subset), x@metadata, parent.frame(2))
+                      keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@metadata, enclos=parent.frame(2))
                   } else {
                       stop("can only subset by time, longitude, latitude, pressure, dataMode, and not by combinations", call.=FALSE)
                   }

@@ -196,7 +196,7 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
 {
     if (missing(x))
         return("")
-    name <- paste(substitute(x))
+    name <- paste(substitute(expr=x, env=environment()))
     res <- ""
     if (missing(x)) {
         res <- "(missing)"
@@ -2332,7 +2332,7 @@ vectorShow <- function(v, msg="", postscript="", digits=5, n=2L)
     DIM <- dim(v)
     nv <- length(v)
     if (!nchar(msg))
-        msg <- deparse(substitute(v))
+        msg <- deparse(substitute(expr=v, env=environment()))
     if (!is.null(DIM)) {
         msg <- paste(msg,
                      paste("[",
