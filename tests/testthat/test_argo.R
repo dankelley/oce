@@ -85,8 +85,8 @@ test_that("subset(argo, within=(POLYGON))", {
           expect_equal(nnew, length(argoSubset[["latitude"]]))
 })
 
-test_that("preferAdjusted() works", {
-          a2 <- preferAdjusted(argo) # defaults to all data
+test_that("preferAdjusted() works on data", {
+          a2 <- preferAdjusted(argo) # defaults to which="all"
           expect_equal(a2[["salinity"]], argo@data$salinityAdjusted)
           expect_equal(a2[["temperature"]], argo@data$temperatureAdjusted)
           expect_equal(a2[["pressure"]], argo@data$pressureAdjusted)
@@ -94,6 +94,28 @@ test_that("preferAdjusted() works", {
           expect_equal(a3[["salinity"]], argo@data$salinityAdjusted)
           expect_equal(a3[["temperature"]], argo@data$temperature)
           expect_equal(a3[["pressure"]], argo@data$pressure)
+})
+
+test_that("preferAdjusted() works on flags", {
+          a2 <- preferAdjusted(argo) # defaults to which="all"
+          expect_equal(a2[["salinityFlags"]], argo@data$flags$salinityAdjusted)
+          expect_equal(a2[["temperatureFlags"]], argo@data$flags$temperatureAdjusted)
+          expect_equal(a2[["pressureFlags"]], argo@data$flags$pressureAdjusted)
+          a3 <- preferAdjusted(argo, which=c("salinity"))
+          expect_equal(a2[["salinityFlags"]], argo@data$flags$salinityAdjusted)
+          expect_equal(a3[["temperatureFlags"]], argo@data$flags$temperature)
+          expect_equal(a3[["pressureFlags"]], argo@data$flags$pressure)
+})
+
+test_that("preferAdjusted() works on units", {
+          a2 <- preferAdjusted(argo) # defaults to which="all"
+          expect_equal(a2[["salinityUnits"]], argo@data$units$salinityAdjusted)
+          expect_equal(a2[["temperatureUnits"]], argo@data$units$temperatureAdjusted)
+          expect_equal(a2[["pressureUnits"]], argo@data$units$pressureAdjusted)
+          a3 <- preferAdjusted(argo, which=c("salinity"))
+          expect_equal(a3[["salinityUnits"]], argo@data$units$salinityAdjusted)
+          expect_equal(a3[["temperatureUnits"]], argo@data$units$temperature)
+          expect_equal(a3[["pressureUnits"]], argo@data$units$pressure)
 })
 
 test_that("subset.argo(argo, \"adjusted\") correctly alters metadata and data", {
