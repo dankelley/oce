@@ -138,6 +138,9 @@ setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
               res <- NULL
+              dots <- list(...)
+              debug <- if ("debug" %in% names(dots)) dots$debug else FALSE
+              oceDebug(debug, "[[,argo-method(\"", i, "\") {\n", sep="", unindent=1)
               if (i == "profile") {
                   ## This assignment to profile is merely to prevent a NOTE from
                   ## the syntax checker. It is needed because of issues with non-standard
@@ -150,12 +153,11 @@ setMethod(f="[[",
                       stop("must provide an integer vector to access, e.g. argo[[\"profile\", 1:3]]")
                   return(subset(x, profile %in% j))
               }
-              if (i %in% c("CT", "N2", "SA", "sigmaTheta", "theta")) {
-                  ## FIXME: should we prefer e.g. salinityAdjusted or salinity?
-                  names <- names(x@data)
-                  salinity <- x@data[[if ("salinityAdjusted" %in% names) "salinityAdjusted" else "salinity"]]
-                  pressure <- x@data[[if ("pressureAdjusted" %in% names) "pressureAdjusted" else "pressure"]]
-                  temperature <- x@data[[if ("temperatureAdjusted" %in% names) "temperatureAdjusted" else "temperature"]]
+              namesData <- names(x@data)
+              if (i %in% c("CT", "N2", "SA", "sigmaTheta", "theta")) { # computed items
+                  salinity <- x[["salinity", debug=debug-1]]
+                  pressure <- x[["pressure", debug=debug-1]]
+                  temperature <- x[["temperature", debug=debug-1]]
                   dim <- dim(salinity)
                   ## Do not need longitude and latitude if eos="unesco", but retain for code clarity
                   longitude <- rep(x@data$longitude, each=dim[1])
@@ -217,10 +219,42 @@ setMethod(f="[[",
                   res <- x@data$latitude
               } else if (i == "longitude") {
                   res <- x@data$longitude
+              } else if (i %in% namesData) {
+                  which <- x@metadata$useAdjustedWhich
+                  fallback <- x@metadata$useAdjustedFallback
+                  if (!is.null(which) && !is.null(fallback)) {
+                      if (which == "all" || i %in% which) {
+                          tmp <- x@data[[paste0(i, "Adjusted")]]
+                          if (is.null(tmp)) {
+                              oceDebug(debug, "There are no adjusted data to use, so we return the unadjusted variant.\n")
+                              res <- x@metadata[[i]]
+                          } else {
+                              if (any(is.finite(tmp))) {
+                                  oceDebug(debug, "using adjusted data\n")
+                                  res <- tmp
+                              } else {
+                                  if (fallback) {
+                                      oceDebug(debug, "falling back to unadjusted data, since all adjusted values are NA\n")
+                                      res <- x@data[[i]]
+                                  } else {
+                                      oceDebug(debug, "returning adjusted data, even though all are are NA, because fallback=", fallback, "\n", sep="")
+                                      res <- tmp
+                                  }
+                              }
+                          }
+                      } else {
+                          oceDebug(debug, "returning unadjusted data, because \"", i, "\" was not given in 'which' arg to useAdjusted()\n", sep="")
+                          res <- x@data[[i]]
+                      }
+                  } else {
+                      oceDebug(debug, "using unadjusted data, since metadata does not contain useAdjustedWhich and useAdjustedFallback\n")
+                      res <- x@data[[i]]
+                  }
               } else {
                   ##message("FIXME: [[,argo-method calling next method")
                   res <- callNextMethod()         # [[ defined in R/AllClass.R
               }
+              oceDebug(debug, "} # [[,argo-method\n", sep="", unindent=1)
               res
           })
 
@@ -1876,3 +1910,106 @@ setMethod("handleFlags", signature=c(object="argo", flags="ANY", actions="ANY", 
                   stop("names of flags and actions must match")
               handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug)
           })
+
+
+#' Set Preference for Adjusted Values
+#'
+#' `preferAdjusted` sets `metadata` items named `"adjustedWhich"` and
+#' `"adjustedFallback"` so that future data accesses with
+#' \code{\link{[[,argo-method}} will return
+#' adjusted data (and associated flags and units), if
+#' indeed adjusted data exist.  Flags and units will also be
+#' chosen to match.  Such a preference be registered for all
+#' the data stored the object, or for a subset of them,
+#' The preference carries through to computed variables, such as `SA`,
+#' that depend on the actual data.  See \dQuote{Details}
+#' for the handling of cases that lack adjusted data, or for which
+#' all the adjusted values for a given variable are `NA`.
+#'
+#' Suppose that `which="all"`, or that `which` is a character
+#' including the string `"salinity"`.  This indicates that
+#' \code{\link{[[,argo-method}} should return adjusted
+#' for the salinity data, and for its associated flags
+#' and units.  Thus, `argo[["salinity"]]`
+#' would return `argo@data$salinityAdjusted`,
+#' instead of `argo@data$salinity`,
+#' `argo[["salinityFlag"]]` would return
+#' `argo@metadata$flags$salinityAdjusted`
+#' instead of `argo@metadata$flags$salinity`, and
+#' `argo[["salinityUnits"]]` would
+#' `argo@metadata$units$salinityAdjusted`
+#' instead of `argo@metadata$units$salinity`.
+#'
+#' The default value `which="all"` indicates that later calls to
+#' \code{\link{[[,argo-method}} should return adjusted
+#' values for all data that have such values (returning the
+#' unadjusted data, otherwise). This can be handy for quick
+#' work, but analysts may also choose to restrict their use of
+#' adjusted values to a subset of variables, e.g. if they wish
+#' to adjust some things by themselves, based on unadjusted values.
+#'
+#' The default value `fallback=TRUE` indicates that later calls to
+#' \code{\link{[[,argo-method}} should return unadjusted values for any
+#' data items that have `NA` for all the adjusted values.  This
+#' condition is rare for core variables (salinity, temperature and
+#' pressure) but is common for biogeochemical variables; see
+#' e.g. Section 2.2.5 of reference 1 for a discussion of
+#' the conditions under which Argo netcdf files contain
+#' adjusted values. Setting `fallback=FALSE` means that adjusted
+#' values (if they exist) will always be returned, even if they
+#' are a useless collection of `NA` values.
+#'
+#' Regardless of whether `selectAdjusted` has been used on an [argo-class]
+#' object, it is possible to access either unadjusted or adjusted
+#' data directly, using the original variable names stored in the
+#' source netcdf file.  For example, `argo[["DOXY"]]`
+#' yields unadjusted oxygen values, and
+#' `argo[["DOXY_ADJUSTED"]]` yields adjusted values (if they exist, or
+#' `NULL` if they do not).
+#' Similarly, adjusted value can always be obtained by using a form
+#' like `argo[["oxygenAdjusted"]]`.  In other words, this function
+#' only has an affect on base names, such as `"oxygen"`.
+#'
+#' Presently, this function only works for [argo-class] objects,
+#' but it might be extended in future if other types of data
+#' are seen to employ a similar scheme of supplying adjusted
+#' values.
+#'
+#' @param argo An [argo-class] object.
+#'
+#' @param which A character vector naming the data items for which
+#' (depending also on the value of `fallback`) adjusted values
+#' are to be sought by future calls to \code{\link{[[,argo-method}}.
+#' The short names are used, e.g. `which="oxygen"` means that
+#' adjusted oxygen is to be returned in future calls
+#' such as `argo[["oxygen"]]`.  The default,
+#' `"all"`, means to  use adjusted values for any variable that
+#' has such values.
+#'
+#' @param fallback A logical value indicating whether to fall back
+#' to unadjusted values for any data field in which the
+#' adjusted values are all `NA`.  The default value, `TRUE`,
+#' makes it more likely that the results will be useful.
+#'
+#' @return An [argo-class] object its `metadata` slot altered
+#' so that the `adjustedWhich` and `adjustedFallback` elements
+#' are as set by the `which` and `fallback` arguments.
+#'
+#' @references
+#' 1. Argo Data Management Team. "Argo User’s Manual V3.3." Ifremer,
+#' November 28, 2019. \url{https://doi.org/10.13155/29825}.
+#'
+#' @author Dan Kelley, based on discussions with Jaimie Harbin (with
+#' respect to the \code{\link{[[,argo-method}} interface) and Clark Richards
+#' (with respect to storing the preference in the `metadata` slot).
+preferAdjusted <- function(argo, which="all", fallback=TRUE)
+{
+    if (!inherits(argo, "argo"))
+        stop("'argo' must be an oce 'argo' object")
+    if (!is.logical(fallback))
+        stop("fallback must be a logical value")
+    argo@metadata$useAdjustedFallback <- fallback
+    argo@metadata$useAdjustedWhich <- which
+    argo
+}
+

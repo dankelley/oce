@@ -85,6 +85,17 @@ test_that("subset(argo, within=(POLYGON))", {
           expect_equal(nnew, length(argoSubset[["latitude"]]))
 })
 
+test_that("preferAdjusted() works", {
+          a2 <- preferAdjusted(argo) # defaults to all data
+          expect_equal(a2[["salinity"]], argo@data$salinityAdjusted)
+          expect_equal(a2[["temperature"]], argo@data$temperatureAdjusted)
+          expect_equal(a2[["pressure"]], argo@data$pressureAdjusted)
+          a3 <- preferAdjusted(argo, which=c("salinity"))
+          expect_equal(a3[["salinity"]], argo@data$salinityAdjusted)
+          expect_equal(a3[["temperature"]], argo@data$temperature)
+          expect_equal(a3[["pressure"]], argo@data$pressure)
+})
+
 test_that("subset.argo(argo, \"adjusted\") correctly alters metadata and data", {
           a <- subset(argo, "adjusted")
           expect_equal(a@metadata$flags$pressureQC, argo@metadata$flags$pressureAdjustedQC)
@@ -98,9 +109,9 @@ test_that("subset.argo(argo, \"adjusted\") correctly alters metadata and data", 
 test_that("argo [[ handles SA and CT", {
           SA <- argo[["SA"]]
           CT <- argo[["CT"]]
-          SP <- argo[["salinityAdjusted"]]
-          t <- argo[["temperatureAdjusted"]]
-          p <- argo[["pressureAdjusted"]]
+          SP <- argo[["salinity"]]
+          t <- argo[["temperature"]]
+          p <- argo[["pressure"]]
           lon <- rep(argo[["longitude"]], each=dim(SP)[1])
           lat <- rep(argo[["latitude"]], each=dim(SP)[1])
           expect_equal(SA, gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat))
