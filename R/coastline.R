@@ -164,7 +164,7 @@ setMethod(f="subset",
               ## we must start with some cleanup (e.g. removal of spaces,
               ## conversion of && to & and <= to <) for the pattern matching
               ## to work simply.
-              s0 <- deparse(substitute(subset), width.cutoff=500)
+              s0 <- deparse(substitute(expr=subset, env=environment()), width.cutoff=500)
               if (length(grep(">", s0)))
                   stop("the 'subset' may not contain the character '>'")
               oceDebug(debug, "s0='", s0, "'\n", sep="")

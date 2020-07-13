@@ -246,7 +246,7 @@ setMethod(f="[[<-",
 setMethod(f="subset",
           signature="echosounder",
           definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res <- x
               dots <- list(...)
               debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
@@ -254,7 +254,7 @@ setMethod(f="subset",
                   stop("must give 'subset'")
               if (length(grep("time", subsetString))) {
                   oceDebug(debug, "subsetting an echosounder object by time\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  keep <- eval(substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   oceDebug(debug, "keeping", 100 * sum(keep)/length(keep), "% of the fast-sampled data\n")
                   res <- x
                   ## trim fast variables, handling matrix 'a' differently, and skipping 'distance'
@@ -296,7 +296,7 @@ setMethod(f="subset",
                   }
               } else if (length(grep("depth", subsetString))) {
                   oceDebug(debug, "subsetting an echosounder object by depth\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   res <- x
                   res[["depth"]] <- res[["depth"]][keep]
                   dataNames <- names(res@data)

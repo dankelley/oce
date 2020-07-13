@@ -102,7 +102,7 @@ setMethod(f="[[<-",
 setMethod(f="subset",
           signature="odf",
           definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res <- x
               ##dots <- list(...)
               if (missing(subset))
@@ -110,7 +110,7 @@ setMethod(f="subset",
 
               if (missing(subset))
                   stop("must specify a 'subset'")
-              keep <- eval(substitute(subset), x@data, parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
+              keep <- eval(substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
               res <- x
               for (i in seq_along(x@data)) {
                   res@data[[i]] <- x@data[[i]][keep]

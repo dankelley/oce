@@ -1266,7 +1266,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
     if (missing(xlab))
         xlab <- ""
     if (missing(ylab))
-        ylab  <- deparse(substitute(y))
+        ylab  <- deparse(substitute(expr=y, env=environment()))
     if (missing(drawTimeRange))
         drawTimeRange <- getOption("oceDrawTimeRange", TRUE)
     ##ocex <- par("cex")
