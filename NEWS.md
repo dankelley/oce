@@ -3,6 +3,7 @@
 ## 1.3.0
 
 * Add `timeToArgoJuld()` and `argoJuldToTime()`.
+* Add `preferAdjusted()` to make it easy to switch to 'adjusted' argo data.
 * Change `read.argo()` and `data(argo)` to use camelCase in all metadata.
 * Add `snakeToCamel()` to convert variable names in e.g. argo netcdf files.
 * Add `read.ctd.odv()`.
