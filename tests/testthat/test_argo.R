@@ -164,3 +164,7 @@ test_that("argo name conversion", {
           expect_equal(argoNames2oceNames(paste(a$V1, "123", sep="")), paste(a$V2, "123", sep=""))
 })
 
+test_that("argo time conversion", {
+    expect_equal(1000, timeToArgoJuld(argoJuldToTime(1000)))
+})
+

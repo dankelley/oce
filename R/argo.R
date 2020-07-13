@@ -1876,3 +1876,30 @@ setMethod("handleFlags", signature=c(object="argo", flags="ANY", actions="ANY", 
                   stop("names of flags and actions must match")
               handleFlagsInternal(object=object, flags=flags, actions=actions, where=where, debug=debug)
           })
+
+
+#' Convert time to Argo Julian Day (juld)
+#'
+#' This converts a POSIXct time into an Argo julian day, with the convention
+#' that juld=0 at 1950-01-01.
+#'
+#' @param t A POSIXct time or a string that can be converted to a POSIXct time
+#'
+#' @examples
+#' timeToArgoJuld("2020-07-01")
+#'
+#' @author Jaimie Harbin and Dan Kelley
+timeToArgoJuld <- function(t)
+    oce::julianDay(as.POSIXct(t, tz='UTC')) - oce::julianDay(as.POSIXct("1950-01-01", tz="UTC"))
+
+#' Convert Argo Julian Day (juld) to time
+#'
+#' @param jday A numerical value indicating the julian day in the Argo convention,
+#' with day=0 at 1950-01-01.
+#'
+#' @examples
+#' argoJuldToTime(25749)
+#'
+#' @author Jaimie Harbin and Dan Kelley
+argoJuldToTime <- function(jday)
+    as.POSIXct("1950-01-01", tz="UTC") + jday*86400
