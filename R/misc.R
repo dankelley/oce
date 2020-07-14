@@ -757,7 +757,7 @@ titleCase <- function(w)
 #' imagep(x, y, v, zlab="v", asp=1)
 #' imagep(x, y, C$curl, zlab="curl", asp=1)
 #' hist(C$curl, breaks=100)
-#' @family functions relating to vector calculus
+#' @family things relating to vector calculus
 curl <- function(u, v, x, y, geographical=FALSE, method=1)
 {
     if (missing(u)) stop("must supply u")
@@ -2979,7 +2979,7 @@ lon360 <- function(x)
 #' @examples
 #' library(oce)
 #' cat("Atlantic Standard Time is ", GMTOffsetFromTz("AST"), "hours after UTC")
-#' @family functions relating to time
+#' @family things relating to time
 GMTOffsetFromTz <- function(tz)
 {
     ## Data are from
@@ -4937,7 +4937,7 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 #' contour(x, y, v, asp=1, main=expression(v))
 #' contour(x, y, sqrt(u^2+v^2), asp=1, main=expression(speed))
 #'
-#' @family functions relating to vector calculus
+#' @family things relating to vector calculus
 grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol(h)))
 {
     if (missing(h))
