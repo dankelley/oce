@@ -2027,7 +2027,7 @@ setMethod("handleFlags", signature=c(object="argo", flags="ANY", actions="ANY", 
 #'
 #' @return An [argo-class] object its `metadata` slot altered
 #' (in its `adjustedWhich` and `adjustedFallback` elements)
-#' as a signal for how \code{\link{[[argo-method}} should
+#' as a signal for how \code{\link{[[,argo-method}} should
 #' function on the object.
 #'
 #' @examples

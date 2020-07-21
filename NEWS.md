@@ -2,18 +2,20 @@
 
 ## 1.3.0
 
-* Add `timeToArgoJuld()` and `argoJuldToTime()`.
-* Add `preferAdjusted()` to make it easier to switch to 'adjusted' argo data.
 * Change `read.argo()` and `data(argo)` to use camelCase in all metadata.
-* Add `snakeToCamel()` to convert variable names in e.g. argo netcdf files.
-* Add `read.ctd.odv()`.
-* Add `addSpine()`.
-* Update reader-oriented website on github using `pkgdown`.
-* Extend `read.ctd.sbe()` to read `.btl` files.
-* Extend `read.adp.rdi()` to read 38kHz RDI adp files.
-* Add `oceAxis()`.
-* Add `oce.plot.ts()` argument `logStyle`.
+* Change reader-oriented github website generator to `pkgdown`.
+* Extend `read.adp.rdi()` to handle 38kHz RDI adp files.
+* Extend `read.ctd.sbe()` to handle 4 new (Beckman) oxygen variables.
+* Extend `read.ctd.sbe()` to handle `.btl` files.
+* Extend `oce.plot.ts()`, adding argument `logStyle`.
+* Add `addSpine()` for defining spines for ship tracks.
 * Add `angle2hms()`.
+* Add `argoJuldToTime()`.
+* Add `oceAxis()`.
+* Add `preferAdjusted()` to make it easier to switch to 'adjusted' argo data.
+* Add `read.ctd.odv()`.
+* Add `snakeToCamel()` to convert variable names in e.g. argo netcdf files.
+* Add `timeToArgoJuld()`.
 
 ## 1.2.0
 

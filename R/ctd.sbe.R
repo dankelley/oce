@@ -368,6 +368,18 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^opoxPS$", name, useBytes=TRUE))) {
         name <- "oxygenSaturation"
         unit <- list(unit=expression(percent), scale="Optode, Aanderaa")
+    } else if (1 == length(grep("oxC", name, useBytes=TRUE))) {
+        name <- "oxygenCurrent"
+        unit <- list(unit=expression(mu*amp), scale="Beckman/YSI")
+    } else if (1 == length(grep("oxTC", name, useBytes=TRUE))) {
+        name <- "oxygenTemperature"
+        unit <- list(unit=expression(degree*C), scale="Beckman/YSI")
+    } else if (1 == length(grep("oxMg/L", name, useBytes=TRUE))) {
+        name <- "oxygen"
+        unit <- list(unit=expression(mg/l), scale="Beckman/YSI")
+    } else if (1 == length(grep("oxPS", name, useBytes=TRUE))) {
+        name <- "oxygenSaturation"
+        unit <- list(unit=expression(percent), scale="Beckman/YSI")
     } else if (1 == length(grep("^oxsatML/L$", name, useBytes=TRUE))) {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="Weiss")

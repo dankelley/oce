@@ -487,8 +487,8 @@ setMethod(f="summary",
                                                                    digits=5), "\n")
               } else if ("longitude" %in% names(object@metadata) && !is.na(object@metadata$longitude)) {
                   cat("* Location:            ",       latlonFormat(object@metadata$latitude,
-                                                                   object@metadata$longitude,
-                                                                   digits=5), "\n", sep="")
+                                                                    object@metadata$longitude,
+                                                                    digits=5), "\n", sep="")
               }
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
@@ -4106,8 +4106,13 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
 #' Parse a Latitude or Longitude String
 #'
 #' Parse a latitude or longitude string, e.g. as in the header of a CTD file
-#' The following formats are understood (for, e.g. latitude) \preformatted{ *
-#' NMEA Latitude = 47 54.760 N ** Latitude: 47 53.27 N }
+#' The following formats are understood (for, e.g. latitude):
+#'```
+#' ** NMEA Latitude = 47 54.760 N
+#' ** Latitude: 47 53.27 N
+#'```
+#' Note that [iconv()] is called to convert the string to ASCII before
+#' decoding, to change any degree (or other non-ASCII) symbols to blanks.
 #'
 #' @param line a character string containing an indication of latitude or
 #' longitude.
@@ -4126,6 +4131,8 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
     ## * NMEA Latitude = 47 54.760 N
     ## ** Latitude:      47 53.27 N
     x <- line
+    ## degree signs will be '?' by prior conversion; make them blank
+    x <- gsub("\\?", " ", x)
     ##positive <- TRUE
     oceDebug(debug, "parseLatLon(\"", line, "\") {\n", sep="")
     oceDebug(debug, "  step 1. \"", x, "\" (as provided)\n", sep="")

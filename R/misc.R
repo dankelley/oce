@@ -2852,6 +2852,7 @@ latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
         else
             res[i] <- paste(format(abs(lat[i]), digits=digits),
                              if (lat[i] > 0) gettext("N", domain="R-oce") else gettext("S", domain="R-oce"),
+                             " ",
                              format(abs(lon[i]), digits=digits),
                              if (lon[i] > 0) gettext("E", domain="R-oce") else gettext("W", domain="R-oce"),
                              sep="")

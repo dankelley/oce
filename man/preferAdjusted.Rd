@@ -28,7 +28,7 @@ other fields that consist of nothing more than \code{NA}s.}
 \value{
 An \linkS4class{argo} object its \code{metadata} slot altered
 (in its \code{adjustedWhich} and \code{adjustedFallback} elements)
-as a signal for how \code{\link{[[argo-method}} should
+as a signal for how \code{\link{[[,argo-method}} should
 function on the object.
 }
 \description{
