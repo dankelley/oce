@@ -636,7 +636,7 @@ setMethod(f="show",
 setMethod(f="subset",
           signature="section",
           definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res <- x
               dots <- list(...)
               dotsNames <- names(dots)
@@ -714,7 +714,7 @@ setMethod(f="subset",
                   ##oceDebug(debug, "subsetString='", subsetString, "'\n")
                   res <- x
                   if (length(grep("stationId", subsetString))) {
-                      keep <- eval(substitute(subset),
+                      keep <- eval(expr=substitute(expr=subset, env=environment()),
                                    envir=data.frame(stationId=as.numeric(x@metadata$stationId)))
                       res@metadata$stationId <- x@metadata$stationId[keep]
                       res@metadata$longitude <- x@metadata$longitude[keep]
@@ -724,14 +724,14 @@ setMethod(f="subset",
                       res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
                   } else if (length(grep("distance", subsetString))) {
                       l <- list(distance=geodDist(res))
-                      keep <- eval(substitute(subset), l, parent.frame(2))
+                      keep <- eval(expr=substitute(expr=subset, env=environment()), envir=l, enclos=parent.frame(2))
                       res@metadata$longitude <- res@metadata$longitude[keep]
                       res@metadata$latitude <- res@metadata$latitude[keep]
                       res@metadata$stationId <- res@metadata$stationId[keep]
                       res@data$station <- res@data$station[keep]
                   } else if (length(grep("levels", subsetString))) {
                       levels <- unlist(lapply(x[["station"]], function(stn) length(stn[["pressure"]])))
-                      keep <- eval(substitute(subset), list(levels=levels))
+                      keep <- eval(expr=substitute(expr=subset, env=environment()), envir=list(levels=levels))
                       res@metadata$longitude <- res@metadata$longitude[keep]
                       res@metadata$latitude <- res@metadata$latitude[keep]
                       res@metadata$stationId <- res@metadata$stationId[keep]
@@ -740,7 +740,7 @@ setMethod(f="subset",
                       n <- length(x@data$station)
                       keep <- vector(length=n)
                       for (i in 1:n)
-                          keep[i] <- eval(substitute(subset), x@data$station[[i]]@metadata, parent.frame(2))
+                          keep[i] <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data$station[[i]]@metadata, enclos=parent.frame(2))
                       nn <- sum(keep)
                       station <- vector("list", nn)
                       stn <- vector("character", nn)
@@ -776,7 +776,7 @@ setMethod(f="subset",
                       n <- length(x@data$station)
                       j <- 1
                       for (i in 1:n) {
-                          r <- eval(substitute(subset), x@data$station[[i]]@data, parent.frame(2))
+                          r <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data$station[[i]]@data, enclos=parent.frame(2))
                           oceDebug(debug, "i=", i, ", j=", j, ", sum(r)=", sum(r), "\n", sep="")
                           if (sum(r) > 0) {
                               ## copy whole station  ...

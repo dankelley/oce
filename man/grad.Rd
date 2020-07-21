@@ -59,10 +59,10 @@ contour(x, y, sqrt(u^2+v^2), asp=1, main=expression(speed))
 
 }
 \seealso{
-Other functions relating to vector calculus: 
+Other things relating to vector calculus: 
 \code{\link{curl}()}
 }
 \author{
 Dan Kelley, based on advice of Clark Richards, and mimicking a matlab function.
 }
-\concept{functions relating to vector calculus}
+\concept{things relating to vector calculus}

@@ -98,10 +98,10 @@ imagep(x, y, C$curl, zlab="curl", asp=1)
 hist(C$curl, breaks=100)
 }
 \seealso{
-Other functions relating to vector calculus: 
+Other things relating to vector calculus: 
 \code{\link{grad}()}
 }
 \author{
 Dan Kelley and Chantelle Layton
 }
-\concept{functions relating to vector calculus}
+\concept{things relating to vector calculus}

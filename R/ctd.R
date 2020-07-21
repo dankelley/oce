@@ -487,8 +487,8 @@ setMethod(f="summary",
                                                                    digits=5), "\n")
               } else if ("longitude" %in% names(object@metadata) && !is.na(object@metadata$longitude)) {
                   cat("* Location:            ",       latlonFormat(object@metadata$latitude,
-                                                                   object@metadata$longitude,
-                                                                   digits=5), "\n", sep="")
+                                                                    object@metadata$longitude,
+                                                                    digits=5), "\n", sep="")
               }
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
@@ -3844,7 +3844,7 @@ setMethod(f="plot",
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               dots <- list(...)
               dotsNames <- names(dots)
               indicesGiven <- length(dots) && ("indices" %in% dotsNames)
@@ -3859,7 +3859,7 @@ setMethod(f="subset",
                   for (i in seq_along(x@metadata$flags)) {
                       res@metadata$flags[[i]] <- x@metadata$flags[[i]][indices]
                   }
-                  subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+                  subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
                   res@processingLog <- processingLogAppend(res@processingLog,
                                                            paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
                   return(res)
@@ -3868,7 +3868,7 @@ setMethod(f="subset",
               res@metadata <- x@metadata
               res@processingLog <- x@processingLog
               ## FIXME: next 2 lines used to be in the loop but I don't see why, so moved out
-              r <- eval(substitute(subset), x@data, parent.frame(2))
+              r <- eval(substitute(expr=subset, env=environment()), x@data, parent.frame(2))
               r <- r & !is.na(r)
               for (i in seq_along(x@data)) {
                   res@data[[i]] <- x@data[[i]][r]
@@ -3877,7 +3877,7 @@ setMethod(f="subset",
                   res@metadata$flags[[i]] <- x@metadata$flags[[i]][r]
               }
               names(res@data) <- names(x@data)
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res@processingLog <- processingLogAppend(res@processingLog,
                                                        paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               res
@@ -4106,8 +4106,13 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, 
 #' Parse a Latitude or Longitude String
 #'
 #' Parse a latitude or longitude string, e.g. as in the header of a CTD file
-#' The following formats are understood (for, e.g. latitude) \preformatted{ *
-#' NMEA Latitude = 47 54.760 N ** Latitude: 47 53.27 N }
+#' The following formats are understood (for, e.g. latitude):
+#'```
+#' ** NMEA Latitude = 47 54.760 N
+#' ** Latitude: 47 53.27 N
+#'```
+#' Note that [iconv()] is called to convert the string to ASCII before
+#' decoding, to change any degree (or other non-ASCII) symbols to blanks.
 #'
 #' @param line a character string containing an indication of latitude or
 #' longitude.
@@ -4126,6 +4131,8 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
     ## * NMEA Latitude = 47 54.760 N
     ## ** Latitude:      47 53.27 N
     x <- line
+    ## degree signs will be '?' by prior conversion; make them blank
+    x <- gsub("\\?", " ", x)
     ##positive <- TRUE
     oceDebug(debug, "parseLatLon(\"", line, "\") {\n", sep="")
     oceDebug(debug, "  step 1. \"", x, "\" (as provided)\n", sep="")

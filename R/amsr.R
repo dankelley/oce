@@ -300,18 +300,17 @@ setMethod(f="subset",
           signature="amsr",
           definition=function(x, subset, ...) {
               res <- x
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              ## subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               if (length(grep("longitude", subsetString))) {
                   if (length(grep("latitude", subsetString)))
                       stop("the subset must not contain both longitude and latitude. Call this twice, to combine these")
-                  keep <- eval(substitute(subset),
-                               envir=data.frame(longitude=x@metadata$longitude))
+                  keep <- eval(expr=substitute(subset, env=environment()), envir=data.frame(longitude=x@metadata$longitude))
                   for (name in names(res@data))
                       res@data[[name]] <- res@data[[name]][keep, ]
                   res@metadata$longitude <- x@metadata$longitude[keep]
               } else if (length(grep("latitude", subsetString))) {
-                  keep <- eval(substitute(subset),
-                               envir=data.frame(latitude=x@metadata$latitude))
+                  keep <- eval(expr=substitute(expr=subset, env=environment()), envir=data.frame(latitude=x@metadata$latitude))
                   for (name in names(res@data))
                       res@data[[name]] <- res@data[[name]][, keep]
                   res@metadata$latitude <- res@metadata$latitude[keep]

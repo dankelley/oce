@@ -36,9 +36,10 @@ if that fails, then a general function is used
 
 
 There are several possibilities, depending on the nature of \code{i}.
-Note that all of these calculations are done with
-\code{salinityAdjusted}, if that is present, or with \code{salinity}
-otherwise, and similar for temperature and pressure.
+Note that \linkS4class{argo} data may contain both unadjusted data and adjusted
+data.  By default, this extraction function refers to the former, but a
+preference for the latter may be set with \code{\link[=preferAdjusted]{preferAdjusted()}}, the
+documentation of which explains (fairly complex) details.
 \itemize{
 \item If \code{i} is \code{"profile"} and \code{j} is an integer vector,
 then an argo object is returned, as specified by \code{j}. For example,

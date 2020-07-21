@@ -196,7 +196,7 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
 {
     if (missing(x))
         return("")
-    name <- paste(substitute(x))
+    name <- paste(substitute(expr=x, env=environment()))
     res <- ""
     if (missing(x)) {
         res <- "(missing)"
@@ -757,7 +757,7 @@ titleCase <- function(w)
 #' imagep(x, y, v, zlab="v", asp=1)
 #' imagep(x, y, C$curl, zlab="curl", asp=1)
 #' hist(C$curl, breaks=100)
-#' @family functions relating to vector calculus
+#' @family things relating to vector calculus
 curl <- function(u, v, x, y, geographical=FALSE, method=1)
 {
     if (missing(u)) stop("must supply u")
@@ -2332,7 +2332,7 @@ vectorShow <- function(v, msg="", postscript="", digits=5, n=2L)
     DIM <- dim(v)
     nv <- length(v)
     if (!nchar(msg))
-        msg <- deparse(substitute(v))
+        msg <- deparse(substitute(expr=v, env=environment()))
     if (!is.null(DIM)) {
         msg <- paste(msg,
                      paste("[",
@@ -2852,6 +2852,7 @@ latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
         else
             res[i] <- paste(format(abs(lat[i]), digits=digits),
                              if (lat[i] > 0) gettext("N", domain="R-oce") else gettext("S", domain="R-oce"),
+                             " ",
                              format(abs(lon[i]), digits=digits),
                              if (lon[i] > 0) gettext("E", domain="R-oce") else gettext("W", domain="R-oce"),
                              sep="")
@@ -2979,7 +2980,7 @@ lon360 <- function(x)
 #' @examples
 #' library(oce)
 #' cat("Atlantic Standard Time is ", GMTOffsetFromTz("AST"), "hours after UTC")
-#' @family functions relating to time
+#' @family things relating to time
 GMTOffsetFromTz <- function(tz)
 {
     ## Data are from
@@ -4937,7 +4938,7 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 #' contour(x, y, v, asp=1, main=expression(v))
 #' contour(x, y, sqrt(u^2+v^2), asp=1, main=expression(speed))
 #'
-#' @family functions relating to vector calculus
+#' @family things relating to vector calculus
 grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol(h)))
 {
     if (missing(h))

@@ -32,12 +32,12 @@ Oce development.
 
 The easy way to install the `"develop"` branch is to execute the
 following commands in R.
-```splus
+```R
 library(devtools)
 install_github("dankelley/oce", ref="develop")
 ```
 and most readers should also install Ocedata, with
-```splus
+```R
 install_github("dankelley/ocedata", ref="master")
 ```
 
