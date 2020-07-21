@@ -89,7 +89,7 @@ the three basic quantities." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -366,8 +366,8 @@ and sufficiently skilled users may even manipulate the contents directly.</p>
 #&gt; 
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2020-07-09 21:57:35 UTC: `create 'ctd' object`
-#&gt;     - 2020-07-09 21:57:35 UTC: `as.ctd(salinity = 35 + 1:3/10, temperature = 10 - 1:3/10, pressure = 1:3)`</div><div class='input'>
+#&gt;     - 2020-07-21 16:49:20 UTC: `create 'ctd' object`
+#&gt;     - 2020-07-21 16:49:20 UTC: `as.ctd(salinity = 35 + 1:3/10, temperature = 10 - 1:3/10, pressure = 1:3)`</div><div class='input'>
 <span class='co'># 2. Fix a typo in a station latitude (fake! it's actually okay)</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
 <span class='no'>ctd</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='oceSetMetadata.html'>oceSetMetadata</a></span>(<span class='no'>ctd</span>, <span class='st'>"latitude"</span>, <span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"latitude"</span>]]-<span class='fl'>0.001</span>,

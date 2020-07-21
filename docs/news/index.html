@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -145,21 +145,24 @@
 <h1 class="page-header" data-toc-text="development version">
 <a href="#oce-development-version" class="anchor"></a>oce (development version)<small> Unreleased </small>
 </h1>
-<div id="121" class="section level2">
+<div id="130" class="section level2">
 <h2 class="hasAnchor">
-<a href="<a href='https://github.com/dankelley/oce/issues/121'>#121</a>" class="anchor"></a>1.2.1</h2>
+<a href="<a href='https://github.com/dankelley/oce/issues/130'>#130</a>" class="anchor"></a>1.3.0</h2>
 <ul>
-<li>Update <code><a href="https://rdrr.io/r/utils/data.html">data(argo)</a></code> to have camelCase names.</li>
-<li>Update <code><a href="../reference/read.argo.html">read.argo()</a></code> to use camelCase in all metadata</li>
-<li>Add <code><a href="../reference/snakeToCamel.html">snakeToCamel()</a></code> to convert variable names in e.g. argo netcdf files.</li>
-<li>Add <code><a href="../reference/read.ctd.odv.html">read.ctd.odv()</a></code>, in preliminary form.</li>
-<li>Add <code><a href="../reference/addSpine.html">addSpine()</a></code>.</li>
-<li>Update reader-oriented website on github.</li>
-<li>Extend <code><a href="../reference/read.ctd.sbe.html">read.ctd.sbe()</a></code> to read <code>.btl</code> files.</li>
-<li>Extend <code><a href="../reference/read.adp.rdi.html">read.adp.rdi()</a></code> to read 38kHz RDI adp files.</li>
-<li>Add <code><a href="../reference/oceAxis.html">oceAxis()</a></code>.</li>
-<li>Add <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code>argument <code>logStyle</code>.</li>
+<li>Change <code><a href="../reference/read.argo.html">read.argo()</a></code> and <code><a href="https://rdrr.io/r/utils/data.html">data(argo)</a></code> to use camelCase in all metadata.</li>
+<li>Change reader-oriented github website generator to <code>pkgdown</code>.</li>
+<li>Extend <code><a href="../reference/read.adp.rdi.html">read.adp.rdi()</a></code> to handle 38kHz RDI adp files.</li>
+<li>Extend <code><a href="../reference/read.ctd.sbe.html">read.ctd.sbe()</a></code> to handle 4 new (Beckman) oxygen variables.</li>
+<li>Extend <code><a href="../reference/read.ctd.sbe.html">read.ctd.sbe()</a></code> to handle <code>.btl</code> files.</li>
+<li>Extend <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code>, adding argument <code>logStyle</code>.</li>
+<li>Add <code><a href="../reference/addSpine.html">addSpine()</a></code> for defining spines for ship tracks.</li>
 <li>Add <code><a href="../reference/angle2hms.html">angle2hms()</a></code>.</li>
+<li>Add <code><a href="../reference/argoJuldToTime.html">argoJuldToTime()</a></code>.</li>
+<li>Add <code><a href="../reference/oceAxis.html">oceAxis()</a></code>.</li>
+<li>Add <code><a href="../reference/preferAdjusted.html">preferAdjusted()</a></code> to make it easier to switch to ‘adjusted’ argo data.</li>
+<li>Add <code><a href="../reference/read.ctd.odv.html">read.ctd.odv()</a></code>.</li>
+<li>Add <code><a href="../reference/snakeToCamel.html">snakeToCamel()</a></code> to convert variable names in e.g. argo netcdf files.</li>
+<li>Add <code><a href="../reference/timeToArgoJuld.html">timeToArgoJuld()</a></code>.</li>
 </ul>
 </div>
 <div id="120" class="section level2">

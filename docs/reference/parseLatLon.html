@@ -41,9 +41,12 @@
 
 <meta property="og:title" content="Parse a Latitude or Longitude String — parseLatLon" />
 <meta property="og:description" content="Parse a latitude or longitude string, e.g. as in the header of a CTD file
-The following formats are understood (for, e.g. latitude) *
-NMEA Latitude = 47 54.760 N ** Latitude: 47 53.27 N 
-" />
+The following formats are understood (for, e.g. latitude):** NMEA Latitude = 47 54.760 N
+** Latitude: 47 53.27 N
+
+
+Note that iconv() is called to convert the string to ASCII before
+decoding, to change any degree (or other non-ASCII) symbols to blanks." />
 
 
 
@@ -75,7 +78,7 @@ NMEA Latitude = 47 54.760 N ** Latitude: 47 53.27 N
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -148,9 +151,12 @@ NMEA Latitude = 47 54.760 N ** Latitude: 47 53.27 N
 
     <div class="ref-description">
     <p>Parse a latitude or longitude string, e.g. as in the header of a CTD file
-The following formats are understood (for, e.g. latitude)</p><pre> *
-NMEA Latitude = 47 54.760 N ** Latitude: 47 53.27 N </pre>
+The following formats are understood (for, e.g. latitude):</p><pre>** NMEA Latitude = 47 54.760 N
+** Latitude: 47 53.27 N
+</pre>
 
+<p>Note that <code><a href='https://rdrr.io/r/base/iconv.html'>iconv()</a></code> is called to convert the string to ASCII before
+decoding, to change any degree (or other non-ASCII) symbols to blanks.</p>
     </div>
 
     <pre class="usage"><span class='fu'>parseLatLon</span>(<span class='no'>line</span>, <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>))</pre>

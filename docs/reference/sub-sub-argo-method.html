@@ -79,7 +79,7 @@ the data, data-quality flags, etc." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -198,9 +198,10 @@ if that fails, then a general function is used
 
 
 <p>There are several possibilities, depending on the nature of <code>i</code>.
-Note that all of these calculations are done with
-<code>salinityAdjusted</code>, if that is present, or with <code>salinity</code>
-otherwise, and similar for temperature and pressure.</p><ul>
+Note that <a href='argo-class.html'>argo</a> data may contain both unadjusted data and adjusted
+data.  By default, this extraction function refers to the former, but a
+preference for the latter may be set with <code><a href='preferAdjusted.html'>preferAdjusted()</a></code>, the
+documentation of which explains (fairly complex) details.</p><ul>
 <li><p>If <code>i</code> is <code>"profile"</code> and <code>j</code> is an integer vector,
 then an argo object is returned, as specified by <code>j</code>. For example,
 <code>argo[["profile", 2:5]]</code> is equivalent to

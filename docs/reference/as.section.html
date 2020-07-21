@@ -73,7 +73,7 @@ objects that can be coerced to a section. There are three cases." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -257,8 +257,8 @@ and these are assembled into a section to be returned.</p>
 #&gt;     2  fake -63.6339  44.6843     181    44
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2020-07-09 21:57:21 UTC: `create 'section' object`
-#&gt;     - 2020-07-09 21:57:21 UTC: `as.section(salinity = c("ctd", "fake"))`</div><div class='input'><span class='co'>## vector of CTD objects</span>
+#&gt;     - 2020-07-21 16:49:05 UTC: `create 'section' object`
+#&gt;     - 2020-07-21 16:49:05 UTC: `as.section(salinity = c("ctd", "fake"))`</div><div class='input'><span class='co'>## vector of CTD objects</span>
 <span class='no'>ctds</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/vector.html'>vector</a></span>(<span class='st'>"list"</span>, <span class='fl'>2</span>)
 <span class='no'>ctds</span><span class='kw'>[[</span><span class='fl'>1</span>]] <span class='kw'>&lt;-</span> <span class='no'>ctd</span>
 <span class='no'>ctds</span><span class='kw'>[[</span><span class='fl'>2</span>]] <span class='kw'>&lt;-</span> <span class='no'>fake</span>
@@ -273,8 +273,8 @@ and these are assembled into a section to be returned.</p>
 #&gt;     2  fake -63.6339  44.6843     181    44
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2020-07-09 21:57:21 UTC: `create 'section' object`
-#&gt;     - 2020-07-09 21:57:21 UTC: `as.section(salinity = ctds)`</div><div class='input'><span class='co'>## argo data (a subset)</span>
+#&gt;     - 2020-07-21 16:49:05 UTC: `create 'section' object`
+#&gt;     - 2020-07-21 16:49:05 UTC: `as.section(salinity = ctds)`</div><div class='input'><span class='co'>## argo data (a subset)</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>argo</span>)
 <span class='no'>sec3</span> <span class='kw'>&lt;-</span> <span class='fu'>as.section</span>(<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>argo</span>, <span class='no'>profile</span><span class='kw'>&lt;</span><span class='fl'>5</span>))
 <span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>sec3</span>)</div><div class='output co'>#&gt; Section Summary
@@ -290,8 +290,8 @@ and these are assembled into a section to be returned.</p>
 #&gt;     4     4 -22.4160  61.2520      56  1768
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2020-07-09 21:57:21 UTC: `create 'section' object`
-#&gt;     - 2020-07-09 21:57:21 UTC: `as.section(salinity = subset(argo, profile &lt; 5))`</div><div class='input'>
+#&gt;     - 2020-07-21 16:49:05 UTC: `create 'section' object`
+#&gt;     - 2020-07-21 16:49:05 UTC: `as.section(salinity = subset(argo, profile &lt; 5))`</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
