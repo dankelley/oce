@@ -8,3 +8,5 @@ oce.R
 oce.html
 rsconnect
 flags_files
+*.md
+figure
