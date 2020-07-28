@@ -21,10 +21,10 @@ using namespace Rcpp;
 int ID_ALLOWED[NID_ALLOWED]={21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 160};
 
 // #define numberKnownIds 5
-// const int ids[numberKnownIds] = {0xa0, 0x15, 0x16, 0x17, 0x18}; 
+// const int ids[numberKnownIds] = {0xa0, 0x15, 0x16, 0x17, 0x18};
 // const char *meanings[numberKnownIds] = {"String", "Burst Data", "Average Data", "Bottom-Track", "Interleaved Burst"};
 // const char *unknownString = "unknown";
-// 
+//
 // const char *id_meaning(int code)
 // {
 //   for (int i=0; i < numberKnownIds; i++) {
@@ -245,7 +245,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       ::Rf_error("cannot read header.family at cindex=%d (%7.4f%% through file)\n",
           cindex, 100.0*cindex/fileSize);
     unsigned char family = header.family; // used in recovery attempt, if a checksum error occurs
-    unsigned char header_buffer[2];
+    //unsigned char header_buffer[2];
     if (header.header_size == 10) {
       if (2 != fread(bytes2, 1, 2, fp))
         ::Rf_error("cannot read bytes2 (for 16 bit header_size) at cindex=%d (%7.4f%% through file)\n",
@@ -344,7 +344,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
           break;
         }
         if (c == SYNC) {
-          unsigned int trial_cindex = cindex; // so we can reset to here if this trial works
+          //unsigned int trial_cindex = cindex; // so we can reset to here if this trial works
           //.Rprintf("... got a sync character (0x%02x) at cindex=%d (%7.4f%% through file)\n",
           //.    SYNC, cindex, 100.0*cindex/fileSize);
           // header size (should be 10 or 12)
