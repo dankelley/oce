@@ -4244,6 +4244,24 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' `eos="gsw"` then [gsw::gsw_CT_freezing()] is used;
 #' in each case, zero pressure is used.
 #'
+#' @param extrapolateIsopycnals logical value (`FALSE` by default) that
+#' indicates whether to extrapolate the isopycnal curves
+#' beyond a temperature-salinity domain that is considered valid.
+#' For `eos="unesco"`, the valid region spans salinities from 0 to 42
+#' and temperatures from -2C to 40C (see page 23 of Fofonoff and Millard, 1983).
+#' For `eos="gsw"`, the appropriate valid range is somewhat uncertain, owing to
+#' contradictions between the foundational research paper (McDougall et al.
+#' 2003, section 3) and the TEOS-10/gsw code. In the present function,
+#' the permitted Absolute Salinity range is taken to be 0 g/kg to 42 g/kg, which
+#' matches the "funnel" used in the TEOS-10/gsw code as of July 2020,
+#' but it should be noted that [gsw::gsw_SA_from_rho()] can handle values up to 50 g/kg,
+#' perhaps suggesting a larger range of validity.  Another point of confusion is
+#' the range of Conservative Temperature validity.  The "funnel" returned
+#' by the TEOS-10/gsw matlab function `gsw_infunnel()` does not set an upper limit
+#' on surface Conservative Temperature, but that makes no physical sense, and so
+#' the present function chooses to follow McDougall et al. (2003 section 3)
+#' in setting 33C as an upper limit on surface Conservative Temperature.
+#'
 #' @param mgp 3-element numerical vector to use for `[par](mgp)`, and also
 #' for [par]`(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
@@ -4287,6 +4305,19 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' data(ctd)
 #' plotTS(ctd)
 #'
+#' @references
+#'
+#' * Fofonoff, N. P., and R. C. Millard.
+#' "Algorithms for Computation of Fundamental Properties of Seawater."
+#' UNESCO Technical Papers in Marine Research. SCOR working group on Evaluation of CTD data;
+#' UNESCO/ICES/SCOR/IAPSO Joint Panel on Oceanographic Tables and Standards, 1983.
+#' \url{https://unesdoc.unesco.org/ark:/48223/pf0000059832}.
+#'
+#' * McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
+#' "Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
+#' Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730–41.
+#' \url{https://doi.org/10.1175/1520-0426(2003)20<730:AACEAF>2.0.CO;2}.
+#'
 #' @family functions that plot oce data
 #' @family things related to ctd data
 plotTS <- function (x,
@@ -4308,6 +4339,7 @@ plotTS <- function (x,
                     xlab, ylab,
                     Slim, Tlim,
                     drawFreezing=TRUE,
+                    extrapolateIsopycnals=FALSE,
                     mgp=getOption("oceMgp"),
                     mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]),
                     lwd=par('lwd'), lty=par('lty'),
@@ -4485,7 +4517,9 @@ plotTS <- function (x,
     if (grid)
         grid(col=col.grid, lty=lty.grid)
     drawIsopycnals(nlevels=nlevels, levels=levels, rotate=rotate, rho1000=rho1000, digits=2,
-                   eos=eos, cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
+                   eos=eos,
+                   extrapolateIsopycnals=extrapolateIsopycnals,
+                   cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
     usr <- par("usr")
     Sr <- seq(max(0, usr[1]), usr[2], length.out=100)
     if (drawFreezing) {
@@ -4529,6 +4563,24 @@ plotTS <- function (x,
 #' @param eos equation of state to be used, either `"unesco"` or
 #' `"gsw"`.
 #'
+#' @param extrapolateIsopycnals logical value (`FALSE` by default) that
+#' indicates whether to extrapolate the isopycnal curves
+#' beyond a temperature-salinity domain that is considered valid.
+#' For `eos="unesco"`, the valid region spans salinities from 0 to 42
+#' and temperatures from -2C to 40C (see page 23 of Fofonoff and Millard, 1983).
+#' For `eos="gsw"`, the appropriate valid range is somewhat uncertain, owing to
+#' contradictions between the foundational research paper (McDougall et al.
+#' 2003, section 3) and the TEOS-10/gsw code. In the present function,
+#' the permitted Absolute Salinity range is taken to be 0 g/kg to 42 g/kg, which
+#' matches the "funnel" used in the TEOS-10/gsw code as of July 2020,
+#' but it should be noted that [gsw::gsw_SA_from_rho()] can handle values up to 50 g/kg,
+#' perhaps suggesting a larger range of validity.  Another point of confusion is
+#' the range of Conservative Temperature valididity.  The "funnel" returned
+#' by the TEOS-10/gsw matlab function `gsw_infunnel()` does not set an upper limit
+#' on surface Conservative Temperature, but that makes no physical sense, and so
+#' the present function chooses to follow McDougall et al. (2003 section 3)
+#' in setting 33C as an upper limit on surface Conservative Temperature.
+#'
 #' @param cex size for labels.
 #'
 #' @param col color for lines and labels.
@@ -4539,11 +4591,24 @@ plotTS <- function (x,
 #'
 #' @return None.
 #'
-#' @author Dan Kelley
-#'
 #' @seealso [plotTS()], which calls this.
+#'
+#' @references
+#' * Fofonoff, N. P., and R. C. Millard.
+#' "Algorithms for Computation of Fundamental Properties of Seawater."
+#' UNESCO Technical Papers in Marine Research. SCOR working group on Evaluation of CTD data;
+#' UNESCO/ICES/SCOR/IAPSO Joint Panel on Oceanographic Tables and Standards, 1983.
+#' \url{https://unesdoc.unesco.org/ark:/48223/pf0000059832}.
+#'
+#' * McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
+#' "Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
+#' Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730–41.
+#' \url{https://doi.org/10.1175/1520-0426(2003)20<730:AACEAF>2.0.CO;2}.
+#'
+#' @author Dan Kelley
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
                            eos=getOption("oceEOS", default='gsw'),
+                           extrapolateIsopycnals=FALSE,
                            cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
     eos <- match.arg(eos, c("unesco", "gsw"))
@@ -4579,11 +4644,27 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
         rhoLabel <- round(rhoLabel, digits)
         ## FIXME-gsw: will this handle gsw?
         Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), eos=eos)
+        if (eos == "unesco" && !extrapolateIsopycnals) {
+            valid <- 0 <= Sline & Sline <= 40
+        }
         ## Eliminate NA (for crazy T)
         ok <- !is.na(Sline)
         ## Eliminate ice values (BUG: only for unesco because what lon and lat to use?)
         if (eos == "unesco")
             ok <- ok & swTFreeze(Sline, 0, eos="unesco") < Tline
+        if (!extrapolateIsopycnals) {
+            validTS <- if (eos == "unesco") {
+                # The use of 'ok &' below prevents NAs from creeping back in.
+                ok & -2 <= Tline & Tline <= 40 & 0 <= Sline & Sline <= 42
+            } else {
+                ok & -2 <= Tline & Tline <= 33 & 0 <= Sline & Sline <= 42
+            }
+            ok <- ok & validTS
+        }
+        if (eos == "unesco" && !extrapolateIsopycnals) {
+            validTS <- ok & -2 <= Tline & Tline <= 40 & 0 <= Sline & Sline <= 40
+            ok <- ok & validTS
+        }
         if (sum(ok) > 2) {
             Sok <- Sline[ok]
             Tok <- Tline[ok]

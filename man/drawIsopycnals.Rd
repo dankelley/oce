@@ -11,6 +11,7 @@ drawIsopycnals(
   rho1000 = FALSE,
   digits = 2,
   eos = getOption("oceEOS", default = "gsw"),
+  extrapolateIsopycnals = FALSE,
   cex = 0.75 * par("cex"),
   col = "darkgray",
   lwd = par("lwd"),
@@ -35,6 +36,24 @@ horizontally.}
 \item{eos}{equation of state to be used, either \code{"unesco"} or
 \code{"gsw"}.}
 
+\item{extrapolateIsopycnals}{logical value (\code{FALSE} by default) that
+indicates whether to extrapolate the isopycnal curves
+beyond a temperature-salinity domain that is considered valid.
+For \code{eos="unesco"}, the valid region spans salinities from 0 to 42
+and temperatures from -2C to 40C (see page 23 of Fofonoff and Millard, 1983).
+For \code{eos="gsw"}, the appropriate valid range is somewhat uncertain, owing to
+contradictions between the foundational research paper (McDougall et al.
+2003, section 3) and the TEOS-10/gsw code. In the present function,
+the permitted Absolute Salinity range is taken to be 0 g/kg to 42 g/kg, which
+matches the "funnel" used in the TEOS-10/gsw code as of July 2020,
+but it should be noted that \code{\link[gsw:gsw_SA_from_rho]{gsw::gsw_SA_from_rho()}} can handle values up to 50 g/kg,
+perhaps suggesting a larger range of validity.  Another point of confusion is
+the range of Conservative Temperature valididity.  The "funnel" returned
+by the TEOS-10/gsw matlab function \code{gsw_infunnel()} does not set an upper limit
+on surface Conservative Temperature, but that makes no physical sense, and so
+the present function chooses to follow McDougall et al. (2003 section 3)
+in setting 33C as an upper limit on surface Conservative Temperature.}
+
 \item{cex}{size for labels.}
 
 \item{col}{color for lines and labels.}
@@ -50,6 +69,19 @@ None.
 Adds isopycnal lines to an existing temperature-salinity plot.  This is
 called by \code{\link[=plotTS]{plotTS()}}, and may be called by the user also, e.g. if
 an image plot is used to show TS data density.
+}
+\references{
+\itemize{
+\item Fofonoff, N. P., and R. C. Millard.
+"Algorithms for Computation of Fundamental Properties of Seawater."
+UNESCO Technical Papers in Marine Research. SCOR working group on Evaluation of CTD data;
+UNESCO/ICES/SCOR/IAPSO Joint Panel on Oceanographic Tables and Standards, 1983.
+\url{https://unesdoc.unesco.org/ark:/48223/pf0000059832}.
+\item McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
+"Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
+Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730–41.
+\url{https://doi.org/10.1175/1520-0426(2003)20<730:AACEAF>2.0.CO;2}.
+}
 }
 \seealso{
 \code{\link[=plotTS]{plotTS()}}, which calls this.

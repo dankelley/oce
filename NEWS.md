@@ -2,6 +2,7 @@
 
 ## 1.3.0
 
+* Change `plotTS()` to trim isopycnals to realistic salinities and temperatures.
 * Change `read.argo()` and `data(argo)` to use camelCase in all metadata.
 * Change reader-oriented github website generator to `pkgdown`.
 * Extend `read.adp.rdi()` to handle 38kHz RDI adp files.

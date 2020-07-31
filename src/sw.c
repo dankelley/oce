@@ -413,6 +413,9 @@ gsw_rho(double sa, double ct, double p)
 
 #endif
 
+// strho_f(), used by strho_bisection_search(),  computes density,
+// given argument 'x'=salinity, along with argument 'teos' and
+// *global* value T=temperature.
 double strho_f(double x, int teos)
 {
   extern double p_ref, sig_0;
@@ -430,8 +433,8 @@ double strho_f(double x, int teos)
 
 /* find roots of f(x)
  * ARGS: *x
- *        x1 and x2 bracket the root
- *        xresolution = error allowed in x
+ *        x1 and x2 salinities that bracket the root
+ *        xresolution = error allowed in x (salinity)
  *        ftol = tolerance in f(x)
  * DESCRIPTION: Searches for a root of f(x) over the interval [x1,x2].
  * RETURN VALUE 0 if root found to within tolerance; 1 otherwise
@@ -448,7 +451,7 @@ int strho_bisection_search(double *x, double x1, double x2, double xresolution, 
     //Rprintf("  strho_bisection_search() returning NA early because no root is bracketed; x1=%f   g1=%f    x2=%f  g2=%f\n", x1,g1,x2,g2);
     return 0;
   }
-  /* printf("TOP of bs.  g1=%f   g2=%f\n",g1,g2); */
+  //Rprintf("strho_bisection_search(*x=%g, x1=%g, x2=%g, ..., teos=%d) where x means salinity\n",*x, x1, x2, teos);
   int iteration = 0;
   int maxiteration = 50; // with range <100deg, have 100/2^20 < 1e-4 degC, good enough for practical
   while (fabs(g = strho_f(*x = (x1 + x2) / 2.0, teos)) > ftol || fabs (x1 - x2) > xresolution) {
