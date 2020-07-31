@@ -4177,6 +4177,32 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #'
 #' Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
 #'
+#' The isopycnal curves (along which density is constant) are 
+#' drawn with [drawIsopycnals()], which also places
+#' labels in the margins showing density minus 1000 \eqn{kg/m^3}{kg/m^3}.
+#' If `trimIsopycnals` is `TRUE` (which is the default), these curves
+#' are trimmed to the region within which the results of density calculation
+#' in the chosen equation of state (`eos`) are considered to be reliable.
+#'
+#' With `eos="unesco"` this region includes
+#' Practical Salinity from 0 to 42 and Potential Temperature
+#' from -2C to 40C, in accordance with Fofonoff and Millard
+#' (1983, page 23).
+#'
+#' With `eos="gsw"` the lower
+#' limit of Absolute Salinity validity is taken as 0 g/kg,
+#' in accordance with both McDougall et al. (2003 section 3)
+#' and the TEOS-10/gsw Matlab code for the so-called "funnel" of validity.
+#' However, an appropriate upper limit on Absolute Salinity is not as clear.
+#' Here, the value 42 g/kg is chosen to match the "funnel" Matlab code
+#' as of July 2020, but two other choices might have been
+#' made. One is 50 g/kg, since [gsw::gsw_SA_from_rho()] returns `NA` values
+#' for Absolute Salinities exceeding that value, and another is
+#' 40 g/kg, as in McDougall et al. (2003 section 3).
+#' The Conservative Temperature range is set to run from -2C
+#' to 33C, as in McDougall et al. (2003 section 3), even though the
+#' "funnel" imposes no upper limit on this variable.
+#'
 #' @param x a [ctd-class], [argo-class] or [section-class] object, or a list
 #' containing solely [ctd-class] objects or [argo-class] objects.
 #'
@@ -4244,6 +4270,12 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' `eos="gsw"` then [gsw::gsw_CT_freezing()] is used;
 #' in each case, zero pressure is used.
 #'
+#' @param trimIsopycnals logical value (`TRUE` by default) that
+#' indicates whether to trim isopycnal curves
+#' to the region of temperature-salinity space for which density
+#' computations are considered to be valid in the context of the
+#' chosen `eos`; see \dQuote{Details}.
+#'
 #' @param mgp 3-element numerical vector to use for `[par](mgp)`, and also
 #' for [par]`(mar)`, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
@@ -4287,6 +4319,19 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' data(ctd)
 #' plotTS(ctd)
 #'
+#' @references
+#'
+#' * Fofonoff, N. P., and R. C. Millard.
+#' "Algorithms for Computation of Fundamental Properties of Seawater."
+#' UNESCO Technical Papers in Marine Research. SCOR working group on Evaluation of CTD data;
+#' UNESCO/ICES/SCOR/IAPSO Joint Panel on Oceanographic Tables and Standards, 1983.
+#' \url{https://unesdoc.unesco.org/ark:/48223/pf0000059832}.
+#'
+#' * McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
+#' "Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
+#' Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730–41.
+#' \url{https://doi.org/10.1175/1520-0426(2003)20<730:AACEAF>2.0.CO;2}.
+#'
 #' @family functions that plot oce data
 #' @family things related to ctd data
 plotTS <- function (x,
@@ -4308,6 +4353,7 @@ plotTS <- function (x,
                     xlab, ylab,
                     Slim, Tlim,
                     drawFreezing=TRUE,
+                    trimIsopycnals=TRUE,
                     mgp=getOption("oceMgp"),
                     mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]),
                     lwd=par('lwd'), lty=par('lty'),
@@ -4485,7 +4531,9 @@ plotTS <- function (x,
     if (grid)
         grid(col=col.grid, lty=lty.grid)
     drawIsopycnals(nlevels=nlevels, levels=levels, rotate=rotate, rho1000=rho1000, digits=2,
-                   eos=eos, cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
+                   eos=eos,
+                   trimIsopycnals=trimIsopycnals,
+                   cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
     usr <- par("usr")
     Sr <- seq(max(0, usr[1]), usr[2], length.out=100)
     if (drawFreezing) {
@@ -4529,6 +4577,13 @@ plotTS <- function (x,
 #' @param eos equation of state to be used, either `"unesco"` or
 #' `"gsw"`.
 #'
+#' @param trimIsopycnals logical value (`TRUE` by default) that
+#' indicates whether to trim isopycnal curves (if drawn)
+#' to the region of temperature-salinity space for which density
+#' computations are considered to be valid in the context of the
+#' chosen `eos`; see the \dQuote{Details} of the documentation
+#' for [plotTS()].
+#'
 #' @param cex size for labels.
 #'
 #' @param col color for lines and labels.
@@ -4539,11 +4594,24 @@ plotTS <- function (x,
 #'
 #' @return None.
 #'
-#' @author Dan Kelley
-#'
 #' @seealso [plotTS()], which calls this.
+#'
+#' @references
+#' * Fofonoff, N. P., and R. C. Millard.
+#' "Algorithms for Computation of Fundamental Properties of Seawater."
+#' UNESCO Technical Papers in Marine Research. SCOR working group on Evaluation of CTD data;
+#' UNESCO/ICES/SCOR/IAPSO Joint Panel on Oceanographic Tables and Standards, 1983.
+#' \url{https://unesdoc.unesco.org/ark:/48223/pf0000059832}.
+#'
+#' * McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
+#' "Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
+#' Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730–41.
+#' \url{https://doi.org/10.1175/1520-0426(2003)20<730:AACEAF>2.0.CO;2}.
+#'
+#' @author Dan Kelley
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
                            eos=getOption("oceEOS", default='gsw'),
+                           trimIsopycnals=TRUE,
                            cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
     eos <- match.arg(eos, c("unesco", "gsw"))
@@ -4581,9 +4649,18 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
         Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), eos=eos)
         ## Eliminate NA (for crazy T)
         ok <- !is.na(Sline)
-        ## Eliminate ice values (BUG: only for unesco because what lon and lat to use?)
+        ## Prevent drawing in the invalid temperature-salinity region (see Details)
         if (eos == "unesco")
             ok <- ok & swTFreeze(Sline, 0, eos="unesco") < Tline
+        if (trimIsopycnals) {
+            validTS <- if (eos == "unesco") {
+                # The use of 'ok &' below prevents NAs from creeping back in.
+                ok & -2 <= Tline & Tline <= 40 & 0 <= Sline & Sline <= 42
+            } else {
+                ok & -2 <= Tline & Tline <= 33 & 0 <= Sline & Sline <= 40
+            }
+            ok <- ok & validTS
+        }
         if (sum(ok) > 2) {
             Sok <- Sline[ok]
             Tok <- Tline[ok]
