@@ -4177,6 +4177,32 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #'
 #' Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
 #'
+#' The isopycnal curves (along which density is constant) are 
+#' drawn with [drawIsopycnals()], which also places
+#' labels in the margins showing density minus 1000 \eqn{kg/m^3}{kg/m^3}.
+#' If `trimIsopycnals` is `TRUE` (which is the default), these curves
+#' are trimmed to the region within which the results of density calculation
+#' in the chosen equation of state (`eos`) are considered to be reliable.
+#'
+#' With `eos="unesco"` this region includes
+#' Practical Salinity from 0 to 42 and Potential Temperature
+#' from -2C to 40C, in accordance with Fofonoff and Millard
+#' (1983, page 23).
+#'
+#' With `eos="gsw"` the lower
+#' limit of Absolute Salinity validity is taken as 0 g/kg,
+#' in accordance with both McDougall et al. (2003 section 3)
+#' and the TEOS-10/gsw Matlab code for the so-called "funnel" of validity.
+#' However, an appropriate upper limit on Absolute Salinity is not as clear.
+#' Here, the value 42 g/kg is chosen to match the "funnel" Matlab code
+#' as of July 2020, but two other choices might have been
+#' made. One is 50 g/kg, since [gsw::gsw_SA_from_rho()] returns `NA` values
+#' for Absolute Salinities exceeding that value, and another is
+#' 40 g/kg, as in McDougall et al. (2003 section 3).
+#' The Conservative Temperature range is set to run from -2C
+#' to 33C, as in McDougall et al. (2003 section 3), even though the
+#' "funnel" imposes no upper limit on this variable.
+#'
 #' @param x a [ctd-class], [argo-class] or [section-class] object, or a list
 #' containing solely [ctd-class] objects or [argo-class] objects.
 #'
@@ -4244,23 +4270,11 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' `eos="gsw"` then [gsw::gsw_CT_freezing()] is used;
 #' in each case, zero pressure is used.
 #'
-#' @param extrapolateIsopycnals logical value (`FALSE` by default) that
-#' indicates whether to extrapolate the isopycnal curves
-#' beyond a temperature-salinity domain that is considered valid.
-#' For `eos="unesco"`, the valid region spans salinities from 0 to 42
-#' and temperatures from -2C to 40C (see page 23 of Fofonoff and Millard, 1983).
-#' For `eos="gsw"`, the appropriate valid range is somewhat uncertain, owing to
-#' contradictions between the foundational research paper (McDougall et al.
-#' 2003, section 3) and the TEOS-10/gsw code. In the present function,
-#' the permitted Absolute Salinity range is taken to be 0 g/kg to 42 g/kg, which
-#' matches the "funnel" used in the TEOS-10/gsw code as of July 2020,
-#' but it should be noted that [gsw::gsw_SA_from_rho()] can handle values up to 50 g/kg,
-#' perhaps suggesting a larger range of validity.  Another point of confusion is
-#' the range of Conservative Temperature validity.  The "funnel" returned
-#' by the TEOS-10/gsw matlab function `gsw_infunnel()` does not set an upper limit
-#' on surface Conservative Temperature, but that makes no physical sense, and so
-#' the present function chooses to follow McDougall et al. (2003 section 3)
-#' in setting 33C as an upper limit on surface Conservative Temperature.
+#' @param trimIsopycnals logical value (`TRUE` by default) that
+#' indicates whether to trim isopycnal curves
+#' to the region of temperature-salinity space for which density
+#' computations are considered to be valid in the context of the
+#' chosen `eos`; see \dQuote{Details}.
 #'
 #' @param mgp 3-element numerical vector to use for `[par](mgp)`, and also
 #' for [par]`(mar)`, computed from this.  The default is tighter than the R
@@ -4339,7 +4353,7 @@ plotTS <- function (x,
                     xlab, ylab,
                     Slim, Tlim,
                     drawFreezing=TRUE,
-                    extrapolateIsopycnals=FALSE,
+                    trimIsopycnals=TRUE,
                     mgp=getOption("oceMgp"),
                     mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]),
                     lwd=par('lwd'), lty=par('lty'),
@@ -4518,7 +4532,7 @@ plotTS <- function (x,
         grid(col=col.grid, lty=lty.grid)
     drawIsopycnals(nlevels=nlevels, levels=levels, rotate=rotate, rho1000=rho1000, digits=2,
                    eos=eos,
-                   extrapolateIsopycnals=extrapolateIsopycnals,
+                   trimIsopycnals=trimIsopycnals,
                    cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
     usr <- par("usr")
     Sr <- seq(max(0, usr[1]), usr[2], length.out=100)
@@ -4563,23 +4577,12 @@ plotTS <- function (x,
 #' @param eos equation of state to be used, either `"unesco"` or
 #' `"gsw"`.
 #'
-#' @param extrapolateIsopycnals logical value (`FALSE` by default) that
-#' indicates whether to extrapolate the isopycnal curves
-#' beyond a temperature-salinity domain that is considered valid.
-#' For `eos="unesco"`, the valid region spans salinities from 0 to 42
-#' and temperatures from -2C to 40C (see page 23 of Fofonoff and Millard, 1983).
-#' For `eos="gsw"`, the appropriate valid range is somewhat uncertain, owing to
-#' contradictions between the foundational research paper (McDougall et al.
-#' 2003, section 3) and the TEOS-10/gsw code. In the present function,
-#' the permitted Absolute Salinity range is taken to be 0 g/kg to 42 g/kg, which
-#' matches the "funnel" used in the TEOS-10/gsw code as of July 2020,
-#' but it should be noted that [gsw::gsw_SA_from_rho()] can handle values up to 50 g/kg,
-#' perhaps suggesting a larger range of validity.  Another point of confusion is
-#' the range of Conservative Temperature valididity.  The "funnel" returned
-#' by the TEOS-10/gsw matlab function `gsw_infunnel()` does not set an upper limit
-#' on surface Conservative Temperature, but that makes no physical sense, and so
-#' the present function chooses to follow McDougall et al. (2003 section 3)
-#' in setting 33C as an upper limit on surface Conservative Temperature.
+#' @param trimIsopycnals logical value (`TRUE` by default) that
+#' indicates whether to trim isopycnal curves (if drawn)
+#' to the region of temperature-salinity space for which density
+#' computations are considered to be valid in the context of the
+#' chosen `eos`; see the \dQuote{Details} of the documentation
+#' for [plotTS()].
 #'
 #' @param cex size for labels.
 #'
@@ -4608,7 +4611,7 @@ plotTS <- function (x,
 #' @author Dan Kelley
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
                            eos=getOption("oceEOS", default='gsw'),
-                           extrapolateIsopycnals=FALSE,
+                           trimIsopycnals=TRUE,
                            cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
     eos <- match.arg(eos, c("unesco", "gsw"))
@@ -4644,25 +4647,18 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
         rhoLabel <- round(rhoLabel, digits)
         ## FIXME-gsw: will this handle gsw?
         Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), eos=eos)
-        if (eos == "unesco" && !extrapolateIsopycnals) {
-            valid <- 0 <= Sline & Sline <= 40
-        }
         ## Eliminate NA (for crazy T)
         ok <- !is.na(Sline)
-        ## Eliminate ice values (BUG: only for unesco because what lon and lat to use?)
+        ## Prevent drawing in the invalid temperature-salinity region (see Details)
         if (eos == "unesco")
             ok <- ok & swTFreeze(Sline, 0, eos="unesco") < Tline
-        if (!extrapolateIsopycnals) {
+        if (trimIsopycnals) {
             validTS <- if (eos == "unesco") {
                 # The use of 'ok &' below prevents NAs from creeping back in.
                 ok & -2 <= Tline & Tline <= 40 & 0 <= Sline & Sline <= 42
             } else {
-                ok & -2 <= Tline & Tline <= 33 & 0 <= Sline & Sline <= 42
+                ok & -2 <= Tline & Tline <= 33 & 0 <= Sline & Sline <= 40
             }
-            ok <- ok & validTS
-        }
-        if (eos == "unesco" && !extrapolateIsopycnals) {
-            validTS <- ok & -2 <= Tline & Tline <= 40 & 0 <= Sline & Sline <= 40
             ok <- ok & validTS
         }
         if (sum(ok) > 2) {

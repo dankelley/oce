@@ -30,7 +30,7 @@ plotTS(
   Slim,
   Tlim,
   drawFreezing = TRUE,
-  extrapolateIsopycnals = FALSE,
+  trimIsopycnals = TRUE,
   mgp = getOption("oceMgp"),
   mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1], mgp[1]),
   lwd = par("lwd"),
@@ -111,23 +111,11 @@ line. This is based on zero pressure. If \code{eos="unesco"} then
 \code{eos="gsw"} then \code{\link[gsw:gsw_CT_freezing]{gsw::gsw_CT_freezing()}} is used;
 in each case, zero pressure is used.}
 
-\item{extrapolateIsopycnals}{logical value (\code{FALSE} by default) that
-indicates whether to extrapolate the isopycnal curves
-beyond a temperature-salinity domain that is considered valid.
-For \code{eos="unesco"}, the valid region spans salinities from 0 to 42
-and temperatures from -2C to 40C (see page 23 of Fofonoff and Millard, 1983).
-For \code{eos="gsw"}, the appropriate valid range is somewhat uncertain, owing to
-contradictions between the foundational research paper (McDougall et al.
-2003, section 3) and the TEOS-10/gsw code. In the present function,
-the permitted Absolute Salinity range is taken to be 0 g/kg to 42 g/kg, which
-matches the "funnel" used in the TEOS-10/gsw code as of July 2020,
-but it should be noted that \code{\link[gsw:gsw_SA_from_rho]{gsw::gsw_SA_from_rho()}} can handle values up to 50 g/kg,
-perhaps suggesting a larger range of validity.  Another point of confusion is
-the range of Conservative Temperature validity.  The "funnel" returned
-by the TEOS-10/gsw matlab function \code{gsw_infunnel()} does not set an upper limit
-on surface Conservative Temperature, but that makes no physical sense, and so
-the present function chooses to follow McDougall et al. (2003 section 3)
-in setting 33C as an upper limit on surface Conservative Temperature.}
+\item{trimIsopycnals}{logical value (\code{TRUE} by default) that
+indicates whether to trim isopycnal curves
+to the region of temperature-salinity space for which density
+computations are considered to be valid in the context of the
+chosen \code{eos}; see \dQuote{Details}.}
 
 \item{mgp}{3-element numerical vector to use for \verb{[par](mgp)}, and also
 for \link{par}\code{(mar)}, computed from this.  The default is tighter than the R
@@ -165,6 +153,33 @@ values that can be used by \code{\link[=oce.grid]{oce.grid()}} to add a grid to 
 }
 \description{
 Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
+}
+\details{
+The isopycnal curves (along which density is constant) are
+drawn with \code{\link[=drawIsopycnals]{drawIsopycnals()}}, which also places
+labels in the margins showing density minus 1000 \eqn{kg/m^3}{kg/m^3}.
+If \code{trimIsopycnals} is \code{TRUE} (which is the default), these curves
+are trimmed to the region within which the results of density calculation
+in the chosen equation of state (\code{eos}) are considered to be reliable.
+
+With \code{eos="unesco"} this region includes
+Practical Salinity from 0 to 42 and Potential Temperature
+from -2C to 40C, in accordance with Fofonoff and Millard
+(1983, page 23).
+
+With \code{eos="gsw"} the lower
+limit of Absolute Salinity validity is taken as 0 g/kg,
+in accordance with both McDougall et al. (2003 section 3)
+and the TEOS-10/gsw Matlab code for the so-called "funnel" of validity.
+However, an appropriate upper limit on Absolute Salinity is not as clear.
+Here, the value 42 g/kg is chosen to match the "funnel" Matlab code
+as of July 2020, but two other choices might have been
+made. One is 50 g/kg, since \code{\link[gsw:gsw_SA_from_rho]{gsw::gsw_SA_from_rho()}} returns \code{NA} values
+for Absolute Salinities exceeding that value, and another is
+40 g/kg, as in McDougall et al. (2003 section 3).
+The Conservative Temperature range is set to run from -2C
+to 33C, as in McDougall et al. (2003 section 3), even though the
+"funnel" imposes no upper limit on this variable.
 }
 \examples{
 library(oce)

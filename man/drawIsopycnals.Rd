@@ -11,7 +11,7 @@ drawIsopycnals(
   rho1000 = FALSE,
   digits = 2,
   eos = getOption("oceEOS", default = "gsw"),
-  extrapolateIsopycnals = FALSE,
+  trimIsopycnals = TRUE,
   cex = 0.75 * par("cex"),
   col = "darkgray",
   lwd = par("lwd"),
@@ -36,23 +36,12 @@ horizontally.}
 \item{eos}{equation of state to be used, either \code{"unesco"} or
 \code{"gsw"}.}
 
-\item{extrapolateIsopycnals}{logical value (\code{FALSE} by default) that
-indicates whether to extrapolate the isopycnal curves
-beyond a temperature-salinity domain that is considered valid.
-For \code{eos="unesco"}, the valid region spans salinities from 0 to 42
-and temperatures from -2C to 40C (see page 23 of Fofonoff and Millard, 1983).
-For \code{eos="gsw"}, the appropriate valid range is somewhat uncertain, owing to
-contradictions between the foundational research paper (McDougall et al.
-2003, section 3) and the TEOS-10/gsw code. In the present function,
-the permitted Absolute Salinity range is taken to be 0 g/kg to 42 g/kg, which
-matches the "funnel" used in the TEOS-10/gsw code as of July 2020,
-but it should be noted that \code{\link[gsw:gsw_SA_from_rho]{gsw::gsw_SA_from_rho()}} can handle values up to 50 g/kg,
-perhaps suggesting a larger range of validity.  Another point of confusion is
-the range of Conservative Temperature valididity.  The "funnel" returned
-by the TEOS-10/gsw matlab function \code{gsw_infunnel()} does not set an upper limit
-on surface Conservative Temperature, but that makes no physical sense, and so
-the present function chooses to follow McDougall et al. (2003 section 3)
-in setting 33C as an upper limit on surface Conservative Temperature.}
+\item{trimIsopycnals}{logical value (\code{TRUE} by default) that
+indicates whether to trim isopycnal curves (if drawn)
+to the region of temperature-salinity space for which density
+computations are considered to be valid in the context of the
+chosen \code{eos}; see the \dQuote{Details} of the documentation
+for \code{\link[=plotTS]{plotTS()}}.}
 
 \item{cex}{size for labels.}
 
