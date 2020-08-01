@@ -8,7 +8,7 @@
 This is created with \code{\link[=read.topo]{read.topo()}}, using a file downloaded with
 \preformatted{
 topoFile <- download.topo(west=-180, east=180, south=-90, north=90,
-                         resolution=30, format="netcdf", destdir=".")
+                         resolution=30, destdir=".")
 }
 }
 \usage{
@@ -24,7 +24,7 @@ Height (\code{topoWorld[["z"]]}) is measured in metres above nominal sea level.
 The coarse resolution can be a problem in plotting depth contours along with
 coastlines in regions of steep topography. For example, near the southeast
 corner of Newfoundland, a 200m contour will overlap a coastline drawn with
-\link[ocedata:coastlineWorldFine]{ocedata::coastlineWorldFine}. The solution in such cases is to
+\link[ocedata:coastlineWorldMedium]{ocedata::coastlineWorldFine}. The solution in such cases is to
 download a higher-resolution topography file, perhaps using
 \code{\link[=download.topo]{download.topo()}}, and then use \code{\link[=read.topo]{read.topo()}}
 to create another \code{topo} object.  (With other data

@@ -7,11 +7,11 @@
 lonlat2map(longitude, latitude, projection = "", debug = getOption("oceDebug"))
 }
 \arguments{
-\item{longitude}{a vector containing decimal longitudes, or a list
+\item{longitude}{a numeric vector containing decimal longitudes, or a list
 containing items named \code{longitude} and \code{latitude}, in which case
 the indicated values are used, and next argument is ignored.}
 
-\item{latitude}{a vector containing decimal latitude (ignored if
+\item{latitude}{a numeric vector containing decimal latitude (ignored if
 \code{longitude} is a list, as described above).}
 
 \item{projection}{optional indication of projection.  This must be character

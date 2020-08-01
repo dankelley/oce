@@ -110,6 +110,7 @@ USA. 429 pages.
 The equivalent function for the sun is \code{\link[=sunAngle]{sunAngle()}}.
 
 Other things related to astronomy: 
+\code{\link{angle2hms}()},
 \code{\link{eclipticalToEquatorial}()},
 \code{\link{equatorialToLocalHorizontal}()},
 \code{\link{julianCenturyAnomaly}()},

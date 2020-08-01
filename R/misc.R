@@ -196,7 +196,7 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
 {
     if (missing(x))
         return("")
-    name <- paste(substitute(x))
+    name <- paste(substitute(expr=x, env=environment()))
     res <- ""
     if (missing(x)) {
         res <- "(missing)"
@@ -222,6 +222,16 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
     if (!last)
         res <- paste(res, ",", sep="")
     res
+}
+
+#' Get first finite value in a vector or array, or NULL if none
+#' @param v A numerical vector or array.
+firstFinite <- function(v)
+{
+    if (!is.vector(v))
+        v <- as.vector(v)
+    first <- which(is.finite(v))
+    if (length(first) > 0) v[first[1]] else NULL
 }
 
 #' Read a World Ocean Atlas NetCDF File
@@ -317,15 +327,76 @@ shortenTimeString <- function(t, debug=getOption("oceDebug"))
     tc
 }
 
-#' Get first finite value in a vector or array, or NULL if none
-#' @param v A numerical vector or array.
-firstFinite <- function(v)
+#' Convert each of a vector of strings from SNAKE_CASE to camelCase
+#'
+#' `snakeToCamel` converts "snake-case" characters such as `"NOVA_SCOTIA"`
+#' to "camel-case" values, such as `"NovaScotia"`.  It was written for
+#' use by [read.argo()], but it also may prove helpful in other contexts.
+#'
+#' The basic procedure is to chop the string up into substrings separated by
+#' the underline character, then to upper-case the first letter of
+#' all substrings except the first, and then to paste the substrings
+#' together.
+#'
+#' However, there are exceptions.  First, any upper-case string that contains no
+#' underlines is converted to lower case, but any mixed-case string with no
+#' underlines is returned as-is (see the second example). Second, if
+#' the `specialCases` argument contains `"QC"`, then the
+#' `QC` is passed through directly (since it is an acronym) and
+#' if the first letter of remaining text is upper-cased (contrast
+#' see the four examples).
+#'
+#' @param s A vector of character values.
+#'
+#' @param specialCases A vector of character values that tell which
+#' special-cases to apply, or `NULL` (the default) to turn off special
+#' cases.  The only permitted special case at the moment is `"QC"` (see
+#' \dQuote{Details}) but the idea of this argument is that other cases
+#' can be added later, if needed.
+#'
+#' @return A vector of character values
+#'
+#' @examples
+#' library(oce)
+#' snakeToCamel("PARAMETER_DATA_MODE")   # "parameterDataMode"
+#' snakeToCamel("PARAMETER")             # "parameter"
+#' snakeToCamel("HISTORY_QCTEST")        # "historyQctest"
+#' snakeToCamel("HISTORY_QCTEST", "QC")  # "historyQCTest"
+#' snakeToCamel("PROFILE_DOXY_QC")       # "profileDoxyQc"
+#' snakeToCamel("PROFILE_DOXY_QC", "QC") # "profileDoxyQC"
+#' @author Dan Kelley
+snakeToCamel <- function(s, specialCases=NULL)
 {
-    if (!is.vector(v))
-        v <- as.vector(v)
-    first <- which(is.finite(v))
-    if (length(first) > 0) v[first[1]] else NULL
+    ns <- length(s)
+    if ("QC" %in% specialCases) {
+        s <- gsub("QCTEST", "Q_C_TEST", s) # for e.g. HISTORY_QCTEST
+        s <- gsub("QC$", "Q_C", s)         # for e.g. PROFILE_DOXY_QC
+        s <- gsub("Qc$", "QC", s)          # for e.g. positionQc (converted previously)
+    }
+    if (ns < 1)
+        stop("'s' must be a vector of character values")
+    res <- vector("character", length=ns)
+    for (is in seq(1L, length(s))) {
+        if (!grepl("_", s[is])) {
+            ## Handle the single-word case. If all upper-case, convert to lower,
+            ## but otherwise, leave it as it is.
+            res[is] <- if (s[is] == toupper(s[is])) tolower(s[is]) else s[is]
+        } else {
+            ## Handle the multi-word case. Start by making it lower case.
+            s[is] <- tolower(s[is])
+            ## Now, split and then work through the words
+            w <- strsplit(s[is], "_")[[1]]
+            nw <- length(w)
+            res[is] <- w[1]
+            for (iw in 2:nw) {
+                wl <- tolower(w[iw])
+                res[is] <- paste0(res[is], toupper(substring(wl,1,1)), substring(wl,2))
+            }
+        }
+    }
+    res
 }
+
 
 #' Decode units, from strings
 #'
@@ -686,7 +757,7 @@ titleCase <- function(w)
 #' imagep(x, y, v, zlab="v", asp=1)
 #' imagep(x, y, C$curl, zlab="curl", asp=1)
 #' hist(C$curl, breaks=100)
-#' @family functions relating to vector calculus
+#' @family things relating to vector calculus
 curl <- function(u, v, x, y, geographical=FALSE, method=1)
 {
     if (missing(u)) stop("must supply u")
@@ -2261,7 +2332,7 @@ vectorShow <- function(v, msg="", postscript="", digits=5, n=2L)
     DIM <- dim(v)
     nv <- length(v)
     if (!nchar(msg))
-        msg <- deparse(substitute(v))
+        msg <- deparse(substitute(expr=v, env=environment()))
     if (!is.null(DIM)) {
         msg <- paste(msg,
                      paste("[",
@@ -2390,7 +2461,9 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
                      "oxygen", "oxygen saturation", "oxygen mL/L", "oxygen umol/L", "oxygen umol/kg",
                      "phosphate", "silicate", "tritium", "spice",
                      "fluorescence", "p", "z", "distance", "distance km",
-                     "along-track distance km", "heading", "pitch", "roll", "u",
+                     "along-spine distance km",
+                     "along-track distance km",
+                     "heading", "pitch", "roll", "u",
                      "v", "w", "speed", "direction", "eastward", "northward",
                      "depth", "elevation", "latitude", "longitude", "frequency cph",
                      "sound speed", "spectral density m2/cph")
@@ -2584,6 +2657,9 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
     } else if (item == "distance km") {
         var <- gettext("Distance", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*km*.(R))
+    } else if (item == "along-spine distance km") {
+        var <- gettext("Along-spine Distance", domain="R-oce")
+        abbreviated <- full <- bquote(.(var)*.(L)*km*.(R))
     } else if (item == "along-track distance km") {
         var <- gettext("Along-track Distance", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*km*.(R))
@@ -2775,9 +2851,10 @@ latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
             res[i] <- "Lat and lon unknown"
         else
             res[i] <- paste(format(abs(lat[i]), digits=digits),
-                             if (lat[i] > 0) "N  " else "S  ",
+                             if (lat[i] > 0) gettext("N", domain="R-oce") else gettext("S", domain="R-oce"),
+                             " ",
                              format(abs(lon[i]), digits=digits),
-                             if (lon[i] > 0) "E" else "W",
+                             if (lon[i] > 0) gettext("E", domain="R-oce") else gettext("W", domain="R-oce"),
                              sep="")
     }
     res
@@ -2807,7 +2884,7 @@ latFormat <- function(lat, digits=max(6, getOption("digits") - 1))
             res[i] <-  ""
         else
             res[i] <- paste(format(abs(lat[i]), digits=digits),
-                             if (lat[i] > 0) "N" else "S", sep="")
+                             if (lat[i] > 0) gettext("N", domain="R-oce") else gettext("S", domain="R-oce"), sep="")
     }
     res
 }
@@ -2836,7 +2913,7 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
             res[i] <- ""
         else
             res[i] <- paste(format(abs(lon[i]), digits=digits),
-                             if (lon[i] > 0) "E" else "S",
+                             if (lon[i] > 0) gettext("E", domain="R-oce") else gettext("W", domain="R-oce"),
                              sep="")
     res
 }
@@ -2903,7 +2980,7 @@ lon360 <- function(x)
 #' @examples
 #' library(oce)
 #' cat("Atlantic Standard Time is ", GMTOffsetFromTz("AST"), "hours after UTC")
-#' @family functions relating to time
+#' @family things relating to time
 GMTOffsetFromTz <- function(tz)
 {
     ## Data are from
@@ -4661,7 +4738,7 @@ oceDebug <- function(debug=0, ..., style="plain", unindent=0)
         }
         flush.console()
     }
-    invisible()
+    invisible(NULL)
 }
 oce.debug <- oceDebug
 
@@ -4861,7 +4938,7 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 #' contour(x, y, v, asp=1, main=expression(v))
 #' contour(x, y, sqrt(u^2+v^2), asp=1, main=expression(speed))
 #'
-#' @family functions relating to vector calculus
+#' @family things relating to vector calculus
 grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol(h)))
 {
     if (missing(h))

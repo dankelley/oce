@@ -36,8 +36,6 @@
   lonlabels = TRUE,
   latlabels = TRUE,
   projection = NULL,
-  parameters = NULL,
-  orientation = NULL,
   latlon.pch = 20,
   latlon.cex = 1.5,
   latlon.col = "red",
@@ -206,12 +204,6 @@ cartesian frame, scaled to retain shapes at the centre.  If this is the string
 used, depending on whether the CTD station is within 70 degrees of the equator
 or at higher latitudes.  Finally, if this is a string in the format used by
 \code{\link[=mapPlot]{mapPlot()}}, then it is is passed to that function.}
-
-\item{parameters}{a \strong{deprecated} argument that has been ignored
-since February 2016; see \link{oce-deprecated}.}
-
-\item{orientation}{a \strong{deprecated} argument that has been ignored
-since February 2016; see \link{oce-deprecated}.}
 
 \item{latlon.pch}{Symbol code for sample location (ignored if no map plotted).}
 
@@ -388,6 +380,7 @@ Other things related to ctd data:
 \code{\link{plotTS}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.odv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.woce.other}()},
 \code{\link{read.ctd.woce}()},

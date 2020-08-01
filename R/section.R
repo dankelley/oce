@@ -11,11 +11,10 @@
 #'
 #' Sections may be sorted with [sectionSort()], subsetted with
 #' [subset,section-method()], smoothed with [sectionSmooth()], and
-#' gridded with [sectionGrid()].  Gridded sections may be plotted with
-#' [plot,section-method()].
-#'
-#' Statistical summaries are provided by [summary,section-method()], while
-#' overviews are provided by `show`.
+#' gridded with [sectionGrid()].  A "spine" may be added to a section
+#' with [addSpine()].  Sections may be summarized with
+#' [summary,section-method()] and plotted
+#' with [plot,section-method()].
 #'
 #' The sample dataset [section()] contains data along WOCE line A03.
 #'
@@ -164,18 +163,24 @@ setMethod("handleFlags", signature=c(object="section", flags="ANY", actions="ANY
 #' str(station1[["flagScheme"]])
 #'}
 setMethod("initializeFlagScheme",
-          c(object="section", name="ANY", mapping="ANY", default="ANY", debug="ANY"),
-          function(object, name=NULL, mapping=NULL, default=NULL, debug=getOption("oceDebug")) {
+          c(object="section", name="ANY", mapping="ANY", default="ANY", update="ANY", debug="ANY"),
+          function(object, name=NULL, mapping=NULL, default=NULL, update=NULL, debug=getOption("oceDebug")) {
               res <- object
               for (i in seq_along(object@data$station)) {
-                  res@data$station[[i]] <- initializeFlagScheme(object@data$station[[i]], name, mapping, default, debug=debug-1)
+                  res@data$station[[i]] <- initializeFlagScheme(object@data$station[[i]],
+                                                                name=name,
+                                                                mapping=mapping,
+                                                                default=default,
+                                                                update=update,
+                                                                debug=debug-1)
               }
               res@processingLog <-
                   processingLogAppend(res@processingLog,
                                       paste("initializeFlagScheme(object",
-                                            ", name=\"", name,
-                                            "\", mapping=",
-                                            gsub("[ ]*", "", paste(as.character(deparse(mapping)))), ")", sep=""))
+                                            ", name=\"", name, "\"",
+                                            ", mapping=", gsub("[ ]*", "", paste(as.character(deparse(mapping)))), ")",
+                                            ", default=", gsub("[ ]*", "", paste(as.character(deparse(default)))), ")",
+                                            sep=""))
               res
           })
 
@@ -210,7 +215,7 @@ setMethod(f="summary",
               cat("* ID:     \"", object@metadata$sectionId, "\"\n", sep="")
               ##stn.sum <- matrix(nrow=numStations, ncol=5)
               if (numStations > 0) {
-                  cat("Overview of stations\n```\n")
+                  cat("* Overview of stations\n")
                   cat(sprintf("%5s %5s %8s %8s %7s %5s\n", "Index", "ID", "Lon", "Lat", "Levels", "Depth"))
                   for (i in seq_len(numStations)) {
                       ##stn <- object@data$station[[i]]
@@ -219,12 +224,11 @@ setMethod(f="summary",
                           thisStn@metadata$station else ""
                       depth <- if (!is.finite(thisStn@metadata$waterDepth) || 0 == thisStn@metadata$waterDepth)
                           max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
-                      cat(sprintf("%5d %5s %8.3f %8.3f %7.0f %5.0f\n",
+                      cat(sprintf("%5d %5s %8.4f %8.4f %7.0f %5.0f\n",
                                   i, id,
                                   thisStn[["longitude"]][1], thisStn[["latitude"]][1],
                                   length(thisStn@data$pressure), depth))
                   }
-                  cat("```\n")
                   names <- names(object@data$station[[1]]@metadata$flags)
                   if (!is.null(names)) {
                       cat("* Data-quality flags\n")
@@ -250,8 +254,21 @@ setMethod(f="summary",
               } else {
                   cat("* No stations\n")
               }
+              if ("spine" %in% names(object@metadata)) {
+                  if (2 == length(object@metadata$spine) &&
+                      2 == sum(c("latitude", "longitude") %in% names(object@metadata$spine))) {
+                      spine <- object@metadata$spine
+                      cat("* Section spine\n")
+                      cat(sprintf("    %8s %8s\n", "Lon", "Lat"))
+                      for (i in seq_along(spine$longitude)) {
+                          cat(sprintf("    %8.4f %8.4f\n", spine$longitude[i], spine$latitude[i]))
+                      }
+                  } else {
+                      warning("malformed section spine")
+                  }
+              }
               processingLogShow(object)
-              invisible()
+              invisible(NULL)
           })
 
 
@@ -622,7 +639,7 @@ setMethod(f="show",
 setMethod(f="subset",
           signature="section",
           definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res <- x
               dots <- list(...)
               dotsNames <- names(dots)
@@ -711,7 +728,7 @@ setMethod(f="subset",
                   ##oceDebug(debug, "subsetString='", subsetString, "'\n")
                   res <- x
                   if (length(grep("stationId", subsetString))) {
-                      keep <- eval(substitute(subset),
+                      keep <- eval(expr=substitute(expr=subset, env=environment()),
                                    envir=data.frame(stationId=as.numeric(x@metadata$stationId)))
                       res@metadata$stationId <- x@metadata$stationId[keep]
                       res@metadata$longitude <- x@metadata$longitude[keep]
@@ -721,14 +738,14 @@ setMethod(f="subset",
                       res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
                   } else if (length(grep("distance", subsetString))) {
                       l <- list(distance=geodDist(res))
-                      keep <- eval(substitute(subset), l, parent.frame(2))
+                      keep <- eval(expr=substitute(expr=subset, env=environment()), envir=l, enclos=parent.frame(2))
                       res@metadata$longitude <- res@metadata$longitude[keep]
                       res@metadata$latitude <- res@metadata$latitude[keep]
                       res@metadata$stationId <- res@metadata$stationId[keep]
                       res@data$station <- res@data$station[keep]
                   } else if (length(grep("levels", subsetString))) {
                       levels <- unlist(lapply(x[["station"]], function(stn) length(stn[["pressure"]])))
-                      keep <- eval(substitute(subset), list(levels=levels))
+                      keep <- eval(expr=substitute(expr=subset, env=environment()), envir=list(levels=levels))
                       res@metadata$longitude <- res@metadata$longitude[keep]
                       res@metadata$latitude <- res@metadata$latitude[keep]
                       res@metadata$stationId <- res@metadata$stationId[keep]
@@ -737,7 +754,7 @@ setMethod(f="subset",
                       n <- length(x@data$station)
                       keep <- vector(length=n)
                       for (i in 1:n)
-                          keep[i] <- eval(substitute(subset), x@data$station[[i]]@metadata, parent.frame(2))
+                          keep[i] <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data$station[[i]]@metadata, enclos=parent.frame(2))
                       nn <- sum(keep)
                       station <- vector("list", nn)
                       stn <- vector("character", nn)
@@ -773,7 +790,7 @@ setMethod(f="subset",
                       n <- length(x@data$station)
                       j <- 1
                       for (i in 1:n) {
-                          r <- eval(substitute(subset), x@data$station[[i]]@data, parent.frame(2))
+                          r <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data$station[[i]]@data, enclos=parent.frame(2))
                           oceDebug(debug, "i=", i, ", j=", j, ", sum(r)=", sum(r), "\n", sep="")
                           if (sum(r) > 0) {
                               ## copy whole station  ...
@@ -859,8 +876,8 @@ sectionSort <- function(section, by)
     if (missing(by)) {
         by <- "stationId"
     } else {
-        byChoices <- c("stationId", "distance", "longitude", "latitude", "time")
-        iby <- pmatch(by, byChoices, nomatch=0)
+        byChoices <- c("stationId", "distance", "longitude", "latitude", "time", "spine")
+        iby <- match(by, byChoices, nomatch=0)
         if (0 == iby)
             stop('unknown by value "', by, '"; should be one of: ', paste(byChoices, collapse=" "))
         by <- byChoices[iby]
@@ -878,6 +895,8 @@ sectionSort <- function(section, by)
         ## FIXME: should check to see if startTime exists first?
         times <- unlist(lapply(section@data$station, function(x) x@metadata$startTime))
         o <- order(times)
+    } else if (by == "spine") {
+        stop("not implemented for spine")
     } else {
         o <- seq_along(section[["station"]]) ## cannot ever get here, actually
     }
@@ -1007,8 +1026,9 @@ sectionAddCtd <- sectionAddStation
 #' that an index is *not* a station number, e.g. to show the first 4
 #' stations, use `station.indices=1:4`.
 #'
-#' @param coastline String giving the coastline to be used in a station map
-#' The permitted choices are `"best"` (the default) to pick
+#' @param coastline Either a [coastline-class] object to be used,
+#' or a string.  In the second case, the permitted
+#' choices are `"best"` (the default) to pick
 #' a variant that suits the scale, `"coastlineWorld"` for the coarse
 #' version that is provided by \CRANpkg{oce},
 #' `"coastlineWorldMedium"` or `"coastlineWorldFine"` for two
@@ -1035,9 +1055,10 @@ sectionAddCtd <- sectionAddStation
 #'
 #' @param xtype Type of x axis, for contour plots, either `"distance"` for
 #' distance (in km) to the first point in the section, `"track"` for distance
-#' along the cruise track, `"longitude"`, `"latitude"`, or
-#' `"time"`.  Note that if the x values are not in order, they will be put in
-#' order (which may make no sense) and a warning will be printed.
+#' along the cruise track, `"longitude"`, `"latitude"`,
+#' `"time"` or `"spine"` (distance along a spine that was added
+#' with [addSpine()]).  Note that if the x values are not in order, they will be put in
+#' order, and since tha might not make physical sense, a warning will be issued.
 #'
 #' @param longitude0,latitude0 Location of the point from which distance is measured.
 #' These values are ignored unless `xtype` is `"distance"`.
@@ -1085,6 +1106,20 @@ sectionAddCtd <- sectionAddStation
 #' In this last case, the interpolation is set at a grid that is roughly
 #' in accordance with the resolution of the latitudes in the `topo` object.
 #' See \dQuote{Examples}.
+#'
+#' @param showBottom a value indicating whether (and how) to indicate the
+#' ocean bottom on cross-section views.  There are three possibilities.
+#' (a) If `showBottom` is `FALSE`, then the bottom is not rendered.  If it
+#' is `TRUE`, then the  bottom is rendered with a gray polygon.
+#' (b) If `showBottom` is the character value `"polygon"`, then a polygon is drawn,
+#' and similarly lines are drawn for `"lines"`, and points for `"points"`.
+#' (c) If `showBottom` is a [topo-class] object, then the station locations are
+#' interpolated to that topography and the results are shown with a polygon.
+#' See \dQuote{Examples}.
+#'
+#' @param showSpine logical value used if `which="map"`.  If `showSpine` is
+#' `TRUE` and `section` has had a spine added wih [addSpine()], then
+#' the spine is drawn in blue.
 #'
 #' @param drawPalette Logical value indicating whether to draw a palette when `ztype="image"`
 #' ignored otherwise.
@@ -1212,6 +1247,7 @@ setMethod(f="plot",
                               showStart=TRUE,
                               stationTicks=TRUE,
                               showBottom=TRUE,
+                              showSpine=TRUE,
                               drawPalette=TRUE,
                               axes=TRUE, mgp, mar,
                               col, cex, pch,
@@ -1225,13 +1261,14 @@ setMethod(f="plot",
               debug <- if (debug > 4) 4 else floor(0.5 + debug)
               if (missing(eos))
                   eos <- getOption("oceEOS", default="gsw")
-              xtype <- match.arg(xtype, c("distance", "track", "longitude", "latitude", "time"))
+              xtype <- match.arg(xtype, c("distance", "track", "longitude", "latitude", "time", "spine"))
               ytype <- match.arg(ytype, c("depth", "pressure"))
               ztype <- match.arg(ztype, c("contour", "image", "points"))
               drawPoints <- ztype == "points"
-              coastline <- match.arg(coastline,
-                                     c("best", "coastlineWorld", "coastlineWorldMedium",
-                                       "coastlineWorldFine", "none"))
+              if (!inherits(coastline, "coastline"))
+                  coastline <- match.arg(coastline,
+                                         c("best", "coastlineWorld", "coastlineWorldMedium",
+                                           "coastlineWorldFine", "none"))
               if (missing(mgp))
                   mgp <- getOption("oceMgp")
               if (missing(mar))
@@ -1317,6 +1354,7 @@ setMethod(f="plot",
               {
                   oceDebug(debug, "plotSubsection(variable=\"", variable,
                            "\", eos=\"", eos,
+                           "\", which.xtype=\"", which.xtype,
                            "\", ztype=\"", ztype,
                            "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
                            "\", span=", if (missing(span)) "(missing)" else span,
@@ -1349,46 +1387,54 @@ setMethod(f="plot",
                           latr <- latm + sqrt(2) * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
                       } else {
                           ## FIXME: the sqrt(2) below helps in a test case ... not sure it make sense though --DK
-                          lonr <- lonm + span / 111.1 * c(-0.5, 0.5) / cos(2*pi/180*latm) / sqrt(2)
+                          lonr <- lonm + span / 111.1 * c(-0.5, 0.5) / cos(pi/180*latm) / sqrt(2)
                           latr <- latm + span / 111.1 * c(-0.5, 0.5) / sqrt(2)
+                          ##DEBUG message("KELLEY span=", span)
+                          ##DEBUG message("KELLEY lonm=", lonm, " lonr=", paste(lonr, collapse=", "))
+                          ##DEBUG message("KELLEY latm=", latm, " latr=", paste(latr, collapse=", "))
                       }
 
                       ## FIXME: this coastline code is reproduced in section.R; it should be DRY
                       haveCoastline <- FALSE
-                      if (!is.character(coastline))
-                          stop("coastline must be a character string")
-                      haveOcedata <- requireNamespace("ocedata", quietly=TRUE)
-                      if (coastline == "best") {
-                          if (haveOcedata) {
-                              bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
-                              oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
-                              if (bestcoastline == "coastlineWorld") {
-                                  data(list=bestcoastline, package="oce", envir=environment())
-                              } else {
-                                  data(list=bestcoastline, package="ocedata", envir=environment())
-                              }
-                              coastline <- get(bestcoastline)
-                          } else {
-                              oceDebug(debug, "using \"coastlineWorld\" because ocedata package not installed\n")
-                              data("coastlineWorld", package="oce", envir=environment())
-                              coastline <- get("coastlineWorld")
-                          }
+                      if (inherits(coastline, "coastline")) {
                           haveCoastline <- TRUE
+                          oceDebug(debug, "using coastline object given as an argument\n")
                       } else {
-                          if (coastline != "none") {
-                              if (coastline == "coastlineWorld") {
+                          if (!is.character(coastline))
+                              stop("coastline must be a character string")
+                          haveOcedata <- requireNamespace("ocedata", quietly=TRUE)
+                          if (coastline == "best") {
+                              if (haveOcedata) {
+                                  bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
+                                  oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
+                                  if (bestcoastline == "coastlineWorld") {
+                                      data(list=bestcoastline, package="oce", envir=environment())
+                                  } else {
+                                      data(list=bestcoastline, package="ocedata", envir=environment())
+                                  }
+                                  coastline <- get(bestcoastline)
+                              } else {
+                                  oceDebug(debug, "using \"coastlineWorld\" because ocedata package not installed\n")
                                   data("coastlineWorld", package="oce", envir=environment())
                                   coastline <- get("coastlineWorld")
-                              } else if (haveOcedata && coastline == "coastlineWorldFine") {
-                                  data("coastlineWorldFine", package="ocedata", envir=environment())
-                                  coastline <- get("coastlineWorldFine")
-                              } else if (haveOcedata && coastline == "coastlineWorldMedium") {
-                                  data("coastlineWorldMedium", package="ocedata", envir=environment())
-                                  coastline <- get("coastlineWorldMedium")
-                              }  else {
-                                  stop("there is no built-in coastline file of name \"", coastline, "\"")
                               }
                               haveCoastline <- TRUE
+                          } else {
+                              if (coastline != "none") {
+                                  if (coastline == "coastlineWorld") {
+                                      data("coastlineWorld", package="oce", envir=environment())
+                                      coastline <- get("coastlineWorld")
+                                  } else if (haveOcedata && coastline == "coastlineWorldFine") {
+                                      data("coastlineWorldFine", package="ocedata", envir=environment())
+                                      coastline <- get("coastlineWorldFine")
+                                  } else if (haveOcedata && coastline == "coastlineWorldMedium") {
+                                      data("coastlineWorldMedium", package="ocedata", envir=environment())
+                                      coastline <- get("coastlineWorldMedium")
+                                  }  else {
+                                      stop("there is no built-in coastline file of name \"", coastline, "\"")
+                                  }
+                                  haveCoastline <- TRUE
+                              }
                           }
                       }
 
@@ -1410,14 +1456,17 @@ setMethod(f="plot",
                               oceDebug(debug, "using", projection, "projection (specified)\n")
                           }
                           mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim, projection=projection, col='gray')
+                          spine <- x[["spine"]]
+                          if (showSpine && !is.null(spine))
+                              mapLines(spine$longitude, spine$latitude, col="blue", lwd=1.4*par("lwd"))
                           mapPoints(x[['longitude', 'byStation']], x[['latitude', 'byStation']],
                                     col=col, pch=3, lwd=1/2)
                           if (xtype == "distance" && showStart) {
                               mapPoints(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
                           }
-                          return()
+                          return()     ## NOTE early return
                       } else {
-                         if (!is.null(map.xlim)) {
+                          if (!is.null(map.xlim)) {
                               map.xlim <- sort(map.xlim)
                               plot(lonr, latr, xlim=map.xlim, asp=asp, type='n',
                                    xlab=gettext("Longitude", domain="R-oce"),
@@ -1428,6 +1477,9 @@ setMethod(f="plot",
                                    xlab=gettext("Longitude", domain="R-oce"),
                                    ylab=gettext("Latitude", domain="R-oce"))
                           } else {
+                              ##DEBUG message("CCC lonr=", paste(lonr, collapse=","))
+                              ##DEBUG message("CCC latr=", paste(latr, collapse=","))
+                              ##DEBUG message("CCC asp=", paste(asp, collapse=","))
                               plot(lonr, latr, asp=asp, type='n',
                                    xlab=gettext("Longitude", domain="R-oce"),
                                    ylab=gettext("Latitude", domain="R-oce"))
@@ -1446,6 +1498,10 @@ setMethod(f="plot",
                               lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
                           }
                       }
+                      spine <- x[["spine"]]
+                      if (showSpine && !is.null(spine))
+                          lines(spine$longitude, spine$latitude, col="blue", lwd=1.4*par("lwd"))
+
                       ## add station data
                       lines(lon, lat, col="lightgray")
                       ## replot with shifted longitude
@@ -1477,7 +1533,7 @@ setMethod(f="plot",
                       ##> message("zAllMissing=", zAllMissing)
                       ##> message("drawPoints=", drawPoints)
                       ##> message("ztype='", ztype, "'")
-                      if ( (drawPoints || ztype == "image") && !zAllMissing ) {
+                      if ((drawPoints || ztype == "image") && !zAllMissing) {
                           ##> message("is.null(zbreaks)=", is.null(zbreaks))
                           if (is.null(zbreaks)) {
                               if (is.null(zlim)) {
@@ -1529,7 +1585,8 @@ setMethod(f="plot",
                                              resizableLabel("along-track distance km"),
                                              gettext("Longitude", domain="R-oce"),
                                              gettext("Latitude", domain="R-oce"),
-                                             gettext("Time", domain="R-oce"))
+                                             gettext("Time", domain="R-oce"),
+                                             resizableLabel("along-spine distance km"))
                           }
                           plot(xxrange, yyrange,
                                xaxs="i", yaxs="i",
@@ -1840,13 +1897,11 @@ setMethod(f="plot",
                   par(mar=omar)
                   oceDebug(debug, "} # plotSubsection()\n", unindent=1)
               }                        # plotSubsection()
-              ##if (!inherits(x, "section"))
-              ##    stop("method is only for objects of class '", "section", "'")
               opar <- par(no.readonly = TRUE)
               if (length(which) > 1) on.exit(par(opar))
-              which.xtype <- pmatch(xtype, c("distance", "track", "longitude", "latitude", "time"), nomatch=0)
+              which.xtype <- match(xtype, c("distance", "track", "longitude", "latitude", "time", "spine"), nomatch=0)
               if (0 == which.xtype)
-                  stop('xtype must be one of: "distance", "track", "longitude", "latitude" or "time"')
+                  stop('xtype must be one of: "distance", "track", "longitude", "latitude", "time", or "spine", not "', xtype, '" as provided')
               which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
               if (missing(stationIndices)) {
                   numStations <- length(x@data$station)
@@ -1882,11 +1937,11 @@ setMethod(f="plot",
                                                             mean(x@data$station[[j]][["longitude"]], na.rm=TRUE),
                                                             mean(x@data$station[[j]][["latitude"]], na.rm=TRUE))
                           }
-                      } else if (which.xtype == 3) {
+                      } else if (which.xtype == 3) { # longitude
                           xx[ix] <- mean(x@data$station[[j]][["longitude"]], na.rm=TRUE)
-                      } else if (which.xtype == 4) {
+                      } else if (which.xtype == 4) { # latitude
                           xx[ix] <- mean(x@data$station[[j]][["latitude"]], na.rm=TRUE)
-                      } else if (which.xtype == 5) {
+                      } else if (which.xtype == 5) { # time
                           ## use ix as a desparate last measure, if there are no times.
                           if (!is.null(x@data$station[[j]]@metadata$startTime)) {
                               xx[ix] <- as.POSIXct(x@data$station[[j]]@metadata$startTime)
@@ -1898,16 +1953,44 @@ setMethod(f="plot",
                                   warning("In plot,section-method() :\n  section stations do not contain startTime; using integers for time axis",
                                           call.=FALSE)
                           }
-                      } else {
-                          stop('unknown xtype; it must be one of: "distance", "track", "longitude", "latitude", or "time"')
                       }
                   }
               } else {
                   xx <- at
               }
               ##> message("which.xtype: ", which.xtype)
-              if (which.xtype==5)
+              if (which.xtype == 5) {
                   xx <- numberAsPOSIXct(xx)
+              } else if (which.xtype == 6) {
+                  ## see https://github.com/dankelley/oce-issues/blob/master/16xx/1678
+                  if (!("spine" %in% names(x@metadata))) {
+                      stop("In plot,section-metod() :\n  this section has no spine; use addSpine() to add a spine", call.=FALSE)
+                  }
+                  spine <- x@metadata$spine
+                  ## Parametric lon=lon(s), at=lat(s)
+                  s <- seq(0, 1, length.out=length(spine$longitude))
+                  lonfun <- approxfun(spine$longitude ~ s)
+                  latfun <- approxfun(spine$latitude ~ s)
+                  ## Create many points on the spine
+                  spineSegments <- 1000
+                  ss <- seq(0, 1, length.out=spineSegments)
+                  stnLon <- x[["longitude", "byStation"]]
+                  stnLat <- x[["latitude", "byStation"]]
+                  closest <- rep(NA, length=length(stnLon))
+                  ## find distance (used in following loop; uses global 'i')
+                  for (i in seq_along(stnLon)) {
+                      closest[i] <- which.min(sapply(ss,
+                                                     function(t) {
+                                                         lonSpine <- lonfun(t)
+                                                         latSpine <- latfun(t)
+                                                         geodDist(lonSpine, latSpine, stnLon[i], stnLat[i])
+                                                     }))
+                  }
+                  ## Map points back to the spine
+                  longitudeRemapped <- lonfun(ss[closest])
+                  latitudeRemapped <- latfun(ss[closest])
+                  xx <- geodDist(longitudeRemapped, latitudeRemapped, alongPath=TRUE)
+              }
               ## Grid is regular (so need only first station) unless which=="data"
               ## FIXME: why checking just first which[] value?
               if (which.ytype == 1) {
@@ -2076,8 +2159,7 @@ setMethod(f="plot",
 #'
 #' @param missingValue Numerical value used to indicate missing data.
 #'
-#' @param debug Logical. If `TRUE`, print some information that might be
-#' helpful during debugging.
+#' @template debugTemplate
 #'
 #' @param processingLog If provided, the action item to be stored in the log.  This
 #' is typically only provided for internal calls; the default that it provides is
@@ -3213,3 +3295,52 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
+
+#' Add a spine to a section object
+#'
+#' The purpose of this is to permit plotting with `xtype="spine"`, so that
+#' the section plot will display the distance of stations projected
+#' onto the spine.
+#'
+#' @param section a [section-class] object.
+#' @param spine either a list or a data frame, containing numeric items named
+#' `longitude` and `latitude`, defining a path along the spine.
+#' @template debugTemplate
+#'
+#' @return A [section-class] object with a spine added.
+#'
+#' @examples
+#' library(oce)
+#' data(section)
+#' sectionWest <- subset(section, longitude < -60)
+#' spine <- list(longitude=c(-74.5, -69.2, -55), latitude=c(38.6, 36.25, 36.25))
+#' sectionWithSpine <- addSpine(sectionWest, spine)
+#' plot(sectionWithSpine, which="map")
+#' plot(sectionWithSpine, xtype="distance", which="temperature")
+#' plot(sectionWithSpine, xtype="spine", which="temperature")
+#'
+#' @author Dan Kelley
+addSpine <- function(section, spine, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "addSpine(..., spine=", argShow(spine), ") {\n", sep="", style="bold", unindent=1)
+    if (missing(section))
+        stop("must provide 'section' argument")
+    if (!inherits(section, "section"))
+        stop("'section' must be a section object, e.g. created by read.section() or as.section()")
+    if (missing(spine))
+        stop("must provide 'spine' argument")
+    res <- section
+    if (2 == length(spine) && 2 == sum(c("latitude", "longitude") %in% names(spine))) {
+        if (length(spine$longitude) != length(spine$latitude))
+            stop("unequal lengths of spine longitude (", length(spine$longitude),
+                 ") and latitude (", length(spine$latitude), ")")
+        if (length(spine$longitude) < 2)
+            stop("length of spine longitude must exceed 2, but it is ", length(spine$longitude))
+        res@metadata$spine <- spine
+    } else {
+        stop("'spine' must be a list or data frame containing two items, named 'longitude' and 'latitude'")
+    }
+    oceDebug(debug, "} # addSpine()\n", sep="", style="bold", unindent=1)
+    res
+}
+

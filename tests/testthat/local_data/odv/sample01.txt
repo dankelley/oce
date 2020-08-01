@@ -1,0 +1,14 @@
+//
+//SDN_parameter_mapping
+//<subject>SDN:LOCAL:DEPHPR01</subject><object>SDN:P01::DEPHPR01</object><units>SDN:P06::ULAA</units>
+//<subject>SDN:LOCAL:PRESPR01</subject><object>SDN:P01::PRESPR01</object><units>SDN:P06::UPDB</units>
+//<subject>SDN:LOCAL:OXYSSC01</subject><object>SDN:P01::OXYSSC01</object><units>SDN:P06::UPCT</units>
+//<subject>SDN:LOCAL:PHOSAADZ</subject><object>SDN:P01::PHOSAADZ</object><units>SDN:P06::UPOX</units>
+//<subject>SDN:LOCAL:ODSDM017</subject><object>SDN:P01::ODSDM017</object><units>SDN:P06::UPOX</units>
+//
+Cruise	Station	Type	yyyy-mm-ddThh:mm:ss.sss	Longitude [degrees_east]	Latitude [degrees_north]	LOCAL_CDI_ID	EDMO_code	Bot. Depth [m]	DEPHPR01 [m]	QV:SEADATANET	PRESPR01 [decibar=10000 pascals]	QV:SEADATANET	OXYSSC01 [%]	QV:SEADATANET	PHOSAADZ [millimole/m3]	QV:SEADATANET	ODSDM017 [millimole/m3]	QV:SEADATANET
+Adricosm-EXT1	43	B	2005-11-06T12:15:00.000	+018.760000	+42.091000 	Adricosm-EXT1_00043_H09	144	0.0	  1.0	1	  1.0	1	 88.22410	1	0.06	1	1.70	1
+									  9.4	1	  9.5	1	  0.35970	3	0.02	1	2.30	1
+									 29.3	1	 29.5	1	  0.36500	3	0.02	1	1.19	1
+									 68.9	1	 69.5	1	  0.35970	3	0.02	1	1.21	1
+									 92.7	1	 93.5	1	  0.45700	3	0.04	1	1.76	1

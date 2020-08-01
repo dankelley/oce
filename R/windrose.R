@@ -329,5 +329,5 @@ setMethod(f="plot",
                   }
                   title(paste("Fiveum (max ", sprintf(max, fmt="%.3g"), ")", sep=""))
               }
-              invisible()
+              invisible(NULL)
           })

@@ -340,7 +340,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             ##    user$blankingDistance <- 0
             ##}
             ##cat("adp.nortek.R:245 user$blankingDistance", user$blankingDistance, "\n")
-            oceDebug(1+debug, "blankingDistance=", user$blankingDistance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
+            oceDebug(debug, "blankingDistance=", user$blankingDistance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
             user$swVersion <- readBin(buf[o+73:74], "integer", n=1, size=2, endian="little") / 10000
             oceDebug(debug, "swVersion=", user$swVersion, "\n")
             user$salinity <- readBin(buf[o+75:76], "integer", n=1, size=2, endian="little") * 0.1
@@ -533,8 +533,10 @@ is.ad2cp <- function(x)
 #' within the `processingLog` slot of th returned value.
 #'
 #' @param debug Integer value indicating the level of debugging.
-#' Set to 1 to get a moderate  amount of debugging information,
-#' or to 2 to get more.
+#' Set to 1 to get a moderate amount of debugging information, from
+#' the R code only, to 2 to get some debugging information from the C++
+#' code that is used to parse the data chunks, or to 3 for intensive
+#' debugging at both levels.
 #'
 #' @param \dots Ignored by this function.
 #'
@@ -636,11 +638,11 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     dataSize <- readBin(buf[5:6], what="integer", n=1, size=2, endian="little", signed=FALSE)
     oceDebug(debug, "dataSize:", dataSize, "\n")
     oceDebug(debug, "buf[1+headerSize+dataSize=", 1+headerSize+dataSize, "]=0x", buf[1+headerSize+dataSize], " (expect 0xa5)\n", sep="")
-    nav <- do_ldc_ad2cp_in_file(filename, from, to, by)
+    nav <- do_ldc_ad2cp_in_file(filename, from, to, by, debug-1)
     d <- list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
     if (0x10 != d$buf[d$index[1]+1]) # 0x10 = AD2CP (p38 integrators guide)
-        stop("this file is not in AD2CP format, since the first byte is not 0x10")
-    oceDebug(debug, "focussing on ", length(d$index), " data records\n")
+        stop("expecting byte value 0x10 at index ", d$index[1]+1, ", but got 0x", d$buf[d$index[1]+1])
+    oceDebug(debug, "focussing on ", length(d$index), " data records\n", sep="")
     Nmax <- length(d$index)
     if (to > Nmax) {
         warning("using to=", Nmax, " based on file contents")
@@ -710,7 +712,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
     header <- NULL
     idHeader <- which(d$id == 0xa0)[1]
     if (length(idHeader)) {
-        oceDebug(debug, "this file has a header at id=", idHeader, "\n")
+        oceDebug(debug, "this file has a header at id=", idHeader, "\n", sep="")
         chars <- rawToChar(d$buf[seq.int(2+d$index[idHeader], by=1, length.out=-1+d$length[idHeader])])
         header <- strsplit(chars, "\r\n")[[1]]
         if (!typeGiven) {
@@ -734,7 +736,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
         pointer1 <- d$index
         pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
         pointer4 <- as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1)))
-        oceDebug(debug, "focussing on ", length(pointer1), " data records (after subsetting for plan=", plan, ")\n")
+        oceDebug(debug, "focussing on ", length(pointer1), " data records (after subsetting for plan=", plan, ")\n", sep="")
     }
     if (debug > 0) {
         oceDebug(debug, "below is table() of the 'plan' values in this subset of the file:\n")
@@ -848,14 +850,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 
     ## Nortek docs [2 p51] say bit 1 (in 0-offset notation) in 'status' indicates blankingDistance
     ## unit, either 0 for m or 1 for cm. (Above, it was read and converted to m, assuming cm.)
-    if (debug > 0) {
-        cat(vectorShow(status[2,]))
-        cat(vectorShow(blankingDistance))
-    }
+    oceDebug(debug, vectorShow(status[2,]))
+    oceDebug(debug, vectorShow(blankingDistance))
     blankingDistance <- blankingDistance * ifelse(status[2, ] == 0x01, 1, 0.1)
-    if (debug > 0)
-        cat(vectorShow(blankingDistance))
-
     ensemble <- readBin(d$buf[pointer4+73], "integer", size=4, n=N, endian="little")
 
     ## Limitations
@@ -864,8 +861,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
         cat("developer-aimed information:\n")
         print(unique(activeConfiguration))
         print(table(activeConfiguration))
-        stop("This file has ",
-             nconfiguration, " active configurations, but read.adp.ad2cp() can only handle one. Please contact the oce developers if you need to work with this file.")
+        stop("This file has ", nconfiguration, " active configurations, but read.adp.ad2cp() can only handle one. Please contact the oce developers if you need to work with this file.")
     }
 
     ## Record-type keys and phrases in documentation [1, sec 6.1, page 47]
@@ -899,7 +895,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             stop("can only decode 'burst' data records that are in 'version 3' format")
         nbeamsBurst <- nbeams[p$burst[1]]
         ncellsBurst <- ncells[p$burst[1]]
-        oceDebug(debug, "burst data records: nbeams:", nbeamsBurst, ", ncells:", ncellsBurst, "\n")
+        oceDebug(debug, "burst data records: nbeams:", nbeamsBurst, ", ncells:", ncellsBurst, "\n", sep="")
         if (any(ncells[p$burst] != ncellsBurst))
             stop("the 'burst' data records do not all have the same number of cells")
         if (any(nbeams[p$burst] != nbeamsBurst))
@@ -1301,7 +1297,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
         ##?     stop("the 'echosounder' data records do not all have the same number of beams")
         ## FIXME: read other fields to the following list.
         echosounder <- list(i=1,
-                        numberOfCells=ncellsEchosounder2,
+                        numberOfCells=ncellsEchosounder2[p$echosounder][1],
                         numberOfBeams=1, # FIXME: is this right?
                         originalCoordinate=coordinateSystem[p$echosounder[1]],
                         oceCoordinate=coordinateSystem[p$echosounder[1]],
@@ -1530,8 +1526,9 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 
     if (monitor)
         progressBar <- txtProgressBar(max=N, style=3, title="Reading profiles")
+    unknownKeys <- list()
     for (ch in 1:N) {
-        oceDebug(debug>2, "d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
+        ## oceDebug(debug>3, "d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
         key <- d$id[ch]
         i <- d$index[ch]
 
@@ -1870,8 +1867,15 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             ##?     i0 <- i0 + 2
             ##? }
             if (echosounderIncluded[ch]) {
-                echosounder$echosounder[echosounder$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
-                i0 <- i0 + 2 * nrow
+                nToRead <- dim(echosounder$echosounder)[1]
+                ## cat("before trying to store to echosounder at",
+                ##     ", echosounder$i=", echosounder$i,
+                ##     ", i=", i,
+                ##     ", i0=", i0,
+                ##     ", nToRead=", nToRead,
+                ##     ", dim()=", paste(dim(echosounder$echosounder),collapse="x"), "\n", sep="")
+                echosounder$echosounder[, echosounder$i] <- readBin(d$buf[i + i0 + seq(0,2*nToRead)], "integer", size=2, n=nToRead, endian="little")
+                i0 <- i0 + 2 * nToRead
             }
             ##? if (AHRSIncluded[ch]) {
             ##?     echosounder$AHRS[echosounder$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
@@ -2047,17 +2051,27 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
             text$text[[text$i]] <- t
             text$i <- text$i + 1
             ##oceDebug(debug, "added to text; now, text$i=", text$i, "\n")
-
         } else {
-
-            stop("unknown key 0x", key, "; only 0x15 through 0x0x1f, plus 0xa0, are permitted")
-
+            ## stop("unknown key 0x", as.raw(key), "; only 0x15 through 0x1f, plus 0xa0, are permitted", sep="")
+            ##cat("unknown key=", key, "\n", sep="")
+            keyname <- paste0("0x", as.character(as.raw(key)))
+            if (keyname %in% names(unknownKeys)) {
+                unknownKeys[[keyname]] <- unknownKeys[[keyname]] + 1
+            } else {
+                unknownKeys[[keyname]] <- 1
+            }
         }
         if (monitor)
             setTxtProgressBar(progressBar, ch)
     }
     if (monitor)
         close(progressBar)
+    if (length(unknownKeys)) {
+        msg <- ""
+        for (kn in names(unknownKeys))
+            msg <- paste0(msg, "   key=", kn, " found ", unknownKeys[[kn]], " times\n")
+        warning("data records with 'id' that is not yet handled:\n", msg)
+    }
 
     ## Prepare data
     data <- list(powerLevel=powerLevel, # FIXME: put in individual items?

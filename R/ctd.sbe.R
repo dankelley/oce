@@ -199,7 +199,7 @@
 #'
 #' @template debugTemplate
 #'
-#' @return a list containing `name` (the oce name), `nameOriginal` (the SBE name) and `unit`.
+#' @return [read.ctd.sbe()] returns a list containing `name` (the oce name), `nameOriginal` (the SBE name) and `unit`.
 #'
 #' @author Dan Kelley
 #'
@@ -368,6 +368,18 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^opoxPS$", name, useBytes=TRUE))) {
         name <- "oxygenSaturation"
         unit <- list(unit=expression(percent), scale="Optode, Aanderaa")
+    } else if (1 == length(grep("oxC", name, useBytes=TRUE))) {
+        name <- "oxygenCurrent"
+        unit <- list(unit=expression(mu*amp), scale="Beckman/YSI")
+    } else if (1 == length(grep("oxTC", name, useBytes=TRUE))) {
+        name <- "oxygenTemperature"
+        unit <- list(unit=expression(degree*C), scale="Beckman/YSI")
+    } else if (1 == length(grep("oxMg/L", name, useBytes=TRUE))) {
+        name <- "oxygen"
+        unit <- list(unit=expression(mg/l), scale="Beckman/YSI")
+    } else if (1 == length(grep("oxPS", name, useBytes=TRUE))) {
+        name <- "oxygenSaturation"
+        unit <- list(unit=expression(percent), scale="Beckman/YSI")
     } else if (1 == length(grep("^oxsatML/L$", name, useBytes=TRUE))) {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="Weiss")
@@ -646,6 +658,11 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' Read a Seabird CTD File
 #'
 #' @template readCtdTemplate
+#' @param btl a logical value, with `TRUE` indicating that this is a `.BTL` file and `FALSE`
+#' (the default) indicating a `.CNV` file.  Note that if `btl` is `TRUE`, the data column
+#' names are taken directly from the file (without e.g. translating to `"Sal00"`
+#' to `"salinity"`.  Also, the "avg" and "sdev" columns are blended together, with
+#' all the latter named as in the file, but with `"_sdev"` appended.
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -662,10 +679,14 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' where `x` is the name of the returned value.  For the details of the
 #' mapping from `.cnv` names to `ctd` names, see [cnvName2oceName()].
 #'
-#' The original data names as stored in `file` are stored within the `metadata`
+#' The names of the elements in the `data` slot of the returned value depend on
+#' the file type, as signalled by the `btl` argument.  For the default case of `.cnv` files,
+#' the original data names as stored in `file` are stored within the `metadata`
 #' slot as `dataNamesOriginal`, and are displayed with `summary` alongside the
-#' numerical summary. See the Appendix VI of reference 2 for the meanings of these
+#' numerical summary; see the Appendix VI of reference 2 for the meanings of these
 #' names (in the "Short Name" column of the table spanning pages 161 through 172).
+#' However, for the case of `.btl` files, the column names are as described
+#' in the documentation entry for the `btl` argument.
 #'
 #' @section A note on sampling times:
 #' Until November of 2018,
@@ -739,7 +760,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' and this was the reference version used in coding `oce`.
 #'
 #' @family functions that read ctd data
-read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
+read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown", btl=FALSE,
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
@@ -796,7 +817,9 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploym
     ## Silence warnings because binary files have 'NUL' characters that spew many warnings
     warn <- options("warn")$warn
     options(warn=-1)
-    lines <- readLines(file, encoding="UTF-8")
+    ##>>> NOTE: use latin1 to avoid a problem with an accented e, used for sigma-theta.
+    ##>>> lines <- readLines(file, encoding="UTF-8")
+    lines <- readLines(file, encoding="latin1")
     options(warn=warn)
 
     ## Get names and units of columns in the SBE data file
@@ -1032,11 +1055,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploym
         if (is.na(date))
             warning("'** Date:' not found in header")
         if (is.na(recoveryTime))
-            warning("'** Recovery' not found in header")
+            warning("'** Recovery:' not found in header")
     }
     ## Require p,S,T data at least
-    if (!("temperature" %in% colNamesInferred))
-        warning("cannot find temperature in this file; try using columns argument if this is an error")
+    if (!btl && !("temperature" %in% colNamesInferred))
+        warning("cannot find temperature; try using the 'columns' argument")
 
     res@metadata$header <- header
     res@metadata$type <- "SBE"
@@ -1073,28 +1096,78 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploym
         return(res)
     }
     ## Read the data as a table.
-    pushBack(lines, file)
-    oceDebug(debug, "About to read these names: c(\"", paste(colNamesInferred, collapse='","'), "\")\n", sep="")
-    ##message("skipping ", iline-1, " lines at top of file")
-    data <- as.list(read.table(file, skip=iline-1, header=FALSE))
-    if (length(data) != length(colNamesInferred))
-        stop("Number of columns in .cnv data file must match number of variables named in the header")
-    names(data) <- colNamesInferred
-    ndata <- length(data[[1]])
-    if (0 < ndata) {
+    if (btl) {
+        pushBack(lines, file) # push back header so we can read from a file, not a text vector (for speed)
+        ## The .BTL format was reverse-engineered by inspecting some files, since I could
+        ## not discover any documentation on the format.  Therefore, there is a good chance
+        ## of errors in this code.  See https://github.com/dankelley/oce/issues/1681
+        oceDebug(debug, "About to read .btl data\n")
+        dataHeaderStartLine <- grep("^[^#^*]", lines)[1]
+        if (!length(dataHeaderStartLine))
+            stop("cannot find the start of .btl data")
+        colNames <- tail(strsplit(lines[dataHeaderStartLine], "[ ]+")[[1]], -1)
+        colNames <- c(colNames, "type") # tack on col for "(avg)" or "(sdev)"
+        oceDebug(debug, "colNames=c(\"", paste(colNames, collapse="\", \""), "\")\n", sep="")
+        lastLine <- length(lines)
+        iodd <- seq(dataHeaderStartLine + 2, lastLine, 2)
+        ieven <- seq(dataHeaderStartLine + 3, lastLine, 2)
+        ## Check that we have the rows interpreted correctly by examining the final column.
+        if (any(!grepl("^.*\\(avg\\)$", lines[iodd])))
+            stop("odd-numbered data lines in .btl files must end with `(avg)`, but lines ", paste(grep("(avg)$", lines[iodd], invert=TRUE), collapse=","), " do not")
+        if (any(!grepl("^.*\\(sdev\\)$", lines[ieven])))
+            stop("even-numbered data lines in .btl files must end with `(sdev)`, but lines ", paste(grep("(sdev)$", lines[ieven], invert=TRUE), collapse=","), " do not")
+        ## It's a multistep process, working with this odd paired-line format.  We
+        ## divide it into steps, in hopes of making it easier to modify the code later,
+        ## in case this fails on some files, or there is a need to change the output
+        ## scheme.
+        dataInterwoven <- utils::read.fwf(file, widths=rep(11, length(colNames)), skip=1+dataHeaderStartLine,
+                                          col.names=colNames)
+        ndataInterwoven <- dim(dataInterwoven)[1]
+        ## Break up into two dataframes
+        iavgs <- seq(1, ndataInterwoven, by=2)
+        isdevs <- seq(2, ndataInterwoven, by=2)
+        avg <- dataInterwoven[iavgs, ]
+        sdev <- dataInterwoven[isdevs,]
+        ## Get time-of-day from sdev, then trim out NA columns, and finally rename columns
+        hms <- gsub(" ", "", sdev$Date)
+        sdevValid <- !is.na(sdev[1,]) & !grepl("Date", names(sdev))
+        sdev <- sdev[, sdevValid]
+        names(sdev) <- paste0(names(sdev), "_sdev")
+        ## Recombine, then trim the "type" columns, which we kept only for testing, so far
+        data <- cbind(avg, sdev)
+        trimCols <- grep("^(type)|(typeSdev)$", names(data))
+        if (2 != length(trimCols))
+            stop("expecting 2 'type' columns to trim, but found ", length(trimCols))
+        data <- data[, -trimCols]
+        data$time <- as.POSIXct(paste(data$Date, hms), format="%b %d %Y %H:%M:%S", tz="UTC")
+        data <- data[, -which(names(data) == "Date")]
         haveData <- TRUE
-        names <- names(data)
-        ##labels <- names
-        ## if (!found.scan) {
-        ##     data$scan <- 1:ndata
-        ##     names <- names(data)
-        ##     colNamesInferred <- c(colNamesInferred, "scan")
-        ##     colNamesOriginal <- c(colNamesOriginal, "scan")
-        ## }
+        names <- colNames # used later (perhaps incorrectly, since we don't have flags etc for .btl files)
     } else {
-        haveData <- FALSE
-        warning("no data in CTD file \"", filename, "\"")
-        data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
+        pushBack(lines, file) # push back header so we can read from a file, not a text vector (for speed)
+        oceDebug(debug, "About to read .cnv data with these names: c(\"", paste(colNamesInferred, collapse='","'), "\")\n", sep="")
+        ##message("skipping ", iline-1, " lines at top of file")
+        data <- as.list(read.table(file, skip=iline-1, header=FALSE))
+
+        if (length(data) != length(colNamesInferred))
+            stop("Number of columns in .cnv data file (", length(data), ") must match number of variables named in the header (", length(colNamesInferred), ")")
+        names(data) <- colNamesInferred
+        ndata <- length(data[[1]])
+        if (0 < ndata) {
+            haveData <- TRUE
+            names <- names(data)
+            ##labels <- names
+            ## if (!found.scan) {
+            ##     data$scan <- 1:ndata
+            ##     names <- names(data)
+            ##     colNamesInferred <- c(colNamesInferred, "scan")
+            ##     colNamesOriginal <- c(colNamesOriginal, "scan")
+            ## }
+        } else {
+            haveData <- FALSE
+            warning("no data in CTD file \"", filename, "\"")
+            data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
+        }
     }
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")

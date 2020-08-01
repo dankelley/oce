@@ -22,10 +22,17 @@
 #' documentation):
 #'
 #' * `name="argo"` defaults `mapping` to
+#' OLD (prior to June 10, 2020)
 #' ```
 #' list(not_assessed=0, passed_all_tests=1, probably_good=2,
 #'      probably_bad=3, bad=4, averaged=7,
 #'      interpolated=8, missing=9)
+#'```
+#' NEW (after June 10, 2020)
+#'```
+#' list(not_assessed=0, passed_all_tests=1, probably_good=2,
+#'      probably_bad=3, bad=4, changed=5, not_used_6=6, not_used_7=7,
+#'      estimated=8, missing=9)
 #' ```
 #' See reference 1 for a deeper explanation of the meanings of these codes.
 #'
@@ -71,14 +78,16 @@
 #'
 #' @param object An oce object.
 #'
-#' @param name Character value naming the scheme. If this refers
-#' to a pre-defined scheme, then `mapping` must not be provided.
+#' @param name a character value naming the scheme. If this refers
+#' to a pre-defined scheme, then `mapping` must not be provided,
+#' because doing so would contradict the pre-defined scheme, defeating
+#' its purpose of providing concreteness and clarity.
 #'
-#' @param mapping A list of named items describing the mapping from
+#' @param mapping a list of named items describing the mapping from
 #' flag meaning to flag numerical value, e.g `list(good=1, bad=2)`
 #' might be used for a hypothetical class.
 #'
-#' @param default Integer vector of flag values that are not considered
+#' @param default an integer vector of flag values that are not considered
 #' to be good. If this is not provided, but if `name` is `"argo"`,
 #' `"BODC"`,
 #' `"DFO"`,
@@ -89,13 +98,21 @@
 #' `c(1,3,4,5,6,7,9)`, leaving only value `2`, which corresponds
 #' with "acceptable" in the notation used for that flag scheme.
 #'
-#' @param debug Integer set to 0 for quiet action or to 1 for some debugging.
+#' @param update a logical value indicating whether the scheme provided is
+#' to update an existing scheme.  The default value, `FALSE`, prevents such
+#' an attempt to alter an existing flag scheme, if one is already embedded
+#' in `object`.
+#'
+#' @param debug an integer set to 0 for quiet action or to 1 for some debugging.
 #'
 #' @return An object with the `metadata` slot containing `flagScheme`.
 #'
 #' @references
-#' 1. The codes for `"Argo"` are defined at
-#' http://www.oceannetworks.ca/data-tools/data-quality
+#' 1. The codes for `"argo"` are derived from information in Table 4.1
+#' of Wong, Annie, Robert Keeley, Thierry Carval, and Argo Data Management Team
+#' (8 January 2020), "Argo Quality Control Manual for CTD and Trajectory Data, Version 3.3,"
+#' available at \url{https://archimer.ifremer.fr/doc/00228/33951/}
+#' as of June 2020.
 #'
 #' 2. The codes for `"BODC"` are defined at
 #' http://seadatanet.maris2.nl/v_bodc_vocab_v2/browse.asp?order=conceptid&formname=search&screen=0&lib=l20

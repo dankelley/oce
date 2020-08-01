@@ -1,8 +1,8 @@
+^issue[0-9]+\.R$
 ^sandbox$
 ^.*.odf$
 ^.*.ODF$
 ^R/check_urls\.R$
-^doc$
 ^Meta$
 ^revdep$
 ^cran-comments.md$
@@ -45,5 +45,11 @@ R/check_urls.R
 ^cran-comments\.md$
 ^CRAN-RELEASE$
 ^Rplot*.png$
-
 ^appveyor\.yml$
+^doc$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^oce-demo-[0-9].png$
+^oce-logo-[0-9].png$
+

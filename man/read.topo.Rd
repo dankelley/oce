@@ -22,15 +22,22 @@ by specifying higher \code{debug} values.}
 A \linkS4class{topo} object that.
 }
 \description{
-Read a file that contains topographic data in the ETOPO dataset, as provided by
+Read a file that contains topographic data in the ETOPO dataset, as was once provided by
 the NOAA website (see \code{\link[=download.topo]{download.topo()}} for a good server for such
-files.
+files. (As of May, 2020, there does not seem to be a way to download these
 }
 \details{
-The three permitted file types are as follows: (1) an ascii type described
-by NOAA as "?"; (2) a NetCDF format described by NOAA as "GMT NetCDF"
-(recognized by the presence of a variable named \verb{), and (3) another NetCDF format described by NOAA as "NetCDF" (recognized by the presence of a variable called }). Files in each of these formats
-can be downloaded with \code{\link[=download.topo]{download.topo()}}.
+The three permitted file types are as follows.
+\enumerate{
+\item An ascii type
+in which line 1 holds a label (which is ignored), whitespace, and then
+the number of columns in the matrix (i.e. the number of longitude values),
+line 2 is similar but for latitude, line 3 is similar but for the westernmost
+longitude, line 4 is similar but for southernmost latitude, line 5
+is similar but for cell size, and lines after that hold the grid.
+\item A NetCDF format that was once described by NOAA as "GMT NetCDF".
+\item A NetCDF format that was once described by NOAA as "NetCDF".
+}
 }
 \examples{
 \dontrun{

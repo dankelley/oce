@@ -17,6 +17,7 @@ mapPlot(
   clip = TRUE,
   type = "polygon",
   axes = TRUE,
+  axisStyle = 1,
   cex,
   cex.axis = 1,
   mgp = c(0, 0.5, 0),
@@ -33,16 +34,16 @@ mapPlot(
 )
 }
 \arguments{
-\item{longitude}{either a vector of longitudes of points to be plotted, or
+\item{longitude}{either a numeric vector of longitudes of points to be plotted, or
 something (an \code{oce} object, a list, or a data frame) from which both
 longitude and latitude may be inferred (in which case the \code{latitude}
 argument is ignored).  If \code{longitude} is missing, both it and
 \code{latitude} are taken from \code{\link[=coastlineWorld]{coastlineWorld()}}.}
 
-\item{latitude}{vector of latitudes of points to be plotted (ignored
+\item{latitude}{numeric vector of latitudes of points to be plotted (ignored
 if the first argument contains both latitude and longitude).}
 
-\item{longitudelim}{optional vector of length two, indicating the
+\item{longitudelim}{optional numeric vector of length two, indicating the
 longitude limits of the plot. This value is used in the selection of
 longitude lines that are shown (and possibly
 labelled on the axes). In some cases, e.g. for polar views,
@@ -91,10 +92,17 @@ that domain.}
 \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
 overlain with line segments.}
 
-\item{axes}{logical value indicating whether to draw longitude and latitude
+\item{axes}{a logical value indicating whether to draw longitude and latitude
 values in the lower and left margin, respectively.  This may not work well
-for some projections or scales.  See also \code{lonlabels} and \code{latlabels}, which
-offer more granular control of labelling.}
+for some projections or scales.  See also \code{axisStyle}, \code{lonlabels}
+and \code{latlabels}, which offer more granular control of labelling.}
+
+\item{axisStyle}{an integer specifying the style of labels for the numbers
+on axes.  The choices are:
+0 for signed numbers without labels;
+1 (the default) for unsigned numbers followed by letters that indicate the hemisphere;
+2 for signed numbers with a degree symbol to the right; and
+3 for unsigned numbers with a degree symbol to the right.}
 
 \item{cex}{character expansion factor for plot symbols,
 used if \code{type='p'} or any other value that yields symbols.}
@@ -137,7 +145,7 @@ forms. First, it may be a character string in the "CRS" format that is
 used by the \CRANpkg{rgdal} package (and in much of modern computer-based
 cartography). For example, \code{projection="+proj=merc"} specifies a
 Mercator projection. The second format is the output from
-\code{\link[sp:CRS]{sp::CRS()}} in the \CRANpkg{sp} package, which is an object
+\code{\link[sp:CRS-class]{sp::CRS()}} in the \CRANpkg{sp} package, which is an object
 with a slot named \code{projarg} that gets used as a projection string.
 See \dQuote{Details}.}
 

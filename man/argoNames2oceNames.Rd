@@ -28,7 +28,7 @@ as names).
 The inference of names was done
 by inspection of some data files, based on reference 1. It should be noted,
 however, that the data files examined contain some names that are not
-undocumented in reference 1, and others that are listed only in its changelog,
+documented in reference 1, and others that are listed only in its changelog,
 with no actual definitions being given. For example, the files had six distinct
 variable names that seem to relate to phase in the oxygen sensor, but
 these are not translated by the present function because these

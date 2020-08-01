@@ -9,7 +9,7 @@ oceSetData(object, name, value, unit, originalName, note = "")
 \arguments{
 \item{object}{an \linkS4class{oce} object.}
 
-\item{name}{String indicating the name of the item to be set.}
+\item{name}{String indicating the name of the \code{data} item to be set.}
 
 \item{value}{Value for the item.}
 
@@ -29,11 +29,18 @@ added to the processing log. This last form is useful in cases where
 in an overly verbose processing log; in such cases, it might help
 to add a note by e.g. \code{processingLog(a) <- "QC (memo dek-2018-01/31)"}}
 }
+\value{
+An \linkS4class{oce} object, the \code{data} slot of which has
+been altered either by adding a new item or modifying an existing
+item.
+}
 \description{
-Set Something in an oce data Slot
+Create a copy of an object in which some element of its
+\code{data} slot has been altered, or added.
 }
 \details{
-There are three possibilities for \code{unit}:
+The trickest argument to set is the \code{unit}.  There are three
+possibilitis for this:
 \enumerate{
 \item \code{unit} is a named or unnamed \code{\link[=list]{list()}} that contains two items.
 If the list is named, the names must be

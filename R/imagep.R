@@ -547,7 +547,7 @@ drawPalette <- function(zlim, zlab="",
     oceDebug(debug, vectorShow(par("mar")), style="blue")
     oceDebug(debug, vectorShow(par("mai")), style="blue")
     oceDebug(debug, "} # drawPalette()\n", unindent=1, style="bold")
-    invisible()
+    invisible(NULL)
 }
 
 

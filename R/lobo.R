@@ -177,12 +177,14 @@ setMethod(f="subset",
               res@metadata <- x@metadata
               res@processingLog <- x@processingLog
               for (i in seq_along(x@data)) {
-                  r <- eval(substitute(subset), x@data, parent.frame(2))
+                  ##r <- eval(substitute(subset), x@data, parent.frame(2))
+                  r <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   r <- r & !is.na(r)
                   res@data[[i]] <- x@data[[i]][r]
               }
               names(res@data) <- names(x@data)
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              ## subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res@processingLog <- processingLogAppend(res@processingLog, paste("subset.lobo(x, subset=", subsetString, ")", sep=""))
               res
           })

@@ -200,7 +200,7 @@ setMethod(f="summary",
 setMethod(f="subset",
           signature="xbt",
           definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res <- x
               dots <- list(...)
               debug <- getOption("oceDebug")
@@ -210,7 +210,7 @@ setMethod(f="subset",
                   stop("must give 'subset'")
               if (length(grep("depth", subsetString))) {
                   oceDebug(debug, "subsetting an xbt by depth\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   names <- names(x@data)
                   oceDebug(debug, vectorShow(keep, "keeping bins:"))
                   res <- x
@@ -609,6 +609,6 @@ setMethod(f="plot",
                   }
               }
               oceDebug(debug, "} # plot.xbt()\n", unindent=1)
-              invisible()
+              invisible(NULL)
           })
 

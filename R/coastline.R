@@ -168,7 +168,7 @@ setMethod(f="subset",
               ## we must start with some cleanup (e.g. removal of spaces,
               ## conversion of && to & and <= to <) for the pattern matching
               ## to work simply.
-              s0 <- deparse(substitute(subset), width.cutoff=500)
+              s0 <- deparse(substitute(expr=subset, env=environment()), width.cutoff=500)
               oceDebug(debug, "subset,coastline-method(..., ", s0, ") {\n", unindent=1, sep="", style="bold")
               if (length(grep(">", s0)))
                   stop("the 'subset' may not contain the character '>'")
@@ -560,7 +560,7 @@ setMethod(f="plot",
                   mapPlot(x[["longitude"]], x[["latitude"]], projection=projection,
                           longitudelim=longitudelim, latitudelim=latitudelim,
                           bg=col, col=if (missing(fill)) "lightgray" else fill, border=border, debug=debug-1)
-                  return(invisible())
+                  return(invisible(NULL))
               }
               if (!missing(clongitude))
                   if (clongitude > 180) clongitude <- clongitude - 360

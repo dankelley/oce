@@ -42,13 +42,13 @@ Oce handles map projections by calling the \code{projection} function of the
 \code{rgdal} R package, and so the notation for representing the projection is
 borrowed from \code{rgdal}.  This system will be familiar to many readers,
 because it is used in other R packages, and more widely in the software called
-PROJ.4, which has interfaces in python and other programming languages (PROJ.4,
-2019). Since oce uses inverse projections in some of its graphical work, only
-PROJ.4 projections that have inverses are incorporated into oce.  Furthermore,
-some projections are omitted from oce because they have been witnessed to cause
-problems on the oce developer's computers, including infinite loops and core
-dumps. See the help for the oce function `mapPlot` for a
-list of the available projections, and some advice on choosing them.
+PROJ, which has interfaces in python and other programming languages (PROJ
+contributors, 2020). Since oce uses inverse projections in some of its
+graphical work, only PROJ projections that have inverses are incorporated into
+oce.  Furthermore, some projections are omitted from oce because they have been
+witnessed to cause problems on the oce developer's computers, including
+infinite loops and core dumps. See the help for the oce function `mapPlot` for
+a list of the available projections, and some advice on choosing them.
 
 There are far too many projections to illustrate here. See
 <http://dankelley.github.io/r/2015/04/03/oce-proj.html> for a blog item that
@@ -296,20 +296,21 @@ if (requireNamespace("ocedata", quietly=TRUE)) {
 
 # References
 
-PROJ. “PROJ.4 6.0.0 Documentation.” Accessed March 7, 2019.
-https://proj4.org/.
+PROJ contributors. \dQuote{PROJ Coordinate Transformation Software Library.}
+Open Source Geospatial Foundation, 2020.  https://proj.org/ (accessed
+2020-04-19)
 
-Snyder, John P. “Map Projections—a Working Manual.” Washington: U.S.
+Snyder, John P. \dQuote{Map Projections—a Working Manual.} Washington: U.S.
 Geological survey professional paper 1395, 1987.
 https://pubs.usgs.gov/pp/1395/report.pdf.
 
-Snyder, John Parr. “Flattening the Earth: Two Thousand Years of Map
-Projections.” Chicago, IL: University of Chicago Press, 1993.
+Snyder, John Parr. \dQuote{Flattening the Earth: Two Thousand Years of Map
+Projections.} Chicago, IL: University of Chicago Press, 1993.
 https://www.press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html.
 
-Snyder, John P., and Philip M. Voxland. “An Album of Map Projections.” U. S.
-Geological Survey Professional Paper. Washington, DC, USA: U. S. Department of
-the Interior: U. S. Geological Survey, 1994.
+Snyder, John P., and Philip M. Voxland. \dQuote{An Album of Map Projections.}
+U. S.  Geological Survey Professional Paper. Washington, DC, USA: U. S.
+Department of the Interior: U. S. Geological Survey, 1994.
 https://pubs.er.usgs.gov/publication/pp1453.
 
 

@@ -22,17 +22,17 @@
 #'
 #' @references
 #'
-#' 1. Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
-#' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
-#' in June 2011.)
+#' 1. Anthony W. Isenor and David Kellow, 2011. \emph{ODF Format Specification
+#' Version 2.0}. (This is a .doc file obtained in June 2011 by Dan Kelley,
+#' which no longer seems to be made available at any DFO website.)
 #'
-#' 2. The St Lawrence Global Observatory website has information on ODF format at
-#' \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
+#' 2. (Unknown authors), October 2014. \emph{ODF Format Description (MLI)},
+#' \url{https://ogsl.ca/wp-content/uploads/ODF_format_desc_en_0.pdf},
+#' (Link verified on June 4, 2020.)
 #'
-#' 3. List of variable codes:
-#' \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}
-#' (checked 2018-02-11); only a subset are handled.
-#'
+#' 3. A sample ODF file in the MLI format is available at
+#' \url{https://ogsl.ca/wp-content/uploads/ODF_file_example_en_0.pdf}.
+#' (Link verified on June 4, 2020.)
 #'
 #' @author Dan Kelley
 #' @family things related to odf data
@@ -102,7 +102,7 @@ setMethod(f="[[<-",
 setMethod(f="subset",
           signature="odf",
           definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res <- x
               ##dots <- list(...)
               if (missing(subset))
@@ -110,7 +110,7 @@ setMethod(f="subset",
 
               if (missing(subset))
                   stop("must specify a 'subset'")
-              keep <- eval(substitute(subset), x@data, parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
+              keep <- eval(substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
               res <- x
               for (i in seq_along(x@data)) {
                   res@data[[i]] <- x@data[[i]][keep]
@@ -392,11 +392,10 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' @family functions that interpret variable names and units from headers
 #'
 #' @references
-#' 1. The Department of Fisheries and Oceans Common Data Dictionary may be
-#' available at `http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY`)
-#' although that link seems to be unreliable. As of September 2017, the
-#' link \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
-#' seems to be a good place to start.
+#'
+#' For sources that describe the ODF format, see the documentation
+#' for the [odf-class].
+#'
 #' @family things related to odf data
 ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
                               columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
@@ -933,6 +932,16 @@ ODFListFromHeader <- function(header)
 #' [unduplicateNames()] being used to append integers to
 #' distinguish between repeated names in the ODF format.
 #'
+#' @param exclude either a character value holding a regular
+#' expression that is used with [grep()] to remove lines from the
+#' header before processing, or `NULL` (the default), meaning
+#' not to exclude any such lines.  The purpose of this argument
+#' is to solve problems with some files, which can have
+#' thousands of lines that indicate details that are may be of
+#' little value in processing.  For example, some files have thousands
+#' of lines that would be excluded by using
+#' `exclude="PROCESS='Nulled the .* value"` in the funcion call.
+#'
 #' @template debugTemplate
 #'
 #' @return An [oce-class] object.
@@ -949,16 +958,11 @@ ODFListFromHeader <- function(header)
 #'
 #' @references
 #'
-#' 1. Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
-#' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
-#' in June 2011.)
-#'
-#' 2. The St Lawrence Global Observatory website has information on ODF format at
-#' \url{https://slgo.ca/app-sgdo/en/docs_reference/documents.html}
-#' and this is perhaps the best resource to learn more.
+#' For sources that describe the ODF format, see the documentation
+#' for the [odf-class].
 #'
 #' @family things related to odf data
-read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebug"))
+read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getOption("oceDebug"))
 {
     if (missing(file))
         stop("must supply 'file', a character value holding the name of an ODF file")
@@ -966,7 +970,7 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
         stop("can only handle one file at a time (the length of 'file' is ", length(file), ", not 1)")
     if (is.character(file) && 0 == file.info(file)$size)
         stop("the file named '", file, "' is empty, and so cannot be read")
-    oceDebug(debug, "read.odf(\"", file, "\", ...) {\n", unindent=1, sep="")
+    oceDebug(debug, "read.odf(\"", file, "\", exclude=", if (is.null(exclude)) "NULL" else "'", exclude, "', ...) {\n", unindent=1, sep="")
     if (!is.null(header)) {
         if (!is.character(header))
             stop("the header argument must be NULL, \"character\", or \"list\"")
@@ -988,22 +992,21 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
         open(file, "r")
         on.exit(close(file))
     }
-    ## Try to find the header/data separator in first 1000 lines
-    ## but if not there (as in a huge file) then look at the whole file.
-    lines <- readLines(file, 1000, encoding="latin1") # issue 1430 re encoding
-    pushBack(lines, file) # we used to read.table(text=lines, ...) but it is VERY slow
-    dataStart <- grep("^[ ]*-- DATA --[ ]*$", lines) # issue 1430 re leading/trailing spaces
-    if (!length(dataStart)) {
-        lines <- readLines(file, encoding="UTF-8")
-        dataStart <- grep("^[ ]*-- DATA --[ ]*$", lines) # issue 1430 re leading/trailing spaces
-        if (!length(dataStart)) {
-            stop("cannot locate a line containing '-- DATA --'")
-        }
-        pushBack(lines, file)
+    ## Read the full file.   (In a previous version, we only read the first 1000 lines
+    ## at the start, and later read the whole thing if we didn't find the DATA line.)
+    lines <- readLines(file, encoding="latin1") # issue 1430 re encoding
+    ## Trim excluded lines.
+    if (!is.null(exclude)) {
+        oldLength <- length(lines)
+        lines <- lines[grep(exclude, lines, invert=TRUE)]
+        oceDebug(debug, "the 'exclude' argument reduced the file line count from", oldLength, "to", length(lines), "lines\n")
     }
-    if (length(dataStart) < 1)
+    ## Locate the header/data separator
+    dataStart <- grep("^[ ]*-- DATA --[ ]*$", lines) # issue 1430 re leading/trailing spaces
+    if (!length(dataStart))
         stop("ODF files must contain a line with \"-- DATA --\"")
     res <- new("odf")
+
     nlines <- length(lines)
     ## Make a list holding all the information in the header. Note that this is entirely
     ## separate from e.g. inference of longitude and latitude from a header.
@@ -1023,6 +1026,14 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
     oceDebug(debug > 2, "headerlist will have", length(headerlist), "items\n")
     names(headerlist) <- categoryNames
     indexCategory <- 0
+    ## demo of what I will try, as a way to avoid this 2:10000 loop:
+    ## ## Set up counter
+    ## lhsc <- list()
+    ## ## Handle an item
+    ## lhs <- gsub("^[ ]*([^=]*)=(.*)$","\\1", h[i])
+    ## if (!(lhs %in% names(lhsc))) lhsc[[lhs]] <- 1 else lhsc[[lhs]] <- 1+lhsc[[lhs]]
+    ## lhs <- paste0(lhs, lhsc[[lhs]])
+    lhsc <- list() # set up a list for counts of lhs patterns, used in renaming
     for (i in seq_along(h)) {
         if (length(grep("^[a-zA-Z]", h[i]))) {
             indexCategory <- indexCategory + 1
@@ -1037,23 +1048,32 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
             }
             ## Use regexp to find lhs and rhs. This is better than using strsplit on '=' because some
             ## rhs have '=' in them.
-            oceDebug(debug > 2, "h[", i, "]='", h[i], "'\n", sep="")
+            ##> oceDebug(debug > 2, "h[", i, "]='", h[i], "'\n", sep="")
             lhs <- gsub("^[ ]*([^=]*)=(.*)$","\\1", h[i])
-            oceDebug(debug > 2, "  lhs='", lhs, "' (before renaming to remove duplicates)\n", sep="")
-            ok <- TRUE
-            if (lhs %in% lhsUsed) {
-                ok <- FALSE
-                for (trial in 2:10000) {
-                    if (!(paste(lhs, trial, sep="") %in% lhsUsed)) {
-                        lhs <- paste(lhs, trial, sep="")
-                        ok <- TRUE
-                        break
-                    }
-                }
+            if (!(lhs %in% names(lhsc))) {
+                lhsc[[lhs]] <- 1
+            } else {
+                lhsc[[lhs]] <- 1 + lhsc[[lhs]]
             }
-            if (!ok)
-                stop("cannot have more than 10000 items of the same name in ODF metadata; rerun with debug=5 to diagnose")
-            oceDebug(debug > 2, "  lhs='", lhs, "' (after renaming to remove duplicates)\n", sep="")
+            ##SLOW oceDebug(debug > 2, "lhs='", lhs, "'", "\n", sep="")
+            lhs <- paste0(lhs, "_", lhsc[[lhs]])
+            ##SLOW oceDebug(debug > 2, "lhs='", lhs, "' after renaming it to make it distinct\n", sep="")
+            ##OLD ##> oceDebug(debug > 2, "  lhs='", lhs, "' (before renaming to remove duplicates)\n", sep="")
+            ##OLD ok <- TRUE
+            ##OLD if (lhs %in% lhsUsed) {
+            ##OLD     ok <- FALSE
+            ##OLD     ## This is slow, of O(N^2), since with N data, we will get to O(N) in the next loop,
+            ##OLD     ## and the enclosing loop will also operatre O(N) times.
+            ##OLD     for (trial in 2:10000) {
+            ##OLD         if (!(paste(lhs, trial, sep="") %in% lhsUsed)) {
+            ##OLD             lhs <- paste(lhs, trial, sep="")
+            ##OLD             ok <- TRUE
+            ##OLD             break
+            ##OLD         }
+            ##OLD     }
+            ##OLD }
+            ##OLD if (!ok)
+            ##OLD     stop("cannot have more than 10000 items of the same name in ODF metadata; rerun with debug=5 to diagnose")
             rhs <- gsub("^[^=]*=[ ]*(.*)[,]*$","\\1", h[i])
             oceDebug(debug > 2, "  rhs='", rhs, "'\n", sep="")
             headerlist[[indexCategory]][[lhs]] <- rhs
@@ -1323,8 +1343,8 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
             res@metadata$waterDepth <- res@metadata$depthMax[1]
     }
     res@metadata$type <- findInHeader("INST_TYPE", lines)
-    if (length(grep("sea", res@metadata$type, ignore.case=TRUE)))
-        res@metadata$type <- "SBE"
+    ##if (length(grep("sea", res@metadata$type, ignore.case=TRUE)))
+    ##    res@metadata$type <- "SBE"
     res@metadata$serialNumber <- findInHeader("SERIAL_NUMBER", lines)
     res@metadata$model <- findInHeader("MODEL", lines)
     if (is.null(header)) {
@@ -1381,7 +1401,7 @@ read.odf <- function(file, columns=NULL, header="list", debug=getOption("oceDebu
     ##> ## fix issue 768
     ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
     ## issue1226 data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
-    data <- scan(file, what="character", skip=dataStart, quiet=TRUE)
+    data <- scan(text=lines, what="character", skip=dataStart, quiet=TRUE)
     data <- matrix(data, ncol=length(namesUnits$names), byrow=TRUE)
     data <- as.data.frame(data, stringsAsFactors=FALSE)
     ## some files have text string (e.g. dates)

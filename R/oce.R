@@ -1117,7 +1117,8 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' remove any possible confusion.
 #' The time axis is drawn with [oce.axis.POSIXct()].
 #'
-#' @param x the times of observations.
+#' @param x the times of observations.  If this is not a [POSIXt] object, then an
+#' attempt is made to convert it to one using [as.POSIXct()].
 #'
 #' @param y the observations.
 #'
@@ -1134,6 +1135,17 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' `y` axis, or `"y"` for logarithmic `y` axis.  (Unlike
 #' [plot.default()] etc., `oce.plot.ts` does not permit
 #' logarithmic time, or `x` axis.)
+#'
+#' @param logStyle a character value that indicates how to draw the y axis, if
+#' `log="y"`.  If it is `"r"` (the default) then the conventional R style is used,
+#' in which a logarithmic transform connects y values to position on the "page"
+#' of the plot device, so that tics will be nonlinearly spaced, but not
+#' organized by integral powers of 10.  However, if it is `"decade"`, then
+#' the style will be that used in the scientific literature, in which large
+#' tick marks are used for integral powers of 10, with smaller tick marks
+#' at integral multiples of those powers, and with labels that use exponential
+#' format for values above 100 or below 0.01.  The value of `logStyle` is passed
+#' to [oceAxis()], which draws the axis.
 #'
 #' @param drawTimeRange an optional indication of whether/how to draw a time range,
 #' in the top-left margin of the plot; see [oce.axis.POSIXct()] for details.
@@ -1160,7 +1172,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' @param cex.axis,cex.lab,cex.main numeric character expansion factors for axis numbers,
 #' axis names and plot titles; see [par()].
 #'
-#' @param  flipy Logical, with `TRUE` indicating that the graph
+#' @param flipy Logical, with `TRUE` indicating that the graph
 #' should have the y axis reversed, i.e. with smaller values at
 #' the bottom of the page.
 #'
@@ -1231,7 +1243,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' oce.plot.ts(t, y, type='p', xlim=c(t[6], t[12]))
 #' # Flip the y axis
 #' oce.plot.ts(t, y, flipy=TRUE)
-oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, ylab,
+oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=FALSE, xlab, ylab,
                         drawTimeRange, fill=FALSE, col=par("col"), pch=par("pch"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.lab=par("cex.lab"), cex.main=par("cex.main"),
                         xaxs=par("xaxs"), yaxs=par("yaxs"),
@@ -1249,10 +1261,12 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
         stop("x cannot be a function")
     if ("adorn" %in% names(list(...)))
         warning("the 'adorn' argument was removed in November 2017")
+    if (!inherits(x, "POSIXt"))
+        x <- as.POSIXct(x)
     if (missing(xlab))
         xlab <- ""
     if (missing(ylab))
-        ylab  <- deparse(substitute(y))
+        ylab  <- deparse(substitute(expr=y, env=environment()))
     if (missing(drawTimeRange))
         drawTimeRange <- getOption("oceDrawTimeRange", TRUE)
     ##ocex <- par("cex")
@@ -1398,9 +1412,17 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", flipy=FALSE, xlab, y
             }
             box()
             ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
-            if (drawyaxis)
-                axis(2, cex.axis=cex.axis, cex=cex.axis)
-            yat <- axis(4, labels=FALSE)
+            if (drawyaxis) {
+                if (log != "y" || logStyle == "r") {
+                    axis(2, cex.axis=cex.axis, cex=cex.axis)
+                    yat <- axis(4, labels=FALSE)
+                } else if (log == "y" && logStyle == "decade") {
+                    yat <- oceAxis(2, logStyle=logStyle, cex.axis=cex.axis, cex=cex.axis)
+                    oceAxis(4, logStyle=logStyle, labels=FALSE)
+                } else if (log == "y") {
+                    stop("if log=\"y\", then logStyle must be \"r\" or \"decade\", not \"", logStyle, "\"")
+                }
+            }
         }
         if (grid) {
             if (log == "y") {
@@ -2078,8 +2100,8 @@ read.oce <- function(file, ...)
         res <- read.ctd.woce.other(file, processingLog=processingLog, ...)
     } else if (type == "ctd/odf" || type == "mctd/odf" || type == "mvctd/odf") {
         res <- read.ctd.odf(file, processingLog=processingLog, ...)
-    } else if (length(grep("/odf$", type))) {
-        res <- read.odf(file, debug=debug)
+    } else if (length(grep(".odf$", type))) {
+        res <- read.odf(file, ..., debug=debug, ...)
     } else if (type == "mtg/odf") {
         ## FIXME: document this data type
         ## Moored tide gauge: returns a data frame.
@@ -2246,6 +2268,83 @@ read.netcdf <- function(file, ...)
     res
 }
 
+
+#' Draw an axis, possibly with decade-style logarithmic scaling
+#' 
+#' @param logStyle a character value that indicates how to draw the y axis, if
+#' `log="y"`.  If it is `"r"` (the default) then the conventional R style is used,
+#' in which a logarithmic transform connects y values to position on the "page"
+#' of the plot device, so that tics will be nonlinearly spaced, but not
+#' organized by integral powers of 10.  However, if it is `"decade"`, then
+#' the style will be that used in the scientific literature, in which large
+#' tick marks are used for integral powers of 10, with smaller tick marks
+#' at integral multiples of those powers, and with labels that use exponential
+#' format for values above 100 or below 0.01.
+#' @param side an integer specifying which axis to draw, with 1 for bottom axis, 2 for left axis,
+#' 3 for top axis, and 4 for right axis (as with [axis()]).
+#' @param labels either a vector of character values used for labels or a logical value indicating
+#' whether to draw such labels.  The first form only works if the coordinate is not logarithmic,
+#' and if `logStyle` is `"r"`.
+#' @param \dots other graphical parameters, passed to [axis()].
+#' 
+#' @return Numerical values at which tick marks were drawn (or would have been drawn, if `labels`
+#' specified to draw them).
+#'
+#' @examples
+#' library(oce)
+#' Ra <- 10^seq(4, 10, 0.1)
+#' Nu <- 0.085 * Ra^(1/3)
+#' plot(Ra, Nu, log="xy", axes=FALSE)
+#' box()
+#' oceAxis(1, logStyle="decade")
+#' oceAxis(2, logStyle="decade")
+#'
+#' @author Dan Kelley
+oceAxis <- function(side, labels=TRUE, logStyle="r", ...)
+{
+    if (missing(side))
+        stop("in oceAxis() :\n  argument \"side\" is missing, with no default", call.=FALSE)
+    if (length(side) != 1)
+        stop("in oceAxis() :\n  argument \"side\" must be a single number", call.=FALSE)
+    if (!(side %in% 1:4))
+        stop("in oceAxis() :\n  argument \"side\" must be 1, 2, 3 or 4", call.=FALSE)
+    if (!(logStyle %in% c("r", "decade")))
+        stop("logStyle must be \"r\" or \"decade\", not \"", logStyle, "\"")
+    if (logStyle == "r") {
+        return(invisible(axis(side=side, labels=labels, ...)))
+    } else {
+        ## use decade axis if previous plot() call made this coordinate be logarithmic
+        if (((side %in% c(1,3)) && par("xlog")) || ((side %in% c(2,4)) && par("ylog"))) { 
+            usr <- if (side %in% c(1, 3)) par("usr")[1:2] else par("usr")[3:4]
+            lowerDecade <- floor(usr[1])
+            upperDecade <- floor(1 + usr[2])
+            smallTickAt <- NULL
+            bigTickAt <- NULL
+            bigTickLabel <- NULL
+            for (bigTick in lowerDecade:upperDecade) {
+                bigTickAt <- c(bigTickAt, bigTick)
+                bigTickLabel <- c(bigTickLabel,
+                                  if (bigTick < -1L || bigTick > 1L)
+                                      substitute(10^A, list(A=bigTick)) else 10^bigTick)
+
+                smallTickAt <- c(smallTickAt, -1 + bigTick + log10(2:9))
+                smallTickAt <- c(smallTickAt,      bigTick + log10(2:9))
+            }
+            bigTickInWindow <- usr[1] <= bigTickAt & bigTickAt <= usr[2]
+            bigTickAt <- bigTickAt[bigTickInWindow]
+            bigTickLabel <- as.expression(bigTickLabel[bigTickInWindow])
+            smallTickInWindow <- usr[1] <= smallTickAt & smallTickAt <= usr[2]
+            smallTickAt <- smallTickAt[smallTickInWindow]
+            rval <- axis(side=side, at=10^bigTickAt, labels=if(labels) bigTickLabel else FALSE)
+            rug(side=side, x=10^smallTickAt, tcl=0.5*par("tcl"), lwd=par("lwd"))
+            return(invisible(rval))
+        } else {
+            return(invisible(axis(side=side, labels=labels, ...)))
+        }
+    }
+}
+
+
 #' Create two-color palette
 #'
 #' Create colors ranging between two specified limits, with white
@@ -2384,6 +2483,28 @@ oceColorsClosure <- function(spec) {
         if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
     }
 }
+
+#' Create colors similar to the google turbo scheme
+#'
+#' This uses the coefficients published (with Apache license) by google;
+#' see reference 1.
+#'
+#' @aliases oce.colorsTurbo oceColorsTurbo
+#'
+#' @param n number of colors to create.
+#'
+#' @references
+#' 1. \url{https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html}
+#'
+#' @author Dan Kelley
+#'
+#' @examples
+#' library(oce)
+#' imagep(volcano, col=oceColorsTurbo(128),
+#'        zlab="oceColorsTurbo")
+#' @family things related to colors
+oceColorsTurbo <- oce.colorsTurbo <- oceColorsClosure("turbo")
+
 
 #' Create colors similar to the matlab Viridis scheme
 #'
@@ -2593,7 +2714,6 @@ oceColorsPalette <- function(n, which=1)
     else character(0)
 }
 oce.colorsPalette <- oceColorsPalette
-
 
 #' Oce Version of axis.POSIXct
 #'
@@ -3156,6 +3276,10 @@ numberAsHMS <- function(t, default=0)
 #' [julianDay()], for example), and with the second column being the
 #' millisecond within that day. See reference 4.
 #'
+#' `"vms"` handles a convention used in the VMS operating system and
+#' for Modified Julian Day, in which `t` is the number of seconds
+#' past 1859-11-17T00:00:00 UTC. See reference 5.
+#'
 #' @param t an integer corresponding to a time, in a way that depends on
 #' `type`.
 #'
@@ -3183,11 +3307,13 @@ numberAsHMS <- function(t, default=0)
 #' see also Denbo, Donald W., and Nancy N. Soreide. \dQuote{EPIC.} Oceanography 9 (1996).
 #' https://doi.org/10.5670/oceanog.1996.10.
 #'
+#' 5. VMS times: https://en.wikipedia.org/wiki/Epoch_(computing)
+#'
 #' @examples
 #' numberAsPOSIXct(0)                     # unix time 0
 #' numberAsPOSIXct(1, type="matlab")      # matlab time 1
 #' numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day, zero hour UTC
-#' numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
+#' numberAsPOSIXct(cbind(2013, 1), type="yearday") # start of 2013
 #'
 #' ## Epic time, one hour into Canada Day of year 2018. In computing the
 #' ## Julian day, note that this starts at noon.
@@ -3200,7 +3326,7 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
     if (missing(type)) {
         type <- "unix"
     } else {
-        typeAllowed <- c("unix", "matlab", "gps", "argo", "excel", "ncep1", "ncep2", "sas", "spss", "yearday", "epic")
+        typeAllowed <- c("unix", "matlab", "gps", "argo", "excel", "ncep1", "ncep2", "sas", "spss", "yearday", "epic", "vms")
         type <- pmatch(type, typeAllowed, nomatch=NA)
         if (is.na(type))
             stop("only permitted type values are: \"", paste(typeAllowed, collapse="\", \""), "\".", sep="")
@@ -3215,7 +3341,7 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
     } else if (type == "yearday") {
         if (2 != ncol(t))
             stop("'t' must have two columns, one for year, the other for yearday")
-        return(ISOdatetime(t[, 1], 1, 1, 0, 0, 0, tz=tz) + 1 + t[, 2] * 24 * 3600)
+        return(ISOdatetime(t[, 1], 1, 1, 0, 0, 0, tz=tz) + (t[, 2] - 1) * 24 * 3600)
     } else if (type == "argo") {
         return(t * 86400 + as.POSIXct("1900-01-01 00:00:00", tz="UTC"))
     } else if (type == "excel") {
@@ -3274,6 +3400,8 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
             stop("for epic times, 't' must be a two-column matrix, with first column the julian day, and second the millisecond within that day")
         r <- do_epic_time_to_ymdhms(t[,1], t[,2])
         t <- ISOdatetime(r$year, r$month, r$day, r$hour, r$minute, r$second, tz=tz)
+    } else if (type == "vms") {
+        t <- as.POSIXct(t, origin="1858-11-17", tz=tz)
     } else {
         stop("unknown type '", type, "'")
     }
@@ -3416,7 +3544,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     ## then adjust 'new' appropriately.
     par(usr=opar$usr, mai=opar$mai, cex=opar$cex, lwd=opar$lwd, lty=opar$lty, bg=opar$bg)
     oceDebug(debug, "} # plotInset()\n", unindent=1)
-    invisible()
+    invisible(NULL)
 }
 
 

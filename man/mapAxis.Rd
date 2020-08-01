@@ -8,6 +8,7 @@ mapAxis(
   side = 1:2,
   longitude = TRUE,
   latitude = TRUE,
+  axisStyle = 1,
   tick = TRUE,
   line = NA,
   pos = NA,
@@ -30,7 +31,7 @@ mapAxis(
 \item{side}{the side at which labels are to be drawn.  If not provided,
 sides 1 and 2 will be used (i.e. bottom and left-hand sides).}
 
-\item{longitude}{either a logical value or a vector of longitudes. There
+\item{longitude}{either a logical value or a numeric vector of longitudes. There
 are three possible cases:
 (1) If \code{longitude=TRUE} (the default) then ticks and nearby numbers will occur at the
 longitude grid established by the previous call to \code{\link[=mapPlot]{mapPlot()}};
@@ -43,6 +44,14 @@ so some longitude values might get ticks but not numbers. To get ticks
 but not numbers, set \code{cex.axis=0}.}
 
 \item{latitude}{similar to \code{longitude} but for latitude.}
+
+\item{axisStyle}{an integer specifying the style of labels for the numbers
+on axes.  The choices are:
+1 for signed numbers without additional labels;
+2 (the default) for unsigned numbers followed by letters indicating the hemisphere;
+3 for signed numbers followed by a degree sign;
+4 for unsigned numbers followed by a degree sign; and
+5 for signed numbers followed by a degree sign and letters indicating the hemisphere.}
 
 \item{tick}{parameter passed to \code{\link[=axis]{axis()}}.}
 

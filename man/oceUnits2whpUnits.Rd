@@ -20,7 +20,8 @@ to match patterns.
 }
 \references{
 Several online sources list WOCE names. An example is
-\url{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
+\verb{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
+(a link that was noticed to be failing on May 31, 2020).
 }
 \seealso{
 Other things related to ctd data: 
@@ -48,6 +49,7 @@ Other things related to ctd data:
 \code{\link{plotTS}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
+\code{\link{read.ctd.odv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.woce.other}()},
 \code{\link{read.ctd.woce}()},

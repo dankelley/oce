@@ -25,10 +25,10 @@ is supplied, but otherwise determines the longitude sequence.}
 \item{dlatitude}{increment in latitude, ignored if \code{latitude}
 is supplied, but otherwise determines the latitude sequence.}
 
-\item{longitude}{vector of longitudes, or \code{NULL} to prevent drawing
+\item{longitude}{numeric vector of longitudes, or \code{NULL} to prevent drawing
 longitude lines.}
 
-\item{latitude}{vector of latitudes, or \code{NULL} to prevent drawing
+\item{latitude}{numeric vector of latitudes, or \code{NULL} to prevent drawing
 latitude lines.}
 
 \item{col}{color of lines}

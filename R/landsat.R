@@ -688,7 +688,7 @@ setMethod(f="plot",
                        ", ...) {\n", sep="", unindent=1)
               if (!length(x@data)) {
                   warning("In plot,landsat-method(): object contains no band data\n", call.=FALSE)
-                  return(invisible())
+                  return(invisible(NULL))
               }
               terralook <- FALSE
               datanames <- names(x@data)

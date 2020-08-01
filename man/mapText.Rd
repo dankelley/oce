@@ -7,9 +7,9 @@
 mapText(longitude, latitude, labels, ...)
 }
 \arguments{
-\item{longitude}{vector of longitudes of text to be plotted.}
+\item{longitude}{numeric vector of longitudes of text to be plotted.}
 
-\item{latitude}{vector of latitudes of text to be plotted.}
+\item{latitude}{numeric vector of latitudes of text to be plotted.}
 
 \item{labels}{vector of labels of text to be plotted.}
 

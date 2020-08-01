@@ -9,6 +9,22 @@ library(oce)
 context("Astronomical")
 
 RPD <- atan2(1, 1) / 45            # radians per degree
+
+test_that("Angles", {
+          ## A randomly-chosen example on page 99 of Meeus (1991).
+          ## Hundreds of other cases could be found in that book, or his
+          ## earlier one, but the fomulae is self-evident so a single
+          ## value ought to be enough to ensure against editing errors that
+          ## might accidentally alter degree2hms().
+          hms <- angle2hms(177.74208)
+          expect_equal(hms$hourDecimal, 177.74208 * 24 / 360)
+          expect_equal(hms$hour, 11)
+          expect_equal(hms$minute, 50)
+          expect_equal(hms$second, 58.0992)
+          expect_equal(hms$string, "11h50m58s.10")
+})
+
+
 test_that("Times", {
           ## [1] chapter 3 page 24-25
           ## FIXME: previously this had the unintelligble tz="ET" but it is *exact* as is

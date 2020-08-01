@@ -1347,7 +1347,7 @@ swZ <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"))
 #' f <- coriolis(section[["station", 1]][["latitude"]])
 #' g <- gravity(section[["station", 1]][["latitude"]])
 #' v <- diff(smu$y)/diff(smu$x) * g / f / 1e3 # 1e3 converts to m
-#' plot(smu$x[-1], v, type='l', col="blue", xlab="distance \[km\]", ylab="velocity (m/s)")
+#' plot(smu$x[-1], v, type='l', col="blue", xlab="distance [km]", ylab="velocity (m/s)")
 #'
 #' # right-hand column: gulf stream region, unsmoothed
 #' gs <- subset(section, 102<=stationId&stationId<=124)

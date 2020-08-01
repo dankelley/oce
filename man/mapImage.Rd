@@ -23,11 +23,11 @@ mapImage(
 )
 }
 \arguments{
-\item{longitude}{vector of longitudes corresponding to \code{z} matrix.}
+\item{longitude}{numeric vector of longitudes corresponding to \code{z} matrix.}
 
-\item{latitude}{vector of latitudes corresponding to \code{z} matrix.}
+\item{latitude}{numeric vector of latitudes corresponding to \code{z} matrix.}
 
-\item{z}{matrix to be represented as an image.}
+\item{z}{numeric matrix to be represented as an image.}
 
 \item{zlim}{limit for z (color).}
 

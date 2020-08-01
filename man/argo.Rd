@@ -5,10 +5,10 @@
 \alias{argo}
 \title{ARGO float dataset}
 \source{
-This file was downloaded using the unix command
-\preformatted{
-ftp ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc
-} issued on 2017 July 7.
+The netcdf file used by \code{\link[=read.argo]{read.argo()}} to create this \linkS4class{argo}
+object was downloaded from
+\url{ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc}
+on 2020 June 24.
 }
 \description{
 This holds data from ARGO 6900388 in the North Atlantic.

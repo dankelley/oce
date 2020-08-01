@@ -160,7 +160,7 @@ setMethod(f="summary",
 setMethod(f="subset",
           signature="cm",
           definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res <- x
               dots <- list(...)
               debug <- getOption("oceDebug")
@@ -170,7 +170,7 @@ setMethod(f="subset",
                   stop("must give 'subset'")
               if (length(grep("time", subsetString))) {
                   oceDebug(debug, "subsetting a cm by time\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   names <- names(x@data)
                   oceDebug(debug, vectorShow(keep, "keeping bins:"))
                   oceDebug(debug, "number of kept bins:", sum(keep), "\n")
@@ -891,6 +891,6 @@ setMethod(f="plot",
                   }
               }
               oceDebug(debug, "} # plot.cm()\n", unindent=1)
-              invisible()
+              invisible(NULL)
           })
 

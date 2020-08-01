@@ -289,7 +289,7 @@ oceCRS <- function(region)
 #' simply by subtracting 180 from each longitude, if any longitude
 #' in the vector exceeds 180.
 #'
-#' @param longitudes a numerical vector of longitudes
+#' @param longitudes numerical vector of longitudes.
 #'
 #' @return vector of longitudes, shifted to the desired range.
 #'
@@ -303,18 +303,18 @@ shiftLongitude <- function(longitudes) {
 fixneg <- function(v)
 {
     res <- v
-    for (i in seq_along(v)) {
-        if (res[i] == "0N") {
+    for (i in seq_along(res)) {
+        ##message("res[i]='", res[i], "' ...")
+        if (grepl("^0[A-Z]$", res[i])) {
             res[i] <- "0"
-        } else if (res[i] == "0E") {
-            res[i] <- "0"
-        } else if ("-" == substr(v[i], 1, 1)) {
+        } else if ("-" == substr(res[i], 1, 1)) {
             ##cat("res[i]=", res[i], "\n")
-            res[i] <- gsub("^-", "", v[i])
-            res[i] <- gsub("E", "W", res[i])
-            res[i] <- gsub("N", "S", res[i])
+            res[i] <- gsub("^-", "", res[i])
+            res[i] <- gsub("E", gettext("W", domain="R-oce"), res[i])
+            res[i] <- gsub("N", gettext("S", domain="R-oce"), res[i])
             ##cat(" -> res[i]=", res[i], "\n")
         }
+        ##message('  ... "', res[i], "'")
     }
     res
 }
@@ -389,7 +389,7 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' @param side the side at which labels are to be drawn.  If not provided,
 #' sides 1 and 2 will be used (i.e. bottom and left-hand sides).
 #'
-#' @param longitude either a logical value or a vector of longitudes. There
+#' @param longitude either a logical value or a numeric vector of longitudes. There
 #' are three possible cases:
 #' (1) If `longitude=TRUE` (the default) then ticks and nearby numbers will occur at the
 #' longitude grid established by the previous call to [mapPlot()];
@@ -402,6 +402,14 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' but not numbers, set `cex.axis=0`.
 #'
 #' @param latitude similar to `longitude` but for latitude.
+#'
+#' @param axisStyle an integer specifying the style of labels for the numbers
+#' on axes.  The choices are:
+#' 1 for signed numbers without additional labels;
+#' 2 (the default) for unsigned numbers followed by letters indicating the hemisphere;
+#' 3 for signed numbers followed by a degree sign;
+#' 4 for unsigned numbers followed by a degree sign; and
+#' 5 for signed numbers followed by a degree sign and letters indicating the hemisphere.
 #'
 #' @param tick parameter passed to [axis()].
 #'
@@ -418,6 +426,14 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' @param lwd axis line width, passed to [axis()]).
 #'
 #' @param lwd.ticks tick line width, passed to [axis()].
+#'
+#' @param axisStyle an integer specifying the style of labels for the numbers
+#' on axes.  The choices are:
+#' 1 for signed numbers without additional labels;
+#' 2 (the default) for unsigned numbers followed by letters indicating the hemisphere;
+#' 3 for signed numbers followed by a degree sign;
+#' 4 for unsigned numbers followed by a degree sign; and
+#' 5 for signed numbers followed by a degree sign and letters indicating the hemisphere.
 #'
 #' @param col axis color, passed to [axis()].
 #'
@@ -465,6 +481,7 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #'
 #' @family functions related to maps
 mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
+                    axisStyle=1,
                     tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
                     lty="solid", lwd=1, lwd.ticks=lwd, col=NULL, col.ticks=NULL,
                     hadj=NA, padj=NA, tcl=-0.3, cex.axis=1,
@@ -473,11 +490,15 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
 {
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
-    oceDebug(debug, "mapAxis(",
-             argShow(side), #side=c(", paste(side, collapse=","), ")",
-             argShow(longitude), #", longitude=", if (length(longitude)) c(longitude[1], "...") else "NULL",
-             argShow(latitude), #", latitude=", if (length(latitude)) c(latitude[1], "...") else "NULL",
-             ") { \n", sp="", unindent=1, sep="", style="bold")
+    oceDebug(debug, "mapAxis(side=c(", paste(side, collapse=","), ")",
+             ", longitude=", if (length(longitude)) c(longitude[1], "...") else "NULL",
+             ", latitude=", if (length(latitude)) c(latitude[1], "...") else "NULL",
+             ", axisStyle=", axisStyle,
+             ") { \n", unindent=1, sep="")
+    if (length(axisStyle) != 1)
+       stop("axisStyle must be of length 1")
+    if (!(axisStyle %in% 1:5))
+        stop("invalid axis style ", paste(axisStyle, collapse=","), "; must be 1, 2, 3, 4 or 5")
     boxLonLat <- usrLonLat()
     axis <- .axis()
     #if (debug > 0) print(axis)
@@ -537,22 +558,41 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
             x <- P$x
             if (is.finite(P$y) && (abs(P$y - usr[3]) < 0.01 * (usr[4] - usr[3]))) {
                 if (!is.na(x) && usr[1] < x && x < usr[2]) {
-                    label <- fixneg(paste(lon, "E", sep=""))
+                    ##label <- fixneg(paste0(lon, gettext("E", domain="R-oce")))
                     ##mtext(label, side=1, at=x)
                     AT <- c(AT, x)
-                    LAB <- c(LAB, label)
-                    oceDebug(debug, "  ", label, "intersects side 1\n")
+                    LAB <- c(LAB, lon)
+                    if (debug > 3) oceDebug(debug, "  ", lon, "E intersects side 1\n", sep="")
                 } else {
-                    oceDebug(debug, "  ", lon, "E does not intersect side 1\n")
+                    if (debug > 3) oceDebug(debug, "    ", lon, "E does not intersect side 1\n", sep="")
                 }
             } else {
                 oceDebug(debug, "skipping off-globe point\n")
             }
         }
         if (!is.null(AT)) {
-            ## prevent calling axis() with cex.axis=0, by just giving empty labels then
-            oceDebug(debug, "calling axis(1) with cex.axis=", cex.axis, "\n")
-            axis(side=1, at=AT, labels=if (cex.axis>0) fixneg(LAB) else rep("", length(AT)),
+            if (axisStyle == 1) {
+                labels <- if (cex.axis>0) LAB else rep("", length(AT))
+            } else if (axisStyle == 2) {
+                labels <- if (cex.axis>0) fixneg(paste0(LAB, gettext("E", domain="R-oce"))) else rep("", length(AT))
+            } else if (axisStyle == 3) {
+                labels <- if (cex.axis>0) paste0(LAB, "\u00B0") else rep("", length(AT))
+            } else if (axisStyle == 4) {
+                labels <- if (cex.axis>0) paste0(abs(LAB), "\u00B0") else rep("", length(AT))
+            } else if (axisStyle == 5) {
+                labels <- if (cex.axis>0) {
+                    paste0(abs(LAB),
+                           "\u00B0",
+                           unlist(lapply(LAB,
+                                         function(l)
+                                             if (l < 0) gettext("W", domain="R-oce")
+                                             else if (l > 0) gettext("E", domain="R-oce")
+                                             else "")))
+                } else {
+                    rep("", length(AT))
+                }
+            }
+            axis(side=1, at=AT, labels=labels,
                  mgp=mgp, tick=tick, line=line, pos=pos, outer=outer, font=font,
                  lty=lty, lwd=lwd, lwd.ticks=lwd.ticks, col=col, col.ticks=col.ticks,
                  hadj=hadj, padj=padj, tcl=tcl, cex.axis=if (cex.axis>0) cex.axis else 1)
@@ -610,10 +650,10 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
                 y <- P$y
                 if (is.finite(P$x) && (abs(P$x - usr[1]) < 0.01 * (usr[2] - usr[1]))) {
                     if (!is.na(y) && usr[3] < y && y < usr[4]) {
-                        label <- fixneg(paste(lat, "N", sep=""))
+                        ##label <- fixneg(paste0(lat, gettext("N", domain="R-oce")))
                         AT <- c(AT, y)
-                        LAB <- c(LAB, label)
-                        if (debug > 3) oceDebug(debug, "  ", label, " intersects side 2\n", sep="")
+                        LAB <- c(LAB, lat)
+                        if (debug > 3) oceDebug(debug, "  ", lat, " intersects side 2\n", sep="")
                     } else {
                         if (debug > 3) oceDebug(debug, "  ", lat, "N does not intersect side 2\n", sep="")
                     }
@@ -624,9 +664,28 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
         }
         #browser()
         if (!is.null(AT)) {
-            oceDebug(debug, "calling axis(2) with cex.axis=", cex.axis, "\n")
-            ## prevent calling axis() with cex.axis=0, by just giving empty labels then
-            axis(side=2, at=AT, labels=if (cex.axis>0) fixneg(LAB) else rep("", length(AT)),
+            if (axisStyle == 1) {
+                labels <- if (cex.axis>0) LAB else rep("", length(AT))
+            } else if (axisStyle == 2) {
+                labels <- if (cex.axis>0) fixneg(paste0(LAB, gettext("N", domain="R-oce"))) else rep("", length(AT))
+            } else if (axisStyle == 3) {
+                labels <- if (cex.axis>0) paste0(LAB, "\u00B0") else rep("", length(AT))
+            } else if (axisStyle == 4) {
+                labels <- if (cex.axis>0) paste0(abs(LAB), "\u00B0") else rep("", length(AT))
+            } else if (axisStyle == 5) {
+                labels <- if (cex.axis>0) {
+                    paste0(abs(LAB),
+                           "\u00B0",
+                           unlist(lapply(LAB,
+                                         function(l)
+                                             if (l < 0) gettext("S", domain="R-oce")
+                                             else if (l > 0) gettext("N", domain="R-oce")
+                                             else "")))
+                } else {
+                    rep("", length(AT))
+                }
+            }
+            axis(side=2, at=AT, labels=labels,
                  mgp=mgp, tick=tick, line=line, pos=pos, outer=outer, font=font,
                  lty=lty, lwd=lwd, lwd.ticks=lwd.ticks, col=col, col.ticks=col.ticks,
                  hadj=hadj, padj=padj, tcl=tcl, cex.axis=if (cex.axis>0) cex.axis else 1)
@@ -649,11 +708,11 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
 #'
 #' Plot contours on an existing map.
 #'
-#' @param longitude vector of longitudes of points to be plotted, or an object of
+#' @param longitude numeric vector of longitudes of points to be plotted, or an object of
 #' class `topo` (see [topo-class]), in which case
 #' `longitude`, `latitude` and `z` are inferred from that object.
 #'
-#' @param latitude vector of latitudes of points to be plotted.
+#' @param latitude numeric vector of latitudes of points to be plotted.
 #'
 #' @param z matrix to be contoured. The number of rows and columns in `z`
 #' must equal the lengths of `longitude` and `latitude`, respectively.
@@ -854,8 +913,9 @@ mapContour <- function(longitude, latitude, z,
                             polyNew <- sf::st_polygon(list(outer=cbind(c(polyx, polyx[1]), c(polyy, polyy[1]))))
                             pointsNew <- sf::st_multipoint(cbind(xc, yc))
                             insideNew <- sf::st_intersection(pointsNew, polyNew)
-                            eraseNew <- matrix(pointsNew %in% insideNew, ncol=2)[,1]
-                            eraseOld <- erase
+                            tmpMatrix <- matrix(pointsNew %in% insideNew, ncol=2)
+                            eraseNew <- tmpMatrix[,1] & tmpMatrix[,2] # could also use an apply op, but this is simple
+                            ##eraseOld <- erase
                             if (!isTRUE(all.equal(eraseNew, erase))) {
                                 warning("mapContour() error: 'erase' disagreement with trial 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n")
                             }
@@ -891,9 +951,9 @@ mapContour <- function(longitude, latitude, z,
 #' This is a preliminary version of this function. It only
 #' works if the lines of constant latitude are horizontal on the plot.
 #'
-#' @param latitude numeric value of latitude in degrees.
+#' @param longitude numeric vector of longitudes in degrees.
 #'
-#' @param longitude numeric value of longitude in degrees.
+#' @param latitude numeric vector of latitudes in degrees.
 #'
 #' @param L axis length in km.
 #'
@@ -951,9 +1011,9 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #' `latitude` are the coordinates along the matrices, and are thus stored in
 #' vectors with lengths that match appropriately.
 #'
-#' @param longitude,latitude vectors of the starting points for arrows.
+#' @param longitude,latitude numeric vectors of the starting points for arrows.
 #'
-#' @param u,v components of a vector to be shown as a direction
+#' @param u,v numeric vectors of the components of a vector to be shown as a direction
 #'     field.
 #'
 #' @param scale latitude degrees per unit of `u` or `v`.
@@ -1028,12 +1088,12 @@ mapDirectionField <- function(longitude, latitude, u, v,
 #' present projection.
 #'
 #'
-#' @param longitude vector of the longitudes of points, or an object from which
+#' @param longitude numeric vector of the longitudes of points, or an object from which
 #' both latitude and longitude can be inferred (e.g. a coastline file, or the
 #' return value from [mapLocator()]), in which case the following
 #' two arguments are ignored.
 #'
-#' @param latitude vector of latitudes of points, needed only if they cannot
+#' @param latitude numeric vector of latitudes of points, needed only if they cannot
 #' be inferred from the first argument.
 #'
 #' @details
@@ -1098,16 +1158,16 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' datum shifts; references 3 and 4 are less detailed and perhaps better for novices.
 #' See reference 8 for a gallery of projections.
 #'
-#' @param longitude either a vector of longitudes of points to be plotted, or
+#' @param longitude either a numeric vector of longitudes of points to be plotted, or
 #' something (an `oce` object, a list, or a data frame) from which both
 #' longitude and latitude may be inferred (in which case the `latitude`
 #' argument is ignored).  If `longitude` is missing, both it and
 #' `latitude` are taken from [coastlineWorld()].
 #'
-#' @param latitude vector of latitudes of points to be plotted (ignored
+#' @param latitude numeric vector of latitudes of points to be plotted (ignored
 #' if the first argument contains both latitude and longitude).
 #'
-#' @param longitudelim optional vector of length two, indicating the
+#' @param longitudelim optional numeric vector of length two, indicating the
 #' longitude limits of the plot. This value is used in the selection of
 #' longitude lines that are shown (and possibly
 #' labelled on the axes). In some cases, e.g. for polar views,
@@ -1156,10 +1216,17 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' `"p"` for points, `"l"` for line segments, or `"o"` for points
 #' overlain with line segments.
 #'
-#' @param axes logical value indicating whether to draw longitude and latitude
+#' @param axes a logical value indicating whether to draw longitude and latitude
 #' values in the lower and left margin, respectively.  This may not work well
-#' for some projections or scales.  See also `lonlabels` and `latlabels`, which
-#' offer more granular control of labelling.
+#' for some projections or scales.  See also `axisStyle`, `lonlabels`
+#' and `latlabels`, which offer more granular control of labelling.
+#'
+#' @param axisStyle an integer specifying the style of labels for the numbers
+#' on axes.  The choices are:
+#' 0 for signed numbers without labels;
+#' 1 (the default) for unsigned numbers followed by letters that indicate the hemisphere;
+#' 2 for signed numbers with a degree symbol to the right; and
+#' 3 for unsigned numbers with a degree symbol to the right.
 #'
 #' @param cex character expansion factor for plot symbols,
 #' used if `type='p'` or any other value that yields symbols.
@@ -1583,7 +1650,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     border=NULL, col=NULL,
                     clip=TRUE,
                     type='polygon',
-                    axes=TRUE, cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
+                    axes=TRUE, axisStyle=1,
+                    cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
                     polarCircle=0, lonlabels=TRUE, latlabels=TRUE,
                     projection="+proj=moll", tissot=FALSE, trim=TRUE,
                     debug=getOption("oceDebug"),
@@ -1597,7 +1665,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
              argShow(grid),
              "...) {\n", sep="", unindent=1, style="bold")
     dots <- list(...)
-    gridOrig <- grid
     if (1 == length(grid))
         grid <- rep(grid, 2)
     if (!missing(projection) && inherits(projection, "CRS")) {
@@ -1621,7 +1688,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         oceDebug(debug, projection, "'\n", sep="")
     }
-   if (missing(longitude)) {
+    if (missing(longitude)) {
         data("coastlineWorld", package="oce", envir=environment())
         longitude <- get("coastlineWorld")
     }
@@ -1985,10 +2052,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #' @param dlatitude increment in latitude, ignored if `latitude`
 #' is supplied, but otherwise determines the latitude sequence.
 #'
-#' @param longitude vector of longitudes, or `NULL` to prevent drawing
+#' @param longitude numeric vector of longitudes, or `NULL` to prevent drawing
 #' longitude lines.
 #'
-#' @param latitude vector of latitudes, or `NULL` to prevent drawing
+#' @param latitude numeric vector of latitudes, or `NULL` to prevent drawing
 #' latitude lines.
 #'
 #' @param col color of lines
@@ -2379,9 +2446,9 @@ mapScalebar <- function(x, y=NULL, length,
 #'
 #' Plot text on an existing map, by analogy to [text()].
 #'
-#' @param longitude vector of longitudes of text to be plotted.
+#' @param longitude numeric vector of longitudes of text to be plotted.
 #'
-#' @param latitude vector of latitudes of text to be plotted.
+#' @param latitude numeric vector of latitudes of text to be plotted.
 #'
 #' @param labels vector of labels of text to be plotted.
 #'
@@ -2499,7 +2566,7 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 #'
 #' Plot lines on an existing map, by analogy to [lines()].
 #'
-#' @param longitude vector of longitudes of points to be plotted, or an
+#' @param longitude numeric vector of longitudes of points to be plotted, or an
 #' object from which longitude and latitude can be inferred (e.g. a coastline
 #' file, or the return value from [mapLocator()]), in which case the
 #' following two arguments are ignored.
@@ -2574,7 +2641,7 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 #' arguments are ignored.  This objects that are possible include those of type
 #' `coastline`.
 #'
-#' @param latitude Latitudes of points to be plotted.
+#' @param latitude numeric vctor of latitudes of points to be plotted.
 #'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
@@ -2902,12 +2969,12 @@ map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
 #' Adds a polygon to an existing map, by analogy to
 #' [polygon()].  Used by [mapImage()].
 #'
-#' @param longitude longitudes of points to be plotted, or an object from
+#' @param longitude numeric vector of longitudes of points to be plotted, or an object from
 #' which longitude and latitude can be inferred (e.g. a coastline file, or
 #' the return value from [mapLocator()]), in which case the
 #' following two arguments are ignored.
 #'
-#' @param latitude latitudes of points to be plotted.
+#' @param latitude numeric vector of latitudes of points to be plotted.
 #'
 #' @param density as for [polygon()].
 #'
@@ -2991,11 +3058,11 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' If a [png()] device is to be used, it is advised to supply
 #' arguments `type="cairo"` and `antialias="none"`; see reference 1.
 #'
-#' @param longitude vector of longitudes corresponding to `z` matrix.
+#' @param longitude numeric vector of longitudes corresponding to `z` matrix.
 #'
-#' @param latitude vector of latitudes corresponding to `z` matrix.
+#' @param latitude numeric vector of latitudes corresponding to `z` matrix.
 #'
-#' @param z matrix to be represented as an image.
+#' @param z numeric matrix to be represented as an image.
 #'
 #' @param zlim limit for z (color).
 #'
@@ -3477,18 +3544,18 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ##. message("DEBUGGING: defined global var 'dan'")
     }
     oceDebug(debug, "} # mapImage()\n", unindent=1)
-    invisible()
+    invisible(NULL)
 }
 
 
 
 #' Convert Longitude and Latitude to UTM
 #'
-#' @param longitude decimal longitude.  May also be a list containing items
+#' @param longitude numeric vector of decimal longitude.  May also be a list containing items
 #' named `longitude` and `latitude`, in which case the indicated
 #' values are used, and next argument is ignored.
 #'
-#' @param latitude decimal latitude (ignored if `longitude` is a list
+#' @param latitude numeric vector of decimal latitude (ignored if `longitude` is a list
 #' containing both coordinates)
 #'
 #' @param zone optional indication of UTM zone.  Normally this is inferred from
@@ -3718,11 +3785,11 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 #' because otherwise, if a new projection is called for, it will ruin any
 #' additions to the existing plot.
 #'
-#' @param longitude a vector containing decimal longitudes, or a list
+#' @param longitude a numeric vector containing decimal longitudes, or a list
 #' containing items named `longitude` and `latitude`, in which case
 #' the indicated values are used, and next argument is ignored.
 #'
-#' @param latitude a vector containing decimal latitude (ignored if
+#' @param latitude a numeric vector containing decimal latitude (ignored if
 #' `longitude` is a list, as described above).
 #'
 #' @param projection optional indication of projection.  This must be character

@@ -4,7 +4,13 @@
 \alias{read.odf}
 \title{Read an ODF file}
 \usage{
-read.odf(file, columns = NULL, header = "list", debug = getOption("oceDebug"))
+read.odf(
+  file,
+  columns = NULL,
+  header = "list",
+  exclude = NULL,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
 \item{file}{the file containing the data.}
@@ -35,6 +41,16 @@ changed from \code{NULL} to \code{"list"}; in addition, the resultant
 list was made to contain every single item in the ODF header, with
 \code{\link[=unduplicateNames]{unduplicateNames()}} being used to append integers to
 distinguish between repeated names in the ODF format.}
+
+\item{exclude}{either a character value holding a regular
+expression that is used with \code{\link[=grep]{grep()}} to remove lines from the
+header before processing, or \code{NULL} (the default), meaning
+not to exclude any such lines.  The purpose of this argument
+is to solve problems with some files, which can have
+thousands of lines that indicate details that are may be of
+little value in processing.  For example, some files have thousands
+of lines that would be excluded by using
+\code{exclude="PROCESS='Nulled the .* value"} in the funcion call.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -129,14 +145,8 @@ points(ctd[['salinity']][bad],ctd[['theta']][bad],col='red',pch=20)
 
 }
 \references{
-\enumerate{
-\item Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
-Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
-in June 2011.)
-\item The St Lawrence Global Observatory website has information on ODF format at
-\url{https://slgo.ca/app-sgdo/en/docs_reference/documents.html}
-and this is perhaps the best resource to learn more.
-}
+For sources that describe the ODF format, see the documentation
+for the \linkS4class{odf}.
 }
 \seealso{
 \code{\link[=ODF2oce]{ODF2oce()}} will be an alternative to this, once (or perhaps if) a \code{ODF}

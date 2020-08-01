@@ -77,8 +77,10 @@ to other adp-reading functions.}
 within the \code{processingLog} slot of th returned value.}
 
 \item{debug}{Integer value indicating the level of debugging.
-Set to 1 to get a moderate  amount of debugging information,
-or to 2 to get more.}
+Set to 1 to get a moderate amount of debugging information, from
+the R code only, to 2 to get some debugging information from the C++
+code that is used to parse the data chunks, or to 3 for intensive
+debugging at both levels.}
 
 \item{\dots}{Ignored by this function.}
 }

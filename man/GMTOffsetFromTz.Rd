@@ -24,11 +24,7 @@ choosing the more common timezone abbreviation over a the less common one.
 library(oce)
 cat("Atlantic Standard Time is ", GMTOffsetFromTz("AST"), "hours after UTC")
 }
-\seealso{
-Other functions relating to time: 
-\code{\link{decodeTime}()}
-}
 \author{
 Dan Kelley
 }
-\concept{functions relating to time}
+\concept{things relating to time}

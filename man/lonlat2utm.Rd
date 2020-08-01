@@ -7,11 +7,11 @@
 lonlat2utm(longitude, latitude, zone, km = FALSE)
 }
 \arguments{
-\item{longitude}{decimal longitude.  May also be a list containing items
+\item{longitude}{numeric vector of decimal longitude.  May also be a list containing items
 named \code{longitude} and \code{latitude}, in which case the indicated
 values are used, and next argument is ignored.}
 
-\item{latitude}{decimal latitude (ignored if \code{longitude} is a list
+\item{latitude}{numeric vector of decimal latitude (ignored if \code{longitude} is a list
 containing both coordinates)}
 
 \item{zone}{optional indication of UTM zone.  Normally this is inferred from

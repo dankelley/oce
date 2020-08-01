@@ -48,7 +48,7 @@ and inverse map projections.
 Some highlights of the evolving relationship with rgdal are:
 \enumerate{
 \item See https://github.com/dankelley/oce/issues/653#issuecomment-107040093
-for the reason why oce switched from using \code{\link[rgdal:rawTransform]{rgdal::rawTransform()}},
+for the reason why oce switched from using \code{\link[rgdal:wrappers]{rgdal::rawTransform()}},
 to \code{\link[rgdal:project]{rgdal::project()}}, both functions provided by the
 \CRANpkg{rgdal} package.
 \item 2016 Apr: rgdal::project started returning named quantities

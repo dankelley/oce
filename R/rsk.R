@@ -197,13 +197,13 @@ setMethod(f="subset",
                   ## in other "subset" definitions, but my tests are suggesting parent.frame(2)
                   ## will work more generally: (a) within flat code and (b) within a function
                   ## that is passed items to go in the subset.
-                  r <- eval(substitute(subset), x@data, parent.frame(2))
+                  r <- eval(substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   ####  str(r)
                   r <- r & !is.na(r)
                   res@data[[i]] <- x@data[[i]][r]
               }
               names(res@data) <- names(x@data)
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               res@processingLog <- processingLogAppend(res@processingLog, paste("subset.rsk(x, subset=", subsetString, ")", sep=""))
               res
           })
@@ -525,7 +525,7 @@ setMethod(f="plot",
                   }
               }
               oceDebug(debug, "} # plot.rsk()\n", unindent=1)
-              invisible()
+              invisible(NULL)
           })
 
 
