@@ -91,12 +91,15 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
         ## points to a tiny distance equatorward of the poles.  On my osx machine,
         ## 1e-6 degrees (or about 10cm) seems to work.
         if (!inv) {
-            oceDebug(debug, "before moving poles:", vectorShow(xy))
+            oceDebug(debug, "moving poles to avoid problems with some projections\n")
+            ##oceDebug(debug, "before moving poles:", vectorShow(xy[,1]))
+            ##oceDebug(debug, "before moving poles:", vectorShow(xy[,2]))
             southPole <- xy[,2] < (-90 + 1e-6)
             xy[southPole, 2] <- -90 + 1e-6
             northPole <- xy[,2] > (90 - 1e-6)
             xy[northPole, 2] <- 90 - 1e-6
-            oceDebug(debug, "after moving poles:", vectorShow(xy))
+            ##oceDebug(debug, "after moving poles: ", vectorShow(xy[,1]))
+            ##oceDebug(debug, "after moving poles: ", vectorShow(xy[,2]))
         }
         if (inv) {
             capture.output({XYSF <- try(unname(sf::sf_project(proj, longlatProj, xy, keep=TRUE)),
@@ -109,15 +112,17 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
             ## XYSF <- try(unname(sf::sf_project(sf::st_crs("+proj=longlat"), sf::st_crs(proj), xy, keep=TRUE)),
             ##     silent=TRUE)
         }
-        oceDebug(debug, "about to test equality of XY and XYSF\n")
         if (inherits(XYSF, "try-error")) {
-            warning("oceProject() : sf_project() yielded errors that must be fixed before oce can switch from rgdal to sf\n")
+            warning("oceProject() : sf_project() yielded errors that must be fixed before oce can switch from rgdal to sf\n", immediate.=TRUE)
         } else {
             XYSF[na, ] <- NA
-            if (!isTRUE(all.equal(XY, XYSF))) {
-                warning("oceProject() : disagreement between old 'rgdal' method and proposed 'sf' method\n")
+            ## In this test, we set a tolerance of 1mm.
+            canCompare <- is.finite(XY) & is.finite(XYSF)
+            if (!isTRUE(all.equal(XY[canCompare], XYSF[canCompare], tolerance=1e-3))) {
+                oceDebug(debug, "old 'rgdal' and new 'sf' methods yield different results\n", style="bold")
+                warning("oceProject() : disagreement between old 'rgdal' method and proposed 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n", immediate.=TRUE)
             } else {
-                oceDebug(debug, "old 'rgdal' and new 'sf' methods yield the same results\n", style="blue")
+                oceDebug(debug, "old 'rgdal' and new 'sf' methods yield the same results\n")
             }
         }
     } else {
@@ -178,11 +183,11 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
 
     ## if (debug > 2)
     ##     points(x, y, pch=20, cex=3, col=2)
-    oceDebug(debug, "about to call map2lonlat\n")
+    ##oceDebug(debug, "about to call map2lonlat\n")
     ll <- map2lonlat(x, y, debug=debug-1)
     nok <- sum(is.finite(ll$longitude))
     ## Convert -Inf and +Inf to NA
-    oceDebug(debug, "DONE with call map2lonlat\n")
+    ##oceDebug(debug, "DONE with call map2lonlat\n")
     bad <- !is.finite(ll$longitude) | !is.finite(ll$latitude)
     ll$longitude[bad] <- NA
     ll$latitude[bad] <- NA
@@ -917,7 +922,7 @@ mapContour <- function(longitude, latitude, z,
                             eraseNew <- tmpMatrix[,1] & tmpMatrix[,2] # could also use an apply op, but this is simple
                             ##eraseOld <- erase
                             if (!isTRUE(all.equal(eraseNew, erase))) {
-                                warning("mapContour() error: 'erase' disagreement with trial 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n")
+                                warning("mapContour() : 'erase' disagreement with trial 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n", immediate.=TRUE)
                             }
                             oceDebug(debug, "ignoring", sum(erase), "points under", label, "contour\n")
                             XC <- xc
@@ -1679,14 +1684,15 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         projection <- gsub("lonlat", "longlat", projection)
     }
     if (packageVersion("sf") >= "0.8.1") {
+        oceDebug(debug, "using sf version", as.character(packageVersion("sf")), "\n")
         tmp <- sf::st_crs(projection)$proj4string
         if (is.na(tmp)) {
-            oceDebug(debug, "original projection '", projection, "' not converted, owing to an error with sf::st_crs()", sep="")
+            oceDebug(debug, "original projection\n      '", projection, "'\n  not converted, owing to an error with sf::st_crs()\n", sep="")
         } else {
-            oceDebug(debug, "original projection '", projection, "' converted to '", tmp, "'", sep="")
+            oceDebug(debug, "original projection\n      '", projection, "'\n", sep="")
+            oceDebug(debug, "new SF-style projection\n      '", tmp, "'\n", sep="")
             projection <- tmp
         }
-        oceDebug(debug, projection, "'\n", sep="")
     }
     if (missing(longitude)) {
         data("coastlineWorld", package="oce", envir=environment())
@@ -2187,16 +2193,16 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
     .axis(list(longitude=if (!missing(longitude) && length(longitude)) longitude else axisOLD$longitude,
                latitude=if (!missing(latitude) && length(latitude)) latitude else axisOLD$latitude))
     if (!length(latitude))
-        oceDebug(debug, "not drawing latitude lines\n")
+        oceDebug(debug, "not drawing latitude graticules\n")
     for (l in latitude) {
         ## FIXME: maybe we should use mapLines here
         if (is.finite(l)) {
             if (boxLonLat$ok && !(boxLonLat$latmin <= l & l <= boxLonLat$latmax)) {
-                oceDebug(debug, "SKIPPING latitude =", l, "line\n")
+                oceDebug(debug, "skipping ", l, "N graticule\n", sep="")
                 ##if (debug > 1) print(boxLonLat)
                 next
             }
-            oceDebug(debug, "drawing longitude =", l, "line\n")
+            oceDebug(debug, "drawing ", l, "N graticule\n", sep="")
             line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n), debug=debug-1)
             x <- line$x
             y <- line$y
@@ -2236,14 +2242,14 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                 usr <- par("usr")
                 axis2 <- sf::st_linestring(cbind(rep(usr[1],2), usr[3:4]))
                 I <- sf::st_intersection(curve, axis2)
-                oceDebug(debug, "length(I)=", length(I), " for intersection to axis(2)\n", style="red")
+                oceDebug(debug, if (length(I) == 0) "  no" else "  ", " intersection with axis(2)\n", sep="")
                 if (length(I) > 0) {
                     Imatrix <- as.matrix(I)
-                    if (debug > 0) {
-                        if (debug > 1)
-                            print(Imatrix)
-                        points(Imatrix[,1], Imatrix[,2], col=2, pch=20, cex=2)
-                    }
+                    ### if (debug > 0) {
+                    ###     if (debug > 1)
+                    ###         print(Imatrix)
+                    ###     points(Imatrix[,1], Imatrix[,2], col=2, pch=20, cex=2)
+                    ### }
                     for (ii in dim(Imatrix)[1]) {
                         ##> message(" ... rval side=2 lat=", l, " at=", Imatrix[ii,2])
                         rval$side <- c(rval$side, 2)
@@ -2286,11 +2292,11 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         ## FIXME: should use mapLines here
         if (is.finite(l)) {
             if (boxLonLat$ok && !(boxLonLat$lonmin <= l & l <= boxLonLat$lonmax)) {
-                oceDebug(debug, "SKIPPING longitude =", l, "line\n")
+                oceDebug(debug, "skipping ", l, "E graticule\n", sep="")
                 ##if (debug > 1) print(boxLonLat)
                 next
             }
-            oceDebug(debug, "drawing longitude =", l, "line\n")
+            oceDebug(debug, "drawing ", l, "E graticule\n", sep="")
             line <- lonlat2map(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
             x <- line$x
             y <- line$y
@@ -2298,9 +2304,9 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
             x <- x[ok]
             y <- y[ok]
             if (0 == length(x) || 0 == length(y)) {
-                oceDebug(debug, "SKIPPING longitude graticule", l, "E\n")
+                oceDebug(debug, "skipping longitude ", l, "E graticule\n", sep="")
             } else {
-                oceDebug(debug, "longitude graticule", l, "E has ", length(x), "segments\n")
+                oceDebug(debug, "  graticule ", l, "E has ", length(x), " segments\n", sep="")
                 lines(x, y, lty=lty, lwd=lwd, col=col)
                 ## {{{ find side=1 and side=2 longitude label from graticle
                 ok <- is.finite(x) & is.finite(y)
@@ -2309,14 +2315,14 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     usr <- par("usr")
                     axis1 <- sf::st_linestring(cbind(usr[1:2], rep(usr[3], 2)))
                     I <- sf::st_intersection(curve, axis1)
-                    oceDebug(debug, "length(I)=", length(I), " for intersection to axis(1)\n", style="red")
+                    oceDebug(debug, if (length(I) == 0) "  no" else "  ", " intersection with axis(1)\n", sep="")
                     if (length(I) > 0) {
                         Imatrix <- as.matrix(I)
-                        if (debug > 0) {
-                            if (debug > 1)
-                                print(Imatrix)
-                            points(Imatrix[1,1], Imatrix[1,2], col=3, pch=20, cex=2)
-                        }
+                        ### if (debug > 0) {
+                        ###     if (debug > 1)
+                        ###         print(Imatrix)
+                        ###     points(Imatrix[1,1], Imatrix[1,2], col=3, pch=20, cex=2)
+                        ### }
                         for (ii in dim(Imatrix)[1]) {
                             ##> message(" ... rval side=1 lon=", l, " at=", Imatrix[ii,1])
                             rval$side <- c(rval$side, 1)
@@ -3848,7 +3854,7 @@ lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceD
     n <- length(longitude)
     if (n != length(latitude))
         stop("lengths of longitude and latitude must match, but they are ", n, " and ", length(latitude))
-    XY <- oceProject(xy=cbind(longitude, latitude), proj=projection, inv=FALSE, debug=debug-1)
+    XY <- oceProject(xy=cbind(longitude, latitude), proj=projection, inv=FALSE, debug=debug)
     .Projection(list(type="proj4", projection=projection))
     ## oceDebug(debug, "} # lonlat2map()\n", unindent=1, sep="", style="bold")
     list(x=XY[, 1], y=XY[, 2])
