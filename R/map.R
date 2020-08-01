@@ -116,9 +116,9 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
             warning("oceProject() : sf_project() yielded errors that must be fixed before oce can switch from rgdal to sf\n", immediate.=TRUE)
         } else {
             XYSF[na, ] <- NA
-            ## In this test, we set a tolerance of 1mm.
+            ## Test rgdal/sf agreement to 1m.
             canCompare <- is.finite(XY) & is.finite(XYSF)
-            if (!isTRUE(all.equal(XY[canCompare], XYSF[canCompare], tolerance=1e-3))) {
+            if (!isTRUE(all.equal(XY[canCompare], XYSF[canCompare], tolerance=1))) {
                 oceDebug(debug, "old 'rgdal' and new 'sf' methods yield different results\n", style="bold")
                 warning("oceProject() : disagreement between old 'rgdal' method and proposed 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n", immediate.=TRUE)
             } else {
@@ -256,11 +256,11 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
 #' library(oce)
 #' data(coastlineWorld)
 #' par(mar=c(2, 2, 1, 1))
-#' plot(coastlineWorld, proj=oceCRS("Atlantic"), span=12000)
-#' plot(coastlineWorld, proj=oceCRS("North Atlantic"), span=8000)
-#' plot(coastlineWorld, proj=oceCRS("South Atlantic"), span=8000)
-#' plot(coastlineWorld, proj=oceCRS("Arctic"), span=4000)
-#' plot(coastlineWorld, proj=oceCRS("Antarctic"), span=10000)
+#' plot(coastlineWorld, projection=oceCRS("Atlantic"), span=12000)
+#' plot(coastlineWorld, projection=oceCRS("North Atlantic"), span=8000)
+#' plot(coastlineWorld, projection=oceCRS("South Atlantic"), span=8000)
+#' plot(coastlineWorld, projection=oceCRS("Arctic"), span=4000)
+#' plot(coastlineWorld, projection=oceCRS("Antarctic"), span=10000)
 #' # Avoid ugly horizontal lines, an artifact of longitude shifting.
 #' # Note: we cannot fill the land once we shift, either.
 #' pacific <- coastlineCut(coastlineWorld, -180)
@@ -1040,7 +1040,7 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #' data(coastlineWorld)
 #' par(mar=rep(2, 4))
 #' mapPlot(coastlineWorld, longitudelim=c(-120,-55), latitudelim=c(35, 50),
-#'         proj="+proj=laea +lat0=40 +lat1=60 +lon_0=-110")
+#'         projection="+proj=laea +lat0=40 +lat1=60 +lon_0=-110")
 #' lon <- seq(-120, -60, 15)
 #' lat <- 45 + seq(-15, 15, 5)
 #' lonm <- matrix(expand.grid(lon, lat)[, 1], nrow=length(lon))
@@ -1355,7 +1355,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'     par(mar=c(3, 3, 1, 1))
 #'     mapPlot(coastlineCut(coastlineWorld, -135),
 #'             longitudelim=c(-130, 50), latitudelim=c(70, 110),
-#'             proj="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
+#'             projection="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
 #'     mtext("Stereographic", adj=1)
 #'
 #'     # Example 6.
@@ -1367,16 +1367,15 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'     for (i in seq_along(lons)) {
 #'         p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
 #'         if (i == 1) {
-#'             mapPlot(coastlineCut(coastlineWorld, lons[i]),
-#'                     projection=p, col="lightgray")
+#'             mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
 #'             xlim <- par("usr")[1:2]
 #'             ylim <- par("usr")[3:4]
 #'         } else {
-#'             mapPlot(coastlineCut(coastlineWorld, lons[i]),
-#'                     projection=p, col="lightgray",
+#'             mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
 #'                     xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
 #'         }
 #'     }
+#'     dev.off()
 #'}
 #'}
 #

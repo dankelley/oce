@@ -474,7 +474,7 @@ if (canProject) {
     par(mar=c(3, 3, 1, 1))
     mapPlot(coastlineCut(coastlineWorld, -135),
             longitudelim=c(-130, 50), latitudelim=c(70, 110),
-            proj="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
+            projection="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
     mtext("Stereographic", adj=1)
 
     # Example 6.
@@ -486,16 +486,15 @@ if (canProject) {
     for (i in seq_along(lons)) {
         p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
         if (i == 1) {
-            mapPlot(coastlineCut(coastlineWorld, lons[i]),
-                    projection=p, col="lightgray")
+            mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
             xlim <- par("usr")[1:2]
             ylim <- par("usr")[3:4]
         } else {
-            mapPlot(coastlineCut(coastlineWorld, lons[i]),
-                    projection=p, col="lightgray",
+            mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
                     xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
         }
     }
+    dev.off()
 }
 }
 }
