@@ -10,9 +10,6 @@
 #' [plot,argo-method()], while [summary,argo-method()]
 #' produces statistical summaries and `show` produces overviews.
 #'
-#' See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some
-#' argo-related datasets that may be useful in a wider context.
-#'
 #' @templateVar class argo
 #'
 #' @templateVar dataExample The key items stored in this slot include  equal-length vectors `time`, `longitude`, `latitude` and equal-dimension matrices `pressure`, `salinity`, and `temperature`.
