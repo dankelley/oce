@@ -16,8 +16,10 @@
 #'
 #' @author Dan Kelley
 #'
-#' @references A users's manual for the LISST-100 instrument is available at
-#' the manufacturer's website \url{http://www.sequoiasci.com}.
+#' @references A users's manual for the LISST-200 instrument (a replacement
+#' for the LISST-100 for which \CRANpkg{oce} support was originally intended)
+#' is available at the manufacturer's website
+#' \url{https://www.sequoiasci.com/wp-content/uploads/2016/02/LISST-200X_Users_Manual_v1_3B.pdf}
 #'
 #' @family classes provided by oce
 #' @family things related to lisst data
