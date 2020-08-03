@@ -1145,23 +1145,219 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' Draw a Map
 #'
 #' Plot coordinates as a map, using one of the subset of projections
-#' provided by the \CRANpkg{rgdal} package.  The projection information specified
-#' with the `mapPlot` call is stored so that can be retrieved by related
-#' functions, making it easy to add points, lines, text, images
+#' provided by the \CRANpkg{sf} package.  The projection information specified
+#' with the `mapPlot()` call is stored in a global variable that can be retrieved
+#' by related functions, making it easy to add points, lines, text, images
 #' or contours to an existing map.
+#' See the \dQuote{Details} for a list of 
+#' available projections.
 #'
-#' Creates a map using the indicated projection.  As noted in the
-#' information on the `projection` argument, projections are specified in
-#' the notation used by `project()` in the \CRANpkg{rgdal} package; see
-#' \dQuote{Available Projections} for a list of possibilities.
+#' Map projections are provided by the
+#' interface that the \CRANpkg{sf} package provides to the PROJ
+#' system command (supplied with R).  However, it is important to note that
+#' not all the \CRANpkg{sf} projections are
+#' available. The `oce` choices are tabulated
+#' below, e.g. `projection="+proj=aea"` selects the Albers equal area
+#' projection.
 #'
-#' Further details on map projections are provided by references 1 and 11, an exhaustive
-#' treatment that includes many illustrations, an overview of the history of the
-#' topic, and some notes on the strengths and weaknesses of the various
-#' formulations.  See especially pages 2 through 7, which define terms and
-#' provide recommendations.  Reference 2 is also useful, especially regarding
-#' datum shifts; references 3 and 4 are less detailed and perhaps better for novices.
-#' See reference 8 for a gallery of projections.
+#' Further details of the vast array of map projections provided by PROJ
+#' are given in reference 4.  This system has been in rapid development
+#' since about 2018, and reference 5 provides a helpful overview of the changes 
+#' and the reasons why they were necessary.  Practical examples of map projections in
+#' \CRANpkg{oce} are provided in reference 6, along with some notes on problems.
+#' A fascinating treatment of the history of map projections is provided
+#' in reference 7.  To get an idea of how projections are being created
+#' nowadays, see reference 8, about the `eqearth` projection that was added
+#' to \CRANpkg{oce} in August 2020.
+#'
+#' @section Available Projections:
+#'
+#' The following table lists projections available in \CRANpkg{oce}, and was generated
+#' by reformatting a subset of the output of the unix
+#' command `proj -lP`. Most of the arguments listed have default values. In
+#' addition, many projections can handle arguments `lon_0` and
+#' `lat_0`, for shifting the reference point, although in some cases
+#' shifting the longitude can yield poor filling of coastlines.
+#'
+#' \tabular{lll}{
+#' **Projection**                       \tab **Code**   \tab **Arguments**\cr
+#' Albers equal area                         \tab `aea`      \tab `lat_1`, `lat_2`\cr
+#' Azimuthal equidistant                     \tab `aeqd`     \tab `lat_0`, `guam`\cr
+#' Aitoff                                    \tab `aitoff`   \tab - \cr
+#' Mod. stererographics of Alaska            \tab `alsk`     \tab - \cr
+#' Bipolar conic of western hemisphere       \tab `bipc`     \tab - \cr
+#' Bonne Werner                              \tab `bonne`    \tab `lat_1`\cr
+#' Cassini                                   \tab `cass`     \tab - \cr
+#' Central cylindrical                       \tab `cc`       \tab - \cr
+#' Equal area cylindrical                    \tab `cea`      \tab `lat_ts`\cr
+#' Collignon                                 \tab `collg`    \tab - \cr
+#' Craster parabolic Putnins P4              \tab `crast`    \tab - \cr
+#' Eckert I                                  \tab `eck1`     \tab - \cr
+#' Eckert II                                 \tab `eck2`     \tab - \cr
+#' Eckert III                                \tab `eck3`     \tab - \cr
+#' Eckert IV                                 \tab `eck4`     \tab - \cr
+#' Eckert V                                  \tab `eck5`     \tab - \cr
+#' Eckert VI                                 \tab `eck6`     \tab - \cr
+#' Equidistant cylindrical plate (Caree)     \tab `eqc`      \tab `lat_ts`, `lat_0`\cr
+#' Equidistant conic                         \tab `eqdc`     \tab `lat_1`, `lat_2`\cr
+#' Equal earth                               \tab `eqearth`  \tab -\cr
+#' Euler                                     \tab `euler`    \tab `lat_1`, `lat_2`\cr
+#' Extended transverse Mercator              \tab `etmerc`   \tab - \cr
+#' Fahey                                     \tab `fahey`    \tab - \cr
+#' Foucault                                  \tab `fouc`     \tab - \cr
+#' Foucault sinusoidal                       \tab `fouc_s`   \tab - \cr
+#' Gall stereographic                        \tab `gall`     \tab - \cr
+#' Geostationary satellite view              \tab `geos`     \tab `h`\cr
+#' General sinusoidal series                 \tab `gn_sinu`  \tab `m`, `n`\cr
+#' Gnomonic                                  \tab `gnom`     \tab - \cr
+#' Goode homolosine                          \tab `goode`    \tab - \cr
+## Mod. stererographics of 48 U.S.           \tab `gs48`     \tab - \cr
+## Mod. stererographics of 50 U.S.           \tab `gs50`     \tab - \cr
+#' Hatano asymmetrical equal area            \tab `hatano`   \tab - \cr
+## NOTE: healpix was removed 2020-08-03 because sf does not support it well
+## HEALPix                                   \tab `healpix`  \tab - \cr
+## NOTE: rhealpix was removed 2020-08-03 because sf does not support it well
+## rHEALPix                                  \tab `rhealpix` \tab `north_square`, `south_square`\cr
+#' Interrupted Goode homolosine              \tab `igh`      \tab -\cr
+## Int'l map of the world polyconic          \tab `imw_p`    \tab `lat_1`, `lat_2`, `lon_1`\cr
+#' Kavraisky V                               \tab `kav5`     \tab - \cr
+#' Kavraisky VII                             \tab `kav7`     \tab - \cr
+## Krovak                                    \tab `krovak`   \tab - \cr
+#' Lambert azimuthal equal area              \tab `laea`     \tab - \cr
+#' Longitude and latitude                    \tab `longlat`  \tab - \cr
+#' Longitude and latitude                    \tab `latlong`  \tab - \cr
+#' Lambert conformal conic                   \tab `lcc`      \tab `lat_1`, `lat_2` or `lat_0`, `k_0`\cr
+#' Lambert equal area conic                  \tab `leac`     \tab `lat_1`, `south`\cr
+## Lee oblated stereographic                 \tab `lee_os`   \tab\cr
+#' Loximuthal                                \tab `loxim`    \tab\cr
+#' Space oblique for Landsat                 \tab `lsat`     \tab `lsat`, `path`\cr
+#' McBryde-Thomas flat-polar sine, no. 1     \tab `mbt_s`    \tab\cr
+#' McBryde-Thomas flat-polar sine, no. 2     \tab `mbt_fps`  \tab\cr
+#' McBryde-Thomas flat-polar parabolic       \tab `mbtfpp`   \tab\cr
+#' McBryde-Thomas flat-polar quartic         \tab `mbtfpq`   \tab\cr
+#' McBryde-Thomas flat-polar sinusoidal      \tab `mbtfps`   \tab\cr
+#' Mercator                                  \tab `merc`     \tab `lat_ts`\cr
+#' Miller oblated stereographic              \tab `mil_os`   \tab\cr
+#' Miller cylindrical                        \tab `mill`     \tab\cr
+#' Mollweide                                 \tab `moll`     \tab\cr
+#' Murdoch I                                 \tab `murd1`    \tab `lat_1`, `lat_2`\cr
+#' Murdoch II                                \tab `murd2`    \tab `lat_1`, `lat_2`\cr
+#' murdoch III                               \tab `murd3`    \tab `lat_1`, `lat_2`\cr
+#' Natural earth                             \tab `natearth` \tab\cr
+#' Nell                                      \tab `nell`     \tab\cr
+#' Nell-Hammer                               \tab `nell_h`   \tab\cr
+#' Near-sided perspective                    \tab `nsper`    \tab `h`\cr
+#' New Zealand map grid                      \tab `nzmg`     \tab\cr
+#' General oblique transformation            \tab `ob_tran`  \tab `o_proj`, `o_lat_p`, `o_lon_p`, `o_alpha`, `o_lon_c`\cr
+#'                                           \tab                 \tab `o_lat_c`, `o_lon_1`, `o_lat_1`, `o_lon_2`, `o_lat_2`\cr
+#' Oblique cylindrical equal area            \tab `ocea`     \tab `lat_1`, `lat_2`, `lon_1`, `lon_2`\cr
+#' Oblated equal area                        \tab `oea`      \tab `n`, `m`, `theta`\cr
+#' Oblique Mercator                          \tab `omerc`    \tab `alpha`, `gamma`, `no_off`, `lonc`, `lon_1`,\cr
+#'                                           \tab                 \tab `lat_1`, `lon_2`, `lat_2`\cr
+#' Orthographic                              \tab `ortho`    \tab `Axi`, `Sph` \cr
+## NOTE: pconic was removed 2020-08-03 because sf does not support it well
+## Perspective conic                         \tab `pconic`   \tab `lat_1`, `lat_2`\cr
+#' Polyconic American                        \tab `poly`     \tab - \cr
+#' Putnins P1                                \tab `putp1`    \tab - \cr
+#' Putnins P2                                \tab `putp2`    \tab - \cr
+#' Putnins P3                                \tab `putp3`    \tab - \cr
+#' Putnins P3'                               \tab `putp3p`   \tab - \cr
+#' Putnins P4'                               \tab `putp4p`   \tab - \cr
+#' Putnins P5                                \tab `putp5`    \tab - \cr
+#' Putnins P5'                               \tab `putp5p`   \tab - \cr
+#' Putnins P6                                \tab `putp6`    \tab - \cr
+#' Putnins P6'                               \tab `putp6p`   \tab - \cr
+#' Quartic authalic                          \tab `qua_aut`  \tab `PCyl`, `Sph`\cr
+#' Quadrilateralized spherical cube          \tab `qsc`      \tab `Azi`, `Sph`\cr
+#' Robinson                                  \tab `robin`    \tab `PCyl`, `Sph`\cr
+#' Roussilhe stereographic                   \tab `rouss`    \tab `Azi`, `Ell`\cr
+#' Sinusoidal aka Sanson-Flamsteed           \tab `sinu`     \tab `PCyl`, `Sph`, `Ell`\cr
+#' Swiss. oblique Mercator                   \tab `somerc`   \tab `Cyl`, `Ell`\cr
+#' Stereographic                             \tab `stere`    \tab `lat_ts`\cr
+#' Oblique stereographic alternative         \tab `sterea`   \tab - \cr
+## Gauss-Schreiber transverse Mercator       \tab `gstmerc`  \tab `lat_0`, `lon_0`, `k_0`\cr
+#' Transverse cylindrical equal area         \tab `tcea`     \tab - \cr
+#' Tissot                                    \tab `tissot`   \tab `lat_1`, `lat_2`\cr
+#' Transverse Mercator                       \tab `tmerc`    \tab `approx\cr
+#' Two point equidistant                     \tab `tpeqd`    \tab `lat_1`, `lon_1`, `lat_2`, `lon_2`\cr
+#' Tilted perspective                        \tab `tpers`    \tab `tilt`, `azi`, `h`\cr
+#' Universal polar stereographic             \tab `ups`      \tab `south`\cr
+#' Urmaev flat-polar sinusoidal              \tab `urmfps`   \tab `n`\cr
+#' Universal transverse Mercator             \tab `utm`      \tab `zone`, `south`, `approx`\cr
+#' van der Grinten I                         \tab `vandg`    \tab - \cr
+#' Vitkovsky I                               \tab `vitk1`    \tab `lat_1`, `lat_2`\cr
+#' Wagner I Kavraisky VI                     \tab `wag1`     \tab - \cr
+#' Wagner II                                 \tab `wag2`     \tab - \cr
+#' Wagner III                                \tab `wag3`     \tab `lat_ts`\cr
+#' Wagner IV                                 \tab `wag4`     \tab - \cr
+#' Wagner V                                  \tab `wag5`     \tab - \cr
+#' Wagner VI                                 \tab `wag6`     \tab - \cr
+#' Werenskiold I                             \tab `weren`    \tab - \cr
+#' Winkel I                                  \tab `wink1`    \tab `lat_ts`\cr
+#' Winkel Tripel                             \tab `wintri`   \tab `lat_ts`\cr
+#' }
+#'
+#' @section Choosing a projection:
+#' The best choice of projection depends on the application.
+#' Users may find `projection="+proj=moll"` useful for world-wide
+#' plots, `ortho` for hemispheres viewed from the equator, `stere`
+#' for polar views, `lcc` for wide meridional ranges in mid latitudes,
+#' `merc` in limited-area cases where angle preservation is
+#' important or `aea` if preservation of area is important.
+#' The choice becomes more important, the larger the size of the region
+#' represented.  When it comes to publication, it can be sensible to use the
+#' same projection as used in previous reports.
+#'
+#' @section Problems:
+#' Map projection is a complicated matter that is addressed here
+#' in a limited and pragmatic way.  For example, `mapPlot` tries to draw
+#' axes along a box containing the map, instead of trying to find spots along
+#' the ``edge'' of the map at which to put longitude and latitude labels.
+#' This design choice greatly simplifies the coding effort, freeing up time to
+#' work on issues regarded as more pressing.  Chief among those issues are (a)
+#' the occurrence of horizontal lines in maps that have prime meridians
+#' (b) inaccurate filling of land regions that (again) occur with shifted
+#' meridians and (c) inaccurate filling of Antarctica in some projections.
+#' Generally, issues are tackled first for commonly used projections, such as
+#' those used in the examples.
+#'
+#' @section Changes:
+#'
+#' * 2020-08-03: added support for the `eqearth` projection (like `robin` but
+#' an equal-area method).
+#'
+#' * 2020-08-03: dropped support for the `healpix`, `pconic`
+#' and `rhealpix` projections, which caused errors with the
+#' \CRANpkg{sf} package.  (This is not a practical loss, since these
+#' interrupted projections were handled badly by `mapPlot()`
+#' in any case.)
+#'
+#' * 2020-08-03: switch from \CRANpkg{rgdal} to \CRANpkg{sf} for
+#' calculations related to map projection, owing to some
+#' changes in the former package that broke \CRANpkg{oce}
+#' code.  (To catch problems, \CRANpkg{oce} was set up to use
+#' both packages temporarily, issuing warnings if the results differed
+#' by more than 1 metre in easting or northing values.)
+#'
+#' * 2019-03-20: the test code provided the \dQuote{Examples} section
+#' is disabled on i386/windows machines, on which the requisite
+#' \CRANpkg{rgdal} package continues to fail on common projections.
+#'
+#' * 2017-11-19: `imw_p` removed, because it has problems doing
+#' inverse calculations.
+#' This is a also problem in the standalone PROJ.4 application version
+#' 4.9.3, downloaded and built on OSX.
+#' See \url{https://github.com/dankelley/oce/issues/1319} for details.
+#'
+#' * 2017-11-17: `lsat` removed, because it does not work in
+#' \CRANpkg{rgdal} or in the latest standalone PROJ.4 application.
+#' This is a also problem in the standalone PROJ.4 application version
+#' 4.9.3, downloaded and built on OSX.
+#' See \url{https://github.com/dankelley/oce/issues/1337} for details.
+#'
+#' * 2017-09-30: `lcca` removed, because its inverse was
+#' wildly inaccurate in a Pacific Antarctic-Alaska application
+#' (see \url{https://github.com/dankelley/oce/issues/1303}).
 #'
 #' @param longitude either a numeric vector of longitudes of points to be plotted, or
 #' something (an `oce` object, a list, or a data frame) from which both
@@ -1295,8 +1491,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @param ... optional arguments passed to some plotting functions.  This can
 #' be useful in many ways, e.g.  Example 5 shows how to use `xlim` etc to
 #' reproduce a scale exactly between two plots.
-#'
-#'
+##'
 #' @seealso
 #' Points may be added to a map with [mapPoints()], lines with
 #' [mapLines()], text with [mapText()], polygons with
@@ -1378,240 +1573,6 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'     dev.off()
 #'}
 #'}
-#
-#' @section Available Projections:
-#' Map projections are provided by the
-#' \CRANpkg{rgdal} package, but not all projections in that package are
-#' available. The available list is given in the table
-#' below. The cartographic community has set up a naming scheme in a coded
-#' scheme, e.g. `projection="+proj=aea"` selects the Albers equal area
-#' projection.
-#'
-#' The allowed projections include those PROJ.4 projections provided by
-#' \CRANpkg{rgdal} that have inverses, minus a few that cause problems:
-#' `alsk` overdraws `coastlineWorld`, and is a niche projection for Alaska;
-#' `calcofi` is not a real projection, but rather a coordinate system;
-#' `gs48` overdraws `coastlineWorld`, and is a niche projection for the USA;
-#' `gs50` overdraws `coastlineWorld`, and is a niche projection for the USA;
-#' `gstmerc` overdraws `coastlineWorld`;
-#' `isea` causes segmentation faults on OSX systems;
-#' `krovak` overdraws `coastlineWorld`, and is a niche projection for the Czech Republic;
-#' `labrd` returns `NaN` for most of the world, and is a niche projection for Madagascar;
-#' `lee_os` overdraws `coastlineWorld`;
-#' and
-#' `nzmg` overdraws `coastlineWorld`.
-#'
-#'
-#' The information in the table is reformatted from the output of the unix
-#' command `proj -lP`, where `proj` is provided by version 4.9.0 of
-#' the PROJ.4 system. Most of the arguments listed have default values. In
-#' addition, most projections can handle arguments `lon_0` and
-#' `lat_0`, for shifting the reference point, although in some cases
-#' shifting the longitude can yield poor filling of coastlines.
-#'
-#' Further details of the projections and the controlling arguments are
-#' provided at several websites, because PROJ.4 has been incorporated into
-#' \CRANpkg{rgdal} and other R packages, plus many other software systems; a good
-#' starting point for learning is reference 6.
-#'
-#' See \dQuote{Examples} for suggested projections for some common
-#' applications, and reference 8 for a gallery indicating how to use every projection.
-#'
-#' \tabular{lll}{
-#' **Projection**                       \tab **Code**   \tab **Arguments**\cr
-#' Albers equal area                         \tab `aea`      \tab `lat_1`, `lat_2`\cr
-#' Azimuthal equidistant                     \tab `aeqd`     \tab `lat_0`, `guam`\cr
-#' Aitoff                                    \tab `aitoff`   \tab - \cr
-#' Mod. stererographics of Alaska            \tab `alsk`     \tab - \cr
-#' Bipolar conic of western hemisphere       \tab `bipc`     \tab - \cr
-#' Bonne Werner                              \tab `bonne`    \tab `lat_1`\cr
-#' Cassini                                   \tab `cass`     \tab - \cr
-#' Central cylindrical                       \tab `cc`       \tab - \cr
-#' Equal area cylindrical                    \tab `cea`      \tab `lat_ts`\cr
-#' Collignon                                 \tab `collg`    \tab - \cr
-#' Craster parabolic Putnins P4              \tab `crast`    \tab - \cr
-#' Eckert I                                  \tab `eck1`     \tab - \cr
-#' Eckert II                                 \tab `eck2`     \tab - \cr
-#' Eckert III                                \tab `eck3`     \tab - \cr
-#' Eckert IV                                 \tab `eck4`     \tab - \cr
-#' Eckert V                                  \tab `eck5`     \tab - \cr
-#' Eckert VI                                 \tab `eck6`     \tab - \cr
-#' Equidistant cylindrical plate (Caree)     \tab `eqc`      \tab `lat_ts`, `lat_0`\cr
-#' Equidistant conic                         \tab `eqdc`     \tab `lat_1`, `lat_2`\cr
-#' Euler                                     \tab `euler`    \tab `lat_1`, `lat_2`\cr
-#' Extended transverse Mercator              \tab `etmerc`   \tab `lat_ts`, `lat_0`\cr
-#' Fahey                                     \tab `fahey`    \tab - \cr
-#' Foucault                                  \tab `fouc`     \tab - \cr
-#' Foucault sinusoidal                       \tab `fouc_s`   \tab - \cr
-#' Gall stereographic                        \tab `gall`     \tab - \cr
-#' Geostationary satellite view              \tab `geos`     \tab `h`\cr
-#' General sinusoidal series                 \tab `gn_sinu`  \tab `m`, `n`\cr
-#' Gnomonic                                  \tab `gnom`     \tab - \cr
-#' Goode homolosine                          \tab `goode`    \tab - \cr
-## Mod. stererographics of 48 U.S.           \tab `gs48`     \tab - \cr
-## Mod. stererographics of 50 U.S.           \tab `gs50`     \tab - \cr
-#' Hatano asymmetrical equal area            \tab `hatano`   \tab - \cr
-#' HEALPix                                   \tab `healpix`  \tab - \cr
-#' rHEALPix                                  \tab `rhealpix` \tab `north_square`, `south_square`\cr
-#' Interrupted Goode homolosine              \tab `igh`      \tab -\cr
-## Int'l map of the world polyconic          \tab `imw_p`    \tab `lat_1`, `lat_2`, `lon_1`\cr
-#' Kavraisky V                               \tab `kav5`     \tab - \cr
-#' Kavraisky VII                             \tab `kav7`     \tab - \cr
-## Krovak                                    \tab `krovak`   \tab - \cr
-#' Lambert azimuthal equal area              \tab `laea`     \tab - \cr
-#' Longitude and latitude                    \tab `longlat`  \tab - \cr
-#' Longitude and latitude                    \tab `latlong`  \tab - \cr
-#' Lambert conformal conic                   \tab `lcc`      \tab `lat_1`, `lat_2`, `lat_0`\cr
-#' Lambert equal area conic                  \tab `leac`     \tab `lat_1`, `south`\cr
-## Lee oblated stereographic                 \tab `lee_os`   \tab\cr
-#' Loximuthal                                \tab `loxim`    \tab\cr
-#' Space oblique for Landsat                 \tab `lsat`     \tab `lsat`, `path`\cr
-#' McBryde-Thomas flat-polar sine, no. 1     \tab `mbt_s`    \tab\cr
-#' McBryde-Thomas flat-polar sine, no. 2     \tab `mbt_fps`  \tab\cr
-#' McBryde-Thomas flat-polar parabolic       \tab `mbtfpp`   \tab\cr
-#' McBryde-Thomas flat-polar quartic         \tab `mbtfpq`   \tab\cr
-#' McBryde-Thomas flat-polar sinusoidal      \tab `mbtfps`   \tab\cr
-#' Mercator                                  \tab `merc`     \tab `lat_ts`\cr
-#' Miller oblated stereographic              \tab `mil_os`   \tab\cr
-#' Miller cylindrical                        \tab `mill`     \tab\cr
-#' Mollweide                                 \tab `moll`     \tab\cr
-#' Murdoch I                                 \tab `murd1`    \tab `lat_1`, `lat_2`\cr
-#' Murdoch II                                \tab `murd2`    \tab `lat_1`, `lat_2`\cr
-#' murdoch III                               \tab `murd3`    \tab `lat_1`, `lat_2`\cr
-#' Natural earth                             \tab `natearth` \tab\cr
-#' Nell                                      \tab `nell`     \tab\cr
-#' Nell-Hammer                               \tab `nell_h`   \tab\cr
-#' Near-sided perspective                    \tab `nsper`    \tab `h`\cr
-#' New Zealand map grid                      \tab `nzmg`     \tab\cr
-#' General oblique transformation            \tab `ob_tran`  \tab `o_proj`, `o_lat_p`, `o_lon_p`, `o_alpha`, `o_lon_c`\cr
-#'                                           \tab                 \tab `o_lat_c`, `o_lon_1`, `o_lat_1`, `o_lon_2`, `o_lat_2`\cr
-#' Oblique cylindrical equal area            \tab `ocea`     \tab `lat_1`, `lat_2`, `lon_1`, `lon_2`\cr
-#' Oblated equal area                        \tab `oea`      \tab `n`, `m`, `theta`\cr
-#' Oblique Mercator                          \tab `omerc`    \tab `alpha`, `gamma`, `no_off`, `lonc`, `lon_1`,\cr
-#'                                           \tab                 \tab `lat_1`, `lon_2`, `lat_2`\cr
-#' Orthographic                              \tab `ortho`    \tab - \cr
-#' Perspective conic                         \tab `pconic`   \tab `lat_1`, `lat_2`\cr
-#' Polyconic American                        \tab `poly`     \tab - \cr
-#' Putnins P1                                \tab `putp1`    \tab - \cr
-#' Putnins P2                                \tab `putp2`    \tab - \cr
-#' Putnins P3                                \tab `putp3`    \tab - \cr
-#' Putnins P3'                               \tab `putp3p`   \tab - \cr
-#' Putnins P4'                               \tab `putp4p`   \tab - \cr
-#' Putnins P5                                \tab `putp5`    \tab - \cr
-#' Putnins P5'                               \tab `putp5p`   \tab - \cr
-#' Putnins P6                                \tab `putp6`    \tab - \cr
-#' Putnins P6'                               \tab `putp6p`   \tab - \cr
-#' Quartic authalic                          \tab `qua_aut`  \tab - \cr
-#' Quadrilateralized spherical cube          \tab `qsc`      \tab - \cr
-#' Robinson                                  \tab `robin`    \tab - \cr
-#' Roussilhe stereographic                   \tab `rouss`    \tab - \cr
-#' Sinusoidal aka Sanson-Flamsteed           \tab `sinu`     \tab - \cr
-#' Swiss. oblique Mercator                   \tab `somerc`   \tab - \cr
-#' Stereographic                             \tab `stere`    \tab `lat_ts`\cr
-#' Oblique stereographic alternative         \tab `sterea`   \tab - \cr
-## Gauss-Schreiber transverse Mercator       \tab `gstmerc`  \tab `lat_0`, `lon_0`, `k_0`\cr
-#' Transverse cylindrical equal area         \tab `tcea`     \tab - \cr
-#' Tissot                                    \tab `tissot`   \tab `lat_1`, `lat_2`\cr
-#' Transverse Mercator                       \tab `tmerc`    \tab - \cr
-#' Two point equidistant                     \tab `tpeqd`    \tab `lat_1`, `lon_1`, `lat_2`, `lon_2`\cr
-#' Tilted perspective                        \tab `tpers`    \tab `tilt`, `azi`, `h`\cr
-#' Universal polar stereographic             \tab `ups`      \tab `south`\cr
-#' Urmaev flat-polar sinusoidal              \tab `urmfps`   \tab `n`\cr
-#' Universal transverse Mercator             \tab `utm`      \tab `zone`, `south`\cr
-#' van der Grinten I                         \tab `vandg`    \tab - \cr
-#' Vitkovsky I                               \tab `vitk1`    \tab `lat_1`, `lat_2`\cr
-#' Wagner I Kavraisky VI                     \tab `wag1`     \tab - \cr
-#' Wagner II                                 \tab `wag2`     \tab - \cr
-#' Wagner III                                \tab `wag3`     \tab `lat_ts`\cr
-#' Wagner IV                                 \tab `wag4`     \tab - \cr
-#' Wagner V                                  \tab `wag5`     \tab - \cr
-#' Wagner VI                                 \tab `wag6`     \tab - \cr
-#' Werenskiold I                             \tab `weren`    \tab - \cr
-#' Winkel I                                  \tab `wink1`    \tab `lat_ts`\cr
-#' Winkel Tripel                             \tab `wintri`   \tab `lat_ts`\cr
-#' }
-#'
-#' @section Available ellipse formulations:
-#' In the PROJ.4 system of specifying projections, the following ellipse
-#' models are available: `MERIT`,
-#' `SGS85`, `GRS80`, `IAU76`, `airy`, `APL4.9`,
-#' `NWL9D`, `mod_airy`, `andrae`, `aust_SA`, `GRS67`,
-#' `bessel`, `bess_nam`, `clrk66`, `clrk80`,
-#' `clrk80ign`, `CPM`, `delmbr`, `engelis`,
-#' `evrst30`, `evrst48`, `evrst56`, `evrst69`,
-#' `evrstSS`, `fschr60`, `fschr60m`, `fschr68`,
-#' `helmert`, `hough`, `intl`, `krass`, `kaula`,
-#' `lerch`, `mprts`, `new_intl`, `plessis`, `SEasia`,
-#' `walbeck`, `WGS60`, `WGS66`, `WGS72`, `WGS84`, and
-#' `sphere` (the default).  For example, use \code{projection="+proj=aea
-#'     +ellps=WGS84"} for an Albers Equal Area projection using the most
-#' recent of the World Geodetic System model. It is unlikely that changing the
-#' ellipse will have a visible effect on plotted material at the plot scale
-#' appropriate to most oceanographic applications.
-#'
-#' @section Available datum formulations:
-#' In the PROJ.4 system of specifying
-#' projections, the following datum formulations are available: `WGS84`,
-#' `GGRS87`, `Greek_Geodetic_Reference_System_1987`, `NAD83`,
-#' `North_American_Datum_1983`, `NAD27`,
-#' `North_American_Datum_1927`, `potsdam`, `Potsdam`,
-#' `carthage`, `Carthage`, `hermannskogel`,
-#' `Hermannskogel`, `ire65`, `Ireland`, `nzgd49`,
-#' `New`, `OSGB36`, and `Airy`. It is unlikely that changing
-#' the datum will have a visible effect on plotted material at the plot scale
-#' appropriate to most oceanographic applications.
-#'
-#' @section Choosing a projection:
-#' The best choice of projection depends on the application.
-#' Readers may find `projection="+proj=moll"` useful for world-wide
-#' plots, `ortho` for hemispheres viewed from the equator, `stere`
-#' for polar views, `lcc` for wide meridional ranges in mid latitudes,
-#' and `merc` in limited-area cases where angle preservation is
-#' important.
-#'
-#' @section Problems:
-#' Map projection is a complicated matter that is addressed here
-#' in a limited and pragmatic way.  For example, `mapPlot` tries to draw
-#' axes along a box containing the map, instead of trying to find spots along
-#' the ``edge'' of the map at which to put longitude and latitude labels.
-#' This design choice greatly simplifies the coding effort, freeing up time to
-#' work on issues regarded as more pressing.  Chief among those issues are (a)
-#' the occurrence of horizontal lines in maps that have prime meridians
-#' (b) inaccurate filling of land regions that (again) occur with shifted
-#' meridians and (c) inaccurate filling of Antarctica in some projections.
-#' Generally, issues are tackled first for commonly used projections, such as
-#' those used in the examples.
-#'
-#' There are also systematic problems on i386/windows machines, owing to
-#' problems with \CRANpkg{rgdal} on such systems. This explains why
-#' [`example`]`("mapPlot")` does not try to create maps on such
-#' machines. However, \CRANpkg{rgdal} is in continue development, so it
-#' is reasonable to hope that `oce` map projections may start working
-#' at some time. As of \CRANpkg{rgdal} version 1.4-3 (in March 2019),
-#' however, `mapPlot` does not work on i386/windows
-#' machines.
-#'
-#' @section Changes:
-#'
-#' * 2019-03-20: the test code provided the \dQuote{Examples} section
-#' is disabled on i386/windows machines, on which the requisite
-#' \CRANpkg{rgdal} package continues to fail on common projections.
-#'
-#' * 2017-11-19: `imw_p` removed, because it has problems doing
-#' inverse calculations.
-#' This is a also problem in the standalone PROJ.4 application version
-#' 4.9.3, downloaded and built on OSX.
-#' See \url{https://github.com/dankelley/oce/issues/1319} for details.
-#'
-#' * 2017-11-17: `lsat` removed, because it does not work in
-#' \CRANpkg{rgdal} or in the latest standalone PROJ.4 application.
-#' This is a also problem in the standalone PROJ.4 application version
-#' 4.9.3, downloaded and built on OSX.
-#' See \url{https://github.com/dankelley/oce/issues/1337} for details.
-#'
-#' * 2017-09-30: `lcca` removed, because its inverse was
-#' wildly inaccurate in a Pacific Antarctic-Alaska application
-#' (see \url{https://github.com/dankelley/oce/issues/1303}).
 #'
 #'
 #' @author Dan Kelley and Clark Richards
@@ -1627,26 +1588,24 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' 3. Wikipedia page \url{https://en.wikipedia.org/wiki/List_of_map_projections}
 #'
-#' 4. Radical Cartography website
-#' `http://www.radicalcartography.net/?projectionref` (This URL worked
-#' prior to Nov 16, 2016, but was found to fail on that date.)
+#' 4. As of 2020 August 3, the key website for the PROJ system is \url{https://proj.org}.
 #'
-#' 5. The `PROJ.4` website is \url{http://trac.osgeo.org/proj}, and it is
-#' the place to start to learn about the code.
+#' 5. Bivand, Roger (n.d.) Why have CRS, projections and transformations changed?
+#' Vignette for rgdal 1.5-13 \url{https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html}
 #'
-#' 6. `PROJ.4` projection details were once at
-#' `http://www.remotesensing.org/geotiff/proj_list/` but it was
-#' discovered on Dec 18, 2016, that this link no longer exists. Indeed, there
-#' seems to have been significant reorganization of websites related to this.
-#' The base website seems to be \url{https://trac.osgeo.org/geotiff/} and that
-#' lists only what is called an unofficial listing, on the wayback web-archiver server
-#' \url{http://web.archive.org/web/20160802172057/http://www.remotesensing.org/geotiff/proj_list/}
+#' 6. A gallery of map plots is provided at
+#' \url{https://dankelley.github.io/r/2020/08/02/oce-proj.html}.
 #'
-#' 7. A gallery of map plots is provided at
-#' \url{http://dankelley.github.io/r/2015/04/03/oce-proj.html}.
+#' 7. Snyder, John Parr.
+#' Flattening the Earth: Two Thousand Years of Map Projections.
+#' Chicago, IL: University of Chicago Press, 1993.
+#' \url{https://www.press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html}.
 #'
-#' 8. A fascinating historical perspective is provided by Snyder, J. P.
-#' (1993). Two thousand years of map projections. University of Chicago Press.
+#' 8. Šavrič, Bojan, Tom Patterson, and Bernhard Jenny.
+#' “The Equal Earth Map Projection.”
+#' International Journal of Geographical Information Science 33, no. 3 (March 4, 2019): 454–65.
+#' \url{https://doi.org/10.1080/13658816.2018.1504949}.
+
 #'
 #' @family functions related to maps
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
@@ -3762,9 +3721,10 @@ utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
 ##    See https://github.com/dankelley/oce/issues/1319 for details.
 knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
                 "cass", "cc", "cea", "collg", "crast", "eck1", "eck2", "eck3",
-                "eck4", "eck5", "eck6", "eqc", "eqdc", "euler", "etmerc",
+                "eck4", "eck5", "eck6", "eqc", "eqdc", "eqearth", "euler", "etmerc",
                 "fahey", "fouc", "fouc_s", "gall", "geos", "gn_sinu", "gnom",
-                "goode",                   "hatano", "healpix", "rhealpix",
+                ##"goode",                 "hatano", "healpix", "rhealpix",
+                "goode",                   "hatano",
                 "igh", "kav5", "kav7",
                 "laea",   "lonlat", "longlat", "latlon", "lcc", "leac",
                 ##"loxim", "lsat", "mbt_s", "mbt_fps", "mbtfpp", "mbtfpq",
@@ -3772,7 +3732,8 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
                 "mbtfps", "merc", "mil_os", "mill", "moll", "murd1", "murd2",
                 ##"murd3", "natearth", "nell", "nell_h", "nsper", "nzmg",
                 "murd3",   "natearth", "nell", "nell_h", "nsper",
-                "ob_tran", "ocea", "oea", "omerc", "ortho", "pconic", "poly",
+                ##"ob_tran", "ocea", "oea", "omerc", "ortho", "pconic", "poly",
+                "ob_tran",   "ocea", "oea", "omerc", "ortho",           "poly",
                 "putp1", "putp2", "putp3", "putp3p", "putp4", "putp4p",
                 "putp5", "putp5p", "putp6", "putp6p", "qsc", "qua_aut",
                 "robin", "rouss", "sinu", "somerc", "stere", "sterea"

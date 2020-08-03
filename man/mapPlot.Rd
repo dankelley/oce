@@ -169,62 +169,41 @@ reproduce a scale exactly between two plots.}
 }
 \description{
 Plot coordinates as a map, using one of the subset of projections
-provided by the \CRANpkg{rgdal} package.  The projection information specified
-with the \code{mapPlot} call is stored so that can be retrieved by related
-functions, making it easy to add points, lines, text, images
+provided by the \CRANpkg{sf} package.  The projection information specified
+with the \code{mapPlot()} call is stored in a global variable that can be retrieved
+by related functions, making it easy to add points, lines, text, images
 or contours to an existing map.
+See the \dQuote{Details} for a list of
+available projections.
 }
 \details{
-Creates a map using the indicated projection.  As noted in the
-information on the \code{projection} argument, projections are specified in
-the notation used by \code{project()} in the \CRANpkg{rgdal} package; see
-\dQuote{Available Projections} for a list of possibilities.
+Map projections are provided by the
+interface that the \CRANpkg{sf} package provides to the PROJ
+system command (supplied with R).  However, it is important to note that
+not all the \CRANpkg{sf} projections are
+available. The \code{oce} choices are tabulated
+below, e.g. \code{projection="+proj=aea"} selects the Albers equal area
+projection.
 
-Further details on map projections are provided by references 1 and 11, an exhaustive
-treatment that includes many illustrations, an overview of the history of the
-topic, and some notes on the strengths and weaknesses of the various
-formulations.  See especially pages 2 through 7, which define terms and
-provide recommendations.  Reference 2 is also useful, especially regarding
-datum shifts; references 3 and 4 are less detailed and perhaps better for novices.
-See reference 8 for a gallery of projections.
+Further details of the vast array of map projections provided by PROJ
+are given in reference 4.  This system has been in rapid development
+since about 2018, and reference 5 provides a helpful overview of the changes
+and the reasons why they were necessary.  Practical examples of map projections in
+\CRANpkg{oce} are provided in reference 6, along with some notes on problems.
+A fascinating treatment of the history of map projections is provided
+in reference 7.  To get an idea of how projections are being created
+nowadays, see reference 8, about the \code{eqearth} projection that was added
+to \CRANpkg{oce} in August 2020.
 }
 \section{Available Projections}{
 
-Map projections are provided by the
-\CRANpkg{rgdal} package, but not all projections in that package are
-available. The available list is given in the table
-below. The cartographic community has set up a naming scheme in a coded
-scheme, e.g. \code{projection="+proj=aea"} selects the Albers equal area
-projection.
 
-The allowed projections include those PROJ.4 projections provided by
-\CRANpkg{rgdal} that have inverses, minus a few that cause problems:
-\code{alsk} overdraws \code{coastlineWorld}, and is a niche projection for Alaska;
-\code{calcofi} is not a real projection, but rather a coordinate system;
-\code{gs48} overdraws \code{coastlineWorld}, and is a niche projection for the USA;
-\code{gs50} overdraws \code{coastlineWorld}, and is a niche projection for the USA;
-\code{gstmerc} overdraws \code{coastlineWorld};
-\code{isea} causes segmentation faults on OSX systems;
-\code{krovak} overdraws \code{coastlineWorld}, and is a niche projection for the Czech Republic;
-\code{labrd} returns \code{NaN} for most of the world, and is a niche projection for Madagascar;
-\code{lee_os} overdraws \code{coastlineWorld};
-and
-\code{nzmg} overdraws \code{coastlineWorld}.
-
-The information in the table is reformatted from the output of the unix
-command \code{proj -lP}, where \code{proj} is provided by version 4.9.0 of
-the PROJ.4 system. Most of the arguments listed have default values. In
-addition, most projections can handle arguments \code{lon_0} and
+The following table lists projections available in \CRANpkg{oce}, and was generated
+by reformatting a subset of the output of the unix
+command \code{proj -lP}. Most of the arguments listed have default values. In
+addition, many projections can handle arguments \code{lon_0} and
 \code{lat_0}, for shifting the reference point, although in some cases
 shifting the longitude can yield poor filling of coastlines.
-
-Further details of the projections and the controlling arguments are
-provided at several websites, because PROJ.4 has been incorporated into
-\CRANpkg{rgdal} and other R packages, plus many other software systems; a good
-starting point for learning is reference 6.
-
-See \dQuote{Examples} for suggested projections for some common
-applications, and reference 8 for a gallery indicating how to use every projection.
 
 \tabular{lll}{
 \strong{Projection}                       \tab \strong{Code}   \tab \strong{Arguments}\cr
@@ -247,8 +226,9 @@ Eckert V                                  \tab \code{eck5}     \tab - \cr
 Eckert VI                                 \tab \code{eck6}     \tab - \cr
 Equidistant cylindrical plate (Caree)     \tab \code{eqc}      \tab \code{lat_ts}, \code{lat_0}\cr
 Equidistant conic                         \tab \code{eqdc}     \tab \code{lat_1}, \code{lat_2}\cr
+Equal earth                               \tab \code{eqearth}  \tab -\cr
 Euler                                     \tab \code{euler}    \tab \code{lat_1}, \code{lat_2}\cr
-Extended transverse Mercator              \tab \code{etmerc}   \tab \code{lat_ts}, \code{lat_0}\cr
+Extended transverse Mercator              \tab \code{etmerc}   \tab - \cr
 Fahey                                     \tab \code{fahey}    \tab - \cr
 Foucault                                  \tab \code{fouc}     \tab - \cr
 Foucault sinusoidal                       \tab \code{fouc_s}   \tab - \cr
@@ -258,15 +238,13 @@ General sinusoidal series                 \tab \code{gn_sinu}  \tab \code{m}, \c
 Gnomonic                                  \tab \code{gnom}     \tab - \cr
 Goode homolosine                          \tab \code{goode}    \tab - \cr
 Hatano asymmetrical equal area            \tab \code{hatano}   \tab - \cr
-HEALPix                                   \tab \code{healpix}  \tab - \cr
-rHEALPix                                  \tab \code{rhealpix} \tab \code{north_square}, \code{south_square}\cr
 Interrupted Goode homolosine              \tab \code{igh}      \tab -\cr
 Kavraisky V                               \tab \code{kav5}     \tab - \cr
 Kavraisky VII                             \tab \code{kav7}     \tab - \cr
 Lambert azimuthal equal area              \tab \code{laea}     \tab - \cr
 Longitude and latitude                    \tab \code{longlat}  \tab - \cr
 Longitude and latitude                    \tab \code{latlong}  \tab - \cr
-Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2}, \code{lat_0}\cr
+Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2} or \code{lat_0}, \code{k_0}\cr
 Lambert equal area conic                  \tab \code{leac}     \tab \code{lat_1}, \code{south}\cr
 Loximuthal                                \tab \code{loxim}    \tab\cr
 Space oblique for Landsat                 \tab \code{lsat}     \tab \code{lsat}, \code{path}\cr
@@ -293,8 +271,7 @@ Oblique cylindrical equal area            \tab \code{ocea}     \tab \code{lat_1}
 Oblated equal area                        \tab \code{oea}      \tab \code{n}, \code{m}, \code{theta}\cr
 Oblique Mercator                          \tab \code{omerc}    \tab \code{alpha}, \code{gamma}, \code{no_off}, \code{lonc}, \code{lon_1},\cr
 \tab                 \tab \code{lat_1}, \code{lon_2}, \code{lat_2}\cr
-Orthographic                              \tab \code{ortho}    \tab - \cr
-Perspective conic                         \tab \code{pconic}   \tab \code{lat_1}, \code{lat_2}\cr
+Orthographic                              \tab \code{ortho}    \tab \code{Axi}, \code{Sph} \cr
 Polyconic American                        \tab \code{poly}     \tab - \cr
 Putnins P1                                \tab \code{putp1}    \tab - \cr
 Putnins P2                                \tab \code{putp2}    \tab - \cr
@@ -305,78 +282,31 @@ Putnins P5                                \tab \code{putp5}    \tab - \cr
 Putnins P5'                               \tab \code{putp5p}   \tab - \cr
 Putnins P6                                \tab \code{putp6}    \tab - \cr
 Putnins P6'                               \tab \code{putp6p}   \tab - \cr
-Quartic authalic                          \tab \code{qua_aut}  \tab - \cr
-Quadrilateralized spherical cube          \tab \code{qsc}      \tab - \cr
-Robinson                                  \tab \code{robin}    \tab - \cr
-Roussilhe stereographic                   \tab \code{rouss}    \tab - \cr
-Sinusoidal aka Sanson-Flamsteed           \tab \code{sinu}     \tab - \cr
-Swiss. oblique Mercator                   \tab \code{somerc}   \tab - \cr
+Quartic authalic                          \tab \code{qua_aut}  \tab \code{PCyl}, \code{Sph}\cr
+Quadrilateralized spherical cube          \tab \code{qsc}      \tab \code{Azi}, \code{Sph}\cr
+Robinson                                  \tab \code{robin}    \tab \code{PCyl}, \code{Sph}\cr
+Roussilhe stereographic                   \tab \code{rouss}    \tab \code{Azi}, \code{Ell}\cr
+Sinusoidal aka Sanson-Flamsteed           \tab \code{sinu}     \tab \code{PCyl}, \code{Sph}, \code{Ell}\cr
+Swiss. oblique Mercator                   \tab \code{somerc}   \tab \code{Cyl}, \code{Ell}\cr
 Stereographic                             \tab \code{stere}    \tab \code{lat_ts}\cr
 Oblique stereographic alternative         \tab \code{sterea}   \tab - \cr
 Transverse cylindrical equal area         \tab \code{tcea}     \tab - \cr
 Tissot                                    \tab \code{tissot}   \tab \code{lat_1}, \code{lat_2}\cr
-Transverse Mercator                       \tab \code{tmerc}    \tab - \cr
-Two point equidistant                     \tab \code{tpeqd}    \tab \code{lat_1}, \code{lon_1}, \code{lat_2}, \code{lon_2}\cr
-Tilted perspective                        \tab \code{tpers}    \tab \code{tilt}, \code{azi}, \code{h}\cr
-Universal polar stereographic             \tab \code{ups}      \tab \code{south}\cr
-Urmaev flat-polar sinusoidal              \tab \code{urmfps}   \tab \code{n}\cr
-Universal transverse Mercator             \tab \code{utm}      \tab \code{zone}, \code{south}\cr
-van der Grinten I                         \tab \code{vandg}    \tab - \cr
-Vitkovsky I                               \tab \code{vitk1}    \tab \code{lat_1}, \code{lat_2}\cr
-Wagner I Kavraisky VI                     \tab \code{wag1}     \tab - \cr
-Wagner II                                 \tab \code{wag2}     \tab - \cr
-Wagner III                                \tab \code{wag3}     \tab \code{lat_ts}\cr
-Wagner IV                                 \tab \code{wag4}     \tab - \cr
-Wagner V                                  \tab \code{wag5}     \tab - \cr
-Wagner VI                                 \tab \code{wag6}     \tab - \cr
-Werenskiold I                             \tab \code{weren}    \tab - \cr
-Winkel I                                  \tab \code{wink1}    \tab \code{lat_ts}\cr
-Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts}\cr
+Transverse Mercator                       \tab \code{tmerc}    \tab \verb{approx\\cr Two point equidistant                     \\tab }tpeqd\verb{   \\tab}lat_1\verb{, }lon_1\verb{, }lat_2\verb{, }lon_2\verb{\\cr Tilted perspective                        \\tab }tpers\verb{   \\tab}tilt\verb{, }azi\verb{, }h\verb{\\cr Universal polar stereographic             \\tab }ups\verb{     \\tab}south\verb{\\cr Urmaev flat-polar sinusoidal              \\tab }urmfps\verb{  \\tab}n\verb{\\cr Universal transverse Mercator             \\tab }utm\verb{     \\tab}zone\verb{, }south\verb{, }approx\verb{\\cr van der Grinten I                         \\tab }vandg\verb{   \\tab - \\cr Vitkovsky I                               \\tab}vitk1\verb{   \\tab}lat_1\verb{, }lat_2\verb{\\cr Wagner I Kavraisky VI                     \\tab }wag1\verb{    \\tab - \\cr Wagner II                                 \\tab}wag2\verb{    \\tab - \\cr Wagner III                                \\tab}wag3\verb{    \\tab}lat_ts\verb{\\cr Wagner IV                                 \\tab }wag4\verb{    \\tab - \\cr Wagner V                                  \\tab}wag5\verb{    \\tab - \\cr Wagner VI                                 \\tab}wag6\verb{    \\tab - \\cr Werenskiold I                             \\tab}weren\verb{   \\tab - \\cr Winkel I                                  \\tab}wink1\verb{   \\tab}lat_ts\verb{\\cr Winkel Tripel                             \\tab }wintri\verb{  \\tab}lat_ts`\cr
 }
-}
-
-\section{Available ellipse formulations}{
-
-In the PROJ.4 system of specifying projections, the following ellipse
-models are available: \code{MERIT},
-\code{SGS85}, \code{GRS80}, \code{IAU76}, \code{airy}, \code{APL4.9},
-\code{NWL9D}, \code{mod_airy}, \code{andrae}, \code{aust_SA}, \code{GRS67},
-\code{bessel}, \code{bess_nam}, \code{clrk66}, \code{clrk80},
-\code{clrk80ign}, \code{CPM}, \code{delmbr}, \code{engelis},
-\code{evrst30}, \code{evrst48}, \code{evrst56}, \code{evrst69},
-\code{evrstSS}, \code{fschr60}, \code{fschr60m}, \code{fschr68},
-\code{helmert}, \code{hough}, \code{intl}, \code{krass}, \code{kaula},
-\code{lerch}, \code{mprts}, \code{new_intl}, \code{plessis}, \code{SEasia},
-\code{walbeck}, \code{WGS60}, \code{WGS66}, \code{WGS72}, \code{WGS84}, and
-\code{sphere} (the default).  For example, use \code{projection="+proj=aea
-    +ellps=WGS84"} for an Albers Equal Area projection using the most
-recent of the World Geodetic System model. It is unlikely that changing the
-ellipse will have a visible effect on plotted material at the plot scale
-appropriate to most oceanographic applications.
-}
-
-\section{Available datum formulations}{
-
-In the PROJ.4 system of specifying
-projections, the following datum formulations are available: \code{WGS84},
-\code{GGRS87}, \code{Greek_Geodetic_Reference_System_1987}, \code{NAD83},
-\code{North_American_Datum_1983}, \code{NAD27},
-\code{North_American_Datum_1927}, \code{potsdam}, \code{Potsdam},
-\code{carthage}, \code{Carthage}, \code{hermannskogel},
-\code{Hermannskogel}, \code{ire65}, \code{Ireland}, \code{nzgd49},
-\code{New}, \code{OSGB36}, and \code{Airy}. It is unlikely that changing
-the datum will have a visible effect on plotted material at the plot scale
-appropriate to most oceanographic applications.
 }
 
 \section{Choosing a projection}{
 
 The best choice of projection depends on the application.
-Readers may find \code{projection="+proj=moll"} useful for world-wide
+Users may find \code{projection="+proj=moll"} useful for world-wide
 plots, \code{ortho} for hemispheres viewed from the equator, \code{stere}
 for polar views, \code{lcc} for wide meridional ranges in mid latitudes,
-and \code{merc} in limited-area cases where angle preservation is
-important.
+\code{merc} in limited-area cases where angle preservation is
+important or \code{aea} if preservation of area is important.
+The choice becomes more important, the larger the size of the region
+represented.  When it comes to publication, it can be sensible to use the
+same projection as used in previous reports.
 }
 
 \section{Problems}{
@@ -392,20 +322,24 @@ the occurrence of horizontal lines in maps that have prime meridians
 meridians and (c) inaccurate filling of Antarctica in some projections.
 Generally, issues are tackled first for commonly used projections, such as
 those used in the examples.
-
-There are also systematic problems on i386/windows machines, owing to
-problems with \CRANpkg{rgdal} on such systems. This explains why
-\code{\link{example}}\code{("mapPlot")} does not try to create maps on such
-machines. However, \CRANpkg{rgdal} is in continue development, so it
-is reasonable to hope that \code{oce} map projections may start working
-at some time. As of \CRANpkg{rgdal} version 1.4-3 (in March 2019),
-however, \code{mapPlot} does not work on i386/windows
-machines.
 }
 
 \section{Changes}{
 
 \itemize{
+\item 2020-08-03: added support for the \code{eqearth} projection (like \code{robin} but
+an equal-area method).
+\item 2020-08-03: dropped support for the \code{healpix}, \code{pconic}
+and \code{rhealpix} projections, which caused errors with the
+\CRANpkg{sf} package.  (This is not a practical loss, since these
+interrupted projections were handled badly by \code{mapPlot()}
+in any case.)
+\item 2020-08-03: switch from \CRANpkg{rgdal} to \CRANpkg{sf} for
+calculations related to map projection, owing to some
+changes in the former package that broke \CRANpkg{oce}
+code.  (To catch problems, \CRANpkg{oce} was set up to use
+both packages temporarily, issuing warnings if the results differed
+by more than 1 metre in easting or northing values.)
 \item 2019-03-20: the test code provided the \dQuote{Examples} section
 is disabled on i386/windows machines, on which the requisite
 \CRANpkg{rgdal} package continues to fail on common projections.
@@ -497,6 +431,8 @@ if (canProject) {
     dev.off()
 }
 }
+
+
 }
 \references{
 \enumerate{
@@ -506,22 +442,19 @@ Professional Paper: 1395 (available at
 \item Natural Resources Canada
 \url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
 \item Wikipedia page \url{https://en.wikipedia.org/wiki/List_of_map_projections}
-\item Radical Cartography website
-\verb{http://www.radicalcartography.net/?projectionref} (This URL worked
-prior to Nov 16, 2016, but was found to fail on that date.)
-\item The \code{PROJ.4} website is \url{http://trac.osgeo.org/proj}, and it is
-the place to start to learn about the code.
-\item \code{PROJ.4} projection details were once at
-\verb{http://www.remotesensing.org/geotiff/proj_list/} but it was
-discovered on Dec 18, 2016, that this link no longer exists. Indeed, there
-seems to have been significant reorganization of websites related to this.
-The base website seems to be \url{https://trac.osgeo.org/geotiff/} and that
-lists only what is called an unofficial listing, on the wayback web-archiver server
-\url{http://web.archive.org/web/20160802172057/http://www.remotesensing.org/geotiff/proj_list/}
+\item As of 2020 August 3, the key website for the PROJ system is \url{https://proj.org}.
+\item Bivand, Roger (n.d.) Why have CRS, projections and transformations changed?
+Vignette for rgdal 1.5-13 \url{https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html}
 \item A gallery of map plots is provided at
-\url{http://dankelley.github.io/r/2015/04/03/oce-proj.html}.
-\item A fascinating historical perspective is provided by Snyder, J. P.
-(1993). Two thousand years of map projections. University of Chicago Press.
+\url{https://dankelley.github.io/r/2020/08/02/oce-proj.html}.
+\item Snyder, John Parr.
+Flattening the Earth: Two Thousand Years of Map Projections.
+Chicago, IL: University of Chicago Press, 1993.
+\url{https://www.press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html}.
+\item Šavrič, Bojan, Tom Patterson, and Bernhard Jenny.
+“The Equal Earth Map Projection.”
+International Journal of Geographical Information Science 33, no. 3 (March 4, 2019): 454–65.
+\url{https://doi.org/10.1080/13658816.2018.1504949}.
 }
 }
 \seealso{
