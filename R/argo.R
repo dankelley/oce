@@ -1920,7 +1920,9 @@ setMethod(f="plot",
 #' @template handleFlagsTemplate
 #'
 #' @references
-#' 1. \url{http://www.argo.ucsd.edu/Argo_date_guide.html#dmodedata}
+#' 1. Wong, Annie, Robert Keeley, Thierry Carval, and Argo Data Management Team.
+#' “Argo Quality Control Manual for CTD and Trajectory Data,” January 1, 2020.
+#' \url{https://archimer.ifremer.fr/doc/00228/33951}.
 #'
 #' @examples
 #' library(oce)
