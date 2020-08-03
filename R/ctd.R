@@ -4330,7 +4330,7 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' * McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
 #' "Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
 #' Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730–41.
-#' \url{https://doi.org/10.1175/1520-0426(2003)20<730:AACEAF>2.0.CO;2}.
+#' \url{https://journals.ametsoc.org/jtech/article/20/5/730/2543/Accurate-and-Computationally-Efficient-Algorithms}.
 #'
 #' @family functions that plot oce data
 #' @family things related to ctd data
@@ -4606,7 +4606,7 @@ plotTS <- function (x,
 #' * McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
 #' "Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
 #' Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730–41.
-#' \url{https://doi.org/10.1175/1520-0426(2003)20<730:AACEAF>2.0.CO;2}.
+#' \url{https://journals.ametsoc.org/jtech/article/20/5/730/2543/Accurate-and-Computationally-Efficient-Algorithms}.
 #'
 #' @author Dan Kelley
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
