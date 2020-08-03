@@ -200,99 +200,116 @@ to \CRANpkg{oce} in August 2020.
 
 The following table lists projections available in \CRANpkg{oce}, and was generated
 by reformatting a subset of the output of the unix
-command \code{proj -lP}. Most of the arguments listed have default values. In
-addition, many projections can handle arguments \code{lon_0} and
-\code{lat_0}, for shifting the reference point, although in some cases
-shifting the longitude can yield poor filling of coastlines.
-
-\tabular{lll}{
-\strong{Projection}                       \tab \strong{Code}   \tab \strong{Arguments}\cr
-Albers equal area                         \tab \code{aea}      \tab \code{lat_1}, \code{lat_2}\cr
-Azimuthal equidistant                     \tab \code{aeqd}     \tab \code{lat_0}, \code{guam}\cr
-Aitoff                                    \tab \code{aitoff}   \tab - \cr
-Mod. stererographics of Alaska            \tab \code{alsk}     \tab - \cr
-Bipolar conic of western hemisphere       \tab \code{bipc}     \tab - \cr
-Bonne Werner                              \tab \code{bonne}    \tab \code{lat_1}\cr
-Cassini                                   \tab \code{cass}     \tab - \cr
-Central cylindrical                       \tab \code{cc}       \tab - \cr
-Equal area cylindrical                    \tab \code{cea}      \tab \code{lat_ts}\cr
-Collignon                                 \tab \code{collg}    \tab - \cr
-Craster parabolic Putnins P4              \tab \code{crast}    \tab - \cr
-Eckert I                                  \tab \code{eck1}     \tab - \cr
-Eckert II                                 \tab \code{eck2}     \tab - \cr
-Eckert III                                \tab \code{eck3}     \tab - \cr
-Eckert IV                                 \tab \code{eck4}     \tab - \cr
-Eckert V                                  \tab \code{eck5}     \tab - \cr
-Eckert VI                                 \tab \code{eck6}     \tab - \cr
-Equidistant cylindrical plate (Caree)     \tab \code{eqc}      \tab \code{lat_ts}, \code{lat_0}\cr
-Equidistant conic                         \tab \code{eqdc}     \tab \code{lat_1}, \code{lat_2}\cr
-Equal earth                               \tab \code{eqearth}  \tab -\cr
-Euler                                     \tab \code{euler}    \tab \code{lat_1}, \code{lat_2}\cr
-Extended transverse Mercator              \tab \code{etmerc}   \tab - \cr
-Fahey                                     \tab \code{fahey}    \tab - \cr
-Foucault                                  \tab \code{fouc}     \tab - \cr
-Foucault sinusoidal                       \tab \code{fouc_s}   \tab - \cr
-Gall stereographic                        \tab \code{gall}     \tab - \cr
-Geostationary satellite view              \tab \code{geos}     \tab \code{h}\cr
-General sinusoidal series                 \tab \code{gn_sinu}  \tab \code{m}, \code{n}\cr
-Gnomonic                                  \tab \code{gnom}     \tab - \cr
-Goode homolosine                          \tab \code{goode}    \tab - \cr
-Hatano asymmetrical equal area            \tab \code{hatano}   \tab - \cr
-Interrupted Goode homolosine              \tab \code{igh}      \tab -\cr
-Kavraisky V                               \tab \code{kav5}     \tab - \cr
-Kavraisky VII                             \tab \code{kav7}     \tab - \cr
-Lambert azimuthal equal area              \tab \code{laea}     \tab - \cr
-Longitude and latitude                    \tab \code{longlat}  \tab - \cr
-Longitude and latitude                    \tab \code{latlong}  \tab - \cr
-Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2} or \code{lat_0}, \code{k_0}\cr
-Lambert equal area conic                  \tab \code{leac}     \tab \code{lat_1}, \code{south}\cr
-Loximuthal                                \tab \code{loxim}    \tab\cr
-Space oblique for Landsat                 \tab \code{lsat}     \tab \code{lsat}, \code{path}\cr
-McBryde-Thomas flat-polar sine, no. 1     \tab \code{mbt_s}    \tab\cr
-McBryde-Thomas flat-polar sine, no. 2     \tab \code{mbt_fps}  \tab\cr
-McBryde-Thomas flat-polar parabolic       \tab \code{mbtfpp}   \tab\cr
-McBryde-Thomas flat-polar quartic         \tab \code{mbtfpq}   \tab\cr
-McBryde-Thomas flat-polar sinusoidal      \tab \code{mbtfps}   \tab\cr
-Mercator                                  \tab \code{merc}     \tab \code{lat_ts}\cr
-Miller oblated stereographic              \tab \code{mil_os}   \tab\cr
-Miller cylindrical                        \tab \code{mill}     \tab\cr
-Mollweide                                 \tab \code{moll}     \tab\cr
-Murdoch I                                 \tab \code{murd1}    \tab \code{lat_1}, \code{lat_2}\cr
-Murdoch II                                \tab \code{murd2}    \tab \code{lat_1}, \code{lat_2}\cr
-murdoch III                               \tab \code{murd3}    \tab \code{lat_1}, \code{lat_2}\cr
-Natural earth                             \tab \code{natearth} \tab\cr
-Nell                                      \tab \code{nell}     \tab\cr
-Nell-Hammer                               \tab \code{nell_h}   \tab\cr
-Near-sided perspective                    \tab \code{nsper}    \tab \code{h}\cr
-New Zealand map grid                      \tab \code{nzmg}     \tab\cr
-General oblique transformation            \tab \code{ob_tran}  \tab \code{o_proj}, \code{o_lat_p}, \code{o_lon_p}, \code{o_alpha}, \code{o_lon_c}\cr
-\tab                 \tab \code{o_lat_c}, \code{o_lon_1}, \code{o_lat_1}, \code{o_lon_2}, \code{o_lat_2}\cr
-Oblique cylindrical equal area            \tab \code{ocea}     \tab \code{lat_1}, \code{lat_2}, \code{lon_1}, \code{lon_2}\cr
-Oblated equal area                        \tab \code{oea}      \tab \code{n}, \code{m}, \code{theta}\cr
-Oblique Mercator                          \tab \code{omerc}    \tab \code{alpha}, \code{gamma}, \code{no_off}, \code{lonc}, \code{lon_1},\cr
-\tab                 \tab \code{lat_1}, \code{lon_2}, \code{lat_2}\cr
-Orthographic                              \tab \code{ortho}    \tab \code{Axi}, \code{Sph} \cr
-Polyconic American                        \tab \code{poly}     \tab - \cr
-Putnins P1                                \tab \code{putp1}    \tab - \cr
-Putnins P2                                \tab \code{putp2}    \tab - \cr
-Putnins P3                                \tab \code{putp3}    \tab - \cr
-Putnins P3'                               \tab \code{putp3p}   \tab - \cr
-Putnins P4'                               \tab \code{putp4p}   \tab - \cr
-Putnins P5                                \tab \code{putp5}    \tab - \cr
-Putnins P5'                               \tab \code{putp5p}   \tab - \cr
-Putnins P6                                \tab \code{putp6}    \tab - \cr
-Putnins P6'                               \tab \code{putp6p}   \tab - \cr
-Quartic authalic                          \tab \code{qua_aut}  \tab \code{PCyl}, \code{Sph}\cr
-Quadrilateralized spherical cube          \tab \code{qsc}      \tab \code{Azi}, \code{Sph}\cr
-Robinson                                  \tab \code{robin}    \tab \code{PCyl}, \code{Sph}\cr
-Roussilhe stereographic                   \tab \code{rouss}    \tab \code{Azi}, \code{Ell}\cr
-Sinusoidal aka Sanson-Flamsteed           \tab \code{sinu}     \tab \code{PCyl}, \code{Sph}, \code{Ell}\cr
-Swiss. oblique Mercator                   \tab \code{somerc}   \tab \code{Cyl}, \code{Ell}\cr
-Stereographic                             \tab \code{stere}    \tab \code{lat_ts}\cr
-Oblique stereographic alternative         \tab \code{sterea}   \tab - \cr
-Transverse cylindrical equal area         \tab \code{tcea}     \tab - \cr
-Tissot                                    \tab \code{tissot}   \tab \code{lat_1}, \code{lat_2}\cr
-Transverse Mercator                       \tab \code{tmerc}    \tab \verb{approx\\cr Two point equidistant                     \\tab }tpeqd\verb{   \\tab}lat_1\verb{, }lon_1\verb{, }lat_2\verb{, }lon_2\verb{\\cr Tilted perspective                        \\tab }tpers\verb{   \\tab}tilt\verb{, }azi\verb{, }h\verb{\\cr Universal polar stereographic             \\tab }ups\verb{     \\tab}south\verb{\\cr Urmaev flat-polar sinusoidal              \\tab }urmfps\verb{  \\tab}n\verb{\\cr Universal transverse Mercator             \\tab }utm\verb{     \\tab}zone\verb{, }south\verb{, }approx\verb{\\cr van der Grinten I                         \\tab }vandg\verb{   \\tab - \\cr Vitkovsky I                               \\tab}vitk1\verb{   \\tab}lat_1\verb{, }lat_2\verb{\\cr Wagner I Kavraisky VI                     \\tab }wag1\verb{    \\tab - \\cr Wagner II                                 \\tab}wag2\verb{    \\tab - \\cr Wagner III                                \\tab}wag3\verb{    \\tab}lat_ts\verb{\\cr Wagner IV                                 \\tab }wag4\verb{    \\tab - \\cr Wagner V                                  \\tab}wag5\verb{    \\tab - \\cr Wagner VI                                 \\tab}wag6\verb{    \\tab - \\cr Werenskiold I                             \\tab}weren\verb{   \\tab - \\cr Winkel I                                  \\tab}wink1\verb{   \\tab}lat_ts\verb{\\cr Winkel Tripel                             \\tab }wintri\verb{  \\tab}lat_ts`\cr
+command \code{proj -lP}. Most of the arguments have default values, and many
+projections also have optional arguments.  Although e.g. \code{proj -l=aea}
+provides a little more information about particular projections,
+users ought to consult reference 4 for fuller details and illustrations.\tabular{lll}{
+   \strong{Projection} \tab \strong{Code} \tab \strong{Arguments} \cr
+   Albers equal area \tab \code{aea} \tab \code{lat_1}, \code{lat_2} \cr
+   Azimuthal equidistant \tab \code{aeqd} \tab \code{lat_0}, \code{guam} \cr
+   Aitoff \tab \code{aitoff} \tab - \cr
+   Mod. stererographics of Alaska \tab \code{alsk} \tab - \cr
+   Bipolar conic of western hemisphere \tab \code{bipc} \tab - \cr
+   Bonne Werner \tab \code{bonne} \tab \code{lat_1} \cr
+   Cassini \tab \code{cass} \tab - \cr
+   Central cylindrical \tab \code{cc} \tab - \cr
+   Equal area cylindrical \tab \code{cea} \tab \code{lat_ts} \cr
+   Collignon \tab \code{collg} \tab - \cr
+   Craster parabolic Putnins P4 \tab \code{crast} \tab - \cr
+   Eckert I \tab \code{eck1} \tab - \cr
+   Eckert II \tab \code{eck2} \tab - \cr
+   Eckert III \tab \code{eck3} \tab - \cr
+   Eckert IV \tab \code{eck4} \tab - \cr
+   Eckert V \tab \code{eck5} \tab - \cr
+   Eckert VI \tab \code{eck6} \tab - \cr
+   Equidistant cylindrical plate (Caree) \tab \code{eqc} \tab \code{lat_ts}, \code{lat_0} \cr
+   Equidistant conic \tab \code{eqdc} \tab \code{lat_1}, \code{lat_2} \cr
+   Equal earth \tab \code{eqearth} \tab - \cr
+   Euler \tab \code{euler} \tab \code{lat_1}, \code{lat_2} \cr
+   Extended transverse Mercator \tab \code{etmerc} \tab - \cr
+   Fahey \tab \code{fahey} \tab - \cr
+   Foucault \tab \code{fouc} \tab - \cr
+   Foucault sinusoidal \tab \code{fouc_s} \tab - \cr
+   Gall stereographic \tab \code{gall} \tab - \cr
+   Geostationary satellite view \tab \code{geos} \tab \code{h} \cr
+   General sinusoidal series \tab \code{gn_sinu} \tab \code{m}, \code{n} \cr
+   Gnomonic \tab \code{gnom} \tab - \cr
+   Goode homolosine \tab \code{goode} \tab - \cr
+   Hatano asymmetrical equal area \tab \code{hatano} \tab - \cr
+   Interrupted Goode homolosine \tab \code{igh} \tab - \cr
+   Kavraisky V \tab \code{kav5} \tab - \cr
+   Kavraisky VII \tab \code{kav7} \tab - \cr
+   Lambert azimuthal equal area \tab \code{laea} \tab - \cr
+   Longitude and latitude \tab \code{longlat} \tab - \cr
+   Longitude and latitude \tab \code{latlong} \tab - \cr
+   Lambert conformal conic \tab \code{lcc} \tab \code{lat_1}, \code{lat_2} or \code{lat_0}, \code{k_0} \cr
+   Lambert equal area conic \tab \code{leac} \tab \code{lat_1}, \code{south} \cr
+   Loximuthal \tab \code{loxim} \tab - \cr
+   Space oblique for Landsat \tab \code{lsat} \tab \code{lsat}, \code{path} \cr
+   McBryde-Thomas flat-polar sine, no. 1 \tab \code{mbt_s} \tab - \cr
+   McBryde-Thomas flat-polar sine, no. 2 \tab \code{mbt_fps} \tab - \cr
+   McBryde-Thomas flat-polar parabolic \tab \code{mbtfpp} \tab - \cr
+   McBryde-Thomas flat-polar quartic \tab \code{mbtfpq} \tab - \cr
+   McBryde-Thomas flat-polar sinusoidal \tab \code{mbtfps} \tab - \cr
+   Mercator \tab \code{merc} \tab \code{lat_ts} \cr
+   Miller oblated stereographic \tab \code{mil_os} \tab - \cr
+   Miller cylindrical \tab \code{mill} \tab - \cr
+   Mollweide \tab \code{moll} \tab - \cr
+   Murdoch I \tab \code{murd1} \tab \code{lat_1}, \code{lat_2} \cr
+   Murdoch II \tab \code{murd2} \tab \code{lat_1}, \code{lat_2} \cr
+   murdoch III \tab \code{murd3} \tab \code{lat_1}, \code{lat_2} \cr
+   Natural earth \tab \code{natearth} \tab - \cr
+   Nell \tab \code{nell} \tab - \cr
+   Nell-Hammer \tab \code{nell_h} \tab - \cr
+   Near-sided perspective \tab \code{nsper} \tab \code{h} \cr
+   New Zealand map grid \tab \code{nzmg} \tab - \cr
+   General oblique transformation \tab \code{ob_tran} \tab \code{o_proj}, \code{o_lat_p}, \code{o_lon_p}, \cr
+    \tab  \tab \code{o_alpha}, \code{o_lon_c}, \code{o_lat_c}, \cr
+    \tab  \tab \code{o_lon_1}, \code{o_lat_1}, \cr
+    \tab  \tab \code{o_lon_2}, \code{o_lat_2} \cr
+   Oblique cylindrical equal area \tab \code{ocea} \tab \code{lat_1}, \code{lat_2}, \code{lon_1}, \code{lon_2} \cr
+   Oblated equal area \tab \code{oea} \tab \code{n}, \code{m}, \code{theta} \cr
+   Oblique Mercator \tab \code{omerc} \tab \code{alpha}, \code{gamma}, \code{no_off}, \cr
+    \tab  \tab \code{lonc}, \code{lon_1}, \code{lat_1}, \cr
+    \tab  \tab \code{lon_2}, \code{lat_2} \cr
+   Orthographic \tab \code{ortho} \tab - \cr
+   Polyconic American \tab \code{poly} \tab - \cr
+   Putnins P1 \tab \code{putp1} \tab - \cr
+   Putnins P2 \tab \code{putp2} \tab - \cr
+   Putnins P3 \tab \code{putp3} \tab - \cr
+   Putnins P3' \tab \code{putp3p} \tab - \cr
+   Putnins P4' \tab \code{putp4p} \tab - \cr
+   Putnins P5 \tab \code{putp5} \tab - \cr
+   Putnins P5' \tab \code{putp5p} \tab - \cr
+   Putnins P6 \tab \code{putp6} \tab - \cr
+   Putnins P6' \tab \code{putp6p} \tab - \cr
+   Quartic authalic \tab \code{qua_aut} \tab - \cr
+   Quadrilateralized spherical cube \tab \code{qsc} \tab - \cr
+   Robinson \tab \code{robin} \tab - \cr
+   Roussilhe stereographic \tab \code{rouss} \tab - \cr
+   Sinusoidal aka Sanson-Flamsteed \tab \code{sinu} \tab - \cr
+   Swiss. oblique Mercator \tab \code{somerc} \tab - \cr
+   Stereographic \tab \code{stere} \tab \code{lat_ts} \cr
+   Oblique stereographic alternative \tab \code{sterea} \tab - \cr
+   Transverse cylindrical equal area \tab \code{tcea} \tab - \cr
+   Tissot \tab \code{tissot} \tab \code{lat_1}, \code{lat_2} \cr
+   Transverse Mercator \tab \code{tmerc} \tab \code{approx} \cr
+   Two point equidistant \tab \code{tpeqd} \tab \code{lat_1}, \code{lon_1}, \code{lat_2}, \code{lon_2} \cr
+   Tilted perspective \tab \code{tpers} \tab \code{tilt}, \code{azi}, \code{h} \cr
+   Universal polar stereographic \tab \code{ups} \tab \code{south} \cr
+   Urmaev flat-polar sinusoidal \tab \code{urmfps} \tab \code{n} \cr
+   Universal transverse Mercator \tab \code{utm} \tab \code{zone}, \code{south}, \code{approx} \cr
+   van der Grinten I \tab \code{vandg} \tab - \cr
+   Vitkovsky I \tab \code{vitk1} \tab \code{lat_1}, \code{lat_2} \cr
+   Wagner I Kavraisky VI \tab \code{wag1} \tab - \cr
+   Wagner II \tab \code{wag2} \tab - \cr
+   Wagner III \tab \code{wag3} \tab \code{lat_ts} \cr
+   Wagner IV \tab \code{wag4} \tab - \cr
+   Wagner V \tab \code{wag5} \tab - \cr
+   Wagner VI \tab \code{wag6} \tab - \cr
+   Werenskiold I \tab \code{weren} \tab - \cr
+   Winkel I \tab \code{wink1} \tab \code{lat_ts} \cr
+   Winkel Tripel \tab \code{wintri} \tab \code{lat_ts} \cr
 }
 }
 
@@ -303,7 +320,8 @@ Users may find \code{projection="+proj=moll"} useful for world-wide
 plots, \code{ortho} for hemispheres viewed from the equator, \code{stere}
 for polar views, \code{lcc} for wide meridional ranges in mid latitudes,
 \code{merc} in limited-area cases where angle preservation is
-important or \code{aea} if preservation of area is important.
+important, or either \code{aea} or \code{eqearth} (on local and global
+scales, respectively) where area preservation is important.
 The choice becomes more important, the larger the size of the region
 represented.  When it comes to publication, it can be sensible to use the
 same projection as used in previous reports.
@@ -441,9 +459,13 @@ Professional Paper: 1395 (available at
 \url{https://pubs.er.usgs.gov/publication/pp1395}).
 \item Natural Resources Canada
 \url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
-\item Wikipedia page \url{https://en.wikipedia.org/wiki/List_of_map_projections}
-\item As of 2020 August 3, the key website for the PROJ system is \url{https://proj.org}.
-\item Bivand, Roger (n.d.) Why have CRS, projections and transformations changed?
+\item “List of Map Projections.” In Wikipedia, July 13, 2020.
+\url{https://en.wikipedia.org/w/index.php?title=List_of_map_projections}.
+\item PROJ contributors (2020).
+“PROJ Coordinate Transformation Software Library.”
+Open Source Geospatial Foundation, n.d.
+\url{https://proj.org}.
+\item Bivand, Roger (2020) Why have CRS, projections and transformations changed?
 Vignette for rgdal 1.5-13 \url{https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html}
 \item A gallery of map plots is provided at
 \url{https://dankelley.github.io/r/2020/08/02/oce-proj.html}.
