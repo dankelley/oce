@@ -20,14 +20,13 @@ readComponent <- function(file)
         ii <- 2 * i - 1
         D <- d[ii,]
         t <- c(t, ISOdatetime(1900+D$IY, D$IM, D$ID, 0:23, 0, 0, tz="UTC"))
-        velo <- c(velo, D$KARD1, D$KARD2, D$KARD3, D$KARD4, D$KARD5, 
-                  D$KARD6, D$KARD7, D$KARD8, D$KARD9, D$KARD10, 
-                  D$KARD11, D$KARD12) 
+        velo <- c(velo, D$KARD1, D$KARD2, D$KARD3, D$KARD4, D$KARD5,
+                  D$KARD6, D$KARD7, D$KARD8, D$KARD9, D$KARD10,
+                  D$KARD11, D$KARD12)
         D <- d[ii+1,]
-        velo <- c(velo, D$KARD1, D$KARD2, D$KARD3, D$KARD4, D$KARD5, 
-                  D$KARD6, D$KARD7, D$KARD8, D$KARD9, D$KARD10, 
-                  D$KARD11, D$KARD12) 
-                                        #print(d[i,])
+        velo <- c(velo, D$KARD1, D$KARD2, D$KARD3, D$KARD4, D$KARD5,
+                  D$KARD6, D$KARD7, D$KARD8, D$KARD9, D$KARD10,
+                  D$KARD11, D$KARD12)
     }
     t <- numberAsPOSIXct(t)
     velo <- velo / 1000
