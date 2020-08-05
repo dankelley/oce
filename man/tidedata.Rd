@@ -71,6 +71,7 @@ Other things related to tides:
 \code{\link{plot,tidem-method}},
 \code{\link{predict.tidem}()},
 \code{\link{summary,tidem-method}},
+\code{\link{tidalCurrent}},
 \code{\link{tidem-class}},
 \code{\link{tidemAstron}()},
 \code{\link{tidemVuf}()},

@@ -2,6 +2,7 @@
 
 ## 1.3.0
 
+*  Add `data(tidalCurrent)` dataset.
 * Change `plotTS()` to trim isopycnals to realistic salinities and temperatures.
 * Change `read.argo()` and `data(argo)` to use camelCase in all metadata.
 * Change reader-oriented github website generator to `pkgdown`.
