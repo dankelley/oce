@@ -103,6 +103,44 @@ setMethod(f="initialize",
 #' @family things related to tides
 NULL
 
+#' Tidal Current Dataset
+#'
+#' The `tidalCurrent` dataset contains tidal velocities reported in
+#' Foreman's (1978) report (reference 1) on his Fortran code for the analysis of
+#' tidal currents and provided in an associated webpage (reference 2).
+#' Here, `tidalCurrent` is data frame containing
+#' * `time` a POSIXct time.
+#' * `u` the eastward component of velocity in m/s.
+#' * `v` the northward component of velocity in m/s.
+#'
+#' @name tidalCurrent
+#'
+#' @docType data
+#'
+#' @examples
+#' library(oce)
+#' data(tidalCurrent)
+#' par(mfrow=c(2, 1))
+#' oce.plot.ts(tidalCurrent$time, tidalCurrent$u, ylab="u [m/s]")
+#' abline(h=0, col=2)
+#' oce.plot.ts(tidalCurrent$time, tidalCurrent$v, ylab="v [m/s]")
+#' abline(h=0, col=2)
+#'
+#' @author Dan Kelley (reformatting data provided by Michael Foreman)
+#'
+#' @references
+#'
+#' 1. Foreman, M. G. G. “Manual for Tidal Currents Analysis and Prediction.”
+#'    Pacific Marine Science Report.
+#'    British Columbia, Canada: Institute of Ocean Sciences, Patricia Bay, 1978.
+#' 2. \code{https://www.dfo-mpo.gc.ca/science/documents/data-donnees/tidal-marees/tidpack.zip}
+#'
+#' @source The data come from the `tide8.dat` and `tide9.dat` files provided
+#' at reference 2.
+#'
+#' @family things related to tides
+NULL
+
 
 #' Summarize a Tidem Object
 #'
