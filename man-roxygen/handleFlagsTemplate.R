@@ -7,12 +7,17 @@
 #' such data-quality flags. For example, a common operation is to replace
 #' erroneous data with `NA`.
 #'
-#' If `metadata$flags` in the first argument
-#' is empty, then that object is returned, unaltered.
-#' Otherwise, `handleFlags` analyses the data-quality flags within
-#' the object, in context of the `flags` argument, and then interprets
-#' the `action` argument to select an action that is to be applied
-#' to the matched data.
+#' If the `flags` within `object`'s `metadata` slot is empty,
+#' then `object` is returned, unaltered.
+#' Otherwise, `handleFlags` examines `object@metadata$flags`
+#' in the context of the `flags` argument, and then
+#' carries out actions that are specified by the `actions` argument.
+#' By default, this sets the returned `data` entries to `NA`,
+#' wherever the corresponding `metadata$flag` values
+#' signal unreliable data. To maintain a hint as to why
+#' `data` were changed, `metadata$flags` in the
+#' returned value is a direct copy of the corresponding
+#' entry in `object`.
 #'
 #' @param flags A [list] specifying flag values upon which
 #' actions will be taken. This can take two forms.
