@@ -254,7 +254,7 @@ test_that("interpBarnes 2D", {
 })
 
 test_that("magneticField() handles both POSIX times and dates", {
-          A <- magneticField(-63.562, 44.640, as.POSIXct("2013-01-01"), version=12)$declination
+          A <- magneticField(-63.562, 44.640, as.POSIXct("2013-01-01", tz="UTC"), version=12)$declination
           B <- magneticField(-63.562, 44.640, as.Date("2013-01-01"), version=12)$declination
           expect_equal(A, B, scale=1, tolerance=1e-8)
 })
