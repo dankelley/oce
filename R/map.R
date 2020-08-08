@@ -1505,7 +1505,8 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' projections (with graphs).
 #'
 #' @examples
-#' canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
+#' ##canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
+#' canProject <- requireNamespace("rgdal")
 #' if (canProject) {
 #'     library(oce)
 #'     data(coastlineWorld)
@@ -2899,7 +2900,8 @@ mapLocator <- function(n=512, type='n', ...)
 #' values indicating points that are off the globe as displayed.
 #'
 #' @examples
-#' canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
+#' ##canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
+#' canProject <- requireNamespace("rgdal")
 #' if (canProject) {
 #'     library(oce)
 #'     ## Cape Split, in the Minas Basin of the Bay of Fundy
@@ -3785,7 +3787,8 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 #' that package is version 1.3-9 or higher.
 #'
 #' @examples
-#' canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
+#' ##canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
+#' canProject <- requireNamespace("rgdal")
 #' if (canProject) {
 #'     library(oce)
 #'     ## Cape Split, in the Minas Basin of the Bay of Fundy

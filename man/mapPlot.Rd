@@ -378,7 +378,8 @@ wildly inaccurate in a Pacific Antarctic-Alaska application
 }
 
 \examples{
-canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
+##canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
+canProject <- requireNamespace("rgdal")
 if (canProject) {
     library(oce)
     data(coastlineWorld)

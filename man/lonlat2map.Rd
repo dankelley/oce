@@ -43,7 +43,8 @@ that package is version 1.3-9 or higher.
 }
 
 \examples{
-canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
+##canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
+canProject <- requireNamespace("rgdal")
 if (canProject) {
     library(oce)
     ## Cape Split, in the Minas Basin of the Bay of Fundy
