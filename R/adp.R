@@ -1912,7 +1912,7 @@ setMethod(f="plot",
 
               tt <- x[["time", j]]
               ##ttDia <- x@data$timeDia  # may be null
-              class(tt) <- "POSIXct"              # otherwise image() gives warnings
+              class(tt) <- c("POSIXct", "POSIXt") # otherwise image() gives warnings
               if (!zlimGiven && all(which %in% 5:8)) {
                   ## single scale for all 'a' (amplitude) data
                   zlim <- range(abs(as.numeric(x[["a"]][, , which[1]-4])), na.rm=TRUE) # FIXME name of item missing, was ma
