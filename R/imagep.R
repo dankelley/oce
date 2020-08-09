@@ -1095,16 +1095,24 @@ imagep <- function(x, y, z,
     ## Adjust x and y, to match what image() does; save orig for filled contours
     xorig <- x
     yorig <- y
-    tz <- attr(x[1], "tzone")
     if (length(x) > 1 && length(x) == nrow(z)) {
-        dx <- 0.5 * diff(x)
-        x <- c(x[1L] - dx[1L], x[-length(x)] + dx, x[length(x)] + dx[length(x) - 1])
+        ## Time is handled separately, because as of 2020-08-09, lubridate (version 1.7.9) gave
+        ## a warning on missing timezones, for the diff that is used below.
+        if (inherits(x, "POSIXt")) {
+            tz <- attr(x[1], "tzone")
+            X <- as.numeric(x)
+            dX <- 0.5 * diff(X)
+            X <- c(X[1L] - dX[1L], X[-length(X)] + dX, X[length(X)] + dX[length(X) - 1])
+            x <- numberAsPOSIXct(X, tz=tz)
+        } else {
+            dx <- 0.5 * diff(x)
+            x <- c(x[1L] - dx[1L], x[-length(x)] + dx, x[length(x)] + dx[length(x) - 1])
+        }
     }
     if (length(y) > 1 && length(y) == ncol(z)) {
         dy <- 0.5 * diff(y)
         y <- c(y[1L] - dy[1L], y[-length(y)] + dy, y[length(y)] + dy[length(y) - 1])
     }
-    attr(x, 'tzone') <- tz
     ##omai <- par("mai")
     ocex <- par("cex")
     if (missing(mar))
