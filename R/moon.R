@@ -67,7 +67,7 @@
 #' * Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
 #' Richmond, Virginia, USA: Willmann-Bell, 1982.
 #'
-#' * Meeus, Jean H. Astronomical Algorithms. 2nd ed.
+#' * Meeus, Jean. Astronomical Algorithms. 2nd ed.
 #' Richmond, Virginia, USA: Willmann-Bell, 1991.
 #'
 #' @examples

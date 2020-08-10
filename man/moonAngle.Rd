@@ -103,7 +103,7 @@ for (i in 1:3) {
 \itemize{
 \item Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
 Richmond, Virginia, USA: Willmann-Bell, 1982.
-\item Meeus, Jean H. Astronomical Algorithms. 2nd ed.
+\item Meeus, Jean. Astronomical Algorithms. 2nd ed.
 Richmond, Virginia, USA: Willmann-Bell, 1991.
 }
 }
