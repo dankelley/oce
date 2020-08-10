@@ -27,9 +27,9 @@ print(siderealTime(t))
 
 }
 \references{
-\enumerate{
-\item Meeus, Jean, 1982.  Astronomical formulae for Calculators.
-Willmann-Bell. Richmond VA, USA. 201 pages
+\itemize{
+\item Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+Richmond, Virginia, USA: Willmann-Bell, 1982.
 }
 }
 \seealso{

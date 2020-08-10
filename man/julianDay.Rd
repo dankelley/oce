@@ -2,7 +2,7 @@
 % Please edit documentation in R/astronomy.R
 \name{julianDay}
 \alias{julianDay}
-\title{Convert a POSIXt time to a Julian day}
+\title{Convert a time to a Julian day}
 \usage{
 julianDay(
   t,
@@ -18,21 +18,27 @@ julianDay(
 \arguments{
 \item{t}{a time, in POSIXt format, e.g. as created by
 \code{\link[=as.POSIXct]{as.POSIXct()}}, \code{\link[=as.POSIXlt]{as.POSIXlt()}}, or
-\code{\link[=numberAsPOSIXct]{numberAsPOSIXct()}}.  If this is provided, the other arguments are
-ignored.}
+\code{\link[=numberAsPOSIXct]{numberAsPOSIXct()}}, or a character string that can be
+converted to a time using \code{\link[=as.POSIXct]{as.POSIXct()}}.  If \code{t} is provided,
+the other arguments are ignored.}
 
 \item{year}{year, to be provided along with \code{month}, etc., if \code{t}
 is not provided.}
 
-\item{month}{month, numbered with January being 1.}
+\item{month}{numerical value for the month, with January being 1.
+(This is required if \code{t} is not provided.)}
 
-\item{day}{day in month, starting at 1.}
+\item{day}{numerical value for day in month, starting at 1.
+(This is required if \code{t} is not provided.)}
 
-\item{hour}{hour of day.}
+\item{hour}{numerical value for hour of day, in range 0 to 24.
+(This is required if \code{t} is not provided.)}
 
-\item{min}{minute of hour}
+\item{min}{numerical value of the minute of the hour.
+(This is required if \code{t} is not provided.)}
 
-\item{sec}{second of hour}
+\item{sec}{numerical value for the second of the minute.
+(This is required if \code{t} is not provided.)}
 
 \item{tz}{timezone}
 }
@@ -41,8 +47,10 @@ A Julian-Day number, in astronomical convention as explained in
 Meeus.
 }
 \description{
-Convert a POSIXt time to a Julian day, using the method provided in
-Chapter 3 of reference 1.  It should be noted that
+Convert a POSIXt time (given as either the \code{t} argument
+or as the \code{year}, \code{month}, and other arguments) to a Julian day,
+using the method provided in
+Chapter 3 of Meeuse (1982).  It should be noted that
 Meeus and other astronomical treatments use fractional days, whereas the
 present code follows the R convention of specifying days in whole numbers,
 with hours, minutes, and seconds also provided as necessary.  Conversion is
@@ -53,15 +61,15 @@ function is to match the other Meeus formulae, so that suggestion is ignored
 here.
 }
 \examples{
-
+## example from Meeus
 t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="UTC")+0.4*86400
-expect_equal(julianDay(t), 2443259.9) # example from Meeus
+expect_equal(julianDay(t), 2443259.9)
 
 }
 \references{
-\enumerate{
-\item Meeus, Jean, 1982.  Astronomical formulae for Calculators.
-Willmann-Bell. Richmond VA, USA. 201 pages
+\itemize{
+\item Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+Richmond, Virginia, USA: Willmann-Bell, 1982.
 }
 }
 \seealso{

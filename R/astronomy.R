@@ -26,8 +26,8 @@
 #' angle2hms(177.74208) # string component 11h50m58s.10
 #'
 #' @references
-#' * Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
-#' USA. 429 pages.
+#' * Meeus, Jean. Astronomical Algorithms. 2nd ed.
+#' Richmond, Virginia, USA: Willmann-Bell, 1991.
 #'
 #' @author Dan Kelley
 #'
@@ -70,11 +70,12 @@ angle2hms <- function(angle)
 #'
 #' @author Dan Kelley, based on formulae in references 1 and 2.
 #'
-#' @references 1. Meeus, Jean, 1982. Astronomical formulae for Calculators.
-#' Willmann-Bell. Richmond VA, USA. 201 pages.
+#' @references
+#' * Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+#' Richmond, Virginia, USA: Willmann-Bell, 1982.
 #'
-#' 2. Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
-#' USA. 429 pages.
+#' * Meeus, Jean. Astronomical Algorithms. 2nd ed.
+#' Richmond, Virginia, USA: Willmann-Bell, 1991.
 #'
 #' @family things related to astronomy
 eclipticalToEquatorial <- function(lambda, beta, epsilon)
@@ -117,11 +118,11 @@ eclipticalToEquatorial <- function(lambda, beta, epsilon)
 #' @author Dan Kelley, based on formulae in references 1 and 2.
 #'
 #' @references
-#' 1. Meeus, Jean, 1982. Astronomical formulae for Calculators.
-#' Willmann-Bell. Richmond VA, USA. 201 pages.
+#' * Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+#' Richmond, Virginia, USA: Willmann-Bell, 1982.
 #'
-#' 2. Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
-#' USA. 429 pages.
+#' * Meeus, Jean. Astronomical Algorithms. 2nd ed.
+#' Richmond, Virginia, USA: Willmann-Bell, 1991.
 #'
 #' @family things related to astronomy
 equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitude, latitude)
@@ -154,8 +155,8 @@ equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitud
 #' @author Dan Kelley
 #'
 #' @references
-#' 1. Meeus, Jean, 1982.  Astronomical formulae for Calculators.
-#' Willmann-Bell. Richmond VA, USA. 201 pages
+#' * Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+#' Richmond, Virginia, USA: Willmann-Bell, 1982.
 #'
 #' @examples
 #'
@@ -181,10 +182,12 @@ siderealTime <- function(t)
 }
 
 
-#' Convert a POSIXt time to a Julian day
+#' Convert a time to a Julian day
 #'
-#' Convert a POSIXt time to a Julian day, using the method provided in
-#' Chapter 3 of reference 1.  It should be noted that
+#' Convert a POSIXt time (given as either the `t` argument
+#' or as the `year`, `month`, and other arguments) to a Julian day,
+#' using the method provided in
+#' Chapter 3 of Meeuse (1982).  It should be noted that
 #' Meeus and other astronomical treatments use fractional days, whereas the
 #' present code follows the R convention of specifying days in whole numbers,
 #' with hours, minutes, and seconds also provided as necessary.  Conversion is
@@ -196,21 +199,27 @@ siderealTime <- function(t)
 #'
 #' @param t a time, in POSIXt format, e.g. as created by
 #' [as.POSIXct()], [as.POSIXlt()], or
-#' [numberAsPOSIXct()].  If this is provided, the other arguments are
-#' ignored.
+#' [numberAsPOSIXct()], or a character string that can be
+#' converted to a time using [as.POSIXct()].  If `t` is provided,
+#' the other arguments are ignored.
 #'
 #' @param year year, to be provided along with `month`, etc., if `t`
 #' is not provided.
 #'
-#' @param month month, numbered with January being 1.
+#' @param month numerical value for the month, with January being 1.
+#' (This is required if `t` is not provided.)
 #'
-#' @param day day in month, starting at 1.
+#' @param day numerical value for day in month, starting at 1.
+#' (This is required if `t` is not provided.)
 #'
-#' @param hour hour of day.
+#' @param hour numerical value for hour of day, in range 0 to 24.
+#' (This is required if `t` is not provided.)
 #'
-#' @param min minute of hour
+#' @param min numerical value of the minute of the hour.
+#' (This is required if `t` is not provided.)
 #'
-#' @param sec second of hour
+#' @param sec numerical value for the second of the minute.
+#' (This is required if `t` is not provided.)
 #'
 #' @param tz timezone
 #'
@@ -220,22 +229,22 @@ siderealTime <- function(t)
 #' @author Dan Kelley
 #'
 #' @references
-#' 1. Meeus, Jean, 1982.  Astronomical formulae for Calculators.
-#' Willmann-Bell. Richmond VA, USA. 201 pages
+#' * Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+#' Richmond, Virginia, USA: Willmann-Bell, 1982.
 #'
 #' @examples
-#'
+#' ## example from Meeus
 #' t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="UTC")+0.4*86400
-#' expect_equal(julianDay(t), 2443259.9) # example from Meeus
+#' expect_equal(julianDay(t), 2443259.9)
 #'
 #' @family things related to astronomy
 #' @family things related to time
 julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz="UTC")
 {
-    if (!inherits(t, "POSIXt"))  {
+    if (missing(t))  {
         if (is.na(year) || is.na(month) || is.na(day) || is.na(hour)
             || is.na(min) || is.na(sec))
-            stop("must supply year, month, day, hour, min, sec, and tz")
+            stop("must supply year, month, day, hour, min, and sec")
         t <- ISOdatetime(year, month, day, hour, min, sec, tz=tz)
     }
     tt <- as.POSIXlt(t, tz=tz)
@@ -268,8 +277,8 @@ julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz=
 #' @author Dan Kelley
 #'
 #' @references
-#' 1. Meeus, Jean, 1982.  Astronomical formulae for Calculators.
-#' Willmann-Bell. Richmond VA, USA. 201 pages
+#' * Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+#' Richmond, Virginia, USA: Willmann-Bell, 1982.
 #'
 #' @examples
 #'

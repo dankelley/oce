@@ -37,11 +37,11 @@ The method is taken from equations 8.5 and 8.6 of reference 1, or, equivalently,
 from equations 12.5 and 12.6 of reference 2.
 }
 \references{
-\enumerate{
-\item Meeus, Jean, 1982. Astronomical formulae for Calculators.
-Willmann-Bell. Richmond VA, USA. 201 pages.
-\item Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
-USA. 429 pages.
+\itemize{
+\item Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+Richmond, Virginia, USA: Willmann-Bell, 1982.
+\item Meeus, Jean. Astronomical Algorithms. 2nd ed.
+Richmond, Virginia, USA: Willmann-Bell, 1991.
 }
 }
 \seealso{
