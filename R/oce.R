@@ -105,7 +105,7 @@ NULL
 #' (none)              \tab (none)                         \tab (none)     \cr
 #'}
 #'
-#' The following were removed after having been marked as "deprecated"
+#' The following functions were removed after having been marked as "deprecated"
 #' in at least one CRAN release, and thereafter as "defunct" in at least
 #' one CRAN release.  (The version number in the table is the first
 #' version to lack the named function.)
@@ -126,6 +126,9 @@ NULL
 #' means they will be marked "defunct" in the next CRAN release. These are normally
 #' listed in the help page for the function in question. A few that may be
 #' of general interest are also listed below.
+#'
+#' * The `adorn` argument was still being checked for (in the dots argument)
+#' until 2020 August 11.
 #'
 #' * The `eos` argument of [swN2()] was removed on 2019
 #' April 11; for details, see the \dQuote{Deprecation Notation} section
@@ -1259,8 +1262,6 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
 {
     if (is.function(x))
         stop("x cannot be a function")
-    if ("adorn" %in% names(list(...)))
-        warning("the 'adorn' argument was removed in November 2017")
     if (!inherits(x, "POSIXt"))
         x <- as.POSIXct(x)
     if (missing(xlab))

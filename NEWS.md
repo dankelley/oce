@@ -2,7 +2,8 @@
 
 ## 1.3.0
 
-*  Add `data(tidalCurrent)` dataset.
+* Change `plot()` calls to not warn of `adorn` in `...`.
+* Add `data(tidalCurrent)` dataset.
 * Change `plotTS()` to trim isopycnals to realistic salinities and temperatures.
 * Change `read.argo()` and `data(argo)` to use camelCase in all metadata.
 * Change reader-oriented github website generator to `pkgdown`.
@@ -76,7 +77,7 @@
 
 * tidem() permits inferred constituents
 * tidem() follows T_TIDE phase convention
-* adorn argument removed from plot functions (after being defunct 1+ year)
+* adorn argument removed from some plot functions (after being defunct 1+ year)
 * deprecate findInOrdered()
 
 ## 0.9-22

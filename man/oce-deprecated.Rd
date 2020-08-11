@@ -35,7 +35,7 @@ be slated for outright deletion in a subsequent release.
 (none)              \tab (none)                         \tab (none)     \cr
 }
 
-The following were removed after having been marked as "deprecated"
+The following functions were removed after having been marked as "deprecated"
 in at least one CRAN release, and thereafter as "defunct" in at least
 one CRAN release.  (The version number in the table is the first
 version to lack the named function.)
@@ -57,6 +57,8 @@ means they will be marked "defunct" in the next CRAN release. These are normally
 listed in the help page for the function in question. A few that may be
 of general interest are also listed below.
 \itemize{
+\item The \code{adorn} argument was still being checked for (in the dots argument)
+until 2020 August 11.
 \item The \code{eos} argument of \code{\link[=swN2]{swN2()}} was removed on 2019
 April 11; for details, see the \dQuote{Deprecation Notation} section
 of the documentation for \code{\link[=swN2]{swN2()}}.

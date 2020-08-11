@@ -3111,8 +3111,6 @@ setMethod(f="plot",
           {
               if (!inherits(x, "ctd"))
                   stop("method is only for objects of class 'ctd'")
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,ctd-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               eos <- match.arg(eos, c("unesco", "gsw"))
               if (!missing(fill)) {
                   ## permit call as documented before 2016-02-03

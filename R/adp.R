@@ -1714,8 +1714,6 @@ setMethod(f="plot",
               ## oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
               ## oceDebug(debug, "par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
               ## oceDebug(debug, "mai.palette=", paste(mai.palette, collapse=" "), "\n")
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,adp-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               instrumentType <- x[["instrumentType"]]
               if (is.null(instrumentType))
                   instrumentType <- "" # simplifies later checks

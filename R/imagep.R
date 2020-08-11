@@ -886,8 +886,6 @@ imagep <- function(x, y, z,
              argShow(mai.palette),
              argShow(breaks),
              style="bold")
-    if ("adorn" %in% names(list(...)))
-        warning("the 'adorn' argument was removed in November 2017")
     zlabPosition <- match.arg(zlabPosition)
     if (!is.logical(flipy))
         stop("flipy must be TRUE or FALSE")

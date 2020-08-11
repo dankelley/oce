@@ -452,8 +452,6 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,rsk-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               oceDebug(debug, "plot.rsk(..., which=", which, ", ...) {\n", unindent=1)
               dotsNames <- names(list(...))
               ## FIXME: In the below, we could be more clever for single-panel plots

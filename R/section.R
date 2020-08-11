@@ -1242,8 +1242,6 @@ setMethod(f="plot",
           {
               if (missing(debug))
                   debug <- getOption("oceDebug")
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,section-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               debug <- if (debug > 4) 4 else floor(0.5 + debug)
               if (missing(eos))
                   eos <- getOption("oceEOS", default="gsw")

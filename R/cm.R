@@ -741,8 +741,6 @@ setMethod(f="plot",
                               ...)
           {
               oceDebug(debug, "plot.cm() {\n", unindent=1)
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,cm-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
               if (3 != sum(c("time", "u", "v") %in% names(x@data))) {
