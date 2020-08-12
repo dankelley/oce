@@ -2487,15 +2487,18 @@ oceColorsClosure <- function(spec) {
 
 #' Create colors similar to the google turbo scheme
 #'
-#' This uses the coefficients published (with Apache license) by google;
-#' see reference 1.
+#' This uses the coefficients published (with Apache license) by google,
+#' as described by Mikhailo (2019).
 #'
 #' @aliases oce.colorsTurbo oceColorsTurbo
 #'
 #' @param n number of colors to create.
 #'
 #' @references
-#' 1. \url{https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html}
+#' Mikhailo, Anton.
+#' \dQuote{Turbo, An Improved Rainbow Colormap for Visualization.}
+#' Google AI (blog), August 20, 2019.
+#' \url{http://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html}
 #'
 #' @author Dan Kelley
 #'

@@ -319,8 +319,10 @@ drawPalette <- function(zlim, zlab="",
         stop("'zlim' must be of length 2")
     if (zlimGiven && zlim[2] < zlim[1])
         stop("'zlim' must be ordered")
+    colGiven <- !missing(col)
+    oceDebug(debug, "colGiven=", colGiven, "\n", sep="")
     colormapGiven <- !missing(colormap)
-    ## oceDebug(debug, "colormapGiven=", colormapGiven, "\n", sep="")
+    oceDebug(debug, "colormapGiven=", colormapGiven, "\n", sep="")
     ##message("missing(col) ", missing(col))
     if (!zlimGiven && !colormapGiven)
         plot <- FALSE
@@ -334,6 +336,7 @@ drawPalette <- function(zlim, zlab="",
     maiGiven <- !missing(mai)
     haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     if (colormapGiven && !zlimGiven) {
+        oceDebug(debug, "inferring zlim from colormap\n")
         zlim <- colormap$zlim
         zlimGiven <- TRUE
         if (zlim[2] <= zlim[1])
@@ -352,6 +355,7 @@ drawPalette <- function(zlim, zlab="",
     pc <- paletteCalculations(maidiff=mai, pos=pos, zlab=zlab, debug=debug-1)
     contours <- if (breaksGiven) breaks else NULL
     if (colormapGiven) {
+        oceDebug(debug, "colormap was given, so getting breaks and col from it\n")
         breaks <- colormap$breaks
         col <- colormap$col
         ## Trick the code below, to avoid auto-creating breaks
@@ -363,6 +367,7 @@ drawPalette <- function(zlim, zlab="",
         breaksOrig <- breaks
         contours <- breaks
     } else {
+        oceDebug(debug, "colormap was not given\n")
         if (zlimGiven && !is.null(zlim)) {
             if (breaksGiven) {
                 breaksOrig <- breaks
@@ -385,8 +390,11 @@ drawPalette <- function(zlim, zlab="",
                 breaks[1] <- zrange[1]
                 breaks[length(breaks)] <- zrange[2]
             }
-            if (missing(col))
+            if (missing(col)) {
+                oceDebug(debug, "setting default 'col' (near line 394)\n")
                 col <- oce.colorsPalette(n=length(breaks)-1)
+                ##col <- oce.colorsTurbo(n=length(breaks)-1)
+            }
             if (is.function(col))
                 col <- col(n=length(breaks)-1)
         }
@@ -1121,8 +1129,7 @@ imagep <- function(x, y, z,
         mai.palette <- rep(0, 4)
         oceDebug(debug, "set mai.palette=", mai.palette, "\n")
     }
-
-    oceDebug(debug, "imagep.R:1125 cex=", cex, ", par('cex')=", par('cex'), style="blue")
+    ##oceDebug(debug, "imagep.R:1125 cex=", cex, ", par('cex')=", par('cex'), style="blue")
     par(mgp=mgp, mar=mar)# , cex=cex)
 
     if (zlimGiven && is.character(zlim)) {
@@ -1188,8 +1195,11 @@ imagep <- function(x, y, z,
                     breaks <- if (missing(zlim)) pretty(z, n=breaks) else pretty(zlim, n=breaks)
                 }
             }
-            if (missing(col))
+            if (missing(col)) {
+                oceDebug(debug, "setting default 'col' (near line 1199)\n")
                 col <- oce.colorsPalette(n=length(breaks)-1)
+                ##col <- oce.colorsTurbo(n=length(breaks)-1)
+            }
         }
         breaks2 <- if (missing(breaks)) NULL else breaks
         col2 <- if (missing(col)) NULL else col
