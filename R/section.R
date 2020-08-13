@@ -1119,7 +1119,8 @@ sectionAddCtd <- sectionAddStation
 #' @param mar Value to be used with [`par`]`("mar")`. If not provided,
 #' a default is set up.
 #'
-#' @param col Color, which defaults to [`par`]`("col")`.
+#' @param col Color, which defaults to [`par`]`("col")` for line types, but
+#' to [oceColorsViridis] for image types.
 #'
 #' @param cex Numerical character-expansion factor, which defaults to [`par`]`("cex")`.
 #'
@@ -1534,8 +1535,10 @@ setMethod(f="plot",
                           }
                           nbreaks <- length(zbreaks)
                           if (nbreaks > 0) {
-                              if (is.null(zcol))
-                                  zcol <- oceColorsJet(nbreaks - 1)
+                              if (is.null(zcol)) {
+                                  ## col <- oceColorsJet(nbreaks - 1)
+                                  zcol <- oceColorsViridis(nbreaks - 1)
+                              }
                               if (is.function(zcol))
                                   zcol <- zcol(nbreaks - 1)
                               zlim <- range(zbreaks)

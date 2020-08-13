@@ -9,6 +9,7 @@
   x,
   y,
   asp,
+  colormap,
   missingColor = list(land = "papayaWhip", none = "lightGray", bad = "gray", rain =
     "plum", ice = "mediumVioletRed"),
   debug = getOption("oceDebug"),
@@ -18,10 +19,16 @@
 \arguments{
 \item{x}{an \linkS4class{amsr} object.}
 
-\item{y}{String indicating the name of the band to plot; if not provided,
+\item{y}{character value indicating the name of the band to plot; if not provided,
 \code{SST} is used; see the documentation for the \linkS4class{amsr} class for a list of bands.}
 
-\item{asp}{Optional aspect ratio for plot.}
+\item{asp}{optional numberical value giving the aspect ratio for plot.}
+
+\item{colormap}{a specification of the colormap to use, as created
+with \code{\link[=colormap]{colormap()}}.  If \code{colormap} is NULL, which is the default, then
+a colormap is created to cover the range of data values, using
+\link{oceColorsViridis} colour scheme.  See \dQuote{Examples} for an example
+of using the "turbo" colour scheme.}
 
 \item{missingColor}{List of colors for problem cases. The names of the
 elements in this list must be as in the default, but the colors may
@@ -40,10 +47,24 @@ Plot an amsr Object
 }
 \examples{
 \dontrun{
-d <- read.amsr("f34_20160102v7.2.gz")
-asp <- 1/cos(pi*40/180)
-plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
+library(oce)
 data(coastlineWorld)
+
+# Example 1
+year <- 2020
+month <- 8
+day <- 6:8
+d1 <- read.amsr(download.amsr(year, month, day[1], "~/data/amsr"))
+d2 <- read.amsr(download.amsr(year, month, day[2], "~/data/amsr"))
+d3 <- read.amsr(download.amsr(year, month, day[3], "~/data/amsr"))
+d <- composite(d1, d2, d3)
+asp <- 1/cos(pi*40/180)
+plot(d, "SST", xlim=c(-80,0), ylim=c(20,60), asp=asp)
+lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+
+# Example 2: 'turbo' colour scheme
+cm <- colormap(zlim=range(d[["SST"]], na.rm=TRUE), col=oceColorsTurbo)
+plot(d, "SST", colormap=cm, xlim=c(-80,0), ylim=c(20,60), asp=asp)
 lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 }
 

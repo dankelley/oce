@@ -326,10 +326,16 @@ setMethod(f="subset",
 #'
 #' @param x an [amsr-class] object.
 #'
-#' @param y String indicating the name of the band to plot; if not provided,
+#' @param y character value indicating the name of the band to plot; if not provided,
 #' `SST` is used; see the documentation for the [amsr-class] class for a list of bands.
 #'
-#' @param asp Optional aspect ratio for plot.
+#' @param asp optional numberical value giving the aspect ratio for plot.
+#'
+#' @param colormap a specification of the colormap to use, as created
+#' with [colormap()].  If `colormap` is NULL, which is the default, then
+#' a colormap is created to cover the range of data values, using
+#' [oceColorsViridis] colour scheme.  See \dQuote{Examples} for an example
+#' of using the "turbo" colour scheme.
 #'
 #' @param missingColor List of colors for problem cases. The names of the
 #' elements in this list must be as in the default, but the colors may
@@ -347,10 +353,24 @@ setMethod(f="subset",
 #'
 #' @examples
 #'\dontrun{
-#' d <- read.amsr("f34_20160102v7.2.gz")
-#' asp <- 1/cos(pi*40/180)
-#' plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
+#' library(oce)
 #' data(coastlineWorld)
+#'
+#' # Example 1
+#' year <- 2020
+#' month <- 8
+#' day <- 6:8
+#' d1 <- read.amsr(download.amsr(year, month, day[1], "~/data/amsr"))
+#' d2 <- read.amsr(download.amsr(year, month, day[2], "~/data/amsr"))
+#' d3 <- read.amsr(download.amsr(year, month, day[3], "~/data/amsr"))
+#' d <- composite(d1, d2, d3)
+#' asp <- 1/cos(pi*40/180)
+#' plot(d, "SST", xlim=c(-80,0), ylim=c(20,60), asp=asp)
+#' lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+#'
+#' # Example 2: 'turbo' colour scheme
+#' cm <- colormap(zlim=range(d[["SST"]], na.rm=TRUE), col=oceColorsTurbo)
+#' plot(d, "SST", colormap=cm, xlim=c(-80,0), ylim=c(20,60), asp=asp)
 #' lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 #'}
 #'
@@ -364,6 +384,7 @@ setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
           definition=function(x, y, asp,
+                              colormap,
                               missingColor=list(land='papayaWhip',
                                                 none='lightGray',
                                                 bad='gray',
@@ -371,8 +392,11 @@ setMethod(f="plot",
                                                 ice='mediumVioletRed'),
                               debug=getOption("oceDebug"), ...)
           {
+              dots <- list(...)
+              debug <- if ("debug" %in% names(dots)) dots$debug else 0
+              colormapGiven <- !missing(colormap)
               oceDebug(debug, "plot.amsr(..., y=c(",
-                       if (missing(y)) "(missing)" else y, ", ...) {\n", sep="", unindent=1)
+                       if (missing(y)) "(missing)" else y, ", ...) {\n", sep="", style="bold", unindent=1)
               if (missing(y))
                   y <- "SST"
               lon <- x[["longitude"]]
@@ -383,8 +407,13 @@ setMethod(f="plot",
                   if (missing(asp)) asp <- 1/cos(pi/180*abs(mean(lat, na.rm=TRUE)))
               }
               z <- x[[y]]
-              i <- if ("zlab" %in% names(list(...))) imagep(lon, lat, z, asp=asp, ...)
-                  else imagep(lon, lat, z, zlab=y, asp=asp, ...)
+              if (!colormapGiven)
+                  colormap <- oce::colormap(zlim=range(z, na.rm=TRUE), col=oceColorsViridis)
+              i <- if ("zlab" %in% names(list(...))) {
+                  imagep(lon, lat, z, colormap=colormap, asp=asp, ...)
+              } else {
+                  imagep(lon, lat, z, colormap=colormap, zlab=y, asp=asp, ...)
+              }
               ## Handle missing-data codes by redrawing the (decimate) image.
               ## Perhaps imagep() should be able to do this, but imagep() is a
               ## long function with a lot of interlocking arguments so I'll
@@ -413,7 +442,7 @@ setMethod(f="plot",
                   ##message("did code ", codes[[codeName]], " (color ", missingColor[[codeName]], ")")
               }
               box()
-              oceDebug(debug, "} # plot.amsr()\n", unindent=1)
+              oceDebug(debug, "} # plot.amsr()\n", sep="", style="bold", unindent=1)
           })
 
 

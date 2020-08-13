@@ -34,7 +34,7 @@ is used.}
 
 \item{zlab}{label for the palette scale.}
 
-\item{breaks}{the z values for breaks in the color scheme.}
+\item{breaks}{numeric vector of the z values for breaks in the color scheme.}
 
 \item{col}{either a vector of colors corresponding to the breaks, of length
 1 less than the number of breaks, or a function specifying colors, e.g.
