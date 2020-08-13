@@ -2,8 +2,11 @@
 
 ## 1.3.0
 
-* Change `plot()` calls to not warn of `adorn` in `...`.
-* Add `data(tidalCurrent)` dataset.
+* Change `imagep()` default colour palette to `oce.colorsViridis()`.
+* Change `drawPalette()` default colour palette to `oce.colorsViridis()`.
+* Change `plot,section-method()` default colour palette to `oce.colorsViridis()`.
+* Change `plot,amsr-method()` default colour palette to `oce.colorsViridis()`.
+* Add `data(tidalCurrent)` dataset, which holds tidal currents from Foreman.
 * Change `plotTS()` to trim isopycnals to realistic salinities and temperatures.
 * Change `read.argo()` and `data(argo)` to use camelCase in all metadata.
 * Change reader-oriented github website generator to `pkgdown`.

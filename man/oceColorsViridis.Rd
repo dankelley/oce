@@ -14,12 +14,20 @@ oceColorsViridis(n)
 This is patterned on a matlab/python scheme (reference 1) that blends
 from yellow to blue in a way that is designed to reproduce well
 in black-and-white, and to be interpretable by those with
-certain forms of color blindness (references 3-4).
+certain forms of color blindness (references 3-4).  An alternative
+to this is provide in the \CRANpkg{viridis} package, as illustrated
+in Example 2.
 }
 \examples{
 library(oce)
+# Example 1: oceColorsViridis
 imagep(volcano, col=oceColorsViridis(128),
        zlab="oceColorsViridis")
+# Example 2: viridis::viridis
+\dontrun{
+imagep(volcano, col=viridis::viridis,
+       zlab="viridis::viridis")}
+
 }
 \references{
 \enumerate{

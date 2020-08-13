@@ -176,7 +176,8 @@ ignored otherwise.}
 \item{mar}{Value to be used with \code{\link{par}}\code{("mar")}. If not provided,
 a default is set up.}
 
-\item{col}{Color, which defaults to \code{\link{par}}\code{("col")}.}
+\item{col}{Color, which defaults to \code{\link{par}}\code{("col")} for line types, but
+to \link{oceColorsViridis} for image types.}
 
 \item{cex}{Numerical character-expansion factor, which defaults to \code{\link{par}}\code{("cex")}.}
 
