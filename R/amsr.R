@@ -1,5 +1,28 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+#' An amsr dataset for waters near Nova Scotia
+#'
+#' This is a composite image for 9 through 11 August, 2020,
+#' trimmed with [subset,amsr-method()] to between 30N and
+#' 60N and between 80@ and 40W.
+#'
+#' @name amsr
+#' @docType data
+#'
+#' @usage data(amsr)
+#'
+#' @examples
+#' library(oce)
+#' data(coastlineWorld)
+#' data(amsr)
+#' plot(amsr, "SST")
+#' lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
+#'
+#' @family datasets provided with oce
+#' @family things related to amsr data
+NULL
+
+
 #' Class to Store AMSR-2 Satellite Data
 #'
 #' This class stores data from the AMSR-2 satellite.
@@ -112,9 +135,9 @@ setMethod(f="summary",
 #' `metadata`.
 #'
 #' Data within the `data` slot may be found directly, e.g.
-#' `j="SSTDay"` will yield sea-surface temperature in the daytime
-#' satellite, and `j="SSTNight"` is used to access the nighttime data. In
-#' addition, `j="SST"` yields an average of the night and day values
+#' `i="SSTDay"` will yield sea-surface temperature in the daytime
+#' satellite, and `i="SSTNight"` is used to access the nighttime data. In
+#' addition, `i="SST"` yields an average of the night and day values
 #' (using just one of these, if the other is missing). This scheme works for
 #' all the data stored in `amsr` objects, namely:
 #' `time`, `SST`, `LFwind`, `MFwind`,
@@ -299,25 +322,40 @@ setMethod(f="[[<-",
 setMethod(f="subset",
           signature="amsr",
           definition=function(x, subset, ...) {
+              dots <- list(...)
+              debug <- if ("debug" %in% names(dots)) dots$debug else 0
+              oceDebug(debug, "subset,amsr-method() {\n", style="bold", sep="", unindent=1)
               res <- x
               ## subsetString <- paste(deparse(substitute(subset)), collapse=" ")
               subsetString <- paste(deparse(substitute(expr=subset, env=environment())), collapse=" ")
               if (length(grep("longitude", subsetString))) {
                   if (length(grep("latitude", subsetString)))
                       stop("the subset must not contain both longitude and latitude. Call this twice, to combine these")
-                  keep <- eval(expr=substitute(subset, env=environment()), envir=data.frame(longitude=x@metadata$longitude))
-                  for (name in names(res@data))
-                      res@data[[name]] <- res@data[[name]][keep, ]
+                  ##keep <- eval(expr=substitute(expr=subset, env=environment()), envir=data.frame(longitude=x@metadata$longitude))
+                  keep <- eval(expr=substitute(expr=subset, env=environment()),
+                               envir=data.frame(longitude=x@metadata$longitude), enclos=parent.frame(2))
+                  oceDebug(debug, "keeping", sum(keep), "of", length(keep), "longitudes\n")
+                  for (name in names(res@data)) {
+                      oceDebug(debug, "processing", name, "\n")
+                      res@data[[name]] <- res[[name, "raw"]][keep, ]
+                  }
                   res@metadata$longitude <- x@metadata$longitude[keep]
               } else if (length(grep("latitude", subsetString))) {
-                  keep <- eval(expr=substitute(expr=subset, env=environment()), envir=data.frame(latitude=x@metadata$latitude))
-                  for (name in names(res@data))
-                      res@data[[name]] <- res@data[[name]][, keep]
+                  if (length(grep("longitude", subsetString)))
+                      stop("the subset must not contain both longitude and latitude. Call this twice, to combine these")
+                  keep <- eval(expr=substitute(expr=subset, env=environment()),
+                               envir=data.frame(latitude=x@metadata$latitude), enclos=parent.frame(2))
+                  oceDebug(debug, "keeping", sum(keep), "of", length(keep), "latitudes\n")
+                  for (name in names(res@data)) {
+                      oceDebug(debug, "processing", name, "\n")
+                      res@data[[name]] <- x[[name, "raw"]][, keep]
+                  }
                   res@metadata$latitude <- res@metadata$latitude[keep]
               } else {
                   stop("may only subset by longitude or latitude")
               }
               res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
+              oceDebug(debug, "} # subset,amsr-method()\n", style="bold", sep="", unindent=1)
               res
           })
 
@@ -329,13 +367,26 @@ setMethod(f="subset",
 #' @param y character value indicating the name of the band to plot; if not provided,
 #' `SST` is used; see the documentation for the [amsr-class] class for a list of bands.
 #'
-#' @param asp optional numberical value giving the aspect ratio for plot.
+#' @param asp optional numerical value giving the aspect ratio for plot.  The
+#' default value, `NULL`, means to use an aspect ratio of 1 for world views,
+#' and a value computed from `ylim`, if the latter is specified in the
+#' `...` argument.
+#'
+#' @param breaks optional numeric vector of the z values for breaks in the color scheme.
+#' See also `colormap`, which takes precedence over `breaks`.
+#'
+#' @param col optional argument, either a vector of colors corresponding to the breaks, of length
+#' 1 less than the number of breaks, or a function specifying colors, e.g.
+#' [oce.colorsJet()] for a rainbow.
+#' See also `colormap`, which takes precedence over `col`.
 #'
 #' @param colormap a specification of the colormap to use, as created
 #' with [colormap()].  If `colormap` is NULL, which is the default, then
 #' a colormap is created to cover the range of data values, using
-#' [oceColorsViridis] colour scheme.  See \dQuote{Examples} for an example
-#' of using the "turbo" colour scheme.
+#' [oceColorsTemperature] colour scheme.
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
+#' provided, it takes precedence over `breaks` and `col`.
+#' See \dQuote{Examples} for an example of using the "turbo" colour scheme.
 #'
 #' @param missingColor List of colors for problem cases. The names of the
 #' elements in this list must be as in the default, but the colors may
@@ -346,8 +397,8 @@ setMethod(f="subset",
 #'
 #' @param debug A debugging flag, integer.
 #'
-#' @param ... extra arguments passed to [imagep()], e.g. set
-#' `col` to control colors.
+#' @param ... extra arguments passed to [imagep()], e.g. to control
+#' the view with `xlim` (for longitude) and `ylim` (for latitude).
 #'
 #' @concept satellite
 #'
@@ -364,13 +415,12 @@ setMethod(f="subset",
 #' d2 <- read.amsr(download.amsr(year, month, day[2], "~/data/amsr"))
 #' d3 <- read.amsr(download.amsr(year, month, day[3], "~/data/amsr"))
 #' d <- composite(d1, d2, d3)
-#' asp <- 1/cos(pi*40/180)
-#' plot(d, "SST", xlim=c(-80,0), ylim=c(20,60), asp=asp)
+#' plot(d, "SST", xlim=c(-80,-10), ylim=c(20,65))
 #' lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 #'
 #' # Example 2: 'turbo' colour scheme
 #' cm <- colormap(zlim=range(d[["SST"]], na.rm=TRUE), col=oceColorsTurbo)
-#' plot(d, "SST", colormap=cm, xlim=c(-80,0), ylim=c(20,60), asp=asp)
+#' plot(d, "SST", colormap=cm, xlim=c(-80,-10), ylim=c(20,65))
 #' lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 #'}
 #'
@@ -383,8 +433,8 @@ setMethod(f="subset",
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
-          definition=function(x, y, asp,
-                              colormap,
+          definition=function(x, y, asp=NULL,
+                              breaks, col, colormap,
                               missingColor=list(land='papayaWhip',
                                                 none='lightGray',
                                                 bad='gray',
@@ -393,25 +443,74 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"), ...)
           {
               dots <- list(...)
-              debug <- if ("debug" %in% names(dots)) dots$debug else 0
-              colormapGiven <- !missing(colormap)
               oceDebug(debug, "plot.amsr(..., y=c(",
                        if (missing(y)) "(missing)" else y, ", ...) {\n", sep="", style="bold", unindent=1)
               if (missing(y))
                   y <- "SST"
               lon <- x[["longitude"]]
               lat <- x[["latitude"]]
-              if ("ylim" %in% names(list(...))) {
-                  if (missing(asp)) asp <- 1/cos(pi/180*abs(mean(list(...)$ylim)))
+              ## Examine ylim (if asp is not NULL) and also at
+              #' both xlim and ylim to compute zrange
+              xlim <- dots$xlim
+              ylim <- dots$ylim
+              if (is.null(asp)) {
+                  if (!is.null(ylim)) {
+                      asp <- 1 / cos(pi/180*abs(mean(ylim, na.rm=TRUE)))
+                      oceDebug(debug, "inferred asp=", asp, " from ylim argument\n", sep="")
+                  } else {
+                      asp <- 1 / cos(pi/180*abs(mean(lat, na.rm=TRUE)))
+                      oceDebug(debug, "inferred asp=", asp, " from ylim argument\n", sep="")
+                  }
               } else {
-                  if (missing(asp)) asp <- 1/cos(pi/180*abs(mean(lat, na.rm=TRUE)))
+                  oceDebug(debug, "using supplied asp=", asp, "\n", sep="")
               }
               z <- x[[y]]
-              if (!colormapGiven)
-                  colormap <- oce::colormap(zlim=range(z, na.rm=TRUE), col=oceColorsViridis)
-              i <- if ("zlab" %in% names(list(...))) {
+              ## Compute zrange for world data, or data narrowed to xlim and ylim.
+              if (!is.null(xlim)) {
+                  if (!is.null(ylim)) {
+                      oceDebug(debug, "computing range based on z trimmed by xlim and ylim\n")
+                      zrange <- range(z[xlim[1] <= lon & lon <= xlim[2], ylim[1] <= lat & lat <= ylim[2]], na.rm=TRUE)
+                  } else {
+                      oceDebug(debug, "computing range based on z trimmed by xlim alone\n")
+                      zrange <- range(z[xlim[1] <= lon & lon <= xlim[2], ], na.rm=TRUE)
+                  }
+              } else {
+                  if (!is.null(ylim)) {
+                      oceDebug(debug, "computing range based on z trimmed by ylim alone\n")
+                      zrange <- range(z[, ylim[1] <= lat & lat <= ylim[2]], na.rm=TRUE)
+                  } else {
+                      oceDebug(debug, "computing range based on whole-world data\n")
+                      zrange <- range(z, na.rm=TRUE)
+                  }
+              }
+              oceDebug(debug, "zrange: ", paste(zrange, collapse=" to "), "\n")
+              ## Determine colormap, if not given as an argument.
+              if (missing(colormap)) {
+                  if (!missing(breaks)) {
+                      if (!missing(col)) {
+                          oceDebug(debug, "computing colormap from specified breaks and specified col\n")
+                          colormap <- oce::colormap(zlim=range(breaks), col=col)
+                      } else {
+                          oceDebug(debug, "computing colormap from specified breaks and computed col\n")
+                          colormap <- oce::colormap(zlim=range(breaks), col=oceColorsTemperature)
+                      }
+                  } else {
+                      if (!missing(col)) {
+                          oceDebug(debug, "computing colormap from and computed breaks and specified col\n")
+                          colormap <- oce::colormap(zlim=zrange, col=col)
+                      } else {
+                          oceDebug(debug, "computing colormap from computed breaks and computed col\n")
+                          colormap <- oce::colormap(zlim=zrange, col=oceColorsTemperature)
+                      }
+                  }
+              } else {
+                  oceDebug(debug, "using specified colormap, ignoring breaks and col, whether they were supplied or not\n")
+              }
+              i <- if ("zlab" %in% names(dots)) {
+                  oceDebug(debug, "calling imagep() with asp=", asp, ", and zlab=\"", dots$zlab, "\"\n", sep="")
                   imagep(lon, lat, z, colormap=colormap, asp=asp, ...)
               } else {
+                  oceDebug(debug, "calling imagep() with asp=", asp, ", and no zlab argument\n", sep="")
                   imagep(lon, lat, z, colormap=colormap, zlab=y, asp=asp, ...)
               }
               ## Handle missing-data codes by redrawing the (decimate) image.

@@ -35,6 +35,7 @@ for (a in seq(-20, 20, by=1))
 \seealso{
 Other datasets provided with oce: 
 \code{\link{adp}},
+\code{\link{amsr}},
 \code{\link{argo}},
 \code{\link{cm}},
 \code{\link{coastlineWorld}},

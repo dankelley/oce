@@ -104,6 +104,7 @@ more information on the handling data from the Landsat-8 satellite.
 Other things related to amsr data: 
 \code{\link{[[,amsr-method}},
 \code{\link{[[<-,amsr-method}},
+\code{\link{amsr}},
 \code{\link{composite,amsr-method}},
 \code{\link{download.amsr}()},
 \code{\link{plot,amsr-method}},

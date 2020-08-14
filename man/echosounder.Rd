@@ -17,6 +17,7 @@ scientific echosounder, as part of the St Lawrence Internal Wave Experiment
 Other datasets provided with oce: 
 \code{\link{adp}},
 \code{\link{adv}},
+\code{\link{amsr}},
 \code{\link{argo}},
 \code{\link{cm}},
 \code{\link{coastlineWorld}},

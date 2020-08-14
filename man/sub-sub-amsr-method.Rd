@@ -39,9 +39,9 @@ are permitted for \code{metadata}, and \code{j} is ignored for
 \code{metadata}.
 
 Data within the \code{data} slot may be found directly, e.g.
-\code{j="SSTDay"} will yield sea-surface temperature in the daytime
-satellite, and \code{j="SSTNight"} is used to access the nighttime data. In
-addition, \code{j="SST"} yields an average of the night and day values
+\code{i="SSTDay"} will yield sea-surface temperature in the daytime
+satellite, and \code{i="SSTNight"} is used to access the nighttime data. In
+addition, \code{i="SST"} yields an average of the night and day values
 (using just one of these, if the other is missing). This scheme works for
 all the data stored in \code{amsr} objects, namely:
 \code{time}, \code{SST}, \code{LFwind}, \code{MFwind},
@@ -174,6 +174,7 @@ Other functions that extract parts of oce objects:
 Other things related to amsr data: 
 \code{\link{[[<-,amsr-method}},
 \code{\link{amsr-class}},
+\code{\link{amsr}},
 \code{\link{composite,amsr-method}},
 \code{\link{download.amsr}()},
 \code{\link{plot,amsr-method}},

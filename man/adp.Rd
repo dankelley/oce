@@ -32,6 +32,7 @@ plot(adp, which=15:18)
 \seealso{
 Other datasets provided with oce: 
 \code{\link{adv}},
+\code{\link{amsr}},
 \code{\link{argo}},
 \code{\link{cm}},
 \code{\link{coastlineWorld}},

@@ -3,12 +3,21 @@
 \name{plot,amsr-method}
 \alias{plot,amsr-method}
 \alias{plot.amsr}
+\alias{both}
+\alias{xlim}
+\alias{and}
+\alias{ylim}
+\alias{to}
+\alias{compute}
+\alias{zrange}
 \title{Plot an amsr Object}
 \usage{
 \S4method{plot}{amsr}(
   x,
   y,
-  asp,
+  asp = NULL,
+  breaks,
+  col,
   colormap,
   missingColor = list(land = "papayaWhip", none = "lightGray", bad = "gray", rain =
     "plum", ice = "mediumVioletRed"),
@@ -22,13 +31,26 @@
 \item{y}{character value indicating the name of the band to plot; if not provided,
 \code{SST} is used; see the documentation for the \linkS4class{amsr} class for a list of bands.}
 
-\item{asp}{optional numberical value giving the aspect ratio for plot.}
+\item{asp}{optional numerical value giving the aspect ratio for plot.  The
+default value, \code{NULL}, means to use an aspect ratio of 1 for world views,
+and a value computed from \code{ylim}, if the latter is specified in the
+\code{...} argument.}
+
+\item{breaks}{optional numeric vector of the z values for breaks in the color scheme.
+See also \code{colormap}, which takes precedence over \code{breaks}.}
+
+\item{col}{optional argument, either a vector of colors corresponding to the breaks, of length
+1 less than the number of breaks, or a function specifying colors, e.g.
+\code{\link[=oce.colorsJet]{oce.colorsJet()}} for a rainbow.
+See also \code{colormap}, which takes precedence over \code{col}.}
 
 \item{colormap}{a specification of the colormap to use, as created
 with \code{\link[=colormap]{colormap()}}.  If \code{colormap} is NULL, which is the default, then
 a colormap is created to cover the range of data values, using
-\link{oceColorsViridis} colour scheme.  See \dQuote{Examples} for an example
-of using the "turbo" colour scheme.}
+\link{oceColorsTemperature} colour scheme.
+If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.
+provided, it takes precedence over \code{breaks} and \code{col}.
+See \dQuote{Examples} for an example of using the "turbo" colour scheme.}
 
 \item{missingColor}{List of colors for problem cases. The names of the
 elements in this list must be as in the default, but the colors may
@@ -39,8 +61,8 @@ default values in \code{missingColor}.}
 
 \item{debug}{A debugging flag, integer.}
 
-\item{...}{extra arguments passed to \code{\link[=imagep]{imagep()}}, e.g. set
-\code{col} to control colors.}
+\item{...}{extra arguments passed to \code{\link[=imagep]{imagep()}}, e.g. to control
+the view with \code{xlim} (for longitude) and \code{ylim} (for latitude).}
 }
 \description{
 Plot an amsr Object
@@ -58,13 +80,12 @@ d1 <- read.amsr(download.amsr(year, month, day[1], "~/data/amsr"))
 d2 <- read.amsr(download.amsr(year, month, day[2], "~/data/amsr"))
 d3 <- read.amsr(download.amsr(year, month, day[3], "~/data/amsr"))
 d <- composite(d1, d2, d3)
-asp <- 1/cos(pi*40/180)
-plot(d, "SST", xlim=c(-80,0), ylim=c(20,60), asp=asp)
+plot(d, "SST", xlim=c(-80,-10), ylim=c(20,65))
 lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
 # Example 2: 'turbo' colour scheme
 cm <- colormap(zlim=range(d[["SST"]], na.rm=TRUE), col=oceColorsTurbo)
-plot(d, "SST", colormap=cm, xlim=c(-80,0), ylim=c(20,60), asp=asp)
+plot(d, "SST", colormap=cm, xlim=c(-80,-10), ylim=c(20,65))
 lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 }
 
@@ -102,6 +123,7 @@ Other things related to amsr data:
 \code{\link{[[,amsr-method}},
 \code{\link{[[<-,amsr-method}},
 \code{\link{amsr-class}},
+\code{\link{amsr}},
 \code{\link{composite,amsr-method}},
 \code{\link{download.amsr}()},
 \code{\link{read.amsr}()},

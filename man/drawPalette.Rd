@@ -34,14 +34,16 @@ is used.}
 
 \item{zlab}{label for the palette scale.}
 
-\item{breaks}{numeric vector of the z values for breaks in the color scheme.}
+\item{breaks}{optional numeric vector of the z values for breaks in the color scheme.
+See also \code{colormap}, which takes precedence over \code{breaks} and \code{col}.}
 
-\item{col}{either a vector of colors corresponding to the breaks, of length
+\item{col}{optional argument, either a vector of colors corresponding to the breaks, of length
 1 less than the number of breaks, or a function specifying colors, e.g.
-\code{\link[=oce.colorsJet]{oce.colorsJet()}} for a rainbow.}
+\code{\link[=oce.colorsJet]{oce.colorsJet()}} for a rainbow.
+See also \code{colormap}, which takes precedence over \code{col} and \code{breaks}.}
 
-\item{colormap}{a color map as created by \code{\link[=colormap]{colormap()}}.  If
-provided, this takes precedence over \code{breaks} and \code{col}.}
+\item{colormap}{an optional color map as created by \code{\link[=colormap]{colormap()}}.
+If provided, this takes precedence over \code{breaks} and \code{col}.}
 
 \item{mai}{margins for palette, as defined in the usual way; see
 \code{\link[=par]{par()}}.  If not given, reasonable values are inferred from the

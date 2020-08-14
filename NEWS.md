@@ -2,6 +2,7 @@
 
 ## 1.3.0
 
+* Add `data(amsr)`
 * Change `imagep()` default colour palette to `oce.colorsViridis()`.
 * Change `drawPalette()` default colour palette to `oce.colorsViridis()`.
 * Change `plot,section-method()` default colour palette to `oce.colorsViridis()`.

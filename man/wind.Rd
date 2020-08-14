@@ -19,6 +19,7 @@ conventional data,'' \emph{J.  Climate Appl.  Met.}, vol 22, p. 1487-1503.
 Other datasets provided with oce: 
 \code{\link{adp}},
 \code{\link{adv}},
+\code{\link{amsr}},
 \code{\link{argo}},
 \code{\link{cm}},
 \code{\link{coastlineWorld}},

@@ -183,14 +183,16 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #'
 #' @param zlab label for the palette scale.
 #'
-#' @param breaks numeric vector of the z values for breaks in the color scheme.
+#' @param breaks optional numeric vector of the z values for breaks in the color scheme.
+#' See also `colormap`, which takes precedence over `breaks` and `col`.
 #'
-#' @param col either a vector of colors corresponding to the breaks, of length
+#' @param col optional argument, either a vector of colors corresponding to the breaks, of length
 #' 1 less than the number of breaks, or a function specifying colors, e.g.
 #' [oce.colorsJet()] for a rainbow.
+#' See also `colormap`, which takes precedence over `col` and `breaks`.
 #'
-#' @param colormap a color map as created by [colormap()].  If
-#' provided, this takes precedence over `breaks` and `col`.
+#' @param colormap an optional color map as created by [colormap()].
+#' If provided, this takes precedence over `breaks` and `col`.
 #'
 #' @param mai margins for palette, as defined in the usual way; see
 #' [par()].  If not given, reasonable values are inferred from the

@@ -31,6 +31,7 @@ Other things related to amsr data:
 \code{\link{[[,amsr-method}},
 \code{\link{[[<-,amsr-method}},
 \code{\link{amsr-class}},
+\code{\link{amsr}},
 \code{\link{download.amsr}()},
 \code{\link{plot,amsr-method}},
 \code{\link{read.amsr}()},
