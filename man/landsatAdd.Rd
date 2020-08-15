@@ -45,5 +45,4 @@ Other things related to landsat data:
 \author{
 Dan Kelley
 }
-\concept{satellite}
 \concept{things related to landsat data}

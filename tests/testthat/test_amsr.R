@@ -2,23 +2,12 @@ library(oce)
 
 context("amsr")
 
-## library(dc) # not on cran yet
-## f1 <- dc.amsr(2016, 08, 09, destdir="~/data/amsr")
-## f2 <- dc.amsr(2016, 08, 09, destdir="~/data/amsr")
-
 test_that("amsr[['SSST']]", {
-          f <- "~/data/amsr/f34_20200809v8.gz"
-          if (file.exists(f)) {
-              a <- read.amsr(f)
-              SST <- a[["SST"]]
-              expect_equal(dim(SST), c(1440, 720))
-              expect_equal(mean(SST,na.rm=TRUE), 17.2814401193)
-              expect_equal(mean(SST[1,],na.rm=TRUE), 19.2450372208)
-              expect_equal(mean(SST[10,],na.rm=TRUE), 18.3939058172)
-              expect_equal(SST[500,500], 27.75)
-          } else {
-              expect_equal(1, 1) ## prevent a NOTE on an empty test
-          }
+          data(amsr)
+          SST <- amsr[["SST"]]
+          expect_equal(dim(SST), c(160, 120))
+          expect_equal(mean(SST, na.rm=TRUE), 22.2395922219 )
+          expect_equal(SST[1, 1], 31.35)
 })
 
 test_that("composite amsr", {
@@ -40,19 +29,10 @@ test_that("composite amsr", {
 })
 
 test_that("subset(amsr)", {
-          f <- "~/data/amsr/f34_20200809v8.gz"
-          if (file.exists(f)) {
-              a <- read.amsr(f)
-              W <- -80
-              E <- -40
-              S <- 30
-              N <- 60
-              alon <- subset(a, W < longitude & longitude < E)
-              expect_equal(dim(alon[["SST"]]), c(160, 720))
-              alat <- subset(a, S < latitude  &  latitude < N)
-              expect_equal(dim(alat[["SST"]]), c(1440, 120))
-          } else {
-              expect_equal(1, 1) ## prevent a NOTE on an empty test
-          }
+          data(amsr)
+          sub <- subset(amsr,  34 <= latitude & latitude <=  53)
+          expect_equal(dim(sub[["SST"]]), c(160, 76))
+          sub <- subset(sub,  -75 <= longitude & longitude <= -50)
+          expect_equal(dim(sub[["SST"]]), c(100, 76))
 })
 

@@ -23,6 +23,9 @@ in \dQuote{Details}.
 }
 \description{
 Extract something from the \code{metadata} or \code{data} slot of an \linkS4class{amsr} object.
+Partial matches for \code{i}
+are permitted for \code{metadata}, and \code{j} is ignored for
+\code{metadata}.
 
 The \code{[[} method works for all \code{oce} objects, i.e.
 objects inheriting from \linkS4class{oce}.  The purpose
@@ -34,20 +37,22 @@ as potential temperature, the units of measurement for
 the data, data-quality flags, etc.
 }
 \details{
-Partial matches for \code{i}
-are permitted for \code{metadata}, and \code{j} is ignored for
-\code{metadata}.
-
 Data within the \code{data} slot may be found directly, e.g.
 \code{i="SSTDay"} will yield sea-surface temperature in the daytime
 satellite, and \code{i="SSTNight"} is used to access the nighttime data. In
-addition, \code{i="SST"} yields an average of the night and day values
-(using just one of these, if the other is missing). This scheme works for
+addition, \code{i="SST"} yields a computed average of the night and day values
+(using just one of these, if the other is missing). This scheme of
+providing computed averages works for
 all the data stored in \code{amsr} objects, namely:
 \code{time}, \code{SST}, \code{LFwind}, \code{MFwind},
 \code{vapor}, \code{cloud} and \code{rain}.  In each case, the default
 is to calculate values in scientific units, unless \code{j="raw"}, in
 which case the raw data are returned.
+
+The conversion from raw to scientific units is done with formulae
+found at \verb{http://www.remss.com/missions/amsre}, e.g. SST is
+computed by converting the raw value to an integer (between 0 and 255),
+multiplying by 0.15C, and subtracting 3C.
 
 The \code{"raw"} mode can be useful
 in decoding the various types of missing value that are used by \code{amsr}
@@ -126,22 +131,11 @@ is employed so that \code{[[} will behave like the normal R version.)
 }
 
 \examples{
-\dontrun{
-# Show a daytime SST image, along with an indication of whether
-# the NA values are from rain.
+# Histogram of SST values
 library(oce)
-earth <- read.amsr("f34_20160102v7.2.gz")
-fclat <- subset(earth , 35 <= latitude & latitude <= 55)
-fc <- subset(fclat , -70 <= longitude & longitude <= -30)
-par(mfrow=c(2, 1))
-plot(fc, "SSTDay")
-rainy <- fc[["SSTDay", "raw"]] == as.raw(0xfb)
-lon <- fc[["longitude"]]
-lat <- fc[["latitude"]]
-asp <- 1 / cos(pi*mean(lat)/180)
-imagep(lon, lat, rainy, asp=asp)
-mtext("red: too rainy to sense SSTDay")
-}
+data(amsr)
+hist(amsr[["SST"]])
+
 }
 \seealso{
 Other functions that extract parts of oce objects: 

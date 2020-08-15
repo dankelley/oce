@@ -58,13 +58,12 @@ if (requireNamespace("ocedata", quietly=TRUE)) {
 }
 }
 \seealso{
-Other things related to satellite data: 
-\code{\link{g1sst-class}},
-\code{\link{plot,satellite-method}},
-\code{\link{satellite-class}},
-\code{\link{summary,satellite-method}}
+Other things related to g1sst data: 
+\code{\link{[[,g1sst-method}},
+\code{\link{[[<-,g1sst-method}},
+\code{\link{g1sst-class}}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to satellite data}
+\concept{things related to g1sst data}

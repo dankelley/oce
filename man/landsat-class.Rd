@@ -206,6 +206,11 @@ slow, decimation is available both in the plotting function and as the separate
 function \code{\link[=decimate]{decimate()}}.  Images may be subsetted with
 \code{\link[=landsatTrim]{landsatTrim()}}.
 
+Other classes holding satellite data: 
+\code{\link{amsr-class}},
+\code{\link{g1sst-class}},
+\code{\link{satellite-class}}
+
 Other things related to landsat data: 
 \code{\link{[[,landsat-method}},
 \code{\link{[[<-,landsat-method}},
@@ -219,5 +224,5 @@ Other things related to landsat data:
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{satellite}
+\concept{classes holding satellite data}
 \concept{things related to landsat data}

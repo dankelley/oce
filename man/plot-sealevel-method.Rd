@@ -90,6 +90,7 @@ structure of sealevel objects, and also outlines the other functions dealing
 with them.
 
 Other functions that plot oce data: 
+\code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,adv-method}},
 \code{\link{plot,amsr-method}},

@@ -1,27 +1,4 @@
-## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
-
-#' An amsr dataset for waters near Nova Scotia
-#'
-#' This is a composite image for 9 through 11 August, 2020,
-#' trimmed with [subset,amsr-method()] to between 30N and
-#' 60N and between 80@ and 40W.
-#'
-#' @name amsr
-#' @docType data
-#'
-#' @usage data(amsr)
-#'
-#' @examples
-#' library(oce)
-#' data(coastlineWorld)
-#' data(amsr)
-#' plot(amsr, "SST")
-#' lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
-#'
-#' @family datasets provided with oce
-#' @family things related to amsr data
-NULL
-
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store AMSR-2 Satellite Data
 #'
@@ -60,8 +37,6 @@ NULL
 #'
 #' @author Dan Kelley and Chantelle Layton
 #'
-#' @concept satellite
-#'
 #' @references
 #' 1. Information on the satellite, how to cite the data, etc. is
 #' provided at `http://www.remss.com/missions/amsr/`.
@@ -69,9 +44,7 @@ NULL
 #' 2. A simple interface for viewing and downloading data is at
 #' `http://images.remss.com/amsr/amsr2_data_daily.html`.
 #'
-#' @seealso The documentation for the [landsat-class] class has
-#' more information on the handling data from the Landsat-8 satellite.
-#'
+#' @family classes holding satellite data
 #' @family things related to amsr data
 setClass("amsr", contains="satellite")
 
@@ -98,18 +71,52 @@ setMethod(f="show",
           })
 
 
-#' Summarize an AMSR Object
+#' An amsr dataset for waters near Nova Scotia
+#'
+#' This is a composite satellite image combining views for
+#' 2020 August 9, 10 and 11, trimmed from a world view to a view
+#' spanning 30N to 60N and 80W to 40W; see \dQuote{Details}.
+#'
+#' The following code was used to create this dataset.
+#'\preformatted{
+#' library(oce)
+#' data(coastlineWorldFine, package="ocedata")
+#' d1 <- read.amsr(download.amsr(2020, 8,  9, "~/data/amsr"))
+#' d2 <- read.amsr(download.amsr(2020, 8, 10, "~/data/amsr"))
+#' d3 <- read.amsr(download.amsr(2020, 8, 11, "~/data/amsr"))
+#' d <- composite(d1, d2, d3)
+#' amsr <- subset(d,    -80 < longitude & longitude < -40)
+#' amsr <- subset(amsr,  30 < latitude  &  latitude <  60)
+#'}
+#'
+#' @name amsr
+#' @docType data
+#'
+#' @usage data(amsr)
+#'
+#' @examples
+#' library(oce)
+#' data(coastlineWorld)
+#' data(amsr)
+#' plot(amsr, "SST")
+#' lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
+#'
+#' @family satellite datasets provided with oce
+#' @family datasets provided with oce
+#' @family things related to amsr data
+NULL
+
+
+#' Summarize an amsr Object
 #'
 #' Although the data are stored in [raw()] form, the summary
 #' presents results in physical units.
 #'
-#' @param object An [amsr-class] object.
+#' @param object an [amsr-class] object.
 #'
-#' @param ... Ignored.
+#' @param ... ignored.
 #'
 #' @author Dan Kelley
-#'
-#' @concept satellite
 #'
 #' @family things related to amsr data
 setMethod(f="summary",
@@ -128,8 +135,6 @@ setMethod(f="summary",
 #' Extract Something From an amsr Object
 #'
 #' Extract something from the `metadata` or `data` slot of an [amsr-class] object.
-#'
-#' @details
 #' Partial matches for `i`
 #' are permitted for `metadata`, and `j` is ignored for
 #' `metadata`.
@@ -137,13 +142,19 @@ setMethod(f="summary",
 #' Data within the `data` slot may be found directly, e.g.
 #' `i="SSTDay"` will yield sea-surface temperature in the daytime
 #' satellite, and `i="SSTNight"` is used to access the nighttime data. In
-#' addition, `i="SST"` yields an average of the night and day values
-#' (using just one of these, if the other is missing). This scheme works for
+#' addition, `i="SST"` yields a computed average of the night and day values
+#' (using just one of these, if the other is missing). This scheme of
+#' providing computed averages works for
 #' all the data stored in `amsr` objects, namely:
 #' `time`, `SST`, `LFwind`, `MFwind`,
 #' `vapor`, `cloud` and `rain`.  In each case, the default
 #' is to calculate values in scientific units, unless `j="raw"`, in
 #' which case the raw data are returned.
+#'
+#' The conversion from raw to scientific units is done with formulae
+#' found at `http://www.remss.com/missions/amsre`, e.g. SST is
+#' computed by converting the raw value to an integer (between 0 and 255),
+#' multiplying by 0.15C, and subtracting 3C.
 #'
 #' The `"raw"` mode can be useful
 #' in decoding the various types of missing value that are used by `amsr`
@@ -176,22 +187,11 @@ setMethod(f="summary",
 #' @template sub_subTemplate
 #'
 #' @examples
-#'\dontrun{
-#' # Show a daytime SST image, along with an indication of whether
-#' # the NA values are from rain.
+#' # Histogram of SST values
 #' library(oce)
-#' earth <- read.amsr("f34_20160102v7.2.gz")
-#' fclat <- subset(earth , 35 <= latitude & latitude <= 55)
-#' fc <- subset(fclat , -70 <= longitude & longitude <= -30)
-#' par(mfrow=c(2, 1))
-#' plot(fc, "SSTDay")
-#' rainy <- fc[["SSTDay", "raw"]] == as.raw(0xfb)
-#' lon <- fc[["longitude"]]
-#' lat <- fc[["latitude"]]
-#' asp <- 1 / cos(pi*mean(lat)/180)
-#' imagep(lon, lat, rainy, asp=asp)
-#' mtext("red: too rainy to sense SSTDay")
-#'}
+#' data(amsr)
+#' hist(amsr[["SST"]])
+#'
 #' @family things related to amsr data
 setMethod(f="[[",
           signature(x="amsr", i="ANY", j="ANY"),
@@ -277,13 +277,13 @@ setMethod(f="[[",
               res
           })
 
-#' @title Replace Parts of an AMSR Object
+#' Replace Parts of an amsr Object
 #'
 #' @param x an [amsr-class] object.
 #'
-#' @family things related to amsr data
-#'
 #' @template sub_subsetTemplate
+#'
+#' @family things related to amsr data
 setMethod(f="[[<-",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
@@ -292,29 +292,30 @@ setMethod(f="[[<-",
 
 #' Subset an amsr Object
 #'
-#' @description
-#' This function is somewhat analogous to
-#' [subset.data.frame()], but only one independent variable may be
-#' used in `subset` in any call to the function, which means that
-#' repeated calls will be necessary to subset based on more than one
-#' independent variable (e.g. latitude and longitude).
+#' Return a subset of a [amsr-class] object.
+#'
+#' This function is used to subset data within an [amsr-class]
+#' object by `longitude` or by `latitude`.  These two methods cannot
+#' be combined in a single call, so two calls are required, as shown
+#' in the Example.
 #'
 #' @param x an [amsr-class] object.
 #'
-#' @param subset An expression indicating how to subset `x`.
+#' @param subset an expression indicating how to subset `x`.
 #'
-#' @param ... Ignored.
+#' @param ... ignored.
 #'
 #' @return An [amsr-class] object.
 #'
 #' @examples
-#'\dontrun{
 #' library(oce)
-#' earth <- read.amsr("f34_20160102v7.2.gz") # not provided with oce
-#' fclat <- subset(earth , 45<=latitude & latitude <= 49)
-#' fc <- subset(fclat , longitude <= -47 & longitude <= -43)
-#' plot(fc)
-#'}
+#' data(amsr) # see ?amsr for how to read and composite such objects
+#' sub <- subset(amsr, -75 < longitude & longitude < -45)
+#' sub <- subset(sub,   40 < latitude  &  latitude <  50)
+#' plot(sub)
+#' data(coastlineWorld)
+#' lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to amsr data
@@ -359,8 +360,13 @@ setMethod(f="subset",
               res
           })
 
-
 #' Plot an amsr Object
+#'
+#' Plot an image of a component of an [amsr-class] object.
+#'
+#' In addition to fields named directly in the object, such as `SSTDay` and
+#' `SSTNight`, it is also possible to plot computed fields, such as `SST`,
+#' which combines the day and night fields.
 #'
 #' @param x an [amsr-class] object.
 #'
@@ -400,34 +406,23 @@ setMethod(f="subset",
 #' @param ... extra arguments passed to [imagep()], e.g. to control
 #' the view with `xlim` (for longitude) and `ylim` (for latitude).
 #'
-#' @concept satellite
-#'
 #' @examples
-#'\dontrun{
 #' library(oce)
 #' data(coastlineWorld)
+#' data(amsr) # see ?amsr for how to read and composite such objects
 #'
-#' # Example 1
-#' year <- 2020
-#' month <- 8
-#' day <- 6:8
-#' d1 <- read.amsr(download.amsr(year, month, day[1], "~/data/amsr"))
-#' d2 <- read.amsr(download.amsr(year, month, day[2], "~/data/amsr"))
-#' d3 <- read.amsr(download.amsr(year, month, day[3], "~/data/amsr"))
-#' d <- composite(d1, d2, d3)
-#' plot(d, "SST", xlim=c(-80,-10), ylim=c(20,65))
+#' # Example 1: plot with default colour scheme, oceColorsTemperature()
+#' plot(amsr, "SST")
 #' lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 #'
 #' # Example 2: 'turbo' colour scheme
-#' cm <- colormap(zlim=range(d[["SST"]], na.rm=TRUE), col=oceColorsTurbo)
-#' plot(d, "SST", colormap=cm, xlim=c(-80,-10), ylim=c(20,65))
+#' plot(amsr, "SST", col=oceColorsTurbo)
 #' lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
-#'}
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that plot oce data
 #' @family things related to amsr data
+#' @family functions that plot oce data
 #'
 #' @aliases plot.amsr
 setMethod(f="plot",
@@ -601,6 +596,7 @@ setMethod(f="plot",
 #'}
 #'
 #' @family functions that download files
+#' @family functions that plot oce data
 #' @family things related to amsr data
 #'
 #' @references
@@ -646,7 +642,6 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
 #' Read a compressed amsr file, generating an [amsr-class] object.
 #' Note that only compressed files are read in this version.
 #'
-#' @section File sources:
 #' AMSR files are provided at the FTP site
 #' `ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/` and login as "guest",
 #' enter a year-based directory (e.g. `y2016` for the year 2016),
@@ -664,8 +659,6 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
 #' \dQuote{File sources}.
 #'
 #' @param debug A debugging flag, integer.
-#'
-#' @concept satellite
 #'
 #' @seealso [plot,amsr-method()] for an example.
 #'
@@ -767,11 +760,12 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
     res
 }
 
-#' @title Create a composite of amsr satellite data
+#' Create a composite of amsr satellite data
 #'
-#' @details
 #' Form averages for each item in the `data` slot of the supplied objects,
-#' taking into account the bad-data codes. If none of the objects has good
+#' taking into account the bad-data codes.
+#'
+#' If none of the objects has good
 #' data at any particular pixel (i.e. particular latitude and longitude),
 #' the resultant will have the bad-data code of the last item in the argument
 #' list.

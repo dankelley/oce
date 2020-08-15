@@ -34,15 +34,14 @@ setClass("satellite", contains="oce")
 #'
 #' @template slot_get
 #'
-#' @concept satellite
-#'
 #' @references
 #' 1. JPO OurOcean Portal `https://ourocean.jpl.nasa.gov/SST/`
 #' (link worked in 2016 but was seen to fail 2017 Feb 2).
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to satellite data
+#' @family classes holding satellite data
+#' @family things related to g1sst data
 setClass("g1sst", contains="satellite")
 
 
@@ -125,7 +124,7 @@ setMethod(f="[[<-",
 #' 2. JPO OurOcean Portal `https://ourocean.jpl.nasa.gov/SST/`
 #' (link worked in 2016 but was seen to fail 2017 Feb 2).
 #'
-#' @family things related to satellite data
+#' @family things related to g1sst data
 read.g1sst <- function(file)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)

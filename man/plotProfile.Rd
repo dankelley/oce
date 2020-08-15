@@ -222,6 +222,7 @@ plotProfile(ctd, xtype="temperature")
 objects, and \code{\link[=plotTS]{plotTS()}} plots a temperature-salinity diagrams.
 
 Other functions that plot oce data: 
+\code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,adv-method}},
 \code{\link{plot,amsr-method}},

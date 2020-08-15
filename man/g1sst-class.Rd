@@ -93,14 +93,18 @@ retrieve derived items.
 }
 }
 \seealso{
-Other things related to satellite data: 
-\code{\link{plot,satellite-method}},
-\code{\link{read.g1sst}()},
-\code{\link{satellite-class}},
-\code{\link{summary,satellite-method}}
+Other classes holding satellite data: 
+\code{\link{amsr-class}},
+\code{\link{landsat-class}},
+\code{\link{satellite-class}}
+
+Other things related to g1sst data: 
+\code{\link{[[,g1sst-method}},
+\code{\link{[[<-,g1sst-method}},
+\code{\link{read.g1sst}()}
 }
 \author{
 Dan Kelley
 }
-\concept{satellite}
-\concept{things related to satellite data}
+\concept{classes holding satellite data}
+\concept{things related to g1sst data}

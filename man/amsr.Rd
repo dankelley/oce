@@ -8,9 +8,22 @@
 data(amsr)
 }
 \description{
-This is a composite image for 9 through 11 August, 2020,
-trimmed with \code{\link[=subset,amsr-method]{subset,amsr-method()}} to between 30N and
-60N and between 80@ and 40W.
+This is a composite satellite image combining views for
+2020 August 9, 10 and 11, trimmed from a world view to a view
+spanning 30N to 60N and 80W to 40W; see \dQuote{Details}.
+}
+\details{
+The following code was used to create this dataset.
+\preformatted{
+library(oce)
+data(coastlineWorldFine, package="ocedata")
+d1 <- read.amsr(download.amsr(2020, 8,  9, "~/data/amsr"))
+d2 <- read.amsr(download.amsr(2020, 8, 10, "~/data/amsr"))
+d3 <- read.amsr(download.amsr(2020, 8, 11, "~/data/amsr"))
+d <- composite(d1, d2, d3)
+amsr <- subset(d,    -80 < longitude & longitude < -40)
+amsr <- subset(amsr,  30 < latitude  &  latitude <  60)
+}
 }
 \examples{
 library(oce)
@@ -21,6 +34,9 @@ lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 
 }
 \seealso{
+Other satellite datasets provided with oce: 
+\code{\link{landsat}}
+
 Other datasets provided with oce: 
 \code{\link{adp}},
 \code{\link{adv}},
@@ -55,4 +71,5 @@ Other things related to amsr data:
 \code{\link{summary,amsr-method}}
 }
 \concept{datasets provided with oce}
+\concept{satellite datasets provided with oce}
 \concept{things related to amsr data}

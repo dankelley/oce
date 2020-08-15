@@ -2,14 +2,14 @@
 % Please edit documentation in R/amsr.R
 \name{summary,amsr-method}
 \alias{summary,amsr-method}
-\title{Summarize an AMSR Object}
+\title{Summarize an amsr Object}
 \usage{
 \S4method{summary}{amsr}(object, ...)
 }
 \arguments{
-\item{object}{An \linkS4class{amsr} object.}
+\item{object}{an \linkS4class{amsr} object.}
 
-\item{...}{Ignored.}
+\item{...}{ignored.}
 }
 \description{
 Although the data are stored in \code{\link[=raw]{raw()}} form, the summary
@@ -30,5 +30,4 @@ Other things related to amsr data:
 \author{
 Dan Kelley
 }
-\concept{satellite}
 \concept{things related to amsr data}

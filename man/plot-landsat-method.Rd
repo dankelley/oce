@@ -160,6 +160,7 @@ Other things related to landsat data:
 \code{\link{summary,landsat-method}}
 
 Other functions that plot oce data: 
+\code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,adv-method}},
 \code{\link{plot,amsr-method}},
@@ -191,5 +192,4 @@ Other functions that plot oce data:
 Dan Kelley
 }
 \concept{functions that plot oce data}
-\concept{satellite}
 \concept{things related to landsat data}

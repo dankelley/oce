@@ -13,10 +13,13 @@ requirements of this package, yielding a spatial resolution of about 2km.
 \details{
 The original data were downloaded from the USGS earthexplorer website, although
 other sites can also be used to uncover it by name.  The original
-data were decimation by a factor of 100 to reduce the file size from about 1GB
-to under 100Kb.
+data were decimated by a factor of 100 in longitude and latitude,
+to reduce the file size from 1G to 100K.
 }
 \seealso{
+Other satellite datasets provided with oce: 
+\code{\link{amsr}}
+
 Other datasets provided with oce: 
 \code{\link{adp}},
 \code{\link{adv}},
@@ -50,4 +53,5 @@ Other things related to landsat data:
 \code{\link{summary,landsat-method}}
 }
 \concept{datasets provided with oce}
+\concept{satellite datasets provided with oce}
 \concept{things related to landsat data}

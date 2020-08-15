@@ -182,5 +182,4 @@ Other things related to landsat data:
 Dan Kelley
 }
 \concept{functions that extract parts of oce objects}
-\concept{satellite}
 \concept{things related to landsat data}

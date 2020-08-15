@@ -65,33 +65,41 @@ default values in \code{missingColor}.}
 the view with \code{xlim} (for longitude) and \code{ylim} (for latitude).}
 }
 \description{
-Plot an amsr Object
+Plot an image of a component of an \linkS4class{amsr} object.
+}
+\details{
+In addition to fields named directly in the object, such as \code{SSTDay} and
+\code{SSTNight}, it is also possible to plot computed fields, such as \code{SST},
+which combines the day and night fields.
 }
 \examples{
-\dontrun{
 library(oce)
 data(coastlineWorld)
+data(amsr) # see ?amsr for how to read and composite such objects
 
-# Example 1
-year <- 2020
-month <- 8
-day <- 6:8
-d1 <- read.amsr(download.amsr(year, month, day[1], "~/data/amsr"))
-d2 <- read.amsr(download.amsr(year, month, day[2], "~/data/amsr"))
-d3 <- read.amsr(download.amsr(year, month, day[3], "~/data/amsr"))
-d <- composite(d1, d2, d3)
-plot(d, "SST", xlim=c(-80,-10), ylim=c(20,65))
+# Example 1: plot with default colour scheme, oceColorsTemperature()
+plot(amsr, "SST")
 lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
 # Example 2: 'turbo' colour scheme
-cm <- colormap(zlim=range(d[["SST"]], na.rm=TRUE), col=oceColorsTurbo)
-plot(d, "SST", colormap=cm, xlim=c(-80,-10), ylim=c(20,65))
+plot(amsr, "SST", col=oceColorsTurbo)
 lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
-}
 
 }
 \seealso{
+Other things related to amsr data: 
+\code{\link{[[,amsr-method}},
+\code{\link{[[<-,amsr-method}},
+\code{\link{amsr-class}},
+\code{\link{amsr}},
+\code{\link{composite,amsr-method}},
+\code{\link{download.amsr}()},
+\code{\link{read.amsr}()},
+\code{\link{subset,amsr-method}},
+\code{\link{summary,amsr-method}}
+
 Other functions that plot oce data: 
+\code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,adv-method}},
 \code{\link{plot,argo-method}},
@@ -118,21 +126,9 @@ Other functions that plot oce data:
 \code{\link{plotScan}()},
 \code{\link{plotTS}()},
 \code{\link{tidem-class}}
-
-Other things related to amsr data: 
-\code{\link{[[,amsr-method}},
-\code{\link{[[<-,amsr-method}},
-\code{\link{amsr-class}},
-\code{\link{amsr}},
-\code{\link{composite,amsr-method}},
-\code{\link{download.amsr}()},
-\code{\link{read.amsr}()},
-\code{\link{subset,amsr-method}},
-\code{\link{summary,amsr-method}}
 }
 \author{
 Dan Kelley
 }
 \concept{functions that plot oce data}
-\concept{satellite}
 \concept{things related to amsr data}
