@@ -1166,7 +1166,7 @@ sectionAddCtd <- sectionAddStation
 #'\dontrun{
 #' plot(GSg, which=1, ztype='image')
 #' T <- GS[['temperature']]
-#' col <- oceColorsJet(100)[rescale(T, rlow=1, rhigh=100)]
+#' col <- oceColorsViridis(100)[rescale(T, rlow=1, rhigh=100)]
 #' points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
 #' points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 #'}

@@ -2959,7 +2959,7 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 #' lines(apply(a,2,median), distance, type='l',col='red')
 #' legend("topright",lwd=1,col=c("black","red"),legend=c("original","attenuated"))
 #' ## Image
-#' plot(adp.att, which="amplitude",col=oce.colorsJet(100))
+#' plot(adp.att, which="amplitude",col=oce.colorsViridis(100))
 #'
 #' @family things related to adp data
 beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALSE, debug=getOption("oceDebug"))

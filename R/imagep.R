@@ -184,15 +184,16 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #' @param zlab label for the palette scale.
 #'
 #' @param breaks optional numeric vector of the z values for breaks in the color scheme.
-#' See also `colormap`, which takes precedence over `breaks` and `col`.
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
 #'
 #' @param col optional argument, either a vector of colors corresponding to the breaks, of length
-#' 1 less than the number of breaks, or a function specifying colors, e.g.
-#' [oce.colorsJet()] for a rainbow.
-#' See also `colormap`, which takes precedence over `col` and `breaks`.
+#' 1 less than the number of breaks, or a function specifying colors.
+#' If `col` is not provided, and if `colormap` is also not provided, then `col`
+#' defaults to [oceColorsViridis()].
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
 #'
 #' @param colormap an optional color map as created by [colormap()].
-#' If provided, this takes precedence over `breaks` and `col`.
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
 #'
 #' @param mai margins for palette, as defined in the usual way; see
 #' [par()].  If not given, reasonable values are inferred from the
@@ -273,9 +274,9 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #' par(mfrow=c(3, 1), mar=c(3, 3, 1, 1))
 #' omar <- par('mar')                 # save initial margin
 #'
-#' ## 1a. top panel: simple case
-#' drawPalette(zlim=c(0, 1), col=oce.colorsJet(10))
-#' plot(1:10, 1:10, col=oce.colorsJet(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
+#' ## 1a. top panel: simple case with Viridis scheme
+#' drawPalette(zlim=c(0, 1), col=oce.colorsViridis(10))
+#' plot(1:10, 1:10, col=oce.colorsViridis(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
 #' par(mar=omar)                      # reset margin
 #'
 #' ## 1b. middle panel: colormap
@@ -288,16 +289,16 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #'
 #' ## 1c. bottom panel: space for palette (to line up graphs)
 #' drawPalette(plot=FALSE)
-#' plot(1:10, 1:10, col=oce.colorsJet(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
+#' plot(1:10, 1:10, col=oce.colorsViridis(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
 #' par(mar=omar)                      # reset margin
 #'
 #' # 2. Use layout to mimic the action of imagep(), with the width
 #' # of the palette region being 14 percent of figure width.
 #' d <- 0.14
 #' layout(matrix(1:2,nrow=1), widths=c(1-d,d))
-#' image(volcano, col=oce.colorsJet(100), zlim=c(90, 200))
+#' image(volcano, col=oce.colorsViridis(100), zlim=c(90, 200))
 #' contour(volcano, add=TRUE)
-#' drawPalette(c(90, 200), fullpage=TRUE, col=oce.colorsJet)
+#' drawPalette(c(90, 200), fullpage=TRUE, col=oce.colorsViridis)
 drawPalette <- function(zlim, zlab="",
                         breaks, col, colormap,
                         mai, cex=par("cex"),
@@ -683,17 +684,21 @@ drawPalette <- function(zlim, zlab="",
 #'    index.
 #'
 #' @param breaks The z values for breaks in the color scheme.  If this is of
-#'         length 1, the value indicates the desired number of breaks, which is
-#'         supplied to [pretty()], in determining clean break points.
+#' length 1, the value indicates the desired number of breaks, which is
+#' supplied to [pretty()], in determining clean break points.
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
 #'
 #' @param col Either a vector of colors corresponding to the breaks, of length
-#'         1 plus the number of breaks, or a function specifying colors,
-#'         e.g. [oce.colorsJet()] for a rainbow.
+#' 1 plus the number of breaks, or a function specifying colors.
+#' If `col` is not provided, and if `colormap` is also not provided, then `col`
+#' defaults to [oceColorsViridis()].
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
 #'
 #' @param colormap A color map as created by [colormap()].  If
-#'         provided, then `colormap$breaks` and `colormap$col` take
-#'         precedence over the present arguments `breaks` and `col`.
-#'         (All of the other contents of `colormap` are ignored, though.)
+#' provided, then `colormap$breaks` and `colormap$col` take
+#' precedence over the present arguments `breaks` and `col`.
+#' (All of the other contents of `colormap` are ignored, though.)
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
 #'
 #' @param labels Optional vector of labels for ticks on palette axis (must
 #'         correspond with `at`).

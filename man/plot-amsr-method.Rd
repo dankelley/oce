@@ -37,19 +37,19 @@ and a value computed from \code{ylim}, if the latter is specified in the
 \code{...} argument.}
 
 \item{breaks}{optional numeric vector of the z values for breaks in the color scheme.
-See also \code{colormap}, which takes precedence over \code{breaks}.}
+If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.}
 
 \item{col}{optional argument, either a vector of colors corresponding to the breaks, of length
-1 less than the number of breaks, or a function specifying colors, e.g.
-\code{\link[=oce.colorsJet]{oce.colorsJet()}} for a rainbow.
-See also \code{colormap}, which takes precedence over \code{col}.}
+1 less than the number of breaks, or a function specifying colors.
+If neither \code{col} or \code{colormap} is provided, then \code{col} defaults to
+\code{\link[=oceColorsTemperature]{oceColorsTemperature()}}.
+If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.}
 
 \item{colormap}{a specification of the colormap to use, as created
 with \code{\link[=colormap]{colormap()}}.  If \code{colormap} is NULL, which is the default, then
 a colormap is created to cover the range of data values, using
 \link{oceColorsTemperature} colour scheme.
 If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.
-provided, it takes precedence over \code{breaks} and \code{col}.
 See \dQuote{Examples} for an example of using the "turbo" colour scheme.}
 
 \item{missingColor}{List of colors for problem cases. The names of the

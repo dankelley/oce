@@ -1324,7 +1324,7 @@ binAverage <- function(x, y, xmin, xmax, xinc)
 #' u <- interpBarnes(wind$x, wind$y, wind$z)
 #' contour(u$xg, u$yg, u$zg)
 #' U <- ungrid(u$xg, u$yg, u$zg)
-#' points(U$x, U$y, col=oce.colorsJet(100)[rescale(U$grid, rlow=1, rhigh=100)], pch=20)
+#' points(U$x, U$y, col=oce.colorsViridis(100)[rescale(U$grid, rlow=1, rhigh=100)], pch=20)
 ungrid <- function(x, y, grid)
 {
     nrow <- nrow(grid)
@@ -1674,7 +1674,7 @@ smoothSomething <- function(x, ...)
 #' x <- 0.5 * t
 #' z <- 50 * (-1 + sin(2 * pi * t / 360))
 #' T <- 5 + 10 * exp(z / 100)
-#' palette <- oce.colorsJet(100)
+#' palette <- oce.colorsViridis(100)
 #' zlim <- range(T)
 #' drawPalette(zlim=zlim, col=palette)
 #' plot(x, z, type='p', pch=20, cex=3,

@@ -138,16 +138,20 @@ index.
 
 \item{breaks}{The z values for breaks in the color scheme.  If this is of
 length 1, the value indicates the desired number of breaks, which is
-supplied to \code{\link[=pretty]{pretty()}}, in determining clean break points.}
+supplied to \code{\link[=pretty]{pretty()}}, in determining clean break points.
+If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.}
 
 \item{col}{Either a vector of colors corresponding to the breaks, of length
-1 plus the number of breaks, or a function specifying colors,
-e.g. \code{\link[=oce.colorsJet]{oce.colorsJet()}} for a rainbow.}
+1 plus the number of breaks, or a function specifying colors.
+If \code{col} is not provided, and if \code{colormap} is also not provided, then \code{col}
+defaults to \code{\link[=oceColorsViridis]{oceColorsViridis()}}.
+If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.}
 
 \item{colormap}{A color map as created by \code{\link[=colormap]{colormap()}}.  If
 provided, then \code{colormap$breaks} and \code{colormap$col} take
 precedence over the present arguments \code{breaks} and \code{col}.
-(All of the other contents of \code{colormap} are ignored, though.)}
+(All of the other contents of \code{colormap} are ignored, though.)
+If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.}
 
 \item{labels}{Optional vector of labels for ticks on palette axis (must
 correspond with \code{at}).}

@@ -379,19 +379,19 @@ setMethod(f="subset",
 #' `...` argument.
 #'
 #' @param breaks optional numeric vector of the z values for breaks in the color scheme.
-#' See also `colormap`, which takes precedence over `breaks`.
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
 #'
 #' @param col optional argument, either a vector of colors corresponding to the breaks, of length
-#' 1 less than the number of breaks, or a function specifying colors, e.g.
-#' [oce.colorsJet()] for a rainbow.
-#' See also `colormap`, which takes precedence over `col`.
+#' 1 less than the number of breaks, or a function specifying colors.
+#' If neither `col` or `colormap` is provided, then `col` defaults to
+#' [oceColorsTemperature()].
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
 #'
 #' @param colormap a specification of the colormap to use, as created
 #' with [colormap()].  If `colormap` is NULL, which is the default, then
 #' a colormap is created to cover the range of data values, using
 #' [oceColorsTemperature] colour scheme.
 #' If `colormap` is provided, it takes precedence over `breaks` and `col`.
-#' provided, it takes precedence over `breaks` and `col`.
 #' See \dQuote{Examples} for an example of using the "turbo" colour scheme.
 #'
 #' @param missingColor List of colors for problem cases. The names of the

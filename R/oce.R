@@ -2619,8 +2619,7 @@ oceColorsVorticity <- oce.colorsVorticity <- oceColorsClosure("vorticity")
 #' @param n number of colors
 #' @examples
 #' library(oce)
-#' imagep(volcano, col=oceColorsJet(128),
-#'        zlab="oceColorsJet")
+#' imagep(volcano, col=oceColorsJet, zlab="oceColorsJet")
 #' @family things related to colors
 oceColorsJet <- function(n)
 {

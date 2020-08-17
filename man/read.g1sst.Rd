@@ -42,7 +42,7 @@ source <- paste("https://coastwatch.pfeg.noaa.gov/erddap/griddap/",
 if (!length(list.files(pattern="^a.nc$")))
     download.file(source, "a.nc")
 d <- read.g1sst("a.nc")
-plot(d, "SST", col=oceColorsJet)
+plot(d, "SST", col=oceColorsTemperature)
 if (requireNamespace("ocedata", quietly=TRUE)) {
     data(coastlineWorldFine, package="ocedata")
     lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
