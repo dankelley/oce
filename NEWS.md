@@ -2,7 +2,12 @@
 
 ## 1.3.0
 
-*  Add `data(tidalCurrent)` dataset.
+* Add `data(amsr)` and improve `subset,amsr-method()`.
+* Change `imagep()` default colour palette to `oce.colorsViridis()`.
+* Change `drawPalette()` default colour palette to `oce.colorsViridis()`.
+* Change `plot,section-method()` default colour palette to `oce.colorsViridis()`.
+* Change `plot,amsr-method()` default colour palette to `oce.colorsViridis()`.
+* Add `data(tidalCurrent)` dataset, which holds tidal currents from Foreman.
 * Change `plotTS()` to trim isopycnals to realistic salinities and temperatures.
 * Change `read.argo()` and `data(argo)` to use camelCase in all metadata.
 * Change reader-oriented github website generator to `pkgdown`.
@@ -76,7 +81,7 @@
 
 * tidem() permits inferred constituents
 * tidem() follows T_TIDE phase convention
-* adorn argument removed from plot functions (after being defunct 1+ year)
+* adorn argument removed from some plot functions (after being defunct 1+ year)
 * deprecate findInOrdered()
 
 ## 0.9-22

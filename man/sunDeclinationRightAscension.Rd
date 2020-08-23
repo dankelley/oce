@@ -36,8 +36,9 @@ expect_equal(b$rightAscension, -161.6183305,
 
 }
 \references{
-\enumerate{
-\item Meeus, Jean H. Astronomical Algorithms. Second edition. Willmann-Bell, Incorporated, 1991.
+\itemize{
+\item Meeus, Jean. Astronomical Algorithms. 2nd ed.
+Richmond, Virginia, USA: Willmann-Bell, 1991.
 }
 }
 \seealso{

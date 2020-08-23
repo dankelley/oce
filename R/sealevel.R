@@ -460,8 +460,6 @@ setMethod(f="plot",
                               ...)
           {
               oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n", sep="", unindent=1)
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,adv-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               ##> dots <- list(...)
               titlePlot<-function(x)
               {

@@ -1133,7 +1133,8 @@ sectionAddCtd <- sectionAddStation
 #' @param mar Value to be used with [`par`]`("mar")`. If not provided,
 #' a default is set up.
 #'
-#' @param col Color, which defaults to [`par`]`("col")`.
+#' @param col Color, which defaults to [`par`]`("col")` for line types, but
+#' to [oceColorsViridis] for image types.
 #'
 #' @param cex Numerical character-expansion factor, which defaults to [`par`]`("cex")`.
 #'
@@ -1179,7 +1180,7 @@ sectionAddCtd <- sectionAddStation
 #'\dontrun{
 #' plot(GSg, which=1, ztype='image')
 #' T <- GS[['temperature']]
-#' col <- oceColorsJet(100)[rescale(T, rlow=1, rhigh=100)]
+#' col <- oceColorsViridis(100)[rescale(T, rlow=1, rhigh=100)]
 #' points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
 #' points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 #'}
@@ -1256,8 +1257,6 @@ setMethod(f="plot",
           {
               if (missing(debug))
                   debug <- getOption("oceDebug")
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,section-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               debug <- if (debug > 4) 4 else floor(0.5 + debug)
               if (missing(eos))
                   eos <- getOption("oceEOS", default="gsw")
@@ -1550,8 +1549,10 @@ setMethod(f="plot",
                           }
                           nbreaks <- length(zbreaks)
                           if (nbreaks > 0) {
-                              if (is.null(zcol))
-                                  zcol <- oceColorsJet(nbreaks - 1)
+                              if (is.null(zcol)) {
+                                  ## col <- oceColorsJet(nbreaks - 1)
+                                  zcol <- oceColorsViridis(nbreaks - 1)
+                              }
                               if (is.function(zcol))
                                   zcol <- zcol(nbreaks - 1)
                               zlim <- range(zbreaks)

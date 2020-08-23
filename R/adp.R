@@ -1714,8 +1714,6 @@ setMethod(f="plot",
               ## oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
               ## oceDebug(debug, "par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
               ## oceDebug(debug, "mai.palette=", paste(mai.palette, collapse=" "), "\n")
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,adp-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               instrumentType <- x[["instrumentType"]]
               if (is.null(instrumentType))
                   instrumentType <- "" # simplifies later checks
@@ -1912,7 +1910,7 @@ setMethod(f="plot",
 
               tt <- x[["time", j]]
               ##ttDia <- x@data$timeDia  # may be null
-              class(tt) <- "POSIXct"              # otherwise image() gives warnings
+              class(tt) <- c("POSIXct", "POSIXt") # otherwise image() gives warnings
               if (!zlimGiven && all(which %in% 5:8)) {
                   ## single scale for all 'a' (amplitude) data
                   zlim <- range(abs(as.numeric(x[["a"]][, , which[1]-4])), na.rm=TRUE) # FIXME name of item missing, was ma
@@ -2961,7 +2959,7 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 #' lines(apply(a,2,median), distance, type='l',col='red')
 #' legend("topright",lwd=1,col=c("black","red"),legend=c("original","attenuated"))
 #' ## Image
-#' plot(adp.att, which="amplitude",col=oce.colorsJet(100))
+#' plot(adp.att, which="amplitude",col=oce.colorsViridis(100))
 #'
 #' @family things related to adp data
 beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALSE, debug=getOption("oceDebug"))

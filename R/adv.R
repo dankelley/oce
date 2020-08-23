@@ -580,8 +580,6 @@ setMethod(f="plot",
                               ...)
           {
               debug <- min(4, max(0, round(debug)))
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,adv-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               oceDebug(debug, "plot.adv(x, which=c(", paste(which, collapse=","), "), type=\"", type, "\", ...) {\n", sep="", unindent=1)
               have.brushCorrelation <- !missing(brushCorrelation)
               oceDebug(debug, "brushCorrelation", if (have.brushCorrelation) brushCorrelation else "not given", "\n")

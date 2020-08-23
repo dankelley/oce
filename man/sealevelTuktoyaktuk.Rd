@@ -60,6 +60,7 @@ Computers and Geosciences, 28, 929-937.
 Other datasets provided with oce: 
 \code{\link{adp}},
 \code{\link{adv}},
+\code{\link{amsr}},
 \code{\link{argo}},
 \code{\link{cm}},
 \code{\link{coastlineWorld}},

@@ -57,7 +57,7 @@ plot(apply(a,2,mean), distance, type='l', xlim=c(0,256))
 lines(apply(a,2,median), distance, type='l',col='red')
 legend("topright",lwd=1,col=c("black","red"),legend=c("original","attenuated"))
 ## Image
-plot(adp.att, which="amplitude",col=oce.colorsJet(100))
+plot(adp.att, which="amplitude",col=oce.colorsViridis(100))
 
 }
 \references{

@@ -157,10 +157,9 @@
 #' Surface Emissivity.  *Journal of Oceanography*, 50, 17:30.
 #' \url{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
 #'
-#' @concept satellite
-#'
 #' @author Dan Kelley and Clark Richards
 #'
+#' @family classes holding satellite data
 #' @family things related to landsat data
 setClass("landsat", contains="satellite")
 
@@ -175,14 +174,14 @@ setClass("landsat", contains="satellite")
 #' @details
 #' The original data were downloaded from the USGS earthexplorer website, although
 #' other sites can also be used to uncover it by name.  The original
-#' data were decimation by a factor of 100 to reduce the file size from about 1GB
-#' to under 100Kb.
+#' data were decimated by a factor of 100 in longitude and latitude,
+#' to reduce the file size from 1G to 100K.
 #'
 #' @name landsat
 #' @docType data
 #'
+#' @family satellite datasets provided with oce
 #' @family datasets provided with oce
-#'
 #' @family things related to landsat data
 NULL
 
@@ -221,8 +220,6 @@ setMethod(f="initialize",
 #' @param object A [landsat-class] object.
 #'
 #' @param ... Ignored.
-#'
-#' @concept satellite
 #'
 #' @author Dan Kelley
 #'
@@ -314,8 +311,6 @@ setMethod(f="summary",
 #' copied over from the source data file and are not altered by e.g.
 #' decimation.  An exception is the lat-lon box, which is altered by
 #' [landsatTrim()].
-#'
-#' @concept satellite
 #'
 #' @author Dan Kelley
 #'
@@ -662,8 +657,6 @@ setMethod(f="[[<-",
 #' processing.
 #'
 #' @param ... optional arguments passed to plotting functions.
-#'
-#' @concept satellite
 #'
 #' @author Dan Kelley
 #'
@@ -1068,8 +1061,6 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #'
 #' @author Dan Kelley
 #'
-#' @concept satellite
-#'
 #' @family things related to landsat data
 read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=getOption("oceDebug"))
 {
@@ -1204,8 +1195,6 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
 #'
 #' @author Dan Kelley
 #'
-#' @concept satellite
-#'
 #' @family things related to landsat data
 landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 {
@@ -1265,8 +1254,6 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 #' with them.
 #'
 #' @author Dan Kelley and Clark Richards
-#'
-#' @concept satellite
 #'
 #' @family things related to landsat data
 landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))

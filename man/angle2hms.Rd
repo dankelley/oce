@@ -37,8 +37,8 @@ angle2hms(177.74208) # string component 11h50m58s.10
 }
 \references{
 \itemize{
-\item Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
-USA. 429 pages.
+\item Meeus, Jean. Astronomical Algorithms. 2nd ed.
+Richmond, Virginia, USA: Willmann-Bell, 1991.
 }
 }
 \seealso{

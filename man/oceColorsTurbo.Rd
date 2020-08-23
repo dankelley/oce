@@ -11,8 +11,8 @@ oceColorsTurbo(n)
 \item{n}{number of colors to create.}
 }
 \description{
-This uses the coefficients published (with Apache license) by google;
-see reference 1.
+This uses the coefficients published (with Apache license) by google,
+as described by Mikhailo (2019).
 }
 \examples{
 library(oce)
@@ -20,9 +20,10 @@ imagep(volcano, col=oceColorsTurbo(128),
        zlab="oceColorsTurbo")
 }
 \references{
-\enumerate{
-\item \url{https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html}
-}
+Mikhailo, Anton.
+\dQuote{Turbo, An Improved Rainbow Colormap for Visualization.}
+Google AI (blog), August 20, 2019.
+\url{http://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html}
 }
 \seealso{
 Other things related to colors: 

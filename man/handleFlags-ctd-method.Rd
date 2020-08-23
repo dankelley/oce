@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{handleFlags,ctd-method}
 \alias{handleFlags,ctd-method}
-\title{Handle Flags in CTD Objects}
+\title{Handle Flags in ctd Objects}
 \usage{
 \S4method{handleFlags}{ctd}(
   object,

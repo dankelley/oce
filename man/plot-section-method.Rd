@@ -176,7 +176,8 @@ ignored otherwise.}
 \item{mar}{Value to be used with \code{\link{par}}\code{("mar")}. If not provided,
 a default is set up.}
 
-\item{col}{Color, which defaults to \code{\link{par}}\code{("col")}.}
+\item{col}{Color, which defaults to \code{\link{par}}\code{("col")} for line types, but
+to \link{oceColorsViridis} for image types.}
 
 \item{cex}{Numerical character-expansion factor, which defaults to \code{\link{par}}\code{("cex")}.}
 
@@ -259,7 +260,7 @@ par(mfrow=c(1, 1))
 \dontrun{
 plot(GSg, which=1, ztype='image')
 T <- GS[['temperature']]
-col <- oceColorsJet(100)[rescale(T, rlow=1, rhigh=100)]
+col <- oceColorsViridis(100)[rescale(T, rlow=1, rhigh=100)]
 points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
 points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 }
@@ -291,6 +292,7 @@ structure of section objects, and also outlines the other functions dealing
 with them.
 
 Other functions that plot oce data: 
+\code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,adv-method}},
 \code{\link{plot,amsr-method}},

@@ -57,7 +57,7 @@ collaborative.
 ```R
 library(oce)
 data(ctd)
-plot(ctd, which=c(1,2,3,5), fill="lightgray")
+plot(ctd, which=c(1,2,3,5))
 ```
 ![Sample CTD plot.](oce-demo-1.png)
 
@@ -97,7 +97,7 @@ library(oce)
 par(mar=rep(0.5, 4))
 data(endeavour, package="ocedata")
 data(coastlineWorld, package="oce")
-mapPlot(coastlineWorld, type='l', fill='gray')
+mapPlot(coastlineWorld, col='gray')
 mapPoints(endeavour$longitude, endeavour$latitude, pch=20, col='red')
 ```
 ![Sample map plot.](oce-demo-5.png)

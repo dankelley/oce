@@ -46,7 +46,7 @@ supplied to \code{\link[=pretty]{pretty()}}, in determining clean break points.}
 
 \item{col}{Either a vector of colors corresponding to the breaks, of length
 1 plus the number of breaks, or a function specifying colors,
-e.g. \code{\link[=oce.colorsJet]{oce.colorsJet()}} for a rainbow.}
+e.g. \code{\link[=oce.colorsViridis]{oce.colorsViridis()}} for the Viridis scheme.}
 
 \item{colormap}{optional colormap, as created by \code{\link[=colormap]{colormap()}}.
 If a \code{colormap} is provided, then its properties takes precedence
@@ -139,10 +139,10 @@ mapLines(coastlineWorld)
 
 ## 2. Northern polar region, with color-coded bathymetry
 par(mfrow=c(1,1))
-drawPalette(c(-5000, 0), zlim=c(-5000, 0), col=oce.colorsJet)
+drawPalette(c(-5000, 0), zlim=c(-5000, 0), col=oce.colorsViridis)
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
         longitudelim=c(-180,180), latitudelim=c(60,120))
-mapImage(topoWorld, zlim=c(-5000, 0), col=oce.colorsJet)
+mapImage(topoWorld, zlim=c(-5000, 0), col=oce.colorsViridis)
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
 ## 3. Levitus SST
@@ -154,9 +154,9 @@ if (requireNamespace("ocedata", quietly=TRUE)) {
     SST <- levitus$SST
     par(mar=rep(1, 4))
     Tlim <- c(-2, 30)
-    drawPalette(Tlim, col=oce.colorsJet)
+    drawPalette(Tlim, col=oce.colorsViridis)
     mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
-    mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
+    mapImage(lon, lat, SST, col=oce.colorsViridis, zlim=Tlim)
     mapPolygon(coastlineWorld, col='gray')
 }
 

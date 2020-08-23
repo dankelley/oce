@@ -168,7 +168,7 @@ NULL
 ## DEVELOPERS: please pattern functions and documentation on this, for uniformity.
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
-#' @title Handle Flags in CTD Objects
+#' @title Handle Flags in ctd Objects
 #'
 #' @param object a [ctd-class] object.
 #'
@@ -425,7 +425,7 @@ setMethod(f="initialize",
           })
 
 
-#' Summarize a CTD Object
+#' Summarize a ctd Object
 #'
 #' Summarizes some of the data in a `ctd` object, presenting such information
 #' as the station name, sampling location, data ranges, etc. If the object was read
@@ -497,7 +497,7 @@ setMethod(f="summary",
           })
 
 
-#' @title Extract Something From a CTD Object
+#' @title Extract Something From a ctd Object
 #'
 #' @param x a [ctd-class] object.
 #'
@@ -917,7 +917,7 @@ setMethod(f="[[",
               }
           })
 
-#' @title Replace Parts of a CTD Object
+#' @title Replace Parts of a ctd Object
 #'
 #' @param x a [ctd-class] object.
 #'
@@ -3111,8 +3111,6 @@ setMethod(f="plot",
           {
               if (!inherits(x, "ctd"))
                   stop("method is only for objects of class 'ctd'")
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,ctd-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               eos <- match.arg(eos, c("unesco", "gsw"))
               if (!missing(fill)) {
                   ## permit call as documented before 2016-02-03
@@ -3806,12 +3804,12 @@ setMethod(f="plot",
           })
 
 
-#' Subset a CTD Object
+#' Subset a ctd Object
 #'
 #' Return a subset of a [ctd-class] object.
 #'
 #' This function is used to subset data within
-#' a ctd object. There are two ways of working. If
+#' a [ctd-class] object. There are two ways of working. If
 #' `subset` is supplied, then it is a logical expression
 #' that is evaluated within the environment of the `data`
 #' slot of the object (see Example 1). Alternatively, if the

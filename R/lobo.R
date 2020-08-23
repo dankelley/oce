@@ -311,8 +311,6 @@ setMethod(f="plot",
                               ...)
           {
               oceDebug(debug, "plot.lobo(...)\n", sep="")
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,lobo-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
               oceDebug(debug, "which:", which, "\n")

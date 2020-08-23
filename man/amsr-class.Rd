@@ -98,12 +98,15 @@ provided at \verb{http://www.remss.com/missions/amsr/}.
 }
 }
 \seealso{
-The documentation for the \linkS4class{landsat} class has
-more information on the handling data from the Landsat-8 satellite.
+Other classes holding satellite data: 
+\code{\link{g1sst-class}},
+\code{\link{landsat-class}},
+\code{\link{satellite-class}}
 
 Other things related to amsr data: 
 \code{\link{[[,amsr-method}},
 \code{\link{[[<-,amsr-method}},
+\code{\link{amsr}},
 \code{\link{composite,amsr-method}},
 \code{\link{download.amsr}()},
 \code{\link{plot,amsr-method}},
@@ -114,5 +117,5 @@ Other things related to amsr data:
 \author{
 Dan Kelley and Chantelle Layton
 }
-\concept{satellite}
+\concept{classes holding satellite data}
 \concept{things related to amsr data}

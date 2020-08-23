@@ -12,13 +12,15 @@
 \item{...}{Other amsr objects.}
 }
 \description{
+Form averages for each item in the \code{data} slot of the supplied objects,
+taking into account the bad-data codes.
+
 objects that are supplied as arguments are averaged in a way that
 makes sense for the object class, i.e. taking into account
 the particular bad-data codes of that particular class.
 }
 \details{
-Form averages for each item in the \code{data} slot of the supplied objects,
-taking into account the bad-data codes. If none of the objects has good
+If none of the objects has good
 data at any particular pixel (i.e. particular latitude and longitude),
 the resultant will have the bad-data code of the last item in the argument
 list.
@@ -31,6 +33,7 @@ Other things related to amsr data:
 \code{\link{[[,amsr-method}},
 \code{\link{[[<-,amsr-method}},
 \code{\link{amsr-class}},
+\code{\link{amsr}},
 \code{\link{download.amsr}()},
 \code{\link{plot,amsr-method}},
 \code{\link{read.amsr}()},

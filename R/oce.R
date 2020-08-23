@@ -105,7 +105,7 @@ NULL
 #' (none)              \tab (none)                         \tab (none)     \cr
 #'}
 #'
-#' The following were removed after having been marked as "deprecated"
+#' The following functions were removed after having been marked as "deprecated"
 #' in at least one CRAN release, and thereafter as "defunct" in at least
 #' one CRAN release.  (The version number in the table is the first
 #' version to lack the named function.)
@@ -126,6 +126,9 @@ NULL
 #' means they will be marked "defunct" in the next CRAN release. These are normally
 #' listed in the help page for the function in question. A few that may be
 #' of general interest are also listed below.
+#'
+#' * The `adorn` argument was still being checked for (in the dots argument)
+#' until 2020 August 11.
 #'
 #' * The `eos` argument of [swN2()] was removed on 2019
 #' April 11; for details, see the \dQuote{Deprecation Notation} section
@@ -1259,8 +1262,6 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
 {
     if (is.function(x))
         stop("x cannot be a function")
-    if ("adorn" %in% names(list(...)))
-        warning("the 'adorn' argument was removed in November 2017")
     if (!inherits(x, "POSIXt"))
         x <- as.POSIXct(x)
     if (missing(xlab))
@@ -2486,15 +2487,18 @@ oceColorsClosure <- function(spec) {
 
 #' Create colors similar to the google turbo scheme
 #'
-#' This uses the coefficients published (with Apache license) by google;
-#' see reference 1.
+#' This uses the coefficients published (with Apache license) by google,
+#' as described by Mikhailo (2019).
 #'
 #' @aliases oce.colorsTurbo oceColorsTurbo
 #'
 #' @param n number of colors to create.
 #'
 #' @references
-#' 1. \url{https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html}
+#' Mikhailo, Anton.
+#' \dQuote{Turbo, An Improved Rainbow Colormap for Visualization.}
+#' Google AI (blog), August 20, 2019.
+#' \url{http://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html}
 #'
 #' @author Dan Kelley
 #'
@@ -2511,7 +2515,9 @@ oceColorsTurbo <- oce.colorsTurbo <- oceColorsClosure("turbo")
 #' This is patterned on a matlab/python scheme (reference 1) that blends
 #' from yellow to blue in a way that is designed to reproduce well
 #' in black-and-white, and to be interpretable by those with
-#' certain forms of color blindness (references 3-4).
+#' certain forms of color blindness (references 3-4).  An alternative
+#' to this is provide in the \CRANpkg{viridis} package, as illustrated
+#' in Example 2.
 #'
 #' @aliases oce.colorsViridis oceColorsViridis
 #'
@@ -2536,8 +2542,14 @@ oceColorsTurbo <- oce.colorsTurbo <- oceColorsClosure("turbo")
 #'
 #' @examples
 #' library(oce)
+#' # Example 1: oceColorsViridis
 #' imagep(volcano, col=oceColorsViridis(128),
 #'        zlab="oceColorsViridis")
+#' # Example 2: viridis::viridis
+#'\dontrun{
+#' imagep(volcano, col=viridis::viridis,
+#'        zlab="viridis::viridis")}
+#'
 #' @family things related to colors
 oceColorsViridis <- oce.colorsViridis <- oceColorsClosure("viridis")
 
@@ -2607,8 +2619,7 @@ oceColorsVorticity <- oce.colorsVorticity <- oceColorsClosure("vorticity")
 #' @param n number of colors
 #' @examples
 #' library(oce)
-#' imagep(volcano, col=oceColorsJet(128),
-#'        zlab="oceColorsJet")
+#' imagep(volcano, col=oceColorsJet, zlab="oceColorsJet")
 #' @family things related to colors
 oceColorsJet <- function(n)
 {

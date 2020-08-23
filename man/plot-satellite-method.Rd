@@ -23,13 +23,8 @@
 For an example using \code{g1sst} data, see \code{\link[=read.g1sst]{read.g1sst()}}.
 }
 \seealso{
-Other things related to satellite data: 
-\code{\link{g1sst-class}},
-\code{\link{read.g1sst}()},
-\code{\link{satellite-class}},
-\code{\link{summary,satellite-method}}
-
 Other functions that plot oce data: 
+\code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,adv-method}},
 \code{\link{plot,amsr-method}},
@@ -61,5 +56,3 @@ Other functions that plot oce data:
 Dan Kelley
 }
 \concept{functions that plot oce data}
-\concept{satellite}
-\concept{things related to satellite data}

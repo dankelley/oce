@@ -25,6 +25,7 @@ plot(cm)
 Other datasets provided with oce: 
 \code{\link{adp}},
 \code{\link{adv}},
+\code{\link{amsr}},
 \code{\link{argo}},
 \code{\link{coastlineWorld}},
 \code{\link{ctdRaw}},

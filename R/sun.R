@@ -120,7 +120,7 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
         stop("t must be in UTC")
     year <- t$year + 1900
     if (any(year < 1950) || any(year > 2050))
-        stop("year=", year, " is outside acceptable range")
+        warning("year=", year[year<1950|year>2050][1], " (and possibly others) is outside the acceptable range of 1950-2050")
     day <- t$yday + 1
     if (any(day < 1) || any(day > 366))
         stop("day is not in range 1 to 366")
@@ -241,7 +241,8 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
 #'              tol=                 0.0000001, scale=1)
 #'
 #' @references
-#' 1. Meeus, Jean H. Astronomical Algorithms. Second edition. Willmann-Bell, Incorporated, 1991.
+#' * Meeus, Jean. Astronomical Algorithms. 2nd ed.
+#' Richmond, Virginia, USA: Willmann-Bell, 1991.
 #'
 #' @family things related to astronomy
 #' @author Dan Kelley, based on formulae in Meeus (1991).

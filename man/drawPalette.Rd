@@ -34,14 +34,17 @@ is used.}
 
 \item{zlab}{label for the palette scale.}
 
-\item{breaks}{the z values for breaks in the color scheme.}
+\item{breaks}{optional numeric vector of the z values for breaks in the color scheme.
+If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.}
 
-\item{col}{either a vector of colors corresponding to the breaks, of length
-1 less than the number of breaks, or a function specifying colors, e.g.
-\code{\link[=oce.colorsJet]{oce.colorsJet()}} for a rainbow.}
+\item{col}{optional argument, either a vector of colors corresponding to the breaks, of length
+1 less than the number of breaks, or a function specifying colors.
+If \code{col} is not provided, and if \code{colormap} is also not provided, then \code{col}
+defaults to \code{\link[=oceColorsViridis]{oceColorsViridis()}}.
+If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.}
 
-\item{colormap}{a color map as created by \code{\link[=colormap]{colormap()}}.  If
-provided, this takes precedence over \code{breaks} and \code{col}.}
+\item{colormap}{an optional color map as created by \code{\link[=colormap]{colormap()}}.
+If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.}
 
 \item{mai}{margins for palette, as defined in the usual way; see
 \code{\link[=par]{par()}}.  If not given, reasonable values are inferred from the
@@ -134,9 +137,9 @@ par(mgp=getOption("oceMgp"))
 par(mfrow=c(3, 1), mar=c(3, 3, 1, 1))
 omar <- par('mar')                 # save initial margin
 
-## 1a. top panel: simple case
-drawPalette(zlim=c(0, 1), col=oce.colorsJet(10))
-plot(1:10, 1:10, col=oce.colorsJet(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
+## 1a. top panel: simple case with Viridis scheme
+drawPalette(zlim=c(0, 1), col=oce.colorsViridis(10))
+plot(1:10, 1:10, col=oce.colorsViridis(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
 par(mar=omar)                      # reset margin
 
 ## 1b. middle panel: colormap
@@ -149,16 +152,16 @@ par(mar=omar)                      # reset margin
 
 ## 1c. bottom panel: space for palette (to line up graphs)
 drawPalette(plot=FALSE)
-plot(1:10, 1:10, col=oce.colorsJet(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
+plot(1:10, 1:10, col=oce.colorsViridis(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
 par(mar=omar)                      # reset margin
 
 # 2. Use layout to mimic the action of imagep(), with the width
 # of the palette region being 14 percent of figure width.
 d <- 0.14
 layout(matrix(1:2,nrow=1), widths=c(1-d,d))
-image(volcano, col=oce.colorsJet(100), zlim=c(90, 200))
+image(volcano, col=oce.colorsViridis(100), zlim=c(90, 200))
 contour(volcano, add=TRUE)
-drawPalette(c(90, 200), fullpage=TRUE, col=oce.colorsJet)
+drawPalette(c(90, 200), fullpage=TRUE, col=oce.colorsViridis)
 }
 \seealso{
 This is used by \code{\link[=imagep]{imagep()}}.
