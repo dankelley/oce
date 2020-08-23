@@ -99,10 +99,11 @@ and \code{latlabels}, which offer more granular control of labelling.}
 
 \item{axisStyle}{an integer specifying the style of labels for the numbers
 on axes.  The choices are:
-0 for signed numbers without labels;
-1 (the default) for unsigned numbers followed by letters that indicate the hemisphere;
-2 for signed numbers with a degree symbol to the right; and
-3 for unsigned numbers with a degree symbol to the right.}
+1 for signed numbers without additional labels;
+2 (the default) for unsigned numbers followed by letters indicating the hemisphere;
+3 for signed numbers followed by a degree sign;
+4 for unsigned numbers followed by a degree sign; and
+5 for signed numbers followed by a degree sign and letters indicating the hemisphere.}
 
 \item{cex}{character expansion factor for plot symbols,
 used if \code{type='p'} or any other value that yields symbols.}
