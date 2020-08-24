@@ -305,6 +305,45 @@ shiftLongitude <- function(longitudes) {
     if (any(longitudes > 180)) longitudes-360 else longitudes
 }
 
+formatLonLat <- function(v, which="longitude", axisStyle=1, cex=1)
+{
+    if (cex <= 0)
+        return(rep("", length(v)))
+    res <- as.character(v)
+    ## we're done if axisStyle is 1
+    if (axisStyle == 1) {
+        ## signed value, without suffix
+        return(res)
+    } else if (axisStyle == 2) {
+        ## unsigned value, with E,W,N,S suffix
+        res <- if (which == "longitude")
+            paste0(res, ifelse(v < 0, gettext("W", domain="R-oce"), gettext("E", domain="R-oce")))
+        else
+            paste0(res, ifelse(v < 0, gettext("S", domain="R-oce"), gettext("N", domain="R-oce")))
+        res[v==0] <- "0"
+    } else if (axisStyle == 3) {
+        ## signed value, with degree suffix
+        res <- paste0(res, "\u00B0")
+    } else if (axisStyle == 4) {
+        ## unsigned value, with degree suffix
+        res <- paste0(abs(v), "\u00B0")
+    } else if (axisStyle == 5) {
+        ## unsigned value, with degree and hemisphere suffix
+        res <- if (which == "longitude") {
+            paste0(abs(v), "\u00B0", unlist(lapply(v, function(l)
+                                                   if (l < 0) gettext("W", domain="R-oce")
+                                                   else if (l > 0) gettext("E", domain="R-oce")
+                                                   else "")))
+        } else {
+            paste0(abs(v), "\u00B0", unlist(lapply(v, function(l)
+                                                   if (l < 0) gettext("S", domain="R-oce")
+                                                   else if (l > 0) gettext("N", domain="R-oce")
+                                                   else "")))
+        }
+    }
+    res
+}
+
 fixneg <- function(v)
 {
     res <- v
@@ -381,15 +420,11 @@ badFillFix2 <- function(x, y, xorig, yorig)
 
 #' Add Axis Labels to an Existing Map
 #'
-#' Plot axis labels on an existing map. The positions of the labels are determined
-#' with [optimize()], calling [oceProject()] repeatedly, which is a slow process.
-#' See \dQuote{Historical notes}.
-#'
-#' @section Historical notes:
-#' Until January 2020, [mapPlot()] used [mapAxis], but this had speed problems, and
-#' so a change was made to [mapPlot()].  Starting in late January 2020, [mapGrid()]
-#' started returning positions for axis labels, as determined by a much faster scheme
-#' of finding positions as intersections of longitude and latitude lines with the axes.
+#' Plot axis labels on an existing map.
+#' This is an advanced function, requiring
+#' coordination with [mapPlot()] and (possibly) also with [mapGrid()],
+#' and so it is best avoided by novices, who may be satisfied
+#' with the defaults used by [mapPlot()].
 #'
 #' @param side the side at which labels are to be drawn.  If not provided,
 #' sides 1 and 2 will be used (i.e. bottom and left-hand sides).
@@ -432,14 +467,6 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #'
 #' @param lwd.ticks tick line width, passed to [axis()].
 #'
-#' @param axisStyle an integer specifying the style of labels for the numbers
-#' on axes.  The choices are:
-#' 1 for signed numbers without additional labels;
-#' 2 (the default) for unsigned numbers followed by letters indicating the hemisphere;
-#' 3 for signed numbers followed by a degree sign;
-#' 4 for unsigned numbers followed by a degree sign; and
-#' 5 for signed numbers followed by a degree sign and letters indicating the hemisphere.
-#'
 #' @param col axis color, passed to [axis()].
 #'
 #' @param col.ticks axis tick color, passed to [axis()].
@@ -460,24 +487,24 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #'
-#' @details
-#' This function is still in development, and the argument list as well as the
-#' action taken are both subject to change, hence the brevity of this help page.
-#'
-#' Note that if a grid line crosses the axis twice, only one label will be drawn.
-#'
 #' @examples
 #'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
-#' par(mar=c(2, 2, 3, 1))
+#' par(mar=c(2, 2, 1, 1))
 #' lonlim <- c(-180, 180)
-#' latlim <- c(60, 120)
+#' latlim <- c(70, 110)
+#' # In mapPlot() call, note axes and grid args, to
+#' # prevent over-plotting of defaults.  Some adjustments
+#' # might be required to the mapGrid() arguments, to
+#' # get agreement with the axis. This is why both
+#' # mapGrid() and mapAxis() are best avoided; it is
+#' # simpler to let mapPlot() handle these things.
 #' mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
 #'         longitudelim=lonlim, latitudelim=latlim,
-#'         grid=FALSE)
-#' mapGrid(15, 15, polarCircle=1/2)
-#' mapAxis()
+#'         col="tan", axes=FALSE, grid=FALSE)
+#' mapGrid(15, 15)
+#' mapAxis(axisStyle=5)
 #'}
 #'
 #' @author Dan Kelley
@@ -486,8 +513,7 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #'
 #' @family functions related to maps
 mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
-                    axisStyle=1,
-                    tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
+                    axisStyle=1, tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
                     lty="solid", lwd=1, lwd.ticks=lwd, col=NULL, col.ticks=NULL,
                     hadj=NA, padj=NA, tcl=-0.3, cex.axis=1,
                     mgp=c(0, 0.5, 0),
@@ -540,163 +566,41 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
         side <- 1:2
     usr <- par('usr')
     axisSpan <- max(usr[2]-usr[1], usr[4]-usr[3])
+    usr <- par("usr")
     if (1 %in% side) {
         oceDebug(debug, "drawing axis on side 1\n")
         oceDebug(debug, vectorShow(longitude))
-        AT <- NULL
-        LAB <- NULL
-        for (lon in longitude) {
-            ##if (debug) oceDebug(debug, "check longitude", lon, "for axis on side=1\n")
-            ## Seek a point at this lon that matches the lon-lat relationship on side=1
-            tol <- diff(par("usr")[3:4])/111e3 / 2000 # 1/2000 of y span in deg
-            elapsedTime <- system.time({
-                o <- optimize(function(lat) abs(lonlat2map(lon, lat, debug=debug-1)$y-usr[3]), lower=-89.9999, upper=89.9999, tol=tol)
-            })[[3]]
-            oceDebug(debug, sprintf("with tol=%.5f deg, it took %.3f seconds to find lon=%.2fE label location on lower axis\n", tol, elapsedTime, lon))
-            if (is.na(o$objective) || o$objective > 0.01*axisSpan) {
-                if (debug) oceDebug(debug, "  longitude", lon, "is unmappable\n")
-                next
-            }
-            ## Check that the point matches lat, as well as lon (this matters for full-globe)
-            P <- lonlat2map(lon, o$minimum)
-            ## oceDebug(debug, "Investigate point at x=", P$x, ", y=", P$y, "; note usr[3]=", usr[3], "\n")
-            x <- P$x
-            if (is.finite(P$y) && (abs(P$y - usr[3]) < 0.01 * (usr[4] - usr[3]))) {
-                if (!is.na(x) && usr[1] < x && x < usr[2]) {
-                    ##label <- fixneg(paste0(lon, gettext("E", domain="R-oce")))
-                    ##mtext(label, side=1, at=x)
-                    AT <- c(AT, x)
-                    LAB <- c(LAB, lon)
-                    if (debug > 3) oceDebug(debug, "  ", lon, "E intersects side 1\n", sep="")
-                } else {
-                    if (debug > 3) oceDebug(debug, "    ", lon, "E does not intersect side 1\n", sep="")
-                }
-            } else {
-                oceDebug(debug, "skipping off-globe point\n")
-            }
-        }
-        if (!is.null(AT)) {
-            if (axisStyle == 1) {
-                labels <- if (cex.axis>0) LAB else rep("", length(AT))
-            } else if (axisStyle == 2) {
-                labels <- if (cex.axis>0) fixneg(paste0(LAB, gettext("E", domain="R-oce"))) else rep("", length(AT))
-            } else if (axisStyle == 3) {
-                labels <- if (cex.axis>0) paste0(LAB, "\u00B0") else rep("", length(AT))
-            } else if (axisStyle == 4) {
-                labels <- if (cex.axis>0) paste0(abs(LAB), "\u00B0") else rep("", length(AT))
-            } else if (axisStyle == 5) {
-                labels <- if (cex.axis>0) {
-                    paste0(abs(LAB),
-                           "\u00B0",
-                           unlist(lapply(LAB,
-                                         function(l)
-                                             if (l < 0) gettext("W", domain="R-oce")
-                                             else if (l > 0) gettext("E", domain="R-oce")
-                                             else "")))
-                } else {
-                    rep("", length(AT))
-                }
-            }
-            axis(side=1, at=AT, labels=labels,
-                 mgp=mgp, tick=tick, line=line, pos=pos, outer=outer, font=font,
-                 lty=lty, lwd=lwd, lwd.ticks=lwd.ticks, col=col, col.ticks=col.ticks,
-                 hadj=hadj, padj=padj, tcl=tcl, cex.axis=if (cex.axis>0) cex.axis else 1)
-        }
-        if (length(latitude)) {
-            warning("mapAxis(side=1) cannot draw latitude labels yet; contact author if you need this")
+        tn <- 100
+        ts <- seq(0, 1, length.out=tn)
+        tx <- seq(usr[1], usr[2], length.out=tn)
+        ty <- rep(usr[3], tn)
+        tt <- map2lonlat(tx, ty, debug=debug-1)
+        owarn <- options("warn")$warn
+        options(warn=-1) # avoid warnings from regularize()
+        tfcn <- try(approxfun(tt$longitude, tx), silent=TRUE)
+        options(warn=owarn)
+        if (!inherits(tfcn, "try=error")) {
+            at <- tfcn(longitude)
+            if (any(is.finite(at)))
+                axis(side=1, at=at, label=formatLonLat(longitude, "longitude", axisStyle=axisStyle))
         }
     }
     if (2 %in% side) {
         oceDebug(debug, "drawing axis on side 2\n")
-        AT <- NULL
-        LAB <- NULL
-        f <- function(lon) lonlat2map(lon, lat)$x-usr[1]
-        ## FIXME: if this uniroot() method looks good for side=2, try for side=1 also.
-        LONLIST <- seq(-360, 360, 20) # smaller increments are slower but catch more labels
-        oceDebug(debug, paste("LONLIST=", paste(LONLIST, collapse=" "), "\n"))
-        for (lat in latitude) {
-            if (debug > 3)
-                oceDebug(debug, "check ", lat, "N for axis on side=2 (usr[1]=", usr[1], ")\n", sep="")
-            ## Seek a point at this lon that matches the lon-lat relationship on side=1
-
-            ## FIXME: I wonder why I don't use the optimize() method that I use for side=1 here
-            ## as well. Maybe I ought to try both.  I sort of think this bracket-uniroot method
-            ## is best, but note that issue 1349 was because I had the `tol` in the `uniroot`
-            ## set to 1deg, which was nutty.
-            for (iLON in 2:length(LONLIST)) {
-                #if (lat == 55) browser()
-                LONLOOK <- LONLIST[iLON+c(-1, 0)]
-                ##cat("f(LONLOOK[1]=", LONLOOK[1], "=", LONLOOK[1]+360, ")= ", f(LONLOOK[1]), " (iLON=", iLON, ")\n")
-                ##cat("f(LONLOOK[2]=", LONLOOK[2], "=", LONLOOK[2]+360, ")= ", f(LONLOOK[2]), " (iLON=", iLON, ")\n")
-                f1 <- f(LONLOOK[1])
-                if (!is.finite(f1))
-                    next
-                f2 <- f(LONLOOK[2])
-                if (!is.finite(f2)) {
-                    ##cat("f2 not finite, so skipping\n")
-                    next
-                }
-                if (f1 * f2 > 0) {
-                    ##cat("f1*f2 > 0, so skipping\n")
-                    next
-                }
-                ##cat(" looking promising LONLOOK[1]=", LONLOOK[1], ", LONLOOK[2]=", LONLOOK[2], "; r follows\n")
-                r <- uniroot(f, lower=LONLOOK[1], upper=LONLOOK[2], tol=0.001) # 0.001deg < 100m.
-                ##print(r)
-                P <- lonlat2map(r$root, lat)
-                ##OLD| ## using optimize. This seems slower, and can hit boundaries.
-                ##OLD| o <- optimize(function(lon) abs(lonlat2map(lon, lat)$x-usr[1]), lower=LONLOOK[1], upper=LONLOOK[2], tol=1)
-                ##OLD| if (is.na(o$objective) || o$objective > 0.01*axisSpan) {
-                ##OLD|     if (debug > 3) oceDebug(debug, "  ", lat, "N is unmappable for iLON=", iLON, "; o$objective=", o$objective, "\n", sep="")
-                ##OLD|     next
-                ##OLD| }
-                ##OLD| # Check that the point matches lat, as well as lon (this matters for full-globe)
-                #P <- lonlat2map(o$minimum, lat)
-                y <- P$y
-                if (is.finite(P$x) && (abs(P$x - usr[1]) < 0.01 * (usr[2] - usr[1]))) {
-                    if (!is.na(y) && usr[3] < y && y < usr[4]) {
-                        ##label <- fixneg(paste0(lat, gettext("N", domain="R-oce")))
-                        AT <- c(AT, y)
-                        LAB <- c(LAB, lat)
-                        if (debug > 3) oceDebug(debug, "  ", lat, " intersects side 2\n", sep="")
-                    } else {
-                        if (debug > 3) oceDebug(debug, "  ", lat, "N does not intersect side 2\n", sep="")
-                    }
-                } else {
-                    ##oceDebug(debug, "skipping off-globe point\n")
-                }
-            }
-        }
-        #browser()
-        if (!is.null(AT)) {
-            if (axisStyle == 1) {
-                labels <- if (cex.axis>0) LAB else rep("", length(AT))
-            } else if (axisStyle == 2) {
-                labels <- if (cex.axis>0) fixneg(paste0(LAB, gettext("N", domain="R-oce"))) else rep("", length(AT))
-            } else if (axisStyle == 3) {
-                labels <- if (cex.axis>0) paste0(LAB, "\u00B0") else rep("", length(AT))
-            } else if (axisStyle == 4) {
-                labels <- if (cex.axis>0) paste0(abs(LAB), "\u00B0") else rep("", length(AT))
-            } else if (axisStyle == 5) {
-                labels <- if (cex.axis>0) {
-                    paste0(abs(LAB),
-                           "\u00B0",
-                           unlist(lapply(LAB,
-                                         function(l)
-                                             if (l < 0) gettext("S", domain="R-oce")
-                                             else if (l > 0) gettext("N", domain="R-oce")
-                                             else "")))
-                } else {
-                    rep("", length(AT))
-                }
-            }
-            axis(side=2, at=AT, labels=labels,
-                 mgp=mgp, tick=tick, line=line, pos=pos, outer=outer, font=font,
-                 lty=lty, lwd=lwd, lwd.ticks=lwd.ticks, col=col, col.ticks=col.ticks,
-                 hadj=hadj, padj=padj, tcl=tcl, cex.axis=if (cex.axis>0) cex.axis else 1)
-        }
-        if (length(longitude)) {
-            warning("mapAxis(side=2) cannot draw longitude labels yet; contact author if you need this")
+        oceDebug(debug, vectorShow(latitude))
+        tn <- 100
+        ts <- seq(0, 1, length.out=tn)
+        tx <- rep(usr[1], tn)
+        ty <- seq(usr[3], usr[4], length.out=tn)
+        tt <- map2lonlat(tx, ty, debug=debug-1)
+        owarn <- options("warn")$warn
+        options(warn=-1) # avoid warnings from regularize()
+        tfcn <- try(approxfun(tt$latitude, ty), silent=TRUE)
+        options(warn=owarn)
+        if (!inherits(tfcn, "try-error")) {
+            at <- tfcn(latitude)
+            if (any(is.finite(at)))
+                axis(side=2, at=at, label=formatLonLat(latitude, "latitude", axisStyle=axisStyle))
         }
     }
     if (3 %in% side) {
@@ -1702,7 +1606,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     #    grid <- rep(15, 2)
     #message("000")
     if (nchar(projection) && substr(projection, 1, 1) != "+") {
-        stop("use PROJ.4 format, e.g. projection=\"+proj=merc\" for Mercator\n", sep="")
+        stop("use PROJ. format, e.g. projection=\"+proj=merc\" for Mercator\n", sep="")
     }
     xy <- lonlat2map(longitude, latitude, projection=projection, debug=debug-1)
     if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("latitudelim must contain two distinct values")
@@ -1977,29 +1881,39 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 if (nrow(axisLabels) > 0) {
                     axisLabels1 <- subset(axisLabels, axisLabels$side==1)
                     if (nrow(axisLabels1) > 0) {
-                        ##> message("next is axisLabels1$at:");print(axisLabels1$at)
-                        ##> message("next is axisLabels1$value:");print(axisLabels1$value)
-                        ##> message("next is fixneg(axisLabels1$value)");print(fixneg(paste0(axisLabels1$value,"E")))
-                        axis(side=1, at=axisLabels1$at, labels=fixneg(paste0(axisLabels1$value,"E")), mgp=mgp)
+                        if (debug) {
+                            cat("About to draw axis on side 1; next is axisLabels1:\n")
+                            print(axisLabels1)
+                        }
+                        axis(side=1, at=axisLabels1$at,
+                                labels=formatLonLat(axisLabels1$value, "longitude", axisStyle=axisStyle),
+                                mgp=mgp)
                     }
                     axisLabels2 <- subset(axisLabels, axisLabels$side==2)
                     if (nrow(axisLabels2) > 0) {
-                        ##> message("next is axisLabels2$at:");print(axisLabels2$at)
-                        ##> message("next is axisLabels2$value:");print(axisLabels2$value)
-                        ##> message("next is fixneg(axisLabels2$value)");print(fixneg(paste0(axisLabels2$value,"N")))
-                        axis(side=2, at=axisLabels2$at, labels=fixneg(paste0(axisLabels2$value,"N")), mgp=mgp)
+                        if (debug) {
+                            cat("About to draw mapAxis on side 2; next is axisLabels2:\n")
+                            print(axisLabels2)
+                        }
+                        axis(side=2, at=axisLabels2$at,
+                             labels=formatLonLat(axisLabels2$value, "latitude", axisStyle=axisStyle),
+                             mgp=mgp)
                     }
                 }
             } else {
                 if (is.logical(lonlabels)) {
-                    mapAxis(side=1, longitude=.axis()$longitude, latitude=FALSE, cex.axis=if (lonlabels) cex.axis else 0, mgp=mgp, debug=debug-1)
+                    mapAxis(side=1, longitude=.axis()$longitude, latitude=FALSE,
+                            cex.axis=if (lonlabels) cex.axis else 0, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
                 } else if (!is.null(lonlabels)) {
-                    mapAxis(side=1, longitude=lonlabels, latitude=FALSE, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
+                    mapAxis(side=1, longitude=lonlabels, latitude=FALSE,
+                            cex.axis=cex.axis, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
                 }
                 if (is.logical(latlabels)) {
-                    mapAxis(side=2, latitude=.axis()$latitude, longitude=FALSE, cex.axis=if (latlabels) cex.axis else 0, mgp=mgp, debug=debug-1)
+                    mapAxis(side=2, latitude=.axis()$latitude, longitude=FALSE,
+                            cex.axis=if (latlabels) cex.axis else 0, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
                 } else if (!is.null(latlabels)) {
-                    mapAxis(side=2, latitude=latlabels, longitude=FALSE, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
+                    mapAxis(side=2, latitude=latlabels, longitude=FALSE,
+                            cex.axis=cex.axis, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
                 }
             }
         }
@@ -2011,9 +1925,13 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 }
 
 
-#' Add a Longitude and Latitude Grid to a Map
+#' Add a Longitude and Latitude Grid to an Existing Map
 #'
 #' Plot longitude and latitude grid on an existing map.
+#' This is an advanced function, requiring
+#' coordination with [mapPlot()] and (possibly) also with [mapAxes()],
+#' and so it is best avoided by novices, who may be satisfied
+#' with the defaults used by [mapPlot()].
 #'
 #' This is somewhat analogous to [grid()], except that the
 #' first two arguments of the latter supply the number of lines in the grid,
@@ -2054,25 +1972,21 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #' 3 to go all the way to the core functions. Any value above 3 will be
 #' truncated to 3.
 #'
-#' @section Plans:
-#' At the moment, the function cannot determine which lines might
-#' work with labels on axes, but this could perhaps be added later, making
-#' this more analogous with [grid()].
-#'
 #' @examples
 #'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
-#' mapPlot(coastlineWorld, type='l', grid=FALSE,
-#' longitudelim=c(-80, 10), latitudelim=c(0, 120),
-#' projection="+proj=ortho")
-#' mapGrid(15, 15, polarCircle=15)
-#'}
+#' par(mar=c(2, 2, 1, 1))
+#' # In mapPlot() call, note axes and grid args, to
+#' # prevent over-plotting of defaults.
+#' mapPlot(coastlineWorld, type="l", projection="+proj=ortho",
+#'         axes=FALSE, grid=FALSE)
+#' mapGrid(15, 15)}
 #'
-#' @return A [data.frame], returned silently, containing `"side"`, `"value"`, `"type"`, and `"at"`.
-#' As of January, 2020, this is used within [mapPlot()] to draw axes on the bottom and left
-#' sides of the plot area, circumventing a previous (much slower) scheme in which
-#' [mapAxis] had been called.
+#' @return A [data.frame], returned silently, containing
+#' `"side"`, `"value"`, `"type"`, and `"at"`.
+#' A default call to [mapPlot()] ensures agreement of grid and axes by using
+#' this return value in a call to [mapAxis()].
 #'
 #' @author Dan Kelley
 #'
