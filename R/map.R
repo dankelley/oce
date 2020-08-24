@@ -1897,9 +1897,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         cat(vectorShow(ts))
                     }
                     oceDebug(debug, "t: ", t, "(scale between ticks, in deg)\n")
-                    ## message("tickEW: ", tickEW)
-                    ## message("tickNS: ", tickNS)
-                    ## message("tick: ", tick)
                     if (!is.finite(t)) {
                         grid <- c(5, 5) # may be ok in many instances
                     } else {
