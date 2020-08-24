@@ -568,6 +568,11 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
     axisSpan <- max(usr[2]-usr[1], usr[4]-usr[3])
     usr <- par("usr")
     if (1 %in% side) {
+        ## Infer positions of labels on the vertical axis by casting a grid on
+        ## that axis in x-y space, transforming this to lon-lat space, setting
+        ## up a piecewise linear model of x as a function of longitude, and then
+        ## using that function at longitudes of interest, to get the "x"
+        ## locations for axis ticks.
         oceDebug(debug, "drawing axis on side 1\n")
         oceDebug(debug, vectorShow(longitude))
         tn <- 100
@@ -575,17 +580,20 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
         tx <- seq(usr[1], usr[2], length.out=tn)
         ty <- rep(usr[3], tn)
         tt <- map2lonlat(tx, ty, debug=debug-1)
-        owarn <- options("warn")$warn
-        options(warn=-1) # avoid warnings from regularize()
-        tfcn <- try(approxfun(tt$longitude, tx), silent=TRUE)
-        options(warn=owarn)
-        if (!inherits(tfcn, "try=error")) {
-            at <- tfcn(longitude)
-            if (any(is.finite(at)))
-                axis(side=1, at=at, label=formatLonLat(longitude, "longitude", axisStyle=axisStyle))
+        if (2 < sum(is.finite(tt$longitude))) { # need 2 points to set up transformation
+            owarn <- options("warn")$warn
+            options(warn=-1) # avoid warnings from regularize()
+            tfcn <- try(approxfun(tt$longitude, tx), silent=TRUE)
+            options(warn=owarn)
+            if (!inherits(tfcn, "try=error")) {
+                at <- tfcn(longitude)
+                if (any(is.finite(at)))
+                    axis(side=1, at=at, label=formatLonLat(longitude, "longitude", axisStyle=axisStyle))
+            }
         }
     }
     if (2 %in% side) {
+        ## See the notes at side=1 for the method.
         oceDebug(debug, "drawing axis on side 2\n")
         oceDebug(debug, vectorShow(latitude))
         tn <- 100
@@ -593,14 +601,16 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
         tx <- rep(usr[1], tn)
         ty <- seq(usr[3], usr[4], length.out=tn)
         tt <- map2lonlat(tx, ty, debug=debug-1)
-        owarn <- options("warn")$warn
-        options(warn=-1) # avoid warnings from regularize()
-        tfcn <- try(approxfun(tt$latitude, ty), silent=TRUE)
-        options(warn=owarn)
-        if (!inherits(tfcn, "try-error")) {
-            at <- tfcn(latitude)
-            if (any(is.finite(at)))
-                axis(side=2, at=at, label=formatLonLat(latitude, "latitude", axisStyle=axisStyle))
+        if (2 < sum(is.finite(tt$latitude))) {
+            owarn <- options("warn")$warn
+            options(warn=-1) # avoid warnings from regularize()
+            tfcn <- try(approxfun(tt$latitude, ty), silent=TRUE)
+            options(warn=owarn)
+            if (!inherits(tfcn, "try-error")) {
+                at <- tfcn(latitude)
+                if (any(is.finite(at)))
+                    axis(side=2, at=at, label=formatLonLat(latitude, "latitude", axisStyle=axisStyle))
+            }
         }
     }
     if (3 %in% side) {
@@ -1929,7 +1939,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #'
 #' Plot longitude and latitude grid on an existing map.
 #' This is an advanced function, requiring
-#' coordination with [mapPlot()] and (possibly) also with [mapAxes()],
+#' coordination with [mapPlot()] and (possibly) also with [mapAxis()],
 #' and so it is best avoided by novices, who may be satisfied
 #' with the defaults used by [mapPlot()].
 #'
@@ -3008,62 +3018,19 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' 1. \url{http://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
 #'
 #' @examples
-#'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' data(topoWorld)
 #'
-#' ## 1. topography
-#' par(mfrow=c(2, 1), mar=c(2, 2, 1, 1))
-#' lonlim <- c(-70, -50)
-#' latlim <- c(40, 50)
-#' topo <- decimate(topoWorld, by=2) # coarse to illustrate filled contours
-#' topo <- subset(topo, latlim[1] < latitude & latitude < latlim[2])
-#' topo <- subset(topo, lonlim[1] < longitude & longitude < lonlim[2])
-#' mapPlot(coastlineWorld, type='l',
-#'         longitudelim=lonlim, latitudelim=latlim,
-#'         projection="+proj=lcc +lat_1=40 +lat_2=50 +lon_0=-60")
-#' breaks <- seq(-5000, 1000, 500)
-#' mapImage(topo, col=oce.colorsGebco, breaks=breaks)
-#' mapLines(coastlineWorld)
-#' box()
-#' mapPlot(coastlineWorld, type='l',
-#'         longitudelim=lonlim, latitudelim=latlim,
-#'         projection="+proj=lcc +lat_1=40 +lat_2=50 +lon_0=-60")
-#' mapImage(topo, filledContour=TRUE, col=oce.colorsGebco, breaks=breaks)
-#' box()
-#' mapLines(coastlineWorld)
-#'
-#' ## 2. Northern polar region, with color-coded bathymetry
-#' par(mfrow=c(1,1))
-#' drawPalette(c(-5000, 0), zlim=c(-5000, 0), col=oce.colorsViridis)
-#' mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-#'         longitudelim=c(-180,180), latitudelim=c(60,120))
-#' mapImage(topoWorld, zlim=c(-5000, 0), col=oce.colorsViridis)
-#' mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
-#'
-#' ## 3. Levitus SST
-#' par(mfrow=c(1,1))
-#' if (requireNamespace("ocedata", quietly=TRUE)) {
-#'     data(levitus, package='ocedata')
-#'     lon <- levitus$longitude
-#'     lat <- levitus$latitude
-#'     SST <- levitus$SST
-#'     par(mar=rep(1, 4))
-#'     Tlim <- c(-2, 30)
-#'     drawPalette(Tlim, col=oce.colorsViridis)
-#'     mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
-#'     mapImage(lon, lat, SST, col=oce.colorsViridis, zlim=Tlim)
-#'     mapPolygon(coastlineWorld, col='gray')
-#'}
-#'
-#' ## 4. Topography without drawing a coastline first
-#' data(topoWorld)
-#' cm <- colormap(topoWorld[['z']], name='gmt_relief')
+#' ## Northern polar region, with color-coded bathymetry
+#' par(mfrow=c(1,1), mar=c(2,2,1,1))
+#' cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
 #' drawPalette(colormap=cm)
-#' mapPlot(c(-180,180), c(-90,90), type="n") # defaults to moll projection
+#' mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
+#'         longitudelim=c(-180,180), latitudelim=c(70,110))
 #' mapImage(topoWorld, colormap=cm)
-#'}
+#' mapGrid(15, 15, polarCircle=1, col=gray(0.2))
+#' mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
 #'
 #' @author Dan Kelley
 #'

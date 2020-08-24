@@ -63,7 +63,7 @@ this return value in a call to \code{\link[=mapAxis]{mapAxis()}}.
 \description{
 Plot longitude and latitude grid on an existing map.
 This is an advanced function, requiring
-coordination with \code{\link[=mapPlot]{mapPlot()}} and (possibly) also with \code{\link[=mapAxes]{mapAxes()}},
+coordination with \code{\link[=mapPlot]{mapPlot()}} and (possibly) also with \code{\link[=mapAxis]{mapAxis()}},
 and so it is best avoided by novices, who may be satisfied
 with the defaults used by \code{\link[=mapPlot]{mapPlot()}}.
 }
