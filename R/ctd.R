@@ -4966,8 +4966,8 @@ plotProfile <- function(x,
     if (is.na(ytypeIndex))
         stop('ytype must be one of: "pressure", "z", "depth", "sigmaTheta", but it is "', ytype, '"')
     ytype <- ytypeChoices[ytypeIndex]
-    if (!is.null(ylab) && ylab == "") {
-        yname <- ""
+    if (!is.null(ylab)) {
+        yname <- ylab
     } else {
         yname <- switch(ytype,
                         pressure=resizableLabel("p", "y", debug=debug-1),
