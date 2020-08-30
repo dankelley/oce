@@ -36,7 +36,7 @@ ground between this and the \code{clipPolys} function in the
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineCut(coastlineWorld, lon_0=100),
-        proj="+proj=moll +lon_0=100", col='gray')
+        projection="+proj=moll +lon_0=100", col='gray')
 }
 
 }

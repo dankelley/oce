@@ -12,6 +12,7 @@ addons:
             - libudunits2-dev
             - libproj-dev
             - libnetcdf-dev
+            - libudunits2-dev
             - netcdf-bin
 
 r_packages:
@@ -20,6 +21,7 @@ r_packages:
     - rgeos
     - ncdf4
     - covr
+    - sf
     - sp
 env:
     global:

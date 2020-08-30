@@ -34,11 +34,11 @@ guided by real-world usage.
 library(oce)
 data(coastlineWorld)
 par(mar=c(2, 2, 1, 1))
-plot(coastlineWorld, proj=oceCRS("Atlantic"), span=12000)
-plot(coastlineWorld, proj=oceCRS("North Atlantic"), span=8000)
-plot(coastlineWorld, proj=oceCRS("South Atlantic"), span=8000)
-plot(coastlineWorld, proj=oceCRS("Arctic"), span=4000)
-plot(coastlineWorld, proj=oceCRS("Antarctic"), span=10000)
+plot(coastlineWorld, projection=oceCRS("Atlantic"), span=12000)
+plot(coastlineWorld, projection=oceCRS("North Atlantic"), span=8000)
+plot(coastlineWorld, projection=oceCRS("South Atlantic"), span=8000)
+plot(coastlineWorld, projection=oceCRS("Arctic"), span=4000)
+plot(coastlineWorld, projection=oceCRS("Antarctic"), span=10000)
 # Avoid ugly horizontal lines, an artifact of longitude shifting.
 # Note: we cannot fill the land once we shift, either.
 pacific <- coastlineCut(coastlineWorld, -180)

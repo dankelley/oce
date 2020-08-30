@@ -70,8 +70,13 @@ retrieve derived items.
 }
 
 \references{
-A users's manual for the LISST-100 instrument is available at
-the manufacturer's website \url{http://www.sequoiasci.com}.
+A users's manual for the LISST-200 instrument (a replacement
+for the LISST-100 for which \CRANpkg{oce} support was originally intended)
+is available at the manufacturer's website
+\url{https://www.sequoiasci.com}
+in a file named
+\code{wp-content/uploads/2016/02/LISST-200X_Users_Manual_v1_3B.pdf}
+as of 2020-08-03.
 }
 \seealso{
 Other classes provided by oce: 

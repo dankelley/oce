@@ -1,5 +1,4 @@
-# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
-
+# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 #' Class to Store Argo Data
 #'
 #' This class stores data from Argo floats.
@@ -10,9 +9,6 @@
 #' [subset,argo-method()].  Plots can be made with
 #' [plot,argo-method()], while [summary,argo-method()]
 #' produces statistical summaries and `show` produces overviews.
-#'
-#' See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some
-#' argo-related datasets that may be useful in a wider context.
 #'
 #' @templateVar class argo
 #'
@@ -434,7 +430,7 @@ getData <- function(file, name, quiet=FALSE)
 #'
 #' @references
 #' 1. Argo User's Manual Version 3.3, Nov 89th, 2019, available at
-#' \url{https://archimer.ifremer.fr/doc/00187/29825/}
+#' \url{https://archimer.ifremer.fr/doc/00187/29825/} online.
 #'
 #' 2. Argo list of parameters in an excel spreadsheet, available at
 #' \url{http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
@@ -551,13 +547,12 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' plotTS(subset(argo, "adjusted"))
 #'
 #' # Example 4. Subset by a polygon determined with locator()
-#'\dontrun{
-#' par(mfrow=c(2, 1))
+#' par(mfrow=c(1, 2))
 #' plot(argo, which="map")
-#' bdy <- locator(4) # Click the mouse on 4 boundary points
+#' ## Can get a boundary with e.g. locator(4)
+#' bdy <- list(x=c(-65, -40, -40, -65), y=c(65, 65, 45, 45))
 #' argoSubset <- subset(argo, within=bdy)
 #' plot(argoSubset, which="map")
-#'}
 #'
 #' @author Dan Kelley
 #'
@@ -572,11 +567,11 @@ setMethod(f="subset",
               dots <- list(...)
               dotsNames <- names(dots)
               withinGiven <- length(dots) && ("within" %in% dotsNames)
-              debug <- getOption("oceDebug")
-              if (length(dots) && ("debug" %in% names(dots)))
-                  debug <- dots$debug
+              debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
+              oceDebug(debug, "subset,argo-method() {\n", sep="", unindent=1, style="bold")
               if (withinGiven) {
-                  oceDebug(debug, "subsetting with 'within' method")
+                  oceDebug(debug, "subsetting with 'within' method\n")
+                  ## {{{ OLD 'sp::point.in.polygon' method
                   polygon <- dots$within
                   if (!is.data.frame(polygon) && !is.list(polygon))
                       stop("'within' must be a data frame or a polygon")
@@ -602,9 +597,22 @@ setMethod(f="subset",
                   } else {
                       stop("cannot use 'within' because the 'sp' package is not installed")
                   }
+                  ## }}}
+                  ## {{{ NEW 'sf' method
+                  ## Compare with 'sf' results
+                  polyNew <- sf::st_polygon(list(outer=cbind(c(lonp, lonp[1]), c(latp, latp[1]))))
+                  pointsNew <- sf::st_multipoint(cbind(lon, lat))
+                  insideNew <- sf::st_intersection(pointsNew, polyNew)
+                  keepNew <- matrix(pointsNew %in% insideNew, ncol=2)[,1]
+                  if (!all.equal(keepNew, keep)) {
+                      warning("subset,argo-method disagreement between old 'sp' method and new 'sf' method\n")
+                  } else {
+                      oceDebug(debug, "subset,argo-method: old 'sp' method and new 'sf' method gave identical results\n");
+                  }
+                  ## }}}
                   ## Metadata
                   for (name in names(x@metadata)) {
-                      oceDebug(debug, "subsetting metadata item named '", name, "'\n", sep="")
+                      oceDebug(debug>2, "subsetting metadata item named '", name, "'\n", sep="")
                       ## Pass oce-generated things through directly.
                       if (name %in% c("units", "flags", "filename", "flagScheme", "dataNamesOriginal")) {
                           ##.message("  ... special case, so passed directly")
@@ -631,7 +639,7 @@ setMethod(f="subset",
                   }
                   ## Data
                   for (name in names(x@data)) {
-                      oceDebug(debug, "subsetting data item named '", name, "'\n", sep="")
+                      oceDebug(debug>2, "subsetting data item named '", name, "'\n", sep="")
                       item <- x@data[[name]]
                       if ("time" == name) {
                           ##.message("'", name, "' is time (not a vector)")
@@ -776,6 +784,7 @@ setMethod(f="subset",
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset.argo(x, subset=", subsetString, ")", sep=""))
                   }
               }
+              oceDebug(debug, "} # subset,argo-method\n", sep="", unindent=1, style="bold")
               res
           })
 
@@ -1033,8 +1042,8 @@ argoDecodeFlags <- function(f) # local function
 #' @references
 #' 1. \url{http://www.argo.ucsd.edu/}
 #'
-#' 2. Argo User's Manual Version 3.3, Nov 89th, 2019, available at
-#' \url{https://archimer.ifremer.fr/doc/00187/29825/}
+#' 2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
+#' \url{https://archimer.ifremer.fr/doc/00187/29825/} online.
 #'
 #' 3. User's Manual (ar-um-02-01) 13 July 2010, available at
 #' \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf},
@@ -1694,11 +1703,9 @@ setMethod(f="plot",
                       " ...) {\n", sep="", unindent=1, style="bold")
               coastline <- match.arg(coastline)
               nw  <- length(which)
-              if (nw > 1) {
-                  par(mfcol=c(1, nw), mgp=mgp, mar=mar)
-              } else {
-                  par(mgp=mgp, mar=mar)
-              }
+              if (nw > 1)
+                  par(mfcol=c(1, nw))
+              par(mgp=mgp, mar=mar)
               if (missing(level) || level == "all")
                   level <- seq(1L, dim(x@data$temperature)[1])
               longitude <- x[["longitude"]]
@@ -1742,7 +1749,8 @@ setMethod(f="plot",
               }
               for (w in 1:nw) {
                   if (which[w] == 1) {
-                      oceDebug(debug, "which[", w, "] ==1, so plotting a map\n")
+                      oceDebug(debug, "which[", w, "] == 1, so plotting a map\n")
+                      oceDebug(debug, "note: par(\"mfrow\") = ", paste(par("mfrow"), collapse=","), "\n")
                       ## map
                       ## FIXME: coastline selection should be DRY
                       haveCoastline <- FALSE
@@ -1786,6 +1794,7 @@ setMethod(f="plot",
                       ## if (!is.character(coastline)) stop("coastline must be a character string")
 
                       if (!is.null(projection)) {
+                          oceDebug(debug, "drawing an argo map with a projection\n")
                           meanlat <- mean(x[['latitude']], na.rm=TRUE)
                           meanlon <- mean(x[['longitude']], na.rm=TRUE)
                           ## id <- pmatch(projection, "automatic")
@@ -1811,6 +1820,7 @@ setMethod(f="plot",
                               }
                           }
                       } else {
+                          oceDebug(debug, "drawing an argo map without a projection\n")
                           asp <- 1 / cos(mean(range(x@data$latitude, na.rm=TRUE)) * atan2(1, 1) / 45)
                           plot(x@data$longitude, x@data$latitude, asp=asp,
                                type=type, cex=cex, pch=pch,
@@ -1904,7 +1914,9 @@ setMethod(f="plot",
 #' @template handleFlagsTemplate
 #'
 #' @references
-#' 1. \url{http://www.argo.ucsd.edu/Argo_date_guide.html#dmodedata}
+#' 1. Wong, Annie, Robert Keeley, Thierry Carval, and Argo Data Management Team.
+#' “Argo Quality Control Manual for CTD and Trajectory Data,” January 1, 2020.
+#' \url{https://archimer.ifremer.fr/doc/00228/33951}.
 #'
 #' @examples
 #' library(oce)

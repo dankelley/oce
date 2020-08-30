@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapGrid}
 \alias{mapGrid}
-\title{Add a Longitude and Latitude Grid to a Map}
+\title{Add a Longitude and Latitude Grid to an Existing Map}
 \usage{
 mapGrid(
   dlongitude = 15,
@@ -50,32 +50,38 @@ that function.}
 \item{latitudelim}{similar to \code{longitudelim}.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
-amount of debugging information, or to 2 to get more.}
+amount of debugging information, 2 to go two function levels deep, or
+3 to go all the way to the core functions. Any value above 3 will be
+truncated to 3.}
+}
+\value{
+A \link{data.frame}, returned silently, containing
+\code{"side"}, \code{"value"}, \code{"type"}, and \code{"at"}.
+A default call to \code{\link[=mapPlot]{mapPlot()}} ensures agreement of grid and axes by using
+this return value in a call to \code{\link[=mapAxis]{mapAxis()}}.
 }
 \description{
 Plot longitude and latitude grid on an existing map.
+This is an advanced function, requiring
+coordination with \code{\link[=mapPlot]{mapPlot()}} and (possibly) also with \code{\link[=mapAxis]{mapAxis()}},
+and so it is best avoided by novices, who may be satisfied
+with the defaults used by \code{\link[=mapPlot]{mapPlot()}}.
 }
 \details{
 This is somewhat analogous to \code{\link[=grid]{grid()}}, except that the
 first two arguments of the latter supply the number of lines in the grid,
 whereas the present function has increments for the first two arguments.
 }
-\section{Plans}{
-
-At the moment, the function cannot determine which lines might
-work with labels on axes, but this could perhaps be added later, making
-this more analogous with \code{\link[=grid]{grid()}}.
-}
-
 \examples{
 \donttest{
 library(oce)
 data(coastlineWorld)
-mapPlot(coastlineWorld, type='l', grid=FALSE,
-longitudelim=c(-80, 10), latitudelim=c(0, 120),
-projection="+proj=ortho")
-mapGrid(15, 15, polarCircle=15)
-}
+par(mar=c(2, 2, 1, 1))
+# In mapPlot() call, note axes and grid args, to
+# prevent over-plotting of defaults.
+mapPlot(coastlineWorld, type="l", projection="+proj=ortho",
+        axes=FALSE, grid=FALSE)
+mapGrid(15, 15)}
 
 }
 \seealso{

@@ -94,7 +94,9 @@ df[11:15,] # notice line 13
 }
 \references{
 \enumerate{
-\item \url{http://www.argo.ucsd.edu/Argo_date_guide.html#dmodedata}
+\item Wong, Annie, Robert Keeley, Thierry Carval, and Argo Data Management Team.
+“Argo Quality Control Manual for CTD and Trajectory Data,” January 1, 2020.
+\url{https://archimer.ifremer.fr/doc/00228/33951}.
 }
 }
 \seealso{

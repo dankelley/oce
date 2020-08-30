@@ -56,7 +56,7 @@
 #' lonR <- tail(lon, 1)
 #' latR <- tail(lat, 1)
 #' data(coastlineWorld)
-#' mapPlot(coastlineWorld, proj="+proj=merc",
+#' mapPlot(coastlineWorld, projection="+proj=merc",
 #'         longitudelim=c(-75,-65), latitudelim=c(35,43), col="gray")
 #' mapPoints(lon, lat)
 #' XY <- geodXy(lon,lat,mean(lon), mean(lat))

@@ -69,6 +69,21 @@ if (requireNamespace("rgdal", quietly=TRUE)) {
               expect_equal(cs, cs2)
             }
 })
+
+  test_that("temporary tests (for rgdal/sf transition)", {
+            data(coastlineWorld)
+            par(mar=c(2,2,1,1))
+            options(warn=3)
+            mapPlot(coastlineWorld, projection="+proj=moll", col="gray")
+            mapPlot(coastlineWorld, projection="+proj=ortho", col="gray")
+            mapPlot(coastlineCut(coastlineWorld,-100),
+                    longitudelim=c(-130,-55), latitudelim=c(35,60),
+                    projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col="gray")
+            mapPlot(coastlineCut(coastlineWorld, -135),
+                    longitudelim=c(-130, 50), latitudelim=c(70, 110),
+                    projection="+proj=stere +lat_0=90 +lon_0=-135", col="gray")
+})
+
 }
 
 

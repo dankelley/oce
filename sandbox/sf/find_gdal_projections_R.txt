@@ -1,0 +1,280 @@
+Loading required package: sp
+rgdal: version: 1.4-8, (SVN revision 845)
+ Geospatial Data Abstraction Library extensions to R successfully loaded
+ Loaded GDAL runtime: GDAL 2.4.2, released 2019/06/28
+ Path to GDAL shared files: /usr/local/Cellar/gdal/2.4.2_4/share/gdal
+ GDAL binary built with GEOS: TRUE 
+ Loaded PROJ.4 runtime: Rel. 6.3.0, January 1st, 2020, [PJ_VERSION: 621]
+ Path to PROJ.4 shared files: (autodetected)
+ Linking to sp version: 1.3-2 
+Linking to GEOS 3.8.0, GDAL 2.4.2, PROJ 6.2.1
+aea 
+proj_create: Error -21: conic lat_1 = -lat_2
++proj=aea +lat_1=10 +lat_2=20  TRUE (first way)
+aeqd 
++proj=aeqd  TRUE (second way)
+affine 
+airy 
+aitoff 
+alsk 
+apian 
+august 
+axisswap 
+proj_create: Error -47: illegal axis orientation combination
+proj_create: Error -47: illegal axis orientation combination
+bacon 
+bertin1953 
+bipc 
+boggs 
+bonne 
+proj_create: Error -23: lat_1 = 0
++proj=bonne +lat_1=10 +lat_2=20  TRUE (first way)
+calcofi 
+cart 
+cass 
++proj=cass  TRUE (second way)
+cc 
+ccon 
+proj_create: Error -23: lat_1 = 0
+cea 
++proj=cea  TRUE (second way)
+chamb 
+proj_create: Error -25: no distance between control points
+collg 
+comill 
+crast 
+deformation 
+proj_create: Error -1: no arguments in initialization list
+proj_create: Error -1: no arguments in initialization list
+denoy 
+eck1 
++proj=eck1  TRUE (second way)
+eck2 
++proj=eck2  TRUE (second way)
+eck3 
++proj=eck3  TRUE (second way)
+eck4 
++proj=eck4  TRUE (second way)
+eck5 
++proj=eck5  TRUE (second way)
+eck6 
++proj=eck6  TRUE (second way)
+eqearth 
+eqc 
++proj=eqc  TRUE (second way)
+eqdc 
+proj_create: Error -21: conic lat_1 = -lat_2
++proj=eqdc +lat_1=10 +lat_2=20  TRUE (first way)
+euler 
+proj_create: Error -41: lat_1 or lat_2 not specified
+etmerc 
++proj=etmerc  TRUE (second way)
+fahey 
+fouc 
+fouc_s 
+gall 
++proj=gall  TRUE (second way)
+geoc 
+geogoffset 
+geos 
+proj_create: Error -30: h <= 0 or h > 1e10 * a
+proj_create: Error -30: h <= 0 or h > 1e10 * a
+gins8 
+gn_sinu 
+proj_create: Error -39: both n & m must be spec'd and > 0
+proj_create: Error -39: both n & m must be spec'd and > 0
+gnom 
++proj=gnom  TRUE (second way)
+goode 
++proj=goode  TRUE (second way)
+gs48 
+gs50 
+hammer 
+hatano 
+healpix 
+rhealpix 
+helmert 
+hgridshift 
+proj_create: Error -1: no arguments in initialization list
+proj_create: Error -1: no arguments in initialization list
+horner 
+proj_create: Error -54: missing required arguments
+proj_create: Error -54: missing required arguments
+igh 
++proj=igh  TRUE (second way)
+imw_p 
+proj_create: Error -41: lat_1 or lat_2 not specified
++proj=imw_p +lat_1=10 +lat_2=20  TRUE (first way)
+isea 
+kav5 
+kav7 
+krovak 
++proj=krovak  TRUE (second way)
+labrd 
+proj_create: Error -55: lat_0 = 0
+proj_create: Error -55: lat_0 = 0
+laea 
++proj=laea  TRUE (second way)
+lagrng 
+larr 
+lask 
+lonlat 
+latlon 
+lcc 
+proj_create: Error -21: conic lat_1 = -lat_2
++proj=lcc +lat_1=10 +lat_2=20  TRUE (first way)
+lcca 
+proj_create: Error -55: lat_0 = 0
+proj_create: Error -55: lat_0 = 0
+leac 
+lee_os 
+loxim 
+lsat 
+proj_create: Error -28: lsat not in 1-5 range
+proj_create: Error -28: lsat not in 1-5 range
+mbt_s 
+mbt_fps 
+mbtfpp 
+mbtfpq 
+mbtfps 
+merc 
++proj=merc  TRUE (second way)
+mil_os 
+mill 
++proj=mill  TRUE (second way)
+misrsom 
+proj_create: Error -29: path not in range
+proj_create: Error -29: path not in range
+moll 
++proj=moll  TRUE (second way)
+molobadekas 
+proj_create: Error -54: missing required arguments
+proj_create: Error -54: missing required arguments
+molodensky 
+proj_create: Error -1: no arguments in initialization list
+proj_create: Error -1: no arguments in initialization list
+murd1 
+proj_create: Error -41: lat_1 or lat_2 not specified
+murd2 
+proj_create: Error -41: lat_1 or lat_2 not specified
+murd3 
+proj_create: Error -41: lat_1 or lat_2 not specified
+natearth 
+natearth2 
+nell 
+nell_h 
+nicol 
+nsper 
+proj_create: Error -30: h <= 0 or h > 1e10 * a
+proj_create: Error -30: h <= 0 or h > 1e10 * a
+nzmg 
++proj=nzmg  TRUE (second way)
+noop 
+ob_tran 
+proj_create: Error -26: projection not selected to be rotated
+proj_create: Error -26: projection not selected to be rotated
+ocea 
+oea 
+proj_create: Error -39: both n & m must be spec'd and > 0
+proj_create: Error -39: both n & m must be spec'd and > 0
+omerc 
+proj_create: Error -33: lat_0 = 0 or 90 or alpha = 90
++proj=omerc +lat_1=10 +lat_2=20  TRUE (first way)
+ortel 
+ortho 
++proj=ortho  TRUE (second way)
+pconic 
+proj_create: Error -41: lat_1 or lat_2 not specified
+patterson 
+pipeline 
+proj_create: Error -50: malformed pipeline
+proj_create: Error -50: malformed pipeline
+poly 
++proj=poly  TRUE (second way)
+pop 
+push 
+putp1 
+putp2 
+putp3 
+putp3p 
+putp4p 
+putp5 
+putp5p 
+putp6 
+putp6p 
+qua_aut 
+qsc 
++proj=qsc  TRUE (second way)
+robin 
++proj=robin  TRUE (second way)
+rouss 
+rpoly 
+sch 
+proj_create: Error -37: failed to find projection to be rotated
+proj_create: Error -37: failed to find projection to be rotated
+sinu 
++proj=sinu  TRUE (second way)
+somerc 
++proj=somerc  TRUE (second way)
+stere 
++proj=stere  TRUE (second way)
+sterea 
++proj=sterea  TRUE (second way)
+gstmerc 
++proj=gstmerc  TRUE (second way)
+tcc 
+tcea 
+times 
+tissot 
+proj_create: Error -41: lat_1 or lat_2 not specified
+tmerc 
++proj=tmerc  TRUE (second way)
+tobmerc 
+tpeqd 
+proj_create: Error -25: no distance between control points
++proj=tpeqd +lat_1=10 +lat_2=20  TRUE (first way)
+tpers 
+proj_create: Error -30: h <= 0 or h > 1e10 * a
+proj_create: Error -30: h <= 0 or h > 1e10 * a
+unitconvert 
+ups 
+urm5 
+proj_create: Error -40: n <= 0, n > 1 or not specified
+proj_create: Error -40: n <= 0, n > 1 or not specified
+urmfps 
+proj_create: Error -40: n <= 0, n > 1 or not specified
+proj_create: Error -40: n <= 0, n > 1 or not specified
+utm 
++proj=utm  TRUE (second way)
+vandg 
++proj=vandg  TRUE (second way)
+vandg2 
+vandg3 
+vandg4 
+vitk1 
+proj_create: Error -41: lat_1 or lat_2 not specified
+vgridshift 
+proj_create: Error -1: no arguments in initialization list
+proj_create: Error -1: no arguments in initialization list
+wag1 
++proj=wag1  TRUE (second way)
+wag2 
++proj=wag2  TRUE (second way)
+wag3 
++proj=wag3  TRUE (second way)
+wag4 
++proj=wag4  TRUE (second way)
+wag5 
++proj=wag5  TRUE (second way)
+wag6 
++proj=wag6  TRUE (second way)
+wag7 
++proj=wag7  TRUE (second way)
+webmerc 
+weren 
+wink1 
+wink2 
+wintri 
+1 total projections,  47 supported,  115 unsupported
+Supported:  aea, aeqd, bonne, cass, cea, eck1, eck2, eck3, eck4, eck5, eck6, eqc, eqdc, etmerc, gall, gnom, goode, igh, imw_p, krovak, laea, lcc, merc, mill, moll, nzmg, omerc, ortho, poly, qsc, robin, sinu, somerc, stere, sterea, gstmerc, tmerc, tpeqd, utm, vandg, wag1, wag2, wag3, wag4, wag5, wag6, wag7 
+Not supported:  affine, airy, aitoff, alsk, apian, august, axisswap, bacon, bertin1953, bipc, boggs, calcofi, cart, cc, ccon, chamb, collg, comill, crast, deformation, denoy, eqearth, euler, fahey, fouc, fouc_s, geoc, geogoffset, geos, gins8, gn_sinu, gs48, gs50, hammer, hatano, healpix, rhealpix, helmert, hgridshift, horner, isea, kav5, kav7, labrd, lagrng, larr, lask, lonlat, latlon, lcca, leac, lee_os, loxim, lsat, mbt_s, mbt_fps, mbtfpp, mbtfpq, mbtfps, mil_os, misrsom, molobadekas, molodensky, murd1, murd2, murd3, natearth, natearth2, nell, nell_h, nicol, nsper, noop, ob_tran, ocea, oea, ortel, pconic, patterson, pipeline, pop, push, putp1, putp2, putp3, putp3p, putp4p, putp5, putp5p, putp6, putp6p, qua_aut, rouss, rpoly, sch, tcc, tcea, times, tissot, tobmerc, tpers, unitconvert, ups, urm5, urmfps, vandg2, vandg3, vandg4, vitk1, vgridshift, webmerc, weren, wink1, wink2, wintri 

@@ -2,6 +2,7 @@
 % Please edit documentation in R/section.R
 \name{handleFlags,section-method}
 \alias{handleFlags,section-method}
+\alias{handleFlags.section}
 \title{Handle flags in Section Objects}
 \usage{
 \S4method{handleFlags}{section}(

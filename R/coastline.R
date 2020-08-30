@@ -1,3 +1,5 @@
+## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
+
 #' Class to Store Coastline Data
 #'
 #' This class stores coastline data.
@@ -146,6 +148,8 @@ setMethod(f="[[<-",
 #' @family functions that subset oce objects
 #'
 #' @author Dan Kelley
+#'
+#' @aliases subset.coastline
 setMethod(f="subset",
           signature="coastline",
           definition=function(x, subset, ...) {
@@ -165,9 +169,9 @@ setMethod(f="subset",
               ## conversion of && to & and <= to <) for the pattern matching
               ## to work simply.
               s0 <- deparse(substitute(expr=subset, env=environment()), width.cutoff=500)
+              oceDebug(debug, "subset,coastline-method(..., ", s0, ") {\n", unindent=1, sep="", style="bold")
               if (length(grep(">", s0)))
                   stop("the 'subset' may not contain the character '>'")
-              oceDebug(debug, "s0='", s0, "'\n", sep="")
               s1 <- gsub(" ", "", s0) # remove all spaces
               oceDebug(debug, "s1='", s1, "'\n", sep="")
               s2 <- gsub("&&", "&", gsub("=", "", gsub("[ ]*", "", s1))) # && becomes &
@@ -198,34 +202,13 @@ setMethod(f="subset",
               if (is.na(E)) stop("could not determine eastern longitude limit")
               if (is.na(S)) stop("could not determine southern latitude limit")
               if (is.na(N)) stop("could not determine northern latitude limit")
-              oceDebug(debug, "W=", W, ", E=", E, ", S=", S, ", N=", N)
+              oceDebug(debug, "W=", W, ", E=", E, ", S=", S, ", N=", N, "\n", sep="")
               res <- x
-              ##OLD ## FIXME: this is terrible. We gain nothing i.t.o. speed by merely setting to NA.
-              ##OLD keep <- W<=x@data$longitude & x@data$longitude<=E & S<=x@data$latitude & x@data$latitude<=N
-              ##OLD res@data$latitude[!keep] <- NA
-              ##OLD res@data$longitude[!keep] <- NA
-              ##old NAendpoints <- function(x) {
-              ##old     if (!is.na(x[1]))
-              ##old         x <- c(NA, x)
-              ##old     if (!is.na(x[length(x)]))
-              ##old         x <- c(x, NA)
-              ##old     x
-              ##old }
               cllon <- x[["longitude"]]
               cllat <- x[["latitude"]]
-              ##old norig <- length(cllon)
-              ## {{{ NEW method (see https://github.com/dankelley/oce/issues/1657)
               if (!requireNamespace("sf", quietly=TRUE))
                   stop("\"sf\" package must be installed for this to work")
               box <- sf::st_polygon(list(outer=cbind(c(W,W,E,E,W), c(S,N,N,S,S))))
-              ## }}}
-              ## {{{ OLD method maybe remove (see https://github.com/dankelley/oce/issues/1657)
-              ##OLD if (!requireNamespace("raster", quietly=TRUE))
-              ##OLD     stop("\"raster\" package must be installed for this to work")
-              ##OLD if (!requireNamespace("sp", quietly=TRUE))
-              ##OLD     stop("\"sp\" package must be installed for this to work")
-              ##OLD box <- as(raster::extent(W, E, S, N), "SpatialPolygons")
-              ##OLD ## }}}
               owarn <- options("warn")$warn
               options(warn=-1)
               na <- which(is.na(cllon))
@@ -234,6 +217,7 @@ setMethod(f="subset",
               outlon <- NULL
               outlat <- NULL
               for (iseg in 2:nseg) {
+                  oceDebug(debug, "iseg=", iseg, "\n")
                   look <- seq.int(na[iseg-1]+1, na[iseg]-1)
                   lon <- cllon[look]
                   if (any(is.na(lon))) stop("step 1: double lon NA at iseg=", iseg) # checks ok on coastlineWorld
@@ -249,31 +233,14 @@ setMethod(f="subset",
                       outlon <- c(outlon, NA, inside[[1]][,1])
                       outlat <- c(outlat, NA, inside[[1]][,2])
                   }
-                  ##OLD     if (length(lon) > 1) {
-                  ##OLD         A <- sp::Polygon(cbind(lon, lat))
-                  ##OLD         B <- sp::Polygons(list(A), "A")
-                  ##OLD         C <- sp::SpatialPolygons(list(B))
-                  ##OLD         i <- raster::intersect(box, C)
-                  ##OLD         if (!is.null(i)) {
-                  ##OLD             for (j in seq_along(i@polygons)) {
-                  ##OLD                 for (k in seq_along(i@polygons[[1]]@Polygons)) {
-                  ##OLD                     xy <- i@polygons[[j]]@Polygons[[k]]@coords
-                  ##OLD                     seglon <- xy[, 1]
-                  ##OLD                     seglat <- xy[, 2]
-                  ##OLD                     nnew <- nnew + length(seglon)
-                  ##OLD                     outlon <- c(outlon, NA, seglon)
-                  ##OLD                     outlat <- c(outlat, NA, seglat)
-                  ##OLD                     oceDebug(debug > 1, "iseg=", iseg, ", j=", j, ", k=", k, "\n", sep="")
-                  ##OLD                 }
-                  ##OLD             }
-                  ##OLD         }
-                  ##OLD     }
               }
+              ## }}}
               res@data$longitude <- outlon
               res@data$latitude <- outlat
               options(warn=owarn)
               res@processingLog <- processingLogAppend(res@processingLog,
                                                        paste("subset(x, ", s0, ")", sep=""))
+              oceDebug(debug, "} # subset,coastline-method\n", unindent=1, sep="", style="bold")
               res
           })
 
@@ -289,6 +256,8 @@ setMethod(f="subset",
 #' @family things related to coastline data
 #'
 #' @author Dan Kelley
+#'
+#' @aliases summary.coastline
 setMethod(f="summary",
           signature="coastline",
           definition=function(object, ...) {
@@ -517,9 +486,9 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' @family functions that plot oce data
 #' @family things related to coastline data
 #'
-#' @aliases plot.coastline
-#'
 #' @author Dan Kelley
+#'
+#' @aliases plot.coastline
 setMethod(f="plot",
           signature=signature("coastline"),
           definition=function (x,
@@ -554,7 +523,7 @@ setMethod(f="plot",
                        ", projection=\"", if (is.null(projection)) "NULL" else projection, "\"",
                        ", cex.axis=", cex.axis,
                        ", inset=", inset,
-                       ", ...) {\n", sep="", unindent=1)
+                       ", ...) {\n", sep="", unindent=1, style="bold")
               if (missing(clongitude) && !missing(projection) && length(grep("+lon_0", projection))) {
                   clongitude <- as.numeric(gsub(".*\\+lon_0=([^ ]*).*", "\\1", projection))
                   oceDebug(debug, "inferred clongitude=", clongitude, " from projection\n")
@@ -638,8 +607,8 @@ setMethod(f="plot",
                           lonlabels=lonlabels, latlabels=latlabels,
                           projection=projection,
                           debug=debug-1, ...)
-                  oceDebug(debug, "} # plot.coastline()\n", unindent=1)
-                  return(invisible(NULL))
+                  oceDebug(debug, "} # plot.coastline()\n", unindent=1, style="bold")
+                  return(invisible())
               }
               geographical <- round(geographical)
               if (geographical < 0 || geographical > 3)
@@ -758,7 +727,7 @@ setMethod(f="plot",
                   if (!missing(bg)) {
                       plot.window(xr, yr, asp=asp, xlab=xlab, ylab=ylab, xaxs="i", yaxs="i", log="", ...)
                       usr <- par("usr")
-                      oceDebug(debug, "drawing background; usr=", par('usr'), "bg=", bg, "\n")
+                      oceDebug(debug, "drawing background bg=", bg, vectorShow(par('usr')))
                       ## polygon(usr[c(1,2,2,1)], usr[c(3,3,4,4)], col=bg)
                       rect(usr[1], usr[3], usr[2], usr[4], col=bg)
                       par(new=TRUE)
@@ -794,8 +763,8 @@ setMethod(f="plot",
                       usrTrimmed[2] <- min( 180, usrTrimmed[2])
                       usrTrimmed[3] <- max( -90, usrTrimmed[3])
                       usrTrimmed[4] <- min(  90, usrTrimmed[4])
-                      oceDebug(debug, "usrTrimmed", usrTrimmed, "\n")
-                      oceDebug(debug, "par('usr')", par('usr'), "\n")
+                      oceDebug(debug, vectorShow(usrTrimmed))
+                      oceDebug(debug, vectorShow(par('usr')))
                       xlabels <- format(xr.pretty)
                       ylabels <- format(yr.pretty)
                       if (geographical >= 1) {
@@ -822,8 +791,8 @@ setMethod(f="plot",
                       oceDebug(debug, "putting right y axis at", usrTrimmed[2], "\n")
                   }
                   yaxp <- par("yaxp")
-                  oceDebug(debug, "par('yaxp')", par("yaxp"), "\n")
-                  oceDebug(debug, "par('pin')", par("pin"), "\n")
+                  oceDebug(debug, vectorShow(par("yaxp")))
+                  oceDebug(debug, vectorShow(par("pin")))
                   if (yaxp[1] < -90 | yaxp[2] > 90) {
                       warning("In plot,coastline-method() : should trim poles\n", call.=FALSE)
                   }
@@ -849,9 +818,9 @@ setMethod(f="plot",
                   }
               }
               ##box()
-              oceDebug(debug, "par('usr')=", par('usr'), "\n")
-              oceDebug(debug, "} # plot.coastline()\n", unindent=1)
-              invisible(NULL)
+              oceDebug(debug, vectorShow(par('usr')))
+              oceDebug(debug, "} # plot.coastline()\n", unindent=1, style="bold")
+              invisible()
           })
 
 #' Download a coastline File
@@ -968,7 +937,7 @@ read.coastline <- function(file,
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
     type <- match.arg(type)
-    oceDebug(debug, "read.coastline(file=\"", file, "\", type=\"", type, "\", ...) {\n", sep="", unindent=1)
+    oceDebug(debug, "read.coastline(file=\"", file, "\", type=\"", type, "\", ...) {\n", sep="", unindent=1, style="bold")
     file <- fullFilename(file)
     if (is.character(file)) {
         if (1 == length(grep(".zip$", file)))
@@ -1033,7 +1002,7 @@ read.coastline <- function(file,
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
-    oceDebug(debug, "} # read.coastline()\n", unindent=1)
+    oceDebug(debug, "} # read.coastline()\n", unindent=1, style="bold")
     res
 }
 
@@ -1085,7 +1054,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
-    oceDebug(debug, "read.shapefile(file=\"", file, "\", ...) {\n", sep="", unindent=1)
+    oceDebug(debug, "read.shapefile(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     shapeTypeList <- c("nullshape",    # 0
                        "point",        # 1
                        "not used",     # 2
@@ -1274,7 +1243,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
-    oceDebug(debug, "} # read.coastline.shapefile()\n", unindent=1)
+    oceDebug(debug, "} # read.coastline.shapefile()\n", unindent=1, style="bold")
     res
 }
 
@@ -1294,7 +1263,7 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
-    oceDebug(debug, "read.coastline.openstreetmap(file=\"", file, "\", ...) {\n", sep="", unindent=1)
+    oceDebug(debug, "read.coastline.openstreetmap(file=\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
     ## FIXME: ignoring lonlim and latlim
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -1346,7 +1315,7 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
-    oceDebug(debug, "} # read.coastline.openstreetmap()\n", unindent=1)
+    oceDebug(debug, "} # read.coastline.openstreetmap()\n", unindent=1, style="bold")
     res
 }
 
@@ -1438,7 +1407,7 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' library(oce)
 #' data(coastlineWorld)
 #' mapPlot(coastlineCut(coastlineWorld, lon_0=100),
-#'         proj="+proj=moll +lon_0=100", col='gray')
+#'         projection="+proj=moll +lon_0=100", col='gray')
 #'}
 #'
 #' @return a new coastline object

@@ -2,6 +2,7 @@
 % Please edit documentation in R/section.R
 \name{summary,section-method}
 \alias{summary,section-method}
+\alias{summary.section}
 \title{Summarize a Section Object}
 \usage{
 \S4method{summary}{section}(object, ...)

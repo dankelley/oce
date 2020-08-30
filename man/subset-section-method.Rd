@@ -2,6 +2,7 @@
 % Please edit documentation in R/section.R
 \name{subset,section-method}
 \alias{subset,section-method}
+\alias{subset.section}
 \title{Subset a Section Object}
 \usage{
 \S4method{subset}{section}(x, subset, ...)
