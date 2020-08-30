@@ -638,8 +638,14 @@ setMethod(f="plot",
                   ## FIXME: handle 'type' values 'p', 'l' and 'o' here
                   warning("BUG: ignoring 'type' because add=TRUE (FIXME)\n")
                   polygon(longitude, latitude, border=border, col=col, ...)
-                  if (axes)
-                      box()                      # clean up edges
+                  if (axes) {
+                      b <- par("usr")
+                      b[1] <- max(-180, b[1])
+                      b[2] <- min(180, b[2])
+                      b[3] <- max(-90, b[3])
+                      b[4] <- min(90, b[4])
+                      rect(b[1], b[3], b[2], b[4])
+                  }
                   ##> } else {
                   ##>     lines(longitude, latitude, ...)
                   ##> }
@@ -802,8 +808,14 @@ setMethod(f="plot",
                       if (is.null(col))
                           col <- "lightgray"
                       polygon(longitude, latitude, border=border, col=col, ...)
-                      if (axes)
-                          box()
+                      if (axes) {
+                          b <- par("usr")
+                          b[1] <- max(-180, b[1])
+                          b[2] <- min(180, b[2])
+                          b[3] <- max(-90, b[3])
+                          b[4] <- min(90, b[4])
+                          rect(b[1], b[3], b[2], b[4])
+                      }
                   } else {
                       if (is.null(col))
                           col <- "black"

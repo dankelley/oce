@@ -2,27 +2,28 @@
 
 ## 1.3.0
 
-* Add `data(amsr)` and improve `subset,amsr-method()`.
-* Change `imagep()` default colour palette to `oce.colorsViridis()`.
-* Change `drawPalette()` default colour palette to `oce.colorsViridis()`.
-* Change `plot,section-method()` default colour palette to `oce.colorsViridis()`.
-* Change `plot,amsr-method()` default colour palette to `oce.colorsViridis()`.
-* Add `data(tidalCurrent)` dataset, which holds tidal currents from Foreman.
-* Change `plotTS()` to trim isopycnals to realistic salinities and temperatures.
-* Change `read.argo()` and `data(argo)` to use camelCase in all metadata.
-* Change reader-oriented github website generator to `pkgdown`.
-* Extend `read.adp.rdi()` to handle 38kHz RDI adp files.
-* Extend `read.ctd.sbe()` to handle 4 new (Beckman) oxygen variables.
-* Extend `read.ctd.sbe()` to handle `.btl` files.
-* Extend `oce.plot.ts()`, adding argument `logStyle`.
-* Add `addSpine()` for defining spines for ship tracks.
+* Add `addSpine()` for defining section spines.
 * Add `angle2hms()`.
 * Add `argoJuldToTime()`.
+* Add `data(amsr)` and improve `subset,amsr-method()`.
+* Add `data(tidalCurrent)` dataset, which holds tidal currents from Foreman.
 * Add `oceAxis()`.
 * Add `preferAdjusted()` to make it easier to switch to 'adjusted' argo data.
 * Add `read.ctd.odv()`.
 * Add `snakeToCamel()` to convert variable names in e.g. argo netcdf files.
 * Add `timeToArgoJuld()`.
+* Change `drawPalette()` default colour palette to `oce.colorsViridis()`.
+* Change `imagep()` default colour palette to `oce.colorsViridis()`.
+* Change `plot,amsr-method()` default colour palette to `oce.colorsViridis()`.
+* Change `plot,section-method()` default colour palette to `oce.colorsViridis()`.
+* Change `plotTS()` to trim isopycnals to realistic salinities and temperatures.
+* Extend `read.adp.rdi()` to handle 38kHz RDI adp files.
+* Change `read.argo()` and `data(argo)` to use camelCase in all metadata.
+* Extend `read.ctd.sbe()` to handle 4 new (Beckman) oxygen variables.
+* Extend `read.ctd.sbe()` to handle `.btl` files.
+* Extend `oce.plot.ts()`, adding argument `logStyle`.
+* Change user-oriented github website generator to `pkgdown`.
+* Fix `plot,coastline-method` error in box drawing.
 
 ## 1.2.0
 
