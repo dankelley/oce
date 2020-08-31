@@ -524,13 +524,13 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' `latitude`; see Example 4.  If `within` is given,
 #' then `subset` is ignored.
 #'
-#' @return An argo object.
+#' @return An [argo-class] object.
 #'
 #' @examples
 #' library(oce)
 #' data(argo)
 #'
-#' # Example 1: buset by time, longitude, and pressure
+#' # Example 1: subset by time, longitude, and pressure
 #' par(mfrow=c(2,2))
 #' plot(argo)
 #' plot(subset(argo, time > mean(time)))
@@ -541,8 +541,8 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' par(mfrow=c(1, 1))
 #' plot(subset(argo, dataMode == "D"))
 #'
-#' # Example 3: contrast corrected and uncorrected data
-#' par(mfrow=c(1,2))
+#' # Example 3: contrast adjusted and unadjusted data
+#' par(mfrow=c(1, 2))
 #' plotTS(argo)
 #' plotTS(subset(argo, "adjusted"))
 #'
@@ -550,8 +550,8 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' par(mfrow=c(1, 2))
 #' plot(argo, which="map")
 #' ## Can get a boundary with e.g. locator(4)
-#' bdy <- list(x=c(-65, -40, -40, -65), y=c(65, 65, 45, 45))
-#' argoSubset <- subset(argo, within=bdy)
+#' boundary <- list(x=c(-65, -40, -40, -65), y=c(65, 65, 45, 45))
+#' argoSubset <- subset(argo, within=boundary)
 #' plot(argoSubset, which="map")
 #'
 #' @author Dan Kelley
@@ -612,34 +612,40 @@ setMethod(f="subset",
                   ## }}}
                   ## Metadata
                   for (name in names(x@metadata)) {
-                      oceDebug(debug>2, "subsetting metadata item named '", name, "'\n", sep="")
-                      ## Pass oce-generated things through directly.
-                      if (name %in% c("units", "flags", "filename", "flagScheme", "dataNamesOriginal")) {
-                          ##.message("  ... special case, so passed directly")
+                      oceDebug(debug, "subsetting metadata item named '", name, "'.\n", sep="")
+                      ## Pass some things through directly.
+                      ## 20200831 if (name %in% c("units", "flags", "filename", "flagScheme", "dataNamesOriginal")) {
+                      if (name %in% c("units", "filename", "flagScheme", "dataNamesOriginal"))
                           next
-                      }
                       item <- x@metadata[[name]]
-                      ## Handle things that are encoded as characters in a string,
-                      ## namely 'direction', 'juldQc', and 'positionQc'.
-                      if (is.character(item) && length(item) == 1) {
-                          ##.message("'", name, "' is character-encoded")
+                      ## Handle things that are encoded as characters in a string, namely 'direction', 'juldQC', 'positionQC',
+                      ## and some other 'QC` things that are found by grepping.
+                      if (name == "direction" || grepl("QC$", name)) {
+                          oceDebug(debug, "  \"", name, "\" is a special string ('direction' or '*QC'), being subsetted by character number\n", sep="")
                           res@metadata[[name]] <- paste(strsplit(item,"")[[1]][keep],collapse="")
-                          ##.message(" ... ok")
+                      } else if (is.list(item)) {
+                          oceDebug(debug, "  \"", name, "\" is a list, with each element being subsetted\n", sep="")
+                          for (l in seq_along(item)) {
+                              res@metadata[[name]][[l]] <- item[[l]][, keep, drop=FALSE]
+                          }
                       } else if (is.vector(name)) {
-                          ##.message("'", name, "' is a vector")
                           res@metadata[[name]] <- item[keep]
-                          ##.message(" ... ok")
                       } else if (is.matrix(name)) {
-                          ##.message("'", name, "' is a matrix")
-                          res@metadata[[name]] <- item[, keep]
-                          ##.message(" ... ok")
+                          res@metadata[[name]] <- item[, keep, drop=FALSE]
+                      } else if (is.array(name)) {
+                          oceDebug(debug, "name=", name, " has dim ", paste(dim(res@metadata[[name]]), collapse=" "), "\n")
+                          if (3 == length(dim(res@metadata[[name]]))) {
+                              res@metadata[[name]] <- item[, keep, , drop=FALSE]
+                          } else {
+                              warning("not subsetting \"", name, "\" in metadata, because it is an array of rank > 3")
+                          }
                       } else {
                           stop("cannot subset metadata item named '", name, "' because it is not a length-one string, a vector, or a matrix")
                       }
                   }
                   ## Data
                   for (name in names(x@data)) {
-                      oceDebug(debug>2, "subsetting data item named '", name, "'\n", sep="")
+                      oceDebug(debug, "subsetting data item named '", name, "'\n", sep="")
                       item <- x@data[[name]]
                       if ("time" == name) {
                           ##.message("'", name, "' is time (not a vector)")

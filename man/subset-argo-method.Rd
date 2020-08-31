@@ -20,7 +20,7 @@ named either \code{x} and \code{y} or \code{longitude} and
 then \code{subset} is ignored.}
 }
 \value{
-An argo object.
+An \linkS4class{argo} object.
 }
 \description{
 Subset an argo object, either by selecting just the "adjusted" data
@@ -52,7 +52,7 @@ to dropping data (as is the case with \code{time}, for example).
 library(oce)
 data(argo)
 
-# Example 1: buset by time, longitude, and pressure
+# Example 1: subset by time, longitude, and pressure
 par(mfrow=c(2,2))
 plot(argo)
 plot(subset(argo, time > mean(time)))
@@ -63,8 +63,8 @@ plot(subset(argoGrid(argo), pressure > 500 & pressure < 1000), which=5)
 par(mfrow=c(1, 1))
 plot(subset(argo, dataMode == "D"))
 
-# Example 3: contrast corrected and uncorrected data
-par(mfrow=c(1,2))
+# Example 3: contrast adjusted and unadjusted data
+par(mfrow=c(1, 2))
 plotTS(argo)
 plotTS(subset(argo, "adjusted"))
 
@@ -72,8 +72,8 @@ plotTS(subset(argo, "adjusted"))
 par(mfrow=c(1, 2))
 plot(argo, which="map")
 ## Can get a boundary with e.g. locator(4)
-bdy <- list(x=c(-65, -40, -40, -65), y=c(65, 65, 45, 45))
-argoSubset <- subset(argo, within=bdy)
+boundary <- list(x=c(-65, -40, -40, -65), y=c(65, 65, 45, 45))
+argoSubset <- subset(argo, within=boundary)
 plot(argoSubset, which="map")
 
 }
