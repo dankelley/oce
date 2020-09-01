@@ -634,8 +634,8 @@ setMethod(f="subset",
                           res@metadata[[name]] <- item[, keep, drop=FALSE]
                       } else if (is.array(name)) {
                           oceDebug(debug, "name=", name, " has dim ", paste(dim(res@metadata[[name]]), collapse=" "), "\n")
-                          if (3 == length(dim(res@metadata[[name]]))) {
-                              res@metadata[[name]] <- item[, keep, , drop=FALSE]
+                          if (length(dim(res@metadata[[name]])) <= 3) {
+                              res@metadata[[name]] <- item[, , keep, drop=FALSE]
                           } else {
                               warning("not subsetting \"", name, "\" in metadata, because it is an array of rank > 3")
                           }
