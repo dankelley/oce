@@ -38,9 +38,10 @@ If \code{node} is positive, then specifies indicates the node. If it is negative
 \code{\link[=locator]{locator()}} is called so that the user can click (once) on the map, after
 which the node is displayed on the map.}
 
-\item{time}{a vector of times at which prediction is to be made.
+\item{time}{a vector of times (in the UTC timezone)
+at which prediction is to be made.
 If not supplied, this will be the week starting at the present time,
-incrementing by 15 minutes.}
+computed with \code{\link[=presentTime]{presentTime()}}, with a 15 minute increment.}
 
 \item{basedir}{directory containing the \code{WebTide} application.}
 
