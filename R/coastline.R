@@ -800,7 +800,7 @@ setMethod(f="plot",
                   oceDebug(debug, vectorShow(par("yaxp")))
                   oceDebug(debug, vectorShow(par("pin")))
                   if (yaxp[1] < -90 | yaxp[2] > 90) {
-                      warning("In plot,coastline-method() : should trim poles\n", call.=FALSE)
+                      oceDebug(debug, "should trim poles\n")
                   }
                   if (type == "polygon") {
                       if (is.null(border))
