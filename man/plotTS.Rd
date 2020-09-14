@@ -21,7 +21,7 @@ plotTS(
   pch = par("pch"),
   bg,
   pt.bg = "transparent",
-  col.rho = "darkgray",
+  col.rho = gray(0.5),
   cex.rho = 3/4 * par("cex"),
   rotate = TRUE,
   useSmoothScatter = FALSE,
@@ -87,9 +87,9 @@ plotting.  (This is useful for cases in which \code{inset=TRUE}.)}
 
 \item{pt.bg}{inside color for symbols with \code{pch} in 21:25}
 
-\item{col.rho}{color for isopycnal lines.}
+\item{col.rho}{color for isopycnal lines and their labels.}
 
-\item{cex.rho}{size of isopycnal labels.}
+\item{cex.rho}{size of the isopycnal labels.}
 
 \item{rotate}{if TRUE, labels in right-hand margin are written vertically}
 

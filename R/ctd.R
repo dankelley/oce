@@ -4244,9 +4244,9 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #'
 #' @param col color for symbols.
 #'
-#' @param col.rho color for isopycnal lines.
+#' @param col.rho color for isopycnal lines and their labels.
 #'
-#' @param cex.rho size of isopycnal labels.
+#' @param cex.rho size of the isopycnal labels.
 #'
 #' @param rotate if TRUE, labels in right-hand margin are written vertically
 #'
@@ -4344,7 +4344,7 @@ plotTS <- function (x,
                     eos=getOption("oceEOS", default='gsw'),
                     cex=par("cex"), col=par("col"), pch=par("pch"),
                     bg, pt.bg="transparent",
-                    col.rho="darkgray",
+                    col.rho=gray(0.5),
                     cex.rho=3/4*par("cex"),
                     rotate=TRUE,
                     useSmoothScatter=FALSE,
