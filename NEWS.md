@@ -17,14 +17,15 @@
 * Change `plot,amsr-method()` default colour palette to `oce.colorsViridis()`.
 * Change `plot,section-method()` default colour palette to `oce.colorsViridis()`.
 * Change `plotTS()` to trim isopycnals to realistic salinities and temperatures.
-* Extend `read.adp.rdi()` to handle 38kHz RDI adp files.
+* Change user-oriented github website generator to `pkgdown`.
 * Change `read.argo()` and `data(argo)` to use camelCase in all metadata.
+* Extend `read.adp.rdi()` to handle 38kHz RDI adp files.
 * Extend `read.ctd.sbe()` to handle 4 new (Beckman) oxygen variables.
 * Extend `read.ctd.sbe()` to handle `.btl` files.
 * Extend `oce.plot.ts()`, adding argument `logStyle`.
+* Fix `plotTS` error in auto-scaling if S and T have mixed NA status.
 * Fix `plot,coastline-method` error in box drawing.
 * Fix `subset,argo-method()` error in `flags`, `location`, and `*QC` in `metadata`.
-* Change user-oriented github website generator to `pkgdown`.
 
 ## 1.2.0
 
