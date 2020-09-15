@@ -19,7 +19,7 @@ plotTS(
   cex = par("cex"),
   col = par("col"),
   pch = par("pch"),
-  bg,
+  bg = "white",
   pt.bg = "transparent",
   col.rho = gray(0.5),
   cex.rho = 3/4 * par("cex"),

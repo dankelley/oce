@@ -4343,7 +4343,7 @@ plotTS <- function (x,
                     rho1000=FALSE,
                     eos=getOption("oceEOS", default='gsw'),
                     cex=par("cex"), col=par("col"), pch=par("pch"),
-                    bg, pt.bg="transparent",
+                    bg="white", pt.bg="transparent",
                     col.rho=gray(0.5),
                     cex.rho=3/4*par("cex"),
                     rotate=TRUE,
@@ -4457,7 +4457,18 @@ plotTS <- function (x,
         y <- if (inSitu) x[["temperature"]] else swTheta(x, referencePressure=referencePressure, eos=eos)
         salinity <- x[["salinity"]]
     }
+    ## Can only plot if both S and T are finite, so we trim S and T, at
+    ## this point called salinity and y, and also bg, col, cex, and pch.
+    ## See https://github.com/dankelley/oce/issues/1730
     canPlot <- is.finite(salinity) & is.finite(y)
+    if (length(col) == length(y))
+        col <- col[canPlot]
+    if (length(bg) == length(y))
+        bg <- bg[canPlot]
+    if (length(cex) == length(y))
+        cex <- cex[canPlot]
+    if (length(pch) == length(y))
+        pch <- pch[canPlot]
     salinity <- salinity[canPlot]
     y <- y[canPlot]
     if (!any(is.finite(salinity))) {
