@@ -4257,10 +4257,10 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #'
 #' @param ylab optional label for the y axis, with default "Temperature \[C\]".
 #'
-#' @param Slim optional limits for salinity axis, otherwise inferred from data.
+#' @param Slim optional limits for salinity axis, otherwise inferred from visible data
+#' (i.e. the data that have finite values for both salinity and temperature).
 #'
-#' @param Tlim optional limits for temperature axis, otherwise inferred from
-#' data.
+#' @param Tlim as `Slim`, but for temperature.
 #'
 #' @param drawFreezing logical indication of whether to draw a freezing-point
 #' line. This is based on zero pressure. If `eos="unesco"` then
@@ -4372,6 +4372,7 @@ plotTS <- function (x,
     yat <- NULL
     if (!inherits(x, "ctd")) {
         if (inherits(x, "section")) {
+            oceDebug(debug, "x is a section object\n")
             if (eos == "gsw") {
                 x <- as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]],
                             longitude=x[["longitude"]], latitude=x[["latitude"]])
@@ -4379,6 +4380,7 @@ plotTS <- function (x,
                 x <- as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]])
             }
         } else if (inherits(x, "argo")) {
+            oceDebug(debug, "x is an argo object\n")
             ## Copy fields into a CTD object.
             SP <- x[["salinity"]]
             dim <- dim(SP)
@@ -4397,7 +4399,9 @@ plotTS <- function (x,
             }
             x <- as.ctd(SP, t, p, longitude=longitude, latitude=latitude)
         } else if (is.list(x)) {
+            oceDebug(debug, "x is a list\n")
             if (inherits(x[[1]], "ctd")) {
+                oceDebug(debug, "x is a list of ctd objects\n")
                 x <- if (eos == "gsw") {
                     as.ctd(salinity=unlist(lapply(x, function(xi) xi[["salinity"]])),
                            temperature=unlist(lapply(x, function(xi) xi[["temperature"]])),
@@ -4410,6 +4414,7 @@ plotTS <- function (x,
                            unlist(lapply(x, function(xi) xi[["pressure"]])))
                 }
             } else if (inherits(x[[1]], "argo")) {
+                oceDebug(debug, "x is a list of argo objects\n")
                 message("FIXME: this ought to be done with as.ctd() so other methods can do simiarly")
                 message("FIXME: determine if 1-col or multi-col (affects latitude lookup)")
                 x <- if (eos == "gsw") {
@@ -4421,6 +4426,7 @@ plotTS <- function (x,
                 stop("If x is a list, it must hold 'ctd' or 'argo' objects")
             }
         } else {
+            oceDebug(debug, "x is a not a ctd object, nor a list\n")
             names <- names(x)
             if ("temperature" %in% names && "salinity" %in% names) {
                 if (eos == "gsw") {
@@ -4439,14 +4445,21 @@ plotTS <- function (x,
                 }
             }
         }
+    } else {
+        oceDebug(debug, "x is a ctd object\n")
     }
     if (eos == "gsw") {
         salinity <- x[["SA"]]
         y <- x[["CT"]]
+        oceDebug(debug, "salinity as SA, with range", paste(range(salinity,na.rm=TRUE), collapse=" to "), "\n")
     } else {
+        oceDebug(debug, "salinity as Practical Salinity, with range ", paste(range(salinity,na.rm=TRUE), collapse=" to "), "\n")
         y <- if (inSitu) x[["temperature"]] else swTheta(x, referencePressure=referencePressure, eos=eos)
         salinity <- x[["salinity"]]
     }
+    canPlot <- is.finite(salinity) & is.finite(y)
+    salinity <- salinity[canPlot]
+    y <- y[canPlot]
     if (!any(is.finite(salinity))) {
         warning("no valid salinity data")
         return(invisible(list(xat=NULL, yat=NULL)))
@@ -4455,8 +4468,14 @@ plotTS <- function (x,
         warning("no valid temperature data")
         return(invisible(list(xat=NULL, yat=NULL)))
     }
-    if (missing(Slim)) Slim <- range(salinity, na.rm=TRUE)
-    if (missing(Tlim)) Tlim <- range(y, na.rm=TRUE)
+    if (missing(Slim)) {
+        Slim <- range(salinity, na.rm=TRUE)
+        oceDebug(debug, "Slim was not given, so inferred Slim=c(", paste(Slim, collapse=","), ") from the data\n", sep="")
+    }
+    if (missing(Tlim)) {
+        Tlim <- range(y, na.rm=TRUE)
+        oceDebug(debug, "Tlim was not given, so inferred Tlim=c(", paste(Tlim, collapse=","), ") from the data\n", sep="")
+    }
     if (!add) {
         ##omar <- par("mar")
         ##omgp <- par("mgp")
@@ -4492,6 +4511,7 @@ plotTS <- function (x,
                       ...)
     } else {
         if (add) {
+            oceDebug(debug, "add=TRUE, so adding to an existing plot\n")
             if (type == 'p') {
                 points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty)
             } else if (type == 'l') {
@@ -4503,6 +4523,7 @@ plotTS <- function (x,
                 points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty)
             }
         } else {
+            oceDebug(debug, "add=FALSE, so making new plot panel based on Slim and Tlim\n")
             plot(Slim, Tlim,
                  xlab=xlab, ylab=ylab,
                  xaxs=if (min(salinity, na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0

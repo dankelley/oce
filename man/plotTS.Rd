@@ -100,10 +100,10 @@ points.}
 
 \item{ylab}{optional label for the y axis, with default "Temperature [C]".}
 
-\item{Slim}{optional limits for salinity axis, otherwise inferred from data.}
+\item{Slim}{optional limits for salinity axis, otherwise inferred from visible data
+(i.e. the data that have finite values for both salinity and temperature).}
 
-\item{Tlim}{optional limits for temperature axis, otherwise inferred from
-data.}
+\item{Tlim}{as \code{Slim}, but for temperature.}
 
 \item{drawFreezing}{logical indication of whether to draw a freezing-point
 line. This is based on zero pressure. If \code{eos="unesco"} then
