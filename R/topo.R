@@ -39,7 +39,7 @@ setClass("topo", contains="oce")
 #' The coarse resolution can be a problem in plotting depth contours along with
 #' coastlines in regions of steep topography. For example, near the southeast
 #' corner of Newfoundland, a 200m contour will overlap a coastline drawn with
-#' [ocedata::coastlineWorldFine]. The solution in such cases is to
+#' `coastlineWorldFine` from the \CRANpkg{ocedata} package. The solution in such cases is to
 #' download a higher-resolution topography file, perhaps using
 #' [download.topo()], and then use [read.topo()]
 #' to create another `topo` object.  (With other data

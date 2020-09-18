@@ -24,7 +24,7 @@ Height (\code{topoWorld[["z"]]}) is measured in metres above nominal sea level.
 The coarse resolution can be a problem in plotting depth contours along with
 coastlines in regions of steep topography. For example, near the southeast
 corner of Newfoundland, a 200m contour will overlap a coastline drawn with
-\link[ocedata:coastlineWorldMedium]{ocedata::coastlineWorldFine}. The solution in such cases is to
+\code{coastlineWorldFine} from the \CRANpkg{ocedata} package. The solution in such cases is to
 download a higher-resolution topography file, perhaps using
 \code{\link[=download.topo]{download.topo()}}, and then use \code{\link[=read.topo]{read.topo()}}
 to create another \code{topo} object.  (With other data

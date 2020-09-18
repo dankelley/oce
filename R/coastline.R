@@ -1361,11 +1361,17 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
              if (missing(lonRange)) "missing" else paste(round(lonRange, 2), collapse=","), "), ",
              "latRange=c(",
              if (missing(latRange)) "missing" else paste(round(latRange, 2), collapse=","), "), ",
-             "span=", if (missing(span)) "(missing)" else span, ", ",
-             "debug=", debug, ") {\n", sep="", unindent=1)
+             "span=", if (missing(span)) "(missing)" else span, ") {\n",
+             sep="", unindent=1, style="bold")
     if (missing(span)) {
+        oceDebug(debug, "inferring span from lonRange=c(",paste(lonRange,collapse=","),
+                 ") and latRange=c(", paste(latRange, collapse=","), ")\n")
         if (missing(lonRange) || missing(latRange))
             return("coastlineWorld")
+        if (length(lonRange) != 2)
+            stop("lonRange must be of length 2")
+        if (length(latRange) != 2)
+            stop("latRange must be of length 2")
         if (any(lonRange > 180)) {
             lonRange <- lonRange - 360 # FIXME: does this always work?
             oceDebug(debug, "adjusted lonRange:", lonRange, "\n")
@@ -1374,11 +1380,11 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
         latRange <- sort(latRange)
         ## Set scale as the max of the distances along four sides of box
         ## NB. all distance used here are in km.
-        l <- geodDist(lonRange[1], latRange[1], lonRange[1], latRange[2])
-        r <- geodDist(lonRange[2], latRange[1], lonRange[2], latRange[2])
-        b <- geodDist(lonRange[1], latRange[1], lonRange[2], latRange[1])
-        t <- geodDist(lonRange[1], latRange[2], lonRange[2], latRange[2])
-        oceDebug(debug, "l:", l, ", r:", r, ", b:", b, ", t:", t, "\n")
+        l <- round(geodDist(lonRange[1], latRange[1], lonRange[1], latRange[2]),2)
+        r <- round(geodDist(lonRange[2], latRange[1], lonRange[2], latRange[2]),2)
+        b <- round(geodDist(lonRange[1], latRange[1], lonRange[2], latRange[1]),2)
+        t <- round(geodDist(lonRange[1], latRange[2], lonRange[2], latRange[2]),2)
+        oceDebug(debug, "Inferring span from corners l:", l, ", r:", r, ", b:", b, ", t:", t, "\n")
         span <- max(l, r, b, t)
     }
     C <- 2 * 3.14 * 6.4e3              # circumferance of earth
@@ -1390,7 +1396,7 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
     } else {
         res <- "coastlineWorld"
     }
-    oceDebug(debug, "}\n", unindent=1)
+    oceDebug(debug, "} # coastlineBest()\n", unindent=1, style="bold")
     res
 }
 
