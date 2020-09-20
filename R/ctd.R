@@ -3750,7 +3750,7 @@ setMethod(f="plot",
                               mtext(x@metadata$station,
                                     side=3, adj=0, cex=par("cex"), line=0.5)
                           }
-                          if (!is.null(x@metadata$startTime) && 4 < nchar(x@metadata$startTime, "bytes")) {
+                          if (!is.null(x@metadata$startTime) && !is.na(x@metadata$startTime) && 4 < nchar(x@metadata$startTime, "bytes")) {
                               mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%M:%S"),
                                     side=3, adj=1, cex=par("cex"), line=0.5)
                           } else if (!is.null(x@data$time)) {
