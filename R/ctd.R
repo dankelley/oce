@@ -3005,8 +3005,13 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' frequency; in that case, it is passed to [swN2()] as the argument
 #' named `df`.
 #'
-#' @param keepNA Flag indicating whether to keep `NA` values in linegraphs,
-#' which will yield breaks in the lines.
+#' @param keepNA logical value indicating whether `NA` values
+#' will yield breaks in lines drawn if `type` is `b`, `l`, or `o`.
+#' The default value is `FALSE`.  Setting `keepNA` to `TRUE`
+#" can be helpful when working with multiple profiles
+#' strung together into one [ctd-class] object, which otherwise
+#' would have extraneous lines joining the deepest point in one
+#' profile to the shallowest in the next profile.
 #'
 #' @param type The type of plot to draw, using the same scheme as
 #' [plot()]. If supplied, this is increased to be the
