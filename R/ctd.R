@@ -5441,7 +5441,7 @@ plotProfile <- function(x,
                         xlim <- range(xvar[look], na.rm=TRUE)
                     plot(xvar[look], y[look],
                          xlab=if (is.null(xlab)) " " else xlab,
-                         xlim=xlim, ylim=rev(range(y[look])),
+                         xlim=xlim, ylim=rev(range(y[look], na.rm=TRUE)),
                          lty=lty, type="n", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 }
                 if (is.null(xlab)) {
