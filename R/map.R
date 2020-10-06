@@ -8,7 +8,7 @@
 longlatProj <- sf::st_crs("+proj=longlat")$proj4string
 
 .Projection <- local({
-    ## Tave state, in a way that emulates mapproj.
+    ## Save state, in a way that emulates mapproj.
     ## The 'type' can be 'none' or 'proj4' (previously, 'mapproj' was also allowed)
     val <- list(type="none", projection="")
     function(new) if (!missing(new)) val <<- new else val
