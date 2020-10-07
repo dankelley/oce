@@ -434,16 +434,18 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' necessary because margin adjustment is the basis for the method used by
 #' [plotInset()].
 #'
-#' @param geographical flag indicating the style of axes.  If
+#' @param geographical flag indicating the style of axes.  With
 #' `geographical=0`, the axes are conventional, with decimal degrees as
 #' the unit, and negative signs indicating the southern and western
-#' hemispheres.  If `geographical=1`, the signs are dropped, with axis
+#' hemispheres.  With `geographical=1`, the signs are dropped, with axis
 #' values being in decreasing order within the southern and western
-#' hemispheres.  If `geographical=2`, the signs are dropped and the axes
+#' hemispheres.  With `geographical=2`, the signs are dropped and the axes
 #' are labelled with degrees, minutes and seconds, as appropriate, and
-#' hemispheres are indicated with letters. If `geographical=3`, things
+#' hemispheres are indicated with letters. With `geographical=3`, things
 #' are the same as for `geographical=2`, but the hemisphere indication
-#' is omitted.
+#' is omitted. Finally, with `geographical=4`, unsigned numbers are used,
+#' followed by letters `N` in the northern hemisphere, `S` in the southern,
+#' `E` in the eastern, and `W` in the western.
 #'
 #' @param longitudelim this and `latitudelim` provide a second way to
 #' suggest plot ranges. Note that these may not be supplied if
@@ -611,8 +613,8 @@ setMethod(f="plot",
                   return(invisible())
               }
               geographical <- round(geographical)
-              if (geographical < 0 || geographical > 3)
-                  stop("argument geographical must be 0, 1, 2, or 3")
+              if (geographical < 0 || geographical > 4)
+                  stop("argument geographical must be an integer between 0 to 4, inclusive")
               if (is.list(x) && "latitude" %in% names(x)) {
                   if (!("longitude" %in% names(x)))
                       stop("list must contain item named 'longitude'")
@@ -757,33 +759,53 @@ setMethod(f="plot",
                               res <- seq(-180, 180, 45)
                           res
                       }
+                      oceDebug(debug, vectorShow(par('usr')))
                       oceDebug(debug, "xr:", xr, ", yr:", yr, ", xr0:", xr0, ", yr0:", yr0, "\n")
                       ##xr.pretty <- prettyLon(xr, n=if (geographical)3 else 5, high.u.bias=20)
-                      xr.pretty <- prettyLon(par('usr')[1:2], n=if (geographical)3 else 5, high.u.bias=20)
+                      xr.pretty <- prettyLon(par('usr')[1:2], n=if (geographical>0) 3 else 5, high.u.bias=20)
                       ##yr.pretty <- prettyLat(yr, n=if (geographical)3 else 5, high.u.bias=20)
-                      yr.pretty <- prettyLat(par('usr')[3:4], n=if (geographical)3 else 5, high.u.bias=20)
-                      oceDebug(debug, "xr.pretty=", xr.pretty, "\n")
-                      oceDebug(debug, "yr.pretty=", yr.pretty, "\n")
-                      oceDebug(debug, "usrTrimmed", usrTrimmed, "(original)\n")
+                      yr.pretty <- prettyLat(par('usr')[3:4], n=if (geographical>0) 3 else 5, high.u.bias=20)
+                      oceDebug(debug, vectorShow(xr.pretty))
+                      oceDebug(debug, vectorShow(yr.pretty))
+                      oceDebug(debug, vectorShow(usrTrimmed, postscript=" (original)\n"))
                       usrTrimmed[1] <- max(-180, usrTrimmed[1])
                       usrTrimmed[2] <- min( 180, usrTrimmed[2])
                       usrTrimmed[3] <- max( -90, usrTrimmed[3])
                       usrTrimmed[4] <- min(  90, usrTrimmed[4])
-                      oceDebug(debug, vectorShow(usrTrimmed))
-                      oceDebug(debug, vectorShow(par('usr')))
-                      xlabels <- format(xr.pretty)
-                      ylabels <- format(yr.pretty)
-                      if (geographical >= 1) {
-                          xlabels <- sub("-", "", xlabels)
-                          ylabels <- sub("-", "", ylabels)
+                      oceDebug(debug, vectorShow(usrTrimmed, postscript=" (after trimming)\n"))
+                      usr12r <- range(usrTrimmed[1:2])
+                      if (diff(usrTrimmed[1:2]) == 360) {
+                          xr.pretty <- seq(-180, 180, 45)
+                      } else {
+                          xr.pretty <- prettyLon(usrTrimmed[1:2], n=if (geographical>0) 3 else 5, high.u.bias=20)
                       }
-                      if (geographical == 2 || geographical == 3) {
-                          xr.pretty <- prettyPosition(xr.pretty, debug=debug-1)
-                          yr.pretty <- prettyPosition(yr.pretty, debug=debug-1)
+                      if (diff(usrTrimmed[3:4]) == 180) {
+                          yr.pretty <- seq(-90, 90, 45)
+                      } else {
+                          yr.pretty <- prettyLon(usrTrimmed[3:4], n=if (geographical>0) 3 else 5, high.u.bias=20)
+                      }
+                      if (geographical >= 1) {
+                          xlabels <- sub("-", "", xr.pretty)
+                          ylabels <- sub("-", "", yr.pretty)
+                      }
+                      if (geographical == 0) {
+                          xlabels <- format(xr.pretty)
+                          ylabels <- format(yr.pretty)
+                      } else if (geographical == 1) {
+                          xlabels <- format(abs(xr.pretty))
+                          ylabels <- format(abs(yr.pretty))
+                      } else if (geographical == 2 || geographical == 3) {
                           xlabels <- formatPosition(xr.pretty, isLat=FALSE, type='expression',
                                                     showHemi=geographical==3)
                           ylabels <- formatPosition(yr.pretty, isLat=TRUE, type='expression',
                                                     showHemi=geographical==3)
+                      } else if (geographical == 4) {
+                          xlabels <- paste0(abs(xr.pretty),
+                                            ifelse(xr.pretty > 0, "E",
+                                                   ifelse(xr.pretty < 0, "W", "")))
+                          ylabels <- paste0(abs(yr.pretty),
+                                            ifelse(yr.pretty > 0, "N",
+                                                   ifelse(yr.pretty < 0, "S", "")))
                       }
 
                       axis(1, at=xr.pretty, labels=xlabels, pos=usrTrimmed[3], cex.axis=cex.axis)

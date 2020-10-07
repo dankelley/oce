@@ -135,16 +135,18 @@ effect is to prevent the present function from adjusting margins, which is
 necessary because margin adjustment is the basis for the method used by
 \code{\link[=plotInset]{plotInset()}}.}
 
-\item{geographical}{flag indicating the style of axes.  If
+\item{geographical}{flag indicating the style of axes.  With
 \code{geographical=0}, the axes are conventional, with decimal degrees as
 the unit, and negative signs indicating the southern and western
-hemispheres.  If \code{geographical=1}, the signs are dropped, with axis
+hemispheres.  With \code{geographical=1}, the signs are dropped, with axis
 values being in decreasing order within the southern and western
-hemispheres.  If \code{geographical=2}, the signs are dropped and the axes
+hemispheres.  With \code{geographical=2}, the signs are dropped and the axes
 are labelled with degrees, minutes and seconds, as appropriate, and
-hemispheres are indicated with letters. If \code{geographical=3}, things
+hemispheres are indicated with letters. With \code{geographical=3}, things
 are the same as for \code{geographical=2}, but the hemisphere indication
-is omitted.}
+is omitted. Finally, with \code{geographical=4}, unsigned numbers are used,
+followed by letters \code{N} in the northern hemisphere, \code{S} in the southern,
+\code{E} in the eastern, and \code{W} in the western.}
 
 \item{longitudelim}{this and \code{latitudelim} provide a second way to
 suggest plot ranges. Note that these may not be supplied if
