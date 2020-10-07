@@ -773,13 +773,16 @@ setMethod(f="plot",
                       usrTrimmed[3] <- max( -90, usrTrimmed[3])
                       usrTrimmed[4] <- min(  90, usrTrimmed[4])
                       oceDebug(debug, vectorShow(usrTrimmed, postscript=" (after trimming)\n"))
+                      ## Go to full-world, if we are close to full world.  This ensures we will
+                      ## get ticks at the extrema, which is useful because the coastline doesn't go
+                      ## close enough to the north pole to get a +90 tick.
                       usr12r <- range(usrTrimmed[1:2])
-                      if (diff(usrTrimmed[1:2]) == 360) {
+                      if (diff(usrTrimmed[1:2]) > 340) {
                           xr.pretty <- seq(-180, 180, 45)
                       } else {
                           xr.pretty <- prettyLon(usrTrimmed[1:2], n=if (geographical>0) 3 else 5, high.u.bias=20)
                       }
-                      if (diff(usrTrimmed[3:4]) == 180) {
+                      if (diff(usrTrimmed[3:4]) > 160) {
                           yr.pretty <- seq(-90, 90, 45)
                       } else {
                           yr.pretty <- prettyLon(usrTrimmed[3:4], n=if (geographical>0) 3 else 5, high.u.bias=20)
