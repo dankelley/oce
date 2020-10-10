@@ -792,11 +792,11 @@ setMethod(f="plot",
                           ylabels <- sub("-", "", yr.pretty)
                       }
                       if (geographical == 0) {
-                          xlabels <- format(xr.pretty)
-                          ylabels <- format(yr.pretty)
+                          xlabels <- xr.pretty
+                          ylabels <- yr.pretty
                       } else if (geographical == 1) {
-                          xlabels <- format(abs(xr.pretty))
-                          ylabels <- format(abs(yr.pretty))
+                          xlabels <- abs(xr.pretty)
+                          ylabels <- abs(yr.pretty)
                       } else if (geographical == 2 || geographical == 3) {
                           xlabels <- formatPosition(xr.pretty, isLat=FALSE, type='expression',
                                                     showHemi=geographical==3)
@@ -810,7 +810,8 @@ setMethod(f="plot",
                                             ifelse(yr.pretty > 0, "N",
                                                    ifelse(yr.pretty < 0, "S", "")))
                       }
-
+                      ##cat("xr.pretty:", paste(xr.pretty, collapse=","),"\n",sep="")
+                      ##cat("xlabels: '", paste(xlabels, collapse="','"),"'\n",sep="")
                       axis(1, at=xr.pretty, labels=xlabels, pos=usrTrimmed[3], cex.axis=cex.axis)
                       oceDebug(debug, "putting bottom x axis at", usrTrimmed[3], "with labels:", xlabels, "\n")
                       axis(2, at=yr.pretty, labels=ylabels, pos=usrTrimmed[1], cex.axis=cex.axis, cex=cex.axis)
