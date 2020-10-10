@@ -136,8 +136,8 @@ setMethod(f="[[",
           definition=function(x, i, j, ...) {
               res <- NULL
               dots <- list(...)
-              debug <- if ("debug" %in% names(dots)) dots$debug else FALSE
-              oceDebug(debug, "[[,argo-method(\"", i, "\") {\n", sep="", unindent=1)
+              debug <- if ("debug" %in% names(dots)) dots$debug else 0
+              oceDebug(debug, "[[,argo-method(\"", i, "\") {\n", sep="", style="bold", unindent=1)
               if (i == "profile") {
                   ## This assignment to profile is merely to prevent a NOTE from
                   ## the syntax checker. It is needed because of issues with non-standard
@@ -253,7 +253,7 @@ setMethod(f="[[",
                               res <- unadjusted
                           } else {
                               if (any(is.finite(adjusted))) {
-                                  oceDebug(debug, "Case 2: returning adjusted item.\n")
+                                  oceDebug(debug, "Case 2: returning adjusted data.\n")
                                   res <- adjusted
                               } else {
                                   if (fallback) {
@@ -277,7 +277,7 @@ setMethod(f="[[",
                   ##message("FIXME: [[,argo-method calling next method")
                   res <- callNextMethod()         # [[ defined in R/AllClass.R
               }
-              oceDebug(debug, "} # [[,argo-method\n", sep="", unindent=1)
+              oceDebug(debug, "} # [[,argo-method\n", sep="", style="bold", unindent=1)
               res
           })
 
