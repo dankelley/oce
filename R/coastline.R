@@ -755,7 +755,7 @@ setMethod(f="plot",
                       prettyLon<-function(xr, ...)
                       {
                           res <- pretty(xr, ...)
-                          if (diff(xr) > 100)
+                          if (diff(xr) > 300)
                               res <- seq(-180, 180, 45)
                           res
                       }
