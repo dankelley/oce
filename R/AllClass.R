@@ -553,6 +553,8 @@ setMethod(f="show",
                       cat(class(object)[1], " object, from file '", filename, "', has nothing in its data slot.\n", sep="")
                   }
               }
+              odigits <- options("digits")$digits
+              options(digits=9) # helps with e.g. CTD adjusted vs unadjusted values
               for (i in seq_along(dataNames)) {
                   d <- object@data[[i]]
                   if (0 == length(d)) {
@@ -583,6 +585,7 @@ setMethod(f="show",
                       }
                   }
               }
+              options(digits=odigits) # return to original digits value
           })
 
 
