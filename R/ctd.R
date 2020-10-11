@@ -5152,16 +5152,7 @@ plotProfile <- function(x,
         plot(sig0[look], y[look], xlim=densitylim, ylim=ylim, cex=cex, pch=pch,
              type=type, col=col.rho, lty=lty, xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col=col.rho, col.axis=col.rho, col.lab=col.rho)
-        ## FIXME: do next with resizable label; also for the N2
-        ##br <- if (getOption("oceUnitBracket") == '[') c("[", "]") else c("(", ")")
-        if (getOption("oceUnitBracket") == '[') {
-            label <- if (eos == "unesco") expression(paste(sigma[theta], " [", kg/m^3, "]")) else
-                expression(paste(sigma[0], " [", kg/m^3, "]"))
-        } else {
-            label <- if (eos == "unesco") expression(paste(sigma[theta], " (", kg/m^3, ")")) else
-                expression(paste(sigma[0], " (", kg/m^3, ")"))
-        }
-        mtext(label, side=3, line=axisNameLoc, col=col.rho, cex=par("cex"))
+        mtext(resizableLabel(if (eos=="unesco") "sigmaTheta" else "sigma0"), side=3, line=axisNameLoc, col=col.rho, cex=par("cex"))
         axis(2)
         box()
         par(new=TRUE)                ## FIXME: this probably won't work if add=TRUE
@@ -5687,7 +5678,8 @@ plotProfile <- function(x,
             label <- if (eos == "unesco") bquote(sigma[theta]*" ("*.(sep)*kg/m^3*.(sep)*")") else
                 bquote(sigma[0]*" ("*.(sep)*kg/m^3*.(sep)*")")
         }
-        mtext(label, side=3, line=axisNameLoc, col=col.rho, cex=par("cex"))
+        mtext(resizableLabel(if (eos == "unesco") "sigmaTheta" else "sigma0"),
+              side=3, line=axisNameLoc, col=col.rho, cex=par("cex"))
         axis(2)
         box()
         if (type == 'l') {
@@ -5721,11 +5713,7 @@ plotProfile <- function(x,
             points(N2, y, col=col.N2, pch=pch, cex=cex)
             lines(N2, y, col=col.N2, lwd=lwd, lty=lty)
         }
-        if (getOption("oceUnitBracket") == '[') {
-            mtext(expression(paste(N^2, " [", s^-2, "]")), side=1, line=axisNameLoc, col=col.N2, cex=par("cex"))
-        } else {
-            mtext(expression(paste(N^2, " (", s^-2, ")")), side=1, line=axisNameLoc, col=col.N2, cex=par("cex"))
-        }
+        mtext(resizableLabel("N2"), side=1, line=axisNameLoc, col=col.N2, cex=par("cex"))
         box()
         if (grid) {
             at <- par("yaxp")
@@ -5740,11 +5728,7 @@ plotProfile <- function(x,
             plot(N2[look], y[look], lty=lty,
                  xlim=N2lim, ylim=ylim, cex=cex, pch=pch,
                  type="n", xlab="", ylab=yname, axes=FALSE)
-            if (getOption("oceUnitBracket") == '[') {
-                mtext(expression(paste(N^2, " [", s^-2, "]")), side=3, line=axisNameLoc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
-            } else {
-                mtext(expression(paste(N^2, " (", s^-2, ")")), side=3, line=axisNameLoc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
-            }
+            mtext(resizableLabel("N2"), side=3, line=axisNameLoc, cex=par("cex"))
             axis(2)
             axis(3)
             box()

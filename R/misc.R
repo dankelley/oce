@@ -2407,21 +2407,21 @@ fullFilename <- function(filename)
 #' and including units as appropriate.
 #' Used by e.g. [plot,ctd-method()].
 #'
-#' @param item code for the label.  This must be an element from the following
-#' list: `"S"`, `"SA"`, `"C"`, `"CT"`, `"conductivity mS/cm"`,
-#' `"conductivity S/m"`, `"T"`, `"theta"`, `"sigmaTheta"`,
-#' `"conservative temperature"`, `"absolute salinity"`,
-#' `"nitrate"`, `"nitrite"`, `"oxygen"`, \code{"oxygen
-#' saturation"}, `"oxygen mL/L"`, `"oxygen umol/L"`, \code{"oxygen
-#' umol/kg"}, `"phosphate"`, `"silicate"`, `"tritium"`,
-#' `"spice"`, `"fluorescence"`, `"p"`, `"z"`,
-#' `"distance"`, `"distance km"`, `"along-track distance km"`,
-#' `"heading"`, `"pitch"`, `"roll"`, `"u"`, `"v"`,
-#' `"w"`, `"speed"`, `"direction"`, `"eastward"`,
-#' `"northward"`, `"depth"`, `"elevation"`, `"latitude"`,
-#' `"longitude"`, `"frequency cph"`, `"sound speed"`, or \code{"spectral density
-#' m2/cph"}.
-#'
+#' @param item code for the label. The following common values are recognized:
+#' `"absolute salinity"`, `"along-spine distance km"`, `"along-track distance km"`,
+#' `"C"`, `"conductivity mS/cm"`, `"conductivity S/m"`, `"conservative temperature"`,
+#' `"CT"`, `"depth"`, `"direction"`, `"distance"`, `"distance km"`, `"eastward"`,
+#' `"elevation"`, `"fluorescence"`, `"frequency cph"`, `"heading"`, `"latitude"`,
+#' `"longitude"`, `"N2"`, `"nitrate"`, `"nitrite"`, `"northward"`, `"oxygen"`,
+#' `"oxygen mL/L"`, `"oxygen saturation"`, `"oxygen umol/kg"`, `"oxygen umol/L"`,
+#' `"p"`, `"phosphate"`, `"pitch"`, `"roll"`, `"S"`, `"SA"`,
+#' `"sigma0"`, `"sigma1"`, `"sigma2"`, `"sigma3"`, `"sigma4"`,
+#' `"sigmaTheta"`,
+#' `"silicate"`, `"sound speed"`, `"spectral density m2/cph"`, `"speed"`,
+#' `"spice"`, `"T"`, `"theta"`, `"tritium"`, `"u"`, `"v"`, `"w"`, or `"z"`.
+#' Other values may also be recognized, and if an unrecognized item is
+#' given, then it is returned, unaltered.
+#"
 #' @param axis a string indicating which axis to use; must be `x` or
 #' `y`.
 #'
@@ -2456,7 +2456,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
         stop("axis must be \"x\" or \"y\"")
     itemAllowed <- c("S", "SA", "C", "CT", "conductivity mS/cm", "conductivity S/m", "T",
                      "theta", "sigmaTheta", "conservative temperature",
-                     "absolute salinity", "nitrate", "nitrite",
+                     "absolute salinity", "N2", "nitrate", "nitrite",
                      "oxygen", "oxygen saturation", "oxygen mL/L", "oxygen umol/L", "oxygen umol/kg",
                      "phosphate", "silicate", "tritium", "spice",
                      "fluorescence", "p", "z", "distance", "distance km",
@@ -2465,7 +2465,12 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
                      "heading", "pitch", "roll", "u",
                      "v", "w", "speed", "direction", "eastward", "northward",
                      "depth", "elevation", "latitude", "longitude", "frequency cph",
-                     "sound speed", "spectral density m2/cph")
+                     "sound speed", "spectral density m2/cph",
+                     "sigma0", "sigma1", "sigma2", "sigma3", "sigma4")
+    ## FIXME: if anything is added, run the next, and paste results into roxygen.
+    ## > A<-paste0("'",paste(sort(itemAllowed), collapse="'`, `'"),"'");A
+    ## NOTE: some hand-tweaking must be done to fix linebreaks and (preferably) to
+    ## change the ' into a ".
     if (!missing(unit)) {
         if (is.list(unit)) {
             unit <- unit[[1]] # second item is a scale
@@ -2556,6 +2561,10 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
             abbreviated <- bquote(phantom()^3*H*.(L)*.(unit[[1]])*.(R))
         }
+    } else if (item == "N2") {
+        ## full <- bquote("Square of Buoyancy Frequency"*.(L)*s^-2*.(R))
+        full  <- bquote(N^2*.(L)*s^-2*.(R))
+        abbreviated <- bquote(N^2*.(L)*s^-2*.(R))
     } else if (item == "nitrate") {
         var <- gettext("Nitrate", domain="R-oce")
         if (is.null(unit)) {
