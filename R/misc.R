@@ -2408,8 +2408,7 @@ fullFilename <- function(filename)
 #' Used by e.g. [plot,ctd-method()].
 #'
 #' @param item code for the label.  This must be an element from the following
-#' list, or an abbreviation that uniquely identifies an element through its
-#' first letters: `"S"`, `"C"`, `"conductivity mS/cm"`,
+#' list: `"S"`, `"SA"`, `"C"`, `"CT"`, `"conductivity mS/cm"`,
 #' `"conductivity S/m"`, `"T"`, `"theta"`, `"sigmaTheta"`,
 #' `"conservative temperature"`, `"absolute salinity"`,
 #' `"nitrate"`, `"nitrite"`, `"oxygen"`, \code{"oxygen
@@ -2455,7 +2454,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
         stop("must provide 'item'")
     if (axis != "x" && axis != "y")
         stop("axis must be \"x\" or \"y\"")
-    itemAllowed <- c("S", "C", "conductivity mS/cm", "conductivity S/m", "T",
+    itemAllowed <- c("S", "SA", "C", "CT", "conductivity mS/cm", "conductivity S/m", "T",
                      "theta", "sigmaTheta", "conservative temperature",
                      "absolute salinity", "nitrate", "nitrite",
                      "oxygen", "oxygen saturation", "oxygen mL/L", "oxygen umol/L", "oxygen umol/kg",
@@ -2516,7 +2515,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
         unit <- gettext("unitless", domain="R-oce")
         full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
         abbreviated <- bquote("C")
-    } else if (item == "conservative temperature") {
+    } else if (item %in% c("CT", "conservative temperature")) {
         var <- gettext("Conservative Temperature", domain="R-oce")
         full <- bquote(.(var)*.(L)*degree*"C"*.(R))
         abbreviated <- bquote(Theta*.(L)*degree*"C"*.(R))
@@ -2640,7 +2639,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
     } else if (item == "S") {
         full <- gettext("Practical Salinity", domain="R-oce")
         abbreviated <- expression(S)
-    } else if (item == "absolute salinity") {
+    } else if (item %in% c("SA", "absolute salinity")) {
         var <- gettext("Absolute Salinity", domain="R-oce")
         full <- bquote(.(var)*.(L)*g/kg*.(R))
         abbreviated <- bquote(S[A]*.(L)*g/kg*.(R))

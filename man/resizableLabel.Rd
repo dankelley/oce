@@ -14,8 +14,7 @@ resizableLabel(
 }
 \arguments{
 \item{item}{code for the label.  This must be an element from the following
-list, or an abbreviation that uniquely identifies an element through its
-first letters: \code{"S"}, \code{"C"}, \code{"conductivity mS/cm"},
+list: \code{"S"}, \code{"SA"}, \code{"C"}, \code{"CT"}, \code{"conductivity mS/cm"},
 \code{"conductivity S/m"}, \code{"T"}, \code{"theta"}, \code{"sigmaTheta"},
 \code{"conservative temperature"}, \code{"absolute salinity"},
 \code{"nitrate"}, \code{"nitrite"}, \code{"oxygen"}, \code{"oxygen
