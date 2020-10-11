@@ -105,6 +105,12 @@ NULL
 #' equation of state is taken to be
 #' [`getOption`]`("oceEOS",default="gsw")`.
 #'
+#' * If `i` is `"sigma0"`, `"sigma1"`, `"sigma2"`, `"sigma3"` or `"sigma4"`,
+#' then the associated function in the \CRANpkg{gsw} package.
+#' For example, `"sigma0"` uses [gsw::gsw_sigma0()], which returns
+#' potential density anomaly referenced to 0 dbar,
+#' according to the gsw equation of state.
+#'
 #' * If `i` is `"theta"`, then
 #' potential temperature (referenced to zero
 #' pressure) is computed, with [swTheta()], where the
@@ -151,7 +157,8 @@ setMethod(f="[[",
                   return(subset(x, profile %in% j))
               }
               namesData <- names(x@data)
-              if (i %in% c("CT", "N2", "SA", "sigmaTheta", "theta")) { # computed items
+              ## handle some computed items
+              if (i %in% c("CT", "N2", "SA", "sigmaTheta", "theta", "sigma0", "sigma1", "sigma2", "sigma3", "sigma4")) {
                   salinity <- x[["salinity", debug=debug-1]]
                   pressure <- x[["pressure", debug=debug-1]]
                   temperature <- x[["temperature", debug=debug-1]]
@@ -180,6 +187,14 @@ setMethod(f="[[",
                       }
                   } else if (i == "SA") {
                       res <- gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
+                  } else if (i %in% c("sigma0", "sigma1", "sigma2", "sigma3", "sigma4")) {
+                      SA <- gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
+                      CT <- gsw_CT_from_t(SA, temperature, pressure)
+                      res <- switch(i, "sigma0"=gsw_sigma0(SA, CT),
+                                    "sigma1"=gsw_sigma1(SA, CT),
+                                    "sigma2"=gsw_sigma2(SA, CT),
+                                    "sigma3"=gsw_sigma3(SA, CT),
+                                    "sigma4"=gsw_sigma4(SA, CT))
                   } else if (i == "sigmaTheta") {
                       res <- swSigmaTheta(salinity, temperature=temperature, pressure=pressure,
                                           referencePressure=0, longitude=longitude, latitude=latitude,

@@ -11,7 +11,7 @@ oceColorsViridis(n)
 \item{n}{number of colors to create.}
 }
 \description{
-This is patterned on a matlab/python scheme (reference 1) that blends
+This is patterned on a \proglang{matlab}/\proglang{python} scheme (reference 1) that blends
 from yellow to blue in a way that is designed to reproduce well
 in black-and-white, and to be interpretable by those with
 certain forms of color blindness (references 3-4).  An alternative
@@ -35,7 +35,7 @@ imagep(volcano, col=viridis::viridis,
 scales is at \url{http://bids.github.io/colormap/}.
 \item Light, A., and P. J. Bartlein, 2004. The End of the Rainbow? Color
 Schemes for Improved Data Graphics. \emph{Eos Trans. AGU}, 85(40),
-doi:10.1029/2004EO400002.
+\doi{doi:10.1029/2004EO400002}.
 \item Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
 Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
 \samp{https://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}.

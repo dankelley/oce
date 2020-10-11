@@ -5041,7 +5041,7 @@ trimString <- function(s)
 #' Perform lowpass digital filtering
 #'
 #' The filter coefficients are constructed using standard definitions,
-#' and then \link[stats]{filter} in the \pkg{stats} package is
+#' and then \link[stats]{filter} in the \CRANpkg{stats} package is
 #' used to filter the data. This leaves `NA`
 #' values within half the filter length of the ends of the time series, but
 #' these may be replaced with the original `x` values, if the argument

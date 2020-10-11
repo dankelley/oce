@@ -17,7 +17,9 @@ importFrom("gsw", "gsw_CT_freezing", "gsw_CT_from_t", "gsw_C_from_SP",
            "gsw_Turner_Rsubrho", "gsw_adiabatic_lapse_rate_from_CT",
            "gsw_alpha", "gsw_alpha_on_beta", "gsw_beta", "gsw_cp_t_exact",
            "gsw_geo_strf_dyn_height", "gsw_p_from_z", "gsw_pot_rho_t_exact",
-           "gsw_pt_from_t", "gsw_rho", "gsw_sound_speed", "gsw_t_freezing",
+           "gsw_pt_from_t", "gsw_rho",
+           "gsw_sigma0", "gsw_sigma1", "gsw_sigma2", "gsw_sigma3", "gsw_sigma4",
+           "gsw_sound_speed", "gsw_t_freezing",
            "gsw_t_from_CT", "gsw_z_from_p")
 importFrom("methods", "as", "callNextMethod", "new", "slot<-", "slotNames",
            "validObject")

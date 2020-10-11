@@ -61,6 +61,11 @@ potential density anomaly (referenced to zero
 pressure) is computed, with \code{\link[=swSigmaTheta]{swSigmaTheta()}}, where the
 equation of state is taken to be
 \code{\link{getOption}}\verb{("oceEOS",default="gsw")}.
+\item If \code{i} is \code{"sigma0"}, \code{"sigma1"}, \code{"sigma2"}, \code{"sigma3"} or \code{"sigma4"},
+then the associated function in the \CRANpkg{gsw} package.
+For example, \code{"sigma0"} uses \code{\link[gsw:gsw_sigma0]{gsw::gsw_sigma0()}}, which returns
+potential density anomaly referenced to 0 dbar,
+according to the gsw equation of state.
 \item If \code{i} is \code{"theta"}, then
 potential temperature (referenced to zero
 pressure) is computed, with \code{\link[=swTheta]{swTheta()}}, where the
