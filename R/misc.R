@@ -3524,14 +3524,22 @@ interpBarnes <- function(x, y, z, w,
     oceDebug(debug, "xr=", xr, ", yr=", yr, ", gamma=", gamma, ", iterations=", iterations, "\n")
 
     ok <- !is.na(x) & !is.na(y) & !is.na(z) & !is.na(w)
-    g <- do_interp_barnes(x[ok], y[ok], z[ok], w[ok], xg, yg, xr, yr, gamma, iterations)
-    if (trim >= 0 && trim <= 1) {
-        bad <- g$wg < quantile(g$wg, trim, na.rm=TRUE)
-        g$zg[bad] <- NA
+    if (sum(ok) > 0) {
+        g <- do_interp_barnes(x[ok], y[ok], z[ok], w[ok], xg, yg, xr, yr, gamma, iterations)
+        if (trim >= 0 && trim <= 1) {
+            bad <- g$wg < quantile(g$wg, trim, na.rm=TRUE)
+            g$zg[bad] <- NA
+        }
+        rval <- list(xg=xg, yg=yg, zg=g$zg, wg=g$wg, zd=g$zd)
+    } else {
+        rval <- list(xg=xg, yg=yg,
+                     zg=matrix(NA, nrow=length(xg), ncol=length(yg)),
+                     wg=matrix(NA, nrow=length(xg), ncol=length(yg)),
+                     zd=rep(NA, length(x)))
     }
-    oceDebug(debug, sprintf("filled %.3f%% of z matrix\n", 100*sum(is.finite(g$zg))/prod(dim(g$zg))))
+    oceDebug(debug, sprintf("filled %.3f%% of z matrix\n", 100*sum(is.finite(rval$zg))/prod(dim(rval$zg))))
     oceDebug(debug, "} # interpBarnes(...)\n", unindent=1, sep="")
-    list(xg=xg, yg=yg, zg=g$zg, wg=g$wg, zd=g$zd)
+    rval
 }
 
 #' Coriolis parameter on rotating earth

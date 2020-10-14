@@ -3025,6 +3025,8 @@ sectionSmooth <- function(section, method="spline",
                     smu$z <- smu$zg
                     smu$x <- smu$xg
                     smu$y <- smu$yg
+                    if (all(is.na(smu$z)))
+                        warning("All \"", var, "\" data are NA, so gridded field is a matrix of NA values\n")
                 } else if (method == "kriging") {
                     if (requireNamespace("automap", quietly=TRUE) &&
                         requireNamespace("sp", quietly=TRUE)) {
