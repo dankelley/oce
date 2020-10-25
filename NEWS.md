@@ -8,23 +8,24 @@
 * Add `data(amsr)` and improve `subset,amsr-method()`.
 * Add `data(tidalCurrent)` dataset, which holds tidal currents from Foreman.
 * Add `oceAxis()`.
-* Add `preferAdjusted()` to make it easier to switch to 'adjusted' argo data.
+* Add `preferAdjusted()` to make it easier to switch to 'adjusted' `argo-class` data.
 * Add `read.ctd.odv()`.
-* Add `snakeToCamel()` to convert variable names in e.g. argo netcdf files.
+* Add `snakeToCamel()` to convert variable names in e.g. Argo netcdf files.
 * Add `timeToArgoJuld()`.
 * Change `drawPalette()` default colour palette to `oce.colorsViridis()`.
 * Change `imagep()` default colour palette to `oce.colorsViridis()`.
 * Change `plot,amsr-method()` default colour palette to `oce.colorsViridis()`.
 * Change `plot,section-method()` default colour palette to `oce.colorsViridis()`.
 * Change `plotTS()` to trim isopycnals to realistic salinities and temperatures.
-* Change user-oriented github website generator to `pkgdown`.
 * Change `read.argo()` and `data(argo)` to use camelCase in all metadata.
+* Change user-oriented github website generator to `pkgdown`.
+* Extend `[[,argo-method` to accept `"ID"` as an alternative to `"id"`.
+* Extend `oce.plot.ts()`, adding argument `logStyle`.
 * Extend `read.adp.rdi()` to handle 38kHz RDI adp files.
 * Extend `read.ctd.sbe()` to handle 4 new (Beckman) oxygen variables.
 * Extend `read.ctd.sbe()` to handle `.btl` files.
-* Extend `oce.plot.ts()`, adding argument `logStyle`.
-* Fix `plotTS` error in auto-scaling if S and T have mixed NA status.
 * Fix `plot,coastline-method` error in box drawing.
+* Fix `plotTS` error in auto-scaling if S and T have mixed NA status.
 * Fix `subset,argo-method()` error in `flags`, `location`, and `*QC` in `metadata`.
 
 ## 1.2.0

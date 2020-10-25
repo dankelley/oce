@@ -120,6 +120,9 @@ NULL
 #' * If `i` is `"depth"`, then
 #' a matrix of depths is returned.
 #'
+#' * If `i` is `"id"` or `"ID"`, then the `id` element within
+#' the `metadata` slot is returned.
+#'
 #' * If `i` is in the `data` slot of `x`,
 #' then it is returned, otherwise if it is in the `metadata` slot,
 #' then that is returned, otherwise `NULL` is returned.
@@ -227,6 +230,8 @@ setMethod(f="[[",
                   } else {
                       res <- swDepth(x@data$pressure, x@data$latitude)
                   }
+              } else if (i == "ID" || i == "id") {
+                  res <- x@metadata$id
               } else if (i == "latitude") {
                   res <- x@data$latitude
               } else if (i == "longitude") {
@@ -523,8 +528,9 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' independent variable.  Subsetting may be done by anything
 #' stored in the data, e.g. `time`,
 #' `latitude`, `longitude`, `profile`, `dataMode`,
-#' or `pressure` or by `profile` (a made-up variable)
-#' or `id` (from the `metadata` slot). Note that subsetting by `pressure`
+#' or `pressure` or by `profile` (a made-up variable),
+#' `id` (from the `metadata` slot) or `ID` (a synonym for `id`).
+#' Note that subsetting by `pressure`
 #' preserves matrix shape, by setting discarded values to `NA`, as opposed
 #' to dropping data (as is the case with `time`, for example).
 #'
@@ -724,7 +730,7 @@ setMethod(f="subset",
                   if (length(grep("time", subsetString)) ||
                       length(grep("longitude", subsetString)) || length(grep("latitude", subsetString))) {
                       keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
-                  } else if (length(grep("id", subsetString))) {
+                  } else if (length(grep("id", subsetString, ignore.case=TRUE))) {
                       ## add id into the data, then do as usual
                       tmp <- x@data
                       tmp$id <- x@metadata$id

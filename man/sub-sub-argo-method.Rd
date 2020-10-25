@@ -73,6 +73,8 @@ equation of state is taken to be
 \code{\link{getOption}}\verb{("oceEOS",default="gsw")}.
 \item If \code{i} is \code{"depth"}, then
 a matrix of depths is returned.
+\item If \code{i} is \code{"id"} or \code{"ID"}, then the \code{id} element within
+the \code{metadata} slot is returned.
 \item If \code{i} is in the \code{data} slot of \code{x},
 then it is returned, otherwise if it is in the \code{metadata} slot,
 then that is returned, otherwise \code{NULL} is returned.
