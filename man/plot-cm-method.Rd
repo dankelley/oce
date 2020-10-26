@@ -7,7 +7,7 @@
 \usage{
 \S4method{plot}{cm}(
   x,
-  which = c(1:2, 7:9),
+  which = c(1:2),
   type = "l",
   drawTimeRange = getOption("oceDrawTimeRange"),
   drawZeroLine = FALSE,
