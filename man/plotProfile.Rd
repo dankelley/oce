@@ -97,10 +97,13 @@ to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.
 \item{lty}{line type for the profile.}
 
 \item{xlab}{optional label for x axis (at top of plot). If not
-provided, the value of \code{xtype} is used for the label.}
+provided, the value of \code{xtype} is used (along with the units
+of the variable) to construct a label. For user-supplied \code{xlab},
+the unit (if any) must be specified as in e.g.
+\code{xlab=expression("Speed ["*m/s*"]")}.}
 
-\item{ylab}{optional label for y axis.  Set to \code{""} to prevent
-labelling the axis.}
+\item{ylab}{optional label for y axis.  See \code{xlab} for a note on
+units.  Setting \code{ylab=""} prevents labelling the axis.}
 
 \item{col}{color for a general profile.}
 
