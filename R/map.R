@@ -609,7 +609,7 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
             if (!inherits(tfcn, "try-error")) {
                 at <- tfcn(latitude)
                 if (any(is.finite(at)))
-                    axis(side=2, at=at, label=formatLonLat(latitude, "latitude", axisStyle=axisStyle))
+                    axis(side=2, at=at, label=formatLonLat(latitude, "latitude", axisStyle=axisStyle), line=line)
             }
         }
     }

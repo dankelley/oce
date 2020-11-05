@@ -53,3 +53,4 @@ R/check_urls.R
 ^oce-demo-[0-9].png$
 ^oce-logo-[0-9].png$
 
+^\.github$
