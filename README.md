@@ -1,5 +1,7 @@
 # **oce** <img src="oce-logo-3.png" align="right" alt="" width="120" />
 
+
+[![R build status](https://github.com/dankelley/oce/workflows/R-CMD-check/badge.svg)](https://github.com/dankelley/oce/actions)
 [![Build Status](https://travis-ci.com/dankelley/oce.svg?branch=develop)](https://travis-ci.com/dankelley/oce)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/dankelley/oce?branch=develop&svg=true)](https://ci.appveyor.com/project/dankelley/oce)
 [![codecov](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://codecov.io/gh/dankelley/oce)
