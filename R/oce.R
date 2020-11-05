@@ -2397,7 +2397,6 @@ oce.colorsTwo <- oceColorsTwo
 #' or `"both"`.
 #'
 #' @param type String indicating the purpose, one of `"fill"` or `"line"`.
-#' @family things related to colors
 #'
 #' @examples
 #' library(oce)
