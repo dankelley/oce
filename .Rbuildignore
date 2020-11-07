@@ -1,3 +1,5 @@
+^.git$
+^.github$
 ^issue[0-9]+\.R$
 ^sandbox$
 ^.*.odf$
@@ -11,7 +13,7 @@
 ^LICENSE$
 ^vignettes/figure$
 ^.*.org$
-.github
+^.github$
 .RData
 .travis.yml
 ^.*.nc$
@@ -53,5 +55,3 @@ R/check_urls.R
 ^oce-demo-[0-9].png$
 ^oce-logo-[0-9].png$
 
-^\.github$
-^codecov\.yml$
