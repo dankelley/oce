@@ -2,7 +2,7 @@
 
 
 [![R build status](https://github.com/dankelley/oce/workflows/R-CMD-check/badge.svg)](https://github.com/dankelley/oce/actions)
-[![codecov](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://codecov.io/gh/dankelley/oce)
+[![Codecov test coverage](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://codecov.io/gh/dankelley/oce?branch=develop)
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/oce)](https://cran.r-project.org/package=oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-month/oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)

@@ -54,3 +54,4 @@ R/check_urls.R
 ^oce-logo-[0-9].png$
 
 ^\.github$
+^codecov\.yml$

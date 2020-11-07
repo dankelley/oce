@@ -8,8 +8,25 @@ Authors@R: c(
     person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field subroutine"))
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
 Depends: R (>= 2.15), gsw, methods, sf (>= 0.8.0), testthat, utils
-Suggests: akima, automap, DBI, foreign, knitr, lubridate, ncdf4, ocedata,
-    raster (>= 1.4.3), rgeos, rgdal, rmarkdown, RSQLite, R.utils, sp, tiff, XML
+Suggests: 
+    akima,
+    automap,
+    DBI,
+    foreign,
+    knitr,
+    lubridate,
+    ncdf4,
+    ocedata,
+    raster (>= 1.4.3),
+    rgeos,
+    rgdal,
+    rmarkdown,
+    RSQLite,
+    R.utils,
+    sp,
+    tiff,
+    XML,
+    covr
 BugReports: https://github.com/dankelley/oce/issues
 Description: Supports the analysis of Oceanographic data, including 'ADCP'
     measurements, measurements made with 'argo' floats, 'CTD' measurements,
