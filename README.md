@@ -22,23 +22,22 @@ Springer-Verlag).
 
 ## Installing oce
 
-Stable versions of oce normally installed from within R, in the same way as
+Stable versions of oce are installed from within R, in the same way as
 other packages.  However, this version is only updated a few times a year
 (pursuant to CRAN policy), so many users install the `"develop"` branch
 instead. This branch may be updated several times per day, as the authors fix
 bugs or add features that are motivated by day-to-day usage.  This is the
-branch favoured by users who need new features or would like to contribute to
+branch favoured by users who need new features or who would wish to contribute to
 Oce development.
 
 The easy way to install the `"develop"` branch is to execute the
 following commands in R.
 ```R
-library(devtools)
-install_github("dankelley/oce", ref="develop")
+remotes::install_github("dankelley/oce", ref="develop")
 ```
 and most readers should also install Ocedata, with
 ```R
-install_github("dankelley/ocedata", ref="master")
+remotes::install_github("dankelley/ocedata", ref="master")
 ```
 
 ## Evolution of oce
