@@ -22,6 +22,7 @@
 * Extend `[[,argo-method` to accept `"ID"` as an alternative to `"id"`.
 * Extend `oce.plot.ts()`, adding argument `logStyle`.
 * Extend `read.adp.rdi()` to handle 38kHz RDI adp files.
+* Extend `read.argo()` and `data(argo)` by adding three more 'CYCLE' variables.
 * Extend `read.ctd.sbe()` to handle 4 new (Beckman) oxygen variables.
 * Extend `read.ctd.sbe()` to handle `.btl` files.
 * Fix `plot,coastline-method` error in box drawing.

@@ -1,5 +1,5 @@
 library(oce)
-argo <- read.oce("6900388_prof.nc")
+argo <- read.oce("6900388_prof.nc", debug=3)
 summary(argo)
 
 ## Save in version 2, because otherwise users with R 3.5.x and earlier will not
