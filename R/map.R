@@ -1883,8 +1883,45 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             axisLabels <- mapGrid(dlongitude=grid[1], dlatitude=grid[2], polarCircle=polarCircle,
                                   longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
         }
+        ## Filter latitude labels based on latlabels
+        ##> message("axisLabels original:") ; print(axisLabels)
+        ##> message("latlabels:") ; print(latlabels)
+        if (is.null(latlabels)) {
+            axisLabels <- axisLabels[axisLabels$type != "latitude",]
+        } else if (is.logical(latlabels) && !latlabels) {
+            axisLabels$value[axisLabels$type == "latitude"] <- ""
+        } else if (is.numeric(latlabels)) {
+            #axisLabels <- axisLabels[axisLabels$type != "latitude",]
+            alats <- axisLabels$value[axisLabels$type == "latitude"]
+            keep <- axisLabels$type == "longitude" | axisLabels$value %in% latlabels
+            ##> message("tmp:");print(cbind(axisLabels, keep=keep))
+            axisLabels <- axisLabels[keep,]
+            ##> message("axisLabels:");print(axisLabels)
+        }
+        ##> message("axisLabels after handling latlabels:") ; print(axisLabels)
+        ## Filter longitude labels based on latlabels
+        ##> message("axisLabels original:") ; print(axisLabels)
+        ##> message("lonlabels:") ; print(lonlabels)
+        if (is.null(lonlabels)) {
+            axisLabels <- axisLabels[axisLabels$type != "longitude",]
+        } else if (is.logical(lonlabels) && !lonlabels) {
+            axisLabels$value[axisLabels$type == "longitude"] <- ""
+        } else if (is.numeric(lonlabels)) {
+            #axisLabels <- axisLabels[axisLabels$type != "latitude",]
+            alats <- axisLabels$value[axisLabels$type == "longitude"]
+            keep <- axisLabels$type == "latitude" | axisLabels$value %in% lonlabels
+            ##> message("tmp:");print(cbind(axisLabels, keep=keep))
+            axisLabels <- axisLabels[keep,]
+            ##> message("axisLabels:");print(axisLabels)
+        }
+        ##> message("axisLabels after handling lonlabels:") ; print(axisLabels)
+        ##> DANlatlabels<<-latlabels
+        ##> DANlonlabels<<-lonlabels
+        oceDebug(debug, vectorShow(latlabels))
+        oceDebug(debug, vectorShow(lonlabels))
         if (axes) {
             if (!is.null(axisLabels)) {
+                oceDebug(debug, "axisLabels is not null\n")
                 if (nrow(axisLabels) > 0) {
                     axisLabels1 <- subset(axisLabels, axisLabels$side==1)
                     if (nrow(axisLabels1) > 0) {
@@ -1908,6 +1945,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     }
                 }
             } else {
+                oceDebug(debug, "axisLabels is null\n")
                 if (is.logical(lonlabels)) {
                     mapAxis(side=1, longitude=.axis()$longitude, latitude=FALSE,
                             cex.axis=if (lonlabels) cex.axis else 0, mgp=mgp, axisStyle=axisStyle, debug=debug-1)
