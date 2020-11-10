@@ -56,3 +56,6 @@ R/check_urls.R
 ^oce-logo-[0-9].png$
 
 ^codecov\.yml$
+ar_index_global_prof.rda
+argo_bio-profile_index.rda
+Rplots.pdf
