@@ -1308,6 +1308,19 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' most projections this works quite well.  If not, one may set
 #' `grid=FALSE` and add a grid later with [mapGrid()].
 #'
+#' @param geographical flag indicating the style of axes.  With
+#' `geographical=0`, the axes are conventional, with decimal degrees as
+#' the unit, and negative signs indicating the southern and western
+#' hemispheres.  With `geographical=1`, the signs are dropped, with axis
+#' values being in decreasing order within the southern and western
+#' hemispheres.  With `geographical=2`, the signs are dropped and the axes
+#' are labelled with degrees, minutes and seconds, as appropriate, and
+#' hemispheres are indicated with letters. With `geographical=3`, things
+#' are the same as for `geographical=2`, but the hemisphere indication
+#' is omitted. Finally, with `geographical=4`, unsigned numbers are used,
+#' followed by letters `N` in the northern hemisphere, `S` in the southern,
+#' `E` in the eastern, and `W` in the western.
+#'
 #' @param bg color of the background (ignored).
 #'
 #' @param fill is a deprecated argument; see [oce-deprecated].
@@ -1532,6 +1545,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @family functions related to maps
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
+                    geographical=0,
                     bg, fill,
                     border=NULL, col=NULL,
                     clip=TRUE,
@@ -1549,10 +1563,15 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
              argShow(type),
              argShow(projection),
              argShow(grid),
-             "...) {\n", sep="", unindent=1, style="bold")
+             argShow(geographical),
+             ", ...) {\n", sep="", unindent=1, style="bold")
     dots <- list(...)
     if (1 == length(grid))
         grid <- rep(grid, 2)
+    geographical <- round(geographical)
+    if (geographical < 0 || geographical > 4)
+        stop("argument geographical must be an integer between 0 to 4, inclusive")
+
     if (!missing(projection) && inherits(projection, "CRS")) {
         projection <- projection@projargs
     }
@@ -1883,42 +1902,92 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             axisLabels <- mapGrid(dlongitude=grid[1], dlatitude=grid[2], polarCircle=polarCircle,
                                   longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
         }
+        if (debug) {
+            cat("Before accounting for latlabel, lonlabel, and geographical, axisLabels is as follows\n")
+            print(axisLabels)
+        }
+        DAN1<<-axisLabels
         ## Filter latitude labels based on latlabels
-        ##> message("axisLabels original:") ; print(axisLabels)
-        ##> message("latlabels:") ; print(latlabels)
-        if (is.null(latlabels)) {
-            axisLabels <- axisLabels[axisLabels$type != "latitude",]
-        } else if (is.logical(latlabels) && !latlabels) {
-            axisLabels$value[axisLabels$type == "latitude"] <- ""
-        } else if (is.numeric(latlabels)) {
-            #axisLabels <- axisLabels[axisLabels$type != "latitude",]
-            alats <- axisLabels$value[axisLabels$type == "latitude"]
-            keep <- axisLabels$type == "longitude" | axisLabels$value %in% latlabels
-            ##> message("tmp:");print(cbind(axisLabels, keep=keep))
-            axisLabels <- axisLabels[keep,]
-            ##> message("axisLabels:");print(axisLabels)
+        message("axisLabels before looking at latitude:");print(axisLabels)
+
+        if (any(axisLabels$type == "latitude")) {
+            message("FIXME 1")
+            if (is.null(latlabels)) {
+                message("FIXME 1.1")
+                axisLabels <- axisLabels[axisLabels$type != "latitude",]
+                message("/FIXME 1.1")
+            } else if (is.logical(latlabels) && !latlabels) {
+                message("FIXME 1.2")
+                print(axisLabels)
+                axisLabels <- axisLabels[axisLabels$type != "latitude",]
+                message("/FIXME 1.2")
+            } else if (is.numeric(latlabels)) {
+                message("FIXME 1.3")
+                alats <- axisLabels$value[axisLabels$type == "latitude"]
+                keep <- axisLabels$type == "longitude" | axisLabels$value %in% latlabels
+                axisLabels <- axisLabels[keep,]
+                message("/FIXME 1.3")
+            }
+            message("/FIXME 1")
         }
-        ##> message("axisLabels after handling latlabels:") ; print(axisLabels)
+        message("axisLabels before looking at longitude:");print(axisLabels)
+
         ## Filter longitude labels based on latlabels
-        ##> message("axisLabels original:") ; print(axisLabels)
-        ##> message("lonlabels:") ; print(lonlabels)
-        if (is.null(lonlabels)) {
-            axisLabels <- axisLabels[axisLabels$type != "longitude",]
-        } else if (is.logical(lonlabels) && !lonlabels) {
-            axisLabels$value[axisLabels$type == "longitude"] <- ""
-        } else if (is.numeric(lonlabels)) {
-            #axisLabels <- axisLabels[axisLabels$type != "latitude",]
-            alats <- axisLabels$value[axisLabels$type == "longitude"]
-            keep <- axisLabels$type == "latitude" | axisLabels$value %in% lonlabels
-            ##> message("tmp:");print(cbind(axisLabels, keep=keep))
-            axisLabels <- axisLabels[keep,]
-            ##> message("axisLabels:");print(axisLabels)
+        if (any(axisLabels$type == "longitude")) {
+            if (is.null(lonlabels)) {
+                axisLabels <- axisLabels[axisLabels$type != "longitude",]
+            } else if (is.logical(lonlabels) && !lonlabels) {
+                axisLabels <- axisLabels[axisLabels$type != "longitude",]
+            } else if (is.numeric(lonlabels)) {
+                alats <- axisLabels$value[axisLabels$type == "longitude"]
+                keep <- axisLabels$type == "latitude" | axisLabels$value %in% lonlabels
+                axisLabels <- axisLabels[keep,]
+            }
         }
-        ##> message("axisLabels after handling lonlabels:") ; print(axisLabels)
-        ##> DANlatlabels<<-latlabels
-        ##> DANlonlabels<<-lonlabels
-        oceDebug(debug, vectorShow(latlabels))
-        oceDebug(debug, vectorShow(lonlabels))
+        message("axisLabels after looking at longitude:");print(axisLabels)
+        message("geographical=",geographical)
+        ## Obey 'geographical' argument
+        DAN2<<-axisLabels
+        if (geographical == 1) {
+            ##>message("1***")
+            ##>print(axisLabels$value)
+            axisLabels$value <- abs(axisLabels$value)
+            ##>message("2***")
+        } else if (geographical == 2 || geographical == 3) {
+            ##>> message("A1")
+            ##>> look <- axisLabels$type == "latitude"
+            ##>> message("A2")
+            ##>> if (any(look)) {
+            ##>>     message("  A2.1  look: ", paste(look, collapse=" "))
+            ##>>     axisLabels$value[look] <- formatPosition(axisLabels$value[look],
+            ##>>                                              isLat=TRUE,
+            ##>>                                              type="expression",
+            ##>>                                              showHemi=geographical==3)
+            ##>> }
+            ##>> message("A3")
+            ##>> look <- axisLabels$type == "longitude"
+            ##>> message("A4")
+            ##>> if (any(look)) {
+            ##>>     message("A4.1")
+            ##>>     message("  A4.1 look: ", paste(look, collapse=" "))
+            axisLabels$value <- formatPosition(axisLabels$value,
+                                               isLat=axisLabels$type=="latitude",
+                                               type="expression",
+                                               showHemi=geographical==3)
+            message("A5")
+        } else if (geographical == 4) {
+            ## Add N, S, E or W suffices, but remove for equator and prime meridian
+            axisLabels$value <- ifelse(axisLabels$type == "latitude",
+                                       paste0(abs(axisLabels$value), ifelse(axisLabels$value < 0, "S", "N")),
+                                       paste0(abs(axisLabels$value), ifelse(axisLabels$value < 0, "W", "E")))
+            axisLabels$value[axisLabels$value == "0E"] <- "0"
+            axisLabels$value[axisLabels$value == "0N"] <- "0"
+        }
+        DAN2<<-axisLabels
+        if (debug) {
+            cat("After accounting for latlabel, lonlabel, and geographical, axisLabels is as follows\n")
+            print(axisLabels)
+        }
         if (axes) {
             if (!is.null(axisLabels)) {
                 oceDebug(debug, "axisLabels is not null\n")
@@ -2743,7 +2812,10 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     noSeconds <- all(seconds == 0)
     noMinutes <- noSeconds & all(minutes == 0)
     if (showHemi) {
-        hemispheres <- if (isLat) ifelse(signs>0, "N", "S") else ifelse(signs>0, "E", "W")
+        ## hemispheres <- if (isLat) ifelse(signs>0, "N", "S") else ifelse(signs>0, "E", "W")
+        hemispheres <- ifelse(isLat,
+                              ifelse(signs>0, "N", "S"),
+                              ifelse(signs>0, "E", "W"))
         hemispheres[signs==0] <- ""
     } else {
         hemispheres <- rep("", length(signs))
