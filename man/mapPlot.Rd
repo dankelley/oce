@@ -10,6 +10,7 @@ mapPlot(
   longitudelim,
   latitudelim,
   grid = TRUE,
+  geographical = 0,
   bg,
   fill,
   border = NULL,
@@ -65,6 +66,19 @@ turn off the grid in longitude or latitude.  Grids are set up based on
 examination of the scale used in middle 10 percent of the plot area, and for
 most projections this works quite well.  If not, one may set
 \code{grid=FALSE} and add a grid later with \code{\link[=mapGrid]{mapGrid()}}.}
+
+\item{geographical}{flag indicating the style of axes.  With
+\code{geographical=0}, the axes are conventional, with decimal degrees as
+the unit, and negative signs indicating the southern and western
+hemispheres.  With \code{geographical=1}, the signs are dropped, with axis
+values being in decreasing order within the southern and western
+hemispheres.  With \code{geographical=2}, the signs are dropped and the axes
+are labelled with degrees, minutes and seconds, as appropriate, and
+hemispheres are indicated with letters. With \code{geographical=3}, things
+are the same as for \code{geographical=2}, but the hemisphere indication
+is omitted. Finally, with \code{geographical=4}, unsigned numbers are used,
+followed by letters \code{N} in the northern hemisphere, \code{S} in the southern,
+\code{E} in the eastern, and \code{W} in the western.}
 
 \item{bg}{color of the background (ignored).}
 
