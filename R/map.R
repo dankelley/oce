@@ -1946,35 +1946,18 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         message("axisLabels after looking at longitude:");print(axisLabels)
         message("geographical=",geographical)
+        message("global DAN1 is axisLabels before altering for 'geographical'")
         ## Obey 'geographical' argument
         DAN2<<-axisLabels
         if (geographical == 1) {
-            ##>message("1***")
-            ##>print(axisLabels$value)
             axisLabels$value <- abs(axisLabels$value)
-            ##>message("2***")
         } else if (geographical == 2 || geographical == 3) {
-            ##>> message("A1")
-            ##>> look <- axisLabels$type == "latitude"
-            ##>> message("A2")
-            ##>> if (any(look)) {
-            ##>>     message("  A2.1  look: ", paste(look, collapse=" "))
-            ##>>     axisLabels$value[look] <- formatPosition(axisLabels$value[look],
-            ##>>                                              isLat=TRUE,
-            ##>>                                              type="expression",
-            ##>>                                              showHemi=geographical==3)
-            ##>> }
-            ##>> message("A3")
-            ##>> look <- axisLabels$type == "longitude"
-            ##>> message("A4")
-            ##>> if (any(look)) {
-            ##>>     message("A4.1")
-            ##>>     message("  A4.1 look: ", paste(look, collapse=" "))
+            message("A5")
             axisLabels$value <- formatPosition(axisLabels$value,
                                                isLat=axisLabels$type=="latitude",
                                                type="expression",
                                                showHemi=geographical==3)
-            message("A5")
+            message("/A5")
         } else if (geographical == 4) {
             ## Add N, S, E or W suffices, but remove for equator and prime meridian
             axisLabels$value <- ifelse(axisLabels$type == "latitude",
@@ -1984,6 +1967,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             axisLabels$value[axisLabels$value == "0N"] <- "0"
         }
         DAN2<<-axisLabels
+        message("global DAN2 is axisLabels after altering for 'geographical'")
         if (debug) {
             cat("After accounting for latlabel, lonlabel, and geographical, axisLabels is as follows\n")
             print(axisLabels)
@@ -1999,7 +1983,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                             print(axisLabels1)
                         }
                         axis(side=1, at=axisLabels1$at,
-                                labels=formatLonLat(axisLabels1$value, "longitude", axisStyle=axisStyle),
+                                labels=axisLabels1$value,
                                 mgp=mgp)
                     }
                     axisLabels2 <- subset(axisLabels, axisLabels$side==2)
@@ -2009,7 +1993,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                             print(axisLabels2)
                         }
                         axis(side=2, at=axisLabels2$at,
-                             labels=formatLonLat(axisLabels2$value, "latitude", axisStyle=axisStyle),
+                             labels=axisLabels2$value,
                              mgp=mgp)
                     }
                 }
