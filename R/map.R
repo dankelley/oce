@@ -587,8 +587,9 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
             options(warn=owarn)
             if (!inherits(tfcn, "try=error")) {
                 at <- tfcn(longitude)
-                if (any(is.finite(at)))
+                if (any(is.finite(at))) {
                     axis(side=1, at=at, label=formatLonLat(longitude, "longitude", axisStyle=axisStyle))
+                }
             }
         }
     }
@@ -1907,31 +1908,31 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             print(axisLabels)
         }
         ## Filter latitude labels based on latlabels
-        ##0 message("axisLabels before looking at latitude:");print(axisLabels)
-        ##0 DAN1<<-axisLabels
+        message("axisLabels before looking at latitude:");print(axisLabels)
         if (any(axisLabels$type == "latitude")) {
             if (is.null(latlabels)) {
-                axisLabels <- axisLabels[axisLabels$type != "latitude",]
+                axisLabels$value[axisLabels$type == "latitude"] <- NA
             } else if (is.logical(latlabels) && !latlabels) {
-                axisLabels <- axisLabels[axisLabels$type != "latitude",]
+                axisLabels$value[axisLabels$type == "latitude"] <- NA
             } else if (is.numeric(latlabels)) {
                 alats <- axisLabels$value[axisLabels$type == "latitude"]
                 keep <- axisLabels$type == "longitude" | axisLabels$value %in% latlabels
-                axisLabels <- axisLabels[keep,]
+                axisLabels$value[!keep] <- NA
             }
         }
-        ##0message("axisLabels before looking at longitude:");print(axisLabels)
+        message("axisLabels before looking at longitude:");print(axisLabels)
 
         ## Filter longitude labels based on latlabels
         if (any(axisLabels$type == "longitude")) {
             if (is.null(lonlabels)) {
-                axisLabels <- axisLabels[axisLabels$type != "longitude",]
+                axisLabels$value[axisLabels$type == "longitude"] <- NA
             } else if (is.logical(lonlabels) && !lonlabels) {
-                axisLabels <- axisLabels[axisLabels$type != "longitude",]
+                axisLabels$value[axisLabels$type == "longitude"] <- NA
             } else if (is.numeric(lonlabels)) {
                 alats <- axisLabels$value[axisLabels$type == "longitude"]
                 keep <- axisLabels$type == "latitude" | axisLabels$value %in% lonlabels
-                axisLabels <- axisLabels[keep,]
+                ## axisLabels <- axisLabels[keep,]
+                axisLabels$value[!keep] <- NA
             }
         }
         ##0 message("axisLabels after looking at longitude:");print(axisLabels)
@@ -1960,6 +1961,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             cat("After accounting for latlabel, lonlabel, and geographical, axisLabels is as follows\n")
             print(axisLabels)
         }
+        message("axes: ", axes, "; next is axisLabels");print(axisLabels)
         if (axes) {
             if (!is.null(axisLabels)) {
                 oceDebug(debug, "axisLabels is not null\n")
@@ -1970,18 +1972,24 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                             cat("About to draw axis on side 1; next is axisLabels1:\n")
                             print(axisLabels1)
                         }
+                        message("about to draw x axis; next is axisLabels1$value")
+                        print(axisLabels1$value)
+                        skip <- if (any(is.expression(axisLabels1$value[1]))) rep(FALSE, nrow(axisLabels1)) else axisLabels1$value == "NANA"
                         axis(side=1, at=axisLabels1$at,
-                                labels=axisLabels1$value,
+                                labels=ifelse(skip, "", axisLabels1$value),
                                 mgp=mgp)
                     }
                     axisLabels2 <- subset(axisLabels, axisLabels$side==2)
                     if (nrow(axisLabels2) > 0) {
-                        if (debug) {
+                        if (debug+1) {
                             cat("About to draw mapAxis on side 2; next is axisLabels2:\n")
                             print(axisLabels2)
                         }
+                        message("about to draw y axis; next is axisLabels2$value")
+                        print(axisLabels2$value)
+                        skip <- if (any(is.expression(axisLabels2$value))) rep(FALSE, nrow(axisLabels2)) else axisLabels2$value == "NANA"
                         axis(side=2, at=axisLabels2$at,
-                             labels=axisLabels2$value,
+                             labels=ifelse(skip, "", axisLabels2$value),
                              mgp=mgp)
                     }
                 }
@@ -2765,8 +2773,11 @@ mapArrows <- function(longitude0, latitude0,
 formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"), showHemi=TRUE)
 {
     type <- match.arg(type)
-    signs <- sign(latlon)
-    x <- abs(latlon)
+    na <- is.na(latlon)
+    signs <- sign(latlon[!na])
+    x <- abs(latlon[!na])
+    message("formatPosition with signs: ", paste(signs, collapse=" "))
+    message("formatPosition with x: ", paste(x, collapse=" "))
     degrees <- floor(x)
     minutes <- floor(60 * (x - degrees))
     seconds <- 3600 * (x - degrees - minutes / 60)
@@ -2832,7 +2843,29 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
             }
         }
     }
-    res
+    RES <- vector("expression", length(latlon))
+    message("length(RES): ", length(RES))
+    message("length(res): ", length(res))
+    message("length(na): ", length(na))
+    message("sum(na): ", sum(na))
+    message("which(!na): ", paste(which(!na), collapse=" "))
+    j <- which(!na)
+    k <- 1 # in res
+    for (i in seq_along(latlon)) {
+        if (i %in% j) {
+            RES[i] <- res[k]
+            k <- k + 1
+        }
+    }
+    ##? j <- 1
+    ##? for (i in which(!na)) {
+    ##?     RES[i] <- res[j]
+    ##?     j <- j + 1
+    ##? }
+    ## RES[which(!na)] <- res
+    print(RES)
+    DANNY<<-RES
+    RES
 }
 
 
