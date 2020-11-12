@@ -1974,10 +1974,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         }
                         message("about to draw x axis; next is axisLabels1$value")
                         print(axisLabels1$value)
+                        message("next is skip for side 1:");print(skip)
                         skip <- if (any(is.expression(axisLabels1$value[1]))) rep(FALSE, nrow(axisLabels1)) else axisLabels1$value == "NANA"
-                        axis(side=1, at=axisLabels1$at,
-                                labels=ifelse(skip, "", axisLabels1$value),
-                                mgp=mgp)
+                        skip[is.na(skip)] <- TRUE
+                        message("next is fixed-up skip for side 1:");print(skip)
+                        if (any(!skip))
+                            axis(side=1, at=axisLabels1$at[!skip], labels=axisLabels1$value[!skip], mgp=mgp)
                     }
                     axisLabels2 <- subset(axisLabels, axisLabels$side==2)
                     if (nrow(axisLabels2) > 0) {
@@ -1988,9 +1990,11 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         message("about to draw y axis; next is axisLabels2$value")
                         print(axisLabels2$value)
                         skip <- if (any(is.expression(axisLabels2$value))) rep(FALSE, nrow(axisLabels2)) else axisLabels2$value == "NANA"
-                        axis(side=2, at=axisLabels2$at,
-                             labels=ifelse(skip, "", axisLabels2$value),
-                             mgp=mgp)
+                        message("next is skip for side 2:");print(skip)
+                        skip[is.na(skip)] <- TRUE
+                        message("next is fixed-up skip for side 2:");print(skip)
+                        if (any(!skip))
+                            axis(side=2, at=axisLabels2$at[!skip], axisLabels2$value[!skip], mgp=mgp)
                     }
                 }
             } else {
