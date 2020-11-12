@@ -1379,17 +1379,15 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' extending from the poles, within which zones are not drawn.
 #'
 #' @param lonlabels An optional logical value or numeric vector that controls
-#' the labelling of longitude values using [mapAxis()]. There are
-#' four possibilities for the value of `lonlabels`:
+#' the labelling along the horizontal axis. There are four possibilities:
 #' (1) If `lonlabels` is `TRUE` (the default), then reasonable values are inferred
-#' and axes are drawn accordingly with both ticks and longitudes
-#' alongside those ticks;
-#' (2) if `lonlabels` is `FALSE`, then ticks are drawn by but not numbers;
-#' (3) if `lonlabels` is `NULL`, then no axis ticks or numbers are are drawn; and
+#' and axes are drawn with ticks and labels alongside those ticks;
+#' (2) if `lonlabels` is `FALSE`, then ticks are drawn, but no labels;
+#' (3) if `lonlabels` is `NULL`, then no axis ticks or labels are drawn; and
 #' (4) if `lonlabels` is  a vector of finite numerical values, then tick marks
 #' are placed  at those longitudes, and labels are put alongside them.
-#' In cases 1 and 4, overdrawing of numbers is avoided,
-#' so some ticks may not have numbers alongside them.
+#' Note that R tries to avoid overwriting labels on axes, so the instructions
+#" in case 4 might not be obeyed exactly.
 #' See also `latlabels`, and note that setting `axes=FALSE`
 #' ensures that no longitude or latitude axes will be drawn regardless
 #' of the values of `lonlabels` and `latlabels`.
@@ -1908,7 +1906,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             print(axisLabels)
         }
         ## Filter latitude labels based on latlabels
-        message("axisLabels before looking at latitude:");print(axisLabels)
+        if (debug) {
+            oceDebug(debug, "axisLabels before looking at latitude:\n")
+            print(axisLabels)
+        }
         if (any(axisLabels$type == "latitude")) {
             if (is.null(latlabels)) {
                 axisLabels$value[axisLabels$type == "latitude"] <- NA
@@ -1920,8 +1921,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 axisLabels$value[!keep] <- NA
             }
         }
-        message("axisLabels before looking at longitude:");print(axisLabels)
-
+        if (debug) {
+            oceDebug(debug, "axisLabels before looking at longitude:\n")
+            print(axisLabels)
+        }
         ## Filter longitude labels based on latlabels
         if (any(axisLabels$type == "longitude")) {
             if (is.null(lonlabels)) {
@@ -1935,11 +1938,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 axisLabels$value[!keep] <- NA
             }
         }
-        ##0 message("axisLabels after looking at longitude:");print(axisLabels)
-        ##0 message("geographical=",geographical)
-        ##0 message("global DAN1 is axisLabels before altering for 'geographical'")
-        ##0 DAN2<<-axisLabels
-        ## Obey 'geographical' argument
+        ## Handle 'geographical' argument
         if (geographical == 1) {
             axisLabels$value <- abs(axisLabels$value)
         } else if (geographical == 2 || geographical == 3) {
@@ -1955,46 +1954,53 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             axisLabels$value[axisLabels$value == "0E"] <- "0"
             axisLabels$value[axisLabels$value == "0N"] <- "0"
         }
-        ##0 DAN2<<-axisLabels
-        ##0 message("global DAN2 is axisLabels after altering for 'geographical'")
         if (debug) {
             cat("After accounting for latlabel, lonlabel, and geographical, axisLabels is as follows\n")
             print(axisLabels)
         }
-        message("axes: ", axes, "; next is axisLabels");print(axisLabels)
+        ## Draw axes
+        oceDebug(debug, "axes=", axes, "\n", sep="")
         if (axes) {
+            oceDebug(debug, vectorShow(latlabels))
+            oceDebug(debug, vectorShow(lonlabels))
             if (!is.null(axisLabels)) {
                 oceDebug(debug, "axisLabels is not null\n")
                 if (nrow(axisLabels) > 0) {
                     axisLabels1 <- subset(axisLabels, axisLabels$side==1)
-                    if (nrow(axisLabels1) > 0) {
-                        if (debug) {
-                            cat("About to draw axis on side 1; next is axisLabels1:\n")
-                            print(axisLabels1)
+                    if (debug) {
+                        oceDebug(debug, "About to consider drawing axis on side 1; next is axisLabels1:\n")
+                        print(axisLabels1)
+                    }
+                    if (nrow(axisLabels1) > 0 && !is.null(lonlabels)) {
+                        skip <- if (any(is.expression(axisLabels1$value[1]))) {
+                            rep(FALSE, nrow(axisLabels1))
+                        } else {
+                            axisLabels1$value == "NANA" # NOTE: I don't know why it is NANA instead of NA, but it is
                         }
-                        message("about to draw x axis; next is axisLabels1$value")
-                        print(axisLabels1$value)
-                        message("next is skip for side 1:");print(skip)
-                        skip <- if (any(is.expression(axisLabels1$value[1]))) rep(FALSE, nrow(axisLabels1)) else axisLabels1$value == "NANA"
+                        oceDebug(debug, "next is raw skip for side 1:", paste(skip, collapse=" "), "\n")
                         skip[is.na(skip)] <- TRUE
-                        message("next is fixed-up skip for side 1:");print(skip)
-                        if (any(!skip))
+                        oceDebug(debug, "next is NA-cleaned skip for side 1:", paste(skip, collapse=" "), "\n")
+                        if (any(!skip)) {
                             axis(side=1, at=axisLabels1$at[!skip], labels=axisLabels1$value[!skip], mgp=mgp)
+                        }
                     }
                     axisLabels2 <- subset(axisLabels, axisLabels$side==2)
-                    if (nrow(axisLabels2) > 0) {
-                        if (debug+1) {
-                            cat("About to draw mapAxis on side 2; next is axisLabels2:\n")
-                            print(axisLabels2)
+                    if (debug) {
+                        oceDebug(debug, "About to consider drawing axis on side 2; next is axisLabels2:\n")
+                        print(axisLabels2)
+                    }
+                    if (nrow(axisLabels2) > 0 && !is.null(latlabels)) {
+                        skip <- if (any(is.expression(axisLabels2$value))) {
+                            rep(FALSE, nrow(axisLabels2))
+                        } else {
+                            axisLabels2$value == "NANA" # NOTE: I don't know why it is NANA instead of NA, but it is
                         }
-                        message("about to draw y axis; next is axisLabels2$value")
-                        print(axisLabels2$value)
-                        skip <- if (any(is.expression(axisLabels2$value))) rep(FALSE, nrow(axisLabels2)) else axisLabels2$value == "NANA"
-                        message("next is skip for side 2:");print(skip)
+                        oceDebug(debug, "next is raw skip for side 2:", paste(skip, collapse=" "), "\n")
                         skip[is.na(skip)] <- TRUE
-                        message("next is fixed-up skip for side 2:");print(skip)
-                        if (any(!skip))
+                        oceDebug(debug, "next is NA-cleaned skip for side 2:", paste(skip, collapse=" "), "\n")
+                        if (any(!skip) || (is.logical(latlabels) && !latlabels)) {
                             axis(side=2, at=axisLabels2$at[!skip], axisLabels2$value[!skip], mgp=mgp)
+                        }
                     }
                 }
             } else {
@@ -2780,8 +2786,8 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     na <- is.na(latlon)
     signs <- sign(latlon[!na])
     x <- abs(latlon[!na])
-    message("formatPosition with signs: ", paste(signs, collapse=" "))
-    message("formatPosition with x: ", paste(x, collapse=" "))
+    ##> message("formatPosition with signs: ", paste(signs, collapse=" "))
+    ##> message("formatPosition with x: ", paste(x, collapse=" "))
     degrees <- floor(x)
     minutes <- floor(60 * (x - degrees))
     seconds <- 3600 * (x - degrees - minutes / 60)
@@ -2847,17 +2853,18 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
             }
         }
     }
-    RES <- vector("expression", length(latlon))
-    message("length(RES): ", length(RES))
-    message("length(res): ", length(res))
-    message("length(na): ", length(na))
-    message("sum(na): ", sum(na))
-    message("which(!na): ", paste(which(!na), collapse=" "))
+    ## Now, we must re-insert those spots we skipped.
+    resAll <- vector("expression", length(latlon))
+    ## message("length(RES): ", length(RES))
+    ## message("length(res): ", length(res))
+    ## message("length(na): ", length(na))
+    ## message("sum(na): ", sum(na))
+    ## message("which(!na): ", paste(which(!na), collapse=" "))
     j <- which(!na)
     k <- 1 # in res
     for (i in seq_along(latlon)) {
         if (i %in% j) {
-            RES[i] <- res[k]
+            resAll[i] <- res[k]
             k <- k + 1
         }
     }
@@ -2867,9 +2874,9 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     ##?     j <- j + 1
     ##? }
     ## RES[which(!na)] <- res
-    print(RES)
-    DANNY<<-RES
-    RES
+    ##print(RES)
+    ##DANNY<<-RES
+    resAll
 }
 
 
