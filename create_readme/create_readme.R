@@ -25,9 +25,9 @@ plot(sealevel, which=1)
 plot(m)
 dev.off()
 
-## ../oce-demo-4.png: PNG image data, 1050 x 1050, 8-bit/color RGBA, non-interlaced
+## ../oce-demo-4.png: PNG image data, 1050 x 600, 8-bit/color RGBA, non-interlaced
 data(echosounder)
-png("oce-demo-4.png", width=1050, height=1050, pointsize=26, bg="transparent")
+png("oce-demo-4.png", width=1050, height=600, pointsize=26, bg="transparent")
 par(lwd=3)
 plot(echosounder, which=2, drawTimeRange=TRUE, drawBottom=TRUE)
 dev.off()
