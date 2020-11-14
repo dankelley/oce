@@ -56,7 +56,7 @@ collaborative.
 ```R
 library(oce)
 data(ctd)
-plot(ctd, which=c(1,2,3,5))
+plot(ctd, which=c(1,2,3,5), type="l", span=150)
 ```
 ![Sample CTD plot.](oce-demo-1.png)
 
@@ -71,11 +71,10 @@ plot(adp)
 ### Sealevel and tides
 ```R
 library(oce)
-library(oce)
-data(sealevelHalifax)
-m <- tidem(sealevelHalifax)
-par(mfrow=c(2,1))
-plot(sealevelHalifax, which=1)
+data(sealevel)
+m <- tidem(sealevel)
+par(mfrow=c(2, 1))
+plot(sealevel, which=1)
 plot(m)
 ```
 ![Sample sealevel plot.](oce-demo-3.png)
@@ -96,8 +95,8 @@ library(oce)
 par(mar=rep(0.5, 4))
 data(endeavour, package="ocedata")
 data(coastlineWorld, package="oce")
-mapPlot(coastlineWorld, col='gray')
-mapPoints(endeavour$longitude, endeavour$latitude, pch=20, col='red')
+mapPlot(coastlineWorld, col="gray")
+mapPoints(endeavour$longitude, endeavour$latitude, pch=20, col="red")
 ```
 ![Sample map plot.](oce-demo-5.png)
 

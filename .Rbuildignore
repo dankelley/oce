@@ -59,3 +59,4 @@ R/check_urls.R
 ar_index_global_prof.rda
 argo_bio-profile_index.rda
 Rplots.pdf
+^create_readme$
