@@ -1629,10 +1629,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     oceDebug(debug, "after making it length 2, grid is c(", paste(grid, collapse=","), ")\n", sep="")
     drawGrid <- (is.logical(grid[1]) && grid[1]) || (is.numeric(grid[1]) && grid[1] > 0)
     oceDebug(debug, "drawGrid=", drawGrid, "\n")
-    # FIXME: 20150326
-    #if (is.logical(grid[1]) && grid[1])
-    #    grid <- rep(15, 2)
-    #message("000")
     if (nchar(projection) && substr(projection, 1, 1) != "+") {
         stop("use PROJ. format, e.g. projection=\"+proj=merc\" for Mercator\n", sep="")
     }
@@ -1913,8 +1909,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         if (any(axisLabels$type == "latitude")) {
             if (is.null(latlabels)) {
                 axisLabels$value[axisLabels$type == "latitude"] <- NA
-            } else if (is.logical(latlabels) && !latlabels) {
-                axisLabels$value[axisLabels$type == "latitude"] <- NA
+            ##? } else if (is.logical(latlabels) && !latlabels) {
+            ##?     axisLabels$value[axisLabels$type == "latitude"] <- NA
             } else if (is.numeric(latlabels)) {
                 alats <- axisLabels$value[axisLabels$type == "latitude"]
                 keep <- axisLabels$type == "longitude" | axisLabels$value %in% latlabels
@@ -1929,8 +1925,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         if (any(axisLabels$type == "longitude")) {
             if (is.null(lonlabels)) {
                 axisLabels$value[axisLabels$type == "longitude"] <- NA
-            } else if (is.logical(lonlabels) && !lonlabels) {
-                axisLabels$value[axisLabels$type == "longitude"] <- NA
+            ##? } else if (is.logical(lonlabels) && !lonlabels) {
+            ##?     axisLabels$value[axisLabels$type == "longitude"] <- NA
             } else if (is.numeric(lonlabels)) {
                 alats <- axisLabels$value[axisLabels$type == "longitude"]
                 keep <- axisLabels$type == "latitude" | axisLabels$value %in% lonlabels
@@ -1939,13 +1935,21 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             }
         }
         ## Handle 'geographical' argument
+        if (debug) {
+            cat("Before accounting for geographical (=", geographical, "), axisLabels is as follows\n")
+            print(axisLabels)
+        }
         if (geographical == 1) {
+            oceDebug(debug, "geographical=", geographical, ": axisLabels$value=", paste(axisLabels$value, collapse=" "), "\n")
             axisLabels$value <- abs(axisLabels$value)
+            oceDebug(debug, "    -> ", paste(axisLabels$value, collapse=" "), "\n")
         } else if (geographical == 2 || geographical == 3) {
+            oceDebug(debug, "geographical=", geographical, ": axisLabels$value=", paste(axisLabels$value, collapse=" "), "\n")
             axisLabels$value <- formatPosition(axisLabels$value,
                                                isLat=axisLabels$type=="latitude",
                                                type="expression",
                                                showHemi=geographical==3)
+            oceDebug(debug, "    -> ", paste(axisLabels$value, collapse=" "), "\n")
         } else if (geographical == 4) {
             ## Add N, S, E or W suffices, but remove for equator and prime meridian
             axisLabels$value <- ifelse(axisLabels$type == "latitude",
@@ -1955,7 +1959,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             axisLabels$value[axisLabels$value == "0N"] <- "0"
         }
         if (debug) {
-            cat("After accounting for latlabel, lonlabel, and geographical, axisLabels is as follows\n")
+            cat("After accounting for geographical (=", geographical, "), axisLabels is as follows\n")
             print(axisLabels)
         }
         ## Draw axes
@@ -1972,16 +1976,20 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         print(axisLabels1)
                     }
                     if (nrow(axisLabels1) > 0 && !is.null(lonlabels)) {
-                        skip <- if (any(is.expression(axisLabels1$value[1]))) {
-                            rep(FALSE, nrow(axisLabels1))
+                        skip <- if (is.expression(axisLabels1$value)) {
+                            sapply(axisLabels1$value, function(V) is.null(V))
                         } else {
                             axisLabels1$value == "NANA" # NOTE: I don't know why it is NANA instead of NA, but it is
                         }
                         oceDebug(debug, "next is raw skip for side 1:", paste(skip, collapse=" "), "\n")
-                        skip[is.na(skip)] <- TRUE
+                        skip[is.na(skip) | is.null(skip)] <- TRUE
                         oceDebug(debug, "next is NA-cleaned skip for side 1:", paste(skip, collapse=" "), "\n")
-                        if (any(!skip)) {
-                            axis(side=1, at=axisLabels1$at[!skip], labels=axisLabels1$value[!skip], mgp=mgp)
+                        if (any(!skip) || (is.logical(lonlabels) && !lonlabels)) {
+                            if (is.logical(lonlabels) && !lonlabels) {
+                                axis(side=1, at=axisLabels1$at[!skip], labels=FALSE, mgp=mgp)
+                            } else {
+                                axis(side=1, at=axisLabels1$at[!skip], labels=axisLabels1$value[!skip], mgp=mgp)
+                            }
                         }
                     }
                     axisLabels2 <- subset(axisLabels, axisLabels$side==2)
@@ -1990,16 +1998,18 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         print(axisLabels2)
                     }
                     if (nrow(axisLabels2) > 0 && !is.null(latlabels)) {
-                        skip <- if (any(is.expression(axisLabels2$value))) {
-                            rep(FALSE, nrow(axisLabels2))
+                        skip <- if (is.expression(axisLabels2$value)) {
+                            sapply(axisLabels2$value, function(V) is.null(V))
                         } else {
                             axisLabels2$value == "NANA" # NOTE: I don't know why it is NANA instead of NA, but it is
                         }
-                        oceDebug(debug, "next is raw skip for side 2:", paste(skip, collapse=" "), "\n")
-                        skip[is.na(skip)] <- TRUE
-                        oceDebug(debug, "next is NA-cleaned skip for side 2:", paste(skip, collapse=" "), "\n")
+                        oceDebug(debug, "next is skip for side 2:", paste(skip, collapse=" "), "\n")
                         if (any(!skip) || (is.logical(latlabels) && !latlabels)) {
-                            axis(side=2, at=axisLabels2$at[!skip], axisLabels2$value[!skip], mgp=mgp)
+                            if (is.logical(latlabels) && !latlabels) {
+                                axis(side=2, at=axisLabels2$at[!skip], labels=FALSE, mgp=mgp)
+                            } else {
+                                axis(side=2, at=axisLabels2$at[!skip], labels=axisLabels2$value[!skip], mgp=mgp)
+                            }
                         }
                     }
                 }

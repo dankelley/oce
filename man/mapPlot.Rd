@@ -137,17 +137,14 @@ axis tick labels.}
 extending from the poles, within which zones are not drawn.}
 
 \item{lonlabels}{An optional logical value or numeric vector that controls
-the labelling of longitude values using \code{\link[=mapAxis]{mapAxis()}}. There are
-four possibilities for the value of \code{lonlabels}:
+the labelling along the horizontal axis. There are four possibilities:
 (1) If \code{lonlabels} is \code{TRUE} (the default), then reasonable values are inferred
-and axes are drawn accordingly with both ticks and longitudes
-alongside those ticks;
-(2) if \code{lonlabels} is \code{FALSE}, then ticks are drawn by but not numbers;
-(3) if \code{lonlabels} is \code{NULL}, then no axis ticks or numbers are are drawn; and
+and axes are drawn with ticks and labels alongside those ticks;
+(2) if \code{lonlabels} is \code{FALSE}, then ticks are drawn, but no labels;
+(3) if \code{lonlabels} is \code{NULL}, then no axis ticks or labels are drawn; and
 (4) if \code{lonlabels} is  a vector of finite numerical values, then tick marks
 are placed  at those longitudes, and labels are put alongside them.
-In cases 1 and 4, overdrawing of numbers is avoided,
-so some ticks may not have numbers alongside them.
+Note that R tries to avoid overwriting labels on axes, so the instructions
 See also \code{latlabels}, and note that setting \code{axes=FALSE}
 ensures that no longitude or latitude axes will be drawn regardless
 of the values of \code{lonlabels} and \code{latlabels}.}
