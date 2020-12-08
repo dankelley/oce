@@ -2390,27 +2390,39 @@ mapScalebar <- function(x, y=NULL, length,
                         lwd=1.5*par("lwd"), cex=par("cex"),
                         col="black")
 {
-    projection <<- .Projection()$type
-    if (exists(projection))
-        stop("must create a map first, with mapPlot()\n")
     if (!is.null(y))
         stop("y must be NULL in this (early) version of mapScalebar()\n")
     if (missing(x))
         x <- "topleft"
     else if (is.na(pmatch(x, c("topleft", "topright"))))
         stop("x must be \"topleft\" or \"topright\", but it is \"", x, "\"\n")
-    usr <- par('usr')
-    ## determine scale from centre of region
-    x0 <- 0.5 * (usr[1] + usr[2])
-    y0 <- 0.5 * (usr[3] + usr[4])
-    dusr <- 0.01 * (usr[2] - usr[1]) # 1 percent of device width
-    x1 <- x0 + dusr
-    y1 <- y0
-    lonlat0 <- map2lonlat(x0, y0)
-    lonlat1 <- map2lonlat(x1, y1)
-    dkm <<- geodDist(lonlat0$longitude, lonlat0$latitude,
-                      lonlat1$longitude, lonlat1$latitude)
-    kmPerUsr <- dkm / dusr
+    projection <- .Projection()$type
+    if (projection != "none") {
+        projection <- .Projection()$type
+        usr <- par('usr')
+        ## determine scale from centre of region
+        x0 <- 0.5 * (usr[1] + usr[2])
+        y0 <- 0.5 * (usr[3] + usr[4])
+        dusr <- 0.01 * (usr[2] - usr[1]) # 1 percent of device width
+        x1 <- x0 + dusr
+        y1 <- y0
+        lonlat0 <- map2lonlat(x0, y0)
+        lonlat1 <- map2lonlat(x1, y1)
+        dkm <- geodDist(lonlat0$longitude, lonlat0$latitude,
+                        lonlat1$longitude, lonlat1$latitude)
+        kmPerUsr <- dkm / dusr
+    } else if("none" ==.Projection()$type) {
+        usr <- par('usr')
+        ## determine scale from centre of region
+        x0 <- 0.5 * (usr[1] + usr[2])
+        y0 <- 0.5 * (usr[3] + usr[4])
+        dusr <- 0.01 * (usr[2] - usr[1]) # 1 percent of device width
+        x1 <- x0 + dusr
+        y1 <- y0
+        dkm <- geodDist(x0, y0,
+                        x1, y1)
+        kmPerUsr <- dkm / dusr
+    }
     ##message("kmPerUsr: ", kmPerUsr)
     if (missing(length)) {
         # corner to corner distance
@@ -2439,7 +2451,7 @@ mapScalebar <- function(x, y=NULL, length,
           col=col, lwd=lwd)
     lines(rep(xBar++cinx+frac, 2), yBar - ciny + c(-ciny, ciny)/3,
           col=col, lwd=lwd)
-    text(xBar+cinx-0.9, yBar-2.2*ciny, pos=4, adj=0, offset=0,
+    text(xBar+cinx, yBar-2.2*ciny, pos=4, adj=0, offset=0,
          sprintf("%.0f km", length), cex=cex, col=col)
 }
 
