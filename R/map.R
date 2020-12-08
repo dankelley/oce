@@ -2359,7 +2359,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 #'
 #' @param x,y position of the scalebar.  Eventually this may be similar to
 #'     the corresponding arguments in [legend()], but at the moment
-#'     `y` must be `NULL` and `x` must be `"topleft"`.
+#'     `y` must be `NULL` and `x` must be `"topleft"` or `"topright"`.
 #'
 #' @param length the distance to indicate, in kilometres.  If not provided, a
 #'     reasonable choice is made, based on the underlying map.
@@ -2438,8 +2438,8 @@ mapScalebar <- function(x, y=NULL, length,
           col=col, lwd=lwd)
     lines(rep(xBar++cinx+frac, 2), yBar - ciny + c(-ciny, ciny)/3,
           col=col, lwd=lwd)
-    text(xBar+cinx, yBar-2.2*ciny, pos=4, adj=0, offset=0,
-         sprintf("%.0f km", length), cex=cex, col=col)
+    text(xBar+cinx-0.9, yBar-2.2*ciny, pos=4, adj=0, offset=0,
+         sprintf("%.3f km", length), cex=cex, col=col)
 }
 
 
