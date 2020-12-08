@@ -2390,7 +2390,8 @@ mapScalebar <- function(x, y=NULL, length,
                         lwd=1.5*par("lwd"), cex=par("cex"),
                         col="black")
 {
-    if ("none" == .Projection()$type)
+    projection <<- .Projection()$type
+    if (exists(projection))
         stop("must create a map first, with mapPlot()\n")
     if (!is.null(y))
         stop("y must be NULL in this (early) version of mapScalebar()\n")
@@ -2407,7 +2408,7 @@ mapScalebar <- function(x, y=NULL, length,
     y1 <- y0
     lonlat0 <- map2lonlat(x0, y0)
     lonlat1 <- map2lonlat(x1, y1)
-    dkm <- geodDist(lonlat0$longitude, lonlat0$latitude,
+    dkm <<- geodDist(lonlat0$longitude, lonlat0$latitude,
                       lonlat1$longitude, lonlat1$latitude)
     kmPerUsr <- dkm / dusr
     ##message("kmPerUsr: ", kmPerUsr)
@@ -2439,7 +2440,7 @@ mapScalebar <- function(x, y=NULL, length,
     lines(rep(xBar++cinx+frac, 2), yBar - ciny + c(-ciny, ciny)/3,
           col=col, lwd=lwd)
     text(xBar+cinx-0.9, yBar-2.2*ciny, pos=4, adj=0, offset=0,
-         sprintf("%.3f km", length), cex=cex, col=col)
+         sprintf("%.0f km", length), cex=cex, col=col)
 }
 
 

@@ -16,7 +16,7 @@ mapScalebar(
 \arguments{
 \item{x, y}{position of the scalebar.  Eventually this may be similar to
 the corresponding arguments in \code{\link[=legend]{legend()}}, but at the moment
-\code{y} must be \code{NULL} and \code{x} must be \code{"topleft"}.}
+\code{y} must be \code{NULL} and \code{x} must be \code{"topleft"} or \code{"topright"}.}
 
 \item{length}{the distance to indicate, in kilometres.  If not provided, a
 reasonable choice is made, based on the underlying map.}
