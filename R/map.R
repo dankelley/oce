@@ -2351,18 +2351,21 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 
 #' Add a Scalebar to a Map
 #'
-#' Draw a scalebar on an existing map.
+#' Draw a scalebar on a map created by [mapPlot()] or otherwise.
 #'
 #' The scale is appropriate to the centre of the plot, and will become
 #' increasingly inaccurate away from that spot, with the error depending on
 #' the projection and the fraction of the earth that is shown.
+#'
+#' Until December 2020, it was required that the map had been drawn by [mapPlot()],
+#' but now it can be any diagram showing longitude and latitude in degrees.
 #'
 #' @param x,y position of the scalebar.  Eventually this may be similar to
 #'     the corresponding arguments in [legend()], but at the moment
 #'     `y` must be `NULL` and `x` must be `"topleft"` or `"topright"`.
 #'
 #' @param length the distance to indicate, in kilometres.  If not provided, a
-#'     reasonable choice is made, based on the underlying map.
+#'     reasonable choice is made, based on the existing plot.
 #'
 #' @param lwd line width of the scalebar.
 #'
@@ -2397,38 +2400,36 @@ mapScalebar <- function(x, y=NULL, length,
     else if (is.na(pmatch(x, c("topleft", "topright"))))
         stop("x must be \"topleft\" or \"topright\", but it is \"", x, "\"\n")
     projection <- .Projection()$type
+    usr <- par('usr')
+    ## determine scale from centre of region
+    x0 <- 0.5 * (usr[1] + usr[2])
+    y0 <- 0.5 * (usr[3] + usr[4])
+    dusr <- 0.01 * (usr[2] - usr[1]) # 1 percent of device width
+    x1 <- x0 + dusr
+    y1 <- y0
     if (projection != "none") {
-        projection <- .Projection()$type
-        usr <- par('usr')
-        ## determine scale from centre of region
-        x0 <- 0.5 * (usr[1] + usr[2])
-        y0 <- 0.5 * (usr[3] + usr[4])
-        dusr <- 0.01 * (usr[2] - usr[1]) # 1 percent of device width
-        x1 <- x0 + dusr
-        y1 <- y0
-        lonlat0 <- map2lonlat(x0, y0)
-        lonlat1 <- map2lonlat(x1, y1)
-        dkm <- geodDist(lonlat0$longitude, lonlat0$latitude,
-                        lonlat1$longitude, lonlat1$latitude)
-        kmPerUsr <- dkm / dusr
-    } else if("none" ==.Projection()$type) {
-        usr <- par('usr')
-        ## determine scale from centre of region
-        x0 <- 0.5 * (usr[1] + usr[2])
-        y0 <- 0.5 * (usr[3] + usr[4])
-        dusr <- 0.01 * (usr[2] - usr[1]) # 1 percent of device width
-        x1 <- x0 + dusr
-        y1 <- y0
-        dkm <- geodDist(x0, y0,
-                        x1, y1)
-        kmPerUsr <- dkm / dusr
+        ## This means the plot was created by mapPlot
+        ll0 <- map2lonlat(x0, y0)
+        ll1 <- map2lonlat(x1, y1)
+        dkm <- geodDist(ll0$longitude, ll0$latitude, ll1$longitude, ll1$latitude)
+    } else {
+        ## This means the plot was not created by mapPlot
+        dkm <- geodDist(x0, y0, x1, y1)
+        ## message("dkm=" ,dkm)
+        ## message("x0=" ,x0)
+        ## message("y0=" ,y0)
+        ## message("x1=" ,x1)
+        ## message("y1=" ,y1)
     }
-    ##message("kmPerUsr: ", kmPerUsr)
+    kmPerUsr <- dkm / dusr
+    ## message("kmPerUsr: ", kmPerUsr)
     if (missing(length)) {
         # corner to corner distance
         ccd <- kmPerUsr * sqrt( (usr[2]-usr[1])^2 + (usr[4]-usr[3])^2 )
         length <- diff(pretty(c(0, ccd), n=12)[1:2])
+        ## message("length=" ,length)
     }
+    ## message("length=" ,length)
     frac <- length / kmPerUsr
     cin <- par('cin')[1]
     cinx <- xinch(cin)
