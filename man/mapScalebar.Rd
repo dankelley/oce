@@ -16,10 +16,10 @@ mapScalebar(
 \arguments{
 \item{x, y}{position of the scalebar.  Eventually this may be similar to
 the corresponding arguments in \code{\link[=legend]{legend()}}, but at the moment
-\code{y} must be \code{NULL} and \code{x} must be \code{"topleft"}.}
+\code{y} must be \code{NULL} and \code{x} must be \code{"topleft"} or \code{"topright"}.}
 
 \item{length}{the distance to indicate, in kilometres.  If not provided, a
-reasonable choice is made, based on the underlying map.}
+reasonable choice is made, based on the existing plot.}
 
 \item{lwd}{line width of the scalebar.}
 
@@ -28,12 +28,15 @@ reasonable choice is made, based on the underlying map.}
 \item{col}{color of the scalebar.}
 }
 \description{
-Draw a scalebar on an existing map.
+Draw a scalebar on a map created by \code{\link[=mapPlot]{mapPlot()}} or otherwise.
 }
 \details{
 The scale is appropriate to the centre of the plot, and will become
 increasingly inaccurate away from that spot, with the error depending on
 the projection and the fraction of the earth that is shown.
+
+Until December 2020, it was required that the map had been drawn by \code{\link[=mapPlot]{mapPlot()}},
+but now it can be any diagram showing longitude and latitude in degrees.
 }
 \examples{
 \donttest{
