@@ -2447,13 +2447,17 @@ mapScalebar <- function(x, y=NULL, length,
             c(llBox$y, urBox$y, urBox$y, llBox$y),
             border="black", col='white')
     ## Draw the scalebar and text below.
-    lines(xBar + cinx + c(0, frac), rep(yBar-ciny, 2), lwd=lwd, col=col, lend=2)
-    lines(rep(xBar+cinx, 2), yBar - ciny + c(-ciny, ciny)/3,
+    lines(xBar + 1.5*cinx + c(0, frac), rep(yBar-ciny, 2), lwd=lwd, col=col, lend=2)
+    lines(rep(xBar+1.5*cinx, 2), yBar - ciny + c(-ciny, ciny)/3,
           col=col, lwd=lwd)
-    lines(rep(xBar++cinx+frac, 2), yBar - ciny + c(-ciny, ciny)/3,
+    lines(rep(xBar+1.5*cinx+frac, 2), yBar - ciny + c(-ciny, ciny)/3,
           col=col, lwd=lwd)
-    text(xBar+cinx, yBar-2.2*ciny, pos=4, adj=0, offset=0,
-         sprintf("%.0f km", length), cex=cex, col=col)
+    label <- sprintf("%.0f km", length)
+    ##>1753< text(xBar+cinx, yBar-2.2*ciny, pos=4, adj=0, offset=0, label, cex=cex, col=2)#col)
+    text(x=xBar+1.5*cinx+frac/2,
+         y=yBar-1.7*ciny,
+         labels=label,
+         pos=1, adj=0, offset=0, cex=cex, col=col)
 }
 
 
