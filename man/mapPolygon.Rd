@@ -43,6 +43,7 @@ Adds a polygon to an existing map, by analogy to
 \code{\link[=polygon]{polygon()}}.  Used by \code{\link[=mapImage]{mapImage()}}.
 }
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 data(topoWorld)
@@ -56,6 +57,7 @@ latlim<- c(40,60)
 mapPlot(coastlineWorld, longitudelim=lonlim, latitudelim=latlim, projection="+proj=merc", grid=FALSE)
 mapImage(topoWorld, colormap=cm)
 mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
+}
 
 }
 \seealso{

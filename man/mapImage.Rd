@@ -111,6 +111,7 @@ If a \code{\link[=png]{png()}} device is to be used, it is advised to supply
 arguments \code{type="cairo"} and \code{antialias="none"}; see reference 1.
 }
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 data(topoWorld)
@@ -124,6 +125,7 @@ mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
 mapImage(topoWorld, colormap=cm)
 mapGrid(15, 15, polarCircle=1, col=gray(0.2))
 mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
+}
 
 }
 \references{

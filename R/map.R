@@ -3040,6 +3040,7 @@ map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
 #' @param fillOddEven as for [polygon()].
 #'
 #' @examples
+#' \dontrun{
 #' library(oce)
 #' data(coastlineWorld)
 #' data(topoWorld)
@@ -3050,9 +3051,11 @@ map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
 #' drawPalette(colormap=cm)
 #' lonlim<- c(-60,-50)
 #' latlim<- c(40,60)
-#' mapPlot(coastlineWorld, longitudelim=lonlim, latitudelim=latlim, projection="+proj=merc", grid=FALSE)
+#' mapPlot(coastlineWorld, longitudelim=lonlim,
+#' latitudelim=latlim, projection="+proj=merc", grid=FALSE)
 #' mapImage(topoWorld, colormap=cm)
 #' mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
+#'}
 #'
 #' @author Dan Kelley
 #'
@@ -3184,6 +3187,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' 1. \url{http://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
 #'
 #' @examples
+#' \dontrun{
 #' library(oce)
 #' data(coastlineWorld)
 #' data(topoWorld)
@@ -3197,6 +3201,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' mapImage(topoWorld, colormap=cm)
 #' mapGrid(15, 15, polarCircle=1, col=gray(0.2))
 #' mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
+#'}
 #'
 #' @author Dan Kelley
 #'
