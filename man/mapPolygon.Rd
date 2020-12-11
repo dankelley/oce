@@ -47,14 +47,14 @@ library(oce)
 data(coastlineWorld)
 data(topoWorld)
 
-## Northern polar region, with color-coded bathymetry
+## Maritime region, with color-coded bathymetry
 par(mfrow=c(1,1), mar=c(2,2,1,1))
 cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
 drawPalette(colormap=cm)
-mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-        longitudelim=c(-180,180), latitudelim=c(70,110))
+lonlim<- c(-60,-50)
+latlim<- c(40,60)
+mapPlot(coastlineWorld, longitudelim=lonlim, latitudelim=latlim, projection="+proj=merc", grid=FALSE)
 mapImage(topoWorld, colormap=cm)
-mapGrid(15, 15, polarCircle=1, col=gray(0.2))
 mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
 
 }
