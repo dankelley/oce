@@ -42,6 +42,22 @@ following two arguments are ignored.}
 Adds a polygon to an existing map, by analogy to
 \code{\link[=polygon]{polygon()}}.  Used by \code{\link[=mapImage]{mapImage()}}.
 }
+\examples{
+library(oce)
+data(coastlineWorld)
+data(topoWorld)
+
+## Northern polar region, with color-coded bathymetry
+par(mfrow=c(1,1), mar=c(2,2,1,1))
+cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
+drawPalette(colormap=cm)
+mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
+        longitudelim=c(-180,180), latitudelim=c(70,110))
+mapImage(topoWorld, colormap=cm)
+mapGrid(15, 15, polarCircle=1, col=gray(0.2))
+mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
+
+}
 \seealso{
 A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
