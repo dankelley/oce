@@ -142,21 +142,19 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
 #' and [mapAxis()] to ignore out-of-frame grid
 #' lines and axis labels.
 #'
-#' Note: this procedure does not work for projections that have trouble
-#' inverting points that are "off the globe". For this reason, this function
-#' examines .Projection()$projection and if it contains the string
-#' `"wintri"`, then the above-stated procedure is skipped, and
-#' the return value has each of the numerical quantities set to `NA`,
-#' and `ok` set to `FALSE`.
+#' Some projections, such as `"wintri"`, have trouble inverting
+#' points that are "off the globe".  In such cases,
+#' the returned value has `lonmin`, `lonmax`, `latmin` and
+#' `latmax` set to `NA`, and `ok` set to `FALSE`.
 #'
 #' @param n number of points to check along each side of the plot box
 #' @template debugTemplate
 #'
-#' @return a list containing `lonmin`, `lonmax`,
-#' `latmin`, `latmax`, and `ok`; the last
-#' of which indicates whether at least one point on the plot box
-#' is invertible. Note that longitude are expressed in the
-#' range from -180 to 180 degrees.
+#' @return A list containing numerical
+#' values `lonmin`, `lonmax`, `latmin`, and `latmax`, along
+#' with logical value `ok`. The last of these indicates
+#' whether at least one point on the plot box is invertible.
+#' Note that longitudes are in the range from -180 to 180 degrees.
 #'
 #' @author Dan Kelley
 #'
