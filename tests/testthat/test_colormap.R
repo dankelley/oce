@@ -150,16 +150,14 @@ test_that("Ex1 from help(colormap)", {
           y <- sin(2 * pi * x)
           c <- colormap(y)
           expect_equal(c$zlim, c(-1.079124,1.079124), tolerance=0.00001)
-          expect_equal(c$breaks[1:3], c(-1.079124,-1.068279,-1.057433), tolerance=0.00001)
-          expect_equal(c$col[1:4], c("#00007F","#000084","#000089","#00008E"))
-          expect_equal(c$zcol[1:4], c("#7FFF7F","#CCFF32","#FFE900","#FFA000"))
+          expect_equal(c$breaks[1:3], c(-1.079124, -1.070627, -1.062130), tolerance=0.00001)
+          expect_equal(c$col[1:4], c("#00007F","#000083","#000087","#00008B"))
+          expect_equal(c$zcol[1:4], c("#81FF7C","#C9FF34","#FFE700","#FFA200"))
           expect_equal(c$missingColor, "gray")
-          expect_equal(c$x0[1:5], c(-1.068279,-1.057433,-1.046588,-1.035742,-1.024897),
+          expect_equal(c$x0[1:5], c(-1.070627, -1.062130, -1.053633, -1.045136, -1.036639),
                        tolerance=0.00001)
-          expect_equal(c$x0[1:5], c(-1.068279,-1.057433,-1.046588,-1.035742,-1.024897),
-                       tolerance=0.00001)
-          expect_equal(c$col0[1:4], c("#00007F","#000084","#000089","#00008E"))
-          expect_equal(c$col1[1:4], c("#00007F","#000084","#000089","#00008E"))
+          expect_equal(c$col0[1:4], c("#00007F","#000083","#000087","#00008B"))
+          expect_equal(c$col1[1:4], c("#00007F","#000083","#000087","#00008B"))
           expect_equal(class(c), c("list","colormap"))
 })
 

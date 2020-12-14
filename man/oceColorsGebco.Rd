@@ -8,24 +8,33 @@
 oceColorsGebco(
   n = 9,
   region = c("water", "land", "both"),
-  type = c("fill", "line")
+  type = c("fill", "line"),
+  debug = getOption("oceDebug")
 )
 }
 \arguments{
 \item{n}{Number of colors to return}
 
-\item{region}{String indicating application region, one of \code{"water"}, \code{"land"},
-or \code{"both"}.}
+\item{region}{String indicating application region,
+one of \code{"water"}, \code{"land"}, or \code{"both"}.}
 
 \item{type}{String indicating the purpose, one of \code{"fill"} or \code{"line"}.}
+
+\item{debug}{a flag that turns on debugging.}
 }
 \description{
-Create colors in a Gebco-like scheme
+The colours were determined by examination of paper
+charts printed during the GEBCO Fifth Edition era.
+The hues range from dark blue to light blue, then
+from light brown to dark brown.  If used to show
+topography in scheme centred on z=0, this means that
+near-coastal regions are light in tone, with darker
+colours representing both mountains and the deep sea.
 }
 \examples{
 library(oce)
-imagep(min(volcano) - volcano, col=oceColorsGebco(128),
-       zlab="oceColorsGebco")
+imagep(volcano, col=oceColorsGebco(128, region="both"))
+
 }
 \seealso{
 Other things related to colors: 

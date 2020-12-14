@@ -475,7 +475,7 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #' through `blend` are all ignored (see \dQuote{Details}).  If it is
 #' provided, then it may either be a vector of break points, or a single number
 #' indicating the desired number of break points to be computed with
-#' [`pretty`]`(z,breaks)1.  In either case of non-missing
+#' [`pretty`]`(z,breaks)`.  In either case of non-missing
 #' `breaks`, the resultant break points must number 1 plus the number of
 #' colors (see `col`).
 #'
@@ -740,7 +740,8 @@ colormap <- function(z=NULL,
         ##     col <- cm$col
         ## } else {
         oceDebug(debug, "processing case A.1 (zlimKnown && !breaksKnown)\n")
-        breaks <- seq(min(zlim, na.rm=TRUE), max(zlim, na.rm=TRUE), length.out=200)
+        breaks <- seq(min(zlim, na.rm=TRUE), max(zlim, na.rm=TRUE), length.out=255)
+        oceDebug(debug, "set to", length(breaks), "breaks, ranging from", breaks[1], "to", tail(breaks,1), "\n")
         ##}
         breaksKnown <- TRUE            # this makes next block execute also
     } else {

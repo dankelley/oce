@@ -2389,36 +2389,60 @@ oce.colorsTwo <- oceColorsTwo
 
 #' Create colors in a Gebco-like scheme
 #'
+#' The colours were determined by examination of paper
+#' charts printed during the GEBCO Fifth Edition era.
+#' The hues range from dark blue to light blue, then
+#' from light brown to dark brown.  If used to show
+#' topography in scheme centred on z=0, this means that
+#' near-coastal regions are light in tone, with darker
+#' colours representing both mountains and the deep sea.
+#'
 #' @aliases oceColorsGebco oce.colorsGebco
 #'
 #' @param n Number of colors to return
 #'
-#' @param region String indicating application region, one of `"water"`, `"land"`,
-#' or `"both"`.
+#' @param region String indicating application region,
+#' one of `"water"`, `"land"`, or `"both"`.
 #'
 #' @param type String indicating the purpose, one of `"fill"` or `"line"`.
 #'
+#' @param debug a flag that turns on debugging.
+#'
 #' @examples
 #' library(oce)
-#' imagep(min(volcano) - volcano, col=oceColorsGebco(128),
-#'        zlab="oceColorsGebco")
+#' imagep(volcano, col=oceColorsGebco(128, region="both"))
+#'
 #' @family things related to colors
-oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill", "line"))
+oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill", "line"), debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "oceColorsGebco(n=", n, ", region=\"", region, "\", type=\"", type, "\", debug=", debug, ")\n", sep="", unindent=1)
     region <- match.arg(region)
     type <- match.arg(type)
+
+    land <- c("#FEF1E0", "#FDE3C1", "#FBC784", "#F1C37A", "#E6B670", "#DCA865",
+              "#D19A5C", "#C79652", "#BD9248", "#B38E3E")
+    water <- c("#0F7CAB", "#2292B5", "#38A7BF", "#4FBBC9", "#68CDD4", "#83DEDE",
+               "#A0E8E4", "#BFF2EC", "#E1FCF7", "#F0FDFB")
     if (type == "fill") {
         ## generate land colors by e.g. rgb(t(col2rgb(land[5])-1*c(10, 4, 10))/255)
-        land <- c("#FBC784", "#F1C37A", "#E6B670", "#DCA865", "#D19A5C",
-                  "#C79652", "#BD9248", "#B38E3E", "#A98A34")
-        water <- rev(c("#E1FCF7", "#BFF2EC", "#A0E8E4", "#83DEDE", "#68CDD4",
-                       "#4FBBC9", "#38A7BF", "#2292B5", "#0F7CAB"))
+        ## until 2020-12-14 land <- c("#FBC784", "#F1C37A", "#E6B670", "#DCA865", "#D19A5C",
+        ## until 2020-12-14           "#C79652", "#BD9248", "#B38E3E", "#A98A34")
+        ## until 2020-12-14 water <- rev(c("#E1FCF7", "#BFF2EC", "#A0E8E4", "#83DEDE", "#68CDD4",
+        ## until 2020-12-14                "#4FBBC9", "#38A7BF", "#2292B5", "#0F7CAB"))
+        ##land <- c("#FEF1E0", "#FDE3C1", "#FBC784", "#F1C37A", "#E6B670", "#DCA865",
+        ##          "#D19A5C", "#C79652", "#BD9248", "#B38E3E")
+        ##water <- c("#0F7CAB", "#2292B5", "#38A7BF", "#4FBBC9", "#68CDD4", "#83DEDE",
+        ##           "#A0E8E4", "#BFF2EC", "#E1FCF7", "#F0FDFB")
+        land <- c("#FFF0DF", "#FFE9D0", "#FFE2C1", "#FDD6A6", "#FBC98A", "#F7C580", "#F2C37B", "#EDBE76", "#E8B872", "#E3B26D",
+                  "#DEAB67", "#D9A563", "#D49E5E", "#CF995A", "#CA9755", "#C59550", "#C1934C", "#BC9147", "#B78F42", "#B38E3E")
+        water <- c("#0F7CAB", "#1886AF", "#2090B4", "#2B9AB9", "#35A4BD", "#40AEC2", "#4BB7C7", "#56C0CC", "#62C9D1", "#6FD1D6",
+                   "#7BD9DB", "#89E0DF", "#96E4E2", "#A4E9E5", "#B3EEE9", "#C2F3ED", "#D2F7F2", "#E2FCF7", "#EBFDF9", "#F5FEFC")
     } else {
+        oceDebug(debug, "type='line'\n")
         land <- c("#FBC784", "#F1C37A", "#E6B670", "#DCA865", "#D19A5C",
                   "#C79652", "#BD9248", "#B38E3E", "#A98A34")
         water <- rev(c("#A4FCE3", "#72EFE9", "#4FE3ED", "#47DCF2", "#46D7F6",
-                       "#3FC0DF", "#3FC0DF", "#3BB7D3", "#36A5C3"))#,"#3194B4",
-                       #"#2A7CA4","#205081","#16255E","#100C2F"))
+                       "#3FC0DF", "#3FC0DF", "#3BB7D3", "#36A5C3"))
     }
     if (region == "water") {
         rgb.list <- col2rgb(water) / 255
@@ -2426,21 +2450,32 @@ oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill"
         r <- approx(1:l, rgb.list[1, 1:l], xout=seq(1, l, length.out=n))$y
         g <- approx(1:l, rgb.list[2, 1:l], xout=seq(1, l, length.out=n))$y
         b <- approx(1:l, rgb.list[3, 1:l], xout=seq(1, l, length.out=n))$y
+        res <- rgb(r, g, b)
     } else if (region == "land") {
         rgb.list <- col2rgb(land) / 255
         l <- length(land)
         r <- approx(1:l, rgb.list[1, 1:l], xout=seq(1, l, length.out=n))$y
         g <- approx(1:l, rgb.list[2, 1:l], xout=seq(1, l, length.out=n))$y
         b <- approx(1:l, rgb.list[3, 1:l], xout=seq(1, l, length.out=n))$y
+        res <- rgb(r, g, b)
     } else {
         ## both
-        rgb.list <- col2rgb(c(water, land)) / 255
-        l <- length(land) + length(water)
-        r <- approx(1:l, rgb.list[1, 1:l], xout=seq(1, l, length.out=n))$y
-        g <- approx(1:l, rgb.list[2, 1:l], xout=seq(1, l, length.out=n))$y
-        b <- approx(1:l, rgb.list[3, 1:l], xout=seq(1, l, length.out=n))$y
+        ## See https://github.com/dankelley/oce/discussions/1756#discussioncomment-204754 for
+        ## a discussion of adding some white 'ink' between the water and the land.
+        ##? rgb.list <- col2rgb(c(water, "#FFFFFF", "#FFFFFF", land)) / 255
+        ##? rgb.list <- col2rgb(c(water, "#FFFFFF", land)) / 255
+        ##20201214> rgb.list <- col2rgb(c(water, "#FFFFFF", land)) / 255
+        ##20201214> l <- ncol(rgb.list)
+        ##20201214> r <- approx(1:l, rgb.list[1, 1:l], xout=seq(1, l, length.out=n))$y
+        ##20201214> g <- approx(1:l, rgb.list[2, 1:l], xout=seq(1, l, length.out=n))$y
+        ##20201214> b <- approx(1:l, rgb.list[3, 1:l], xout=seq(1, l, length.out=n))$y
+        ## I find it very difficult to see a difference between 'rgb' and 'Lab' spaces, and between
+        ## 'linear' and 'spline' interpolations.
+        cr <- colorRamp(c(water, "#FFFFFF", land), bias=1, space="rgb", interpolate="spline")(seq(0, 1, length.out=n))
+        res <- rgb(cr, maxColorValue=255)
     }
-    rgb(r, g, b)
+    oceDebug(debug, "} # oceColorsGebco()", sep="", unindent=1)
+    res
 }
 oce.colorsGebco <- oceColorsGebco
 

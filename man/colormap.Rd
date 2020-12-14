@@ -48,7 +48,9 @@ painted with the nearest in-range color.}
 through \code{blend} are all ignored (see \dQuote{Details}).  If it is
 provided, then it may either be a vector of break points, or a single number
 indicating the desired number of break points to be computed with
-\code{\link{pretty}}\verb{(z,breaks)1.  In either case of non-missing }breaks\verb{, the resultant break points must number 1 plus the number of colors (see }col`).}
+\code{\link{pretty}}\verb{(z,breaks)}.  In either case of non-missing
+\code{breaks}, the resultant break points must number 1 plus the number of
+colors (see \code{col}).}
 
 \item{col}{either a vector of colors or a function taking a numerical value
 as its single argument and returning a vector of colors.  The value of
