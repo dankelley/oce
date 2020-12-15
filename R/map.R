@@ -126,7 +126,7 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, pass
             }
         }
     } else {
-        oceDebug(debug, paste("oceProject() skipping sf test, because sf version (", packageVersion("sf"), ") predates 0.8.1\n", sep="")) 
+        oceDebug(debug, paste("oceProject() skipping sf test, because sf version (", packageVersion("sf"), ") predates 0.8.1\n", sep=""))
     }
     ## }}}
     options(warn=owarn)
@@ -1062,7 +1062,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' with the `mapPlot()` call is stored in a global variable that can be retrieved
 #' by related functions, making it easy to add points, lines, text, images
 #' or contours to an existing map.
-#' See the \dQuote{Details} for a list of 
+#' See the \dQuote{Details} for a list of
 #' available projections.
 #'
 #' Map projections are provided by the
@@ -1075,7 +1075,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' Further details of the vast array of map projections provided by PROJ
 #' are given in reference 4.  This system has been in rapid development
-#' since about 2018, and reference 5 provides a helpful overview of the changes 
+#' since about 2018, and reference 5 provides a helpful overview of the changes
 #' and the reasons why they were necessary.  Practical examples of map projections in
 #' \CRANpkg{oce} are provided in reference 6, along with some notes on problems.
 #' A fascinating treatment of the history of map projections is provided
@@ -1173,17 +1173,17 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' | Orthographic                              | `ortho`    | -                                  |
 ## NOTE: pconic was removed 2020-08-03 because sf does not support it well
 ## Perspective conic                           | `pconic`   | `lat_1`, `lat_2`                   |
-#' | Polyconic American                        | `poly`     | -                                  | 
-#' | Putnins P1                                | `putp1`    | -                                  | 
-#' | Putnins P2                                | `putp2`    | -                                  | 
-#' | Putnins P3                                | `putp3`    | -                                  | 
-#' | Putnins P3'                               | `putp3p`   | -                                  | 
-#' | Putnins P4'                               | `putp4p`   | -                                  | 
-#' | Putnins P5                                | `putp5`    | -                                  | 
-#' | Putnins P5'                               | `putp5p`   | -                                  | 
-#' | Putnins P6                                | `putp6`    | -                                  | 
-#' | Putnins P6'                               | `putp6p`   | -                                  | 
-#' | Quartic authalic                          | `qua_aut`  | -                                  | 
+#' | Polyconic American                        | `poly`     | -                                  |
+#' | Putnins P1                                | `putp1`    | -                                  |
+#' | Putnins P2                                | `putp2`    | -                                  |
+#' | Putnins P3                                | `putp3`    | -                                  |
+#' | Putnins P3'                               | `putp3p`   | -                                  |
+#' | Putnins P4'                               | `putp4p`   | -                                  |
+#' | Putnins P5                                | `putp5`    | -                                  |
+#' | Putnins P5'                               | `putp5p`   | -                                  |
+#' | Putnins P6                                | `putp6`    | -                                  |
+#' | Putnins P6'                               | `putp6p`   | -                                  |
+#' | Quartic authalic                          | `qua_aut`  | -                                  |
 #' | Quadrilateralized spherical cube          | `qsc`      | -                                  |
 #' | Robinson                                  | `robin`    | -                                  |
 #' | Roussilhe stereographic                   | `rouss`    | -                                  |
@@ -2080,7 +2080,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #' @param latitudelim similar to `longitudelim`.
 #'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
-#' amount of debugging information, 2 to go two function levels deep, or 
+#' amount of debugging information, 2 to go two function levels deep, or
 #' 3 to go all the way to the core functions. Any value above 3 will be
 #' truncated to 3.
 #'
@@ -3037,6 +3037,24 @@ map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
 #'
 #' @param fillOddEven as for [polygon()].
 #'
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' data(coastlineWorld)
+#' data(topoWorld)
+#'
+#' ## Maritime region, with color-coded bathymetry
+#' par(mfrow=c(1,1), mar=c(2,2,1,1))
+#' cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
+#' drawPalette(colormap=cm)
+#' lonlim<- c(-60,-50)
+#' latlim<- c(40,60)
+#' mapPlot(coastlineWorld, longitudelim=lonlim,
+#' latitudelim=latlim, projection="+proj=merc", grid=FALSE)
+#' mapImage(topoWorld, colormap=cm)
+#' mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
+#'}
+#'
 #' @author Dan Kelley
 #'
 #' @seealso A map must first have been created with [mapPlot()].
@@ -3167,6 +3185,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' 1. \url{http://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
 #'
 #' @examples
+#' \dontrun{
 #' library(oce)
 #' data(coastlineWorld)
 #' data(topoWorld)
@@ -3180,6 +3199,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' mapImage(topoWorld, colormap=cm)
 #' mapGrid(15, 15, polarCircle=1, col=gray(0.2))
 #' mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
+#'}
 #'
 #' @author Dan Kelley
 #'
