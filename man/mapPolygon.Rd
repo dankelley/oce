@@ -26,7 +26,8 @@ argument are ignored.}
 \item{latitude}{numeric vector of latitudes of points to be plotted (ignored
 if both longitude and latitude can be determined from the first argument).}
 
-\item{density, angle, border, col, lty, ..., filOddEven}{handled as \code{\link[=polygon]{polygon()}} handles the same arguments.}
+\item{density, angle, border, col, lty, ..., filOddEven}{handled as
+\code{\link[=polygon]{polygon()}} handles the same arguments.}
 }
 \description{
 \code{mapPolygon} adds a polygon to an existing map.
