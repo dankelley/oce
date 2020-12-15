@@ -17,46 +17,36 @@ mapPolygon(
 )
 }
 \arguments{
-\item{longitude}{numeric vector of longitudes of points to be plotted, or an object from
-which longitude and latitude can be inferred (e.g. a coastline file, or
-the return value from \code{\link[=mapLocator]{mapLocator()}}), in which case the
-following two arguments are ignored.}
+\item{longitude}{numeric vector of longitudes of points defining the polygon,
+to be plotted, or an object from
+which both longitude and latitude can be inferred (e.g. a coastline file, or
+the return value from \code{\link[=mapLocator]{mapLocator()}}), in which case the \code{latitude}
+argument are ignored.}
 
-\item{latitude}{numeric vector of latitudes of points to be plotted.}
+\item{latitude}{numeric vector of latitudes of points to be plotted (ignored
+if both longitude and latitude can be determined from the first argument).}
 
-\item{density}{as for \code{\link[=polygon]{polygon()}}.}
-
-\item{angle}{as for \code{\link[=polygon]{polygon()}}.}
-
-\item{border}{as for \code{\link[=polygon]{polygon()}}.}
-
-\item{col}{as for \code{\link[=polygon]{polygon()}}.}
-
-\item{lty}{as for \code{\link[=polygon]{polygon()}}.}
-
-\item{...}{as for \code{\link[=polygon]{polygon()}}.}
-
-\item{fillOddEven}{as for \code{\link[=polygon]{polygon()}}.}
+\item{density, angle, border, col, lty, ..., filOddEven}{handled as \code{\link[=polygon]{polygon()}} handles the same arguments.}
 }
 \description{
-Adds a polygon to an existing map, by analogy to
-\code{\link[=polygon]{polygon()}}.  Used by \code{\link[=mapImage]{mapImage()}}.
+\code{mapPolygon} adds a polygon to an existing map.
 }
 \examples{
-\dontrun{
+\donttest{
 library(oce)
 data(coastlineWorld)
 data(topoWorld)
 
-## Maritime region, with color-coded bathymetry
+## Bathymetry near southeastern Canada
 par(mfrow=c(1,1), mar=c(2,2,1,1))
 cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
 drawPalette(colormap=cm)
 lonlim<- c(-60,-50)
 latlim<- c(40,60)
-mapPlot(coastlineWorld, longitudelim=lonlim, latitudelim=latlim, projection="+proj=merc", grid=FALSE)
+mapPlot(coastlineWorld, longitudelim=lonlim,
+latitudelim=latlim, projection="+proj=merc", grid=FALSE)
 mapImage(topoWorld, colormap=cm)
-mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
+mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="lightgray")
 }
 
 }

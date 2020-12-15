@@ -3013,37 +3013,38 @@ map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
 
 #' Add a Polygon to a Map
 #'
-#' Adds a polygon to an existing map, by analogy to
-#' [polygon()].  Used by [mapImage()].
+#' `mapPolygon` adds a polygon to an existing map.
 #'
-#' @param longitude numeric vector of longitudes of points to be plotted, or an object from
-#' which longitude and latitude can be inferred (e.g. a coastline file, or
-#' the return value from [mapLocator()]), in which case the
-#' following two arguments are ignored.
+#' @param longitude numeric vector of longitudes of points defining the polygon,
+#' to be plotted, or an object from
+#' which both longitude and latitude can be inferred (e.g. a coastline file, or
+#' the return value from [mapLocator()]), in which case the `latitude`
+#' argument are ignored.
 #'
-#' @param latitude numeric vector of latitudes of points to be plotted.
+#' @param latitude numeric vector of latitudes of points to be plotted (ignored
+#' if both longitude and latitude can be determined from the first argument).
 #'
-#' @param density as for [polygon()].
+#' @param density,angle,border,col,lty,...,filOddEven handled as [polygon()] handles the same arguments.
 #'
-#' @param angle as for [polygon()].
-#'
-#' @param border as for [polygon()].
-#'
-#' @param col as for [polygon()].
-#'
-#' @param lty as for [polygon()].
-#'
-#' @param ... as for [polygon()].
-#'
-#' @param fillOddEven as for [polygon()].
+## @param angle as for [polygon()].
+##
+## @param border as for [polygon()].
+##
+## @param col as for [polygon()].
+##
+## @param lty as for [polygon()].
+##
+## @param ... as for [polygon()].
+##
+## @param fillOddEven as for [polygon()].
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(oce)
 #' data(coastlineWorld)
 #' data(topoWorld)
 #'
-#' ## Maritime region, with color-coded bathymetry
+#' ## Bathymetry near southeastern Canada
 #' par(mfrow=c(1,1), mar=c(2,2,1,1))
 #' cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
 #' drawPalette(colormap=cm)
@@ -3052,7 +3053,7 @@ map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
 #' mapPlot(coastlineWorld, longitudelim=lonlim,
 #' latitudelim=latlim, projection="+proj=merc", grid=FALSE)
 #' mapImage(topoWorld, colormap=cm)
-#' mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
+#' mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="lightgray")
 #'}
 #'
 #' @author Dan Kelley
