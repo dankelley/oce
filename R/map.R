@@ -3024,7 +3024,7 @@ map2lonlat <- function(x, y, init=NULL, debug=getOption("oceDebug"))
 #' @param latitude numeric vector of latitudes of points to be plotted (ignored
 #' if both longitude and latitude can be determined from the first argument).
 #'
-#' @param density,angle,border,col,lty,...,filOddEven handled as
+#' @param density,angle,border,col,lty,...,fillOddEven handled as
 #' [polygon()] handles the same arguments.
 #'
 ## @param angle as for [polygon()].
