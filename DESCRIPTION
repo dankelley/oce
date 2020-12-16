@@ -7,8 +7,8 @@ Authors@R: c(
     person(given="Chantelle", family="Layton", email="chantelle.layton@dal.ca", role=c("ctb"), comment=c(ORCID="https://orcid.org/0000-0002-3199-5763", "curl() coauthor")),
     person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field subroutine"))
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
-Depends: R (>= 3.5.0), gsw, methods, sf (>= 0.8.0), testthat, utils
-Suggests: 
+Depends: R (>= 2.15), gsw, methods, sf (>= 0.8.0), testthat, utils
+Suggests:
     akima,
     automap,
     DBI,
