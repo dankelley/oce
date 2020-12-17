@@ -1917,6 +1917,10 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             oceDebug(debug, "these two bytes imply this is adp/nortek/aqudopp (see system-integrator-manual_jan2011.pdf Table 5.2)\n")
             return("adp/nortek/aquadopp")
         }
+        if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x81) {
+            oceDebug(debug, "these two bytes imply this is adp/nortek/aqudopp (see N3015-023-Integrators-Guide-Classic_1220.pdf page 30)\n")
+            return("adp/nortek/aquadoppPlusMagnetometer")
+        }
         if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x21)  {
             oceDebug(debug, "these two bytes imply this is adp/nortek/aqudoppProfiler\n")
             return("adp/nortek/aquadoppProfiler") # p37 SIG
@@ -2080,6 +2084,8 @@ read.oce <- function(file, ...)
         res <- read.adp.sontek(file, processingLog=processingLog, ...) # FIXME is pcadcp different?
     } else if (type == "adp/nortek/aquadopp") {
         res <- read.aquadopp(file, processingLog=processingLog, ...)
+    } else if (type == "adp/nortek/aquadoppPlusMagnetometer") {
+        res <- read.aquadopp(file, type="aquadoppPlusMagnetometer", processingLog=processingLog, ...)
     } else if (type == "adp/nortek/aquadoppProfiler") {
         res <- read.aquadoppProfiler(file, processingLog=processingLog, ...)
     } else if (type == "adp/nortek/aquadoppHR") {
