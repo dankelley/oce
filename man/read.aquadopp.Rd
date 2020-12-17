@@ -12,6 +12,7 @@ read.aquadopp(
   tz = getOption("oceTz"),
   longitude = NA,
   latitude = NA,
+  type = "aquadopp",
   orientation,
   distance,
   monitor = FALSE,
@@ -52,6 +53,10 @@ East.}
 \item{latitude}{optional signed number indicating the latitude in degrees
 North.}
 
+\item{type}{Either "aquadopp" for a standard aquadopp file, or
+"aquadoppPlusMagnetometer" for a file which includes the raw magnetometer
+data.}
+
 \item{orientation}{Optional character string specifying the orientation of the
 sensor, provided for those cases in which it cannot be inferred from the
 data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
@@ -89,14 +94,9 @@ NMEA strings, then navigational data will be stored in an item
 called \code{nmea} in the \code{data} slot).
 }
 \description{
-The R code is based on information in
-the Nortek System Integrator Guide (2008) and on postings on the Nortek
-``knowledge center'' discussion board.  One might assume that the latter is
-less authoritative than the former.  For example, the inference of cell size
-follows advice found at
-http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717,
-which contains a typo in an early posting that is
-corrected later on.
+The R code is based on information in the Nortek System Integrator Guide
+(2017), postings on the Nortek ``knowledge center'' discussion board, and
+discussions with Nortek engineers (Dec. 2020).
 }
 \references{
 \enumerate{
