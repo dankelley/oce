@@ -2654,11 +2654,11 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         pressureLSW <- readBin(buf[diaStart2 + 26], what="integer", n=diaToRead, size=2, endian="little", signed=FALSE)
         pressureDia <- (as.integer(pressureMSB)*65536 + pressureLSW) * 0.001
         temperatureDia <- 0.01 * readBin(buf[diaStart2 + 28], what="integer", n=diaToRead, size=2, endian="little")
-        soundSpeed <- 0.1 * readBin(buf[profileStart2 + 30], what="integer", n=profilesToRead, size=2, endian="little")
-        ensCount <- readBin(buf[profileStart2 + 32], what="integer", n=profilesToRead, size=2, endian="little")
-        compHx <- readBin(buf[profileStart2 + 34], what="integer", n=profilesToRead, size=2, endian="little")
-        compHy <- readBin(buf[profileStart2 + 36], what="integer", n=profilesToRead, size=2, endian="little")
-        compHz <- readBin(buf[profileStart2 + 38], what="integer", n=profilesToRead, size=2, endian="little")
+        soundSpeedDia <- 0.1 * readBin(buf[profileStart2 + 30], what="integer", n=profilesToRead, size=2, endian="little")
+        ensCountDia <- readBin(buf[profileStart2 + 32], what="integer", n=profilesToRead, size=2, endian="little")
+        compHxDia <- readBin(buf[profileStart2 + 34], what="integer", n=profilesToRead, size=2, endian="little")
+        compHyDia <- readBin(buf[profileStart2 + 36], what="integer", n=profilesToRead, size=2, endian="little")
+        compHzDia <- readBin(buf[profileStart2 + 38], what="integer", n=profilesToRead, size=2, endian="little")
         vDia <- array(double(), dim=c(diaToRead,  1,  3))
         vDia[, , 1] <- 0.001 * readBin(buf[diaStart2 + 40], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
         vDia[, , 2] <- 0.001 * readBin(buf[diaStart2 + 42], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
@@ -2713,6 +2713,13 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         res@data$temperatureDia <- temperatureDia
         res@data$vDia <- vDia
         res@data$aDia <- aDia
+        if (type == "aquadoppPlusMagnetometer") {
+            res@datda$soundSpeedDia <- soundSpeedDia
+            res@datda$soundSpeedDia <- soundSpeedDia
+            res@datda$compHxDia <- compHxDia
+            res@datda$compHyDia <- compHyDia
+            res@datda$compHzDia <- compHzDia
+        }
     }
 
     if (missing(orientation)) {
