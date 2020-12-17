@@ -2702,7 +2702,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         warning(paste('Found and removed', length(tNA), 'NAs in the time vector.'))
     }
 
-    if (type == "aquadopp" && diaToRead > 0) {
+    if (type == "aquadopp" || type == "aquadoppPlusMagnetometer" && diaToRead > 0) {
         ## FIXME: there may be other things here, e.g. does it try to measure salinity?
         res@data$timeDia <- timeDia
         res@data$errorDia <- errorDia
