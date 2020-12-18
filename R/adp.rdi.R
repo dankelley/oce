@@ -398,6 +398,17 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' resolution, values that may be retrieved for an ADP object name `d`
 #' with `d[["velocityMaximum"]]` and `d[["velocityResolution"]]`.
 #'
+#' @section Handling of old file formats:
+#' 1. Early PD0 file formats stored the year of sampling with a different
+#' base year than that used in modern files.  To accomodate this,
+#' `read.adp.rdi` examines the inferred year, and if it is greater than
+#' 2050, then 100 years are subtracted from the time. This offset was
+#' inferred by tests with sample files, but *not* from RDI documentation,
+#' so it is somewhat risky.  If the authors can find RDI documentation that
+#' indicates the condition in which this century offset is required, then
+#' a change will be made to the code.  Even if not, the method should
+#' not cause problems for a long time.
+#'
 #' @template adpTemplate
 #'
 #' @param testing logical value (IGNORED).

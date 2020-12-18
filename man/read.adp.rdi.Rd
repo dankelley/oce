@@ -105,6 +105,21 @@ two facts control the maximum recordable velocity and the velocity
 resolution, values that may be retrieved for an ADP object name \code{d}
 with \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
 }
+\section{Handling of old file formats}{
+
+\enumerate{
+\item Early PD0 file formats stored the year of sampling with a different
+base year than that used in modern files.  To accomodate this,
+\code{read.adp.rdi} examines the inferred year, and if it is greater than
+2050, then 100 years are subtracted from the time. This offset was
+inferred by tests with sample files, but \emph{not} from RDI documentation,
+so it is somewhat risky.  If the authors can find RDI documentation that
+indicates the condition in which this century offset is required, then
+a change will be made to the code.  Even if not, the method should
+not cause problems for a long time.
+}
+}
+
 \section{Names of items in data slot}{
 
 
