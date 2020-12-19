@@ -12,6 +12,8 @@ using namespace Rcpp;
 
 #define OUTLIM 10000000
 
+static int warnings = 10;
+
 // If memory-fault problems occur, look at the Calloc() and Realloc()
 // calls, and at the spots where information is stored in the relevant
 // arrays. Note that arrows grow by a factor of 3/2 whenever needed;
@@ -53,6 +55,16 @@ double oce_timegm(struct tm *t)
 
   day = t->tm_mday - 1;
   year0 = year_base + t->tm_year;
+  // FIXME: is there a better way to decide when results are odd?
+  // FIXME: Should this be a user-controlled thing at the read.adp.rdi()
+  // FIXME: level, in R?
+  if (year0 > 2050) {
+    if (warnings > 0) {
+      Rprintf("oce_timegm(): year %d > 2050, so subtracting 100 y (will warn at most 10 times)\n", year0, t->tm_year);
+      warnings--;
+    }
+    year0 = year0 - 100;
+  }
   /* safety check for unbounded loops */
   if (year0 > 3000) {
     excess = (int)(year0/2000) - 1;
