@@ -14,121 +14,103 @@ longlatProj <- sf::st_crs("+proj=longlat")$proj4string
     function(new) if (!missing(new)) val <<- new else val
 })
 
-#' Wrapper to rgdal::project()
+#' Wrapper to sf::sf_project()
 #'
 #' This function is used to isolate other oce functions from
-#' changes to the [rgdal::project()] function in the \CRANpkg{rgdal}
-#' package, which is used for calculations involved in both forward
-#' and inverse map projections.
+#' changes to the map-projection functions that are done in the \CRANpkg{sf}
+#' package.  (Until 2020 December, the \CRANpkg{rgdal} package was used,
+#' after a year of tests ensuring that the results of the two packages were
+#' the same.)
 #'
-#' Some highlights of the evolving relationship with rgdal are:
-#' 1. See https://github.com/dankelley/oce/issues/653#issuecomment-107040093
-#'    for the reason why oce switched from using [rgdal::rawTransform()],
-#'    to [rgdal::project()], both functions provided by the
-#'    \CRANpkg{rgdal} package.
-#' 2. 2016 Apr: rgdal::project started returning named quantities
-#' 3. 2019 Feb: allowNAs_if_not_legacy was added in rgdal 1.3-9 to prevent
-#'    an error on i386/windows. However, using this argument imposes a
-#'    burden on users to update \CRANpkg{rgdal}, so the approach taken
-#'    here (by default, i.e. with `passNA=FALSE`) is to
-#'    temporarily switch NA data to 0, and then switch
-#'    back to NA after the calculation.
+#' @param xy two-column numeric matrix specifying locations.  If `inv` is False, then `xy[,1]` will hold
+#' longitude and `xy[,2]` will hold latitude, but if `inv` is True, then the columns will be easting
+#' and northing values (in metres).
 #'
-#' @param xy,proj,inv,use_ob_tran,legacy  As for the [rgdal::project()] function in the
-#' \CRANpkg{rgdal} package.
+#' @param proj character string indicating the desired map projection, or an object of class `crs`;
+#' see [sf::sf_project()].
 #'
-#' @param passNA Logical value indicating whether to pass NA values into
-#' \CRANpkg{rgdal}.  The default is `FALSE`, meaning that any NA
-#' values are first converted to 0 before the calculation, and then
-#' converted to NA afterwards. Setting this to `TRUE` produces
-#' errors on the i386/windows platform, but it seems likely that a version
-#' of \CRANpkg{rgdal} released after 1.3-9 may not have that error.
+#' @param inv logical value, False by default, indicating whether an inverse projection is requested.
+#'
+#' @param use_ob_tran,legacy,passNA ignored in oce 1.0.3, and will be disallowed in oce 1.0.4.
 #'
 #' @template debugTemplate
 #'
 #' @return A two-column matrix, with first column holding either
 #' `longitude` or `x`, and second column holding either
 #' `latitude` or `y`.
-oceProject <- function(xy, proj, inv=FALSE, use_ob_tran=FALSE, legacy=TRUE, passNA=FALSE, debug=getOption("oceDebug"))
+oceProject <- function(xy, proj, inv=FALSE, use_ob_tran, legacy, passNA, debug=getOption("oceDebug"))
 {
-    if (!requireNamespace("rgdal", quietly=TRUE))
-        stop('must install.packages("rgdal") to do map projections')
+    if (!missing(use_ob_tran))
+        warning("use_ob_tran is ignored in oce 1.3-0, and will be disallowed thereafter\n")
+    if (!missing(legacy))
+        warning("legacy is ignored in oce 1.3-0, and will be disallowed thereafter\n")
+    if (!missing(passNA))
+        warning("passNA is ignored in oce 1.3-0, and will be disallowed thereafter\n")
+    if (!requireNamespace("sf", quietly=TRUE))
+        stop('must install.packages("sf") to do map projections')
     oceDebug(debug, "oceProject(xy, proj=\"", proj, "\", ...) {\n", sep="", unindent=1, style="bold")
     owarn <- options()$warn # this, and the capture.output, quieten the processing
     options(warn=-1)
-    ## {{{ OLD 'rgdal' method
-    if (passNA) {
-        na <- which(is.na(xy[,1]))
-        xy[na, ] <- 0
-        capture.output({
-            XY <- unname(rgdal::project(xy, proj=proj, inv=inv))
-        })
-        XY[na, ] <- NA
-    } else {
-        if (.Platform$OS.type == "windows" && .Platform$r_arch == "i386") {
-            if (packageVersion("rgdal") < "1.3.9")
-                stop("rgdal must be at least version 1.3.9, on i386/windows platforms")
-            capture.output(
-                           {
-                               XY <- unname(rgdal::project(xy, proj=proj, inv=inv, legacy=legacy, allowNAs_if_not_legacy=TRUE))
-                           }
-            )
-        } else {
-            capture.output(
-                           {
-                               XY <- unname(rgdal::project(xy=xy, proj=proj, inv=inv, legacy=legacy))
-                           }
-            )
-        }
+    ## <1629> ## {{{ OLD 'rgdal' method
+    ## <1629> if (passNA) {
+    ## <1629>     na <- which(is.na(xy[,1]))
+    ## <1629>     xy[na, ] <- 0
+    ## <1629>     capture.output({
+    ## <1629>         XY <- unname(rgdal::project(xy, proj=proj, inv=inv))
+    ## <1629>     })
+    ## <1629>     XY[na, ] <- NA
+    ## <1629> } else {
+    ## <1629>     if (.Platform$OS.type == "windows" && .Platform$r_arch == "i386") {
+    ## <1629>         if (packageVersion("rgdal") < "1.3.9")
+    ## <1629>             stop("rgdal must be at least version 1.3.9, on i386/windows platforms")
+    ## <1629>         capture.output(
+    ## <1629>                        {
+    ## <1629>                            XY <- unname(rgdal::project(xy, proj=proj, inv=inv, legacy=legacy, allowNAs_if_not_legacy=TRUE))
+    ## <1629>                        }
+    ## <1629>         )
+    ## <1629>     } else {
+    ## <1629>         capture.output(
+    ## <1629>                        {
+    ## <1629>                            XY <- unname(rgdal::project(xy=xy, proj=proj, inv=inv, legacy=legacy))
+    ## <1629>                        }
+    ## <1629>         )
+    ## <1629>     }
+    ## <1629> }
+    ## <1629> ## }}}
+    na <- which(!is.finite(xy[,1]))
+    xy[na, ] <- 0
+    ## sf_project() with proj=lcc fails at S. pole. We will never need things
+    ## to be *precisely* at the poles, so let's move near-polar (or extra-polar)
+    ## points to a tiny distance equatorward of the poles.  On my osx machine,
+    ## 1e-6 degrees (or about 10cm) seems to work.
+    if (!inv) {
+        oceDebug(debug, "moving poles to avoid problems with some projections\n")
+        ##oceDebug(debug, "before moving poles:", vectorShow(xy[,1]))
+        ##oceDebug(debug, "before moving poles:", vectorShow(xy[,2]))
+        southPole <- xy[,2] < (-90 + 1e-6)
+        xy[southPole, 2] <- -90 + 1e-6
+        northPole <- xy[,2] > (90 - 1e-6)
+        xy[northPole, 2] <- 90 - 1e-6
+        ##oceDebug(debug, "after moving poles: ", vectorShow(xy[,1]))
+        ##oceDebug(debug, "after moving poles: ", vectorShow(xy[,2]))
     }
-    ## }}}
-    ## {{{ NEW 'sf' method
-    if (packageVersion("sf") >= "0.8.1") {
-        na <- which(!is.finite(xy[,1]))
-        xy[na, ] <- 0
-        ## sf_project() with proj=lcc fails at S. pole. We will never need things
-        ## to be *precisely* at the poles, so let's move near-polar (or extra-polar)
-        ## points to a tiny distance equatorward of the poles.  On my osx machine,
-        ## 1e-6 degrees (or about 10cm) seems to work.
-        if (!inv) {
-            oceDebug(debug, "moving poles to avoid problems with some projections\n")
-            ##oceDebug(debug, "before moving poles:", vectorShow(xy[,1]))
-            ##oceDebug(debug, "before moving poles:", vectorShow(xy[,2]))
-            southPole <- xy[,2] < (-90 + 1e-6)
-            xy[southPole, 2] <- -90 + 1e-6
-            northPole <- xy[,2] > (90 - 1e-6)
-            xy[northPole, 2] <- 90 - 1e-6
-            ##oceDebug(debug, "after moving poles: ", vectorShow(xy[,1]))
-            ##oceDebug(debug, "after moving poles: ", vectorShow(xy[,2]))
-        }
-        if (inv) {
-            capture.output({XYSF <- try(unname(sf::sf_project(proj, longlatProj, xy, keep=TRUE)),
-                silent=TRUE)})
-            ## XYSF <- try(unname(sf::sf_project(sf::st_crs(proj), sf::st_crs("+proj=longlat"), xy, keep=TRUE)),
-            ##     silent=TRUE)
-        } else {
-            capture.output({XYSF <- try(unname(sf::sf_project(longlatProj, proj, xy, keep=TRUE)),
-                silent=TRUE)})
-            ## XYSF <- try(unname(sf::sf_project(sf::st_crs("+proj=longlat"), sf::st_crs(proj), xy, keep=TRUE)),
-            ##     silent=TRUE)
-        }
-        if (inherits(XYSF, "try-error")) {
-            warning("oceProject() : sf_project() yielded errors that must be fixed before oce can switch from rgdal to sf\n", immediate.=TRUE)
-        } else {
-            XYSF[na, ] <- NA
-            ## Test rgdal/sf agreement to 1m.
-            canCompare <- is.finite(XY) & is.finite(XYSF)
-            if (!isTRUE(all.equal(XY[canCompare], XYSF[canCompare], tolerance=1))) {
-                oceDebug(debug, "old 'rgdal' and new 'sf' methods yield different results\n", style="bold")
-                warning("oceProject() : disagreement between old 'rgdal' method and proposed 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n", immediate.=TRUE)
-            } else {
-                oceDebug(debug, "old 'rgdal' and new 'sf' methods yield the same results\n")
-            }
-        }
+    ## Use capture.output() to discard any stray printing that sf might do.
+    if (inv) {
+        capture.output({XY <- try(unname(sf::sf_project(proj, longlatProj, xy, keep=TRUE)), silent=TRUE)})
     } else {
-        oceDebug(debug, paste("oceProject() skipping sf test, because sf version (", packageVersion("sf"), ") predates 0.8.1\n", sep=""))
+        capture.output({XY <- try(unname(sf::sf_project(longlatProj, proj, xy, keep=TRUE)), silent=TRUE)})
     }
-    ## }}}
+    if (inherits(XY, "try-error"))
+        stop("oceProject() : sf_project() yielded errors\n")
+    XY[na, ] <- NA
+    ## <1629> ## Test rgdal/sf agreement to 1m.
+    ## <1629> canCompare <- is.finite(XY) & is.finite(XYSF)
+    ## <1629> if (!isTRUE(all.equal(XY[canCompare], XYSF[canCompare], tolerance=1))) {
+    ## <1629>     oceDebug(debug, "old 'rgdal' and new 'sf' methods yield different results\n", style="bold")
+    ## <1629>     warning("oceProject() : disagreement between old 'rgdal' method and proposed 'sf' method. Please post an issue on www.github.com/dankelley/oce/issues\n", immediate.=TRUE)
+    ## <1629> } else {
+    ## <1629>     oceDebug(debug, "old 'rgdal' and new 'sf' methods yield the same results\n")
+    ## <1629> }
     options(warn=owarn)
     oceDebug(debug, "} # oceProject\n", sep="", unindent=1, style="bold")
     XY
@@ -987,14 +969,14 @@ mapDirectionField <- function(longitude, latitude, u, v,
             latitude <- matrix(rep(latitude, nlon), byrow=TRUE, nrow=nlon)
         }
     }
-    xy <- lonlat2map(longitude, latitude)
+    xy <- lonlat2map(as.vector(longitude), as.vector(latitude))
     ## Calculate spatially-dependent scale (fails for off-page points)
     ## Calculate lon-lat at ends of arrows
     scalex <- scale / cos(pi * latitude / 180)
     latEnd <- latitude + v * scale
     lonEnd <- longitude + u * scalex
-    xy <- lonlat2map(longitude, latitude)
-    xyEnd <- lonlat2map(lonEnd, latEnd)
+    xy <- lonlat2map(as.vector(longitude), as.vector(latitude))
+    xyEnd <- lonlat2map(as.vector(lonEnd), as.vector(latEnd))
     arrows(xy$x, xy$y, xyEnd$x, xyEnd$y, length=length, code=code, col=col, ...)
 }
 
@@ -1239,6 +1221,9 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @section Changes:
 #'
+#' * 2020-12-24: complete switch from \CRANpkg{rgdal} to \CRANpkg{sf},
+#' removing the testing scheme created on 2020-08-03.
+#'
 #' * 2020-08-03: added support for the `eqearth` projection (like `robin` but
 #' an equal-area method).
 #'
@@ -1430,79 +1415,76 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' projections (with graphs).
 #'
 #' @examples
-#' ##canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
-#' canProject <- requireNamespace("rgdal")
-#' if (canProject) {
-#'     library(oce)
-#'     data(coastlineWorld)
+#'\donttest{
+#' library(oce)
+#' data(coastlineWorld)
 #'
-#'     # Example 1.
-#'     # Mollweide (referenc 1 page 54) is an equal-area projection that works well
-#'     # for whole-globe views.
-#'     mapPlot(coastlineWorld, projection="+proj=moll", col='gray')
-#'     mtext("Mollweide", adj=1)
+#' # Example 1.
+#' # Mollweide (referenc 1 page 54) is an equal-area projection that works well
+#' # for whole-globe views.
+#' mapPlot(coastlineWorld, projection="+proj=moll", col='gray')
+#' mtext("Mollweide", adj=1)
 #'
-#'     # Example 2.
-#'     # Note that filling is not employed (`col` is not
-#'     # given) when the prime meridian is shifted, because
-#'     # this causes a problem with Antarctica
-#'     cl180 <- coastlineCut(coastlineWorld, lon_0=-180)
-#'     mapPlot(cl180, projection="+proj=moll +lon_0=-180")
-#'     mtext("Mollweide with coastlineCut", adj=1)
+#' # Example 2.
+#' # Note that filling is not employed (`col` is not
+#' # given) when the prime meridian is shifted, because
+#' # this causes a problem with Antarctica
+#' cl180 <- coastlineCut(coastlineWorld, lon_0=-180)
+#' mapPlot(cl180, projection="+proj=moll +lon_0=-180")
+#' mtext("Mollweide with coastlineCut", adj=1)
 #'
-#'     # Example 3.
-#'     # Orthographic projections resemble a globe, making them attractive for
-#'     # non-technical use, but they are neither conformal nor equal-area, so they
-#'     # are somewhat limited for serious use on large scales.  See Section 20 of
-#'     # reference 1. Note that filling is not employed because it causes a problem with
-#'     # Antarctica.
-#'     par(mar=c(3, 3, 1, 1))
-#'     mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
-#'     mtext("Orthographic", adj=1)
+#' # Example 3.
+#' # Orthographic projections resemble a globe, making them attractive for
+#' # non-technical use, but they are neither conformal nor equal-area, so they
+#' # are somewhat limited for serious use on large scales.  See Section 20 of
+#' # reference 1. Note that filling is not employed because it causes a problem with
+#' # Antarctica.
+#' par(mar=c(3, 3, 1, 1))
+#' mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
+#' mtext("Orthographic", adj=1)
 #'
-#'     # Example 4.
-#'     # The Lambert conformal conic projection is an equal-area projection
-#'     # recommended by reference 1, page 95, for regions of large east-west extent
-#'     # away from the equator, here illustrated for the USA and Canada.
-#'     par(mar=c(3, 3, 1, 1))
-#'     mapPlot(coastlineCut(coastlineWorld, -100),
-#'             longitudelim=c(-130,-55), latitudelim=c(35, 60),
-#'             projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
-#'     mtext("Lambert conformal", adj=1)
+#' # Example 4.
+#' # The Lambert conformal conic projection is an equal-area projection
+#' # recommended by reference 1, page 95, for regions of large east-west extent
+#' # away from the equator, here illustrated for the USA and Canada.
+#' par(mar=c(3, 3, 1, 1))
+#' mapPlot(coastlineCut(coastlineWorld, -100),
+#'         longitudelim=c(-130,-55), latitudelim=c(35, 60),
+#'         projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
+#' mtext("Lambert conformal", adj=1)
 #'
-#'     # Example 5.
-#'     # The stereographic projection (reference 1, page 120) is conformal, used
-#'     # below for an Arctic view with a Canadian focus.  Note the trick of going
-#'     # past the pole: the second latitudelim value is 180 minus the first, and the
-#'     # second longitudelim is 180 plus the first; this uses image points "over"
-#'     # the pole.
-#'     par(mar=c(3, 3, 1, 1))
-#'     mapPlot(coastlineCut(coastlineWorld, -135),
-#'             longitudelim=c(-130, 50), latitudelim=c(70, 110),
-#'             projection="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
-#'     mtext("Stereographic", adj=1)
+#' # Example 5.
+#' # The stereographic projection (reference 1, page 120) is conformal, used
+#' # below for an Arctic view with a Canadian focus.  Note the trick of going
+#' # past the pole: the second latitudelim value is 180 minus the first, and the
+#' # second longitudelim is 180 plus the first; this uses image points "over"
+#' # the pole.
+#' par(mar=c(3, 3, 1, 1))
+#' mapPlot(coastlineCut(coastlineWorld, -135),
+#'         longitudelim=c(-130, 50), latitudelim=c(70, 110),
+#'         projection="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
+#' mtext("Stereographic", adj=1)
 #'
-#'     # Example 6.
-#'     # Spinning globe: create PNG files that can be assembled into a movie
+#' # Example 6.
+#' # Spinning globe: create PNG files that can be assembled into a movie
+#'}
+#'
 #'\dontrun{
-#'     png("globe-%03d.png")
-#'     lons <- seq(360, 0, -15)
-#'     par(mar=rep(0, 4))
-#'     for (i in seq_along(lons)) {
-#'         p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
-#'         if (i == 1) {
-#'             mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
-#'             xlim <- par("usr")[1:2]
-#'             ylim <- par("usr")[3:4]
-#'         } else {
-#'             mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
-#'                     xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
-#'         }
+#' png("globe-%03d.png")
+#' lons <- seq(360, 0, -15)
+#' par(mar=rep(0, 4))
+#' for (i in seq_along(lons)) {
+#'     p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
+#'     if (i == 1) {
+#'         mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
+#'         xlim <- par("usr")[1:2]
+#'         ylim <- par("usr")[3:4]
+#'     } else {
+#'         mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
+#'                 xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
 #'     }
-#'     dev.off()
-#'}
-#'}
-#'
+#' }
+#' dev.off()}
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -2962,27 +2944,20 @@ mapLocator <- function(n=512, type='n', ...)
 #' @template debugTemplate
 #'
 #' @section Bugs:
-#' `oce` uses [rgdal::project()] in the \CRANpkg{rgdal}
-#' package to handle projections. Only those projections that have inverses are
-#' permitted within `oce`, and even those can sometimes yield errors, owing
-#' to limitations in \CRANpkg{rgdal}. On i386/windows machines, the version
-#' of \CRANpkg{rgdal} must be 1.3-9 or higher, to prevent an error with
-#' `map2lonlat`.
+#' `oce` uses [sf::sf_project()] to handle projections. Only those projections that
+#' have inverses are permitted within `oce`, and of that subset, some are omitted
+#' because the `oce` developers have experienced problems with them.
 #'
 #' @return
 #' A list containing `longitude` and `latitude`, with `NA`
 #' values indicating points that are off the globe as displayed.
 #'
 #' @examples
-#' ##canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
-#' canProject <- requireNamespace("rgdal")
-#' if (canProject) {
-#'     library(oce)
-#'     ## Cape Split, in the Minas Basin of the Bay of Fundy
-#'     cs <- list(longitude=-64.49657, latitude=45.33462)
-#'     xy <- lonlat2map(cs, projection="+proj=merc")
-#'     map2lonlat(xy)
-#' }
+#' library(oce)
+#' ## Cape Split, in the Minas Basin of the Bay of Fundy
+#' cs <- list(longitude=-64.49657, latitude=45.33462)
+#' xy <- lonlat2map(cs, projection="+proj=merc")
+#' map2lonlat(xy)
 #'
 #' @seealso [lonlat2map()] does the inverse operation.
 #'
@@ -3840,15 +3815,11 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 #' that package is version 1.3-9 or higher.
 #'
 #' @examples
-#' ##canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
-#' canProject <- requireNamespace("rgdal")
-#' if (canProject) {
-#'     library(oce)
-#'     ## Cape Split, in the Minas Basin of the Bay of Fundy
-#'     cs <- list(longitude=-64.49657, latitude=45.33462)
-#'     xy <- lonlat2map(cs, projection="+proj=merc")
-#'     map2lonlat(xy)
-#' }
+#' library(oce)
+#' ## Cape Split, in the Minas Basin of the Bay of Fundy
+#' cs <- list(longitude=-64.49657, latitude=45.33462)
+#' xy <- lonlat2map(cs, projection="+proj=merc")
+#' map2lonlat(xy)
 #'
 #' @family functions related to maps
 lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceDebug"))

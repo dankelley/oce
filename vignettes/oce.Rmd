@@ -387,7 +387,7 @@ Gulf Stream. (Hint: use the `swDynamicHeight()` function.)
 
 Oce has several functions that facilitate the drawing of maps. A variety
 of projections are provided, with the mathematics of projection being
-handled behind the scenes with the `rgdal` package. An introduction to
+handled behind the scenes with the `sf` package. An introduction to
 drawing maps is provided with `?mapPlot`, and the [map projection
 vignette](map_projections.html) provides much more detail.
 

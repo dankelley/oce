@@ -29,6 +29,7 @@
 * Fix `plot,coastline-method` error in box drawing.
 * Fix `plotTS` error in auto-scaling if S and T have mixed NA status.
 * Fix `subset,argo-method()` error in `flags`, `location`, and `*QC` in `metadata`.
+* Remove dependence on `rgdal` package, using `sf` now for map projections.
 
 ## 1.2.0
 

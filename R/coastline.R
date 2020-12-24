@@ -463,10 +463,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #'
 #' @section History: Until February, 2016, `plot,coastline-method` relied on a
 #' now-defunct argument `fill` to control colors; `col` is to be
-#' used now, instead. Also, in February, 2016, the arguments named
-#' `parameters` and `orientation` were both removed, as they had
-#' become nonfunctional about a year previously, in the transition to using
-#' the `rgdal` package to carry out map projections.
+#' used now, instead.
 #'
 #' @seealso The documentation for the [coastline-class] class explains the
 #' structure of coastline objects, and also outlines the other functions
@@ -1444,7 +1441,7 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' @param coastline a [coastline-class] object.
 #'
 #' @param lon_0 longitude as would be given in a `+lon_0=` item in a
-#' call to the [rgdal::project()] function in the \CRANpkg{rgdal} package.
+#' call to the [sf::sf_project()] function in the \CRANpkg{sf} package.
 #'
 #' @examples
 #'\donttest{

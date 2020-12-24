@@ -1708,9 +1708,7 @@ as.argo <- function(time, longitude, latitude,
 #' of two projections is used: stereopolar (i.e. `"+proj=stere +lon_0=X"`
 #' where `X` is the mean longitude), or Mercator (i.e. `"+proj=merc"`)
 #' otherwise.  Otherwise, `projection` must be a character string specifying
-#' a projection in the notation used by the [rgdal::project] function
-#' in the \CRANpkg{rgdal} package; this will be familiar to many readers as
-#' the PROJ.4 notation; see [mapPlot()].
+#' a projection in the notation used by [oceProject()] and [mapPlot()].
 #'
 #' @param mar value to be used with `par('mar')`.
 #'

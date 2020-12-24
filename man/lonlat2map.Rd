@@ -43,15 +43,11 @@ that package is version 1.3-9 or higher.
 }
 
 \examples{
-##canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
-canProject <- requireNamespace("rgdal")
-if (canProject) {
-    library(oce)
-    ## Cape Split, in the Minas Basin of the Bay of Fundy
-    cs <- list(longitude=-64.49657, latitude=45.33462)
-    xy <- lonlat2map(cs, projection="+proj=merc")
-    map2lonlat(xy)
-}
+library(oce)
+## Cape Split, in the Minas Basin of the Bay of Fundy
+cs <- list(longitude=-64.49657, latitude=45.33462)
+xy <- lonlat2map(cs, projection="+proj=merc")
+map2lonlat(xy)
 
 }
 \seealso{

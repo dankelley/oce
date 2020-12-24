@@ -38,9 +38,9 @@ projection for a particular task. Snyder (1987), Snyder (1993) and Snyder and
 Voxland (1994) are all excellent sources on these topics, and the first and
 last of these are available for free online.
 
-Oce handles map projections by calling the \code{projection} function of the
-\code{rgdal} R package, and so the notation for representing the projection is
-borrowed from \code{rgdal}.  This system will be familiar to many readers,
+Oce handles map projections by calling the `sf_project` function of the
+`sf` R package, and so the notation for representing the projection is
+borrowed from `sf`.  This system will be familiar to many readers,
 because it is used in other R packages, and more widely in the software called
 PROJ, which has interfaces in python and other programming languages (PROJ
 contributors, 2020). Since oce uses inverse projections in some of its
