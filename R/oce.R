@@ -2532,7 +2532,7 @@ oceColorsClosure <- function(spec) {
 #' Mikhailo, Anton.
 #' \dQuote{Turbo, An Improved Rainbow Colormap for Visualization.}
 #' Google AI (blog), August 20, 2019.
-#' \url{http://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html}
+#' \url{https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html}
 #'
 #' @author Dan Kelley
 #'
@@ -3341,9 +3341,9 @@ numberAsHMS <- function(t, default=0)
 #'
 #' @references
 #' 1. Matlab times:
-#' \url{http://www.mathworks.com/help/matlab/ref/datenum.html}
+#' \url{https://www.mathworks.com/help/matlab/ref/datenum.html}
 #'
-#' 2. NCEP times: \url{https://www.esrl.noaa.gov/psd/data/gridded/faq.html#3}
+#' 2. NCEP times: \url{https://psl.noaa.gov/data/gridded/faq.html}
 #'
 #' 3. problem with NCEP times:
 #' \url{https://github.com/dankelley/oce/issues/738}

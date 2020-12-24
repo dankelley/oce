@@ -57,9 +57,10 @@ setClass("section", contains="oce")
 #' region across to North America, with a change of heading in the last few dozen
 #' stations to run across the nominal Gulf Stream axis.
 #' The data flags follow the "WHP Bottle"convention, set by
-#' [initializeFlagScheme,section-method()] to `"WHP bottle"`; see
-#' \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
-#' for more information on World Hydrographic Program flag conventions.
+#' [initializeFlagScheme,section-method()] to `"WHP bottle"`.  This convention
+#' used to be described at the link
+#' `https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm`
+#' but that was found to fail in December 2020.
 #'
 #' @examples
 #'\dontrun{
@@ -116,7 +117,8 @@ setMethod(f="initialize",
 #' @template handleFlagsTemplate
 #'
 #' @references
-#' 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+#' The following link used to work, but was found to fail in December 2020.
+#' 1. `https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm`
 #'
 #' @examples
 #' library(oce)

@@ -1514,13 +1514,12 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' 7. Snyder, John Parr.
 #' Flattening the Earth: Two Thousand Years of Map Projections.
 #' Chicago, IL: University of Chicago Press, 1993.
-#' \url{https://www.press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html}.
+#' \url{https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html}
 #'
 #' 8. Šavrič, Bojan, Tom Patterson, and Bernhard Jenny.
 #' “The Equal Earth Map Projection.”
 #' International Journal of Geographical Information Science 33, no. 3 (March 4, 2019): 454–65.
 #' \url{https://doi.org/10.1080/13658816.2018.1504949}.
-
 #'
 #' @family functions related to maps
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
@@ -3159,7 +3158,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' moderate amount of debugging information, or to 2 to get more.
 #'
 #' @references
-#' 1. \url{http://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
+#' 1. \url{https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
 #'
 #' @examples
 #' \dontrun{

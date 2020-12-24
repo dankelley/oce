@@ -115,9 +115,6 @@ legend("bottomleft", pch=seq_along(year), legend=year, bg="white", cex=3/4)
 plot(handleFlags(argo), which=c(1, 4, 6, 5))
 
 }
-\references{
-\url{http://www.argo.ucsd.edu/}
-}
 \seealso{
 Other things related to argo data: 
 \code{\link{[[,argo-method}},

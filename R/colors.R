@@ -488,7 +488,7 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #' `"gmt_relief"`, `"gmt_ocean"`, `"gmt_globe"` or
 #' `"gmt_gebco"`) or the name of a file or URL that contains a color map
 #' specification in GMT format, e.g. one of the `.cpt` files from
-#' \url{http://www.beamreach.org/maps/gmt/share/cpt}). If `name` is
+#' \url{https://beamreach.org/maps/gmt/share/cpt/}). If `name` is
 #' provided, then `x0`, `x1`, `col0` and `col1` are all
 #' ignored.
 #'
@@ -551,8 +551,8 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #' 2015-12-12).  Diagrams showing the GMT color schemes are at
 #' `http://www.geos.ed.ac.uk/it/howto/GMT/CPT/palettes.html` (link worked
 #' for years but failed 2015-12-08), and numerical specifications for some
-#' color maps are at \url{http://www.beamreach.org/maps/gmt/share/cpt},
-#' \url{http://soliton.vm.bytemark.co.uk/pub/cpt-city}, and other sources.
+#' color maps are at \url{https://beamreach.org/maps/gmt/share/cpt/},
+#' \url{http://soliton.vm.bytemark.co.uk/pub/cpt-city/}, and other sources.
 #'
 #' @examples
 #' library(oce)

@@ -38,7 +38,7 @@ instead of the present function.
 \url{https://github.com/gavinsimpson/canadaHCD} for instructions on how
 to download and install from GitHub.
 \item Environment Canada website for Historical Climate Data
-\url{http://climate.weather.gc.ca/index_e.html}
+\url{https://climate.weather.gc.ca/index_e.html}
 }
 }
 \seealso{

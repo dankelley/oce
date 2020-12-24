@@ -23,7 +23,7 @@ imagep(volcano, col=oceColorsTurbo(128),
 Mikhailo, Anton.
 \dQuote{Turbo, An Improved Rainbow Colormap for Visualization.}
 Google AI (blog), August 20, 2019.
-\url{http://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html}
+\url{https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html}
 }
 \seealso{
 Other things related to colors: 

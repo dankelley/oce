@@ -29,7 +29,7 @@ the header), \code{beamToXyzAdv} the user will need to store one in
 }
 }
 \references{
-\url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
+\url{https://nortek.zendesk.com/hc/en-us/articles/360029820971-How-is-a-Coordinate-transformation-done-}
 }
 \seealso{
 See \code{\link[=read.adv]{read.adv()}} for notes on functions relating to

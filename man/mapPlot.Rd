@@ -484,7 +484,7 @@ Vignette for rgdal 1.5-13 \url{https://rgdal.r-forge.r-project.org/articles/CRS_
 \item Snyder, John Parr.
 Flattening the Earth: Two Thousand Years of Map Projections.
 Chicago, IL: University of Chicago Press, 1993.
-\url{https://www.press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html}.
+\url{https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html}
 \item Šavrič, Bojan, Tom Patterson, and Bernhard Jenny.
 “The Equal Earth Map Projection.”
 International Journal of Geographical Information Science 33, no. 3 (March 4, 2019): 454–65.

@@ -919,7 +919,7 @@ download.coastline <- function(resolution, item="coastline",
     if (!(resolution %in% resolutionChoices))
         stop("'resolution' must be one of: '", paste(resolutionChoices, collapse="' '"), "'")
     if (server == "naturalearth")
-        urlBase <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download"
+        urlBase <- "https://www.naturalearthdata.com/downloads"
     else
         stop("the only server that works is naturalearth")
     filename <- paste("ne_", resolution, "_", item, ".zip", sep="")
@@ -1075,9 +1075,9 @@ read.coastline <- function(file,
 #' @references
 #' 1. The ``shapefile'' format is described in
 #' *ESRI Shapefile Technical Description*, March 1998, available at
-#' \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
+#' \url{https://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
 #'
-#' 2. The NaturalEarth website \url{https://www.naturalearthdata.com/downloads}
+#' 2. The NaturalEarth website \url{https://www.naturalearthdata.com/downloads/}
 #' provides coastline datasets in three resolutions, along with similar files
 #' lakes and rivers, for borders, etc. It is highly recommended.
 #'

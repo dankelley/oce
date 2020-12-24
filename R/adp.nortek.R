@@ -32,7 +32,7 @@
 #' ``knowledge center'' discussion board.  One might assume that the latter is
 #' less authoritative than the former.  For example, the inference of cell size
 #' follows advice found at
-#' http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717,
+#' https://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717,
 #' which contains a typo in an early posting that is
 #' corrected later on.
 #'
@@ -56,10 +56,10 @@
 #'
 #' @references 1. Information on Nortek profilers (including the System
 #' Integrator Guide, which explains the data format byte-by-byte) is available
-#' at \url{http://www.nortekusa.com/usa?set_language=usa} after login.
+#' at \url{https://www.nortekusa.com/usa?set_language=usa} after login.
 #'
 #' 2. The Nortek Knowledge Center
-#' http://www.nortekusa.com/en/knowledge-center
+#' https://www.nortekusa.com/en/knowledge-center
 #' may be of help if problems arise in dealing with data from Nortek instruments.
 decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "vector"), debug=getOption("oceDebug"), ...)
 {
@@ -242,7 +242,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             oceDebug(debug, "user$hBinLength: ", user$hBinLength, " (p31 of System Integrator Guide)\n")
             ## The cell size is computed with different formulae for different devices, and
             ## different frequencies.  See
-            ##   http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717
+            ##   https://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717
             ## for the details (and note that there are some typos from the Nortek advisor, which
             ## get corrected later on that webpage).
             if (type == "aquadoppHR") {
@@ -282,7 +282,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
                 user$cellSize <- 0.75  # value for one particular test file
                 user$blankingDistance <- 0.37 # value for one particular test file
             } else if (type == "vector") {
-                ## Formula (revised) from Nortek http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/595666030
+                ## Formula (revised) from Nortek https://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/595666030
                 ## Cell size (mm) = T3counts * 1000 * 750 / 480000
                 soundspeed <- 1500
                 user$cellSize <- user$receiveLength * (soundspeed / 2) / 480.0e3 # drop the 1000 to get m
@@ -2163,7 +2163,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 #' ``knowledge center'' discussion board.  One might assume that the latter is
 #' less authoritative than the former.  For example, the inference of cell size
 #' follows advice found at
-#' http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717,
+#' \url{https://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717},
 #' which contains a typo in an early posting that is
 #' corrected later on.
 #'
@@ -2185,11 +2185,11 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 #' @references
 #' 1. Information on Nortek profilers (including the System Integrator Guide,
 #' which explains the data format byte-by-byte) is available at
-#' \url{http://www.nortekusa.com/}.  (One must join the site to see the
+#' \url{https://www.nortekusa.com/}.  (One must join the site to see the
 #' manuals.)
 #'
 #' 2. The Nortek Knowledge Center
-#' \url{http://www.nortekusa.com/en/knowledge-center} may be of help if
+#' \url{https://www.nortekusa.com/en/knowledge-center} may be of help if
 #' problems arise in dealing with data from Nortek instruments.
 #'
 #' @template adpTemplate
@@ -2220,7 +2220,7 @@ read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' ``knowledge center'' discussion board.  One might assume that the latter is
 #' less authoritative than the former.  For example, the inference of cell size
 #' follows advice found at
-#' http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717,
+#' \url{https://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717},
 #' which contains a typo in an early posting that is
 #' corrected later on.
 #'
@@ -2242,11 +2242,11 @@ read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @references
 #' 1. Information on Nortek profilers (including the System Integrator Guide,
 #' which explains the data format byte-by-byte) is available at
-#' \url{http://www.nortekusa.com/}.  (One must join the site to see the
+#' \url{https://www.nortekusa.com/}.  (One must join the site to see the
 #' manuals.)
 #'
 #' 2. The Nortek Knowledge Center
-#' \url{http://www.nortekusa.com/en/knowledge-center} may be of help if
+#' \url{https://www.nortekusa.com/en/knowledge-center} may be of help if
 #' problems arise in dealing with data from Nortek instruments.
 #'
 #' @template adpTemplate
@@ -2278,7 +2278,7 @@ read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' ``knowledge center'' discussion board.  One might assume that the latter is
 #' less authoritative than the former.  For example, the inference of cell size
 #' follows advice found at
-#' http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717,
+#' \url{https://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717},
 #' which contains a typo in an early posting that is
 #' corrected later on.
 #'
@@ -2300,11 +2300,11 @@ read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @references
 #' 1. Information on Nortek profilers (including the System Integrator Guide,
 #' which explains the data format byte-by-byte) is available at
-#' \url{http://www.nortekusa.com/}.  (One must join the site to see the
+#' \url{https://www.nortekusa.com/}.  (One must join the site to see the
 #' manuals.)
 #'
 #' 2. The Nortek Knowledge Center
-#' \url{http://www.nortekusa.com/en/knowledge-center} may be of help if
+#' \url{https://www.nortekusa.com/en/knowledge-center} may be of help if
 #' problems arise in dealing with data from Nortek instruments.
 #'
 #' @template adpTemplate
@@ -2350,11 +2350,11 @@ read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @references
 #' 1. Information on Nortek profilers (including the System Integrator Guide,
 #' which explains the data format byte-by-byte) is available at
-#' \url{http://www.nortekusa.com/}.  (One must join the site to see the
+#' \url{https://www.nortekusa.com/}.  (One must join the site to see the
 #' manuals.)
 #'
 #' 2. The Nortek Knowledge Center
-#' \url{http://www.nortekusa.com/en/knowledge-center} may be of help if
+#' \url{https://www.nortekusa.com/en/knowledge-center} may be of help if
 #' problems arise in dealing with data from Nortek instruments.
 #'
 #' @template adpTemplate

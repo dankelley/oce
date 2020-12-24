@@ -242,10 +242,9 @@ woceUnit2oceUnit <- function(woceUnit)
 #' @template readCtdTemplate
 #'
 #' @references
-#' The WOCE-exchange format is described at
-#' `http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm`,
-#' and a sample file is at
-#' \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
+#' The WOCE-exchange format was once described at
+#' `http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm`
+#' although that link is no longer working as of December 2020.
 #'
 #' @family functions that read ctd data
 #'

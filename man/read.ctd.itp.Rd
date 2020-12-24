@@ -88,7 +88,7 @@ Read an ITP-type CTD File
 }
 \references{
 Information about ice-tethered profile data is provided at
-\url{http://www.whoi.edu/page.do?pid=23096}, which also provides a link for
+\url{https://www.whoi.edu/page.do?pid=23096}, which also provides a link for
 downloading data.  Note that the present version only handles data in
 profiler-mode, not fixed-depth mode.
 }

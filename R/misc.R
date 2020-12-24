@@ -2973,7 +2973,7 @@ lon360 <- function(x)
 #' Determine time offset from timezone
 #'
 #' The data are from
-#' \url{https://www.timeanddate.com/library/abbreviations/timezones/} and were
+#' \url{https://www.timeanddate.com/time/zones/} and were
 #' hand-edited to develop this code, so there may be errors.  Also, note that
 #' some of these contradict; if you examine the code, you'll see some
 #' commented-out portions that represent solving conflicting definitions by
@@ -5058,7 +5058,7 @@ trimString <- function(s)
 #' Perform lowpass digital filtering
 #'
 #' The filter coefficients are constructed using standard definitions,
-#' and then \link[stats]{filter} in the \CRANpkg{stats} package is
+#' and then [stats::filter()] is
 #' used to filter the data. This leaves `NA`
 #' values within half the filter length of the ends of the time series, but
 #' these may be replaced with the original `x` values, if the argument

@@ -214,8 +214,7 @@ setMethod(f="subset",
 #' to download and install from GitHub.
 #'
 #' 2. Environment Canada website for Historical Climate Data
-#' \url{http://climate.weather.gc.ca/index_e.html}
-#'
+#' \url{https://climate.weather.gc.ca/index_e.html}
 #' @family things related to met data
 as.met <- function(time, temperature, pressure, u, v, filename="(constructed from data)")
 {
@@ -361,7 +360,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
-#' \url{http://climate.weather.gc.ca/index_e.html}
+#' \url{https://climate.weather.gc.ca/index_e.html}
 #'
 #' 2. Gavin Simpson's `canadaHCD` package on GitHub
 #' \url{https://github.com/gavinsimpson/canadaHCD}
@@ -592,7 +591,7 @@ metNames2oceNames <- function(names, scheme)
 #'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
-#' \url{http://climate.weather.gc.ca/index_e.html}
+#' \url{https://climate.weather.gc.ca/index_e.html}
 #'
 #' @family things related to met data
 read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"), debug=getOption("oceDebug"))

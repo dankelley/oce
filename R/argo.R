@@ -32,17 +32,11 @@ setClass("argo", contains="oce")
 #'
 #' This holds data from ARGO 6900388 in the North Atlantic.
 #'
-#' To quote Argo's website: "These data were collected and made freely
-#' available by the International Argo Program and the national programs
-#' that contribute to it.  (http//www.argo.ucsd.edu,
-#' http://argo.jcommops.org).  The Argo Program is part of the
-#' Global Ocean Observing System."
-#'
 #' Below is the official citation (note that this DOI has web links for
 #' downloads):
 #' Argo (2017). Argo float data and metadata from Global Data Assembly Centre
 #' (Argo GDAC) - Snapshot of Argo GDAC of July, 8st 2017. SEANOE.
-#' \url{http://doi.org/10.17882/42182#50865}
+#' \url{https://doi.org/10.17882/42182#50865}
 #'
 #' @name argo
 #' @docType data
@@ -1067,7 +1061,7 @@ argoDecodeFlags <- function(f) # local function
 #' objects, and also outlines the other functions dealing with them.
 #'
 #' @references
-#' 1. \url{http://www.argo.ucsd.edu/}
+#' 1. \url{https://argo.ucsd.edu}
 #'
 #' 2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
 #' \url{https://archimer.ifremer.fr/doc/00187/29825/} online.
@@ -1091,7 +1085,7 @@ argoDecodeFlags <- function(f) # local function
 #' \code{https://www.usgodae.org/ftp/outgoing/argo/} is the top level of
 #' a such a repository. If the ID of a float is known but not the
 #' "dac", then a first step is to download the text file
-#' \code{http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
+#' \code{https://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
 #' and search for the ID. The first few lines of that file are header,
 #' and after that the format is simple, with columns separated by slash
 #' (`/`). The dac is in the first such column and the float ID in the
@@ -1738,8 +1732,6 @@ as.argo <- function(time, longitude, latitude,
 #' # of handleFlags(), to skip over questionable data.
 #' plot(handleFlags(argo), which=c(1, 4, 6, 5))
 #'
-#' @references \url{http://www.argo.ucsd.edu/}
-#'
 #' @author Dan Kelley
 #'
 #' @family things related to argo data
@@ -1979,7 +1971,7 @@ setMethod(f="plot",
 #' @references
 #' 1. Wong, Annie, Robert Keeley, Thierry Carval, and Argo Data Management Team.
 #' “Argo Quality Control Manual for CTD and Trajectory Data,” January 1, 2020.
-#' \url{https://archimer.ifremer.fr/doc/00228/33951}.
+#' \url{https://archimer.ifremer.fr/doc/00228/33951/}.
 #'
 #' @examples
 #' library(oce)

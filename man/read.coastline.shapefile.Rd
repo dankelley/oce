@@ -51,8 +51,8 @@ constructed, of which coastlines could be a subset.
 \enumerate{
 \item The ``shapefile'' format is described in
 \emph{ESRI Shapefile Technical Description}, March 1998, available at
-\url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
-\item The NaturalEarth website \url{https://www.naturalearthdata.com/downloads}
+\url{https://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
+\item The NaturalEarth website \url{https://www.naturalearthdata.com/downloads/}
 provides coastline datasets in three resolutions, along with similar files
 lakes and rivers, for borders, etc. It is highly recommended.
 }
