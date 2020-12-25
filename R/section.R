@@ -2171,10 +2171,10 @@ setMethod(f="plot",
 #' @return A [section-class] object.
 #'
 #' @references
-#' Several repository sites provide section data. An example that is perhaps likely
-#' to exist for years is \url{https://cchdo.ucsd.edu}, but a search on \code{"WOCE
-#'   bottle data"} should turn up other sites, if this one ceases to exist. Only
-#' the so-called *exchange BOT* data format can be processed by read.section()
+#' Several repository sites provide section data. A reasonably stable example is
+#' \url{https://cchdo.ucsd.edu}, but a search on \code{"WOCE bottle data"} should
+#' turn up other sites, if this ceases to exist. Only
+#' the so-called *exchange BOT* data format can be processed by [read.section()]
 #' at this time. Data names are inferred from column headings using
 #' [woceNames2oceNames()].
 #'

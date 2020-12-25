@@ -485,7 +485,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, deploy
         ## EXPOCODE,SECT_ID,STNNBR,CASTNO,SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
         ## ,,,,,,,,,,,,DBAR,IPTS-68,PSS-78,,PSS-78,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,
         ## nolint end (long lines)
-        dataNamesOriginal <- as.list(gsub(" *$", "", strsplit(line, ",")[[1]]))
+        dataNamesOriginal <- as.list(trimws(strsplit(line, ",")[[1]]))
         oceDebug(debug, "dataNamesOriginal: ", paste(dataNamesOriginal, sep=" "), "\n")
         dataNamesOriginalCorrected <- dataNamesOriginal
 
