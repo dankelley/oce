@@ -72,7 +72,7 @@ plot(met)
 \references{
 \enumerate{
 \item Environment Canada website for Historical Climate Data
-\url{https://climate.weather.gc.ca/index_e.html}
+\verb{https://climate.weather.gc.ca/index_e.html}
 }
 }
 \seealso{

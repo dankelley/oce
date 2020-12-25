@@ -214,7 +214,8 @@ setMethod(f="subset",
 #' to download and install from GitHub.
 #'
 #' 2. Environment Canada website for Historical Climate Data
-#' \url{https://climate.weather.gc.ca/index_e.html}
+#' `https://climate.weather.gc.ca/index_e.html`
+#'
 #' @family things related to met data
 as.met <- function(time, temperature, pressure, u, v, filename="(constructed from data)")
 {
@@ -286,15 +287,10 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' Data are downloaded from the Environment Canada's historical data
 #' website and cached locally.
 #'
-#' The data are downloaded from
-#' \url{https://climate.weather.gc.ca/historical_data/search_historic_data_e.html}
-#' using [utils::download.file()]
-#' pointed to the Environment Canada website (reference 1)
-#' using queries that had to be devised by reverse-engineering, since the agency
-#' does not provide documentation about how to construct queries. Caution: the
-#' query format changes from time to time, so [download.met()] may work one
-#' day, and fail the next.
-#'
+#' The data are downloaded
+#' using [utils::download.file()] based on a query devised by reverse-engineering
+#' queries create by the Environment Canada interface
+#' `https://climate.weather.gc.ca/historical_data/search_historic_data_e.html`.
 #' The constructed query contains Station ID, as provided in the `id` argument.
 #' Note that this seems to be a creation of Environment Canada, alone;
 #' it is distinct from the more standard "Climate ID" and "WMO ID".
@@ -360,7 +356,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
-#' \url{https://climate.weather.gc.ca/index_e.html}
+#' `https://climate.weather.gc.ca/index_e.html`
 #'
 #' 2. Gavin Simpson's `canadaHCD` package on GitHub
 #' \url{https://github.com/gavinsimpson/canadaHCD}
@@ -591,7 +587,7 @@ metNames2oceNames <- function(names, scheme)
 #'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
-#' \url{https://climate.weather.gc.ca/index_e.html}
+#' `https://climate.weather.gc.ca/index_e.html`
 #'
 #' @family things related to met data
 read.met <- function(file, type=NULL, skip=NULL, tz=getOption("oceTz"), debug=getOption("oceDebug"))

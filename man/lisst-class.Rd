@@ -71,7 +71,7 @@ retrieve derived items.
 
 \references{
 Information about LISS instruments is provided at
-the manufacturer's website, \url{https://www.sequoiasci.com}.
+the manufacturer's website, \verb{https://www.sequoiasci.com}.
 }
 \seealso{
 Other classes provided by oce: 

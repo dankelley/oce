@@ -97,7 +97,7 @@ NULL
 #'
 #' This is a subset of a file downloaded with [download.met()]
 #' from the Environment Canada "Climate Data"
-#' website \url{https://climate.weather.gc.ca/index_e.html}
+#' website `https://climate.weather.gc.ca/index_e.html`
 #' sometime before October 13, 2019.
 #'
 #' @name test_met_csv1.csv
@@ -119,7 +119,7 @@ NULL
 #'
 #' This is a subset of a file downloaded with [download.met()]
 #' from the Environment Canada "Climate Data"
-#' website \url{https://climate.weather.gc.ca/index_e.html}
+#' website `https://climate.weather.gc.ca/index_e.html`
 #' on October 13, 2019.
 #'
 #' @name test_met_csv2.csv
@@ -141,7 +141,7 @@ NULL
 #'
 #' This is a subset of a file downloaded with [download.met()]
 #' from the Environment Canada "Climate Data"
-#' website \url{https://climate.weather.gc.ca/index_e.html}
+#' website `https://climate.weather.gc.ca/index_e.html`
 #' on October 13, 2019.
 #'
 #' @name test_met_xml2.xml

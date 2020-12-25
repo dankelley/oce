@@ -17,7 +17,7 @@
 #' @author Dan Kelley
 #'
 #' @references Information about LISS instruments is provided at
-#' the manufacturer's website, \url{https://www.sequoiasci.com}.
+#' the manufacturer's website, `https://www.sequoiasci.com`.
 #'
 #' @family classes provided by oce
 #' @family things related to lisst data
