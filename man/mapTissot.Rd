@@ -45,8 +45,7 @@ mapTissot(c(15, 15), col='red')
 \references{
 \enumerate{
 \item Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
-Professional Paper: 1395 (available at
-\url{https://pubs.er.usgs.gov/publication/pp1395}).
+Professional Paper: 1395 \verb{https://pubs.er.usgs.gov/publication/pp1395}
 }
 }
 \seealso{
