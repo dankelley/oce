@@ -1,5 +1,6 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+
 abbreviateVector <- function(x)
 {
     if (1 >= length(x)) {
@@ -5140,4 +5141,6 @@ lowpass <- function(x, filter="hamming", n, replace=TRUE, coefficients=FALSE)
     }
     rval
 }
+
+
 
