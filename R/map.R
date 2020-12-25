@@ -1264,7 +1264,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' something (an `oce` object, a list, or a data frame) from which both
 #' longitude and latitude may be inferred (in which case the `latitude`
 #' argument is ignored).  If `longitude` is missing, both it and
-#' `latitude` are taken from [coastlineWorld()].
+#' `latitude` are taken from the built-in [coastlineWorld] dataset.
 #'
 #' @param latitude numeric vector of latitudes of points to be plotted (ignored
 #' if the first argument contains both latitude and longitude).
@@ -1380,7 +1380,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @param projection optional indication of projection, in one of two
 #' forms. First, it may be a character string in the "CRS" format that is
-#' used by the \CRANpkg{rgdal} package (and in much of modern computer-based
+#' used by the \CRANpkg{sf} package (and in much of modern computer-based
 #' cartography). For example, `projection="+proj=merc"` specifies a
 #' Mercator projection. The second format is the output from
 #' [sp::CRS()] in the \CRANpkg{sp} package, which is an object
@@ -3795,7 +3795,7 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 #' `longitude` is a list, as described above).
 #'
 #' @param projection optional indication of projection.  This must be character
-#' string in the format used by the \CRANpkg{rgdal} package;
+#' string in the format used by the \CRANpkg{sf} package;
 #' see [mapPlot()].)
 #'
 #' @template debugTemplate
@@ -3808,10 +3808,6 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 #' already been drawn with [mapPlot()], because that function cannot
 #' alter an existing projection. [map2lonlat()] is an inverse to
 #' `map2lonlat`.
-#'
-#' @section Bugs:
-#' This uses \CRANpkg{rgdal}, and will fail on i386/windows machines unless
-#' that package is version 1.3-9 or higher.
 #'
 #' @examples
 #' library(oce)

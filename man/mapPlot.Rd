@@ -39,7 +39,7 @@ mapPlot(
 something (an \code{oce} object, a list, or a data frame) from which both
 longitude and latitude may be inferred (in which case the \code{latitude}
 argument is ignored).  If \code{longitude} is missing, both it and
-\code{latitude} are taken from \code{\link[=coastlineWorld]{coastlineWorld()}}.}
+\code{latitude} are taken from the built-in \link{coastlineWorld} dataset.}
 
 \item{latitude}{numeric vector of latitudes of points to be plotted (ignored
 if the first argument contains both latitude and longitude).}
@@ -154,7 +154,7 @@ plot axis.}
 
 \item{projection}{optional indication of projection, in one of two
 forms. First, it may be a character string in the "CRS" format that is
-used by the \CRANpkg{rgdal} package (and in much of modern computer-based
+used by the \CRANpkg{sf} package (and in much of modern computer-based
 cartography). For example, \code{projection="+proj=merc"} specifies a
 Mercator projection. The second format is the output from
 \code{\link[sp:CRS-class]{sp::CRS()}} in the \CRANpkg{sp} package, which is an object
