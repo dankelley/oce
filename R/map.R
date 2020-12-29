@@ -1536,6 +1536,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     debug=getOption("oceDebug"),
                     ...)
 {
+    debug <- max(0, min(debug, 3))
     oceDebug(debug, "mapPlot(longitude, latitude,",
              argShow(longitudelim),
              argShow(latitudelim),
@@ -1778,7 +1779,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     oceDebug(debug, "yfrac:", yfrac, "\n")
     oceDebug(debug, "finally fractionOfGlobe:", fractionOfGlobe, "\n")
     if (axes || drawGrid) {
-        oceDebug(debug, "axes=", axes, "|| drawGrid=", drawGrid, " is TRUE\n")
+        oceDebug(debug, "(axes=", axes, "|| drawGrid=", drawGrid, ") is TRUE\n")
         ## Grid lines and axes.
         ## Find ll and ur corners of plot, if possible, for use in calculating
         ## lon and lat spans.  This will not work in all cases; e.g. for a
@@ -1824,7 +1825,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     else if (difflongitudelim < 180) 15
                     else 15
                 grid[2] <- grid[1]
-                oceDebug(debug, "limits given (or inferred) near map.R:1427 -- set grid=", paste(grid, collapse=" "), "\n")
+                oceDebug(debug, "limits given or inferred, yielding grid=c(", grid[1], ",", grid[2], ")\n", sep="")
             } else {
                 usr <- par('usr')
                 x0 <- 0.5 * sum(usr[1:2])
@@ -2141,24 +2142,26 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         oceDebug(debug, "poleInView=", poleInView, ", so drawing longitude from -180 to 180\n")
     } else {
         if (!missing(longitudelim)) {
-            lonMin <- longitudelim[1] - diff(longitudelim) / 2
-            lonMax <- longitudelim[2] + diff(longitudelim) / 2
+            ## limit to 2 times lon/lim limit range (FIXME: enough for curvy cases?)
+            lonMin <- longitudelim[1] - 2*diff(longitudelim)
+            lonMax <- longitudelim[2] + 2*diff(longitudelim)
             oceDebug(debug, "lonMin=", lonMin, ", lonMax=", lonMax, "\n")
             if (!is.null(longitude)) {
-                oceDebug(debug, "before trimming to longitudelim+: lon range ", paste(range(longitude, na.rm=TRUE), collapse=" "), "\n")
+                oceDebug(debug, "before trimming to lonMin,lonMax, lon range=c(", paste(range(longitude, na.rm=TRUE), collapse=" "), ")\n", sep="")
                 longitude <- longitude[lonMin <= longitude & longitude <= lonMax]
-                oceDebug(debug, "after: lon range ", paste(range(longitude), collapse=" "), "\n")
+                oceDebug(debug, "after trimming, lon range is", paste(range(longitude, na.rm=TRUE), collapse=" "), "\n")
             }
         }
     }
     if (!missing(latitudelim)) {
-        ## limit to 1.5 timex lon/lim limit range
-        latMin <- latitudelim[1] - diff(latitudelim) / 2
-        latMax <- latitudelim[2] + diff(latitudelim) / 2
+        ## limit to 2 times lon/lim limit range (FIXME: enough for curvy cases?)
+        latMin <- latitudelim[1] - 2*diff(latitudelim)
+        latMax <- latitudelim[2] + 2*diff(latitudelim)
+        oceDebug(debug, "latMin=", latMin, ", latMax=", latMax, "\n")
         if (!is.null(latitude)) {
-            oceDebug(debug, "before trimming to latitudelim+: lat range ", paste(range(latitude, na.rm=TRUE), collapse=" "), "\n")
+            oceDebug(debug, "before trimming to latMin,latMax, lat range=c(", paste(range(latitude, na.rm=TRUE), collapse=" "), ")\n", sep="")
             latitude <- latitude[latMin <= latitude & latitude <= latMax]
-            oceDebug(debug, "after: lat range ", paste(range(latitude), collapse=" "), "\n")
+            oceDebug(debug, "after trimming, lat range is", paste(range(latitude, na.rm=TRUE), collapse=" "), "\n")
         }
     }
     n <- 360                           # number of points on line
@@ -2217,7 +2220,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                 usr <- par("usr")
                 axis2 <- sf::st_linestring(cbind(rep(usr[1],2), usr[3:4]))
                 I <- sf::st_intersection(curve, axis2)
-                oceDebug(debug, if (length(I) == 0) "  no" else "  ", " intersection with axis(2)\n", sep="")
+                oceDebug(debug, if (length(I) == 0) "no" else "", "intersection with axis(2)\n", sep="")
                 if (length(I) > 0) {
                     Imatrix <- as.matrix(I)
                     ### if (debug > 0) {
