@@ -1343,9 +1343,17 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
     }
     ## Find data ranges. Note that x is a time, so it's either going to be NA or
     ## sensible; thus the na.rm argument to range() is suitable for trimming bad
-    ## values.  However, for y, the finite argument is more sensible, because we
-    ## might for example be plotting log10(count), where count could be zero
-    ## sometimes (and not uncommonly, in biological data).
+    ## values.  However, for y, we emulate plot(), by trimming (and warning).
+    if ("y" %in% log) {
+        yBAD <- (!is.finite(y)) | y <= 0.0
+        nyBAD <- sum(yBAD)
+        if (nyBAD > 0L) {
+            warning(nyBAD, " y value <= 0 omitted from logarithmic oce.plot.ts\n")
+            ##> Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value <= 0 omitted from
+            x <- x[!yBAD]
+            y <- y[!yBAD]
+        }
+    }
     xrange <- range(x, na.rm=TRUE)
     yrange <- range(y, finite=TRUE)
     maybeflip <- function(y) if (flipy) rev(sort(y)) else y
@@ -2315,7 +2323,7 @@ oceAxis <- function(side, labels=TRUE, logStyle="r", ...)
         return(invisible(axis(side=side, labels=labels, ...)))
     } else {
         ## use decade axis if previous plot() call made this coordinate be logarithmic
-        if (((side %in% c(1,3)) && par("xlog")) || ((side %in% c(2,4)) && par("ylog"))) { 
+        if (((side %in% c(1,3)) && par("xlog")) || ((side %in% c(2,4)) && par("ylog"))) {
             usr <- if (side %in% c(1, 3)) par("usr")[1:2] else par("usr")[3:4]
             lowerDecade <- floor(usr[1])
             upperDecade <- floor(1 + usr[2])
