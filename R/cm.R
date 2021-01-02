@@ -260,18 +260,32 @@ as.cm <- function(time, u=NULL, v=NULL,
             latitude <- x@metadata$latitude
         if ("filename" %in% mnames)
             filename <- x@metadata$filename
-        if ("u" %in% dnames && "v" %in% dnames) {
-            u <- x@data$u
-            v <- x@data$v
-        } else if ("speedHorizontal" %in% dnames && "directionTrue" %in% dnames) {
-            ## NOTE: this can be generalized later to take e.g. 'speed', if some objects have that
-            u <- x@data$speedHorizontal * cos(rpd * (90-x@data$directionTrue))
-            v <- x@data$speedHorizontal * sin(rpd * (90-x@data$directionTrue))
-        } else if ("speedHorizontal" %in% dnames && "direction" %in% dnames) {
-            u <- x@data$speedHorizontal * cos(rpd * (90-x@data$direction))
-            v <- x@data$speedHorizontal * sin(rpd * (90-x@data$direction))
-        } else {
-            stop("first argument must hold either 'u' plus 'v' or 'speed' plus 'directionTrue' or 'direction'")
+        if (inherits(x, "adp")) {
+            if (1 == dim(x@data$v)[2]) {
+                oceDebug(debug, "x is an adp object with just 1 cell\n")
+                u <- as.vector(x@data$v[,1,1])
+                v <- as.vector(x@data$v[,1,2])
+            } else {
+                stop("can't convert multi-cell adp; try as.cm(x[[\"time\"]],x[[\"v\"]][,1,1], x[[\"v\"]][,1,2])")
+            }
+        } else if (inherits(x, "adv")) {
+            oceDebug(debug, "x is an adv object\n")
+            u <- as.vector(x@data$v[,1])
+            v <- as.vector(x@data$v[,2])
+        }  else {
+            if ("u" %in% dnames && "v" %in% dnames) {
+                u <- x@data$u
+                v <- x@data$v
+            } else if ("speedHorizontal" %in% dnames && "directionTrue" %in% dnames) {
+                ## NOTE: this can be generalized later to take e.g. 'speed', if some objects have that
+                u <- x@data$speedHorizontal * cos(rpd * (90-x@data$directionTrue))
+                v <- x@data$speedHorizontal * sin(rpd * (90-x@data$directionTrue))
+            } else if ("speedHorizontal" %in% dnames && "direction" %in% dnames) {
+                u <- x@data$speedHorizontal * cos(rpd * (90-x@data$direction))
+                v <- x@data$speedHorizontal * sin(rpd * (90-x@data$direction))
+            } else {
+                stop("first argument must hold either 'u' plus 'v' or 'speed' plus 'directionTrue' or 'direction'")
+            }
         }
     }
     direction <- 90 - atan2(v, u) / rpd
