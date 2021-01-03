@@ -114,6 +114,11 @@ setMethod(f="initialize",
 #'
 #' @param ... Further arguments passed to or from other methods.
 #'
+#' @examples
+#' library(oce)
+#' data(cm)
+#' summary(cm)
+#'
 #' @seealso The documentation for the [cm-class] class explains the structure
 #' of `cm` objects, and also outlines the other functions dealing with them.
 #'
