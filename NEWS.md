@@ -21,6 +21,7 @@
 * Change `read.argo()` and `data(argo)` to use camelCase in all metadata.
 * Change user-oriented github website generator to `pkgdown`.
 * Extend `[[,argo-method` to accept `"ID"` as an alternative to `"id"`.
+* Extend `as.cm()` to accept `adp` and `adv` objects.
 * Extend `oce.plot.ts()`, adding argument `logStyle`.
 * Extend `read.adp.rdi()` to handle 38kHz RDI adp files.
 * Extend `read.argo()` and `data(argo)` by adding three more 'CYCLE' variables.
@@ -29,7 +30,7 @@
 * Fix `plot,coastline-method` error in box drawing.
 * Fix `plotTS` error in auto-scaling if S and T have mixed NA status.
 * Fix `subset,argo-method()` error in `flags`, `location`, and `*QC` in `metadata`.
-* Remove dependence on `rgdal` package, using `sf` now for map projections.
+* Remove dependence on `rgdal` package, using `sf` for map projections.
 
 ## 1.2.0
 

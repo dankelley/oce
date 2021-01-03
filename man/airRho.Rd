@@ -9,20 +9,20 @@ airRho(temperature, pressure, humidity)
 \arguments{
 \item{temperature}{\emph{in-situ} temperature, in \eqn{^\circ}{deg}C.}
 
-\item{pressure}{pressure in Pa (NOT kPa) -- ignored at present}
+\item{pressure}{numeric value for pressure in Pa (\emph{not} the kPa used in public
+weather forecasts).}
 
 \item{humidity}{ignored at present}
 }
 \value{
-\emph{In-situ} air density, in kg/m\eqn{^3}{^3}.
+\emph{In-situ} dry-air density, in kg/m\eqn{^3}{^3}.
 }
 \description{
-Compute \eqn{\rho}{rho}, the \emph{in-situ} density of air.
+Compute \eqn{\rho}{rho}, the \emph{in-situ} density of dry air.
 }
 \details{
-This will eventually be a proper equation of state, but for now it's just
-returns something from wikipedia (i.e. not trustworthy), and not using
-humidity.
+This will eventually be a proper equation of state, but for now it just
+uses a dry-air formula posted on wikipedia (i.e. not trustworthy).
 }
 \examples{
 degC <- seq(0,30,length.out=100)
@@ -30,13 +30,16 @@ p <- seq(98,102,length.out=100) * 1e3
 contour(x=degC, y=p, z=outer(degC,p,airRho), labcex=1)
 }
 \references{
-National Oceanographic and Atmospheric Agency, 1976.  U.S.
+\enumerate{
+\item \url{https://en.wikipedia.org/wiki/Density_of_air}
+\item National Oceanographic and Atmospheric Agency, 1976.  U.S.
 Standard Atmosphere, 1976.  NOAA-S/T 76-1562.  (A PDF of this document may
 be available at
 \verb{http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19770009539_1977009539.pdf}
 or
 \verb{http://www.dtic.mil/cgi-bin/GetTRDoc?Location=U2&doc=GetTRDoc.pdf&AD=ADA035728}
 although neither link has proven to be reliable.)
+}
 }
 \author{
 Dan Kelley

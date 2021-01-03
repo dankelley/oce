@@ -19,23 +19,25 @@ NULL
 
 #' Air density
 #'
-#' Compute \eqn{\rho}{rho}, the *in-situ* density of air.
+#' Compute \eqn{\rho}{rho}, the *in-situ* density of dry air.
 #'
-#' This will eventually be a proper equation of state, but for now it's just
-#' returns something from wikipedia (i.e. not trustworthy), and not using
-#' humidity.
+#' This will eventually be a proper equation of state, but for now it just
+#' uses a dry-air formula posted on wikipedia (i.e. not trustworthy).
 #'
 #' @param temperature *in-situ* temperature, in \eqn{^\circ}{deg}C.
 #'
-#' @param pressure pressure in Pa (NOT kPa) -- ignored at present
+#' @param pressure numeric value for pressure in Pa (*not* the kPa used in public
+#' weather forecasts).
 #'
 #' @param humidity ignored at present
 #'
-#' @return *In-situ* air density, in kg/m\eqn{^3}{^3}.
+#' @return *In-situ* dry-air density, in kg/m\eqn{^3}{^3}.
 #'
 #' @author Dan Kelley
 #'
-#' @references National Oceanographic and Atmospheric Agency, 1976.  U.S.
+#' @references
+#' 1. <https://en.wikipedia.org/wiki/Density_of_air>
+#' 2. National Oceanographic and Atmospheric Agency, 1976.  U.S.
 #' Standard Atmosphere, 1976.  NOAA-S/T 76-1562.  (A PDF of this document may
 #' be available at
 #' `http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19770009539_1977009539.pdf`
