@@ -1,4 +1,6 @@
-SETUP <- FALSE # set TRUE during coding, to set up the .rda file (see below)
+library(oce)
+
+context("tides")
 
 ## See page 2 of Foreman 1977 for the format of tide3.dat,
 ## which is provided in t-tide as (what seems to be) an exact
@@ -7,8 +9,6 @@ SETUP <- FALSE # set TRUE during coding, to set up the .rda file (see below)
 ## Notes
 ## 1. most of the tests here check against the T_TIDE values.
 ## 2. variable names are chosen to match T_TIDE, except that e.g. "const" is "tideconst"
-
-debug <- 0                              # 0, 1 or 2
 
 file <- file("tide3.dat.gz", "r")
 
@@ -29,7 +29,6 @@ ishallow <- NA
 ic <- 1
 while (TRUE) {
     items <- scan(file, "character", nlines=1, quiet=TRUE)
-    if (debug > 2) print(items)
     nitems <- length(items)
     if (nitems == 0)
         break
@@ -39,8 +38,6 @@ while (TRUE) {
     kmpr[ic] <- if (nitems == 2) ""  else gsub(" ", "", items[3])
     ic <- ic + 1
 }
-if ((ic - 1) != nc) stop("failed to read all ", nc, " constituent entries.  Only got ", ic)
-
 for (ic in 1:nc) {
     if (kmpr[ic] != "")  {
         ikmpr[ic] <- which(name == kmpr[ic])
@@ -49,28 +46,19 @@ for (ic in 1:nc) {
 }
 df[1] <- 0                              # Z0 is special (???) BUG: fixme
 
-stopifnot(name[1] == "Z0")
-stopifnot(name[2] == "SA")
-stopifnot(kmpr[2] == "SSA")
-i <- which(name == "M2")
-stopifnot(all.equal(freq[i], 1/12.4206011981605))
-
 ############################
 ## Satellites [sat]       ##
 ############################
 get.satellite <- function(x, o)
 {
-    if (debug > 2) cat("  SAT '",x,"'\n",sep="")
     ldel  <- as.numeric(substr(x,o+01,o+03))            # I3
     mdel  <- as.numeric(substr(x,o+04,o+06))            # I3
     ndel  <- as.numeric(substr(x,o+07,o+09))            # I3
     ph    <- as.numeric(substr(x,o+10,o+13))            # F4.2
     ee    <- as.numeric(substr(x,o+14,o+20))            # F7.4
     ir    <- as.numeric(substr(x,o+22,o+22))            # 1x, I1
-    if (debug > 2) cat("  SAT  ldel=",ldel, "mdel=",mdel,"ndel=",ndel,"ph=",ph,"ee=",ee,"ir=",ir,"\n")
     c(ldel, mdel, ndel, ph, ee, ir)
 }
-
 
 scan(file, "character", nlines=3, quiet=TRUE) # skip 3 lines
 
@@ -83,13 +71,12 @@ iconst  <- matrix(NA, ns, 1)
 
 this.sat <- 1
 while (TRUE) {
-    if (debug > 1) cat("***** looking for satellite ", this.sat, "********\n")
     x <- readLines(file, n=1)
     nx <- nchar(x)
     if (this.sat > ns || nx < 10) break
-                                        # Line format and content
-                                        # 6X,A5,1X,6I3,F5.2,I4
-                                        # kon, ii,jj,kk,ll,mm,nn semi nj
+    ## Line format and content
+    ## 6X,A5,1X,6I3,F5.2,I4
+    ## kon, ii,jj,kk,ll,mm,nn semi nj
     kon <- gsub(" ", "", substr(x, 7, 11))
     which.constituent <- which(name == kon)
 
@@ -100,25 +87,16 @@ while (TRUE) {
     d5[which.constituent] <- mm <- as.numeric(substr(x, 25, 27))
     d6[which.constituent] <- nn <- as.numeric(substr(x, 28, 30))
 
-    if (debug > 0) cat("name=", kon, "which.constituent=", which.constituent,"\n")
-
     semi[which.constituent] <- as.numeric(substr(x, 31, 35))
     nj <- as.numeric(substr(x, 36, 39)) # number of satellites
     nsat[which.constituent] <- nj
 
-    if (debug > 1) cat("------------ nj=", nj, "-------------\n")
-
-    if (debug > 1) {
-        cat(">>>", x, "\n", sep="")
-        cat("kon=", kon, " ii=",ii," jj=",jj," kk=",kk," ll=",ll," mm=",mm," nn=",nn," semi=",semi[which.constituent]," nj=",nj,"\n",sep="")
-    }
     if (nj > 0) {
         ## ALP1    1 -4  2  1  0  0 -.25   2
         ## ALP1  -1  0  0 .75 0.0360R1   0 -1  0 .00 0.1906
         is <- 1
         while (is <= nj) {
             xs <- readLines(file, n=1)
-            if (debug > 1) cat(">>>", xs, "<<<\n",sep="")
             nxs <- nchar(xs)
             if (nxs != 31 && nxs != 33 && nxs != 39 && nxs != 54 && nxs != 56 && nxs != 77 && nxs != 79) {
                 cat("GOT BAD LINE AS FOLLOWS:\n12345678901234567890123456789012345678901234567890\n",xs,"\n",sep="")
@@ -126,12 +104,10 @@ while (TRUE) {
             }
             s <- get.satellite(xs, 11)
             deldood[this.sat, 1:3] <- s[1:3]
-            if (debug > 4) {cat("deldood:"); print(deldood[this.sat, 1:3])}
             phcorr[this.sat]  <- s[4]
             amprat[this.sat]  <- s[5]
             ilatfac[this.sat] <- s[6]
             iconst[this.sat]  <- which.constituent # constituent to which this satellite is attached
-            if (debug > 1) cat("Got satellite ", this.sat, "for constituent", kon, "(", which.constituent, ") which has amprat", amprat[this.sat], "\n")
             this.sat <- this.sat + 1
             is <- is + 1
             if (nxs > 50) {
@@ -141,7 +117,6 @@ while (TRUE) {
                 amprat[this.sat]  <- s[5]
                 ilatfac[this.sat] <- s[6]
                 iconst[this.sat]  <- which.constituent # constituent to which this satellite is attached
-                if (debug > 1) cat("Got satellite ", isat, "for constituent", kon, "(", which.constituent, "), which has amprat", amprat[isat], "\n")
                 this.sat <- this.sat + 1
                 is <- is + 1
             }
@@ -152,23 +127,17 @@ while (TRUE) {
                 amprat[this.sat]  <- s[5]
                 ilatfac[this.sat] <- s[6]
                 iconst[this.sat]  <- which.constituent # constituent to which this satellite is attached
-                if (debug > 1) cat("Got satellite ", isat, "for constituent", kon, "(", which.constituent, "), which has amprat", amprat[isat], "\n")
                 this.sat <- this.sat + 1
                 is <- is + 1
             }
         }
     }
-    if (debug>0) cat("\n")
 }
 if ((this.sat - 1) != ns) stop("failed to read all ", ns, " satellite entries.  Only got ", this.sat)
 
-stopifnot(sum(nsat) == ns)
 
 sat <- list(deldood=deldood, phcorr=phcorr, amprat=amprat, ilatfac=ilatfac, iconst=iconst)
 
-stopifnot(sat$deldood[1,] == c(-1,  0, 0))
-stopifnot(sat$deldood[2,] == c( 0, -1, 0))
-stopifnot(sat$deldood[3,] == c(-2, -2, 0))
 
 ## This portion of the file ends as follows
 ##      M3      3  0  0  0  0  0 -.50   1
@@ -199,14 +168,11 @@ while(TRUE) {
     which.constituent <- which(name == kon)
     nj <- as.numeric(substr(x, 12, 12))
     nshallow[which.constituent] <- nj
-    if (debug > 1) cat("kon: '", kon, "' nj=", nj, "\n",sep="")
     if (nj > 0) {
         for (j in 1:nj) {
             o <- 15 + (j-1)*15
             iconst[this.shallow] <- which.constituent
-            if (debug > 2) cat("<", substr(x, o, o+4), ">\n",sep="")
             coef[this.shallow]  <- as.numeric(substr(x, o, o+4))
-            if (debug > 2) cat("<<",coef[this.shallow],">>\n",sep="")
             konco <- gsub(" ", "", substr(x, o+5, o+9))
             iname[this.shallow] <- which(name == konco)
             ishallow[which.constituent] <- this.shallow - j + 1 # BUG: broken
@@ -218,19 +184,6 @@ close(file)
 
 shallow <- data.frame(iconst=iconst, coef=coef, iname=iname)
 
-if (debug > 3) print(shallow$iconst[1:3])
-stopifnot(shallow$iconst[1:5] == c(26,26,27,27,30))
-
-if (debug > 3) print(shallow$coef[1:5])
-stopifnot(shallow$coef[1:5] == c(2, -1, 1, -1, 2))
-
-if (debug > 3) print(shallow$iname[1:5])
-stopifnot(shallow$iname[1:5] == c(19, 13, 57, 13, 48))
-
-stopifnot(nsat[48] == 9)        # M2
-stopifnot(all.equal(df[48], 0.08051140070000))
-stopifnot(ishallow[143:146] == c(242, 245, 246, 248))
-stopifnot(nshallow[143:146] == c(3, 1, 2, 4))
 
 #################
 ## equilibrium ##
@@ -240,7 +193,6 @@ efile <- file("t_equilib.dat.gz", "r")
 edat <- readLines(efile)
 ne <- length(edat)
 for (i in 10:ne) {                      # 9 lines of header
-    if (debug > 2) cat("<<", edat[i], ">>\n")
     # Name Species A B
     kon <- gsub(" ", "", substr(edat[i], 1, 4))
     which.constituent <- which(name == kon)
@@ -249,12 +201,9 @@ for (i in 10:ne) {                      # 9 lines of header
     A <- as.numeric(substr(edat[i],  9, 15))
     B <- as.numeric(substr(edat[i], 16, 21))
     if (A != 0) {
-        if (debug > 2) cat("case A, k=",which.constituent, "A=",A,"\n")
         doodsonamp[which.constituent] <- A / 1e5
         doodsonspecies[which.constituent] <- species
-    }
-    else {
-        if (debug > 2) cat("case B, k=",which.constituent, "B=",B,"\n")
+    } else {
         doodsonamp[which.constituent] <- B / 1e5
         doodsonspecies[which.constituent] <- -species
     }
@@ -275,50 +224,51 @@ const <- data.frame(name=name,
                     doodsonamp=doodsonamp,
                     doodsonspecies=doodsonspecies,
                     stringsAsFactors=FALSE)
-
-cat("First, and last of tidedata$const, for reference:\n")
-print(const[c(1:3,nc-1,nc),])
-
 tidedata <- list(const=const, sat=sat, shallow=shallow)
 
-stopifnot(all.equal(tidedata$const$doodsonspecies[c(2,3,10)], c(0,0,-1)))
-stopifnot(all.equal(tidedata$const$doodsonamp[c(2,3,10)], c(0.01160000000000,0.07299000000000,0.01153000000000)))
+test_that("deldood", {
+          expect_equal(sum(nsat), ns)
+          expect_equal(sat$deldood[1,], c(-1,  0, 0))
+          expect_equal(sat$deldood[2,], c( 0, -1, 0))
+          expect_equal(sat$deldood[3,], c(-2, -2, 0))
+})
 
-cat("
-DO MANUALLY:
-    save(tidedata, file=\"../data/tidedata.rda\")
-TO SET UP THE SYSTEM.
-")
+test_that("constituents were read correctly", {
+        expect_equal(name[1], "Z0")
+        expect_equal(name[2], "SA")
+        expect_equal(kmpr[2], "SSA")
+        i <- which(name == "M2")
+        expect_equal(freq[i], 1/12.4206011981605)
+})
 
+test_that("shallow constitutents", {
+          shallow <- data.frame(iconst=iconst, coef=coef, iname=iname)
+          expect_equal(tidedata$shallow$iconst[1:5], c(26,26,27,27,30))
+          expect_equal(tidedata$shallow$coef[1:5], c(2, -1, 1, -1, 2))
+          expect_equal(tidedata$shallow$iname[1:5], c(19, 13, 57, 13, 48))
+          expect_equal(df[48], 0.08051140070000)
+          expect_equal(ishallow[143:146], c(242, 245, 246, 248))
+          expect_equal(nshallow[143:146], c(3, 1, 2, 4))
+})
 
+test_that("doodson", {
+          expect_equal(tidedata$const$doodsonspecies[c(2,3,10)], c(0,0,-1))
+          expect_equal(tidedata$const$doodsonamp[c(2,3,10)], c(0.01160000000000,0.07299000000000,0.01153000000000))
+})
 
-#############################
-## Tests of ancillary code ##
-############################
-
-if (!SETUP) {
-
-    library(oce)
-
+test_that("ancillary code", {
     ## Test against matlab t_astron, with a randomly-picked calibration time
     t <- as.POSIXct("2008-01-22 18:50:24", tz="GMT")
-    print(t)
-
     a <- tidemAstron(t)
-    print(a)
-    stopifnot(all.equal.numeric(a$astro, c(1.28861316428, 0.33390620851, 0.83751937277, 0.14234854462, 0.08559663825, 0.78633079279), tolerance=1e-8))
-    stopifnot(all.equal.numeric(a$ader,  c(0.96613680803, 0.03660110127, 0.00273790931, 0.00030945407, 0.00014709388, 0.00000013082), tolerance=1e-8))
-
+    expect_equal(a$astro, c(1.28861316428, 0.33390620851, 0.83751937277, 0.14234854462, 0.08559663825, 0.78633079279), tolerance=1e-8)
+    expect_equal(a$ader,  c(0.96613680803, 0.03660110127, 0.00273790931, 0.00030945407, 0.00014709388, 0.00000013082), tolerance=1e-8)
     vuf <- tidemVuf(t, 48)
-    print(vuf)
-    stopifnot(all.equal.numeric(c(vuf$v), c(0.57722632857477), tolerance=1e-8))
-    stopifnot(all.equal.numeric(c(vuf$u), c(0), tolerance=1e-8))
-    stopifnot(all.equal.numeric(c(vuf$f), c(1), tolerance=1e-8))
-
+    expect_equal(vuf$v, c(0.57722632857477), tolerance=1e-8)
+    expect_equal(vuf$u, c(0), tolerance=1e-8)
+    expect_equal(vuf$f, c(1), tolerance=1e-8)
     vuf <- tidemVuf(t, c(48, 49), 45)
-    print(vuf)
-    stopifnot(all.equal.numeric(vuf$v, c(0.57722632857477,0.62841490855698), tolerance=1e-8))
-    stopifnot(all.equal.numeric(vuf$u, c(0.00295677805220,0.00180270946435), tolerance=1e-8))
-    stopifnot(all.equal.numeric(vuf$f, c(0.96893771510868,0.98142639461951), tolerance=1e-8))
+    expect_equal(vuf$v, c(0.57722632857477,0.62841490855698), tolerance=1e-8)
+    expect_equal(vuf$u, c(0.00295677805220,0.00180270946435), tolerance=1e-8)
+    expect_equal(vuf$f, c(0.96893771510868,0.98142639461951), tolerance=1e-8)
+})
 
-}
