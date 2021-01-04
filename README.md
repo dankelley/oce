@@ -7,13 +7,13 @@
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-month/oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
-[![Rdoc](http://www.rdocumentation.org/badges/version/oce)](http://www.rdocumentation.org/packages/oce)
+[![Rdoc](https://www.rdocumentation.org/badges/version/oce)](https://www.rdocumentation.org/packages/oce)
 
 
 ## About oce
 
 Oce is an R package for processing oceanographic data.  Its
-[webpage](http://dankelley.github.com/oce/) provides details, of which this
+[webpage](https://dankelley.github.io/oce/) provides details, of which this
 README file is just a sketch.  A book by one of the oce co-authors provides
 more information on the package and its potential for oceanographic research
 (Kelley, Dan E., 2018. [Oceanographic Analysis with

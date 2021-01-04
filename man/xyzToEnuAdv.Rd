@@ -117,7 +117,7 @@ yes \tab yes \tab down \tab H-90 \tab R \tab P \tab X \tab -Y \tab -Z\cr
 }
 \references{
 \enumerate{
-\item \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
+\item @template nortekCoordTemplate
 \item Clark Richards, 2012, PhD Dalhousie University Department of
 Oceanography.
 }

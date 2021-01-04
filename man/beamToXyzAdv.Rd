@@ -29,7 +29,9 @@ the header), \code{beamToXyzAdv} the user will need to store one in
 }
 }
 \references{
-\url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
+\enumerate{
+\item @template nortekCoordTemplate
+}
 }
 \seealso{
 See \code{\link[=read.adv]{read.adv()}} for notes on functions relating to

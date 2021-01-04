@@ -12,7 +12,7 @@
 #'
 #' @references
 #' Information about ice-tethered profile data is provided at
-#' \url{http://www.whoi.edu/page.do?pid=23096}, which also provides a link for
+#' \url{https://www.whoi.edu/page.do?pid=23096}, which also provides a link for
 #' downloading data.  Note that the present version only handles data in
 #' profiler-mode, not fixed-depth mode.
 #'
@@ -46,7 +46,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, deploym
     if (nlines < 2)
         stop("file is too short; must have more than 2 lines")
     isProfile <- '%' != substr(lines[2], 1, 1)
-    ## see e.g. http://www.whoi.edu/page.do?pid=125516
+    ## see e.g. https://www.whoi.edu/page.do?pid=125516
     if (isProfile) {
         ## %ITP 59, profile 2: year day longitude(E+) latitude(N+) ndepths
         ## 2013  247.25002   156.2163  80.3189  371

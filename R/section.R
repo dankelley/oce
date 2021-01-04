@@ -57,9 +57,10 @@ setClass("section", contains="oce")
 #' region across to North America, with a change of heading in the last few dozen
 #' stations to run across the nominal Gulf Stream axis.
 #' The data flags follow the "WHP Bottle"convention, set by
-#' [initializeFlagScheme,section-method()] to `"WHP bottle"`; see
-#' \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
-#' for more information on World Hydrographic Program flag conventions.
+#' [initializeFlagScheme,section-method()] to `"WHP bottle"`.  This convention
+#' used to be described at the link
+#' `https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm`
+#' but that was found to fail in December 2020.
 #'
 #' @examples
 #'\dontrun{
@@ -116,7 +117,8 @@ setMethod(f="initialize",
 #' @template handleFlagsTemplate
 #'
 #' @references
-#' 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+#' The following link used to work, but was found to fail in December 2020.
+#' 1. `https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm`
 #'
 #' @examples
 #' library(oce)
@@ -2169,10 +2171,10 @@ setMethod(f="plot",
 #' @return A [section-class] object.
 #'
 #' @references
-#' Several repository sites provide section data. An example that is perhaps likely
-#' to exist for years is \url{https://cchdo.ucsd.edu}, but a search on \code{"WOCE
-#'   bottle data"} should turn up other sites, if this one ceases to exist. Only
-#' the so-called *exchange BOT* data format can be processed by read.section()
+#' Several repository sites provide section data. A reasonably stable example is
+#' \url{https://cchdo.ucsd.edu}, but a search on \code{"WOCE bottle data"} should
+#' turn up other sites, if this ceases to exist. Only
+#' the so-called *exchange BOT* data format can be processed by [read.section()]
 #' at this time. Data names are inferred from column headings using
 #' [woceNames2oceNames()].
 #'
@@ -3344,6 +3346,43 @@ addSpine <- function(section, spine, debug=getOption("oceDebug"))
         stop("'spine' must be a list or data frame containing two items, named 'longitude' and 'latitude'")
     }
     oceDebug(debug, "} # addSpine()\n", sep="", style="bold", unindent=1)
+    res
+}
+
+#' Try to Reduce Section Longitude Range
+#'
+#' [longitudeTighten] shifts some longitudes in its first argument by 360 degrees, if doing
+#' so will reduce the overall longitude span.
+#'
+#' This function can be helpful in cases where the CTD stations within a section
+#' cross the cut point of the longitude convention, which otherwise might
+#' yield ugly plots if [plot,section-method()] is used with `xtype="longitude"`.
+#' This problem does occur with CTD objects ordered by time of sampling,
+#' but was observed in December 2020 for a GO-SHIPS dataset downloaded from
+#' `https://cchdo.ucsd.edu/data/15757/a10_1992_ct1`.
+#'
+#' @param section a [section-class] object.
+#'
+#' @return A [section-class] object based on its first argument, but with
+#' longitudes shifted in its `metadata` slot, and also in the `metadata` slots
+#' of each of the [ctd-class] objects that are stored in the `station` item
+#' in its `data` slot.
+#'
+#' @author Dan Kelley
+longitudeTighten <- function(section)
+{
+    if (!inherits(section, "section"))
+        stop("'section' must be an object created with read.section() or as.section()")
+    res <- section
+    longitude <- section[["longitude", "byStation"]]
+    longitudeShifted <- ifelse(longitude > 180, longitude - 360, longitude)
+    if (diff(range(longitude)) > diff(range(longitudeShifted))) 
+        longitude <- longitudeShifted
+    res <- oceSetMetadata(res, "longitude", longitude, "longitudeTighten")
+    ctds <- section@data$station
+    for (i in seq_along(ctds))
+        ctds[[i]]@metadata$longitude <- longitude[i]
+    res@data$station <- ctds
     res
 }
 

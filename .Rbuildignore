@@ -1,3 +1,4 @@
+^marmap.*csv$
 ^.git$
 ^.github$
 ^issue[0-9]+\.R$
@@ -42,6 +43,7 @@ tests/testthat/Rplots.pdf
 tests/testthat/test_local_*.R
 tests/testthat/local_data
 tests/testthat/valgrind_tests.*
+tests/testthat/_snaps
 R/check_urls.R
 .lintr
 ^cran-comments\.md$

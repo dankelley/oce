@@ -1155,7 +1155,7 @@ setMethod(f="plot",
 #' [xyzToEnuAdv()].
 #'
 #' @references
-#' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
+#' 1. @template nortekCoordTemplate
 #'
 #' @family things related to adv data
 toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
@@ -1203,7 +1203,8 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 #' `"adv"` objects.
 #'
 #' @references
-#' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
+#' 1. @template nortekCoordTemplate
+#'
 #' @family things related to adp data
 beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 {
@@ -1348,7 +1349,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' `adv` objects.
 #'
 #' @references
-#' 1. \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
+#' 1. @template nortekCoordTemplate
 #'
 #' 2. Clark Richards, 2012, PhD Dalhousie University Department of
 #' Oceanography.

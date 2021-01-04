@@ -194,10 +194,7 @@ plot, and with \code{bg="white"}.
 \section{History}{
  Until February, 2016, \verb{plot,coastline-method} relied on a
 now-defunct argument \code{fill} to control colors; \code{col} is to be
-used now, instead. Also, in February, 2016, the arguments named
-\code{parameters} and \code{orientation} were both removed, as they had
-become nonfunctional about a year previously, in the transition to using
-the \code{rgdal} package to carry out map projections.
+used now, instead.
 }
 
 \examples{

@@ -24,7 +24,9 @@ by specifying higher \code{debug} values.}
 Convert an ADP Object to ENU Coordinates
 }
 \references{
-\url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
+\enumerate{
+\item @template nortekCoordTemplate
+}
 }
 \seealso{
 See \code{\link[=read.adp]{read.adp()}} for notes on functions relating to

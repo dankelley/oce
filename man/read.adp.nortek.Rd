@@ -98,10 +98,10 @@ Read a Nortek ADP File
 \enumerate{
 \item Information on Nortek profilers (including the System Integrator Guide,
 which explains the data format byte-by-byte) is available at
-\url{http://www.nortekusa.com/}.  (One must join the site to see the
+\url{https://www.nortekusa.com/}.  (One must join the site to see the
 manuals.)
 \item The Nortek Knowledge Center
-\url{http://www.nortekusa.com/en/knowledge-center} may be of help if
+\url{https://www.nortekusa.com/en/knowledge-center} may be of help if
 problems arise in dealing with data from Nortek instruments.
 }
 }

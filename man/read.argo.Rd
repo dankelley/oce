@@ -97,7 +97,7 @@ float. For example,
 \code{https://www.usgodae.org/ftp/outgoing/argo/} is the top level of
 a such a repository. If the ID of a float is known but not the
 "dac", then a first step is to download the text file
-\code{http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
+\code{https://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
 and search for the ID. The first few lines of that file are header,
 and after that the format is simple, with columns separated by slash
 (\code{/}). The dac is in the first such column and the float ID in the
@@ -151,7 +151,7 @@ summary(argo)
 }
 \references{
 \enumerate{
-\item \url{http://www.argo.ucsd.edu/}
+\item \url{https://argo.ucsd.edu}
 \item Argo User's Manual Version 3.2, Dec 29th, 2015, available at
 \url{https://archimer.ifremer.fr/doc/00187/29825/} online.
 \item User's Manual (ar-um-02-01) 13 July 2010, available at

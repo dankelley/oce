@@ -2892,7 +2892,8 @@ setMethod(f="plot",
 #' [xyzToEnuAdp()].
 #'
 #' @references
-#' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
+#' 1. @template nortekCoordTemplate
+#'
 #' @family things related to adp data
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {

@@ -76,8 +76,6 @@
 #'
 #' Archived CTD (and other) data may be found on servers such as
 #' 1. \url{https://cchdo.ucsd.edu/}
-#' 2. \url{https://www.nodc.noaa.gov/woce/wdiu/}
-## 3. \url{https://www.nodc.noaa.gov/cgi-bin/OC5/SELECT/builder.pl}
 #'
 #' @examples
 #'
@@ -175,7 +173,9 @@ NULL
 #' @template handleFlagsTemplate
 #'
 #' @references
-#' 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+#' The following link used to work, but failed as of December 2020.
+#'
+#' 1. `https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm`
 #'
 #' @examples
 #' library(oce)
@@ -2704,9 +2704,11 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 #' @author Dan Kelley
 #'
 #' @references
-#' 1. https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm
+#' The following links used to work, but failed as of December 2020.
 #'
-#' 2. https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv
+#' 1. `https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm`
+#'
+#' 2. `https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv`
 #'
 #' @family things related to ctd data
 write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")

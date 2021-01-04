@@ -463,10 +463,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #'
 #' @section History: Until February, 2016, `plot,coastline-method` relied on a
 #' now-defunct argument `fill` to control colors; `col` is to be
-#' used now, instead. Also, in February, 2016, the arguments named
-#' `parameters` and `orientation` were both removed, as they had
-#' become nonfunctional about a year previously, in the transition to using
-#' the `rgdal` package to carry out map projections.
+#' used now, instead.
 #'
 #' @seealso The documentation for the [coastline-class] class explains the
 #' structure of coastline objects, and also outlines the other functions
@@ -922,7 +919,7 @@ download.coastline <- function(resolution, item="coastline",
     if (!(resolution %in% resolutionChoices))
         stop("'resolution' must be one of: '", paste(resolutionChoices, collapse="' '"), "'")
     if (server == "naturalearth")
-        urlBase <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download"
+        urlBase <- "https://www.naturalearthdata.com/downloads"
     else
         stop("the only server that works is naturalearth")
     filename <- paste("ne_", resolution, "_", item, ".zip", sep="")
@@ -1078,9 +1075,9 @@ read.coastline <- function(file,
 #' @references
 #' 1. The ``shapefile'' format is described in
 #' *ESRI Shapefile Technical Description*, March 1998, available at
-#' \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
+#' \url{https://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
 #'
-#' 2. The NaturalEarth website \url{https://www.naturalearthdata.com/downloads}
+#' 2. The NaturalEarth website \url{https://www.naturalearthdata.com/downloads/}
 #' provides coastline datasets in three resolutions, along with similar files
 #' lakes and rivers, for borders, etc. It is highly recommended.
 #'
@@ -1444,7 +1441,7 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' @param coastline a [coastline-class] object.
 #'
 #' @param lon_0 longitude as would be given in a `+lon_0=` item in a
-#' call to the [rgdal::project()] function in the \CRANpkg{rgdal} package.
+#' call to the [sf::sf_project()] function in the \CRANpkg{sf} package.
 #'
 #' @examples
 #'\donttest{

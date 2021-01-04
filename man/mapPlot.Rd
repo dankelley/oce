@@ -39,7 +39,7 @@ mapPlot(
 something (an \code{oce} object, a list, or a data frame) from which both
 longitude and latitude may be inferred (in which case the \code{latitude}
 argument is ignored).  If \code{longitude} is missing, both it and
-\code{latitude} are taken from \code{\link[=coastlineWorld]{coastlineWorld()}}.}
+\code{latitude} are taken from the built-in \link{coastlineWorld} dataset.}
 
 \item{latitude}{numeric vector of latitudes of points to be plotted (ignored
 if the first argument contains both latitude and longitude).}
@@ -154,7 +154,7 @@ plot axis.}
 
 \item{projection}{optional indication of projection, in one of two
 forms. First, it may be a character string in the "CRS" format that is
-used by the \CRANpkg{rgdal} package (and in much of modern computer-based
+used by the \CRANpkg{sf} package (and in much of modern computer-based
 cartography). For example, \code{projection="+proj=merc"} specifies a
 Mercator projection. The second format is the output from
 \code{\link[sp:CRS-class]{sp::CRS()}} in the \CRANpkg{sp} package, which is an object
@@ -357,6 +357,8 @@ those used in the examples.
 \section{Changes}{
 
 \itemize{
+\item 2020-12-24: complete switch from \CRANpkg{rgdal} to \CRANpkg{sf},
+removing the testing scheme created on 2020-08-03.
 \item 2020-08-03: added support for the \code{eqearth} projection (like \code{robin} but
 an equal-area method).
 \item 2020-08-03: dropped support for the \code{healpix}, \code{pconic}
@@ -390,86 +392,84 @@ wildly inaccurate in a Pacific Antarctic-Alaska application
 }
 
 \examples{
-##canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
-canProject <- requireNamespace("rgdal")
-if (canProject) {
-    library(oce)
-    data(coastlineWorld)
+\donttest{
+library(oce)
+data(coastlineWorld)
 
-    # Example 1.
-    # Mollweide (referenc 1 page 54) is an equal-area projection that works well
-    # for whole-globe views.
-    mapPlot(coastlineWorld, projection="+proj=moll", col='gray')
-    mtext("Mollweide", adj=1)
+# Example 1.
+# Mollweide (referenc 1 page 54) is an equal-area projection that works well
+# for whole-globe views.
+mapPlot(coastlineWorld, projection="+proj=moll", col='gray')
+mtext("Mollweide", adj=1)
 
-    # Example 2.
-    # Note that filling is not employed (`col` is not
-    # given) when the prime meridian is shifted, because
-    # this causes a problem with Antarctica
-    cl180 <- coastlineCut(coastlineWorld, lon_0=-180)
-    mapPlot(cl180, projection="+proj=moll +lon_0=-180")
-    mtext("Mollweide with coastlineCut", adj=1)
+# Example 2.
+# Note that filling is not employed (`col` is not
+# given) when the prime meridian is shifted, because
+# this causes a problem with Antarctica
+cl180 <- coastlineCut(coastlineWorld, lon_0=-180)
+mapPlot(cl180, projection="+proj=moll +lon_0=-180")
+mtext("Mollweide with coastlineCut", adj=1)
 
-    # Example 3.
-    # Orthographic projections resemble a globe, making them attractive for
-    # non-technical use, but they are neither conformal nor equal-area, so they
-    # are somewhat limited for serious use on large scales.  See Section 20 of
-    # reference 1. Note that filling is not employed because it causes a problem with
-    # Antarctica.
-    par(mar=c(3, 3, 1, 1))
-    mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
-    mtext("Orthographic", adj=1)
+# Example 3.
+# Orthographic projections resemble a globe, making them attractive for
+# non-technical use, but they are neither conformal nor equal-area, so they
+# are somewhat limited for serious use on large scales.  See Section 20 of
+# reference 1. Note that filling is not employed because it causes a problem with
+# Antarctica.
+par(mar=c(3, 3, 1, 1))
+mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
+mtext("Orthographic", adj=1)
 
-    # Example 4.
-    # The Lambert conformal conic projection is an equal-area projection
-    # recommended by reference 1, page 95, for regions of large east-west extent
-    # away from the equator, here illustrated for the USA and Canada.
-    par(mar=c(3, 3, 1, 1))
-    mapPlot(coastlineCut(coastlineWorld, -100),
-            longitudelim=c(-130,-55), latitudelim=c(35, 60),
-            projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
-    mtext("Lambert conformal", adj=1)
+# Example 4.
+# The Lambert conformal conic projection is an equal-area projection
+# recommended by reference 1, page 95, for regions of large east-west extent
+# away from the equator, here illustrated for the USA and Canada.
+par(mar=c(3, 3, 1, 1))
+mapPlot(coastlineCut(coastlineWorld, -100),
+        longitudelim=c(-130,-55), latitudelim=c(35, 60),
+        projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
+mtext("Lambert conformal", adj=1)
 
-    # Example 5.
-    # The stereographic projection (reference 1, page 120) is conformal, used
-    # below for an Arctic view with a Canadian focus.  Note the trick of going
-    # past the pole: the second latitudelim value is 180 minus the first, and the
-    # second longitudelim is 180 plus the first; this uses image points "over"
-    # the pole.
-    par(mar=c(3, 3, 1, 1))
-    mapPlot(coastlineCut(coastlineWorld, -135),
-            longitudelim=c(-130, 50), latitudelim=c(70, 110),
-            projection="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
-    mtext("Stereographic", adj=1)
+# Example 5.
+# The stereographic projection (reference 1, page 120) is conformal, used
+# below for an Arctic view with a Canadian focus.  Note the trick of going
+# past the pole: the second latitudelim value is 180 minus the first, and the
+# second longitudelim is 180 plus the first; this uses image points "over"
+# the pole.
+par(mar=c(3, 3, 1, 1))
+mapPlot(coastlineCut(coastlineWorld, -135),
+        longitudelim=c(-130, 50), latitudelim=c(70, 110),
+        projection="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
+mtext("Stereographic", adj=1)
 
-    # Example 6.
-    # Spinning globe: create PNG files that can be assembled into a movie
+# Example 6.
+# Spinning globe: create PNG files that can be assembled into a movie
+}
+
 \dontrun{
-    png("globe-\%03d.png")
-    lons <- seq(360, 0, -15)
-    par(mar=rep(0, 4))
-    for (i in seq_along(lons)) {
-        p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
-        if (i == 1) {
-            mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
-            xlim <- par("usr")[1:2]
-            ylim <- par("usr")[3:4]
-        } else {
-            mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
-                    xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
-        }
+png("globe-\%03d.png")
+lons <- seq(360, 0, -15)
+par(mar=rep(0, 4))
+for (i in seq_along(lons)) {
+    p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
+    if (i == 1) {
+        mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
+        xlim <- par("usr")[1:2]
+        ylim <- par("usr")[3:4]
+    } else {
+        mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
+                xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
     }
-    dev.off()
 }
-}
-
+dev.off()}
 
 }
 \references{
 \enumerate{
 \item Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
-Professional Paper: 1395 (available at
-\url{https://pubs.er.usgs.gov/publication/pp1395}).
+Professional Paper: 1395
+\url{https://pubs.er.usgs.gov/publication/pp1395}
+https://doi.org/10.3133/pp1395
 \item Natural Resources Canada
 \url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
 \item “List of Map Projections.” In Wikipedia, July 13, 2020.
@@ -485,7 +485,7 @@ Vignette for rgdal 1.5-13 \url{https://rgdal.r-forge.r-project.org/articles/CRS_
 \item Snyder, John Parr.
 Flattening the Earth: Two Thousand Years of Map Projections.
 Chicago, IL: University of Chicago Press, 1993.
-\url{https://www.press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html}.
+\url{https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html}
 \item Šavrič, Bojan, Tom Patterson, and Bernhard Jenny.
 “The Equal Earth Map Projection.”
 International Journal of Geographical Information Science 33, no. 3 (March 4, 2019): 454–65.

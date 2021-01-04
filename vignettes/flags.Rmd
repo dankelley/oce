@@ -60,12 +60,12 @@ comparison with related measurements, etc.
 ## Flag conventions
 
 A frustrating aspect of oceanographic analysis is that different data archiving
-agencies employ different systems for flags. For example, the [World
+agencies employ different systems for flags. For example, the World
 Hydrographic
-Programme](https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm)
+Programme
 designates good bottle/CTD data with a flag value of 2, whereas the [World
 Ocean
-Database](https://data.nodc.noaa.gov/woa/WOD/CODES/TXT/Definition_of_Quality_Flags.txt)
+Database](https://www.ncei.noaa.gov/data/oceans/woa/WOD/CODES/TXT/Definition_of_Quality_Flags.txt)
 uses 0 for good data.
 
 Analysts must be aware of the scheme used for a particular dataset.  It is also

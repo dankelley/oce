@@ -14,12 +14,11 @@ files. Note that the salinities in this sample dataset are known to be incorrect
 owing to a lack of calibration of an old instrument that had not been used in a long time.
 }
 \examples{
-\dontrun{
 library(oce)
 data(cm)
 summary(cm)
 plot(cm)
-}
+
 }
 \seealso{
 Other datasets provided with oce: 

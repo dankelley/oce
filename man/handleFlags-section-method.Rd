@@ -101,8 +101,9 @@ plotTS(section2)
 
 }
 \references{
+The following link used to work, but was found to fail in December 2020.
 \enumerate{
-\item \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+\item \verb{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 }
 }
 \seealso{

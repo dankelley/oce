@@ -387,7 +387,7 @@ Gulf Stream. (Hint: use the `swDynamicHeight()` function.)
 
 Oce has several functions that facilitate the drawing of maps. A variety
 of projections are provided, with the mathematics of projection being
-handled behind the scenes with the `rgdal` package. An introduction to
+handled behind the scenes with the `sf` package. An introduction to
 drawing maps is provided with `?mapPlot`, and the [map projection
 vignette](map_projections.html) provides much more detail.
 
@@ -498,7 +498,7 @@ to organize medical effort efficiently.
 
 # Development website
 
-The site <http://github.com/dankelley/oce> provides a window on the
+The site <https://github.com/dankelley/oce> provides a window on the
 development that goes on between the CRAN releases of the package.
 Readers are requested to visit the site to report bugs, to suggest new
 features, or just to see how `oce` development is coming along. Note

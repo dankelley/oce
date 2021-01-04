@@ -38,9 +38,9 @@ projection for a particular task. Snyder (1987), Snyder (1993) and Snyder and
 Voxland (1994) are all excellent sources on these topics, and the first and
 last of these are available for free online.
 
-Oce handles map projections by calling the \code{projection} function of the
-\code{rgdal} R package, and so the notation for representing the projection is
-borrowed from \code{rgdal}.  This system will be familiar to many readers,
+Oce handles map projections by calling the `sf_project` function of the
+`sf` R package, and so the notation for representing the projection is
+borrowed from `sf`.  This system will be familiar to many readers,
 because it is used in other R packages, and more widely in the software called
 PROJ, which has interfaces in python and other programming languages (PROJ
 contributors, 2020). Since oce uses inverse projections in some of its
@@ -51,7 +51,7 @@ infinite loops and core dumps. See the help for the oce function `mapPlot` for
 a list of the available projections, and some advice on choosing them.
 
 There are far too many projections to illustrate here. See
-<http://dankelley.github.io/r/2015/04/03/oce-proj.html> for a blog item that
+<https://dankelley.github.io/r/2015/04/03/oce-proj.html> for a blog item that
 provides examples of the available projections. Note that some have a problem
 with spurious horizontal lines. This can result from coastline segments that
 cross the edge of the plotting area, and getting rid of this is tricky enough
@@ -297,19 +297,20 @@ if (requireNamespace("ocedata", quietly=TRUE)) {
 # References
 
 PROJ contributors. "PROJ Coordinate Transformation Software Library." Open
-Source Geospatial Foundation, 2020.  https://proj.org/ (accessed 2020-08-24)
+Source Geospatial Foundation, 2020. 
+<https://proj.org/>
 
 Snyder, John P. "Map Projections—a Working Manual." Washington: U.S.
 Geological survey professional paper 1395, 1987.
-https://pubs.usgs.gov/pp/1395/report.pdf.
+<https://pubs.usgs.gov/pp/1395/report.pdf>
 
 Snyder, John Parr. "Flattening the Earth: Two Thousand Years of Map
 Projections." Chicago, IL: University of Chicago Press, 1993.
-https://www.press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html.
+<https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html>
 
 Snyder, John P., and Philip M. Voxland. "An Album of Map Projections."
 U. S.  Geological Survey Professional Paper. Washington, DC, USA: U. S.
 Department of the Interior: U. S. Geological Survey, 1994.
-https://pubs.er.usgs.gov/publication/pp1453.
+<https://pubs.er.usgs.gov/publication/pp1453>
 
 

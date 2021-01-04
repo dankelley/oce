@@ -133,9 +133,9 @@
 #'
 #' 3. see landsat.usgs.gov/calibration_notices.php
 #'
-#' 4. \url{http://dankelley.github.io/r/2014/07/01/landsat.html}
+#' 4. \url{https://dankelley.github.io/r/2014/07/01/landsat.html}
 #'
-#' 5. \url{http://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/}
+#' 5. \url{https://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/}
 #'
 #' 6. see landsat.usgs.gov/Landsat8_Using_Product.php
 #'
@@ -146,7 +146,7 @@
 #' 9. Yu, X. X. Guo and Z. Wu., 2014. Land Surface Temperature Retrieval from
 #' Landsat 8 TIRS-Comparison between Radiative Transfer Equation-Based Method,
 #' Split Window Algorithm and Single Channel Method, *Remote Sensing*, 6,
-#' 9829-9652.  \url{http://www.mdpi.com/2072-4292/6/10/9829}
+#' 9829-9652.  \url{https://www.mdpi.com/2072-4292/6/10/9829}
 #'
 #' 10. Rajeshwari, A., and N. D. Mani, 2014.  Estimation of land surface
 #' temperature of Dindigul district using Landsat 8 data. *International

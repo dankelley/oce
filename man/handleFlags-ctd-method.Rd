@@ -129,8 +129,9 @@ expect_equal(is.na(Bf[["salinity"]]), deep)
 
 }
 \references{
+The following link used to work, but failed as of December 2020.
 \enumerate{
-\item \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+\item \verb{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 }
 }
 \seealso{

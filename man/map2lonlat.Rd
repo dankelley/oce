@@ -38,24 +38,17 @@ handled well; see \sQuote{Bugs}.
 }
 \section{Bugs}{
 
-\code{oce} uses \code{\link[rgdal:project]{rgdal::project()}} in the \CRANpkg{rgdal}
-package to handle projections. Only those projections that have inverses are
-permitted within \code{oce}, and even those can sometimes yield errors, owing
-to limitations in \CRANpkg{rgdal}. On i386/windows machines, the version
-of \CRANpkg{rgdal} must be 1.3-9 or higher, to prevent an error with
-\code{map2lonlat}.
+\code{oce} uses \code{\link[sf:sf_project]{sf::sf_project()}} to handle projections. Only those projections that
+have inverses are permitted within \code{oce}, and of that subset, some are omitted
+because the \code{oce} developers have experienced problems with them.
 }
 
 \examples{
-##canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
-canProject <- requireNamespace("rgdal")
-if (canProject) {
-    library(oce)
-    ## Cape Split, in the Minas Basin of the Bay of Fundy
-    cs <- list(longitude=-64.49657, latitude=45.33462)
-    xy <- lonlat2map(cs, projection="+proj=merc")
-    map2lonlat(xy)
-}
+library(oce)
+## Cape Split, in the Minas Basin of the Bay of Fundy
+cs <- list(longitude=-64.49657, latitude=45.33462)
+xy <- lonlat2map(cs, projection="+proj=merc")
+map2lonlat(xy)
 
 }
 \seealso{
