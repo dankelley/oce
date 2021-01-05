@@ -3358,7 +3358,7 @@ numberAsHMS <- function(t, default=0)
 #'
 #' 4. EPIC times: software and manuals at \url{https://www.pmel.noaa.gov/epic/download/index.html#epslib};
 #' see also Denbo, Donald W., and Nancy N. Soreide. \dQuote{EPIC.} Oceanography 9 (1996).
-#' https://doi.org/10.5670/oceanog.1996.10.
+#' \doi{10.5670/oceanog.1996.10}
 #'
 #' 5. VMS times: https://en.wikipedia.org/wiki/Epoch_(computing)
 #'

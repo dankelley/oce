@@ -36,7 +36,7 @@ setClass("argo", contains="oce")
 #' downloads):
 #' Argo (2017). Argo float data and metadata from Global Data Assembly Centre
 #' (Argo GDAC) - Snapshot of Argo GDAC of July, 8st 2017. SEANOE.
-#' \url{https://doi.org/10.17882/42182#50865}
+#' \doi{10.17882/42182#50865}
 #'
 #' @name argo
 #' @docType data
@@ -2105,7 +2105,8 @@ setMethod("handleFlags", signature=c(object="argo", flags="ANY", actions="ANY", 
 #'
 #' @references
 #' 1. Argo Data Management Team. "Argo User’s Manual V3.3." Ifremer,
-#' November 28, 2019. \url{https://doi.org/10.13155/29825}.
+#' November 28, 2019.
+#' \doi{10.13155/29825}
 #'
 #' @author Dan Kelley, based on discussions with Jaimie Harbin (with
 #' respect to the \code{\link{[[,argo-method}} interface) and Clark Richards

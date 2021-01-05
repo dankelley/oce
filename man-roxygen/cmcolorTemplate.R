@@ -49,7 +49,7 @@
 #' * Thyng, Kristen, Chad Greene, Robert Hetland, Heather Zimmerle, and Steven DiMarco.
 #'   \dQuote{True Colors of Oceanography: Guidelines for Effective and Accurate Colormap Selection.}
 #'   Oceanography 29, no. 3 (September 1, 2016): 9–13.
-#'   \url{https://doi.org/10.5670/oceanog.2016.66}.
+#'   \doi{10.5670/oceanog.2016.66}
 #'
 #' * Thyng, Kristen. Kthyng/Cmocean. Python, 2019.
 #'   \url{https://github.com/kthyng/cmocean}.
