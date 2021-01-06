@@ -61,7 +61,7 @@
 #' 2. The Nortek Knowledge Center
 #' https://www.nortekusa.com/en/knowledge-center
 #' may be of help if problems arise in dealing with data from Nortek instruments.
-decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "vector"), debug=getOption("oceDebug"), ...)
+decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "aquadoppPlusMagnetometer", "vector"), debug=getOption("oceDebug"), ...)
 {
     type <- match.arg(type)
     oceDebug(debug, "decodeHeaderNortek(buf, type=\"", type, "\", ...) {\n", sep="", unindent=1)
@@ -275,7 +275,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
                     ##user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                 }
                 user$blankingDistance <- user$T2 * 0.0229 * cos(25 * degToRad) - user$cellSize
-            } else if (type == "aquadopp") {
+            } else if (type == "aquadopp" | type == "aquadoppPlusMagnetometer") {
                 ##user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                 ##user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
                 warning("using fixed cell size and blanking distance for Aquadopp, since cannot infer these from the file")
@@ -2158,15 +2158,14 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 
 #' Read a Nortek Aquadopp File
 #'
-#' The R code is based on information in
-#' the Nortek System Integrator Guide (2008) and on postings on the Nortek
-#' ``knowledge center'' discussion board.  One might assume that the latter is
-#' less authoritative than the former.  For example, the inference of cell size
-#' follows advice found at
-#' \url{https://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717},
-#' which contains a typo in an early posting that is
-#' corrected later on.
+#' The R code is based on information in the Nortek System Integrator Guide
+#' (2017), postings on the Nortek ``knowledge center'' discussion board, and
+#' discussions with Nortek engineers (Dec. 2020).
 #'
+#' @param type Either "aquadopp" for a standard aquadopp file, or
+#'     "aquadoppPlusMagnetometer" for a file which includes the raw magnetometer
+#'     data.
+#' 
 #' @param orientation Optional character string specifying the orientation of the
 #' sensor, provided for those cases in which it cannot be inferred from the
 #' data file.  The valid choices are `"upward"`, `"downward"`, and
@@ -2199,6 +2198,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 #' @family things related to adp data
 read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                           longitude=NA, latitude=NA,
+                          type=c("aquadopp", "aquadoppPlusMagnetometer"),
                           orientation, distance,
                           monitor=FALSE, despike=FALSE, processingLog,
                           debug=getOption("oceDebug"), ...)
@@ -2207,7 +2207,7 @@ read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         stop("empty file")
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
                            longitude=longitude, latitude=latitude,
-                           type="aquadopp", orientation=orientation, distance=distance,
+                           type=type, orientation=orientation, distance=distance,
                            monitor=monitor, despike=despike, processingLog=processingLog,
                            debug=debug, ...))
 }
@@ -2364,7 +2364,7 @@ read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @family things related to adp data
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=NA, latitude=NA,
-                            type=c("aquadoppHR", "aquadoppProfiler", "aquadopp"),
+                            type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "aquadoppPlusMagnetometer"),
                             orientation, distance,
                             monitor=FALSE, despike=FALSE, processingLog,
                             debug=getOption("oceDebug"),
@@ -2419,6 +2419,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     if (missing(to))
         to <- NA                       # will catch this later
+    if (type=="aquadoppPlusMagnetometer") oceDebug(debug, "Reading an aquadopp file which includes raw magnetometer data\n")
     oceDebug(debug, "read.adp.nortek(...,from=", format(from), ",to=", format(to), "...)\n")
     res <- new("adp")
     ##fromKeep <- from
@@ -2559,12 +2560,20 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     pressure.LSW <- readBin(buf[profileStart2 + 26], what="integer", n=profilesToRead, size=2, endian="little", signed=FALSE)
     pressure <- (as.integer(pressure.MSB)*65536 + pressure.LSW) * 0.001 # CHECK
     temperature <- 0.01 * readBin(buf[profileStart2 + 28], what="integer", n=profilesToRead, size=2, endian="little")
+    ## if type=aquadoppPlusMagnetometer read the extra fields -- issue 1758, and SIG 2020:
+    if (type == 'aquadoppPlusMagnetometer') {
+        soundSpeed <- 0.1 * readBin(buf[profileStart2 + 30], what="integer", n=profilesToRead, size=2, endian="little")
+        ensCount <- readBin(buf[profileStart2 + 32], what="integer", n=profilesToRead, size=2, endian="little")
+        compHx <- readBin(buf[profileStart2 + 34], what="integer", n=profilesToRead, size=2, endian="little")
+        compHy <- readBin(buf[profileStart2 + 36], what="integer", n=profilesToRead, size=2, endian="little")
+        compHz <- readBin(buf[profileStart2 + 38], what="integer", n=profilesToRead, size=2, endian="little")
+    }
     v <- array(double(), dim=c(profilesToRead, numberOfCells,  numberOfBeams))
     a <- array(raw(), dim=c(profilesToRead,  numberOfCells,  numberOfBeams)) # echo amplitude
     q <- array(raw(), dim=c(profilesToRead,  numberOfCells,  numberOfBeams)) # correlation
     velocityScale <- 1e-3              # FIXME: why not use the value in user$velocityScale?
     ## FIXME: why does 54 work, given 53 in docs? [see 38 of System Integrator Guide]
-    oShift <- switch(type, aquadoppHR=54, aquadoppProfiler=30, aquadopp=30)
+    oShift <- switch(type, aquadoppHR=54, aquadoppProfiler=30, aquadopp=30, aquadoppPlusMagnetometer=40)
     for (i in 1:profilesToRead) {
         o <- profileStart[i] + oShift
         ##oceDebug(debug, 'getting data chunk',i,' at file position',o,'\n')
@@ -2621,6 +2630,43 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         aDia[, , 1] <- buf[diaStart + 36]
         aDia[, , 2] <- buf[diaStart + 37]
         aDia[, , 3] <- buf[diaStart + 38]
+    } else if (type == 'aquadoppPlusMagnetometer') {
+        diaStart <- .Call("match3bytes", buf, 0xa5, 0x80, 0x15)
+        oceDebug(debug, "diaStart range:", range(diaStart), "\n")
+        diaStart <- subset(diaStart, diaStart >= profileStart[fromIndex])
+        diaStart <- subset(diaStart, diaStart <= profileStart[toIndex])
+        oceDebug(debug, "LATER diaStart range:", range(diaStart), "\n")
+        diaToRead <- length(diaStart)
+        diaStart2 <- sort(c(diaStart, diaStart+1))
+        timeDia <- ISOdatetime(2000+bcdToInteger(buf[diaStart+8]),
+                               bcdToInteger(buf[diaStart+9]), # month
+                               bcdToInteger(buf[diaStart+6]), # day
+                               bcdToInteger(buf[diaStart+7]), # hour
+                               bcdToInteger(buf[diaStart+4]), # min
+                               bcdToInteger(buf[diaStart+5]), # sec
+                               tz=tz)
+        ## aquadopp error: see table 5.4 (p40) and table 5.10 (p53) of system-integrator-manual_jan2011.pdf
+        errorDia <- readBin(buf[diaStart2 + 10], what="integer", n=diaToRead, size=2, endian="little", signed=FALSE)
+        headingDia <- 0.1 * readBin(buf[diaStart2 + 18], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        pitchDia <- 0.1 * readBin(buf[diaStart2 + 20], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        rollDia <- 0.1 * readBin(buf[diaStart2 + 22], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        pressureMSB <- readBin(buf[diaStart + 24], what="integer", n=diaToRead, size=1, endian="little", signed=FALSE)
+        pressureLSW <- readBin(buf[diaStart2 + 26], what="integer", n=diaToRead, size=2, endian="little", signed=FALSE)
+        pressureDia <- (as.integer(pressureMSB)*65536 + pressureLSW) * 0.001
+        temperatureDia <- 0.01 * readBin(buf[diaStart2 + 28], what="integer", n=diaToRead, size=2, endian="little")
+        soundSpeedDia <- 0.1 * readBin(buf[profileStart2 + 30], what="integer", n=profilesToRead, size=2, endian="little")
+        ensCountDia <- readBin(buf[profileStart2 + 32], what="integer", n=profilesToRead, size=2, endian="little")
+        compHxDia <- readBin(buf[profileStart2 + 34], what="integer", n=profilesToRead, size=2, endian="little")
+        compHyDia <- readBin(buf[profileStart2 + 36], what="integer", n=profilesToRead, size=2, endian="little")
+        compHzDia <- readBin(buf[profileStart2 + 38], what="integer", n=profilesToRead, size=2, endian="little")
+        vDia <- array(double(), dim=c(diaToRead,  1,  3))
+        vDia[, , 1] <- 0.001 * readBin(buf[diaStart2 + 40], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        vDia[, , 2] <- 0.001 * readBin(buf[diaStart2 + 42], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        vDia[, , 3] <- 0.001 * readBin(buf[diaStart2 + 44], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        aDia <- array(raw(), dim=c(diaToRead,  1,  3))
+        aDia[, , 1] <- buf[diaStart + 46]
+        aDia[, , 2] <- buf[diaStart + 47]
+        aDia[, , 3] <- buf[diaStart + 48]
     }
 
     res@data <- list(v=v, a=a, q=q,
@@ -2632,6 +2678,13 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      heading=heading,
                      pitch=pitch,
                      roll=roll)
+    if (type=="aquadoppPlusMagnetometer") {
+        res@data <- c(res@data, list(soundSpeed=soundSpeed,
+                                     ensCount=ensCount,
+                                     compHx=compHx,
+                                     compHy=compHy,
+                                     compHz=compHz))
+    }
     ## Sometimes there can be an extra sample, with a time of
     ## NA. Because the times are continuous without the extra sample,
     ## for now I'll just remove the entire sample
@@ -2649,7 +2702,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         warning(paste('Found and removed', length(tNA), 'NAs in the time vector.'))
     }
 
-    if (type == "aquadopp" && diaToRead > 0) {
+    if (type == "aquadopp" || type == "aquadoppPlusMagnetometer" && diaToRead > 0) {
         ## FIXME: there may be other things here, e.g. does it try to measure salinity?
         res@data$timeDia <- timeDia
         res@data$errorDia <- errorDia
@@ -2660,6 +2713,13 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         res@data$temperatureDia <- temperatureDia
         res@data$vDia <- vDia
         res@data$aDia <- aDia
+        if (type == "aquadoppPlusMagnetometer") {
+            res@data$soundSpeedDia <- soundSpeedDia
+            res@data$soundSpeedDia <- soundSpeedDia
+            res@data$compHxDia <- compHxDia
+            res@data$compHyDia <- compHyDia
+            res@data$compHzDia <- compHzDia
+        }
     }
 
     if (missing(orientation)) {

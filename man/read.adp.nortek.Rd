@@ -12,7 +12,7 @@ read.adp.nortek(
   tz = getOption("oceTz"),
   longitude = NA,
   latitude = NA,
-  type = c("aquadoppHR", "aquadoppProfiler", "aquadopp"),
+  type = c("aquadoppHR", "aquadoppProfiler", "aquadopp", "aquadoppPlusMagnetometer"),
   orientation,
   distance,
   monitor = FALSE,

@@ -6,7 +6,8 @@
 \usage{
 decodeHeaderNortek(
   buf,
-  type = c("aquadoppHR", "aquadoppProfiler", "aquadopp", "vector"),
+  type = c("aquadoppHR", "aquadoppProfiler", "aquadopp", "aquadoppPlusMagnetometer",
+    "vector"),
   debug = getOption("oceDebug"),
   ...
 )
