@@ -2198,7 +2198,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 #' @family things related to adp data
 read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                           longitude=NA, latitude=NA,
-                          type="aquadopp",
+                          type=c("aquadopp", "aquadoppPlusMagnetometer"),
                           orientation, distance,
                           monitor=FALSE, despike=FALSE, processingLog,
                           debug=getOption("oceDebug"), ...)
@@ -2714,11 +2714,11 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         res@data$vDia <- vDia
         res@data$aDia <- aDia
         if (type == "aquadoppPlusMagnetometer") {
-            res@datda$soundSpeedDia <- soundSpeedDia
-            res@datda$soundSpeedDia <- soundSpeedDia
-            res@datda$compHxDia <- compHxDia
-            res@datda$compHyDia <- compHyDia
-            res@datda$compHzDia <- compHzDia
+            res@data$soundSpeedDia <- soundSpeedDia
+            res@data$soundSpeedDia <- soundSpeedDia
+            res@data$compHxDia <- compHxDia
+            res@data$compHyDia <- compHyDia
+            res@data$compHzDia <- compHzDia
         }
     }
 
