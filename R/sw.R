@@ -524,7 +524,8 @@ swCSTp <- function(salinity, temperature=15, pressure=0,
 #'
 #' 2.  K. Hill, T. Dauphinee, and D. Woods. \dQuote{The Extension of the Practical
 #' Salinity Scale 1978 to Low Salinities.} IEEE Journal of Oceanic Engineering 11,
-#' no. 1 (January 1986): 109-12. https://doi.org/10.1109/JOE.1986.1145154.
+#' no. 1 (January 1986): 109-12.
+#' \doi{10.1109/JOE.1986.1145154}
 #'
 #' 3. `gsw_from_SP` online documentation, available at
 #' `http://www.teos-10.org/pubs/gsw/html/gsw_C_from_SP.html`
@@ -2247,11 +2248,11 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #' Diffusive Stability: Spiciness.} Progress in Oceanography, Observations of the
 #' 1997-98 El Nino along the West Coast of North America, 54, no. 1
 #' (July 1, 2002):493-501.
-#' \url{https://doi.org/10.1016/S0079-6611(02)00065-4}
+#' \doi{10.1016/S0079-6611(02)00065-4}
 #'
 #' 2.McDougall, Trevor J., and Oliver A. Krzysik. \dQuote{Spiciness.}
 #' Journal of Marine Research 73, no. 5 (September 1, 2015): 141-52.
-#' \url{https://doi.org/10.1357/002224015816665589}
+#' \doi{10.1357/002224015816665589}
 #'
 #' @family functions that calculate seawater properties
 swSpice <- function(salinity, temperature=NULL, pressure=NULL,

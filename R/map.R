@@ -1493,7 +1493,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 #' Professional Paper: 1395
 #' <https://pubs.er.usgs.gov/publication/pp1395>
-#' https://doi.org/10.3133/pp1395
+#' \doi{10.3133/pp1395}
 #'
 #' 2. Natural Resources Canada
 #' \url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
@@ -1520,7 +1520,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' 8. Šavrič, Bojan, Tom Patterson, and Bernhard Jenny.
 #' “The Equal Earth Map Projection.”
 #' International Journal of Geographical Information Science 33, no. 3 (March 4, 2019): 454–65.
-#' \url{https://doi.org/10.1080/13658816.2018.1504949}.
+#' \doi{10.1080/13658816.2018.1504949}
 #'
 #' @family functions related to maps
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
@@ -2522,7 +2522,7 @@ mapText <- function(longitude, latitude, labels, ...)
 #' 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 #' Professional Paper: 1395
 #' <https://pubs.er.usgs.gov/publication/pp1395>
-#' https://doi.org/10.3133/pp1395
+#' \doi{10.3133/pp1395}
 #'
 #' @examples
 #'\donttest{

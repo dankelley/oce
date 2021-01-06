@@ -1,13 +1,15 @@
 # **oce** <img src="oce-logo-3.png" align="right" alt="" width="120" />
 
+<!-- badges: start -->
 
-[![R build status](https://github.com/dankelley/oce/workflows/R-CMD-check/badge.svg)](https://github.com/dankelley/oce/actions)
+[![R-CMD-check](https://github.com/dankelley/oce/workflows/R-CMD-check/badge.svg)](https://github.com/dankelley/oce/actions)
 [![Codecov test coverage](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://codecov.io/gh/dankelley/oce?branch=develop)
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/oce)](https://cran.r-project.org/package=oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-month/oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
 [![Rdoc](https://www.rdocumentation.org/badges/version/oce)](https://www.rdocumentation.org/packages/oce)
+<!-- badges: end -->
 
 
 ## About oce

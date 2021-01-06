@@ -18,7 +18,7 @@ Below is the official citation (note that this DOI has web links for
 downloads):
 Argo (2017). Argo float data and metadata from Global Data Assembly Centre
 (Argo GDAC) - Snapshot of Argo GDAC of July, 8st 2017. SEANOE.
-\url{https://doi.org/10.17882/42182#50865}
+\doi{10.17882/42182#50865}
 }
 \examples{
 \donttest{

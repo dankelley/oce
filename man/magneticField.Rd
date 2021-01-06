@@ -109,7 +109,7 @@ website (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
 (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html} on March 3, 2020.
 \item Witze, Alexandra. \dQuote{Earth's Magnetic Field Is Acting up and Geologists Don't Know Why.}
 Nature 565 (January 9, 2019): 143.
-\url{https://doi.org/10.1038/d41586-019-00007-1}.
+\doi{10.1038/d41586-019-00007-1}
 }
 }
 \seealso{

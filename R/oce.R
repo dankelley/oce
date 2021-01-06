@@ -1312,9 +1312,10 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
     xlimGiven <- !missing(xlim)
     if (xlimGiven) {
         if (2 != length(xlim))
-            stop("'xlim' must be of length 2")
+            stop("'xlim' must be of length 2, but it is of length ", length(xlim))
         if (xlim[2] <= xlim[1])
-            stop("the elements of xlim must be in order")
+            stop("the elements of xlim must be in order, but they are ",
+                 format(xlim[1]), " and ", format(xlim[2]), ", respectively")
         ## Comment-out next line for issue 1508, since trim_ts
         ## fails if times are NA.
         ## ends <- trim_ts(x, xlim, 0.04)
@@ -3364,7 +3365,7 @@ numberAsHMS <- function(t, default=0)
 #'
 #' 4. EPIC times: software and manuals at \url{https://www.pmel.noaa.gov/epic/download/index.html#epslib};
 #' see also Denbo, Donald W., and Nancy N. Soreide. \dQuote{EPIC.} Oceanography 9 (1996).
-#' https://doi.org/10.5670/oceanog.1996.10.
+#' \doi{10.5670/oceanog.1996.10}
 #'
 #' 5. VMS times: https://en.wikipedia.org/wiki/Epoch_(computing)
 #'

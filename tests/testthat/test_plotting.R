@@ -35,3 +35,16 @@ test_that("multi-panel plots leave usr as it was originally", {
           expect_silent(plot(section))
           expect_equal(par('usr'), orig)
 })
+
+
+test_that("oce.plot.ts() catches xlim errors", {
+          t0 <- as.POSIXct("1967-07-04", tz="UTC") # Canada's centenary
+          t <- seq(t0, length.out=24, by="1 hour")
+          y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
+          expect_silent(oce.plot.ts(t,y))
+          xlim <- range(t)
+          expect_silent(oce.plot.ts(t,y, xlim=xlim))
+          expect_error(oce.plot.ts(t,y, xlim=rev(xlim)), "the elements of xlim must be in order")
+          expect_error(oce.plot.ts(t,y, xlim=c(xlim[1], NA)), "missing value where TRUE/FALSE needed")
+})
+

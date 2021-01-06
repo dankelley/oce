@@ -47,7 +47,7 @@ mapTissot(c(15, 15), col='red')
 \item Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 Professional Paper: 1395
 \url{https://pubs.er.usgs.gov/publication/pp1395}
-https://doi.org/10.3133/pp1395
+\doi{10.3133/pp1395}
 }
 }
 \seealso{

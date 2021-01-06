@@ -469,7 +469,7 @@ dev.off()}
 \item Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 Professional Paper: 1395
 \url{https://pubs.er.usgs.gov/publication/pp1395}
-https://doi.org/10.3133/pp1395
+\doi{10.3133/pp1395}
 \item Natural Resources Canada
 \url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
 \item “List of Map Projections.” In Wikipedia, July 13, 2020.
@@ -489,7 +489,7 @@ Chicago, IL: University of Chicago Press, 1993.
 \item Šavrič, Bojan, Tom Patterson, and Bernhard Jenny.
 “The Equal Earth Map Projection.”
 International Journal of Geographical Information Science 33, no. 3 (March 4, 2019): 454–65.
-\url{https://doi.org/10.1080/13658816.2018.1504949}.
+\doi{10.1080/13658816.2018.1504949}
 }
 }
 \seealso{

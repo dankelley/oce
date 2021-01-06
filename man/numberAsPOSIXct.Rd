@@ -88,7 +88,7 @@ numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
 \url{https://github.com/dankelley/oce/issues/738}
 \item EPIC times: software and manuals at \url{https://www.pmel.noaa.gov/epic/download/index.html#epslib};
 see also Denbo, Donald W., and Nancy N. Soreide. \dQuote{EPIC.} Oceanography 9 (1996).
-https://doi.org/10.5670/oceanog.1996.10.
+\doi{10.5670/oceanog.1996.10}
 \item VMS times: https://en.wikipedia.org/wiki/Epoch_(computing)
 }
 }
