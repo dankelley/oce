@@ -53,7 +53,7 @@ East.}
 \item{latitude}{optional signed number indicating the latitude in degrees
 North.}
 
-\item{type}{Either "aquadopp" for a standard aquadopp file, or
+\item{type}{Either "aquadopp" for a standard aquadopp file (the default), or
 "aquadoppPlusMagnetometer" for a file which includes the raw magnetometer
 data.}
 

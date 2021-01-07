@@ -2162,10 +2162,10 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 #' (2017), postings on the Nortek ``knowledge center'' discussion board, and
 #' discussions with Nortek engineers (Dec. 2020).
 #'
-#' @param type Either "aquadopp" for a standard aquadopp file, or
+#' @param type Either "aquadopp" for a standard aquadopp file (the default), or
 #'     "aquadoppPlusMagnetometer" for a file which includes the raw magnetometer
 #'     data.
-#' 
+#'
 #' @param orientation Optional character string specifying the orientation of the
 #' sensor, provided for those cases in which it cannot be inferred from the
 #' data file.  The valid choices are `"upward"`, `"downward"`, and
@@ -2198,7 +2198,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 #' @family things related to adp data
 read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                           longitude=NA, latitude=NA,
-                          type=c("aquadopp", "aquadoppPlusMagnetometer"),
+                          type="aquadopp",
                           orientation, distance,
                           monitor=FALSE, despike=FALSE, processingLog,
                           debug=getOption("oceDebug"), ...)
@@ -2419,6 +2419,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     if (missing(to))
         to <- NA                       # will catch this later
+    type <- match.arg(type)
     if (type=="aquadoppPlusMagnetometer") oceDebug(debug, "Reading an aquadopp file which includes raw magnetometer data\n")
     oceDebug(debug, "read.adp.nortek(...,from=", format(from), ",to=", format(to), "...)\n")
     res <- new("adp")
@@ -2437,7 +2438,6 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         open(file, "rb")
         on.exit(close(file))
     }
-    type <- match.arg(type)
     seek(file, 0, "start")
     seek(file, 0, "start")
     ## go to the end, so the next seek (to get to the data) reveals file length
@@ -2561,7 +2561,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     pressure <- (as.integer(pressure.MSB)*65536 + pressure.LSW) * 0.001 # CHECK
     temperature <- 0.01 * readBin(buf[profileStart2 + 28], what="integer", n=profilesToRead, size=2, endian="little")
     ## if type=aquadoppPlusMagnetometer read the extra fields -- issue 1758, and SIG 2020:
-    if (type == 'aquadoppPlusMagnetometer') {
+    if (type == "aquadoppPlusMagnetometer") {
         soundSpeed <- 0.1 * readBin(buf[profileStart2 + 30], what="integer", n=profilesToRead, size=2, endian="little")
         ensCount <- readBin(buf[profileStart2 + 32], what="integer", n=profilesToRead, size=2, endian="little")
         compHx <- readBin(buf[profileStart2 + 34], what="integer", n=profilesToRead, size=2, endian="little")
@@ -2630,7 +2630,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         aDia[, , 1] <- buf[diaStart + 36]
         aDia[, , 2] <- buf[diaStart + 37]
         aDia[, , 3] <- buf[diaStart + 38]
-    } else if (type == 'aquadoppPlusMagnetometer') {
+    } else if (type == "aquadoppPlusMagnetometer") {
         diaStart <- .Call("match3bytes", buf, 0xa5, 0x80, 0x15)
         oceDebug(debug, "diaStart range:", range(diaStart), "\n")
         diaStart <- subset(diaStart, diaStart >= profileStart[fromIndex])
