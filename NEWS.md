@@ -9,7 +9,7 @@
 * Add `data(tidalCurrent)` dataset of tidal currents from Foreman.
 * Add `data(topoNS)` dataset of Nova Scotia topography.
 * Add `oceAxis()`.
-* Add `preferAdjusted()` to make it easier to switch to 'adjusted' `argo-class` data.
+* Add `preferAdjusted()` for `argo-class` data.
 * Add `read.ctd.odv()`.
 * Add `snakeToCamel()` to convert variable names in e.g. Argo netcdf files.
 * Add `timeToArgoJuld()`.
