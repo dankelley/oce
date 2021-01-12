@@ -1,22 +1,22 @@
 #' Convert from ITS-90 to IPTS-68 temperature
 #'
 #' @template temperatureConversionTemplate
-#' @param temperature Vector of temperatures expressed in the ITS-90 scale.
-#' @return Temperature expressed in the IPTS-68 scale.
+#' @param temperature numeric vector of temperatures]in \eqn{^\circ}{deg}C on the ITS-90 scale.
+#' @return Corresponding temperatures in \eqn{^\circ}{deg}C on the IPTS-68 scale.
 T68fromT90 <- function(temperature) temperature * 1.00024
 
 #' Convert from IPTS-68 to ITS-90 temperature
 #'
 #' @template temperatureConversionTemplate
-#' @param temperature Vector of temperatures expressed in the IPTS-68 scale.
-#' @return temperature Temperature expressed in the ITS-90 scale.
+#' @param temperature numeric vector of temperatures in \eqn{^\circ}{deg}C on the IPTS-68 scale.
+#' @return Corresponding temperatures in \eqn{^\circ}{deg}C on the ITS-90 scale.
 T90fromT68 <- function(temperature) temperature / 1.00024
 
 #' Convert from ITS-48 to ITS-90 temperature
 #'
 #' @template temperatureConversionTemplate
-#' @param temperature Vector of temperatures expressed in the ITS-48 scale.
-#' @return Temperature expressed in the ITS-90 scale.
+#' @param temperature Vector of temperatures in \eqn{^\circ}{deg}C on the IPTS-48 scale.
+#' @return Corresponding temperatures in \eqn{^\circ}{deg}C on the ITS-90 scale.
 T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature * (100-temperature))/1.00024
 
 #' Look Within the First Element of a List for Replacement Values
@@ -709,7 +709,7 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", defa
 #'
 #' Finds the temperature that yields the given density, with the given salinity
 #' and pressure.  The method is a bisection search with temperature tolerance
-#' 0.001 \eqn{^\circ C}{degC}.
+#' 0.001 \eqn{^\circ}{deg}C.
 #'
 #' @param salinity *in-situ* salinity (PSU)
 #'
@@ -720,7 +720,7 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", defa
 #' @param eos equation of state to be used, either `"unesco"` or
 #' `"gsw"` (ignored at present).
 #'
-#' @return *In-situ* temperature (\eqn{^\circ C}{degC}) in the ITS-90
+#' @return *In-situ* temperature in \eqn{^\circ}{deg}C on the ITS-90
 #' scale.
 #'
 #' @author Dan Kelley

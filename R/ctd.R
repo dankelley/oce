@@ -969,8 +969,8 @@ setMethod(f="[[<-",
 #' argument, because it will be needed for computing actual salinity,
 #' using [swSCTp()].
 #'
-#' @param temperature *in-situ* temperature in \eqn{^\circ deg}C on
-#' the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
+#' @param temperature *in-situ* temperature in \eqn{^\circ}{deg}C
+#' on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
 #' [swRho()].
 #'
 #' @param pressure Vector of pressure values, one for each `salinity` and
@@ -1004,7 +1004,10 @@ setMethod(f="[[<-",
 #' @param time optional vector of times of observation
 #'
 #' @param other optional list of other data columns that are not in the standard
-#' list
+#' list. Note that this argument is **deprecated**, meaning that it
+#' will be removed soon. Please use `as.ctd()` to construct a [ctd-class]
+#' object, and then use [oceSetData()] later, to add other data,
+#' as needed.
 #'
 #' @param units an optional list containing units.  If not supplied,
 #' defaults are set for `pressure`, `temperature`, `salinity`,

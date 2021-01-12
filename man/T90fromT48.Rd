@@ -7,10 +7,10 @@
 T90fromT48(temperature)
 }
 \arguments{
-\item{temperature}{Vector of temperatures expressed in the ITS-48 scale.}
+\item{temperature}{Vector of temperatures in \eqn{^\circ}{deg}C on the IPTS-48 scale.}
 }
 \value{
-Temperature expressed in the ITS-90 scale.
+Corresponding temperatures in \eqn{^\circ}{deg}C on the ITS-90 scale.
 }
 \description{
 Today's instruments typically record in the ITS-90 scale, but some old
