@@ -18,12 +18,18 @@ download.topo(
 )
 }
 \arguments{
-\item{west, east}{Longitudes of the western and eastern sides of the box.}
+\item{west, east}{numeric values for the limits of the data-selection box, in degrees.
+These are converted to the -180 to 180 degree notation, if needed.
+Then, \code{west} is rounded down to the nearest 1/100th degree, and \code{east}
+is rounded up to the the nearest 1/100th degree. The results of these
+operations are used in constructing the query for the NOAA data server.}
 
-\item{south, north}{Latitudes of the southern and northern sides of the box.}
+\item{south, north}{latitude limits, treated in a way that
+corresponds to the longitude limits.}
 
 \item{resolution}{numeric value of grid spacing, in geographical minutes.
-The default value of 4 minutes corresponds to 4 nautical miles, or 7.4km.}
+The default value is 4 minutes, corresponding to 4 nautical miles (approx. 7.4km)
+in the north-south direction, and less in the east-west direction.}
 
 \item{destdir}{Optional string indicating the directory in which to store
 downloaded files. If not supplied, \code{"."} is used, i.e. the data file
@@ -58,27 +64,35 @@ Topographic data are downloaded from a data server that holds the ETOPO1
 dataset (Amante, C. and B.W. Eakins, 2009), and saved as a netCDF file whose
 name specifies the data request, if a file of that name is not already
 present on the local file system.  The return value is the name of the data
-file, and it's typical use is as the filename for a call to \code{\link[=read.topo]{read.topo()}}.
+file, and its typical use is as the filename for a call to \code{\link[=read.topo]{read.topo()}}.
 Given the rules on file naming, subsequent calls to \code{download.topo()}
 with identical parameters will simply return the name of the cached file,
 assuming the user has not deleted it in the meantime.
 }
 \details{
-For years, the server used by \code{download.topo()} was capable of
-returning netCDF files, but this was found to fail in late May of 2020.
-Luckily, the \code{\link[marmap:getNOAA.bathy]{marmap::getNOAA.bathy()}} function in the \CRANpkg{marmap}
-package was updated to handle the changes in the server, and
-\code{download.topo()} was able to pattern its URL construction on that function.
-The server also now has an API, which might suggest it will be less subject
-to change in the future.
+The specified longitude and latitude limits are rounded to 2 digits
+(corresponding to a footprint of approximately 1km), and these are used
+in the server request. If the resultant request would generate under
+1 row or column in the result, \link{download.topo} generates an
+error message and stops.
 }
+\section{Historical note relating to NOAA server changes}{
+
+In May of 2020, \code{\link[=download.topo]{download.topo()}} stopped working, evidently owing
+to changes in the NOAA server API, which had been inferred by reverse
+engineering a NOAA data-request website. Luckily, \code{\link[marmap:getNOAA.bathy]{marmap::getNOAA.bathy()}}
+was found to be working at that time, and so \code{\link[=download.topo]{download.topo()}} was revised based on
+that function.  The problem of keeping up with changing data-server APIs should
+be easier in the future, since NOAA has made the API public.
+}
+
 \examples{
 \dontrun{
 library(oce)
 topoFile <- download.topo(west=-66, east=-60, south=43, north=47,
                           resolution=1, destdir="~/data/topo")
 topo <- read.topo(topoFile)
-imagep(topo, zlim=c(-400, 400), drawTriangles=TRUE)
+imagep(topo, zlim=c(-400, 400), col=oceColorsTwo, drawTriangles=TRUE)
 if (requireNamespace("ocedata", quietly=TRUE)) {
     data(coastlineWorldFine, package="ocedata")
     lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
