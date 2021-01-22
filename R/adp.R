@@ -1989,6 +1989,8 @@ setMethod(f="plot",
                           } else {
                               oceDebug(debug, "a velocity component image/timeseries\n")
                               z <- x[["v", j]][, , which[w]]
+                              oceDebug(debug, "class(z) after subsetting for 3rd dimension:: ", class(z), "\n")
+                              ## oceDebug(debug, "dim(z): ", paste(dim(z), collapse="x"), "\n")
                               zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
                               oceDebug(debug, "zlab:", zlab, "\n")
                               xdistance <- x[["distance", j]]
@@ -1997,8 +1999,18 @@ setMethod(f="plot",
                               oceDebug(debug, vectorShow(y.look))
                               if (0 == sum(y.look))
                                   stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse=","), ")")
-                              zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
-                                  if (breaksGiven) NULL else max(abs(z[, y.look]), na.rm=TRUE) * c(-1, 1)
+                              zlim <- if (zlimGiven) {
+                                  zlimAsGiven[w, ]
+                              } else {
+                                  if (breaksGiven) {
+                                      NULL
+                                  } else {
+                                      if (is.array(z)){
+                                          max(abs(z[, y.look]), na.rm=TRUE) * c(-1, 1)
+                                      } else {
+                                          max(abs(z), na.rm=TRUE) * c(-1, 1)
+                                      }
+                                  }
                               }
                               oceDebug(debug, "zlim: ", paste(zlim, collapse=" "), "\n")
                           }
