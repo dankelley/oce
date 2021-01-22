@@ -1291,6 +1291,7 @@ beamName <- function(x, which)
 #'
 #' @param despike if `TRUE`, [despike()] will be used to clean
 #' anomalous spikes in heading, etc.
+#'
 #' @template adpTemplate
 #'
 #' @author Dan Kelley and Clark Richards
@@ -1303,6 +1304,8 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
                      debug=getOption("oceDebug"),
                      ...)
 {
+    if (!interactive())
+        monitor <- FALSE
     fromGiven <- !missing(from) # FIXME document THIS
     toGiven <- !missing(to) # FIXME document THIS
     byGiven <- !missing(by) # FIXME document THIS

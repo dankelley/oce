@@ -523,8 +523,10 @@ is.ad2cp <- function(x)
 #' can be used to alter the slantwise beam angle of an existing object,
 #' and this will alter any later conversion from beam to xyz coordinates.
 #'
-#' @param monitor Logical value indicating whether the progress in reading
-#' the file is to be illustrated by calling [txtProgressBar()].
+#' @param monitor boolean value indicating whether to indicate the progress
+#' of reading the file, by using [txtProgressBar()] or otherwise.  The value
+#' of `monitor` is changed to `FALSE` automatically, for non-interactive
+#' sessions.
 #'
 #' @param despike Ignored by this function, and provided only for similarity
 #' to other adp-reading functions.
@@ -564,6 +566,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
                            monitor=FALSE, despike=FALSE, processingLog,
                            debug=getOption("oceDebug"), ...)
 {
+    if (!interactive())
+        monitor <- FALSE
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
     if (!missing(orientation))
@@ -572,6 +576,8 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
         warning("ignoring 'distance' (see documentation)")
     if (!missing(despike))
         warning("ignoring 'despike' (see documentation)")
+    if (!interactive())
+        monitor <- FALSE
     fromGiven <- !missing(from)
     toGiven <- !missing(to)
     byGiven <- !missing(by)
@@ -2205,6 +2211,8 @@ read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
+    if (!interactive())
+        monitor <- FALSE
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
                            longitude=longitude, latitude=latitude,
                            type=type, orientation=orientation, distance=distance,
@@ -2262,6 +2270,8 @@ read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
+    if (!interactive())
+        monitor <- FALSE
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
                            longitude=longitude, latitude=latitude,
                            type="aquadoppHR",
@@ -2372,6 +2382,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
+    if (!interactive())
+        monitor <- FALSE
     ##degToRad <- atan2(1, 1) / 45
     profileStart <- NULL # prevents scope warning in rstudio; defined later anyway
     bisectAdpNortek <- function(buf, t.find, add=0, debug=0) {

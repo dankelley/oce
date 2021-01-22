@@ -535,7 +535,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' If the result of these calculations is that `by` exceeds 1, then
 #' messages are printed to alert the user that the file will be decimated,
 #' and also `monitor` is set to `TRUE`, so that a textual progress bar
-#' is shown.
+#' is shown (if the session is interactive).
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -685,6 +685,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          ...)
 {
     ##. warningBinaryFixedAttitudeCount <- 0
+    if (!interactive())
+        monitor <- FALSE
     warningUnknownCode <- list()
     fromGiven <- !missing(from) # FIXME document THIS
     toGiven <- !missing(to) # FIXME document THIS
@@ -837,10 +839,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 by <- max(1L, as.integer(by))
                 if (by > 1) {
                     warning("setting by=", by, " for a large RDI file\n")
-                    message("setting by=", by, " for a large RDI file")
-                    if (!monitor) {
+                    if (!monitor && interactive()) {
                         warning("setting monitor=TRUE for a large RDI file\n")
-                        message("setting monitor=TRUE for a large RDI file")
                         monitor <- TRUE
                     }
                 }

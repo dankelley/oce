@@ -54,9 +54,10 @@ North.}
 
 \item{type}{character string indicating the type of instrument.}
 
-\item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
-in reading the file, either by printing a dot for each profile or by writing
-a textual progress bar with \code{\link[=txtProgressBar]{txtProgressBar()}}.}
+\item{monitor}{boolean value indicating whether to indicate the progress
+of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value
+of \code{monitor} is changed to \code{FALSE} automatically, for non-interactive
+sessions.}
 
 \item{despike}{if \code{TRUE}, \code{\link[=despike]{despike()}} will be used to clean
 anomalous spikes in heading, etc.}
@@ -241,7 +242,7 @@ ratio is less than 1.
 If the result of these calculations is that \code{by} exceeds 1, then
 messages are printed to alert the user that the file will be decimated,
 and also \code{monitor} is set to \code{TRUE}, so that a textual progress bar
-is shown.
+is shown (if the session is interactive).
 }
 
 \section{Development Notes}{

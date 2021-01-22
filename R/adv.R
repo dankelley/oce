@@ -363,6 +363,8 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
+    if (!interactive())
+        monitor <- FALSE
     type <- match.arg(type)
     ## FIXME: all these read.adv variants should have the same argument list
     if (type == "nortek")
