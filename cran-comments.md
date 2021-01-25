@@ -1,16 +1,34 @@
-## Test environments
+# Tests
 
-* local MacOS-11.1 R-4.0.3 CMD (BUILD, INSTALL, CHECK): no ERRORs or WARNINGs,
-  but the usual note on the author, plus another NOTE on sub-directories of 1MB
-  or more: (R 3.0Mb, data 1.2Mb, doc 2.3Mb, help 2.8Mb).
-    
-* R-CMD-check github action clean on windows-latest (release), ubutntu-20.04
-  (release and devel), but failure on macOS-latest (release) owing to general
-  problems with that action relating to the connection with gfortran (see
-  https://github.com/r-lib/actions/pull/232 for what may be a solution to that
-  general problem).
+## Local Tests
 
-## devtools::revdep_check() results
+Local MacOS-11.1 R-4.0.3 CMD (BUILD, INSTALL, CHECK): no ERRORs or WARNINGs but
+the usual note on the author, plus another NOTE on sub-directories of 1MB or
+more: (R 3.0Mb, data 1.2Mb, doc 2.3Mb, help 2.8Mb).
+
+## Github R-CMD-check Action Tests
+
+R-CMD-check github action reports no problems on
+* windows-latest (release)
+* ubuntu-20.04 (release)
+* ubuntu-20.04 (devel)
+
+However, it reports **failure** on macOS-latest (release), owing R-CMD-check
+having difficulty in locating gfortran.  There is a pull request
+(https://github.com/r-lib/actions/pull/232) that ought to solve this general
+problem, which is not restricted to `oce`.
+
+## Remote Windows Checks
+
+Using
+```R
+devtools:::check_win()
+```
+yields
+```
+```
+
+# Reverse Dependency Checks
 
 Using
 

@@ -197,7 +197,7 @@ UNESCO/ICES/SCOR/IAPSO Joint Panel on Oceanographic Tables and Standards, 1983.
 \item McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
 "Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
 Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730–41.
-\url{https://journals.ametsoc.org/jtech/article/20/5/730/2543/Accurate-and-Computationally-Efficient-Algorithms}.
+\code{https://journals.ametsoc.org/jtech/article/20/5/730/2543/Accurate-and-Computationally-Efficient-Algorithms}.
 }
 }
 \seealso{

@@ -4185,7 +4185,7 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #'
 #' Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
 #'
-#' The isopycnal curves (along which density is constant) are 
+#' The isopycnal curves (along which density is constant) are
 #' drawn with [drawIsopycnals()], which also places
 #' labels in the margins showing density minus 1000 \eqn{kg/m^3}{kg/m^3}.
 #' If `trimIsopycnals` is `TRUE` (which is the default), these curves
@@ -4338,7 +4338,7 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' * McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
 #' "Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
 #' Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730–41.
-#' \url{https://journals.ametsoc.org/jtech/article/20/5/730/2543/Accurate-and-Computationally-Efficient-Algorithms}.
+#' \code{https://journals.ametsoc.org/jtech/article/20/5/730/2543/Accurate-and-Computationally-Efficient-Algorithms}.
 #'
 #' @family functions that plot oce data
 #' @family things related to ctd data
