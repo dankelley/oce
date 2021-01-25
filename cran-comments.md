@@ -14,9 +14,13 @@ R-CMD-check github action reports no problems on
 * ubuntu-20.04 (devel)
 
 However, it reports **failure** on macOS-latest (release), owing R-CMD-check
-having difficulty in locating gfortran.  There is a pull request
-(https://github.com/r-lib/actions/pull/232) that ought to solve this general
-problem, which is not restricted to `oce`.
+having a difficulty (not related to `oce`) in locating gfortran. I reported
+this as an issue, and in short order a pull request
+(https://github.com/r-lib/actions/pull/232) was proposed as a solution.  This
+PR has not yet been merged into R-CMD-check, but there is reason to expect
+clean results for `oce` when it is merged, given that there are no problems on
+my own macOS machine, or in R-hub tests.
+
 
 ## Remote Windows Checks
 
@@ -24,14 +28,11 @@ Using
 ```R
 devtools:::check_win()
 ```
-yields
-```
-```
+yields clean results, with just the usual NOTE about the author.
 
 # Reverse Dependency Checks
 
 Using
-
 ```
 devtools::install_github("r-lib/revdepcheck")
 revdep_check(timeout=30*60,num_workers=4)
