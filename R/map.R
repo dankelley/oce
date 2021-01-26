@@ -2645,7 +2645,7 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 #' arguments are ignored.  This objects that are possible include those of type
 #' `coastline`.
 #'
-#' @param latitude numeric vctor of latitudes of points to be plotted.
+#' @param latitude numeric vector of latitudes of points to be plotted.
 #'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
@@ -3503,7 +3503,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             }
         } else if (method == 3) {
             colPolygon <- rep(missingColor, ni*nj)
-            ## findInterval() requires the 2nd arg to be in order
+            ## findInterval() requires the second arg to be in order
             ## FIXME: do we need to reorder after the findInterval()?
             ## next is bad because it lengthens col
             ##bad o <- order(breaks)

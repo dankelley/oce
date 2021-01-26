@@ -10,7 +10,7 @@
 #' astronomical literature to use strings to represent the results,
 #' e.g. with \eqn{11^h40^m48^s.10}{11h40m48s.10} for the
 #' value used in the \dQuote{Examples}; see Chapter 1 of
-#' Meeuse (1991) for more on angle calculation and representation.
+#' Meeus (1991) for more on angle calculation and representation.
 #'
 #' @param angle numerical value giving an angle in degrees
 #'
@@ -26,7 +26,7 @@
 #' angle2hms(177.74208) # string component 11h50m58s.10
 #'
 #' @references
-#' * Meeus, Jean. Astronomical Algorithms. 2nd ed.
+#' * Meeus, Jean. Astronomical Algorithms. Second Edition.
 #' Richmond, Virginia, USA: Willmann-Bell, 1991.
 #'
 #' @author Dan Kelley
@@ -59,7 +59,7 @@ angle2hms <- function(angle)
 #'
 #' @param lambda longitude, in degrees, or a data frame containing
 #' `lambda`, `beta`, and `epsilon`, in which case the next to
-#' arguments are ignored.
+#' arguments are ignored
 #'
 #' @param beta geocentric latitude, in degrees
 #'
@@ -71,10 +71,10 @@ angle2hms <- function(angle)
 #' @author Dan Kelley, based on formulae in references 1 and 2.
 #'
 #' @references
-#' * Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+#' * Meeus, Jean. Astronomical Formulas for Calculators. Second Edition.
 #' Richmond, Virginia, USA: Willmann-Bell, 1982.
 #'
-#' * Meeus, Jean. Astronomical Algorithms. 2nd ed.
+#' * Meeus, Jean. Astronomical Algorithms. Second Edition.
 #' Richmond, Virginia, USA: Willmann-Bell, 1991.
 #'
 #' @family things related to astronomy
@@ -118,10 +118,10 @@ eclipticalToEquatorial <- function(lambda, beta, epsilon)
 #' @author Dan Kelley, based on formulae in references 1 and 2.
 #'
 #' @references
-#' * Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+#' * Meeus, Jean. Astronomical Formulas for Calculators. Second Edition.
 #' Richmond, Virginia, USA: Willmann-Bell, 1982.
 #'
-#' * Meeus, Jean. Astronomical Algorithms. 2nd ed.
+#' * Meeus, Jean. Astronomical Algorithms. Second Edition.
 #' Richmond, Virginia, USA: Willmann-Bell, 1991.
 #'
 #' @family things related to astronomy
@@ -155,7 +155,7 @@ equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitud
 #' @author Dan Kelley
 #'
 #' @references
-#' * Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+#' * Meeus, Jean. Astronomical Formulas for Calculators. Second Edition.
 #' Richmond, Virginia, USA: Willmann-Bell, 1982.
 #'
 #' @examples
@@ -187,7 +187,7 @@ siderealTime <- function(t)
 #' Convert a POSIXt time (given as either the `t` argument
 #' or as the `year`, `month`, and other arguments) to a Julian day,
 #' using the method provided in
-#' Chapter 3 of Meeuse (1982).  It should be noted that
+#' Chapter 3 of Meeus (1982).  It should be noted that
 #' Meeus and other astronomical treatments use fractional days, whereas the
 #' present code follows the R convention of specifying days in whole numbers,
 #' with hours, minutes, and seconds also provided as necessary.  Conversion is
@@ -229,7 +229,7 @@ siderealTime <- function(t)
 #' @author Dan Kelley
 #'
 #' @references
-#' * Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+#' * Meeus, Jean. Astronomical Formulas for Calculators. Second Edition.
 #' Richmond, Virginia, USA: Willmann-Bell, 1982.
 #'
 #' @examples
@@ -277,7 +277,7 @@ julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz=
 #' @author Dan Kelley
 #'
 #' @references
-#' * Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+#' * Meeus, Jean. Astronomical Formulas for Calculators. Second Edition.
 #' Richmond, Virginia, USA: Willmann-Bell, 1982.
 #'
 #' @examples

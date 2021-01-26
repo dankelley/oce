@@ -400,7 +400,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'
 #' @section Handling of old file formats:
 #' 1. Early PD0 file formats stored the year of sampling with a different
-#' base year than that used in modern files.  To accomodate this,
+#' base year than that used in modern files.  To accommodate this,
 #' `read.adp.rdi` examines the inferred year, and if it is greater than
 #' 2050, then 100 years are subtracted from the time. This offset was
 #' inferred by tests with sample files, but *not* from RDI documentation,

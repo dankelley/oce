@@ -114,7 +114,7 @@ distance (in km) to the first point in the section, \code{"track"} for distance
 along the cruise track, \code{"longitude"}, \code{"latitude"},
 \code{"time"} or \code{"spine"} (distance along a spine that was added
 with \code{\link[=addSpine]{addSpine()}}).  Note that if the x values are not in order, they will be put in
-order, and since tha might not make physical sense, a warning will be issued.}
+order, and since that might not make physical sense, a warning will be issued.}
 
 \item{ytype}{Type of y axis for contour plots, either \code{"pressure"} for
 pressure (in dbar, with zero at the surface) or \code{"depth"} for depth (in m
@@ -161,7 +161,7 @@ interpolated to that topography and the results are shown with a polygon.
 See \dQuote{Examples}.}
 
 \item{showSpine}{logical value used if \code{which="map"}.  If \code{showSpine} is
-\code{TRUE} and \code{section} has had a spine added wih \code{\link[=addSpine]{addSpine()}}, then
+\code{TRUE} and \code{section} has had a spine added with \code{\link[=addSpine]{addSpine()}}, then
 the spine is drawn in blue.}
 
 \item{drawPalette}{Logical value indicating whether to draw a palette when \code{ztype="image"}

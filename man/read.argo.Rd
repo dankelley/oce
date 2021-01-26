@@ -54,7 +54,7 @@ then \code{PRES} (pressure) data are sought in the file, along with
 are stored with names created as explained in the
 \dQuote{Variable renaming convention} section below. Note that
 flags, which are stored variables ending in \code{"_QC"} in the netcdf
-fil, are stored in the \code{flags} item within the \code{metadata} slot
+file, are stored in the \code{flags} item within the \code{metadata} slot
 of the returned object; thus, for example,
 \code{PRES_QC} is stored as \code{pressure} in \code{flags}.
 }

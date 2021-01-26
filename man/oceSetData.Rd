@@ -39,8 +39,8 @@ Create a copy of an object in which some element of its
 \code{data} slot has been altered, or added.
 }
 \details{
-The trickest argument to set is the \code{unit}.  There are three
-possibilitis for this:
+The trickiest argument to set is the \code{unit}.  There are three
+possibilities for this:
 \enumerate{
 \item \code{unit} is a named or unnamed \code{\link[=list]{list()}} that contains two items.
 If the list is named, the names must be

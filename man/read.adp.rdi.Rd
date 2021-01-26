@@ -110,7 +110,7 @@ with \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
 
 \enumerate{
 \item Early PD0 file formats stored the year of sampling with a different
-base year than that used in modern files.  To accomodate this,
+base year than that used in modern files.  To accommodate this,
 \code{read.adp.rdi} examines the inferred year, and if it is greater than
 2050, then 100 years are subtracted from the time. This offset was
 inferred by tests with sample files, but \emph{not} from RDI documentation,

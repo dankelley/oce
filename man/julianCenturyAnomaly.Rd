@@ -27,7 +27,7 @@ cat(format(t), "is Julian Century anomaly", format(jca, digits=8), "\n")
 }
 \references{
 \itemize{
-\item Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+\item Meeus, Jean. Astronomical Formulas for Calculators. Second Edition.
 Richmond, Virginia, USA: Willmann-Bell, 1982.
 }
 }

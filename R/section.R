@@ -1060,7 +1060,7 @@ sectionAddCtd <- sectionAddStation
 #' along the cruise track, `"longitude"`, `"latitude"`,
 #' `"time"` or `"spine"` (distance along a spine that was added
 #' with [addSpine()]).  Note that if the x values are not in order, they will be put in
-#' order, and since tha might not make physical sense, a warning will be issued.
+#' order, and since that might not make physical sense, a warning will be issued.
 #'
 #' @param longitude0,latitude0 Location of the point from which distance is measured.
 #' These values are ignored unless `xtype` is `"distance"`.
@@ -1120,7 +1120,7 @@ sectionAddCtd <- sectionAddStation
 #' See \dQuote{Examples}.
 #'
 #' @param showSpine logical value used if `which="map"`.  If `showSpine` is
-#' `TRUE` and `section` has had a spine added wih [addSpine()], then
+#' `TRUE` and `section` has had a spine added with [addSpine()], then
 #' the spine is drawn in blue.
 #'
 #' @param drawPalette Logical value indicating whether to draw a palette when `ztype="image"`

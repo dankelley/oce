@@ -997,7 +997,7 @@ argoDecodeFlags <- function(f) # local function
 #' are stored with names created as explained in the
 #' \dQuote{Variable renaming convention} section below. Note that
 #' flags, which are stored variables ending in `"_QC"` in the netcdf
-#' fil, are stored in the `flags` item within the `metadata` slot
+#' file, are stored in the `flags` item within the `metadata` slot
 #' of the returned object; thus, for example,
 #' `PRES_QC` is stored as `pressure` in `flags`.
 #'

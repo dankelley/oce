@@ -50,7 +50,7 @@ Meeus.
 Convert a POSIXt time (given as either the \code{t} argument
 or as the \code{year}, \code{month}, and other arguments) to a Julian day,
 using the method provided in
-Chapter 3 of Meeuse (1982).  It should be noted that
+Chapter 3 of Meeus (1982).  It should be noted that
 Meeus and other astronomical treatments use fractional days, whereas the
 present code follows the R convention of specifying days in whole numbers,
 with hours, minutes, and seconds also provided as necessary.  Conversion is
@@ -68,7 +68,7 @@ expect_equal(julianDay(t), 2443259.9)
 }
 \references{
 \itemize{
-\item Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+\item Meeus, Jean. Astronomical Formulas for Calculators. Second Edition.
 Richmond, Virginia, USA: Willmann-Bell, 1982.
 }
 }

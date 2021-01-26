@@ -38,9 +38,9 @@ from equations 12.5 and 12.6 of reference 2.
 }
 \references{
 \itemize{
-\item Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+\item Meeus, Jean. Astronomical Formulas for Calculators. Second Edition.
 Richmond, Virginia, USA: Willmann-Bell, 1982.
-\item Meeus, Jean. Astronomical Algorithms. 2nd ed.
+\item Meeus, Jean. Astronomical Algorithms. Second Edition.
 Richmond, Virginia, USA: Willmann-Bell, 1991.
 }
 }

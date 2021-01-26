@@ -442,7 +442,7 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, debug=getOption("oceDe
 #' Read a NOAA format for AXBTs
 #'
 #'
-#' This file format, described at https://www.aoml.noaa.gov/phod/dhos/axbt.php, contains a header
+#' This file format, described at \code{https://www.aoml.noaa.gov/phod/dhos/axbt.php}, contains a header
 #' line, followed by data lines.  For example, a particular file at this site has first
 #' three lines as follows.
 #' ```

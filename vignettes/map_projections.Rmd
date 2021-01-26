@@ -103,11 +103,11 @@ Note that this `plot` is being transferred to the specialized method for a
 `coastline` object (defined by the `oce` package) and that this means that
 there are some arguments in addition to those of the normal `plot` function.
 In this example, the second and third arguments specify the central spot of
-interest, and the fourth is a suggested diagaonal span, in kilometres.  (The
+interest, and the fourth is a suggested diagonal span, in kilometres.  (The
 span is not always obeyed exactly, and the results also depend on aspect ratio
 of the plot device.)
 
-The graphs shown above share a common stength: the axes for longitude and
+The graphs shown above share a common strength: the axes for longitude and
 latitude are orthogonal, and the scale along each axis is linear. This makes it
 easy for readers to identify the location of features of the diagrams. However,
 using linear axes on large-scale views leads to distortions of coastline shapes
@@ -174,7 +174,7 @@ arguments, and for citations to external resources that explain what they mean.
 
 ## Mid-latitude views
 
-The Lambert Conformal view is often used in maps that span wide longitudal
+The Lambert Conformal view is often used in maps that span wide longitudinal
 ranges, e.g. a map of Canada may be produced as follows.
 
 ```{r}

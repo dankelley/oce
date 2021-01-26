@@ -64,10 +64,10 @@
 #' @seealso The equivalent function for the sun is [sunAngle()].
 #'
 #' @references
-#' * Meeus, Jean. Astronomical Formulas for Calculators. 2nd ed.
+#' * Meeus, Jean. Astronomical Formulas for Calculators. Second Edition.
 #' Richmond, Virginia, USA: Willmann-Bell, 1982.
 #'
-#' * Meeus, Jean. Astronomical Algorithms. 2nd ed.
+#' * Meeus, Jean. Astronomical Algorithms. Second Edition.
 #' Richmond, Virginia, USA: Willmann-Bell, 1991.
 #'
 #' @examples

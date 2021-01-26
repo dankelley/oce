@@ -70,7 +70,7 @@ retrieve derived items.
 }
 
 \references{
-Information about LISS instruments is provided at
+Information about LISST instruments is provided at
 the manufacturer's website, \verb{https://www.sequoiasci.com}.
 }
 \seealso{
