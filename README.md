@@ -1,6 +1,4 @@
-# **oce**
-
-![oce logo](oce-logo-3.png)
+# oce <img srg="oce-logo-3.png" alight="right", height="95" />
 
 <!-- badges: start -->
 
