@@ -34,8 +34,8 @@ yields clean results, with just the usual NOTE about the author.
 
 Using
 ```
-devtools::install_github("r-lib/revdepcheck")
-revdep_check(timeout=30*60,num_workers=4)
+## devtools::install_github("r-lib/revdepcheck")
+revdepcheck::revdep_check(timeout=30*60,num_workers=4)
 ```
 yields
 ```
