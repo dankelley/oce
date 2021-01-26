@@ -879,7 +879,7 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
 #' @references
 #'
 #' * Carval, Thierry, Bob Keeley, Yasushi Takatsuki, Takashi Yoshida, Stephen Loch Loch,
-#' Claudia Schmid, and Roger Goldsmith. Argo User’s Manual V3.3. Ifremer, 2019.
+#' Claudia Schmid, and Roger Goldsmith. Argo User's Manual V3.3. Ifremer, 2019.
 #' \doi{10.13155/29825}
 #'
 #' @family functions relating to data-quality flags

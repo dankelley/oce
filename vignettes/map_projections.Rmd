@@ -297,10 +297,10 @@ if (requireNamespace("ocedata", quietly=TRUE)) {
 # References
 
 PROJ contributors. "PROJ Coordinate Transformation Software Library." Open
-Source Geospatial Foundation, 2020. 
+Source Geospatial Foundation, 2020.
 <https://proj.org/>
 
-Snyder, John P. "Map Projections—a Working Manual." Washington: U.S.
+Snyder, John P. "Map Projections-a Working Manual." Washington: U.S.
 Geological survey professional paper 1395, 1987.
 <https://pubs.usgs.gov/pp/1395/report.pdf>
 

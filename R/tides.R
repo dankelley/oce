@@ -128,7 +128,7 @@ NULL
 #'
 #' @references
 #'
-#' 1. Foreman, M. G. G. “Manual for Tidal Currents Analysis and Prediction.”
+#' 1. Foreman, M. G. G. "Manual for Tidal Currents Analysis and Prediction."
 #'    Pacific Marine Science Report.
 #'    British Columbia, Canada: Institute of Ocean Sciences, Patricia Bay, 1978.
 #' 2. \code{https://www.dfo-mpo.gc.ca/science/documents/data-donnees/tidal-marees/tidpack.zip}

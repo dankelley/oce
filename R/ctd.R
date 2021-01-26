@@ -4337,7 +4337,7 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #'
 #' * McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
 #' "Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
-#' Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730–41.
+#' Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730-41.
 #' \code{https://journals.ametsoc.org/jtech/article/20/5/730/2543/Accurate-and-Computationally-Efficient-Algorithms}.
 #'
 #' @family functions that plot oce data
@@ -4645,7 +4645,7 @@ plotTS <- function (x,
 #'
 #' * McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
 #' "Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
-#' Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730–41.
+#' Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730-41.
 #' \code{https://journals.ametsoc.org/jtech/article/20/5/730/2543/Accurate-and-Computationally-Efficient-Algorithms}.
 #'
 #' @author Dan Kelley

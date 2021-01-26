@@ -472,10 +472,10 @@ Professional Paper: 1395
 \doi{10.3133/pp1395}
 \item Natural Resources Canada
 \url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
-\item “List of Map Projections.” In Wikipedia, July 13, 2020.
+\item "List of Map Projections." In Wikipedia, July 13, 2020.
 \url{https://en.wikipedia.org/w/index.php?title=List_of_map_projections}.
 \item PROJ contributors (2020).
-“PROJ Coordinate Transformation Software Library.”
+"PROJ Coordinate Transformation Software Library."
 Open Source Geospatial Foundation, n.d.
 \url{https://proj.org}.
 \item Bivand, Roger (2020) Why have CRS, projections and transformations changed?
@@ -487,8 +487,8 @@ Flattening the Earth: Two Thousand Years of Map Projections.
 Chicago, IL: University of Chicago Press, 1993.
 \url{https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html}
 \item Šavrič, Bojan, Tom Patterson, and Bernhard Jenny.
-“The Equal Earth Map Projection.”
-International Journal of Geographical Information Science 33, no. 3 (March 4, 2019): 454–65.
+"The Equal Earth Map Projection."
+International Journal of Geographical Information Science 33, no. 3 (March 4, 2019): 454-65.
 \doi{10.1080/13658816.2018.1504949}
 }
 }

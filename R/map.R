@@ -1498,11 +1498,11 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' 2. Natural Resources Canada
 #' \url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
 #'
-#' 3. “List of Map Projections.” In Wikipedia, July 13, 2020.
+#' 3. "List of Map Projections." In Wikipedia, July 13, 2020.
 #' \url{https://en.wikipedia.org/w/index.php?title=List_of_map_projections}.
 #'
 #' 4. PROJ contributors (2020).
-#' “PROJ Coordinate Transformation Software Library.”
+#' "PROJ Coordinate Transformation Software Library."
 #' Open Source Geospatial Foundation, n.d.
 #' \url{https://proj.org}.
 #'
@@ -1518,8 +1518,8 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' \url{https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html}
 #'
 #' 8. Šavrič, Bojan, Tom Patterson, and Bernhard Jenny.
-#' “The Equal Earth Map Projection.”
-#' International Journal of Geographical Information Science 33, no. 3 (March 4, 2019): 454–65.
+#' "The Equal Earth Map Projection."
+#' International Journal of Geographical Information Science 33, no. 3 (March 4, 2019): 454-65.
 #' \doi{10.1080/13658816.2018.1504949}
 #'
 #' @family functions related to maps

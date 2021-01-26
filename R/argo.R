@@ -1970,7 +1970,7 @@ setMethod(f="plot",
 #'
 #' @references
 #' 1. Wong, Annie, Robert Keeley, Thierry Carval, and Argo Data Management Team.
-#' “Argo Quality Control Manual for CTD and Trajectory Data,” January 1, 2020.
+#' "Argo Quality Control Manual for CTD and Trajectory Data," January 1, 2020.
 #' \url{https://archimer.ifremer.fr/doc/00228/33951/}.
 #'
 #' @examples
@@ -2104,7 +2104,7 @@ setMethod("handleFlags", signature=c(object="argo", flags="ANY", actions="ANY", 
 #' all.equal(argo[["salinityUnitsAdjusted"]], argoAdjusted[["salinityUnits"]])
 #'
 #' @references
-#' 1. Argo Data Management Team. "Argo User’s Manual V3.3." Ifremer,
+#' 1. Argo Data Management Team. "Argo User's Manual V3.3." Ifremer,
 #' November 28, 2019.
 #' \doi{10.13155/29825}
 #'
