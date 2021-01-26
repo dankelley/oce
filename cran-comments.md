@@ -28,7 +28,12 @@ Using
 ```R
 devtools:::check_win()
 ```
-yields clean results, with just the usual NOTE about the author.
+yields no errors, but there is a WARNING on R-3.6.3, relating to a PNG
+reference in the README.md file.  This WARNING does not show up for the other
+tested windows systems.  I am a bit mystified, since there are no WARNINGs for
+the other PNGs referred to in README.md. Although it's easy to delete the image
+references, I hope to retain them, since they make the github page more
+informative.
 
 # Reverse Dependency Checks
 
