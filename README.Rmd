@@ -1,3 +1,17 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/"
+)
+```
+
 # oce <img src="man/figures/oce-logo-3.png" align="right" height="95" />
 
 <!-- badges: start -->
@@ -18,9 +32,9 @@ Oce is an R package for processing oceanographic data.  Its
 [webpage](https://dankelley.github.io/oce/) provides details, of which this
 README file is just a sketch.  A book by one of the oce co-authors provides
 more information on the package and its potential for oceanographic research
-(Kelley, Dan E., 2018. [Oceanographic Analysis with
-R](https://www.springer.com/us/book/9781493988426).  New York.  Springer-Verlag
-ISBN 978-1-4939-8844-0).
+(Kelley, Dan E., 2018.
+[Oceanographic Analysis with R](https://www.springer.com/us/book/9781493988426).
+New York.  Springer-Verlag ISBN 978-1-4939-8844-0).
 
 ## Installing oce
 
@@ -34,11 +48,11 @@ contribute to Oce development.
 
 The easy way to install the `"develop"` branch is to execute the
 following commands in R.
-```R
+```{r, eval = FALSE}
 remotes::install_github("dankelley/oce", ref="develop")
 ```
 and most readers should also install Ocedata, with
-```R
+```{r, eval = FALSE}
 remotes::install_github("dankelley/ocedata", ref="master")
 ```
 
@@ -55,7 +69,8 @@ collaborative.
 ## Examples using built-in datasets
 
 ### CTD
-```R
+
+```{r, eval = FALSE}
 library(oce)
 data(ctd)
 plot(ctd, which=c(1,2,3,5), type="l", span=150)
@@ -63,7 +78,8 @@ plot(ctd, which=c(1,2,3,5), type="l", span=150)
 ![Sample CTD plot.](man/figures/oce-demo-1.png)
 
 ### Acoustic Doppler profiler
-```R
+
+```{r, eval = FALSE}
 library(oce)
 data(adp)
 plot(adp)
@@ -71,7 +87,8 @@ plot(adp)
 ![Sample adp plot.](man/figures/oce-demo-2.png)
 
 ### Sealevel and tides
-```R
+
+```{r, eval = FALSE}
 library(oce)
 data(sealevel)
 m <- tidem(sealevel)
@@ -83,7 +100,8 @@ plot(m)
 
 
 ### Echosounder
-```R
+
+```{r, eval = FALSE}
 library(oce)
 data(echosounder)
 plot(echosounder, which=2, drawTimeRange=TRUE, drawBottom=TRUE)
@@ -92,7 +110,8 @@ plot(echosounder, which=2, drawTimeRange=TRUE, drawBottom=TRUE)
 
 
 ### Map
-```R
+
+```{r, eval = FALSE}
 library(oce)
 par(mar=rep(0.5, 4))
 data(endeavour, package="ocedata")
@@ -104,12 +123,12 @@ mapPoints(endeavour$longitude, endeavour$latitude, pch=20, col="red")
 
 
 ### Landsat image
-```R
+
+```{r, eval = FALSE}
 library(ocedata)
 library(oce)
 data(landsat)
 plot(landsat)
 ```
 ![Sample landsat image plot.](man/figures/oce-demo-6.png)
-
 
