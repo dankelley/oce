@@ -75,7 +75,7 @@ location." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@ location." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ location." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -154,54 +154,54 @@ location.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ctd</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(
-  <span class='no'>x</span>,
-  <span class='no'>which</span>,
-  <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"fg"</span>),
-  <span class='no'>fill</span>,
-  <span class='kw'>borderCoastline</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>colCoastline</span> <span class='kw'>=</span> <span class='st'>"lightgray"</span>,
-  <span class='kw'>eos</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceEOS"</span>, <span class='kw'>default</span> <span class='kw'>=</span> <span class='st'>"gsw"</span>),
-  <span class='kw'>ref.lat</span> <span class='kw'>=</span> <span class='fl'>NaN</span>,
-  <span class='kw'>ref.lon</span> <span class='kw'>=</span> <span class='fl'>NaN</span>,
-  <span class='kw'>grid</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>coastline</span> <span class='kw'>=</span> <span class='st'>"best"</span>,
-  <span class='no'>Slim</span>,
-  <span class='no'>Clim</span>,
-  <span class='no'>Tlim</span>,
-  <span class='no'>plim</span>,
-  <span class='no'>densitylim</span>,
-  <span class='no'>N2lim</span>,
-  <span class='no'>Rrholim</span>,
-  <span class='no'>dpdtlim</span>,
-  <span class='no'>timelim</span>,
-  <span class='no'>lonlim</span>,
-  <span class='no'>latlim</span>,
-  <span class='kw'>drawIsobaths</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='no'>clongitude</span>,
-  <span class='no'>clatitude</span>,
-  <span class='no'>span</span>,
-  <span class='kw'>showHemi</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>lonlabels</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>latlabels</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>projection</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>latlon.pch</span> <span class='kw'>=</span> <span class='fl'>20</span>,
-  <span class='kw'>latlon.cex</span> <span class='kw'>=</span> <span class='fl'>1.5</span>,
-  <span class='kw'>latlon.col</span> <span class='kw'>=</span> <span class='st'>"red"</span>,
-  <span class='kw'>cex</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>cex.axis</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"cex.axis"</span>),
-  <span class='kw'>pch</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>useSmoothScatter</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='no'>df</span>,
-  <span class='kw'>keepNA</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='no'>type</span>,
-  <span class='kw'>mgp</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceMgp"</span>),
-  <span class='kw'>mar</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='no'>mgp</span>[<span class='fl'>1</span>] + <span class='fl'>1.5</span>, <span class='no'>mgp</span>[<span class='fl'>1</span>] + <span class='fl'>1.5</span>, <span class='no'>mgp</span>[<span class='fl'>1</span>] + <span class='fl'>1.5</span>, <span class='no'>mgp</span>[<span class='fl'>1</span>] + <span class='fl'>1</span>),
-  <span class='kw'>inset</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>),
-  <span class='no'>...</span>
-)</pre>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>which</span>,
+  col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"fg"</span><span class='op'>)</span>,
+  <span class='va'>fill</span>,
+  borderCoastline <span class='op'>=</span> <span class='cn'>NA</span>,
+  colCoastline <span class='op'>=</span> <span class='st'>"lightgray"</span>,
+  eos <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceEOS"</span>, default <span class='op'>=</span> <span class='st'>"gsw"</span><span class='op'>)</span>,
+  ref.lat <span class='op'>=</span> <span class='cn'>NaN</span>,
+  ref.lon <span class='op'>=</span> <span class='cn'>NaN</span>,
+  grid <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  coastline <span class='op'>=</span> <span class='st'>"best"</span>,
+  <span class='va'>Slim</span>,
+  <span class='va'>Clim</span>,
+  <span class='va'>Tlim</span>,
+  <span class='va'>plim</span>,
+  <span class='va'>densitylim</span>,
+  <span class='va'>N2lim</span>,
+  <span class='va'>Rrholim</span>,
+  <span class='va'>dpdtlim</span>,
+  <span class='va'>timelim</span>,
+  <span class='va'>lonlim</span>,
+  <span class='va'>latlim</span>,
+  drawIsobaths <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>clongitude</span>,
+  <span class='va'>clatitude</span>,
+  <span class='va'>span</span>,
+  showHemi <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  lonlabels <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  latlabels <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  projection <span class='op'>=</span> <span class='cn'>NULL</span>,
+  latlon.pch <span class='op'>=</span> <span class='fl'>20</span>,
+  latlon.cex <span class='op'>=</span> <span class='fl'>1.5</span>,
+  latlon.col <span class='op'>=</span> <span class='st'>"red"</span>,
+  cex <span class='op'>=</span> <span class='fl'>1</span>,
+  cex.axis <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"cex.axis"</span><span class='op'>)</span>,
+  pch <span class='op'>=</span> <span class='fl'>1</span>,
+  useSmoothScatter <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>df</span>,
+  keepNA <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>type</span>,
+  mgp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceMgp"</span><span class='op'>)</span>,
+  mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>+</span> <span class='fl'>1.5</span>, <span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>+</span> <span class='fl'>1.5</span>, <span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>+</span> <span class='fl'>1.5</span>, <span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>+</span> <span class='fl'>1</span><span class='op'>)</span>,
+  inset <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  add <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -228,7 +228,7 @@ profile of \(\sigma_\theta\) and \(N^2\)</p></li>
 <li><p><code>which=4</code> or <code>which="text"</code> gives a textual
 summary of some aspects of the data</p></li>
 <li><p><code>which=5</code> or <code>which="map"</code> gives a map plotted
-with <code><a href='plot-coastline-method.html'>plot,coastline-method()</a></code>, with a dot for
+with <code><a href='plot,coastline-method.html'>plot,coastline-method()</a></code>, with a dot for
 the station location.  Notes near the top boundary of the map give the
 station number, the sampling date, and the name of the chief scientist,
 if these are known. Note that the longitude will be converted to a value
@@ -273,12 +273,12 @@ index number (especially useful for <code><a href='ctdTrim.html'>ctdTrim()</a></
     <tr>
       <th>borderCoastline</th>
       <td><p>Color of coastlines and international borders, passed
-to <code><a href='plot-coastline-method.html'>plot,coastline-method()</a></code> if a map is included in <code>which</code>.</p></td>
+to <code><a href='plot,coastline-method.html'>plot,coastline-method()</a></code> if a map is included in <code>which</code>.</p></td>
     </tr>
     <tr>
       <th>colCoastline</th>
       <td><p>Fill color of coastlines and international borders, passed
-to <code><a href='plot-coastline-method.html'>plot,coastline-method()</a></code> if a map is included in <code>which</code>. Set to
+to <code><a href='plot,coastline-method.html'>plot,coastline-method()</a></code> if a map is included in <code>which</code>. Set to
 <code>NULL</code> to avoid filling.</p></td>
     </tr>
     <tr>
@@ -309,8 +309,8 @@ name of a built-in coastline (<code>"coastlineWorld"</code>,
 a suitable coastline for the locale, or <code>"none"</code> to prevent
 the drawing of a coastline.  There is a speed penalty for providing
 <code>coastline</code> as a character string, because it forces
-<code><a href='plot-coastline-method.html'>plot,coastline-method()</a></code> to load it on every call.  So, if
-<code><a href='plot-coastline-method.html'>plot,coastline-method()</a></code> is to be called several times for a given
+<code><a href='plot,coastline-method.html'>plot,coastline-method()</a></code> to load it on every call.  So, if
+<code><a href='plot,coastline-method.html'>plot,coastline-method()</a></code> is to be called several times for a given
 coastline, it makes sense to load it in before the first call, and to
 supply the object as an argument, as opposed to the name of the object.</p></td>
     </tr>
@@ -442,7 +442,7 @@ plotted).</p></td>
     <tr>
       <th>useSmoothScatter</th>
       <td><p>Boolean, set to <code>TRUE</code> to use
-<code><a href='https://rdrr.io/r/graphics/smoothScatter.html'>smoothScatter()</a></code> instead of <code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code> to draw the plot.</p></td>
+<code><a href='https://rdrr.io/r/graphics/smoothScatter.html'>smoothScatter()</a></code> instead of <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code> to draw the plot.</p></td>
     </tr>
     <tr>
       <th>df</th>
@@ -452,13 +452,17 @@ named <code>df</code>.</p></td>
     </tr>
     <tr>
       <th>keepNA</th>
-      <td><p>Flag indicating whether to keep <code>NA</code> values in linegraphs,
-which will yield breaks in the lines.</p></td>
+      <td><p>logical value indicating whether <code>NA</code> values
+will yield breaks in lines drawn if <code>type</code> is <code>b</code>, <code>l</code>, or <code>o</code>.
+The default value is <code>FALSE</code>.  Setting <code>keepNA</code> to <code>TRUE</code>
+strung together into one <a href='ctd-class.html'>ctd</a> object, which otherwise
+would have extraneous lines joining the deepest point in one
+profile to the shallowest in the next profile.</p></td>
     </tr>
     <tr>
       <th>type</th>
       <td><p>The type of plot to draw, using the same scheme as
-<code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code>. If supplied, this is increased to be the
+<code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code>. If supplied, this is increased to be the
 same length as <code>which</code>, if necessary, and then supplied to
 each of the individual plot calls. If it is not supplied,
 then those plot calls use defaults (e.g. using a line for
@@ -541,35 +545,36 @@ boundaries, with <code>borderCoastline</code>.</p>
     <div class='dont-index'><p>The documentation for <a href='ctd-class.html'>ctd</a> explains the structure of CTD
 objects, and also outlines the other functions dealing with them.</p>
 <p>Other functions that plot oce data: 
-<code><a href='plot-adp-method.html'>plot,adp-method</a></code>,
-<code><a href='plot-adv-method.html'>plot,adv-method</a></code>,
-<code><a href='plot-amsr-method.html'>plot,amsr-method</a></code>,
-<code><a href='plot-argo-method.html'>plot,argo-method</a></code>,
-<code><a href='plot-bremen-method.html'>plot,bremen-method</a></code>,
-<code><a href='plot-cm-method.html'>plot,cm-method</a></code>,
-<code><a href='plot-coastline-method.html'>plot,coastline-method</a></code>,
-<code><a href='plot-gps-method.html'>plot,gps-method</a></code>,
-<code><a href='plot-ladp-method.html'>plot,ladp-method</a></code>,
-<code><a href='plot-landsat-method.html'>plot,landsat-method</a></code>,
-<code><a href='plot-lisst-method.html'>plot,lisst-method</a></code>,
-<code><a href='plot-lobo-method.html'>plot,lobo-method</a></code>,
-<code><a href='plot-met-method.html'>plot,met-method</a></code>,
-<code><a href='plot-odf-method.html'>plot,odf-method</a></code>,
-<code><a href='plot-rsk-method.html'>plot,rsk-method</a></code>,
-<code><a href='plot-satellite-method.html'>plot,satellite-method</a></code>,
-<code><a href='plot-sealevel-method.html'>plot,sealevel-method</a></code>,
-<code><a href='plot-section-method.html'>plot,section-method</a></code>,
-<code><a href='plot-tidem-method.html'>plot,tidem-method</a></code>,
-<code><a href='plot-topo-method.html'>plot,topo-method</a></code>,
-<code><a href='plot-windrose-method.html'>plot,windrose-method</a></code>,
-<code><a href='plot-xbt-method.html'>plot,xbt-method</a></code>,
+<code><a href='download.amsr.html'>download.amsr</a>()</code>,
+<code><a href='plot,adp-method.html'>plot,adp-method</a></code>,
+<code><a href='plot,adv-method.html'>plot,adv-method</a></code>,
+<code><a href='plot,amsr-method.html'>plot,amsr-method</a></code>,
+<code><a href='plot,argo-method.html'>plot,argo-method</a></code>,
+<code><a href='plot,bremen-method.html'>plot,bremen-method</a></code>,
+<code><a href='plot,cm-method.html'>plot,cm-method</a></code>,
+<code><a href='plot,coastline-method.html'>plot,coastline-method</a></code>,
+<code><a href='plot,gps-method.html'>plot,gps-method</a></code>,
+<code><a href='plot,ladp-method.html'>plot,ladp-method</a></code>,
+<code><a href='plot,landsat-method.html'>plot,landsat-method</a></code>,
+<code><a href='plot,lisst-method.html'>plot,lisst-method</a></code>,
+<code><a href='plot,lobo-method.html'>plot,lobo-method</a></code>,
+<code><a href='plot,met-method.html'>plot,met-method</a></code>,
+<code><a href='plot,odf-method.html'>plot,odf-method</a></code>,
+<code><a href='plot,rsk-method.html'>plot,rsk-method</a></code>,
+<code><a href='plot,satellite-method.html'>plot,satellite-method</a></code>,
+<code><a href='plot,sealevel-method.html'>plot,sealevel-method</a></code>,
+<code><a href='plot,section-method.html'>plot,section-method</a></code>,
+<code><a href='plot,tidem-method.html'>plot,tidem-method</a></code>,
+<code><a href='plot,topo-method.html'>plot,topo-method</a></code>,
+<code><a href='plot,windrose-method.html'>plot,windrose-method</a></code>,
+<code><a href='plot,xbt-method.html'>plot,xbt-method</a></code>,
 <code><a href='plotProfile.html'>plotProfile</a>()</code>,
 <code><a href='plotScan.html'>plotScan</a>()</code>,
 <code><a href='plotTS.html'>plotTS</a>()</code>,
 <code><a href='tidem-class.html'>tidem-class</a></code></p>
 <p>Other things related to ctd data: 
 <code><a href='CTD_BCD2014666_008_1_DN.ODF.gz.html'>CTD_BCD2014666_008_1_DN.ODF.gz</a></code>,
-<code><a href='sub-sub-ctd-method.html'>[[,ctd-method</a></code>,
+<code><a href='[[,ctd-method.html'>[[,ctd-method</a></code>,
 <code>[[&lt;-,ctd-method</code>,
 <code><a href='as.ctd.html'>as.ctd</a>()</code>,
 <code><a href='cnvName2oceName.html'>cnvName2oceName</a>()</code>,
@@ -582,9 +587,9 @@ objects, and also outlines the other functions dealing with them.</p>
 <code><a href='ctd.html'>ctd</a></code>,
 <code><a href='d200321-001.ctd.html'>d200321-001.ctd</a></code>,
 <code><a href='d201211_0011.cnv.html'>d201211_0011.cnv</a></code>,
-<code><a href='handleFlags-ctd-method.html'>handleFlags,ctd-method</a></code>,
-<code><a href='initialize-ctd-method.html'>initialize,ctd-method</a></code>,
-<code><a href='initializeFlagScheme-ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
+<code><a href='handleFlags,ctd-method.html'>handleFlags,ctd-method</a></code>,
+<code><a href='initialize,ctd-method.html'>initialize,ctd-method</a></code>,
+<code><a href='initializeFlagScheme,ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
 <code><a href='oceNames2whpNames.html'>oceNames2whpNames</a>()</code>,
 <code><a href='oceUnits2whpUnits.html'>oceUnits2whpUnits</a>()</code>,
 <code><a href='plotProfile.html'>plotProfile</a>()</code>,
@@ -597,30 +602,37 @@ objects, and also outlines the other functions dealing with them.</p>
 <code><a href='read.ctd.woce.other.html'>read.ctd.woce.other</a>()</code>,
 <code><a href='read.ctd.woce.html'>read.ctd.woce</a>()</code>,
 <code><a href='read.ctd.html'>read.ctd</a>()</code>,
-<code><a href='setFlags-ctd-method.html'>setFlags,ctd-method</a></code>,
-<code><a href='subset-ctd-method.html'>subset,ctd-method</a></code>,
-<code><a href='summary-ctd-method.html'>summary,ctd-method</a></code>,
+<code><a href='setFlags,ctd-method.html'>setFlags,ctd-method</a></code>,
+<code><a href='subset,ctd-method.html'>subset,ctd-method</a></code>,
+<code><a href='summary,ctd-method.html'>summary,ctd-method</a></code>,
 <code><a href='woceNames2oceNames.html'>woceNames2oceNames</a>()</code>,
 <code><a href='woceUnit2oceUnit.html'>woceUnit2oceUnit</a>()</code>,
 <code><a href='write.ctd.html'>write.ctd</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'>## 1. simple plot</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>ctd</span>)</div><div class='img'><img src='plot-ctd-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+</div><div class='img'><img src='plot-ctd-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'>## 2. how to customize depth contours</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>2</span>))
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>section</span>)
-<span class='no'>stn</span> <span class='kw'>&lt;-</span> <span class='no'>section</span><span class='kw'>[[</span><span class='st'>"station"</span>, <span class='fl'>105</span>]]
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>stn</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>'map'</span>, <span class='kw'>drawIsobaths</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>stn</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>'map'</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>topoWorld</span>)
-<span class='no'>tlon</span> <span class='kw'>&lt;-</span> <span class='no'>topoWorld</span><span class='kw'>[[</span><span class='st'>"longitude"</span>]]
-<span class='no'>tlat</span> <span class='kw'>&lt;-</span> <span class='no'>topoWorld</span><span class='kw'>[[</span><span class='st'>"latitude"</span>]]
-<span class='no'>tdep</span> <span class='kw'>&lt;-</span> -<span class='no'>topoWorld</span><span class='kw'>[[</span><span class='st'>"z"</span>]]
-<span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span>(<span class='no'>tlon</span>, <span class='no'>tlat</span>, <span class='no'>tdep</span>, <span class='kw'>drawlabels</span><span class='kw'>=</span><span class='fl'>FALSE</span>,
-        <span class='kw'>levels</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>1000</span>,<span class='fl'>6000</span>,<span class='fl'>1000</span>), <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'lightblue'</span>, <span class='kw'>add</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span>(<span class='no'>tlon</span>, <span class='no'>tlat</span>, <span class='no'>tdep</span>, <span class='kw'>vfont</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"sans serif"</span>, <span class='st'>"bold"</span>),
-        <span class='kw'>levels</span><span class='kw'>=</span><span class='no'>stn</span><span class='kw'>[[</span><span class='st'>'waterDepth'</span>]], <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'red'</span>, <span class='kw'>lwd</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>add</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='img'><img src='plot-ctd-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>)</span>
+<span class='va'>stn</span> <span class='op'>&lt;-</span> <span class='va'>section</span><span class='op'>[[</span><span class='st'>"station"</span>, <span class='fl'>105</span><span class='op'>]</span><span class='op'>]</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>stn</span>, which<span class='op'>=</span><span class='st'>'map'</span>, drawIsobaths<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>stn</span>, which<span class='op'>=</span><span class='st'>'map'</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>topoWorld</span><span class='op'>)</span>
+<span class='va'>tlon</span> <span class='op'>&lt;-</span> <span class='va'>topoWorld</span><span class='op'>[[</span><span class='st'>"longitude"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>tlat</span> <span class='op'>&lt;-</span> <span class='va'>topoWorld</span><span class='op'>[[</span><span class='st'>"latitude"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>tdep</span> <span class='op'>&lt;-</span> <span class='op'>-</span><span class='va'>topoWorld</span><span class='op'>[[</span><span class='st'>"z"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span><span class='op'>(</span><span class='va'>tlon</span>, <span class='va'>tlat</span>, <span class='va'>tdep</span>, drawlabels<span class='op'>=</span><span class='cn'>FALSE</span>,
+        levels<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>1000</span>,<span class='fl'>6000</span>,<span class='fl'>1000</span><span class='op'>)</span>, col<span class='op'>=</span><span class='st'>'lightblue'</span>, add<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span><span class='op'>(</span><span class='va'>tlon</span>, <span class='va'>tlat</span>, <span class='va'>tdep</span>, vfont<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"sans serif"</span>, <span class='st'>"bold"</span><span class='op'>)</span>,
+        levels<span class='op'>=</span><span class='va'>stn</span><span class='op'>[[</span><span class='st'>'waterDepth'</span><span class='op'>]</span><span class='op'>]</span>, col<span class='op'>=</span><span class='st'>'red'</span>, lwd<span class='op'>=</span><span class='fl'>2</span>, add<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
+</div><div class='img'><img src='plot-ctd-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -637,7 +649,7 @@ objects, and also outlines the other functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

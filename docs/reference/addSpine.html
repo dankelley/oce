@@ -74,7 +74,7 @@ onto the spine." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@ onto the spine." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -123,7 +123,7 @@ onto the spine." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -151,7 +151,7 @@ the section plot will display the distance of stations projected
 onto the spine.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>addSpine</span>(<span class='no'>section</span>, <span class='no'>spine</span>, <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>))</pre>
+    <pre class="usage"><span class='fu'>addSpine</span><span class='op'>(</span><span class='va'>section</span>, <span class='va'>spine</span>, debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -180,14 +180,20 @@ by specifying higher <code>debug</code> values.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A <a href='section-class.html'>section</a> object with a spine added.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>section</span>)
-<span class='no'>sectionWest</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>section</span>, <span class='no'>longitude</span> <span class='kw'>&lt;</span> -<span class='fl'>60</span>)
-<span class='no'>spine</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>longitude</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>74.5</span>, -<span class='fl'>69.2</span>, -<span class='fl'>55</span>), <span class='kw'>latitude</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>38.6</span>, <span class='fl'>36.25</span>, <span class='fl'>36.25</span>))
-<span class='no'>sectionWithSpine</span> <span class='kw'>&lt;-</span> <span class='fu'>addSpine</span>(<span class='no'>sectionWest</span>, <span class='no'>spine</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>sectionWithSpine</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"map"</span>)</div><div class='img'><img src='addSpine-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>sectionWithSpine</span>, <span class='kw'>xtype</span><span class='kw'>=</span><span class='st'>"distance"</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"temperature"</span>)</div><div class='img'><img src='addSpine-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>sectionWithSpine</span>, <span class='kw'>xtype</span><span class='kw'>=</span><span class='st'>"spine"</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"temperature"</span>)</div><div class='img'><img src='addSpine-3.png' alt='' width='700' height='433' /></div><div class='input'>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>)</span>
+<span class='va'>sectionWest</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>section</span>, <span class='va'>longitude</span> <span class='op'>&lt;</span> <span class='op'>-</span><span class='fl'>60</span><span class='op'>)</span>
+<span class='va'>spine</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>longitude<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>74.5</span>, <span class='op'>-</span><span class='fl'>69.2</span>, <span class='op'>-</span><span class='fl'>55</span><span class='op'>)</span>, latitude<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>38.6</span>, <span class='fl'>36.25</span>, <span class='fl'>36.25</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>sectionWithSpine</span> <span class='op'>&lt;-</span> <span class='fu'>addSpine</span><span class='op'>(</span><span class='va'>sectionWest</span>, <span class='va'>spine</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>sectionWithSpine</span>, which<span class='op'>=</span><span class='st'>"map"</span><span class='op'>)</span>
+</div><div class='img'><img src='addSpine-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>sectionWithSpine</span>, xtype<span class='op'>=</span><span class='st'>"distance"</span>, which<span class='op'>=</span><span class='st'>"temperature"</span><span class='op'>)</span>
+</div><div class='img'><img src='addSpine-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>sectionWithSpine</span>, xtype<span class='op'>=</span><span class='st'>"spine"</span>, which<span class='op'>=</span><span class='st'>"temperature"</span><span class='op'>)</span>
+</div><div class='img'><img src='addSpine-3.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -204,7 +210,7 @@ by specifying higher <code>debug</code> values.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

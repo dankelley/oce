@@ -73,7 +73,7 @@ data slot has been altered, or added." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -81,7 +81,7 @@ data slot has been altered, or added." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -122,7 +122,7 @@ data slot has been altered, or added." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -149,7 +149,7 @@ data slot has been altered, or added." />
 <code>data</code> slot has been altered, or added.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>oceSetData</span>(<span class='no'>object</span>, <span class='no'>name</span>, <span class='no'>value</span>, <span class='no'>unit</span>, <span class='no'>originalName</span>, <span class='kw'>note</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
+    <pre class="usage"><span class='fu'>oceSetData</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>name</span>, <span class='va'>value</span>, <span class='va'>unit</span>, <span class='va'>originalName</span>, note <span class='op'>=</span> <span class='st'>""</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -197,8 +197,8 @@ been altered either by adding a new item or modifying an existing
 item.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The trickest argument to set is the <code>unit</code>.  There are three
-possibilitis for this:</p><ol>
+    <p>The trickiest argument to set is the <code>unit</code>.  There are three
+possibilities for this:</p><ol>
 <li><p><code>unit</code> is a named or unnamed <code><a href='https://rdrr.io/r/base/list.html'>list()</a></code> that contains two items.
 If the list is named, the names must be
 <code>unit</code> and <code>scale</code>. If the list is unnamed, the stated names are assigned
@@ -220,15 +220,20 @@ and the scale set to <code>""</code>.</p></li>
 <code><a href='oceDeleteData.html'>oceDeleteData</a>()</code>,
 <code><a href='oceGetData.html'>oceGetData</a>()</code>,
 <code><a href='oceRenameData.html'>oceRenameData</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
-<span class='no'>Tf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='swTFreeze.html'>swTFreeze</a></span>(<span class='no'>ctd</span>)
-<span class='no'>ctd</span> <span class='kw'>&lt;-</span> <span class='fu'>oceSetData</span>(<span class='no'>ctd</span>, <span class='st'>"freezing"</span>, <span class='no'>Tf</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span>(<span class='no'>degree</span>*<span class='no'>C</span>), <span class='kw'>scale</span><span class='kw'>=</span><span class='st'>"ITS-90"</span>))
-<span class='no'>feet</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='swDepth.html'>swDepth</a></span>(<span class='no'>ctd</span>) / <span class='fl'>0.3048</span>
-<span class='no'>ctd</span> <span class='kw'>&lt;-</span> <span class='fu'>oceSetData</span>(<span class='no'>ctd</span>, <span class='kw'>name</span><span class='kw'>=</span><span class='st'>"depthInFeet"</span>, <span class='kw'>value</span><span class='kw'>=</span><span class='no'>feet</span>, <span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span>(<span class='st'>"feet"</span>))
-<span class='no'>fathoms</span> <span class='kw'>&lt;-</span> <span class='no'>feet</span> / <span class='fl'>6</span>
-<span class='no'>ctd</span> <span class='kw'>&lt;-</span> <span class='fu'>oceSetData</span>(<span class='no'>ctd</span>, <span class='st'>"depthInFathoms"</span>, <span class='no'>fathoms</span>, <span class='st'>"fathoms"</span>)</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+<span class='va'>Tf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='swTFreeze.html'>swTFreeze</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+<span class='va'>ctd</span> <span class='op'>&lt;-</span> <span class='fu'>oceSetData</span><span class='op'>(</span><span class='va'>ctd</span>, <span class='st'>"freezing"</span>, <span class='va'>Tf</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>unit<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>degree</span><span class='op'>*</span><span class='va'>C</span><span class='op'>)</span>, scale<span class='op'>=</span><span class='st'>"ITS-90"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>feet</span> <span class='op'>&lt;-</span> <span class='fu'><a href='swDepth.html'>swDepth</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span> <span class='op'>/</span> <span class='fl'>0.3048</span>
+<span class='va'>ctd</span> <span class='op'>&lt;-</span> <span class='fu'>oceSetData</span><span class='op'>(</span><span class='va'>ctd</span>, name<span class='op'>=</span><span class='st'>"depthInFeet"</span>, value<span class='op'>=</span><span class='va'>feet</span>, <span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='st'>"feet"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>fathoms</span> <span class='op'>&lt;-</span> <span class='va'>feet</span> <span class='op'>/</span> <span class='fl'>6</span>
+<span class='va'>ctd</span> <span class='op'>&lt;-</span> <span class='fu'>oceSetData</span><span class='op'>(</span><span class='va'>ctd</span>, <span class='st'>"depthInFathoms"</span>, <span class='va'>fathoms</span>, <span class='st'>"fathoms"</span><span class='op'>)</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -244,7 +249,7 @@ and the scale set to <code>""</code>.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

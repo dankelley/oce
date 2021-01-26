@@ -75,7 +75,7 @@ level." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@ level." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ level." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -153,7 +153,7 @@ functions, so the effect is a nesting, with more space for deeper function
 level.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>oceDebug</span>(<span class='kw'>debug</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='no'>...</span>, <span class='kw'>style</span> <span class='kw'>=</span> <span class='st'>"plain"</span>, <span class='kw'>unindent</span> <span class='kw'>=</span> <span class='fl'>0</span>)</pre>
+    <pre class="usage"><span class='fu'>oceDebug</span><span class='op'>(</span>debug <span class='op'>=</span> <span class='fl'>0</span>, <span class='va'>...</span>, style <span class='op'>=</span> <span class='st'>"plain"</span>, unindent <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -187,10 +187,20 @@ e.g. for start and end lines from a called function.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>oceDebug</span>(<span class='kw'>debug</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='st'>"Example"</span>, <span class='fl'>1</span>, <span class='st'>"Plain text"</span>)</div><div class='output co'>#&gt;         Example 1 Plain text</div><div class='input'><span class='fu'>oceDebug</span>(<span class='kw'>debug</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='st'>"Example"</span>, <span class='fl'>2</span>, <span class='st'>"Bold"</span>, <span class='kw'>style</span><span class='kw'>=</span><span class='st'>"bold"</span>)</div><div class='output co'>#&gt; <span style='font-weight: bold;'>        Example 2 Bold</span><span></div><div class='input'><span class='fu'>oceDebug</span>(<span class='kw'>debug</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='st'>"Example"</span>, <span class='fl'>3</span>, <span class='st'>"Italic"</span>, <span class='kw'>style</span><span class='kw'>=</span><span class='st'>"italic"</span>)</div><div class='output co'>#&gt; </span><span style='font-style: italic;'>        Example 3 Italic</span><span></div><div class='input'><span class='fu'>oceDebug</span>(<span class='kw'>debug</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='st'>"Example"</span>, <span class='fl'>4</span>, <span class='st'>"Red"</span>, <span class='kw'>style</span><span class='kw'>=</span><span class='st'>"red"</span>)</div><div class='output co'>#&gt; </span><span style='color: #BB0000;'>        Example 4 Red</span><span></div><div class='input'><span class='fu'>oceDebug</span>(<span class='kw'>debug</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='st'>"Example"</span>, <span class='fl'>5</span>, <span class='st'>"Green"</span>, <span class='kw'>style</span><span class='kw'>=</span><span class='st'>"green"</span>)</div><div class='output co'>#&gt; </span><span style='color: #00BB00;'>        Example 5 Green</span><span></div><div class='input'><span class='fu'>oceDebug</span>(<span class='kw'>debug</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='st'>"Example"</span>, <span class='fl'>6</span>, <span class='st'>"Blue"</span>, <span class='kw'>style</span><span class='kw'>=</span><span class='st'>"blue"</span>)</div><div class='output co'>#&gt; </span><span style='color: #0000BB;'>        Example 6 Blue</span><span></div><div class='input'><span class='no'>mycyan</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>...</span>) <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='st'>"\033[36m"</span>, <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='no'>...</span>, <span class='kw'>sep</span><span class='kw'>=</span><span class='st'>" "</span>), <span class='st'>"\033[0m"</span>, <span class='kw'>sep</span><span class='kw'>=</span><span class='st'>""</span>)
-<span class='fu'>oceDebug</span>(<span class='kw'>debug</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='st'>"Example"</span>, <span class='fl'>7</span>, <span class='st'>"User-set cyan"</span>, <span class='kw'>style</span><span class='kw'>=</span><span class='no'>mycyan</span>)</div><div class='output co'>#&gt; </span><span style='color: #00BBBB;'>        Example 7 User-set cyan</span><span></div></span></pre>
+    <pre class="examples"><div class='input'><span class='fu'>oceDebug</span><span class='op'>(</span>debug<span class='op'>=</span><span class='fl'>1</span>, <span class='st'>"Example"</span>, <span class='fl'>1</span>, <span class='st'>"Plain text"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;         Example 1 Plain text</div><div class='input'><span class='fu'>oceDebug</span><span class='op'>(</span>debug<span class='op'>=</span><span class='fl'>1</span>, <span class='st'>"Example"</span>, <span class='fl'>2</span>, <span class='st'>"Bold"</span>, style<span class='op'>=</span><span class='st'>"bold"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span style='font-weight: bold;'>        Example 2 Bold</span><span></div><div class='input'><span class='fu'>oceDebug</span><span class='op'>(</span>debug<span class='op'>=</span><span class='fl'>1</span>, <span class='st'>"Example"</span>, <span class='fl'>3</span>, <span class='st'>"Italic"</span>, style<span class='op'>=</span><span class='st'>"italic"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; </span><span style='font-style: italic;'>        Example 3 Italic</span><span></div><div class='input'><span class='fu'>oceDebug</span><span class='op'>(</span>debug<span class='op'>=</span><span class='fl'>1</span>, <span class='st'>"Example"</span>, <span class='fl'>4</span>, <span class='st'>"Red"</span>, style<span class='op'>=</span><span class='st'>"red"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; </span><span style='color: #BB0000;'>        Example 4 Red</span><span></div><div class='input'><span class='fu'>oceDebug</span><span class='op'>(</span>debug<span class='op'>=</span><span class='fl'>1</span>, <span class='st'>"Example"</span>, <span class='fl'>5</span>, <span class='st'>"Green"</span>, style<span class='op'>=</span><span class='st'>"green"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; </span><span style='color: #00BB00;'>        Example 5 Green</span><span></div><div class='input'><span class='fu'>oceDebug</span><span class='op'>(</span>debug<span class='op'>=</span><span class='fl'>1</span>, <span class='st'>"Example"</span>, <span class='fl'>6</span>, <span class='st'>"Blue"</span>, style<span class='op'>=</span><span class='st'>"blue"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; </span><span style='color: #0000BB;'>        Example 6 Blue</span><span></div><div class='input'><span class='va'>mycyan</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"\033[36m"</span>, <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='va'>...</span>, sep<span class='op'>=</span><span class='st'>" "</span><span class='op'>)</span>, <span class='st'>"\033[0m"</span>, sep<span class='op'>=</span><span class='st'>""</span><span class='op'>)</span>
+<span class='fu'>oceDebug</span><span class='op'>(</span>debug<span class='op'>=</span><span class='fl'>1</span>, <span class='st'>"Example"</span>, <span class='fl'>7</span>, <span class='st'>"User-set cyan"</span>, style<span class='op'>=</span><span class='va'>mycyan</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; </span><span style='color: #00BBBB;'>        Example 7 User-set cyan</span><span></div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -206,7 +216,7 @@ e.g. for start and end lines from a called function.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

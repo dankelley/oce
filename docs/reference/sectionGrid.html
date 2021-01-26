@@ -75,7 +75,7 @@ processing." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@ processing." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ processing." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -153,14 +153,14 @@ documentation for <code><a href='ctdDecimate.html'>ctdDecimate()</a></code>, whi
 processing.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sectionGrid</span>(
-  <span class='no'>section</span>,
-  <span class='no'>p</span>,
-  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"approx"</span>,
-  <span class='kw'>trim</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>),
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>sectionGrid</span><span class='op'>(</span>
+  <span class='va'>section</span>,
+  <span class='va'>p</span>,
+  method <span class='op'>=</span> <span class='st'>"approx"</span>,
+  trim <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -230,37 +230,43 @@ a flag system, for possible use in later processing steps.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to section data: 
-<code><a href='sub-sub-section-method.html'>[[,section-method</a></code>,
+<code><a href='[[,section-method.html'>[[,section-method</a></code>,
 <code>[[&lt;-,section-method</code>,
 <code><a href='as.section.html'>as.section</a>()</code>,
-<code><a href='handleFlags-section-method.html'>handleFlags,section-method</a></code>,
-<code><a href='initializeFlagScheme-section-method.html'>initializeFlagScheme,section-method</a></code>,
-<code><a href='plot-section-method.html'>plot,section-method</a></code>,
+<code><a href='handleFlags,section-method.html'>handleFlags,section-method</a></code>,
+<code><a href='initializeFlagScheme,section-method.html'>initializeFlagScheme,section-method</a></code>,
+<code><a href='plot,section-method.html'>plot,section-method</a></code>,
 <code><a href='read.section.html'>read.section</a>()</code>,
 <code><a href='section-class.html'>section-class</a></code>,
 <code><a href='sectionAddStation.html'>sectionAddStation</a>()</code>,
 <code><a href='sectionSmooth.html'>sectionSmooth</a>()</code>,
 <code><a href='sectionSort.html'>sectionSort</a>()</code>,
 <code><a href='section.html'>section</a></code>,
-<code><a href='subset-section-method.html'>subset,section-method</a></code>,
-<code><a href='summary-section-method.html'>summary,section-method</a></code></p></div>
+<code><a href='subset,section-method.html'>subset,section-method</a></code>,
+<code><a href='summary,section-method.html'>summary,section-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Gulf Stream</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>section</span>)
-<span class='no'>GS</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>section</span>, <span class='fl'>109</span><span class='kw'>&lt;=</span><span class='no'>stationId</span><span class='kw'>&amp;</span><span class='no'>stationId</span><span class='kw'>&lt;=</span><span class='fl'>129</span>)
-<span class='no'>GSg</span> <span class='kw'>&lt;-</span> <span class='fu'>sectionGrid</span>(<span class='no'>GS</span>, <span class='kw'>p</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>5000</span>, <span class='fl'>100</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>GSg</span>, <span class='kw'>map.xlim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>80</span>,-<span class='fl'>60</span>))</div><div class='img'><img src='sectionGrid-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Show effects of various depth schemes</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>1</span>))
-<span class='no'>default</span> <span class='kw'>&lt;-</span> <span class='fu'>sectionGrid</span>(<span class='no'>GS</span>)
-<span class='no'>approxML</span> <span class='kw'>&lt;-</span> <span class='fu'>sectionGrid</span>(<span class='no'>GS</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"approxML"</span>)
-<span class='no'>standardDepths5</span> <span class='kw'>&lt;-</span> <span class='fu'>sectionGrid</span>(<span class='no'>GS</span>, <span class='kw'>p</span><span class='kw'>=</span><span class='fu'><a href='standardDepths.html'>standardDepths</a></span>(<span class='fl'>5</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>default</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"temperature"</span>, <span class='kw'>ztype</span><span class='kw'>=</span><span class='st'>"image"</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>200</span>,<span class='fl'>0</span>))
-<span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span>(<span class='st'>"default sectionGrid()"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>approxML</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"temperature"</span>, <span class='kw'>ztype</span><span class='kw'>=</span><span class='st'>"image"</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>200</span>,<span class='fl'>0</span>))
-<span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span>(<span class='st'>"sectionGrid(..., method=\"approxML\")"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>standardDepths5</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"temperature"</span>, <span class='kw'>ztype</span><span class='kw'>=</span><span class='st'>"image"</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>200</span>,<span class='fl'>0</span>))</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span>(<span class='st'>"sectionGrid(..., p=standardDepths(5))"</span>)</div><div class='img'><img src='sectionGrid-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>)</span>
+<span class='va'>GS</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>section</span>, <span class='fl'>109</span><span class='op'>&lt;=</span><span class='va'>stationId</span><span class='op'>&amp;</span><span class='va'>stationId</span><span class='op'>&lt;=</span><span class='fl'>129</span><span class='op'>)</span>
+<span class='va'>GSg</span> <span class='op'>&lt;-</span> <span class='fu'>sectionGrid</span><span class='op'>(</span><span class='va'>GS</span>, p<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>5000</span>, <span class='fl'>100</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>GSg</span>, map.xlim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>80</span>,<span class='op'>-</span><span class='fl'>60</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='sectionGrid-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Show effects of various depth schemes</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>default</span> <span class='op'>&lt;-</span> <span class='fu'>sectionGrid</span><span class='op'>(</span><span class='va'>GS</span><span class='op'>)</span>
+<span class='va'>approxML</span> <span class='op'>&lt;-</span> <span class='fu'>sectionGrid</span><span class='op'>(</span><span class='va'>GS</span>, method<span class='op'>=</span><span class='st'>"approxML"</span><span class='op'>)</span>
+<span class='va'>standardDepths5</span> <span class='op'>&lt;-</span> <span class='fu'>sectionGrid</span><span class='op'>(</span><span class='va'>GS</span>, p<span class='op'>=</span><span class='fu'><a href='standardDepths.html'>standardDepths</a></span><span class='op'>(</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>default</span>, which<span class='op'>=</span><span class='st'>"temperature"</span>, ztype<span class='op'>=</span><span class='st'>"image"</span>, ylim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>200</span>,<span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span><span class='op'>(</span><span class='st'>"default sectionGrid()"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>approxML</span>, which<span class='op'>=</span><span class='st'>"temperature"</span>, ztype<span class='op'>=</span><span class='st'>"image"</span>, ylim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>200</span>,<span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span><span class='op'>(</span><span class='st'>"sectionGrid(..., method=\"approxML\")"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>standardDepths5</span>, which<span class='op'>=</span><span class='st'>"temperature"</span>, ztype<span class='op'>=</span><span class='st'>"image"</span>, ylim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>200</span>,<span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span><span class='op'>(</span><span class='st'>"sectionGrid(..., p=standardDepths(5))"</span><span class='op'>)</span>
+</div><div class='img'><img src='sectionGrid-2.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -277,7 +283,7 @@ a flag system, for possible use in later processing steps.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

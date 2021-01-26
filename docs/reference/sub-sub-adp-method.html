@@ -79,7 +79,7 @@ the data, data-quality flags, etc." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -87,7 +87,7 @@ the data, data-quality flags, etc." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -128,7 +128,7 @@ the data, data-quality flags, etc." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -151,7 +151,7 @@ the data, data-quality flags, etc." />
     </div>
 
     <div class="ref-description">
-    <p>The <code>[[</code> method works for all <code>oce</code> objects, i.e.
+    <p>The <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> method works for all <code>oce</code> objects, i.e.
 objects inheriting from <a href='oce-class.html'>oce</a>.  The purpose
 is to insulate users from the internal details of <code>oce</code>
 objects, by looking for items within the various storage
@@ -203,7 +203,7 @@ first on the values of <code>i</code> and, optionally, <code>j</code>. The work
 proceeds in steps, by testing a sequence of possible conditions
 in sequence.</p><ol>
 <li><p>A check is made as to whether <code>i</code> names one of the standard
-<code>oce</code> slots. If so, <code>[[</code> returns the slot contents of that slot.
+<code>oce</code> slots. If so, <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> returns the slot contents of that slot.
 Thus, <code>x[["metadata"]]</code> will retrieve the <code>metadata</code> slot,
 while <code>x[["data"]]</code> and <code>x[["processingLog"]]</code> return
 those slots.</p></li>
@@ -242,7 +242,7 @@ and it directs where to look.</p></li>
 
 <p>If none of the above-listed conditions holds, then <code>NULL</code> is returned,
 without the issuance of a warning or error message. (This silent operation
-is employed so that <code>[[</code> will behave like the normal R version.)</p>
+is employed so that <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> will behave like the normal R version.)</p>
     <h2 class="hasAnchor" id="details-of-the-specialized-adp-method"><a class="anchor" href="#details-of-the-specialized-adp-method"></a>Details of the specialized <code>adp</code> method</h2>
 
     
@@ -257,30 +257,30 @@ retrieved with e.g. <code>x[["coordinate"]]</code>.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other functions that extract parts of oce objects: 
-<code><a href='sub-sub-adv-method.html'>[[,adv-method</a></code>,
-<code><a href='sub-sub-amsr-method.html'>[[,amsr-method</a></code>,
-<code><a href='sub-sub-argo-method.html'>[[,argo-method</a></code>,
-<code><a href='sub-sub-bremen-method.html'>[[,bremen-method</a></code>,
-<code><a href='sub-sub-cm-method.html'>[[,cm-method</a></code>,
-<code><a href='sub-sub-coastline-method.html'>[[,coastline-method</a></code>,
-<code><a href='sub-sub-ctd-method.html'>[[,ctd-method</a></code>,
-<code><a href='sub-sub-echosounder-method.html'>[[,echosounder-method</a></code>,
-<code><a href='sub-sub-g1sst-method.html'>[[,g1sst-method</a></code>,
-<code><a href='sub-sub-gps-method.html'>[[,gps-method</a></code>,
-<code><a href='sub-sub-ladp-method.html'>[[,ladp-method</a></code>,
-<code><a href='sub-sub-landsat-method.html'>[[,landsat-method</a></code>,
-<code><a href='sub-sub-lisst-method.html'>[[,lisst-method</a></code>,
-<code><a href='sub-sub-lobo-method.html'>[[,lobo-method</a></code>,
-<code><a href='sub-sub-met-method.html'>[[,met-method</a></code>,
-<code><a href='sub-sub-oce-method.html'>[[,oce-method</a></code>,
-<code><a href='sub-sub-odf-method.html'>[[,odf-method</a></code>,
-<code><a href='sub-sub-rsk-method.html'>[[,rsk-method</a></code>,
-<code><a href='sub-sub-sealevel-method.html'>[[,sealevel-method</a></code>,
-<code><a href='sub-sub-section-method.html'>[[,section-method</a></code>,
-<code><a href='sub-sub-tidem-method.html'>[[,tidem-method</a></code>,
-<code><a href='sub-sub-topo-method.html'>[[,topo-method</a></code>,
-<code><a href='sub-sub-windrose-method.html'>[[,windrose-method</a></code>,
-<code><a href='sub-sub-xbt-method.html'>[[,xbt-method</a></code>,
+<code><a href='[[,adv-method.html'>[[,adv-method</a></code>,
+<code><a href='[[,amsr-method.html'>[[,amsr-method</a></code>,
+<code><a href='[[,argo-method.html'>[[,argo-method</a></code>,
+<code><a href='[[,bremen-method.html'>[[,bremen-method</a></code>,
+<code><a href='[[,cm-method.html'>[[,cm-method</a></code>,
+<code><a href='[[,coastline-method.html'>[[,coastline-method</a></code>,
+<code><a href='[[,ctd-method.html'>[[,ctd-method</a></code>,
+<code><a href='[[,echosounder-method.html'>[[,echosounder-method</a></code>,
+<code><a href='[[,g1sst-method.html'>[[,g1sst-method</a></code>,
+<code><a href='[[,gps-method.html'>[[,gps-method</a></code>,
+<code><a href='[[,ladp-method.html'>[[,ladp-method</a></code>,
+<code><a href='[[,landsat-method.html'>[[,landsat-method</a></code>,
+<code><a href='[[,lisst-method.html'>[[,lisst-method</a></code>,
+<code><a href='[[,lobo-method.html'>[[,lobo-method</a></code>,
+<code><a href='[[,met-method.html'>[[,met-method</a></code>,
+<code><a href='[[,oce-method.html'>[[,oce-method</a></code>,
+<code><a href='[[,odf-method.html'>[[,odf-method</a></code>,
+<code><a href='[[,rsk-method.html'>[[,rsk-method</a></code>,
+<code><a href='[[,sealevel-method.html'>[[,sealevel-method</a></code>,
+<code><a href='[[,section-method.html'>[[,section-method</a></code>,
+<code><a href='[[,tidem-method.html'>[[,tidem-method</a></code>,
+<code><a href='[[,topo-method.html'>[[,topo-method</a></code>,
+<code><a href='[[,windrose-method.html'>[[,windrose-method</a></code>,
+<code><a href='[[,xbt-method.html'>[[,xbt-method</a></code>,
 <code>[[&lt;-,adv-method</code></p>
 <p>Other things related to adp data: 
 <code>[[&lt;-,adp-method</code>,
@@ -299,9 +299,9 @@ retrieved with e.g. <code>x[["coordinate"]]</code>.</p>
 <code><a href='binmapAdp.html'>binmapAdp</a>()</code>,
 <code><a href='enuToOtherAdp.html'>enuToOtherAdp</a>()</code>,
 <code><a href='enuToOther.html'>enuToOther</a>()</code>,
-<code><a href='handleFlags-adp-method.html'>handleFlags,adp-method</a></code>,
+<code><a href='handleFlags,adp-method.html'>handleFlags,adp-method</a></code>,
 <code><a href='is.ad2cp.html'>is.ad2cp</a>()</code>,
-<code><a href='plot-adp-method.html'>plot,adp-method</a></code>,
+<code><a href='plot,adp-method.html'>plot,adp-method</a></code>,
 <code><a href='read.adp.ad2cp.html'>read.adp.ad2cp</a>()</code>,
 <code><a href='read.adp.nortek.html'>read.adp.nortek</a>()</code>,
 <code><a href='read.adp.rdi.html'>read.adp.rdi</a>()</code>,
@@ -312,21 +312,28 @@ retrieved with e.g. <code>x[["coordinate"]]</code>.</p>
 <code><a href='read.aquadoppProfiler.html'>read.aquadoppProfiler</a>()</code>,
 <code><a href='read.aquadopp.html'>read.aquadopp</a>()</code>,
 <code><a href='rotateAboutZ.html'>rotateAboutZ</a>()</code>,
-<code><a href='setFlags-adp-method.html'>setFlags,adp-method</a></code>,
-<code><a href='subset-adp-method.html'>subset,adp-method</a></code>,
+<code><a href='setFlags,adp-method.html'>setFlags,adp-method</a></code>,
+<code><a href='subset,adp-method.html'>subset,adp-method</a></code>,
 <code><a href='subtractBottomVelocity.html'>subtractBottomVelocity</a>()</code>,
-<code><a href='summary-adp-method.html'>summary,adp-method</a></code>,
+<code><a href='summary,adp-method.html'>summary,adp-method</a></code>,
 <code><a href='toEnuAdp.html'>toEnuAdp</a>()</code>,
 <code><a href='toEnu.html'>toEnu</a>()</code>,
 <code><a href='velocityStatistics.html'>velocityStatistics</a>()</code>,
 <code><a href='xyzToEnuAdpAD2CP.html'>xyzToEnuAdpAD2CP</a>()</code>,
 <code><a href='xyzToEnuAdp.html'>xyzToEnuAdp</a>()</code>,
 <code><a href='xyzToEnu.html'>xyzToEnu</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>adp</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>adp</span><span class='op'>)</span>
 <span class='co'># Tests for beam 1, distance bin 1, first 5 observation times</span>
-<span class='no'>adp</span><span class='kw'>[[</span><span class='st'>"v"</span>]][<span class='fl'>1</span>:<span class='fl'>5</span>,<span class='fl'>1</span>,<span class='fl'>1</span>]</div><div class='output co'>#&gt; [1] -0.11955771 -0.09925398  0.10203802  0.09613003  0.24394126</div><div class='input'><span class='no'>adp</span><span class='kw'>[[</span><span class='st'>"a"</span>]][<span class='fl'>1</span>:<span class='fl'>5</span>,<span class='fl'>1</span>,<span class='fl'>1</span>]</div><div class='output co'>#&gt; [1] 99 9d 9f 87 8a</div><div class='input'><span class='no'>adp</span><span class='kw'>[[</span><span class='st'>"a"</span>, <span class='st'>"numeric"</span>]][<span class='fl'>1</span>:<span class='fl'>5</span>,<span class='fl'>1</span>,<span class='fl'>1</span>]</div><div class='output co'>#&gt; [1] 153 157 159 135 138</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='no'>adp</span><span class='kw'>[[</span><span class='st'>"a"</span>]][<span class='fl'>1</span>:<span class='fl'>5</span>,<span class='fl'>1</span>,<span class='fl'>1</span>]) <span class='co'># same as above</span></div><div class='output co'>#&gt; [1] 153 157 159 135 138</div><div class='input'>
+<span class='va'>adp</span><span class='op'>[[</span><span class='st'>"v"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>]</span>
+</div><div class='output co'>#&gt; [1] -0.11955771 -0.09925398  0.10203802  0.09613003  0.24394126</div><div class='input'><span class='va'>adp</span><span class='op'>[[</span><span class='st'>"a"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>]</span>
+</div><div class='output co'>#&gt; [1] 99 9d 9f 87 8a</div><div class='input'><span class='va'>adp</span><span class='op'>[[</span><span class='st'>"a"</span>, <span class='st'>"numeric"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>]</span>
+</div><div class='output co'>#&gt; [1] 153 157 159 135 138</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span><span class='op'>(</span><span class='va'>adp</span><span class='op'>[[</span><span class='st'>"a"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>]</span><span class='op'>)</span> <span class='co'># same as above</span>
+</div><div class='output co'>#&gt; [1] 153 157 159 135 138</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -343,7 +350,7 @@ retrieved with e.g. <code>x[["coordinate"]]</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

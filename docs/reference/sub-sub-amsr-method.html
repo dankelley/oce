@@ -41,6 +41,9 @@
 
 <meta property="og:title" content="Extract Something From an amsr Object — [[,amsr-method" />
 <meta property="og:description" content="Extract something from the metadata or data slot of an amsr object.
+Partial matches for i
+are permitted for metadata, and j is ignored for
+metadata.
 The [[ method works for all oce objects, i.e.
 objects inheriting from oce.  The purpose
 is to insulate users from the internal details of oce
@@ -80,7 +83,7 @@ the data, data-quality flags, etc." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -88,7 +91,7 @@ the data, data-quality flags, etc." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -129,7 +132,7 @@ the data, data-quality flags, etc." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -152,8 +155,11 @@ the data, data-quality flags, etc." />
     </div>
 
     <div class="ref-description">
-    <p>Extract something from the <code>metadata</code> or <code>data</code> slot of an <a href='amsr-class.html'>amsr</a> object.</p>
-<p>The <code>[[</code> method works for all <code>oce</code> objects, i.e.
+    <p>Extract something from the <code>metadata</code> or <code>data</code> slot of an <a href='amsr-class.html'>amsr</a> object.
+Partial matches for <code>i</code>
+are permitted for <code>metadata</code>, and <code>j</code> is ignored for
+<code>metadata</code>.</p>
+<p>The <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> method works for all <code>oce</code> objects, i.e.
 objects inheriting from <a href='oce-class.html'>oce</a>.  The purpose
 is to insulate users from the internal details of <code>oce</code>
 objects, by looking for items within the various storage
@@ -195,19 +201,21 @@ the raw data equal <code><a href='https://rdrr.io/r/base/raw.html'>as.raw(251:25
 in &#8220;Details&#8221;.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Partial matches for <code>i</code>
-are permitted for <code>metadata</code>, and <code>j</code> is ignored for
-<code>metadata</code>.</p>
-<p>Data within the <code>data</code> slot may be found directly, e.g.
-<code>j="SSTDay"</code> will yield sea-surface temperature in the daytime
-satellite, and <code>j="SSTNight"</code> is used to access the nighttime data. In
-addition, <code>j="SST"</code> yields an average of the night and day values
-(using just one of these, if the other is missing). This scheme works for
+    <p>Data within the <code>data</code> slot may be found directly, e.g.
+<code>i="SSTDay"</code> will yield sea-surface temperature in the daytime
+satellite, and <code>i="SSTNight"</code> is used to access the nighttime data. In
+addition, <code>i="SST"</code> yields a computed average of the night and day values
+(using just one of these, if the other is missing). This scheme of
+providing computed averages works for
 all the data stored in <code>amsr</code> objects, namely:
 <code>time</code>, <code>SST</code>, <code>LFwind</code>, <code>MFwind</code>,
 <code>vapor</code>, <code>cloud</code> and <code>rain</code>.  In each case, the default
 is to calculate values in scientific units, unless <code>j="raw"</code>, in
 which case the raw data are returned.</p>
+<p>The conversion from raw to scientific units is done with formulae
+found at <code>http://www.remss.com/missions/amsre</code>, e.g. SST is
+computed by converting the raw value to an integer (between 0 and 255),
+multiplying by 0.15C, and subtracting 3C.</p>
 <p>The <code>"raw"</code> mode can be useful
 in decoding the various types of missing value that are used by <code>amsr</code>
 data, namely <code><a href='https://rdrr.io/r/base/raw.html'>as.raw(255)</a></code> for land, <code><a href='https://rdrr.io/r/base/raw.html'>as.raw(254)</a></code> for
@@ -241,7 +249,7 @@ first on the values of <code>i</code> and, optionally, <code>j</code>. The work
 proceeds in steps, by testing a sequence of possible conditions
 in sequence.</p><ol>
 <li><p>A check is made as to whether <code>i</code> names one of the standard
-<code>oce</code> slots. If so, <code>[[</code> returns the slot contents of that slot.
+<code>oce</code> slots. If so, <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> returns the slot contents of that slot.
 Thus, <code>x[["metadata"]]</code> will retrieve the <code>metadata</code> slot,
 while <code>x[["data"]]</code> and <code>x[["processingLog"]]</code> return
 those slots.</p></li>
@@ -280,62 +288,56 @@ and it directs where to look.</p></li>
 
 <p>If none of the above-listed conditions holds, then <code>NULL</code> is returned,
 without the issuance of a warning or error message. (This silent operation
-is employed so that <code>[[</code> will behave like the normal R version.)</p>
+is employed so that <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> will behave like the normal R version.)</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other functions that extract parts of oce objects: 
-<code><a href='sub-sub-adp-method.html'>[[,adp-method</a></code>,
-<code><a href='sub-sub-adv-method.html'>[[,adv-method</a></code>,
-<code><a href='sub-sub-argo-method.html'>[[,argo-method</a></code>,
-<code><a href='sub-sub-bremen-method.html'>[[,bremen-method</a></code>,
-<code><a href='sub-sub-cm-method.html'>[[,cm-method</a></code>,
-<code><a href='sub-sub-coastline-method.html'>[[,coastline-method</a></code>,
-<code><a href='sub-sub-ctd-method.html'>[[,ctd-method</a></code>,
-<code><a href='sub-sub-echosounder-method.html'>[[,echosounder-method</a></code>,
-<code><a href='sub-sub-g1sst-method.html'>[[,g1sst-method</a></code>,
-<code><a href='sub-sub-gps-method.html'>[[,gps-method</a></code>,
-<code><a href='sub-sub-ladp-method.html'>[[,ladp-method</a></code>,
-<code><a href='sub-sub-landsat-method.html'>[[,landsat-method</a></code>,
-<code><a href='sub-sub-lisst-method.html'>[[,lisst-method</a></code>,
-<code><a href='sub-sub-lobo-method.html'>[[,lobo-method</a></code>,
-<code><a href='sub-sub-met-method.html'>[[,met-method</a></code>,
-<code><a href='sub-sub-oce-method.html'>[[,oce-method</a></code>,
-<code><a href='sub-sub-odf-method.html'>[[,odf-method</a></code>,
-<code><a href='sub-sub-rsk-method.html'>[[,rsk-method</a></code>,
-<code><a href='sub-sub-sealevel-method.html'>[[,sealevel-method</a></code>,
-<code><a href='sub-sub-section-method.html'>[[,section-method</a></code>,
-<code><a href='sub-sub-tidem-method.html'>[[,tidem-method</a></code>,
-<code><a href='sub-sub-topo-method.html'>[[,topo-method</a></code>,
-<code><a href='sub-sub-windrose-method.html'>[[,windrose-method</a></code>,
-<code><a href='sub-sub-xbt-method.html'>[[,xbt-method</a></code>,
+<code><a href='[[,adp-method.html'>[[,adp-method</a></code>,
+<code><a href='[[,adv-method.html'>[[,adv-method</a></code>,
+<code><a href='[[,argo-method.html'>[[,argo-method</a></code>,
+<code><a href='[[,bremen-method.html'>[[,bremen-method</a></code>,
+<code><a href='[[,cm-method.html'>[[,cm-method</a></code>,
+<code><a href='[[,coastline-method.html'>[[,coastline-method</a></code>,
+<code><a href='[[,ctd-method.html'>[[,ctd-method</a></code>,
+<code><a href='[[,echosounder-method.html'>[[,echosounder-method</a></code>,
+<code><a href='[[,g1sst-method.html'>[[,g1sst-method</a></code>,
+<code><a href='[[,gps-method.html'>[[,gps-method</a></code>,
+<code><a href='[[,ladp-method.html'>[[,ladp-method</a></code>,
+<code><a href='[[,landsat-method.html'>[[,landsat-method</a></code>,
+<code><a href='[[,lisst-method.html'>[[,lisst-method</a></code>,
+<code><a href='[[,lobo-method.html'>[[,lobo-method</a></code>,
+<code><a href='[[,met-method.html'>[[,met-method</a></code>,
+<code><a href='[[,oce-method.html'>[[,oce-method</a></code>,
+<code><a href='[[,odf-method.html'>[[,odf-method</a></code>,
+<code><a href='[[,rsk-method.html'>[[,rsk-method</a></code>,
+<code><a href='[[,sealevel-method.html'>[[,sealevel-method</a></code>,
+<code><a href='[[,section-method.html'>[[,section-method</a></code>,
+<code><a href='[[,tidem-method.html'>[[,tidem-method</a></code>,
+<code><a href='[[,topo-method.html'>[[,topo-method</a></code>,
+<code><a href='[[,windrose-method.html'>[[,windrose-method</a></code>,
+<code><a href='[[,xbt-method.html'>[[,xbt-method</a></code>,
 <code>[[&lt;-,adv-method</code></p>
 <p>Other things related to amsr data: 
 <code>[[&lt;-,amsr-method</code>,
 <code><a href='amsr-class.html'>amsr-class</a></code>,
-<code><a href='composite-amsr-method.html'>composite,amsr-method</a></code>,
+<code><a href='amsr.html'>amsr</a></code>,
+<code><a href='composite,amsr-method.html'>composite,amsr-method</a></code>,
 <code><a href='download.amsr.html'>download.amsr</a>()</code>,
-<code><a href='plot-amsr-method.html'>plot,amsr-method</a></code>,
+<code><a href='plot,amsr-method.html'>plot,amsr-method</a></code>,
 <code><a href='read.amsr.html'>read.amsr</a>()</code>,
-<code><a href='subset-amsr-method.html'>subset,amsr-method</a></code>,
-<code><a href='summary-amsr-method.html'>summary,amsr-method</a></code></p></div>
+<code><a href='subset,amsr-method.html'>subset,amsr-method</a></code>,
+<code><a href='summary,amsr-method.html'>summary,amsr-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='co'># Show a daytime SST image, along with an indication of whether</span>
-<span class='co'># the NA values are from rain.</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='no'>earth</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='read.amsr.html'>read.amsr</a></span>(<span class='st'>"f34_20160102v7.2.gz"</span>)
-<span class='no'>fclat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>earth</span> , <span class='fl'>35</span> <span class='kw'>&lt;=</span> <span class='no'>latitude</span> <span class='kw'>&amp;</span> <span class='no'>latitude</span> <span class='kw'>&lt;=</span> <span class='fl'>55</span>)
-<span class='no'>fc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>fclat</span> , -<span class='fl'>70</span> <span class='kw'>&lt;=</span> <span class='no'>longitude</span> <span class='kw'>&amp;</span> <span class='no'>longitude</span> <span class='kw'>&lt;=</span> -<span class='fl'>30</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>fc</span>, <span class='st'>"SSTDay"</span>)
-<span class='no'>rainy</span> <span class='kw'>&lt;-</span> <span class='no'>fc</span><span class='kw'>[[</span><span class='st'>"SSTDay"</span>, <span class='st'>"raw"</span>]] <span class='kw'>==</span> <span class='fu'><a href='https://rdrr.io/r/base/raw.html'>as.raw</a></span>(<span class='fl'>0xfb</span>)
-<span class='no'>lon</span> <span class='kw'>&lt;-</span> <span class='no'>fc</span><span class='kw'>[[</span><span class='st'>"longitude"</span>]]
-<span class='no'>lat</span> <span class='kw'>&lt;-</span> <span class='no'>fc</span><span class='kw'>[[</span><span class='st'>"latitude"</span>]]
-<span class='no'>asp</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span> / <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>cos</a></span>(<span class='no'>pi</span>*<span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>lat</span>)/<span class='fl'>180</span>)
-<span class='fu'><a href='imagep.html'>imagep</a></span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='no'>rainy</span>, <span class='kw'>asp</span><span class='kw'>=</span><span class='no'>asp</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span>(<span class='st'>"red: too rainy to sense SSTDay"</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='co'># Histogram of SST values</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>amsr</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span><span class='op'>(</span><span class='va'>amsr</span><span class='op'>[[</span><span class='st'>"SST"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+</div><div class='img'><img src='sub-sub-amsr-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -351,7 +353,7 @@ is employed so that <code>[[</code> will behave like the normal R version.)</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

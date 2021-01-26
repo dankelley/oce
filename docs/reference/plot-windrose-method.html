@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -148,15 +148,15 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for windrose</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(
-  <span class='no'>x</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"count"</span>, <span class='st'>"mean"</span>, <span class='st'>"median"</span>, <span class='st'>"fivenum"</span>),
-  <span class='kw'>convention</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"meteorological"</span>, <span class='st'>"oceanographic"</span>),
-  <span class='kw'>mgp</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceMgp"</span>),
-  <span class='kw'>mar</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='no'>mgp</span>[<span class='fl'>1</span>], <span class='no'>mgp</span>[<span class='fl'>1</span>], <span class='fl'>1</span> + <span class='no'>mgp</span>[<span class='fl'>1</span>], <span class='no'>mgp</span>[<span class='fl'>1</span>]),
-  <span class='no'>col</span>,
-  <span class='no'>...</span>
-)</pre>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"count"</span>, <span class='st'>"mean"</span>, <span class='st'>"median"</span>, <span class='st'>"fivenum"</span><span class='op'>)</span>,
+  convention <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"meteorological"</span>, <span class='st'>"oceanographic"</span><span class='op'>)</span>,
+  mgp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceMgp"</span><span class='op'>)</span>,
+  mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span>, <span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span>, <span class='fl'>1</span> <span class='op'>+</span> <span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span>, <span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>)</span>,
+  <span class='va'>col</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -208,48 +208,55 @@ the fourth is, again, used for the grid lines.</p></td>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other functions that plot oce data: 
-<code><a href='plot-adp-method.html'>plot,adp-method</a></code>,
-<code><a href='plot-adv-method.html'>plot,adv-method</a></code>,
-<code><a href='plot-amsr-method.html'>plot,amsr-method</a></code>,
-<code><a href='plot-argo-method.html'>plot,argo-method</a></code>,
-<code><a href='plot-bremen-method.html'>plot,bremen-method</a></code>,
-<code><a href='plot-cm-method.html'>plot,cm-method</a></code>,
-<code><a href='plot-coastline-method.html'>plot,coastline-method</a></code>,
-<code><a href='plot-ctd-method.html'>plot,ctd-method</a></code>,
-<code><a href='plot-gps-method.html'>plot,gps-method</a></code>,
-<code><a href='plot-ladp-method.html'>plot,ladp-method</a></code>,
-<code><a href='plot-landsat-method.html'>plot,landsat-method</a></code>,
-<code><a href='plot-lisst-method.html'>plot,lisst-method</a></code>,
-<code><a href='plot-lobo-method.html'>plot,lobo-method</a></code>,
-<code><a href='plot-met-method.html'>plot,met-method</a></code>,
-<code><a href='plot-odf-method.html'>plot,odf-method</a></code>,
-<code><a href='plot-rsk-method.html'>plot,rsk-method</a></code>,
-<code><a href='plot-satellite-method.html'>plot,satellite-method</a></code>,
-<code><a href='plot-sealevel-method.html'>plot,sealevel-method</a></code>,
-<code><a href='plot-section-method.html'>plot,section-method</a></code>,
-<code><a href='plot-tidem-method.html'>plot,tidem-method</a></code>,
-<code><a href='plot-topo-method.html'>plot,topo-method</a></code>,
-<code><a href='plot-xbt-method.html'>plot,xbt-method</a></code>,
+<code><a href='download.amsr.html'>download.amsr</a>()</code>,
+<code><a href='plot,adp-method.html'>plot,adp-method</a></code>,
+<code><a href='plot,adv-method.html'>plot,adv-method</a></code>,
+<code><a href='plot,amsr-method.html'>plot,amsr-method</a></code>,
+<code><a href='plot,argo-method.html'>plot,argo-method</a></code>,
+<code><a href='plot,bremen-method.html'>plot,bremen-method</a></code>,
+<code><a href='plot,cm-method.html'>plot,cm-method</a></code>,
+<code><a href='plot,coastline-method.html'>plot,coastline-method</a></code>,
+<code><a href='plot,ctd-method.html'>plot,ctd-method</a></code>,
+<code><a href='plot,gps-method.html'>plot,gps-method</a></code>,
+<code><a href='plot,ladp-method.html'>plot,ladp-method</a></code>,
+<code><a href='plot,landsat-method.html'>plot,landsat-method</a></code>,
+<code><a href='plot,lisst-method.html'>plot,lisst-method</a></code>,
+<code><a href='plot,lobo-method.html'>plot,lobo-method</a></code>,
+<code><a href='plot,met-method.html'>plot,met-method</a></code>,
+<code><a href='plot,odf-method.html'>plot,odf-method</a></code>,
+<code><a href='plot,rsk-method.html'>plot,rsk-method</a></code>,
+<code><a href='plot,satellite-method.html'>plot,satellite-method</a></code>,
+<code><a href='plot,sealevel-method.html'>plot,sealevel-method</a></code>,
+<code><a href='plot,section-method.html'>plot,section-method</a></code>,
+<code><a href='plot,tidem-method.html'>plot,tidem-method</a></code>,
+<code><a href='plot,topo-method.html'>plot,topo-method</a></code>,
+<code><a href='plot,xbt-method.html'>plot,xbt-method</a></code>,
 <code><a href='plotProfile.html'>plotProfile</a>()</code>,
 <code><a href='plotScan.html'>plotScan</a>()</code>,
 <code><a href='plotTS.html'>plotTS</a>()</code>,
 <code><a href='tidem-class.html'>tidem-class</a></code></p>
 <p>Other things related to windrose data: 
-<code><a href='sub-sub-windrose-method.html'>[[,windrose-method</a></code>,
+<code><a href='[[,windrose-method.html'>[[,windrose-method</a></code>,
 <code>[[&lt;-,windrose-method</code>,
 <code><a href='as.windrose.html'>as.windrose</a>()</code>,
-<code><a href='summary-windrose-method.html'>summary,windrose-method</a></code>,
+<code><a href='summary,windrose-method.html'>summary,windrose-method</a></code>,
 <code><a href='windrose-class.html'>windrose-class</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='no'>opar</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>no.readonly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-<span class='no'>xcomp</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>360</span>) + <span class='fl'>1</span>
-<span class='no'>ycomp</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>360</span>)
-<span class='no'>wr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='as.windrose.html'>as.windrose</a></span>(<span class='no'>xcomp</span>, <span class='no'>ycomp</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>wr</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>wr</span>, <span class='st'>"fivenum"</span>)</div><div class='img'><img src='plot-windrose-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='no'>opar</span>)</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='va'>opar</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>no.readonly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='va'>xcomp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>360</span><span class='op'>)</span> <span class='op'>+</span> <span class='fl'>1</span>
+<span class='va'>ycomp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>360</span><span class='op'>)</span>
+<span class='va'>wr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='as.windrose.html'>as.windrose</a></span><span class='op'>(</span><span class='va'>xcomp</span>, <span class='va'>ycomp</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>wr</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>wr</span>, <span class='st'>"fivenum"</span><span class='op'>)</span>
+</div><div class='img'><img src='plot-windrose-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='va'>opar</span><span class='op'>)</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -265,7 +272,7 @@ the fourth is, again, used for the grid lines.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

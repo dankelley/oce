@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,7 +147,7 @@
     <p>Add an item to a processing log (in place)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>processingLog</span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span></pre>
+    <pre class="usage"><span class='fu'>processingLog</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -170,18 +170,20 @@
 <code><a href='processingLogShow.html'>processingLogShow</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
-<span class='fu'><a href='processingLogShow.html'>processingLogShow</a></span>(<span class='no'>ctd</span>)</div><div class='output co'>#&gt; * Processing Log
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+<span class='fu'><a href='processingLogShow.html'>processingLogShow</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; * Processing Log
 #&gt; 
 #&gt;     - 2018-11-14 20:03:47 UTC: `create 'ctd' object`
 #&gt;     - 2018-11-14 20:03:47 UTC: `read.ctd.sbe(file = file, debug = 10, processingLog = processingLog)`
-#&gt;     - 2018-11-14 20:03:47 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`</div><div class='input'><span class='fu'>processingLog</span>(<span class='no'>ctd</span>) <span class='kw'>&lt;-</span> <span class='st'>"test"</span>
-<span class='fu'><a href='processingLogShow.html'>processingLogShow</a></span>(<span class='no'>ctd</span>)</div><div class='output co'>#&gt; * Processing Log
+#&gt;     - 2018-11-14 20:03:47 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`</div><div class='input'><span class='fu'>processingLog</span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='st'>"test"</span>
+<span class='fu'><a href='processingLogShow.html'>processingLogShow</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; * Processing Log
 #&gt; 
 #&gt;     - 2018-11-14 20:03:47 UTC: `create 'ctd' object`
 #&gt;     - 2018-11-14 20:03:47 UTC: `read.ctd.sbe(file = file, debug = 10, processingLog = processingLog)`
 #&gt;     - 2018-11-14 20:03:47 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`
-#&gt;     - 2020-07-09 21:59:58 UTC: `test`</div><div class='input'>
+#&gt;     - 2021-01-26 21:24:05 UTC: `test`</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -198,7 +200,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

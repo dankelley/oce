@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Format bytes as binary <a href='https://rdrr.io/r/base/Defunct.html'>defunct</a> — byteToBinary • oce</title>
+<title>Format bytes as binary defunct — byteToBinary • oce</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="Format bytes as binary <a href='https://rdrr.io/r/base/Defunct.html'>defunct</a> — byteToBinary" />
+<meta property="og:title" content="Format bytes as binary defunct — byteToBinary" />
 <meta property="og:description" content="WARNING: The endian argument will soon be removed
 from this function; see oce-defunct.
 This is because the actions for endian=&quot;little&quot; made
@@ -76,7 +76,7 @@ was changed to &quot;big&quot; on 2017 May 6." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -84,7 +84,7 @@ was changed to &quot;big&quot; on 2017 May 6." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -125,7 +125,7 @@ was changed to &quot;big&quot; on 2017 May 6." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -155,7 +155,7 @@ no sense in practical work. The default value for <code>endian</code>
 was changed to <code>"big"</code> on 2017 May 6.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>byteToBinary</span>(<span class='no'>x</span>, <span class='kw'>endian</span> <span class='kw'>=</span> <span class='st'>"big"</span>)</pre>
+    <pre class="usage"><span class='fu'>byteToBinary</span><span class='op'>(</span><span class='va'>x</span>, endian <span class='op'>=</span> <span class='st'>"big"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -179,12 +179,17 @@ was changed to <code>"big"</code> on 2017 May 6.</p>
 <code>"little"</code> case.)
 See &#8220;Examples&#8221; for how this relates to the output from
 <a href='https://rdrr.io/r/base/rawConversion.html'>rawToBits</a>.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
 <span class='co'>## Note comparison with rawToBits():</span>
-<span class='no'>a</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/raw.html'>as.raw</a></span>(<span class='fl'>0x0a</span>)
-<span class='fu'>byteToBinary</span>(<span class='no'>a</span>, <span class='st'>"big"</span>)        <span class='co'># "00001010"</span></div><div class='output co'>#&gt; [1] "00001010"</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/rawConversion.html'>rawToBits</a></span>(<span class='no'>a</span>))) <span class='co'># 0 0 0 0 1 0 1 0</span></div><div class='output co'>#&gt; [1] 0 0 0 0 1 0 1 0</div></pre>
+<span class='va'>a</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/raw.html'>as.raw</a></span><span class='op'>(</span><span class='fl'>0x0a</span><span class='op'>)</span>
+<span class='fu'>byteToBinary</span><span class='op'>(</span><span class='va'>a</span>, <span class='st'>"big"</span><span class='op'>)</span>        <span class='co'># "00001010"</span>
+</div><div class='output co'>#&gt; [1] "00001010"</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rawConversion.html'>rawToBits</a></span><span class='op'>(</span><span class='va'>a</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='co'># 0 0 0 0 1 0 1 0</span>
+</div><div class='output co'>#&gt; [1] 0 0 0 0 1 0 1 0</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -200,7 +205,7 @@ See &#8220;Examples&#8221; for how this relates to the output from
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

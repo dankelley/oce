@@ -74,7 +74,7 @@ used by analogy to ADVs." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@ used by analogy to ADVs." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -123,7 +123,7 @@ used by analogy to ADVs." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -196,15 +196,15 @@ object may be retrieved in the standard R way using <code>slot()</code>. For
 example <code>slot(o,"data")</code> returns the <code>data</code> slot of an object named <code>o</code>,
 and similarly <code>slot(o,"metadata")</code> returns
 the <code>metadata</code> slot.</p>
-<p>The slots may also be obtained with the <code><a href='sub-sub-adp-method.html'>[[,adp-method</a></code>
+<p>The slots may also be obtained with the <code><a href='[[,adp-method.html'>[[,adp-method</a></code>
 operator, as e.g. <code>o[["data"]]</code> and <code>o[["metadata"]]</code>, respectively.</p>
-<p>The <code><a href='sub-sub-adp-method.html'>[[,adp-method</a></code> operator can also
+<p>The <code><a href='[[,adp-method.html'>[[,adp-method</a></code> operator can also
 be used to retrieve items from within the <code>data</code> and <code>metadata</code> slots.
 For example, <code>o[["temperature"]]</code> can be used to retrieve temperature
 from an object containing that quantity. The rule is that a named
 quantity is sought first within the object's <code>metadata</code> slot,
 with the <code>data</code> slot being checked only if <code>metadata</code> does not
-contain the item. This <code>[[</code> method can also be used to get
+contain the item. This <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
@@ -258,12 +258,13 @@ whether the object is in beam coordinates, frame coordinates, or earth
 coordinates.  For example, if in earth coordinates, then beam 1 is
 the eastward component of velocity.
 Thus, for example,</p><pre>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>adp</span>)
-<span class='no'>t</span> <span class='kw'>&lt;-</span> <span class='no'>adp</span><span class='kw'>[[</span><span class='st'>'time'</span>]]
-<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='no'>adp</span><span class='kw'>[[</span><span class='st'>'distance'</span>]]
-<span class='no'>eastward</span> <span class='kw'>&lt;-</span> <span class='no'>adp</span><span class='kw'>[[</span><span class='st'>'v'</span>]][,,<span class='fl'>1</span>]
-<span class='fu'><a href='imagep.html'>imagep</a></span>(<span class='no'>t</span>, <span class='no'>d</span>, <span class='no'>eastward</span>, <span class='kw'>missingColor</span><span class='kw'>=</span><span class='st'>"gray"</span>)</pre><p>plots an image of the eastward component of velocity as a function of time (the x axis)
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>adp</span><span class='op'>)</span>
+<span class='va'>t</span> <span class='op'>&lt;-</span> <span class='va'>adp</span><span class='op'>[[</span><span class='st'>'time'</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>d</span> <span class='op'>&lt;-</span> <span class='va'>adp</span><span class='op'>[[</span><span class='st'>'distance'</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>eastward</span> <span class='op'>&lt;-</span> <span class='va'>adp</span><span class='op'>[[</span><span class='st'>'v'</span><span class='op'>]</span><span class='op'>]</span><span class='op'>[</span>,,<span class='fl'>1</span><span class='op'>]</span>
+<span class='fu'><a href='imagep.html'>imagep</a></span><span class='op'>(</span><span class='va'>t</span>, <span class='va'>d</span>, <span class='va'>eastward</span>, missingColor<span class='op'>=</span><span class='st'>"gray"</span><span class='op'>)</span>
+</pre><p>plots an image of the eastward component of velocity as a function of time (the x axis)
 and distance from sensor (y axis), since the <code>adp</code> dataset is
 in earth coordinates. Note the semidurnal tidal signal, and the pattern of missing
 data at the ocean surface (gray blotches at the top).</p>
@@ -401,7 +402,7 @@ general ADP function <code><a href='read.adp.html'>read.adp()</a></code> or spec
 <code><a href='read.adp.rdi.html'>read.adp.rdi()</a></code>, <code><a href='read.adp.nortek.html'>read.adp.nortek()</a></code>,
 <code><a href='read.adp.ad2cp.html'>read.adp.ad2cp()</a></code>,
 <code><a href='read.adp.sontek.html'>read.adp.sontek()</a></code> or <code><a href='read.adp.sontek.serial.html'>read.adp.sontek.serial()</a></code>.</p>
-<p>ADP data may be plotted with <code><a href='plot-adp-method.html'>plot,adp-method()</a></code>, which is a
+<p>ADP data may be plotted with <code><a href='plot,adp-method.html'>plot,adp-method()</a></code>, which is a
 generic function so it may be called simply as <code>plot</code>.</p>
 <p>Statistical summaries of ADP data are provided by the generic function
 <code>summary</code>, while briefer overviews are provided with <code>show</code>.</p>
@@ -429,7 +430,7 @@ transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 <code><a href='windrose-class.html'>windrose-class</a></code>,
 <code><a href='xbt-class.html'>xbt-class</a></code></p>
 <p>Other things related to adp data: 
-<code><a href='sub-sub-adp-method.html'>[[,adp-method</a></code>,
+<code><a href='[[,adp-method.html'>[[,adp-method</a></code>,
 <code>[[&lt;-,adp-method</code>,
 <code><a href='ad2cpHeaderValue.html'>ad2cpHeaderValue</a>()</code>,
 <code><a href='adpEnsembleAverage.html'>adpEnsembleAverage</a>()</code>,
@@ -445,9 +446,9 @@ transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 <code><a href='binmapAdp.html'>binmapAdp</a>()</code>,
 <code><a href='enuToOtherAdp.html'>enuToOtherAdp</a>()</code>,
 <code><a href='enuToOther.html'>enuToOther</a>()</code>,
-<code><a href='handleFlags-adp-method.html'>handleFlags,adp-method</a></code>,
+<code><a href='handleFlags,adp-method.html'>handleFlags,adp-method</a></code>,
 <code><a href='is.ad2cp.html'>is.ad2cp</a>()</code>,
-<code><a href='plot-adp-method.html'>plot,adp-method</a></code>,
+<code><a href='plot,adp-method.html'>plot,adp-method</a></code>,
 <code><a href='read.adp.ad2cp.html'>read.adp.ad2cp</a>()</code>,
 <code><a href='read.adp.nortek.html'>read.adp.nortek</a>()</code>,
 <code><a href='read.adp.rdi.html'>read.adp.rdi</a>()</code>,
@@ -458,10 +459,10 @@ transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 <code><a href='read.aquadoppProfiler.html'>read.aquadoppProfiler</a>()</code>,
 <code><a href='read.aquadopp.html'>read.aquadopp</a>()</code>,
 <code><a href='rotateAboutZ.html'>rotateAboutZ</a>()</code>,
-<code><a href='setFlags-adp-method.html'>setFlags,adp-method</a></code>,
-<code><a href='subset-adp-method.html'>subset,adp-method</a></code>,
+<code><a href='setFlags,adp-method.html'>setFlags,adp-method</a></code>,
+<code><a href='subset,adp-method.html'>subset,adp-method</a></code>,
 <code><a href='subtractBottomVelocity.html'>subtractBottomVelocity</a>()</code>,
-<code><a href='summary-adp-method.html'>summary,adp-method</a></code>,
+<code><a href='summary,adp-method.html'>summary,adp-method</a></code>,
 <code><a href='toEnuAdp.html'>toEnuAdp</a>()</code>,
 <code><a href='toEnu.html'>toEnu</a>()</code>,
 <code><a href='velocityStatistics.html'>velocityStatistics</a>()</code>,
@@ -484,7 +485,7 @@ transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

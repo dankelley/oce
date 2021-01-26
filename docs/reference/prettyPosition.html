@@ -74,7 +74,7 @@ half-degrees, minutes, etc." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@ half-degrees, minutes, etc." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -123,7 +123,7 @@ half-degrees, minutes, etc." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -151,7 +151,7 @@ Depending on the range of values in <code>x</code>, rounding is done to degrees,
 half-degrees, minutes, etc.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>prettyPosition</span>(<span class='no'>x</span>, <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>))</pre>
+    <pre class="usage"><span class='fu'>prettyPosition</span><span class='op'>(</span><span class='va'>x</span>, debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -172,18 +172,15 @@ processing.</p></td>
 
     <p>A vector of numbers that will yield good axis labels if
 <code><a href='formatPosition.html'>formatPosition()</a></code> is used.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='formatPosition.html'>formatPosition</a></span>(<span class='fu'>prettyPosition</span>(<span class='fl'>10</span>+<span class='fl'>1</span>:<span class='fl'>10</span>/<span class='fl'>60</span>+<span class='fl'>2.8</span>/<span class='fl'>3600</span>))</div><div class='output co'>#&gt; [[1]]
-#&gt; [1] 10 10 10 10 10 10 10
-#&gt; 
-#&gt; [[2]]
-#&gt; [1]  0  2  4  6  8 10 12
-#&gt; 
-#&gt; [[3]]
-#&gt; [1] "N" "N" "N" "N" "N" "N" "N"
-#&gt; </div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='formatPosition.html'>formatPosition</a></span><span class='op'>(</span><span class='fu'>prettyPosition</span><span class='op'>(</span><span class='fl'>10</span><span class='op'>+</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span><span class='op'>/</span><span class='fl'>60</span><span class='op'>+</span><span class='fl'>2.8</span><span class='op'>/</span><span class='fl'>3600</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; expression(c(10, 10, 10, 10, 10, 10, 10), c(0, 2, 4, 6, 8, 10, 
+#&gt; 12), c("N", NA, NA, NA, NA, NA, NA), NULL, NULL, NULL, NULL)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -199,7 +196,7 @@ processing.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

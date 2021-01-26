@@ -77,7 +77,7 @@ inset." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -85,7 +85,7 @@ inset." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -126,7 +126,7 @@ inset." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -157,15 +157,15 @@ within the inset, so it is essential to finish a plot before drawing an
 inset.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotInset</span>(
-  <span class='no'>xleft</span>,
-  <span class='no'>ybottom</span>,
-  <span class='no'>xright</span>,
-  <span class='no'>ytop</span>,
-  <span class='no'>expr</span>,
-  <span class='kw'>mar</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>plotInset</span><span class='op'>(</span>
+  <span class='va'>xleft</span>,
+  <span class='va'>ybottom</span>,
+  <span class='va'>xright</span>,
+  <span class='va'>ytop</span>,
+  <span class='va'>expr</span>,
+  mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -208,21 +208,28 @@ amount of debugging information, or to 2 to get more.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
 <span class='co'>## power law in linear and log form</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>:<span class='fl'>10</span>
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='no'>x</span>^<span class='fl'>2</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>log</span><span class='kw'>=</span><span class='st'>'xy'</span>,<span class='kw'>type</span><span class='kw'>=</span><span class='st'>'l'</span>)</div><div class='input'><span class='fu'>plotInset</span>(<span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>10</span>, <span class='fl'>8</span>,
-          <span class='kw'>expr</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>x</span>,<span class='no'>y</span>,<span class='kw'>type</span><span class='kw'>=</span><span class='st'>'l'</span>,<span class='kw'>cex.axis</span><span class='kw'>=</span><span class='fl'>3</span>/<span class='fl'>4</span>,<span class='kw'>mgp</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>/<span class='fl'>2</span>, <span class='fl'>1</span>/<span class='fl'>2</span>, <span class='fl'>0</span>)),
-          <span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2.5</span>, <span class='fl'>2.5</span>, <span class='fl'>1</span>, <span class='fl'>1</span>))</div><div class='img'><img src='plotInset-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>
+<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='va'>x</span><span class='op'>^</span><span class='fl'>2</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, log<span class='op'>=</span><span class='st'>'xy'</span>,type<span class='op'>=</span><span class='st'>'l'</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>plotInset</span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>10</span>, <span class='fl'>8</span>,
+          expr<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>,<span class='va'>y</span>,type<span class='op'>=</span><span class='st'>'l'</span>,cex.axis<span class='op'>=</span><span class='fl'>3</span><span class='op'>/</span><span class='fl'>4</span>,mgp<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span><span class='op'>/</span><span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>/</span><span class='fl'>2</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span>,
+          mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2.5</span>, <span class='fl'>2.5</span>, <span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='plotInset-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'>## CTD data with location</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>ctd</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"TS"</span>)</div><div class='input'><span class='fu'>plotInset</span>(<span class='fl'>29.9</span>, <span class='fl'>2.7</span>, <span class='fl'>31</span>, <span class='fl'>10</span>,
-          <span class='kw'>expr</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>ctd</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>'map'</span>,
-          <span class='kw'>coastline</span><span class='kw'>=</span><span class='st'>"coastlineWorld"</span>,
-          <span class='kw'>span</span><span class='kw'>=</span><span class='fl'>5000</span>, <span class='kw'>mar</span><span class='kw'>=</span><span class='kw'>NULL</span>, <span class='kw'>cex.axis</span><span class='kw'>=</span><span class='fl'>3</span>/<span class='fl'>4</span>))</div><div class='img'><img src='plotInset-2.png' alt='' width='700' height='433' /></div></pre>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>ctd</span>, which<span class='op'>=</span><span class='st'>"TS"</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>plotInset</span><span class='op'>(</span><span class='fl'>29.9</span>, <span class='fl'>2.7</span>, <span class='fl'>31</span>, <span class='fl'>10</span>,
+          expr<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>ctd</span>, which<span class='op'>=</span><span class='st'>'map'</span>,
+          coastline<span class='op'>=</span><span class='st'>"coastlineWorld"</span>,
+          span<span class='op'>=</span><span class='fl'>5000</span>, mar<span class='op'>=</span><span class='cn'>NULL</span>, cex.axis<span class='op'>=</span><span class='fl'>3</span><span class='op'>/</span><span class='fl'>4</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='plotInset-2.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -238,7 +245,7 @@ amount of debugging information, or to 2 to get more.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

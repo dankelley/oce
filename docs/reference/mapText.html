@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,7 +147,7 @@
     <p>Plot text on an existing map, by analogy to <code><a href='https://rdrr.io/r/graphics/text.html'>text()</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>mapText</span>(<span class='no'>longitude</span>, <span class='no'>latitude</span>, <span class='no'>labels</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>mapText</span><span class='op'>(</span><span class='va'>longitude</span>, <span class='va'>latitude</span>, <span class='va'>labels</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -198,18 +198,24 @@
 <code><a href='shiftLongitude.html'>shiftLongitude</a>()</code>,
 <code><a href='usrLonLat.html'>usrLonLat</a>()</code>,
 <code><a href='utm2lonlat.html'>utm2lonlat</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>coastlineWorld</span>)
-<span class='no'>longitude</span> <span class='kw'>&lt;-</span> <span class='no'>coastlineWorld</span><span class='kw'>[[</span><span class='st'>'longitude'</span>]]
-<span class='no'>latitude</span> <span class='kw'>&lt;-</span> <span class='no'>coastlineWorld</span><span class='kw'>[[</span><span class='st'>'latitude'</span>]]
-<span class='fu'><a href='mapPlot.html'>mapPlot</a></span>(<span class='no'>longitude</span>, <span class='no'>latitude</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'l'</span>, <span class='kw'>grid</span><span class='kw'>=</span><span class='fl'>5</span>,
-        <span class='kw'>longitudelim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>70</span>,-<span class='fl'>50</span>), <span class='kw'>latitudelim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>45</span>, <span class='fl'>50</span>),
-        <span class='kw'>projection</span><span class='kw'>=</span><span class='st'>"+proj=merc"</span>)</div><div class='input'><span class='no'>lon</span> <span class='kw'>&lt;-</span> -<span class='fl'>63.5744</span> <span class='co'># Halifax</span>
-<span class='no'>lat</span> <span class='kw'>&lt;-</span> <span class='fl'>44.6479</span>
-<span class='fu'><a href='mapPoints.html'>mapPoints</a></span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='kw'>pch</span><span class='kw'>=</span><span class='fl'>20</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"red"</span>)</div><div class='input'><span class='fu'>mapText</span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='st'>"Halifax"</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"red"</span>, <span class='kw'>pos</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>offset</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='img'><img src='mapText-1.png' alt='' width='700' height='433' /></div><div class='input'># }
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>)</span>
+<span class='va'>longitude</span> <span class='op'>&lt;-</span> <span class='va'>coastlineWorld</span><span class='op'>[[</span><span class='st'>'longitude'</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>latitude</span> <span class='op'>&lt;-</span> <span class='va'>coastlineWorld</span><span class='op'>[[</span><span class='st'>'latitude'</span><span class='op'>]</span><span class='op'>]</span>
+<span class='fu'><a href='mapPlot.html'>mapPlot</a></span><span class='op'>(</span><span class='va'>longitude</span>, <span class='va'>latitude</span>, type<span class='op'>=</span><span class='st'>'l'</span>, grid<span class='op'>=</span><span class='fl'>5</span>,
+        longitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>70</span>,<span class='op'>-</span><span class='fl'>50</span><span class='op'>)</span>, latitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>45</span>, <span class='fl'>50</span><span class='op'>)</span>,
+        projection<span class='op'>=</span><span class='st'>"+proj=merc"</span><span class='op'>)</span>
+</div><div class='input'><span class='va'>lon</span> <span class='op'>&lt;-</span> <span class='op'>-</span><span class='fl'>63.5744</span> <span class='co'># Halifax</span>
+<span class='va'>lat</span> <span class='op'>&lt;-</span> <span class='fl'>44.6479</span>
+<span class='fu'><a href='mapPoints.html'>mapPoints</a></span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, pch<span class='op'>=</span><span class='fl'>20</span>, col<span class='op'>=</span><span class='st'>"red"</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>mapText</span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, <span class='st'>"Halifax"</span>, col<span class='op'>=</span><span class='st'>"red"</span>, pos<span class='op'>=</span><span class='fl'>1</span>, offset<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='img'><img src='mapText-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
 
 </div></pre>
   </div>
@@ -227,7 +233,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

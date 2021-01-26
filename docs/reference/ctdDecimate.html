@@ -74,7 +74,7 @@ CTD/bottle profiles." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@ CTD/bottle profiles." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -123,7 +123,7 @@ CTD/bottle profiles." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -151,14 +151,14 @@ by <code><a href='sectionGrid.html'>sectionGrid()</a></code>, but is also useful
 CTD/bottle profiles.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ctdDecimate</span>(
-  <span class='no'>x</span>,
-  <span class='kw'>p</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"boxcar"</span>,
-  <span class='kw'>rule</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>e</span> <span class='kw'>=</span> <span class='fl'>1.5</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>ctdDecimate</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  p <span class='op'>=</span> <span class='fl'>1</span>,
+  method <span class='op'>=</span> <span class='st'>"boxcar"</span>,
+  rule <span class='op'>=</span> <span class='fl'>1</span>,
+  e <span class='op'>=</span> <span class='fl'>1.5</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -277,7 +277,7 @@ with a Complex Hydrographical Structure.&#8221; Journal of Atmospheric and Ocean
 CTD objects, and also outlines the other functions dealing with them.</p>
 <p>Other things related to ctd data: 
 <code><a href='CTD_BCD2014666_008_1_DN.ODF.gz.html'>CTD_BCD2014666_008_1_DN.ODF.gz</a></code>,
-<code><a href='sub-sub-ctd-method.html'>[[,ctd-method</a></code>,
+<code><a href='[[,ctd-method.html'>[[,ctd-method</a></code>,
 <code>[[&lt;-,ctd-method</code>,
 <code><a href='as.ctd.html'>as.ctd</a>()</code>,
 <code><a href='cnvName2oceName.html'>cnvName2oceName</a>()</code>,
@@ -289,12 +289,12 @@ CTD objects, and also outlines the other functions dealing with them.</p>
 <code><a href='ctd.html'>ctd</a></code>,
 <code><a href='d200321-001.ctd.html'>d200321-001.ctd</a></code>,
 <code><a href='d201211_0011.cnv.html'>d201211_0011.cnv</a></code>,
-<code><a href='handleFlags-ctd-method.html'>handleFlags,ctd-method</a></code>,
-<code><a href='initialize-ctd-method.html'>initialize,ctd-method</a></code>,
-<code><a href='initializeFlagScheme-ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
+<code><a href='handleFlags,ctd-method.html'>handleFlags,ctd-method</a></code>,
+<code><a href='initialize,ctd-method.html'>initialize,ctd-method</a></code>,
+<code><a href='initializeFlagScheme,ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
 <code><a href='oceNames2whpNames.html'>oceNames2whpNames</a>()</code>,
 <code><a href='oceUnits2whpUnits.html'>oceUnits2whpUnits</a>()</code>,
-<code><a href='plot-ctd-method.html'>plot,ctd-method</a></code>,
+<code><a href='plot,ctd-method.html'>plot,ctd-method</a></code>,
 <code><a href='plotProfile.html'>plotProfile</a>()</code>,
 <code><a href='plotScan.html'>plotScan</a>()</code>,
 <code><a href='plotTS.html'>plotTS</a>()</code>,
@@ -305,22 +305,28 @@ CTD objects, and also outlines the other functions dealing with them.</p>
 <code><a href='read.ctd.woce.other.html'>read.ctd.woce.other</a>()</code>,
 <code><a href='read.ctd.woce.html'>read.ctd.woce</a>()</code>,
 <code><a href='read.ctd.html'>read.ctd</a>()</code>,
-<code><a href='setFlags-ctd-method.html'>setFlags,ctd-method</a></code>,
-<code><a href='subset-ctd-method.html'>subset,ctd-method</a></code>,
-<code><a href='summary-ctd-method.html'>summary,ctd-method</a></code>,
+<code><a href='setFlags,ctd-method.html'>setFlags,ctd-method</a></code>,
+<code><a href='subset,ctd-method.html'>subset,ctd-method</a></code>,
+<code><a href='summary,ctd-method.html'>summary,ctd-method</a></code>,
 <code><a href='woceNames2oceNames.html'>woceNames2oceNames</a>()</code>,
 <code><a href='woceUnit2oceUnit.html'>woceUnit2oceUnit</a>()</code>,
 <code><a href='write.ctd.html'>write.ctd</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
-<span class='fu'><a href='plotProfile.html'>plotProfile</a></span>(<span class='no'>ctd</span>, <span class='st'>"salinity"</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>10</span>, <span class='fl'>0</span>))</div><div class='input'><span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>45</span>, <span class='fl'>1</span>)
-<span class='no'>ctd2</span> <span class='kw'>&lt;-</span> <span class='fu'>ctdDecimate</span>(<span class='no'>ctd</span>, <span class='kw'>p</span><span class='kw'>=</span><span class='no'>p</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='no'>ctd2</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]], <span class='no'>ctd2</span><span class='kw'>[[</span><span class='st'>"pressure"</span>]], <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"blue"</span>)</div><div class='input'><span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>45</span>, <span class='fl'>1</span>)
-<span class='no'>ctd3</span> <span class='kw'>&lt;-</span> <span class='fu'>ctdDecimate</span>(<span class='no'>ctd</span>, <span class='kw'>p</span><span class='kw'>=</span><span class='no'>p</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>xout</span>)
-                    <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/smooth.spline.html'>smooth.spline</a></span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>df</span><span class='kw'>=</span><span class='fl'>30</span>), <span class='no'>xout</span>)$<span class='no'>y</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='no'>ctd3</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]], <span class='no'>ctd3</span><span class='kw'>[[</span><span class='st'>"pressure"</span>]], <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"red"</span>)</div><div class='img'><img src='ctdDecimate-1.png' alt='' width='700' height='433' /></div><div class='input'>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+<span class='fu'><a href='plotProfile.html'>plotProfile</a></span><span class='op'>(</span><span class='va'>ctd</span>, <span class='st'>"salinity"</span>, ylim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>10</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='input'><span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>45</span>, <span class='fl'>1</span><span class='op'>)</span>
+<span class='va'>ctd2</span> <span class='op'>&lt;-</span> <span class='fu'>ctdDecimate</span><span class='op'>(</span><span class='va'>ctd</span>, p<span class='op'>=</span><span class='va'>p</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>ctd2</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>ctd2</span><span class='op'>[[</span><span class='st'>"pressure"</span><span class='op'>]</span><span class='op'>]</span>, col<span class='op'>=</span><span class='st'>"blue"</span><span class='op'>)</span>
+</div><div class='input'><span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>45</span>, <span class='fl'>1</span><span class='op'>)</span>
+<span class='va'>ctd3</span> <span class='op'>&lt;-</span> <span class='fu'>ctdDecimate</span><span class='op'>(</span><span class='va'>ctd</span>, p<span class='op'>=</span><span class='va'>p</span>, method<span class='op'>=</span><span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>xout</span><span class='op'>)</span>
+                    <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/smooth.spline.html'>smooth.spline</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, df<span class='op'>=</span><span class='fl'>30</span><span class='op'>)</span>, <span class='va'>xout</span><span class='op'>)</span><span class='op'>$</span><span class='va'>y</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>ctd3</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>ctd3</span><span class='op'>[[</span><span class='st'>"pressure"</span><span class='op'>]</span><span class='op'>]</span>, col<span class='op'>=</span><span class='st'>"red"</span><span class='op'>)</span>
+</div><div class='img'><img src='ctdDecimate-1.png' alt='' width='700' height='433' /></div><div class='input'>
 
 </div></pre>
   </div>
@@ -338,7 +344,7 @@ CTD objects, and also outlines the other functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

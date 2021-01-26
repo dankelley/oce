@@ -73,7 +73,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -81,7 +81,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -122,7 +122,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -149,7 +149,7 @@
 (see reference 1).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>read.g1sst</span>(<span class='no'>file</span>)</pre>
+    <pre class="usage"><span class='fu'>read.g1sst</span><span class='op'>(</span><span class='va'>file</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -183,35 +183,39 @@ show just the data) that the field mostly derives from simulation.</p>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other things related to satellite data: 
-<code><a href='g1sst-class.html'>g1sst-class</a></code>,
-<code><a href='plot-satellite-method.html'>plot,satellite-method</a></code>,
-<code><a href='satellite-class.html'>satellite-class</a></code>,
-<code><a href='summary-satellite-method.html'>summary,satellite-method</a></code></p></div>
+    <div class='dont-index'><p>Other things related to g1sst data: 
+<code><a href='[[,g1sst-method.html'>[[,g1sst-method</a></code>,
+<code>[[&lt;-,g1sst-method</code>,
+<code><a href='g1sst-class.html'>g1sst-class</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># Construct query, making it easier to understand and modify.</span>
-<span class='no'>day</span> <span class='kw'>&lt;-</span> <span class='st'>"2016-01-02"</span>
-<span class='no'>lon0</span> <span class='kw'>&lt;-</span> -<span class='fl'>66.5</span>
-<span class='no'>lon1</span> <span class='kw'>&lt;-</span> -<span class='fl'>64.0</span>
-<span class='no'>lat0</span> <span class='kw'>&lt;-</span> <span class='fl'>44</span>
-<span class='no'>lat1</span> <span class='kw'>&lt;-</span> <span class='fl'>46</span>
-<span class='no'>source</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='st'>"https://coastwatch.pfeg.noaa.gov/erddap/griddap/"</span>,
+<span class='va'>day</span> <span class='op'>&lt;-</span> <span class='st'>"2016-01-02"</span>
+<span class='va'>lon0</span> <span class='op'>&lt;-</span> <span class='op'>-</span><span class='fl'>66.5</span>
+<span class='va'>lon1</span> <span class='op'>&lt;-</span> <span class='op'>-</span><span class='fl'>64.0</span>
+<span class='va'>lat0</span> <span class='op'>&lt;-</span> <span class='fl'>44</span>
+<span class='va'>lat1</span> <span class='op'>&lt;-</span> <span class='fl'>46</span>
+<span class='va'>source</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"https://coastwatch.pfeg.noaa.gov/erddap/griddap/"</span>,
                 <span class='st'>"jplG1SST.nc?"</span>,
-                <span class='st'>"SST%5B("</span>, <span class='no'>day</span>, <span class='st'>"T12:00:00Z)"</span>,
-                <span class='st'>"%5D%5B("</span>, <span class='no'>lat0</span>, <span class='st'>"):("</span>, <span class='no'>lat1</span>, <span class='st'>")"</span>,
-                <span class='st'>"%5D%5B("</span>, <span class='no'>lon0</span>, <span class='st'>"):("</span>, <span class='no'>lon1</span>, <span class='st'>")"</span>,
-                <span class='st'>"%5D"</span>, <span class='kw'>sep</span><span class='kw'>=</span><span class='st'>""</span>)
-<span class='kw'>if</span> (!<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span>(<span class='kw'>pattern</span><span class='kw'>=</span><span class='st'>"^a.nc$"</span>)))
-    <span class='fu'><a href='https://rdrr.io/r/utils/download.file.html'>download.file</a></span>(<span class='no'>source</span>, <span class='st'>"a.nc"</span>)
-<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>read.g1sst</span>(<span class='st'>"a.nc"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>d</span>, <span class='st'>"SST"</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='no'>oceColorsJet</span>)
-<span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"ocedata"</span>, <span class='kw'>quietly</span><span class='kw'>=</span><span class='fl'>TRUE</span>)) {
-    <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>coastlineWorldFine</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"ocedata"</span>)
-    <span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='no'>coastlineWorldFine</span><span class='kw'>[[</span><span class='st'>'longitude'</span>]],<span class='no'>coastlineWorldFine</span><span class='kw'>[[</span><span class='st'>'latitude'</span>]])
-}
-}</div></pre>
+                <span class='st'>"SST%5B("</span>, <span class='va'>day</span>, <span class='st'>"T12:00:00Z)"</span>,
+                <span class='st'>"%5D%5B("</span>, <span class='va'>lat0</span>, <span class='st'>"):("</span>, <span class='va'>lat1</span>, <span class='st'>")"</span>,
+                <span class='st'>"%5D%5B("</span>, <span class='va'>lon0</span>, <span class='st'>"):("</span>, <span class='va'>lon1</span>, <span class='st'>")"</span>,
+                <span class='st'>"%5D"</span>, sep<span class='op'>=</span><span class='st'>""</span><span class='op'>)</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span><span class='op'>(</span>pattern<span class='op'>=</span><span class='st'>"^a.nc$"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+    <span class='fu'><a href='https://rdrr.io/r/utils/download.file.html'>download.file</a></span><span class='op'>(</span><span class='va'>source</span>, <span class='st'>"a.nc"</span><span class='op'>)</span>
+<span class='va'>d</span> <span class='op'>&lt;-</span> <span class='fu'>read.g1sst</span><span class='op'>(</span><span class='st'>"a.nc"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>d</span>, <span class='st'>"SST"</span>, col<span class='op'>=</span><span class='va'>oceColorsTemperature</span><span class='op'>)</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"ocedata"</span>, quietly<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>coastlineWorldFine</span>, package<span class='op'>=</span><span class='st'>"ocedata"</span><span class='op'>)</span>
+    <span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>coastlineWorldFine</span><span class='op'>[[</span><span class='st'>'longitude'</span><span class='op'>]</span><span class='op'>]</span>,<span class='va'>coastlineWorldFine</span><span class='op'>[[</span><span class='st'>'latitude'</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+<span class='op'>}</span>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -227,7 +231,7 @@ show just the data) that the field mostly derives from simulation.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

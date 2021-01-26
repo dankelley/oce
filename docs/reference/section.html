@@ -46,9 +46,10 @@ Multanovsky, undertaking a westward transect from the Mediterranean outflow
 region across to North America, with a change of heading in the last few dozen
 stations to run across the nominal Gulf Stream axis.
 The data flags follow the &quot;WHP Bottle&quot;convention, set by
-initializeFlagScheme,section-method() to &quot;WHP bottle&quot;; see
+initializeFlagScheme,section-method() to &quot;WHP bottle&quot;.  This convention
+used to be described at the link
 https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm
-for more information on World Hydrographic Program flag conventions." />
+but that was found to fail in December 2020." />
 
 
 
@@ -80,7 +81,7 @@ for more information on World Hydrographic Program flag conventions." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -88,7 +89,7 @@ for more information on World Hydrographic Program flag conventions." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -129,7 +130,7 @@ for more information on World Hydrographic Program flag conventions." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -158,12 +159,13 @@ Multanovsky, undertaking a westward transect from the Mediterranean outflow
 region across to North America, with a change of heading in the last few dozen
 stations to run across the nominal Gulf Stream axis.
 The data flags follow the "WHP Bottle"convention, set by
-<code><a href='initializeFlagScheme-section-method.html'>initializeFlagScheme,section-method()</a></code> to <code>"WHP bottle"</code>; see
-<a href='https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm'>https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm</a>
-for more information on World Hydrographic Program flag conventions.</p>
+<code><a href='initializeFlagScheme,section-method.html'>initializeFlagScheme,section-method()</a></code> to <code>"WHP bottle"</code>.  This convention
+used to be described at the link
+<code>https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm</code>
+but that was found to fail in December 2020.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>section</span>)</pre>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>)</span></pre>
 
 
     <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
@@ -175,6 +177,7 @@ from <a href='https://cchdo.ucsd.edu/cruise/90CT40_1'>https://cchdo.ucsd.edu/cru
     <div class='dont-index'><p>Other datasets provided with oce: 
 <code><a href='adp.html'>adp</a></code>,
 <code><a href='adv.html'>adv</a></code>,
+<code><a href='amsr.html'>amsr</a></code>,
 <code><a href='argo.html'>argo</a></code>,
 <code><a href='cm.html'>cm</a></code>,
 <code><a href='coastlineWorld.html'>coastlineWorld</a></code>,
@@ -189,34 +192,37 @@ from <a href='https://cchdo.ucsd.edu/cruise/90CT40_1'>https://cchdo.ucsd.edu/cru
 <code><a href='rsk.html'>rsk</a></code>,
 <code><a href='sealevelTuktoyaktuk.html'>sealevelTuktoyaktuk</a></code>,
 <code><a href='sealevel.html'>sealevel</a></code>,
+<code><a href='topoNS.html'>topoNS</a></code>,
 <code><a href='topoWorld.html'>topoWorld</a></code>,
 <code><a href='wind.html'>wind</a></code>,
 <code><a href='xbt.html'>xbt</a></code></p>
 <p>Other things related to section data: 
-<code><a href='sub-sub-section-method.html'>[[,section-method</a></code>,
+<code><a href='[[,section-method.html'>[[,section-method</a></code>,
 <code>[[&lt;-,section-method</code>,
 <code><a href='as.section.html'>as.section</a>()</code>,
-<code><a href='handleFlags-section-method.html'>handleFlags,section-method</a></code>,
-<code><a href='initializeFlagScheme-section-method.html'>initializeFlagScheme,section-method</a></code>,
-<code><a href='plot-section-method.html'>plot,section-method</a></code>,
+<code><a href='handleFlags,section-method.html'>handleFlags,section-method</a></code>,
+<code><a href='initializeFlagScheme,section-method.html'>initializeFlagScheme,section-method</a></code>,
+<code><a href='plot,section-method.html'>plot,section-method</a></code>,
 <code><a href='read.section.html'>read.section</a>()</code>,
 <code><a href='section-class.html'>section-class</a></code>,
 <code><a href='sectionAddStation.html'>sectionAddStation</a>()</code>,
 <code><a href='sectionGrid.html'>sectionGrid</a>()</code>,
 <code><a href='sectionSmooth.html'>sectionSmooth</a>()</code>,
 <code><a href='sectionSort.html'>sectionSort</a>()</code>,
-<code><a href='subset-section-method.html'>subset,section-method</a></code>,
-<code><a href='summary-section-method.html'>summary,section-method</a></code></p></div>
+<code><a href='subset,section-method.html'>subset,section-method</a></code>,
+<code><a href='summary,section-method.html'>summary,section-method</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
 <span class='co'># Gulf Stream</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>section</span>)
-<span class='no'>GS</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>section</span>, <span class='fl'>109</span><span class='kw'>&lt;=</span><span class='no'>stationId</span><span class='kw'>&amp;</span><span class='no'>stationId</span><span class='kw'>&lt;=</span><span class='fl'>129</span>)
-<span class='no'>GSg</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sectionGrid.html'>sectionGrid</a></span>(<span class='no'>GS</span>, <span class='kw'>p</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>5000</span>, <span class='fl'>100</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>GSg</span>, <span class='kw'>map.xlim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>80</span>,-<span class='fl'>60</span>))
-}</div></pre>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>)</span>
+<span class='va'>GS</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>section</span>, <span class='fl'>109</span><span class='op'>&lt;=</span><span class='va'>stationId</span><span class='op'>&amp;</span><span class='va'>stationId</span><span class='op'>&lt;=</span><span class='fl'>129</span><span class='op'>)</span>
+<span class='va'>GSg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sectionGrid.html'>sectionGrid</a></span><span class='op'>(</span><span class='va'>GS</span>, p<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>5000</span>, <span class='fl'>100</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>GSg</span>, map.xlim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>80</span>,<span class='op'>-</span><span class='fl'>60</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -232,7 +238,7 @@ from <a href='https://cchdo.ucsd.edu/cruise/90CT40_1'>https://cchdo.ucsd.edu/cru
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

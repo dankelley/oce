@@ -79,7 +79,7 @@ is provided to convert from the ITS-48 system to ITS-90." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -87,7 +87,7 @@ is provided to convert from the ITS-48 system to ITS-90." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -128,7 +128,7 @@ is provided to convert from the ITS-48 system to ITS-90." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -161,20 +161,20 @@ in some precise work.  Mostly for historical interest, <code>T90fromT48()</code>
 is provided to convert from the ITS-48 system to ITS-90.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>T90fromT48</span>(<span class='no'>temperature</span>)</pre>
+    <pre class="usage"><span class='fu'>T90fromT48</span><span class='op'>(</span><span class='va'>temperature</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>temperature</th>
-      <td><p>Vector of temperatures expressed in the ITS-48 scale.</p></td>
+      <td><p>Vector of temperatures in \(^\circ\)C on the IPTS-48 scale.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Temperature expressed in the ITS-90 scale.</p>
+    <p>Corresponding temperatures in \(^\circ\)C on the ITS-90 scale.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>P. M. Saunders, 1990. The international temperature scale of
@@ -218,12 +218,16 @@ http://www.nodc.noaa.gov/woce/wdiu/wocedocs/newsltr/news10/contents.htm</p>
 <code><a href='swTheta.html'>swTheta</a>()</code>,
 <code><a href='swViscosity.html'>swViscosity</a>()</code>,
 <code><a href='swZ.html'>swZ</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='no'>T68</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>3</span>, <span class='fl'>20</span>, <span class='fl'>1</span>)
-<span class='no'>T90</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='T90fromT68.html'>T90fromT68</a></span>(<span class='no'>T68</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>((<span class='no'>T68</span>-<span class='no'>T90</span>)^<span class='fl'>2</span>))</div><div class='output co'>#&gt; [1] 0.003027144</div><div class='input'>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='va'>T68</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>20</span>, <span class='fl'>1</span><span class='op'>)</span>
+<span class='va'>T90</span> <span class='op'>&lt;-</span> <span class='fu'><a href='T90fromT68.html'>T90fromT68</a></span><span class='op'>(</span><span class='va'>T68</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='op'>(</span><span class='va'>T68</span><span class='op'>-</span><span class='va'>T90</span><span class='op'>)</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 0.003027144</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -240,7 +244,7 @@ http://www.nodc.noaa.gov/woce/wdiu/wocedocs/newsltr/news10/contents.htm</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

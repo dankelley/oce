@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,7 +147,7 @@
     <p>Calculate the z component of the curl of an x-y vector field.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>curl</span>(<span class='no'>u</span>, <span class='no'>v</span>, <span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>geographical</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
+    <pre class="usage"><span class='fu'>curl</span><span class='op'>(</span><span class='va'>u</span>, <span class='va'>v</span>, <span class='va'>x</span>, <span class='va'>y</span>, geographical <span class='op'>=</span> <span class='cn'>FALSE</span>, method <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -224,37 +224,41 @@ matrix dimensions are similarly reduced compared with the dimensions of
 of December 2014 and is unlikely to be stabilized until February 2015.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other functions relating to vector calculus: 
+    <div class='dont-index'><p>Other things relating to vector calculus: 
 <code><a href='grad.html'>grad</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley and Chantelle Layton</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
 <span class='co'>## 1. Shear flow with uniform curl.</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>:<span class='fl'>4</span>
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>:<span class='fl'>10</span>
-<span class='no'>u</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/outer.html'>outer</a></span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>y</span>) <span class='no'>y</span>/<span class='fl'>2</span>)
-<span class='no'>v</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/outer.html'>outer</a></span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>y</span>) -<span class='no'>x</span>/<span class='fl'>2</span>)
-<span class='no'>C</span> <span class='kw'>&lt;-</span> <span class='fu'>curl</span>(<span class='no'>u</span>, <span class='no'>v</span>, <span class='no'>x</span>, <span class='no'>y</span>, <span class='fl'>FALSE</span>)
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>
+<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>
+<span class='va'>u</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/outer.html'>outer</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span><span class='op'>)</span> <span class='va'>y</span><span class='op'>/</span><span class='fl'>2</span><span class='op'>)</span>
+<span class='va'>v</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/outer.html'>outer</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span><span class='op'>)</span> <span class='op'>-</span><span class='va'>x</span><span class='op'>/</span><span class='fl'>2</span><span class='op'>)</span>
+<span class='va'>C</span> <span class='op'>&lt;-</span> <span class='fu'>curl</span><span class='op'>(</span><span class='va'>u</span>, <span class='va'>v</span>, <span class='va'>x</span>, <span class='va'>y</span>, <span class='cn'>FALSE</span><span class='op'>)</span>
 
 <span class='co'>## 2. Rankine vortex: constant curl inside circle, zero outside</span>
-<span class='no'>rankine</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>y</span>)
-{
-    <span class='no'>r</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span>(<span class='no'>x</span>^<span class='fl'>2</span> + <span class='no'>y</span>^<span class='fl'>2</span>)
-    <span class='no'>theta</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>atan2</a></span>(<span class='no'>y</span>, <span class='no'>x</span>)
-    <span class='no'>speed</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span>(<span class='no'>r</span> <span class='kw'>&lt;</span> <span class='fl'>1</span>, <span class='fl'>0.5</span>*<span class='no'>r</span>, <span class='fl'>0.5</span>/<span class='no'>r</span>)
-    <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>u</span><span class='kw'>=</span>-<span class='no'>speed</span>*<span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span>(<span class='no'>theta</span>), <span class='kw'>v</span><span class='kw'>=</span><span class='no'>speed</span>*<span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>cos</a></span>(<span class='no'>theta</span>))
-}
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='kw'>length.out</span><span class='kw'>=</span><span class='fl'>100</span>)
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='kw'>length.out</span><span class='kw'>=</span><span class='fl'>50</span>)
-<span class='no'>u</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/outer.html'>outer</a></span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>y</span>) <span class='fu'>rankine</span>(<span class='no'>x</span>, <span class='no'>y</span>)$<span class='no'>u</span>)
-<span class='no'>v</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/outer.html'>outer</a></span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>y</span>) <span class='fu'>rankine</span>(<span class='no'>x</span>, <span class='no'>y</span>)$<span class='no'>v</span>)
-<span class='no'>C</span> <span class='kw'>&lt;-</span> <span class='fu'>curl</span>(<span class='no'>u</span>, <span class='no'>v</span>, <span class='no'>x</span>, <span class='no'>y</span>, <span class='fl'>FALSE</span>)
+<span class='va'>rankine</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span><span class='op'>)</span>
+<span class='op'>{</span>
+    <span class='va'>r</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>^</span><span class='fl'>2</span> <span class='op'>+</span> <span class='va'>y</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span>
+    <span class='va'>theta</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>atan2</a></span><span class='op'>(</span><span class='va'>y</span>, <span class='va'>x</span><span class='op'>)</span>
+    <span class='va'>speed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='va'>r</span> <span class='op'>&lt;</span> <span class='fl'>1</span>, <span class='fl'>0.5</span><span class='op'>*</span><span class='va'>r</span>, <span class='fl'>0.5</span><span class='op'>/</span><span class='va'>r</span><span class='op'>)</span>
+    <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>u<span class='op'>=</span><span class='op'>-</span><span class='va'>speed</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span><span class='op'>(</span><span class='va'>theta</span><span class='op'>)</span>, v<span class='op'>=</span><span class='va'>speed</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>cos</a></span><span class='op'>(</span><span class='va'>theta</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>2</span>, <span class='fl'>2</span>, length.out<span class='op'>=</span><span class='fl'>100</span><span class='op'>)</span>
+<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>2</span>, <span class='fl'>2</span>, length.out<span class='op'>=</span><span class='fl'>50</span><span class='op'>)</span>
+<span class='va'>u</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/outer.html'>outer</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span><span class='op'>)</span> <span class='fu'>rankine</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span><span class='op'>)</span><span class='op'>$</span><span class='va'>u</span><span class='op'>)</span>
+<span class='va'>v</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/outer.html'>outer</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span><span class='op'>)</span> <span class='fu'>rankine</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span><span class='op'>)</span><span class='op'>$</span><span class='va'>v</span><span class='op'>)</span>
+<span class='va'>C</span> <span class='op'>&lt;-</span> <span class='fu'>curl</span><span class='op'>(</span><span class='va'>u</span>, <span class='va'>v</span>, <span class='va'>x</span>, <span class='va'>y</span>, <span class='cn'>FALSE</span><span class='op'>)</span>
 <span class='co'>## plot results</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>))
-<span class='fu'><a href='imagep.html'>imagep</a></span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>u</span>, <span class='kw'>zlab</span><span class='kw'>=</span><span class='st'>"u"</span>, <span class='kw'>asp</span><span class='kw'>=</span><span class='fl'>1</span>)
-<span class='fu'><a href='imagep.html'>imagep</a></span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>v</span>, <span class='kw'>zlab</span><span class='kw'>=</span><span class='st'>"v"</span>, <span class='kw'>asp</span><span class='kw'>=</span><span class='fl'>1</span>)
-<span class='fu'><a href='imagep.html'>imagep</a></span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>C</span>$<span class='no'>curl</span>, <span class='kw'>zlab</span><span class='kw'>=</span><span class='st'>"curl"</span>, <span class='kw'>asp</span><span class='kw'>=</span><span class='fl'>1</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span>(<span class='no'>C</span>$<span class='no'>curl</span>, <span class='kw'>breaks</span><span class='kw'>=</span><span class='fl'>100</span>)</div><div class='img'><img src='curl-1.png' alt='' width='700' height='433' /></div></pre>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='imagep.html'>imagep</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>u</span>, zlab<span class='op'>=</span><span class='st'>"u"</span>, asp<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+<span class='fu'><a href='imagep.html'>imagep</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>v</span>, zlab<span class='op'>=</span><span class='st'>"v"</span>, asp<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+<span class='fu'><a href='imagep.html'>imagep</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>C</span><span class='op'>$</span><span class='va'>curl</span>, zlab<span class='op'>=</span><span class='st'>"curl"</span>, asp<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span><span class='op'>(</span><span class='va'>C</span><span class='op'>$</span><span class='va'>curl</span>, breaks<span class='op'>=</span><span class='fl'>100</span><span class='op'>)</span>
+</div><div class='img'><img src='curl-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -270,7 +274,7 @@ of December 2014 and is unlikely to be stabilized until February 2015.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -75,7 +75,7 @@ then gsw::gsw_t_freezing() to get the freezing temperature)." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@ then gsw::gsw_t_freezing() to get the freezing temperature)." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ then gsw::gsw_t_freezing() to get the freezing temperature)." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -153,14 +153,14 @@ by using <code><a href='https://rdrr.io/pkg/gsw/man/gsw_SA_from_SP.html'>gsw::gs
 then <code><a href='https://rdrr.io/pkg/gsw/man/gsw_t_freezing.html'>gsw::gsw_t_freezing()</a></code> to get the freezing temperature).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>swTFreeze</span>(
-  <span class='no'>salinity</span>,
-  <span class='kw'>pressure</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>saturation_fraction</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>eos</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceEOS"</span>, <span class='kw'>default</span> <span class='kw'>=</span> <span class='st'>"gsw"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>swTFreeze</span><span class='op'>(</span>
+  <span class='va'>salinity</span>,
+  pressure <span class='op'>=</span> <span class='cn'>NULL</span>,
+  longitude <span class='op'>=</span> <span class='cn'>NULL</span>,
+  latitude <span class='op'>=</span> <span class='cn'>NULL</span>,
+  saturation_fraction <span class='op'>=</span> <span class='fl'>1</span>,
+  eos <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceEOS"</span>, default <span class='op'>=</span> <span class='st'>"gsw"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -262,23 +262,27 @@ the Gibbs Seawater (GSW) Oceanographic Toolbox. SCOR/IAPSO WG127, 2011.</p></li>
 <code><a href='swTheta.html'>swTheta</a>()</code>,
 <code><a href='swViscosity.html'>swViscosity</a>()</code>,
 <code><a href='swZ.html'>swZ</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># 1. Test for a check-value given in reference 1. This value, -2.588567 degC,</span>
 <span class='co'># is in the 1968 temperature scale (IPTS-68), but swTFreeze reports</span>
 <span class='co'># in the newer ITS-90 scale, so we must convert before checking.</span>
-<span class='no'>Tcheck</span> <span class='kw'>&lt;-</span> -<span class='fl'>2.588567</span> <span class='co'># IPTS-68</span>
-<span class='no'>T</span> <span class='kw'>&lt;-</span> <span class='fu'>swTFreeze</span>(<span class='kw'>salinity</span><span class='kw'>=</span><span class='fl'>40</span>, <span class='kw'>pressure</span><span class='kw'>=</span><span class='fl'>500</span>, <span class='kw'>eos</span><span class='kw'>=</span><span class='st'>"unesco"</span>)
-<span class='fu'>expect_equal</span>(<span class='no'>Tcheck</span>, <span class='fu'><a href='T68fromT90.html'>T68fromT90</a></span>(<span class='no'>T</span>), <span class='kw'>tolerance</span><span class='kw'>=</span><span class='fl'>1e-6</span>)
+<span class='va'>Tcheck</span> <span class='op'>&lt;-</span> <span class='op'>-</span><span class='fl'>2.588567</span> <span class='co'># IPTS-68</span>
+<span class='cn'>T</span> <span class='op'>&lt;-</span> <span class='fu'>swTFreeze</span><span class='op'>(</span>salinity<span class='op'>=</span><span class='fl'>40</span>, pressure<span class='op'>=</span><span class='fl'>500</span>, eos<span class='op'>=</span><span class='st'>"unesco"</span><span class='op'>)</span>
+<span class='fu'>expect_equal</span><span class='op'>(</span><span class='va'>Tcheck</span>, <span class='fu'><a href='T68fromT90.html'>T68fromT90</a></span><span class='op'>(</span><span class='cn'>T</span><span class='op'>)</span>, tolerance<span class='op'>=</span><span class='fl'>1e-6</span><span class='op'>)</span>
 
 <span class='co'># 2. Compare unesco and gsw formulations.</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
-<span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"pressure"</span>]]
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>), <span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>2</span>), <span class='kw'>mgp</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>0.7</span>, <span class='fl'>0</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='fu'>swTFreeze</span>(<span class='no'>ctd</span>, <span class='kw'>eos</span><span class='kw'>=</span><span class='st'>"unesco"</span>),
-     <span class='no'>p</span>, <span class='kw'>xlab</span><span class='kw'>=</span><span class='st'>"unesco"</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span>(<span class='no'>p</span>)))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='fu'>swTFreeze</span>(<span class='no'>ctd</span>, <span class='kw'>eos</span><span class='kw'>=</span><span class='st'>"unesco"</span>) - <span class='fu'>swTFreeze</span>(<span class='no'>ctd</span>, <span class='kw'>eos</span><span class='kw'>=</span><span class='st'>"gsw"</span>),
-     <span class='no'>p</span>, <span class='kw'>xlab</span><span class='kw'>=</span><span class='st'>"unesco-gsw"</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span>(<span class='no'>p</span>)))</div><div class='img'><img src='swTFreeze-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='va'>ctd</span><span class='op'>[[</span><span class='st'>"pressure"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2</span><span class='op'>)</span>, mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>2</span><span class='op'>)</span>, mgp<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>0.7</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'>swTFreeze</span><span class='op'>(</span><span class='va'>ctd</span>, eos<span class='op'>=</span><span class='st'>"unesco"</span><span class='op'>)</span>,
+     <span class='va'>p</span>, xlab<span class='op'>=</span><span class='st'>"unesco"</span>, ylim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span><span class='op'>(</span><span class='va'>p</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'>swTFreeze</span><span class='op'>(</span><span class='va'>ctd</span>, eos<span class='op'>=</span><span class='st'>"unesco"</span><span class='op'>)</span> <span class='op'>-</span> <span class='fu'>swTFreeze</span><span class='op'>(</span><span class='va'>ctd</span>, eos<span class='op'>=</span><span class='st'>"gsw"</span><span class='op'>)</span>,
+     <span class='va'>p</span>, xlab<span class='op'>=</span><span class='st'>"unesco-gsw"</span>, ylim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span><span class='op'>(</span><span class='va'>p</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='swTFreeze-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -295,7 +299,7 @@ the Gibbs Seawater (GSW) Oceanographic Toolbox. SCOR/IAPSO WG127, 2011.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

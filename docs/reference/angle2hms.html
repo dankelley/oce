@@ -50,7 +50,7 @@ values, plus a decimal second value. It is common in the
 astronomical literature to use strings to represent the results,
 e.g. with \(11^h40^m48^s.10\) for the
 value used in the &amp;#8220;Examples&amp;#8221;; see Chapter 1 of
-Meeuse (1991) for more on angle calculation and representation." />
+Meeus (1991) for more on angle calculation and representation." />
 
 
 
@@ -82,7 +82,7 @@ Meeuse (1991) for more on angle calculation and representation." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -90,7 +90,7 @@ Meeuse (1991) for more on angle calculation and representation." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -131,7 +131,7 @@ Meeuse (1991) for more on angle calculation and representation." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -164,10 +164,10 @@ values, plus a decimal second value. It is common in the
 astronomical literature to use strings to represent the results,
 e.g. with \(11^h40^m48^s.10\) for the
 value used in the &#8220;Examples&#8221;; see Chapter 1 of
-Meeuse (1991) for more on angle calculation and representation.</p>
+Meeus (1991) for more on angle calculation and representation.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>angle2hms</span>(<span class='no'>angle</span>)</pre>
+    <pre class="usage"><span class='fu'>angle2hms</span><span class='op'>(</span><span class='va'>angle</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -190,8 +190,8 @@ notation, with the second part to two decimal places and intervening <code>h</co
 
     
 <ul>
-<li><p>Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
-USA. 429 pages.</p></li>
+<li><p>Meeus, Jean. Astronomical Algorithms. Second Edition.
+Richmond, Virginia, USA: Willmann-Bell, 1991.</p></li>
 </ul>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
@@ -205,10 +205,14 @@ USA. 429 pages.</p></li>
 <code><a href='siderealTime.html'>siderealTime</a>()</code>,
 <code><a href='sunAngle.html'>sunAngle</a>()</code>,
 <code><a href='sunDeclinationRightAscension.html'>sunDeclinationRightAscension</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># A randomly-chosen example on page 99 of Meeus (1991).</span>
-<span class='fu'>angle2hms</span>(<span class='fl'>177.74208</span>) <span class='co'># string component 11h50m58s.10</span></div><div class='output co'>#&gt; $hourDecimal
+<span class='fu'>angle2hms</span><span class='op'>(</span><span class='fl'>177.74208</span><span class='op'>)</span> <span class='co'># string component 11h50m58s.10</span>
+</div><div class='output co'>#&gt; $hourDecimal
 #&gt; [1] 11.84947
 #&gt; 
 #&gt; $hour
@@ -239,7 +243,7 @@ USA. 429 pages.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

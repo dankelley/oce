@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,7 +147,7 @@
     <p>Filter a time-series, possibly recursively</p>
     </div>
 
-    <pre class="usage"><span class='fu'>oceFilter</span>(<span class='no'>x</span>, <span class='kw'>a</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='no'>b</span>, <span class='kw'>zero.phase</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>oceFilter</span><span class='op'>(</span><span class='va'>x</span>, a <span class='op'>=</span> <span class='fl'>1</span>, <span class='va'>b</span>, zero.phase <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -195,21 +195,29 @@ shares this problem.)</p>
 
     <p>The first value in the <code>a</code> vector is ignored, and if
 <code><a href='https://rdrr.io/r/base/length.html'>length(a)</a></code> equals 1, a non-recursive filter results.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>4</span>, <span class='fl'>4</span>, <span class='fl'>1</span>, <span class='fl'>1</span>))
-<span class='no'>b</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fl'>5</span>)/<span class='fl'>5</span>
-<span class='no'>a</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>10</span>)
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span>(<span class='no'>x</span> <span class='kw'>==</span> <span class='fl'>5</span>, <span class='fl'>1</span>, <span class='fl'>0</span>)
-<span class='no'>f1</span> <span class='kw'>&lt;-</span> <span class='fu'>oceFilter</span>(<span class='no'>y</span>, <span class='no'>a</span>, <span class='no'>b</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>0</span>, <span class='fl'>1.5</span>), <span class='kw'>pch</span><span class='kw'>=</span><span class='st'>"o"</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'b'</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span>(<span class='no'>x</span>, <span class='no'>f1</span>, <span class='kw'>pch</span><span class='kw'>=</span><span class='st'>"x"</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"red"</span>)</div><div class='input'>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='fl'>4</span>, <span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>b</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>5</span><span class='op'>)</span><span class='op'>/</span><span class='fl'>5</span>
+<span class='va'>a</span> <span class='op'>&lt;-</span> <span class='fl'>1</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>10</span><span class='op'>)</span>
+<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='va'>x</span> <span class='op'>==</span> <span class='fl'>5</span>, <span class='fl'>1</span>, <span class='fl'>0</span><span class='op'>)</span>
+<span class='va'>f1</span> <span class='op'>&lt;-</span> <span class='fu'>oceFilter</span><span class='op'>(</span><span class='va'>y</span>, <span class='va'>a</span>, <span class='va'>b</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, ylim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>0</span>, <span class='fl'>1.5</span><span class='op'>)</span>, pch<span class='op'>=</span><span class='st'>"o"</span>, type<span class='op'>=</span><span class='st'>'b'</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>f1</span>, pch<span class='op'>=</span><span class='st'>"x"</span>, col<span class='op'>=</span><span class='st'>"red"</span><span class='op'>)</span>
+</div><div class='input'>
 <span class='co'># remove the phase lag</span>
-<span class='no'>f2</span> <span class='kw'>&lt;-</span> <span class='fu'>oceFilter</span>(<span class='no'>y</span>, <span class='no'>a</span>, <span class='no'>b</span>, <span class='fl'>TRUE</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span>(<span class='no'>x</span>, <span class='no'>f2</span>, <span class='kw'>pch</span><span class='kw'>=</span><span class='st'>"+"</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"blue"</span>)</div><div class='input'>
-<span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span>(<span class='st'>"topleft"</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"black"</span>,<span class='st'>"red"</span>,<span class='st'>"blue"</span>), <span class='kw'>pch</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"o"</span>,<span class='st'>"x"</span>,<span class='st'>"+"</span>),
-       <span class='kw'>legend</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"data"</span>,<span class='st'>"normal filter"</span>, <span class='st'>"zero-phase filter"</span>))</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span>(<span class='st'>"note that normal filter rolls off at end"</span>)</div><div class='img'><img src='oceFilter-1.png' alt='' width='700' height='433' /></div></pre>
+<span class='va'>f2</span> <span class='op'>&lt;-</span> <span class='fu'>oceFilter</span><span class='op'>(</span><span class='va'>y</span>, <span class='va'>a</span>, <span class='va'>b</span>, <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>f2</span>, pch<span class='op'>=</span><span class='st'>"+"</span>, col<span class='op'>=</span><span class='st'>"blue"</span><span class='op'>)</span>
+</div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span><span class='op'>(</span><span class='st'>"topleft"</span>, col<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"black"</span>,<span class='st'>"red"</span>,<span class='st'>"blue"</span><span class='op'>)</span>, pch<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"o"</span>,<span class='st'>"x"</span>,<span class='st'>"+"</span><span class='op'>)</span>,
+       legend<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"data"</span>,<span class='st'>"normal filter"</span>, <span class='st'>"zero-phase filter"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span><span class='op'>(</span><span class='st'>"note that normal filter rolls off at end"</span><span class='op'>)</span>
+</div><div class='img'><img src='oceFilter-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -225,7 +233,7 @@ shares this problem.)</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

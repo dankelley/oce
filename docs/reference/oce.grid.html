@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,7 +147,7 @@
     <p>Add a Grid to an Existing Oce Plot</p>
     </div>
 
-    <pre class="usage"><span class='fu'>oce.grid</span>(<span class='no'>xat</span>, <span class='no'>yat</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='st'>"lightgray"</span>, <span class='kw'>lty</span> <span class='kw'>=</span> <span class='st'>"dotted"</span>, <span class='kw'>lwd</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"lwd"</span>))</pre>
+    <pre class="usage"><span class='fu'>oce.grid</span><span class='op'>(</span><span class='va'>xat</span>, <span class='va'>yat</span>, col <span class='op'>=</span> <span class='st'>"lightgray"</span>, lty <span class='op'>=</span> <span class='st'>"dotted"</span>, lwd <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"lwd"</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -184,22 +184,32 @@ that it cannot handle axes with non-uniform grids, e.g. those with time axes
 that span months of differing lengths.</p>
 <p>As of early February 2015, <code>oce.grid</code> handles <code>xat</code> produced as the
 return value from the following functions: <code><a href='imagep.html'>imagep()</a></code> and
-<code><a href='oce.plot.ts.html'>oce.plot.ts()</a></code>, <code><a href='plot-adp-method.html'>plot,adp-method()</a></code>,
-<code><a href='plot-echosounder-method.html'>plot,echosounder-method()</a></code>, and <code><a href='plotTS.html'>plotTS()</a></code>.
+<code><a href='oce.plot.ts.html'>oce.plot.ts()</a></code>, <code><a href='plot,adp-method.html'>plot,adp-method()</a></code>,
+<code><a href='plot,echosounder-method.html'>plot,echosounder-method()</a></code>, and <code><a href='plotTS.html'>plotTS()</a></code>.
 It makes no sense to try to use <code>oce.grid</code> for multipanel oce plots,
-e.g. the default plot from <code><a href='plot-adp-method.html'>plot,adp-method()</a></code>.</p>
+e.g. the default plot from <code><a href='plot,adp-method.html'>plot,adp-method()</a></code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='no'>i</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='imagep.html'>imagep</a></span>(<span class='no'>volcano</span>)</div><div class='input'><span class='fu'>oce.grid</span>(<span class='no'>i</span>, <span class='kw'>lwd</span><span class='kw'>=</span><span class='fl'>2</span>)</div><div class='img'><img src='oce.grid-1.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>sealevel</span>)
-<span class='no'>i</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='oce.plot.ts.html'>oce.plot.ts</a></span>(<span class='no'>sealevel</span><span class='kw'>[[</span><span class='st'>"time"</span>]], <span class='no'>sealevel</span><span class='kw'>[[</span><span class='st'>"elevation"</span>]])</div><div class='input'><span class='fu'>oce.grid</span>(<span class='no'>i</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'red'</span>)</div><div class='img'><img src='oce.grid-2.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
-<span class='no'>i</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='plotTS.html'>plotTS</a></span>(<span class='no'>ctd</span>)</div><div class='input'><span class='fu'>oce.grid</span>(<span class='no'>i</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'red'</span>)</div><div class='img'><img src='oce.grid-3.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>adp</span>)
-<span class='no'>i</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>adp</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='input'><span class='fu'>oce.grid</span>(<span class='no'>i</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'gray'</span>, <span class='kw'>lty</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='img'><img src='oce.grid-4.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>echosounder</span>)
-<span class='no'>i</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>echosounder</span>)</div><div class='input'><span class='fu'>oce.grid</span>(<span class='no'>i</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'pink'</span>, <span class='kw'>lty</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='img'><img src='oce.grid-5.png' alt='' width='700' height='433' /></div><div class='input'>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='va'>i</span> <span class='op'>&lt;-</span> <span class='fu'><a href='imagep.html'>imagep</a></span><span class='op'>(</span><span class='va'>volcano</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>oce.grid</span><span class='op'>(</span><span class='va'>i</span>, lwd<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>
+</div><div class='img'><img src='oce.grid-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>sealevel</span><span class='op'>)</span>
+<span class='va'>i</span> <span class='op'>&lt;-</span> <span class='fu'><a href='oce.plot.ts.html'>oce.plot.ts</a></span><span class='op'>(</span><span class='va'>sealevel</span><span class='op'>[[</span><span class='st'>"time"</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>sealevel</span><span class='op'>[[</span><span class='st'>"elevation"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>oce.grid</span><span class='op'>(</span><span class='va'>i</span>, col<span class='op'>=</span><span class='st'>'red'</span><span class='op'>)</span>
+</div><div class='img'><img src='oce.grid-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+<span class='va'>i</span> <span class='op'>&lt;-</span> <span class='fu'><a href='plotTS.html'>plotTS</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>oce.grid</span><span class='op'>(</span><span class='va'>i</span>, col<span class='op'>=</span><span class='st'>'red'</span><span class='op'>)</span>
+</div><div class='img'><img src='oce.grid-3.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>adp</span><span class='op'>)</span>
+<span class='va'>i</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>adp</span>, which<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>oce.grid</span><span class='op'>(</span><span class='va'>i</span>, col<span class='op'>=</span><span class='st'>'gray'</span>, lty<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='img'><img src='oce.grid-4.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>echosounder</span><span class='op'>)</span>
+<span class='va'>i</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>echosounder</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>oce.grid</span><span class='op'>(</span><span class='va'>i</span>, col<span class='op'>=</span><span class='st'>'pink'</span>, lty<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='img'><img src='oce.grid-5.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -216,7 +226,7 @@ e.g. the default plot from <code><a href='plot-adp-method.html'>plot,adp-method(
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

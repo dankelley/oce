@@ -75,7 +75,7 @@ discussion here focusses on Landsat 8 and Landsat 7." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@ discussion here focusses on Landsat 8 and Landsat 7." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ discussion here focusses on Landsat 8 and Landsat 7." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -196,15 +196,15 @@ object may be retrieved in the standard R way using <code>slot()</code>. For
 example <code>slot(o,"data")</code> returns the <code>data</code> slot of an object named <code>o</code>,
 and similarly <code>slot(o,"metadata")</code> returns
 the <code>metadata</code> slot.</p>
-<p>The slots may also be obtained with the <code><a href='sub-sub-landsat-method.html'>[[,landsat-method</a></code>
+<p>The slots may also be obtained with the <code><a href='[[,landsat-method.html'>[[,landsat-method</a></code>
 operator, as e.g. <code>o[["data"]]</code> and <code>o[["metadata"]]</code>, respectively.</p>
-<p>The <code><a href='sub-sub-landsat-method.html'>[[,landsat-method</a></code> operator can also
+<p>The <code><a href='[[,landsat-method.html'>[[,landsat-method</a></code> operator can also
 be used to retrieve items from within the <code>data</code> and <code>metadata</code> slots.
 For example, <code>o[["temperature"]]</code> can be used to retrieve temperature
 from an object containing that quantity. The rule is that a named
 quantity is sought first within the object's <code>metadata</code> slot,
 with the <code>data</code> slot being checked only if <code>metadata</code> does not
-contain the item. This <code>[[</code> method can also be used to get
+contain the item. This <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
@@ -224,7 +224,8 @@ breaks these 16 bits up into most-significant and least-significant bytes.
 For example, the aerosol band of a Landsat object named <code>x</code> are
 contained within <code>x@data$aerosol$msb</code> and <code>x@data$aerosol$lsb</code>,
 each of which is a matrix of raw values.  The results may be combined as e.g.</p><pre>
-<span class='fl'>256L</span>*<span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span>(<span class='no'>x</span>@<span class='kw'>data</span><span class='kw'>[[</span><span class='no'>i</span>]]$<span class='no'>msb</span>) + <span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span>(<span class='no'>x</span>@<span class='kw'>data</span><span class='kw'>[[</span><span class='no'>i</span>]]$<span class='no'>lsb</span>)</pre><p>and this is what is returned by executing <code>x[["aerosol"]]</code>.</p>
+<span class='fl'>256L</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>@</span><span class='va'>data</span><span class='op'>[[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>]</span><span class='op'>$</span><span class='va'>msb</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>@</span><span class='va'>data</span><span class='op'>[[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>]</span><span class='op'>$</span><span class='va'>lsb</span><span class='op'>)</span>
+</pre><p>and this is what is returned by executing <code>x[["aerosol"]]</code>.</p>
 <p>Landsat data files typically occupy approximately a
 gigabyte of storage.  That means that corresponding Oce objects are about
 the same size, and this can pose significant problems on computers with
@@ -286,7 +287,7 @@ An exception is the Landsat-7 bands named <code>tirs1</code> and <code>tirs2</co
 are at two different gain settings, with identical wavelength span for
 each, which roughly matches the range of the Landsat-8 bands <code>tirs1</code>
 and <code>tirs2</code> combined.  This may seem confusing, but it lets code like
-<code><a href='https://rdrr.io/r/base/plot.html'>plot(im, band="tirs1")</a></code> to work with both Landsat-8 and Landsat-7.</p>
+<code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot(im, band="tirs1")</a></code> to work with both Landsat-8 and Landsat-7.</p>
 <pre>
 .------------------------------------------------------------------------------.
 | Band | Band                      | Band         | Wavelength    | Resolution |
@@ -311,15 +312,15 @@ and <code>tirs2</code> combined.  This may seem confusing, but it lets code like
 <li><p>See the USGS "glovis" web site.</p></li>
 <li><p>see landsat.gsfc.nasa.gov/?page_id=5377</p></li>
 <li><p>see landsat.usgs.gov/calibration_notices.php</p></li>
-<li><p><a href='http://dankelley.github.io/r/2014/07/01/landsat.html'>http://dankelley.github.io/r/2014/07/01/landsat.html</a></p></li>
-<li><p><a href='http://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/'>http://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/</a></p></li>
+<li><p><a href='https://dankelley.github.io/r/2014/07/01/landsat.html'>https://dankelley.github.io/r/2014/07/01/landsat.html</a></p></li>
+<li><p><a href='https://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/'>https://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/</a></p></li>
 <li><p>see landsat.usgs.gov/Landsat8_Using_Product.php</p></li>
 <li><p>see landsathandbook.gsfc.nasa.gov/pdfs/Landsat7_Handbook.pdf</p></li>
 <li><p>see landsat.usgs.gov/band_designations_landsat_satellites.php</p></li>
 <li><p>Yu, X. X. Guo and Z. Wu., 2014. Land Surface Temperature Retrieval from
 Landsat 8 TIRS-Comparison between Radiative Transfer Equation-Based Method,
 Split Window Algorithm and Single Channel Method, <em>Remote Sensing</em>, 6,
-9829-9652.  <a href='http://www.mdpi.com/2072-4292/6/10/9829'>http://www.mdpi.com/2072-4292/6/10/9829</a></p></li>
+9829-9652.  <a href='https://www.mdpi.com/2072-4292/6/10/9829'>https://www.mdpi.com/2072-4292/6/10/9829</a></p></li>
 <li><p>Rajeshwari, A., and N. D. Mani, 2014.  Estimation of land surface
 temperature of Dindigul district using Landsat 8 data. <em>International
 Journal of Research in Engineering and Technology</em>, 3(5), 122-126.
@@ -335,19 +336,26 @@ Surface Emissivity.  <em>Journal of Oceanography</em>, 50, 17:30.
 <p>A file containing Landsat data may be read with <code><a href='read.landsat.html'>read.landsat()</a></code> or
 <code><a href='read.oce.html'>read.oce()</a></code>, and one such file is provided by the <a href='https://CRAN.R-project.org/package=ocedata'><span class="pkg">ocedata</span></a>
 package as a dataset named <code>landsat</code>.</p>
-<p>Plots may be made with <code><a href='plot-landsat-method.html'>plot,landsat-method()</a></code>.  Since plotting can be quite
+<p>Plots may be made with <code><a href='plot,landsat-method.html'>plot,landsat-method()</a></code>.  Since plotting can be quite
 slow, decimation is available both in the plotting function and as the separate
 function <code><a href='decimate.html'>decimate()</a></code>.  Images may be subsetted with
 <code><a href='landsatTrim.html'>landsatTrim()</a></code>.</p>
+<p>Other classes holding satellite data: 
+<code><a href='amsr-class.html'>amsr-class</a></code>,
+<code><a href='g1sst-class.html'>g1sst-class</a></code>,
+<code><a href='satellite-class.html'>satellite-class</a></code></p>
 <p>Other things related to landsat data: 
-<code><a href='sub-sub-landsat-method.html'>[[,landsat-method</a></code>,
+<code><a href='[[,landsat-method.html'>[[,landsat-method</a></code>,
 <code>[[&lt;-,landsat-method</code>,
 <code><a href='landsatAdd.html'>landsatAdd</a>()</code>,
 <code><a href='landsatTrim.html'>landsatTrim</a>()</code>,
 <code><a href='landsat.html'>landsat</a></code>,
-<code><a href='plot-landsat-method.html'>plot,landsat-method</a></code>,
+<code><a href='plot,landsat-method.html'>plot,landsat-method</a></code>,
 <code><a href='read.landsat.html'>read.landsat</a>()</code>,
-<code><a href='summary-landsat-method.html'>summary,landsat-method</a></code></p></div>
+<code><a href='summary,landsat-method.html'>summary,landsat-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley and Clark Richards</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -364,7 +372,7 @@ function <code><a href='decimate.html'>decimate()</a></code>.  Images may be sub
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

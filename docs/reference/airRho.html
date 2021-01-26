@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Air density — airRho" />
-<meta property="og:description" content="Compute \(\rho\), the in-situ density of air." />
+<meta property="og:description" content="Compute \(\rho\), the in-situ density of dry air." />
 
 
 
@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -144,10 +144,10 @@
     </div>
 
     <div class="ref-description">
-    <p>Compute \(\rho\), the <em>in-situ</em> density of air.</p>
+    <p>Compute \(\rho\), the <em>in-situ</em> density of dry air.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>airRho</span>(<span class='no'>temperature</span>, <span class='no'>pressure</span>, <span class='no'>humidity</span>)</pre>
+    <pre class="usage"><span class='fu'>airRho</span><span class='op'>(</span><span class='va'>temperature</span>, <span class='va'>pressure</span>, <span class='va'>humidity</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -158,7 +158,8 @@
     </tr>
     <tr>
       <th>pressure</th>
-      <td><p>pressure in Pa (NOT kPa) -- ignored at present</p></td>
+      <td><p>numeric value for pressure in Pa (<em>not</em> the kPa used in public
+weather forecasts).</p></td>
     </tr>
     <tr>
       <th>humidity</th>
@@ -168,26 +169,34 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><em>In-situ</em> air density, in kg/m\(^3\).</p>
+    <p><em>In-situ</em> dry-air density, in kg/m\(^3\).</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This will eventually be a proper equation of state, but for now it's just
-returns something from wikipedia (i.e. not trustworthy), and not using
-humidity.</p>
+    <p>This will eventually be a proper equation of state, but for now it just
+uses a dry-air formula posted on wikipedia (i.e. not trustworthy).</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>National Oceanographic and Atmospheric Agency, 1976.  U.S.
+    
+<ol>
+<li><p><a href='https://en.wikipedia.org/wiki/Density_of_air'>https://en.wikipedia.org/wiki/Density_of_air</a></p></li>
+<li><p>National Oceanographic and Atmospheric Agency, 1976.  U.S.
 Standard Atmosphere, 1976.  NOAA-S/T 76-1562.  (A PDF of this document may
 be available at
 <code>http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19770009539_1977009539.pdf</code>
 or
 <code>http://www.dtic.mil/cgi-bin/GetTRDoc?Location=U2&amp;doc=GetTRDoc.pdf&amp;AD=ADA035728</code>
-although neither link has proven to be reliable.)</p>
+although neither link has proven to be reliable.)</p></li>
+</ol>
+
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>degC</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>,<span class='fl'>30</span>,<span class='kw'>length.out</span><span class='kw'>=</span><span class='fl'>100</span>)
-<span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>98</span>,<span class='fl'>102</span>,<span class='kw'>length.out</span><span class='kw'>=</span><span class='fl'>100</span>) * <span class='fl'>1e3</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span>(<span class='kw'>x</span><span class='kw'>=</span><span class='no'>degC</span>, <span class='kw'>y</span><span class='kw'>=</span><span class='no'>p</span>, <span class='kw'>z</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/outer.html'>outer</a></span>(<span class='no'>degC</span>,<span class='no'>p</span>,<span class='no'>airRho</span>), <span class='kw'>labcex</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='img'><img src='airRho-1.png' alt='' width='700' height='433' /></div></pre>
+    <pre class="examples"><div class='input'><span class='va'>degC</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>30</span>,length.out<span class='op'>=</span><span class='fl'>100</span><span class='op'>)</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>98</span>,<span class='fl'>102</span>,length.out<span class='op'>=</span><span class='fl'>100</span><span class='op'>)</span> <span class='op'>*</span> <span class='fl'>1e3</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>degC</span>, y<span class='op'>=</span><span class='va'>p</span>, z<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/outer.html'>outer</a></span><span class='op'>(</span><span class='va'>degC</span>,<span class='va'>p</span>,<span class='va'>airRho</span><span class='op'>)</span>, labcex<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='img'><img src='airRho-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -203,7 +212,7 @@ although neither link has proven to be reliable.)</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

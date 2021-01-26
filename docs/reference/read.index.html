@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,13 +147,13 @@
     <p>Read an ocean index file, in the format used by NOAA.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>read.index</span>(
-  <span class='no'>file</span>,
-  <span class='no'>format</span>,
-  <span class='no'>missingValue</span>,
-  <span class='kw'>tz</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceTz"</span>),
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>read.index</span><span class='op'>(</span>
+  <span class='va'>file</span>,
+  <span class='va'>format</span>,
+  <span class='va'>missingValue</span>,
+  tz <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceTz"</span><span class='op'>)</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -211,23 +211,28 @@ the first of which is the year, with the following 12 being the values
 for January, February, etc.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>See <a href='https://www.esrl.noaa.gov/psd/data/climateindices/list/'>https://www.esrl.noaa.gov/psd/data/climateindices/list/</a>
+    <p>See <a href='https://psl.noaa.gov/data/climateindices/list/'>https://psl.noaa.gov/data/climateindices/list/</a>
 for a list of indices.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>))
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
 <span class='co'># 1. AO, Arctic oscillation</span>
-<span class='no'>ao</span> <span class='kw'>&lt;-</span> <span class='fu'>read.index</span>(<span class='st'>"https://www.esrl.noaa.gov/psd/data/correlation/ao.data"</span>)
-<span class='no'>aorecent</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>ao</span>, <span class='no'>t</span> <span class='kw'>&gt;</span> <span class='fu'><a href='https://rdrr.io/r/base/as.POSIXlt.html'>as.POSIXct</a></span>(<span class='st'>"2000-01-01"</span>))
-<span class='fu'><a href='oce.plot.ts.html'>oce.plot.ts</a></span>(<span class='no'>aorecent</span>$<span class='no'>t</span>, <span class='no'>aorecent</span>$<span class='no'>index</span>)
+<span class='co'>#  Note that data used to be at https://www.esrl.noaa.gov/psd/data/correlation/ao.data</span>
+<span class='va'>ao</span> <span class='op'>&lt;-</span> <span class='fu'>read.index</span><span class='op'>(</span><span class='st'>"https://psl.noaa.gov/data/correlation/ao.data"</span><span class='op'>)</span>
+<span class='va'>aorecent</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>ao</span>, <span class='va'>t</span> <span class='op'>&gt;</span> <span class='fu'><a href='https://rdrr.io/r/base/as.POSIXlt.html'>as.POSIXct</a></span><span class='op'>(</span><span class='st'>"2000-01-01"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='oce.plot.ts.html'>oce.plot.ts</a></span><span class='op'>(</span><span class='va'>aorecent</span><span class='op'>$</span><span class='va'>t</span>, <span class='va'>aorecent</span><span class='op'>$</span><span class='va'>index</span><span class='op'>)</span>
 <span class='co'># 2. SOI, probably more up-to-date then data(soi, package="ocedata")</span>
-<span class='no'>soi</span> <span class='kw'>&lt;-</span> <span class='fu'>read.index</span>(<span class='st'>"https://www.cgd.ucar.edu/cas/catalog/climind/SOI.signal.ascii"</span>)
-<span class='no'>soirecent</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>soi</span>, <span class='no'>t</span> <span class='kw'>&gt;</span> <span class='fu'><a href='https://rdrr.io/r/base/as.POSIXlt.html'>as.POSIXct</a></span>(<span class='st'>"2000-01-01"</span>))
-<span class='fu'><a href='oce.plot.ts.html'>oce.plot.ts</a></span>(<span class='no'>soirecent</span>$<span class='no'>t</span>, <span class='no'>soirecent</span>$<span class='no'>index</span>)
-}</div></pre>
+<span class='va'>soi</span> <span class='op'>&lt;-</span> <span class='fu'>read.index</span><span class='op'>(</span><span class='st'>"https://www.cgd.ucar.edu/cas/catalog/climind/SOI.signal.ascii"</span><span class='op'>)</span>
+<span class='va'>soirecent</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>soi</span>, <span class='va'>t</span> <span class='op'>&gt;</span> <span class='fu'><a href='https://rdrr.io/r/base/as.POSIXlt.html'>as.POSIXct</a></span><span class='op'>(</span><span class='st'>"2000-01-01"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='oce.plot.ts.html'>oce.plot.ts</a></span><span class='op'>(</span><span class='va'>soirecent</span><span class='op'>$</span><span class='va'>t</span>, <span class='va'>soirecent</span><span class='op'>$</span><span class='va'>index</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -243,7 +248,7 @@ for a list of indices.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -75,7 +75,7 @@ NOAA website (see reference 1)." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@ NOAA website (see reference 1)." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ NOAA website (see reference 1)." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -153,7 +153,7 @@ International Geomagnetic Reference Field
 NOAA website (see reference 1).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>magneticField</span>(<span class='no'>longitude</span>, <span class='no'>latitude</span>, <span class='no'>time</span>, <span class='kw'>version</span> <span class='kw'>=</span> <span class='fl'>13</span>)</pre>
+    <pre class="usage"><span class='fu'>magneticField</span><span class='op'>(</span><span class='va'>longitude</span>, <span class='va'>latitude</span>, <span class='va'>time</span>, version <span class='op'>=</span> <span class='fl'>13</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -202,7 +202,7 @@ but that only dates from 1945 to 2015 are to be considered definitive.</p>
 
 <p>For about a decade, <code>magneticField</code> used the version 12 formulae provided
 by IAGA, but the code was updated on March 3, 2020, to version 13.  Example
-3 shows that the differences in declination are typicaly under 2 degrees
+3 shows that the differences in declination are typically under 2 degrees
 (with 95 percent of the data lying between -1.7 and 0.7 degrees).</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
@@ -210,60 +210,74 @@ by IAGA, but the code was updated on March 3, 2020, to version 13.  Example
 <ol>
 <li><p>The underlying Fortran code for version 12 is from <code>igrf12.f</code>, downloaded the NOAA
 website (<a href='https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html'>https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html</a>) on June 7,</p></li>
-<li><p>That for version 13 is <code>igrf13.f</code>, downloadd from the NOAA website
+<li><p>That for version 13 is <code>igrf13.f</code>, downloaded from the NOAA website
 (<a href='https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html'>https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html</a> on March 3, 2020.</p></li>
 <li><p>Witze, Alexandra. &#8220;Earth's Magnetic Field Is Acting up and Geologists Don't Know Why.&#8221;
 Nature 565 (January 9, 2019): 143.
-<a href='https://doi.org/10.1038/d41586-019-00007-1'>https://doi.org/10.1038/d41586-019-00007-1</a>.</p></li>
+doi: <a href='https://doi.org/10.1038/d41586-019-00007-1'>10.1038/d41586-019-00007-1</a></p></li>
 </ol>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to magnetism: 
 <code><a href='applyMagneticDeclination.html'>applyMagneticDeclination</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley wrote the R code and a fortran wrapper to the
+<code>igrf12.f</code> subroutine, which was written by Susan Macmillan of the
+British Geological Survey and distributed ``without limitation'' (email from
+SM to DK dated June 5, 2015).</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
 <span class='co'># 1. Today's value at Halifax NS</span>
-<span class='fu'>magneticField</span>(-(<span class='fl'>63</span>+<span class='fl'>36</span>/<span class='fl'>60</span>), <span class='fl'>44</span>+<span class='fl'>39</span>/<span class='fl'>60</span>, <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span>())</div><div class='output co'>#&gt; $declination
-#&gt; [1] -16.91577
+<span class='fu'>magneticField</span><span class='op'>(</span><span class='op'>-</span><span class='op'>(</span><span class='fl'>63</span><span class='op'>+</span><span class='fl'>36</span><span class='op'>/</span><span class='fl'>60</span><span class='op'>)</span>, <span class='fl'>44</span><span class='op'>+</span><span class='fl'>39</span><span class='op'>/</span><span class='fl'>60</span>, <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $declination
+#&gt; [1] -16.83976
 #&gt; 
 #&gt; $inclination
-#&gt; [1] 66.83773
+#&gt; [1] 66.78279
 #&gt; 
 #&gt; $intensity
-#&gt; [1] 51489
+#&gt; [1] 51452.01
 #&gt; </div><div class='input'>
 <span class='co'># 2. World map of declination in year 2000.</span>
 <span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>coastlineWorld</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>0.5</span>, <span class='fl'>4</span>)) <span class='co'># no axes on whole-world projection</span>
-<span class='fu'><a href='mapPlot.html'>mapPlot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>projection</span><span class='kw'>=</span><span class='st'>"+proj=robin"</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"lightgray"</span>)</div><div class='input'><span class='co'># Construct matrix holding declination</span>
-<span class='no'>lon</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>180</span>, <span class='fl'>180</span>)
-<span class='no'>lat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>90</span>, <span class='fl'>90</span>)
-<span class='no'>dec2000</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>lon</span>, <span class='no'>lat</span>)
-    <span class='fu'>magneticField</span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='fl'>2000</span>)$<span class='no'>declination</span>
-<span class='no'>dec</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/outer.html'>outer</a></span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='no'>dec2000</span>) <span class='co'># hint: outer() is very handy!</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>0.5</span>, <span class='fl'>4</span><span class='op'>)</span><span class='op'>)</span> <span class='co'># no axes on whole-world projection</span>
+<span class='fu'><a href='mapPlot.html'>mapPlot</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, projection<span class='op'>=</span><span class='st'>"+proj=robin"</span>, col<span class='op'>=</span><span class='st'>"lightgray"</span><span class='op'>)</span>
+</div><div class='input'><span class='co'># Construct matrix holding declination</span>
+<span class='va'>lon</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>180</span>, <span class='fl'>180</span><span class='op'>)</span>
+<span class='va'>lat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>90</span>, <span class='fl'>90</span><span class='op'>)</span>
+<span class='va'>dec2000</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span><span class='op'>)</span>
+    <span class='fu'>magneticField</span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, <span class='fl'>2000</span><span class='op'>)</span><span class='op'>$</span><span class='va'>declination</span>
+<span class='va'>dec</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/outer.html'>outer</a></span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, <span class='va'>dec2000</span><span class='op'>)</span> <span class='co'># hint: outer() is very handy!</span>
 <span class='co'># Contour, unlabelled for small increments, labeled for</span>
 <span class='co'># larger increments.</span>
-<span class='fu'><a href='mapContour.html'>mapContour</a></span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='no'>dec</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'blue'</span>, <span class='kw'>levels</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>180</span>, -<span class='fl'>5</span>, <span class='fl'>5</span>),
-           <span class='kw'>lty</span><span class='kw'>=</span><span class='fl'>3</span>, <span class='kw'>drawlabels</span><span class='kw'>=</span><span class='fl'>FALSE</span>)</div><div class='input'><span class='fu'><a href='mapContour.html'>mapContour</a></span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='no'>dec</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'blue'</span>, <span class='kw'>levels</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>180</span>, -<span class='fl'>20</span>, <span class='fl'>20</span>))</div><div class='input'><span class='fu'><a href='mapContour.html'>mapContour</a></span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='no'>dec</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'red'</span>, <span class='kw'>levels</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>5</span>, <span class='fl'>180</span>, <span class='fl'>5</span>),
-           <span class='kw'>lty</span><span class='kw'>=</span><span class='fl'>3</span>, <span class='kw'>drawlabels</span><span class='kw'>=</span><span class='fl'>FALSE</span>)</div><div class='input'><span class='fu'><a href='mapContour.html'>mapContour</a></span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='no'>dec</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'red'</span>, <span class='kw'>levels</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>20</span>, <span class='fl'>180</span>, <span class='fl'>20</span>))</div><div class='input'><span class='fu'><a href='mapContour.html'>mapContour</a></span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='no'>dec</span>, <span class='kw'>levels</span><span class='kw'>=</span><span class='fl'>180</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'black'</span>, <span class='kw'>lwd</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>drawlabels</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
-<span class='fu'><a href='mapContour.html'>mapContour</a></span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='no'>dec</span>, <span class='kw'>levels</span><span class='kw'>=</span><span class='fl'>0</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'black'</span>, <span class='kw'>lwd</span><span class='kw'>=</span><span class='fl'>2</span>)</div><div class='img'><img src='magneticField-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
+<span class='fu'><a href='mapContour.html'>mapContour</a></span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, <span class='va'>dec</span>, col<span class='op'>=</span><span class='st'>'blue'</span>, levels<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>180</span>, <span class='op'>-</span><span class='fl'>5</span>, <span class='fl'>5</span><span class='op'>)</span>,
+           lty<span class='op'>=</span><span class='fl'>3</span>, drawlabels<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='mapContour.html'>mapContour</a></span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, <span class='va'>dec</span>, col<span class='op'>=</span><span class='st'>'blue'</span>, levels<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>180</span>, <span class='op'>-</span><span class='fl'>20</span>, <span class='fl'>20</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='mapContour.html'>mapContour</a></span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, <span class='va'>dec</span>, col<span class='op'>=</span><span class='st'>'red'</span>, levels<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>5</span>, <span class='fl'>180</span>, <span class='fl'>5</span><span class='op'>)</span>,
+           lty<span class='op'>=</span><span class='fl'>3</span>, drawlabels<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='mapContour.html'>mapContour</a></span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, <span class='va'>dec</span>, col<span class='op'>=</span><span class='st'>'red'</span>, levels<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>180</span>, <span class='fl'>20</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='mapContour.html'>mapContour</a></span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, <span class='va'>dec</span>, levels<span class='op'>=</span><span class='fl'>180</span>, col<span class='op'>=</span><span class='st'>'black'</span>, lwd<span class='op'>=</span><span class='fl'>2</span>, drawlabels<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='fu'><a href='mapContour.html'>mapContour</a></span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, <span class='va'>dec</span>, levels<span class='op'>=</span><span class='fl'>0</span>, col<span class='op'>=</span><span class='st'>'black'</span>, lwd<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>
+</div><div class='img'><img src='magneticField-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
 
 <span class='co'># 3. Declination differences between versions 12 and 13</span>
 <span class='co'># \donttest{</span>
-<span class='no'>lon</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>180</span>, <span class='fl'>180</span>)
-<span class='no'>lat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>90</span>, <span class='fl'>90</span>)
-<span class='no'>decDiff</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>lon</span>, <span class='no'>lat</span>) {
-    <span class='no'>old</span> <span class='kw'>&lt;-</span> <span class='fu'>magneticField</span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='fl'>2020</span>, <span class='kw'>version</span><span class='kw'>=</span><span class='fl'>13</span>)$<span class='no'>declination</span>
-    <span class='no'>new</span> <span class='kw'>&lt;-</span> <span class='fu'>magneticField</span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='fl'>2020</span>, <span class='kw'>version</span><span class='kw'>=</span><span class='fl'>12</span>)$<span class='no'>declination</span>
-    <span class='no'>new</span> - <span class='no'>old</span>
-}
-<span class='no'>decDiff</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/outer.html'>outer</a></span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='no'>decDiff</span>)
-<span class='no'>decDiff</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span>(<span class='no'>decDiff</span> <span class='kw'>&gt;</span> <span class='fl'>180</span>, <span class='no'>decDiff</span> - <span class='fl'>360</span>, <span class='no'>decDiff</span>)
+<span class='va'>lon</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>180</span>, <span class='fl'>180</span><span class='op'>)</span>
+<span class='va'>lat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>90</span>, <span class='fl'>90</span><span class='op'>)</span>
+<span class='va'>decDiff</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>old</span> <span class='op'>&lt;-</span> <span class='fu'>magneticField</span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, <span class='fl'>2020</span>, version<span class='op'>=</span><span class='fl'>13</span><span class='op'>)</span><span class='op'>$</span><span class='va'>declination</span>
+    <span class='va'>new</span> <span class='op'>&lt;-</span> <span class='fu'>magneticField</span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, <span class='fl'>2020</span>, version<span class='op'>=</span><span class='fl'>12</span><span class='op'>)</span><span class='op'>$</span><span class='va'>declination</span>
+    <span class='va'>new</span> <span class='op'>-</span> <span class='va'>old</span>
+<span class='op'>}</span>
+<span class='va'>decDiff</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/outer.html'>outer</a></span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, <span class='va'>decDiff</span><span class='op'>)</span>
+<span class='va'>decDiff</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='va'>decDiff</span> <span class='op'>&gt;</span> <span class='fl'>180</span>, <span class='va'>decDiff</span> <span class='op'>-</span> <span class='fl'>360</span>, <span class='va'>decDiff</span><span class='op'>)</span>
 <span class='co'># Overall (mean) shift -0.1deg</span>
-<span class='fu'><a href='https://rdrr.io/r/stats/t.test.html'>t.test</a></span>(<span class='no'>decDiff</span>)</div><div class='output co'>#&gt; 
+<span class='fu'><a href='https://rdrr.io/r/stats/t.test.html'>t.test</a></span><span class='op'>(</span><span class='va'>decDiff</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 
 #&gt; 	One Sample t-test
 #&gt; 
 #&gt; data:  decDiff
@@ -275,12 +289,16 @@ Nature 565 (January 9, 2019): 143.
 #&gt;   mean of x 
 #&gt; -0.09541254 
 #&gt; </div><div class='input'><span class='co'># View histogram, narrowed to small differences</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3.5</span>, <span class='fl'>3.5</span>, <span class='fl'>2</span>, <span class='fl'>2</span>), <span class='kw'>mgp</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>0.7</span>, <span class='fl'>0</span>))
-<span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span>(<span class='no'>decDiff</span>, <span class='kw'>breaks</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>180</span>, <span class='fl'>180</span>, <span class='fl'>0.05</span>), <span class='kw'>xlim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>2</span>, <span class='fl'>2</span>),
-     <span class='kw'>xlab</span><span class='kw'>=</span><span class='st'>"Declination difference [deg] from version=12 to version=13"</span>,
-     <span class='kw'>main</span><span class='kw'>=</span><span class='st'>"Predictions for year 2020"</span>)</div><div class='img'><img src='magneticField-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/quantile.html'>quantile</a></span>(<span class='no'>decDiff</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.025</span>, <span class='fl'>0.975</span>)))</div><div class='output co'>#&gt;       2.5%      97.5% 
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3.5</span>, <span class='fl'>3.5</span>, <span class='fl'>2</span>, <span class='fl'>2</span><span class='op'>)</span>, mgp<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>0.7</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span><span class='op'>(</span><span class='va'>decDiff</span>, breaks<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>180</span>, <span class='fl'>180</span>, <span class='fl'>0.05</span><span class='op'>)</span>, xlim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>2</span>, <span class='fl'>2</span><span class='op'>)</span>,
+     xlab<span class='op'>=</span><span class='st'>"Declination difference [deg] from version=12 to version=13"</span>,
+     main<span class='op'>=</span><span class='st'>"Predictions for year 2020"</span><span class='op'>)</span>
+</div><div class='img'><img src='magneticField-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/quantile.html'>quantile</a></span><span class='op'>(</span><span class='va'>decDiff</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.025</span>, <span class='fl'>0.975</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;       2.5%      97.5% 
 #&gt; -1.6695352  0.7159345 </div><div class='input'><span class='co'># Note that the large differences are at high latitudes</span>
-<span class='fu'><a href='imagep.html'>imagep</a></span>(<span class='no'>lon</span>,<span class='no'>lat</span>,<span class='no'>decDiff</span>, <span class='kw'>zlim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>1</span>,<span class='fl'>1</span>)*<span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span>(<span class='no'>decDiff</span>)))</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='no'>coastlineWorld</span><span class='kw'>[[</span><span class='st'>"longitude"</span>]], <span class='no'>coastlineWorld</span><span class='kw'>[[</span><span class='st'>"latitude"</span>]])</div><div class='img'><img src='magneticField-3.png' alt='' width='700' height='433' /></div><div class='input'># }
+<span class='fu'><a href='imagep.html'>imagep</a></span><span class='op'>(</span><span class='va'>lon</span>,<span class='va'>lat</span>,<span class='va'>decDiff</span>, zlim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span><span class='op'>(</span><span class='va'>decDiff</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>[[</span><span class='st'>"longitude"</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>coastlineWorld</span><span class='op'>[[</span><span class='st'>"latitude"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+</div><div class='img'><img src='magneticField-3.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -297,7 +315,7 @@ Nature 565 (January 9, 2019): 143.
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

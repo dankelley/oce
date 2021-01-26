@@ -74,7 +74,7 @@ spatial data into location bins." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@ spatial data into location bins." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -123,7 +123,7 @@ spatial data into location bins." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -151,16 +151,16 @@ vectors <code>x</code> and <code>y</code>. A common example might be averaging
 spatial data into location bins.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>binMean2D</span>(
-  <span class='no'>x</span>,
-  <span class='no'>y</span>,
-  <span class='no'>f</span>,
-  <span class='no'>xbreaks</span>,
-  <span class='no'>ybreaks</span>,
-  <span class='kw'>flatten</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>fill</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>fillgap</span> <span class='kw'>=</span> -<span class='fl'>1</span>
-)</pre>
+    <pre class="usage"><span class='fu'>binMean2D</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>y</span>,
+  <span class='va'>f</span>,
+  <span class='va'>xbreaks</span>,
+  <span class='va'>ybreaks</span>,
+  flatten <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  fill <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  fillgap <span class='op'>=</span> <span class='op'>-</span><span class='fl'>1</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -226,16 +226,21 @@ and the resultant average (<code>f</code>) of <code>f(x,y)</code>, classified by
 <code><a href='binCount1D.html'>binCount1D</a>()</code>,
 <code><a href='binCount2D.html'>binCount2D</a>()</code>,
 <code><a href='binMean1D.html'>binMean1D</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>500</span>)
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>500</span>)
-<span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='no'>x</span> + <span class='no'>y</span>
-<span class='no'>xb</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0.1</span>)
-<span class='no'>yb</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0.2</span>)
-<span class='no'>m</span> <span class='kw'>&lt;-</span> <span class='fu'>binMean2D</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>f</span>, <span class='no'>xb</span>, <span class='no'>yb</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='no'>y</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span>(<span class='no'>m</span>$<span class='no'>xmids</span>, <span class='no'>m</span>$<span class='no'>ymids</span>, <span class='no'>m</span>$<span class='no'>result</span>, <span class='kw'>add</span><span class='kw'>=</span><span class='fl'>TRUE</span>, <span class='kw'>levels</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>2</span>, <span class='fl'>0.5</span>), <span class='kw'>labcex</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='img'><img src='binMean2D-1.png' alt='' width='700' height='433' /></div><div class='input'>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>500</span><span class='op'>)</span>
+<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>500</span><span class='op'>)</span>
+<span class='va'>f</span> <span class='op'>&lt;-</span> <span class='va'>x</span> <span class='op'>+</span> <span class='va'>y</span>
+<span class='va'>xb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0.1</span><span class='op'>)</span>
+<span class='va'>yb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0.2</span><span class='op'>)</span>
+<span class='va'>m</span> <span class='op'>&lt;-</span> <span class='fu'>binMean2D</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>f</span>, <span class='va'>xb</span>, <span class='va'>yb</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span><span class='op'>(</span><span class='va'>m</span><span class='op'>$</span><span class='va'>xmids</span>, <span class='va'>m</span><span class='op'>$</span><span class='va'>ymids</span>, <span class='va'>m</span><span class='op'>$</span><span class='va'>result</span>, add<span class='op'>=</span><span class='cn'>TRUE</span>, levels<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>2</span>, <span class='fl'>0.5</span><span class='op'>)</span>, labcex<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='img'><img src='binMean2D-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -252,7 +257,7 @@ and the resultant average (<code>f</code>) of <code>f(x,y)</code>, classified by
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

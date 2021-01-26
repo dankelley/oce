@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,7 +147,7 @@
     <p>Substitute NA for data outside a range, e.g. to remove wild spikes in data.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>rangeLimit</span>(<span class='no'>x</span>, <span class='no'>min</span>, <span class='no'>max</span>)</pre>
+    <pre class="usage"><span class='fu'>rangeLimit</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>min</span>, <span class='va'>max</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -168,10 +168,14 @@ also not supplied, a <code>min</code> of the 0.995 percentile will be used.</p><
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='no'>ten.to.twenty</span> <span class='kw'>&lt;-</span> <span class='fu'>rangeLimit</span>(<span class='fl'>1</span>:<span class='fl'>100</span>, <span class='fl'>10</span>, <span class='fl'>20</span>)</div></pre>
+<span class='va'>ten.to.twenty</span> <span class='op'>&lt;-</span> <span class='fu'>rangeLimit</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span>, <span class='fl'>10</span>, <span class='fl'>20</span><span class='op'>)</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -187,7 +191,7 @@ also not supplied, a <code>min</code> of the 0.995 percentile will be used.</p><
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

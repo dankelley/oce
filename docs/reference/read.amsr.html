@@ -73,7 +73,7 @@ Note that only compressed files are read in this version." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -81,7 +81,7 @@ Note that only compressed files are read in this version." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -122,7 +122,7 @@ Note that only compressed files are read in this version." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -149,7 +149,7 @@ Note that only compressed files are read in this version." />
 Note that only compressed files are read in this version.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>read.amsr</span>(<span class='no'>file</span>, <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>))</pre>
+    <pre class="usage"><span class='fu'>read.amsr</span><span class='op'>(</span><span class='va'>file</span>, debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -165,11 +165,9 @@ Note that only compressed files are read in this version.</p>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="file-sources"><a class="anchor" href="#file-sources"></a>File sources</h2>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    
-
-<p>AMSR files are provided at the FTP site
+    <p>AMSR files are provided at the FTP site
 <code>ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/</code> and login as "guest",
 enter a year-based directory (e.g. <code>y2016</code> for the year 2016),
 then enter a month-based directory (e.g. <code>m08</code> for August, the 8th
@@ -183,16 +181,20 @@ about inability to read a 6-chunk file, but
 <code>read.amsr("f34_20160803v7.2.gz")</code> will work properly.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='plot-amsr-method.html'>plot,amsr-method()</a></code> for an example.</p>
+    <div class='dont-index'><p><code><a href='plot,amsr-method.html'>plot,amsr-method()</a></code> for an example.</p>
 <p>Other things related to amsr data: 
-<code><a href='sub-sub-amsr-method.html'>[[,amsr-method</a></code>,
+<code><a href='[[,amsr-method.html'>[[,amsr-method</a></code>,
 <code>[[&lt;-,amsr-method</code>,
 <code><a href='amsr-class.html'>amsr-class</a></code>,
-<code><a href='composite-amsr-method.html'>composite,amsr-method</a></code>,
+<code><a href='amsr.html'>amsr</a></code>,
+<code><a href='composite,amsr-method.html'>composite,amsr-method</a></code>,
 <code><a href='download.amsr.html'>download.amsr</a>()</code>,
-<code><a href='plot-amsr-method.html'>plot,amsr-method</a></code>,
-<code><a href='subset-amsr-method.html'>subset,amsr-method</a></code>,
-<code><a href='summary-amsr-method.html'>summary,amsr-method</a></code></p></div>
+<code><a href='plot,amsr-method.html'>plot,amsr-method</a></code>,
+<code><a href='subset,amsr-method.html'>subset,amsr-method</a></code>,
+<code><a href='summary,amsr-method.html'>summary,amsr-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley and Chantelle Layton</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -209,7 +211,7 @@ about inability to read a 6-chunk file, but
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -75,7 +75,7 @@ modification of Rainsford's method with Helmert's elliptical terms." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@ modification of Rainsford's method with Helmert's elliptical terms." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ modification of Rainsford's method with Helmert's elliptical terms." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -153,13 +153,13 @@ involves the solution of the geodetic inverse problem, using T. Vincenty's
 modification of Rainsford's method with Helmert's elliptical terms.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>geodDist</span>(
-  <span class='no'>longitude1</span>,
-  <span class='kw'>latitude1</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>longitude2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>latitude2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>alongPath</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>geodDist</span><span class='op'>(</span>
+  <span class='va'>longitude1</span>,
+  latitude1 <span class='op'>=</span> <span class='cn'>NULL</span>,
+  longitude2 <span class='op'>=</span> <span class='cn'>NULL</span>,
+  latitude2 <span class='op'>=</span> <span class='cn'>NULL</span>,
+  alongPath <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -232,12 +232,18 @@ Ellipsoid with Application of Nested Equations", <em>Survey Review</em>, April
 <code><a href='geodGc.html'>geodGc</a>()</code>,
 <code><a href='geodXyInverse.html'>geodXyInverse</a>()</code>,
 <code><a href='geodXy.html'>geodXy</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley based this on R code sent to him by Darren Gillis, who in
+2003 had modified Fortran code that, according to comments in the source,
+had been written in 1974 by L. Pfeifer and J. G. Gergen.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='no'>km</span> <span class='kw'>&lt;-</span> <span class='fu'>geodDist</span>(<span class='fl'>100</span>, <span class='fl'>45</span>, <span class='fl'>100</span>, <span class='fl'>46</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>section</span>)
-<span class='fu'>geodDist</span>(<span class='no'>section</span>)</div><div class='output co'>#&gt;   [1]    0.00000   19.32429   41.97088   55.38400   77.12095   97.43228
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='va'>km</span> <span class='op'>&lt;-</span> <span class='fu'>geodDist</span><span class='op'>(</span><span class='fl'>100</span>, <span class='fl'>45</span>, <span class='fl'>100</span>, <span class='fl'>46</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>)</span>
+<span class='fu'>geodDist</span><span class='op'>(</span><span class='va'>section</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   [1]    0.00000   19.32429   41.97088   55.38400   77.12095   97.43228
 #&gt;   [7]  140.86337  236.68579  288.31159  341.09128  391.72386  445.05214
 #&gt;  [13]  497.71719  549.70283  601.72487  655.01069  708.59668  760.25064
 #&gt;  [19]  814.20562  866.36956  919.08447  971.64219 1076.76938 1130.27545
@@ -257,7 +263,8 @@ Ellipsoid with Application of Nested Equations", <em>Survey Review</em>, April
 #&gt; [103] 5388.12780 5402.31973 5415.84740 5429.59164 5443.72655 5457.30296
 #&gt; [109] 5470.12311 5479.22626 5488.57772 5504.57747 5518.33874 5530.83750
 #&gt; [115] 5542.29346 5553.12372 5565.24674 5576.51940 5587.84941 5599.75751
-#&gt; [121] 5610.04172 5621.55739 5629.16006 5633.49267</div><div class='input'><span class='fu'>geodDist</span>(<span class='no'>section</span>, <span class='kw'>alongPath</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='output co'>#&gt;   [1]    0.00000   19.32429   41.98025   55.45124   77.19517  110.46626
+#&gt; [121] 5610.04172 5621.55739 5629.16006 5633.49267</div><div class='input'><span class='fu'>geodDist</span><span class='op'>(</span><span class='va'>section</span>, alongPath<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   [1]    0.00000   19.32429   41.98025   55.45124   77.19517  110.46626
 #&gt;   [7]  165.53704  270.97198  324.62785  379.07516  430.79723  485.08130
 #&gt;  [13]  538.55673  591.26800  643.88027  697.78690  752.07840  804.06096
 #&gt;  [19]  858.28302  910.91394  964.04121 1017.01676 1123.51893 1177.28079
@@ -294,7 +301,7 @@ Ellipsoid with Application of Nested Equations", <em>Survey Review</em>, April
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -79,7 +79,7 @@ reordering the constituent stations in sensible ways." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -87,7 +87,7 @@ reordering the constituent stations in sensible ways." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -128,7 +128,7 @@ reordering the constituent stations in sensible ways." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -161,7 +161,7 @@ are more than 9 stations.) The purpose of <code>sectionSort</code> is to permit
 reordering the constituent stations in sensible ways.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sectionSort</span>(<span class='no'>section</span>, <span class='no'>by</span>)</pre>
+    <pre class="usage"><span class='fu'>sectionSort</span><span class='op'>(</span><span class='va'>section</span>, <span class='va'>by</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -188,32 +188,37 @@ is the case for the input section, <code>x</code>.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to section data: 
-<code><a href='sub-sub-section-method.html'>[[,section-method</a></code>,
+<code><a href='[[,section-method.html'>[[,section-method</a></code>,
 <code>[[&lt;-,section-method</code>,
 <code><a href='as.section.html'>as.section</a>()</code>,
-<code><a href='handleFlags-section-method.html'>handleFlags,section-method</a></code>,
-<code><a href='initializeFlagScheme-section-method.html'>initializeFlagScheme,section-method</a></code>,
-<code><a href='plot-section-method.html'>plot,section-method</a></code>,
+<code><a href='handleFlags,section-method.html'>handleFlags,section-method</a></code>,
+<code><a href='initializeFlagScheme,section-method.html'>initializeFlagScheme,section-method</a></code>,
+<code><a href='plot,section-method.html'>plot,section-method</a></code>,
 <code><a href='read.section.html'>read.section</a>()</code>,
 <code><a href='section-class.html'>section-class</a></code>,
 <code><a href='sectionAddStation.html'>sectionAddStation</a>()</code>,
 <code><a href='sectionGrid.html'>sectionGrid</a>()</code>,
 <code><a href='sectionSmooth.html'>sectionSmooth</a>()</code>,
 <code><a href='section.html'>section</a></code>,
-<code><a href='subset-section-method.html'>subset,section-method</a></code>,
-<code><a href='summary-section-method.html'>summary,section-method</a></code></p></div>
+<code><a href='subset,section-method.html'>subset,section-method</a></code>,
+<code><a href='summary,section-method.html'>summary,section-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># Eastern North Atlantic, showing Mediterranean water;</span>
 <span class='co'># sorting by longitude makes it easier to compare</span>
 <span class='co'># the map and the section.</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>section</span>)
-<span class='no'>s</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sectionGrid.html'>sectionGrid</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>section</span>, -<span class='fl'>30</span> <span class='kw'>&lt;=</span> <span class='no'>longitude</span>))
-<span class='no'>ss</span> <span class='kw'>&lt;-</span> <span class='fu'>sectionSort</span>(<span class='no'>ss</span>, <span class='kw'>by</span><span class='kw'>=</span><span class='st'>"longitude"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>ss</span>)
-}</div></pre>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>)</span>
+<span class='va'>s</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sectionGrid.html'>sectionGrid</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>section</span>, <span class='op'>-</span><span class='fl'>30</span> <span class='op'>&lt;=</span> <span class='va'>longitude</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>ss</span> <span class='op'>&lt;-</span> <span class='fu'>sectionSort</span><span class='op'>(</span><span class='va'>ss</span>, by<span class='op'>=</span><span class='st'>"longitude"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>ss</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -229,7 +234,7 @@ is the case for the input section, <code>x</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -80,7 +80,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -94,13 +94,13 @@
 
       
 
-      </header><script src="ctd_files/header-attrs-2.3/header-attrs.js"></script><script src="ctd_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="ctd_files/header-attrs-2.6/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>2. Analysis of CTD data</h1>
                         <h4 class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="uri">https://orcid.org/0000-0001-7808-5911</a>) and Clark Richards (<a href="https://orcid.org/0000-0002-7833-206X" class="uri">https://orcid.org/0000-0002-7833-206X</a>)</h4>
             
-            <h4 class="date">2020-07-09</h4>
+            <h4 class="date">2021-01-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/master/vignettes/ctd.Rmd"><code>vignettes/ctd.Rmd</code></a></small>
       <div class="hidden name"><code>ctd.Rmd</code></div>
@@ -126,9 +126,10 @@
 <h1 class="hasAnchor">
 <a href="#example-with-pre-trimmed-data" class="anchor"></a>Example with pre-trimmed data</h1>
 <p>Many of the object types supported by <code>oce</code> come with built-in data. For an example, <code><a href="https://rdrr.io/r/utils/data.html">data(ctd)</a></code> yields a CTD profile that has been trimmed to just the downcast portion of the sampling. (See the next section to learn how to do this trimming.) A summary and plot (Figure 2) are created as follows.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">ctd</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">ctd</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/">oce</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span>
 <span class="co">#&gt; CTD Summary</span>
 <span class="co">#&gt; -----------</span>
 <span class="co">#&gt; </span>
@@ -142,7 +143,7 @@
 <span class="co">#&gt; * Cruise:              Halifax Harbour</span>
 <span class="co">#&gt; * Vessel:              Divcom3</span>
 <span class="co">#&gt; * Station:             Stn 2</span>
-<span class="co">#&gt; * Location:            44.684N63.644W</span>
+<span class="co">#&gt; * Location:            44.684N 63.644W</span>
 <span class="co">#&gt; * Data Overview</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt;                                 Min.   Mean   Max. Dim. NAs OriginalName</span>
@@ -159,7 +160,7 @@
 <span class="co">#&gt;     - 2018-11-14 20:03:47 UTC: `create 'ctd' object`</span>
 <span class="co">#&gt;     - 2018-11-14 20:03:47 UTC: `read.ctd.sbe(file = file, debug = 10, processingLog = processingLog)`</span>
 <span class="co">#&gt;     - 2018-11-14 20:03:47 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`</span>
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">ctd</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></code></pre></div>
 <div class="figure">
 <img src="ctd_files/figure-html/unnamed-chunk-2-1.png" alt="**Figure 2.** An overview of a ctd dataset." width="432"><p class="caption">
 <strong>Figure 2.</strong> An overview of a ctd dataset.
@@ -172,43 +173,48 @@
 <h1 class="hasAnchor">
 <a href="#example-with-raw-data" class="anchor"></a>Example with raw data</h1>
 <p>Practicing Oceanographers may be wondering how the CTD cast used in the preceding section was trimmed of equilibration-phase and upcast-phase data. Spurious data from these phases must be trimmed as a first step in processing. For example, consider the following code.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">ctdRaw</span>)
-<span class="fu"><a href="../reference/plotScan.html">plotScan</a></span>(<span class="no">ctdRaw</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">ctdRaw</span><span class="op">)</span>
+<span class="fu"><a href="../reference/plotScan.html">plotScan</a></span><span class="op">(</span><span class="va">ctdRaw</span><span class="op">)</span></code></pre></div>
 <div class="figure">
 <img src="ctd_files/figure-html/unnamed-chunk-3-1.png" alt="**Figure 3.** Scanwise plot of the `ctdRaw` sample data set.  Note the spike at the start, the equilibration phase before the downcast, and the spurious freshening signal near the start of the upcast." width="360"><p class="caption">
 <strong>Figure 3.</strong> Scanwise plot of the <code>ctdRaw</code> sample data set. Note the spike at the start, the equilibration phase before the downcast, and the spurious freshening signal near the start of the upcast.
 </p>
 </div>
 <p>This produces a two-panel plot (Figure 3) of the data as a time-series, revealing not just the desired downcast, but also an earlier equilibration phase and a later upcast. The x-axis in Figure 3 is the scan number, which is a convenient index for extraction of the downcast portion of the profile by an essentially manual method, e.g. proceeding with a sequence of commands such as</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="../reference/plotScan.html">plotScan</a></span>(<span class="fu"><a href="../reference/ctdTrim.html">ctdTrim</a></span>(<span class="no">ctdRaw</span>, <span class="st">"range"</span>,
-                 <span class="kw">parameters</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">item</span><span class="kw">=</span><span class="st">"scan"</span>, <span class="kw">from</span><span class="kw">=</span><span class="fl">140</span>, <span class="kw">to</span><span class="kw">=</span><span class="fl">250</span>)))
-<span class="fu"><a href="../reference/plotScan.html">plotScan</a></span>(<span class="fu"><a href="../reference/ctdTrim.html">ctdTrim</a></span>(<span class="no">ctdRaw</span>, <span class="st">"range"</span>,
-                 <span class="kw">parameters</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">item</span><span class="kw">=</span><span class="st">"scan"</span>, <span class="kw">from</span><span class="kw">=</span><span class="fl">150</span>, <span class="kw">to</span><span class="kw">=</span><span class="fl">250</span>)))</pre></body></html></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/plotScan.html">plotScan</a></span><span class="op">(</span><span class="fu"><a href="../reference/ctdTrim.html">ctdTrim</a></span><span class="op">(</span><span class="va">ctdRaw</span>, <span class="st">"range"</span>,
+                 parameters<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>item<span class="op">=</span><span class="st">"scan"</span>, from<span class="op">=</span><span class="fl">140</span>, to<span class="op">=</span><span class="fl">250</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="../reference/plotScan.html">plotScan</a></span><span class="op">(</span><span class="fu"><a href="../reference/ctdTrim.html">ctdTrim</a></span><span class="op">(</span><span class="va">ctdRaw</span>, <span class="st">"range"</span>,
+                 parameters<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>item<span class="op">=</span><span class="st">"scan"</span>, from<span class="op">=</span><span class="fl">150</span>, to<span class="op">=</span><span class="fl">250</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>This method of making decisions based on plotted information is probably the most robust method of trimming data. However, for quick work, users may be satisfied with the results of automatic downcast detection, e.g.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">ctdTrimmed</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ctdTrim.html">ctdTrim</a></span>(<span class="no">ctdRaw</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ctdTrimmed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ctdTrim.html">ctdTrim</a></span><span class="op">(</span><span class="va">ctdRaw</span><span class="op">)</span></code></pre></div>
 <p>It should be noted that <code><a href="../reference/ctdTrim.html">ctdTrim()</a></code> inserts entries into the object’s log file, so that the details of how the trimming was done are recorded together with the data.</p>
 <p>Once the profile has been trimmed, one may wish to use <code>ctd.decimate()</code> to smooth the data and interpolate the smoothed results to uniformly-spaced pressure values.</p>
 <p>Taking these things together, a quick visual examination of a CTD file takes just one line of code:</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="fu"><a href="../reference/ctdDecimate.html">ctdDecimate</a></span>(<span class="fu"><a href="../reference/ctdTrim.html">ctdTrim</a></span>(<span class="fu"><a href="../reference/read.ctd.html">read.ctd</a></span>(<span class="st">"stn123.cnv"</span>))))</pre></body></html></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="../reference/ctdDecimate.html">ctdDecimate</a></span><span class="op">(</span><span class="fu"><a href="../reference/ctdTrim.html">ctdTrim</a></span><span class="op">(</span><span class="fu"><a href="../reference/read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="st">"stn123.cnv"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="example-with-woce-archive-data" class="section level1">
 <h1 class="hasAnchor">
 <a href="#example-with-woce-archive-data" class="anchor"></a>Example with WOCE archive data</h1>
 <p>The package has a harder time scanning the headers of data files in the WOCE archive format than it does in the Seabird format illustrated in the previous examples. This is mainly because front-line researchers tend to work in the Seabird format, and partly because the WOCE format is odd. For example, the first line of a WOCE file is of the form <code>CTD,20060609WHPOSIODAM</code> (or <code>BOTTLE,...</code>). Scanning the item to the left of the comma is not difficult (although there are variants to the two shown, e.g. <code>CTDO</code> sometimes occurs). The part to the right of the comma is more difficult. The first part is a date (<code>yyyymmdd</code>) so that is no problem. But then things start to get tricky. In the example provided, this text contains the division of the institute (WHPO), the institute itself (SIO), and initial of the investigator (DAM). The problem is that no dividers separate these items, and that there seem to be no standards for the item lengths. Rather than spend a great deal of time coding special cases (e.g. scanning to see if the string <code>WHOI</code> occurs in the header line), the approach taken with <code>oce</code> is to ignore such issues relating to quirky headers, on the assumption that users can scan human-written headers with high skill.</p>
 <p>Quite commonly, CTD profiles taken during a cruise are collected together in a sequence of files in a given directory. For a real-world example, one might visit the website mentioned in the code provided below, download and expand the zip file, enter the directory thus formed, and run the code to get an overall TS plot for all the CTD stations of this cruise. (Caution: the link seems to change from time to time.)</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/">oce</a></span><span class="op">)</span>
 <span class="co"># http://cchdo.ucsd.edu/data/7971/ar18_58JH19941029_ct1.zip</span>
 <span class="co"># setwd("~/Downloads/ar18_58JH19941029_ct1")</span>
-<span class="no">files</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.html">system</a></span>(<span class="st">"ls *.csv"</span>, <span class="kw">intern</span><span class="kw">=</span><span class="fl">TRUE</span>)
-<span class="kw">for</span> (<span class="no">i</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">files</span>)) {
-    <span class="no">x</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/read.ctd.html">read.ctd</a></span>(<span class="no">files</span>[<span class="no">i</span>])
-    <span class="kw">if</span> (<span class="no">i</span> <span class="kw">==</span> <span class="fl">1</span>) {
-        <span class="fu"><a href="../reference/plotTS.html">plotTS</a></span>(<span class="no">x</span>, <span class="kw">Slim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">31</span>, <span class="fl">35.5</span>), <span class="kw">Tlim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">2</span>, <span class="fl">10</span>), <span class="kw">type</span><span class="kw">=</span><span class="st">'o'</span>)
-    } <span class="kw">else</span> {
-        <span class="fu"><a href="https://rdrr.io/r/graphics/points.html">points</a></span>(<span class="no">x</span><span class="kw">[[</span><span class="st">"salinity"</span>]], <span class="no">x</span><span class="kw">[[</span><span class="st">"potential temperature"</span>]])
-        <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html">lines</a></span>(<span class="no">x</span><span class="kw">[[</span><span class="st">"salinity"</span>]], <span class="no">x</span><span class="kw">[[</span><span class="st">"potential temperature"</span>]])
-    }
-}</pre></body></html></div>
+<span class="va">files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.html">system</a></span><span class="op">(</span><span class="st">"ls *.csv"</span>, intern<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
+<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">files</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">files</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>
+    <span class="kw">if</span> <span class="op">(</span><span class="va">i</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span>
+        <span class="fu"><a href="../reference/plotTS.html">plotTS</a></span><span class="op">(</span><span class="va">x</span>, Slim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">31</span>, <span class="fl">35.5</span><span class="op">)</span>, Tlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">10</span><span class="op">)</span>, type<span class="op">=</span><span class="st">'o'</span><span class="op">)</span>
+    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+        <span class="fu"><a href="https://rdrr.io/r/graphics/points.html">points</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span>, <span class="va">x</span><span class="op">[[</span><span class="st">"potential temperature"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
+        <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html">lines</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span>, <span class="va">x</span><span class="op">[[</span><span class="st">"potential temperature"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
+    <span class="op">}</span>
+<span class="op">}</span></code></pre></div>
 <p>The <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> notation is explained in Section 3, but this example conveys the gist, that it permits accessing data, or derived data, from within an object.</p>
 <p>In the above, lines connect the points within a given profile. This can be a useful method for a quick scan looking for outliers. Another is to colour-code the profiles, although this gets confusing with large datasets, in which case the method of the following exercise might be useful.</p>
 <p><strong>Exercise 2. (advanced)</strong> Make a multi-file plot summarizing the TS relationship in a collection of CTD datasets, with each plot file showing the overall relationship in gray and the individual profile in black.</p>
@@ -218,40 +224,43 @@
 <a href="#solutions-to-exercises" class="anchor"></a>Solutions to exercises</h1>
 <p><strong>Exercise 1.</strong> Plot a profile of <span class="math inline">\(\sigma_\theta\)</span> and <span class="math inline">\(N^2\)</span> within the pycnocline in the built-in <code>ctd</code> data set. (Hint: use <code><a href="https://rdrr.io/r/base/subset.html">subset()</a></code>.)</p>
 <p>Although one may argue as to the limits of the pycnocline, for illustration let us say it is in 5 dbar to 12 dbar range. One way to do this is</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">ctd</span>)
-<span class="no">pycnocline</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ctdTrim.html">ctdTrim</a></span>(<span class="no">ctd</span>, <span class="st">"range"</span>,
-                      <span class="kw">parameters</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">item</span><span class="kw">=</span><span class="st">"pressure"</span>, <span class="kw">from</span><span class="kw">=</span><span class="fl">5</span>, <span class="kw">to</span><span class="kw">=</span><span class="fl">12</span>))
-<span class="fu"><a href="../reference/plotProfile.html">plotProfile</a></span>(<span class="no">pycnocline</span>, <span class="kw">which</span><span class="kw">=</span><span class="st">"density+N2"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/">oce</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span>
+<span class="va">pycnocline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ctdTrim.html">ctdTrim</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"range"</span>,
+                      parameters<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>item<span class="op">=</span><span class="st">"pressure"</span>, from<span class="op">=</span><span class="fl">5</span>, to<span class="op">=</span><span class="fl">12</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="../reference/plotProfile.html">plotProfile</a></span><span class="op">(</span><span class="va">pycnocline</span>, which<span class="op">=</span><span class="st">"density+N2"</span><span class="op">)</span></code></pre></div>
 <p>Another is</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">ctd</span>)
-<span class="no">pycnocline</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span>(<span class="no">ctd</span>, <span class="fl">5</span> <span class="kw">&lt;=</span> <span class="no">pressure</span> <span class="kw">&amp;</span> <span class="no">pressure</span> <span class="kw">&lt;=</span> <span class="fl">12</span>)
-<span class="fu"><a href="../reference/plotProfile.html">plotProfile</a></span>(<span class="no">pycnocline</span>, <span class="kw">which</span><span class="kw">=</span><span class="st">"density+N2"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/">oce</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span>
+<span class="va">pycnocline</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="fl">5</span> <span class="op">&lt;=</span> <span class="va">pressure</span> <span class="op">&amp;</span> <span class="va">pressure</span> <span class="op">&lt;=</span> <span class="fl">12</span><span class="op">)</span>
+<span class="fu"><a href="../reference/plotProfile.html">plotProfile</a></span><span class="op">(</span><span class="va">pycnocline</span>, which<span class="op">=</span><span class="st">"density+N2"</span><span class="op">)</span></code></pre></div>
 <p><strong>Exercise 2. (advanced)</strong> Make a multi-file plot summarizing the TS relationship in a collection of CTD datasets, with each plot file showing the overall relationship in gray and the individual profile in black.</p>
 <p>The code provided below creates 91 PNG files, with names <code>ar18_01.png</code>, <code>ar18_02.png</code>, etc. Loading these in a view that permits quick paging through this file list is an easy way to spot suspicious data, since each plot has the station number at the top. (Users trying this example should bear in mind that this is a fairly large dataset, so the processing will take up to a minute.)</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">oce</span>)
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/">oce</a></span><span class="op">)</span>
 <span class="co"># http://cchdo.ucsd.edu/data/7971/ar18_58JH19941029_ct1.zip</span>
 <span class="co"># setwd("~/Downloads/ar18_58JH19941029_ct1")</span>
-<span class="no">files</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.html">system</a></span>(<span class="st">"ls *.csv"</span>, <span class="kw">intern</span><span class="kw">=</span><span class="fl">TRUE</span>)
-<span class="no">n</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">files</span>)
-<span class="no">ctds</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span>(<span class="st">"list"</span>, <span class="no">n</span>) <span class="co"># to hold the CTD objects</span>
-<span class="no">station</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span>(<span class="st">"list"</span>, <span class="no">n</span>)
-<span class="kw">for</span> (<span class="no">i</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="no">n</span>) {
-    <span class="no">ctds</span><span class="kw">[[</span><span class="no">i</span>]] <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/read.ctd.html">read.ctd</a></span>(<span class="no">files</span>[<span class="no">i</span>])
-    <span class="no">station</span><span class="kw">[[</span><span class="no">i</span>]] <span class="kw">&lt;-</span> <span class="no">ctds</span><span class="kw">[[</span><span class="no">i</span>]]<span class="kw">[[</span><span class="st">"station"</span>]]
-}
-<span class="no">S</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fl">1</span>:<span class="no">n</span>, <span class="kw">function</span>(<span class="no">i</span>) <span class="no">ctds</span><span class="kw">[[</span><span class="no">i</span>]]<span class="kw">[[</span><span class="st">"salinity"</span>]]))
-<span class="no">T</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fl">1</span>:<span class="no">n</span>, <span class="kw">function</span>(<span class="no">i</span>) <span class="no">ctds</span><span class="kw">[[</span><span class="no">i</span>]]<span class="kw">[[</span><span class="st">"temperature"</span>]]))
-<span class="no">p</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fl">1</span>:<span class="no">n</span>, <span class="kw">function</span>(<span class="no">i</span>) <span class="no">ctds</span><span class="kw">[[</span><span class="no">i</span>]]<span class="kw">[[</span><span class="st">"pressure"</span>]]))
-<span class="no">overall</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/as.ctd.html">as.ctd</a></span>(<span class="no">S</span>, <span class="no">T</span>, <span class="no">p</span>)
-<span class="fu"><a href="https://rdrr.io/r/grDevices/png.html">png</a></span>(<span class="st">"ar18_%02d.png"</span>)
-<span class="kw">for</span> (<span class="no">i</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="no">n</span>) {
-    <span class="fu"><a href="../reference/plotTS.html">plotTS</a></span>(<span class="no">overall</span>, <span class="kw">col</span><span class="kw">=</span><span class="st">'gray'</span>)
-    <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html">lines</a></span>(<span class="no">ctds</span><span class="kw">[[</span><span class="no">i</span>]]<span class="kw">[[</span><span class="st">"salinity"</span>]], <span class="no">ctds</span><span class="kw">[[</span><span class="no">i</span>]]<span class="kw">[[</span><span class="st">"potential temperature"</span>]])
-    <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html">mtext</a></span>(<span class="no">station</span>[<span class="no">i</span>], <span class="kw">side</span><span class="kw">=</span><span class="fl">3</span>, <span class="kw">line</span><span class="kw">=</span><span class="fl">0</span>)
-}
-<span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span>()</pre></body></html></div>
+<span class="va">files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.html">system</a></span><span class="op">(</span><span class="st">"ls *.csv"</span>, intern<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">files</span><span class="op">)</span>
+<span class="va">ctds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="va">n</span><span class="op">)</span> <span class="co"># to hold the CTD objects</span>
+<span class="va">station</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="va">n</span><span class="op">)</span>
+<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">files</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>
+    <span class="va">station</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"station"</span><span class="op">]</span><span class="op">]</span>
+<span class="op">}</span>
+<span class="va">S</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+<span class="cn">T</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"temperature"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+<span class="va">overall</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.ctd.html">as.ctd</a></span><span class="op">(</span><span class="va">S</span>, <span class="cn">T</span>, <span class="va">p</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/grDevices/png.html">png</a></span><span class="op">(</span><span class="st">"ar18_%02d.png"</span><span class="op">)</span>
+<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="../reference/plotTS.html">plotTS</a></span><span class="op">(</span><span class="va">overall</span>, col<span class="op">=</span><span class="st">'gray'</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html">lines</a></span><span class="op">(</span><span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"salinity"</span><span class="op">]</span><span class="op">]</span>, <span class="va">ctds</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"potential temperature"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html">mtext</a></span><span class="op">(</span><span class="va">station</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, side<span class="op">=</span><span class="fl">3</span>, line<span class="op">=</span><span class="fl">0</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
   </div>
 
@@ -270,7 +279,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

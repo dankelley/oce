@@ -75,7 +75,7 @@ owing to a lack of calibration of an old instrument that had not been used in a 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@ owing to a lack of calibration of an old instrument that had not been used in a 
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ owing to a lack of calibration of an old instrument that had not been used in a 
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -153,7 +153,7 @@ files. Note that the salinities in this sample dataset are known to be incorrect
 owing to a lack of calibration of an old instrument that had not been used in a long time.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cm</span>)</pre>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>cm</span><span class='op'>)</span></pre>
 
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
@@ -161,6 +161,7 @@ owing to a lack of calibration of an old instrument that had not been used in a 
     <div class='dont-index'><p>Other datasets provided with oce: 
 <code><a href='adp.html'>adp</a></code>,
 <code><a href='adv.html'>adv</a></code>,
+<code><a href='amsr.html'>amsr</a></code>,
 <code><a href='argo.html'>argo</a></code>,
 <code><a href='coastlineWorld.html'>coastlineWorld</a></code>,
 <code><a href='ctdRaw.html'>ctdRaw</a></code>,
@@ -175,27 +176,85 @@ owing to a lack of calibration of an old instrument that had not been used in a 
 <code><a href='sealevelTuktoyaktuk.html'>sealevelTuktoyaktuk</a></code>,
 <code><a href='sealevel.html'>sealevel</a></code>,
 <code><a href='section.html'>section</a></code>,
+<code><a href='topoNS.html'>topoNS</a></code>,
 <code><a href='topoWorld.html'>topoWorld</a></code>,
 <code><a href='wind.html'>wind</a></code>,
 <code><a href='xbt.html'>xbt</a></code></p>
 <p>Other things related to cm data: 
-<code><a href='sub-sub-cm-method.html'>[[,cm-method</a></code>,
+<code><a href='[[,cm-method.html'>[[,cm-method</a></code>,
 <code>[[&lt;-,cm-method</code>,
 <code><a href='as.cm.html'>as.cm</a>()</code>,
 <code><a href='cm-class.html'>cm-class</a></code>,
-<code><a href='plot-cm-method.html'>plot,cm-method</a></code>,
+<code><a href='plot,cm-method.html'>plot,cm-method</a></code>,
 <code><a href='read.cm.html'>read.cm</a>()</code>,
 <code><a href='rotateAboutZ.html'>rotateAboutZ</a>()</code>,
-<code><a href='subset-cm-method.html'>subset,cm-method</a></code>,
-<code><a href='summary-cm-method.html'>summary,cm-method</a></code></p></div>
+<code><a href='subset,cm-method.html'>subset,cm-method</a></code>,
+<code><a href='summary,cm-method.html'>summary,cm-method</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cm</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>cm</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>cm</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>cm</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>cm</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Cm summary
+#&gt; ----------
+#&gt; 
+#&gt; * File source:        "/data/archive/sleiwex/2008/moorings/m11/cm/interocean_0811786/manufacturer/cm_interocean_0811786.s4a.tab"
+#&gt; * Instrument type:    (2Hz)S4
+#&gt; * Serial Number:      8111786
+#&gt; * Version:            2.399
+#&gt; * Time ranges from 2008-06-26 to 2008-06-26 23:59:00 with 1440 samples and mean increment 1 min
+#&gt; * Data Overview
+#&gt; 
+#&gt;                                 Min.      Mean   Max. Dim.  NAs OriginalName
+#&gt;     Sample..                     842    1561.5   2281 1440    0     Sample #
+#&gt;     Date                          NA        NA     NA 1440    0         Date
+#&gt;     Time                          NA        NA     NA 1440    0         Time
+#&gt;     dec.S                          0         0      0 1440    0        dec S
+#&gt;     v [m/s]                   -0.862 -0.088736   0.74 1440    0       Vnorth
+#&gt;     u [m/s]                   -0.478   0.02761  0.654 1440    0        Veast
+#&gt;     Speed                       1.44    53.569  98.29 1440    0        Speed
+#&gt;     Dir                            7    126.99  352.1 1440    0          Dir
+#&gt;     Vref                          NA        NA     NA 1440 1440         Vref
+#&gt;     Hx                          -210   -31.052    177 1440    0           Hx
+#&gt;     Hy                          -212  -0.58889    211 1440    0           Hy
+#&gt;     conductivity [mS/cm]        36.8    36.924   37.2 1440    0         Cond
+#&gt;     temperature [°C, ITS-90]   1.204    2.0773  3.065 1440    0       T-Temp
+#&gt;     Depth                     73.242    74.767 77.148 1440    0        Depth
+#&gt;     none                          NA        NA     NA 1440 1440         none
+#&gt;     none.1                        NA        NA     NA 1440 1440         none
+#&gt;     Hdg                            0    175.79  359.2 1440    0          Hdg
+#&gt;     X                             NA        NA     NA 1440 1440            -
+#&gt;     salinity [PSS-78]         41.307     42.71 44.205 1440    0          Sal
+#&gt;     Dens                      1033.3    1034.5 1035.8 1440    0         Dens
+#&gt;     SV                        1467.9    1469.8 1472.2 1440    0           SV
+#&gt;     X.1                           NA        NA     NA 1440 1440            -
+#&gt;     N.S.Dist                 -2535.2    4159.5  10349 1440    0     N-S Dist
+#&gt;     E.W.Dist                 -2033.5    893.81 4687.5 1440    0     E-W Dist
+#&gt;     X.2                           NA        NA     NA 1440 1440            -
+#&gt;     SRB.Date                      NA        NA     NA 1440 1440     SRB Date
+#&gt;     SRB.Time                      NA        NA     NA 1440 1440     SRB Time
+#&gt;     Vref.1                     1.226    1.2263   1.23 1440 1152         Vref
+#&gt;     Hx.1                          NA        NA     NA 1440 1440           Hx
+#&gt;     Hy.1                          NA        NA     NA 1440 1440           Hy
+#&gt;     Cond.1                        NA        NA     NA 1440 1440         Cond
+#&gt;     T.Temp.1                      NA        NA     NA 1440 1440       T-Temp
+#&gt;     Depth.1                       NA        NA     NA 1440 1440        Depth
+#&gt;     none.2                        NA        NA     NA 1440 1440         none
+#&gt;     none.3                        NA        NA     NA 1440 1440         none
+#&gt;     Hdg.1                         NA        NA     NA 1440 1440          Hdg
+#&gt;     X.3                           NA        NA     NA 1440 1440            -
+#&gt;     Sal.1                         NA        NA     NA 1440 1440          Sal
+#&gt;     Dens.1                        NA        NA     NA 1440 1440         Dens
+#&gt;     SV.1                          NA        NA     NA 1440 1440           SV
+#&gt;     pressure [dbar]           73.855    75.392 77.794 1440    0            -
+#&gt; 
+#&gt; * Processing Log
+#&gt; 
+#&gt;     - 2016-08-01 11:20:36 UTC: `create 'cm' object`
+#&gt;     - 2016-08-01 11:20:36 UTC: `read.oce(file = "/data/archive/sleiwex/2008/moorings/m11/cm/interocean_0811786/manufacturer/cm_interocean_0811786.s4a.tab",     from = 840, to = 840 + 24 * 60)`
+#&gt;     - 2016-08-01 11:20:36 UTC: `subset.cm(x, subset=time &lt; as.POSIXct("2008-06-27 00:00:00", tz = "UTC"))`</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>cm</span><span class='op'>)</span>
+</div><div class='img'><img src='cm-1.png' alt='' width='700' height='433' /></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -211,7 +270,7 @@ owing to a lack of calibration of an old instrument that had not been used in a 
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

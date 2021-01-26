@@ -73,7 +73,7 @@ or by subsetting by pressure or other variables." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -81,7 +81,7 @@ or by subsetting by pressure or other variables." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -122,7 +122,7 @@ or by subsetting by pressure or other variables." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -150,7 +150,7 @@ or by subsetting by pressure or other variables.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for argo</span>
-<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>x</span>, <span class='no'>subset</span>, <span class='no'>...</span>)</pre>
+<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>subset</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -176,7 +176,7 @@ then <code>subset</code> is ignored.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An argo object.</p>
+    <p>An <a href='argo-class.html'>argo</a> object.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>If <code>subset</code> is the string <code>"adjusted"</code>, then <code>subset</code>
@@ -194,67 +194,80 @@ repeated calls will be necessary to subset based on more than one
 independent variable.  Subsetting may be done by anything
 stored in the data, e.g. <code>time</code>,
 <code>latitude</code>, <code>longitude</code>, <code>profile</code>, <code>dataMode</code>,
-or <code>pressure</code> or by <code>profile</code> (a made-up variable)
-or <code>id</code> (from the <code>metadata</code> slot). Note that subsetting by <code>pressure</code>
+or <code>pressure</code> or by <code>profile</code> (a made-up variable),
+<code>id</code> (from the <code>metadata</code> slot) or <code>ID</code> (a synonym for <code>id</code>).
+Note that subsetting by <code>pressure</code>
 preserves matrix shape, by setting discarded values to <code>NA</code>, as opposed
 to dropping data (as is the case with <code>time</code>, for example).</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to argo data: 
-<code><a href='sub-sub-argo-method.html'>[[,argo-method</a></code>,
+<code><a href='[[,argo-method.html'>[[,argo-method</a></code>,
 <code>[[&lt;-,argo-method</code>,
 <code><a href='argo-class.html'>argo-class</a></code>,
 <code><a href='argoGrid.html'>argoGrid</a>()</code>,
 <code><a href='argoNames2oceNames.html'>argoNames2oceNames</a>()</code>,
 <code><a href='argo.html'>argo</a></code>,
 <code><a href='as.argo.html'>as.argo</a>()</code>,
-<code><a href='handleFlags-argo-method.html'>handleFlags,argo-method</a></code>,
-<code><a href='plot-argo-method.html'>plot,argo-method</a></code>,
+<code><a href='handleFlags,argo-method.html'>handleFlags,argo-method</a></code>,
+<code><a href='plot,argo-method.html'>plot,argo-method</a></code>,
 <code><a href='read.argo.html'>read.argo</a>()</code>,
-<code><a href='summary-argo-method.html'>summary,argo-method</a></code></p>
+<code><a href='summary,argo-method.html'>summary,argo-method</a></code></p>
 <p>Other functions that subset oce objects: 
-<code><a href='subset-adp-method.html'>subset,adp-method</a></code>,
-<code><a href='subset-adv-method.html'>subset,adv-method</a></code>,
-<code><a href='subset-amsr-method.html'>subset,amsr-method</a></code>,
-<code><a href='subset-cm-method.html'>subset,cm-method</a></code>,
-<code><a href='subset-coastline-method.html'>subset,coastline-method</a></code>,
-<code><a href='subset-ctd-method.html'>subset,ctd-method</a></code>,
-<code><a href='subset-echosounder-method.html'>subset,echosounder-method</a></code>,
-<code><a href='subset-lobo-method.html'>subset,lobo-method</a></code>,
-<code><a href='subset-met-method.html'>subset,met-method</a></code>,
-<code><a href='subset-oce-method.html'>subset,oce-method</a></code>,
-<code><a href='subset-odf-method.html'>subset,odf-method</a></code>,
-<code><a href='subset-rsk-method.html'>subset,rsk-method</a></code>,
-<code><a href='subset-sealevel-method.html'>subset,sealevel-method</a></code>,
-<code><a href='subset-section-method.html'>subset,section-method</a></code>,
-<code><a href='subset-topo-method.html'>subset,topo-method</a></code>,
-<code><a href='subset-xbt-method.html'>subset,xbt-method</a></code></p></div>
+<code><a href='subset,adp-method.html'>subset,adp-method</a></code>,
+<code><a href='subset,adv-method.html'>subset,adv-method</a></code>,
+<code><a href='subset,amsr-method.html'>subset,amsr-method</a></code>,
+<code><a href='subset,cm-method.html'>subset,cm-method</a></code>,
+<code><a href='subset,coastline-method.html'>subset,coastline-method</a></code>,
+<code><a href='subset,ctd-method.html'>subset,ctd-method</a></code>,
+<code><a href='subset,echosounder-method.html'>subset,echosounder-method</a></code>,
+<code><a href='subset,lobo-method.html'>subset,lobo-method</a></code>,
+<code><a href='subset,met-method.html'>subset,met-method</a></code>,
+<code><a href='subset,oce-method.html'>subset,oce-method</a></code>,
+<code><a href='subset,odf-method.html'>subset,odf-method</a></code>,
+<code><a href='subset,rsk-method.html'>subset,rsk-method</a></code>,
+<code><a href='subset,sealevel-method.html'>subset,sealevel-method</a></code>,
+<code><a href='subset,section-method.html'>subset,section-method</a></code>,
+<code><a href='subset,topo-method.html'>subset,topo-method</a></code>,
+<code><a href='subset,xbt-method.html'>subset,xbt-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>argo</span>)
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>argo</span><span class='op'>)</span>
 
-<span class='co'># Example 1: buset by time, longitude, and pressure</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>,<span class='fl'>2</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>argo</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>argo</span>, <span class='no'>time</span> <span class='kw'>&gt;</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>time</span>)))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>argo</span>, <span class='no'>longitude</span> <span class='kw'>&gt;</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>longitude</span>)))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='fu'><a href='argoGrid.html'>argoGrid</a></span>(<span class='no'>argo</span>), <span class='no'>pressure</span> <span class='kw'>&gt;</span> <span class='fl'>500</span> <span class='kw'>&amp;</span> <span class='no'>pressure</span> <span class='kw'>&lt;</span> <span class='fl'>1000</span>), <span class='kw'>which</span><span class='kw'>=</span><span class='fl'>5</span>)</div><div class='img'><img src='subset-argo-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'># Example 1: subset by time, longitude, and pressure</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>argo</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>argo</span>, <span class='va'>time</span> <span class='op'>&gt;</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>time</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>argo</span>, <span class='va'>longitude</span> <span class='op'>&gt;</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>longitude</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='fu'><a href='argoGrid.html'>argoGrid</a></span><span class='op'>(</span><span class='va'>argo</span><span class='op'>)</span>, <span class='va'>pressure</span> <span class='op'>&gt;</span> <span class='fl'>500</span> <span class='op'>&amp;</span> <span class='va'>pressure</span> <span class='op'>&lt;</span> <span class='fl'>1000</span><span class='op'>)</span>, which<span class='op'>=</span><span class='fl'>5</span><span class='op'>)</span>
+</div><div class='img'><img src='subset-argo-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Example 2: restrict attention to delayed-mode profiles.</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>1</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>argo</span>, <span class='no'>dataMode</span> <span class='kw'>==</span> <span class='st'>"D"</span>))</div><div class='img'><img src='subset-argo-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'># Example 3: contrast corrected and uncorrected data</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>2</span>))
-<span class='fu'><a href='plotTS.html'>plotTS</a></span>(<span class='no'>argo</span>)
-<span class='fu'><a href='plotTS.html'>plotTS</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>argo</span>, <span class='st'>"adjusted"</span>))</div><div class='img'><img src='subset-argo-method-3.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>argo</span>, <span class='va'>dataMode</span> <span class='op'>==</span> <span class='st'>"D"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+<span class='co'># Example 3: contrast adjusted and unadjusted data</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='plotTS.html'>plotTS</a></span><span class='op'>(</span><span class='va'>argo</span><span class='op'>)</span>
+<span class='fu'><a href='plotTS.html'>plotTS</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>argo</span>, <span class='st'>"adjusted"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span>
+
 <span class='co'># Example 4. Subset by a polygon determined with locator()</span>
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>argo</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"map"</span>)
-<span class='no'>bdy</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/locator.html'>locator</a></span>(<span class='fl'>4</span>) <span class='co'># Click the mouse on 4 boundary points</span>
-<span class='no'>argoSubset</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>argo</span>, <span class='kw'>within</span><span class='kw'>=</span><span class='no'>bdy</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>argoSubset</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"map"</span>)
-}</div></pre>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>argo</span>, which<span class='op'>=</span><span class='st'>"map"</span><span class='op'>)</span>
+<span class='co'>## Can get a boundary with e.g. locator(4)</span>
+<span class='va'>boundary</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>65</span>, <span class='op'>-</span><span class='fl'>40</span>, <span class='op'>-</span><span class='fl'>40</span>, <span class='op'>-</span><span class='fl'>65</span><span class='op'>)</span>, y<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>65</span>, <span class='fl'>65</span>, <span class='fl'>45</span>, <span class='fl'>45</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>argoSubset</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>argo</span>, within<span class='op'>=</span><span class='va'>boundary</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>argoSubset</span>, which<span class='op'>=</span><span class='st'>"map"</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -270,7 +283,7 @@ to dropping data (as is the case with <code>time</code>, for example).</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

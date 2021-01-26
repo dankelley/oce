@@ -75,7 +75,7 @@ and summaries with summary,topo-method()." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@ and summaries with summary,topo-method()." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ and summaries with summary,topo-method()." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -149,8 +149,8 @@ and summaries with summary,topo-method()." />
     <div class="ref-description">
     <p>This class stores topographic data, as read with
 <code><a href='read.topo.html'>read.topo()</a></code> or assembled with <code><a href='as.topo.html'>as.topo()</a></code>.
-Plotting is handled with <code><a href='plot-topo-method.html'>plot,topo-method()</a></code>
-and summaries with <code><a href='summary-topo-method.html'>summary,topo-method()</a></code>.</p>
+Plotting is handled with <code><a href='plot,topo-method.html'>plot,topo-method()</a></code>
+and summaries with <code><a href='summary,topo-method.html'>summary,topo-method()</a></code>.</p>
     </div>
 
 
@@ -197,15 +197,15 @@ object may be retrieved in the standard R way using <code>slot()</code>. For
 example <code>slot(o,"data")</code> returns the <code>data</code> slot of an object named <code>o</code>,
 and similarly <code>slot(o,"metadata")</code> returns
 the <code>metadata</code> slot.</p>
-<p>The slots may also be obtained with the <code><a href='sub-sub-topo-method.html'>[[,topo-method</a></code>
+<p>The slots may also be obtained with the <code><a href='[[,topo-method.html'>[[,topo-method</a></code>
 operator, as e.g. <code>o[["data"]]</code> and <code>o[["metadata"]]</code>, respectively.</p>
-<p>The <code><a href='sub-sub-topo-method.html'>[[,topo-method</a></code> operator can also
+<p>The <code><a href='[[,topo-method.html'>[[,topo-method</a></code> operator can also
 be used to retrieve items from within the <code>data</code> and <code>metadata</code> slots.
 For example, <code>o[["temperature"]]</code> can be used to retrieve temperature
 from an object containing that quantity. The rule is that a named
 quantity is sought first within the object's <code>metadata</code> slot,
 with the <code>data</code> slot being checked only if <code>metadata</code> does not
-contain the item. This <code>[[</code> method can also be used to get
+contain the item. This <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
@@ -236,16 +236,20 @@ retrieve derived items.</p>
 <code><a href='windrose-class.html'>windrose-class</a></code>,
 <code><a href='xbt-class.html'>xbt-class</a></code></p>
 <p>Other things related to topo data: 
-<code><a href='sub-sub-topo-method.html'>[[,topo-method</a></code>,
+<code><a href='[[,topo-method.html'>[[,topo-method</a></code>,
 <code>[[&lt;-,topo-method</code>,
 <code><a href='as.topo.html'>as.topo</a>()</code>,
 <code><a href='download.topo.html'>download.topo</a>()</code>,
-<code><a href='plot-topo-method.html'>plot,topo-method</a></code>,
+<code><a href='plot,topo-method.html'>plot,topo-method</a></code>,
 <code><a href='read.topo.html'>read.topo</a>()</code>,
-<code><a href='subset-topo-method.html'>subset,topo-method</a></code>,
-<code><a href='summary-topo-method.html'>summary,topo-method</a></code>,
+<code><a href='subset,topo-method.html'>subset,topo-method</a></code>,
+<code><a href='summary,topo-method.html'>summary,topo-method</a></code>,
 <code><a href='topoInterpolate.html'>topoInterpolate</a>()</code>,
+<code><a href='topoNS.html'>topoNS</a></code>,
 <code><a href='topoWorld.html'>topoWorld</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -262,7 +266,7 @@ retrieve derived items.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

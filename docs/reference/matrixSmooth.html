@@ -75,7 +75,7 @@ m_{i,j+1})/6\).  Note that missing values propagate to neighbours." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@ m_{i,j+1})/6\).  Note that missing values propagate to neighbours." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ m_{i,j+1})/6\).  Note that missing values propagate to neighbours." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -153,7 +153,7 @@ the result is defined in terms in terms of the original as follows.
 m_{i,j+1})/6\).  Note that missing values propagate to neighbours.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>matrixSmooth</span>(<span class='no'>m</span>, <span class='kw'>passes</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
+    <pre class="usage"><span class='fu'>matrixSmooth</span><span class='op'>(</span><span class='va'>m</span>, passes <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -172,20 +172,25 @@ be applied.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A smoothed matrix.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='no'>opar</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>no.readonly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-<span class='no'>m</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='kw'>length.out</span><span class='kw'>=</span><span class='fl'>5</span>), <span class='fl'>5</span>), <span class='kw'>nrow</span><span class='kw'>=</span><span class='fl'>5</span>, <span class='kw'>byrow</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
-<span class='no'>m</span>[<span class='fl'>3</span>, <span class='fl'>3</span>] <span class='kw'>&lt;-</span> <span class='fl'>2</span>
-<span class='no'>m1</span> <span class='kw'>&lt;-</span> <span class='fu'>matrixSmooth</span>(<span class='no'>m</span>)
-<span class='no'>m2</span> <span class='kw'>&lt;-</span> <span class='fu'>matrixSmooth</span>(<span class='no'>m1</span>)
-<span class='no'>m3</span> <span class='kw'>&lt;-</span> <span class='fu'>matrixSmooth</span>(<span class='no'>m2</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>))
-<span class='fu'><a href='https://rdrr.io/r/graphics/image.html'>image</a></span>(<span class='no'>m</span>,  <span class='kw'>col</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/grDevices/palettes.html'>rainbow</a></span>(<span class='fl'>100</span>), <span class='kw'>zlim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>4</span>), <span class='kw'>main</span><span class='kw'>=</span><span class='st'>"original image"</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/image.html'>image</a></span>(<span class='no'>m1</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/grDevices/palettes.html'>rainbow</a></span>(<span class='fl'>100</span>), <span class='kw'>zlim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>4</span>), <span class='kw'>main</span><span class='kw'>=</span><span class='st'>"smoothed 1 time"</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/image.html'>image</a></span>(<span class='no'>m2</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/grDevices/palettes.html'>rainbow</a></span>(<span class='fl'>100</span>), <span class='kw'>zlim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>4</span>), <span class='kw'>main</span><span class='kw'>=</span><span class='st'>"smoothed 2 times"</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/image.html'>image</a></span>(<span class='no'>m3</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/grDevices/palettes.html'>rainbow</a></span>(<span class='fl'>100</span>), <span class='kw'>zlim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>4</span>), <span class='kw'>main</span><span class='kw'>=</span><span class='st'>"smoothed 3 times"</span>)</div><div class='img'><img src='matrixSmooth-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='no'>opar</span>)</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='va'>opar</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>no.readonly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='va'>m</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span>, length.out<span class='op'>=</span><span class='fl'>5</span><span class='op'>)</span>, <span class='fl'>5</span><span class='op'>)</span>, nrow<span class='op'>=</span><span class='fl'>5</span>, byrow<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='va'>m</span><span class='op'>[</span><span class='fl'>3</span>, <span class='fl'>3</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fl'>2</span>
+<span class='va'>m1</span> <span class='op'>&lt;-</span> <span class='fu'>matrixSmooth</span><span class='op'>(</span><span class='va'>m</span><span class='op'>)</span>
+<span class='va'>m2</span> <span class='op'>&lt;-</span> <span class='fu'>matrixSmooth</span><span class='op'>(</span><span class='va'>m1</span><span class='op'>)</span>
+<span class='va'>m3</span> <span class='op'>&lt;-</span> <span class='fu'>matrixSmooth</span><span class='op'>(</span><span class='va'>m2</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/image.html'>image</a></span><span class='op'>(</span><span class='va'>m</span>,  col<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/grDevices/palettes.html'>rainbow</a></span><span class='op'>(</span><span class='fl'>100</span><span class='op'>)</span>, zlim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>4</span><span class='op'>)</span>, main<span class='op'>=</span><span class='st'>"original image"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/image.html'>image</a></span><span class='op'>(</span><span class='va'>m1</span>, col<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/grDevices/palettes.html'>rainbow</a></span><span class='op'>(</span><span class='fl'>100</span><span class='op'>)</span>, zlim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>4</span><span class='op'>)</span>, main<span class='op'>=</span><span class='st'>"smoothed 1 time"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/image.html'>image</a></span><span class='op'>(</span><span class='va'>m2</span>, col<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/grDevices/palettes.html'>rainbow</a></span><span class='op'>(</span><span class='fl'>100</span><span class='op'>)</span>, zlim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>4</span><span class='op'>)</span>, main<span class='op'>=</span><span class='st'>"smoothed 2 times"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/image.html'>image</a></span><span class='op'>(</span><span class='va'>m3</span>, col<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/grDevices/palettes.html'>rainbow</a></span><span class='op'>(</span><span class='fl'>100</span><span class='op'>)</span>, zlim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>4</span><span class='op'>)</span>, main<span class='op'>=</span><span class='st'>"smoothed 3 times"</span><span class='op'>)</span>
+</div><div class='img'><img src='matrixSmooth-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='va'>opar</span><span class='op'>)</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -201,7 +206,7 @@ be applied.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

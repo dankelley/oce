@@ -77,7 +77,7 @@ to the file format noticed at that time (see the notes on the type argument)." /
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
       </span>
     </div>
 
@@ -85,7 +85,7 @@ to the file format noticed at that time (see the notes on the type argument)." /
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -126,7 +126,7 @@ to the file format noticed at that time (see the notes on the type argument)." /
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -157,13 +157,13 @@ example, a change was required in October 2019, to accommodate changes
 to the file format noticed at that time (see the notes on the <code>type</code> argument).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>read.met</span>(
-  <span class='no'>file</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>skip</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>tz</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceTz"</span>),
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>read.met</span><span class='op'>(</span>
+  <span class='va'>file</span>,
+  type <span class='op'>=</span> <span class='cn'>NULL</span>,
+  skip <span class='op'>=</span> <span class='cn'>NULL</span>,
+  tz <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceTz"</span><span class='op'>)</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -211,45 +211,50 @@ amount of debugging information, or to 2 to get more.</p></td>
     
 <ol>
 <li><p>Environment Canada website for Historical Climate Data
-<a href='http://climate.weather.gc.ca/index_e.html'>http://climate.weather.gc.ca/index_e.html</a></p></li>
+<code>https://climate.weather.gc.ca/index_e.html</code></p></li>
 </ol>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to met data: 
-<code><a href='sub-sub-met-method.html'>[[,met-method</a></code>,
+<code><a href='[[,met-method.html'>[[,met-method</a></code>,
 <code>[[&lt;-,met-method</code>,
 <code><a href='as.met.html'>as.met</a>()</code>,
 <code><a href='download.met.html'>download.met</a>()</code>,
 <code><a href='met-class.html'>met-class</a></code>,
 <code><a href='met.html'>met</a></code>,
-<code><a href='plot-met-method.html'>plot,met-method</a></code>,
-<code><a href='subset-met-method.html'>subset,met-method</a></code>,
-<code><a href='summary-met-method.html'>summary,met-method</a></code>,
+<code><a href='plot,met-method.html'>plot,met-method</a></code>,
+<code><a href='subset,met-method.html'>subset,met-method</a></code>,
+<code><a href='summary,met-method.html'>summary,met-method</a></code>,
 <code><a href='test_met_csv1.csv.html'>test_met_csv1.csv</a></code>,
 <code><a href='test_met_csv2.csv.html'>test_met_csv2.csv</a></code>,
 <code><a href='test_met_xml2.xml.html'>test_met_xml2.xml</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># The old csv format (no longer supplied by Environment Canada as of Oct 2019)</span>
-<span class='no'>csv1</span> <span class='kw'>&lt;-</span> <span class='fu'>read.met</span>(<span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"test_met_vsn1.csv"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"oce"</span>))
+<span class='va'>csv1</span> <span class='op'>&lt;-</span> <span class='fu'>read.met</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"test_met_vsn1.csv"</span>, package<span class='op'>=</span><span class='st'>"oce"</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'># The new "csv2" format (provided by Environment Canada as of Oct 2019)</span>
-<span class='no'>csv2</span> <span class='kw'>&lt;-</span> <span class='fu'>read.met</span>(<span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"test_met_vsn2.csv"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"oce"</span>))
+<span class='va'>csv2</span> <span class='op'>&lt;-</span> <span class='fu'>read.met</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"test_met_vsn2.csv"</span>, package<span class='op'>=</span><span class='st'>"oce"</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'># "xml2" format</span>
-<span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"XML"</span>, <span class='kw'>quietly</span><span class='kw'>=</span><span class='fl'>TRUE</span>))
-    <span class='no'>xml2</span> <span class='kw'>&lt;-</span> <span class='fu'>read.met</span>(<span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"test_met_xml2.xml"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"oce"</span>))
+<span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"XML"</span>, quietly<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>
+    <span class='va'>xml2</span> <span class='op'>&lt;-</span> <span class='fu'>read.met</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"test_met_xml2.xml"</span>, package<span class='op'>=</span><span class='st'>"oce"</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
 <span class='co'># Recreate data(met) and plot u(t) and v(t)</span>
-<span class='no'>metFile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='download.met.html'>download.met</a></span>(<span class='kw'>id</span><span class='kw'>=</span><span class='fl'>6358</span>, <span class='kw'>year</span><span class='kw'>=</span><span class='fl'>2003</span>, <span class='kw'>month</span><span class='kw'>=</span><span class='fl'>9</span>, <span class='kw'>destdir</span><span class='kw'>=</span><span class='st'>"."</span>)
-<span class='no'>met</span> <span class='kw'>&lt;-</span> <span class='fu'>read.met</span>(<span class='no'>metFile</span>)
-<span class='no'>met</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='oceSetData.html'>oceSetData</a></span>(<span class='no'>met</span>, <span class='st'>"time"</span>, <span class='no'>met</span><span class='kw'>[[</span><span class='st'>"time"</span>]]+<span class='fl'>4</span>*<span class='fl'>3600</span>,
-                  <span class='kw'>note</span><span class='kw'>=</span><span class='st'>"add 4h to local time to get UTC time"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>met</span>)
-}</div></pre>
+<span class='va'>metFile</span> <span class='op'>&lt;-</span> <span class='fu'><a href='download.met.html'>download.met</a></span><span class='op'>(</span>id<span class='op'>=</span><span class='fl'>6358</span>, year<span class='op'>=</span><span class='fl'>2003</span>, month<span class='op'>=</span><span class='fl'>9</span>, destdir<span class='op'>=</span><span class='st'>"."</span><span class='op'>)</span>
+<span class='va'>met</span> <span class='op'>&lt;-</span> <span class='fu'>read.met</span><span class='op'>(</span><span class='va'>metFile</span><span class='op'>)</span>
+<span class='va'>met</span> <span class='op'>&lt;-</span> <span class='fu'><a href='oceSetData.html'>oceSetData</a></span><span class='op'>(</span><span class='va'>met</span>, <span class='st'>"time"</span>, <span class='va'>met</span><span class='op'>[[</span><span class='st'>"time"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>+</span><span class='fl'>4</span><span class='op'>*</span><span class='fl'>3600</span>,
+                  note<span class='op'>=</span><span class='st'>"add 4h to local time to get UTC time"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>met</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -265,7 +270,7 @@ amount of debugging information, or to 2 to get more.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
