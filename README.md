@@ -1,4 +1,4 @@
-# oce <img src="oce-logo-3.png" align="right" height="95" />
+# oce <img src="man/figures/oce-logo-3.png" align="right" height="95" />
 
 <!-- badges: start -->
 
@@ -60,7 +60,7 @@ library(oce)
 data(ctd)
 plot(ctd, which=c(1,2,3,5), type="l", span=150)
 ```
-![Sample CTD plot.](oce-demo-1.png)
+![Sample CTD plot.](man/figures/oce-demo-1.png)
 
 ### Acoustic Doppler profiler
 ```R
@@ -68,7 +68,7 @@ library(oce)
 data(adp)
 plot(adp)
 ```
-![Sample adp plot.](oce-demo-2.png)
+![Sample adp plot.](man/figures/oce-demo-2.png)
 
 ### Sealevel and tides
 ```R
@@ -79,7 +79,7 @@ par(mfrow=c(2, 1))
 plot(sealevel, which=1)
 plot(m)
 ```
-![Sample sealevel plot.](oce-demo-3.png)
+![Sample sealevel plot.](man/figures/oce-demo-3.png)
 
 
 ### Echosounder
@@ -88,7 +88,7 @@ library(oce)
 data(echosounder)
 plot(echosounder, which=2, drawTimeRange=TRUE, drawBottom=TRUE)
 ```
-![Sample echosounder plot.](oce-demo-4.png)
+![Sample echosounder plot.](man/figures/oce-demo-4.png)
 
 
 ### Map
@@ -100,7 +100,7 @@ data(coastlineWorld, package="oce")
 mapPlot(coastlineWorld, col="gray")
 mapPoints(endeavour$longitude, endeavour$latitude, pch=20, col="red")
 ```
-![Sample map plot.](oce-demo-5.png)
+![Sample map plot.](man/figures/oce-demo-5.png)
 
 
 ### Landsat image
@@ -110,6 +110,6 @@ library(oce)
 data(landsat)
 plot(landsat)
 ```
-![Sample landsat image plot.](oce-demo-6.png)
+![Sample landsat image plot.](man/figures/oce-demo-6.png)
 
 
