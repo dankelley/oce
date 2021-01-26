@@ -91,10 +91,9 @@ again \code{"CTD"} but no other non-whitespace characters occur on
 the line.
 }
 \references{
-The WOCE-exchange format is described at
-\verb{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
-and a sample file is at
-\url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
+The WOCE-exchange format was once described at
+\verb{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+although that link is no longer working as of December 2020.
 }
 \seealso{
 Other things related to ctd data: 

@@ -93,7 +93,7 @@ formulae provided by Hill et al. (1986; reference 2), modified to match the
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -134,7 +134,7 @@ formulae provided by Hill et al. (1986; reference 2), modified to match the
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -173,13 +173,13 @@ formulae provided by Hill et al. (1986; reference 2), modified to match the
 <code>"unesco"</code> value at Practical salinity equal to 2 (reference 3).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>swSCTp</span>(
-  <span class='no'>conductivity</span>,
-  <span class='kw'>temperature</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>pressure</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='no'>conductivityUnit</span>,
-  <span class='kw'>eos</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceEOS"</span>, <span class='kw'>default</span> <span class='kw'>=</span> <span class='st'>"gsw"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>swSCTp</span><span class='op'>(</span>
+  <span class='va'>conductivity</span>,
+  temperature <span class='op'>=</span> <span class='cn'>NULL</span>,
+  pressure <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>conductivityUnit</span>,
+  eos <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceEOS"</span>, default <span class='op'>=</span> <span class='st'>"gsw"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -226,7 +226,8 @@ computation of fundamental properties of seawater. <em>Unesco Technical
 Papers in Marine Science</em>, <em>44</em>, 53 pp.</p></li>
 <li><p>K. Hill, T. Dauphinee, and D. Woods. &#8220;The Extension of the Practical
 Salinity Scale 1978 to Low Salinities.&#8221; IEEE Journal of Oceanic Engineering 11,
-no. 1 (January 1986): 109-12. https://doi.org/10.1109/JOE.1986.1145154.</p></li>
+no. 1 (January 1986): 109-12.
+doi: <a href='https://doi.org/10.1109/JOE.1986.1145154'>10.1109/JOE.1986.1145154</a></p></li>
 <li><p><code>gsw_from_SP</code> online documentation, available at
 <code>http://www.teos-10.org/pubs/gsw/html/gsw_C_from_SP.html</code></p></li>
 </ol>
@@ -272,12 +273,19 @@ conductivity from salinity, see <code><a href='swCSTp.html'>swCSTp()</a></code>.
 <code><a href='swTheta.html'>swTheta</a>()</code>,
 <code><a href='swViscosity.html'>swViscosity</a>()</code>,
 <code><a href='swZ.html'>swZ</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># 1. Demonstrate agreement with test value in UNESCO documents</span>
-<span class='fu'>swSCTp</span>(<span class='fl'>1</span>, <span class='fu'><a href='T90fromT68.html'>T90fromT68</a></span>(<span class='fl'>15</span>), <span class='fl'>0</span>, <span class='kw'>eos</span><span class='kw'>=</span><span class='st'>"unesco"</span>) <span class='co'># expect 35</span></div><div class='output co'>#&gt; [1] 35</div><div class='input'><span class='co'># 2. Demonstrate agreement of gsw and unesco, S&gt;2 case</span>
-<span class='fu'>swSCTp</span>(<span class='fl'>1</span>, <span class='fu'><a href='T90fromT68.html'>T90fromT68</a></span>(<span class='fl'>15</span>), <span class='fl'>0</span>, <span class='kw'>eos</span><span class='kw'>=</span><span class='st'>"gsw"</span>) <span class='co'># again, expect 35</span></div><div class='output co'>#&gt; [1] 35</div><div class='input'><span class='co'># 3. Demonstrate close values even in very brackish water</span>
-<span class='fu'>swSCTp</span>(<span class='fl'>0.02</span>, <span class='fl'>10</span>, <span class='fl'>100</span>, <span class='kw'>eos</span><span class='kw'>=</span><span class='st'>"gsw"</span>)    <span class='co'># 0.6013981</span></div><div class='output co'>#&gt; [1] 0.6013981</div><div class='input'><span class='fu'>swSCTp</span>(<span class='fl'>0.02</span>, <span class='fl'>10</span>, <span class='fl'>100</span>, <span class='kw'>eos</span><span class='kw'>=</span><span class='st'>"unesco"</span>) <span class='co'># 0.6011721</span></div><div class='output co'>#&gt; [1] 0.6011721</div><div class='input'>
+<span class='fu'>swSCTp</span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='T90fromT68.html'>T90fromT68</a></span><span class='op'>(</span><span class='fl'>15</span><span class='op'>)</span>, <span class='fl'>0</span>, eos<span class='op'>=</span><span class='st'>"unesco"</span><span class='op'>)</span> <span class='co'># expect 35</span>
+</div><div class='output co'>#&gt; [1] 35</div><div class='input'><span class='co'># 2. Demonstrate agreement of gsw and unesco, S&gt;2 case</span>
+<span class='fu'>swSCTp</span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='T90fromT68.html'>T90fromT68</a></span><span class='op'>(</span><span class='fl'>15</span><span class='op'>)</span>, <span class='fl'>0</span>, eos<span class='op'>=</span><span class='st'>"gsw"</span><span class='op'>)</span> <span class='co'># again, expect 35</span>
+</div><div class='output co'>#&gt; [1] 35</div><div class='input'><span class='co'># 3. Demonstrate close values even in very brackish water</span>
+<span class='fu'>swSCTp</span><span class='op'>(</span><span class='fl'>0.02</span>, <span class='fl'>10</span>, <span class='fl'>100</span>, eos<span class='op'>=</span><span class='st'>"gsw"</span><span class='op'>)</span>    <span class='co'># 0.6013981</span>
+</div><div class='output co'>#&gt; [1] 0.6013981</div><div class='input'><span class='fu'>swSCTp</span><span class='op'>(</span><span class='fl'>0.02</span>, <span class='fl'>10</span>, <span class='fl'>100</span>, eos<span class='op'>=</span><span class='st'>"unesco"</span><span class='op'>)</span> <span class='co'># 0.6011721</span>
+</div><div class='output co'>#&gt; [1] 0.6011721</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -294,7 +302,7 @@ conductivity from salinity, see <code><a href='swCSTp.html'>swCSTp()</a></code>.
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

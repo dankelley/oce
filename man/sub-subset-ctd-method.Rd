@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{[[<-,ctd-method}
 \alias{[[<-,ctd-method}
-\title{Replace Parts of a CTD Object}
+\title{Replace Parts of a ctd Object}
 \usage{
 \S4method{[[}{ctd}(x, i, j, ...) <- value
 }

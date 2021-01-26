@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,12 +147,13 @@
     <p>Decode data in a Nortek ADV or ADP header.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>decodeHeaderNortek</span>(
-  <span class='no'>buf</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"aquadoppHR"</span>, <span class='st'>"aquadoppProfiler"</span>, <span class='st'>"aquadopp"</span>, <span class='st'>"vector"</span>),
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>),
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>decodeHeaderNortek</span><span class='op'>(</span>
+  <span class='va'>buf</span>,
+  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"aquadoppHR"</span>, <span class='st'>"aquadoppProfiler"</span>, <span class='st'>"aquadopp"</span>, <span class='st'>"aquadoppPlusMagnetometer"</span>,
+    <span class='st'>"vector"</span><span class='op'>)</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -190,7 +191,7 @@ Nortek System Integrator Guide (2008) and on postings on the Nortek
 ``knowledge center'' discussion board.  One might assume that the latter is
 less authoritative than the former.  For example, the inference of cell size
 follows advice found at
-http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717,
+https://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717,
 which contains a typo in an early posting that is
 corrected later on.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
@@ -199,9 +200,9 @@ corrected later on.</p>
 <ol>
 <li><p>Information on Nortek profilers (including the System
 Integrator Guide, which explains the data format byte-by-byte) is available
-at <a href='http://www.nortekusa.com/usa?set_language=usa'>http://www.nortekusa.com/usa?set_language=usa</a> after login.</p></li>
+at <a href='https://www.nortekusa.com/usa?set_language=usa'>https://www.nortekusa.com/usa?set_language=usa</a> after login.</p></li>
 <li><p>The Nortek Knowledge Center
-http://www.nortekusa.com/en/knowledge-center
+https://www.nortekusa.com/en/knowledge-center
 may be of help if problems arise in dealing with data from Nortek instruments.</p></li>
 </ol>
 
@@ -209,6 +210,9 @@ may be of help if problems arise in dealing with data from Nortek instruments.</
 
     <div class='dont-index'><p>Most users should employ the functions <code><a href='read.adp.html'>read.adp()</a></code> and
 <code><a href='read.adv.html'>read.adv()</a></code> instead of this one.</p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley and Clark Richards</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -225,7 +229,7 @@ may be of help if problems arise in dealing with data from Nortek instruments.</
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

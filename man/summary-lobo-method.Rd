@@ -25,9 +25,6 @@ library(oce)
 data(lobo)
 summary(lobo)
 }
-\references{
-\url{http://lobo.satlantic.com} \url{http://www.mbari.org/lobo/}
-}
 \seealso{
 The documentation for \linkS4class{lobo} explains the
 structure of LOBO objects, and also outlines the other functions dealing

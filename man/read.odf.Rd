@@ -50,7 +50,7 @@ is to solve problems with some files, which can have
 thousands of lines that indicate details that are may be of
 little value in processing.  For example, some files have thousands
 of lines that would be excluded by using
-\code{exclude="PROCESS='Nulled the .* value"} in the funcion call.}
+\code{exclude="PROCESS='Nulled the .* value"} in the function call.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

@@ -42,7 +42,7 @@ source <- paste("https://coastwatch.pfeg.noaa.gov/erddap/griddap/",
 if (!length(list.files(pattern="^a.nc$")))
     download.file(source, "a.nc")
 d <- read.g1sst("a.nc")
-plot(d, "SST", col=oceColorsJet)
+plot(d, "SST", col=oceColorsTemperature)
 if (requireNamespace("ocedata", quietly=TRUE)) {
     data(coastlineWorldFine, package="ocedata")
     lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
@@ -58,13 +58,12 @@ if (requireNamespace("ocedata", quietly=TRUE)) {
 }
 }
 \seealso{
-Other things related to satellite data: 
-\code{\link{g1sst-class}},
-\code{\link{plot,satellite-method}},
-\code{\link{satellite-class}},
-\code{\link{summary,satellite-method}}
+Other things related to g1sst data: 
+\code{\link{[[,g1sst-method}},
+\code{\link{[[<-,g1sst-method}},
+\code{\link{g1sst-class}}
 }
 \author{
 Dan Kelley
 }
-\concept{things related to satellite data}
+\concept{things related to g1sst data}

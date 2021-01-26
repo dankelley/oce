@@ -27,7 +27,7 @@ provides is better for normal calls by a user.}
 An \linkS4class{xbt} object.
 }
 \description{
-This file format, described at https://www.aoml.noaa.gov/phod/dhos/axbt.php, contains a header
+This file format, described at \code{https://www.aoml.noaa.gov/phod/dhos/axbt.php}, contains a header
 line, followed by data lines.  For example, a particular file at this site has first
 three lines as follows.\preformatted{181.589 20100709 140820  -85.336  25.290 N42RF GL10 14    2010-190-15:49:18
   -0.0 27.52 -9.99

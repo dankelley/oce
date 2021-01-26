@@ -39,7 +39,7 @@ setClass("topo", contains="oce")
 #' The coarse resolution can be a problem in plotting depth contours along with
 #' coastlines in regions of steep topography. For example, near the southeast
 #' corner of Newfoundland, a 200m contour will overlap a coastline drawn with
-#' [ocedata::coastlineWorldFine]. The solution in such cases is to
+#' `coastlineWorldFine` from the \CRANpkg{ocedata} package. The solution in such cases is to
 #' download a higher-resolution topography file, perhaps using
 #' [download.topo()], and then use [read.topo()]
 #' to create another `topo` object.  (With other data
@@ -84,6 +84,40 @@ setClass("topo", contains="oce")
 #' @family datasets provided with oce
 #' @family things related to topo data
 NULL
+
+#' High-resolution Topographic Dataset for Nova Scotia
+#'
+#' One-minute (under 2km) dataset in a region including Nova Scotia, Prince
+#' Edward Island and part of New Brunswick, Canada.
+#'
+#' @name topoNS
+#' @docType data
+#'
+#' @usage data(topoNS)
+#'
+#' @source
+#' This is created with [read.topo()], using a file downloaded with
+#' [download.topo]`(-67,-59.5,43.3,47.2,resolution=1)`.
+#'
+#' @examples
+#'\donttest{
+#' library(oce)
+#' data(coastlineWorldFine, package="ocedata")
+#' data(topoNS)
+#' # 1. Contour plot (with no legend)
+#' plot(topoNS, location="none")
+#' # 2. Image plot (note that whitespace can occur if plot does not match aspect ratio)
+#' H <- quantile(abs(topoNS[["z"]]), 0.98)
+#' cm <- colormap(H*c(-1, 1),
+#'                col=function(n) oceColorsGebco(region="both",n=n))
+#' imagep(topoNS, colormap=cm, xlab="", ylab="")
+#' lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
+#'}
+#'
+#' @family datasets provided with oce
+#' @family things related to topo data
+NULL
+
 
 setMethod(f="initialize",
           signature="topo",
@@ -223,25 +257,37 @@ setMethod(f="subset",
 #' dataset (Amante, C. and B.W. Eakins, 2009), and saved as a netCDF file whose
 #' name specifies the data request, if a file of that name is not already
 #' present on the local file system.  The return value is the name of the data
-#' file, and it's typical use is as the filename for a call to [read.topo()].
+#' file, and its typical use is as the filename for a call to [read.topo()].
 #' Given the rules on file naming, subsequent calls to `download.topo()`
 #' with identical parameters will simply return the name of the cached file,
 #' assuming the user has not deleted it in the meantime.
 #'
-#' For years, the server used by `download.topo()` was capable of
-#' returning netCDF files, but this was found to fail in late May of 2020.
-#' Luckily, the [marmap::getNOAA.bathy()] function in the \CRANpkg{marmap}
-#' package was updated to handle the changes in the server, and
-#' `download.topo()` was able to pattern its URL construction on that function.
-#' The server also now has an API, which might suggest it will be less subject
-#' to change in the future.
+#' The specified longitude and latitude limits are rounded to 2 digits
+#' (corresponding to a footprint of approximately 1km), and these are used
+#' in the server request. If the resultant request would generate under
+#' 1 row or column in the result, [download.topo] generates an
+#' error message and stops.
 #'
-#' @param west,east Longitudes of the western and eastern sides of the box.
+#' @section Historical note relating to NOAA server changes:
+#' In May of 2020, [download.topo()] stopped working, evidently owing
+#' to changes in the NOAA server API, which had been inferred by reverse
+#' engineering a NOAA data-request website. Luckily, [marmap::getNOAA.bathy()]
+#' was found to be working at that time, and so [download.topo()] was revised based on
+#' that function.  The problem of keeping up with changing data-server APIs should
+#' be easier in the future, since NOAA has made the API public.
 #'
-#' @param south,north Latitudes of the southern and northern sides of the box.
+#' @param west,east numeric values for the limits of the data-selection box, in degrees.
+#' These are converted to the -180 to 180 degree notation, if needed.
+#' Then, `west` is rounded down to the nearest 1/100th degree, and `east`
+#' is rounded up to the the nearest 1/100th degree. The results of these
+#' operations are used in constructing the query for the NOAA data server.
+#'
+#' @param south,north latitude limits, treated in a way that
+#' corresponds to the longitude limits.
 #'
 #' @param resolution numeric value of grid spacing, in geographical minutes.
-#' The default value of 4 minutes corresponds to 4 nautical miles, or 7.4km.
+#' The default value is 4 minutes, corresponding to 4 nautical miles (approx. 7.4km)
+#' in the north-south direction, and less in the east-west direction.
 #'
 #' @template downloadDestTemplate
 #'
@@ -264,7 +310,7 @@ setMethod(f="subset",
 #' topoFile <- download.topo(west=-66, east=-60, south=43, north=47,
 #'                           resolution=1, destdir="~/data/topo")
 #' topo <- read.topo(topoFile)
-#' imagep(topo, zlim=c(-400, 400), drawTriangles=TRUE)
+#' imagep(topo, zlim=c(-400, 400), col=oceColorsTwo, drawTriangles=TRUE)
 #' if (requireNamespace("ocedata", quietly=TRUE)) {
 #'     data(coastlineWorldFine, package="ocedata")
 #'     lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
@@ -294,15 +340,19 @@ download.topo <- function(west, east, south, north, resolution=4,
              sep="", style="bold", unindent=1)
     if (resolution < 1)
         warning("resolution is < 1, which may cause errors or incorrect results\n")
-
+    ## The +-0.005 is to get rounding down for west and south, and rounding up for east and north.
+    east <- round(east + 0.005, 2)
+    west <- round(west - 0.005, 2)
+    south <- round(south - 0.005, 2)
+    north <- round(north + 0.005, 2)
     if (west > 180)
         west <- west - 360
     if (east > 180)
         east <- east - 360
-    wName <- paste(abs(round(west,2)), if (west <= 0) "W" else "E", sep="")
-    eName <- paste(abs(round(east,2)), if (east <= 0) "W" else "E", sep="")
-    sName <- paste(abs(round(south,2)), if (south <= 0) "S" else "N", sep="")
-    nName <- paste(abs(round(north,2)), if (north <= 0) "S" else "N", sep="")
+    wName <- paste(abs(west), if (west <= 0) "W" else "E", sep="")
+    eName <- paste(abs(east), if (east <= 0) "W" else "E", sep="")
+    sName <- paste(abs(south), if (south <= 0) "S" else "N", sep="")
+    nName <- paste(abs(north), if (north <= 0) "S" else "N", sep="")
     resolutionName <- paste(resolution, "min", sep="")
     if (missing(destfile))
         destfile <- paste0(paste("topo", wName, eName, sName, nName, resolutionName, sep="_"), ".nc")
@@ -313,8 +363,12 @@ download.topo <- function(west, east, south, north, resolution=4,
         oceDebug(debug, "} # download.topo\n", sep="", style="bold", unindent=1)
         return(destination)
     }
-    nlon <- (east - west) * 60 / resolution
-    nlat <- (north - south) * 60 / resolution
+    nlon <- as.integer((east - west) * 60.0 / resolution)
+    if (nlon < 1L)
+        stop("Cannot download topo file, since east-west (=", east-west, " deg) is less than resolution (=", resolution, " min)")
+    nlat <- as.integer((north - south) * 60.0 / resolution)
+    if (nlat < 1L)
+        stop("Cannot download topo file, since north-south(=", north-south, " deg) is less than resolution (=", resolution, " min)")
     url <- paste0(server, "/arcgis/rest/services/DEM_mosaics/ETOPO1_bedrock/ImageServer/exportImage",
                   "?bbox=", west, ",", south, ",", east, ",", north,
                   "&bboxSR=4326",

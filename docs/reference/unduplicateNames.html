@@ -83,7 +83,7 @@ formats permit the reuse of variable names within a given file." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ formats permit the reuse of variable names within a given file." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -153,7 +153,7 @@ input functions, to handle the fact that several oceanographic data
 formats permit the reuse of variable names within a given file.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>unduplicateNames</span>(<span class='no'>strings</span>, <span class='kw'>style</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
+    <pre class="usage"><span class='fu'>unduplicateNames</span><span class='op'>(</span><span class='va'>strings</span>, style <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -183,7 +183,9 @@ in CTD data, and by <code><a href='read.odf.html'>read.odf()</a></code> with <co
 key-value pairs within ODF metadata.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>unduplicateNames</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"a"</span>, <span class='st'>"b"</span>, <span class='st'>"a"</span>, <span class='st'>"c"</span>, <span class='st'>"b"</span>))</div><div class='output co'>#&gt; [1] "a"  "b"  "a2" "c"  "b2"</div><div class='input'><span class='fu'>unduplicateNames</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"a"</span>, <span class='st'>"b"</span>, <span class='st'>"a"</span>, <span class='st'>"c"</span>, <span class='st'>"b"</span>), <span class='kw'>style</span><span class='kw'>=</span><span class='fl'>2</span>)</div><div class='output co'>#&gt; [1] "a_001" "b_001" "a_002" "c"     "b_002"</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'>unduplicateNames</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"b"</span>, <span class='st'>"a"</span>, <span class='st'>"c"</span>, <span class='st'>"b"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "a"  "b"  "a2" "c"  "b2"</div><div class='input'><span class='fu'>unduplicateNames</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"b"</span>, <span class='st'>"a"</span>, <span class='st'>"c"</span>, <span class='st'>"b"</span><span class='op'>)</span>, style<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "a_001" "b_001" "a_002" "c"     "b_002"</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -199,7 +201,7 @@ key-value pairs within ODF metadata.</p></div>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

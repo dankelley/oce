@@ -83,7 +83,7 @@ match the conventions of the field." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ match the conventions of the field." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -187,7 +187,7 @@ is not possible, users will need to go beyond <code><a href='read.oce.html'>read
 <p>A list of the generic methods in oce is provided by
 <a href='https://rdrr.io/r/utils/methods.html'>methods</a><code>(class="oce")</code>; a few that are used frequently
 are as follows.</p><ul>
-<li><p><code>[[</code> Finds the value of an item in the object's
+<li><p><code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> Finds the value of an item in the object's
 <code>metadata</code> or <code>data</code> slot. If the item does
 not exist, but can be calculated from the other items,
 then the calculated value is returned. As an example of the
@@ -195,9 +195,9 @@ latter, consider the built-in <code>ctd</code> dataset, which does
 not contain potential temperature, "<code>theta</code>". Using
 <code>ctd[["theta"]]</code> therefore causes <code><a href='swTheta.html'>swTheta()</a></code>
 to be called, to calculate <code>theta</code>.
-See <a href='sub-sub-oce-method.html'>[[,oce-method</a> or type <code><a href='sub-sub-oce-method.html'>?"[[,oce-method"</a></code>
+See <a href='[[,oce-method.html'>[[,oce-method</a> or type <code><a href='[[,oce-method.html'>?"[[,oce-method"</a></code>
 to learn more about general functioning, or a specialized
-method like <a href='sub-sub-ctd-method.html'>[[,ctd-method</a> for CTD data, etc.</p></li>
+method like <a href='[[,ctd-method.html'>[[,ctd-method</a> for CTD data, etc.</p></li>
 <li><p><code>[[&lt;-</code> Alters the named item in the object's <code>metadata</code> or
 <code>data</code> slot.  If the item does not exist, it is created.
 See [[&lt;-,oce-method or type <code>?"[[&lt;-,oce-method"</code>
@@ -206,13 +206,13 @@ method like [[&lt;-,ctd-method for CTD data, etc.</p></li>
 <li><p><code><a href='https://rdrr.io/r/base/summary.html'>summary()</a></code> Displays some information about the object named as an
 argument, including a few elements from its <code>metadata</code> slot
 and some statistics of the contents of its <code>data</code> slot.
-See <a href='summary-oce-method.html'>summary,oce-method</a> or type <code><a href='summary-oce-method.html'>?"summary,oce-method"</a></code>
+See <a href='summary,oce-method.html'>summary,oce-method</a> or type <code><a href='summary,oce-method.html'>?"summary,oce-method"</a></code>
 to learn more about general functioning, or a specialized
-method like <a href='summary-ctd-method.html'>summary,ctd-method</a> for CTD data, etc.</p></li>
+method like <a href='summary,ctd-method.html'>summary,ctd-method</a> for CTD data, etc.</p></li>
 <li><p><code><a href='https://rdrr.io/r/base/subset.html'>subset()</a></code> Takes a subset of an oce object.
-See <a href='subset-oce-method.html'>subset,oce-method</a> or type <code><a href='subset-oce-method.html'>?"subset,oce-method"</a></code>
+See <a href='subset,oce-method.html'>subset,oce-method</a> or type <code><a href='subset,oce-method.html'>?"subset,oce-method"</a></code>
 to learn more about general functioning, or a specialized
-method like <a href='subset-ctd-method.html'>subset,ctd-method</a> for CTD data, etc.</p></li>
+method like <a href='subset,ctd-method.html'>subset,ctd-method</a> for CTD data, etc.</p></li>
 </ul>
 
 
@@ -231,7 +231,7 @@ method like <a href='subset-ctd-method.html'>subset,ctd-method</a> for CTD data,
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

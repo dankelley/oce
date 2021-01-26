@@ -54,9 +54,10 @@ North.}
 
 \item{type}{character string indicating the type of instrument.}
 
-\item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
-in reading the file, either by printing a dot for each profile or by writing
-a textual progress bar with \code{\link[=txtProgressBar]{txtProgressBar()}}.}
+\item{monitor}{boolean value indicating whether to indicate the progress
+of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value
+of \code{monitor} is changed to \code{FALSE} automatically, for non-interactive
+sessions.}
 
 \item{despike}{if \code{TRUE}, \code{\link[=despike]{despike()}} will be used to clean
 anomalous spikes in heading, etc.}
@@ -105,6 +106,21 @@ two facts control the maximum recordable velocity and the velocity
 resolution, values that may be retrieved for an ADP object name \code{d}
 with \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
 }
+\section{Handling of old file formats}{
+
+\enumerate{
+\item Early PD0 file formats stored the year of sampling with a different
+base year than that used in modern files.  To accommodate this,
+\code{read.adp.rdi} examines the inferred year, and if it is greater than
+2050, then 100 years are subtracted from the time. This offset was
+inferred by tests with sample files, but \emph{not} from RDI documentation,
+so it is somewhat risky.  If the authors can find RDI documentation that
+indicates the condition in which this century offset is required, then
+a change will be made to the code.  Even if not, the method should
+not cause problems for a long time.
+}
+}
+
 \section{Names of items in data slot}{
 
 
@@ -226,7 +242,7 @@ ratio is less than 1.
 If the result of these calculations is that \code{by} exceeds 1, then
 messages are printed to alert the user that the file will be decimated,
 and also \code{monitor} is set to \code{TRUE}, so that a textual progress bar
-is shown.
+is shown (if the session is interactive).
 }
 
 \section{Development Notes}{

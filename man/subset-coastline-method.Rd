@@ -2,6 +2,7 @@
 % Please edit documentation in R/coastline.R
 \name{subset,coastline-method}
 \alias{subset,coastline-method}
+\alias{subset.coastline}
 \title{Subset a Coastline Object}
 \usage{
 \S4method{subset}{coastline}(x, subset, ...)

@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,18 +147,18 @@
     <p>Read a General CTD File</p>
     </div>
 
-    <pre class="usage"><span class='fu'>read.ctd</span>(
-  <span class='no'>file</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>columns</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>station</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='no'>missingValue</span>,
-  <span class='kw'>deploymentType</span> <span class='kw'>=</span> <span class='st'>"unknown"</span>,
-  <span class='kw'>monitor</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>),
-  <span class='no'>processingLog</span>,
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>read.ctd</span><span class='op'>(</span>
+  <span class='va'>file</span>,
+  type <span class='op'>=</span> <span class='cn'>NULL</span>,
+  columns <span class='op'>=</span> <span class='cn'>NULL</span>,
+  station <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>missingValue</span>,
+  deploymentType <span class='op'>=</span> <span class='st'>"unknown"</span>,
+  monitor <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>,
+  <span class='va'>processingLog</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -194,10 +194,11 @@ and control is dispatched to <code><a href='read.ctd.odv.html'>read.ctd.odv()</a
       <td><p>an optional <a href='https://rdrr.io/r/base/list.html'>list</a> that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
 <code><a href='read.ctd.sbe.html'>read.ctd.sbe()</a></code> and <code><a href='read.ctd.odf.html'>read.ctd.odf()</a></code>. For example,
-if a data file named salinity as <code>"SAL"</code>, then using</p><pre><span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>read.ctd</span>(<span class='no'>f</span>, <span class='kw'>columns</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
-    <span class='kw'>salinity</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>name</span><span class='kw'>=</span><span class='st'>"SAL"</span>,
-                  <span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span>(),
-                  <span class='kw'>scale</span><span class='kw'>=</span><span class='st'>"PSS-78"</span>))))</pre>
+if a data file named salinity as <code>"SAL"</code>, then using</p><pre><span class='va'>d</span> <span class='op'>&lt;-</span> <span class='fu'>read.ctd</span><span class='op'>(</span><span class='va'>f</span>, columns<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+    salinity<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>name<span class='op'>=</span><span class='st'>"SAL"</span>,
+                  unit<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>unit<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='op'>)</span>,
+                  scale<span class='op'>=</span><span class='st'>"PSS-78"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</pre>
 
 <p>would assign the <code>"SAL"</code> column to the <code>salinity</code> entry in the data
 slot of the CTD object returned by the <code>read.*</code> function.</p></td>
@@ -269,7 +270,7 @@ in those formats varies so widely.</p>
 
     <div class='dont-index'><p>Other things related to ctd data: 
 <code><a href='CTD_BCD2014666_008_1_DN.ODF.gz.html'>CTD_BCD2014666_008_1_DN.ODF.gz</a></code>,
-<code><a href='sub-sub-ctd-method.html'>[[,ctd-method</a></code>,
+<code><a href='[[,ctd-method.html'>[[,ctd-method</a></code>,
 <code>[[&lt;-,ctd-method</code>,
 <code><a href='as.ctd.html'>as.ctd</a>()</code>,
 <code><a href='cnvName2oceName.html'>cnvName2oceName</a>()</code>,
@@ -282,12 +283,12 @@ in those formats varies so widely.</p>
 <code><a href='ctd.html'>ctd</a></code>,
 <code><a href='d200321-001.ctd.html'>d200321-001.ctd</a></code>,
 <code><a href='d201211_0011.cnv.html'>d201211_0011.cnv</a></code>,
-<code><a href='handleFlags-ctd-method.html'>handleFlags,ctd-method</a></code>,
-<code><a href='initialize-ctd-method.html'>initialize,ctd-method</a></code>,
-<code><a href='initializeFlagScheme-ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
+<code><a href='handleFlags,ctd-method.html'>handleFlags,ctd-method</a></code>,
+<code><a href='initialize,ctd-method.html'>initialize,ctd-method</a></code>,
+<code><a href='initializeFlagScheme,ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
 <code><a href='oceNames2whpNames.html'>oceNames2whpNames</a>()</code>,
 <code><a href='oceUnits2whpUnits.html'>oceUnits2whpUnits</a>()</code>,
-<code><a href='plot-ctd-method.html'>plot,ctd-method</a></code>,
+<code><a href='plot,ctd-method.html'>plot,ctd-method</a></code>,
 <code><a href='plotProfile.html'>plotProfile</a>()</code>,
 <code><a href='plotScan.html'>plotScan</a>()</code>,
 <code><a href='plotTS.html'>plotTS</a>()</code>,
@@ -297,9 +298,9 @@ in those formats varies so widely.</p>
 <code><a href='read.ctd.sbe.html'>read.ctd.sbe</a>()</code>,
 <code><a href='read.ctd.woce.other.html'>read.ctd.woce.other</a>()</code>,
 <code><a href='read.ctd.woce.html'>read.ctd.woce</a>()</code>,
-<code><a href='setFlags-ctd-method.html'>setFlags,ctd-method</a></code>,
-<code><a href='subset-ctd-method.html'>subset,ctd-method</a></code>,
-<code><a href='summary-ctd-method.html'>summary,ctd-method</a></code>,
+<code><a href='setFlags,ctd-method.html'>setFlags,ctd-method</a></code>,
+<code><a href='subset,ctd-method.html'>subset,ctd-method</a></code>,
+<code><a href='summary,ctd-method.html'>summary,ctd-method</a></code>,
 <code><a href='woceNames2oceNames.html'>woceNames2oceNames</a>()</code>,
 <code><a href='woceUnit2oceUnit.html'>woceUnit2oceUnit</a>()</code>,
 <code><a href='write.ctd.html'>write.ctd</a>()</code></p>
@@ -309,6 +310,9 @@ in those formats varies so widely.</p>
 <code><a href='read.ctd.sbe.html'>read.ctd.sbe</a>()</code>,
 <code><a href='read.ctd.woce.other.html'>read.ctd.woce.other</a>()</code>,
 <code><a href='read.ctd.woce.html'>read.ctd.woce</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -325,7 +329,7 @@ in those formats varies so widely.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

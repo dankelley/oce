@@ -15,7 +15,7 @@
 #' 2. Cheng, Lijing, John Abraham, Gustavo Goni, Timothy Boyer, Susan Wijffels, Rebecca
 #' Cowley, Viktor Gouretski, et al. "XBT Science: Assessment of Instrumental Biases and Errors."
 #' Bulletin of the American Meteorological Society 97, no. 6 (June 2016): 924-33.
-#' https://doi.org/10.1175/BAMS-D-15-00031.1.
+#' \code{10.1175/BAMS-D-15-00031.1}
 #'
 #' @templateVar class xbt
 #'
@@ -442,7 +442,7 @@ read.xbt.edf <- function(file, longitude=NA, latitude=NA, debug=getOption("oceDe
 #' Read a NOAA format for AXBTs
 #'
 #'
-#' This file format, described at https://www.aoml.noaa.gov/phod/dhos/axbt.php, contains a header
+#' This file format, described at \code{https://www.aoml.noaa.gov/phod/dhos/axbt.php}, contains a header
 #' line, followed by data lines.  For example, a particular file at this site has first
 #' three lines as follows.
 #' ```

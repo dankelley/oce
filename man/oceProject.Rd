@@ -2,27 +2,37 @@
 % Please edit documentation in R/map.R
 \name{oceProject}
 \alias{oceProject}
-\title{Wrapper to rgdal::project()}
+\title{Wrapper to sf::sf_project()}
 \usage{
 oceProject(
   xy,
   proj,
   inv = FALSE,
-  use_ob_tran = FALSE,
-  legacy = TRUE,
-  passNA = FALSE
+  use_ob_tran,
+  legacy,
+  passNA,
+  debug = getOption("oceDebug")
 )
 }
 \arguments{
-\item{xy, proj, inv, use_ob_tran, legacy}{As for the \code{\link[rgdal:project]{rgdal::project()}} function in the
-\CRANpkg{rgdal} package.}
+\item{xy}{two-column numeric matrix specifying locations.  If \code{inv} is False, then \code{xy[,1]} will hold
+longitude and \code{xy[,2]} will hold latitude, but if \code{inv} is True, then the columns will be easting
+and northing values (in metres).}
 
-\item{passNA}{Logical value indicating whether to pass NA values into
-\CRANpkg{rgdal}.  The default is \code{FALSE}, meaning that any NA
-values are first converted to 0 before the calculation, and then
-converted to NA afterwards. Setting this to \code{TRUE} produces
-errors on the i386/windows platform, but it seems likely that a version
-of \CRANpkg{rgdal} released after 1.3-9 may not have that error.}
+\item{proj}{character string indicating the desired map projection, or an object of class \code{crs};
+see \code{\link[sf:sf_project]{sf::sf_project()}}.}
+
+\item{inv}{logical value, False by default, indicating whether an inverse projection is requested.}
+
+\item{use_ob_tran, legacy, passNA}{ignored in oce 1.0.3, and will be disallowed in oce 1.0.4.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 A two-column matrix, with first column holding either
@@ -31,23 +41,8 @@ A two-column matrix, with first column holding either
 }
 \description{
 This function is used to isolate other oce functions from
-changes to the \code{\link[rgdal:project]{rgdal::project()}} function in the \CRANpkg{rgdal}
-package, which is used for calculations involved in both forward
-and inverse map projections.
-}
-\details{
-Some highlights of the evolving relationship with rgdal are:
-\enumerate{
-\item See https://github.com/dankelley/oce/issues/653#issuecomment-107040093
-for the reason why oce switched from using \code{\link[rgdal:wrappers]{rgdal::rawTransform()}},
-to \code{\link[rgdal:project]{rgdal::project()}}, both functions provided by the
-\CRANpkg{rgdal} package.
-\item 2016 Apr: rgdal::project started returning named quantities
-\item 2019 Feb: allowNAs_if_not_legacy was added in rgdal 1.3-9 to prevent
-an error on i386/windows. However, using this argument imposes a
-burden on users to update \CRANpkg{rgdal}, so the approach taken
-here (by default, i.e. with \code{passNA=FALSE}) is to
-temporarily switch NA data to 0, and then switch
-back to NA after the calculation.
-}
+changes to the map-projection functions that are done in the \CRANpkg{sf}
+package.  (Until 2020 December, the \CRANpkg{rgdal} package was used,
+after a year of tests ensuring that the results of the two packages were
+the same.)
 }

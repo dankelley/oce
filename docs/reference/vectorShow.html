@@ -81,7 +81,7 @@ last of the vector, which can be quite helpful in debugging." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -122,7 +122,7 @@ last of the vector, which can be quite helpful in debugging." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -149,7 +149,7 @@ last of the vector, which can be quite helpful in debugging." />
 last of the vector, which can be quite helpful in debugging.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>vectorShow</span>(<span class='no'>v</span>, <span class='kw'>msg</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>postscript</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>digits</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>2L</span>)</pre>
+    <pre class="usage"><span class='fu'>vectorShow</span><span class='op'>(</span><span class='va'>v</span>, msg <span class='op'>=</span> <span class='st'>""</span>, postscript <span class='op'>=</span> <span class='st'>""</span>, digits <span class='op'>=</span> <span class='fl'>5</span>, n <span class='op'>=</span> <span class='fl'>2L</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -188,10 +188,17 @@ is negative, then all the elements are shown.</p></td>
 
     <p>A string ending in a newline character, suitable for
 display with <code><a href='https://rdrr.io/r/base/cat.html'>cat()</a></code> or <code><a href='oceDebug.html'>oceDebug()</a></code>.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>vectorShow</span>(<span class='no'>pi</span>)</div><div class='output co'>#&gt; [1] "pi: 3.1416\n"</div><div class='input'><span class='fu'>vectorShow</span>(<span class='no'>volcano</span>)</div><div class='output co'>#&gt; [1] "volcano [1:87, 1:61]: 100, 101, ..., 94, 94\n"</div><div class='input'><span class='no'>knot2mps</span> <span class='kw'>&lt;-</span> <span class='fl'>0.5144444</span>
-<span class='fu'>vectorShow</span>(<span class='no'>knot2mps</span>, <span class='kw'>postscript</span><span class='kw'>=</span><span class='st'>"knots per m/s"</span>)</div><div class='output co'>#&gt; [1] "knot2mps: 0.51444 knots per m/s\n"</div><div class='input'><span class='fu'>vectorShow</span>(<span class='st'>"January"</span>, <span class='kw'>msg</span><span class='kw'>=</span><span class='st'>"The first month is"</span>)</div><div class='output co'>#&gt; [1] "The first month is: January\n"</div><div class='input'>
+    <pre class="examples"><div class='input'><span class='fu'>vectorShow</span><span class='op'>(</span><span class='va'>pi</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "pi: 3.1416\n"</div><div class='input'><span class='fu'>vectorShow</span><span class='op'>(</span><span class='va'>volcano</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "volcano [1:87, 1:61]: 100, 101, ..., 94, 94\n"</div><div class='input'><span class='va'>knot2mps</span> <span class='op'>&lt;-</span> <span class='fl'>0.5144444</span>
+<span class='fu'>vectorShow</span><span class='op'>(</span><span class='va'>knot2mps</span>, postscript<span class='op'>=</span><span class='st'>"knots per m/s"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "knot2mps: 0.51444 knots per m/s\n"</div><div class='input'><span class='fu'>vectorShow</span><span class='op'>(</span><span class='st'>"January"</span>, msg<span class='op'>=</span><span class='st'>"The first month is"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "The first month is: January\n"</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -208,7 +215,7 @@ display with <code><a href='https://rdrr.io/r/base/cat.html'>cat()</a></code> or
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,21 +147,21 @@
     <p>Read an ADP data file, producing an <a href='adp-class.html'>adp</a> object.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>read.adp</span>(
-  <span class='no'>file</span>,
-  <span class='no'>from</span>,
-  <span class='no'>to</span>,
-  <span class='no'>by</span>,
-  <span class='kw'>tz</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceTz"</span>),
-  <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='no'>manufacturer</span>,
-  <span class='kw'>monitor</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>despike</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='no'>processingLog</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>),
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>read.adp</span><span class='op'>(</span>
+  <span class='va'>file</span>,
+  <span class='va'>from</span>,
+  <span class='va'>to</span>,
+  <span class='va'>by</span>,
+  tz <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceTz"</span><span class='op'>)</span>,
+  longitude <span class='op'>=</span> <span class='cn'>NA</span>,
+  latitude <span class='op'>=</span> <span class='cn'>NA</span>,
+  <span class='va'>manufacturer</span>,
+  monitor <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  despike <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>processingLog</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -221,9 +221,10 @@ and <code>"sontek"</code> will cause <code><a href='read.adp.sontek.html'>read.a
     </tr>
     <tr>
       <th>monitor</th>
-      <td><p>boolean, set to <code>TRUE</code> to provide an indication of progress
-in reading the file, either by printing a dot for each profile or by writing
-a textual progress bar with <code><a href='https://rdrr.io/r/utils/txtProgressBar.html'>txtProgressBar()</a></code>.</p></td>
+      <td><p>boolean value indicating whether to indicate the progress
+of reading the file, by using <code><a href='https://rdrr.io/r/utils/txtProgressBar.html'>txtProgressBar()</a></code> or otherwise.  The value
+of <code>monitor</code> is changed to <code>FALSE</code> automatically, for non-interactive
+sessions.</p></td>
     </tr>
     <tr>
       <th>despike</th>
@@ -266,7 +267,7 @@ been documented under the heading <code><a href='read.adv.html'>read.adv()</a></
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to adp data: 
-<code><a href='sub-sub-adp-method.html'>[[,adp-method</a></code>,
+<code><a href='[[,adp-method.html'>[[,adp-method</a></code>,
 <code>[[&lt;-,adp-method</code>,
 <code><a href='ad2cpHeaderValue.html'>ad2cpHeaderValue</a>()</code>,
 <code><a href='adp-class.html'>adp-class</a></code>,
@@ -283,9 +284,9 @@ been documented under the heading <code><a href='read.adv.html'>read.adv()</a></
 <code><a href='binmapAdp.html'>binmapAdp</a>()</code>,
 <code><a href='enuToOtherAdp.html'>enuToOtherAdp</a>()</code>,
 <code><a href='enuToOther.html'>enuToOther</a>()</code>,
-<code><a href='handleFlags-adp-method.html'>handleFlags,adp-method</a></code>,
+<code><a href='handleFlags,adp-method.html'>handleFlags,adp-method</a></code>,
 <code><a href='is.ad2cp.html'>is.ad2cp</a>()</code>,
-<code><a href='plot-adp-method.html'>plot,adp-method</a></code>,
+<code><a href='plot,adp-method.html'>plot,adp-method</a></code>,
 <code><a href='read.adp.ad2cp.html'>read.adp.ad2cp</a>()</code>,
 <code><a href='read.adp.nortek.html'>read.adp.nortek</a>()</code>,
 <code><a href='read.adp.rdi.html'>read.adp.rdi</a>()</code>,
@@ -295,16 +296,19 @@ been documented under the heading <code><a href='read.adv.html'>read.adv()</a></
 <code><a href='read.aquadoppProfiler.html'>read.aquadoppProfiler</a>()</code>,
 <code><a href='read.aquadopp.html'>read.aquadopp</a>()</code>,
 <code><a href='rotateAboutZ.html'>rotateAboutZ</a>()</code>,
-<code><a href='setFlags-adp-method.html'>setFlags,adp-method</a></code>,
-<code><a href='subset-adp-method.html'>subset,adp-method</a></code>,
+<code><a href='setFlags,adp-method.html'>setFlags,adp-method</a></code>,
+<code><a href='subset,adp-method.html'>subset,adp-method</a></code>,
 <code><a href='subtractBottomVelocity.html'>subtractBottomVelocity</a>()</code>,
-<code><a href='summary-adp-method.html'>summary,adp-method</a></code>,
+<code><a href='summary,adp-method.html'>summary,adp-method</a></code>,
 <code><a href='toEnuAdp.html'>toEnuAdp</a>()</code>,
 <code><a href='toEnu.html'>toEnu</a>()</code>,
 <code><a href='velocityStatistics.html'>velocityStatistics</a>()</code>,
 <code><a href='xyzToEnuAdpAD2CP.html'>xyzToEnuAdpAD2CP</a>()</code>,
 <code><a href='xyzToEnuAdp.html'>xyzToEnuAdp</a>()</code>,
 <code><a href='xyzToEnu.html'>xyzToEnu</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley and Clark Richards</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -321,7 +325,7 @@ been documented under the heading <code><a href='read.adv.html'>read.adv()</a></
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

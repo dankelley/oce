@@ -12,7 +12,7 @@
 #' thousands of lines that indicate details that are may be of
 #' little value in processing.  For example, some files have thousands
 #' of lines that would be excluded by using
-#' `exclude="PROCESS='Nulled the .* value"` in the funcion call.
+#' `exclude="PROCESS='Nulled the .* value"` in the function call.
 ##'
 #' @author Dan Kelley
 #'

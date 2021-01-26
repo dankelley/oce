@@ -112,8 +112,9 @@ all.equal(argo[["salinityUnitsAdjusted"]], argoAdjusted[["salinityUnits"]])
 }
 \references{
 \enumerate{
-\item Argo Data Management Team. "Argo User’s Manual V3.3." Ifremer,
-November 28, 2019. \url{https://doi.org/10.13155/29825}.
+\item Argo Data Management Team. "Argo User's Manual V3.3." Ifremer,
+November 28, 2019.
+\doi{10.13155/29825}
 }
 }
 \author{

@@ -14,17 +14,17 @@ files. Note that the salinities in this sample dataset are known to be incorrect
 owing to a lack of calibration of an old instrument that had not been used in a long time.
 }
 \examples{
-\dontrun{
 library(oce)
 data(cm)
 summary(cm)
 plot(cm)
-}
+
 }
 \seealso{
 Other datasets provided with oce: 
 \code{\link{adp}},
 \code{\link{adv}},
+\code{\link{amsr}},
 \code{\link{argo}},
 \code{\link{coastlineWorld}},
 \code{\link{ctdRaw}},
@@ -39,6 +39,7 @@ Other datasets provided with oce:
 \code{\link{sealevelTuktoyaktuk}},
 \code{\link{sealevel}},
 \code{\link{section}},
+\code{\link{topoNS}},
 \code{\link{topoWorld}},
 \code{\link{wind}},
 \code{\link{xbt}}

@@ -208,13 +208,13 @@ variants.)
 Notes:
 \enumerate{
 \item 'pr' is in a Dalhousie-generated data file but seems not to be in reference 1.
-\item this is an odd unit, and so if \verb{sw*} functions are called on an object
+\item This is an odd unit, and so if \verb{sw*} functions are called on an object
 containing this, a conversion will be made before performing the computation. Be
 on the lookout for errors, since this is a rare situation.
-\item assume ITS-90 temperature scale, since sample \code{.cnv} file headers do not specify it.
-\item some files have PSU for this. Should we handle that? And are there other S scales to consider?
-\item 'theta' may appear in different ways with different encoding configurations, set up
-within R or in the operating system.
+\item Assume ITS-90 temperature scale, since sample \code{.cnv} file headers do not specify it.
+\item Some files have PSU for this. Should we handle that? And are there other S scales to consider?
+\item The 'theta' symbol (here shown accented e) may appear in different ways with different
+encoding configurations, set up within R or in the operating system.
 }
 }
 \references{

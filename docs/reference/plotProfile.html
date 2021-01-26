@@ -85,7 +85,7 @@ on a plot." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -126,7 +126,7 @@ on a plot." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -157,52 +157,52 @@ The colors (<code>col.salinity</code>, etc.) are only used if two profiles appea
 on a plot.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotProfile</span>(
-  <span class='no'>x</span>,
-  <span class='kw'>xtype</span> <span class='kw'>=</span> <span class='st'>"salinity+temperature"</span>,
-  <span class='kw'>ytype</span> <span class='kw'>=</span> <span class='st'>"pressure"</span>,
-  <span class='kw'>eos</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceEOS"</span>, <span class='kw'>default</span> <span class='kw'>=</span> <span class='st'>"gsw"</span>),
-  <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>col</span> <span class='kw'>=</span> <span class='st'>"black"</span>,
-  <span class='kw'>col.salinity</span> <span class='kw'>=</span> <span class='st'>"darkgreen"</span>,
-  <span class='kw'>col.temperature</span> <span class='kw'>=</span> <span class='st'>"red"</span>,
-  <span class='kw'>col.rho</span> <span class='kw'>=</span> <span class='st'>"blue"</span>,
-  <span class='kw'>col.N2</span> <span class='kw'>=</span> <span class='st'>"brown"</span>,
-  <span class='kw'>col.dpdt</span> <span class='kw'>=</span> <span class='st'>"darkgreen"</span>,
-  <span class='kw'>col.time</span> <span class='kw'>=</span> <span class='st'>"darkgreen"</span>,
-  <span class='kw'>pt.bg</span> <span class='kw'>=</span> <span class='st'>"transparent"</span>,
-  <span class='kw'>grid</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>col.grid</span> <span class='kw'>=</span> <span class='st'>"lightgray"</span>,
-  <span class='kw'>lty.grid</span> <span class='kw'>=</span> <span class='st'>"dotted"</span>,
-  <span class='no'>Slim</span>,
-  <span class='no'>Clim</span>,
-  <span class='no'>Tlim</span>,
-  <span class='no'>densitylim</span>,
-  <span class='no'>N2lim</span>,
-  <span class='no'>Rrholim</span>,
-  <span class='no'>dpdtlim</span>,
-  <span class='no'>timelim</span>,
-  <span class='no'>plim</span>,
-  <span class='no'>xlim</span>,
-  <span class='no'>ylim</span>,
-  <span class='kw'>lwd</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"lwd"</span>),
-  <span class='kw'>xaxs</span> <span class='kw'>=</span> <span class='st'>"r"</span>,
-  <span class='kw'>yaxs</span> <span class='kw'>=</span> <span class='st'>"r"</span>,
-  <span class='kw'>cex</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>pch</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>useSmoothScatter</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='no'>df</span>,
-  <span class='kw'>keepNA</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"l"</span>,
-  <span class='kw'>mgp</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceMgp"</span>),
-  <span class='no'>mar</span>,
-  <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>inset</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>, <span class='fl'>0</span>),
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>plotProfile</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  xtype <span class='op'>=</span> <span class='st'>"salinity+temperature"</span>,
+  ytype <span class='op'>=</span> <span class='st'>"pressure"</span>,
+  eos <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceEOS"</span>, default <span class='op'>=</span> <span class='st'>"gsw"</span><span class='op'>)</span>,
+  lty <span class='op'>=</span> <span class='fl'>1</span>,
+  xlab <span class='op'>=</span> <span class='cn'>NULL</span>,
+  ylab <span class='op'>=</span> <span class='cn'>NULL</span>,
+  col <span class='op'>=</span> <span class='st'>"black"</span>,
+  col.salinity <span class='op'>=</span> <span class='st'>"darkgreen"</span>,
+  col.temperature <span class='op'>=</span> <span class='st'>"red"</span>,
+  col.rho <span class='op'>=</span> <span class='st'>"blue"</span>,
+  col.N2 <span class='op'>=</span> <span class='st'>"brown"</span>,
+  col.dpdt <span class='op'>=</span> <span class='st'>"darkgreen"</span>,
+  col.time <span class='op'>=</span> <span class='st'>"darkgreen"</span>,
+  pt.bg <span class='op'>=</span> <span class='st'>"transparent"</span>,
+  grid <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  col.grid <span class='op'>=</span> <span class='st'>"lightgray"</span>,
+  lty.grid <span class='op'>=</span> <span class='st'>"dotted"</span>,
+  <span class='va'>Slim</span>,
+  <span class='va'>Clim</span>,
+  <span class='va'>Tlim</span>,
+  <span class='va'>densitylim</span>,
+  <span class='va'>N2lim</span>,
+  <span class='va'>Rrholim</span>,
+  <span class='va'>dpdtlim</span>,
+  <span class='va'>timelim</span>,
+  <span class='va'>plim</span>,
+  <span class='va'>xlim</span>,
+  <span class='va'>ylim</span>,
+  lwd <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"lwd"</span><span class='op'>)</span>,
+  xaxs <span class='op'>=</span> <span class='st'>"r"</span>,
+  yaxs <span class='op'>=</span> <span class='st'>"r"</span>,
+  cex <span class='op'>=</span> <span class='fl'>1</span>,
+  pch <span class='op'>=</span> <span class='fl'>1</span>,
+  useSmoothScatter <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>df</span>,
+  keepNA <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  type <span class='op'>=</span> <span class='st'>"l"</span>,
+  mgp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceMgp"</span><span class='op'>)</span>,
+  <span class='va'>mar</span>,
+  add <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  inset <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span>, <span class='fl'>0</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -263,12 +263,15 @@ to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.</p></li
     <tr>
       <th>xlab</th>
       <td><p>optional label for x axis (at top of plot). If not
-provided, the value of <code>xtype</code> is used for the label.</p></td>
+provided, the value of <code>xtype</code> is used (along with the units
+of the variable) to construct a label. For user-supplied <code>xlab</code>,
+the unit (if any) must be specified as in e.g.
+<code>xlab=expression("Speed ["*m/s*"]")</code>.</p></td>
     </tr>
     <tr>
       <th>ylab</th>
-      <td><p>optional label for y axis.  Set to <code>""</code> to prevent
-labelling the axis.</p></td>
+      <td><p>optional label for y axis.  See <code>xlab</code> for a note on
+units.  Setting <code>ylab=""</code> prevents labelling the axis.</p></td>
     </tr>
     <tr>
       <th>col</th>
@@ -389,7 +392,7 @@ or by <code>densitylim</code> if <code>ytype</code> is <code>"sigmaTheta"</code>
     <tr>
       <th>useSmoothScatter</th>
       <td><p>boolean, set to <code>TRUE</code> to use
-<code><a href='https://rdrr.io/r/graphics/smoothScatter.html'>smoothScatter()</a></code> instead of <code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code> to draw the plot.</p></td>
+<code><a href='https://rdrr.io/r/graphics/smoothScatter.html'>smoothScatter()</a></code> instead of <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code> to draw the plot.</p></td>
     </tr>
     <tr>
       <th>df</th>
@@ -403,7 +406,7 @@ if a plot using \(N^2\) is requested.</p></td>
     <tr>
       <th>type</th>
       <td><p>type of plot to draw, using the same scheme as
-<code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code>.</p></td>
+<code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code>.</p></td>
     </tr>
     <tr>
       <th>mgp</th>
@@ -449,38 +452,39 @@ is to set <code>df</code>, for use in <code><a href='swN2.html'>swN2()</a></code
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='read.ctd.html'>read.ctd()</a></code> scans ctd information from a file,
-<code><a href='plot-ctd-method.html'>plot,ctd-method()</a></code> is a general plotting function for <code>ctd</code>
+<code><a href='plot,ctd-method.html'>plot,ctd-method()</a></code> is a general plotting function for <code>ctd</code>
 objects, and <code><a href='plotTS.html'>plotTS()</a></code> plots a temperature-salinity diagrams.</p>
 <p>Other functions that plot oce data: 
-<code><a href='plot-adp-method.html'>plot,adp-method</a></code>,
-<code><a href='plot-adv-method.html'>plot,adv-method</a></code>,
-<code><a href='plot-amsr-method.html'>plot,amsr-method</a></code>,
-<code><a href='plot-argo-method.html'>plot,argo-method</a></code>,
-<code><a href='plot-bremen-method.html'>plot,bremen-method</a></code>,
-<code><a href='plot-cm-method.html'>plot,cm-method</a></code>,
-<code><a href='plot-coastline-method.html'>plot,coastline-method</a></code>,
-<code><a href='plot-ctd-method.html'>plot,ctd-method</a></code>,
-<code><a href='plot-gps-method.html'>plot,gps-method</a></code>,
-<code><a href='plot-ladp-method.html'>plot,ladp-method</a></code>,
-<code><a href='plot-landsat-method.html'>plot,landsat-method</a></code>,
-<code><a href='plot-lisst-method.html'>plot,lisst-method</a></code>,
-<code><a href='plot-lobo-method.html'>plot,lobo-method</a></code>,
-<code><a href='plot-met-method.html'>plot,met-method</a></code>,
-<code><a href='plot-odf-method.html'>plot,odf-method</a></code>,
-<code><a href='plot-rsk-method.html'>plot,rsk-method</a></code>,
-<code><a href='plot-satellite-method.html'>plot,satellite-method</a></code>,
-<code><a href='plot-sealevel-method.html'>plot,sealevel-method</a></code>,
-<code><a href='plot-section-method.html'>plot,section-method</a></code>,
-<code><a href='plot-tidem-method.html'>plot,tidem-method</a></code>,
-<code><a href='plot-topo-method.html'>plot,topo-method</a></code>,
-<code><a href='plot-windrose-method.html'>plot,windrose-method</a></code>,
-<code><a href='plot-xbt-method.html'>plot,xbt-method</a></code>,
+<code><a href='download.amsr.html'>download.amsr</a>()</code>,
+<code><a href='plot,adp-method.html'>plot,adp-method</a></code>,
+<code><a href='plot,adv-method.html'>plot,adv-method</a></code>,
+<code><a href='plot,amsr-method.html'>plot,amsr-method</a></code>,
+<code><a href='plot,argo-method.html'>plot,argo-method</a></code>,
+<code><a href='plot,bremen-method.html'>plot,bremen-method</a></code>,
+<code><a href='plot,cm-method.html'>plot,cm-method</a></code>,
+<code><a href='plot,coastline-method.html'>plot,coastline-method</a></code>,
+<code><a href='plot,ctd-method.html'>plot,ctd-method</a></code>,
+<code><a href='plot,gps-method.html'>plot,gps-method</a></code>,
+<code><a href='plot,ladp-method.html'>plot,ladp-method</a></code>,
+<code><a href='plot,landsat-method.html'>plot,landsat-method</a></code>,
+<code><a href='plot,lisst-method.html'>plot,lisst-method</a></code>,
+<code><a href='plot,lobo-method.html'>plot,lobo-method</a></code>,
+<code><a href='plot,met-method.html'>plot,met-method</a></code>,
+<code><a href='plot,odf-method.html'>plot,odf-method</a></code>,
+<code><a href='plot,rsk-method.html'>plot,rsk-method</a></code>,
+<code><a href='plot,satellite-method.html'>plot,satellite-method</a></code>,
+<code><a href='plot,sealevel-method.html'>plot,sealevel-method</a></code>,
+<code><a href='plot,section-method.html'>plot,section-method</a></code>,
+<code><a href='plot,tidem-method.html'>plot,tidem-method</a></code>,
+<code><a href='plot,topo-method.html'>plot,topo-method</a></code>,
+<code><a href='plot,windrose-method.html'>plot,windrose-method</a></code>,
+<code><a href='plot,xbt-method.html'>plot,xbt-method</a></code>,
 <code><a href='plotScan.html'>plotScan</a>()</code>,
 <code><a href='plotTS.html'>plotTS</a>()</code>,
 <code><a href='tidem-class.html'>tidem-class</a></code></p>
 <p>Other things related to ctd data: 
 <code><a href='CTD_BCD2014666_008_1_DN.ODF.gz.html'>CTD_BCD2014666_008_1_DN.ODF.gz</a></code>,
-<code><a href='sub-sub-ctd-method.html'>[[,ctd-method</a></code>,
+<code><a href='[[,ctd-method.html'>[[,ctd-method</a></code>,
 <code>[[&lt;-,ctd-method</code>,
 <code><a href='as.ctd.html'>as.ctd</a>()</code>,
 <code><a href='cnvName2oceName.html'>cnvName2oceName</a>()</code>,
@@ -493,12 +497,12 @@ objects, and <code><a href='plotTS.html'>plotTS()</a></code> plots a temperature
 <code><a href='ctd.html'>ctd</a></code>,
 <code><a href='d200321-001.ctd.html'>d200321-001.ctd</a></code>,
 <code><a href='d201211_0011.cnv.html'>d201211_0011.cnv</a></code>,
-<code><a href='handleFlags-ctd-method.html'>handleFlags,ctd-method</a></code>,
-<code><a href='initialize-ctd-method.html'>initialize,ctd-method</a></code>,
-<code><a href='initializeFlagScheme-ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
+<code><a href='handleFlags,ctd-method.html'>handleFlags,ctd-method</a></code>,
+<code><a href='initialize,ctd-method.html'>initialize,ctd-method</a></code>,
+<code><a href='initializeFlagScheme,ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
 <code><a href='oceNames2whpNames.html'>oceNames2whpNames</a>()</code>,
 <code><a href='oceUnits2whpUnits.html'>oceUnits2whpUnits</a>()</code>,
-<code><a href='plot-ctd-method.html'>plot,ctd-method</a></code>,
+<code><a href='plot,ctd-method.html'>plot,ctd-method</a></code>,
 <code><a href='plotScan.html'>plotScan</a>()</code>,
 <code><a href='plotTS.html'>plotTS</a>()</code>,
 <code><a href='read.ctd.itp.html'>read.ctd.itp</a>()</code>,
@@ -508,17 +512,21 @@ objects, and <code><a href='plotTS.html'>plotTS()</a></code> plots a temperature
 <code><a href='read.ctd.woce.other.html'>read.ctd.woce.other</a>()</code>,
 <code><a href='read.ctd.woce.html'>read.ctd.woce</a>()</code>,
 <code><a href='read.ctd.html'>read.ctd</a>()</code>,
-<code><a href='setFlags-ctd-method.html'>setFlags,ctd-method</a></code>,
-<code><a href='subset-ctd-method.html'>subset,ctd-method</a></code>,
-<code><a href='summary-ctd-method.html'>summary,ctd-method</a></code>,
+<code><a href='setFlags,ctd-method.html'>setFlags,ctd-method</a></code>,
+<code><a href='subset,ctd-method.html'>subset,ctd-method</a></code>,
+<code><a href='summary,ctd-method.html'>summary,ctd-method</a></code>,
 <code><a href='woceNames2oceNames.html'>woceNames2oceNames</a>()</code>,
 <code><a href='woceUnit2oceUnit.html'>woceUnit2oceUnit</a>()</code>,
 <code><a href='write.ctd.html'>write.ctd</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
-<span class='fu'>plotProfile</span>(<span class='no'>ctd</span>, <span class='kw'>xtype</span><span class='kw'>=</span><span class='st'>"temperature"</span>)</div><div class='img'><img src='plotProfile-1.png' alt='' width='700' height='433' /></div><div class='input'>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+<span class='fu'>plotProfile</span><span class='op'>(</span><span class='va'>ctd</span>, xtype<span class='op'>=</span><span class='st'>"temperature"</span><span class='op'>)</span>
+</div><div class='img'><img src='plotProfile-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -535,7 +543,7 @@ objects, and <code><a href='plotTS.html'>plotTS()</a></code> plots a temperature
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -81,7 +81,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -122,7 +122,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -149,23 +149,23 @@
 (See example 4 for a way to start  with a blank map.)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>mapImage</span>(
-  <span class='no'>longitude</span>,
-  <span class='no'>latitude</span>,
-  <span class='no'>z</span>,
-  <span class='no'>zlim</span>,
-  <span class='kw'>zclip</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='no'>breaks</span>,
-  <span class='no'>col</span>,
-  <span class='no'>colormap</span>,
-  <span class='kw'>border</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>lwd</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"lwd"</span>),
-  <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"lty"</span>),
-  <span class='kw'>missingColor</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>filledContour</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>gridder</span> <span class='kw'>=</span> <span class='st'>"binMean2D"</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>mapImage</span><span class='op'>(</span>
+  <span class='va'>longitude</span>,
+  <span class='va'>latitude</span>,
+  <span class='va'>z</span>,
+  <span class='va'>zlim</span>,
+  zclip <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>breaks</span>,
+  <span class='va'>col</span>,
+  <span class='va'>colormap</span>,
+  border <span class='op'>=</span> <span class='cn'>NA</span>,
+  lwd <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"lwd"</span><span class='op'>)</span>,
+  lty <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"lty"</span><span class='op'>)</span>,
+  missingColor <span class='op'>=</span> <span class='cn'>NA</span>,
+  filledContour <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  gridder <span class='op'>=</span> <span class='st'>"binMean2D"</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -207,7 +207,7 @@ supplied to <code><a href='https://rdrr.io/r/base/pretty.html'>pretty()</a></cod
       <th>col</th>
       <td><p>Either a vector of colors corresponding to the breaks, of length
 1 plus the number of breaks, or a function specifying colors,
-e.g. <code><a href='oceColorsJet.html'>oce.colorsJet()</a></code> for a rainbow.</p></td>
+e.g. <code><a href='oceColorsViridis.html'>oce.colorsViridis()</a></code> for the Viridis scheme.</p></td>
     </tr>
     <tr>
       <th>colormap</th>
@@ -286,7 +286,7 @@ arguments <code>type="cairo"</code> and <code>antialias="none"</code>; see refer
 
     
 <ol>
-<li><p><a href='http://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/'>http://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/</a></p></li>
+<li><p><a href='https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/'>https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/</a></p></li>
 </ol>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
@@ -316,54 +316,26 @@ arguments <code>type="cairo"</code> and <code>antialias="none"</code>; see refer
 <code><a href='shiftLongitude.html'>shiftLongitude</a>()</code>,
 <code><a href='usrLonLat.html'>usrLonLat</a>()</code>,
 <code><a href='utm2lonlat.html'>utm2lonlat</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>coastlineWorld</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>topoWorld</span>)
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>topoWorld</span><span class='op'>)</span>
 
-<span class='co'>## 1. topography</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>), <span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>))
-<span class='no'>lonlim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>70</span>, -<span class='fl'>50</span>)
-<span class='no'>latlim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>40</span>, <span class='fl'>50</span>)
-<span class='no'>topo</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='decimate.html'>decimate</a></span>(<span class='no'>topoWorld</span>, <span class='kw'>by</span><span class='kw'>=</span><span class='fl'>2</span>) <span class='co'># coarse to illustrate filled contours</span>
-<span class='no'>topo</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>topo</span>, <span class='no'>latlim</span>[<span class='fl'>1</span>] <span class='kw'>&lt;</span> <span class='no'>latitude</span> <span class='kw'>&amp;</span> <span class='no'>latitude</span> <span class='kw'>&lt;</span> <span class='no'>latlim</span>[<span class='fl'>2</span>])
-<span class='no'>topo</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>topo</span>, <span class='no'>lonlim</span>[<span class='fl'>1</span>] <span class='kw'>&lt;</span> <span class='no'>longitude</span> <span class='kw'>&amp;</span> <span class='no'>longitude</span> <span class='kw'>&lt;</span> <span class='no'>lonlim</span>[<span class='fl'>2</span>])
-<span class='fu'><a href='mapPlot.html'>mapPlot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'l'</span>,
-        <span class='kw'>longitudelim</span><span class='kw'>=</span><span class='no'>lonlim</span>, <span class='kw'>latitudelim</span><span class='kw'>=</span><span class='no'>latlim</span>,
-        <span class='kw'>projection</span><span class='kw'>=</span><span class='st'>"+proj=lcc +lat_1=40 +lat_2=50 +lon_0=-60"</span>)
-<span class='no'>breaks</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>5000</span>, <span class='fl'>1000</span>, <span class='fl'>500</span>)
-<span class='fu'>mapImage</span>(<span class='no'>topo</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='no'>oce.colorsGebco</span>, <span class='kw'>breaks</span><span class='kw'>=</span><span class='no'>breaks</span>)
-<span class='fu'><a href='mapLines.html'>mapLines</a></span>(<span class='no'>coastlineWorld</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/box.html'>box</a></span>()
-<span class='fu'><a href='mapPlot.html'>mapPlot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'l'</span>,
-        <span class='kw'>longitudelim</span><span class='kw'>=</span><span class='no'>lonlim</span>, <span class='kw'>latitudelim</span><span class='kw'>=</span><span class='no'>latlim</span>,
-        <span class='kw'>projection</span><span class='kw'>=</span><span class='st'>"+proj=lcc +lat_1=40 +lat_2=50 +lon_0=-60"</span>)</div><div class='input'><span class='fu'>mapImage</span>(<span class='no'>topo</span>, <span class='kw'>filledContour</span><span class='kw'>=</span><span class='fl'>TRUE</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='no'>oce.colorsGebco</span>, <span class='kw'>breaks</span><span class='kw'>=</span><span class='no'>breaks</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/box.html'>box</a></span>()</div><div class='input'><span class='fu'><a href='mapLines.html'>mapLines</a></span>(<span class='no'>coastlineWorld</span>)</div><div class='img'><img src='mapImage-1.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'>## 2. Northern polar region, with color-coded bathymetry</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>1</span>))
-<span class='fu'><a href='drawPalette.html'>drawPalette</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>5000</span>, <span class='fl'>0</span>), <span class='kw'>zlim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>5000</span>, <span class='fl'>0</span>), <span class='kw'>col</span><span class='kw'>=</span><span class='no'>oce.colorsJet</span>)
-<span class='fu'><a href='mapPlot.html'>mapPlot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>projection</span><span class='kw'>=</span><span class='st'>"+proj=stere +lat_0=90"</span>,
-        <span class='kw'>longitudelim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>180</span>,<span class='fl'>180</span>), <span class='kw'>latitudelim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>60</span>,<span class='fl'>120</span>))</div><div class='input'><span class='fu'>mapImage</span>(<span class='no'>topoWorld</span>, <span class='kw'>zlim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>5000</span>, <span class='fl'>0</span>), <span class='kw'>col</span><span class='kw'>=</span><span class='no'>oce.colorsJet</span>)</div><div class='input'><span class='fu'><a href='mapLines.html'>mapLines</a></span>(<span class='no'>coastlineWorld</span><span class='kw'>[[</span><span class='st'>'longitude'</span>]], <span class='no'>coastlineWorld</span><span class='kw'>[[</span><span class='st'>'latitude'</span>]])</div><div class='img'><img src='mapImage-2.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'>## 3. Levitus SST</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>1</span>))
-<span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"ocedata"</span>, <span class='kw'>quietly</span><span class='kw'>=</span><span class='fl'>TRUE</span>)) {
-    <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>levitus</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>'ocedata'</span>)
-    <span class='no'>lon</span> <span class='kw'>&lt;-</span> <span class='no'>levitus</span>$<span class='no'>longitude</span>
-    <span class='no'>lat</span> <span class='kw'>&lt;-</span> <span class='no'>levitus</span>$<span class='no'>latitude</span>
-    <span class='no'>SST</span> <span class='kw'>&lt;-</span> <span class='no'>levitus</span>$<span class='no'>SST</span>
-    <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fl'>4</span>))
-    <span class='no'>Tlim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>2</span>, <span class='fl'>30</span>)
-    <span class='fu'><a href='drawPalette.html'>drawPalette</a></span>(<span class='no'>Tlim</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='no'>oce.colorsJet</span>)
-    <span class='fu'><a href='mapPlot.html'>mapPlot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>projection</span><span class='kw'>=</span><span class='st'>"+proj=moll"</span>, <span class='kw'>grid</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
-    <span class='fu'>mapImage</span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='no'>SST</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='no'>oce.colorsJet</span>, <span class='kw'>zlim</span><span class='kw'>=</span><span class='no'>Tlim</span>)
-    <span class='fu'><a href='mapPolygon.html'>mapPolygon</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'gray'</span>)
-}</div><div class='img'><img src='mapImage-3.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'>## 4. Topography without drawing a coastline first</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>topoWorld</span>)
-<span class='no'>cm</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='colormap.html'>colormap</a></span>(<span class='no'>topoWorld</span><span class='kw'>[[</span><span class='st'>'z'</span>]], <span class='kw'>name</span><span class='kw'>=</span><span class='st'>'gmt_relief'</span>)
-<span class='fu'><a href='drawPalette.html'>drawPalette</a></span>(<span class='kw'>colormap</span><span class='kw'>=</span><span class='no'>cm</span>)
-<span class='fu'><a href='mapPlot.html'>mapPlot</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>180</span>,<span class='fl'>180</span>), <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>90</span>,<span class='fl'>90</span>), <span class='kw'>type</span><span class='kw'>=</span><span class='st'>"n"</span>) <span class='co'># defaults to moll projection</span></div><div class='input'><span class='fu'>mapImage</span>(<span class='no'>topoWorld</span>, <span class='kw'>colormap</span><span class='kw'>=</span><span class='no'>cm</span>)</div><div class='img'><img src='mapImage-4.png' alt='' width='700' height='433' /></div><div class='input'># }
+<span class='co'>## Northern polar region, with color-coded bathymetry</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>,<span class='fl'>2</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>cm</span> <span class='op'>&lt;-</span> <span class='fu'><a href='colormap.html'>colormap</a></span><span class='op'>(</span>zlim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>5000</span>, <span class='fl'>0</span><span class='op'>)</span>, col<span class='op'>=</span><span class='va'>oceColorsGebco</span><span class='op'>)</span>
+<span class='fu'><a href='drawPalette.html'>drawPalette</a></span><span class='op'>(</span>colormap<span class='op'>=</span><span class='va'>cm</span><span class='op'>)</span>
+<span class='fu'><a href='mapPlot.html'>mapPlot</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, projection<span class='op'>=</span><span class='st'>"+proj=stere +lat_0=90"</span>,
+        longitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>180</span>,<span class='fl'>180</span><span class='op'>)</span>, latitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>70</span>,<span class='fl'>110</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'>mapImage</span><span class='op'>(</span><span class='va'>topoWorld</span>, colormap<span class='op'>=</span><span class='va'>cm</span><span class='op'>)</span>
+<span class='fu'><a href='mapGrid.html'>mapGrid</a></span><span class='op'>(</span><span class='fl'>15</span>, <span class='fl'>15</span>, polarCircle<span class='op'>=</span><span class='fl'>1</span>, col<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/grDevices/gray.html'>gray</a></span><span class='op'>(</span><span class='fl'>0.2</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='mapPolygon.html'>mapPolygon</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>[[</span><span class='st'>'longitude'</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>coastlineWorld</span><span class='op'>[[</span><span class='st'>'latitude'</span><span class='op'>]</span><span class='op'>]</span>, col<span class='op'>=</span><span class='st'>"tan"</span><span class='op'>)</span>
+<span class='op'>}</span>
 
 </div></pre>
   </div>
@@ -381,7 +353,7 @@ arguments <code>type="cairo"</code> and <code>antialias="none"</code>; see refer
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

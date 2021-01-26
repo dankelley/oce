@@ -82,7 +82,7 @@ on published tables of harmonic fits." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -123,7 +123,7 @@ on published tables of harmonic fits." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -151,7 +151,7 @@ on published tables of harmonic fits." />
 on published tables of harmonic fits.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>as.tidem</span>(<span class='no'>tRef</span>, <span class='no'>latitude</span>, <span class='no'>name</span>, <span class='no'>amplitude</span>, <span class='no'>phase</span>, <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>))</pre>
+    <pre class="usage"><span class='fu'>as.tidem</span><span class='op'>(</span><span class='va'>tRef</span>, <span class='va'>latitude</span>, <span class='va'>name</span>, <span class='va'>amplitude</span>, <span class='va'>phase</span>, debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -202,8 +202,9 @@ contents.</p>
     <p>Note that only constituent names known to <code><a href='tidem.html'>tidem()</a></code> are handled.
 The permitted names are those listed in Foreman (1978), and
 tabulated with</p><pre>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>tidedata</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>name</span><span class='kw'>=</span><span class='no'>tidedata</span>$<span class='no'>const</span>$<span class='no'>name</span>, <span class='kw'>freq</span><span class='kw'>=</span><span class='no'>tidedata</span>$<span class='no'>const</span>$<span class='no'>freq</span>)</pre><p>Warnings are issued for any constituent name that is not in this list; as
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>tidedata</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>name<span class='op'>=</span><span class='va'>tidedata</span><span class='op'>$</span><span class='va'>const</span><span class='op'>$</span><span class='va'>name</span>, freq<span class='op'>=</span><span class='va'>tidedata</span><span class='op'>$</span><span class='va'>const</span><span class='op'>$</span><span class='va'>freq</span><span class='op'>)</span>
+</pre><p>Warnings are issued for any constituent name that is not in this list; as
 of the late summer of 2019, the only example seen in practice is
 <code>M1</code>, which according to Wikipedia (2019) has frequency 0.0402557, which
 is very close to that of <code>NO1</code>, i.e. 0.04026859, perhaps explaining
@@ -235,11 +236,12 @@ https://github.com/dankelley/oce/issues/1654</p></li>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to tides: 
-<code><a href='sub-sub-tidem-method.html'>[[,tidem-method</a></code>,
+<code><a href='[[,tidem-method.html'>[[,tidem-method</a></code>,
 <code>[[&lt;-,tidem-method</code>,
-<code><a href='plot-tidem-method.html'>plot,tidem-method</a></code>,
+<code><a href='plot,tidem-method.html'>plot,tidem-method</a></code>,
 <code><a href='predict.tidem.html'>predict.tidem</a>()</code>,
-<code><a href='summary-tidem-method.html'>summary,tidem-method</a></code>,
+<code><a href='summary,tidem-method.html'>summary,tidem-method</a></code>,
+<code><a href='tidalCurrent.html'>tidalCurrent</a></code>,
 <code><a href='tidedata.html'>tidedata</a></code>,
 <code><a href='tidem-class.html'>tidem-class</a></code>,
 <code><a href='tidemAstron.html'>tidemAstron</a>()</code>,
@@ -249,18 +251,19 @@ https://github.com/dankelley/oce/issues/1654</p></li>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Simulate a tide table with output from tidem().</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>sealevelTuktoyaktuk</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>sealevelTuktoyaktuk</span><span class='op'>)</span>
 <span class='co'># 'm0' is model fitted by tidem()</span>
-<span class='no'>m0</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='tidem.html'>tidem</a></span>(<span class='no'>sealevelTuktoyaktuk</span>)</div><div class='output co'>#&gt; Note: the tidal record is too short to fit for constituents:  SA SSA MSM MF SIG1 RHO1 TAU1 BET1 CHI1 PI1 P1 S1 PSI1 PHI1 THE1 SO1 OQ2 2N2 NU2 GAM2 H1 H2 MKS2 LDA2 T2 R2 K2 MSN2 SO3 MK4 SK4 2MK6 MSK6 </div><div class='input'><span class='no'>p0</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(<span class='no'>m0</span>, <span class='no'>sealevelTuktoyaktuk</span><span class='kw'>[[</span><span class='st'>"time"</span>]])
-<span class='no'>m1</span> <span class='kw'>&lt;-</span> <span class='fu'>as.tidem</span>(<span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>sealevelTuktoyaktuk</span><span class='kw'>[[</span><span class='st'>"time"</span>]]), <span class='no'>sealevelTuktoyaktuk</span><span class='kw'>[[</span><span class='st'>"latitude"</span>]],
-               <span class='no'>m0</span><span class='kw'>[[</span><span class='st'>"name"</span>]], <span class='no'>m0</span><span class='kw'>[[</span><span class='st'>"amplitude"</span>]], <span class='no'>m0</span><span class='kw'>[[</span><span class='st'>"phase"</span>]])
+<span class='va'>m0</span> <span class='op'>&lt;-</span> <span class='fu'><a href='tidem.html'>tidem</a></span><span class='op'>(</span><span class='va'>sealevelTuktoyaktuk</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Note: the tidal record is too short to fit for constituents:  SA SSA MSM MF SIG1 RHO1 TAU1 BET1 CHI1 PI1 P1 S1 PSI1 PHI1 THE1 SO1 OQ2 2N2 NU2 GAM2 H1 H2 MKS2 LDA2 T2 R2 K2 MSN2 SO3 MK4 SK4 2MK6 MSK6 </div><div class='input'><span class='va'>p0</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>m0</span>, <span class='va'>sealevelTuktoyaktuk</span><span class='op'>[[</span><span class='st'>"time"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+<span class='va'>m1</span> <span class='op'>&lt;-</span> <span class='fu'>as.tidem</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>sealevelTuktoyaktuk</span><span class='op'>[[</span><span class='st'>"time"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>, <span class='va'>sealevelTuktoyaktuk</span><span class='op'>[[</span><span class='st'>"latitude"</span><span class='op'>]</span><span class='op'>]</span>,
+               <span class='va'>m0</span><span class='op'>[[</span><span class='st'>"name"</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>m0</span><span class='op'>[[</span><span class='st'>"amplitude"</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>m0</span><span class='op'>[[</span><span class='st'>"phase"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
 <span class='co'># Test agreement with tidem() result, by comparing predicted sealevels.</span>
-<span class='no'>p1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(<span class='no'>m1</span>, <span class='no'>sealevelTuktoyaktuk</span><span class='kw'>[[</span><span class='st'>"time"</span>]])
-<span class='fu'>expect_lt</span>(<span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span>(<span class='no'>p1</span> - <span class='no'>p0</span>), <span class='kw'>na.rm</span><span class='kw'>=</span><span class='fl'>TRUE</span>), <span class='fl'>1e-10</span>)
+<span class='va'>p1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>m1</span>, <span class='va'>sealevelTuktoyaktuk</span><span class='op'>[[</span><span class='st'>"time"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+<span class='fu'>expect_lt</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span><span class='op'>(</span><span class='va'>p1</span> <span class='op'>-</span> <span class='va'>p0</span><span class='op'>)</span>, na.rm<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>, <span class='fl'>1e-10</span><span class='op'>)</span>
 <span class='co'># Simplified harmonic model, using large constituents</span>
 <span class='co'># &gt; m0[["name"]][which(m[["amplitude"]]&gt;0.05)]</span>
 <span class='co'># [1] "Z0"  "MM"  "MSF" "O1"  "K1"  "OO1" "N2"  "M2"  "S2"</span>
-<span class='no'>h</span> <span class='kw'>&lt;-</span> <span class='st'>"
+<span class='va'>h</span> <span class='op'>&lt;-</span> <span class='st'>"
 name  amplitude      phase
   Z0 1.98061875   0.000000
   MM 0.21213065 263.344739
@@ -271,17 +274,18 @@ name  amplitude      phase
   N2 0.08377108  44.521462
   M2 0.49041340  77.703594
   S2 0.22023705 137.475767"</span>
-<span class='no'>coef</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='kw'>text</span><span class='kw'>=</span><span class='no'>h</span>, <span class='kw'>header</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
-<span class='no'>m2</span> <span class='kw'>&lt;-</span> <span class='fu'>as.tidem</span>(<span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>sealevelTuktoyaktuk</span><span class='kw'>[[</span><span class='st'>"time"</span>]]),
-               <span class='no'>sealevelTuktoyaktuk</span><span class='kw'>[[</span><span class='st'>"latitude"</span>]],
-               <span class='no'>coef</span>$<span class='no'>name</span>, <span class='no'>coef</span>$<span class='no'>amplitude</span>, <span class='no'>coef</span>$<span class='no'>phase</span>)
-<span class='no'>p2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(<span class='no'>m2</span>, <span class='no'>sealevelTuktoyaktuk</span><span class='kw'>[[</span><span class='st'>"time"</span>]])
-<span class='fu'>expect_lt</span>(<span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span>(<span class='no'>p2</span> - <span class='no'>p0</span>), <span class='kw'>na.rm</span><span class='kw'>=</span><span class='fl'>TRUE</span>), <span class='fl'>1</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>1</span>))
-<span class='fu'><a href='oce.plot.ts.html'>oce.plot.ts</a></span>(<span class='no'>sealevelTuktoyaktuk</span><span class='kw'>[[</span><span class='st'>"time"</span>]], <span class='no'>p0</span>)
-<span class='no'>ylim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"usr"</span>)[<span class='fl'>3</span>:<span class='fl'>4</span>] <span class='co'># to match scales in other panels</span>
-<span class='fu'><a href='oce.plot.ts.html'>oce.plot.ts</a></span>(<span class='no'>sealevelTuktoyaktuk</span><span class='kw'>[[</span><span class='st'>"time"</span>]], <span class='no'>p1</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='no'>ylim</span>)
-<span class='fu'><a href='oce.plot.ts.html'>oce.plot.ts</a></span>(<span class='no'>sealevelTuktoyaktuk</span><span class='kw'>[[</span><span class='st'>"time"</span>]], <span class='no'>p2</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='no'>ylim</span>)</div><div class='img'><img src='as.tidem-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='va'>coef</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span>text<span class='op'>=</span><span class='va'>h</span>, header<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='va'>m2</span> <span class='op'>&lt;-</span> <span class='fu'>as.tidem</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>sealevelTuktoyaktuk</span><span class='op'>[[</span><span class='st'>"time"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>,
+               <span class='va'>sealevelTuktoyaktuk</span><span class='op'>[[</span><span class='st'>"latitude"</span><span class='op'>]</span><span class='op'>]</span>,
+               <span class='va'>coef</span><span class='op'>$</span><span class='va'>name</span>, <span class='va'>coef</span><span class='op'>$</span><span class='va'>amplitude</span>, <span class='va'>coef</span><span class='op'>$</span><span class='va'>phase</span><span class='op'>)</span>
+<span class='va'>p2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>m2</span>, <span class='va'>sealevelTuktoyaktuk</span><span class='op'>[[</span><span class='st'>"time"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+<span class='fu'>expect_lt</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span><span class='op'>(</span><span class='va'>p2</span> <span class='op'>-</span> <span class='va'>p0</span><span class='op'>)</span>, na.rm<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>, <span class='fl'>1</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='oce.plot.ts.html'>oce.plot.ts</a></span><span class='op'>(</span><span class='va'>sealevelTuktoyaktuk</span><span class='op'>[[</span><span class='st'>"time"</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>p0</span><span class='op'>)</span>
+<span class='va'>ylim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"usr"</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>3</span><span class='op'>:</span><span class='fl'>4</span><span class='op'>]</span> <span class='co'># to match scales in other panels</span>
+<span class='fu'><a href='oce.plot.ts.html'>oce.plot.ts</a></span><span class='op'>(</span><span class='va'>sealevelTuktoyaktuk</span><span class='op'>[[</span><span class='st'>"time"</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>p1</span>, ylim<span class='op'>=</span><span class='va'>ylim</span><span class='op'>)</span>
+<span class='fu'><a href='oce.plot.ts.html'>oce.plot.ts</a></span><span class='op'>(</span><span class='va'>sealevelTuktoyaktuk</span><span class='op'>[[</span><span class='st'>"time"</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>p2</span>, ylim<span class='op'>=</span><span class='va'>ylim</span><span class='op'>)</span>
+</div><div class='img'><img src='as.tidem-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -298,7 +302,7 @@ name  amplitude      phase
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

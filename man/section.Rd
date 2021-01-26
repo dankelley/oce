@@ -18,9 +18,10 @@ Multanovsky, undertaking a westward transect from the Mediterranean outflow
 region across to North America, with a change of heading in the last few dozen
 stations to run across the nominal Gulf Stream axis.
 The data flags follow the "WHP Bottle"convention, set by
-\code{\link[=initializeFlagScheme,section-method]{initializeFlagScheme,section-method()}} to \code{"WHP bottle"}; see
-\url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
-for more information on World Hydrographic Program flag conventions.
+\code{\link[=initializeFlagScheme,section-method]{initializeFlagScheme,section-method()}} to \code{"WHP bottle"}.  This convention
+used to be described at the link
+\verb{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+but that was found to fail in December 2020.
 }
 \examples{
 \dontrun{
@@ -37,6 +38,7 @@ plot(GSg, map.xlim=c(-80,-60))
 Other datasets provided with oce: 
 \code{\link{adp}},
 \code{\link{adv}},
+\code{\link{amsr}},
 \code{\link{argo}},
 \code{\link{cm}},
 \code{\link{coastlineWorld}},
@@ -51,6 +53,7 @@ Other datasets provided with oce:
 \code{\link{rsk}},
 \code{\link{sealevelTuktoyaktuk}},
 \code{\link{sealevel}},
+\code{\link{topoNS}},
 \code{\link{topoWorld}},
 \code{\link{wind}},
 \code{\link{xbt}}

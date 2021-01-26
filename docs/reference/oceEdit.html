@@ -81,7 +81,7 @@ log of the returned object." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -122,7 +122,7 @@ log of the returned object." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -149,15 +149,15 @@ log of the returned object." />
 log of the returned object.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>oceEdit</span>(
-  <span class='no'>x</span>,
-  <span class='no'>item</span>,
-  <span class='no'>value</span>,
-  <span class='no'>action</span>,
-  <span class='kw'>reason</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>person</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>oceEdit</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>item</span>,
+  <span class='va'>value</span>,
+  <span class='va'>action</span>,
+  reason <span class='op'>=</span> <span class='st'>""</span>,
+  person <span class='op'>=</span> <span class='st'>""</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -173,7 +173,7 @@ on the sub-class of <code>x</code>.</p></td>
 <code>metadata</code> or <code>data</code> slot, the former being checked first.
 An exception is if <code>item</code> starts with <code>"data@"</code> or
 <code>"metadata@"</code>, in which case the named slot is updated with a changed
-value of the contents of <code>item</code> after the <code>@</code> character.</p></td>
+value of the contents of <code>item</code> after the <code><a href='https://rdrr.io/r/base/slotOp.html'>@</a></code> character.</p></td>
     </tr>
     <tr>
       <th>value</th>
@@ -210,14 +210,14 @@ appropriately, and with a log item indicating the nature of the alteration.</p>
 either the object's metadata or data slot may be altered. There are
 two ways in which this can be done.</p><ul>
 <li><p>Case 1A. If the <code>item</code> string does not contain an
-<code>@</code> character, then the <code>metadata</code> slot is examined
+<code><a href='https://rdrr.io/r/base/slotOp.html'>@</a></code> character, then the <code>metadata</code> slot is examined
 for an entry named <code>item</code>, and that is modified if so.
 Alternatively, if <code>item</code> is found in <code>metadata</code>, then
 that value is modified. However, if <code>item</code> is not found in
 either <code>metadata</code> or <code>data</code>, then an error is reported
 (see 1B for how to add something that does not yet exist).</p></li>
 <li><p>Case 1B. If the <code>item</code> string contains
-the <code>@</code> character, then the text to the left of that character
+the <code><a href='https://rdrr.io/r/base/slotOp.html'>@</a></code> character, then the text to the left of that character
 must be either <code>"metadata"</code> or <code>"data"</code>, and it names the slot
 in which the change is done. In contrast with case 1A, this will
 <em>create</em> a new item, if it is not already in existence.</p></li>
@@ -233,13 +233,17 @@ Indeed, this is the main benefit to using this function, instead of altering
 the object directly.  The log entry will be most useful if it contains a
 brief note on the <code>reason</code> for the change, and the name of the
 <code>person</code> doing the work.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
-<span class='no'>ctd2</span> <span class='kw'>&lt;-</span> <span class='fu'>oceEdit</span>(<span class='no'>ctd</span>, <span class='kw'>item</span><span class='kw'>=</span><span class='st'>"latitude"</span>, <span class='kw'>value</span><span class='kw'>=</span><span class='fl'>47.8879</span>,
-               <span class='kw'>reason</span><span class='kw'>=</span><span class='st'>"illustration"</span>, <span class='kw'>person</span><span class='kw'>=</span><span class='st'>"Dan Kelley"</span>)
-<span class='no'>ctd3</span> <span class='kw'>&lt;-</span> <span class='fu'>oceEdit</span>(<span class='no'>ctd</span>,<span class='kw'>action</span><span class='kw'>=</span><span class='st'>"x@data$pressure&lt;-x@data$pressure-1"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: the 'action' method may not work -- this needs testing!</span></div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+<span class='va'>ctd2</span> <span class='op'>&lt;-</span> <span class='fu'>oceEdit</span><span class='op'>(</span><span class='va'>ctd</span>, item<span class='op'>=</span><span class='st'>"latitude"</span>, value<span class='op'>=</span><span class='fl'>47.8879</span>,
+               reason<span class='op'>=</span><span class='st'>"illustration"</span>, person<span class='op'>=</span><span class='st'>"Dan Kelley"</span><span class='op'>)</span>
+<span class='va'>ctd3</span> <span class='op'>&lt;-</span> <span class='fu'>oceEdit</span><span class='op'>(</span><span class='va'>ctd</span>,action<span class='op'>=</span><span class='st'>"x@data$pressure&lt;-x@data$pressure-1"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: the 'action' method may not work -- this needs testing!</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -255,7 +259,7 @@ brief note on the <code>reason</code> for the change, and the name of the
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

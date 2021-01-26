@@ -86,7 +86,7 @@ respectively, and finally to use atan2() to infer the angles." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -127,7 +127,7 @@ respectively, and finally to use atan2() to infer the angles." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -159,7 +159,7 @@ The method is to use the cosine and sine of the angle, to construct "x" and
 respectively, and finally to use <code><a href='https://rdrr.io/r/base/Trig.html'>atan2()</a></code> to infer the angles.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>unwrapAngle</span>(<span class='no'>angle</span>)</pre>
+    <pre class="usage"><span class='fu'>unwrapAngle</span><span class='op'>(</span><span class='va'>angle</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -176,15 +176,24 @@ added noise</p></td>
     <p>A list with two estimates: <code>mean</code> is based on an arithmetic
 mean, and <code>median</code> is based on the median. Both are mapped to the range
 0 to 360.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='no'>true</span> <span class='kw'>&lt;-</span> <span class='fl'>355</span>
-<span class='no'>a</span> <span class='kw'>&lt;-</span> <span class='no'>true</span> + <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>100</span>, <span class='kw'>sd</span><span class='kw'>=</span><span class='fl'>10</span>)
-<span class='no'>a</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span>(<span class='no'>a</span> <span class='kw'>&gt;</span> <span class='fl'>360</span>, <span class='no'>a</span> - <span class='fl'>360</span>, <span class='no'>a</span>)
-<span class='no'>a2</span> <span class='kw'>&lt;-</span> <span class='fu'>unwrapAngle</span>(<span class='no'>a</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>5</span>, <span class='fl'>3</span>))
-<span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span>(<span class='no'>a</span>, <span class='kw'>breaks</span><span class='kw'>=</span><span class='fl'>360</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span>(<span class='kw'>v</span><span class='kw'>=</span><span class='no'>a2</span>$<span class='no'>mean</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"blue"</span>, <span class='kw'>lty</span><span class='kw'>=</span><span class='st'>"dashed"</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span>(<span class='kw'>v</span><span class='kw'>=</span><span class='no'>true</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"blue"</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span>(<span class='st'>"true (solid)\n estimate (dashed)"</span>, <span class='kw'>at</span><span class='kw'>=</span><span class='no'>true</span>, <span class='kw'>side</span><span class='kw'>=</span><span class='fl'>3</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"blue"</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span>(<span class='kw'>v</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>a</span>), <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"red"</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span>(<span class='st'>"mean"</span>, <span class='kw'>at</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>a</span>), <span class='kw'>side</span><span class='kw'>=</span><span class='fl'>3</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"red"</span>)</div><div class='img'><img src='unwrapAngle-1.png' alt='' width='700' height='433' /></div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='va'>true</span> <span class='op'>&lt;-</span> <span class='fl'>355</span>
+<span class='va'>a</span> <span class='op'>&lt;-</span> <span class='va'>true</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>100</span>, sd<span class='op'>=</span><span class='fl'>10</span><span class='op'>)</span>
+<span class='va'>a</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='va'>a</span> <span class='op'>&gt;</span> <span class='fl'>360</span>, <span class='va'>a</span> <span class='op'>-</span> <span class='fl'>360</span>, <span class='va'>a</span><span class='op'>)</span>
+<span class='va'>a2</span> <span class='op'>&lt;-</span> <span class='fu'>unwrapAngle</span><span class='op'>(</span><span class='va'>a</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>5</span>, <span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span><span class='op'>(</span><span class='va'>a</span>, breaks<span class='op'>=</span><span class='fl'>360</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span><span class='op'>(</span>v<span class='op'>=</span><span class='va'>a2</span><span class='op'>$</span><span class='va'>mean</span>, col<span class='op'>=</span><span class='st'>"blue"</span>, lty<span class='op'>=</span><span class='st'>"dashed"</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span><span class='op'>(</span>v<span class='op'>=</span><span class='va'>true</span>, col<span class='op'>=</span><span class='st'>"blue"</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span><span class='op'>(</span><span class='st'>"true (solid)\n estimate (dashed)"</span>, at<span class='op'>=</span><span class='va'>true</span>, side<span class='op'>=</span><span class='fl'>3</span>, col<span class='op'>=</span><span class='st'>"blue"</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span><span class='op'>(</span>v<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>a</span><span class='op'>)</span>, col<span class='op'>=</span><span class='st'>"red"</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span><span class='op'>(</span><span class='st'>"mean"</span>, at<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>a</span><span class='op'>)</span>, side<span class='op'>=</span><span class='fl'>3</span>, col<span class='op'>=</span><span class='st'>"red"</span><span class='op'>)</span>
+</div><div class='img'><img src='unwrapAngle-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -200,7 +209,7 @@ mean, and <code>median</code> is based on the median. Both are mapped to the ran
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

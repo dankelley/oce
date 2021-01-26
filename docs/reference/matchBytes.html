@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,7 +147,7 @@
     <p>Find spots in a raw vector that match a given byte sequence.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>matchBytes</span>(<span class='no'>input</span>, <span class='no'>b1</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>matchBytes</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>b1</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -171,11 +171,16 @@ for 1-byte, use <code><a href='https://rdrr.io/r/base/which.html'>which()</a></c
 
     <p>List of the indices of <code>input</code> that match the start of the
 <code>bytes</code> sequence (see example).</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>buf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/raw.html'>as.raw</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0xa5</span>, <span class='fl'>0x11</span>, <span class='fl'>0xaa</span>, <span class='fl'>0xa5</span>, <span class='fl'>0x11</span>, <span class='fl'>0x00</span>))
-<span class='no'>match</span> <span class='kw'>&lt;-</span> <span class='fu'>matchBytes</span>(<span class='no'>buf</span>, <span class='fl'>0xa5</span>, <span class='fl'>0x11</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>buf</span>)</div><div class='output co'>#&gt; [1] a5 11 aa a5 11 00</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>match</span>)</div><div class='output co'>#&gt; [1] 1 4</div></pre>
+    <pre class="examples"><div class='input'><span class='va'>buf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/raw.html'>as.raw</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0xa5</span>, <span class='fl'>0x11</span>, <span class='fl'>0xaa</span>, <span class='fl'>0xa5</span>, <span class='fl'>0x11</span>, <span class='fl'>0x00</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>match</span> <span class='op'>&lt;-</span> <span class='fu'>matchBytes</span><span class='op'>(</span><span class='va'>buf</span>, <span class='fl'>0xa5</span>, <span class='fl'>0x11</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>buf</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] a5 11 aa a5 11 00</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>match</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 1 4</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -191,7 +196,7 @@ for 1-byte, use <code><a href='https://rdrr.io/r/base/which.html'>which()</a></c
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

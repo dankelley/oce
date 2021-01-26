@@ -181,6 +181,7 @@ The documentation for \linkS4class{adv} explains the structure
 of ADV objects, and also outlines the other functions dealing with them.
 
 Other functions that plot oce data: 
+\code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,amsr-method}},
 \code{\link{plot,argo-method}},

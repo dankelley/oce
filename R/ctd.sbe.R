@@ -184,13 +184,13 @@
 #' }
 #' Notes:
 #' 1. 'pr' is in a Dalhousie-generated data file but seems not to be in reference 1.
-#' 2. this is an odd unit, and so if `sw*` functions are called on an object
+#' 2. This is an odd unit, and so if `sw*` functions are called on an object
 #' containing this, a conversion will be made before performing the computation. Be
 #' on the lookout for errors, since this is a rare situation.
-#' 3. assume ITS-90 temperature scale, since sample `.cnv` file headers do not specify it.
-#' 4. some files have PSU for this. Should we handle that? And are there other S scales to consider?
-#' 5. 'theta' may appear in different ways with different encoding configurations, set up
-#' within R or in the operating system.
+#' 3. Assume ITS-90 temperature scale, since sample `.cnv` file headers do not specify it.
+#' 4. Some files have PSU for this. Should we handle that? And are there other S scales to consider?
+#' 5. The 'theta' symbol (here shown accented e) may appear in different ways with different
+#' encoding configurations, set up within R or in the operating system.
 #'
 #' @param h The header line.
 #'

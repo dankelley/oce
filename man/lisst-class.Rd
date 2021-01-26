@@ -70,8 +70,8 @@ retrieve derived items.
 }
 
 \references{
-A users's manual for the LISST-100 instrument is available at
-the manufacturer's website \url{http://www.sequoiasci.com}.
+Information about LISST instruments is provided at
+the manufacturer's website, \verb{https://www.sequoiasci.com}.
 }
 \seealso{
 Other classes provided by oce: 

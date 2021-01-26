@@ -564,8 +564,6 @@ setMethod(f="plot",
               res <- list(xat=NULL, yat=NULL)
               dotsNames <- names(dots)
               oceDebug(debug, "plot() { # for echosounder\n", unindent=1, style="bold")
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,echosounder-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               opar <- par(no.readonly = TRUE)
               lw <- length(which)
               if (length(beam) < lw)

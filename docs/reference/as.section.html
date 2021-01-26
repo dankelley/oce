@@ -81,7 +81,7 @@ objects that can be coerced to a section. There are three cases." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -122,7 +122,7 @@ objects that can be coerced to a section. There are three cases." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -149,15 +149,15 @@ objects that can be coerced to a section. There are three cases." />
 objects that can be coerced to a section. There are three cases.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>as.section</span>(
-  <span class='no'>salinity</span>,
-  <span class='no'>temperature</span>,
-  <span class='no'>pressure</span>,
-  <span class='no'>longitude</span>,
-  <span class='no'>latitude</span>,
-  <span class='no'>station</span>,
-  <span class='kw'>sectionId</span> <span class='kw'>=</span> <span class='st'>""</span>
-)</pre>
+    <pre class="usage"><span class='fu'>as.section</span><span class='op'>(</span>
+  <span class='va'>salinity</span>,
+  <span class='va'>temperature</span>,
+  <span class='va'>pressure</span>,
+  <span class='va'>longitude</span>,
+  <span class='va'>latitude</span>,
+  <span class='va'>station</span>,
+  sectionId <span class='op'>=</span> <span class='st'>""</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -221,11 +221,11 @@ and these are assembled into a section to be returned.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to section data: 
-<code><a href='sub-sub-section-method.html'>[[,section-method</a></code>,
+<code><a href='[[,section-method.html'>[[,section-method</a></code>,
 <code>[[&lt;-,section-method</code>,
-<code><a href='handleFlags-section-method.html'>handleFlags,section-method</a></code>,
-<code><a href='initializeFlagScheme-section-method.html'>initializeFlagScheme,section-method</a></code>,
-<code><a href='plot-section-method.html'>plot,section-method</a></code>,
+<code><a href='handleFlags,section-method.html'>handleFlags,section-method</a></code>,
+<code><a href='initializeFlagScheme,section-method.html'>initializeFlagScheme,section-method</a></code>,
+<code><a href='plot,section-method.html'>plot,section-method</a></code>,
 <code><a href='read.section.html'>read.section</a>()</code>,
 <code><a href='section-class.html'>section-class</a></code>,
 <code><a href='sectionAddStation.html'>sectionAddStation</a>()</code>,
@@ -233,20 +233,24 @@ and these are assembled into a section to be returned.</p>
 <code><a href='sectionSmooth.html'>sectionSmooth</a>()</code>,
 <code><a href='sectionSort.html'>sectionSort</a>()</code>,
 <code><a href='section.html'>section</a></code>,
-<code><a href='subset-section-method.html'>subset,section-method</a></code>,
-<code><a href='summary-section-method.html'>summary,section-method</a></code></p></div>
+<code><a href='subset,section-method.html'>subset,section-method</a></code>,
+<code><a href='summary,section-method.html'>summary,section-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
 <span class='co'>## vector of names of CTD objects</span>
-<span class='no'>fake</span> <span class='kw'>&lt;-</span> <span class='no'>ctd</span>
-<span class='no'>fake</span><span class='kw'>[[</span><span class='st'>"temperature"</span>]] <span class='kw'>&lt;-</span> <span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"temperature"</span>]] + <span class='fl'>0.5</span>
-<span class='no'>fake</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]] <span class='kw'>&lt;-</span> <span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]] + <span class='fl'>0.1</span>
-<span class='no'>fake</span><span class='kw'>[[</span><span class='st'>"longitude"</span>]] <span class='kw'>&lt;-</span> <span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"longitude"</span>]] + <span class='fl'>0.01</span>
-<span class='no'>fake</span><span class='kw'>[[</span><span class='st'>"station"</span>]] <span class='kw'>&lt;-</span> <span class='st'>"fake"</span>
-<span class='no'>sec1</span> <span class='kw'>&lt;-</span> <span class='fu'>as.section</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"ctd"</span>, <span class='st'>"fake"</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>sec1</span>)</div><div class='output co'>#&gt; Section Summary
+<span class='va'>fake</span> <span class='op'>&lt;-</span> <span class='va'>ctd</span>
+<span class='va'>fake</span><span class='op'>[[</span><span class='st'>"temperature"</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>ctd</span><span class='op'>[[</span><span class='st'>"temperature"</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>+</span> <span class='fl'>0.5</span>
+<span class='va'>fake</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>ctd</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>+</span> <span class='fl'>0.1</span>
+<span class='va'>fake</span><span class='op'>[[</span><span class='st'>"longitude"</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>ctd</span><span class='op'>[[</span><span class='st'>"longitude"</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>+</span> <span class='fl'>0.01</span>
+<span class='va'>fake</span><span class='op'>[[</span><span class='st'>"station"</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='st'>"fake"</span>
+<span class='va'>sec1</span> <span class='op'>&lt;-</span> <span class='fu'>as.section</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ctd"</span>, <span class='st'>"fake"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>sec1</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Section Summary
 #&gt; ---------------
 #&gt; 
 #&gt; * Source: ""
@@ -257,12 +261,14 @@ and these are assembled into a section to be returned.</p>
 #&gt;     2  fake -63.6339  44.6843     181    44
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2020-07-21 16:49:05 UTC: `create 'section' object`
-#&gt;     - 2020-07-21 16:49:05 UTC: `as.section(salinity = c("ctd", "fake"))`</div><div class='input'><span class='co'>## vector of CTD objects</span>
-<span class='no'>ctds</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/vector.html'>vector</a></span>(<span class='st'>"list"</span>, <span class='fl'>2</span>)
-<span class='no'>ctds</span><span class='kw'>[[</span><span class='fl'>1</span>]] <span class='kw'>&lt;-</span> <span class='no'>ctd</span>
-<span class='no'>ctds</span><span class='kw'>[[</span><span class='fl'>2</span>]] <span class='kw'>&lt;-</span> <span class='no'>fake</span>
-<span class='no'>sec2</span> <span class='kw'>&lt;-</span> <span class='fu'>as.section</span>(<span class='no'>ctds</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: estimated waterDepth as max(pressure) for CTDs numbered 1:2</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>sec2</span>)</div><div class='output co'>#&gt; Section Summary
+#&gt;     - 2021-01-26 21:47:46 UTC: `create 'section' object`
+#&gt;     - 2021-01-26 21:47:46 UTC: `as.section(salinity = c("ctd", "fake"))`</div><div class='input'><span class='co'>## vector of CTD objects</span>
+<span class='va'>ctds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/vector.html'>vector</a></span><span class='op'>(</span><span class='st'>"list"</span>, <span class='fl'>2</span><span class='op'>)</span>
+<span class='va'>ctds</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>ctd</span>
+<span class='va'>ctds</span><span class='op'>[[</span><span class='fl'>2</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>fake</span>
+<span class='va'>sec2</span> <span class='op'>&lt;-</span> <span class='fu'>as.section</span><span class='op'>(</span><span class='va'>ctds</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: estimated waterDepth as max(pressure) for CTDs numbered 1:2</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>sec2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Section Summary
 #&gt; ---------------
 #&gt; 
 #&gt; * Source: ""
@@ -273,11 +279,12 @@ and these are assembled into a section to be returned.</p>
 #&gt;     2  fake -63.6339  44.6843     181    44
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2020-07-21 16:49:05 UTC: `create 'section' object`
-#&gt;     - 2020-07-21 16:49:05 UTC: `as.section(salinity = ctds)`</div><div class='input'><span class='co'>## argo data (a subset)</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>argo</span>)
-<span class='no'>sec3</span> <span class='kw'>&lt;-</span> <span class='fu'>as.section</span>(<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>argo</span>, <span class='no'>profile</span><span class='kw'>&lt;</span><span class='fl'>5</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>sec3</span>)</div><div class='output co'>#&gt; Section Summary
+#&gt;     - 2021-01-26 21:47:46 UTC: `create 'section' object`
+#&gt;     - 2021-01-26 21:47:46 UTC: `as.section(salinity = ctds)`</div><div class='input'><span class='co'>## argo data (a subset)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>argo</span><span class='op'>)</span>
+<span class='va'>sec3</span> <span class='op'>&lt;-</span> <span class='fu'>as.section</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>argo</span>, <span class='va'>profile</span><span class='op'>&lt;</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>sec3</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Section Summary
 #&gt; ---------------
 #&gt; 
 #&gt; * Source: ""
@@ -290,8 +297,8 @@ and these are assembled into a section to be returned.</p>
 #&gt;     4     4 -22.4160  61.2520      56  1768
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2020-07-21 16:49:05 UTC: `create 'section' object`
-#&gt;     - 2020-07-21 16:49:05 UTC: `as.section(salinity = subset(argo, profile &lt; 5))`</div><div class='input'>
+#&gt;     - 2021-01-26 21:47:46 UTC: `create 'section' object`
+#&gt;     - 2021-01-26 21:47:46 UTC: `as.section(salinity = subset(argo, profile &lt; 5))`</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -308,7 +315,7 @@ and these are assembled into a section to be returned.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

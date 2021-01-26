@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,13 +147,13 @@
     <p>Translate data names in the ODF convention to similar names in the Oce convention.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ODFNames2oceNames</span>(
-  <span class='no'>ODFnames</span>,
-  <span class='kw'>ODFunits</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>columns</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>PARAMETER_HEADER</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>ODFNames2oceNames</span><span class='op'>(</span>
+  <span class='va'>ODFnames</span>,
+  ODFunits <span class='op'>=</span> <span class='cn'>NULL</span>,
+  columns <span class='op'>=</span> <span class='cn'>NULL</span>,
+  PARAMETER_HEADER <span class='op'>=</span> <span class='cn'>NULL</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -244,7 +244,7 @@ the name of the (i-1)-th column and appending <code>"Flag"</code>.</p><table cla
 <tr><td><code>TE90_*.*</code></td><td><code>temperature</code></td><td>Used mainly in <code>ctd</code> objects</td></tr>
 <tr><td><code>TEMP_*.*</code></td><td><code>temperature</code></td><td>Used mainly in <code>ctd</code> objects</td></tr>
 <tr><td><code>TOTP_*.*</code></td><td><code>pressureAbsolute</code></td><td>Used mainly in <code>ctd</code> objects</td></tr>
-<tr><td><code>UNKN_*.*</code></td><td><code>-</code></td><td>The result is context-dependent</td></tr>
+<tr><td><code>UNKN_*.*</code></td><td><code><a href='https://rdrr.io/r/base/Arithmetic.html'>-</a></code></td><td>The result is context-dependent</td></tr>
 <tr><td><code>VAIS_*.*</code></td><td><code>BVFrequency</code></td><td></td></tr>
 <tr><td><code>VCSP_*.*</code></td><td><code>w</code></td><td>Used in <code>adp</code> objects</td></tr>
 </table>
@@ -290,14 +290,17 @@ for the <a href='odf-class.html'>odf</a>.</p>
 <code><a href='CTD_BCD2014666_008_1_DN.ODF.gz.html'>CTD_BCD2014666_008_1_DN.ODF.gz</a></code>,
 <code><a href='ODF2oce.html'>ODF2oce</a>()</code>,
 <code><a href='ODFListFromHeader.html'>ODFListFromHeader</a>()</code>,
-<code><a href='sub-sub-odf-method.html'>[[,odf-method</a></code>,
+<code><a href='[[,odf-method.html'>[[,odf-method</a></code>,
 <code>[[&lt;-,odf-method</code>,
 <code><a href='odf-class.html'>odf-class</a></code>,
-<code><a href='plot-odf-method.html'>plot,odf-method</a></code>,
+<code><a href='plot,odf-method.html'>plot,odf-method</a></code>,
 <code><a href='read.ctd.odf.html'>read.ctd.odf</a>()</code>,
 <code><a href='read.odf.html'>read.odf</a>()</code>,
-<code><a href='subset-odf-method.html'>subset,odf-method</a></code>,
-<code><a href='summary-odf-method.html'>summary,odf-method</a></code></p></div>
+<code><a href='subset,odf-method.html'>subset,odf-method</a></code>,
+<code><a href='summary,odf-method.html'>summary,odf-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -314,7 +317,7 @@ for the <a href='odf-class.html'>odf</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

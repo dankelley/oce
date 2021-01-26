@@ -1291,6 +1291,7 @@ beamName <- function(x, which)
 #'
 #' @param despike if `TRUE`, [despike()] will be used to clean
 #' anomalous spikes in heading, etc.
+#'
 #' @template adpTemplate
 #'
 #' @author Dan Kelley and Clark Richards
@@ -1303,6 +1304,8 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
                      debug=getOption("oceDebug"),
                      ...)
 {
+    if (!interactive())
+        monitor <- FALSE
     fromGiven <- !missing(from) # FIXME document THIS
     toGiven <- !missing(to) # FIXME document THIS
     byGiven <- !missing(by) # FIXME document THIS
@@ -1714,8 +1717,6 @@ setMethod(f="plot",
               ## oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
               ## oceDebug(debug, "par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
               ## oceDebug(debug, "mai.palette=", paste(mai.palette, collapse=" "), "\n")
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,adp-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               instrumentType <- x[["instrumentType"]]
               if (is.null(instrumentType))
                   instrumentType <- "" # simplifies later checks
@@ -1912,7 +1913,7 @@ setMethod(f="plot",
 
               tt <- x[["time", j]]
               ##ttDia <- x@data$timeDia  # may be null
-              class(tt) <- "POSIXct"              # otherwise image() gives warnings
+              class(tt) <- c("POSIXct", "POSIXt") # otherwise image() gives warnings
               if (!zlimGiven && all(which %in% 5:8)) {
                   ## single scale for all 'a' (amplitude) data
                   zlim <- range(abs(as.numeric(x[["a"]][, , which[1]-4])), na.rm=TRUE) # FIXME name of item missing, was ma
@@ -1991,6 +1992,8 @@ setMethod(f="plot",
                           } else {
                               oceDebug(debug, "a velocity component image/timeseries\n")
                               z <- x[["v", j]][, , which[w]]
+                              oceDebug(debug, "class(z) after subsetting for 3rd dimension:: ", class(z), "\n")
+                              ## oceDebug(debug, "dim(z): ", paste(dim(z), collapse="x"), "\n")
                               zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
                               oceDebug(debug, "zlab:", zlab, "\n")
                               xdistance <- x[["distance", j]]
@@ -1999,8 +2002,18 @@ setMethod(f="plot",
                               oceDebug(debug, vectorShow(y.look))
                               if (0 == sum(y.look))
                                   stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse=","), ")")
-                              zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
-                                  if (breaksGiven) NULL else max(abs(z[, y.look]), na.rm=TRUE) * c(-1, 1)
+                              zlim <- if (zlimGiven) {
+                                  zlimAsGiven[w, ]
+                              } else {
+                                  if (breaksGiven) {
+                                      NULL
+                                  } else {
+                                      if (is.array(z)){
+                                          max(abs(z[, y.look]), na.rm=TRUE) * c(-1, 1)
+                                      } else {
+                                          max(abs(z), na.rm=TRUE) * c(-1, 1)
+                                      }
+                                  }
                               }
                               oceDebug(debug, "zlim: ", paste(zlim, collapse=" "), "\n")
                           }
@@ -2894,7 +2907,8 @@ setMethod(f="plot",
 #' [xyzToEnuAdp()].
 #'
 #' @references
-#' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
+#' 1. @template nortekCoordTemplate
+#'
 #' @family things related to adp data
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
@@ -2961,7 +2975,7 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 #' lines(apply(a,2,median), distance, type='l',col='red')
 #' legend("topright",lwd=1,col=c("black","red"),legend=c("original","attenuated"))
 #' ## Image
-#' plot(adp.att, which="amplitude",col=oce.colorsJet(100))
+#' plot(adp.att, which="amplitude",col=oce.colorsViridis(100))
 #'
 #' @family things related to adp data
 beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALSE, debug=getOption("oceDebug"))

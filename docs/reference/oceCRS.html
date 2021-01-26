@@ -82,7 +82,7 @@ plot,coastline-method()." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -123,7 +123,7 @@ plot,coastline-method()." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -148,10 +148,10 @@ plot,coastline-method()." />
     <div class="ref-description">
     <p>Create a coordinate reference string (CRS), suitable for use as a
 <code>projection</code> argument to <code><a href='mapPlot.html'>mapPlot()</a></code> or
-<code><a href='plot-coastline-method.html'>plot,coastline-method()</a></code>.</p>
+<code><a href='plot,coastline-method.html'>plot,coastline-method()</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>oceCRS</span>(<span class='no'>region</span>)</pre>
+    <pre class="usage"><span class='fu'>oceCRS</span><span class='op'>(</span><span class='va'>region</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -202,16 +202,27 @@ guided by real-world usage.</p>
 <code><a href='shiftLongitude.html'>shiftLongitude</a>()</code>,
 <code><a href='usrLonLat.html'>usrLonLat</a>()</code>,
 <code><a href='utm2lonlat.html'>utm2lonlat</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>coastlineWorld</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>proj</span><span class='kw'>=</span><span class='fu'>oceCRS</span>(<span class='st'>"Atlantic"</span>), <span class='kw'>span</span><span class='kw'>=</span><span class='fl'>12000</span>)</div><div class='img'><img src='oceCRS-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>proj</span><span class='kw'>=</span><span class='fu'>oceCRS</span>(<span class='st'>"North Atlantic"</span>), <span class='kw'>span</span><span class='kw'>=</span><span class='fl'>8000</span>)</div><div class='img'><img src='oceCRS-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>proj</span><span class='kw'>=</span><span class='fu'>oceCRS</span>(<span class='st'>"South Atlantic"</span>), <span class='kw'>span</span><span class='kw'>=</span><span class='fl'>8000</span>)</div><div class='img'><img src='oceCRS-3.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>proj</span><span class='kw'>=</span><span class='fu'>oceCRS</span>(<span class='st'>"Arctic"</span>), <span class='kw'>span</span><span class='kw'>=</span><span class='fl'>4000</span>)</div><div class='img'><img src='oceCRS-4.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>proj</span><span class='kw'>=</span><span class='fu'>oceCRS</span>(<span class='st'>"Antarctic"</span>), <span class='kw'>span</span><span class='kw'>=</span><span class='fl'>10000</span>)</div><div class='img'><img src='oceCRS-5.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Avoid ugly horizontal lines, an artifact of longitude shifting.</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, projection<span class='op'>=</span><span class='fu'>oceCRS</span><span class='op'>(</span><span class='st'>"Atlantic"</span><span class='op'>)</span>, span<span class='op'>=</span><span class='fl'>12000</span><span class='op'>)</span>
+</div><div class='img'><img src='oceCRS-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, projection<span class='op'>=</span><span class='fu'>oceCRS</span><span class='op'>(</span><span class='st'>"North Atlantic"</span><span class='op'>)</span>, span<span class='op'>=</span><span class='fl'>8000</span><span class='op'>)</span>
+</div><div class='img'><img src='oceCRS-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, projection<span class='op'>=</span><span class='fu'>oceCRS</span><span class='op'>(</span><span class='st'>"South Atlantic"</span><span class='op'>)</span>, span<span class='op'>=</span><span class='fl'>8000</span><span class='op'>)</span>
+</div><div class='img'><img src='oceCRS-3.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, projection<span class='op'>=</span><span class='fu'>oceCRS</span><span class='op'>(</span><span class='st'>"Arctic"</span><span class='op'>)</span>, span<span class='op'>=</span><span class='fl'>4000</span><span class='op'>)</span>
+</div><div class='img'><img src='oceCRS-4.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, projection<span class='op'>=</span><span class='fu'>oceCRS</span><span class='op'>(</span><span class='st'>"Antarctic"</span><span class='op'>)</span>, span<span class='op'>=</span><span class='fl'>10000</span><span class='op'>)</span>
+</div><div class='img'><img src='oceCRS-5.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Avoid ugly horizontal lines, an artifact of longitude shifting.</span>
 <span class='co'># Note: we cannot fill the land once we shift, either.</span>
-<span class='no'>pacific</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span>(<span class='no'>coastlineWorld</span>, -<span class='fl'>180</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>pacific</span>, <span class='kw'>proj</span><span class='kw'>=</span><span class='fu'>oceCRS</span>(<span class='st'>"Pacific"</span>), <span class='kw'>span</span><span class='kw'>=</span><span class='fl'>15000</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='kw'>NULL</span>)</div><div class='img'><img src='oceCRS-6.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>pacific</span>, <span class='kw'>proj</span><span class='kw'>=</span><span class='fu'>oceCRS</span>(<span class='st'>"North Pacific"</span>), <span class='kw'>span</span><span class='kw'>=</span><span class='fl'>12000</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='kw'>NULL</span>)</div><div class='img'><img src='oceCRS-7.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>pacific</span>, <span class='kw'>proj</span><span class='kw'>=</span><span class='fu'>oceCRS</span>(<span class='st'>"South Pacific"</span>), <span class='kw'>span</span><span class='kw'>=</span><span class='fl'>12000</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='kw'>NULL</span>)</div><div class='img'><img src='oceCRS-8.png' alt='' width='700' height='433' /></div><div class='input'># }
+<span class='va'>pacific</span> <span class='op'>&lt;-</span> <span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, <span class='op'>-</span><span class='fl'>180</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>pacific</span>, proj<span class='op'>=</span><span class='fu'>oceCRS</span><span class='op'>(</span><span class='st'>"Pacific"</span><span class='op'>)</span>, span<span class='op'>=</span><span class='fl'>15000</span>, col<span class='op'>=</span><span class='cn'>NULL</span><span class='op'>)</span>
+</div><div class='img'><img src='oceCRS-6.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>pacific</span>, proj<span class='op'>=</span><span class='fu'>oceCRS</span><span class='op'>(</span><span class='st'>"North Pacific"</span><span class='op'>)</span>, span<span class='op'>=</span><span class='fl'>12000</span>, col<span class='op'>=</span><span class='cn'>NULL</span><span class='op'>)</span>
+</div><div class='img'><img src='oceCRS-7.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>pacific</span>, proj<span class='op'>=</span><span class='fu'>oceCRS</span><span class='op'>(</span><span class='st'>"South Pacific"</span><span class='op'>)</span>, span<span class='op'>=</span><span class='fl'>12000</span>, col<span class='op'>=</span><span class='cn'>NULL</span><span class='op'>)</span>
+</div><div class='img'><img src='oceCRS-8.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -228,7 +239,7 @@ guided by real-world usage.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

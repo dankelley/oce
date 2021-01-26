@@ -43,7 +43,9 @@
 <meta property="og:description" content="This is patterned on a matlab/python scheme (reference 1) that blends
 from yellow to blue in a way that is designed to reproduce well
 in black-and-white, and to be interpretable by those with
-certain forms of color blindness (references 3-4)." />
+certain forms of color blindness (references 3-4).  An alternative
+to this is provide in the viridis package, as illustrated
+in Example 2." />
 
 
 
@@ -83,7 +85,7 @@ certain forms of color blindness (references 3-4)." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +126,7 @@ certain forms of color blindness (references 3-4)." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -150,10 +152,12 @@ certain forms of color blindness (references 3-4)." />
     <p>This is patterned on a matlab/python scheme (reference 1) that blends
 from yellow to blue in a way that is designed to reproduce well
 in black-and-white, and to be interpretable by those with
-certain forms of color blindness (references 3-4).</p>
+certain forms of color blindness (references 3-4).  An alternative
+to this is provide in the <a href='https://CRAN.R-project.org/package=viridis'><span class="pkg">viridis</span></a> package, as illustrated
+in Example 2.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>oceColorsViridis</span>(<span class='no'>n</span>)</pre>
+    <pre class="usage"><span class='fu'>oceColorsViridis</span><span class='op'>(</span><span class='va'>n</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -172,7 +176,8 @@ certain forms of color blindness (references 3-4).</p>
 scales is at <a href='http://bids.github.io/colormap/'>http://bids.github.io/colormap/</a>.</p></li>
 <li><p>Light, A., and P. J. Bartlein, 2004. The End of the Rainbow? Color
 Schemes for Improved Data Graphics. <em>Eos Trans. AGU</em>, 85(40),
-doi:10.1029/2004EO400002.</p></li>
+doi: <a href='https://doi.org/10.1029/2004EO400002'>10.1029/2004EO400002</a>
+.</p></li>
 <li><p>Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
 Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
 <samp>https://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html</samp>.</p></li>
@@ -204,11 +209,21 @@ graphics,'' by A. Light and P. J. Bartlein. <em>Eos Trans. AGU</em>, 86(20).</p>
 <code><a href='oceColorsVelocity.html'>oceColorsVelocity</a>()</code>,
 <code><a href='oceColorsVorticity.html'>oceColorsVorticity</a>()</code>,
 <code><a href='ocecolors.html'>ocecolors</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='imagep.html'>imagep</a></span>(<span class='no'>volcano</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='fu'>oceColorsViridis</span>(<span class='fl'>128</span>),
-       <span class='kw'>zlab</span><span class='kw'>=</span><span class='st'>"oceColorsViridis"</span>)</div><div class='img'><img src='oceColorsViridis-1.png' alt='' width='700' height='433' /></div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='co'># Example 1: oceColorsViridis</span>
+<span class='fu'><a href='imagep.html'>imagep</a></span><span class='op'>(</span><span class='va'>volcano</span>, col<span class='op'>=</span><span class='fu'>oceColorsViridis</span><span class='op'>(</span><span class='fl'>128</span><span class='op'>)</span>,
+       zlab<span class='op'>=</span><span class='st'>"oceColorsViridis"</span><span class='op'>)</span>
+</div><div class='img'><img src='oceColorsViridis-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Example 2: viridis::viridis</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'><a href='imagep.html'>imagep</a></span><span class='op'>(</span><span class='va'>volcano</span>, col<span class='op'>=</span><span class='fu'>viridis</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/pkg/viridisLite/man/viridis.html'>viridis</a></span>,
+       zlab<span class='op'>=</span><span class='st'>"viridis::viridis"</span><span class='op'>)</span><span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -224,7 +239,7 @@ graphics,'' by A. Light and P. J. Bartlein. <em>Eos Trans. AGU</em>, 86(20).</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

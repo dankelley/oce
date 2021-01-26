@@ -1,22 +1,22 @@
 #' Convert from ITS-90 to IPTS-68 temperature
 #'
 #' @template temperatureConversionTemplate
-#' @param temperature Vector of temperatures expressed in the ITS-90 scale.
-#' @return Temperature expressed in the IPTS-68 scale.
+#' @param temperature numeric vector of temperatures]in \eqn{^\circ}{deg}C on the ITS-90 scale.
+#' @return Corresponding temperatures in \eqn{^\circ}{deg}C on the IPTS-68 scale.
 T68fromT90 <- function(temperature) temperature * 1.00024
 
 #' Convert from IPTS-68 to ITS-90 temperature
 #'
 #' @template temperatureConversionTemplate
-#' @param temperature Vector of temperatures expressed in the IPTS-68 scale.
-#' @return temperature Temperature expressed in the ITS-90 scale.
+#' @param temperature numeric vector of temperatures in \eqn{^\circ}{deg}C on the IPTS-68 scale.
+#' @return Corresponding temperatures in \eqn{^\circ}{deg}C on the ITS-90 scale.
 T90fromT68 <- function(temperature) temperature / 1.00024
 
 #' Convert from ITS-48 to ITS-90 temperature
 #'
 #' @template temperatureConversionTemplate
-#' @param temperature Vector of temperatures expressed in the ITS-48 scale.
-#' @return Temperature expressed in the ITS-90 scale.
+#' @param temperature Vector of temperatures in \eqn{^\circ}{deg}C on the IPTS-48 scale.
+#' @return Corresponding temperatures in \eqn{^\circ}{deg}C on the ITS-90 scale.
 T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature * (100-temperature))/1.00024
 
 #' Look Within the First Element of a List for Replacement Values
@@ -524,7 +524,8 @@ swCSTp <- function(salinity, temperature=15, pressure=0,
 #'
 #' 2.  K. Hill, T. Dauphinee, and D. Woods. \dQuote{The Extension of the Practical
 #' Salinity Scale 1978 to Low Salinities.} IEEE Journal of Oceanic Engineering 11,
-#' no. 1 (January 1986): 109-12. https://doi.org/10.1109/JOE.1986.1145154.
+#' no. 1 (January 1986): 109-12.
+#' \doi{10.1109/JOE.1986.1145154}
 #'
 #' 3. `gsw_from_SP` online documentation, available at
 #' `http://www.teos-10.org/pubs/gsw/html/gsw_C_from_SP.html`
@@ -708,7 +709,7 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", defa
 #'
 #' Finds the temperature that yields the given density, with the given salinity
 #' and pressure.  The method is a bisection search with temperature tolerance
-#' 0.001 \eqn{^\circ C}{degC}.
+#' 0.001 \eqn{^\circ}{deg}C.
 #'
 #' @param salinity *in-situ* salinity (PSU)
 #'
@@ -719,7 +720,7 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", defa
 #' @param eos equation of state to be used, either `"unesco"` or
 #' `"gsw"` (ignored at present).
 #'
-#' @return *In-situ* temperature (\eqn{^\circ C}{degC}) in the ITS-90
+#' @return *In-situ* temperature in \eqn{^\circ}{deg}C on the ITS-90
 #' scale.
 #'
 #' @author Dan Kelley
@@ -2247,11 +2248,11 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #' Diffusive Stability: Spiciness.} Progress in Oceanography, Observations of the
 #' 1997-98 El Nino along the West Coast of North America, 54, no. 1
 #' (July 1, 2002):493-501.
-#' \url{https://doi.org/10.1016/S0079-6611(02)00065-4}
+#' \doi{10.1016/S0079-6611(02)00065-4}
 #'
 #' 2.McDougall, Trevor J., and Oliver A. Krzysik. \dQuote{Spiciness.}
 #' Journal of Marine Research 73, no. 5 (September 1, 2015): 141-52.
-#' \url{https://doi.org/10.1357/002224015816665589}
+#' \doi{10.1357/002224015816665589}
 #'
 #' @family functions that calculate seawater properties
 swSpice <- function(salinity, temperature=NULL, pressure=NULL,

@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,31 +147,31 @@
     <p>Assemble data into a <a href='ctd-class.html'>ctd</a> object.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>as.ctd</span>(
-  <span class='no'>salinity</span>,
-  <span class='kw'>temperature</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>pressure</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>conductivity</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>scan</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>time</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>other</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>units</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>flags</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>missingValue</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>serialNumber</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>ship</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>cruise</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>station</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>startTime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>deploymentType</span> <span class='kw'>=</span> <span class='st'>"unknown"</span>,
-  <span class='kw'>pressureAtmospheric</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>sampleInterval</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>profile</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>as.ctd</span><span class='op'>(</span>
+  <span class='va'>salinity</span>,
+  temperature <span class='op'>=</span> <span class='cn'>NULL</span>,
+  pressure <span class='op'>=</span> <span class='cn'>NULL</span>,
+  conductivity <span class='op'>=</span> <span class='cn'>NULL</span>,
+  scan <span class='op'>=</span> <span class='cn'>NULL</span>,
+  time <span class='op'>=</span> <span class='cn'>NULL</span>,
+  other <span class='op'>=</span> <span class='cn'>NULL</span>,
+  units <span class='op'>=</span> <span class='cn'>NULL</span>,
+  flags <span class='op'>=</span> <span class='cn'>NULL</span>,
+  missingValue <span class='op'>=</span> <span class='cn'>NULL</span>,
+  type <span class='op'>=</span> <span class='st'>""</span>,
+  serialNumber <span class='op'>=</span> <span class='st'>""</span>,
+  ship <span class='op'>=</span> <span class='cn'>NULL</span>,
+  cruise <span class='op'>=</span> <span class='cn'>NULL</span>,
+  station <span class='op'>=</span> <span class='cn'>NULL</span>,
+  startTime <span class='op'>=</span> <span class='cn'>NULL</span>,
+  longitude <span class='op'>=</span> <span class='cn'>NULL</span>,
+  latitude <span class='op'>=</span> <span class='cn'>NULL</span>,
+  deploymentType <span class='op'>=</span> <span class='st'>"unknown"</span>,
+  pressureAtmospheric <span class='op'>=</span> <span class='fl'>0</span>,
+  sampleInterval <span class='op'>=</span> <span class='cn'>NA</span>,
+  profile <span class='op'>=</span> <span class='cn'>NULL</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -202,8 +202,8 @@ using <code><a href='swSCTp.html'>swSCTp()</a></code>.</p></li>
     </tr>
     <tr>
       <th>temperature</th>
-      <td><p><em>in-situ</em> temperature in \(^\circ deg\)C on
-the ITS-90 scale; see &#8220;Temperature units&#8221; in the documentation for
+      <td><p><em>in-situ</em> temperature in \(^\circ\)C
+on the ITS-90 scale; see &#8220;Temperature units&#8221; in the documentation for
 <code><a href='swRho.html'>swRho()</a></code>.</p></td>
     </tr>
     <tr>
@@ -230,7 +230,10 @@ divide by 42.914 to get conductivity ratio (see Culkin and Smith, 1980).</p></td
     <tr>
       <th>other</th>
       <td><p>optional list of other data columns that are not in the standard
-list</p></td>
+list. Note that this argument is <strong>deprecated</strong>, meaning that it
+will be removed soon. Please use <code>as.ctd()</code> to construct a <a href='ctd-class.html'>ctd</a>
+object, and then use <code><a href='oceSetData.html'>oceSetData()</a></code> later, to add other data,
+as needed.</p></td>
     </tr>
     <tr>
       <th>units</th>
@@ -386,7 +389,7 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p>
 
     <div class='dont-index'><p>Other things related to ctd data: 
 <code><a href='CTD_BCD2014666_008_1_DN.ODF.gz.html'>CTD_BCD2014666_008_1_DN.ODF.gz</a></code>,
-<code><a href='sub-sub-ctd-method.html'>[[,ctd-method</a></code>,
+<code><a href='[[,ctd-method.html'>[[,ctd-method</a></code>,
 <code>[[&lt;-,ctd-method</code>,
 <code><a href='cnvName2oceName.html'>cnvName2oceName</a>()</code>,
 <code><a href='ctd-class.html'>ctd-class</a></code>,
@@ -398,12 +401,12 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p>
 <code><a href='ctd.html'>ctd</a></code>,
 <code><a href='d200321-001.ctd.html'>d200321-001.ctd</a></code>,
 <code><a href='d201211_0011.cnv.html'>d201211_0011.cnv</a></code>,
-<code><a href='handleFlags-ctd-method.html'>handleFlags,ctd-method</a></code>,
-<code><a href='initialize-ctd-method.html'>initialize,ctd-method</a></code>,
-<code><a href='initializeFlagScheme-ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
+<code><a href='handleFlags,ctd-method.html'>handleFlags,ctd-method</a></code>,
+<code><a href='initialize,ctd-method.html'>initialize,ctd-method</a></code>,
+<code><a href='initializeFlagScheme,ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
 <code><a href='oceNames2whpNames.html'>oceNames2whpNames</a>()</code>,
 <code><a href='oceUnits2whpUnits.html'>oceUnits2whpUnits</a>()</code>,
-<code><a href='plot-ctd-method.html'>plot,ctd-method</a></code>,
+<code><a href='plot,ctd-method.html'>plot,ctd-method</a></code>,
 <code><a href='plotProfile.html'>plotProfile</a>()</code>,
 <code><a href='plotScan.html'>plotScan</a>()</code>,
 <code><a href='plotTS.html'>plotTS</a>()</code>,
@@ -414,46 +417,52 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p>
 <code><a href='read.ctd.woce.other.html'>read.ctd.woce.other</a>()</code>,
 <code><a href='read.ctd.woce.html'>read.ctd.woce</a>()</code>,
 <code><a href='read.ctd.html'>read.ctd</a>()</code>,
-<code><a href='setFlags-ctd-method.html'>setFlags,ctd-method</a></code>,
-<code><a href='subset-ctd-method.html'>subset,ctd-method</a></code>,
-<code><a href='summary-ctd-method.html'>summary,ctd-method</a></code>,
+<code><a href='setFlags,ctd-method.html'>setFlags,ctd-method</a></code>,
+<code><a href='subset,ctd-method.html'>subset,ctd-method</a></code>,
+<code><a href='summary,ctd-method.html'>summary,ctd-method</a></code>,
 <code><a href='woceNames2oceNames.html'>woceNames2oceNames</a>()</code>,
 <code><a href='woceUnit2oceUnit.html'>woceUnit2oceUnit</a>()</code>,
 <code><a href='write.ctd.html'>write.ctd</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
 <span class='co'>## 1. fake data, with default units</span>
-<span class='no'>pressure</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>:<span class='fl'>50</span>
-<span class='no'>temperature</span> <span class='kw'>&lt;-</span> <span class='fl'>10</span> - <span class='fu'><a href='https://rdrr.io/r/base/Hyperbolic.html'>tanh</a></span>((<span class='no'>pressure</span> - <span class='fl'>20</span>) / <span class='fl'>5</span>) + <span class='fl'>0.02</span>*<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>50</span>)
-<span class='no'>salinity</span> <span class='kw'>&lt;-</span> <span class='fl'>34</span> + <span class='fl'>0.5</span>*<span class='fu'><a href='https://rdrr.io/r/base/Hyperbolic.html'>tanh</a></span>((<span class='no'>pressure</span> - <span class='fl'>20</span>) / <span class='fl'>5</span>) + <span class='fl'>0.01</span>*<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>50</span>)
-<span class='no'>ctd</span> <span class='kw'>&lt;-</span> <span class='fu'>as.ctd</span>(<span class='no'>salinity</span>, <span class='no'>temperature</span>, <span class='no'>pressure</span>)
+<span class='va'>pressure</span> <span class='op'>&lt;-</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>50</span>
+<span class='va'>temperature</span> <span class='op'>&lt;-</span> <span class='fl'>10</span> <span class='op'>-</span> <span class='fu'><a href='https://rdrr.io/r/base/Hyperbolic.html'>tanh</a></span><span class='op'>(</span><span class='op'>(</span><span class='va'>pressure</span> <span class='op'>-</span> <span class='fl'>20</span><span class='op'>)</span> <span class='op'>/</span> <span class='fl'>5</span><span class='op'>)</span> <span class='op'>+</span> <span class='fl'>0.02</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>50</span><span class='op'>)</span>
+<span class='va'>salinity</span> <span class='op'>&lt;-</span> <span class='fl'>34</span> <span class='op'>+</span> <span class='fl'>0.5</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/base/Hyperbolic.html'>tanh</a></span><span class='op'>(</span><span class='op'>(</span><span class='va'>pressure</span> <span class='op'>-</span> <span class='fl'>20</span><span class='op'>)</span> <span class='op'>/</span> <span class='fl'>5</span><span class='op'>)</span> <span class='op'>+</span> <span class='fl'>0.01</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>50</span><span class='op'>)</span>
+<span class='va'>ctd</span> <span class='op'>&lt;-</span> <span class='fu'>as.ctd</span><span class='op'>(</span><span class='va'>salinity</span>, <span class='va'>temperature</span>, <span class='va'>pressure</span><span class='op'>)</span>
 <span class='co'># Add a new column</span>
-<span class='no'>fluo</span> <span class='kw'>&lt;-</span> <span class='fl'>5</span> * <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(-<span class='no'>pressure</span> / <span class='fl'>20</span>)
-<span class='no'>ctd</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='oceSetData.html'>oceSetData</a></span>(<span class='no'>ctd</span>, <span class='kw'>name</span><span class='kw'>=</span><span class='st'>"fluorescence"</span>, <span class='kw'>value</span><span class='kw'>=</span><span class='no'>fluo</span>,
-                  <span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span>(<span class='no'>mg</span>/<span class='no'>m</span>^<span class='fl'>3</span>), <span class='kw'>scale</span><span class='kw'>=</span><span class='st'>""</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>ctd</span>)</div><div class='output co'>#&gt; CTD Summary
+<span class='va'>fluo</span> <span class='op'>&lt;-</span> <span class='fl'>5</span> <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='op'>-</span><span class='va'>pressure</span> <span class='op'>/</span> <span class='fl'>20</span><span class='op'>)</span>
+<span class='va'>ctd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='oceSetData.html'>oceSetData</a></span><span class='op'>(</span><span class='va'>ctd</span>, name<span class='op'>=</span><span class='st'>"fluorescence"</span>, value<span class='op'>=</span><span class='va'>fluo</span>,
+                  unit<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>unit<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>mg</span><span class='op'>/</span><span class='va'>m</span><span class='op'>^</span><span class='fl'>3</span><span class='op'>)</span>, scale<span class='op'>=</span><span class='st'>""</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; CTD Summary
 #&gt; -----------
 #&gt; 
 #&gt; * Data Overview
 #&gt; 
 #&gt;                                 Min.   Mean   Max. Dim. NAs OriginalName
 #&gt;     scan                           1   25.5     50   50   0            -
-#&gt;     salinity [PSS-78]         33.486 34.111 34.521   50   0            -
-#&gt;     temperature [°C, ITS-90]  8.9567 9.7808 11.033   50   0            -
+#&gt;     salinity [PSS-78]          33.49 34.108 34.519   50   0            -
+#&gt;     temperature [°C, ITS-90]   8.962 9.7833 11.033   50   0            -
 #&gt;     pressure [dbar]                1   25.5     50   50   0            -
 #&gt;     fluorescence [mg/m³]     0.41042 1.7903 4.7561   50   0            -
 #&gt; 
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2020-07-21 16:49:04 UTC: `create 'ctd' object`
-#&gt;     - 2020-07-21 16:49:04 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`
-#&gt;     - 2020-07-21 16:49:04 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`</div><div class='input'>
+#&gt;     - 2021-01-26 21:47:45 UTC: `create 'ctd' object`
+#&gt;     - 2021-01-26 21:47:45 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`
+#&gt;     - 2021-01-26 21:47:45 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`</div><div class='input'>
 <span class='co'>## 2. fake data, with supplied units (which are the defaults, actually)</span>
-<span class='no'>ctd</span> <span class='kw'>&lt;-</span> <span class='fu'>as.ctd</span>(<span class='no'>salinity</span>, <span class='no'>temperature</span>, <span class='no'>pressure</span>,
-    <span class='kw'>units</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>salinity</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span>(), <span class='kw'>scale</span><span class='kw'>=</span><span class='st'>"PSS-78"</span>),
-    <span class='kw'>temperature</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span>(<span class='no'>degree</span>*<span class='no'>C</span>), <span class='kw'>scale</span><span class='kw'>=</span><span class='st'>"ITS-90"</span>),
-    <span class='kw'>pressure</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span>(<span class='no'>dbar</span>), <span class='kw'>scale</span><span class='kw'>=</span><span class='st'>""</span>)))</div></pre>
+<span class='va'>ctd</span> <span class='op'>&lt;-</span> <span class='fu'>as.ctd</span><span class='op'>(</span><span class='va'>salinity</span>, <span class='va'>temperature</span>, <span class='va'>pressure</span>,
+    units<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>salinity<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>unit<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='op'>)</span>, scale<span class='op'>=</span><span class='st'>"PSS-78"</span><span class='op'>)</span>,
+    temperature<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>unit<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>degree</span><span class='op'>*</span><span class='va'>C</span><span class='op'>)</span>, scale<span class='op'>=</span><span class='st'>"ITS-90"</span><span class='op'>)</span>,
+    pressure<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>unit<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>dbar</span><span class='op'>)</span>, scale<span class='op'>=</span><span class='st'>""</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -469,7 +478,7 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

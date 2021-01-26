@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,22 +147,22 @@
     <p>Read a Teledyne/RDI ADCP file (called 'adp' in oce).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>read.adp.rdi</span>(
-  <span class='no'>file</span>,
-  <span class='no'>from</span>,
-  <span class='no'>to</span>,
-  <span class='no'>by</span>,
-  <span class='kw'>tz</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceTz"</span>),
-  <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"workhorse"</span>),
-  <span class='kw'>monitor</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>despike</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='no'>processingLog</span>,
-  <span class='kw'>testing</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>),
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>read.adp.rdi</span><span class='op'>(</span>
+  <span class='va'>file</span>,
+  <span class='va'>from</span>,
+  <span class='va'>to</span>,
+  <span class='va'>by</span>,
+  tz <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceTz"</span><span class='op'>)</span>,
+  longitude <span class='op'>=</span> <span class='cn'>NA</span>,
+  latitude <span class='op'>=</span> <span class='cn'>NA</span>,
+  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"workhorse"</span><span class='op'>)</span>,
+  monitor <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  despike <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>processingLog</span>,
+  testing <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -217,9 +217,10 @@ North.</p></td>
     </tr>
     <tr>
       <th>monitor</th>
-      <td><p>boolean, set to <code>TRUE</code> to provide an indication of progress
-in reading the file, either by printing a dot for each profile or by writing
-a textual progress bar with <code><a href='https://rdrr.io/r/utils/txtProgressBar.html'>txtProgressBar()</a></code>.</p></td>
+      <td><p>boolean value indicating whether to indicate the progress
+of reading the file, by using <code><a href='https://rdrr.io/r/utils/txtProgressBar.html'>txtProgressBar()</a></code> or otherwise.  The value
+of <code>monitor</code> is changed to <code>FALSE</code> automatically, for non-interactive
+sessions.</p></td>
     </tr>
     <tr>
       <th>despike</th>
@@ -275,6 +276,22 @@ scale factor being used to convert to velocity in metres per second.  These
 two facts control the maximum recordable velocity and the velocity
 resolution, values that may be retrieved for an ADP object name <code>d</code>
 with <code>d[["velocityMaximum"]]</code> and <code>d[["velocityResolution"]]</code>.</p>
+    <h2 class="hasAnchor" id="handling-of-old-file-formats"><a class="anchor" href="#handling-of-old-file-formats"></a>Handling of old file formats</h2>
+
+    
+
+<ol>
+<li><p>Early PD0 file formats stored the year of sampling with a different
+base year than that used in modern files.  To accommodate this,
+<code>read.adp.rdi</code> examines the inferred year, and if it is greater than
+2050, then 100 years are subtracted from the time. This offset was
+inferred by tests with sample files, but <em>not</em> from RDI documentation,
+so it is somewhat risky.  If the authors can find RDI documentation that
+indicates the condition in which this century offset is required, then
+a change will be made to the code.  Even if not, the method should
+not cause problems for a long time.</p></li>
+</ol>
+
     <h2 class="hasAnchor" id="names-of-items-in-data-slot"><a class="anchor" href="#names-of-items-in-data-slot"></a>Names of items in data slot</h2>
 
     
@@ -395,7 +412,7 @@ ratio is less than 1.</p></li>
 <p>If the result of these calculations is that <code>by</code> exceeds 1, then
 messages are printed to alert the user that the file will be decimated,
 and also <code>monitor</code> is set to <code>TRUE</code>, so that a textual progress bar
-is shown.</p>
+is shown (if the session is interactive).</p>
     <h2 class="hasAnchor" id="development-notes"><a class="anchor" href="#development-notes"></a>Development Notes</h2>
 
     
@@ -506,7 +523,8 @@ Advanced users who want to diagnose the problem further might find it helpful to
 examine the original data file using other tools. To this end, <code>read.adp.rdi</code>
 inserts an element named <code>ensembleInFile</code> into the <code>metadata</code> slot.
 This gives the starting byte number of each inferred ensemble within the original data
-file.  For example, if <code>d</code> is an object read with <code>read.adp.rdi</code>, then using</p><pre><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>d</span><span class='kw'>[[</span><span class='st'>"time"</span>]][-<span class='fl'>1</span>], <span class='fu'><a href='https://rdrr.io/r/base/diff.html'>diff</a></span>(<span class='no'>d</span><span class='kw'>[[</span><span class='st'>"ensembleInFile"</span>]]))</pre>
+file.  For example, if <code>d</code> is an object read with <code>read.adp.rdi</code>, then using</p><pre><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>d</span><span class='op'>[[</span><span class='st'>"time"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>[</span><span class='op'>-</span><span class='fl'>1</span><span class='op'>]</span>, <span class='fu'><a href='https://rdrr.io/r/base/diff.html'>diff</a></span><span class='op'>(</span><span class='va'>d</span><span class='op'>[[</span><span class='st'>"ensembleInFile"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span>
+</pre>
 
 <p>can be a good way to narrow in on problems.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
@@ -531,7 +549,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to adp data: 
-<code><a href='sub-sub-adp-method.html'>[[,adp-method</a></code>,
+<code><a href='[[,adp-method.html'>[[,adp-method</a></code>,
 <code>[[&lt;-,adp-method</code>,
 <code><a href='ad2cpHeaderValue.html'>ad2cpHeaderValue</a>()</code>,
 <code><a href='adp-class.html'>adp-class</a></code>,
@@ -548,9 +566,9 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <code><a href='binmapAdp.html'>binmapAdp</a>()</code>,
 <code><a href='enuToOtherAdp.html'>enuToOtherAdp</a>()</code>,
 <code><a href='enuToOther.html'>enuToOther</a>()</code>,
-<code><a href='handleFlags-adp-method.html'>handleFlags,adp-method</a></code>,
+<code><a href='handleFlags,adp-method.html'>handleFlags,adp-method</a></code>,
 <code><a href='is.ad2cp.html'>is.ad2cp</a>()</code>,
-<code><a href='plot-adp-method.html'>plot,adp-method</a></code>,
+<code><a href='plot,adp-method.html'>plot,adp-method</a></code>,
 <code><a href='read.adp.ad2cp.html'>read.adp.ad2cp</a>()</code>,
 <code><a href='read.adp.nortek.html'>read.adp.nortek</a>()</code>,
 <code><a href='read.adp.sontek.serial.html'>read.adp.sontek.serial</a>()</code>,
@@ -560,26 +578,30 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <code><a href='read.aquadoppProfiler.html'>read.aquadoppProfiler</a>()</code>,
 <code><a href='read.aquadopp.html'>read.aquadopp</a>()</code>,
 <code><a href='rotateAboutZ.html'>rotateAboutZ</a>()</code>,
-<code><a href='setFlags-adp-method.html'>setFlags,adp-method</a></code>,
-<code><a href='subset-adp-method.html'>subset,adp-method</a></code>,
+<code><a href='setFlags,adp-method.html'>setFlags,adp-method</a></code>,
+<code><a href='subset,adp-method.html'>subset,adp-method</a></code>,
 <code><a href='subtractBottomVelocity.html'>subtractBottomVelocity</a>()</code>,
-<code><a href='summary-adp-method.html'>summary,adp-method</a></code>,
+<code><a href='summary,adp-method.html'>summary,adp-method</a></code>,
 <code><a href='toEnuAdp.html'>toEnuAdp</a>()</code>,
 <code><a href='toEnu.html'>toEnu</a>()</code>,
 <code><a href='velocityStatistics.html'>velocityStatistics</a>()</code>,
 <code><a href='xyzToEnuAdpAD2CP.html'>xyzToEnuAdpAD2CP</a>()</code>,
 <code><a href='xyzToEnuAdp.html'>xyzToEnuAdp</a>()</code>,
 <code><a href='xyzToEnu.html'>xyzToEnu</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley and Clark Richards</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>adp</span> <span class='kw'>&lt;-</span> <span class='fu'>read.adp.rdi</span>(<span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"adp_rdi.000"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"oce"</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>adp</span>)</div><div class='output co'>#&gt; ADP Summary
+    <pre class="examples"><div class='input'><span class='va'>adp</span> <span class='op'>&lt;-</span> <span class='fu'>read.adp.rdi</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"adp_rdi.000"</span>, package<span class='op'>=</span><span class='st'>"oce"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>adp</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; ADP Summary
 #&gt; -----------
 #&gt; 
 #&gt; * Instrument:         adcp
 #&gt; * Serial number:      unknown
 #&gt; * Firmware version:   16.28
-#&gt; * Source filename:    ``/private/var/folders/rx/k1x_t_q12zb9hbjr4ldxmjc80000gn/T/RtmpjZN348/temp_libpath17c45663e6dd0/oce/extdata/adp_rdi.000``
+#&gt; * Source filename:    ``/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpRNoUfR/temp_libpath223ac501e8b/oce/extdata/adp_rdi.000``
 #&gt; * Location:           unknown latitude, unknown longitude
 #&gt; * Number of profiles: 9 
 #&gt; * Number of cells:    84 
@@ -634,7 +656,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 #&gt; 
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2020-07-21 16:51:53 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</div><div class='input'>
+#&gt;     - 2021-01-26 21:49:02 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -651,7 +673,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

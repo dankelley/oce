@@ -83,7 +83,7 @@ modern literature on XBTs in general." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ modern literature on XBTs in general." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -163,7 +163,7 @@ modern literature on XBTs in general.</p>
 <dt><code>data</code></dt><dd><p>As with all <code>oce</code> objects, the <code>data</code> slot
 for <code>xbt</code> objects is a
 <a href='https://rdrr.io/r/base/list.html'>list</a> containing the main data for the object.
-The key items stored in this slot are <code>depth</code> (or <code>z</code>) and <code>temperature</code>, although some datasets also have <code>soundSpeed</code>.  Note that <code>depth</code> and <code>z</code> are inferred from time in water, using an empirical formula for instrument descent rate, and that <code>soundSpeed</code> is #' calculated using a fixed  practical salinity of 35. Note that the <code>[[</code> accessor will compute any of <code>depth</code>, <code>z</code> or <code>pressure</code>, based on whatever is in the data object.  Similarly, <code>soundspeed</code> will compute sound speed (assuming a practical salinity of 35), if that that item is present in the <code>data</code> slot.</p></dd>
+The key items stored in this slot are <code>depth</code> (or <code>z</code>) and <code>temperature</code>, although some datasets also have <code>soundSpeed</code>.  Note that <code>depth</code> and <code>z</code> are inferred from time in water, using an empirical formula for instrument descent rate, and that <code>soundSpeed</code> is #' calculated using a fixed  practical salinity of 35. Note that the <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> accessor will compute any of <code>depth</code>, <code>z</code> or <code>pressure</code>, based on whatever is in the data object.  Similarly, <code>soundspeed</code> will compute sound speed (assuming a practical salinity of 35), if that that item is present in the <code>data</code> slot.</p></dd>
 
 <dt><code>metadata</code></dt><dd><p>As with all <code>oce</code> objects, the <code>metadata</code> slot
 for <code>xbt</code> objects is a <a href='https://rdrr.io/r/base/list.html'>list</a> containing
@@ -197,15 +197,15 @@ object may be retrieved in the standard R way using <code>slot()</code>. For
 example <code>slot(o,"data")</code> returns the <code>data</code> slot of an object named <code>o</code>,
 and similarly <code>slot(o,"metadata")</code> returns
 the <code>metadata</code> slot.</p>
-<p>The slots may also be obtained with the <code><a href='sub-sub-xbt-method.html'>[[,xbt-method</a></code>
+<p>The slots may also be obtained with the <code><a href='[[,xbt-method.html'>[[,xbt-method</a></code>
 operator, as e.g. <code>o[["data"]]</code> and <code>o[["metadata"]]</code>, respectively.</p>
-<p>The <code><a href='sub-sub-xbt-method.html'>[[,xbt-method</a></code> operator can also
+<p>The <code><a href='[[,xbt-method.html'>[[,xbt-method</a></code> operator can also
 be used to retrieve items from within the <code>data</code> and <code>metadata</code> slots.
 For example, <code>o[["temperature"]]</code> can be used to retrieve temperature
 from an object containing that quantity. The rule is that a named
 quantity is sought first within the object's <code>metadata</code> slot,
 with the <code>data</code> slot being checked only if <code>metadata</code> does not
-contain the item. This <code>[[</code> method can also be used to get
+contain the item. This <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
@@ -225,20 +225,20 @@ https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual
 <li><p>Cheng, Lijing, John Abraham, Gustavo Goni, Timothy Boyer, Susan Wijffels, Rebecca
 Cowley, Viktor Gouretski, et al. "XBT Science: Assessment of Instrumental Biases and Errors."
 Bulletin of the American Meteorological Society 97, no. 6 (June 2016): 924-33.
-https://doi.org/10.1175/BAMS-D-15-00031.1.</p></li>
+<code>10.1175/BAMS-D-15-00031.1</code></p></li>
 </ol>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to xbt data: 
-<code><a href='sub-sub-xbt-method.html'>[[,xbt-method</a></code>,
+<code><a href='[[,xbt-method.html'>[[,xbt-method</a></code>,
 <code>[[&lt;-,xbt-method</code>,
 <code><a href='as.xbt.html'>as.xbt</a>()</code>,
-<code><a href='plot-xbt-method.html'>plot,xbt-method</a></code>,
+<code><a href='plot,xbt-method.html'>plot,xbt-method</a></code>,
 <code><a href='read.xbt.noaa1.html'>read.xbt.noaa1</a>()</code>,
 <code><a href='read.xbt.html'>read.xbt</a>()</code>,
-<code><a href='subset-xbt-method.html'>subset,xbt-method</a></code>,
-<code><a href='summary-xbt-method.html'>summary,xbt-method</a></code>,
+<code><a href='subset,xbt-method.html'>subset,xbt-method</a></code>,
+<code><a href='summary,xbt-method.html'>summary,xbt-method</a></code>,
 <code><a href='xbt.edf.html'>xbt.edf</a></code>,
 <code><a href='xbt.html'>xbt</a></code></p>
 <p>Other classes provided by oce: 
@@ -259,6 +259,9 @@ https://doi.org/10.1175/BAMS-D-15-00031.1.</p></li>
 <code><a href='section-class.html'>section-class</a></code>,
 <code><a href='topo-class.html'>topo-class</a></code>,
 <code><a href='windrose-class.html'>windrose-class</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -275,7 +278,7 @@ https://doi.org/10.1175/BAMS-D-15-00031.1.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

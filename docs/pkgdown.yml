@@ -1,6 +1,6 @@
-pandoc: '2.10'
-pkgdown: 1.5.1.9000
-pkgdown_sha: 810084e8a9abd091378a6b75fa9d7de9ce637aa1
+pandoc: 2.11.2
+pkgdown: 1.6.1
+pkgdown_sha: ~
 articles:
   adp: adp.html
   ctd: ctd.html
@@ -8,5 +8,5 @@ articles:
   map_projections: map_projections.html
   oce: oce.html
   subclassing: subclassing.html
-last_built: 2020-07-21T16:48Z
+last_built: 2021-01-26T21:47Z
 

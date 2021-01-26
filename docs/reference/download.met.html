@@ -81,7 +81,7 @@ website and cached locally." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -122,7 +122,7 @@ website and cached locally." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -149,18 +149,18 @@ website and cached locally." />
 website and cached locally.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>download.met</span>(
-  <span class='no'>id</span>,
-  <span class='no'>year</span>,
-  <span class='no'>month</span>,
-  <span class='no'>deltat</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"xml"</span>,
-  <span class='kw'>destdir</span> <span class='kw'>=</span> <span class='st'>"."</span>,
-  <span class='no'>destfile</span>,
-  <span class='kw'>force</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>download.met</span><span class='op'>(</span>
+  <span class='va'>id</span>,
+  <span class='va'>year</span>,
+  <span class='va'>month</span>,
+  <span class='va'>deltat</span>,
+  type <span class='op'>=</span> <span class='st'>"xml"</span>,
+  destdir <span class='op'>=</span> <span class='st'>"."</span>,
+  <span class='va'>destfile</span>,
+  force <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  quiet <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -234,15 +234,11 @@ by specifying higher <code>debug</code> values.</p></td>
     <p>String indicating the full pathname to the downloaded file.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The data are downloaded from
-<a href='https://climate.weather.gc.ca/historical_data/search_historic_data_e.html'>https://climate.weather.gc.ca/historical_data/search_historic_data_e.html</a>
-using <code><a href='https://rdrr.io/r/utils/download.file.html'>utils::download.file()</a></code>
-pointed to the Environment Canada website (reference 1)
-using queries that had to be devised by reverse-engineering, since the agency
-does not provide documentation about how to construct queries. Caution: the
-query format changes from time to time, so <code>download.met()</code> may work one
-day, and fail the next.</p>
-<p>The constructed query contains Station ID, as provided in the <code>id</code> argument.
+    <p>The data are downloaded
+using <code><a href='https://rdrr.io/r/utils/download.file.html'>utils::download.file()</a></code> based on a query devised by reverse-engineering
+queries create by the Environment Canada interface
+<code>https://climate.weather.gc.ca/historical_data/search_historic_data_e.html</code>.
+The constructed query contains Station ID, as provided in the <code>id</code> argument.
 Note that this seems to be a creation of Environment Canada, alone;
 it is distinct from the more standard "Climate ID" and "WMO ID".
 To make things more difficult, Environment Canada states that the
@@ -265,7 +261,7 @@ many important metadata blank.</p>
     
 <ol>
 <li><p>Environment Canada website for Historical Climate Data
-<a href='http://climate.weather.gc.ca/index_e.html'>http://climate.weather.gc.ca/index_e.html</a></p></li>
+<code>https://climate.weather.gc.ca/index_e.html</code></p></li>
 <li><p>Gavin Simpson's <code>canadaHCD</code> package on GitHub
 <a href='https://github.com/gavinsimpson/canadaHCD'>https://github.com/gavinsimpson/canadaHCD</a></p></li>
 </ol>
@@ -278,27 +274,32 @@ many important metadata blank.</p>
 <code><a href='download.coastline.html'>download.coastline</a>()</code>,
 <code><a href='download.topo.html'>download.topo</a>()</code></p>
 <p>Other things related to met data: 
-<code><a href='sub-sub-met-method.html'>[[,met-method</a></code>,
+<code><a href='[[,met-method.html'>[[,met-method</a></code>,
 <code>[[&lt;-,met-method</code>,
 <code><a href='as.met.html'>as.met</a>()</code>,
 <code><a href='met-class.html'>met-class</a></code>,
 <code><a href='met.html'>met</a></code>,
-<code><a href='plot-met-method.html'>plot,met-method</a></code>,
+<code><a href='plot,met-method.html'>plot,met-method</a></code>,
 <code><a href='read.met.html'>read.met</a>()</code>,
-<code><a href='subset-met-method.html'>subset,met-method</a></code>,
-<code><a href='summary-met-method.html'>summary,met-method</a></code>,
+<code><a href='subset,met-method.html'>subset,met-method</a></code>,
+<code><a href='summary,met-method.html'>summary,met-method</a></code>,
 <code><a href='test_met_csv1.csv.html'>test_met_csv1.csv</a></code>,
 <code><a href='test_met_csv2.csv.html'>test_met_csv2.csv</a></code>,
 <code><a href='test_met_xml2.xml.html'>test_met_xml2.xml</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
 <span class='co'>## Download data for Halifax International Airport, in September</span>
 <span class='co'>## of 2003. (This dataset is used for data(met) provided with oce.)</span>
-<span class='no'>metFile</span> <span class='kw'>&lt;-</span> <span class='fu'>download.met</span>(<span class='fl'>6358</span>, <span class='fl'>2003</span>, <span class='fl'>9</span>, <span class='kw'>destdir</span><span class='kw'>=</span><span class='st'>"."</span>)
-<span class='no'>met</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='read.met.html'>read.met</a></span>(<span class='no'>metFile</span>)
-}</div></pre>
+<span class='va'>metFile</span> <span class='op'>&lt;-</span> <span class='fu'>download.met</span><span class='op'>(</span><span class='fl'>6358</span>, <span class='fl'>2003</span>, <span class='fl'>9</span>, destdir<span class='op'>=</span><span class='st'>"."</span><span class='op'>)</span>
+<span class='va'>met</span> <span class='op'>&lt;-</span> <span class='fu'><a href='read.met.html'>read.met</a></span><span class='op'>(</span><span class='va'>metFile</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -314,7 +315,7 @@ many important metadata blank.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

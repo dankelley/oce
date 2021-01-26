@@ -40,7 +40,13 @@
 
 
 <meta property="og:title" content="Create colors in a Gebco-like scheme — oceColorsGebco" />
-<meta property="og:description" content="Create colors in a Gebco-like scheme" />
+<meta property="og:description" content="The colours were determined by examination of paper
+charts printed during the GEBCO Fifth Edition era.
+The hues range from dark blue to light blue, then
+from light brown to dark brown.  If used to show
+topography in scheme centred on z=0, this means that
+near-coastal regions are light in tone, with darker
+colours representing both mountains and the deep sea." />
 
 
 
@@ -80,7 +86,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +127,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -144,14 +150,21 @@
     </div>
 
     <div class="ref-description">
-    <p>Create colors in a Gebco-like scheme</p>
+    <p>The colours were determined by examination of paper
+charts printed during the GEBCO Fifth Edition era.
+The hues range from dark blue to light blue, then
+from light brown to dark brown.  If used to show
+topography in scheme centred on z=0, this means that
+near-coastal regions are light in tone, with darker
+colours representing both mountains and the deep sea.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>oceColorsGebco</span>(
-  <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>9</span>,
-  <span class='kw'>region</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"water"</span>, <span class='st'>"land"</span>, <span class='st'>"both"</span>),
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"fill"</span>, <span class='st'>"line"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>oceColorsGebco</span><span class='op'>(</span>
+  n <span class='op'>=</span> <span class='fl'>9</span>,
+  region <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"water"</span>, <span class='st'>"land"</span>, <span class='st'>"both"</span><span class='op'>)</span>,
+  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"fill"</span>, <span class='st'>"line"</span><span class='op'>)</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -162,12 +175,16 @@
     </tr>
     <tr>
       <th>region</th>
-      <td><p>String indicating application region, one of <code>"water"</code>, <code>"land"</code>,
-or <code>"both"</code>.</p></td>
+      <td><p>String indicating application region,
+one of <code>"water"</code>, <code>"land"</code>, or <code>"both"</code>.</p></td>
     </tr>
     <tr>
       <th>type</th>
       <td><p>String indicating the purpose, one of <code>"fill"</code> or <code>"line"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>debug</th>
+      <td><p>a flag that turns on debugging.</p></td>
     </tr>
     </table>
 
@@ -194,34 +211,13 @@ or <code>"both"</code>.</p></td>
 <code><a href='oceColorsVelocity.html'>oceColorsVelocity</a>()</code>,
 <code><a href='oceColorsViridis.html'>oceColorsViridis</a>()</code>,
 <code><a href='oceColorsVorticity.html'>oceColorsVorticity</a>()</code>,
-<code><a href='ocecolors.html'>ocecolors</a></code></p>
-<p>Other things related to colors: 
-<code><a href='colormap.html'>colormap</a>()</code>,
-<code><a href='oceColors9B.html'>oceColors9B</a>()</code>,
-<code><a href='oceColorsCDOM.html'>oceColorsCDOM</a>()</code>,
-<code><a href='oceColorsChlorophyll.html'>oceColorsChlorophyll</a>()</code>,
-<code><a href='oceColorsClosure.html'>oceColorsClosure</a>()</code>,
-<code><a href='oceColorsDensity.html'>oceColorsDensity</a>()</code>,
-<code><a href='oceColorsFreesurface.html'>oceColorsFreesurface</a>()</code>,
-<code><a href='oceColorsJet.html'>oceColorsJet</a>()</code>,
-<code><a href='oceColorsOxygen.html'>oceColorsOxygen</a>()</code>,
-<code><a href='oceColorsPAR.html'>oceColorsPAR</a>()</code>,
-<code><a href='oceColorsPalette.html'>oceColorsPalette</a>()</code>,
-<code><a href='oceColorsPhase.html'>oceColorsPhase</a>()</code>,
-<code><a href='oceColorsSalinity.html'>oceColorsSalinity</a>()</code>,
-<code><a href='oceColorsTemperature.html'>oceColorsTemperature</a>()</code>,
-<code><a href='oceColorsTurbidity.html'>oceColorsTurbidity</a>()</code>,
-<code><a href='oceColorsTurbo.html'>oceColorsTurbo</a>()</code>,
-<code><a href='oceColorsTwo.html'>oceColorsTwo</a>()</code>,
-<code><a href='oceColorsVelocity.html'>oceColorsVelocity</a>()</code>,
-<code><a href='oceColorsViridis.html'>oceColorsViridis</a>()</code>,
-<code><a href='oceColorsVorticity.html'>oceColorsVorticity</a>()</code>,
 <code><a href='ocecolors.html'>ocecolors</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='imagep.html'>imagep</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='no'>volcano</span>) - <span class='no'>volcano</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='fu'>oceColorsGebco</span>(<span class='fl'>128</span>),
-       <span class='kw'>zlab</span><span class='kw'>=</span><span class='st'>"oceColorsGebco"</span>)</div><div class='img'><img src='oceColorsGebco-1.png' alt='' width='700' height='433' /></div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='imagep.html'>imagep</a></span><span class='op'>(</span><span class='va'>volcano</span>, col<span class='op'>=</span><span class='fu'>oceColorsGebco</span><span class='op'>(</span><span class='fl'>128</span>, region<span class='op'>=</span><span class='st'>"both"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='oceColorsGebco-1.png' alt='' width='700' height='433' /></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -237,7 +233,7 @@ or <code>"both"</code>.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

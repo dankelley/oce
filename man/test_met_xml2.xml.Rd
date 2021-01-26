@@ -8,7 +8,7 @@
 \description{
 This is a subset of a file downloaded with \code{\link[=download.met]{download.met()}}
 from the Environment Canada "Climate Data"
-website \url{http://climate.weather.gc.ca/index_e.html}
+website \verb{https://climate.weather.gc.ca/index_e.html}
 on October 13, 2019.
 }
 \examples{

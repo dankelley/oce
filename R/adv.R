@@ -363,6 +363,8 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
+    if (!interactive())
+        monitor <- FALSE
     type <- match.arg(type)
     ## FIXME: all these read.adv variants should have the same argument list
     if (type == "nortek")
@@ -580,8 +582,6 @@ setMethod(f="plot",
                               ...)
           {
               debug <- min(4, max(0, round(debug)))
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,adv-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               oceDebug(debug, "plot.adv(x, which=c(", paste(which, collapse=","), "), type=\"", type, "\", ...) {\n", sep="", unindent=1)
               have.brushCorrelation <- !missing(brushCorrelation)
               oceDebug(debug, "brushCorrelation", if (have.brushCorrelation) brushCorrelation else "not given", "\n")
@@ -1157,7 +1157,7 @@ setMethod(f="plot",
 #' [xyzToEnuAdv()].
 #'
 #' @references
-#' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
+#' 1. @template nortekCoordTemplate
 #'
 #' @family things related to adv data
 toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
@@ -1205,7 +1205,8 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 #' `"adv"` objects.
 #'
 #' @references
-#' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
+#' 1. @template nortekCoordTemplate
+#'
 #' @family things related to adp data
 beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 {
@@ -1350,7 +1351,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' `adv` objects.
 #'
 #' @references
-#' 1. \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
+#' 1. @template nortekCoordTemplate
 #'
 #' 2. Clark Richards, 2012, PhD Dalhousie University Department of
 #' Oceanography.

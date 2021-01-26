@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -156,11 +156,11 @@
 <code><a href='as.section.html'>as.section()</a></code> or by adding a ctd station to an existing section with
 <code><a href='sectionAddStation.html'>sectionAddStation()</a></code>.</p>
 <p>Sections may be sorted with <code><a href='sectionSort.html'>sectionSort()</a></code>, subsetted with
-<code><a href='subset-section-method.html'>subset,section-method()</a></code>, smoothed with <code><a href='sectionSmooth.html'>sectionSmooth()</a></code>, and
+<code><a href='subset,section-method.html'>subset,section-method()</a></code>, smoothed with <code><a href='sectionSmooth.html'>sectionSmooth()</a></code>, and
 gridded with <code><a href='sectionGrid.html'>sectionGrid()</a></code>.  A "spine" may be added to a section
 with <code><a href='addSpine.html'>addSpine()</a></code>.  Sections may be summarized with
-<code><a href='summary-section-method.html'>summary,section-method()</a></code> and plotted
-with <code><a href='plot-section-method.html'>plot,section-method()</a></code>.</p>
+<code><a href='summary,section-method.html'>summary,section-method()</a></code> and plotted
+with <code><a href='plot,section-method.html'>plot,section-method()</a></code>.</p>
 <p>The sample dataset <code><a href='section.html'>section()</a></code> contains data along WOCE line A03.</p>
     <h2 class="hasAnchor" id="slots"><a class="anchor" href="#slots"></a>Slots</h2>
 
@@ -204,15 +204,15 @@ object may be retrieved in the standard R way using <code>slot()</code>. For
 example <code>slot(o,"data")</code> returns the <code>data</code> slot of an object named <code>o</code>,
 and similarly <code>slot(o,"metadata")</code> returns
 the <code>metadata</code> slot.</p>
-<p>The slots may also be obtained with the <code><a href='sub-sub-section-method.html'>[[,section-method</a></code>
+<p>The slots may also be obtained with the <code><a href='[[,section-method.html'>[[,section-method</a></code>
 operator, as e.g. <code>o[["data"]]</code> and <code>o[["metadata"]]</code>, respectively.</p>
-<p>The <code><a href='sub-sub-section-method.html'>[[,section-method</a></code> operator can also
+<p>The <code><a href='[[,section-method.html'>[[,section-method</a></code> operator can also
 be used to retrieve items from within the <code>data</code> and <code>metadata</code> slots.
 For example, <code>o[["temperature"]]</code> can be used to retrieve temperature
 from an object containing that quantity. The rule is that a named
 quantity is sought first within the object's <code>metadata</code> slot,
 with the <code>data</code> slot being checked only if <code>metadata</code> does not
-contain the item. This <code>[[</code> method can also be used to get
+contain the item. This <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
@@ -243,30 +243,36 @@ retrieve derived items.</p>
 <code><a href='windrose-class.html'>windrose-class</a></code>,
 <code><a href='xbt-class.html'>xbt-class</a></code></p>
 <p>Other things related to section data: 
-<code><a href='sub-sub-section-method.html'>[[,section-method</a></code>,
+<code><a href='[[,section-method.html'>[[,section-method</a></code>,
 <code>[[&lt;-,section-method</code>,
 <code><a href='as.section.html'>as.section</a>()</code>,
-<code><a href='handleFlags-section-method.html'>handleFlags,section-method</a></code>,
-<code><a href='initializeFlagScheme-section-method.html'>initializeFlagScheme,section-method</a></code>,
-<code><a href='plot-section-method.html'>plot,section-method</a></code>,
+<code><a href='handleFlags,section-method.html'>handleFlags,section-method</a></code>,
+<code><a href='initializeFlagScheme,section-method.html'>initializeFlagScheme,section-method</a></code>,
+<code><a href='plot,section-method.html'>plot,section-method</a></code>,
 <code><a href='read.section.html'>read.section</a>()</code>,
 <code><a href='sectionAddStation.html'>sectionAddStation</a>()</code>,
 <code><a href='sectionGrid.html'>sectionGrid</a>()</code>,
 <code><a href='sectionSmooth.html'>sectionSmooth</a>()</code>,
 <code><a href='sectionSort.html'>sectionSort</a>()</code>,
 <code><a href='section.html'>section</a></code>,
-<code><a href='subset-section-method.html'>subset,section-method</a></code>,
-<code><a href='summary-section-method.html'>summary,section-method</a></code></p></div>
+<code><a href='subset,section-method.html'>subset,section-method</a></code>,
+<code><a href='summary,section-method.html'>summary,section-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>section</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>section</span><span class='kw'>[[</span><span class='st'>'station'</span>, <span class='fl'>1</span>]])</div><div class='img'><img src='section-class-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/pairs.html'>pairs</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='kw'>z</span><span class='kw'>=</span>-<span class='no'>section</span><span class='kw'>[[</span><span class='st'>"pressure"</span>]],<span class='kw'>T</span><span class='kw'>=</span><span class='no'>section</span><span class='kw'>[[</span><span class='st'>"temperature"</span>]],<span class='kw'>S</span><span class='kw'>=</span><span class='no'>section</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]]))</div><div class='img'><img src='section-class-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'>## T profiles for first few stations in section, at common scale</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>,<span class='fl'>3</span>))
-<span class='no'>Tlim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span>(<span class='no'>section</span><span class='kw'>[[</span><span class='st'>"temperature"</span>]])
-<span class='no'>ylim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span>(<span class='no'>section</span><span class='kw'>[[</span><span class='st'>"pressure"</span>]]))
-<span class='kw'>for</span> (<span class='no'>stn</span> <span class='kw'>in</span> <span class='no'>section</span><span class='kw'>[[</span><span class='st'>"station"</span>, <span class='fl'>1</span>:<span class='fl'>9</span>]])
-    <span class='fu'><a href='plotProfile.html'>plotProfile</a></span>(<span class='no'>stn</span>, <span class='kw'>xtype</span><span class='kw'>=</span><span class='st'>'potential temperature'</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='no'>ylim</span>, <span class='kw'>Tlim</span><span class='kw'>=</span><span class='no'>Tlim</span>)</div><div class='img'><img src='section-class-3.png' alt='' width='700' height='433' /></div><div class='input'>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>[[</span><span class='st'>'station'</span>, <span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+</div><div class='img'><img src='section-class-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/pairs.html'>pairs</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span>z<span class='op'>=</span><span class='op'>-</span><span class='va'>section</span><span class='op'>[[</span><span class='st'>"pressure"</span><span class='op'>]</span><span class='op'>]</span>,T<span class='op'>=</span><span class='va'>section</span><span class='op'>[[</span><span class='st'>"temperature"</span><span class='op'>]</span><span class='op'>]</span>,S<span class='op'>=</span><span class='va'>section</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='section-class-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'>## T profiles for first few stations in section, at common scale</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>,<span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>Tlim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>[[</span><span class='st'>"temperature"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+<span class='va'>ylim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>[[</span><span class='st'>"pressure"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span>
+<span class='kw'>for</span> <span class='op'>(</span><span class='va'>stn</span> <span class='kw'>in</span> <span class='va'>section</span><span class='op'>[[</span><span class='st'>"station"</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>9</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+    <span class='fu'><a href='plotProfile.html'>plotProfile</a></span><span class='op'>(</span><span class='va'>stn</span>, xtype<span class='op'>=</span><span class='st'>'potential temperature'</span>, ylim<span class='op'>=</span><span class='va'>ylim</span>, Tlim<span class='op'>=</span><span class='va'>Tlim</span><span class='op'>)</span>
+</div><div class='img'><img src='section-class-3.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -283,7 +289,7 @@ retrieve derived items.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

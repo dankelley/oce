@@ -4,6 +4,12 @@ adpOld <- adp                          # for checking
 load("adp.rda")
 
 summary(adp)
+png("check_adp.png", unit="in", width=7, height=7, res=200)
+plot(adp)
+dev.off()
+png("check_adp_old.png", unit="in", width=7, height=7, res=200)
+plot(adpOld)
+dev.off()
 
 expect_equal(adpOld[["data"]], adp[["data"]])
 names <- names(adp[["metadata"]])

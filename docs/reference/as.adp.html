@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,15 +147,15 @@
     <p>Create an ADP Object</p>
     </div>
 
-    <pre class="usage"><span class='fu'>as.adp</span>(
-  <span class='no'>time</span>,
-  <span class='no'>distance</span>,
-  <span class='no'>v</span>,
-  <span class='kw'>a</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>q</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>orientation</span> <span class='kw'>=</span> <span class='st'>"upward"</span>,
-  <span class='kw'>coordinate</span> <span class='kw'>=</span> <span class='st'>"enu"</span>
-)</pre>
+    <pre class="usage"><span class='fu'>as.adp</span><span class='op'>(</span>
+  <span class='va'>time</span>,
+  <span class='va'>distance</span>,
+  <span class='va'>v</span>,
+  a <span class='op'>=</span> <span class='cn'>NULL</span>,
+  q <span class='op'>=</span> <span class='cn'>NULL</span>,
+  orientation <span class='op'>=</span> <span class='st'>"upward"</span>,
+  coordinate <span class='op'>=</span> <span class='st'>"enu"</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -205,7 +205,7 @@ arguments may be useful.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to adp data: 
-<code><a href='sub-sub-adp-method.html'>[[,adp-method</a></code>,
+<code><a href='[[,adp-method.html'>[[,adp-method</a></code>,
 <code>[[&lt;-,adp-method</code>,
 <code><a href='ad2cpHeaderValue.html'>ad2cpHeaderValue</a>()</code>,
 <code><a href='adp-class.html'>adp-class</a></code>,
@@ -221,9 +221,9 @@ arguments may be useful.</p>
 <code><a href='binmapAdp.html'>binmapAdp</a>()</code>,
 <code><a href='enuToOtherAdp.html'>enuToOtherAdp</a>()</code>,
 <code><a href='enuToOther.html'>enuToOther</a>()</code>,
-<code><a href='handleFlags-adp-method.html'>handleFlags,adp-method</a></code>,
+<code><a href='handleFlags,adp-method.html'>handleFlags,adp-method</a></code>,
 <code><a href='is.ad2cp.html'>is.ad2cp</a>()</code>,
-<code><a href='plot-adp-method.html'>plot,adp-method</a></code>,
+<code><a href='plot,adp-method.html'>plot,adp-method</a></code>,
 <code><a href='read.adp.ad2cp.html'>read.adp.ad2cp</a>()</code>,
 <code><a href='read.adp.nortek.html'>read.adp.nortek</a>()</code>,
 <code><a href='read.adp.rdi.html'>read.adp.rdi</a>()</code>,
@@ -234,25 +234,29 @@ arguments may be useful.</p>
 <code><a href='read.aquadoppProfiler.html'>read.aquadoppProfiler</a>()</code>,
 <code><a href='read.aquadopp.html'>read.aquadopp</a>()</code>,
 <code><a href='rotateAboutZ.html'>rotateAboutZ</a>()</code>,
-<code><a href='setFlags-adp-method.html'>setFlags,adp-method</a></code>,
-<code><a href='subset-adp-method.html'>subset,adp-method</a></code>,
+<code><a href='setFlags,adp-method.html'>setFlags,adp-method</a></code>,
+<code><a href='subset,adp-method.html'>subset,adp-method</a></code>,
 <code><a href='subtractBottomVelocity.html'>subtractBottomVelocity</a>()</code>,
-<code><a href='summary-adp-method.html'>summary,adp-method</a></code>,
+<code><a href='summary,adp-method.html'>summary,adp-method</a></code>,
 <code><a href='toEnuAdp.html'>toEnuAdp</a>()</code>,
 <code><a href='toEnu.html'>toEnu</a>()</code>,
 <code><a href='velocityStatistics.html'>velocityStatistics</a>()</code>,
 <code><a href='xyzToEnuAdpAD2CP.html'>xyzToEnuAdpAD2CP</a>()</code>,
 <code><a href='xyzToEnuAdp.html'>xyzToEnuAdp</a>()</code>,
 <code><a href='xyzToEnu.html'>xyzToEnu</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>adp</span>)
-<span class='no'>t</span> <span class='kw'>&lt;-</span> <span class='no'>adp</span><span class='kw'>[[</span><span class='st'>"time"</span>]]
-<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='no'>adp</span><span class='kw'>[[</span><span class='st'>"distance"</span>]]
-<span class='no'>v</span> <span class='kw'>&lt;-</span> <span class='no'>adp</span><span class='kw'>[[</span><span class='st'>"v"</span>]]
-<span class='no'>a</span> <span class='kw'>&lt;-</span> <span class='fu'>as.adp</span>(<span class='kw'>time</span><span class='kw'>=</span><span class='no'>t</span>, <span class='kw'>distance</span><span class='kw'>=</span><span class='no'>d</span>, <span class='kw'>v</span><span class='kw'>=</span><span class='no'>v</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>adp</span><span class='op'>)</span>
+<span class='va'>t</span> <span class='op'>&lt;-</span> <span class='va'>adp</span><span class='op'>[[</span><span class='st'>"time"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>d</span> <span class='op'>&lt;-</span> <span class='va'>adp</span><span class='op'>[[</span><span class='st'>"distance"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>v</span> <span class='op'>&lt;-</span> <span class='va'>adp</span><span class='op'>[[</span><span class='st'>"v"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>a</span> <span class='op'>&lt;-</span> <span class='fu'>as.adp</span><span class='op'>(</span>time<span class='op'>=</span><span class='va'>t</span>, distance<span class='op'>=</span><span class='va'>d</span>, v<span class='op'>=</span><span class='va'>v</span><span class='op'>)</span>
 <span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>a</span>)</div><div class='img'><img src='as.adp-1.png' alt='' width='700' height='433' /></div><div class='input'># }
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>a</span><span class='op'>)</span>
+</div><div class='img'><img src='as.adp-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
 
 </div></pre>
   </div>
@@ -270,7 +274,7 @@ arguments may be useful.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

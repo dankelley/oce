@@ -77,10 +77,8 @@ abline(v=juan, col='red')
 The example refers to Hurricane Juan, which caused a great deal
 of damage to Halifax in 2003.  Since this was in the era of the digital
 photo, a casual web search will uncover some spectacular images of damage,
-from both wind and storm surge. A map of the path of Hurricane Juan across
-Nova Scotia is at
-\url{http://ec.gc.ca/ouragans-hurricanes/default.asp?lang=En&n=222F51F7-1}.
-Landfall, very near the site of this sealevel
+from both wind and storm surge.
+Landfall, within 30km of this sealevel
 gauge, was between 00:10 and 00:20 Halifax local time on Monday, Sept 29,
 2003.
 }
@@ -90,6 +88,7 @@ structure of sealevel objects, and also outlines the other functions dealing
 with them.
 
 Other functions that plot oce data: 
+\code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,adv-method}},
 \code{\link{plot,amsr-method}},

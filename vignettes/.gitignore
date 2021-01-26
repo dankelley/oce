@@ -1,10 +1,9 @@
+*.html
 map_projections.R
-map_projections.html
 adp.R
-adp.html
 flags.R
-flags.html
 oce.R
-oce.html
 rsconnect
 flags_files
+*.md
+figure

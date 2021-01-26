@@ -38,12 +38,11 @@ setClass("cm", contains="oce")
 #' @usage data(cm)
 #'
 #' @examples
-#'\dontrun{
 #' library(oce)
 #' data(cm)
 #' summary(cm)
 #' plot(cm)
-#'}
+#'
 #' @family datasets provided with oce
 #' @family things related to cm data
 NULL
@@ -114,6 +113,11 @@ setMethod(f="initialize",
 #' @param object A [cm-class] object.
 #'
 #' @param ... Further arguments passed to or from other methods.
+#'
+#' @examples
+#' library(oce)
+#' data(cm)
+#' summary(cm)
 #'
 #' @seealso The documentation for the [cm-class] class explains the structure
 #' of `cm` objects, and also outlines the other functions dealing with them.
@@ -198,37 +202,35 @@ setMethod(f="subset",
 
 #' Coerce data into a CM object
 #'
-#' @param time A vector of times of observation, or an `oce` object that holds `time`,
-#' in addition to either both `u` and `v`, or both `directionTrue`
-#' and `speedHorizontal`.
+#' @param time A vector of times of observation, or an `oce` object from which time
+#' and two velocity components can be inferred, e.g. an [adv-class] object, or
+#' an [adp-class] object that has only one distance bin.  If `time` is an `oce` object,
+#' then all of the following arguments are ignored.
 #'
-#' @param u either a numerical vector containing the eastward component of velocity, in m/s,
-#' or an `oce` object that can can be coerced into a `cm` object. In the second
-#' case, the other arguments to the present function are ignored.
+#' @param u,v optional numerical vectors containing the x and y components of velocity (m/s).
 #'
-#' @param v vector containing the northward component of velocity in m/s.
+#' @param pressure,conductivity,salinity,temperature optional numerical vectors
+#' containing pressure (dbar), electrical conductivity, practical salinity,
+#' and in-situ temperature (degree C).
 #'
-#' @param pressure vector containing pressure in dbar. Ignored if the first argument
-#' contains an `oce` object holding pressure.
+#' @param longitude,latitude optional position specified in degrees East and North.
 #'
-#' @param conductivity Optional vector of conductivity.
-#' Ignored if the first argument contains an `oce` object holding pressure.
-#'
-#' @param salinity Optional vector of salinity, assumed to be Practical Salinity.
-#' Ignored if the first argument contains an `oce` object holding salinity
-#'
-#' @param temperature Optional vector of temperature.
-#' Ignored if the first argument contains an `oce` object holding temperature
-#'
-#' @param longitude Optional longitude in degrees East.
-#' Ignored if the first argument contains an `oce` object holding longitude.
-#'
-#' @param latitude Latitude in degrees North.
-#' Ignored if the first argument contains an `oce` object holding latitude.
-#'
-#' @param filename Optional source file name
+#' @param filename optional source file name.
 #'
 #' @template debugTemplate
+#'
+#' @examples
+#' library(oce)
+#' # Example 1: creation from scratch
+#' t <- Sys.time() + 0:50
+#' u <- sin(2*pi*0:50/5) + rnorm(51)
+#' v <- cos(2*pi*0:50/5) + rnorm(51)
+#' p <- 100 + rnorm(51)
+#' summary(as.cm(t, u, v, p))
+#'
+#' # Example 2: creation from an adv object
+#' data(adv)
+#' summary(as.cm(adv))
 #'
 #' @family things related to cm data
 as.cm <- function(time, u=NULL, v=NULL,
@@ -239,6 +241,7 @@ as.cm <- function(time, u=NULL, v=NULL,
     rpd <- atan2(1, 1) / 45            # radians per degree (avoid 'pi')
     ## Catch special cases
     firstArgIsOce <- inherits(time, "oce")
+    processingLog <- NULL
     if (firstArgIsOce) {
         x <- time
         mnames <- names(x@metadata)
@@ -260,18 +263,34 @@ as.cm <- function(time, u=NULL, v=NULL,
             latitude <- x@metadata$latitude
         if ("filename" %in% mnames)
             filename <- x@metadata$filename
-        if ("u" %in% dnames && "v" %in% dnames) {
-            u <- x@data$u
-            v <- x@data$v
-        } else if ("speedHorizontal" %in% dnames && "directionTrue" %in% dnames) {
-            ## NOTE: this can be generalized later to take e.g. 'speed', if some objects have that
-            u <- x@data$speedHorizontal * cos(rpd * (90-x@data$directionTrue))
-            v <- x@data$speedHorizontal * sin(rpd * (90-x@data$directionTrue))
-        } else if ("speedHorizontal" %in% dnames && "direction" %in% dnames) {
-            u <- x@data$speedHorizontal * cos(rpd * (90-x@data$direction))
-            v <- x@data$speedHorizontal * sin(rpd * (90-x@data$direction))
-        } else {
-            stop("first argument must hold either 'u' plus 'v' or 'speed' plus 'directionTrue' or 'direction'")
+        if (inherits(x, "adp")) {
+            if (1 == dim(x@data$v)[2]) {
+                oceDebug(debug, "x is an adp object with just 1 cell\n")
+                u <- as.vector(x@data$v[,1,1])
+                v <- as.vector(x@data$v[,1,2])
+            } else {
+                stop("can't convert multi-cell adp; try as.cm(x[[\"time\"]],x[[\"v\"]][,1,1], x[[\"v\"]][,1,2])")
+            }
+            processingLog <- x@processingLog
+        } else if (inherits(x, "adv")) {
+            oceDebug(debug, "x is an adv object\n")
+            u <- as.vector(x@data$v[,1])
+            v <- as.vector(x@data$v[,2])
+            processingLog <- x@processingLog
+        }  else {
+            if ("u" %in% dnames && "v" %in% dnames) {
+                u <- x@data$u
+                v <- x@data$v
+            } else if ("speedHorizontal" %in% dnames && "directionTrue" %in% dnames) {
+                ## NOTE: this can be generalized later to take e.g. 'speed', if some objects have that
+                u <- x@data$speedHorizontal * cos(rpd * (90-x@data$directionTrue))
+                v <- x@data$speedHorizontal * sin(rpd * (90-x@data$directionTrue))
+            } else if ("speedHorizontal" %in% dnames && "direction" %in% dnames) {
+                u <- x@data$speedHorizontal * cos(rpd * (90-x@data$direction))
+                v <- x@data$speedHorizontal * sin(rpd * (90-x@data$direction))
+            } else {
+                stop("first argument must hold either 'u' plus 'v' or 'speed' plus 'directionTrue' or 'direction'")
+            }
         }
     }
     direction <- 90 - atan2(v, u) / rpd
@@ -331,7 +350,10 @@ as.cm <- function(time, u=NULL, v=NULL,
         } else {
             res@metadata$dataNamesOriginal <- NULL
         }
+        res@processingLog <- x@processingLog
     }
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                             paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # as.cm()\n", unindent=1)
     res
 }
@@ -728,7 +750,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 setMethod(f="plot",
           signature=signature("cm"),
           definition=function(x,
-                              which=c(1:2, 7:9),
+                              which=c(1:2),
                               type="l",
                               drawTimeRange=getOption("oceDrawTimeRange"),
                               drawZeroLine=FALSE,
@@ -741,8 +763,6 @@ setMethod(f="plot",
                               ...)
           {
               oceDebug(debug, "plot.cm() {\n", unindent=1)
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,cm-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
               if (3 != sum(c("time", "u", "v") %in% names(x@data))) {

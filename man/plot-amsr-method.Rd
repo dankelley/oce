@@ -3,12 +3,22 @@
 \name{plot,amsr-method}
 \alias{plot,amsr-method}
 \alias{plot.amsr}
+\alias{both}
+\alias{xlim}
+\alias{and}
+\alias{ylim}
+\alias{to}
+\alias{compute}
+\alias{zrange}
 \title{Plot an amsr Object}
 \usage{
 \S4method{plot}{amsr}(
   x,
   y,
-  asp,
+  asp = NULL,
+  breaks,
+  col,
+  colormap,
   missingColor = list(land = "papayaWhip", none = "lightGray", bad = "gray", rain =
     "plum", ice = "mediumVioletRed"),
   debug = getOption("oceDebug"),
@@ -18,10 +28,29 @@
 \arguments{
 \item{x}{an \linkS4class{amsr} object.}
 
-\item{y}{String indicating the name of the band to plot; if not provided,
+\item{y}{character value indicating the name of the band to plot; if not provided,
 \code{SST} is used; see the documentation for the \linkS4class{amsr} class for a list of bands.}
 
-\item{asp}{Optional aspect ratio for plot.}
+\item{asp}{optional numerical value giving the aspect ratio for plot.  The
+default value, \code{NULL}, means to use an aspect ratio of 1 for world views,
+and a value computed from \code{ylim}, if the latter is specified in the
+\code{...} argument.}
+
+\item{breaks}{optional numeric vector of the z values for breaks in the color scheme.
+If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.}
+
+\item{col}{optional argument, either a vector of colors corresponding to the breaks, of length
+1 less than the number of breaks, or a function specifying colors.
+If neither \code{col} or \code{colormap} is provided, then \code{col} defaults to
+\code{\link[=oceColorsTemperature]{oceColorsTemperature()}}.
+If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.}
+
+\item{colormap}{a specification of the colormap to use, as created
+with \code{\link[=colormap]{colormap()}}.  If \code{colormap} is NULL, which is the default, then
+a colormap is created to cover the range of data values, using
+\link{oceColorsTemperature} colour scheme.
+If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.
+See \dQuote{Examples} for an example of using the "turbo" colour scheme.}
 
 \item{missingColor}{List of colors for problem cases. The names of the
 elements in this list must be as in the default, but the colors may
@@ -32,24 +61,45 @@ default values in \code{missingColor}.}
 
 \item{debug}{A debugging flag, integer.}
 
-\item{...}{extra arguments passed to \code{\link[=imagep]{imagep()}}, e.g. set
-\code{col} to control colors.}
+\item{...}{extra arguments passed to \code{\link[=imagep]{imagep()}}, e.g. to control
+the view with \code{xlim} (for longitude) and \code{ylim} (for latitude).}
 }
 \description{
-Plot an amsr Object
+Plot an image of a component of an \linkS4class{amsr} object.
+}
+\details{
+In addition to fields named directly in the object, such as \code{SSTDay} and
+\code{SSTNight}, it is also possible to plot computed fields, such as \code{SST},
+which combines the day and night fields.
 }
 \examples{
-\dontrun{
-d <- read.amsr("f34_20160102v7.2.gz")
-asp <- 1/cos(pi*40/180)
-plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
+library(oce)
 data(coastlineWorld)
+data(amsr) # see ?amsr for how to read and composite such objects
+
+# Example 1: plot with default colour scheme, oceColorsTemperature()
+plot(amsr, "SST")
 lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
-}
+
+# Example 2: 'turbo' colour scheme
+plot(amsr, "SST", col=oceColorsTurbo)
+lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
 }
 \seealso{
+Other things related to amsr data: 
+\code{\link{[[,amsr-method}},
+\code{\link{[[<-,amsr-method}},
+\code{\link{amsr-class}},
+\code{\link{amsr}},
+\code{\link{composite,amsr-method}},
+\code{\link{download.amsr}()},
+\code{\link{read.amsr}()},
+\code{\link{subset,amsr-method}},
+\code{\link{summary,amsr-method}}
+
 Other functions that plot oce data: 
+\code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,adv-method}},
 \code{\link{plot,argo-method}},
@@ -76,20 +126,9 @@ Other functions that plot oce data:
 \code{\link{plotScan}()},
 \code{\link{plotTS}()},
 \code{\link{tidem-class}}
-
-Other things related to amsr data: 
-\code{\link{[[,amsr-method}},
-\code{\link{[[<-,amsr-method}},
-\code{\link{amsr-class}},
-\code{\link{composite,amsr-method}},
-\code{\link{download.amsr}()},
-\code{\link{read.amsr}()},
-\code{\link{subset,amsr-method}},
-\code{\link{summary,amsr-method}}
 }
 \author{
 Dan Kelley
 }
 \concept{functions that plot oce data}
-\concept{satellite}
 \concept{things related to amsr data}

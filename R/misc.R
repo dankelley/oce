@@ -1,5 +1,6 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+
 abbreviateVector <- function(x)
 {
     if (1 >= length(x)) {
@@ -1324,7 +1325,7 @@ binAverage <- function(x, y, xmin, xmax, xinc)
 #' u <- interpBarnes(wind$x, wind$y, wind$z)
 #' contour(u$xg, u$yg, u$zg)
 #' U <- ungrid(u$xg, u$yg, u$zg)
-#' points(U$x, U$y, col=oce.colorsJet(100)[rescale(U$grid, rlow=1, rhigh=100)], pch=20)
+#' points(U$x, U$y, col=oce.colorsViridis(100)[rescale(U$grid, rlow=1, rhigh=100)], pch=20)
 ungrid <- function(x, y, grid)
 {
     nrow <- nrow(grid)
@@ -1674,7 +1675,7 @@ smoothSomething <- function(x, ...)
 #' x <- 0.5 * t
 #' z <- 50 * (-1 + sin(2 * pi * t / 360))
 #' T <- 5 + 10 * exp(z / 100)
-#' palette <- oce.colorsJet(100)
+#' palette <- oce.colorsViridis(100)
 #' zlim <- range(T)
 #' drawPalette(zlim=zlim, col=palette)
 #' plot(x, z, type='p', pch=20, cex=3,
@@ -2407,22 +2408,21 @@ fullFilename <- function(filename)
 #' and including units as appropriate.
 #' Used by e.g. [plot,ctd-method()].
 #'
-#' @param item code for the label.  This must be an element from the following
-#' list, or an abbreviation that uniquely identifies an element through its
-#' first letters: `"S"`, `"C"`, `"conductivity mS/cm"`,
-#' `"conductivity S/m"`, `"T"`, `"theta"`, `"sigmaTheta"`,
-#' `"conservative temperature"`, `"absolute salinity"`,
-#' `"nitrate"`, `"nitrite"`, `"oxygen"`, \code{"oxygen
-#' saturation"}, `"oxygen mL/L"`, `"oxygen umol/L"`, \code{"oxygen
-#' umol/kg"}, `"phosphate"`, `"silicate"`, `"tritium"`,
-#' `"spice"`, `"fluorescence"`, `"p"`, `"z"`,
-#' `"distance"`, `"distance km"`, `"along-track distance km"`,
-#' `"heading"`, `"pitch"`, `"roll"`, `"u"`, `"v"`,
-#' `"w"`, `"speed"`, `"direction"`, `"eastward"`,
-#' `"northward"`, `"depth"`, `"elevation"`, `"latitude"`,
-#' `"longitude"`, `"frequency cph"`, `"sound speed"`, or \code{"spectral density
-#' m2/cph"}.
-#'
+#' @param item code for the label. The following common values are recognized:
+#' `"absolute salinity"`, `"along-spine distance km"`, `"along-track distance km"`,
+#' `"C"`, `"conductivity mS/cm"`, `"conductivity S/m"`, `"conservative temperature"`,
+#' `"CT"`, `"depth"`, `"direction"`, `"distance"`, `"distance km"`, `"eastward"`,
+#' `"elevation"`, `"fluorescence"`, `"frequency cph"`, `"heading"`, `"latitude"`,
+#' `"longitude"`, `"N2"`, `"nitrate"`, `"nitrite"`, `"northward"`, `"oxygen"`,
+#' `"oxygen mL/L"`, `"oxygen saturation"`, `"oxygen umol/kg"`, `"oxygen umol/L"`,
+#' `"p"`, `"phosphate"`, `"pitch"`, `"roll"`, `"S"`, `"SA"`,
+#' `"sigma0"`, `"sigma1"`, `"sigma2"`, `"sigma3"`, `"sigma4"`,
+#' `"sigmaTheta"`,
+#' `"silicate"`, `"sound speed"`, `"spectral density m2/cph"`, `"speed"`,
+#' `"spice"`, `"T"`, `"theta"`, `"tritium"`, `"u"`, `"v"`, `"w"`, or `"z"`.
+#' Other values may also be recognized, and if an unrecognized item is
+#' given, then it is returned, unaltered.
+#"
 #' @param axis a string indicating which axis to use; must be `x` or
 #' `y`.
 #'
@@ -2455,9 +2455,9 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
         stop("must provide 'item'")
     if (axis != "x" && axis != "y")
         stop("axis must be \"x\" or \"y\"")
-    itemAllowed <- c("S", "C", "conductivity mS/cm", "conductivity S/m", "T",
+    itemAllowed <- c("S", "SA", "C", "CT", "conductivity mS/cm", "conductivity S/m", "T",
                      "theta", "sigmaTheta", "conservative temperature",
-                     "absolute salinity", "nitrate", "nitrite",
+                     "absolute salinity", "N2", "nitrate", "nitrite",
                      "oxygen", "oxygen saturation", "oxygen mL/L", "oxygen umol/L", "oxygen umol/kg",
                      "phosphate", "silicate", "tritium", "spice",
                      "fluorescence", "p", "z", "distance", "distance km",
@@ -2466,7 +2466,12 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
                      "heading", "pitch", "roll", "u",
                      "v", "w", "speed", "direction", "eastward", "northward",
                      "depth", "elevation", "latitude", "longitude", "frequency cph",
-                     "sound speed", "spectral density m2/cph")
+                     "sound speed", "spectral density m2/cph",
+                     "sigma0", "sigma1", "sigma2", "sigma3", "sigma4")
+    ## FIXME: if anything is added, run the next, and paste results into roxygen.
+    ## > A<-paste0("'",paste(sort(itemAllowed), collapse="'`, `'"),"'");A
+    ## NOTE: some hand-tweaking must be done to fix linebreaks and (preferably) to
+    ## change the ' into a ".
     if (!missing(unit)) {
         if (is.list(unit)) {
             unit <- unit[[1]] # second item is a scale
@@ -2516,7 +2521,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
         unit <- gettext("unitless", domain="R-oce")
         full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
         abbreviated <- bquote("C")
-    } else if (item == "conservative temperature") {
+    } else if (item %in% c("CT", "conservative temperature")) {
         var <- gettext("Conservative Temperature", domain="R-oce")
         full <- bquote(.(var)*.(L)*degree*"C"*.(R))
         abbreviated <- bquote(Theta*.(L)*degree*"C"*.(R))
@@ -2557,6 +2562,10 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
             abbreviated <- bquote(phantom()^3*H*.(L)*.(unit[[1]])*.(R))
         }
+    } else if (item == "N2") {
+        ## full <- bquote("Square of Buoyancy Frequency"*.(L)*s^-2*.(R))
+        full  <- bquote(N^2*.(L)*s^-2*.(R))
+        abbreviated <- bquote(N^2*.(L)*s^-2*.(R))
     } else if (item == "nitrate") {
         var <- gettext("Nitrate", domain="R-oce")
         if (is.null(unit)) {
@@ -2640,7 +2649,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
     } else if (item == "S") {
         full <- gettext("Practical Salinity", domain="R-oce")
         abbreviated <- expression(S)
-    } else if (item == "absolute salinity") {
+    } else if (item %in% c("SA", "absolute salinity")) {
         var <- gettext("Absolute Salinity", domain="R-oce")
         full <- bquote(.(var)*.(L)*g/kg*.(R))
         abbreviated <- bquote(S[A]*.(L)*g/kg*.(R))
@@ -2965,7 +2974,7 @@ lon360 <- function(x)
 #' Determine time offset from timezone
 #'
 #' The data are from
-#' \url{https://www.timeanddate.com/library/abbreviations/timezones/} and were
+#' \url{https://www.timeanddate.com/time/zones/} and were
 #' hand-edited to develop this code, so there may be errors.  Also, note that
 #' some of these contradict; if you examine the code, you'll see some
 #' commented-out portions that represent solving conflicting definitions by
@@ -3516,14 +3525,22 @@ interpBarnes <- function(x, y, z, w,
     oceDebug(debug, "xr=", xr, ", yr=", yr, ", gamma=", gamma, ", iterations=", iterations, "\n")
 
     ok <- !is.na(x) & !is.na(y) & !is.na(z) & !is.na(w)
-    g <- do_interp_barnes(x[ok], y[ok], z[ok], w[ok], xg, yg, xr, yr, gamma, iterations)
-    if (trim >= 0 && trim <= 1) {
-        bad <- g$wg < quantile(g$wg, trim, na.rm=TRUE)
-        g$zg[bad] <- NA
+    if (sum(ok) > 0) {
+        g <- do_interp_barnes(x[ok], y[ok], z[ok], w[ok], xg, yg, xr, yr, gamma, iterations)
+        if (trim >= 0 && trim <= 1) {
+            bad <- g$wg < quantile(g$wg, trim, na.rm=TRUE)
+            g$zg[bad] <- NA
+        }
+        rval <- list(xg=xg, yg=yg, zg=g$zg, wg=g$wg, zd=g$zd)
+    } else {
+        rval <- list(xg=xg, yg=yg,
+                     zg=matrix(NA, nrow=length(xg), ncol=length(yg)),
+                     wg=matrix(NA, nrow=length(xg), ncol=length(yg)),
+                     zd=rep(NA, length(x)))
     }
-    oceDebug(debug, sprintf("filled %.3f%% of z matrix\n", 100*sum(is.finite(g$zg))/prod(dim(g$zg))))
+    oceDebug(debug, sprintf("filled %.3f%% of z matrix\n", 100*sum(is.finite(rval$zg))/prod(dim(rval$zg))))
     oceDebug(debug, "} # interpBarnes(...)\n", unindent=1, sep="")
-    list(xg=xg, yg=yg, zg=g$zg, wg=g$wg, zd=g$zd)
+    rval
 }
 
 #' Coriolis parameter on rotating earth
@@ -4315,17 +4332,17 @@ integerToAscii <- function(i)
 #' @section Historical Notes:
 #' For about a decade, `magneticField` used the version 12 formulae provided
 #' by IAGA, but the code was updated on March 3, 2020, to version 13.  Example
-#' 3 shows that the differences in declination are typicaly under 2 degrees
+#' 3 shows that the differences in declination are typically under 2 degrees
 #' (with 95 percent of the data lying between -1.7 and 0.7 degrees).
 #'
 #' @references
 #' 1. The underlying Fortran code for version 12 is from `igrf12.f`, downloaded the NOAA
 #' website (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
-#' 2015. That for version 13 is `igrf13.f`, downloadd from the NOAA website
+#' 2015. That for version 13 is `igrf13.f`, downloaded from the NOAA website
 #' (\url{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html} on March 3, 2020.
 #' 2. Witze, Alexandra. \dQuote{Earth's Magnetic Field Is Acting up and Geologists Don't Know Why.}
 #' Nature 565 (January 9, 2019): 143.
-#' \url{https://doi.org/10.1038/d41586-019-00007-1}.
+#' \doi{10.1038/d41586-019-00007-1}
 #'
 #' @examples
 #' library(oce)
@@ -5042,7 +5059,7 @@ trimString <- function(s)
 #' Perform lowpass digital filtering
 #'
 #' The filter coefficients are constructed using standard definitions,
-#' and then \link[stats]{filter} in the \pkg{stats} package is
+#' and then [stats::filter()] is
 #' used to filter the data. This leaves `NA`
 #' values within half the filter length of the ends of the time series, but
 #' these may be replaced with the original `x` values, if the argument
@@ -5124,4 +5141,6 @@ lowpass <- function(x, filter="hamming", n, replace=TRUE, coefficients=FALSE)
     }
     rval
 }
+
+
 

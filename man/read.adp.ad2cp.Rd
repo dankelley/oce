@@ -67,8 +67,10 @@ section 2 on page 6). Note that \code{\link[=oceSetMetadata]{oceSetMetadata()}}
 can be used to alter the slantwise beam angle of an existing object,
 and this will alter any later conversion from beam to xyz coordinates.}
 
-\item{monitor}{Logical value indicating whether the progress in reading
-the file is to be illustrated by calling \code{\link[=txtProgressBar]{txtProgressBar()}}.}
+\item{monitor}{boolean value indicating whether to indicate the progress
+of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value
+of \code{monitor} is changed to \code{FALSE} automatically, for non-interactive
+sessions.}
 
 \item{despike}{Ignored by this function, and provided only for similarity
 to other adp-reading functions.}

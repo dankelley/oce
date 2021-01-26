@@ -83,7 +83,7 @@ used, and this may be added in the future." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ used, and this may be added in the future." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -154,34 +154,34 @@ used, and this may be added in the future.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for echosounder</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(
-  <span class='no'>x</span>,
-  <span class='kw'>which</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>beam</span> <span class='kw'>=</span> <span class='st'>"a"</span>,
-  <span class='no'>newx</span>,
-  <span class='no'>xlab</span>,
-  <span class='no'>ylab</span>,
-  <span class='no'>xlim</span>,
-  <span class='no'>ylim</span>,
-  <span class='no'>zlim</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"l"</span>,
-  <span class='kw'>col</span> <span class='kw'>=</span> <span class='no'>oceColorsJet</span>,
-  <span class='kw'>lwd</span> <span class='kw'>=</span> <span class='fl'>2</span>,
-  <span class='kw'>despike</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='no'>drawBottom</span>,
-  <span class='kw'>ignore</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-  <span class='kw'>drawTimeRange</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>drawPalette</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='no'>radius</span>,
-  <span class='no'>coastline</span>,
-  <span class='kw'>mgp</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceMgp"</span>),
-  <span class='kw'>mar</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='no'>mgp</span>[<span class='fl'>1</span>], <span class='no'>mgp</span>[<span class='fl'>1</span>] + <span class='fl'>1.5</span>, <span class='no'>mgp</span>[<span class='fl'>2</span>] + <span class='fl'>1</span>/<span class='fl'>2</span>, <span class='fl'>1</span>/<span class='fl'>2</span>),
-  <span class='no'>atTop</span>,
-  <span class='no'>labelsTop</span>,
-  <span class='no'>tformat</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>),
-  <span class='no'>...</span>
-)</pre>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  which <span class='op'>=</span> <span class='fl'>1</span>,
+  beam <span class='op'>=</span> <span class='st'>"a"</span>,
+  <span class='va'>newx</span>,
+  <span class='va'>xlab</span>,
+  <span class='va'>ylab</span>,
+  <span class='va'>xlim</span>,
+  <span class='va'>ylim</span>,
+  <span class='va'>zlim</span>,
+  type <span class='op'>=</span> <span class='st'>"l"</span>,
+  col <span class='op'>=</span> <span class='va'>oceColorsJet</span>,
+  lwd <span class='op'>=</span> <span class='fl'>2</span>,
+  despike <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>drawBottom</span>,
+  ignore <span class='op'>=</span> <span class='fl'>5</span>,
+  drawTimeRange <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  drawPalette <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  <span class='va'>radius</span>,
+  <span class='va'>coastline</span>,
+  mgp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceMgp"</span><span class='op'>)</span>,
+  mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span>, <span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>+</span> <span class='fl'>1.5</span>, <span class='va'>mgp</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span> <span class='op'>+</span> <span class='fl'>1</span><span class='op'>/</span><span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>/</span><span class='fl'>2</span><span class='op'>)</span>,
+  <span class='va'>atTop</span>,
+  <span class='va'>labelsTop</span>,
+  <span class='va'>tformat</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -333,22 +333,26 @@ values that can be used by <code><a href='oce.grid.html'>oce.grid()</a></code> t
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to echosounder data: 
-<code><a href='sub-sub-echosounder-method.html'>[[,echosounder-method</a></code>,
+<code><a href='[[,echosounder-method.html'>[[,echosounder-method</a></code>,
 <code>[[&lt;-,echosounder-method</code>,
 <code><a href='as.echosounder.html'>as.echosounder</a>()</code>,
 <code><a href='echosounder-class.html'>echosounder-class</a></code>,
 <code><a href='echosounder.html'>echosounder</a></code>,
 <code><a href='findBottom.html'>findBottom</a>()</code>,
 <code><a href='read.echosounder.html'>read.echosounder</a>()</code>,
-<code><a href='subset-echosounder-method.html'>subset,echosounder-method</a></code>,
-<code><a href='summary-echosounder-method.html'>summary,echosounder-method</a></code></p></div>
+<code><a href='subset,echosounder-method.html'>subset,echosounder-method</a></code>,
+<code><a href='summary,echosounder-method.html'>summary,echosounder-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley, with extensive help from Clark Richards</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>echosounder</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>echosounder</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>2</span>), <span class='kw'>drawBottom</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='img'><img src='plot-echosounder-method-1.png' alt='' width='700' height='433' /></div><div class='input'># }
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>echosounder</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>echosounder</span>, which<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span>, drawBottom<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
+</div><div class='img'><img src='plot-echosounder-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -365,7 +369,7 @@ values that can be used by <code><a href='oce.grid.html'>oce.grid()</a></code> t
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -88,7 +88,7 @@ project with DFO makes available more files." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -129,7 +129,7 @@ project with DFO makes available more files." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -163,13 +163,13 @@ is used by <code>read.ctd.odf</code> for CTD data, etc. As of mid-2018,
 project with DFO makes available more files.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>read.odf</span>(
-  <span class='no'>file</span>,
-  <span class='kw'>columns</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>header</span> <span class='kw'>=</span> <span class='st'>"list"</span>,
-  <span class='kw'>exclude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>read.odf</span><span class='op'>(</span>
+  <span class='va'>file</span>,
+  columns <span class='op'>=</span> <span class='cn'>NULL</span>,
+  header <span class='op'>=</span> <span class='st'>"list"</span>,
+  exclude <span class='op'>=</span> <span class='cn'>NULL</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -219,7 +219,7 @@ is to solve problems with some files, which can have
 thousands of lines that indicate details that are may be of
 little value in processing.  For example, some files have thousands
 of lines that would be excluded by using
-<code>exclude="PROCESS='Nulled the .* value"</code> in the funcion call.</p></td>
+<code>exclude="PROCESS='Nulled the .* value"</code> in the function call.</p></td>
     </tr>
     <tr>
       <th>debug</th>
@@ -295,32 +295,36 @@ package is released by the Canadian Department of Fisheries and Oceans.</p>
 <code><a href='ODF2oce.html'>ODF2oce</a>()</code>,
 <code><a href='ODFListFromHeader.html'>ODFListFromHeader</a>()</code>,
 <code><a href='ODFNames2oceNames.html'>ODFNames2oceNames</a>()</code>,
-<code><a href='sub-sub-odf-method.html'>[[,odf-method</a></code>,
+<code><a href='[[,odf-method.html'>[[,odf-method</a></code>,
 <code>[[&lt;-,odf-method</code>,
 <code><a href='odf-class.html'>odf-class</a></code>,
-<code><a href='plot-odf-method.html'>plot,odf-method</a></code>,
+<code><a href='plot,odf-method.html'>plot,odf-method</a></code>,
 <code><a href='read.ctd.odf.html'>read.ctd.odf</a>()</code>,
-<code><a href='subset-odf-method.html'>subset,odf-method</a></code>,
-<code><a href='summary-odf-method.html'>summary,odf-method</a></code></p></div>
+<code><a href='subset,odf-method.html'>subset,odf-method</a></code>,
+<code><a href='summary,odf-method.html'>summary,odf-method</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
 <span class='co'>#</span>
 <span class='co'># 1. Read a CTD cast made on the Scotian Shelf. Note that the file's metadata</span>
 <span class='co'># states that conductivity is in S/m, but it is really conductivity ratio,</span>
 <span class='co'># so we must alter the unit before converting to a CTD object. Note that</span>
 <span class='co'># read.odf() on this data file produces a warning suggesting that the user</span>
 <span class='co'># repair the unit, using the method outlined here.</span>
-<span class='no'>odf</span> <span class='kw'>&lt;-</span> <span class='fu'>read.odf</span>(<span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"CTD_BCD2014666_008_1_DN.ODF.gz"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"oce"</span>))</div><div class='output co'>#&gt; <span class='warning'>Warning: "CRAT_01" should be unitless, but the file states the unit as "S/m" so that is retained in the object metadata. This will likely cause problems.  See ?read.odf for an example of rectifying this unit error.</span></div><div class='input'><span class='no'>ctd</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='as.ctd.html'>as.ctd</a></span>(<span class='no'>odf</span>) <span class='co'>## so we can e.g. extract potential temperature</span>
-<span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"conductivityUnit"</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span>(), <span class='kw'>scale</span><span class='kw'>=</span><span class='st'>""</span>)
+<span class='va'>odf</span> <span class='op'>&lt;-</span> <span class='fu'>read.odf</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"CTD_BCD2014666_008_1_DN.ODF.gz"</span>, package<span class='op'>=</span><span class='st'>"oce"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: "CRAT_01" should be unitless, but the file states the unit as "S/m" so that is retained in the object metadata. This will likely cause problems.  See ?read.odf for an example of rectifying this unit error.</span></div><div class='input'><span class='va'>ctd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='as.ctd.html'>as.ctd</a></span><span class='op'>(</span><span class='va'>odf</span><span class='op'>)</span> <span class='co'>## so we can e.g. extract potential temperature</span>
+<span class='va'>ctd</span><span class='op'>[[</span><span class='st'>"conductivityUnit"</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>unit<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='op'>)</span>, scale<span class='op'>=</span><span class='st'>""</span><span class='op'>)</span>
 <span class='co'>#</span>
 <span class='co'># 2. Make a CTD, and plot (with span to show NS)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>ctd</span>, <span class='kw'>span</span><span class='kw'>=</span><span class='fl'>500</span>)</div><div class='img'><img src='read.odf-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'>#</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>ctd</span>, span<span class='op'>=</span><span class='fl'>500</span><span class='op'>)</span>
+</div><div class='img'><img src='read.odf-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'>#</span>
 <span class='co'># 3. Highlight bad data on TS diagram. (Note that the eos</span>
 <span class='co'># is specified, because we will extract practical-salinity and</span>
 <span class='co'># UNESCO-defined potential temperatures for the added points.)</span>
-<span class='fu'><a href='plotTS.html'>plotTS</a></span>(<span class='no'>ctd</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>"o"</span>, <span class='kw'>eos</span><span class='kw'>=</span><span class='st'>"unesco"</span>) <span class='co'># use a line to show loops</span></div><div class='input'><span class='no'>bad</span> <span class='kw'>&lt;-</span> <span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"QCFlag"</span>]]<span class='kw'>!=</span><span class='fl'>0</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span>(<span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>'salinity'</span>]][<span class='no'>bad</span>],<span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>'theta'</span>]][<span class='no'>bad</span>],<span class='kw'>col</span><span class='kw'>=</span><span class='st'>'red'</span>,<span class='kw'>pch</span><span class='kw'>=</span><span class='fl'>20</span>)</div><div class='img'><img src='read.odf-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='plotTS.html'>plotTS</a></span><span class='op'>(</span><span class='va'>ctd</span>, type<span class='op'>=</span><span class='st'>"o"</span>, eos<span class='op'>=</span><span class='st'>"unesco"</span><span class='op'>)</span> <span class='co'># use a line to show loops</span>
+</div><div class='input'><span class='va'>bad</span> <span class='op'>&lt;-</span> <span class='va'>ctd</span><span class='op'>[[</span><span class='st'>"QCFlag"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>!=</span><span class='fl'>0</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>[[</span><span class='st'>'salinity'</span><span class='op'>]</span><span class='op'>]</span><span class='op'>[</span><span class='va'>bad</span><span class='op'>]</span>,<span class='va'>ctd</span><span class='op'>[[</span><span class='st'>'theta'</span><span class='op'>]</span><span class='op'>]</span><span class='op'>[</span><span class='va'>bad</span><span class='op'>]</span>,col<span class='op'>=</span><span class='st'>'red'</span>,pch<span class='op'>=</span><span class='fl'>20</span><span class='op'>)</span>
+</div><div class='img'><img src='read.odf-2.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -337,7 +341,7 @@ package is released by the Canadian Department of Fisheries and Oceans.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

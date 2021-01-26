@@ -9,34 +9,38 @@
 \arguments{
 \item{x}{an \linkS4class{amsr} object.}
 
-\item{subset}{An expression indicating how to subset \code{x}.}
+\item{subset}{an expression indicating how to subset \code{x}.}
 
-\item{...}{Ignored.}
+\item{...}{ignored.}
 }
 \value{
 An \linkS4class{amsr} object.
 }
 \description{
-This function is somewhat analogous to
-\code{\link[=subset.data.frame]{subset.data.frame()}}, but only one independent variable may be
-used in \code{subset} in any call to the function, which means that
-repeated calls will be necessary to subset based on more than one
-independent variable (e.g. latitude and longitude).
+Return a subset of a \linkS4class{amsr} object.
+}
+\details{
+This function is used to subset data within an \linkS4class{amsr}
+object by \code{longitude} or by \code{latitude}.  These two methods cannot
+be combined in a single call, so two calls are required, as shown
+in the Example.
 }
 \examples{
-\dontrun{
 library(oce)
-earth <- read.amsr("f34_20160102v7.2.gz") # not provided with oce
-fclat <- subset(earth , 45<=latitude & latitude <= 49)
-fc <- subset(fclat , longitude <= -47 & longitude <= -43)
-plot(fc)
-}
+data(amsr) # see ?amsr for how to read and composite such objects
+sub <- subset(amsr, -75 < longitude & longitude < -45)
+sub <- subset(sub,   40 < latitude  &  latitude <  50)
+plot(sub)
+data(coastlineWorld)
+lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+
 }
 \seealso{
 Other things related to amsr data: 
 \code{\link{[[,amsr-method}},
 \code{\link{[[<-,amsr-method}},
 \code{\link{amsr-class}},
+\code{\link{amsr}},
 \code{\link{composite,amsr-method}},
 \code{\link{download.amsr}()},
 \code{\link{plot,amsr-method}},

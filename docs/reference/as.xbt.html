@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,15 +147,15 @@
     <p>Create an xbt object</p>
     </div>
 
-    <pre class="usage"><span class='fu'>as.xbt</span>(
-  <span class='no'>z</span>,
-  <span class='no'>temperature</span>,
-  <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>filename</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>sequenceNumber</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>serialNumber</span> <span class='kw'>=</span> <span class='st'>""</span>
-)</pre>
+    <pre class="usage"><span class='fu'>as.xbt</span><span class='op'>(</span>
+  <span class='va'>z</span>,
+  <span class='va'>temperature</span>,
+  longitude <span class='op'>=</span> <span class='cn'>NA</span>,
+  latitude <span class='op'>=</span> <span class='cn'>NA</span>,
+  filename <span class='op'>=</span> <span class='st'>""</span>,
+  sequenceNumber <span class='op'>=</span> <span class='cn'>NA</span>,
+  serialNumber <span class='op'>=</span> <span class='st'>""</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -193,16 +193,19 @@ depth, i.e. <code>z</code> is 0 at the air-sea interface, and negative within th
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to xbt data: 
-<code><a href='sub-sub-xbt-method.html'>[[,xbt-method</a></code>,
+<code><a href='[[,xbt-method.html'>[[,xbt-method</a></code>,
 <code>[[&lt;-,xbt-method</code>,
-<code><a href='plot-xbt-method.html'>plot,xbt-method</a></code>,
+<code><a href='plot,xbt-method.html'>plot,xbt-method</a></code>,
 <code><a href='read.xbt.noaa1.html'>read.xbt.noaa1</a>()</code>,
 <code><a href='read.xbt.html'>read.xbt</a>()</code>,
-<code><a href='subset-xbt-method.html'>subset,xbt-method</a></code>,
-<code><a href='summary-xbt-method.html'>summary,xbt-method</a></code>,
+<code><a href='subset,xbt-method.html'>subset,xbt-method</a></code>,
+<code><a href='summary,xbt-method.html'>summary,xbt-method</a></code>,
 <code><a href='xbt-class.html'>xbt-class</a></code>,
 <code><a href='xbt.edf.html'>xbt.edf</a></code>,
 <code><a href='xbt.html'>xbt</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -219,7 +222,7 @@ depth, i.e. <code>z</code> is 0 at the air-sea interface, and negative within th
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

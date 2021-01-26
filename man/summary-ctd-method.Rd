@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{summary,ctd-method}
 \alias{summary,ctd-method}
-\title{Summarize a CTD Object}
+\title{Summarize a ctd Object}
 \usage{
 \S4method{summary}{ctd}(object, ...)
 }

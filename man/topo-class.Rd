@@ -102,6 +102,7 @@ Other things related to topo data:
 \code{\link{subset,topo-method}},
 \code{\link{summary,topo-method}},
 \code{\link{topoInterpolate}()},
+\code{\link{topoNS}},
 \code{\link{topoWorld}}
 }
 \author{

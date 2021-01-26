@@ -76,9 +76,7 @@ mean float latitude.  If \code{projection="automatic"}, then one
 of two projections is used: stereopolar (i.e. \code{"+proj=stere +lon_0=X"}
 where \code{X} is the mean longitude), or Mercator (i.e. \code{"+proj=merc"})
 otherwise.  Otherwise, \code{projection} must be a character string specifying
-a projection in the notation used by the \link[rgdal:project]{rgdal::project} function
-in the \CRANpkg{rgdal} package; this will be familiar to many readers as
-the PROJ.4 notation; see \code{\link[=mapPlot]{mapPlot()}}.}
+a projection in the notation used by \code{\link[=oceProject]{oceProject()}} and \code{\link[=mapPlot]{mapPlot()}}.}
 
 \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also for
 \code{par(mar)}, computed from this.  The default is tighter than the R
@@ -117,9 +115,6 @@ legend("bottomleft", pch=seq_along(year), legend=year, bg="white", cex=3/4)
 plot(handleFlags(argo), which=c(1, 4, 6, 5))
 
 }
-\references{
-\url{http://www.argo.ucsd.edu/}
-}
 \seealso{
 Other things related to argo data: 
 \code{\link{[[,argo-method}},
@@ -135,6 +130,7 @@ Other things related to argo data:
 \code{\link{summary,argo-method}}
 
 Other functions that plot oce data: 
+\code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,adv-method}},
 \code{\link{plot,amsr-method}},

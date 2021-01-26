@@ -7,9 +7,24 @@ Authors@R: c(
     person(given="Chantelle", family="Layton", email="chantelle.layton@dal.ca", role=c("ctb"), comment=c(ORCID="https://orcid.org/0000-0002-3199-5763", "curl() coauthor")),
     person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field subroutine"))
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
-Depends: R (>= 2.15), gsw, methods, testthat, utils
-Suggests: akima, automap, DBI, foreign, knitr, lubridate, ncdf4, ocedata,
-    raster (>= 1.4.3), rgeos, rgdal, rmarkdown, RSQLite, R.utils, sf, sp, tiff, XML
+Depends: R (>= 2.15), gsw, methods, sf (>= 0.9.0), testthat, utils
+Suggests:
+    akima,
+    automap,
+    DBI,
+    foreign,
+    knitr,
+    lubridate,
+    ncdf4,
+    ocedata,
+    raster (>= 1.4.3),
+    rgeos,
+    rmarkdown,
+    RSQLite,
+    R.utils,
+    sp,
+    tiff,
+    XML
 BugReports: https://github.com/dankelley/oce/issues
 Description: Supports the analysis of Oceanographic data, including 'ADCP'
     measurements, measurements made with 'argo' floats, 'CTD' measurements,
@@ -22,7 +37,7 @@ Description: Supports the analysis of Oceanographic data, including 'ADCP'
     in 2018 by 'Springer-Verlag' with ISBN 978-1-4939-8842-6.
 License: GPL (>= 2)
 Encoding: UTF-8
-URL: https://dankelley.github.io/oce
+URL: https://dankelley.github.io/oce/
 LazyData: false
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1

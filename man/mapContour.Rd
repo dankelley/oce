@@ -52,7 +52,7 @@ this equals \code{"erase"} (which is the default), then the contour line
 is drawn  first, then the area under the label is erased (filled with
 white 'ink'), and then the label is drawn. This can be useful
 in drawing coarsely-spaced labelled contours on top of finely-spaced
-unlabelled contours. On the othr hand, if \code{underlay} equals
+unlabelled contours. On the other hand, if \code{underlay} equals
 \code{"interrupt"}, then the contour line is interrupted in the
 region of the label, which is closer to the scheme used by the
 base \code{\link[=contour]{contour()}} function.}

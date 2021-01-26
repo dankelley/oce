@@ -16,8 +16,7 @@ read.amsr(file, debug = getOption("oceDebug"))
 Read a compressed amsr file, generating an \linkS4class{amsr} object.
 Note that only compressed files are read in this version.
 }
-\section{File sources}{
-
+\details{
 AMSR files are provided at the FTP site
 \verb{ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/} and login as "guest",
 enter a year-based directory (e.g. \code{y2016} for the year 2016),
@@ -31,7 +30,6 @@ downloading a similarly-named file (e.g. in the present example,
 about inability to read a 6-chunk file, but
 \code{read.amsr("f34_20160803v7.2.gz")} will work properly.
 }
-
 \seealso{
 \code{\link[=plot,amsr-method]{plot,amsr-method()}} for an example.
 
@@ -39,6 +37,7 @@ Other things related to amsr data:
 \code{\link{[[,amsr-method}},
 \code{\link{[[<-,amsr-method}},
 \code{\link{amsr-class}},
+\code{\link{amsr}},
 \code{\link{composite,amsr-method}},
 \code{\link{download.amsr}()},
 \code{\link{plot,amsr-method}},
@@ -48,5 +47,4 @@ Other things related to amsr data:
 \author{
 Dan Kelley and Chantelle Layton
 }
-\concept{satellite}
 \concept{things related to amsr data}

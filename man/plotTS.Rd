@@ -19,9 +19,9 @@ plotTS(
   cex = par("cex"),
   col = par("col"),
   pch = par("pch"),
-  bg,
+  bg = "white",
   pt.bg = "transparent",
-  col.rho = "darkgray",
+  col.rho = gray(0.5),
   cex.rho = 3/4 * par("cex"),
   rotate = TRUE,
   useSmoothScatter = FALSE,
@@ -30,6 +30,7 @@ plotTS(
   Slim,
   Tlim,
   drawFreezing = TRUE,
+  trimIsopycnals = TRUE,
   mgp = getOption("oceMgp"),
   mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1], mgp[1]),
   lwd = par("lwd"),
@@ -86,9 +87,9 @@ plotting.  (This is useful for cases in which \code{inset=TRUE}.)}
 
 \item{pt.bg}{inside color for symbols with \code{pch} in 21:25}
 
-\item{col.rho}{color for isopycnal lines.}
+\item{col.rho}{color for isopycnal lines and their labels.}
 
-\item{cex.rho}{size of isopycnal labels.}
+\item{cex.rho}{size of the isopycnal labels.}
 
 \item{rotate}{if TRUE, labels in right-hand margin are written vertically}
 
@@ -99,16 +100,22 @@ points.}
 
 \item{ylab}{optional label for the y axis, with default "Temperature [C]".}
 
-\item{Slim}{optional limits for salinity axis, otherwise inferred from data.}
+\item{Slim}{optional limits for salinity axis, otherwise inferred from visible data
+(i.e. the data that have finite values for both salinity and temperature).}
 
-\item{Tlim}{optional limits for temperature axis, otherwise inferred from
-data.}
+\item{Tlim}{as \code{Slim}, but for temperature.}
 
 \item{drawFreezing}{logical indication of whether to draw a freezing-point
 line. This is based on zero pressure. If \code{eos="unesco"} then
 \code{\link[=swTFreeze]{swTFreeze()}} is used to compute the curve, whereas if
 \code{eos="gsw"} then \code{\link[gsw:gsw_CT_freezing]{gsw::gsw_CT_freezing()}} is used;
 in each case, zero pressure is used.}
+
+\item{trimIsopycnals}{logical value (\code{TRUE} by default) that
+indicates whether to trim isopycnal curves
+to the region of temperature-salinity space for which density
+computations are considered to be valid in the context of the
+chosen \code{eos}; see \dQuote{Details}.}
 
 \item{mgp}{3-element numerical vector to use for \verb{[par](mgp)}, and also
 for \link{par}\code{(mar)}, computed from this.  The default is tighter than the R
@@ -147,17 +154,58 @@ values that can be used by \code{\link[=oce.grid]{oce.grid()}} to add a grid to 
 \description{
 Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
 }
+\details{
+The isopycnal curves (along which density is constant) are
+drawn with \code{\link[=drawIsopycnals]{drawIsopycnals()}}, which also places
+labels in the margins showing density minus 1000 \eqn{kg/m^3}{kg/m^3}.
+If \code{trimIsopycnals} is \code{TRUE} (which is the default), these curves
+are trimmed to the region within which the results of density calculation
+in the chosen equation of state (\code{eos}) are considered to be reliable.
+
+With \code{eos="unesco"} this region includes
+Practical Salinity from 0 to 42 and Potential Temperature
+from -2C to 40C, in accordance with Fofonoff and Millard
+(1983, page 23).
+
+With \code{eos="gsw"} the lower
+limit of Absolute Salinity validity is taken as 0 g/kg,
+in accordance with both McDougall et al. (2003 section 3)
+and the TEOS-10/gsw Matlab code for the so-called "funnel" of validity.
+However, an appropriate upper limit on Absolute Salinity is not as clear.
+Here, the value 42 g/kg is chosen to match the "funnel" Matlab code
+as of July 2020, but two other choices might have been
+made. One is 50 g/kg, since \code{\link[gsw:gsw_SA_from_rho]{gsw::gsw_SA_from_rho()}} returns \code{NA} values
+for Absolute Salinities exceeding that value, and another is
+40 g/kg, as in McDougall et al. (2003 section 3).
+The Conservative Temperature range is set to run from -2C
+to 33C, as in McDougall et al. (2003 section 3), even though the
+"funnel" imposes no upper limit on this variable.
+}
 \examples{
 library(oce)
 data(ctd)
 plotTS(ctd)
 
 }
+\references{
+\itemize{
+\item Fofonoff, N. P., and R. C. Millard.
+"Algorithms for Computation of Fundamental Properties of Seawater."
+UNESCO Technical Papers in Marine Research. SCOR working group on Evaluation of CTD data;
+UNESCO/ICES/SCOR/IAPSO Joint Panel on Oceanographic Tables and Standards, 1983.
+\url{https://unesdoc.unesco.org/ark:/48223/pf0000059832}.
+\item McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
+"Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
+Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730-41.
+\code{https://journals.ametsoc.org/jtech/article/20/5/730/2543/Accurate-and-Computationally-Efficient-Algorithms}.
+}
+}
 \seealso{
 \code{\link[=summary,ctd-method]{summary,ctd-method()}} summarizes the information, while
 \code{\link[=read.ctd]{read.ctd()}} scans it from a file.
 
 Other functions that plot oce data: 
+\code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,adv-method}},
 \code{\link{plot,amsr-method}},

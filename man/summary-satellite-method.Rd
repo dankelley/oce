@@ -14,15 +14,6 @@
 \description{
 Summarize a satellite object
 }
-\seealso{
-Other things related to satellite data: 
-\code{\link{g1sst-class}},
-\code{\link{plot,satellite-method}},
-\code{\link{read.g1sst}()},
-\code{\link{satellite-class}}
-}
 \author{
 Dan Kelley
 }
-\concept{satellite}
-\concept{things related to satellite data}

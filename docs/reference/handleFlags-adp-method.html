@@ -48,12 +48,17 @@ for various data classes) provides a way to
 manipulate the contents of the data slot, based on
 such data-quality flags. For example, a common operation is to replace
 erroneous data with NA.
-If metadata$flags in the first argument
-is empty, then that object is returned, unaltered.
-Otherwise, handleFlags analyses the data-quality flags within
-the object, in context of the flags argument, and then interprets
-the action argument to select an action that is to be applied
-to the matched data." />
+If the flags within object's metadata slot is empty,
+then object is returned, unaltered.
+Otherwise, handleFlags examines object@metadata$flags
+in the context of the flags argument, and then
+carries out actions that are specified by the actions argument.
+By default, this sets the returned data entries to NA,
+wherever the corresponding metadata$flag values
+signal unreliable data. To maintain a hint as to why
+data were changed, metadata$flags in the
+returned value is a direct copy of the corresponding
+entry in object." />
 
 
 
@@ -93,7 +98,7 @@ to the matched data." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -134,7 +139,7 @@ to the matched data." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -165,22 +170,27 @@ for various data classes) provides a way to
 manipulate the contents of the <code>data</code> slot, based on
 such data-quality flags. For example, a common operation is to replace
 erroneous data with <code>NA</code>.</p>
-<p>If <code>metadata$flags</code> in the first argument
-is empty, then that object is returned, unaltered.
-Otherwise, <code>handleFlags</code> analyses the data-quality flags within
-the object, in context of the <code>flags</code> argument, and then interprets
-the <code>action</code> argument to select an action that is to be applied
-to the matched data.</p>
+<p>If the <code>flags</code> within <code>object</code>'s <code>metadata</code> slot is empty,
+then <code>object</code> is returned, unaltered.
+Otherwise, <code>handleFlags</code> examines <code>object@metadata$flags</code>
+in the context of the <code>flags</code> argument, and then
+carries out actions that are specified by the <code>actions</code> argument.
+By default, this sets the returned <code>data</code> entries to <code>NA</code>,
+wherever the corresponding <code>metadata$flag</code> values
+signal unreliable data. To maintain a hint as to why
+<code>data</code> were changed, <code>metadata$flags</code> in the
+returned value is a direct copy of the corresponding
+entry in <code>object</code>.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for adp</span>
-<span class='fu'><a href='handleFlags.html'>handleFlags</a></span>(
-  <span class='no'>object</span>,
-  <span class='kw'>flags</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>actions</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>where</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+<span class='fu'><a href='handleFlags.html'>handleFlags</a></span><span class='op'>(</span>
+  <span class='va'>object</span>,
+  flags <span class='op'>=</span> <span class='cn'>NULL</span>,
+  actions <span class='op'>=</span> <span class='cn'>NULL</span>,
+  where <span class='op'>=</span> <span class='cn'>NULL</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -254,26 +264,26 @@ quantities may not be set to <code>NA</code>.</p>
 
     <div class='dont-index'><p>Other functions relating to data-quality flags: 
 <code><a href='defaultFlags.html'>defaultFlags</a>()</code>,
-<code><a href='handleFlags-argo-method.html'>handleFlags,argo-method</a></code>,
-<code><a href='handleFlags-ctd-method.html'>handleFlags,ctd-method</a></code>,
-<code><a href='handleFlags-oce-method.html'>handleFlags,oce-method</a></code>,
-<code><a href='handleFlags-section-method.html'>handleFlags,section-method</a></code>,
+<code><a href='handleFlags,argo-method.html'>handleFlags,argo-method</a></code>,
+<code><a href='handleFlags,ctd-method.html'>handleFlags,ctd-method</a></code>,
+<code><a href='handleFlags,oce-method.html'>handleFlags,oce-method</a></code>,
+<code><a href='handleFlags,section-method.html'>handleFlags,section-method</a></code>,
 <code><a href='handleFlags.html'>handleFlags</a>()</code>,
-<code><a href='initializeFlagScheme-ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
-<code><a href='initializeFlagScheme-oce-method.html'>initializeFlagScheme,oce-method</a></code>,
-<code><a href='initializeFlagScheme-section-method.html'>initializeFlagScheme,section-method</a></code>,
+<code><a href='initializeFlagScheme,ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
+<code><a href='initializeFlagScheme,oce-method.html'>initializeFlagScheme,oce-method</a></code>,
+<code><a href='initializeFlagScheme,section-method.html'>initializeFlagScheme,section-method</a></code>,
 <code><a href='initializeFlagSchemeInternal.html'>initializeFlagSchemeInternal</a>()</code>,
 <code><a href='initializeFlagScheme.html'>initializeFlagScheme</a>()</code>,
-<code><a href='initializeFlags-adp-method.html'>initializeFlags,adp-method</a></code>,
-<code><a href='initializeFlags-oce-method.html'>initializeFlags,oce-method</a></code>,
+<code><a href='initializeFlags,adp-method.html'>initializeFlags,adp-method</a></code>,
+<code><a href='initializeFlags,oce-method.html'>initializeFlags,oce-method</a></code>,
 <code><a href='initializeFlagsInternal.html'>initializeFlagsInternal</a>()</code>,
 <code><a href='initializeFlags.html'>initializeFlags</a>()</code>,
-<code><a href='setFlags-adp-method.html'>setFlags,adp-method</a></code>,
-<code><a href='setFlags-ctd-method.html'>setFlags,ctd-method</a></code>,
-<code><a href='setFlags-oce-method.html'>setFlags,oce-method</a></code>,
+<code><a href='setFlags,adp-method.html'>setFlags,adp-method</a></code>,
+<code><a href='setFlags,ctd-method.html'>setFlags,ctd-method</a></code>,
+<code><a href='setFlags,oce-method.html'>setFlags,oce-method</a></code>,
 <code><a href='setFlags.html'>setFlags</a>()</code></p>
 <p>Other things related to adp data: 
-<code><a href='sub-sub-adp-method.html'>[[,adp-method</a></code>,
+<code><a href='[[,adp-method.html'>[[,adp-method</a></code>,
 <code>[[&lt;-,adp-method</code>,
 <code><a href='ad2cpHeaderValue.html'>ad2cpHeaderValue</a>()</code>,
 <code><a href='adp-class.html'>adp-class</a></code>,
@@ -291,7 +301,7 @@ quantities may not be set to <code>NA</code>.</p>
 <code><a href='enuToOtherAdp.html'>enuToOtherAdp</a>()</code>,
 <code><a href='enuToOther.html'>enuToOther</a>()</code>,
 <code><a href='is.ad2cp.html'>is.ad2cp</a>()</code>,
-<code><a href='plot-adp-method.html'>plot,adp-method</a></code>,
+<code><a href='plot,adp-method.html'>plot,adp-method</a></code>,
 <code><a href='read.adp.ad2cp.html'>read.adp.ad2cp</a>()</code>,
 <code><a href='read.adp.nortek.html'>read.adp.nortek</a>()</code>,
 <code><a href='read.adp.rdi.html'>read.adp.rdi</a>()</code>,
@@ -302,10 +312,10 @@ quantities may not be set to <code>NA</code>.</p>
 <code><a href='read.aquadoppProfiler.html'>read.aquadoppProfiler</a>()</code>,
 <code><a href='read.aquadopp.html'>read.aquadopp</a>()</code>,
 <code><a href='rotateAboutZ.html'>rotateAboutZ</a>()</code>,
-<code><a href='setFlags-adp-method.html'>setFlags,adp-method</a></code>,
-<code><a href='subset-adp-method.html'>subset,adp-method</a></code>,
+<code><a href='setFlags,adp-method.html'>setFlags,adp-method</a></code>,
+<code><a href='subset,adp-method.html'>subset,adp-method</a></code>,
 <code><a href='subtractBottomVelocity.html'>subtractBottomVelocity</a>()</code>,
-<code><a href='summary-adp-method.html'>summary,adp-method</a></code>,
+<code><a href='summary,adp-method.html'>summary,adp-method</a></code>,
 <code><a href='toEnuAdp.html'>toEnuAdp</a>()</code>,
 <code><a href='toEnu.html'>toEnu</a>()</code>,
 <code><a href='velocityStatistics.html'>velocityStatistics</a>()</code>,
@@ -315,24 +325,25 @@ quantities may not be set to <code>NA</code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Flag low "goodness" or high "error beam" values.</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>adp</span>)
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>adp</span><span class='op'>)</span>
 <span class='co'># Same as Example 2 of ?'setFlags,adp-method'</span>
-<span class='no'>v</span> <span class='kw'>&lt;-</span> <span class='no'>adp</span><span class='kw'>[[</span><span class='st'>"v"</span>]]
-<span class='no'>i2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/array.html'>array</a></span>(<span class='fl'>FALSE</span>, <span class='kw'>dim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span>(<span class='no'>v</span>))
-<span class='no'>g</span> <span class='kw'>&lt;-</span> <span class='no'>adp</span><span class='kw'>[[</span><span class='st'>"g"</span>, <span class='st'>"numeric"</span>]]
+<span class='va'>v</span> <span class='op'>&lt;-</span> <span class='va'>adp</span><span class='op'>[[</span><span class='st'>"v"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>i2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/array.html'>array</a></span><span class='op'>(</span><span class='cn'>FALSE</span>, dim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span><span class='op'>(</span><span class='va'>v</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>g</span> <span class='op'>&lt;-</span> <span class='va'>adp</span><span class='op'>[[</span><span class='st'>"g"</span>, <span class='st'>"numeric"</span><span class='op'>]</span><span class='op'>]</span>
 <span class='co'># Thresholds on percent "goodness" and error "velocity"</span>
-<span class='no'>G</span> <span class='kw'>&lt;-</span> <span class='fl'>25</span>
-<span class='no'>V4</span> <span class='kw'>&lt;-</span> <span class='fl'>0.45</span>
-<span class='kw'>for</span> (<span class='no'>k</span> <span class='kw'>in</span> <span class='fl'>1</span>:<span class='fl'>3</span>)
-    <span class='no'>i2</span>[,,<span class='no'>k</span>] <span class='kw'>&lt;-</span> ((<span class='no'>g</span>[,,<span class='no'>k</span>]+<span class='no'>g</span>[,,<span class='fl'>4</span>]) <span class='kw'>&lt;</span> <span class='no'>G</span>) <span class='kw'>|</span> (<span class='no'>v</span>[,,<span class='fl'>4</span>] <span class='kw'>&gt;</span> <span class='no'>V4</span>)
-<span class='no'>adpQC</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='initializeFlags.html'>initializeFlags</a></span>(<span class='no'>adp</span>, <span class='st'>"v"</span>, <span class='fl'>2</span>)
-<span class='no'>adpQC</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='setFlags.html'>setFlags</a></span>(<span class='no'>adpQC</span>, <span class='st'>"v"</span>, <span class='no'>i2</span>, <span class='fl'>3</span>)
-<span class='no'>adpClean</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='handleFlags.html'>handleFlags</a></span>(<span class='no'>adpQC</span>, <span class='kw'>flags</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='fl'>3</span>), <span class='kw'>actions</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='st'>"NA"</span>))
+<span class='va'>G</span> <span class='op'>&lt;-</span> <span class='fl'>25</span>
+<span class='va'>V4</span> <span class='op'>&lt;-</span> <span class='fl'>0.45</span>
+<span class='kw'>for</span> <span class='op'>(</span><span class='va'>k</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span>
+    <span class='va'>i2</span><span class='op'>[</span>,,<span class='va'>k</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='op'>(</span><span class='op'>(</span><span class='va'>g</span><span class='op'>[</span>,,<span class='va'>k</span><span class='op'>]</span><span class='op'>+</span><span class='va'>g</span><span class='op'>[</span>,,<span class='fl'>4</span><span class='op'>]</span><span class='op'>)</span> <span class='op'>&lt;</span> <span class='va'>G</span><span class='op'>)</span> <span class='op'>|</span> <span class='op'>(</span><span class='va'>v</span><span class='op'>[</span>,,<span class='fl'>4</span><span class='op'>]</span> <span class='op'>&gt;</span> <span class='va'>V4</span><span class='op'>)</span>
+<span class='va'>adpQC</span> <span class='op'>&lt;-</span> <span class='fu'><a href='initializeFlags.html'>initializeFlags</a></span><span class='op'>(</span><span class='va'>adp</span>, <span class='st'>"v"</span>, <span class='fl'>2</span><span class='op'>)</span>
+<span class='va'>adpQC</span> <span class='op'>&lt;-</span> <span class='fu'><a href='setFlags.html'>setFlags</a></span><span class='op'>(</span><span class='va'>adpQC</span>, <span class='st'>"v"</span>, <span class='va'>i2</span>, <span class='fl'>3</span><span class='op'>)</span>
+<span class='va'>adpClean</span> <span class='op'>&lt;-</span> <span class='fu'><a href='handleFlags.html'>handleFlags</a></span><span class='op'>(</span><span class='va'>adpQC</span>, flags<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='fl'>3</span><span class='op'>)</span>, actions<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='st'>"NA"</span><span class='op'>)</span><span class='op'>)</span>
 <span class='co'># Demonstrate (subtle) change graphically.</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfcol</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>adp</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"u1"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>adpClean</span>, <span class='kw'>which</span><span class='kw'>=</span><span class='st'>"u1"</span>)</div><div class='img'><img src='handleFlags-adp-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfcol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>adp</span>, which<span class='op'>=</span><span class='st'>"u1"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>adpClean</span>, which<span class='op'>=</span><span class='st'>"u1"</span><span class='op'>)</span>
+</div><div class='img'><img src='handleFlags-adp-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -349,7 +360,7 @@ quantities may not be set to <code>NA</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

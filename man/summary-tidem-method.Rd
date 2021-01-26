@@ -44,6 +44,7 @@ Other things related to tides:
 \code{\link{as.tidem}()},
 \code{\link{plot,tidem-method}},
 \code{\link{predict.tidem}()},
+\code{\link{tidalCurrent}},
 \code{\link{tidedata}},
 \code{\link{tidem-class}},
 \code{\link{tidemAstron}()},

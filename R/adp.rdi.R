@@ -398,6 +398,17 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' resolution, values that may be retrieved for an ADP object name `d`
 #' with `d[["velocityMaximum"]]` and `d[["velocityResolution"]]`.
 #'
+#' @section Handling of old file formats:
+#' 1. Early PD0 file formats stored the year of sampling with a different
+#' base year than that used in modern files.  To accommodate this,
+#' `read.adp.rdi` examines the inferred year, and if it is greater than
+#' 2050, then 100 years are subtracted from the time. This offset was
+#' inferred by tests with sample files, but *not* from RDI documentation,
+#' so it is somewhat risky.  If the authors can find RDI documentation that
+#' indicates the condition in which this century offset is required, then
+#' a change will be made to the code.  Even if not, the method should
+#' not cause problems for a long time.
+#'
 #' @template adpTemplate
 #'
 #' @param testing logical value (IGNORED).
@@ -524,7 +535,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' If the result of these calculations is that `by` exceeds 1, then
 #' messages are printed to alert the user that the file will be decimated,
 #' and also `monitor` is set to `TRUE`, so that a textual progress bar
-#' is shown.
+#' is shown (if the session is interactive).
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -674,6 +685,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          ...)
 {
     ##. warningBinaryFixedAttitudeCount <- 0
+    if (!interactive())
+        monitor <- FALSE
     warningUnknownCode <- list()
     fromGiven <- !missing(from) # FIXME document THIS
     toGiven <- !missing(to) # FIXME document THIS
@@ -826,10 +839,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 by <- max(1L, as.integer(by))
                 if (by > 1) {
                     warning("setting by=", by, " for a large RDI file\n")
-                    message("setting by=", by, " for a large RDI file")
-                    if (!monitor) {
+                    if (!monitor && interactive()) {
                         warning("setting monitor=TRUE for a large RDI file\n")
-                        message("setting monitor=TRUE for a large RDI file")
                         monitor <- TRUE
                     }
                 }

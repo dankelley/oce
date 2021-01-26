@@ -82,7 +82,7 @@ still work with the original name that was stored in the data." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -123,7 +123,7 @@ still work with the original name that was stored in the data." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,11 +147,11 @@ still work with the original name that was stored in the data." />
 
     <div class="ref-description">
     <p>Rename an item within the <code>data</code> slot of an <a href='oce-class.html'>oce</a> object, also changing
-<code>dataNamesOriginal</code> in the <code>metadata</code> slot, so that the <code>[[</code> accessor will
+<code>dataNamesOriginal</code> in the <code>metadata</code> slot, so that the <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> accessor will
 still work with the original name that was stored in the data.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>oceRenameData</span>(<span class='no'>object</span>, <span class='no'>old</span>, <span class='no'>new</span>, <span class='kw'>note</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
+    <pre class="usage"><span class='fu'>oceRenameData</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>old</span>, <span class='va'>new</span>, note <span class='op'>=</span> <span class='st'>""</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -185,13 +185,18 @@ log gets a new item that is constructed from the function call.</p></td>
 <code><a href='oceDeleteData.html'>oceDeleteData</a>()</code>,
 <code><a href='oceGetData.html'>oceGetData</a>()</code>,
 <code><a href='oceSetData.html'>oceSetData</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
-<span class='no'>CTD</span> <span class='kw'>&lt;-</span> <span class='fu'>oceRenameData</span>(<span class='no'>ctd</span>, <span class='st'>"salinity"</span>, <span class='st'>"SALT"</span>)
-<span class='fu'>expect_equal</span>(<span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]], <span class='no'>CTD</span><span class='kw'>[[</span><span class='st'>"SALT"</span>]])
-<span class='fu'>expect_equal</span>(<span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"sal00"</span>]], <span class='no'>CTD</span><span class='kw'>[[</span><span class='st'>"SALT"</span>]])</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+<span class='va'>CTD</span> <span class='op'>&lt;-</span> <span class='fu'>oceRenameData</span><span class='op'>(</span><span class='va'>ctd</span>, <span class='st'>"salinity"</span>, <span class='st'>"SALT"</span><span class='op'>)</span>
+<span class='fu'>expect_equal</span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>CTD</span><span class='op'>[[</span><span class='st'>"SALT"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+<span class='fu'>expect_equal</span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>[[</span><span class='st'>"sal00"</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>CTD</span><span class='op'>[[</span><span class='st'>"SALT"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -207,7 +212,7 @@ log gets a new item that is constructed from the function call.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

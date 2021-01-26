@@ -83,7 +83,7 @@ stats package." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ stats package." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -153,7 +153,7 @@ those who prefer not to use <code><a href='https://rdrr.io/r/stats/convolve.html
 <code>stats</code> package.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>oceConvolve</span>(<span class='no'>x</span>, <span class='no'>f</span>, <span class='kw'>end</span> <span class='kw'>=</span> <span class='fl'>2</span>)</pre>
+    <pre class="usage"><span class='fu'>oceConvolve</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>f</span>, end <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -179,17 +179,22 @@ with <code>x</code> are used.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A vector of the convolution output.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='no'>t</span> <span class='kw'>&lt;-</span> <span class='fl'>0</span>:<span class='fl'>1027</span>
-<span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>t</span>)
-<span class='no'>signal</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span>(<span class='no'>t</span> * <span class='fl'>2</span> * <span class='no'>pi</span> / <span class='fl'>128</span>) <span class='kw'>&gt;</span> <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0</span>)
-<span class='no'>tau</span> <span class='kw'>&lt;-</span> <span class='fl'>10</span>
-<span class='no'>filter</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(-<span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>5</span>*<span class='no'>tau</span>, <span class='fl'>0</span>) / <span class='no'>tau</span>)
-<span class='no'>filter</span> <span class='kw'>&lt;-</span> <span class='no'>filter</span> / <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>filter</span>)
-<span class='no'>observation</span> <span class='kw'>&lt;-</span> <span class='fu'>oce.convolve</span>(<span class='no'>signal</span>, <span class='no'>filter</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>t</span>, <span class='no'>signal</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'l'</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='no'>t</span>, <span class='no'>observation</span>, <span class='kw'>lty</span><span class='kw'>=</span><span class='st'>'dotted'</span>)</div><div class='img'><img src='oceConvolve-1.png' alt='' width='700' height='433' /></div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='va'>t</span> <span class='op'>&lt;-</span> <span class='fl'>0</span><span class='op'>:</span><span class='fl'>1027</span>
+<span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>t</span><span class='op'>)</span>
+<span class='va'>signal</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span><span class='op'>(</span><span class='va'>t</span> <span class='op'>*</span> <span class='fl'>2</span> <span class='op'>*</span> <span class='va'>pi</span> <span class='op'>/</span> <span class='fl'>128</span><span class='op'>)</span> <span class='op'>&gt;</span> <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0</span><span class='op'>)</span>
+<span class='va'>tau</span> <span class='op'>&lt;-</span> <span class='fl'>10</span>
+<span class='va'>filter</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='op'>-</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>5</span><span class='op'>*</span><span class='va'>tau</span>, <span class='fl'>0</span><span class='op'>)</span> <span class='op'>/</span> <span class='va'>tau</span><span class='op'>)</span>
+<span class='va'>filter</span> <span class='op'>&lt;-</span> <span class='va'>filter</span> <span class='op'>/</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>filter</span><span class='op'>)</span>
+<span class='va'>observation</span> <span class='op'>&lt;-</span> <span class='fu'>oce.convolve</span><span class='op'>(</span><span class='va'>signal</span>, <span class='va'>filter</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>t</span>, <span class='va'>signal</span>, type<span class='op'>=</span><span class='st'>'l'</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>t</span>, <span class='va'>observation</span>, lty<span class='op'>=</span><span class='st'>'dotted'</span><span class='op'>)</span>
+</div><div class='img'><img src='oceConvolve-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -205,7 +210,7 @@ with <code>x</code> are used.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

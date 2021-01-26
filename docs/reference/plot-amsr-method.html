@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Plot an amsr Object — plot,amsr-method" />
-<meta property="og:description" content="Plot an amsr Object" />
+<meta property="og:description" content="Plot an image of a component of an amsr object." />
 
 
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -144,19 +144,22 @@
     </div>
 
     <div class="ref-description">
-    <p>Plot an amsr Object</p>
+    <p>Plot an image of a component of an <a href='amsr-class.html'>amsr</a> object.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for amsr</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(
-  <span class='no'>x</span>,
-  <span class='no'>y</span>,
-  <span class='no'>asp</span>,
-  <span class='kw'>missingColor</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>land</span> <span class='kw'>=</span> <span class='st'>"papayaWhip"</span>, <span class='kw'>none</span> <span class='kw'>=</span> <span class='st'>"lightGray"</span>, <span class='kw'>bad</span> <span class='kw'>=</span> <span class='st'>"gray"</span>, <span class='kw'>rain</span> <span class='kw'>=</span>
-    <span class='st'>"plum"</span>, <span class='kw'>ice</span> <span class='kw'>=</span> <span class='st'>"mediumVioletRed"</span>),
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>),
-  <span class='no'>...</span>
-)</pre>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>y</span>,
+  asp <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>breaks</span>,
+  <span class='va'>col</span>,
+  <span class='va'>colormap</span>,
+  missingColor <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>land <span class='op'>=</span> <span class='st'>"papayaWhip"</span>, none <span class='op'>=</span> <span class='st'>"lightGray"</span>, bad <span class='op'>=</span> <span class='st'>"gray"</span>, rain <span class='op'>=</span>
+    <span class='st'>"plum"</span>, ice <span class='op'>=</span> <span class='st'>"mediumVioletRed"</span><span class='op'>)</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -167,12 +170,37 @@
     </tr>
     <tr>
       <th>y</th>
-      <td><p>String indicating the name of the band to plot; if not provided,
+      <td><p>character value indicating the name of the band to plot; if not provided,
 <code>SST</code> is used; see the documentation for the <a href='amsr-class.html'>amsr</a> class for a list of bands.</p></td>
     </tr>
     <tr>
       <th>asp</th>
-      <td><p>Optional aspect ratio for plot.</p></td>
+      <td><p>optional numerical value giving the aspect ratio for plot.  The
+default value, <code>NULL</code>, means to use an aspect ratio of 1 for world views,
+and a value computed from <code>ylim</code>, if the latter is specified in the
+<code>...</code> argument.</p></td>
+    </tr>
+    <tr>
+      <th>breaks</th>
+      <td><p>optional numeric vector of the z values for breaks in the color scheme.
+If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.</p></td>
+    </tr>
+    <tr>
+      <th>col</th>
+      <td><p>optional argument, either a vector of colors corresponding to the breaks, of length
+1 less than the number of breaks, or a function specifying colors.
+If neither <code>col</code> or <code>colormap</code> is provided, then <code>col</code> defaults to
+<code><a href='oceColorsTemperature.html'>oceColorsTemperature()</a></code>.
+If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.</p></td>
+    </tr>
+    <tr>
+      <th>colormap</th>
+      <td><p>a specification of the colormap to use, as created
+with <code><a href='colormap.html'>colormap()</a></code>.  If <code>colormap</code> is NULL, which is the default, then
+a colormap is created to cover the range of data values, using
+<a href='oceColorsTemperature.html'>oceColorsTemperature</a> colour scheme.
+If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.
+See &#8220;Examples&#8221; for an example of using the "turbo" colour scheme.</p></td>
     </tr>
     <tr>
       <th>missingColor</th>
@@ -189,58 +217,74 @@ default values in <code>missingColor</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>extra arguments passed to <code><a href='imagep.html'>imagep()</a></code>, e.g. set
-<code>col</code> to control colors.</p></td>
+      <td><p>extra arguments passed to <code><a href='imagep.html'>imagep()</a></code>, e.g. to control
+the view with <code>xlim</code> (for longitude) and <code>ylim</code> (for latitude).</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>In addition to fields named directly in the object, such as <code>SSTDay</code> and
+<code>SSTNight</code>, it is also possible to plot computed fields, such as <code>SST</code>,
+which combines the day and night fields.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other functions that plot oce data: 
-<code><a href='plot-adp-method.html'>plot,adp-method</a></code>,
-<code><a href='plot-adv-method.html'>plot,adv-method</a></code>,
-<code><a href='plot-argo-method.html'>plot,argo-method</a></code>,
-<code><a href='plot-bremen-method.html'>plot,bremen-method</a></code>,
-<code><a href='plot-cm-method.html'>plot,cm-method</a></code>,
-<code><a href='plot-coastline-method.html'>plot,coastline-method</a></code>,
-<code><a href='plot-ctd-method.html'>plot,ctd-method</a></code>,
-<code><a href='plot-gps-method.html'>plot,gps-method</a></code>,
-<code><a href='plot-ladp-method.html'>plot,ladp-method</a></code>,
-<code><a href='plot-landsat-method.html'>plot,landsat-method</a></code>,
-<code><a href='plot-lisst-method.html'>plot,lisst-method</a></code>,
-<code><a href='plot-lobo-method.html'>plot,lobo-method</a></code>,
-<code><a href='plot-met-method.html'>plot,met-method</a></code>,
-<code><a href='plot-odf-method.html'>plot,odf-method</a></code>,
-<code><a href='plot-rsk-method.html'>plot,rsk-method</a></code>,
-<code><a href='plot-satellite-method.html'>plot,satellite-method</a></code>,
-<code><a href='plot-sealevel-method.html'>plot,sealevel-method</a></code>,
-<code><a href='plot-section-method.html'>plot,section-method</a></code>,
-<code><a href='plot-tidem-method.html'>plot,tidem-method</a></code>,
-<code><a href='plot-topo-method.html'>plot,topo-method</a></code>,
-<code><a href='plot-windrose-method.html'>plot,windrose-method</a></code>,
-<code><a href='plot-xbt-method.html'>plot,xbt-method</a></code>,
+    <div class='dont-index'><p>Other things related to amsr data: 
+<code><a href='[[,amsr-method.html'>[[,amsr-method</a></code>,
+<code>[[&lt;-,amsr-method</code>,
+<code><a href='amsr-class.html'>amsr-class</a></code>,
+<code><a href='amsr.html'>amsr</a></code>,
+<code><a href='composite,amsr-method.html'>composite,amsr-method</a></code>,
+<code><a href='download.amsr.html'>download.amsr</a>()</code>,
+<code><a href='read.amsr.html'>read.amsr</a>()</code>,
+<code><a href='subset,amsr-method.html'>subset,amsr-method</a></code>,
+<code><a href='summary,amsr-method.html'>summary,amsr-method</a></code></p>
+<p>Other functions that plot oce data: 
+<code><a href='download.amsr.html'>download.amsr</a>()</code>,
+<code><a href='plot,adp-method.html'>plot,adp-method</a></code>,
+<code><a href='plot,adv-method.html'>plot,adv-method</a></code>,
+<code><a href='plot,argo-method.html'>plot,argo-method</a></code>,
+<code><a href='plot,bremen-method.html'>plot,bremen-method</a></code>,
+<code><a href='plot,cm-method.html'>plot,cm-method</a></code>,
+<code><a href='plot,coastline-method.html'>plot,coastline-method</a></code>,
+<code><a href='plot,ctd-method.html'>plot,ctd-method</a></code>,
+<code><a href='plot,gps-method.html'>plot,gps-method</a></code>,
+<code><a href='plot,ladp-method.html'>plot,ladp-method</a></code>,
+<code><a href='plot,landsat-method.html'>plot,landsat-method</a></code>,
+<code><a href='plot,lisst-method.html'>plot,lisst-method</a></code>,
+<code><a href='plot,lobo-method.html'>plot,lobo-method</a></code>,
+<code><a href='plot,met-method.html'>plot,met-method</a></code>,
+<code><a href='plot,odf-method.html'>plot,odf-method</a></code>,
+<code><a href='plot,rsk-method.html'>plot,rsk-method</a></code>,
+<code><a href='plot,satellite-method.html'>plot,satellite-method</a></code>,
+<code><a href='plot,sealevel-method.html'>plot,sealevel-method</a></code>,
+<code><a href='plot,section-method.html'>plot,section-method</a></code>,
+<code><a href='plot,tidem-method.html'>plot,tidem-method</a></code>,
+<code><a href='plot,topo-method.html'>plot,topo-method</a></code>,
+<code><a href='plot,windrose-method.html'>plot,windrose-method</a></code>,
+<code><a href='plot,xbt-method.html'>plot,xbt-method</a></code>,
 <code><a href='plotProfile.html'>plotProfile</a>()</code>,
 <code><a href='plotScan.html'>plotScan</a>()</code>,
 <code><a href='plotTS.html'>plotTS</a>()</code>,
-<code><a href='tidem-class.html'>tidem-class</a></code></p>
-<p>Other things related to amsr data: 
-<code><a href='sub-sub-amsr-method.html'>[[,amsr-method</a></code>,
-<code>[[&lt;-,amsr-method</code>,
-<code><a href='amsr-class.html'>amsr-class</a></code>,
-<code><a href='composite-amsr-method.html'>composite,amsr-method</a></code>,
-<code><a href='download.amsr.html'>download.amsr</a>()</code>,
-<code><a href='read.amsr.html'>read.amsr</a>()</code>,
-<code><a href='subset-amsr-method.html'>subset,amsr-method</a></code>,
-<code><a href='summary-amsr-method.html'>summary,amsr-method</a></code></p></div>
+<code><a href='tidem-class.html'>tidem-class</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='read.amsr.html'>read.amsr</a></span>(<span class='st'>"f34_20160102v7.2.gz"</span>)
-<span class='no'>asp</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>/<span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>cos</a></span>(<span class='no'>pi</span>*<span class='fl'>40</span>/<span class='fl'>180</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>d</span>, <span class='st'>"SST"</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='no'>oceColorsJet</span>, <span class='kw'>xlim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>80</span>,<span class='fl'>0</span>), <span class='kw'>ylim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>20</span>,<span class='fl'>60</span>), <span class='kw'>asp</span><span class='kw'>=</span><span class='no'>asp</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>coastlineWorld</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='no'>coastlineWorld</span><span class='kw'>[[</span><span class='st'>'longitude'</span>]], <span class='no'>coastlineWorld</span><span class='kw'>[[</span><span class='st'>'latitude'</span>]])
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>amsr</span><span class='op'>)</span> <span class='co'># see ?amsr for how to read and composite such objects</span>
+
+<span class='co'># Example 1: plot with default colour scheme, oceColorsTemperature()</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>amsr</span>, <span class='st'>"SST"</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>[[</span><span class='st'>'longitude'</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>coastlineWorld</span><span class='op'>[[</span><span class='st'>'latitude'</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+</div><div class='img'><img src='plot-amsr-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'># Example 2: 'turbo' colour scheme</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>amsr</span>, <span class='st'>"SST"</span>, col<span class='op'>=</span><span class='va'>oceColorsTurbo</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>[[</span><span class='st'>'longitude'</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>coastlineWorld</span><span class='op'>[[</span><span class='st'>'latitude'</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+</div><div class='img'><img src='plot-amsr-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -256,7 +300,7 @@ default values in <code>missingColor</code>.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

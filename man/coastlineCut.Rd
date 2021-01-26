@@ -10,7 +10,7 @@ coastlineCut(coastline, lon_0 = 0)
 \item{coastline}{a \linkS4class{coastline} object.}
 
 \item{lon_0}{longitude as would be given in a \verb{+lon_0=} item in a
-call to the \code{\link[rgdal:project]{rgdal::project()}} function in the \CRANpkg{rgdal} package.}
+call to the \code{\link[sf:sf_project]{sf::sf_project()}} function in the \CRANpkg{sf} package.}
 }
 \value{
 a new coastline object
@@ -36,7 +36,7 @@ ground between this and the \code{clipPolys} function in the
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineCut(coastlineWorld, lon_0=100),
-        proj="+proj=moll +lon_0=100", col='gray')
+        projection="+proj=moll +lon_0=100", col='gray')
 }
 
 }

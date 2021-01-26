@@ -38,9 +38,9 @@ projection for a particular task. Snyder (1987), Snyder (1993) and Snyder and
 Voxland (1994) are all excellent sources on these topics, and the first and
 last of these are available for free online.
 
-Oce handles map projections by calling the \code{projection} function of the
-\code{rgdal} R package, and so the notation for representing the projection is
-borrowed from \code{rgdal}.  This system will be familiar to many readers,
+Oce handles map projections by calling the `sf_project` function of the
+`sf` R package, and so the notation for representing the projection is
+borrowed from `sf`.  This system will be familiar to many readers,
 because it is used in other R packages, and more widely in the software called
 PROJ, which has interfaces in python and other programming languages (PROJ
 contributors, 2020). Since oce uses inverse projections in some of its
@@ -51,7 +51,7 @@ infinite loops and core dumps. See the help for the oce function `mapPlot` for
 a list of the available projections, and some advice on choosing them.
 
 There are far too many projections to illustrate here. See
-<http://dankelley.github.io/r/2015/04/03/oce-proj.html> for a blog item that
+<https://dankelley.github.io/r/2015/04/03/oce-proj.html> for a blog item that
 provides examples of the available projections. Note that some have a problem
 with spurious horizontal lines. This can result from coastline segments that
 cross the edge of the plotting area, and getting rid of this is tricky enough
@@ -60,7 +60,7 @@ to be the heart of the longest-lived bug in the `oce` issue list, i.e.
 `coastlineCut()` can help, but it is provisional and subject to change.
 
 
-# Avoiding projections for limited-area plots
+# Avoiding projections for small regions
 
 For map views that span only a few tens or hundreds of kilometers, it may be
 sufficient to plot directly, in rectilinear longitude-latitude space, but with
@@ -96,11 +96,18 @@ aspect ratio and setting line-type plots can be spared by using the generic
 `plot()` function for `coastline` objects, as follows.
 
 ```{r}
-plot(coastlineWorld,
-     longitudelim=c(-130, -50), latitudelim=c(40, 50))
+plot(coastlineWorld, clongitude=-90, clatitude=45, span=7000)
 ```
 
-The graphs shown above share a common stength: the axes for longitude and
+Note that this `plot` is being transferred to the specialized method for a
+`coastline` object (defined by the `oce` package) and that this means that
+there are some arguments in addition to those of the normal `plot` function.
+In this example, the second and third arguments specify the central spot of
+interest, and the fourth is a suggested diagonal span, in kilometres.  (The
+span is not always obeyed exactly, and the results also depend on aspect ratio
+of the plot device.)
+
+The graphs shown above share a common strength: the axes for longitude and
 latitude are orthogonal, and the scale along each axis is linear. This makes it
 easy for readers to identify the location of features of the diagrams. However,
 using linear axes on large-scale views leads to distortions of coastline shapes
@@ -125,14 +132,18 @@ The function used to produce maps with projections is
 
 ```{r fig.cap="World coastline with default (Mollweide) projection.", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
-mapPlot(coastlineWorld)
+mapPlot(coastlineWorld, col="lightgray")
 ```
+
+Note that the land is coloured in this example, but that sometimes doing that
+will yield odd-looking plots, because of a bug in how some projections are
+handled in oce.
 
 This default plot uses the Mollweide projection (see any of the Snyder
 references in the bibliography), which is set by the default value
-`"+proj=moll"` for `mapPlot`. Another popular world view is
-the Robinson projection, which has been used by Rand McNally, the National
-Geographic Society, and other groups.
+`"+proj=moll"` for `mapPlot`.
+Another popular world view is the Robinson projection, which has been used by
+Rand McNally, the National Geographic Society, and other groups.
 
 **Exercise 1.** Plot the world with a Robinson projection, using gray shading for land.
 
@@ -149,29 +160,34 @@ the pole in between).
 ```{r fig.cap="Polar view with stereographic projection.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=10)}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld, longitudelim=c(-130, 50), latitudelim=c(60, 120),
-       projection="+proj=stere +lat_0=90", col='gray')
+        projection="+proj=stere +lat_0=90", col='gray')
 ```
 
-This Arctic example also illustrates the specification of extra arguments in
-the `projection` value, in this case the base latitude being set to the north
-pole. See the table in the documentation for `mapPlot` for a
-listing of arguments, and for citations to external resources that explain what
-they mean.
+Here, the region of interest is defined with `longitudelim` and `latitudelim`,
+instead of with `clongitude`, `clatitude` and `span`. Note that the latitude
+limit is set to extend past the pole, which is a way of making the plot include
+the pole.  See the table in the documentation for `mapPlot` for a listing of
+arguments, and for citations to external resources that explain what they mean.
 
 **Exercise 3.** Draw a view of Antarctica and the Southern Ocean.
 
 
 ## Mid-latitude views
 
-The Lambert Conformal view is often used in maps that span wide longitudal
+The Lambert Conformal view is often used in maps that span wide longitudinal
 ranges, e.g. a map of Canada may be produced as follows.
 
 ```{r}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld,
          longitudelim=c(-130,-55), latitudelim=c(35, 60),
-         projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
+         projection="+proj=lcc +lat_1=30 +lat_2=60 +lon_0=-100", col='gray')
 ```
+
+Here, `lat_1` and `lat_2`, the latitudes where the projection cone intersects
+the earth, are set to span the populated region of Canada and the northern USA,
+and `lon_0`, the meridian that will be vertical on the plot, is chosen to lie
+near the middle of the continent.
 
 **Exercise 4.** Plot the eastern North Atlantic using a Mercator projection.
 
@@ -224,11 +240,8 @@ mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE, col="lightgray")
 mapImage(lon, lat, z, colormap=cm)
 ```
 
-
-
-
-
 **Exercise 3.** Draw a view of Antarctica and the Southern Ocean.
+
 ```{r}
 par(mar=c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld, longitudelim=c(-180, 180), latitudelim=c(-130, -50),
@@ -283,21 +296,21 @@ if (requireNamespace("ocedata", quietly=TRUE)) {
 
 # References
 
-PROJ contributors. \dQuote{PROJ Coordinate Transformation Software Library.}
-Open Source Geospatial Foundation, 2020.  https://proj.org/ (accessed
-2020-04-19)
+PROJ contributors. "PROJ Coordinate Transformation Software Library." Open
+Source Geospatial Foundation, 2020.
+<https://proj.org/>
 
-Snyder, John P. \dQuote{Map Projections—a Working Manual.} Washington: U.S.
+Snyder, John P. "Map Projections-a Working Manual." Washington: U.S.
 Geological survey professional paper 1395, 1987.
-https://pubs.usgs.gov/pp/1395/report.pdf.
+<https://pubs.usgs.gov/pp/1395/report.pdf>
 
-Snyder, John Parr. \dQuot{Flattening the Earth: Two Thousand Years of Map
-Projections.} Chicago, IL: University of Chicago Press, 1993.
-https://www.press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html.
+Snyder, John Parr. "Flattening the Earth: Two Thousand Years of Map
+Projections." Chicago, IL: University of Chicago Press, 1993.
+<https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html>
 
-Snyder, John P., and Philip M. Voxland. \dQuote{An Album of Map Projections.}
+Snyder, John P., and Philip M. Voxland. "An Album of Map Projections."
 U. S.  Geological Survey Professional Paper. Washington, DC, USA: U. S.
 Department of the Interior: U. S. Geological Survey, 1994.
-https://pubs.er.usgs.gov/publication/pp1453.
+<https://pubs.er.usgs.gov/publication/pp1453>
 
 

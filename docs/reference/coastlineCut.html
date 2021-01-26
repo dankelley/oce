@@ -85,7 +85,7 @@ may help with other values of lon_0." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -126,7 +126,7 @@ may help with other values of lon_0." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -157,7 +157,7 @@ function is not needed for default maps, which have <code>+lon_0=0</code>. Howev
 may help with other values of <code>lon_0</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>coastlineCut</span>(<span class='no'>coastline</span>, <span class='kw'>lon_0</span> <span class='kw'>=</span> <span class='fl'>0</span>)</pre>
+    <pre class="usage"><span class='fu'>coastlineCut</span><span class='op'>(</span><span class='va'>coastline</span>, lon_0 <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -169,7 +169,7 @@ may help with other values of <code>lon_0</code>.</p>
     <tr>
       <th>lon_0</th>
       <td><p>longitude as would be given in a <code>+lon_0=</code> item in a
-call to the <code><a href='https://rdrr.io/pkg/rgdal/man/project.html'>rgdal::project()</a></code> function in the <a href='https://CRAN.R-project.org/package=rgdal'><span class="pkg">rgdal</span></a> package.</p></td>
+call to the <code><a href='https://r-spatial.github.io/sf/reference/sf_project.html'>sf::sf_project()</a></code> function in the <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a> package.</p></td>
     </tr>
     </table>
 
@@ -187,25 +187,29 @@ ground between this and the <code>clipPolys</code> function in the
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to coastline data: 
-<code><a href='sub-sub-coastline-method.html'>[[,coastline-method</a></code>,
+<code><a href='[[,coastline-method.html'>[[,coastline-method</a></code>,
 <code>[[&lt;-,coastline-method</code>,
 <code><a href='as.coastline.html'>as.coastline</a>()</code>,
 <code><a href='coastline-class.html'>coastline-class</a></code>,
 <code><a href='coastlineBest.html'>coastlineBest</a>()</code>,
 <code><a href='coastlineWorld.html'>coastlineWorld</a></code>,
 <code><a href='download.coastline.html'>download.coastline</a>()</code>,
-<code><a href='plot-coastline-method.html'>plot,coastline-method</a></code>,
+<code><a href='plot,coastline-method.html'>plot,coastline-method</a></code>,
 <code><a href='read.coastline.openstreetmap.html'>read.coastline.openstreetmap</a>()</code>,
 <code><a href='read.coastline.shapefile.html'>read.coastline.shapefile</a>()</code>,
-<code><a href='subset-coastline-method.html'>subset,coastline-method</a></code>,
-<code><a href='summary-coastline-method.html'>summary,coastline-method</a></code></p></div>
+<code><a href='subset,coastline-method.html'>subset,coastline-method</a></code>,
+<code><a href='summary,coastline-method.html'>summary,coastline-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>coastlineWorld</span>)
-<span class='fu'><a href='mapPlot.html'>mapPlot</a></span>(<span class='fu'>coastlineCut</span>(<span class='no'>coastlineWorld</span>, <span class='kw'>lon_0</span><span class='kw'>=</span><span class='fl'>100</span>),
-        <span class='kw'>proj</span><span class='kw'>=</span><span class='st'>"+proj=moll +lon_0=100"</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'gray'</span>)</div><div class='img'><img src='coastlineCut-1.png' alt='' width='700' height='433' /></div><div class='input'># }
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>)</span>
+<span class='fu'><a href='mapPlot.html'>mapPlot</a></span><span class='op'>(</span><span class='fu'>coastlineCut</span><span class='op'>(</span><span class='va'>coastlineWorld</span>, lon_0<span class='op'>=</span><span class='fl'>100</span><span class='op'>)</span>,
+        projection<span class='op'>=</span><span class='st'>"+proj=moll +lon_0=100"</span>, col<span class='op'>=</span><span class='st'>'gray'</span><span class='op'>)</span>
+</div><div class='img'><img src='coastlineCut-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
 
 </div></pre>
   </div>
@@ -223,7 +227,7 @@ ground between this and the <code>clipPolys</code> function in the
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

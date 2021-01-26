@@ -24,6 +24,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
+    if (!interactive())
+        monitor <- FALSE
     ##   vvd=vector velocity data [p35 SIG], containing the data: pressure, vel, amp, corr (plus sensemble counter etc)
     ##   vsd=velocity system data [p36 SIG], containing times, temperatures, angles, etc
     ## NOTE: we interpolate from vsd to vvd, to get the final data$time, etc.

@@ -63,8 +63,10 @@ within the call stack to which debugging applies.  For example,
 \code{read.adv.nortek(...,debug=2)} provides information about not just the
 main body of the data file, but also the details of the header.}
 
-\item{monitor}{boolean, set to \code{TRUE} to provide an indication of every
-data burst read.}
+\item{monitor}{boolean value indicating whether to indicate the progress
+of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value
+of \code{monitor} is changed to \code{FALSE} automatically, for non-interactive
+sessions.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 This parameter is typically only provided for internal calls; the default

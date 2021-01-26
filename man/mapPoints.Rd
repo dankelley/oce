@@ -12,7 +12,7 @@ longitude and latitude can be inferred in which case the following two
 arguments are ignored.  This objects that are possible include those of type
 \code{coastline}.}
 
-\item{latitude}{numeric vctor of latitudes of points to be plotted.}
+\item{latitude}{numeric vector of latitudes of points to be plotted.}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate amount
 of debugging information, or to 2 to get more.}

@@ -86,7 +86,7 @@ instead of the present function." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -127,7 +127,7 @@ instead of the present function." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -159,7 +159,7 @@ with data from Environment Canada (reference 2) is advised to use <code><a href=
 instead of the present function.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>as.met</span>(<span class='no'>time</span>, <span class='no'>temperature</span>, <span class='no'>pressure</span>, <span class='no'>u</span>, <span class='no'>v</span>, <span class='kw'>filename</span> <span class='kw'>=</span> <span class='st'>"(constructed from data)"</span>)</pre>
+    <pre class="usage"><span class='fu'>as.met</span><span class='op'>(</span><span class='va'>time</span>, <span class='va'>temperature</span>, <span class='va'>pressure</span>, <span class='va'>u</span>, <span class='va'>v</span>, filename <span class='op'>=</span> <span class='st'>"(constructed from data)"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -202,24 +202,27 @@ coerced into times) or the output from <code>canadaHCD::hcd_hourly</code> (see r
 <a href='https://github.com/gavinsimpson/canadaHCD'>https://github.com/gavinsimpson/canadaHCD</a> for instructions on how
 to download and install from GitHub.</p></li>
 <li><p>Environment Canada website for Historical Climate Data
-<a href='http://climate.weather.gc.ca/index_e.html'>http://climate.weather.gc.ca/index_e.html</a></p></li>
+<code>https://climate.weather.gc.ca/index_e.html</code></p></li>
 </ol>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to met data: 
-<code><a href='sub-sub-met-method.html'>[[,met-method</a></code>,
+<code><a href='[[,met-method.html'>[[,met-method</a></code>,
 <code>[[&lt;-,met-method</code>,
 <code><a href='download.met.html'>download.met</a>()</code>,
 <code><a href='met-class.html'>met-class</a></code>,
 <code><a href='met.html'>met</a></code>,
-<code><a href='plot-met-method.html'>plot,met-method</a></code>,
+<code><a href='plot,met-method.html'>plot,met-method</a></code>,
 <code><a href='read.met.html'>read.met</a>()</code>,
-<code><a href='subset-met-method.html'>subset,met-method</a></code>,
-<code><a href='summary-met-method.html'>summary,met-method</a></code>,
+<code><a href='subset,met-method.html'>subset,met-method</a></code>,
+<code><a href='summary,met-method.html'>summary,met-method</a></code>,
 <code><a href='test_met_csv1.csv.html'>test_met_csv1.csv</a></code>,
 <code><a href='test_met_csv2.csv.html'>test_met_csv2.csv</a></code>,
 <code><a href='test_met_xml2.xml.html'>test_met_xml2.xml</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -236,7 +239,7 @@ to download and install from GitHub.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

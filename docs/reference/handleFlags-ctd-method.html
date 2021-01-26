@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Handle Flags in CTD Objects — handleFlags,ctd-method • oce</title>
+<title>Handle Flags in ctd Objects — handleFlags,ctd-method • oce</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="Handle Flags in CTD Objects — handleFlags,ctd-method" />
+<meta property="og:title" content="Handle Flags in ctd Objects — handleFlags,ctd-method" />
 <meta property="og:description" content="Data-quality flags are stored in the metadata
 slot of oce objects in a
 list named flags.
@@ -48,12 +48,17 @@ for various data classes) provides a way to
 manipulate the contents of the data slot, based on
 such data-quality flags. For example, a common operation is to replace
 erroneous data with NA.
-If metadata$flags in the first argument
-is empty, then that object is returned, unaltered.
-Otherwise, handleFlags analyses the data-quality flags within
-the object, in context of the flags argument, and then interprets
-the action argument to select an action that is to be applied
-to the matched data." />
+If the flags within object's metadata slot is empty,
+then object is returned, unaltered.
+Otherwise, handleFlags examines object@metadata$flags
+in the context of the flags argument, and then
+carries out actions that are specified by the actions argument.
+By default, this sets the returned data entries to NA,
+wherever the corresponding metadata$flag values
+signal unreliable data. To maintain a hint as to why
+data were changed, metadata$flags in the
+returned value is a direct copy of the corresponding
+entry in object." />
 
 
 
@@ -93,7 +98,7 @@ to the matched data." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -134,7 +139,7 @@ to the matched data." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -151,7 +156,7 @@ to the matched data." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Handle Flags in CTD Objects</h1>
+    <h1>Handle Flags in ctd Objects</h1>
     <small class="dont-index">Source: <a href='https://github.com/dankelley/oce/blob/master/R/ctd.R'><code>R/ctd.R</code></a></small>
     <div class="hidden name"><code>handleFlags-ctd-method.Rd</code></div>
     </div>
@@ -165,22 +170,27 @@ for various data classes) provides a way to
 manipulate the contents of the <code>data</code> slot, based on
 such data-quality flags. For example, a common operation is to replace
 erroneous data with <code>NA</code>.</p>
-<p>If <code>metadata$flags</code> in the first argument
-is empty, then that object is returned, unaltered.
-Otherwise, <code>handleFlags</code> analyses the data-quality flags within
-the object, in context of the <code>flags</code> argument, and then interprets
-the <code>action</code> argument to select an action that is to be applied
-to the matched data.</p>
+<p>If the <code>flags</code> within <code>object</code>'s <code>metadata</code> slot is empty,
+then <code>object</code> is returned, unaltered.
+Otherwise, <code>handleFlags</code> examines <code>object@metadata$flags</code>
+in the context of the <code>flags</code> argument, and then
+carries out actions that are specified by the <code>actions</code> argument.
+By default, this sets the returned <code>data</code> entries to <code>NA</code>,
+wherever the corresponding <code>metadata$flag</code> values
+signal unreliable data. To maintain a hint as to why
+<code>data</code> were changed, <code>metadata$flags</code> in the
+returned value is a direct copy of the corresponding
+entry in <code>object</code>.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ctd</span>
-<span class='fu'><a href='handleFlags.html'>handleFlags</a></span>(
-  <span class='no'>object</span>,
-  <span class='kw'>flags</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>actions</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>where</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+<span class='fu'><a href='handleFlags.html'>handleFlags</a></span><span class='op'>(</span>
+  <span class='va'>object</span>,
+  flags <span class='op'>=</span> <span class='cn'>NULL</span>,
+  actions <span class='op'>=</span> <span class='cn'>NULL</span>,
+  where <span class='op'>=</span> <span class='cn'>NULL</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -244,36 +254,35 @@ handled for each data item. If not supplied, this defaults to the value of
 
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    
-<ol>
-<li><p><a href='https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm'>https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm</a></p></li>
+    <p>The following link used to work, but failed as of December 2020.</p><ol>
+<li><p><code>https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm</code></p></li>
 </ol>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other functions relating to data-quality flags: 
 <code><a href='defaultFlags.html'>defaultFlags</a>()</code>,
-<code><a href='handleFlags-adp-method.html'>handleFlags,adp-method</a></code>,
-<code><a href='handleFlags-argo-method.html'>handleFlags,argo-method</a></code>,
-<code><a href='handleFlags-oce-method.html'>handleFlags,oce-method</a></code>,
-<code><a href='handleFlags-section-method.html'>handleFlags,section-method</a></code>,
+<code><a href='handleFlags,adp-method.html'>handleFlags,adp-method</a></code>,
+<code><a href='handleFlags,argo-method.html'>handleFlags,argo-method</a></code>,
+<code><a href='handleFlags,oce-method.html'>handleFlags,oce-method</a></code>,
+<code><a href='handleFlags,section-method.html'>handleFlags,section-method</a></code>,
 <code><a href='handleFlags.html'>handleFlags</a>()</code>,
-<code><a href='initializeFlagScheme-ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
-<code><a href='initializeFlagScheme-oce-method.html'>initializeFlagScheme,oce-method</a></code>,
-<code><a href='initializeFlagScheme-section-method.html'>initializeFlagScheme,section-method</a></code>,
+<code><a href='initializeFlagScheme,ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
+<code><a href='initializeFlagScheme,oce-method.html'>initializeFlagScheme,oce-method</a></code>,
+<code><a href='initializeFlagScheme,section-method.html'>initializeFlagScheme,section-method</a></code>,
 <code><a href='initializeFlagSchemeInternal.html'>initializeFlagSchemeInternal</a>()</code>,
 <code><a href='initializeFlagScheme.html'>initializeFlagScheme</a>()</code>,
-<code><a href='initializeFlags-adp-method.html'>initializeFlags,adp-method</a></code>,
-<code><a href='initializeFlags-oce-method.html'>initializeFlags,oce-method</a></code>,
+<code><a href='initializeFlags,adp-method.html'>initializeFlags,adp-method</a></code>,
+<code><a href='initializeFlags,oce-method.html'>initializeFlags,oce-method</a></code>,
 <code><a href='initializeFlagsInternal.html'>initializeFlagsInternal</a>()</code>,
 <code><a href='initializeFlags.html'>initializeFlags</a>()</code>,
-<code><a href='setFlags-adp-method.html'>setFlags,adp-method</a></code>,
-<code><a href='setFlags-ctd-method.html'>setFlags,ctd-method</a></code>,
-<code><a href='setFlags-oce-method.html'>setFlags,oce-method</a></code>,
+<code><a href='setFlags,adp-method.html'>setFlags,adp-method</a></code>,
+<code><a href='setFlags,ctd-method.html'>setFlags,ctd-method</a></code>,
+<code><a href='setFlags,oce-method.html'>setFlags,oce-method</a></code>,
 <code><a href='setFlags.html'>setFlags</a>()</code></p>
 <p>Other things related to ctd data: 
 <code><a href='CTD_BCD2014666_008_1_DN.ODF.gz.html'>CTD_BCD2014666_008_1_DN.ODF.gz</a></code>,
-<code><a href='sub-sub-ctd-method.html'>[[,ctd-method</a></code>,
+<code><a href='[[,ctd-method.html'>[[,ctd-method</a></code>,
 <code>[[&lt;-,ctd-method</code>,
 <code><a href='as.ctd.html'>as.ctd</a>()</code>,
 <code><a href='cnvName2oceName.html'>cnvName2oceName</a>()</code>,
@@ -286,11 +295,11 @@ handled for each data item. If not supplied, this defaults to the value of
 <code><a href='ctd.html'>ctd</a></code>,
 <code><a href='d200321-001.ctd.html'>d200321-001.ctd</a></code>,
 <code><a href='d201211_0011.cnv.html'>d201211_0011.cnv</a></code>,
-<code><a href='initialize-ctd-method.html'>initialize,ctd-method</a></code>,
-<code><a href='initializeFlagScheme-ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
+<code><a href='initialize,ctd-method.html'>initialize,ctd-method</a></code>,
+<code><a href='initializeFlagScheme,ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
 <code><a href='oceNames2whpNames.html'>oceNames2whpNames</a>()</code>,
 <code><a href='oceUnits2whpUnits.html'>oceUnits2whpUnits</a>()</code>,
-<code><a href='plot-ctd-method.html'>plot,ctd-method</a></code>,
+<code><a href='plot,ctd-method.html'>plot,ctd-method</a></code>,
 <code><a href='plotProfile.html'>plotProfile</a>()</code>,
 <code><a href='plotScan.html'>plotScan</a>()</code>,
 <code><a href='plotTS.html'>plotTS</a>()</code>,
@@ -301,21 +310,22 @@ handled for each data item. If not supplied, this defaults to the value of
 <code><a href='read.ctd.woce.other.html'>read.ctd.woce.other</a>()</code>,
 <code><a href='read.ctd.woce.html'>read.ctd.woce</a>()</code>,
 <code><a href='read.ctd.html'>read.ctd</a>()</code>,
-<code><a href='setFlags-ctd-method.html'>setFlags,ctd-method</a></code>,
-<code><a href='subset-ctd-method.html'>subset,ctd-method</a></code>,
-<code><a href='summary-ctd-method.html'>summary,ctd-method</a></code>,
+<code><a href='setFlags,ctd-method.html'>setFlags,ctd-method</a></code>,
+<code><a href='subset,ctd-method.html'>subset,ctd-method</a></code>,
+<code><a href='summary,ctd-method.html'>summary,ctd-method</a></code>,
 <code><a href='woceNames2oceNames.html'>woceNames2oceNames</a>()</code>,
 <code><a href='woceUnit2oceUnit.html'>woceUnit2oceUnit</a>()</code>,
 <code><a href='write.ctd.html'>write.ctd</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>section</span>)
-<span class='no'>stn</span> <span class='kw'>&lt;-</span> <span class='no'>section</span><span class='kw'>[[</span><span class='st'>"station"</span>, <span class='fl'>100</span>]]
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>)</span>
+<span class='va'>stn</span> <span class='op'>&lt;-</span> <span class='va'>section</span><span class='op'>[[</span><span class='st'>"station"</span>, <span class='fl'>100</span><span class='op'>]</span><span class='op'>]</span>
 <span class='co'># 1. Default: anything not flagged as 2 is set to NA, to focus</span>
 <span class='co'># solely on 'good', in the World Hydrographic Program scheme.</span>
-<span class='no'>STN1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='handleFlags.html'>handleFlags</a></span>(<span class='no'>stn</span>, <span class='kw'>flags</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>3</span>:<span class='fl'>9</span>)))
-<span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>old</span><span class='kw'>=</span><span class='no'>stn</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]], <span class='kw'>new</span><span class='kw'>=</span><span class='no'>STN1</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]], <span class='kw'>salinityFlag</span><span class='kw'>=</span><span class='no'>stn</span><span class='kw'>[[</span><span class='st'>"salinityFlag"</span>]])</div><div class='output co'>#&gt;        old     new salinityFlag
+<span class='va'>STN1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='handleFlags.html'>handleFlags</a></span><span class='op'>(</span><span class='va'>stn</span>, flags<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>3</span><span class='op'>:</span><span class='fl'>9</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>old<span class='op'>=</span><span class='va'>stn</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span>, new<span class='op'>=</span><span class='va'>STN1</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span>, salinityFlag<span class='op'>=</span><span class='va'>stn</span><span class='op'>[[</span><span class='st'>"salinityFlag"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;        old     new salinityFlag
 #&gt; 1  36.4766 36.4766            2
 #&gt; 2  36.6921 36.6921            2
 #&gt; 3  36.6001 36.6001            2
@@ -341,40 +351,43 @@ handled for each data item. If not supplied, this defaults to the value of
 #&gt; 23 34.8834 34.8834            2
 #&gt; 24 34.9039 34.9039            2</div><div class='input'>
 <span class='co'># 2. Use bottle salinity, if it is good and ctd is bad</span>
-<span class='no'>replace</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span> <span class='kw'>==</span> <span class='no'>stn</span><span class='kw'>[[</span><span class='st'>"salinityBottleFlag"</span>]] <span class='kw'>&amp;&amp;</span> <span class='fl'>2</span> <span class='kw'>!=</span> <span class='no'>stn</span><span class='kw'>[[</span><span class='st'>"salinityFlag"</span>]]
-<span class='no'>S</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span>(<span class='no'>replace</span>, <span class='no'>stn</span><span class='kw'>[[</span><span class='st'>"salinityBottle"</span>]], <span class='no'>stn</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]])
-<span class='no'>STN2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='oceSetData.html'>oceSetData</a></span>(<span class='no'>stn</span>, <span class='st'>"salinity"</span>, <span class='no'>S</span>)
+<span class='va'>replace</span> <span class='op'>&lt;-</span> <span class='fl'>2</span> <span class='op'>==</span> <span class='va'>stn</span><span class='op'>[[</span><span class='st'>"salinityBottleFlag"</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&amp;&amp;</span> <span class='fl'>2</span> <span class='op'>!=</span> <span class='va'>stn</span><span class='op'>[[</span><span class='st'>"salinityFlag"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>S</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='va'>replace</span>, <span class='va'>stn</span><span class='op'>[[</span><span class='st'>"salinityBottle"</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>stn</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+<span class='va'>STN2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='oceSetData.html'>oceSetData</a></span><span class='op'>(</span><span class='va'>stn</span>, <span class='st'>"salinity"</span>, <span class='va'>S</span><span class='op'>)</span>
 
 <span class='co'># 3. Use smoothed TS relationship to nudge questionable data.</span>
-<span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>) {
-  <span class='no'>S</span> <span class='kw'>&lt;-</span> <span class='no'>x</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]]
-  <span class='no'>T</span> <span class='kw'>&lt;-</span> <span class='no'>x</span><span class='kw'>[[</span><span class='st'>"temperature"</span>]]
-  <span class='no'>df</span> <span class='kw'>&lt;-</span> <span class='fl'>0.5</span> * <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>S</span>) <span class='co'># smooths a bit</span>
-  <span class='no'>sp</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/smooth.spline.html'>smooth.spline</a></span>(<span class='no'>T</span>, <span class='no'>S</span>, <span class='kw'>df</span><span class='kw'>=</span><span class='no'>df</span>)
-  <span class='fl'>0.5</span> * (<span class='no'>S</span> + <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(<span class='no'>sp</span>, <span class='no'>T</span>)$<span class='no'>y</span>)
-}
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>2</span>))
-<span class='no'>STN3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='handleFlags.html'>handleFlags</a></span>(<span class='no'>stn</span>, <span class='kw'>flags</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>salinity</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>3</span>:<span class='fl'>9</span>)), <span class='kw'>action</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>salinity</span><span class='kw'>=</span><span class='no'>f</span>))
-<span class='fu'><a href='plotProfile.html'>plotProfile</a></span>(<span class='no'>stn</span>, <span class='st'>"salinity"</span>, <span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>))
-<span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='no'>stn</span><span class='kw'>[[</span><span class='st'>"pressure"</span>]]
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>STN3</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]] - <span class='no'>stn</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]], <span class='no'>p</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span>(<span class='no'>p</span>)))</div><div class='img'><img src='handleFlags-ctd-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='va'>f</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>S</span> <span class='op'>&lt;-</span> <span class='va'>x</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span>
+  <span class='cn'>T</span> <span class='op'>&lt;-</span> <span class='va'>x</span><span class='op'>[[</span><span class='st'>"temperature"</span><span class='op'>]</span><span class='op'>]</span>
+  <span class='va'>df</span> <span class='op'>&lt;-</span> <span class='fl'>0.5</span> <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>S</span><span class='op'>)</span> <span class='co'># smooths a bit</span>
+  <span class='va'>sp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/smooth.spline.html'>smooth.spline</a></span><span class='op'>(</span><span class='cn'>T</span>, <span class='va'>S</span>, df<span class='op'>=</span><span class='va'>df</span><span class='op'>)</span>
+  <span class='fl'>0.5</span> <span class='op'>*</span> <span class='op'>(</span><span class='va'>S</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>sp</span>, <span class='cn'>T</span><span class='op'>)</span><span class='op'>$</span><span class='va'>y</span><span class='op'>)</span>
+<span class='op'>}</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>STN3</span> <span class='op'>&lt;-</span> <span class='fu'><a href='handleFlags.html'>handleFlags</a></span><span class='op'>(</span><span class='va'>stn</span>, flags<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>salinity<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>3</span><span class='op'>:</span><span class='fl'>9</span><span class='op'>)</span><span class='op'>)</span>, action<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>salinity<span class='op'>=</span><span class='va'>f</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='plotProfile.html'>plotProfile</a></span><span class='op'>(</span><span class='va'>stn</span>, <span class='st'>"salinity"</span>, mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='va'>stn</span><span class='op'>[[</span><span class='st'>"pressure"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>STN3</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>-</span> <span class='va'>stn</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>p</span>, ylim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span><span class='op'>(</span><span class='va'>p</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='handleFlags-ctd-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># 4. Single-variable flags (vector specification)</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>section</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>)</span>
 <span class='co'># Multiple-flag scheme: one per data item</span>
-<span class='no'>A</span> <span class='kw'>&lt;-</span> <span class='no'>section</span><span class='kw'>[[</span><span class='st'>"station"</span>, <span class='fl'>100</span>]]
-<span class='no'>deep</span> <span class='kw'>&lt;-</span> <span class='no'>A</span><span class='kw'>[[</span><span class='st'>"pressure"</span>]] <span class='kw'>&gt;</span> <span class='fl'>1500</span>
-<span class='no'>flag</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span>(<span class='no'>deep</span>, <span class='fl'>7</span>, <span class='fl'>2</span>)
-<span class='kw'>for</span> (<span class='no'>flagName</span> <span class='kw'>in</span> <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>A</span><span class='kw'>[[</span><span class='st'>"flags"</span>]]))
-    <span class='no'>A</span><span class='kw'>[[</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='no'>flagName</span>, <span class='st'>"Flag"</span>, <span class='kw'>sep</span><span class='kw'>=</span><span class='st'>""</span>)]] <span class='kw'>&lt;-</span> <span class='no'>flag</span>
-<span class='no'>Af</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='handleFlags.html'>handleFlags</a></span>(<span class='no'>A</span>)
-<span class='fu'>expect_equal</span>(<span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='no'>Af</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]]), <span class='no'>deep</span>)
+<span class='va'>A</span> <span class='op'>&lt;-</span> <span class='va'>section</span><span class='op'>[[</span><span class='st'>"station"</span>, <span class='fl'>100</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>deep</span> <span class='op'>&lt;-</span> <span class='va'>A</span><span class='op'>[[</span><span class='st'>"pressure"</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&gt;</span> <span class='fl'>1500</span>
+<span class='va'>flag</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='va'>deep</span>, <span class='fl'>7</span>, <span class='fl'>2</span><span class='op'>)</span>
+<span class='kw'>for</span> <span class='op'>(</span><span class='va'>flagName</span> <span class='kw'>in</span> <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>A</span><span class='op'>[[</span><span class='st'>"flags"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span>
+    <span class='va'>A</span><span class='op'>[[</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='va'>flagName</span>, <span class='st'>"Flag"</span>, sep<span class='op'>=</span><span class='st'>""</span><span class='op'>)</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>flag</span>
+<span class='va'>Af</span> <span class='op'>&lt;-</span> <span class='fu'><a href='handleFlags.html'>handleFlags</a></span><span class='op'>(</span><span class='va'>A</span><span class='op'>)</span>
+<span class='fu'>expect_equal</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span><span class='va'>Af</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>, <span class='va'>deep</span><span class='op'>)</span>
 
 <span class='co'># 5. Single-variable flags (list specification)</span>
-<span class='no'>B</span> <span class='kw'>&lt;-</span> <span class='no'>section</span><span class='kw'>[[</span><span class='st'>"station"</span>, <span class='fl'>100</span>]]
-<span class='no'>B</span><span class='kw'>[[</span><span class='st'>"flags"</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>flag</span>)
-<span class='no'>Bf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='handleFlags.html'>handleFlags</a></span>(<span class='no'>B</span>)
-<span class='fu'>expect_equal</span>(<span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='no'>Bf</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]]), <span class='no'>deep</span>)</div></pre>
+<span class='va'>B</span> <span class='op'>&lt;-</span> <span class='va'>section</span><span class='op'>[[</span><span class='st'>"station"</span>, <span class='fl'>100</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>B</span><span class='op'>[[</span><span class='st'>"flags"</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='va'>flag</span><span class='op'>)</span>
+<span class='va'>Bf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='handleFlags.html'>handleFlags</a></span><span class='op'>(</span><span class='va'>B</span><span class='op'>)</span>
+<span class='fu'>expect_equal</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span><span class='va'>Bf</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>, <span class='va'>deep</span><span class='op'>)</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -390,7 +403,7 @@ handled for each data item. If not supplied, this defaults to the value of
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

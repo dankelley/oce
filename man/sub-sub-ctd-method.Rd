@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{[[,ctd-method}
 \alias{[[,ctd-method}
-\title{Extract Something From a CTD Object}
+\title{Extract Something From a ctd Object}
 \usage{
 \S4method{[[}{ctd}(x, i, j, ...)
 }

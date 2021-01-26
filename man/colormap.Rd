@@ -48,7 +48,9 @@ painted with the nearest in-range color.}
 through \code{blend} are all ignored (see \dQuote{Details}).  If it is
 provided, then it may either be a vector of break points, or a single number
 indicating the desired number of break points to be computed with
-\code{\link{pretty}}\verb{(z,breaks)1.  In either case of non-missing }breaks\verb{, the resultant break points must number 1 plus the number of colors (see }col`).}
+\code{\link{pretty}}\verb{(z,breaks)}.  In either case of non-missing
+\code{breaks}, the resultant break points must number 1 plus the number of
+colors (see \code{col}).}
 
 \item{col}{either a vector of colors or a function taking a numerical value
 as its single argument and returning a vector of colors.  The value of
@@ -59,7 +61,7 @@ as its single argument and returning a vector of colors.  The value of
 \code{"gmt_relief"}, \code{"gmt_ocean"}, \code{"gmt_globe"} or
 \code{"gmt_gebco"}) or the name of a file or URL that contains a color map
 specification in GMT format, e.g. one of the \code{.cpt} files from
-\url{http://www.beamreach.org/maps/gmt/share/cpt}). If \code{name} is
+\url{https://beamreach.org/maps/gmt/share/cpt/}). If \code{name} is
 provided, then \code{x0}, \code{x1}, \code{col0} and \code{col1} are all
 ignored.}
 
@@ -233,8 +235,8 @@ Information on GMT software is given at
 2015-12-12).  Diagrams showing the GMT color schemes are at
 \verb{http://www.geos.ed.ac.uk/it/howto/GMT/CPT/palettes.html} (link worked
 for years but failed 2015-12-08), and numerical specifications for some
-color maps are at \url{http://www.beamreach.org/maps/gmt/share/cpt},
-\url{http://soliton.vm.bytemark.co.uk/pub/cpt-city}, and other sources.
+color maps are at \url{https://beamreach.org/maps/gmt/share/cpt/},
+\url{http://soliton.vm.bytemark.co.uk/pub/cpt-city/}, and other sources.
 }
 \seealso{
 Other things related to colors: 

@@ -1,5 +1,5 @@
 library(oce)
-beam <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000",
+beam <- read.oce("~/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000",
                  from=as.POSIXct("2008-06-26", tz="UTC"),
                  to=as.POSIXct("2008-06-27", tz="UTC"),
                  by="60:00",

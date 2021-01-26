@@ -1,7 +1,5 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-##. TESTinfer1 <- !TRUE
-
 #' Class to Store Tidal Models
 #'
 #' This class stores tidal-constituent models.
@@ -99,6 +97,44 @@ setMethod(f="initialize",
 #' Foreman (1978).  The data are scanned using \file{tests/tide.R} in this
 #' package, which also performs some tests using `T_TIDE` values as a
 #' reference.
+#'
+#' @family things related to tides
+NULL
+
+#' Tidal Current Dataset
+#'
+#' The `tidalCurrent` dataset contains tidal velocities reported in
+#' Foreman's (1978) report (reference 1) on his Fortran code for the analysis of
+#' tidal currents and provided in an associated webpage (reference 2).
+#' Here, `tidalCurrent` is data frame containing
+#' * `time` a POSIXct time.
+#' * `u` the eastward component of velocity in m/s.
+#' * `v` the northward component of velocity in m/s.
+#'
+#' @name tidalCurrent
+#'
+#' @docType data
+#'
+#' @examples
+#' library(oce)
+#' data(tidalCurrent)
+#' par(mfrow=c(2, 1))
+#' oce.plot.ts(tidalCurrent$time, tidalCurrent$u, ylab="u [m/s]")
+#' abline(h=0, col=2)
+#' oce.plot.ts(tidalCurrent$time, tidalCurrent$v, ylab="v [m/s]")
+#' abline(h=0, col=2)
+#'
+#' @author Dan Kelley (reformatting data provided by Michael Foreman)
+#'
+#' @references
+#'
+#' 1. Foreman, M. G. G. "Manual for Tidal Currents Analysis and Prediction."
+#'    Pacific Marine Science Report.
+#'    British Columbia, Canada: Institute of Ocean Sciences, Patricia Bay, 1978.
+#' 2. \code{https://www.dfo-mpo.gc.ca/science/documents/data-donnees/tidal-marees/tidpack.zip}
+#'
+#' @source The data come from the `tide8.dat` and `tide9.dat` files provided
+#' at reference 2.
 #'
 #' @family things related to tides
 NULL
@@ -1253,30 +1289,6 @@ tidem <- function(t, x, constituents, infer=NULL,
             }
         }
     }
-    ## Remove Z0, if it is present (because we get that by the intercept)
-    ##TEST if ("Z0" %in% name) {
-    ##TEST     remove <- which("Z0" == name)
-    ##TEST     indices <- indices[-remove]
-    ##TEST     name <- name[-remove]
-    ##TEST     freq <- freq[-remove]
-    ##TEST     kmpr <- kmpr[-remove]
-    ##TEST }
-    ##. if (TESTinfer1) {
-    ##.     ## Ensure that we fit for any infer$name constituents, *regardless* of whether
-    ##.     ## those consitituents are permitted by the Rayleigh criterion.
-    ##.     if (!is.null(infer)) {
-    ##.         for (n in c(infer$name)) {
-    ##.             if (!(n %in% name)) {
-    ##.                 a <- which(tc$name == n)
-    ##.                 indices <- c(indices, a)
-    ##.                 name <- c(name, tc$name[a])
-    ##.                 freq <- c(freq, tc$freq[a])
-    ##.                 kmpr <- c(kmpr, tc$kmpr[a])
-    ##.                 message("fitting for infer$name=", n, ", even though the Rayleigh Criterion would exclude it")
-    ##.             }
-    ##.         }
-    ##.     }
-    ##. }
 
     ## sort constituents by index (which, among other things, ensures that Z0 is at the start, if it exists)
     oindices <- order(indices)
@@ -1729,9 +1741,10 @@ predict.tidem <- function(object, newdata, ...)
 #' [locator()] is called so that the user can click (once) on the map, after
 #' which the node is displayed on the map.
 #'
-#' @param time a vector of times at which prediction is to be made.
+#' @param time a vector of times (in the UTC timezone)
+#' at which prediction is to be made.
 #' If not supplied, this will be the week starting at the present time,
-#' incrementing by 15 minutes.
+#' computed with [presentTime()], with a 15 minute increment.
 #'
 #' @param basedir directory containing the `WebTide` application.
 #'
@@ -1797,6 +1810,9 @@ webtide <- function(action=c("map", "predict"),
                     region="nwatl",
                     plot=TRUE, tformat, debug=getOption("oceDebug"), ...)
 {
+    debug <- max(0, min(floor(debug), 2))
+    oceDebug(debug, "webtide(action=\"", action, "\", ...)\n",
+             sep="", unindent=1, style="bold")
     rpd <- atan2(1, 1) / 45  # radians per degree
     action <- match.arg(action)
     nodeGiven <- !missing(node)
@@ -1825,13 +1841,25 @@ webtide <- function(action=c("map", "predict"),
             par(mfrow=c(1, 1), mar=c(3, 3, 2, 1), mgp=c(2, 0.7, 0))
             plot(triangles$longitude, triangles$latitude, pch=2, cex=1/4, lwd=1/8,
                  asp=asp, xlab="", ylab="", ...)
-            ##usr <- par('usr')
-            ##best <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
-            data("coastlineWorld", package="oce", envir=environment())
-            coastlineWorld <- get("coastlineWorld")
-            ##data(best, envir=environment(), debug=debug-1)
-            ##coastline <- get(best)
-            lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+            ## Try for a coastline of well-suite resolution, if we have ocedata installed.
+            usr <- par("usr")
+            bestcoastline <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4], debug=debug-1)
+            oceDebug(debug, "coastlineBest() suggests using", bestcoastline, "as the coastline\n")
+            if (bestcoastline == "coastlineWorld") {
+                data(list=bestcoastline, package="oce", envir=environment())
+                coastlineWorld <- get("coastlineWorld")
+            } else {
+                if (requireNamespace("ocedata", quietly=TRUE)) {
+                    data(list=bestcoastline, package="ocedata", envir=environment())
+                    oceDebug(debug, "Using", bestcoastline, "from the ocedata package.\n")
+                    coastlineWorld <- get(bestcoastline)
+                } else {
+                    data(list="coastlineWorld", package="oce", envir=environment())
+                    oceDebug(debug, "The ocedata package is not available, so using", bestcoastline, "from oce\n")
+                    coastlineWorld <- get("coastlineWorld")
+                }
+            }
+            polygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
             ## use lon and lat, if node not given
             if (!nodeGiven && longitudeGiven && latitudeGiven) {
                 closest <- which.min(geodDist(triangles$longitude, triangles$latitude, longitude, latitude))
@@ -1855,11 +1883,13 @@ webtide <- function(action=c("map", "predict"),
                            legend=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude))
                 }
             }
+            oceDebug(debug, "} # webtide()\n", sep="", unindent=1, style="bold")
             return(invisible(list(node=node, latitude=latitude, longitude=longitude)))
         } else  {
             node <- triangles$triangle
             longitude <- triangles$longitude
             latitude <- triangles$latitude
+            oceDebug(debug, "} # webtide()\n", sep="", unindent=1, style="bold")
             return(list(node=node, latitude=latitude, longitude=longitude))
         }
     } else if (action == "predict") {
@@ -1938,9 +1968,11 @@ webtide <- function(action=c("map", "predict"),
             oce.plot.ts(time, v, type='l', xlab="", ylab=resizableLabel("v"),
                         drawTimeRange=FALSE, tformat=tformat)
             abline(h=0, lty='dotted', col='gray')
+            oceDebug(debug, "} # webtide()\n", sep="", unindent=1, style="bold")
             return(invisible(list(time=time, elevation=elevation, u=u, v=v,
                                   node=node, basedir=basedir, region=region)))
         } else {
+            oceDebug(debug, "} # webtide()\n", sep="", unindent=1, style="bold")
             return(list(time=time, elevation=elevation, u=u, v=v,
                         node=node, basedir=basedir, region=region))
         }

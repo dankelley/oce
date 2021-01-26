@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,7 +147,7 @@
     <p>Convert an ADV Object to ENU Coordinates</p>
     </div>
 
-    <pre class="usage"><span class='fu'>toEnuAdv</span>(<span class='no'>x</span>, <span class='kw'>declination</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>))</pre>
+    <pre class="usage"><span class='fu'>toEnuAdv</span><span class='op'>(</span><span class='va'>x</span>, declination <span class='op'>=</span> <span class='fl'>0</span>, debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -175,14 +175,18 @@ by specifying higher <code>debug</code> values.</p></td>
 
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p><a href='https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done'>https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done</a></p>
+    
+<ol>
+<li><p>@template nortekCoordTemplate</p></li>
+</ol>
+
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>See <code><a href='read.adv.html'>read.adv()</a></code> for notes on functions relating to
 <code>"adv"</code> objects.  Also, see <code><a href='beamToXyzAdv.html'>beamToXyzAdv()</a></code> and
 <code><a href='xyzToEnuAdv.html'>xyzToEnuAdv()</a></code>.</p>
 <p>Other things related to adv data: 
-<code><a href='sub-sub-adv-method.html'>[[,adv-method</a></code>,
+<code><a href='[[,adv-method.html'>[[,adv-method</a></code>,
 <code>[[&lt;-,adv-method</code>,
 <code><a href='adv-class.html'>adv-class</a></code>,
 <code><a href='adv.html'>adv</a></code>,
@@ -190,19 +194,22 @@ by specifying higher <code>debug</code> values.</p></td>
 <code><a href='beamToXyz.html'>beamToXyz</a>()</code>,
 <code><a href='enuToOtherAdv.html'>enuToOtherAdv</a>()</code>,
 <code><a href='enuToOther.html'>enuToOther</a>()</code>,
-<code><a href='plot-adv-method.html'>plot,adv-method</a></code>,
+<code><a href='plot,adv-method.html'>plot,adv-method</a></code>,
 <code><a href='read.adv.nortek.html'>read.adv.nortek</a>()</code>,
 <code><a href='read.adv.sontek.adr.html'>read.adv.sontek.adr</a>()</code>,
 <code><a href='read.adv.sontek.serial.html'>read.adv.sontek.serial</a>()</code>,
 <code><a href='read.adv.sontek.text.html'>read.adv.sontek.text</a>()</code>,
 <code><a href='read.adv.html'>read.adv</a>()</code>,
 <code><a href='rotateAboutZ.html'>rotateAboutZ</a>()</code>,
-<code><a href='subset-adv-method.html'>subset,adv-method</a></code>,
-<code><a href='summary-adv-method.html'>summary,adv-method</a></code>,
+<code><a href='subset,adv-method.html'>subset,adv-method</a></code>,
+<code><a href='summary,adv-method.html'>summary,adv-method</a></code>,
 <code><a href='toEnu.html'>toEnu</a>()</code>,
 <code><a href='velocityStatistics.html'>velocityStatistics</a>()</code>,
 <code><a href='xyzToEnuAdv.html'>xyzToEnuAdv</a>()</code>,
 <code><a href='xyzToEnu.html'>xyzToEnu</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -219,7 +226,7 @@ by specifying higher <code>debug</code> values.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

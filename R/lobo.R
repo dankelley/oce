@@ -134,8 +134,6 @@ setMethod(f="[[<-",
 #' structure of LOBO objects, and also outlines the other functions dealing
 #' with them.
 #'
-#' @references \url{http://lobo.satlantic.com} \url{http://www.mbari.org/lobo/}
-#'
 #' @examples
 #'
 #' library(oce)
@@ -311,8 +309,6 @@ setMethod(f="plot",
                               ...)
           {
               oceDebug(debug, "plot.lobo(...)\n", sep="")
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,lobo-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
               oceDebug(debug, "which:", which, "\n")

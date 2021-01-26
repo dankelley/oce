@@ -14,9 +14,6 @@ pressures with \code{\link[=argoGrid]{argoGrid()}} or subsetted with
 \code{\link[=subset,argo-method]{subset,argo-method()}}.  Plots can be made with
 \code{\link[=plot,argo-method]{plot,argo-method()}}, while \code{\link[=summary,argo-method]{summary,argo-method()}}
 produces statistical summaries and \code{show} produces overviews.
-
-See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some
-argo-related datasets that may be useful in a wider context.
 }
 \section{Slots}{
 

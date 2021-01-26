@@ -553,6 +553,8 @@ setMethod(f="show",
                       cat(class(object)[1], " object, from file '", filename, "', has nothing in its data slot.\n", sep="")
                   }
               }
+              odigits <- options("digits")$digits
+              options(digits=9) # helps with e.g. CTD adjusted vs unadjusted values
               for (i in seq_along(dataNames)) {
                   d <- object@data[[i]]
                   if (0 == length(d)) {
@@ -583,6 +585,7 @@ setMethod(f="show",
                       }
                   }
               }
+              options(digits=odigits) # return to original digits value
           })
 
 
@@ -876,8 +879,8 @@ handleFlagsInternal <- function(object, flags, actions, where, debug=0) {
 #' @references
 #'
 #' * Carval, Thierry, Bob Keeley, Yasushi Takatsuki, Takashi Yoshida, Stephen Loch Loch,
-#' Claudia Schmid, and Roger Goldsmith. Argo User’s Manual V3.3. Ifremer, 2019.
-#' \url{https://doi.org/10.13155/29825}.
+#' Claudia Schmid, and Roger Goldsmith. Argo User's Manual V3.3. Ifremer, 2019.
+#' \doi{10.13155/29825}
 #'
 #' @family functions relating to data-quality flags
 defaultFlags <- function(object)

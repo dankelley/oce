@@ -4,7 +4,7 @@
 \alias{map2lonlat}
 \title{Convert X and Y to Longitude and Latitude}
 \usage{
-map2lonlat(x, y, init = NULL)
+map2lonlat(x, y, init = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{vector containing the x component of points in the projected space, or
@@ -16,6 +16,14 @@ argument is ignored.}
 
 \item{init}{vector containing the initial guesses for longitude and latitude,
 presently ignored.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 A list containing \code{longitude} and \code{latitude}, with \code{NA}
@@ -30,23 +38,17 @@ handled well; see \sQuote{Bugs}.
 }
 \section{Bugs}{
 
-\code{oce} uses \code{\link[rgdal:project]{rgdal::project()}} in the \CRANpkg{rgdal}
-package to handle projections. Only those projections that have inverses are
-permitted within \code{oce}, and even those can sometimes yield errors, owing
-to limitations in \CRANpkg{rgdal}. On i386/windows machines, the version
-of \CRANpkg{rgdal} must be 1.3-9 or higher, to prevent an error with
-\code{map2lonlat}.
+\code{oce} uses \code{\link[sf:sf_project]{sf::sf_project()}} to handle projections. Only those projections that
+have inverses are permitted within \code{oce}, and of that subset, some are omitted
+because the \code{oce} developers have experienced problems with them.
 }
 
 \examples{
-canProject <- .Platform$OS.type!="windows"&&requireNamespace("rgdal")
-if (canProject) {
-    library(oce)
-    ## Cape Split, in the Minas Basin of the Bay of Fundy
-    cs <- list(longitude=-64.49657, latitude=45.33462)
-    xy <- lonlat2map(cs, projection="+proj=merc")
-    map2lonlat(xy)
-}
+library(oce)
+## Cape Split, in the Minas Basin of the Bay of Fundy
+cs <- list(longitude=-64.49657, latitude=45.33462)
+xy <- lonlat2map(cs, projection="+proj=merc")
+map2lonlat(xy)
 
 }
 \seealso{

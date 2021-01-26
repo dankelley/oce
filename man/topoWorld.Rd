@@ -24,7 +24,7 @@ Height (\code{topoWorld[["z"]]}) is measured in metres above nominal sea level.
 The coarse resolution can be a problem in plotting depth contours along with
 coastlines in regions of steep topography. For example, near the southeast
 corner of Newfoundland, a 200m contour will overlap a coastline drawn with
-\link[ocedata:coastlineWorldMedium]{ocedata::coastlineWorldFine}. The solution in such cases is to
+\code{coastlineWorldFine} from the \CRANpkg{ocedata} package. The solution in such cases is to
 download a higher-resolution topography file, perhaps using
 \code{\link[=download.topo]{download.topo()}}, and then use \code{\link[=read.topo]{read.topo()}}
 to create another \code{topo} object.  (With other data
@@ -61,6 +61,7 @@ imagep(topoWorld)
 Other datasets provided with oce: 
 \code{\link{adp}},
 \code{\link{adv}},
+\code{\link{amsr}},
 \code{\link{argo}},
 \code{\link{cm}},
 \code{\link{coastlineWorld}},
@@ -76,6 +77,7 @@ Other datasets provided with oce:
 \code{\link{sealevelTuktoyaktuk}},
 \code{\link{sealevel}},
 \code{\link{section}},
+\code{\link{topoNS}},
 \code{\link{wind}},
 \code{\link{xbt}}
 
@@ -89,7 +91,8 @@ Other things related to topo data:
 \code{\link{subset,topo-method}},
 \code{\link{summary,topo-method}},
 \code{\link{topo-class}},
-\code{\link{topoInterpolate}()}
+\code{\link{topoInterpolate}()},
+\code{\link{topoNS}}
 }
 \concept{datasets provided with oce}
 \concept{things related to topo data}

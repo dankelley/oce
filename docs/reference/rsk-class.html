@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -152,8 +152,8 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>A rsk object may be read with <code><a href='read.rsk.html'>read.rsk()</a></code> or created with
-<code><a href='as.rsk.html'>as.rsk()</a></code>.  Plots can be made with <code><a href='plot-rsk-method.html'>plot,rsk-method()</a></code>, while
-<code><a href='summary-rsk-method.html'>summary,rsk-method()</a></code> produces statistical summaries and <code>show</code>
+<code><a href='as.rsk.html'>as.rsk()</a></code>.  Plots can be made with <code><a href='plot,rsk-method.html'>plot,rsk-method()</a></code>, while
+<code><a href='summary,rsk-method.html'>summary,rsk-method()</a></code> produces statistical summaries and <code>show</code>
 produces overviews.   If atmospheric pressure has not been removed from the
 data, the functions <code><a href='rskPatm.html'>rskPatm()</a></code> may provide guidance as to its value;
 however, this last function is no equal to decent record-keeping at sea.</p>
@@ -198,15 +198,15 @@ object may be retrieved in the standard R way using <code>slot()</code>. For
 example <code>slot(o,"data")</code> returns the <code>data</code> slot of an object named <code>o</code>,
 and similarly <code>slot(o,"metadata")</code> returns
 the <code>metadata</code> slot.</p>
-<p>The slots may also be obtained with the <code><a href='sub-sub-rsk-method.html'>[[,rsk-method</a></code>
+<p>The slots may also be obtained with the <code><a href='[[,rsk-method.html'>[[,rsk-method</a></code>
 operator, as e.g. <code>o[["data"]]</code> and <code>o[["metadata"]]</code>, respectively.</p>
-<p>The <code><a href='sub-sub-rsk-method.html'>[[,rsk-method</a></code> operator can also
+<p>The <code><a href='[[,rsk-method.html'>[[,rsk-method</a></code> operator can also
 be used to retrieve items from within the <code>data</code> and <code>metadata</code> slots.
 For example, <code>o[["temperature"]]</code> can be used to retrieve temperature
 from an object containing that quantity. The rule is that a named
 quantity is sought first within the object's <code>metadata</code> slot,
 with the <code>data</code> slot being checked only if <code>metadata</code> does not
-contain the item. This <code>[[</code> method can also be used to get
+contain the item. This <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> method can also be used to get
 certain derived quantities, if the object contains sufficient
 information to calculate them. For example, an object that holds
 (practical) salinity, temperature and pressure, along with
@@ -244,16 +244,19 @@ retrieve derived items.</p>
 <code><a href='windrose-class.html'>windrose-class</a></code>,
 <code><a href='xbt-class.html'>xbt-class</a></code></p>
 <p>Other things related to rsk data: 
-<code><a href='sub-sub-rsk-method.html'>[[,rsk-method</a></code>,
+<code><a href='[[,rsk-method.html'>[[,rsk-method</a></code>,
 <code>[[&lt;-,rsk-method</code>,
 <code><a href='as.rsk.html'>as.rsk</a>()</code>,
-<code><a href='plot-rsk-method.html'>plot,rsk-method</a></code>,
+<code><a href='plot,rsk-method.html'>plot,rsk-method</a></code>,
 <code><a href='read.rsk.html'>read.rsk</a>()</code>,
 <code><a href='rskPatm.html'>rskPatm</a>()</code>,
 <code><a href='rskToc.html'>rskToc</a>()</code>,
 <code><a href='rsk.html'>rsk</a></code>,
-<code><a href='subset-rsk-method.html'>subset,rsk-method</a></code>,
-<code><a href='summary-rsk-method.html'>summary,rsk-method</a></code></p></div>
+<code><a href='subset,rsk-method.html'>subset,rsk-method</a></code>,
+<code><a href='summary,rsk-method.html'>summary,rsk-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley and Clark Richards</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -270,7 +273,7 @@ retrieve derived items.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

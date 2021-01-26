@@ -83,7 +83,7 @@ lines and axis labels." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ lines and axis labels." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -153,7 +153,7 @@ and <code><a href='mapAxis.html'>mapAxis()</a></code> to ignore out-of-frame gri
 lines and axis labels.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>usrLonLat</span>(<span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>25</span>, <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>))</pre>
+    <pre class="usage"><span class='fu'>usrLonLat</span><span class='op'>(</span>n <span class='op'>=</span> <span class='fl'>25</span>, debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -176,19 +176,17 @@ by specifying higher <code>debug</code> values.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a list containing <code>lonmin</code>, <code>lonmax</code>,
-<code>latmin</code>, <code>latmax</code>, and <code>ok</code>; the last
-of which indicates whether at least one point on the plot box
-is invertible. Note that longitude are expressed in the
-range from -180 to 180 degrees.</p>
+    <p>A list containing numerical
+values <code>lonmin</code>, <code>lonmax</code>, <code>latmin</code>, and <code>latmax</code>, along
+with logical value <code>ok</code>. The last of these indicates
+whether at least one point on the plot box is invertible.
+Note that longitudes are in the range from -180 to 180 degrees.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Note: this procedure does not work for projections that have trouble
-inverting points that are "off the globe". For this reason, this function
-examines .Projection()$projection and if it contains the string
-<code>"wintri"</code>, then the above-stated procedure is skipped, and
-the return value has each of the numerical quantities set to <code>NA</code>,
-and <code>ok</code> set to <code>FALSE</code>.</p>
+    <p>Some projections, such as <code>"wintri"</code>, have trouble inverting
+points that are "off the globe".  In such cases,
+the returned value has <code>lonmin</code>, <code>lonmax</code>, <code>latmin</code> and
+<code>latmax</code> set to <code>NA</code>, and <code>ok</code> set to <code>FALSE</code>.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other functions related to maps: 
@@ -215,6 +213,9 @@ and <code>ok</code> set to <code>FALSE</code>.</p>
 <code><a href='oceCRS.html'>oceCRS</a>()</code>,
 <code><a href='shiftLongitude.html'>shiftLongitude</a>()</code>,
 <code><a href='utm2lonlat.html'>utm2lonlat</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -231,7 +232,7 @@ and <code>ok</code> set to <code>FALSE</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

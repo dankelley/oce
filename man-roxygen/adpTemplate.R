@@ -28,9 +28,10 @@
 #' @param latitude optional signed number indicating the latitude in degrees
 #' North.
 #'
-#' @param monitor boolean, set to `TRUE` to provide an indication of progress
-#' in reading the file, either by printing a dot for each profile or by writing
-#' a textual progress bar with [txtProgressBar()].
+#' @param monitor boolean value indicating whether to indicate the progress
+#' of reading the file, by using [txtProgressBar()] or otherwise.  The value
+#' of `monitor` is changed to `FALSE` automatically, for non-interactive
+#' sessions.
 #'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' (Typically only provided for internal calls; the default that it provides is

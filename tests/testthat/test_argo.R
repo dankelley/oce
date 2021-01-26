@@ -72,17 +72,24 @@ test_that("subset(argo, pressure < 500))", {
 
 test_that("subset(argo, within=(POLYGON))", {
           ## Labrador Sea (this test will fail if data(argo) is changed)
+          nlevel <- 56
           nold <- 223
           nnew <- 53
           expect_equal(nold, nchar(argo[["direction"]]))
-          expect_equal(c(56, nold), dim(argo[["pressure"]]))
+          expect_equal(c(nlevel, nold), dim(argo[["pressure"]]))
           expect_equal(nold, length(argo[["latitude"]]))
           bdy <- list(x=c(-41.05788, -41.92521, -68.96441, -69.55673),
                       y=c(64.02579, 49.16223, 50.50927, 61.38379))
           argoSubset <- subset(argo, within=bdy)
           expect_equal(nnew, nchar(argoSubset[["direction"]]))
-          expect_equal(c(56, nnew), dim(argoSubset[["pressure"]]))
+          expect_equal(c(nlevel, nnew), dim(argoSubset[["pressure"]]))
           expect_equal(nnew, length(argoSubset[["latitude"]]))
+          expect_equal(c(nlevel, nnew), dim(argoSubset[["salinityFlag"]]))
+          expect_equal(c(nlevel, nnew), dim(argoSubset[["temperatureFlag"]]))
+          N <- names(argo[["metadata"]])
+          N <- c("direction", N[grep("QC$", N)])
+          for (item in N)
+            expect_equal(nnew, nchar(argoSubset[[item]]))
 })
 
 test_that("preferAdjusted() works on data", {

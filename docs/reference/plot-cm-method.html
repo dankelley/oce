@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -148,20 +148,20 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for cm</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(
-  <span class='no'>x</span>,
-  <span class='kw'>which</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='fl'>7</span>:<span class='fl'>9</span>),
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"l"</span>,
-  <span class='kw'>drawTimeRange</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDrawTimeRange"</span>),
-  <span class='kw'>drawZeroLine</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>mgp</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceMgp"</span>),
-  <span class='kw'>mar</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='no'>mgp</span>[<span class='fl'>1</span>] + <span class='fl'>1.5</span>, <span class='no'>mgp</span>[<span class='fl'>1</span>] + <span class='fl'>1.5</span>, <span class='fl'>1.5</span>, <span class='fl'>1.5</span>),
-  <span class='kw'>small</span> <span class='kw'>=</span> <span class='fl'>2000</span>,
-  <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='no'>tformat</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>),
-  <span class='no'>...</span>
-)</pre>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  which <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>)</span>,
+  type <span class='op'>=</span> <span class='st'>"l"</span>,
+  drawTimeRange <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDrawTimeRange"</span><span class='op'>)</span>,
+  drawZeroLine <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  mgp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceMgp"</span><span class='op'>)</span>,
+  mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>+</span> <span class='fl'>1.5</span>, <span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>+</span> <span class='fl'>1.5</span>, <span class='fl'>1.5</span>, <span class='fl'>1.5</span><span class='op'>)</span>,
+  small <span class='op'>=</span> <span class='fl'>2000</span>,
+  main <span class='op'>=</span> <span class='st'>""</span>,
+  <span class='va'>tformat</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -178,7 +178,7 @@ values of <code>which</code>.</p></td>
     </tr>
     <tr>
       <th>type</th>
-      <td><p>type of plot, as for <code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code>.</p></td>
+      <td><p>type of plot, as for <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code>.</p></td>
     </tr>
     <tr>
       <th>drawTimeRange</th>
@@ -205,7 +205,7 @@ in order to use more space for the data and less for the axes.</p></td>
       <th>small</th>
       <td><p>an integer indicating the size of data set to be considered
 "small", to be plotted with points or lines using the standard
-<code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code> function.  Data sets with more than <code>small</code> points will
+<code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code> function.  Data sets with more than <code>small</code> points will
 be plotted with <code><a href='https://rdrr.io/r/graphics/smoothScatter.html'>smoothScatter()</a></code> instead.</p></td>
     </tr>
     <tr>
@@ -257,47 +257,52 @@ case, but with an added arrow indicating the mean current.</p></li>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other functions that plot oce data: 
-<code><a href='plot-adp-method.html'>plot,adp-method</a></code>,
-<code><a href='plot-adv-method.html'>plot,adv-method</a></code>,
-<code><a href='plot-amsr-method.html'>plot,amsr-method</a></code>,
-<code><a href='plot-argo-method.html'>plot,argo-method</a></code>,
-<code><a href='plot-bremen-method.html'>plot,bremen-method</a></code>,
-<code><a href='plot-coastline-method.html'>plot,coastline-method</a></code>,
-<code><a href='plot-ctd-method.html'>plot,ctd-method</a></code>,
-<code><a href='plot-gps-method.html'>plot,gps-method</a></code>,
-<code><a href='plot-ladp-method.html'>plot,ladp-method</a></code>,
-<code><a href='plot-landsat-method.html'>plot,landsat-method</a></code>,
-<code><a href='plot-lisst-method.html'>plot,lisst-method</a></code>,
-<code><a href='plot-lobo-method.html'>plot,lobo-method</a></code>,
-<code><a href='plot-met-method.html'>plot,met-method</a></code>,
-<code><a href='plot-odf-method.html'>plot,odf-method</a></code>,
-<code><a href='plot-rsk-method.html'>plot,rsk-method</a></code>,
-<code><a href='plot-satellite-method.html'>plot,satellite-method</a></code>,
-<code><a href='plot-sealevel-method.html'>plot,sealevel-method</a></code>,
-<code><a href='plot-section-method.html'>plot,section-method</a></code>,
-<code><a href='plot-tidem-method.html'>plot,tidem-method</a></code>,
-<code><a href='plot-topo-method.html'>plot,topo-method</a></code>,
-<code><a href='plot-windrose-method.html'>plot,windrose-method</a></code>,
-<code><a href='plot-xbt-method.html'>plot,xbt-method</a></code>,
+<code><a href='download.amsr.html'>download.amsr</a>()</code>,
+<code><a href='plot,adp-method.html'>plot,adp-method</a></code>,
+<code><a href='plot,adv-method.html'>plot,adv-method</a></code>,
+<code><a href='plot,amsr-method.html'>plot,amsr-method</a></code>,
+<code><a href='plot,argo-method.html'>plot,argo-method</a></code>,
+<code><a href='plot,bremen-method.html'>plot,bremen-method</a></code>,
+<code><a href='plot,coastline-method.html'>plot,coastline-method</a></code>,
+<code><a href='plot,ctd-method.html'>plot,ctd-method</a></code>,
+<code><a href='plot,gps-method.html'>plot,gps-method</a></code>,
+<code><a href='plot,ladp-method.html'>plot,ladp-method</a></code>,
+<code><a href='plot,landsat-method.html'>plot,landsat-method</a></code>,
+<code><a href='plot,lisst-method.html'>plot,lisst-method</a></code>,
+<code><a href='plot,lobo-method.html'>plot,lobo-method</a></code>,
+<code><a href='plot,met-method.html'>plot,met-method</a></code>,
+<code><a href='plot,odf-method.html'>plot,odf-method</a></code>,
+<code><a href='plot,rsk-method.html'>plot,rsk-method</a></code>,
+<code><a href='plot,satellite-method.html'>plot,satellite-method</a></code>,
+<code><a href='plot,sealevel-method.html'>plot,sealevel-method</a></code>,
+<code><a href='plot,section-method.html'>plot,section-method</a></code>,
+<code><a href='plot,tidem-method.html'>plot,tidem-method</a></code>,
+<code><a href='plot,topo-method.html'>plot,topo-method</a></code>,
+<code><a href='plot,windrose-method.html'>plot,windrose-method</a></code>,
+<code><a href='plot,xbt-method.html'>plot,xbt-method</a></code>,
 <code><a href='plotProfile.html'>plotProfile</a>()</code>,
 <code><a href='plotScan.html'>plotScan</a>()</code>,
 <code><a href='plotTS.html'>plotTS</a>()</code>,
 <code><a href='tidem-class.html'>tidem-class</a></code></p>
 <p>Other things related to cm data: 
-<code><a href='sub-sub-cm-method.html'>[[,cm-method</a></code>,
+<code><a href='[[,cm-method.html'>[[,cm-method</a></code>,
 <code>[[&lt;-,cm-method</code>,
 <code><a href='as.cm.html'>as.cm</a>()</code>,
 <code><a href='cm-class.html'>cm-class</a></code>,
 <code><a href='cm.html'>cm</a></code>,
 <code><a href='read.cm.html'>read.cm</a>()</code>,
 <code><a href='rotateAboutZ.html'>rotateAboutZ</a>()</code>,
-<code><a href='subset-cm-method.html'>subset,cm-method</a></code>,
-<code><a href='summary-cm-method.html'>summary,cm-method</a></code></p></div>
+<code><a href='subset,cm-method.html'>subset,cm-method</a></code>,
+<code><a href='summary,cm-method.html'>summary,cm-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>  <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-  <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cm</span>)
-  <span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>cm</span>)</div><div class='output co'>#&gt; Cm summary
+    <pre class="examples"><div class='input'>  <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+  <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>cm</span><span class='op'>)</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>cm</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Cm summary
 #&gt; ----------
 #&gt; 
 #&gt; * File source:        "/data/archive/sleiwex/2008/moorings/m11/cm/interocean_0811786/manufacturer/cm_interocean_0811786.s4a.tab"
@@ -354,7 +359,8 @@ case, but with an added arrow indicating the mean current.</p></li>
 #&gt; 
 #&gt;     - 2016-08-01 11:20:36 UTC: `create 'cm' object`
 #&gt;     - 2016-08-01 11:20:36 UTC: `read.oce(file = "/data/archive/sleiwex/2008/moorings/m11/cm/interocean_0811786/manufacturer/cm_interocean_0811786.s4a.tab",     from = 840, to = 840 + 24 * 60)`
-#&gt;     - 2016-08-01 11:20:36 UTC: `subset.cm(x, subset=time &lt; as.POSIXct("2008-06-27 00:00:00", tz = "UTC"))`</div><div class='input'>  <span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>cm</span>)</div><div class='img'><img src='plot-cm-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
+#&gt;     - 2016-08-01 11:20:36 UTC: `subset.cm(x, subset=time &lt; as.POSIXct("2008-06-27 00:00:00", tz = "UTC"))`</div><div class='input'>  <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>cm</span><span class='op'>)</span>
+</div><div class='img'><img src='plot-cm-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -371,7 +377,7 @@ case, but with an added arrow indicating the mean current.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

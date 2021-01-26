@@ -46,7 +46,7 @@ supplied to \code{\link[=pretty]{pretty()}}, in determining clean break points.}
 
 \item{col}{Either a vector of colors corresponding to the breaks, of length
 1 plus the number of breaks, or a function specifying colors,
-e.g. \code{\link[=oce.colorsJet]{oce.colorsJet()}} for a rainbow.}
+e.g. \code{\link[=oce.colorsViridis]{oce.colorsViridis()}} for the Viridis scheme.}
 
 \item{colormap}{optional colormap, as created by \code{\link[=colormap]{colormap()}}.
 If a \code{colormap} is provided, then its properties takes precedence
@@ -111,67 +111,26 @@ If a \code{\link[=png]{png()}} device is to be used, it is advised to supply
 arguments \code{type="cairo"} and \code{antialias="none"}; see reference 1.
 }
 \examples{
-\donttest{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 data(topoWorld)
 
-## 1. topography
-par(mfrow=c(2, 1), mar=c(2, 2, 1, 1))
-lonlim <- c(-70, -50)
-latlim <- c(40, 50)
-topo <- decimate(topoWorld, by=2) # coarse to illustrate filled contours
-topo <- subset(topo, latlim[1] < latitude & latitude < latlim[2])
-topo <- subset(topo, lonlim[1] < longitude & longitude < lonlim[2])
-mapPlot(coastlineWorld, type='l',
-        longitudelim=lonlim, latitudelim=latlim,
-        projection="+proj=lcc +lat_1=40 +lat_2=50 +lon_0=-60")
-breaks <- seq(-5000, 1000, 500)
-mapImage(topo, col=oce.colorsGebco, breaks=breaks)
-mapLines(coastlineWorld)
-box()
-mapPlot(coastlineWorld, type='l',
-        longitudelim=lonlim, latitudelim=latlim,
-        projection="+proj=lcc +lat_1=40 +lat_2=50 +lon_0=-60")
-mapImage(topo, filledContour=TRUE, col=oce.colorsGebco, breaks=breaks)
-box()
-mapLines(coastlineWorld)
-
-## 2. Northern polar region, with color-coded bathymetry
-par(mfrow=c(1,1))
-drawPalette(c(-5000, 0), zlim=c(-5000, 0), col=oce.colorsJet)
-mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-        longitudelim=c(-180,180), latitudelim=c(60,120))
-mapImage(topoWorld, zlim=c(-5000, 0), col=oce.colorsJet)
-mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
-
-## 3. Levitus SST
-par(mfrow=c(1,1))
-if (requireNamespace("ocedata", quietly=TRUE)) {
-    data(levitus, package='ocedata')
-    lon <- levitus$longitude
-    lat <- levitus$latitude
-    SST <- levitus$SST
-    par(mar=rep(1, 4))
-    Tlim <- c(-2, 30)
-    drawPalette(Tlim, col=oce.colorsJet)
-    mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
-    mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
-    mapPolygon(coastlineWorld, col='gray')
-}
-
-## 4. Topography without drawing a coastline first
-data(topoWorld)
-cm <- colormap(topoWorld[['z']], name='gmt_relief')
+## Northern polar region, with color-coded bathymetry
+par(mfrow=c(1,1), mar=c(2,2,1,1))
+cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
 drawPalette(colormap=cm)
-mapPlot(c(-180,180), c(-90,90), type="n") # defaults to moll projection
+mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
+        longitudelim=c(-180,180), latitudelim=c(70,110))
 mapImage(topoWorld, colormap=cm)
+mapGrid(15, 15, polarCircle=1, col=gray(0.2))
+mapPolygon(coastlineWorld[['longitude']], coastlineWorld[['latitude']], col="tan")
 }
 
 }
 \references{
 \enumerate{
-\item \url{http://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
+\item \url{https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
 }
 }
 \seealso{

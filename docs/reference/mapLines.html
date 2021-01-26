@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,7 +147,7 @@
     <p>Plot lines on an existing map, by analogy to <code><a href='https://rdrr.io/r/graphics/lines.html'>lines()</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>mapLines</span>(<span class='no'>longitude</span>, <span class='no'>latitude</span>, <span class='kw'>greatCircle</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>mapLines</span><span class='op'>(</span><span class='va'>longitude</span>, <span class='va'>latitude</span>, greatCircle <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -201,16 +201,22 @@ segments as great circles.  (Ignored.)</p></td>
 <code><a href='shiftLongitude.html'>shiftLongitude</a>()</code>,
 <code><a href='usrLonLat.html'>usrLonLat</a>()</code>,
 <code><a href='utm2lonlat.html'>utm2lonlat</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>coastlineWorld</span>)
-<span class='fu'><a href='mapPlot.html'>mapPlot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'l'</span>,
-        <span class='kw'>longitudelim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>80</span>, <span class='fl'>10</span>), <span class='kw'>latitudelim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>120</span>),
-        <span class='kw'>projection</span><span class='kw'>=</span><span class='st'>"+proj=ortho +lon_0=-40"</span>)</div><div class='input'><span class='no'>lon</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>63.5744</span>, <span class='fl'>0.1062</span>)             <span class='co'># Halifax CA to London UK</span>
-<span class='no'>lat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>44.6479</span>, <span class='fl'>51.5171</span>)
-<span class='fu'><a href='mapPoints.html'>mapPoints</a></span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'red'</span>)</div><div class='input'><span class='fu'>mapLines</span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'red'</span>)</div><div class='img'><img src='mapLines-1.png' alt='' width='700' height='433' /></div><div class='input'># }
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>)</span>
+<span class='fu'><a href='mapPlot.html'>mapPlot</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, type<span class='op'>=</span><span class='st'>'l'</span>,
+        longitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>80</span>, <span class='fl'>10</span><span class='op'>)</span>, latitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>120</span><span class='op'>)</span>,
+        projection<span class='op'>=</span><span class='st'>"+proj=ortho +lon_0=-40"</span><span class='op'>)</span>
+</div><div class='input'><span class='va'>lon</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>63.5744</span>, <span class='fl'>0.1062</span><span class='op'>)</span>             <span class='co'># Halifax CA to London UK</span>
+<span class='va'>lat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>44.6479</span>, <span class='fl'>51.5171</span><span class='op'>)</span>
+<span class='fu'><a href='mapPoints.html'>mapPoints</a></span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, col<span class='op'>=</span><span class='st'>'red'</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>mapLines</span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, col<span class='op'>=</span><span class='st'>'red'</span><span class='op'>)</span>
+</div><div class='img'><img src='mapLines-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
 
 </div></pre>
   </div>
@@ -228,7 +234,7 @@ segments as great circles.  (Ignored.)</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

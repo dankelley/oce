@@ -22,7 +22,7 @@ swTSrho(
 \code{"gsw"} (ignored at present).}
 }
 \value{
-\emph{In-situ} temperature (\eqn{^\circ C}{degC}) in the ITS-90
+\emph{In-situ} temperature in \eqn{^\circ}{deg}C on the ITS-90
 scale.
 }
 \description{
@@ -31,7 +31,7 @@ Compute \emph{in-situ} temperature, given salinity, density, and pressure.
 \details{
 Finds the temperature that yields the given density, with the given salinity
 and pressure.  The method is a bisection search with temperature tolerance
-0.001 \eqn{^\circ C}{degC}.
+0.001 \eqn{^\circ}{deg}C.
 }
 \examples{
 swTSrho(35, 23, 0, eos="unesco") # 26.11301

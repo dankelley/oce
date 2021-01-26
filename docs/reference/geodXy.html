@@ -82,7 +82,7 @@ along geodesic curves.  See &amp;#8220;Caution&amp;#8221;." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -123,7 +123,7 @@ along geodesic curves.  See &amp;#8220;Caution&amp;#8221;." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -151,13 +151,13 @@ mooring array or a ship transects, calculates (x,y) from distance calculations
 along geodesic curves.  See &#8220;Caution&#8221;.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>geodXy</span>(
-  <span class='no'>longitude</span>,
-  <span class='no'>latitude</span>,
-  <span class='no'>longitudeRef</span>,
-  <span class='no'>latitudeRef</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>geodXy</span><span class='op'>(</span>
+  <span class='va'>longitude</span>,
+  <span class='va'>latitude</span>,
+  <span class='va'>longitudeRef</span>,
+  <span class='va'>latitudeRef</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -226,26 +226,34 @@ sense if the mean resultant x and y were zero.</p></li>
 <code><a href='geodDist.html'>geodDist</a>()</code>,
 <code><a href='geodGc.html'>geodGc</a>()</code>,
 <code><a href='geodXyInverse.html'>geodXyInverse</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
 <span class='co'># Develop a transect-based axis system for final data(section) stations</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>section</span>)
-<span class='no'>lon</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span>(<span class='no'>section</span><span class='kw'>[[</span><span class='st'>"longitude"</span>, <span class='st'>"byStation"</span>]], <span class='fl'>26</span>)
-<span class='no'>lat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span>(<span class='no'>section</span><span class='kw'>[[</span><span class='st'>"latitude"</span>, <span class='st'>"byStation"</span>]], <span class='fl'>26</span>)
-<span class='no'>lonR</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span>(<span class='no'>lon</span>, <span class='fl'>1</span>)
-<span class='no'>latR</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span>(<span class='no'>lat</span>, <span class='fl'>1</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>coastlineWorld</span>)
-<span class='fu'><a href='mapPlot.html'>mapPlot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>proj</span><span class='kw'>=</span><span class='st'>"+proj=merc"</span>,
-        <span class='kw'>longitudelim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>75</span>,-<span class='fl'>65</span>), <span class='kw'>latitudelim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>35</span>,<span class='fl'>43</span>), <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"gray"</span>)</div><div class='input'><span class='fu'><a href='mapPoints.html'>mapPoints</a></span>(<span class='no'>lon</span>, <span class='no'>lat</span>)</div><div class='input'><span class='no'>XY</span> <span class='kw'>&lt;-</span> <span class='fu'>geodXy</span>(<span class='no'>lon</span>,<span class='no'>lat</span>,<span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>lon</span>), <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>lat</span>))
-<span class='no'>angle</span> <span class='kw'>&lt;-</span> <span class='fl'>180</span>/<span class='no'>pi</span>*<span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>atan</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span>(<span class='no'>y</span>~<span class='no'>x</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>XY</span>))[<span class='fl'>2</span>])
-<span class='fu'><a href='mapCoordinateSystem.html'>mapCoordinateSystem</a></span>(<span class='no'>lonR</span>, <span class='no'>latR</span>, <span class='fl'>500</span>, <span class='no'>angle</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='fl'>2</span>)</div><div class='input'><span class='co'># Compare UTM calculation</span>
-<span class='no'>UTM</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='lonlat2utm.html'>lonlat2utm</a></span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='kw'>zone</span><span class='kw'>=</span><span class='fl'>18</span>) <span class='co'># we need to set the zone for this task!</span>
-<span class='no'>angleUTM</span> <span class='kw'>&lt;-</span> <span class='fl'>180</span>/<span class='no'>pi</span>*<span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>atan</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span>(<span class='no'>northing</span>~<span class='no'>easting</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>UTM</span>))[<span class='fl'>2</span>])
-<span class='fu'><a href='mapCoordinateSystem.html'>mapCoordinateSystem</a></span>(<span class='no'>lonR</span>, <span class='no'>latR</span>, <span class='fl'>500</span>, <span class='no'>angleUTM</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='fl'>3</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span>(<span class='st'>"topright"</span>, <span class='kw'>lwd</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='fl'>2</span>:<span class='fl'>3</span>, <span class='kw'>bg</span><span class='kw'>=</span><span class='st'>"white"</span>, <span class='kw'>title</span><span class='kw'>=</span><span class='st'>"Axis Rotation Angle"</span>,
-       <span class='kw'>legend</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sprintf.html'>sprintf</a></span>(<span class='st'>"geod: %.1f deg"</span>, <span class='no'>angle</span>),
-                <span class='fu'><a href='https://rdrr.io/r/base/sprintf.html'>sprintf</a></span>(<span class='st'>"utm:  %.1f deg"</span>, <span class='no'>angleUTM</span>)))</div><div class='img'><img src='geodXy-1.png' alt='' width='700' height='433' /></div><div class='input'># }
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>)</span>
+<span class='va'>lon</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>[[</span><span class='st'>"longitude"</span>, <span class='st'>"byStation"</span><span class='op'>]</span><span class='op'>]</span>, <span class='fl'>26</span><span class='op'>)</span>
+<span class='va'>lat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>[[</span><span class='st'>"latitude"</span>, <span class='st'>"byStation"</span><span class='op'>]</span><span class='op'>]</span>, <span class='fl'>26</span><span class='op'>)</span>
+<span class='va'>lonR</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>lon</span>, <span class='fl'>1</span><span class='op'>)</span>
+<span class='va'>latR</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>lat</span>, <span class='fl'>1</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>)</span>
+<span class='fu'><a href='mapPlot.html'>mapPlot</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, projection<span class='op'>=</span><span class='st'>"+proj=merc"</span>,
+        longitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>75</span>,<span class='op'>-</span><span class='fl'>65</span><span class='op'>)</span>, latitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>35</span>,<span class='fl'>43</span><span class='op'>)</span>, col<span class='op'>=</span><span class='st'>"gray"</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='mapPoints.html'>mapPoints</a></span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span><span class='op'>)</span>
+</div><div class='input'><span class='va'>XY</span> <span class='op'>&lt;-</span> <span class='fu'>geodXy</span><span class='op'>(</span><span class='va'>lon</span>,<span class='va'>lat</span>,<span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>lon</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>lat</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>angle</span> <span class='op'>&lt;-</span> <span class='fl'>180</span><span class='op'>/</span><span class='va'>pi</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>atan</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>~</span><span class='va'>x</span>, data<span class='op'>=</span><span class='va'>XY</span><span class='op'>)</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span><span class='op'>)</span>
+<span class='fu'><a href='mapCoordinateSystem.html'>mapCoordinateSystem</a></span><span class='op'>(</span><span class='va'>lonR</span>, <span class='va'>latR</span>, <span class='fl'>500</span>, <span class='va'>angle</span>, col<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>
+</div><div class='input'><span class='co'># Compare UTM calculation</span>
+<span class='va'>UTM</span> <span class='op'>&lt;-</span> <span class='fu'><a href='lonlat2utm.html'>lonlat2utm</a></span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, zone<span class='op'>=</span><span class='fl'>18</span><span class='op'>)</span> <span class='co'># we need to set the zone for this task!</span>
+<span class='va'>angleUTM</span> <span class='op'>&lt;-</span> <span class='fl'>180</span><span class='op'>/</span><span class='va'>pi</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>atan</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>northing</span><span class='op'>~</span><span class='va'>easting</span>, data<span class='op'>=</span><span class='va'>UTM</span><span class='op'>)</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span><span class='op'>)</span>
+<span class='fu'><a href='mapCoordinateSystem.html'>mapCoordinateSystem</a></span><span class='op'>(</span><span class='va'>lonR</span>, <span class='va'>latR</span>, <span class='fl'>500</span>, <span class='va'>angleUTM</span>, col<span class='op'>=</span><span class='fl'>3</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span><span class='op'>(</span><span class='st'>"topright"</span>, lwd<span class='op'>=</span><span class='fl'>1</span>, col<span class='op'>=</span><span class='fl'>2</span><span class='op'>:</span><span class='fl'>3</span>, bg<span class='op'>=</span><span class='st'>"white"</span>, title<span class='op'>=</span><span class='st'>"Axis Rotation Angle"</span>,
+       legend<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/sprintf.html'>sprintf</a></span><span class='op'>(</span><span class='st'>"geod: %.1f deg"</span>, <span class='va'>angle</span><span class='op'>)</span>,
+                <span class='fu'><a href='https://rdrr.io/r/base/sprintf.html'>sprintf</a></span><span class='op'>(</span><span class='st'>"utm:  %.1f deg"</span>, <span class='va'>angleUTM</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='geodXy-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -262,7 +270,7 @@ sense if the mean resultant x and y were zero.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

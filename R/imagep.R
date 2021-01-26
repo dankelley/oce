@@ -76,7 +76,7 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
              ", width=", width, ", pos=", pos,
              ", zlab=", if (missing(zlab)) "(missing)" else "(given)",
              ", maidiff=c(", paste(maidiff, collapse=","), ")",
-             ", debug=", debug, ") {\n", sep="", unindent=1)
+             ", debug=", debug, ") {\n", sep="", style="bold", unindent=1)
     haveZlab <- !missing(zlab) && !is.null(zlab) && sum(nchar(zlab)) > 0
 
     ## 2014-04-02 {
@@ -99,8 +99,8 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
     ## } 2014-04-02
 
     lineHeight <- par("cin")[2]  # character height in inches
-    oceDebug(debug, "lineHeight: ", lineHeight, " from cin\n")
-    oceDebug(debug, "par('csi'):: ", par('csi'), "\n")
+    oceDebug(debug, "lineHeight:", lineHeight, "from cin\n")
+    oceDebug(debug, "par('csi'):", par('csi'), "\n")
     tickSpace <- abs(par("tcl")) * lineHeight # inches (not sure on this)
     textSpace <- 1.25 * (lineHeight + if (haveZlab) lineHeight else 0)
     figureWidth <- par("fin")[1]
@@ -157,7 +157,7 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
     pc$mai1f <- pc$mai1f + maidiff
     oceDebug(debug, "pc$mail1: ", paste(round(pc$mai1, 2), sep=" "), "\n")
     oceDebug(debug, "pc$mailf: ", paste(round(pc$mai1f, 2), sep=" "), "\n")
-    oceDebug(debug, "} # paletteCalculations\n", unindent=1)
+    oceDebug(debug, "} # paletteCalculations\n", style="bold", sep="", unindent=1)
     pc
 }
 
@@ -183,14 +183,17 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #'
 #' @param zlab label for the palette scale.
 #'
-#' @param breaks the z values for breaks in the color scheme.
+#' @param breaks optional numeric vector of the z values for breaks in the color scheme.
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
 #'
-#' @param col either a vector of colors corresponding to the breaks, of length
-#' 1 less than the number of breaks, or a function specifying colors, e.g.
-#' [oce.colorsJet()] for a rainbow.
+#' @param col optional argument, either a vector of colors corresponding to the breaks, of length
+#' 1 less than the number of breaks, or a function specifying colors.
+#' If `col` is not provided, and if `colormap` is also not provided, then `col`
+#' defaults to [oceColorsViridis()].
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
 #'
-#' @param colormap a color map as created by [colormap()].  If
-#' provided, this takes precedence over `breaks` and `col`.
+#' @param colormap an optional color map as created by [colormap()].
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
 #'
 #' @param mai margins for palette, as defined in the usual way; see
 #' [par()].  If not given, reasonable values are inferred from the
@@ -271,9 +274,9 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #' par(mfrow=c(3, 1), mar=c(3, 3, 1, 1))
 #' omar <- par('mar')                 # save initial margin
 #'
-#' ## 1a. top panel: simple case
-#' drawPalette(zlim=c(0, 1), col=oce.colorsJet(10))
-#' plot(1:10, 1:10, col=oce.colorsJet(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
+#' ## 1a. top panel: simple case with Viridis scheme
+#' drawPalette(zlim=c(0, 1), col=oce.colorsViridis(10))
+#' plot(1:10, 1:10, col=oce.colorsViridis(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
 #' par(mar=omar)                      # reset margin
 #'
 #' ## 1b. middle panel: colormap
@@ -286,16 +289,16 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #'
 #' ## 1c. bottom panel: space for palette (to line up graphs)
 #' drawPalette(plot=FALSE)
-#' plot(1:10, 1:10, col=oce.colorsJet(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
+#' plot(1:10, 1:10, col=oce.colorsViridis(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
 #' par(mar=omar)                      # reset margin
 #'
 #' # 2. Use layout to mimic the action of imagep(), with the width
 #' # of the palette region being 14 percent of figure width.
 #' d <- 0.14
 #' layout(matrix(1:2,nrow=1), widths=c(1-d,d))
-#' image(volcano, col=oce.colorsJet(100), zlim=c(90, 200))
+#' image(volcano, col=oce.colorsViridis(100), zlim=c(90, 200))
 #' contour(volcano, add=TRUE)
-#' drawPalette(c(90, 200), fullpage=TRUE, col=oce.colorsJet)
+#' drawPalette(c(90, 200), fullpage=TRUE, col=oce.colorsViridis)
 drawPalette <- function(zlim, zlab="",
                         breaks, col, colormap,
                         mai, cex=par("cex"),
@@ -306,6 +309,7 @@ drawPalette <- function(zlim, zlab="",
                         axisPalette, tformat,
                         debug=getOption("oceDebug"), ...)
 {
+    debug <- max(0, min(debug, 4))
     oceDebug(debug, "drawPalette(",
              argShow(zlab),
              argShow(zlim),
@@ -319,8 +323,10 @@ drawPalette <- function(zlim, zlab="",
         stop("'zlim' must be of length 2")
     if (zlimGiven && zlim[2] < zlim[1])
         stop("'zlim' must be ordered")
+    colGiven <- !missing(col)
+    oceDebug(debug, "colGiven=", colGiven, "\n", sep="")
     colormapGiven <- !missing(colormap)
-    ## oceDebug(debug, "colormapGiven=", colormapGiven, "\n", sep="")
+    oceDebug(debug, "colormapGiven=", colormapGiven, "\n", sep="")
     ##message("missing(col) ", missing(col))
     if (!zlimGiven && !colormapGiven)
         plot <- FALSE
@@ -334,6 +340,7 @@ drawPalette <- function(zlim, zlab="",
     maiGiven <- !missing(mai)
     haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     if (colormapGiven && !zlimGiven) {
+        oceDebug(debug, "inferring zlim from colormap\n")
         zlim <- colormap$zlim
         zlimGiven <- TRUE
         if (zlim[2] <= zlim[1])
@@ -352,6 +359,7 @@ drawPalette <- function(zlim, zlab="",
     pc <- paletteCalculations(maidiff=mai, pos=pos, zlab=zlab, debug=debug-1)
     contours <- if (breaksGiven) breaks else NULL
     if (colormapGiven) {
+        oceDebug(debug, "colormap was given, so getting breaks and col from it\n")
         breaks <- colormap$breaks
         col <- colormap$col
         ## Trick the code below, to avoid auto-creating breaks
@@ -363,32 +371,44 @@ drawPalette <- function(zlim, zlab="",
         breaksOrig <- breaks
         contours <- breaks
     } else {
+        oceDebug(debug, "colormap was not given\n")
         if (zlimGiven && !is.null(zlim)) {
             if (breaksGiven) {
                 breaksOrig <- breaks
                 contours <- breaks
+                oceDebug(debug, "user gave", length(breaks),"breaks\n")
             } else {
                 zrange <- zlim
                 if (missing(col)) {
-                    breaks <- pretty(zlim)
+                    ## Change: this used to be pretty(zlim) but when would a person
+                    ## ever want an image with just a few colours?
+                    breaks <- seq(zlim[1], zlim[2], length.out=PLEN) # smooth image color scale
                     contours <- breaks
+                    oceDebug(debug, "breaks not given, col not given: set", length(breaks),"breaks\n")
                 } else {
                     if (is.function(col)) {
                         breaks <- seq(zlim[1], zlim[2], length.out=PLEN) # smooth image color scale
                         contours <- pretty(zlim)
+                        oceDebug(debug, "breaks not given; col is a function; set", length(breaks),"breaks\n")
                     } else {
                         breaks <- seq(zlim[1], zlim[2], length.out=1+length(col))
                         contours <- seq(zlim[1], zlim[2], length.out=1+length(col))
+                        oceDebug(debug, "breaks not given; col is a vector; set", length(breaks),"breaks\n")
                     }
                 }
                 breaksOrig <- breaks
                 breaks[1] <- zrange[1]
                 breaks[length(breaks)] <- zrange[2]
             }
-            if (missing(col))
-                col <- oce.colorsPalette(n=length(breaks)-1)
-            if (is.function(col))
+            if (missing(col)) {
+                oceDebug(debug, "setting default 'col' to oce.colorsViridis(near line 394)\n")
+                ##col <- oce.colorsPalette(n=length(breaks)-1)
+                col <- oce.colorsViridis(n=length(breaks)-1)
+            }
+            if (is.function(col)) {
+                oceDebug(debug, "col is a function, so calling it and making it a vector\n")
                 col <- col(n=length(breaks)-1)
+            }
         }
     }
     oceDebug(debug, "plot:", plot, "; fullpage:", fullpage, "\n")
@@ -400,6 +420,7 @@ drawPalette <- function(zlim, zlab="",
         oceDebug(debug, "A. par(mai=c(", paste(round(par('mai'), 1), collapse=","), "))\n")
         oceDebug(debug, "A. par(mar=c(", paste(round(par('mar'), 1), collapse=","), "))\n")
         if (!breaksGiven) {
+            oceDebug(debug, "'breaks' was not given\n")
             palette <- seq(zlim[1], zlim[2], length.out=PLEN)
             if (pos == 1 || pos == 3) {
                 image(x=palette, y=1, z=matrix(palette, ncol=1), axes=FALSE, xlab="", ylab="",
@@ -418,8 +439,9 @@ drawPalette <- function(zlim, zlab="",
                 stop("pos must be 1, 2, 3 or 4") # cannot be reached
             }
         } else {
+            oceDebug(debug, "'breaks' was given\n")
             palette <- seq(zlim[1], zlim[2], length.out=PLEN)
-            oceDebug(debug, "drawing palette image, with ", vectorShow(par('mai')))
+            oceDebug(debug, "drawing palette image, with", vectorShow(par('mai')))
             oceDebug(debug, "palette image width =",
                      par('fin')[1] - par('mai')[2] - par('mai')[4], "in\n")
             oceDebug(debug, "palette image height =",
@@ -427,9 +449,11 @@ drawPalette <- function(zlim, zlab="",
             oceDebug(debug, vectorShow(par('pin')))
             oceDebug(debug, vectorShow(par('fin')))
             if (pos == 1 || pos == 3) {
+                oceDebug(debug, "pos=", pos, " (for bottom or top side)\n")
                 image(x=palette, y=1, z=matrix(palette, ncol=1), axes=FALSE, xlab="", ylab="",
                       breaks=breaksOrig, col=col, zlim=zlim)
             } else if (pos == 2 || pos == 4) {
+                oceDebug(debug, "pos=", pos, " (for left or right side)\n")
                 ##message("in drawPalette(), breaks and col follow:");
                 ##str(breaksOrig)
                 ##str(col)
@@ -516,7 +540,7 @@ drawPalette <- function(zlim, zlab="",
         ## FIXME: just guessing on best 'line', used below
         if (!missing(axisPalette))
             axis <- axisPalette
-        oceDebug(debug, "about to label palette zlab='", zlab, "' with cex=", cex, style="blue")
+        oceDebug(debug, "about to label palette zlab='", zlab, "' with cex=", cex, "\n")
         if (pos == 1) {
             axis(side=1, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex, las=las)
             if (haveZlab) mtext(zlab, side=1, line=getOption("oceMgp")[1], cex=cex)
@@ -544,8 +568,8 @@ drawPalette <- function(zlim, zlab="",
         }
     }
     oceDebug(debug, "just before drawPalette() returns\n")
-    oceDebug(debug, vectorShow(par("mar")), style="blue")
-    oceDebug(debug, vectorShow(par("mai")), style="blue")
+    oceDebug(debug, vectorShow(par("mar")))
+    oceDebug(debug, vectorShow(par("mai")))
     oceDebug(debug, "} # drawPalette()\n", unindent=1, style="bold")
     invisible(NULL)
 }
@@ -660,17 +684,21 @@ drawPalette <- function(zlim, zlab="",
 #'    index.
 #'
 #' @param breaks The z values for breaks in the color scheme.  If this is of
-#'         length 1, the value indicates the desired number of breaks, which is
-#'         supplied to [pretty()], in determining clean break points.
+#' length 1, the value indicates the desired number of breaks, which is
+#' supplied to [pretty()], in determining clean break points.
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
 #'
 #' @param col Either a vector of colors corresponding to the breaks, of length
-#'         1 plus the number of breaks, or a function specifying colors,
-#'         e.g. [oce.colorsJet()] for a rainbow.
+#' 1 plus the number of breaks, or a function specifying colors.
+#' If `col` is not provided, and if `colormap` is also not provided, then `col`
+#' defaults to [oceColorsViridis()].
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
 #'
 #' @param colormap A color map as created by [colormap()].  If
-#'         provided, then `colormap$breaks` and `colormap$col` take
-#'         precedence over the present arguments `breaks` and `col`.
-#'         (All of the other contents of `colormap` are ignored, though.)
+#' provided, then `colormap$breaks` and `colormap$col` take
+#' precedence over the present arguments `breaks` and `col`.
+#' (All of the other contents of `colormap` are ignored, though.)
+#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
 #'
 #' @param labels Optional vector of labels for ticks on palette axis (must
 #'         correspond with `at`).
@@ -886,8 +914,6 @@ imagep <- function(x, y, z,
              argShow(mai.palette),
              argShow(breaks),
              style="bold")
-    if ("adorn" %in% names(list(...)))
-        warning("the 'adorn' argument was removed in November 2017")
     zlabPosition <- match.arg(zlabPosition)
     if (!is.logical(flipy))
         stop("flipy must be TRUE or FALSE")
@@ -1095,16 +1121,24 @@ imagep <- function(x, y, z,
     ## Adjust x and y, to match what image() does; save orig for filled contours
     xorig <- x
     yorig <- y
-    tz <- attr(x[1], "tzone")
     if (length(x) > 1 && length(x) == nrow(z)) {
-        dx <- 0.5 * diff(x)
-        x <- c(x[1L] - dx[1L], x[-length(x)] + dx, x[length(x)] + dx[length(x) - 1])
+        ## Time is handled separately, because as of 2020-08-09, lubridate (version 1.7.9) gave
+        ## a warning on missing timezones, for the diff that is used below.
+        if (inherits(x, "POSIXt")) {
+            tz <- attr(x[1], "tzone")
+            X <- as.numeric(x)
+            dX <- 0.5 * diff(X)
+            X <- c(X[1L] - dX[1L], X[-length(X)] + dX, X[length(X)] + dX[length(X) - 1])
+            x <- numberAsPOSIXct(X, tz=tz)
+        } else {
+            dx <- 0.5 * diff(x)
+            x <- c(x[1L] - dx[1L], x[-length(x)] + dx, x[length(x)] + dx[length(x) - 1])
+        }
     }
     if (length(y) > 1 && length(y) == ncol(z)) {
         dy <- 0.5 * diff(y)
         y <- c(y[1L] - dy[1L], y[-length(y)] + dy, y[length(y)] + dy[length(y) - 1])
     }
-    attr(x, 'tzone') <- tz
     ##omai <- par("mai")
     ocex <- par("cex")
     if (missing(mar))
@@ -1115,8 +1149,7 @@ imagep <- function(x, y, z,
         mai.palette <- rep(0, 4)
         oceDebug(debug, "set mai.palette=", mai.palette, "\n")
     }
-
-    oceDebug(debug, "imagep.R:1125 cex=", cex, ", par('cex')=", par('cex'), style="blue")
+    ##oceDebug(debug, "imagep.R:1125 cex=", cex, ", par('cex')=", par('cex'), style="blue")
     par(mgp=mgp, mar=mar)# , cex=cex)
 
     if (zlimGiven && is.character(zlim)) {
@@ -1182,8 +1215,11 @@ imagep <- function(x, y, z,
                     breaks <- if (missing(zlim)) pretty(z, n=breaks) else pretty(zlim, n=breaks)
                 }
             }
-            if (missing(col))
-                col <- oce.colorsPalette(n=length(breaks)-1)
+            if (missing(col)) {
+                oceDebug(debug, "setting default 'col' to oce.colorsViridis (near line 1199)\n")
+                ##col <- oce.colorsPalette(n=length(breaks)-1)
+                col <- oce.colorsViridis(n=length(breaks)-1)
+            }
         }
         breaks2 <- if (missing(breaks)) NULL else breaks
         col2 <- if (missing(col)) NULL else col

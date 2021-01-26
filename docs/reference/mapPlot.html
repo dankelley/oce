@@ -41,10 +41,12 @@
 
 <meta property="og:title" content="Draw a Map — mapPlot" />
 <meta property="og:description" content="Plot coordinates as a map, using one of the subset of projections
-provided by the rgdal package.  The projection information specified
-with the mapPlot call is stored so that can be retrieved by related
-functions, making it easy to add points, lines, text, images
-or contours to an existing map." />
+provided by the sf package.  The projection information specified
+with the mapPlot() call is stored in a global variable that can be retrieved
+by related functions, making it easy to add points, lines, text, images
+or contours to an existing map.
+See the &amp;#8220;Details&amp;#8221; for a list of
+available projections." />
 
 
 
@@ -84,7 +86,7 @@ or contours to an existing map." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -125,7 +127,7 @@ or contours to an existing map." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -149,40 +151,43 @@ or contours to an existing map." />
 
     <div class="ref-description">
     <p>Plot coordinates as a map, using one of the subset of projections
-provided by the <a href='https://CRAN.R-project.org/package=rgdal'><span class="pkg">rgdal</span></a> package.  The projection information specified
-with the <code>mapPlot</code> call is stored so that can be retrieved by related
-functions, making it easy to add points, lines, text, images
-or contours to an existing map.</p>
+provided by the <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a> package.  The projection information specified
+with the <code>mapPlot()</code> call is stored in a global variable that can be retrieved
+by related functions, making it easy to add points, lines, text, images
+or contours to an existing map.
+See the &#8220;Details&#8221; for a list of
+available projections.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>mapPlot</span>(
-  <span class='no'>longitude</span>,
-  <span class='no'>latitude</span>,
-  <span class='no'>longitudelim</span>,
-  <span class='no'>latitudelim</span>,
-  <span class='kw'>grid</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='no'>bg</span>,
-  <span class='no'>fill</span>,
-  <span class='kw'>border</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>col</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>clip</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"polygon"</span>,
-  <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>axisStyle</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='no'>cex</span>,
-  <span class='kw'>cex.axis</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>mgp</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0</span>),
-  <span class='kw'>drawBox</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>showHemi</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>polarCircle</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>lonlabels</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>latlabels</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>projection</span> <span class='kw'>=</span> <span class='st'>"+proj=moll"</span>,
-  <span class='kw'>tissot</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>trim</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>),
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>mapPlot</span><span class='op'>(</span>
+  <span class='va'>longitude</span>,
+  <span class='va'>latitude</span>,
+  <span class='va'>longitudelim</span>,
+  <span class='va'>latitudelim</span>,
+  grid <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  geographical <span class='op'>=</span> <span class='fl'>0</span>,
+  <span class='va'>bg</span>,
+  <span class='va'>fill</span>,
+  border <span class='op'>=</span> <span class='cn'>NULL</span>,
+  col <span class='op'>=</span> <span class='cn'>NULL</span>,
+  clip <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  type <span class='op'>=</span> <span class='st'>"polygon"</span>,
+  axes <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  axisStyle <span class='op'>=</span> <span class='fl'>1</span>,
+  <span class='va'>cex</span>,
+  cex.axis <span class='op'>=</span> <span class='fl'>1</span>,
+  mgp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0</span><span class='op'>)</span>,
+  drawBox <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  showHemi <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  polarCircle <span class='op'>=</span> <span class='fl'>0</span>,
+  lonlabels <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  latlabels <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  projection <span class='op'>=</span> <span class='st'>"+proj=moll"</span>,
+  tissot <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  trim <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -193,7 +198,7 @@ or contours to an existing map.</p>
 something (an <code>oce</code> object, a list, or a data frame) from which both
 longitude and latitude may be inferred (in which case the <code>latitude</code>
 argument is ignored).  If <code>longitude</code> is missing, both it and
-<code>latitude</code> are taken from <code><a href='coastlineWorld.html'>coastlineWorld()</a></code>.</p></td>
+<code>latitude</code> are taken from the built-in <a href='coastlineWorld.html'>coastlineWorld</a> dataset.</p></td>
     </tr>
     <tr>
       <th>latitude</th>
@@ -228,6 +233,21 @@ turn off the grid in longitude or latitude.  Grids are set up based on
 examination of the scale used in middle 10 percent of the plot area, and for
 most projections this works quite well.  If not, one may set
 <code>grid=FALSE</code> and add a grid later with <code><a href='mapGrid.html'>mapGrid()</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>geographical</th>
+      <td><p>flag indicating the style of axes.  With
+<code>geographical=0</code>, the axes are conventional, with decimal degrees as
+the unit, and negative signs indicating the southern and western
+hemispheres.  With <code>geographical=1</code>, the signs are dropped, with axis
+values being in decreasing order within the southern and western
+hemispheres.  With <code>geographical=2</code>, the signs are dropped and the axes
+are labelled with degrees, minutes and seconds, as appropriate, and
+hemispheres are indicated with letters. With <code>geographical=3</code>, things
+are the same as for <code>geographical=2</code>, but the hemisphere indication
+is omitted. Finally, with <code>geographical=4</code>, unsigned numbers are used,
+followed by letters <code>N</code> in the northern hemisphere, <code>S</code> in the southern,
+<code>E</code> in the eastern, and <code>W</code> in the western.</p></td>
     </tr>
     <tr>
       <th>bg</th>
@@ -278,10 +298,11 @@ and <code>latlabels</code>, which offer more granular control of labelling.</p><
       <th>axisStyle</th>
       <td><p>an integer specifying the style of labels for the numbers
 on axes.  The choices are:
-0 for signed numbers without labels;
-1 (the default) for unsigned numbers followed by letters that indicate the hemisphere;
-2 for signed numbers with a degree symbol to the right; and
-3 for unsigned numbers with a degree symbol to the right.</p></td>
+1 for signed numbers without additional labels;
+2 (the default) for unsigned numbers followed by letters indicating the hemisphere;
+3 for signed numbers followed by a degree sign;
+4 for unsigned numbers followed by a degree sign; and
+5 for signed numbers followed by a degree sign and letters indicating the hemisphere.</p></td>
     </tr>
     <tr>
       <th>cex</th>
@@ -315,17 +336,14 @@ extending from the poles, within which zones are not drawn.</p></td>
     <tr>
       <th>lonlabels</th>
       <td><p>An optional logical value or numeric vector that controls
-the labelling of longitude values using <code><a href='mapAxis.html'>mapAxis()</a></code>. There are
-four possibilities for the value of <code>lonlabels</code>:
+the labelling along the horizontal axis. There are four possibilities:
 (1) If <code>lonlabels</code> is <code>TRUE</code> (the default), then reasonable values are inferred
-and axes are drawn accordingly with both ticks and longitudes
-alongside those ticks;
-(2) if <code>lonlabels</code> is <code>FALSE</code>, then ticks are drawn by but not numbers;
-(3) if <code>lonlabels</code> is <code>NULL</code>, then no axis ticks or numbers are are drawn; and
+and axes are drawn with ticks and labels alongside those ticks;
+(2) if <code>lonlabels</code> is <code>FALSE</code>, then ticks are drawn, but no labels;
+(3) if <code>lonlabels</code> is <code>NULL</code>, then no axis ticks or labels are drawn; and
 (4) if <code>lonlabels</code> is  a vector of finite numerical values, then tick marks
 are placed  at those longitudes, and labels are put alongside them.
-In cases 1 and 4, overdrawing of numbers is avoided,
-so some ticks may not have numbers alongside them.
+Note that R tries to avoid overwriting labels on axes, so the instructions
 See also <code>latlabels</code>, and note that setting <code>axes=FALSE</code>
 ensures that no longitude or latitude axes will be drawn regardless
 of the values of <code>lonlabels</code> and <code>latlabels</code>.</p></td>
@@ -339,7 +357,7 @@ plot axis.</p></td>
       <th>projection</th>
       <td><p>optional indication of projection, in one of two
 forms. First, it may be a character string in the "CRS" format that is
-used by the <a href='https://CRAN.R-project.org/package=rgdal'><span class="pkg">rgdal</span></a> package (and in much of modern computer-based
+used by the <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a> package (and in much of modern computer-based
 cartography). For example, <code>projection="+proj=merc"</code> specifies a
 Mercator projection. The second format is the output from
 <code><a href='https://rdrr.io/pkg/sp/man/CRS-class.html'>sp::CRS()</a></code> in the <a href='https://CRAN.R-project.org/package=sp'><span class="pkg">sp</span></a> package, which is an object
@@ -376,53 +394,33 @@ reproduce a scale exactly between two plots.</p></td>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Creates a map using the indicated projection.  As noted in the
-information on the <code>projection</code> argument, projections are specified in
-the notation used by <code>project()</code> in the <a href='https://CRAN.R-project.org/package=rgdal'><span class="pkg">rgdal</span></a> package; see
-&#8220;Available Projections&#8221; for a list of possibilities.</p>
-<p>Further details on map projections are provided by references 1 and 11, an exhaustive
-treatment that includes many illustrations, an overview of the history of the
-topic, and some notes on the strengths and weaknesses of the various
-formulations.  See especially pages 2 through 7, which define terms and
-provide recommendations.  Reference 2 is also useful, especially regarding
-datum shifts; references 3 and 4 are less detailed and perhaps better for novices.
-See reference 8 for a gallery of projections.</p>
+    <p>Map projections are provided by the
+interface that the <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a> package provides to the PROJ
+system command (supplied with R).  However, it is important to note that
+not all the <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a> projections are
+available. The <code>oce</code> choices are tabulated
+below, e.g. <code>projection="+proj=aea"</code> selects the Albers equal area
+projection.</p>
+<p>Further details of the vast array of map projections provided by PROJ
+are given in reference 4.  This system has been in rapid development
+since about 2018, and reference 5 provides a helpful overview of the changes
+and the reasons why they were necessary.  Practical examples of map projections in
+<a href='https://CRAN.R-project.org/package=oce'><span class="pkg">oce</span></a> are provided in reference 6, along with some notes on problems.
+A fascinating treatment of the history of map projections is provided
+in reference 7.  To get an idea of how projections are being created
+nowadays, see reference 8, about the <code>eqearth</code> projection that was added
+to <a href='https://CRAN.R-project.org/package=oce'><span class="pkg">oce</span></a> in August 2020.</p>
     <h2 class="hasAnchor" id="available-projections"><a class="anchor" href="#available-projections"></a>Available Projections</h2>
 
     
 
-<p>Map projections are provided by the
-<a href='https://CRAN.R-project.org/package=rgdal'><span class="pkg">rgdal</span></a> package, but not all projections in that package are
-available. The available list is given in the table
-below. The cartographic community has set up a naming scheme in a coded
-scheme, e.g. <code>projection="+proj=aea"</code> selects the Albers equal area
-projection.</p>
-<p>The allowed projections include those PROJ.4 projections provided by
-<a href='https://CRAN.R-project.org/package=rgdal'><span class="pkg">rgdal</span></a> that have inverses, minus a few that cause problems:
-<code>alsk</code> overdraws <code>coastlineWorld</code>, and is a niche projection for Alaska;
-<code>calcofi</code> is not a real projection, but rather a coordinate system;
-<code>gs48</code> overdraws <code>coastlineWorld</code>, and is a niche projection for the USA;
-<code>gs50</code> overdraws <code>coastlineWorld</code>, and is a niche projection for the USA;
-<code>gstmerc</code> overdraws <code>coastlineWorld</code>;
-<code>isea</code> causes segmentation faults on OSX systems;
-<code>krovak</code> overdraws <code>coastlineWorld</code>, and is a niche projection for the Czech Republic;
-<code>labrd</code> returns <code>NaN</code> for most of the world, and is a niche projection for Madagascar;
-<code>lee_os</code> overdraws <code>coastlineWorld</code>;
-and
-<code>nzmg</code> overdraws <code>coastlineWorld</code>.</p>
-<p>The information in the table is reformatted from the output of the unix
-command <code>proj -lP</code>, where <code>proj</code> is provided by version 4.9.0 of
-the PROJ.4 system. Most of the arguments listed have default values. In
-addition, most projections can handle arguments <code>lon_0</code> and
-<code>lat_0</code>, for shifting the reference point, although in some cases
-shifting the longitude can yield poor filling of coastlines.</p>
-<p>Further details of the projections and the controlling arguments are
-provided at several websites, because PROJ.4 has been incorporated into
-<a href='https://CRAN.R-project.org/package=rgdal'><span class="pkg">rgdal</span></a> and other R packages, plus many other software systems; a good
-starting point for learning is reference 6.</p>
-<p>See &#8220;Examples&#8221; for suggested projections for some common
-applications, and reference 8 for a gallery indicating how to use every projection.</p>
-<table class='table'>
+
+<p>The following table lists projections available in <a href='https://CRAN.R-project.org/package=oce'><span class="pkg">oce</span></a>, and was generated
+by reformatting a subset of the output of the unix
+command <code>proj -lP</code>. Most of the arguments have default values, and many
+projections also have optional arguments.  Although e.g. <code>proj -l=aea</code>
+provides a little more information about particular projections,
+users ought to consult reference 4 for fuller details and illustrations.</p><table class='table'>
 <tr><td><strong>Projection</strong></td><td><strong>Code</strong></td><td><strong>Arguments</strong></td></tr>
 <tr><td>Albers equal area</td><td><code>aea</code></td><td><code>lat_1</code>, <code>lat_2</code></td></tr>
 <tr><td>Azimuthal equidistant</td><td><code>aeqd</code></td><td><code>lat_0</code>, <code>guam</code></td></tr>
@@ -443,8 +441,9 @@ applications, and reference 8 for a gallery indicating how to use every projecti
 <tr><td>Eckert VI</td><td><code>eck6</code></td><td>-</td></tr>
 <tr><td>Equidistant cylindrical plate (Caree)</td><td><code>eqc</code></td><td><code>lat_ts</code>, <code>lat_0</code></td></tr>
 <tr><td>Equidistant conic</td><td><code>eqdc</code></td><td><code>lat_1</code>, <code>lat_2</code></td></tr>
+<tr><td>Equal earth</td><td><code>eqearth</code></td><td>-</td></tr>
 <tr><td>Euler</td><td><code>euler</code></td><td><code>lat_1</code>, <code>lat_2</code></td></tr>
-<tr><td>Extended transverse Mercator</td><td><code>etmerc</code></td><td><code>lat_ts</code>, <code>lat_0</code></td></tr>
+<tr><td>Extended transverse Mercator</td><td><code>etmerc</code></td><td>-</td></tr>
 <tr><td>Fahey</td><td><code>fahey</code></td><td>-</td></tr>
 <tr><td>Foucault</td><td><code>fouc</code></td><td>-</td></tr>
 <tr><td>Foucault sinusoidal</td><td><code>fouc_s</code></td><td>-</td></tr>
@@ -454,44 +453,43 @@ applications, and reference 8 for a gallery indicating how to use every projecti
 <tr><td>Gnomonic</td><td><code>gnom</code></td><td>-</td></tr>
 <tr><td>Goode homolosine</td><td><code>goode</code></td><td>-</td></tr>
 <tr><td>Hatano asymmetrical equal area</td><td><code>hatano</code></td><td>-</td></tr>
-<tr><td>HEALPix</td><td><code>healpix</code></td><td>-</td></tr>
-<tr><td>rHEALPix</td><td><code>rhealpix</code></td><td><code>north_square</code>, <code>south_square</code></td></tr>
 <tr><td>Interrupted Goode homolosine</td><td><code>igh</code></td><td>-</td></tr>
 <tr><td>Kavraisky V</td><td><code>kav5</code></td><td>-</td></tr>
 <tr><td>Kavraisky VII</td><td><code>kav7</code></td><td>-</td></tr>
 <tr><td>Lambert azimuthal equal area</td><td><code>laea</code></td><td>-</td></tr>
-<tr><td>Longitude and latitude</td><td><code>lonlat</code></td><td>-</td></tr>
 <tr><td>Longitude and latitude</td><td><code>longlat</code></td><td>-</td></tr>
-<tr><td>Longitude and latitude</td><td><code>latlon</code></td><td>-</td></tr>
-<tr><td>Lambert conformal conic</td><td><code>lcc</code></td><td><code>lat_1</code>, <code>lat_2</code>, <code>lat_0</code></td></tr>
+<tr><td>Longitude and latitude</td><td><code>latlong</code></td><td>-</td></tr>
+<tr><td>Lambert conformal conic</td><td><code>lcc</code></td><td><code>lat_1</code>, <code>lat_2</code> or <code>lat_0</code>, <code>k_0</code></td></tr>
 <tr><td>Lambert equal area conic</td><td><code>leac</code></td><td><code>lat_1</code>, <code>south</code></td></tr>
-<tr><td>Loximuthal</td><td><code>loxim</code></td><td></td></tr>
+<tr><td>Loximuthal</td><td><code>loxim</code></td><td>-</td></tr>
 <tr><td>Space oblique for Landsat</td><td><code>lsat</code></td><td><code>lsat</code>, <code>path</code></td></tr>
-<tr><td>McBryde-Thomas flat-polar sine, no. 1</td><td><code>mbt_s</code></td><td></td></tr>
-<tr><td>McBryde-Thomas flat-polar sine, no. 2</td><td><code>mbt_fps</code></td><td></td></tr>
-<tr><td>McBryde-Thomas flat-polar parabolic</td><td><code>mbtfpp</code></td><td></td></tr>
-<tr><td>McBryde-Thomas flat-polar quartic</td><td><code>mbtfpq</code></td><td></td></tr>
-<tr><td>McBryde-Thomas flat-polar sinusoidal</td><td><code>mbtfps</code></td><td></td></tr>
+<tr><td>McBryde-Thomas flat-polar sine, no. 1</td><td><code>mbt_s</code></td><td>-</td></tr>
+<tr><td>McBryde-Thomas flat-polar sine, no. 2</td><td><code>mbt_fps</code></td><td>-</td></tr>
+<tr><td>McBryde-Thomas flat-polar parabolic</td><td><code>mbtfpp</code></td><td>-</td></tr>
+<tr><td>McBryde-Thomas flat-polar quartic</td><td><code>mbtfpq</code></td><td>-</td></tr>
+<tr><td>McBryde-Thomas flat-polar sinusoidal</td><td><code>mbtfps</code></td><td>-</td></tr>
 <tr><td>Mercator</td><td><code>merc</code></td><td><code>lat_ts</code></td></tr>
-<tr><td>Miller oblated stereographic</td><td><code>mil_os</code></td><td></td></tr>
-<tr><td>Miller cylindrical</td><td><code>mill</code></td><td></td></tr>
-<tr><td>Mollweide</td><td><code>moll</code></td><td></td></tr>
+<tr><td>Miller oblated stereographic</td><td><code>mil_os</code></td><td>-</td></tr>
+<tr><td>Miller cylindrical</td><td><code>mill</code></td><td>-</td></tr>
+<tr><td>Mollweide</td><td><code>moll</code></td><td>-</td></tr>
 <tr><td>Murdoch I</td><td><code>murd1</code></td><td><code>lat_1</code>, <code>lat_2</code></td></tr>
 <tr><td>Murdoch II</td><td><code>murd2</code></td><td><code>lat_1</code>, <code>lat_2</code></td></tr>
 <tr><td>murdoch III</td><td><code>murd3</code></td><td><code>lat_1</code>, <code>lat_2</code></td></tr>
-<tr><td>Natural earth</td><td><code>natearth</code></td><td></td></tr>
-<tr><td>Nell</td><td><code>nell</code></td><td></td></tr>
-<tr><td>Nell-Hammer</td><td><code>nell_h</code></td><td></td></tr>
+<tr><td>Natural earth</td><td><code>natearth</code></td><td>-</td></tr>
+<tr><td>Nell</td><td><code>nell</code></td><td>-</td></tr>
+<tr><td>Nell-Hammer</td><td><code>nell_h</code></td><td>-</td></tr>
 <tr><td>Near-sided perspective</td><td><code>nsper</code></td><td><code>h</code></td></tr>
-<tr><td>New Zealand map grid</td><td><code>nzmg</code></td><td></td></tr>
-<tr><td>General oblique transformation</td><td><code>ob_tran</code></td><td><code>o_proj</code>, <code>o_lat_p</code>, <code>o_lon_p</code>, <code>o_alpha</code>, <code>o_lon_c</code></td></tr>
-<tr><td></td><td></td><td><code>o_lat_c</code>, <code>o_lon_1</code>, <code>o_lat_1</code>, <code>o_lon_2</code>, <code>o_lat_2</code></td></tr>
+<tr><td>New Zealand map grid</td><td><code>nzmg</code></td><td>-</td></tr>
+<tr><td>General oblique transformation</td><td><code>ob_tran</code></td><td><code>o_proj</code>, <code>o_lat_p</code>, <code>o_lon_p</code>,</td></tr>
+<tr><td></td><td></td><td><code>o_alpha</code>, <code>o_lon_c</code>, <code>o_lat_c</code>,</td></tr>
+<tr><td></td><td></td><td><code>o_lon_1</code>, <code>o_lat_1</code>,</td></tr>
+<tr><td></td><td></td><td><code>o_lon_2</code>, <code>o_lat_2</code></td></tr>
 <tr><td>Oblique cylindrical equal area</td><td><code>ocea</code></td><td><code>lat_1</code>, <code>lat_2</code>, <code>lon_1</code>, <code>lon_2</code></td></tr>
 <tr><td>Oblated equal area</td><td><code>oea</code></td><td><code>n</code>, <code>m</code>, <code>theta</code></td></tr>
-<tr><td>Oblique Mercator</td><td><code>omerc</code></td><td><code>alpha</code>, <code>gamma</code>, <code>no_off</code>, <code>lonc</code>, <code>lon_1</code>,</td></tr>
-<tr><td></td><td></td><td><code>lat_1</code>, <code>lon_2</code>, <code>lat_2</code></td></tr>
+<tr><td>Oblique Mercator</td><td><code>omerc</code></td><td><code>alpha</code>, <code>gamma</code>, <code>no_off</code>,</td></tr>
+<tr><td></td><td></td><td><code>lonc</code>, <code>lon_1</code>, <code>lat_1</code>,</td></tr>
+<tr><td></td><td></td><td><code>lon_2</code>, <code>lat_2</code></td></tr>
 <tr><td>Orthographic</td><td><code>ortho</code></td><td>-</td></tr>
-<tr><td>Perspective conic</td><td><code>pconic</code></td><td><code>lat_1</code>, <code>lat_2</code></td></tr>
 <tr><td>Polyconic American</td><td><code>poly</code></td><td>-</td></tr>
 <tr><td>Putnins P1</td><td><code>putp1</code></td><td>-</td></tr>
 <tr><td>Putnins P2</td><td><code>putp2</code></td><td>-</td></tr>
@@ -512,12 +510,12 @@ applications, and reference 8 for a gallery indicating how to use every projecti
 <tr><td>Oblique stereographic alternative</td><td><code>sterea</code></td><td>-</td></tr>
 <tr><td>Transverse cylindrical equal area</td><td><code>tcea</code></td><td>-</td></tr>
 <tr><td>Tissot</td><td><code>tissot</code></td><td><code>lat_1</code>, <code>lat_2</code></td></tr>
-<tr><td>Transverse Mercator</td><td><code>tmerc</code></td><td>-</td></tr>
+<tr><td>Transverse Mercator</td><td><code>tmerc</code></td><td><code>approx</code></td></tr>
 <tr><td>Two point equidistant</td><td><code>tpeqd</code></td><td><code>lat_1</code>, <code>lon_1</code>, <code>lat_2</code>, <code>lon_2</code></td></tr>
 <tr><td>Tilted perspective</td><td><code>tpers</code></td><td><code>tilt</code>, <code>azi</code>, <code>h</code></td></tr>
 <tr><td>Universal polar stereographic</td><td><code>ups</code></td><td><code>south</code></td></tr>
 <tr><td>Urmaev flat-polar sinusoidal</td><td><code>urmfps</code></td><td><code>n</code></td></tr>
-<tr><td>Universal transverse Mercator</td><td><code>utm</code></td><td><code>zone</code>, <code>south</code></td></tr>
+<tr><td>Universal transverse Mercator</td><td><code>utm</code></td><td><code>zone</code>, <code>south</code>, <code>approx</code></td></tr>
 <tr><td>van der Grinten I</td><td><code>vandg</code></td><td>-</td></tr>
 <tr><td>Vitkovsky I</td><td><code>vitk1</code></td><td><code>lat_1</code>, <code>lat_2</code></td></tr>
 <tr><td>Wagner I Kavraisky VI</td><td><code>wag1</code></td><td>-</td></tr>
@@ -532,50 +530,20 @@ applications, and reference 8 for a gallery indicating how to use every projecti
 </table>
 
 
-    <h2 class="hasAnchor" id="available-ellipse-formulations"><a class="anchor" href="#available-ellipse-formulations"></a>Available ellipse formulations</h2>
-
-    
-
-<p>In the PROJ.4 system of specifying projections, the following ellipse
-models are available: <code>MERIT</code>,
-<code>SGS85</code>, <code>GRS80</code>, <code>IAU76</code>, <code>airy</code>, <code>APL4.9</code>,
-<code>NWL9D</code>, <code>mod_airy</code>, <code>andrae</code>, <code>aust_SA</code>, <code>GRS67</code>,
-<code>bessel</code>, <code>bess_nam</code>, <code>clrk66</code>, <code>clrk80</code>,
-<code>clrk80ign</code>, <code>CPM</code>, <code>delmbr</code>, <code>engelis</code>,
-<code>evrst30</code>, <code>evrst48</code>, <code>evrst56</code>, <code>evrst69</code>,
-<code>evrstSS</code>, <code>fschr60</code>, <code>fschr60m</code>, <code>fschr68</code>,
-<code>helmert</code>, <code>hough</code>, <code>intl</code>, <code>krass</code>, <code>kaula</code>,
-<code>lerch</code>, <code>mprts</code>, <code>new_intl</code>, <code>plessis</code>, <code>SEasia</code>,
-<code>walbeck</code>, <code>WGS60</code>, <code>WGS66</code>, <code>WGS72</code>, <code>WGS84</code>, and
-<code>sphere</code> (the default).  For example, use <code>projection="+proj=aea
-    +ellps=WGS84"</code> for an Albers Equal Area projection using the most
-recent of the World Geodetic System model. It is unlikely that changing the
-ellipse will have a visible effect on plotted material at the plot scale
-appropriate to most oceanographic applications.</p>
-    <h2 class="hasAnchor" id="available-datum-formulations"><a class="anchor" href="#available-datum-formulations"></a>Available datum formulations</h2>
-
-    
-
-<p>In the PROJ.4 system of specifying
-projections, the following datum formulations are available: <code>WGS84</code>,
-<code>GGRS87</code>, <code>Greek_Geodetic_Reference_System_1987</code>, <code>NAD83</code>,
-<code>North_American_Datum_1983</code>, <code>NAD27</code>,
-<code>North_American_Datum_1927</code>, <code>potsdam</code>, <code>Potsdam</code>,
-<code>carthage</code>, <code>Carthage</code>, <code>hermannskogel</code>,
-<code>Hermannskogel</code>, <code>ire65</code>, <code>Ireland</code>, <code>nzgd49</code>,
-<code>New</code>, <code>OSGB36</code>, and <code>Airy</code>. It is unlikely that changing
-the datum will have a visible effect on plotted material at the plot scale
-appropriate to most oceanographic applications.</p>
     <h2 class="hasAnchor" id="choosing-a-projection"><a class="anchor" href="#choosing-a-projection"></a>Choosing a projection</h2>
 
     
 
 <p>The best choice of projection depends on the application.
-Readers may find <code>projection="+proj=moll"</code> useful for world-wide
+Users may find <code>projection="+proj=moll"</code> useful for world-wide
 plots, <code>ortho</code> for hemispheres viewed from the equator, <code>stere</code>
 for polar views, <code>lcc</code> for wide meridional ranges in mid latitudes,
-and <code>merc</code> in limited-area cases where angle preservation is
-important.</p>
+<code>merc</code> in limited-area cases where angle preservation is
+important, or either <code>aea</code> or <code>eqearth</code> (on local and global
+scales, respectively) where area preservation is important.
+The choice becomes more important, the larger the size of the region
+represented.  When it comes to publication, it can be sensible to use the
+same projection as used in previous reports.</p>
     <h2 class="hasAnchor" id="problems"><a class="anchor" href="#problems"></a>Problems</h2>
 
     
@@ -591,19 +559,26 @@ the occurrence of horizontal lines in maps that have prime meridians
 meridians and (c) inaccurate filling of Antarctica in some projections.
 Generally, issues are tackled first for commonly used projections, such as
 those used in the examples.</p>
-<p>There are also systematic problems on i386/windows machines, owing to
-problems with <a href='https://CRAN.R-project.org/package=rgdal'><span class="pkg">rgdal</span></a> on such systems. This explains why
-<code><a href='https://rdrr.io/r/utils/example.html'>example</a></code><code>("mapPlot")</code> does not try to create maps on such
-machines. However, <a href='https://CRAN.R-project.org/package=rgdal'><span class="pkg">rgdal</span></a> is in continue development, so it
-is reasonable to hope that <code>oce</code> map projections may start working
-at some time. As of <a href='https://CRAN.R-project.org/package=rgdal'><span class="pkg">rgdal</span></a> version 1.4-3 (in March 2019),
-however, <code>mapPlot</code> does not work on i386/windows
-machines.</p>
     <h2 class="hasAnchor" id="changes"><a class="anchor" href="#changes"></a>Changes</h2>
 
     
 
 <ul>
+<li><p>2020-12-24: complete switch from <a href='https://CRAN.R-project.org/package=rgdal'><span class="pkg">rgdal</span></a> to <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a>,
+removing the testing scheme created on 2020-08-03.</p></li>
+<li><p>2020-08-03: added support for the <code>eqearth</code> projection (like <code>robin</code> but
+an equal-area method).</p></li>
+<li><p>2020-08-03: dropped support for the <code>healpix</code>, <code>pconic</code>
+and <code>rhealpix</code> projections, which caused errors with the
+<a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a> package.  (This is not a practical loss, since these
+interrupted projections were handled badly by <code>mapPlot()</code>
+in any case.)</p></li>
+<li><p>2020-08-03: switch from <a href='https://CRAN.R-project.org/package=rgdal'><span class="pkg">rgdal</span></a> to <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a> for
+calculations related to map projection, owing to some
+changes in the former package that broke <a href='https://CRAN.R-project.org/package=oce'><span class="pkg">oce</span></a>
+code.  (To catch problems, <a href='https://CRAN.R-project.org/package=oce'><span class="pkg">oce</span></a> was set up to use
+both packages temporarily, issuing warnings if the results differed
+by more than 1 metre in easting or northing values.)</p></li>
 <li><p>2019-03-20: the test code provided the &#8220;Examples&#8221; section
 is disabled on i386/windows machines, on which the requisite
 <a href='https://CRAN.R-project.org/package=rgdal'><span class="pkg">rgdal</span></a> package continues to fail on common projections.</p></li>
@@ -627,27 +602,30 @@ wildly inaccurate in a Pacific Antarctic-Alaska application
     
 <ol>
 <li><p>Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
-Professional Paper: 1395 (available at
-<a href='https://pubs.er.usgs.gov/publication/pp1395'>https://pubs.er.usgs.gov/publication/pp1395</a>).</p></li>
+Professional Paper: 1395
+<a href='https://pubs.er.usgs.gov/publication/pp1395'>https://pubs.er.usgs.gov/publication/pp1395</a>
+doi: <a href='https://doi.org/10.3133/pp1395'>10.3133/pp1395</a></p></li>
 <li><p>Natural Resources Canada
 <a href='https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805'>https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805</a></p></li>
-<li><p>Wikipedia page <a href='https://en.wikipedia.org/wiki/List_of_map_projections'>https://en.wikipedia.org/wiki/List_of_map_projections</a></p></li>
-<li><p>Radical Cartography website
-<code>http://www.radicalcartography.net/?projectionref</code> (This URL worked
-prior to Nov 16, 2016, but was found to fail on that date.)</p></li>
-<li><p>The <code>PROJ.4</code> website is <a href='http://trac.osgeo.org/proj'>http://trac.osgeo.org/proj</a>, and it is
-the place to start to learn about the code.</p></li>
-<li><p><code>PROJ.4</code> projection details were once at
-<code>http://www.remotesensing.org/geotiff/proj_list/</code> but it was
-discovered on Dec 18, 2016, that this link no longer exists. Indeed, there
-seems to have been significant reorganization of websites related to this.
-The base website seems to be <a href='https://trac.osgeo.org/geotiff/'>https://trac.osgeo.org/geotiff/</a> and that
-lists only what is called an unofficial listing, on the wayback web-archiver server
-<a href='http://web.archive.org/web/20160802172057/http://www.remotesensing.org/geotiff/proj_list/'>http://web.archive.org/web/20160802172057/http://www.remotesensing.org/geotiff/proj_list/</a></p></li>
+<li><p>"List of Map Projections." In Wikipedia, January 26, 2021.
+<a href='https://en.wikipedia.org/w/index.php?title=List_of_map_projections'>https://en.wikipedia.org/w/index.php?title=List_of_map_projections</a>.</p></li>
+<li><p>PROJ contributors (2020).
+"PROJ Coordinate Transformation Software Library."
+Open Source Geospatial Foundation, n.d.
+<a href='https://proj.org'>https://proj.org</a>.</p></li>
+<li><p>Bivand, Roger (2020) Why have CRS, projections and transformations changed?
+Vignette for rgdal 1.5-13
+<a href='https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html'>https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html</a></p></li>
 <li><p>A gallery of map plots is provided at
-<a href='http://dankelley.github.io/r/2015/04/03/oce-proj.html'>http://dankelley.github.io/r/2015/04/03/oce-proj.html</a>.</p></li>
-<li><p>A fascinating historical perspective is provided by Snyder, J. P.
-(1993). Two thousand years of map projections. University of Chicago Press.</p></li>
+<a href='https://dankelley.github.io/r/2020/08/02/oce-proj.html'>https://dankelley.github.io/r/2020/08/02/oce-proj.html</a></p></li>
+<li><p>Snyder, John Parr.
+Flattening the Earth: Two Thousand Years of Map Projections.
+Chicago, IL: University of Chicago Press, 1993.
+<a href='https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html'>https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html</a></p></li>
+<li><p>Šavrič, Bojan, Tom Patterson, and Bernhard Jenny.
+"The Equal Earth Map Projection."
+International Journal of Geographical Information Science 33, no. 3 (March 4, 2019): 454-65.
+doi: <a href='https://doi.org/10.1080/13658816.2018.1504949'>10.1080/13658816.2018.1504949</a></p></li>
 </ol>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
@@ -683,80 +661,83 @@ projections (with graphs).</p>
 <code><a href='shiftLongitude.html'>shiftLongitude</a>()</code>,
 <code><a href='usrLonLat.html'>usrLonLat</a>()</code>,
 <code><a href='utm2lonlat.html'>utm2lonlat</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley and Clark Richards</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>canProject</span> <span class='kw'>&lt;-</span> <span class='no'>.Platform</span>$<span class='no'>OS.type</span><span class='kw'>!=</span><span class='st'>"windows"</span><span class='kw'>&amp;&amp;</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"rgdal"</span>)
-<span class='kw'>if</span> (<span class='no'>canProject</span>) {
-    <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-    <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>coastlineWorld</span>)
+    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>)</span>
 
-    <span class='co'># Example 1.</span>
-    <span class='co'># Mollweide (referenc 1 page 54) is an equal-area projection that works well</span>
-    <span class='co'># for whole-globe views.</span>
-    <span class='fu'>mapPlot</span>(<span class='no'>coastlineWorld</span>, <span class='kw'>projection</span><span class='kw'>=</span><span class='st'>"+proj=moll"</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'gray'</span>)
-    <span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span>(<span class='st'>"Mollweide"</span>, <span class='kw'>adj</span><span class='kw'>=</span><span class='fl'>1</span>)
+<span class='co'># Example 1.</span>
+<span class='co'># Mollweide (referenc 1 page 54) is an equal-area projection that works well</span>
+<span class='co'># for whole-globe views.</span>
+<span class='fu'>mapPlot</span><span class='op'>(</span><span class='va'>coastlineWorld</span>, projection<span class='op'>=</span><span class='st'>"+proj=moll"</span>, col<span class='op'>=</span><span class='st'>'gray'</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span><span class='op'>(</span><span class='st'>"Mollweide"</span>, adj<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='img'><img src='mapPlot-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'># Example 2.</span>
+<span class='co'># Note that filling is not employed (`col` is not</span>
+<span class='co'># given) when the prime meridian is shifted, because</span>
+<span class='co'># this causes a problem with Antarctica</span>
+<span class='va'>cl180</span> <span class='op'>&lt;-</span> <span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, lon_0<span class='op'>=</span><span class='op'>-</span><span class='fl'>180</span><span class='op'>)</span>
+<span class='fu'>mapPlot</span><span class='op'>(</span><span class='va'>cl180</span>, projection<span class='op'>=</span><span class='st'>"+proj=moll +lon_0=-180"</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span><span class='op'>(</span><span class='st'>"Mollweide with coastlineCut"</span>, adj<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='img'><img src='mapPlot-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'># Example 3.</span>
+<span class='co'># Orthographic projections resemble a globe, making them attractive for</span>
+<span class='co'># non-technical use, but they are neither conformal nor equal-area, so they</span>
+<span class='co'># are somewhat limited for serious use on large scales.  See Section 20 of</span>
+<span class='co'># reference 1. Note that filling is not employed because it causes a problem with</span>
+<span class='co'># Antarctica.</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'>mapPlot</span><span class='op'>(</span><span class='va'>coastlineWorld</span>, projection<span class='op'>=</span><span class='st'>"+proj=ortho +lon_0=-180"</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span><span class='op'>(</span><span class='st'>"Orthographic"</span>, adj<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='img'><img src='mapPlot-3.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'># Example 4.</span>
+<span class='co'># The Lambert conformal conic projection is an equal-area projection</span>
+<span class='co'># recommended by reference 1, page 95, for regions of large east-west extent</span>
+<span class='co'># away from the equator, here illustrated for the USA and Canada.</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'>mapPlot</span><span class='op'>(</span><span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, <span class='op'>-</span><span class='fl'>100</span><span class='op'>)</span>,
+        longitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>130</span>,<span class='op'>-</span><span class='fl'>55</span><span class='op'>)</span>, latitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>35</span>, <span class='fl'>60</span><span class='op'>)</span>,
+        projection<span class='op'>=</span><span class='st'>"+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100"</span>, col<span class='op'>=</span><span class='st'>'gray'</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span><span class='op'>(</span><span class='st'>"Lambert conformal"</span>, adj<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='img'><img src='mapPlot-4.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'># Example 5.</span>
+<span class='co'># The stereographic projection (reference 1, page 120) is conformal, used</span>
+<span class='co'># below for an Arctic view with a Canadian focus.  Note the trick of going</span>
+<span class='co'># past the pole: the second latitudelim value is 180 minus the first, and the</span>
+<span class='co'># second longitudelim is 180 plus the first; this uses image points "over"</span>
+<span class='co'># the pole.</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'>mapPlot</span><span class='op'>(</span><span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, <span class='op'>-</span><span class='fl'>135</span><span class='op'>)</span>,
+        longitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>130</span>, <span class='fl'>50</span><span class='op'>)</span>, latitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>70</span>, <span class='fl'>110</span><span class='op'>)</span>,
+        projection<span class='op'>=</span><span class='st'>"+proj=stere +lat_0=90 +lon_0=-135"</span>, col<span class='op'>=</span><span class='st'>'gray'</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span><span class='op'>(</span><span class='st'>"Stereographic"</span>, adj<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='img'><img src='mapPlot-5.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'># Example 6.</span>
+<span class='co'># Spinning globe: create PNG files that can be assembled into a movie</span>
+<span class='co'># }</span>
 
-    <span class='co'># Example 2.</span>
-    <span class='co'># Note that filling is not employed (`col` is not</span>
-    <span class='co'># given) when the prime meridian is shifted, because</span>
-    <span class='co'># this causes a problem with Antarctica</span>
-    <span class='no'>cl180</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>lon_0</span><span class='kw'>=</span>-<span class='fl'>180</span>)
-    <span class='fu'>mapPlot</span>(<span class='no'>cl180</span>, <span class='kw'>projection</span><span class='kw'>=</span><span class='st'>"+proj=moll +lon_0=-180"</span>)
-    <span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span>(<span class='st'>"Mollweide with coastlineCut"</span>, <span class='kw'>adj</span><span class='kw'>=</span><span class='fl'>1</span>)
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'><a href='https://rdrr.io/r/grDevices/png.html'>png</a></span><span class='op'>(</span><span class='st'>"globe-%03d.png"</span><span class='op'>)</span>
+<span class='va'>lons</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>360</span>, <span class='fl'>0</span>, <span class='op'>-</span><span class='fl'>15</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>4</span><span class='op'>)</span><span class='op'>)</span>
+<span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_along</a></span><span class='op'>(</span><span class='va'>lons</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"+proj=ortho +lat_0=30 +lon_0="</span>, <span class='va'>lons</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span>, sep<span class='op'>=</span><span class='st'>""</span><span class='op'>)</span>
+    <span class='kw'>if</span> <span class='op'>(</span><span class='va'>i</span> <span class='op'>==</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'>{</span>
+        <span class='fu'>mapPlot</span><span class='op'>(</span><span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, <span class='va'>lons</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>)</span>, projection<span class='op'>=</span><span class='va'>p</span>, col<span class='op'>=</span><span class='st'>"gray"</span><span class='op'>)</span>
+        <span class='va'>xlim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"usr"</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>]</span>
+        <span class='va'>ylim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"usr"</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>3</span><span class='op'>:</span><span class='fl'>4</span><span class='op'>]</span>
+    <span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
+        <span class='fu'>mapPlot</span><span class='op'>(</span><span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, <span class='va'>lons</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>)</span>, projection<span class='op'>=</span><span class='va'>p</span>, col<span class='op'>=</span><span class='st'>"gray"</span>,
+                xlim<span class='op'>=</span><span class='va'>xlim</span>, ylim<span class='op'>=</span><span class='va'>ylim</span>, xaxs<span class='op'>=</span><span class='st'>"i"</span>, yaxs<span class='op'>=</span><span class='st'>"i"</span><span class='op'>)</span>
+    <span class='op'>}</span>
+<span class='op'>}</span>
+<span class='fu'><a href='https://rdrr.io/r/grDevices/dev.html'>dev.off</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>}</span>
 
-    <span class='co'># Example 3.</span>
-    <span class='co'># Orthographic projections resemble a globe, making them attractive for</span>
-    <span class='co'># non-technical use, but they are neither conformal nor equal-area, so they</span>
-    <span class='co'># are somewhat limited for serious use on large scales.  See Section 20 of</span>
-    <span class='co'># reference 1. Note that filling is not employed because it causes a problem with</span>
-    <span class='co'># Antarctica.</span>
-    <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>1</span>))
-    <span class='fu'>mapPlot</span>(<span class='no'>coastlineWorld</span>, <span class='kw'>projection</span><span class='kw'>=</span><span class='st'>"+proj=ortho +lon_0=-180"</span>)
-    <span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span>(<span class='st'>"Orthographic"</span>, <span class='kw'>adj</span><span class='kw'>=</span><span class='fl'>1</span>)
-
-    <span class='co'># Example 4.</span>
-    <span class='co'># The Lambert conformal conic projection is an equal-area projection</span>
-    <span class='co'># recommended by reference 1, page 95, for regions of large east-west extent</span>
-    <span class='co'># away from the equator, here illustrated for the USA and Canada.</span>
-    <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>1</span>))
-    <span class='fu'>mapPlot</span>(<span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span>(<span class='no'>coastlineWorld</span>, -<span class='fl'>100</span>),
-            <span class='kw'>longitudelim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>130</span>,-<span class='fl'>55</span>), <span class='kw'>latitudelim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>35</span>, <span class='fl'>60</span>),
-            <span class='kw'>projection</span><span class='kw'>=</span><span class='st'>"+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100"</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'gray'</span>)
-    <span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span>(<span class='st'>"Lambert conformal"</span>, <span class='kw'>adj</span><span class='kw'>=</span><span class='fl'>1</span>)
-
-    <span class='co'># Example 5.</span>
-    <span class='co'># The stereographic projection (reference 1, page 120) is conformal, used</span>
-    <span class='co'># below for an Arctic view with a Canadian focus.  Note the trick of going</span>
-    <span class='co'># past the pole: the second latitudelim value is 180 minus the first, and the</span>
-    <span class='co'># second longitudelim is 180 plus the first; this uses image points "over"</span>
-    <span class='co'># the pole.</span>
-    <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>1</span>))
-    <span class='fu'>mapPlot</span>(<span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span>(<span class='no'>coastlineWorld</span>, -<span class='fl'>135</span>),
-            <span class='kw'>longitudelim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>130</span>, <span class='fl'>50</span>), <span class='kw'>latitudelim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>70</span>, <span class='fl'>110</span>),
-            <span class='kw'>proj</span><span class='kw'>=</span><span class='st'>"+proj=stere +lat_0=90 +lon_0=-135"</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>'gray'</span>)
-    <span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span>(<span class='st'>"Stereographic"</span>, <span class='kw'>adj</span><span class='kw'>=</span><span class='fl'>1</span>)
-
-    <span class='co'># Example 6.</span>
-    <span class='co'># Spinning globe: create PNG files that can be assembled into a movie</span>
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-    <span class='fu'><a href='https://rdrr.io/r/grDevices/png.html'>png</a></span>(<span class='st'>"globe-%03d.png"</span>)
-    <span class='no'>lons</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>360</span>, <span class='fl'>0</span>, -<span class='fl'>15</span>)
-    <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>0</span>, <span class='fl'>4</span>))
-    <span class='kw'>for</span> (<span class='no'>i</span> <span class='kw'>in</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_along</a></span>(<span class='no'>lons</span>)) {
-        <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='st'>"+proj=ortho +lat_0=30 +lon_0="</span>, <span class='no'>lons</span>[<span class='no'>i</span>], <span class='kw'>sep</span><span class='kw'>=</span><span class='st'>""</span>)
-        <span class='kw'>if</span> (<span class='no'>i</span> <span class='kw'>==</span> <span class='fl'>1</span>) {
-            <span class='fu'>mapPlot</span>(<span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span>(<span class='no'>coastlineWorld</span>, <span class='no'>lons</span>[<span class='no'>i</span>]),
-                    <span class='kw'>projection</span><span class='kw'>=</span><span class='no'>p</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"lightgray"</span>)
-            <span class='no'>xlim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"usr"</span>)[<span class='fl'>1</span>:<span class='fl'>2</span>]
-            <span class='no'>ylim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"usr"</span>)[<span class='fl'>3</span>:<span class='fl'>4</span>]
-        } <span class='kw'>else</span> {
-            <span class='fu'>mapPlot</span>(<span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span>(<span class='no'>coastlineWorld</span>, <span class='no'>lons</span>[<span class='no'>i</span>]),
-                    <span class='kw'>projection</span><span class='kw'>=</span><span class='no'>p</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"lightgray"</span>,
-                    <span class='kw'>xlim</span><span class='kw'>=</span><span class='no'>xlim</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='no'>ylim</span>, <span class='kw'>xaxs</span><span class='kw'>=</span><span class='st'>"i"</span>, <span class='kw'>yaxs</span><span class='kw'>=</span><span class='st'>"i"</span>)
-        }
-    }
-}
-}</div><div class='img'><img src='mapPlot-1.png' alt='' width='700' height='433' /></div><div class='img'><img src='mapPlot-2.png' alt='' width='700' height='433' /></div><div class='img'><img src='mapPlot-3.png' alt='' width='700' height='433' /></div><div class='img'><img src='mapPlot-4.png' alt='' width='700' height='433' /></div><div class='img'><img src='mapPlot-5.png' alt='' width='700' height='433' /></div></pre>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -772,7 +753,7 @@ projections (with graphs).</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

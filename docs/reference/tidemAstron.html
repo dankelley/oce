@@ -82,7 +82,7 @@ which inherits from the Fortran code described by Foreman (1978)." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -123,7 +123,7 @@ which inherits from the Fortran code described by Foreman (1978)." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -151,7 +151,7 @@ on <code>t_astron</code> in the <code>T_TIDE</code> Matlab package (see Pawlowic
 which inherits from the Fortran code described by Foreman (1978).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>tidemAstron</span>(<span class='no'>t</span>)</pre>
+    <pre class="usage"><span class='fu'>tidemAstron</span><span class='op'>(</span><span class='va'>t</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -184,20 +184,26 @@ Computers and Geosciences, 28, 929-937.</p></li>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to tides: 
-<code><a href='sub-sub-tidem-method.html'>[[,tidem-method</a></code>,
+<code><a href='[[,tidem-method.html'>[[,tidem-method</a></code>,
 <code>[[&lt;-,tidem-method</code>,
 <code><a href='as.tidem.html'>as.tidem</a>()</code>,
-<code><a href='plot-tidem-method.html'>plot,tidem-method</a></code>,
+<code><a href='plot,tidem-method.html'>plot,tidem-method</a></code>,
 <code><a href='predict.tidem.html'>predict.tidem</a>()</code>,
-<code><a href='summary-tidem-method.html'>summary,tidem-method</a></code>,
+<code><a href='summary,tidem-method.html'>summary,tidem-method</a></code>,
+<code><a href='tidalCurrent.html'>tidalCurrent</a></code>,
 <code><a href='tidedata.html'>tidedata</a></code>,
 <code><a href='tidem-class.html'>tidem-class</a></code>,
 <code><a href='tidemVuf.html'>tidemVuf</a>()</code>,
 <code><a href='tidem.html'>tidem</a></code>,
 <code><a href='webtide.html'>webtide</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley translated this from the <code>t_astron</code> function
+of the <code>T_TIDE</code> Matlab package (see Pawlowicz et al. 2002).</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>tidemAstron</span>(<span class='fu'><a href='https://rdrr.io/r/base/as.POSIXlt.html'>as.POSIXct</a></span>(<span class='st'>"2008-01-22 18:50:24"</span>))</div><div class='output co'>#&gt; $astro
+    <pre class="examples"><div class='input'><span class='fu'>tidemAstron</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/as.POSIXlt.html'>as.POSIXct</a></span><span class='op'>(</span><span class='st'>"2008-01-22 18:50:24"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $astro
 #&gt; [1] 1.44963597 0.34000639 0.83797569 0.14240012 0.08562115 0.78633081
 #&gt; 
 #&gt; $ader
@@ -220,7 +226,7 @@ Computers and Geosciences, 28, 929-937.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

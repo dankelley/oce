@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,43 +147,44 @@
     <p>Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotTS</span>(
-  <span class='no'>x</span>,
-  <span class='kw'>inSitu</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"p"</span>,
-  <span class='kw'>referencePressure</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>nlevels</span> <span class='kw'>=</span> <span class='fl'>6</span>,
-  <span class='no'>levels</span>,
-  <span class='kw'>grid</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>col.grid</span> <span class='kw'>=</span> <span class='st'>"lightgray"</span>,
-  <span class='kw'>lty.grid</span> <span class='kw'>=</span> <span class='st'>"dotted"</span>,
-  <span class='kw'>rho1000</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>eos</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceEOS"</span>, <span class='kw'>default</span> <span class='kw'>=</span> <span class='st'>"gsw"</span>),
-  <span class='kw'>cex</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"cex"</span>),
-  <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"col"</span>),
-  <span class='kw'>pch</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"pch"</span>),
-  <span class='no'>bg</span>,
-  <span class='kw'>pt.bg</span> <span class='kw'>=</span> <span class='st'>"transparent"</span>,
-  <span class='kw'>col.rho</span> <span class='kw'>=</span> <span class='st'>"darkgray"</span>,
-  <span class='kw'>cex.rho</span> <span class='kw'>=</span> <span class='fl'>3</span>/<span class='fl'>4</span> * <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"cex"</span>),
-  <span class='kw'>rotate</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>useSmoothScatter</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='no'>xlab</span>,
-  <span class='no'>ylab</span>,
-  <span class='no'>Slim</span>,
-  <span class='no'>Tlim</span>,
-  <span class='kw'>drawFreezing</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>mgp</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceMgp"</span>),
-  <span class='kw'>mar</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='no'>mgp</span>[<span class='fl'>1</span>] + <span class='fl'>1.5</span>, <span class='no'>mgp</span>[<span class='fl'>1</span>] + <span class='fl'>1.5</span>, <span class='no'>mgp</span>[<span class='fl'>1</span>], <span class='no'>mgp</span>[<span class='fl'>1</span>]),
-  <span class='kw'>lwd</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"lwd"</span>),
-  <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"lty"</span>),
-  <span class='kw'>lwd.rho</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"lwd"</span>),
-  <span class='kw'>lty.rho</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"lty"</span>),
-  <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>inset</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>),
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>plotTS</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  inSitu <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  type <span class='op'>=</span> <span class='st'>"p"</span>,
+  referencePressure <span class='op'>=</span> <span class='fl'>0</span>,
+  nlevels <span class='op'>=</span> <span class='fl'>6</span>,
+  <span class='va'>levels</span>,
+  grid <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  col.grid <span class='op'>=</span> <span class='st'>"lightgray"</span>,
+  lty.grid <span class='op'>=</span> <span class='st'>"dotted"</span>,
+  rho1000 <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  eos <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceEOS"</span>, default <span class='op'>=</span> <span class='st'>"gsw"</span><span class='op'>)</span>,
+  cex <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"cex"</span><span class='op'>)</span>,
+  col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"col"</span><span class='op'>)</span>,
+  pch <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"pch"</span><span class='op'>)</span>,
+  bg <span class='op'>=</span> <span class='st'>"white"</span>,
+  pt.bg <span class='op'>=</span> <span class='st'>"transparent"</span>,
+  col.rho <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/grDevices/gray.html'>gray</a></span><span class='op'>(</span><span class='fl'>0.5</span><span class='op'>)</span>,
+  cex.rho <span class='op'>=</span> <span class='fl'>3</span><span class='op'>/</span><span class='fl'>4</span> <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"cex"</span><span class='op'>)</span>,
+  rotate <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  useSmoothScatter <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>xlab</span>,
+  <span class='va'>ylab</span>,
+  <span class='va'>Slim</span>,
+  <span class='va'>Tlim</span>,
+  drawFreezing <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  trimIsopycnals <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  mgp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceMgp"</span><span class='op'>)</span>,
+  mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>+</span> <span class='fl'>1.5</span>, <span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>+</span> <span class='fl'>1.5</span>, <span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span>, <span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>)</span>,
+  lwd <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"lwd"</span><span class='op'>)</span>,
+  lty <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"lty"</span><span class='op'>)</span>,
+  lwd.rho <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"lwd"</span><span class='op'>)</span>,
+  lty.rho <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"lty"</span><span class='op'>)</span>,
+  add <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  inset <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -265,11 +266,11 @@ plotting.  (This is useful for cases in which <code>inset=TRUE</code>.)</p></td>
     </tr>
     <tr>
       <th>col.rho</th>
-      <td><p>color for isopycnal lines.</p></td>
+      <td><p>color for isopycnal lines and their labels.</p></td>
     </tr>
     <tr>
       <th>cex.rho</th>
-      <td><p>size of isopycnal labels.</p></td>
+      <td><p>size of the isopycnal labels.</p></td>
     </tr>
     <tr>
       <th>rotate</th>
@@ -290,12 +291,12 @@ points.</p></td>
     </tr>
     <tr>
       <th>Slim</th>
-      <td><p>optional limits for salinity axis, otherwise inferred from data.</p></td>
+      <td><p>optional limits for salinity axis, otherwise inferred from visible data
+(i.e. the data that have finite values for both salinity and temperature).</p></td>
     </tr>
     <tr>
       <th>Tlim</th>
-      <td><p>optional limits for temperature axis, otherwise inferred from
-data.</p></td>
+      <td><p>as <code>Slim</code>, but for temperature.</p></td>
     </tr>
     <tr>
       <th>drawFreezing</th>
@@ -304,6 +305,14 @@ line. This is based on zero pressure. If <code>eos="unesco"</code> then
 <code><a href='swTFreeze.html'>swTFreeze()</a></code> is used to compute the curve, whereas if
 <code>eos="gsw"</code> then <code><a href='https://rdrr.io/pkg/gsw/man/gsw_CT_freezing.html'>gsw::gsw_CT_freezing()</a></code> is used;
 in each case, zero pressure is used.</p></td>
+    </tr>
+    <tr>
+      <th>trimIsopycnals</th>
+      <td><p>logical value (<code>TRUE</code> by default) that
+indicates whether to trim isopycnal curves
+to the region of temperature-salinity space for which density
+computations are considered to be valid in the context of the
+chosen <code>eos</code>; see &#8220;Details&#8221;.</p></td>
     </tr>
     <tr>
       <th>mgp</th>
@@ -361,40 +370,81 @@ amount of debugging information, or to 2 to get more.</p></td>
 
     <p>A list is silently returned, containing <code>xat</code> and <code>yat</code>,
 values that can be used by <code><a href='oce.grid.html'>oce.grid()</a></code> to add a grid to the plot.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The isopycnal curves (along which density is constant) are
+drawn with <code><a href='drawIsopycnals.html'>drawIsopycnals()</a></code>, which also places
+labels in the margins showing density minus 1000 \(kg/m^3\).
+If <code>trimIsopycnals</code> is <code>TRUE</code> (which is the default), these curves
+are trimmed to the region within which the results of density calculation
+in the chosen equation of state (<code>eos</code>) are considered to be reliable.</p>
+<p>With <code>eos="unesco"</code> this region includes
+Practical Salinity from 0 to 42 and Potential Temperature
+from -2C to 40C, in accordance with Fofonoff and Millard
+(1983, page 23).</p>
+<p>With <code>eos="gsw"</code> the lower
+limit of Absolute Salinity validity is taken as 0 g/kg,
+in accordance with both McDougall et al. (2003 section 3)
+and the TEOS-10/gsw Matlab code for the so-called "funnel" of validity.
+However, an appropriate upper limit on Absolute Salinity is not as clear.
+Here, the value 42 g/kg is chosen to match the "funnel" Matlab code
+as of July 2020, but two other choices might have been
+made. One is 50 g/kg, since <code><a href='https://rdrr.io/pkg/gsw/man/gsw_SA_from_rho.html'>gsw::gsw_SA_from_rho()</a></code> returns <code>NA</code> values
+for Absolute Salinities exceeding that value, and another is
+40 g/kg, as in McDougall et al. (2003 section 3).
+The Conservative Temperature range is set to run from -2C
+to 33C, as in McDougall et al. (2003 section 3), even though the
+"funnel" imposes no upper limit on this variable.</p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    
+<ul>
+<li><p>Fofonoff, N. P., and R. C. Millard.
+"Algorithms for Computation of Fundamental Properties of Seawater."
+UNESCO Technical Papers in Marine Research. SCOR working group on Evaluation of CTD data;
+UNESCO/ICES/SCOR/IAPSO Joint Panel on Oceanographic Tables and Standards, 1983.
+<a href='https://unesdoc.unesco.org/ark:/48223/pf0000059832'>https://unesdoc.unesco.org/ark:/48223/pf0000059832</a>.</p></li>
+<li><p>McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
+"Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
+Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730-41.
+<code>https://journals.ametsoc.org/jtech/article/20/5/730/2543/Accurate-and-Computationally-Efficient-Algorithms</code>.</p></li>
+</ul>
+
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='summary-ctd-method.html'>summary,ctd-method()</a></code> summarizes the information, while
+    <div class='dont-index'><p><code><a href='summary,ctd-method.html'>summary,ctd-method()</a></code> summarizes the information, while
 <code><a href='read.ctd.html'>read.ctd()</a></code> scans it from a file.</p>
 <p>Other functions that plot oce data: 
-<code><a href='plot-adp-method.html'>plot,adp-method</a></code>,
-<code><a href='plot-adv-method.html'>plot,adv-method</a></code>,
-<code><a href='plot-amsr-method.html'>plot,amsr-method</a></code>,
-<code><a href='plot-argo-method.html'>plot,argo-method</a></code>,
-<code><a href='plot-bremen-method.html'>plot,bremen-method</a></code>,
-<code><a href='plot-cm-method.html'>plot,cm-method</a></code>,
-<code><a href='plot-coastline-method.html'>plot,coastline-method</a></code>,
-<code><a href='plot-ctd-method.html'>plot,ctd-method</a></code>,
-<code><a href='plot-gps-method.html'>plot,gps-method</a></code>,
-<code><a href='plot-ladp-method.html'>plot,ladp-method</a></code>,
-<code><a href='plot-landsat-method.html'>plot,landsat-method</a></code>,
-<code><a href='plot-lisst-method.html'>plot,lisst-method</a></code>,
-<code><a href='plot-lobo-method.html'>plot,lobo-method</a></code>,
-<code><a href='plot-met-method.html'>plot,met-method</a></code>,
-<code><a href='plot-odf-method.html'>plot,odf-method</a></code>,
-<code><a href='plot-rsk-method.html'>plot,rsk-method</a></code>,
-<code><a href='plot-satellite-method.html'>plot,satellite-method</a></code>,
-<code><a href='plot-sealevel-method.html'>plot,sealevel-method</a></code>,
-<code><a href='plot-section-method.html'>plot,section-method</a></code>,
-<code><a href='plot-tidem-method.html'>plot,tidem-method</a></code>,
-<code><a href='plot-topo-method.html'>plot,topo-method</a></code>,
-<code><a href='plot-windrose-method.html'>plot,windrose-method</a></code>,
-<code><a href='plot-xbt-method.html'>plot,xbt-method</a></code>,
+<code><a href='download.amsr.html'>download.amsr</a>()</code>,
+<code><a href='plot,adp-method.html'>plot,adp-method</a></code>,
+<code><a href='plot,adv-method.html'>plot,adv-method</a></code>,
+<code><a href='plot,amsr-method.html'>plot,amsr-method</a></code>,
+<code><a href='plot,argo-method.html'>plot,argo-method</a></code>,
+<code><a href='plot,bremen-method.html'>plot,bremen-method</a></code>,
+<code><a href='plot,cm-method.html'>plot,cm-method</a></code>,
+<code><a href='plot,coastline-method.html'>plot,coastline-method</a></code>,
+<code><a href='plot,ctd-method.html'>plot,ctd-method</a></code>,
+<code><a href='plot,gps-method.html'>plot,gps-method</a></code>,
+<code><a href='plot,ladp-method.html'>plot,ladp-method</a></code>,
+<code><a href='plot,landsat-method.html'>plot,landsat-method</a></code>,
+<code><a href='plot,lisst-method.html'>plot,lisst-method</a></code>,
+<code><a href='plot,lobo-method.html'>plot,lobo-method</a></code>,
+<code><a href='plot,met-method.html'>plot,met-method</a></code>,
+<code><a href='plot,odf-method.html'>plot,odf-method</a></code>,
+<code><a href='plot,rsk-method.html'>plot,rsk-method</a></code>,
+<code><a href='plot,satellite-method.html'>plot,satellite-method</a></code>,
+<code><a href='plot,sealevel-method.html'>plot,sealevel-method</a></code>,
+<code><a href='plot,section-method.html'>plot,section-method</a></code>,
+<code><a href='plot,tidem-method.html'>plot,tidem-method</a></code>,
+<code><a href='plot,topo-method.html'>plot,topo-method</a></code>,
+<code><a href='plot,windrose-method.html'>plot,windrose-method</a></code>,
+<code><a href='plot,xbt-method.html'>plot,xbt-method</a></code>,
 <code><a href='plotProfile.html'>plotProfile</a>()</code>,
 <code><a href='plotScan.html'>plotScan</a>()</code>,
 <code><a href='tidem-class.html'>tidem-class</a></code></p>
 <p>Other things related to ctd data: 
 <code><a href='CTD_BCD2014666_008_1_DN.ODF.gz.html'>CTD_BCD2014666_008_1_DN.ODF.gz</a></code>,
-<code><a href='sub-sub-ctd-method.html'>[[,ctd-method</a></code>,
+<code><a href='[[,ctd-method.html'>[[,ctd-method</a></code>,
 <code>[[&lt;-,ctd-method</code>,
 <code><a href='as.ctd.html'>as.ctd</a>()</code>,
 <code><a href='cnvName2oceName.html'>cnvName2oceName</a>()</code>,
@@ -407,12 +457,12 @@ values that can be used by <code><a href='oce.grid.html'>oce.grid()</a></code> t
 <code><a href='ctd.html'>ctd</a></code>,
 <code><a href='d200321-001.ctd.html'>d200321-001.ctd</a></code>,
 <code><a href='d201211_0011.cnv.html'>d201211_0011.cnv</a></code>,
-<code><a href='handleFlags-ctd-method.html'>handleFlags,ctd-method</a></code>,
-<code><a href='initialize-ctd-method.html'>initialize,ctd-method</a></code>,
-<code><a href='initializeFlagScheme-ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
+<code><a href='handleFlags,ctd-method.html'>handleFlags,ctd-method</a></code>,
+<code><a href='initialize,ctd-method.html'>initialize,ctd-method</a></code>,
+<code><a href='initializeFlagScheme,ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
 <code><a href='oceNames2whpNames.html'>oceNames2whpNames</a>()</code>,
 <code><a href='oceUnits2whpUnits.html'>oceUnits2whpUnits</a>()</code>,
-<code><a href='plot-ctd-method.html'>plot,ctd-method</a></code>,
+<code><a href='plot,ctd-method.html'>plot,ctd-method</a></code>,
 <code><a href='plotProfile.html'>plotProfile</a>()</code>,
 <code><a href='plotScan.html'>plotScan</a>()</code>,
 <code><a href='read.ctd.itp.html'>read.ctd.itp</a>()</code>,
@@ -422,17 +472,21 @@ values that can be used by <code><a href='oce.grid.html'>oce.grid()</a></code> t
 <code><a href='read.ctd.woce.other.html'>read.ctd.woce.other</a>()</code>,
 <code><a href='read.ctd.woce.html'>read.ctd.woce</a>()</code>,
 <code><a href='read.ctd.html'>read.ctd</a>()</code>,
-<code><a href='setFlags-ctd-method.html'>setFlags,ctd-method</a></code>,
-<code><a href='subset-ctd-method.html'>subset,ctd-method</a></code>,
-<code><a href='summary-ctd-method.html'>summary,ctd-method</a></code>,
+<code><a href='setFlags,ctd-method.html'>setFlags,ctd-method</a></code>,
+<code><a href='subset,ctd-method.html'>subset,ctd-method</a></code>,
+<code><a href='summary,ctd-method.html'>summary,ctd-method</a></code>,
 <code><a href='woceNames2oceNames.html'>woceNames2oceNames</a>()</code>,
 <code><a href='woceUnit2oceUnit.html'>woceUnit2oceUnit</a>()</code>,
 <code><a href='write.ctd.html'>write.ctd</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
-<span class='fu'>plotTS</span>(<span class='no'>ctd</span>)</div><div class='img'><img src='plotTS-1.png' alt='' width='700' height='433' /></div><div class='input'>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+<span class='fu'>plotTS</span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+</div><div class='img'><img src='plotTS-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -449,7 +503,7 @@ values that can be used by <code><a href='oce.grid.html'>oce.grid()</a></code> t
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

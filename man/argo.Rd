@@ -14,17 +14,11 @@ on 2020 June 24.
 This holds data from ARGO 6900388 in the North Atlantic.
 }
 \details{
-To quote Argo's website: "These data were collected and made freely
-available by the International Argo Program and the national programs
-that contribute to it.  (http//www.argo.ucsd.edu,
-http://argo.jcommops.org).  The Argo Program is part of the
-Global Ocean Observing System."
-
 Below is the official citation (note that this DOI has web links for
 downloads):
 Argo (2017). Argo float data and metadata from Global Data Assembly Centre
 (Argo GDAC) - Snapshot of Argo GDAC of July, 8st 2017. SEANOE.
-\url{http://doi.org/10.17882/42182#50865}
+\doi{10.17882/42182#50865}
 }
 \examples{
 \donttest{
@@ -40,6 +34,7 @@ plot(argo, which="trajectory")
 Other datasets provided with oce: 
 \code{\link{adp}},
 \code{\link{adv}},
+\code{\link{amsr}},
 \code{\link{cm}},
 \code{\link{coastlineWorld}},
 \code{\link{ctdRaw}},
@@ -54,6 +49,7 @@ Other datasets provided with oce:
 \code{\link{sealevelTuktoyaktuk}},
 \code{\link{sealevel}},
 \code{\link{section}},
+\code{\link{topoNS}},
 \code{\link{topoWorld}},
 \code{\link{wind}},
 \code{\link{xbt}}

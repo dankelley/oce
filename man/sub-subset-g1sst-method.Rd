@@ -75,7 +75,9 @@ Other functions that replace parts of oce objects:
 \code{\link{[[<-,xbt-method}}
 
 Other things related to g1sst data: 
-\code{\link{[[,g1sst-method}}
+\code{\link{[[,g1sst-method}},
+\code{\link{g1sst-class}},
+\code{\link{read.g1sst}()}
 }
 \concept{functions that replace parts of oce objects}
 \concept{things related to g1sst data}

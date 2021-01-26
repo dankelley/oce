@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Subset a CTD Object — subset,ctd-method • oce</title>
+<title>Subset a ctd Object — subset,ctd-method • oce</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="Subset a CTD Object — subset,ctd-method" />
+<meta property="og:title" content="Subset a ctd Object — subset,ctd-method" />
 <meta property="og:description" content="Return a subset of a ctd object." />
 
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -138,7 +138,7 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Subset a CTD Object</h1>
+    <h1>Subset a ctd Object</h1>
     <small class="dont-index">Source: <a href='https://github.com/dankelley/oce/blob/master/R/ctd.R'><code>R/ctd.R</code></a></small>
     <div class="hidden name"><code>subset-ctd-method.Rd</code></div>
     </div>
@@ -148,7 +148,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ctd</span>
-<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>x</span>, <span class='no'>subset</span>, <span class='no'>...</span>)</pre>
+<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>subset</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -174,7 +174,7 @@ possibility is that this argument be named <code>indices</code>. See &#8220;Deta
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>This function is used to subset data within
-a ctd object. There are two ways of working. If
+a <a href='ctd-class.html'>ctd</a> object. There are two ways of working. If
 <code>subset</code> is supplied, then it is a logical expression
 that is evaluated within the environment of the <code>data</code>
 slot of the object (see Example 1). Alternatively, if the
@@ -185,7 +185,7 @@ then that expression is used to subset each item within the
 
     <div class='dont-index'><p>Other things related to ctd data: 
 <code><a href='CTD_BCD2014666_008_1_DN.ODF.gz.html'>CTD_BCD2014666_008_1_DN.ODF.gz</a></code>,
-<code><a href='sub-sub-ctd-method.html'>[[,ctd-method</a></code>,
+<code><a href='[[,ctd-method.html'>[[,ctd-method</a></code>,
 <code>[[&lt;-,ctd-method</code>,
 <code><a href='as.ctd.html'>as.ctd</a>()</code>,
 <code><a href='cnvName2oceName.html'>cnvName2oceName</a>()</code>,
@@ -198,12 +198,12 @@ then that expression is used to subset each item within the
 <code><a href='ctd.html'>ctd</a></code>,
 <code><a href='d200321-001.ctd.html'>d200321-001.ctd</a></code>,
 <code><a href='d201211_0011.cnv.html'>d201211_0011.cnv</a></code>,
-<code><a href='handleFlags-ctd-method.html'>handleFlags,ctd-method</a></code>,
-<code><a href='initialize-ctd-method.html'>initialize,ctd-method</a></code>,
-<code><a href='initializeFlagScheme-ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
+<code><a href='handleFlags,ctd-method.html'>handleFlags,ctd-method</a></code>,
+<code><a href='initialize,ctd-method.html'>initialize,ctd-method</a></code>,
+<code><a href='initializeFlagScheme,ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
 <code><a href='oceNames2whpNames.html'>oceNames2whpNames</a>()</code>,
 <code><a href='oceUnits2whpUnits.html'>oceUnits2whpUnits</a>()</code>,
-<code><a href='plot-ctd-method.html'>plot,ctd-method</a></code>,
+<code><a href='plot,ctd-method.html'>plot,ctd-method</a></code>,
 <code><a href='plotProfile.html'>plotProfile</a>()</code>,
 <code><a href='plotScan.html'>plotScan</a>()</code>,
 <code><a href='plotTS.html'>plotTS</a>()</code>,
@@ -214,35 +214,41 @@ then that expression is used to subset each item within the
 <code><a href='read.ctd.woce.other.html'>read.ctd.woce.other</a>()</code>,
 <code><a href='read.ctd.woce.html'>read.ctd.woce</a>()</code>,
 <code><a href='read.ctd.html'>read.ctd</a>()</code>,
-<code><a href='setFlags-ctd-method.html'>setFlags,ctd-method</a></code>,
-<code><a href='summary-ctd-method.html'>summary,ctd-method</a></code>,
+<code><a href='setFlags,ctd-method.html'>setFlags,ctd-method</a></code>,
+<code><a href='summary,ctd-method.html'>summary,ctd-method</a></code>,
 <code><a href='woceNames2oceNames.html'>woceNames2oceNames</a>()</code>,
 <code><a href='woceUnit2oceUnit.html'>woceUnit2oceUnit</a>()</code>,
 <code><a href='write.ctd.html'>write.ctd</a>()</code></p>
 <p>Other functions that subset oce objects: 
-<code><a href='subset-adp-method.html'>subset,adp-method</a></code>,
-<code><a href='subset-adv-method.html'>subset,adv-method</a></code>,
-<code><a href='subset-amsr-method.html'>subset,amsr-method</a></code>,
-<code><a href='subset-argo-method.html'>subset,argo-method</a></code>,
-<code><a href='subset-cm-method.html'>subset,cm-method</a></code>,
-<code><a href='subset-coastline-method.html'>subset,coastline-method</a></code>,
-<code><a href='subset-echosounder-method.html'>subset,echosounder-method</a></code>,
-<code><a href='subset-lobo-method.html'>subset,lobo-method</a></code>,
-<code><a href='subset-met-method.html'>subset,met-method</a></code>,
-<code><a href='subset-oce-method.html'>subset,oce-method</a></code>,
-<code><a href='subset-odf-method.html'>subset,odf-method</a></code>,
-<code><a href='subset-rsk-method.html'>subset,rsk-method</a></code>,
-<code><a href='subset-sealevel-method.html'>subset,sealevel-method</a></code>,
-<code><a href='subset-section-method.html'>subset,section-method</a></code>,
-<code><a href='subset-topo-method.html'>subset,topo-method</a></code>,
-<code><a href='subset-xbt-method.html'>subset,xbt-method</a></code></p></div>
+<code><a href='subset,adp-method.html'>subset,adp-method</a></code>,
+<code><a href='subset,adv-method.html'>subset,adv-method</a></code>,
+<code><a href='subset,amsr-method.html'>subset,amsr-method</a></code>,
+<code><a href='subset,argo-method.html'>subset,argo-method</a></code>,
+<code><a href='subset,cm-method.html'>subset,cm-method</a></code>,
+<code><a href='subset,coastline-method.html'>subset,coastline-method</a></code>,
+<code><a href='subset,echosounder-method.html'>subset,echosounder-method</a></code>,
+<code><a href='subset,lobo-method.html'>subset,lobo-method</a></code>,
+<code><a href='subset,met-method.html'>subset,met-method</a></code>,
+<code><a href='subset,oce-method.html'>subset,oce-method</a></code>,
+<code><a href='subset,odf-method.html'>subset,odf-method</a></code>,
+<code><a href='subset,rsk-method.html'>subset,rsk-method</a></code>,
+<code><a href='subset,sealevel-method.html'>subset,sealevel-method</a></code>,
+<code><a href='subset,section-method.html'>subset,section-method</a></code>,
+<code><a href='subset,topo-method.html'>subset,topo-method</a></code>,
+<code><a href='subset,xbt-method.html'>subset,xbt-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>ctd</span>)</div><div class='img'><img src='subset-ctd-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'>## Example 1</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>ctd</span>, <span class='no'>pressure</span><span class='kw'>&lt;</span><span class='fl'>10</span>))</div><div class='img'><img src='subset-ctd-method-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'>## Example 2</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>ctd</span>, <span class='kw'>indices</span><span class='kw'>=</span><span class='fl'>1</span>:<span class='fl'>10</span>))</div><div class='img'><img src='subset-ctd-method-3.png' alt='' width='700' height='433' /></div><div class='input'>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+</div><div class='img'><img src='subset-ctd-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'>## Example 1</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>ctd</span>, <span class='va'>pressure</span><span class='op'>&lt;</span><span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='subset-ctd-method-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'>## Example 2</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>ctd</span>, indices<span class='op'>=</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='subset-ctd-method-3.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -259,7 +265,7 @@ then that expression is used to subset each item within the
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -28,7 +28,7 @@ values, plus a decimal second value. It is common in the
 astronomical literature to use strings to represent the results,
 e.g. with \eqn{11^h40^m48^s.10}{11h40m48s.10} for the
 value used in the \dQuote{Examples}; see Chapter 1 of
-Meeuse (1991) for more on angle calculation and representation.
+Meeus (1991) for more on angle calculation and representation.
 }
 \examples{
 # A randomly-chosen example on page 99 of Meeus (1991).
@@ -37,8 +37,8 @@ angle2hms(177.74208) # string component 11h50m58s.10
 }
 \references{
 \itemize{
-\item Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
-USA. 429 pages.
+\item Meeus, Jean. Astronomical Algorithms. Second Edition.
+Richmond, Virginia, USA: Willmann-Bell, 1991.
 }
 }
 \seealso{

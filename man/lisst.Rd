@@ -19,6 +19,7 @@ artificially.
 Other datasets provided with oce: 
 \code{\link{adp}},
 \code{\link{adv}},
+\code{\link{amsr}},
 \code{\link{argo}},
 \code{\link{cm}},
 \code{\link{coastlineWorld}},
@@ -33,6 +34,7 @@ Other datasets provided with oce:
 \code{\link{sealevelTuktoyaktuk}},
 \code{\link{sealevel}},
 \code{\link{section}},
+\code{\link{topoNS}},
 \code{\link{topoWorld}},
 \code{\link{wind}},
 \code{\link{xbt}}

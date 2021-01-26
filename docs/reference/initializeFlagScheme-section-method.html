@@ -91,7 +91,7 @@ that may be specialized to the class of object
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -132,7 +132,7 @@ that may be specialized to the class of object
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -170,14 +170,14 @@ that may be specialized to the class of <code>object</code>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for section</span>
-<span class='fu'><a href='initializeFlagScheme.html'>initializeFlagScheme</a></span>(
-  <span class='no'>object</span>,
-  <span class='kw'>name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>default</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>update</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+<span class='fu'><a href='initializeFlagScheme.html'>initializeFlagScheme</a></span><span class='op'>(</span>
+  <span class='va'>object</span>,
+  name <span class='op'>=</span> <span class='cn'>NULL</span>,
+  mapping <span class='op'>=</span> <span class='cn'>NULL</span>,
+  default <span class='op'>=</span> <span class='cn'>NULL</span>,
+  update <span class='op'>=</span> <span class='cn'>NULL</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -235,40 +235,46 @@ names are simplified from the phrases used in defining
 documentation):</p><ul>
 <li><p><code>name="argo"</code> defaults <code>mapping</code> to
 OLD (prior to June 10, 2020)</p></li>
-</ul><pre><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>not_assessed</span><span class='kw'>=</span><span class='fl'>0</span>, <span class='kw'>passed_all_tests</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>probably_good</span><span class='kw'>=</span><span class='fl'>2</span>,
-     <span class='kw'>probably_bad</span><span class='kw'>=</span><span class='fl'>3</span>, <span class='kw'>bad</span><span class='kw'>=</span><span class='fl'>4</span>, <span class='kw'>averaged</span><span class='kw'>=</span><span class='fl'>7</span>,
-     <span class='kw'>interpolated</span><span class='kw'>=</span><span class='fl'>8</span>, <span class='kw'>missing</span><span class='kw'>=</span><span class='fl'>9</span>)</pre>
+</ul><pre><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>not_assessed<span class='op'>=</span><span class='fl'>0</span>, passed_all_tests<span class='op'>=</span><span class='fl'>1</span>, probably_good<span class='op'>=</span><span class='fl'>2</span>,
+     probably_bad<span class='op'>=</span><span class='fl'>3</span>, bad<span class='op'>=</span><span class='fl'>4</span>, averaged<span class='op'>=</span><span class='fl'>7</span>,
+     interpolated<span class='op'>=</span><span class='fl'>8</span>, missing<span class='op'>=</span><span class='fl'>9</span><span class='op'>)</span>
+</pre>
 
-<p>NEW (after June 10, 2020)</p><pre><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>not_assessed</span><span class='kw'>=</span><span class='fl'>0</span>, <span class='kw'>passed_all_tests</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>probably_good</span><span class='kw'>=</span><span class='fl'>2</span>,
-     <span class='kw'>probably_bad</span><span class='kw'>=</span><span class='fl'>3</span>, <span class='kw'>bad</span><span class='kw'>=</span><span class='fl'>4</span>, <span class='kw'>changed</span><span class='kw'>=</span><span class='fl'>5</span>, <span class='kw'>not_used_6</span><span class='kw'>=</span><span class='fl'>6</span>, <span class='kw'>not_used_7</span><span class='kw'>=</span><span class='fl'>7</span>,
-     <span class='kw'>estimated</span><span class='kw'>=</span><span class='fl'>8</span>, <span class='kw'>missing</span><span class='kw'>=</span><span class='fl'>9</span>)</pre>
+<p>NEW (after June 10, 2020)</p><pre><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>not_assessed<span class='op'>=</span><span class='fl'>0</span>, passed_all_tests<span class='op'>=</span><span class='fl'>1</span>, probably_good<span class='op'>=</span><span class='fl'>2</span>,
+     probably_bad<span class='op'>=</span><span class='fl'>3</span>, bad<span class='op'>=</span><span class='fl'>4</span>, changed<span class='op'>=</span><span class='fl'>5</span>, not_used_6<span class='op'>=</span><span class='fl'>6</span>, not_used_7<span class='op'>=</span><span class='fl'>7</span>,
+     estimated<span class='op'>=</span><span class='fl'>8</span>, missing<span class='op'>=</span><span class='fl'>9</span><span class='op'>)</span>
+</pre>
 
 <p>See reference 1 for a deeper explanation of the meanings of these codes.</p><ul>
 <li><p><code>name="BODC"</code> defaults <code>mapping</code> to</p></li>
-</ul><pre><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>no_quality_control</span><span class='kw'>=</span><span class='fl'>0</span>, <span class='kw'>good</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>probably_good</span><span class='kw'>=</span><span class='fl'>2</span>,
-     <span class='kw'>probably_bad</span><span class='kw'>=</span><span class='fl'>3</span>, <span class='kw'>bad</span><span class='kw'>=</span><span class='fl'>4</span>, <span class='kw'>changed</span><span class='kw'>=</span><span class='fl'>5</span>,
-     <span class='kw'>below_detection</span><span class='kw'>=</span><span class='fl'>6</span>, <span class='kw'>in_excess</span><span class='kw'>=</span><span class='fl'>7</span>, <span class='kw'>interpolated</span><span class='kw'>=</span><span class='fl'>8</span>,
-     <span class='kw'>missing</span><span class='kw'>=</span><span class='fl'>9</span>)</pre>
+</ul><pre><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>no_quality_control<span class='op'>=</span><span class='fl'>0</span>, good<span class='op'>=</span><span class='fl'>1</span>, probably_good<span class='op'>=</span><span class='fl'>2</span>,
+     probably_bad<span class='op'>=</span><span class='fl'>3</span>, bad<span class='op'>=</span><span class='fl'>4</span>, changed<span class='op'>=</span><span class='fl'>5</span>,
+     below_detection<span class='op'>=</span><span class='fl'>6</span>, in_excess<span class='op'>=</span><span class='fl'>7</span>, interpolated<span class='op'>=</span><span class='fl'>8</span>,
+     missing<span class='op'>=</span><span class='fl'>9</span><span class='op'>)</span>
+</pre>
 
 <p>See reference 2 for a deeper explanation of the meanings of these codes,
 and note that codes <code>A</code> and <code>Q</code> are not provided in
 oce.</p><ul>
 <li><p><code>name="DFO"</code> defaults <code>mapping</code> to</p></li>
-</ul><pre><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>no_quality_control</span><span class='kw'>=</span><span class='fl'>0</span>, <span class='kw'>appears_correct</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>appears_inconsistent</span><span class='kw'>=</span><span class='fl'>2</span>,
-     <span class='kw'>doubtful</span><span class='kw'>=</span><span class='fl'>3</span>, <span class='kw'>erroneous</span><span class='kw'>=</span><span class='fl'>4</span>, <span class='kw'>changed</span><span class='kw'>=</span><span class='fl'>5</span>,
-     <span class='kw'>qc_by_originator</span><span class='kw'>=</span><span class='fl'>8</span>, <span class='kw'>missing</span><span class='kw'>=</span><span class='fl'>9</span>)</pre>
+</ul><pre><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>no_quality_control<span class='op'>=</span><span class='fl'>0</span>, appears_correct<span class='op'>=</span><span class='fl'>1</span>, appears_inconsistent<span class='op'>=</span><span class='fl'>2</span>,
+     doubtful<span class='op'>=</span><span class='fl'>3</span>, erroneous<span class='op'>=</span><span class='fl'>4</span>, changed<span class='op'>=</span><span class='fl'>5</span>,
+     qc_by_originator<span class='op'>=</span><span class='fl'>8</span>, missing<span class='op'>=</span><span class='fl'>9</span><span class='op'>)</span>
+</pre>
 
 <p>See reference 3 for a deeper explanation of the meanings of these codes.</p><ul>
 <li><p><code>name="WHP bottle"</code> defaults <code>mapping</code> to</p></li>
-</ul><pre><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>no_information</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>no_problems_noted</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>leaking</span><span class='kw'>=</span><span class='fl'>3</span>,
-     <span class='kw'>did_not_trip</span><span class='kw'>=</span><span class='fl'>4</span>, <span class='kw'>not_reported</span><span class='kw'>=</span><span class='fl'>5</span>, <span class='kw'>discrepency</span><span class='kw'>=</span><span class='fl'>6</span>,
-     <span class='kw'>unknown_problem</span><span class='kw'>=</span><span class='fl'>7</span>, <span class='kw'>did_not_trip</span><span class='kw'>=</span><span class='fl'>8</span>, <span class='kw'>no_sample</span><span class='kw'>=</span><span class='fl'>9</span>)</pre>
+</ul><pre><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>no_information<span class='op'>=</span><span class='fl'>1</span>, no_problems_noted<span class='op'>=</span><span class='fl'>2</span>, leaking<span class='op'>=</span><span class='fl'>3</span>,
+     did_not_trip<span class='op'>=</span><span class='fl'>4</span>, not_reported<span class='op'>=</span><span class='fl'>5</span>, discrepency<span class='op'>=</span><span class='fl'>6</span>,
+     unknown_problem<span class='op'>=</span><span class='fl'>7</span>, did_not_trip<span class='op'>=</span><span class='fl'>8</span>, no_sample<span class='op'>=</span><span class='fl'>9</span><span class='op'>)</span>
+</pre>
 
 <p>See reference 4 for a deeper explanation of the meanings of these codes.</p><ul>
 <li><p><code>name="WHP CTD"</code> defaults <code>mapping</code> to</p></li>
-</ul><pre><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>not_calibrated</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>acceptable</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>questionable</span><span class='kw'>=</span><span class='fl'>3</span>,
-    <span class='kw'>bad</span><span class='kw'>=</span><span class='fl'>4</span>, <span class='kw'>not_reported</span><span class='kw'>=</span><span class='fl'>5</span>, <span class='kw'>interpolated</span><span class='kw'>=</span><span class='fl'>6</span>,
-    <span class='kw'>despiked</span><span class='kw'>=</span><span class='fl'>7</span>, <span class='kw'>missing</span><span class='kw'>=</span><span class='fl'>9</span>)</pre>
+</ul><pre><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>not_calibrated<span class='op'>=</span><span class='fl'>1</span>, acceptable<span class='op'>=</span><span class='fl'>2</span>, questionable<span class='op'>=</span><span class='fl'>3</span>,
+    bad<span class='op'>=</span><span class='fl'>4</span>, not_reported<span class='op'>=</span><span class='fl'>5</span>, interpolated<span class='op'>=</span><span class='fl'>6</span>,
+    despiked<span class='op'>=</span><span class='fl'>7</span>, missing<span class='op'>=</span><span class='fl'>9</span><span class='op'>)</span>
+</pre>
 
 <p>See reference 4 for a deeper explanation of the meanings of these codes.</p>
     <h2 class="hasAnchor" id="caution"><a class="anchor" href="#caution"></a>Caution</h2>
@@ -298,30 +304,30 @@ https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_d
 
     <div class='dont-index'><p>Other functions relating to data-quality flags: 
 <code><a href='defaultFlags.html'>defaultFlags</a>()</code>,
-<code><a href='handleFlags-adp-method.html'>handleFlags,adp-method</a></code>,
-<code><a href='handleFlags-argo-method.html'>handleFlags,argo-method</a></code>,
-<code><a href='handleFlags-ctd-method.html'>handleFlags,ctd-method</a></code>,
-<code><a href='handleFlags-oce-method.html'>handleFlags,oce-method</a></code>,
-<code><a href='handleFlags-section-method.html'>handleFlags,section-method</a></code>,
+<code><a href='handleFlags,adp-method.html'>handleFlags,adp-method</a></code>,
+<code><a href='handleFlags,argo-method.html'>handleFlags,argo-method</a></code>,
+<code><a href='handleFlags,ctd-method.html'>handleFlags,ctd-method</a></code>,
+<code><a href='handleFlags,oce-method.html'>handleFlags,oce-method</a></code>,
+<code><a href='handleFlags,section-method.html'>handleFlags,section-method</a></code>,
 <code><a href='handleFlags.html'>handleFlags</a>()</code>,
-<code><a href='initializeFlagScheme-ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
-<code><a href='initializeFlagScheme-oce-method.html'>initializeFlagScheme,oce-method</a></code>,
+<code><a href='initializeFlagScheme,ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
+<code><a href='initializeFlagScheme,oce-method.html'>initializeFlagScheme,oce-method</a></code>,
 <code><a href='initializeFlagSchemeInternal.html'>initializeFlagSchemeInternal</a>()</code>,
 <code><a href='initializeFlagScheme.html'>initializeFlagScheme</a>()</code>,
-<code><a href='initializeFlags-adp-method.html'>initializeFlags,adp-method</a></code>,
-<code><a href='initializeFlags-oce-method.html'>initializeFlags,oce-method</a></code>,
+<code><a href='initializeFlags,adp-method.html'>initializeFlags,adp-method</a></code>,
+<code><a href='initializeFlags,oce-method.html'>initializeFlags,oce-method</a></code>,
 <code><a href='initializeFlagsInternal.html'>initializeFlagsInternal</a>()</code>,
 <code><a href='initializeFlags.html'>initializeFlags</a>()</code>,
-<code><a href='setFlags-adp-method.html'>setFlags,adp-method</a></code>,
-<code><a href='setFlags-ctd-method.html'>setFlags,ctd-method</a></code>,
-<code><a href='setFlags-oce-method.html'>setFlags,oce-method</a></code>,
+<code><a href='setFlags,adp-method.html'>setFlags,adp-method</a></code>,
+<code><a href='setFlags,ctd-method.html'>setFlags,ctd-method</a></code>,
+<code><a href='setFlags,oce-method.html'>setFlags,oce-method</a></code>,
 <code><a href='setFlags.html'>setFlags</a>()</code></p>
 <p>Other things related to section data: 
-<code><a href='sub-sub-section-method.html'>[[,section-method</a></code>,
+<code><a href='[[,section-method.html'>[[,section-method</a></code>,
 <code>[[&lt;-,section-method</code>,
 <code><a href='as.section.html'>as.section</a>()</code>,
-<code><a href='handleFlags-section-method.html'>handleFlags,section-method</a></code>,
-<code><a href='plot-section-method.html'>plot,section-method</a></code>,
+<code><a href='handleFlags,section-method.html'>handleFlags,section-method</a></code>,
+<code><a href='plot,section-method.html'>plot,section-method</a></code>,
 <code><a href='read.section.html'>read.section</a>()</code>,
 <code><a href='section-class.html'>section-class</a></code>,
 <code><a href='sectionAddStation.html'>sectionAddStation</a>()</code>,
@@ -329,18 +335,19 @@ https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_d
 <code><a href='sectionSmooth.html'>sectionSmooth</a>()</code>,
 <code><a href='sectionSort.html'>sectionSort</a>()</code>,
 <code><a href='section.html'>section</a></code>,
-<code><a href='subset-section-method.html'>subset,section-method</a></code>,
-<code><a href='summary-section-method.html'>summary,section-method</a></code></p></div>
+<code><a href='subset,section-method.html'>subset,section-method</a></code>,
+<code><a href='summary,section-method.html'>summary,section-method</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>section</span>)
-<span class='no'>section</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='read.section.html'>read.section</a></span>(<span class='st'>"a03_hy1.csv"</span>, <span class='kw'>sectionId</span><span class='kw'>=</span><span class='st'>"a03"</span>, <span class='kw'>institute</span><span class='kw'>=</span><span class='st'>"SIO"</span>,
-                        <span class='kw'>ship</span><span class='kw'>=</span><span class='st'>"R/V Professor Multanovskiy"</span>, <span class='kw'>scientist</span><span class='kw'>=</span><span class='st'>"Vladimir Tereschenkov"</span>)
-<span class='no'>sectionWithFlags</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='initializeFlagScheme.html'>initializeFlagScheme</a></span>(<span class='no'>section</span>, <span class='st'>"WHP bottle"</span>)
-<span class='no'>station1</span> <span class='kw'>&lt;-</span> <span class='no'>sectionWithFlags</span><span class='kw'>[[</span><span class='st'>"station"</span>, <span class='fl'>1</span>]]
-<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='no'>station1</span><span class='kw'>[[</span><span class='st'>"flagScheme"</span>]])
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>section</span><span class='op'>)</span>
+<span class='va'>section</span> <span class='op'>&lt;-</span> <span class='fu'><a href='read.section.html'>read.section</a></span><span class='op'>(</span><span class='st'>"a03_hy1.csv"</span>, sectionId<span class='op'>=</span><span class='st'>"a03"</span>, institute<span class='op'>=</span><span class='st'>"SIO"</span>,
+                        ship<span class='op'>=</span><span class='st'>"R/V Professor Multanovskiy"</span>, scientist<span class='op'>=</span><span class='st'>"Vladimir Tereschenkov"</span><span class='op'>)</span>
+<span class='va'>sectionWithFlags</span> <span class='op'>&lt;-</span> <span class='fu'><a href='initializeFlagScheme.html'>initializeFlagScheme</a></span><span class='op'>(</span><span class='va'>section</span>, <span class='st'>"WHP bottle"</span><span class='op'>)</span>
+<span class='va'>station1</span> <span class='op'>&lt;-</span> <span class='va'>sectionWithFlags</span><span class='op'>[[</span><span class='st'>"station"</span>, <span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>station1</span><span class='op'>[[</span><span class='st'>"flagScheme"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -356,7 +363,7 @@ https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_d
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

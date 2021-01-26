@@ -54,7 +54,7 @@ then \code{PRES} (pressure) data are sought in the file, along with
 are stored with names created as explained in the
 \dQuote{Variable renaming convention} section below. Note that
 flags, which are stored variables ending in \code{"_QC"} in the netcdf
-fil, are stored in the \code{flags} item within the \code{metadata} slot
+file, are stored in the \code{flags} item within the \code{metadata} slot
 of the returned object; thus, for example,
 \code{PRES_QC} is stored as \code{pressure} in \code{flags}.
 }
@@ -97,7 +97,7 @@ float. For example,
 \code{https://www.usgodae.org/ftp/outgoing/argo/} is the top level of
 a such a repository. If the ID of a float is known but not the
 "dac", then a first step is to download the text file
-\code{http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
+\code{https://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
 and search for the ID. The first few lines of that file are header,
 and after that the format is simple, with columns separated by slash
 (\code{/}). The dac is in the first such column and the float ID in the
@@ -151,9 +151,9 @@ summary(argo)
 }
 \references{
 \enumerate{
-\item \url{http://www.argo.ucsd.edu/}
-\item Argo User's Manual Version 3.3, Nov 89th, 2019, available at
-\url{https://archimer.ifremer.fr/doc/00187/29825/}
+\item \url{https://argo.ucsd.edu}
+\item Argo User's Manual Version 3.2, Dec 29th, 2015, available at
+\url{https://archimer.ifremer.fr/doc/00187/29825/} online.
 \item User's Manual (ar-um-02-01) 13 July 2010, available at
 \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf},
 which is the main document describing argo data.

@@ -58,9 +58,10 @@ is provided, then the value \code{"rdi"} will cause \code{\link[=read.adp.rdi]{r
 to be used, \code{"nortek"} will cause \code{\link[=read.adp.nortek]{read.adp.nortek()}} to be used,
 and \code{"sontek"} will cause \code{\link[=read.adp.sontek]{read.adp.sontek()}} to be used.}
 
-\item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
-in reading the file, either by printing a dot for each profile or by writing
-a textual progress bar with \code{\link[=txtProgressBar]{txtProgressBar()}}.}
+\item{monitor}{boolean value indicating whether to indicate the progress
+of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value
+of \code{monitor} is changed to \code{FALSE} automatically, for non-interactive
+sessions.}
 
 \item{despike}{if \code{TRUE}, \code{\link[=despike]{despike()}} will be used to clean
 anomalous spikes in heading, etc.}

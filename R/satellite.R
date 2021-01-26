@@ -7,9 +7,7 @@
 #'
 #' @author Dan Kelley and Chantelle Layton
 #'
-#' @concept satellite
-#'
-#' @family things related to satellite data
+#' @family classes holding satellite data
 setClass("satellite", contains="oce")
 
 setMethod(f="initialize",
@@ -31,10 +29,6 @@ setMethod(f="initialize",
 #' @param ... Ignored.
 #'
 #' @author Dan Kelley
-#'
-#' @concept satellite
-#'
-#' @family things related to satellite data
 setMethod(f="summary",
           signature="satellite",
           definition=function(object, ...) {
@@ -77,11 +71,8 @@ setMethod(f="summary",
 #' @param ... extra arguments passed to [imagep()], e.g. set
 #' `col` to control colors.
 #'
-#' @concept satellite
-#'
 #' @author Dan Kelley
 #'
-#' @family things related to satellite data
 #' @family functions that plot oce data
 #'
 #' @aliases plot.satellite

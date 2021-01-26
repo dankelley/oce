@@ -68,15 +68,10 @@ Data are downloaded from the Environment Canada's historical data
 website and cached locally.
 }
 \details{
-The data are downloaded from
-\url{https://climate.weather.gc.ca/historical_data/search_historic_data_e.html}
-using \code{\link[utils:download.file]{utils::download.file()}}
-pointed to the Environment Canada website (reference 1)
-using queries that had to be devised by reverse-engineering, since the agency
-does not provide documentation about how to construct queries. Caution: the
-query format changes from time to time, so \code{\link[=download.met]{download.met()}} may work one
-day, and fail the next.
-
+The data are downloaded
+using \code{\link[utils:download.file]{utils::download.file()}} based on a query devised by reverse-engineering
+queries create by the Environment Canada interface
+\verb{https://climate.weather.gc.ca/historical_data/search_historic_data_e.html}.
 The constructed query contains Station ID, as provided in the \code{id} argument.
 Note that this seems to be a creation of Environment Canada, alone;
 it is distinct from the more standard "Climate ID" and "WMO ID".
@@ -110,7 +105,7 @@ met <- read.met(metFile)
 \references{
 \enumerate{
 \item Environment Canada website for Historical Climate Data
-\url{http://climate.weather.gc.ca/index_e.html}
+\verb{https://climate.weather.gc.ca/index_e.html}
 \item Gavin Simpson's \code{canadaHCD} package on GitHub
 \url{https://github.com/gavinsimpson/canadaHCD}
 }

@@ -91,25 +91,29 @@ amount of debugging information, or to 2 to get more.}
 }
 \description{
 Plot axis labels on an existing map.
-}
-\details{
-This function is still in development, and the argument list as well as the
-action taken are both subject to change, hence the brevity of this help page.
-
-Note that if a grid line crosses the axis twice, only one label will be drawn.
+This is an advanced function, requiring
+coordination with \code{\link[=mapPlot]{mapPlot()}} and (possibly) also with \code{\link[=mapGrid]{mapGrid()}},
+and so it is best avoided by novices, who may be satisfied
+with the defaults used by \code{\link[=mapPlot]{mapPlot()}}.
 }
 \examples{
 \donttest{
 library(oce)
 data(coastlineWorld)
-par(mar=c(2, 2, 3, 1))
+par(mar=c(2, 2, 1, 1))
 lonlim <- c(-180, 180)
-latlim <- c(60, 120)
+latlim <- c(70, 110)
+# In mapPlot() call, note axes and grid args, to
+# prevent over-plotting of defaults.  Some adjustments
+# might be required to the mapGrid() arguments, to
+# get agreement with the axis. This is why both
+# mapGrid() and mapAxis() are best avoided; it is
+# simpler to let mapPlot() handle these things.
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
         longitudelim=lonlim, latitudelim=latlim,
-        grid=FALSE)
-mapGrid(15, 15, polarCircle=1/2)
-mapAxis()
+        col="tan", axes=FALSE, grid=FALSE)
+mapGrid(15, 15)
+mapAxis(axisStyle=5)
 }
 
 }

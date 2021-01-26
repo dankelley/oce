@@ -48,12 +48,17 @@ for various data classes) provides a way to
 manipulate the contents of the data slot, based on
 such data-quality flags. For example, a common operation is to replace
 erroneous data with NA.
-If metadata$flags in the first argument
-is empty, then that object is returned, unaltered.
-Otherwise, handleFlags analyses the data-quality flags within
-the object, in context of the flags argument, and then interprets
-the action argument to select an action that is to be applied
-to the matched data." />
+If the flags within object's metadata slot is empty,
+then object is returned, unaltered.
+Otherwise, handleFlags examines object@metadata$flags
+in the context of the flags argument, and then
+carries out actions that are specified by the actions argument.
+By default, this sets the returned data entries to NA,
+wherever the corresponding metadata$flag values
+signal unreliable data. To maintain a hint as to why
+data were changed, metadata$flags in the
+returned value is a direct copy of the corresponding
+entry in object." />
 
 
 
@@ -93,7 +98,7 @@ to the matched data." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -134,7 +139,7 @@ to the matched data." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -165,22 +170,27 @@ for various data classes) provides a way to
 manipulate the contents of the <code>data</code> slot, based on
 such data-quality flags. For example, a common operation is to replace
 erroneous data with <code>NA</code>.</p>
-<p>If <code>metadata$flags</code> in the first argument
-is empty, then that object is returned, unaltered.
-Otherwise, <code>handleFlags</code> analyses the data-quality flags within
-the object, in context of the <code>flags</code> argument, and then interprets
-the <code>action</code> argument to select an action that is to be applied
-to the matched data.</p>
+<p>If the <code>flags</code> within <code>object</code>'s <code>metadata</code> slot is empty,
+then <code>object</code> is returned, unaltered.
+Otherwise, <code>handleFlags</code> examines <code>object@metadata$flags</code>
+in the context of the <code>flags</code> argument, and then
+carries out actions that are specified by the <code>actions</code> argument.
+By default, this sets the returned <code>data</code> entries to <code>NA</code>,
+wherever the corresponding <code>metadata$flag</code> values
+signal unreliable data. To maintain a hint as to why
+<code>data</code> were changed, <code>metadata$flags</code> in the
+returned value is a direct copy of the corresponding
+entry in <code>object</code>.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for argo</span>
-<span class='fu'><a href='handleFlags.html'>handleFlags</a></span>(
-  <span class='no'>object</span>,
-  <span class='kw'>flags</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>actions</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>where</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+<span class='fu'><a href='handleFlags.html'>handleFlags</a></span><span class='op'>(</span>
+  <span class='va'>object</span>,
+  flags <span class='op'>=</span> <span class='cn'>NULL</span>,
+  actions <span class='op'>=</span> <span class='cn'>NULL</span>,
+  where <span class='op'>=</span> <span class='cn'>NULL</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -246,52 +256,58 @@ handled for each data item. If not supplied, this defaults to the value of
 
     
 <ol>
-<li><p><a href='http://www.argo.ucsd.edu/Argo_date_guide.html#dmodedata'>http://www.argo.ucsd.edu/Argo_date_guide.html#dmodedata</a></p></li>
+<li><p>Wong, Annie, Robert Keeley, Thierry Carval, and Argo Data Management Team.
+"Argo Quality Control Manual for CTD and Trajectory Data," January 1, 2020.
+<a href='https://archimer.ifremer.fr/doc/00228/33951/'>https://archimer.ifremer.fr/doc/00228/33951/</a>.</p></li>
 </ol>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other functions relating to data-quality flags: 
 <code><a href='defaultFlags.html'>defaultFlags</a>()</code>,
-<code><a href='handleFlags-adp-method.html'>handleFlags,adp-method</a></code>,
-<code><a href='handleFlags-ctd-method.html'>handleFlags,ctd-method</a></code>,
-<code><a href='handleFlags-oce-method.html'>handleFlags,oce-method</a></code>,
-<code><a href='handleFlags-section-method.html'>handleFlags,section-method</a></code>,
+<code><a href='handleFlags,adp-method.html'>handleFlags,adp-method</a></code>,
+<code><a href='handleFlags,ctd-method.html'>handleFlags,ctd-method</a></code>,
+<code><a href='handleFlags,oce-method.html'>handleFlags,oce-method</a></code>,
+<code><a href='handleFlags,section-method.html'>handleFlags,section-method</a></code>,
 <code><a href='handleFlags.html'>handleFlags</a>()</code>,
-<code><a href='initializeFlagScheme-ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
-<code><a href='initializeFlagScheme-oce-method.html'>initializeFlagScheme,oce-method</a></code>,
-<code><a href='initializeFlagScheme-section-method.html'>initializeFlagScheme,section-method</a></code>,
+<code><a href='initializeFlagScheme,ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
+<code><a href='initializeFlagScheme,oce-method.html'>initializeFlagScheme,oce-method</a></code>,
+<code><a href='initializeFlagScheme,section-method.html'>initializeFlagScheme,section-method</a></code>,
 <code><a href='initializeFlagSchemeInternal.html'>initializeFlagSchemeInternal</a>()</code>,
 <code><a href='initializeFlagScheme.html'>initializeFlagScheme</a>()</code>,
-<code><a href='initializeFlags-adp-method.html'>initializeFlags,adp-method</a></code>,
-<code><a href='initializeFlags-oce-method.html'>initializeFlags,oce-method</a></code>,
+<code><a href='initializeFlags,adp-method.html'>initializeFlags,adp-method</a></code>,
+<code><a href='initializeFlags,oce-method.html'>initializeFlags,oce-method</a></code>,
 <code><a href='initializeFlagsInternal.html'>initializeFlagsInternal</a>()</code>,
 <code><a href='initializeFlags.html'>initializeFlags</a>()</code>,
-<code><a href='setFlags-adp-method.html'>setFlags,adp-method</a></code>,
-<code><a href='setFlags-ctd-method.html'>setFlags,ctd-method</a></code>,
-<code><a href='setFlags-oce-method.html'>setFlags,oce-method</a></code>,
+<code><a href='setFlags,adp-method.html'>setFlags,adp-method</a></code>,
+<code><a href='setFlags,ctd-method.html'>setFlags,ctd-method</a></code>,
+<code><a href='setFlags,oce-method.html'>setFlags,oce-method</a></code>,
 <code><a href='setFlags.html'>setFlags</a>()</code></p>
 <p>Other things related to argo data: 
-<code><a href='sub-sub-argo-method.html'>[[,argo-method</a></code>,
+<code><a href='[[,argo-method.html'>[[,argo-method</a></code>,
 <code>[[&lt;-,argo-method</code>,
 <code><a href='argo-class.html'>argo-class</a></code>,
 <code><a href='argoGrid.html'>argoGrid</a>()</code>,
 <code><a href='argoNames2oceNames.html'>argoNames2oceNames</a>()</code>,
 <code><a href='argo.html'>argo</a></code>,
 <code><a href='as.argo.html'>as.argo</a>()</code>,
-<code><a href='plot-argo-method.html'>plot,argo-method</a></code>,
+<code><a href='plot,argo-method.html'>plot,argo-method</a></code>,
 <code><a href='read.argo.html'>read.argo</a>()</code>,
-<code><a href='subset-argo-method.html'>subset,argo-method</a></code>,
-<code><a href='summary-argo-method.html'>summary,argo-method</a></code></p></div>
+<code><a href='subset,argo-method.html'>subset,argo-method</a></code>,
+<code><a href='summary,argo-method.html'>summary,argo-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>argo</span>)
-<span class='no'>argoNew</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='handleFlags.html'>handleFlags</a></span>(<span class='no'>argo</span>)
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>argo</span><span class='op'>)</span>
+<span class='va'>argoNew</span> <span class='op'>&lt;-</span> <span class='fu'><a href='handleFlags.html'>handleFlags</a></span><span class='op'>(</span><span class='va'>argo</span><span class='op'>)</span>
 <span class='co'># Demonstrate replacement, looking at the second profile</span>
-<span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='no'>argo</span><span class='kw'>[[</span><span class='st'>"salinityFlag"</span>]][,<span class='fl'>2</span>]
-<span class='no'>df</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>flag</span><span class='kw'>=</span><span class='no'>f</span>, <span class='kw'>orig</span><span class='kw'>=</span><span class='no'>argo</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]][,<span class='fl'>2</span>], <span class='kw'>new</span><span class='kw'>=</span><span class='no'>argoNew</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]][,<span class='fl'>2</span>])
-<span class='no'>df</span>[<span class='fl'>11</span>:<span class='fl'>15</span>,] <span class='co'># notice line 13</span></div><div class='output co'>#&gt;    flag   orig    new
+<span class='va'>f</span> <span class='op'>&lt;-</span> <span class='va'>argo</span><span class='op'>[[</span><span class='st'>"salinityFlag"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>[</span>,<span class='fl'>2</span><span class='op'>]</span>
+<span class='va'>df</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>flag<span class='op'>=</span><span class='va'>f</span>, orig<span class='op'>=</span><span class='va'>argo</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>[</span>,<span class='fl'>2</span><span class='op'>]</span>, new<span class='op'>=</span><span class='va'>argoNew</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>[</span>,<span class='fl'>2</span><span class='op'>]</span><span class='op'>)</span>
+<span class='va'>df</span><span class='op'>[</span><span class='fl'>11</span><span class='op'>:</span><span class='fl'>15</span>,<span class='op'>]</span> <span class='co'># notice line 13</span>
+</div><div class='output co'>#&gt;    flag   orig    new
 #&gt; 11    1 35.207 35.207
 #&gt; 12    1 35.207 35.207
 #&gt; 13    4 35.209     NA
@@ -313,7 +329,7 @@ handled for each data item. If not supplied, this defaults to the value of
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

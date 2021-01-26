@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -147,72 +147,47 @@
     <p>Coerce data into a CM object</p>
     </div>
 
-    <pre class="usage"><span class='fu'>as.cm</span>(
-  <span class='no'>time</span>,
-  <span class='kw'>u</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>v</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>pressure</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>conductivity</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>temperature</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>salinity</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>filename</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>as.cm</span><span class='op'>(</span>
+  <span class='va'>time</span>,
+  u <span class='op'>=</span> <span class='cn'>NULL</span>,
+  v <span class='op'>=</span> <span class='cn'>NULL</span>,
+  pressure <span class='op'>=</span> <span class='cn'>NULL</span>,
+  conductivity <span class='op'>=</span> <span class='cn'>NULL</span>,
+  temperature <span class='op'>=</span> <span class='cn'>NULL</span>,
+  salinity <span class='op'>=</span> <span class='cn'>NULL</span>,
+  longitude <span class='op'>=</span> <span class='cn'>NA</span>,
+  latitude <span class='op'>=</span> <span class='cn'>NA</span>,
+  filename <span class='op'>=</span> <span class='st'>""</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>time</th>
-      <td><p>A vector of times of observation, or an <code>oce</code> object that holds <code>time</code>,
-in addition to either both <code>u</code> and <code>v</code>, or both <code>directionTrue</code>
-and <code>speedHorizontal</code>.</p></td>
+      <td><p>A vector of times of observation, or an <code>oce</code> object from which time
+and two velocity components can be inferred, e.g. an <a href='adv-class.html'>adv</a> object, or
+an <a href='adp-class.html'>adp</a> object that has only one distance bin.  If <code>time</code> is an <code>oce</code> object,
+then all of the following arguments are ignored.</p></td>
     </tr>
     <tr>
-      <th>u</th>
-      <td><p>either a numerical vector containing the eastward component of velocity, in m/s,
-or an <code>oce</code> object that can can be coerced into a <code>cm</code> object. In the second
-case, the other arguments to the present function are ignored.</p></td>
+      <th>u, v</th>
+      <td><p>optional numerical vectors containing the x and y components of velocity (m/s).</p></td>
     </tr>
     <tr>
-      <th>v</th>
-      <td><p>vector containing the northward component of velocity in m/s.</p></td>
+      <th>pressure, conductivity, salinity, temperature</th>
+      <td><p>optional numerical vectors
+containing pressure (dbar), electrical conductivity, practical salinity,
+and in-situ temperature (degree C).</p></td>
     </tr>
     <tr>
-      <th>pressure</th>
-      <td><p>vector containing pressure in dbar. Ignored if the first argument
-contains an <code>oce</code> object holding pressure.</p></td>
-    </tr>
-    <tr>
-      <th>conductivity</th>
-      <td><p>Optional vector of conductivity.
-Ignored if the first argument contains an <code>oce</code> object holding pressure.</p></td>
-    </tr>
-    <tr>
-      <th>temperature</th>
-      <td><p>Optional vector of temperature.
-Ignored if the first argument contains an <code>oce</code> object holding temperature</p></td>
-    </tr>
-    <tr>
-      <th>salinity</th>
-      <td><p>Optional vector of salinity, assumed to be Practical Salinity.
-Ignored if the first argument contains an <code>oce</code> object holding salinity</p></td>
-    </tr>
-    <tr>
-      <th>longitude</th>
-      <td><p>Optional longitude in degrees East.
-Ignored if the first argument contains an <code>oce</code> object holding longitude.</p></td>
-    </tr>
-    <tr>
-      <th>latitude</th>
-      <td><p>Latitude in degrees North.
-Ignored if the first argument contains an <code>oce</code> object holding latitude.</p></td>
+      <th>longitude, latitude</th>
+      <td><p>optional position specified in degrees East and North.</p></td>
     </tr>
     <tr>
       <th>filename</th>
-      <td><p>Optional source file name</p></td>
+      <td><p>optional source file name.</p></td>
     </tr>
     <tr>
       <th>debug</th>
@@ -229,16 +204,66 @@ by specifying higher <code>debug</code> values.</p></td>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to cm data: 
-<code><a href='sub-sub-cm-method.html'>[[,cm-method</a></code>,
+<code><a href='[[,cm-method.html'>[[,cm-method</a></code>,
 <code>[[&lt;-,cm-method</code>,
 <code><a href='cm-class.html'>cm-class</a></code>,
 <code><a href='cm.html'>cm</a></code>,
-<code><a href='plot-cm-method.html'>plot,cm-method</a></code>,
+<code><a href='plot,cm-method.html'>plot,cm-method</a></code>,
 <code><a href='read.cm.html'>read.cm</a>()</code>,
 <code><a href='rotateAboutZ.html'>rotateAboutZ</a>()</code>,
-<code><a href='subset-cm-method.html'>subset,cm-method</a></code>,
-<code><a href='summary-cm-method.html'>summary,cm-method</a></code></p></div>
+<code><a href='subset,cm-method.html'>subset,cm-method</a></code>,
+<code><a href='summary,cm-method.html'>summary,cm-method</a></code></p></div>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='co'># Example 1: creation from scratch</span>
+<span class='va'>t</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.time</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span> <span class='fl'>0</span><span class='op'>:</span><span class='fl'>50</span>
+<span class='va'>u</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span><span class='op'>(</span><span class='fl'>2</span><span class='op'>*</span><span class='va'>pi</span><span class='op'>*</span><span class='fl'>0</span><span class='op'>:</span><span class='fl'>50</span><span class='op'>/</span><span class='fl'>5</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>51</span><span class='op'>)</span>
+<span class='va'>v</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>cos</a></span><span class='op'>(</span><span class='fl'>2</span><span class='op'>*</span><span class='va'>pi</span><span class='op'>*</span><span class='fl'>0</span><span class='op'>:</span><span class='fl'>50</span><span class='op'>/</span><span class='fl'>5</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>51</span><span class='op'>)</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fl'>100</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>51</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='fu'>as.cm</span><span class='op'>(</span><span class='va'>t</span>, <span class='va'>u</span>, <span class='va'>v</span>, <span class='va'>p</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Cm summary
+#&gt; ----------
+#&gt; 
+#&gt; * Time ranges from 2021-01-26 17:47:45 to 2021-01-26 17:48:35 with 51 samples and mean increment 1 s
+#&gt; * Data Overview
+#&gt; 
+#&gt;                        Min.      Mean   Max. Dim. NAs OriginalName
+#&gt;     u [m/s]         -2.8628 0.0070087 3.2703   51   0            -
+#&gt;     v [m/s]         -2.5653   0.23561 2.4359   51   0            -
+#&gt;     pressure [dbar]    98.1    100.02 101.88   51   0            -
+#&gt; 
+#&gt; * Processing Log
+#&gt; 
+#&gt;     - 2021-01-26 21:47:45 UTC: `create 'cm' object`
+#&gt;     - 2021-01-26 21:47:45 UTC: `as.cm(time = t, u = u, v = v, pressure = p)`</div><div class='input'>
+<span class='co'># Example 2: creation from an adv object</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>adv</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='fu'>as.cm</span><span class='op'>(</span><span class='va'>adv</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Cm summary
+#&gt; ----------
+#&gt; 
+#&gt; * File source:        "(file name redacted)"
+#&gt; * Serial Number:      (serial number redacted)
+#&gt; * Time ranges from 2008-07-01 00:00:00 to 2008-07-01 00:00:59 with 480 samples and mean increment 0.1250001 s
+#&gt; * Data Overview
+#&gt; 
+#&gt;                           Min.      Mean     Max. Dim. NAs OriginalName
+#&gt;     u [m/s]          -0.080871 -0.027275 0.012168  480   0            -
+#&gt;     v [m/s]         -0.0090777  0.021877 0.057789  480   0            -
+#&gt;     pressure [dbar]      16.85    16.866   16.879  480   0            -
+#&gt; 
+#&gt; * Processing Log
+#&gt; 
+#&gt;     - 2015-12-23 17:53:39 UTC: `read.oce(file = "/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec",     from = as.POSIXct("2008-06-25 00:00:00", tz = "UTC"), to = as.POSIXct("2008-07-06 00:00:00",         tz = "UTC"), latitude = 47.87943, longitude = -69.72533)`
+#&gt;     - 2015-12-23 17:53:54 UTC: `retime(x = m05VectorBeam, a = 0.58, b = 6.3892e-07, t0 = as.POSIXct("2008-07-01 00:00:00",     tz = "UTC"))`
+#&gt;     - 2015-12-23 17:53:55 UTC: `subset(x, subset=as.POSIXct("2008-06-25 13:00:00", tz = "UTC") &lt;= time &amp; time &lt;=      as.POSIXct("2008-07-03 00:50:00", tz = "UTC"))`
+#&gt;     - 2015-12-23 17:53:55 UTC: `oceEdit(x = m05VectorBeam, item = "transformationMatrix", value = rbind(c(11033,     -5803, -5238), c(347, -9622, 9338), c(-1418, -1476, -1333))/4096,     reason = "Nortek email 2011-02-14", person = "DEK")`
+#&gt;     - 2015-12-23 17:53:55 UTC: `use aquadoppHR heading; despike own pitch and roll`
+#&gt;     - 2015-12-23 17:54:11 UTC: `beamToXyzAdv(x = x)`
+#&gt;     - 2015-12-23 17:54:34 UTC: `xyzToEnu(x, declination=-18.099, horizontalCase=TRUE, sensorOrientiation=upward, debug=0)`
+#&gt;     - 2021-01-26 21:47:45 UTC: `as.cm(time = adv)`</div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -254,7 +279,7 @@ by specifying higher <code>debug</code> values.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

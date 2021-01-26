@@ -54,8 +54,8 @@ oceDeleteData <- function(object, name)
 #' Create a copy of an object in which some element of its
 #' `data` slot has been altered, or added.
 #'
-#' The trickest argument to set is the `unit`.  There are three
-#' possibilitis for this:
+#' The trickiest argument to set is the `unit`.  There are three
+#' possibilities for this:
 #' 1. `unit` is a named or unnamed [list()] that contains two items.
 #' If the list is named, the names must be
 #' `unit` and `scale`. If the list is unnamed, the stated names are assigned

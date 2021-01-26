@@ -2,7 +2,7 @@
 % Please edit documentation in R/amsr.R
 \name{[[<-,amsr-method}
 \alias{[[<-,amsr-method}
-\title{Replace Parts of an AMSR Object}
+\title{Replace Parts of an amsr Object}
 \usage{
 \S4method{[[}{amsr}(x, i, j, ...) <- value
 }
@@ -49,16 +49,6 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other things related to amsr data: 
-\code{\link{[[,amsr-method}},
-\code{\link{amsr-class}},
-\code{\link{composite,amsr-method}},
-\code{\link{download.amsr}()},
-\code{\link{plot,amsr-method}},
-\code{\link{read.amsr}()},
-\code{\link{subset,amsr-method}},
-\code{\link{summary,amsr-method}}
-
 Other functions that replace parts of oce objects: 
 \code{\link{[[<-,adp-method}},
 \code{\link{[[<-,argo-method}},
@@ -83,6 +73,17 @@ Other functions that replace parts of oce objects:
 \code{\link{[[<-,topo-method}},
 \code{\link{[[<-,windrose-method}},
 \code{\link{[[<-,xbt-method}}
+
+Other things related to amsr data: 
+\code{\link{[[,amsr-method}},
+\code{\link{amsr-class}},
+\code{\link{amsr}},
+\code{\link{composite,amsr-method}},
+\code{\link{download.amsr}()},
+\code{\link{plot,amsr-method}},
+\code{\link{read.amsr}()},
+\code{\link{subset,amsr-method}},
+\code{\link{summary,amsr-method}}
 }
 \concept{functions that replace parts of oce objects}
 \concept{things related to amsr data}

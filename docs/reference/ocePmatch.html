@@ -84,7 +84,7 @@ plotting functions." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -125,7 +125,7 @@ plotting functions." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -155,7 +155,7 @@ This is a wrapper that is useful mainly for <code>which</code> arguments to
 plotting functions.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ocePmatch</span>(<span class='no'>x</span>, <span class='no'>table</span>, <span class='kw'>nomatch</span> <span class='kw'>=</span> <span class='fl'>NA_integer_</span>, <span class='kw'>duplicates.ok</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>ocePmatch</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>table</span>, nomatch <span class='op'>=</span> <span class='cn'>NA_integer_</span>, duplicates.ok <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -195,10 +195,14 @@ by the <code>NA</code> argument.</p>
 
     <div class='dont-index'><p>Since <code><a href='https://rdrr.io/r/base/pmatch.html'>pmatch()</a></code> is used for the actual matching, its
 documentation should be consulted.</p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'>oce.pmatch</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"s"</span>, <span class='st'>"at"</span>, <span class='st'>"te"</span>), <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>salinity</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>temperature</span><span class='kw'>=</span><span class='fl'>3.1</span>))</div><div class='output co'>#&gt; [1] 1.0  NA 3.1</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'>oce.pmatch</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"s"</span>, <span class='st'>"at"</span>, <span class='st'>"te"</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>salinity<span class='op'>=</span><span class='fl'>1</span>, temperature<span class='op'>=</span><span class='fl'>3.1</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 1.0  NA 3.1</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -214,7 +218,7 @@ documentation should be consulted.</p></div>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

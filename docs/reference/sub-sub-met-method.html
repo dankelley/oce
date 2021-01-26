@@ -87,7 +87,7 @@ the data, data-quality flags, etc." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -128,7 +128,7 @@ the data, data-quality flags, etc." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -151,7 +151,7 @@ the data, data-quality flags, etc." />
     </div>
 
     <div class="ref-description">
-    <p>The <code>[[</code> method works for all <code>oce</code> objects, i.e.
+    <p>The <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> method works for all <code>oce</code> objects, i.e.
 objects inheriting from <a href='oce-class.html'>oce</a>.  The purpose
 is to insulate users from the internal details of <code>oce</code>
 objects, by looking for items within the various storage
@@ -203,7 +203,7 @@ first on the values of <code>i</code> and, optionally, <code>j</code>. The work
 proceeds in steps, by testing a sequence of possible conditions
 in sequence.</p><ol>
 <li><p>A check is made as to whether <code>i</code> names one of the standard
-<code>oce</code> slots. If so, <code>[[</code> returns the slot contents of that slot.
+<code>oce</code> slots. If so, <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> returns the slot contents of that slot.
 Thus, <code>x[["metadata"]]</code> will retrieve the <code>metadata</code> slot,
 while <code>x[["data"]]</code> and <code>x[["processingLog"]]</code> return
 those slots.</p></li>
@@ -242,34 +242,34 @@ and it directs where to look.</p></li>
 
 <p>If none of the above-listed conditions holds, then <code>NULL</code> is returned,
 without the issuance of a warning or error message. (This silent operation
-is employed so that <code>[[</code> will behave like the normal R version.)</p>
+is employed so that <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> will behave like the normal R version.)</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other functions that extract parts of oce objects: 
-<code><a href='sub-sub-adp-method.html'>[[,adp-method</a></code>,
-<code><a href='sub-sub-adv-method.html'>[[,adv-method</a></code>,
-<code><a href='sub-sub-amsr-method.html'>[[,amsr-method</a></code>,
-<code><a href='sub-sub-argo-method.html'>[[,argo-method</a></code>,
-<code><a href='sub-sub-bremen-method.html'>[[,bremen-method</a></code>,
-<code><a href='sub-sub-cm-method.html'>[[,cm-method</a></code>,
-<code><a href='sub-sub-coastline-method.html'>[[,coastline-method</a></code>,
-<code><a href='sub-sub-ctd-method.html'>[[,ctd-method</a></code>,
-<code><a href='sub-sub-echosounder-method.html'>[[,echosounder-method</a></code>,
-<code><a href='sub-sub-g1sst-method.html'>[[,g1sst-method</a></code>,
-<code><a href='sub-sub-gps-method.html'>[[,gps-method</a></code>,
-<code><a href='sub-sub-ladp-method.html'>[[,ladp-method</a></code>,
-<code><a href='sub-sub-landsat-method.html'>[[,landsat-method</a></code>,
-<code><a href='sub-sub-lisst-method.html'>[[,lisst-method</a></code>,
-<code><a href='sub-sub-lobo-method.html'>[[,lobo-method</a></code>,
-<code><a href='sub-sub-oce-method.html'>[[,oce-method</a></code>,
-<code><a href='sub-sub-odf-method.html'>[[,odf-method</a></code>,
-<code><a href='sub-sub-rsk-method.html'>[[,rsk-method</a></code>,
-<code><a href='sub-sub-sealevel-method.html'>[[,sealevel-method</a></code>,
-<code><a href='sub-sub-section-method.html'>[[,section-method</a></code>,
-<code><a href='sub-sub-tidem-method.html'>[[,tidem-method</a></code>,
-<code><a href='sub-sub-topo-method.html'>[[,topo-method</a></code>,
-<code><a href='sub-sub-windrose-method.html'>[[,windrose-method</a></code>,
-<code><a href='sub-sub-xbt-method.html'>[[,xbt-method</a></code>,
+<code><a href='[[,adp-method.html'>[[,adp-method</a></code>,
+<code><a href='[[,adv-method.html'>[[,adv-method</a></code>,
+<code><a href='[[,amsr-method.html'>[[,amsr-method</a></code>,
+<code><a href='[[,argo-method.html'>[[,argo-method</a></code>,
+<code><a href='[[,bremen-method.html'>[[,bremen-method</a></code>,
+<code><a href='[[,cm-method.html'>[[,cm-method</a></code>,
+<code><a href='[[,coastline-method.html'>[[,coastline-method</a></code>,
+<code><a href='[[,ctd-method.html'>[[,ctd-method</a></code>,
+<code><a href='[[,echosounder-method.html'>[[,echosounder-method</a></code>,
+<code><a href='[[,g1sst-method.html'>[[,g1sst-method</a></code>,
+<code><a href='[[,gps-method.html'>[[,gps-method</a></code>,
+<code><a href='[[,ladp-method.html'>[[,ladp-method</a></code>,
+<code><a href='[[,landsat-method.html'>[[,landsat-method</a></code>,
+<code><a href='[[,lisst-method.html'>[[,lisst-method</a></code>,
+<code><a href='[[,lobo-method.html'>[[,lobo-method</a></code>,
+<code><a href='[[,oce-method.html'>[[,oce-method</a></code>,
+<code><a href='[[,odf-method.html'>[[,odf-method</a></code>,
+<code><a href='[[,rsk-method.html'>[[,rsk-method</a></code>,
+<code><a href='[[,sealevel-method.html'>[[,sealevel-method</a></code>,
+<code><a href='[[,section-method.html'>[[,section-method</a></code>,
+<code><a href='[[,tidem-method.html'>[[,tidem-method</a></code>,
+<code><a href='[[,topo-method.html'>[[,topo-method</a></code>,
+<code><a href='[[,windrose-method.html'>[[,windrose-method</a></code>,
+<code><a href='[[,xbt-method.html'>[[,xbt-method</a></code>,
 <code>[[&lt;-,adv-method</code></p>
 <p>Other things related to met data: 
 <code>[[&lt;-,met-method</code>,
@@ -277,10 +277,10 @@ is employed so that <code>[[</code> will behave like the normal R version.)</p>
 <code><a href='download.met.html'>download.met</a>()</code>,
 <code><a href='met-class.html'>met-class</a></code>,
 <code><a href='met.html'>met</a></code>,
-<code><a href='plot-met-method.html'>plot,met-method</a></code>,
+<code><a href='plot,met-method.html'>plot,met-method</a></code>,
 <code><a href='read.met.html'>read.met</a>()</code>,
-<code><a href='subset-met-method.html'>subset,met-method</a></code>,
-<code><a href='summary-met-method.html'>summary,met-method</a></code>,
+<code><a href='subset,met-method.html'>subset,met-method</a></code>,
+<code><a href='summary,met-method.html'>summary,met-method</a></code>,
 <code><a href='test_met_csv1.csv.html'>test_met_csv1.csv</a></code>,
 <code><a href='test_met_csv2.csv.html'>test_met_csv2.csv</a></code>,
 <code><a href='test_met_xml2.xml.html'>test_met_xml2.xml</a></code></p></div>
@@ -300,7 +300,7 @@ is employed so that <code>[[</code> will behave like the normal R version.)</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

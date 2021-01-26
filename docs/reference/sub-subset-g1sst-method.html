@@ -86,7 +86,7 @@ flags." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -127,7 +127,7 @@ flags." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -151,7 +151,7 @@ flags." />
 
     <div class="ref-description">
     <p>The <code>[[&lt;-</code> method works for all <a href='oce-class.html'>oce</a> objects.
-The purpose, as with the related extraction method, <code>[[</code>,
+The purpose, as with the related extraction method, <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code>,
 is to insulate users from the internal details of <a href='oce-class.html'>oce</a>
 objects, by looking for items within the various storage
 slots of the object. Items not actually stored can also be
@@ -189,16 +189,18 @@ flags.</p>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>As with <code>[[</code> method, the procedure works in steps.</p>
+    <p>As with <code><a href='https://rdrr.io/r/base/Extract.html'>[[</a></code> method, the procedure works in steps.</p>
 <p>First, the <code>metadata</code> slot of <code>x</code> is checked to
 see whether it contains something named with <code>i</code>.
 If so, then the named item is replaced with <code>value</code>.</p>
 <p>Otherwise, if the string value of <code>i</code> ends in <code>Unit</code>, then the
 characters preceding that are taken as the name of a variable, and
-the <code>metadata</code> slot of <code>x</code> is updated to store that unit, e.g.</p><pre><span class='no'>x</span><span class='kw'>[[</span><span class='st'>"temperatureUnits"</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>unit</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span>(<span class='no'>degree</span>*<span class='no'>F</span>),<span class='kw'>scale</span><span class='kw'>=</span><span class='st'>""</span>)</pre>
+the <code>metadata</code> slot of <code>x</code> is updated to store that unit, e.g.</p><pre><span class='va'>x</span><span class='op'>[[</span><span class='st'>"temperatureUnits"</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>unit<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>degree</span><span class='op'>*</span><span class='cn'>F</span><span class='op'>)</span>,scale<span class='op'>=</span><span class='st'>""</span><span class='op'>)</span>
+</pre>
 
 <p>Similarly, if <code>i</code> ends in <code>Flag</code>, then quality-control
-flags are set up as defined by <code>result</code>, e.g.</p><pre><span class='no'>o</span><span class='kw'>[[</span><span class='st'>"temperatureFlags"</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>,<span class='fl'>4</span>,<span class='fl'>2</span>,<span class='fl'>2</span>)</pre>
+flags are set up as defined by <code>result</code>, e.g.</p><pre><span class='va'>o</span><span class='op'>[[</span><span class='st'>"temperatureFlags"</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>,<span class='fl'>4</span>,<span class='fl'>2</span>,<span class='fl'>2</span><span class='op'>)</span>
+</pre>
 
 <p>Otherwise, <code><a href='https://rdrr.io/r/base/pmatch.html'>pmatch()</a></code> is used for a partial-string match with
 the names of the items that are in the <code>data</code> slot of <code>x</code>.
@@ -231,7 +233,9 @@ The first item found (if any) is then updated to hold the value <code>result</co
 <code>[[&lt;-,windrose-method</code>,
 <code>[[&lt;-,xbt-method</code></p>
 <p>Other things related to g1sst data: 
-<code><a href='sub-sub-g1sst-method.html'>[[,g1sst-method</a></code></p></div>
+<code><a href='[[,g1sst-method.html'>[[,g1sst-method</a></code>,
+<code><a href='g1sst-class.html'>g1sst-class</a></code>,
+<code><a href='read.g1sst.html'>read.g1sst</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -248,7 +252,7 @@ The first item found (if any) is then updated to hold the value <code>result</co
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

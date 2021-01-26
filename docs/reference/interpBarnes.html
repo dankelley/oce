@@ -83,7 +83,7 @@ the pregrid argument." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@ the pregrid argument." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -153,23 +153,23 @@ sparse, using the <code>trim</code> argument, and the ability to pre-grid, with
 the <code>pregrid</code> argument.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>interpBarnes</span>(
-  <span class='no'>x</span>,
-  <span class='no'>y</span>,
-  <span class='no'>z</span>,
-  <span class='no'>w</span>,
-  <span class='no'>xg</span>,
-  <span class='no'>yg</span>,
-  <span class='no'>xgl</span>,
-  <span class='no'>ygl</span>,
-  <span class='no'>xr</span>,
-  <span class='no'>yr</span>,
-  <span class='kw'>gamma</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
-  <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>2</span>,
-  <span class='kw'>trim</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>pregrid</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>interpBarnes</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>y</span>,
+  <span class='va'>z</span>,
+  <span class='va'>w</span>,
+  <span class='va'>xg</span>,
+  <span class='va'>yg</span>,
+  <span class='va'>xgl</span>,
+  <span class='va'>ygl</span>,
+  <span class='va'>xr</span>,
+  <span class='va'>yr</span>,
+  gamma <span class='op'>=</span> <span class='fl'>0.5</span>,
+  iterations <span class='op'>=</span> <span class='fl'>2</span>,
+  trim <span class='op'>=</span> <span class='fl'>0</span>,
+  pregrid <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -263,33 +263,47 @@ conventional data,'' <em>J.  Climate Appl.  Met.</em>, vol 22, p. 1487-1503.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>See <code><a href='wind.html'>wind()</a></code>.</p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
 
 <span class='co'># 1. contouring example, with wind-speed data from Koch et al. (1983)</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>wind</span>)
-<span class='no'>u</span> <span class='kw'>&lt;-</span> <span class='fu'>interpBarnes</span>(<span class='no'>wind</span>$<span class='no'>x</span>, <span class='no'>wind</span>$<span class='no'>y</span>, <span class='no'>wind</span>$<span class='no'>z</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span>(<span class='no'>u</span>$<span class='no'>xg</span>, <span class='no'>u</span>$<span class='no'>yg</span>, <span class='no'>u</span>$<span class='no'>zg</span>, <span class='kw'>labcex</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/text.html'>text</a></span>(<span class='no'>wind</span>$<span class='no'>x</span>, <span class='no'>wind</span>$<span class='no'>y</span>, <span class='no'>wind</span>$<span class='no'>z</span>, <span class='kw'>cex</span><span class='kw'>=</span><span class='fl'>0.7</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"blue"</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/title.html'>title</a></span>(<span class='st'>"Numbers are the data"</span>)</div><div class='img'><img src='interpBarnes-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>wind</span><span class='op'>)</span>
+<span class='va'>u</span> <span class='op'>&lt;-</span> <span class='fu'>interpBarnes</span><span class='op'>(</span><span class='va'>wind</span><span class='op'>$</span><span class='va'>x</span>, <span class='va'>wind</span><span class='op'>$</span><span class='va'>y</span>, <span class='va'>wind</span><span class='op'>$</span><span class='va'>z</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span><span class='op'>(</span><span class='va'>u</span><span class='op'>$</span><span class='va'>xg</span>, <span class='va'>u</span><span class='op'>$</span><span class='va'>yg</span>, <span class='va'>u</span><span class='op'>$</span><span class='va'>zg</span>, labcex<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/text.html'>text</a></span><span class='op'>(</span><span class='va'>wind</span><span class='op'>$</span><span class='va'>x</span>, <span class='va'>wind</span><span class='op'>$</span><span class='va'>y</span>, <span class='va'>wind</span><span class='op'>$</span><span class='va'>z</span>, cex<span class='op'>=</span><span class='fl'>0.7</span>, col<span class='op'>=</span><span class='st'>"blue"</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/title.html'>title</a></span><span class='op'>(</span><span class='st'>"Numbers are the data"</span><span class='op'>)</span>
+</div><div class='img'><img src='interpBarnes-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># 2. As 1, but blank out spots where data are sparse</span>
-<span class='no'>u</span> <span class='kw'>&lt;-</span> <span class='fu'>interpBarnes</span>(<span class='no'>wind</span>$<span class='no'>x</span>, <span class='no'>wind</span>$<span class='no'>y</span>, <span class='no'>wind</span>$<span class='no'>z</span>, <span class='kw'>trim</span><span class='kw'>=</span><span class='fl'>0.1</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span>(<span class='no'>u</span>$<span class='no'>xg</span>, <span class='no'>u</span>$<span class='no'>yg</span>, <span class='no'>u</span>$<span class='no'>zg</span>, <span class='kw'>level</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>30</span>, <span class='fl'>1</span>))</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span>(<span class='no'>wind</span>$<span class='no'>x</span>, <span class='no'>wind</span>$<span class='no'>y</span>, <span class='kw'>cex</span><span class='kw'>=</span><span class='fl'>1.5</span>, <span class='kw'>pch</span><span class='kw'>=</span><span class='fl'>20</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"blue"</span>)</div><div class='img'><img src='interpBarnes-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='va'>u</span> <span class='op'>&lt;-</span> <span class='fu'>interpBarnes</span><span class='op'>(</span><span class='va'>wind</span><span class='op'>$</span><span class='va'>x</span>, <span class='va'>wind</span><span class='op'>$</span><span class='va'>y</span>, <span class='va'>wind</span><span class='op'>$</span><span class='va'>z</span>, trim<span class='op'>=</span><span class='fl'>0.1</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span><span class='op'>(</span><span class='va'>u</span><span class='op'>$</span><span class='va'>xg</span>, <span class='va'>u</span><span class='op'>$</span><span class='va'>yg</span>, <span class='va'>u</span><span class='op'>$</span><span class='va'>zg</span>, level<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>30</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span><span class='op'>(</span><span class='va'>wind</span><span class='op'>$</span><span class='va'>x</span>, <span class='va'>wind</span><span class='op'>$</span><span class='va'>y</span>, cex<span class='op'>=</span><span class='fl'>1.5</span>, pch<span class='op'>=</span><span class='fl'>20</span>, col<span class='op'>=</span><span class='st'>"blue"</span><span class='op'>)</span>
+</div><div class='img'><img src='interpBarnes-2.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># 3. As 1, but interpolate back to points, and display the percent mismatch</span>
-<span class='no'>u</span> <span class='kw'>&lt;-</span> <span class='fu'>interpBarnes</span>(<span class='no'>wind</span>$<span class='no'>x</span>, <span class='no'>wind</span>$<span class='no'>y</span>, <span class='no'>wind</span>$<span class='no'>z</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span>(<span class='no'>u</span>$<span class='no'>xg</span>, <span class='no'>u</span>$<span class='no'>yg</span>, <span class='no'>u</span>$<span class='no'>zg</span>, <span class='kw'>labcex</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='input'><span class='no'>mismatch</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span> * (<span class='no'>wind</span>$<span class='no'>z</span> - <span class='no'>u</span>$<span class='no'>zd</span>) / <span class='no'>wind</span>$<span class='no'>z</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/text.html'>text</a></span>(<span class='no'>wind</span>$<span class='no'>x</span>, <span class='no'>wind</span>$<span class='no'>y</span>, <span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span>(<span class='no'>mismatch</span>), <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"blue"</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/title.html'>title</a></span>(<span class='st'>"Numbers are percent mismatch between grid and data"</span>)</div><div class='img'><img src='interpBarnes-3.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='va'>u</span> <span class='op'>&lt;-</span> <span class='fu'>interpBarnes</span><span class='op'>(</span><span class='va'>wind</span><span class='op'>$</span><span class='va'>x</span>, <span class='va'>wind</span><span class='op'>$</span><span class='va'>y</span>, <span class='va'>wind</span><span class='op'>$</span><span class='va'>z</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span><span class='op'>(</span><span class='va'>u</span><span class='op'>$</span><span class='va'>xg</span>, <span class='va'>u</span><span class='op'>$</span><span class='va'>yg</span>, <span class='va'>u</span><span class='op'>$</span><span class='va'>zg</span>, labcex<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='input'><span class='va'>mismatch</span> <span class='op'>&lt;-</span> <span class='fl'>100</span> <span class='op'>*</span> <span class='op'>(</span><span class='va'>wind</span><span class='op'>$</span><span class='va'>z</span> <span class='op'>-</span> <span class='va'>u</span><span class='op'>$</span><span class='va'>zd</span><span class='op'>)</span> <span class='op'>/</span> <span class='va'>wind</span><span class='op'>$</span><span class='va'>z</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/text.html'>text</a></span><span class='op'>(</span><span class='va'>wind</span><span class='op'>$</span><span class='va'>x</span>, <span class='va'>wind</span><span class='op'>$</span><span class='va'>y</span>, <span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span><span class='op'>(</span><span class='va'>mismatch</span><span class='op'>)</span>, col<span class='op'>=</span><span class='st'>"blue"</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/title.html'>title</a></span><span class='op'>(</span><span class='st'>"Numbers are percent mismatch between grid and data"</span><span class='op'>)</span>
+</div><div class='img'><img src='interpBarnes-3.png' alt='' width='700' height='433' /></div><div class='input'>
 
 <span class='co'># 4. As 3, but contour the mismatch</span>
-<span class='no'>mismatchGrid</span> <span class='kw'>&lt;-</span> <span class='fu'>interpBarnes</span>(<span class='no'>wind</span>$<span class='no'>x</span>, <span class='no'>wind</span>$<span class='no'>y</span>, <span class='no'>mismatch</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span>(<span class='no'>mismatchGrid</span>$<span class='no'>xg</span>, <span class='no'>mismatchGrid</span>$<span class='no'>yg</span>, <span class='no'>mismatchGrid</span>$<span class='no'>zg</span>, <span class='kw'>labcex</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='img'><img src='interpBarnes-4.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='va'>mismatchGrid</span> <span class='op'>&lt;-</span> <span class='fu'>interpBarnes</span><span class='op'>(</span><span class='va'>wind</span><span class='op'>$</span><span class='va'>x</span>, <span class='va'>wind</span><span class='op'>$</span><span class='va'>y</span>, <span class='va'>mismatch</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span><span class='op'>(</span><span class='va'>mismatchGrid</span><span class='op'>$</span><span class='va'>xg</span>, <span class='va'>mismatchGrid</span><span class='op'>$</span><span class='va'>yg</span>, <span class='va'>mismatchGrid</span><span class='op'>$</span><span class='va'>zg</span>, labcex<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='img'><img src='interpBarnes-4.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># 5. One-dimensional example, smoothing a salinity profile</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ctd</span>)
-<span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"pressure"</span>]]
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>p</span>)) <span class='co'># fake y data, with arbitrary value</span>
-<span class='no'>S</span> <span class='kw'>&lt;-</span> <span class='no'>ctd</span><span class='kw'>[[</span><span class='st'>"salinity"</span>]]
-<span class='no'>pg</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/pretty.html'>pretty</a></span>(<span class='no'>p</span>, <span class='kw'>n</span><span class='kw'>=</span><span class='fl'>100</span>)
-<span class='no'>g</span> <span class='kw'>&lt;-</span> <span class='fu'>interpBarnes</span>(<span class='no'>p</span>, <span class='no'>y</span>, <span class='no'>S</span>, <span class='kw'>xg</span><span class='kw'>=</span><span class='no'>pg</span>, <span class='kw'>xr</span><span class='kw'>=</span><span class='fl'>1</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>S</span>, <span class='no'>p</span>, <span class='kw'>cex</span><span class='kw'>=</span><span class='fl'>0.5</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"blue"</span>, <span class='kw'>ylim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span>(<span class='no'>p</span>)))</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='no'>g</span>$<span class='no'>zg</span>, <span class='no'>g</span>$<span class='no'>xg</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"red"</span>)</div><div class='img'><img src='interpBarnes-5.png' alt='' width='700' height='433' /></div></pre>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='va'>ctd</span><span class='op'>[[</span><span class='st'>"pressure"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>p</span><span class='op'>)</span><span class='op'>)</span> <span class='co'># fake y data, with arbitrary value</span>
+<span class='va'>S</span> <span class='op'>&lt;-</span> <span class='va'>ctd</span><span class='op'>[[</span><span class='st'>"salinity"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>pg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/pretty.html'>pretty</a></span><span class='op'>(</span><span class='va'>p</span>, n<span class='op'>=</span><span class='fl'>100</span><span class='op'>)</span>
+<span class='va'>g</span> <span class='op'>&lt;-</span> <span class='fu'>interpBarnes</span><span class='op'>(</span><span class='va'>p</span>, <span class='va'>y</span>, <span class='va'>S</span>, xg<span class='op'>=</span><span class='va'>pg</span>, xr<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>S</span>, <span class='va'>p</span>, cex<span class='op'>=</span><span class='fl'>0.5</span>, col<span class='op'>=</span><span class='st'>"blue"</span>, ylim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span><span class='op'>(</span><span class='va'>p</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>g</span><span class='op'>$</span><span class='va'>zg</span>, <span class='va'>g</span><span class='op'>$</span><span class='va'>xg</span>, col<span class='op'>=</span><span class='st'>"red"</span><span class='op'>)</span>
+</div><div class='img'><img src='interpBarnes-5.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -305,7 +319,7 @@ conventional data,'' <em>J.  Climate Appl.  Met.</em>, vol 22, p. 1487-1503.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

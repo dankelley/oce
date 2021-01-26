@@ -12,6 +12,7 @@ read.aquadopp(
   tz = getOption("oceTz"),
   longitude = NA,
   latitude = NA,
+  type = "aquadopp",
   orientation,
   distance,
   monitor = FALSE,
@@ -52,6 +53,10 @@ East.}
 \item{latitude}{optional signed number indicating the latitude in degrees
 North.}
 
+\item{type}{Either "aquadopp" for a standard aquadopp file (the default), or
+"aquadoppPlusMagnetometer" for a file which includes the raw magnetometer
+data.}
+
 \item{orientation}{Optional character string specifying the orientation of the
 sensor, provided for those cases in which it cannot be inferred from the
 data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
@@ -64,9 +69,10 @@ The problem is that the distance is poorly documented in the Nortek System
 Integrator Guide (2008 edition, page 31), so the function must rely on
 word-of-mouth formulae that do not work in all cases.}
 
-\item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
-in reading the file, either by printing a dot for each profile or by writing
-a textual progress bar with \code{\link[=txtProgressBar]{txtProgressBar()}}.}
+\item{monitor}{boolean value indicating whether to indicate the progress
+of reading the file, by using \code{\link[=txtProgressBar]{txtProgressBar()}} or otherwise.  The value
+of \code{monitor} is changed to \code{FALSE} automatically, for non-interactive
+sessions.}
 
 \item{despike}{if \code{TRUE}, \code{\link[=despike]{despike()}} will be used to clean
 anomalous spikes in heading, etc.}
@@ -89,23 +95,18 @@ NMEA strings, then navigational data will be stored in an item
 called \code{nmea} in the \code{data} slot).
 }
 \description{
-The R code is based on information in
-the Nortek System Integrator Guide (2008) and on postings on the Nortek
-``knowledge center'' discussion board.  One might assume that the latter is
-less authoritative than the former.  For example, the inference of cell size
-follows advice found at
-http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717,
-which contains a typo in an early posting that is
-corrected later on.
+The R code is based on information in the Nortek System Integrator Guide
+(2017), postings on the Nortek ``knowledge center'' discussion board, and
+discussions with Nortek engineers (Dec. 2020).
 }
 \references{
 \enumerate{
 \item Information on Nortek profilers (including the System Integrator Guide,
 which explains the data format byte-by-byte) is available at
-\url{http://www.nortekusa.com/}.  (One must join the site to see the
+\url{https://www.nortekusa.com/}.  (One must join the site to see the
 manuals.)
 \item The Nortek Knowledge Center
-\url{http://www.nortekusa.com/en/knowledge-center} may be of help if
+\url{https://www.nortekusa.com/en/knowledge-center} may be of help if
 problems arise in dealing with data from Nortek instruments.
 }
 }

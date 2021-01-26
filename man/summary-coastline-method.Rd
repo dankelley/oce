@@ -2,6 +2,7 @@
 % Please edit documentation in R/coastline.R
 \name{summary,coastline-method}
 \alias{summary,coastline-method}
+\alias{summary.coastline}
 \title{Summarize a Coastline Object}
 \usage{
 \S4method{summary}{coastline}(object, ...)

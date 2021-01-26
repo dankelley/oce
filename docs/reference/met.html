@@ -82,7 +82,7 @@ city)." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -123,7 +123,7 @@ city)." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -158,13 +158,15 @@ city).</p>
     <p>Environment Canada website on October 19, 2019.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The data file was downloaded<div class="R"></p><pre><span class='no'>metFile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='download.met.html'>download.met</a></span>(<span class='kw'>id</span><span class='kw'>=</span><span class='fl'>6358</span>, <span class='kw'>year</span><span class='kw'>=</span><span class='fl'>2003</span>, <span class='kw'>month</span><span class='kw'>=</span><span class='fl'>9</span>, <span class='kw'>destdir</span><span class='kw'>=</span><span class='st'>"."</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>"xml"</span>)</pre><p></div></p>
+    <p>The data file was downloaded<div class="R"></p><pre><span class='va'>metFile</span> <span class='op'>&lt;-</span> <span class='fu'><a href='download.met.html'>download.met</a></span><span class='op'>(</span>id<span class='op'>=</span><span class='fl'>6358</span>, year<span class='op'>=</span><span class='fl'>2003</span>, month<span class='op'>=</span><span class='fl'>9</span>, destdir<span class='op'>=</span><span class='st'>"."</span>, type<span class='op'>=</span><span class='st'>"xml"</span><span class='op'>)</span>
+</pre><p></div></p>
 <p>Note that using <code><a href='download.met.html'>download.met()</a></code> avoids having to navigate the
 the awkward Environment Canada website, but it imposes the burden
 of having to know the station ID number.  With the data in-hand,
-the object was then created (and its timezone adjusted) with<div class="R"></p><pre><span class='no'>met</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='read.met.html'>read.met</a></span>(<span class='no'>metFile</span>)
-<span class='no'>met</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='oceSetData.html'>oceSetData</a></span>(<span class='no'>met</span>, <span class='st'>"time"</span>, <span class='no'>met</span><span class='kw'>[[</span><span class='st'>"time"</span>]]+<span class='fl'>4</span>*<span class='fl'>3600</span>,
-                 <span class='kw'>note</span><span class='kw'>=</span><span class='st'>"add 4h to local time to get UTC time"</span>)</pre><p></div></p>
+the object was then created (and its timezone adjusted) with<div class="R"></p><pre><span class='va'>met</span> <span class='op'>&lt;-</span> <span class='fu'><a href='read.met.html'>read.met</a></span><span class='op'>(</span><span class='va'>metFile</span><span class='op'>)</span>
+<span class='va'>met</span> <span class='op'>&lt;-</span> <span class='fu'><a href='oceSetData.html'>oceSetData</a></span><span class='op'>(</span><span class='va'>met</span>, <span class='st'>"time"</span>, <span class='va'>met</span><span class='op'>[[</span><span class='st'>"time"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>+</span><span class='fl'>4</span><span class='op'>*</span><span class='fl'>3600</span>,
+                 note<span class='op'>=</span><span class='st'>"add 4h to local time to get UTC time"</span><span class='op'>)</span>
+</pre><p></div></p>
 <p><em>Historical note.</em> The <code><a href='https://rdrr.io/r/utils/data.html'>data(met)</a></code> object was changed on October 19,
 2019, based on the data provided by Environment
 Canada at that time. The previous version of <code><a href='https://rdrr.io/r/utils/data.html'>data(met)</a></code>,
@@ -177,6 +179,7 @@ shift in the Environment Canada data format.</p>
     <div class='dont-index'><p>Other datasets provided with oce: 
 <code><a href='adp.html'>adp</a></code>,
 <code><a href='adv.html'>adv</a></code>,
+<code><a href='amsr.html'>amsr</a></code>,
 <code><a href='argo.html'>argo</a></code>,
 <code><a href='cm.html'>cm</a></code>,
 <code><a href='coastlineWorld.html'>coastlineWorld</a></code>,
@@ -191,19 +194,20 @@ shift in the Environment Canada data format.</p>
 <code><a href='sealevelTuktoyaktuk.html'>sealevelTuktoyaktuk</a></code>,
 <code><a href='sealevel.html'>sealevel</a></code>,
 <code><a href='section.html'>section</a></code>,
+<code><a href='topoNS.html'>topoNS</a></code>,
 <code><a href='topoWorld.html'>topoWorld</a></code>,
 <code><a href='wind.html'>wind</a></code>,
 <code><a href='xbt.html'>xbt</a></code></p>
 <p>Other things related to met data: 
-<code><a href='sub-sub-met-method.html'>[[,met-method</a></code>,
+<code><a href='[[,met-method.html'>[[,met-method</a></code>,
 <code>[[&lt;-,met-method</code>,
 <code><a href='as.met.html'>as.met</a>()</code>,
 <code><a href='download.met.html'>download.met</a>()</code>,
 <code><a href='met-class.html'>met-class</a></code>,
-<code><a href='plot-met-method.html'>plot,met-method</a></code>,
+<code><a href='plot,met-method.html'>plot,met-method</a></code>,
 <code><a href='read.met.html'>read.met</a>()</code>,
-<code><a href='subset-met-method.html'>subset,met-method</a></code>,
-<code><a href='summary-met-method.html'>summary,met-method</a></code>,
+<code><a href='subset,met-method.html'>subset,met-method</a></code>,
+<code><a href='summary,met-method.html'>summary,met-method</a></code>,
 <code><a href='test_met_csv1.csv.html'>test_met_csv1.csv</a></code>,
 <code><a href='test_met_csv2.csv.html'>test_met_csv2.csv</a></code>,
 <code><a href='test_met_xml2.xml.html'>test_met_xml2.xml</a></code></p></div>
@@ -223,7 +227,7 @@ shift in the Environment Canada data format.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

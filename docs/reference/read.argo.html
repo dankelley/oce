@@ -82,7 +82,7 @@ in the Argo documentation (see references 2 and 3)." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -123,7 +123,7 @@ in the Argo documentation (see references 2 and 3)." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -151,7 +151,7 @@ The file must be in the ARGO-style NetCDF format described
 in the Argo documentation (see references 2 and 3).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>read.argo</span>(<span class='no'>file</span>, <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>), <span class='no'>processingLog</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>read.argo</span><span class='op'>(</span><span class='va'>file</span>, debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>, <span class='va'>processingLog</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -206,7 +206,7 @@ then <code>PRES</code> (pressure) data are sought in the file, along with
 are stored with names created as explained in the
 &#8220;Variable renaming convention&#8221; section below. Note that
 flags, which are stored variables ending in <code>"_QC"</code> in the netcdf
-fil, are stored in the <code>flags</code> item within the <code>metadata</code> slot
+file, are stored in the <code>flags</code> item within the <code>metadata</code> slot
 of the returned object; thus, for example,
 <code>PRES_QC</code> is stored as <code>pressure</code> in <code>flags</code>.</p>
     <h2 class="hasAnchor" id="variable-renaming-convention"><a class="anchor" href="#variable-renaming-convention"></a>Variable renaming convention</h2>
@@ -248,10 +248,10 @@ float. For example,
 <code>https://www.usgodae.org/ftp/outgoing/argo/</code> is the top level of
 a such a repository. If the ID of a float is known but not the
 "dac", then a first step is to download the text file
-<code>http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt</code>
+<code>https://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt</code>
 and search for the ID. The first few lines of that file are header,
 and after that the format is simple, with columns separated by slash
-(<code>/</code>). The dac is in the first such column and the float ID in the
+(<code><a href='https://rdrr.io/r/base/Arithmetic.html'>/</a></code>). The dac is in the first such column and the float ID in the
 second. A simple search will reveal the dac.
 For example <code><a href='https://rdrr.io/r/utils/data.html'>data(argo)</a></code> is based on float 6900388, and the line
 containing that token is
@@ -274,9 +274,9 @@ over time.</p>
 
     
 <ol>
-<li><p><a href='http://www.argo.ucsd.edu/'>http://www.argo.ucsd.edu/</a></p></li>
-<li><p>Argo User's Manual Version 3.3, Nov 89th, 2019, available at
-<a href='https://archimer.ifremer.fr/doc/00187/29825/'>https://archimer.ifremer.fr/doc/00187/29825/</a></p></li>
+<li><p><a href='https://argo.ucsd.edu'>https://argo.ucsd.edu</a></p></li>
+<li><p>Argo User's Manual Version 3.2, Dec 29th, 2015, available at
+<a href='https://archimer.ifremer.fr/doc/00187/29825/'>https://archimer.ifremer.fr/doc/00187/29825/</a> online.</p></li>
 <li><p>User's Manual (ar-um-02-01) 13 July 2010, available at
 <a href='http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf'>http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf</a>,
 which is the main document describing argo data.</p></li>
@@ -287,42 +287,48 @@ which is the main document describing argo data.</p></li>
     <div class='dont-index'><p>The documentation for the <a href='argo-class.html'>argo</a> class explains the structure of argo
 objects, and also outlines the other functions dealing with them.</p>
 <p>Other things related to argo data: 
-<code><a href='sub-sub-argo-method.html'>[[,argo-method</a></code>,
+<code><a href='[[,argo-method.html'>[[,argo-method</a></code>,
 <code>[[&lt;-,argo-method</code>,
 <code><a href='argo-class.html'>argo-class</a></code>,
 <code><a href='argoGrid.html'>argoGrid</a>()</code>,
 <code><a href='argoNames2oceNames.html'>argoNames2oceNames</a>()</code>,
 <code><a href='argo.html'>argo</a></code>,
 <code><a href='as.argo.html'>as.argo</a>()</code>,
-<code><a href='handleFlags-argo-method.html'>handleFlags,argo-method</a></code>,
-<code><a href='plot-argo-method.html'>plot,argo-method</a></code>,
-<code><a href='subset-argo-method.html'>subset,argo-method</a></code>,
-<code><a href='summary-argo-method.html'>summary,argo-method</a></code></p></div>
+<code><a href='handleFlags,argo-method.html'>handleFlags,argo-method</a></code>,
+<code><a href='plot,argo-method.html'>plot,argo-method</a></code>,
+<code><a href='subset,argo-method.html'>subset,argo-method</a></code>,
+<code><a href='summary,argo-method.html'>summary,argo-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'>## Example 1: read from a local file</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>read.argo</span>(<span class='st'>"/data/OAR/6900388_prof.nc"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>d</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>d</span>)
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='va'>d</span> <span class='op'>&lt;-</span> <span class='fu'>read.argo</span><span class='op'>(</span><span class='st'>"/data/OAR/6900388_prof.nc"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>d</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>d</span><span class='op'>)</span>
 
 <span class='co'>## Example 2: construct URL for download (brittle)</span>
-<span class='no'>id</span> <span class='kw'>&lt;-</span> <span class='st'>"6900388"</span>
-<span class='no'>url</span> <span class='kw'>&lt;-</span> <span class='st'>"https://www.usgodae.org/ftp/outgoing/argo"</span>
-<span class='kw'>if</span> (!<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span>(<span class='kw'>pattern</span><span class='kw'>=</span><span class='st'>"argo_index.txt"</span>)))
-    <span class='fu'><a href='https://rdrr.io/r/utils/download.file.html'>download.file</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='no'>url</span>, <span class='st'>"ar_index_global_meta.txt"</span>, <span class='kw'>sep</span><span class='kw'>=</span><span class='st'>"/"</span>), <span class='st'>"argo_index.txt"</span>)
-<span class='no'>index</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/readLines.html'>readLines</a></span>(<span class='st'>"argo_index.txt"</span>)
-<span class='no'>line</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grep</a></span>(<span class='no'>id</span>, <span class='no'>index</span>)
-<span class='kw'>if</span> (<span class='fl'>0</span> <span class='kw'>==</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>line</span>)) <span class='fu'><a href='https://rdrr.io/r/base/stop.html'>stop</a></span>(<span class='st'>"id "</span>, <span class='no'>id</span>, <span class='st'>" not found"</span>)
-<span class='kw'>if</span> (<span class='fl'>1</span> <span class='kw'>&lt;</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>line</span>)) <span class='fu'><a href='https://rdrr.io/r/base/stop.html'>stop</a></span>(<span class='st'>"id "</span>, <span class='no'>id</span>, <span class='st'>" found multiple times"</span>)
-<span class='no'>dac</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/strsplit.html'>strsplit</a></span>(<span class='no'>index</span>[<span class='no'>line</span>], <span class='st'>"/"</span>)<span class='kw'>[[</span><span class='fl'>1</span>]][<span class='fl'>1</span>]
-<span class='no'>profile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='no'>id</span>, <span class='st'>"_prof.nc"</span>, <span class='kw'>sep</span><span class='kw'>=</span><span class='st'>""</span>)
-<span class='no'>float</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='no'>url</span>, <span class='st'>"dac"</span>, <span class='no'>dac</span>, <span class='no'>id</span>, <span class='no'>profile</span>, <span class='kw'>sep</span><span class='kw'>=</span><span class='st'>"/"</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/download.file.html'>download.file</a></span>(<span class='no'>float</span>, <span class='no'>profile</span>)
-<span class='no'>argo</span> <span class='kw'>&lt;-</span> <span class='fu'>read.argo</span>(<span class='no'>profile</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>argo</span>)
-}</div></pre>
+<span class='va'>id</span> <span class='op'>&lt;-</span> <span class='st'>"6900388"</span>
+<span class='va'>url</span> <span class='op'>&lt;-</span> <span class='st'>"https://www.usgodae.org/ftp/outgoing/argo"</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span><span class='op'>(</span>pattern<span class='op'>=</span><span class='st'>"argo_index.txt"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+    <span class='fu'><a href='https://rdrr.io/r/utils/download.file.html'>download.file</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='va'>url</span>, <span class='st'>"ar_index_global_meta.txt"</span>, sep<span class='op'>=</span><span class='st'>"/"</span><span class='op'>)</span>, <span class='st'>"argo_index.txt"</span><span class='op'>)</span>
+<span class='va'>index</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/readLines.html'>readLines</a></span><span class='op'>(</span><span class='st'>"argo_index.txt"</span><span class='op'>)</span>
+<span class='va'>line</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grep</a></span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>index</span><span class='op'>)</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='fl'>0</span> <span class='op'>==</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>line</span><span class='op'>)</span><span class='op'>)</span> <span class='kw'><a href='https://rdrr.io/r/base/stop.html'>stop</a></span><span class='op'>(</span><span class='st'>"id "</span>, <span class='va'>id</span>, <span class='st'>" not found"</span><span class='op'>)</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='fl'>1</span> <span class='op'>&lt;</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>line</span><span class='op'>)</span><span class='op'>)</span> <span class='kw'><a href='https://rdrr.io/r/base/stop.html'>stop</a></span><span class='op'>(</span><span class='st'>"id "</span>, <span class='va'>id</span>, <span class='st'>" found multiple times"</span><span class='op'>)</span>
+<span class='va'>dac</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/strsplit.html'>strsplit</a></span><span class='op'>(</span><span class='va'>index</span><span class='op'>[</span><span class='va'>line</span><span class='op'>]</span>, <span class='st'>"/"</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span>
+<span class='va'>profile</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='va'>id</span>, <span class='st'>"_prof.nc"</span>, sep<span class='op'>=</span><span class='st'>""</span><span class='op'>)</span>
+<span class='va'>float</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='va'>url</span>, <span class='st'>"dac"</span>, <span class='va'>dac</span>, <span class='va'>id</span>, <span class='va'>profile</span>, sep<span class='op'>=</span><span class='st'>"/"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/download.file.html'>download.file</a></span><span class='op'>(</span><span class='va'>float</span>, <span class='va'>profile</span><span class='op'>)</span>
+<span class='va'>argo</span> <span class='op'>&lt;-</span> <span class='fu'>read.argo</span><span class='op'>(</span><span class='va'>profile</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>argo</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -338,7 +344,7 @@ objects, and also outlines the other functions dealing with them.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

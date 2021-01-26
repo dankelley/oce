@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +121,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -148,7 +148,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for argo</span>
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>object</span>, <span class='no'>...</span>)</pre>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -172,22 +172,26 @@
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to argo data: 
-<code><a href='sub-sub-argo-method.html'>[[,argo-method</a></code>,
+<code><a href='[[,argo-method.html'>[[,argo-method</a></code>,
 <code>[[&lt;-,argo-method</code>,
 <code><a href='argo-class.html'>argo-class</a></code>,
 <code><a href='argoGrid.html'>argoGrid</a>()</code>,
 <code><a href='argoNames2oceNames.html'>argoNames2oceNames</a>()</code>,
 <code><a href='argo.html'>argo</a></code>,
 <code><a href='as.argo.html'>as.argo</a>()</code>,
-<code><a href='handleFlags-argo-method.html'>handleFlags,argo-method</a></code>,
-<code><a href='plot-argo-method.html'>plot,argo-method</a></code>,
+<code><a href='handleFlags,argo-method.html'>handleFlags,argo-method</a></code>,
+<code><a href='plot,argo-method.html'>plot,argo-method</a></code>,
 <code><a href='read.argo.html'>read.argo</a>()</code>,
-<code><a href='subset-argo-method.html'>subset,argo-method</a></code></p></div>
+<code><a href='subset,argo-method.html'>subset,argo-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>argo</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>argo</span>)</div><div class='output co'>#&gt; Argo Summary
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>argo</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>argo</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Argo Summary
 #&gt; ------------
 #&gt; 
 #&gt; * Source:              "/Users/kelley/git/oce/create_data/argo/6900388_prof.nc"
@@ -226,9 +230,9 @@
 #&gt; 
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2020-06-24 16:56:43 UTC: `create 'argo' object`
-#&gt;     - 2020-06-24 16:56:43 UTC: `initializeFlagScheme(object, name="argo", mapping=list(not_assessed=0,passed_all_tests=1,probably_good=2,probably_bad=3,bad=4,changed=5,not_used_6=6,not_used_7=7,estimated=8,missing=9)), default=c(0,3,4,9))`
-#&gt;     - 2020-06-24 16:56:43 UTC: `read.argo(file="/Users/kelley/git/oce/create_data/argo/6900388_prof.nc")`</div><div class='input'>
+#&gt;     - 2020-11-09 16:05:39 UTC: `create 'argo' object`
+#&gt;     - 2020-11-09 16:05:39 UTC: `initializeFlagScheme(object, name="argo", mapping=list(not_assessed=0,passed_all_tests=1,probably_good=2,probably_bad=3,bad=4,changed=5,not_used_6=6,not_used_7=7,estimated=8,missing=9)), default=c(0,3,4,9))`
+#&gt;     - 2020-11-09 16:05:39 UTC: `read.argo(file="/Users/kelley/git/oce/create_data/argo/6900388_prof.nc")`</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -245,7 +249,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -116,6 +116,7 @@ plot(topoWorld, clongitude=-60, clatitude=45, span=10000)
 }
 \seealso{
 Other functions that plot oce data: 
+\code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,adv-method}},
 \code{\link{plot,amsr-method}},
@@ -153,6 +154,7 @@ Other things related to topo data:
 \code{\link{summary,topo-method}},
 \code{\link{topo-class}},
 \code{\link{topoInterpolate}()},
+\code{\link{topoNS}},
 \code{\link{topoWorld}}
 }
 \author{

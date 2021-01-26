@@ -87,7 +87,7 @@ read from the file." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -128,7 +128,7 @@ read from the file." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -161,18 +161,18 @@ name the salinity column "<code>CTDSAL</code>"; if not, salinity values will not
 read from the file.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>read.section</span>(
-  <span class='no'>file</span>,
-  <span class='no'>directory</span>,
-  <span class='kw'>sectionId</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='no'>flags</span>,
-  <span class='kw'>ship</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>scientist</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>institute</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>missingValue</span> <span class='kw'>=</span> -<span class='fl'>999</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>),
-  <span class='no'>processingLog</span>
-)</pre>
+    <pre class="usage"><span class='fu'>read.section</span><span class='op'>(</span>
+  <span class='va'>file</span>,
+  <span class='va'>directory</span>,
+  sectionId <span class='op'>=</span> <span class='st'>""</span>,
+  <span class='va'>flags</span>,
+  ship <span class='op'>=</span> <span class='st'>""</span>,
+  scientist <span class='op'>=</span> <span class='st'>""</span>,
+  institute <span class='op'>=</span> <span class='st'>""</span>,
+  missingValue <span class='op'>=</span> <span class='op'>-</span><span class='fl'>999</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>,
+  <span class='va'>processingLog</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -245,29 +245,32 @@ are present, then <code>CTDSAL</code> is stored as <code>salinity</code> and <co
 is stored as <code>salinityBottle</code>.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>Several repository sites provide section data. An example that is perhaps likely
-to exist for years is <a href='https://cchdo.ucsd.edu'>https://cchdo.ucsd.edu</a>, but a search on <code>"WOCE
-  bottle data"</code> should turn up other sites, if this one ceases to exist. Only
-the so-called <em>exchange BOT</em> data format can be processed by read.section()
+    <p>Several repository sites provide section data. A reasonably stable example is
+<a href='https://cchdo.ucsd.edu'>https://cchdo.ucsd.edu</a>, but a search on <code>"WOCE bottle data"</code> should
+turn up other sites, if this ceases to exist. Only
+the so-called <em>exchange BOT</em> data format can be processed by <code>read.section()</code>
 at this time. Data names are inferred from column headings using
 <code><a href='woceNames2oceNames.html'>woceNames2oceNames()</a></code>.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to section data: 
-<code><a href='sub-sub-section-method.html'>[[,section-method</a></code>,
+<code><a href='[[,section-method.html'>[[,section-method</a></code>,
 <code>[[&lt;-,section-method</code>,
 <code><a href='as.section.html'>as.section</a>()</code>,
-<code><a href='handleFlags-section-method.html'>handleFlags,section-method</a></code>,
-<code><a href='initializeFlagScheme-section-method.html'>initializeFlagScheme,section-method</a></code>,
-<code><a href='plot-section-method.html'>plot,section-method</a></code>,
+<code><a href='handleFlags,section-method.html'>handleFlags,section-method</a></code>,
+<code><a href='initializeFlagScheme,section-method.html'>initializeFlagScheme,section-method</a></code>,
+<code><a href='plot,section-method.html'>plot,section-method</a></code>,
 <code><a href='section-class.html'>section-class</a></code>,
 <code><a href='sectionAddStation.html'>sectionAddStation</a>()</code>,
 <code><a href='sectionGrid.html'>sectionGrid</a>()</code>,
 <code><a href='sectionSmooth.html'>sectionSmooth</a>()</code>,
 <code><a href='sectionSort.html'>sectionSort</a>()</code>,
 <code><a href='section.html'>section</a></code>,
-<code><a href='subset-section-method.html'>subset,section-method</a></code>,
-<code><a href='summary-section-method.html'>summary,section-method</a></code></p></div>
+<code><a href='subset,section-method.html'>subset,section-method</a></code>,
+<code><a href='summary,section-method.html'>summary,section-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -284,7 +287,7 @@ at this time. Data names are inferred from column headings using
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -82,7 +82,7 @@ an image plot is used to show TS data density." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -123,7 +123,7 @@ an image plot is used to show TS data density." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -151,18 +151,19 @@ called by <code><a href='plotTS.html'>plotTS()</a></code>, and may be called by 
 an image plot is used to show TS data density.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>drawIsopycnals</span>(
-  <span class='kw'>nlevels</span> <span class='kw'>=</span> <span class='fl'>6</span>,
-  <span class='no'>levels</span>,
-  <span class='kw'>rotate</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>rho1000</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>digits</span> <span class='kw'>=</span> <span class='fl'>2</span>,
-  <span class='kw'>eos</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceEOS"</span>, <span class='kw'>default</span> <span class='kw'>=</span> <span class='st'>"gsw"</span>),
-  <span class='kw'>cex</span> <span class='kw'>=</span> <span class='fl'>0.75</span> * <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"cex"</span>),
-  <span class='kw'>col</span> <span class='kw'>=</span> <span class='st'>"darkgray"</span>,
-  <span class='kw'>lwd</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"lwd"</span>),
-  <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"lty"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>drawIsopycnals</span><span class='op'>(</span>
+  nlevels <span class='op'>=</span> <span class='fl'>6</span>,
+  <span class='va'>levels</span>,
+  rotate <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  rho1000 <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  digits <span class='op'>=</span> <span class='fl'>2</span>,
+  eos <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceEOS"</span>, default <span class='op'>=</span> <span class='st'>"gsw"</span><span class='op'>)</span>,
+  trimIsopycnals <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  cex <span class='op'>=</span> <span class='fl'>0.75</span> <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"cex"</span><span class='op'>)</span>,
+  col <span class='op'>=</span> <span class='st'>"darkgray"</span>,
+  lwd <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"lwd"</span><span class='op'>)</span>,
+  lty <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"lty"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -197,6 +198,15 @@ horizontally.</p></td>
 <code>"gsw"</code>.</p></td>
     </tr>
     <tr>
+      <th>trimIsopycnals</th>
+      <td><p>logical value (<code>TRUE</code> by default) that
+indicates whether to trim isopycnal curves (if drawn)
+to the region of temperature-salinity space for which density
+computations are considered to be valid in the context of the
+chosen <code>eos</code>; see the &#8220;Details&#8221; of the documentation
+for <code><a href='plotTS.html'>plotTS()</a></code>.</p></td>
+    </tr>
+    <tr>
       <th>cex</th>
       <td><p>size for labels.</p></td>
     </tr>
@@ -217,9 +227,27 @@ horizontally.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>None.</p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    
+<ul>
+<li><p>Fofonoff, N. P., and R. C. Millard.
+"Algorithms for Computation of Fundamental Properties of Seawater."
+UNESCO Technical Papers in Marine Research. SCOR working group on Evaluation of CTD data;
+UNESCO/ICES/SCOR/IAPSO Joint Panel on Oceanographic Tables and Standards, 1983.
+<a href='https://unesdoc.unesco.org/ark:/48223/pf0000059832'>https://unesdoc.unesco.org/ark:/48223/pf0000059832</a>.</p></li>
+<li><p>McDougall, Trevor J., David R. Jackett, Daniel G. Wright, and Rainer Feistel.
+"Accurate and Computationally Efficient Algorithms for Potential Temperature and Density of Seawater."
+Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730-41.
+<code>https://journals.ametsoc.org/jtech/article/20/5/730/2543/Accurate-and-Computationally-Efficient-Algorithms</code>.</p></li>
+</ul>
+
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='plotTS.html'>plotTS()</a></code>, which calls this.</p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -236,7 +264,7 @@ horizontally.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

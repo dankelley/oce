@@ -87,7 +87,7 @@ a good idea to smooth u and v before using this function." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -128,7 +128,7 @@ a good idea to smooth u and v before using this function." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -161,21 +161,21 @@ difficult, owing to overlap in the arrows.  For this reason, it is often
 a good idea to smooth <code>u</code> and <code>v</code> before using this function.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotSticks</span>(
-  <span class='no'>x</span>,
-  <span class='no'>y</span>,
-  <span class='no'>u</span>,
-  <span class='no'>v</span>,
-  <span class='kw'>yscale</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>length</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>20</span>,
-  <span class='kw'>mgp</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceMgp"</span>),
-  <span class='kw'>mar</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='no'>mgp</span>[<span class='fl'>1</span>] + <span class='fl'>1</span>, <span class='no'>mgp</span>[<span class='fl'>1</span>] + <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span> + <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>"cex"</span>)),
-  <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>col</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>plotSticks</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>y</span>,
+  <span class='va'>u</span>,
+  <span class='va'>v</span>,
+  yscale <span class='op'>=</span> <span class='fl'>1</span>,
+  add <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  length <span class='op'>=</span> <span class='fl'>1</span><span class='op'>/</span><span class='fl'>20</span>,
+  mgp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceMgp"</span><span class='op'>)</span>,
+  mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>+</span> <span class='fl'>1</span>, <span class='va'>mgp</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>+</span> <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"cex"</span><span class='op'>)</span><span class='op'>)</span>,
+  xlab <span class='op'>=</span> <span class='st'>""</span>,
+  ylab <span class='op'>=</span> <span class='st'>""</span>,
+  col <span class='op'>=</span> <span class='fl'>1</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -241,26 +241,32 @@ uses; see &#8220;Examples&#8221;.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
 
 <span class='co'># Flow from a point source</span>
-<span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>16</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>0</span>, <span class='no'>n</span>)
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>0</span>, <span class='no'>n</span>)
-<span class='no'>theta</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>2</span>*<span class='no'>pi</span>, <span class='kw'>length.out</span><span class='kw'>=</span><span class='no'>n</span>)
-<span class='no'>u</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span>(<span class='no'>theta</span>)
-<span class='no'>v</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>cos</a></span>(<span class='no'>theta</span>)
-<span class='fu'>plotSticks</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>u</span>, <span class='no'>v</span>, <span class='kw'>xlim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>2</span>, <span class='fl'>2</span>), <span class='kw'>ylim</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>2</span>, <span class='fl'>2</span>))</div><div class='img'><img src='plotSticks-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/rm.html'>rm</a></span>(<span class='no'>n</span>, <span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>theta</span>, <span class='no'>u</span>, <span class='no'>v</span>)
+<span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>16</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='va'>n</span><span class='op'>)</span>
+<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='va'>n</span><span class='op'>)</span>
+<span class='va'>theta</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>2</span><span class='op'>*</span><span class='va'>pi</span>, length.out<span class='op'>=</span><span class='va'>n</span><span class='op'>)</span>
+<span class='va'>u</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span><span class='op'>(</span><span class='va'>theta</span><span class='op'>)</span>
+<span class='va'>v</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>cos</a></span><span class='op'>(</span><span class='va'>theta</span><span class='op'>)</span>
+<span class='fu'>plotSticks</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>u</span>, <span class='va'>v</span>, xlim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>2</span>, <span class='fl'>2</span><span class='op'>)</span>, ylim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>2</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='plotSticks-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/rm.html'>rm</a></span><span class='op'>(</span><span class='va'>n</span>, <span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>theta</span>, <span class='va'>u</span>, <span class='va'>v</span><span class='op'>)</span>
 
 <span class='co'># Oceanographic example</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>met</span>)
-<span class='no'>t</span> <span class='kw'>&lt;-</span> <span class='no'>met</span><span class='kw'>[[</span><span class='st'>"time"</span>]]
-<span class='no'>u</span> <span class='kw'>&lt;-</span> <span class='no'>met</span><span class='kw'>[[</span><span class='st'>"u"</span>]]
-<span class='no'>v</span> <span class='kw'>&lt;-</span> <span class='no'>met</span><span class='kw'>[[</span><span class='st'>"v"</span>]]
-<span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='no'>met</span><span class='kw'>[[</span><span class='st'>"pressure"</span>]]
-<span class='fu'><a href='oce.plot.ts.html'>oce.plot.ts</a></span>(<span class='no'>t</span>, <span class='no'>p</span>)</div><div class='input'><span class='fu'>plotSticks</span>(<span class='no'>t</span>, <span class='fl'>99</span>, <span class='no'>u</span>, <span class='no'>v</span>, <span class='kw'>yscale</span><span class='kw'>=</span><span class='fl'>25</span>, <span class='kw'>add</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='img'><img src='plotSticks-2.png' alt='' width='700' height='433' /></div></pre>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>met</span><span class='op'>)</span>
+<span class='va'>t</span> <span class='op'>&lt;-</span> <span class='va'>met</span><span class='op'>[[</span><span class='st'>"time"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>u</span> <span class='op'>&lt;-</span> <span class='va'>met</span><span class='op'>[[</span><span class='st'>"u"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>v</span> <span class='op'>&lt;-</span> <span class='va'>met</span><span class='op'>[[</span><span class='st'>"v"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='va'>met</span><span class='op'>[[</span><span class='st'>"pressure"</span><span class='op'>]</span><span class='op'>]</span>
+<span class='fu'><a href='oce.plot.ts.html'>oce.plot.ts</a></span><span class='op'>(</span><span class='va'>t</span>, <span class='va'>p</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>plotSticks</span><span class='op'>(</span><span class='va'>t</span>, <span class='fl'>99</span>, <span class='va'>u</span>, <span class='va'>v</span>, yscale<span class='op'>=</span><span class='fl'>25</span>, add<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
+</div><div class='img'><img src='plotSticks-2.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -276,7 +282,7 @@ uses; see &#8220;Examples&#8221;.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

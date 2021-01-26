@@ -40,11 +40,7 @@
 
 
 <meta property="og:title" content="Subset an amsr Object — subset,amsr-method" />
-<meta property="og:description" content="This function is somewhat analogous to
-subset.data.frame(), but only one independent variable may be
-used in subset in any call to the function, which means that
-repeated calls will be necessary to subset based on more than one
-independent variable (e.g. latitude and longitude)." />
+<meta property="og:description" content="Return a subset of a amsr object." />
 
 
 
@@ -84,7 +80,7 @@ independent variable (e.g. latitude and longitude)." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -125,7 +121,7 @@ independent variable (e.g. latitude and longitude)." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -148,15 +144,11 @@ independent variable (e.g. latitude and longitude)." />
     </div>
 
     <div class="ref-description">
-    <p>This function is somewhat analogous to
-<code><a href='https://rdrr.io/r/base/subset.html'>subset.data.frame()</a></code>, but only one independent variable may be
-used in <code>subset</code> in any call to the function, which means that
-repeated calls will be necessary to subset based on more than one
-independent variable (e.g. latitude and longitude).</p>
+    <p>Return a subset of a <a href='amsr-class.html'>amsr</a> object.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for amsr</span>
-<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>x</span>, <span class='no'>subset</span>, <span class='no'>...</span>)</pre>
+<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>subset</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -167,54 +159,66 @@ independent variable (e.g. latitude and longitude).</p>
     </tr>
     <tr>
       <th>subset</th>
-      <td><p>An expression indicating how to subset <code>x</code>.</p></td>
+      <td><p>an expression indicating how to subset <code>x</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Ignored.</p></td>
+      <td><p>ignored.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>An <a href='amsr-class.html'>amsr</a> object.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>This function is used to subset data within an <a href='amsr-class.html'>amsr</a>
+object by <code>longitude</code> or by <code>latitude</code>.  These two methods cannot
+be combined in a single call, so two calls are required, as shown
+in the Example.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to amsr data: 
-<code><a href='sub-sub-amsr-method.html'>[[,amsr-method</a></code>,
+<code><a href='[[,amsr-method.html'>[[,amsr-method</a></code>,
 <code>[[&lt;-,amsr-method</code>,
 <code><a href='amsr-class.html'>amsr-class</a></code>,
-<code><a href='composite-amsr-method.html'>composite,amsr-method</a></code>,
+<code><a href='amsr.html'>amsr</a></code>,
+<code><a href='composite,amsr-method.html'>composite,amsr-method</a></code>,
 <code><a href='download.amsr.html'>download.amsr</a>()</code>,
-<code><a href='plot-amsr-method.html'>plot,amsr-method</a></code>,
+<code><a href='plot,amsr-method.html'>plot,amsr-method</a></code>,
 <code><a href='read.amsr.html'>read.amsr</a>()</code>,
-<code><a href='summary-amsr-method.html'>summary,amsr-method</a></code></p>
+<code><a href='summary,amsr-method.html'>summary,amsr-method</a></code></p>
 <p>Other functions that subset oce objects: 
-<code><a href='subset-adp-method.html'>subset,adp-method</a></code>,
-<code><a href='subset-adv-method.html'>subset,adv-method</a></code>,
-<code><a href='subset-argo-method.html'>subset,argo-method</a></code>,
-<code><a href='subset-cm-method.html'>subset,cm-method</a></code>,
-<code><a href='subset-coastline-method.html'>subset,coastline-method</a></code>,
-<code><a href='subset-ctd-method.html'>subset,ctd-method</a></code>,
-<code><a href='subset-echosounder-method.html'>subset,echosounder-method</a></code>,
-<code><a href='subset-lobo-method.html'>subset,lobo-method</a></code>,
-<code><a href='subset-met-method.html'>subset,met-method</a></code>,
-<code><a href='subset-oce-method.html'>subset,oce-method</a></code>,
-<code><a href='subset-odf-method.html'>subset,odf-method</a></code>,
-<code><a href='subset-rsk-method.html'>subset,rsk-method</a></code>,
-<code><a href='subset-sealevel-method.html'>subset,sealevel-method</a></code>,
-<code><a href='subset-section-method.html'>subset,section-method</a></code>,
-<code><a href='subset-topo-method.html'>subset,topo-method</a></code>,
-<code><a href='subset-xbt-method.html'>subset,xbt-method</a></code></p></div>
+<code><a href='subset,adp-method.html'>subset,adp-method</a></code>,
+<code><a href='subset,adv-method.html'>subset,adv-method</a></code>,
+<code><a href='subset,argo-method.html'>subset,argo-method</a></code>,
+<code><a href='subset,cm-method.html'>subset,cm-method</a></code>,
+<code><a href='subset,coastline-method.html'>subset,coastline-method</a></code>,
+<code><a href='subset,ctd-method.html'>subset,ctd-method</a></code>,
+<code><a href='subset,echosounder-method.html'>subset,echosounder-method</a></code>,
+<code><a href='subset,lobo-method.html'>subset,lobo-method</a></code>,
+<code><a href='subset,met-method.html'>subset,met-method</a></code>,
+<code><a href='subset,oce-method.html'>subset,oce-method</a></code>,
+<code><a href='subset,odf-method.html'>subset,odf-method</a></code>,
+<code><a href='subset,rsk-method.html'>subset,rsk-method</a></code>,
+<code><a href='subset,sealevel-method.html'>subset,sealevel-method</a></code>,
+<code><a href='subset,section-method.html'>subset,section-method</a></code>,
+<code><a href='subset,topo-method.html'>subset,topo-method</a></code>,
+<code><a href='subset,xbt-method.html'>subset,xbt-method</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='no'>earth</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='read.amsr.html'>read.amsr</a></span>(<span class='st'>"f34_20160102v7.2.gz"</span>) <span class='co'># not provided with oce</span>
-<span class='no'>fclat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>earth</span> , <span class='fl'>45</span><span class='kw'>&lt;=</span><span class='no'>latitude</span> <span class='kw'>&amp;</span> <span class='no'>latitude</span> <span class='kw'>&lt;=</span> <span class='fl'>49</span>)
-<span class='no'>fc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>fclat</span> , <span class='no'>longitude</span> <span class='kw'>&lt;=</span> -<span class='fl'>47</span> <span class='kw'>&amp;</span> <span class='no'>longitude</span> <span class='kw'>&lt;=</span> -<span class='fl'>43</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>fc</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>amsr</span><span class='op'>)</span> <span class='co'># see ?amsr for how to read and composite such objects</span>
+<span class='va'>sub</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>amsr</span>, <span class='op'>-</span><span class='fl'>75</span> <span class='op'>&lt;</span> <span class='va'>longitude</span> <span class='op'>&amp;</span> <span class='va'>longitude</span> <span class='op'>&lt;</span> <span class='op'>-</span><span class='fl'>45</span><span class='op'>)</span>
+<span class='va'>sub</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sub</span>,   <span class='fl'>40</span> <span class='op'>&lt;</span> <span class='va'>latitude</span>  <span class='op'>&amp;</span>  <span class='va'>latitude</span> <span class='op'>&lt;</span>  <span class='fl'>50</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>sub</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>[[</span><span class='st'>'longitude'</span><span class='op'>]</span><span class='op'>]</span>, <span class='va'>coastlineWorld</span><span class='op'>[[</span><span class='st'>'latitude'</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+</div><div class='img'><img src='subset-amsr-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -230,7 +234,7 @@ independent variable (e.g. latitude and longitude).</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -2,20 +2,35 @@
 
 ## 1.3.0
 
-* Change `read.argo()` and `data(argo)` to use camelCase in all metadata.
-* Change reader-oriented github website generator to `pkgdown`.
-* Extend `read.adp.rdi()` to handle 38kHz RDI adp files.
-* Extend `read.ctd.sbe()` to handle 4 new (Beckman) oxygen variables.
-* Extend `read.ctd.sbe()` to handle `.btl` files.
-* Extend `oce.plot.ts()`, adding argument `logStyle`.
-* Add `addSpine()` for defining spines for ship tracks.
+* Add `addSpine()` for defining section spines.
 * Add `angle2hms()`.
 * Add `argoJuldToTime()`.
+* Add `data(amsr)` and improve `subset,amsr-method()`.
+* Add `data(tidalCurrent)` dataset of tidal currents from Foreman.
+* Add `data(topoNS)` dataset of Nova Scotia topography.
 * Add `oceAxis()`.
-* Add `preferAdjusted()` to make it easier to switch to 'adjusted' argo data.
+* Add `preferAdjusted()` for `argo-class` data.
 * Add `read.ctd.odv()`.
-* Add `snakeToCamel()` to convert variable names in e.g. argo netcdf files.
+* Add `snakeToCamel()` to convert variable names in e.g. Argo netcdf files.
 * Add `timeToArgoJuld()`.
+* Change `drawPalette()` default colour palette to `oce.colorsViridis()`.
+* Change `imagep()` default colour palette to `oce.colorsViridis()`.
+* Change `plot,amsr-method()` default colour palette to `oce.colorsViridis()`.
+* Change `plot,section-method()` default colour palette to `oce.colorsViridis()`.
+* Change `plotTS()` to trim isopycnals to realistic salinities and temperatures.
+* Change `read.argo()` and `data(argo)` to use camelCase in all metadata.
+* Change user-oriented github website generator to `pkgdown`.
+* Extend `[[,argo-method` to accept `"ID"` as an alternative to `"id"`.
+* Extend `as.cm()` to accept `adp` and `adv` objects.
+* Extend `oce.plot.ts()`, adding argument `logStyle`.
+* Extend `read.adp.rdi()` to handle 38kHz RDI adp files.
+* Extend `read.argo()` and `data(argo)` by adding three more 'CYCLE' variables.
+* Extend `read.ctd.sbe()` to handle 4 new (Beckman) oxygen variables.
+* Extend `read.ctd.sbe()` to handle `.btl` files.
+* Fix `plot,coastline-method` error in box drawing.
+* Fix `plotTS` error in auto-scaling if S and T have mixed NA status.
+* Fix `subset,argo-method()` error in `flags`, `location`, and `*QC` in `metadata`.
+* Remove dependence on `rgdal` package, using `sf` for map projections.
 
 ## 1.2.0
 
@@ -74,7 +89,7 @@
 
 * tidem() permits inferred constituents
 * tidem() follows T_TIDE phase convention
-* adorn argument removed from plot functions (after being defunct 1+ year)
+* adorn argument removed from some plot functions (after being defunct 1+ year)
 * deprecate findInOrdered()
 
 ## 0.9-22

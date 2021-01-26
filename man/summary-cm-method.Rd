@@ -15,6 +15,12 @@
 Summarizes some of the data in a \code{cm} object, presenting such information
 as the station name, sampling location, data ranges, etc.
 }
+\examples{
+library(oce)
+data(cm)
+summary(cm)
+
+}
 \seealso{
 The documentation for the \linkS4class{cm} class explains the structure
 of \code{cm} objects, and also outlines the other functions dealing with them.

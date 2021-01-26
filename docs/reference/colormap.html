@@ -82,7 +82,7 @@ cases that extend far beyond the examples." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -123,7 +123,7 @@ cases that extend far beyond the examples." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -151,21 +151,21 @@ use this function, and some study of the arguments should prove fruitful in
 cases that extend far beyond the examples.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>colormap</span>(
-  <span class='kw'>z</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='no'>zlim</span>,
-  <span class='kw'>zclip</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='no'>breaks</span>,
-  <span class='kw'>col</span> <span class='kw'>=</span> <span class='no'>oceColorsJet</span>,
-  <span class='no'>name</span>,
-  <span class='no'>x0</span>,
-  <span class='no'>x1</span>,
-  <span class='no'>col0</span>,
-  <span class='no'>col1</span>,
-  <span class='kw'>blend</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='no'>missingColor</span>,
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>colormap</span><span class='op'>(</span>
+  z <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>zlim</span>,
+  zclip <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>breaks</span>,
+  col <span class='op'>=</span> <span class='va'>oceColorsJet</span>,
+  <span class='va'>name</span>,
+  <span class='va'>x0</span>,
+  <span class='va'>x1</span>,
+  <span class='va'>col0</span>,
+  <span class='va'>col1</span>,
+  blend <span class='op'>=</span> <span class='fl'>0</span>,
+  <span class='va'>missingColor</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -205,7 +205,9 @@ painted with the nearest in-range color.</p></td>
 through <code>blend</code> are all ignored (see &#8220;Details&#8221;).  If it is
 provided, then it may either be a vector of break points, or a single number
 indicating the desired number of break points to be computed with
-<code><a href='https://rdrr.io/r/base/pretty.html'>pretty</a></code><code>(z,breaks)1.  In either case of non-missing </code>breaks<code>, the resultant break points must number 1 plus the number of colors (see </code>col`).</p></td>
+<code><a href='https://rdrr.io/r/base/pretty.html'>pretty</a></code><code>(z,breaks)</code>.  In either case of non-missing
+<code>breaks</code>, the resultant break points must number 1 plus the number of
+colors (see <code>col</code>).</p></td>
     </tr>
     <tr>
       <th>col</th>
@@ -220,7 +222,7 @@ as its single argument and returning a vector of colors.  The value of
 <code>"gmt_relief"</code>, <code>"gmt_ocean"</code>, <code>"gmt_globe"</code> or
 <code>"gmt_gebco"</code>) or the name of a file or URL that contains a color map
 specification in GMT format, e.g. one of the <code>.cpt</code> files from
-<a href='http://www.beamreach.org/maps/gmt/share/cpt'>http://www.beamreach.org/maps/gmt/share/cpt</a>). If <code>name</code> is
+<a href='https://beamreach.org/maps/gmt/share/cpt/'>https://beamreach.org/maps/gmt/share/cpt/</a>). If <code>name</code> is
 provided, then <code>x0</code>, <code>x1</code>, <code>col0</code> and <code>col1</code> are all
 ignored.</p></td>
     </tr>
@@ -290,7 +292,7 @@ graph, or <code>breaks</code> and `col` vectors that are suitable for use by
 <p>There are three ways of specifying color schemes, and <code>colormap</code> works
 by checking for each condition in turn.</p><ul>
 <li><p><strong>Case A.</strong> Supply <code>z</code> but nothing else.  In this case,
-<code>breaks</code> will be set to <code>[</code>pretty<code>]</code>(z,10)` and things are
+<code>breaks</code> will be set to <code><a href='https://rdrr.io/r/base/Extract.html'>[</a></code>pretty<code>]</code>(z,10)` and things are
 otherwise as in case B.</p></li>
 <li><p><strong>Case B.</strong> Supply <code>breaks</code>.  In this case, <code>breaks</code> and
 <code>col</code> are used together to specify a color scheme.  If <code>col</code> is a
@@ -333,8 +335,8 @@ Note that the each of the items has the same length. The case of
 2015-12-12).  Diagrams showing the GMT color schemes are at
 <code>http://www.geos.ed.ac.uk/it/howto/GMT/CPT/palettes.html</code> (link worked
 for years but failed 2015-12-08), and numerical specifications for some
-color maps are at <a href='http://www.beamreach.org/maps/gmt/share/cpt'>http://www.beamreach.org/maps/gmt/share/cpt</a>,
-<a href='http://soliton.vm.bytemark.co.uk/pub/cpt-city'>http://soliton.vm.bytemark.co.uk/pub/cpt-city</a>, and other sources.</p>
+color maps are at <a href='https://beamreach.org/maps/gmt/share/cpt/'>https://beamreach.org/maps/gmt/share/cpt/</a>,
+<a href='http://soliton.vm.bytemark.co.uk/pub/cpt-city/'>http://soliton.vm.bytemark.co.uk/pub/cpt-city/</a>, and other sources.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other things related to colors: 
@@ -359,67 +361,76 @@ color maps are at <a href='http://www.beamreach.org/maps/gmt/share/cpt'>http://w
 <code><a href='oceColorsViridis.html'>oceColorsViridis</a>()</code>,
 <code><a href='oceColorsVorticity.html'>oceColorsVorticity</a>()</code>,
 <code><a href='ocecolors.html'>ocecolors</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
 <span class='co'>## Example 1. color scheme for points on xy plot</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='kw'>length.out</span><span class='kw'>=</span><span class='fl'>40</span>)
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span>(<span class='fl'>2</span> * <span class='no'>pi</span> * <span class='no'>x</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>1</span>))
-<span class='no'>mar</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='st'>'mar'</span>) <span class='co'># prevent margin creep by drawPalette()</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span>, length.out<span class='op'>=</span><span class='fl'>40</span><span class='op'>)</span>
+<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span><span class='op'>(</span><span class='fl'>2</span> <span class='op'>*</span> <span class='va'>pi</span> <span class='op'>*</span> <span class='va'>x</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>mar</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>'mar'</span><span class='op'>)</span> <span class='co'># prevent margin creep by drawPalette()</span>
 <span class='co'>## First, default breaks</span>
-<span class='no'>c</span> <span class='kw'>&lt;-</span> <span class='fu'>colormap</span>(<span class='no'>y</span>)
-<span class='fu'><a href='drawPalette.html'>drawPalette</a></span>(<span class='no'>c</span>$<span class='no'>zlim</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='no'>c</span>$<span class='no'>col</span>, <span class='kw'>breaks</span><span class='kw'>=</span><span class='no'>c</span>$<span class='no'>breaks</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>bg</span><span class='kw'>=</span><span class='no'>c</span>$<span class='no'>zcol</span>, <span class='kw'>pch</span><span class='kw'>=</span><span class='fl'>21</span>, <span class='kw'>cex</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/grid.html'>grid</a></span>()</div><div class='img'><img src='colormap-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='no'>mar</span>)
+<span class='va'>c</span> <span class='op'>&lt;-</span> <span class='fu'>colormap</span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span>
+<span class='fu'><a href='drawPalette.html'>drawPalette</a></span><span class='op'>(</span><span class='va'>c</span><span class='op'>$</span><span class='va'>zlim</span>, col<span class='op'>=</span><span class='va'>c</span><span class='op'>$</span><span class='va'>col</span>, breaks<span class='op'>=</span><span class='va'>c</span><span class='op'>$</span><span class='va'>breaks</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, bg<span class='op'>=</span><span class='va'>c</span><span class='op'>$</span><span class='va'>zcol</span>, pch<span class='op'>=</span><span class='fl'>21</span>, cex<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/grid.html'>grid</a></span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='img'><img src='colormap-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='va'>mar</span><span class='op'>)</span>
 <span class='co'>## Second, 100 breaks, yielding a smoother palette</span>
-<span class='no'>c</span> <span class='kw'>&lt;-</span> <span class='fu'>colormap</span>(<span class='no'>y</span>, <span class='kw'>breaks</span><span class='kw'>=</span><span class='fl'>100</span>)
-<span class='fu'><a href='drawPalette.html'>drawPalette</a></span>(<span class='no'>c</span>$<span class='no'>zlim</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='no'>c</span>$<span class='no'>col</span>, <span class='kw'>breaks</span><span class='kw'>=</span><span class='no'>c</span>$<span class='no'>breaks</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>bg</span><span class='kw'>=</span><span class='no'>c</span>$<span class='no'>zcol</span>, <span class='kw'>pch</span><span class='kw'>=</span><span class='fl'>21</span>, <span class='kw'>cex</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/grid.html'>grid</a></span>()</div><div class='img'><img src='colormap-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='no'>mar</span>)
+<span class='va'>c</span> <span class='op'>&lt;-</span> <span class='fu'>colormap</span><span class='op'>(</span><span class='va'>y</span>, breaks<span class='op'>=</span><span class='fl'>100</span><span class='op'>)</span>
+<span class='fu'><a href='drawPalette.html'>drawPalette</a></span><span class='op'>(</span><span class='va'>c</span><span class='op'>$</span><span class='va'>zlim</span>, col<span class='op'>=</span><span class='va'>c</span><span class='op'>$</span><span class='va'>col</span>, breaks<span class='op'>=</span><span class='va'>c</span><span class='op'>$</span><span class='va'>breaks</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, bg<span class='op'>=</span><span class='va'>c</span><span class='op'>$</span><span class='va'>zcol</span>, pch<span class='op'>=</span><span class='fl'>21</span>, cex<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/grid.html'>grid</a></span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='img'><img src='colormap-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='va'>mar</span><span class='op'>)</span>
 
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'>## Example 2. topographic image with a standard color scheme</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>1</span>))
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>topoWorld</span>)
-<span class='no'>cm</span> <span class='kw'>&lt;-</span> <span class='fu'>colormap</span>(<span class='kw'>name</span><span class='kw'>=</span><span class='st'>"gmt_globe"</span>)
-<span class='fu'><a href='imagep.html'>imagep</a></span>(<span class='no'>topoWorld</span>, <span class='kw'>breaks</span><span class='kw'>=</span><span class='no'>cm</span>$<span class='no'>breaks</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='no'>cm</span>$<span class='no'>col</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mfrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>topoWorld</span><span class='op'>)</span>
+<span class='va'>cm</span> <span class='op'>&lt;-</span> <span class='fu'>colormap</span><span class='op'>(</span>name<span class='op'>=</span><span class='st'>"gmt_globe"</span><span class='op'>)</span>
+<span class='fu'><a href='imagep.html'>imagep</a></span><span class='op'>(</span><span class='va'>topoWorld</span>, breaks<span class='op'>=</span><span class='va'>cm</span><span class='op'>$</span><span class='va'>breaks</span>, col<span class='op'>=</span><span class='va'>cm</span><span class='op'>$</span><span class='va'>col</span><span class='op'>)</span>
 
 <span class='co'>## Example 3. topographic image with modified colors,</span>
 <span class='co'>## black for depths below 4km.</span>
-<span class='no'>cm</span> <span class='kw'>&lt;-</span> <span class='fu'>colormap</span>(<span class='kw'>name</span><span class='kw'>=</span><span class='st'>"gmt_globe"</span>)
-<span class='no'>deep</span> <span class='kw'>&lt;-</span> <span class='no'>cm</span>$<span class='no'>x0</span> <span class='kw'>&lt;</span> -<span class='fl'>4000</span>
-<span class='no'>cm</span>$<span class='no'>col0</span>[<span class='no'>deep</span>] <span class='kw'>&lt;-</span> <span class='st'>'black'</span>
-<span class='no'>cm</span>$<span class='no'>col1</span>[<span class='no'>deep</span>] <span class='kw'>&lt;-</span> <span class='st'>'black'</span>
-<span class='no'>cm</span> <span class='kw'>&lt;-</span> <span class='fu'>colormap</span>(<span class='kw'>x0</span><span class='kw'>=</span><span class='no'>cm</span>$<span class='no'>x0</span>, <span class='kw'>x1</span><span class='kw'>=</span><span class='no'>cm</span>$<span class='no'>x1</span>, <span class='kw'>col0</span><span class='kw'>=</span><span class='no'>cm</span>$<span class='no'>col0</span>, <span class='kw'>col1</span><span class='kw'>=</span><span class='no'>cm</span>$<span class='no'>col1</span>)
-<span class='fu'><a href='imagep.html'>imagep</a></span>(<span class='no'>topoWorld</span>, <span class='kw'>breaks</span><span class='kw'>=</span><span class='no'>cm</span>$<span class='no'>breaks</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='no'>cm</span>$<span class='no'>col</span>)
+<span class='va'>cm</span> <span class='op'>&lt;-</span> <span class='fu'>colormap</span><span class='op'>(</span>name<span class='op'>=</span><span class='st'>"gmt_globe"</span><span class='op'>)</span>
+<span class='va'>deep</span> <span class='op'>&lt;-</span> <span class='va'>cm</span><span class='op'>$</span><span class='va'>x0</span> <span class='op'>&lt;</span> <span class='op'>-</span><span class='fl'>4000</span>
+<span class='va'>cm</span><span class='op'>$</span><span class='va'>col0</span><span class='op'>[</span><span class='va'>deep</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='st'>'black'</span>
+<span class='va'>cm</span><span class='op'>$</span><span class='va'>col1</span><span class='op'>[</span><span class='va'>deep</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='st'>'black'</span>
+<span class='va'>cm</span> <span class='op'>&lt;-</span> <span class='fu'>colormap</span><span class='op'>(</span>x0<span class='op'>=</span><span class='va'>cm</span><span class='op'>$</span><span class='va'>x0</span>, x1<span class='op'>=</span><span class='va'>cm</span><span class='op'>$</span><span class='va'>x1</span>, col0<span class='op'>=</span><span class='va'>cm</span><span class='op'>$</span><span class='va'>col0</span>, col1<span class='op'>=</span><span class='va'>cm</span><span class='op'>$</span><span class='va'>col1</span><span class='op'>)</span>
+<span class='fu'><a href='imagep.html'>imagep</a></span><span class='op'>(</span><span class='va'>topoWorld</span>, breaks<span class='op'>=</span><span class='va'>cm</span><span class='op'>$</span><span class='va'>breaks</span>, col<span class='op'>=</span><span class='va'>cm</span><span class='op'>$</span><span class='va'>col</span><span class='op'>)</span>
 
 <span class='co'>## Example 4. image of world topography with water colorized</span>
 <span class='co'>## smoothly from violet at 8km depth to blue</span>
 <span class='co'>## at 4km depth, then blending in 0.5km increments</span>
 <span class='co'>## to white at the coast, with tan for land.</span>
-<span class='no'>cm</span> <span class='kw'>&lt;-</span> <span class='fu'>colormap</span>(<span class='kw'>x0</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>8000</span>, -<span class='fl'>4000</span>,   <span class='fl'>0</span>,  <span class='fl'>100</span>),
-               <span class='kw'>x1</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>4000</span>,     <span class='fl'>0</span>, <span class='fl'>100</span>, <span class='fl'>5000</span>),
-               <span class='kw'>col0</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"violet"</span>,<span class='st'>"blue"</span>,<span class='st'>"white"</span>,<span class='st'>"tan"</span>),
-               <span class='kw'>col1</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"blue"</span>,<span class='st'>"white"</span>,<span class='st'>"tan"</span>,<span class='st'>"yellow"</span>))
-<span class='no'>lon</span> <span class='kw'>&lt;-</span> <span class='no'>topoWorld</span><span class='kw'>[[</span><span class='st'>'longitude'</span>]]
-<span class='no'>lat</span> <span class='kw'>&lt;-</span> <span class='no'>topoWorld</span><span class='kw'>[[</span><span class='st'>'latitude'</span>]]
-<span class='no'>z</span> <span class='kw'>&lt;-</span> <span class='no'>topoWorld</span><span class='kw'>[[</span><span class='st'>'z'</span>]]
-<span class='fu'><a href='imagep.html'>imagep</a></span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='no'>z</span>, <span class='kw'>breaks</span><span class='kw'>=</span><span class='no'>cm</span>$<span class='no'>breaks</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='no'>cm</span>$<span class='no'>col</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span>(<span class='no'>lon</span>, <span class='no'>lat</span>, <span class='no'>z</span>, <span class='kw'>levels</span><span class='kw'>=</span><span class='fl'>0</span>, <span class='kw'>add</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
+<span class='va'>cm</span> <span class='op'>&lt;-</span> <span class='fu'>colormap</span><span class='op'>(</span>x0<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>8000</span>, <span class='op'>-</span><span class='fl'>4000</span>,   <span class='fl'>0</span>,  <span class='fl'>100</span><span class='op'>)</span>,
+               x1<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>4000</span>,     <span class='fl'>0</span>, <span class='fl'>100</span>, <span class='fl'>5000</span><span class='op'>)</span>,
+               col0<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"violet"</span>,<span class='st'>"blue"</span>,<span class='st'>"white"</span>,<span class='st'>"tan"</span><span class='op'>)</span>,
+               col1<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"blue"</span>,<span class='st'>"white"</span>,<span class='st'>"tan"</span>,<span class='st'>"yellow"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>lon</span> <span class='op'>&lt;-</span> <span class='va'>topoWorld</span><span class='op'>[[</span><span class='st'>'longitude'</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>lat</span> <span class='op'>&lt;-</span> <span class='va'>topoWorld</span><span class='op'>[[</span><span class='st'>'latitude'</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>z</span> <span class='op'>&lt;-</span> <span class='va'>topoWorld</span><span class='op'>[[</span><span class='st'>'z'</span><span class='op'>]</span><span class='op'>]</span>
+<span class='fu'><a href='imagep.html'>imagep</a></span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, <span class='va'>z</span>, breaks<span class='op'>=</span><span class='va'>cm</span><span class='op'>$</span><span class='va'>breaks</span>, col<span class='op'>=</span><span class='va'>cm</span><span class='op'>$</span><span class='va'>col</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/contour.html'>contour</a></span><span class='op'>(</span><span class='va'>lon</span>, <span class='va'>lat</span>, <span class='va'>z</span>, levels<span class='op'>=</span><span class='fl'>0</span>, add<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
 
 <span class='co'>## Example 5. visualize GMT style color map</span>
-<span class='no'>cm</span> <span class='kw'>&lt;-</span> <span class='fu'>colormap</span>(<span class='kw'>name</span><span class='kw'>=</span><span class='st'>"gmt_globe"</span>, <span class='kw'>debug</span><span class='kw'>=</span><span class='fl'>4</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_along</a></span>(<span class='no'>cm</span>$<span class='no'>x0</span>), <span class='no'>cm</span>$<span class='no'>x0</span>, <span class='kw'>pch</span><span class='kw'>=</span><span class='fl'>21</span>, <span class='kw'>bg</span><span class='kw'>=</span><span class='no'>cm</span>$<span class='no'>col0</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/grid.html'>grid</a></span>()
-<span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_along</a></span>(<span class='no'>cm</span>$<span class='no'>x1</span>), <span class='no'>cm</span>$<span class='no'>x1</span>, <span class='kw'>pch</span><span class='kw'>=</span><span class='fl'>21</span>, <span class='kw'>bg</span><span class='kw'>=</span><span class='no'>cm</span>$<span class='no'>col1</span>)
+<span class='va'>cm</span> <span class='op'>&lt;-</span> <span class='fu'>colormap</span><span class='op'>(</span>name<span class='op'>=</span><span class='st'>"gmt_globe"</span>, debug<span class='op'>=</span><span class='fl'>4</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_along</a></span><span class='op'>(</span><span class='va'>cm</span><span class='op'>$</span><span class='va'>x0</span><span class='op'>)</span>, <span class='va'>cm</span><span class='op'>$</span><span class='va'>x0</span>, pch<span class='op'>=</span><span class='fl'>21</span>, bg<span class='op'>=</span><span class='va'>cm</span><span class='op'>$</span><span class='va'>col0</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/grid.html'>grid</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_along</a></span><span class='op'>(</span><span class='va'>cm</span><span class='op'>$</span><span class='va'>x1</span><span class='op'>)</span>, <span class='va'>cm</span><span class='op'>$</span><span class='va'>x1</span>, pch<span class='op'>=</span><span class='fl'>21</span>, bg<span class='op'>=</span><span class='va'>cm</span><span class='op'>$</span><span class='va'>col1</span><span class='op'>)</span>
 
 <span class='co'>## Example 6. colfunction</span>
-<span class='no'>cm</span> <span class='kw'>&lt;-</span> <span class='fu'>colormap</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>))
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>:<span class='fl'>10</span>
-<span class='no'>y</span> <span class='kw'>&lt;-</span> (<span class='no'>x</span> - <span class='fl'>5.5</span>)^<span class='fl'>2</span>
-<span class='no'>z</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='kw'>length.out</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>x</span>))
-<span class='fu'><a href='drawPalette.html'>drawPalette</a></span>(<span class='kw'>colormap</span><span class='kw'>=</span><span class='no'>cm</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>pch</span><span class='kw'>=</span><span class='fl'>21</span>, <span class='kw'>bg</span><span class='kw'>=</span><span class='no'>cm</span>$<span class='fu'>colfunction</span>(<span class='no'>z</span>), <span class='kw'>cex</span><span class='kw'>=</span><span class='fl'>3</span>)
-}</div></pre>
+<span class='va'>cm</span> <span class='op'>&lt;-</span> <span class='fu'>colormap</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>
+<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='op'>(</span><span class='va'>x</span> <span class='op'>-</span> <span class='fl'>5.5</span><span class='op'>)</span><span class='op'>^</span><span class='fl'>2</span>
+<span class='va'>z</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span>, length.out<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='drawPalette.html'>drawPalette</a></span><span class='op'>(</span>colormap<span class='op'>=</span><span class='va'>cm</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, pch<span class='op'>=</span><span class='fl'>21</span>, bg<span class='op'>=</span><span class='va'>cm</span><span class='op'>$</span><span class='fu'>colfunction</span><span class='op'>(</span><span class='va'>z</span><span class='op'>)</span>, cex<span class='op'>=</span><span class='fl'>3</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -435,7 +446,7 @@ color maps are at <a href='http://www.beamreach.org/maps/gmt/share/cpt'>http://w
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

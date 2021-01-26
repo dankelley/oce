@@ -9,7 +9,7 @@ eclipticalToEquatorial(lambda, beta, epsilon)
 \arguments{
 \item{lambda}{longitude, in degrees, or a data frame containing
 \code{lambda}, \code{beta}, and \code{epsilon}, in which case the next to
-arguments are ignored.}
+arguments are ignored}
 
 \item{beta}{geocentric latitude, in degrees}
 
@@ -33,11 +33,11 @@ has found that reference 2 is available to him via his university library
 inter-library loan system, whereas he owns a copy of reference 1.
 }
 \references{
-\enumerate{
-\item Meeus, Jean, 1982. Astronomical formulae for Calculators.
-Willmann-Bell. Richmond VA, USA. 201 pages.
-\item Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
-USA. 429 pages.
+\itemize{
+\item Meeus, Jean. Astronomical Formulas for Calculators. Second Edition.
+Richmond, Virginia, USA: Willmann-Bell, 1982.
+\item Meeus, Jean. Astronomical Algorithms. Second Edition.
+Richmond, Virginia, USA: Willmann-Bell, 1991.
 }
 }
 \seealso{

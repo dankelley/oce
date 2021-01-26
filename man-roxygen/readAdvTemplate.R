@@ -79,8 +79,10 @@
 #' `read.adv.nortek(...,debug=2)` provides information about not just the
 #' main body of the data file, but also the details of the header.
 #'
-#' @param monitor boolean, set to `TRUE` to provide an indication of every
-#' data burst read.
+#' @param monitor boolean value indicating whether to indicate the progress
+#' of reading the file, by using [txtProgressBar()] or otherwise.  The value
+#' of `monitor` is changed to `FALSE` automatically, for non-interactive
+#' sessions.
 #'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' This parameter is typically only provided for internal calls; the default

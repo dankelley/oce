@@ -40,7 +40,11 @@
 
 
 <meta property="og:title" content="Add Axis Labels to an Existing Map — mapAxis" />
-<meta property="og:description" content="Plot axis labels on an existing map." />
+<meta property="og:description" content="Plot axis labels on an existing map.
+This is an advanced function, requiring
+coordination with mapPlot() and (possibly) also with mapGrid(),
+and so it is best avoided by novices, who may be satisfied
+with the defaults used by mapPlot()." />
 
 
 
@@ -80,7 +84,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -121,7 +125,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -144,31 +148,35 @@
     </div>
 
     <div class="ref-description">
-    <p>Plot axis labels on an existing map.</p>
+    <p>Plot axis labels on an existing map.
+This is an advanced function, requiring
+coordination with <code><a href='mapPlot.html'>mapPlot()</a></code> and (possibly) also with <code><a href='mapGrid.html'>mapGrid()</a></code>,
+and so it is best avoided by novices, who may be satisfied
+with the defaults used by <code><a href='mapPlot.html'>mapPlot()</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>mapAxis</span>(
-  <span class='kw'>side</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>2</span>,
-  <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>axisStyle</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>tick</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>line</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>pos</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>outer</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>font</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>lty</span> <span class='kw'>=</span> <span class='st'>"solid"</span>,
-  <span class='kw'>lwd</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>lwd.ticks</span> <span class='kw'>=</span> <span class='no'>lwd</span>,
-  <span class='kw'>col</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>col.ticks</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>hadj</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>padj</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>tcl</span> <span class='kw'>=</span> -<span class='fl'>0.3</span>,
-  <span class='kw'>cex.axis</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>mgp</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0</span>),
-  <span class='kw'>debug</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"oceDebug"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>mapAxis</span><span class='op'>(</span>
+  side <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span>,
+  longitude <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  latitude <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  axisStyle <span class='op'>=</span> <span class='fl'>1</span>,
+  tick <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  line <span class='op'>=</span> <span class='cn'>NA</span>,
+  pos <span class='op'>=</span> <span class='cn'>NA</span>,
+  outer <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  font <span class='op'>=</span> <span class='cn'>NA</span>,
+  lty <span class='op'>=</span> <span class='st'>"solid"</span>,
+  lwd <span class='op'>=</span> <span class='fl'>1</span>,
+  lwd.ticks <span class='op'>=</span> <span class='va'>lwd</span>,
+  col <span class='op'>=</span> <span class='cn'>NULL</span>,
+  col.ticks <span class='op'>=</span> <span class='cn'>NULL</span>,
+  hadj <span class='op'>=</span> <span class='cn'>NA</span>,
+  padj <span class='op'>=</span> <span class='cn'>NA</span>,
+  tcl <span class='op'>=</span> <span class='op'>-</span><span class='fl'>0.3</span>,
+  cex.axis <span class='op'>=</span> <span class='fl'>1</span>,
+  mgp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0</span><span class='op'>)</span>,
+  debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -276,11 +284,6 @@ amount of debugging information, or to 2 to get more.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>This function is still in development, and the argument list as well as the
-action taken are both subject to change, hence the brevity of this help page.</p>
-<p>Note that if a grid line crosses the axis twice, only one label will be drawn.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>A map must first have been created with <code><a href='mapPlot.html'>mapPlot()</a></code>.</p>
@@ -308,17 +311,29 @@ action taken are both subject to change, hence the brevity of this help page.</p
 <code><a href='shiftLongitude.html'>shiftLongitude</a>()</code>,
 <code><a href='usrLonLat.html'>usrLonLat</a>()</code>,
 <code><a href='utm2lonlat.html'>utm2lonlat</a>()</code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Dan Kelley</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>oce</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>coastlineWorld</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>1</span>))
-<span class='no'>lonlim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>180</span>, <span class='fl'>180</span>)
-<span class='no'>latlim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>60</span>, <span class='fl'>120</span>)
-<span class='fu'><a href='mapPlot.html'>mapPlot</a></span>(<span class='no'>coastlineWorld</span>, <span class='kw'>projection</span><span class='kw'>=</span><span class='st'>"+proj=stere +lat_0=90"</span>,
-        <span class='kw'>longitudelim</span><span class='kw'>=</span><span class='no'>lonlim</span>, <span class='kw'>latitudelim</span><span class='kw'>=</span><span class='no'>latlim</span>,
-        <span class='kw'>grid</span><span class='kw'>=</span><span class='fl'>FALSE</span>)</div><div class='input'><span class='fu'><a href='mapGrid.html'>mapGrid</a></span>(<span class='fl'>15</span>, <span class='fl'>15</span>, <span class='kw'>polarCircle</span><span class='kw'>=</span><span class='fl'>1</span>/<span class='fl'>2</span>)</div><div class='input'><span class='fu'>mapAxis</span>()</div><div class='output co'>#&gt; <span class='warning'>Warning: mapAxis(side=1) cannot draw latitude labels yet; contact author if you need this</span></div><div class='output co'>#&gt; <span class='warning'>Warning: mapAxis(side=2) cannot draw longitude labels yet; contact author if you need this</span></div><div class='img'><img src='mapAxis-1.png' alt='' width='700' height='433' /></div><div class='input'># }
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>lonlim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>180</span>, <span class='fl'>180</span><span class='op'>)</span>
+<span class='va'>latlim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>70</span>, <span class='fl'>110</span><span class='op'>)</span>
+<span class='co'># In mapPlot() call, note axes and grid args, to</span>
+<span class='co'># prevent over-plotting of defaults.  Some adjustments</span>
+<span class='co'># might be required to the mapGrid() arguments, to</span>
+<span class='co'># get agreement with the axis. This is why both</span>
+<span class='co'># mapGrid() and mapAxis() are best avoided; it is</span>
+<span class='co'># simpler to let mapPlot() handle these things.</span>
+<span class='fu'><a href='mapPlot.html'>mapPlot</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, projection<span class='op'>=</span><span class='st'>"+proj=stere +lat_0=90"</span>,
+        longitudelim<span class='op'>=</span><span class='va'>lonlim</span>, latitudelim<span class='op'>=</span><span class='va'>latlim</span>,
+        col<span class='op'>=</span><span class='st'>"tan"</span>, axes<span class='op'>=</span><span class='cn'>FALSE</span>, grid<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='mapGrid.html'>mapGrid</a></span><span class='op'>(</span><span class='fl'>15</span>, <span class='fl'>15</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>mapAxis</span><span class='op'>(</span>axisStyle<span class='op'>=</span><span class='fl'>5</span><span class='op'>)</span>
+</div><div class='img'><img src='mapAxis-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
 
 </div></pre>
   </div>
@@ -336,7 +351,7 @@ action taken are both subject to change, hence the brevity of this help page.</p
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

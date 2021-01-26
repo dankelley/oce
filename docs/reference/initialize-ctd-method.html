@@ -84,7 +84,7 @@ following the usual rules for transitioning to deprecated and defunct status
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -125,7 +125,7 @@ following the usual rules for transitioning to deprecated and defunct status
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dankelley/oce/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -156,17 +156,17 @@ following the usual rules for transitioning to deprecated and defunct status
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ctd</span>
-<span class='fu'>initialize</span>(
-  <span class='no'>.Object</span>,
-  <span class='no'>pressure</span>,
-  <span class='no'>salinity</span>,
-  <span class='no'>temperature</span>,
-  <span class='no'>conductivity</span>,
-  <span class='no'>units</span>,
-  <span class='no'>pressureType</span>,
-  <span class='no'>deploymentType</span>,
-  <span class='no'>...</span>
-)</pre>
+<span class='fu'>initialize</span><span class='op'>(</span>
+  <span class='va'>.Object</span>,
+  <span class='va'>pressure</span>,
+  <span class='va'>salinity</span>,
+  <span class='va'>temperature</span>,
+  <span class='va'>conductivity</span>,
+  <span class='va'>units</span>,
+  <span class='va'>pressureType</span>,
+  <span class='va'>deploymentType</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -244,7 +244,7 @@ on elements stored in <code>ctd</code> objects.</p>
 
     <div class='dont-index'><p>Other things related to ctd data: 
 <code><a href='CTD_BCD2014666_008_1_DN.ODF.gz.html'>CTD_BCD2014666_008_1_DN.ODF.gz</a></code>,
-<code><a href='sub-sub-ctd-method.html'>[[,ctd-method</a></code>,
+<code><a href='[[,ctd-method.html'>[[,ctd-method</a></code>,
 <code>[[&lt;-,ctd-method</code>,
 <code><a href='as.ctd.html'>as.ctd</a>()</code>,
 <code><a href='cnvName2oceName.html'>cnvName2oceName</a>()</code>,
@@ -257,11 +257,11 @@ on elements stored in <code>ctd</code> objects.</p>
 <code><a href='ctd.html'>ctd</a></code>,
 <code><a href='d200321-001.ctd.html'>d200321-001.ctd</a></code>,
 <code><a href='d201211_0011.cnv.html'>d201211_0011.cnv</a></code>,
-<code><a href='handleFlags-ctd-method.html'>handleFlags,ctd-method</a></code>,
-<code><a href='initializeFlagScheme-ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
+<code><a href='handleFlags,ctd-method.html'>handleFlags,ctd-method</a></code>,
+<code><a href='initializeFlagScheme,ctd-method.html'>initializeFlagScheme,ctd-method</a></code>,
 <code><a href='oceNames2whpNames.html'>oceNames2whpNames</a>()</code>,
 <code><a href='oceUnits2whpUnits.html'>oceUnits2whpUnits</a>()</code>,
-<code><a href='plot-ctd-method.html'>plot,ctd-method</a></code>,
+<code><a href='plot,ctd-method.html'>plot,ctd-method</a></code>,
 <code><a href='plotProfile.html'>plotProfile</a>()</code>,
 <code><a href='plotScan.html'>plotScan</a>()</code>,
 <code><a href='plotTS.html'>plotTS</a>()</code>,
@@ -272,9 +272,9 @@ on elements stored in <code>ctd</code> objects.</p>
 <code><a href='read.ctd.woce.other.html'>read.ctd.woce.other</a>()</code>,
 <code><a href='read.ctd.woce.html'>read.ctd.woce</a>()</code>,
 <code><a href='read.ctd.html'>read.ctd</a>()</code>,
-<code><a href='setFlags-ctd-method.html'>setFlags,ctd-method</a></code>,
-<code><a href='subset-ctd-method.html'>subset,ctd-method</a></code>,
-<code><a href='summary-ctd-method.html'>summary,ctd-method</a></code>,
+<code><a href='setFlags,ctd-method.html'>setFlags,ctd-method</a></code>,
+<code><a href='subset,ctd-method.html'>subset,ctd-method</a></code>,
+<code><a href='summary,ctd-method.html'>summary,ctd-method</a></code>,
 <code><a href='woceNames2oceNames.html'>woceNames2oceNames</a>()</code>,
 <code><a href='woceUnit2oceUnit.html'>woceUnit2oceUnit</a>()</code>,
 <code><a href='write.ctd.html'>write.ctd</a>()</code></p></div>
@@ -282,12 +282,14 @@ on elements stored in <code>ctd</code> objects.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='co'>## 1. empty</span>
-<span class='fu'>new</span>(<span class='st'>"ctd"</span>)</div><div class='output co'>#&gt; ctd object has nothing in its data slot.</div><div class='input'>
+<span class='fu'>new</span><span class='op'>(</span><span class='st'>"ctd"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; ctd object has nothing in its data slot.</div><div class='input'>
 <span class='co'>## 2. fake data with no location information, so can only</span>
 <span class='co'>##    plot with the UNESCO equation of state.</span>
 <span class='co'>##    NOTE: always name arguments, in case the default order gets changed</span>
-<span class='no'>ctd</span> <span class='kw'>&lt;-</span> <span class='fu'>new</span>(<span class='st'>"ctd"</span>, <span class='kw'>salinity</span><span class='kw'>=</span><span class='fl'>35</span>+<span class='fl'>1</span>:<span class='fl'>3</span>/<span class='fl'>10</span>, <span class='kw'>temperature</span><span class='kw'>=</span><span class='fl'>10</span>-<span class='fl'>1</span>:<span class='fl'>3</span>/<span class='fl'>10</span>, <span class='kw'>pressure</span><span class='kw'>=</span><span class='fl'>1</span>:<span class='fl'>3</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>ctd</span>)</div><div class='output co'>#&gt; CTD Summary
+<span class='va'>ctd</span> <span class='op'>&lt;-</span> <span class='fu'>new</span><span class='op'>(</span><span class='st'>"ctd"</span>, salinity<span class='op'>=</span><span class='fl'>35</span><span class='op'>+</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>/</span><span class='fl'>10</span>, temperature<span class='op'>=</span><span class='fl'>10</span><span class='op'>-</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>/</span><span class='fl'>10</span>, pressure<span class='op'>=</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>ctd</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; CTD Summary
 #&gt; -----------
 #&gt; 
 #&gt; * Data Overview
@@ -299,11 +301,13 @@ on elements stored in <code>ctd</code> objects.</p>
 #&gt; 
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2020-07-21 16:49:49 UTC: `create 'ctd' object`</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>ctd</span>, <span class='kw'>eos</span><span class='kw'>=</span><span class='st'>"unesco"</span>)</div><div class='img'><img src='initialize-ctd-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
+#&gt;     - 2021-01-26 21:48:10 UTC: `create 'ctd' object`</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>ctd</span>, eos<span class='op'>=</span><span class='st'>"unesco"</span><span class='op'>)</span>
+</div><div class='img'><img src='initialize-ctd-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'>## 3. as 2, but insert location and plot with GSW equation of state.</span>
-<span class='no'>ctd</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='oceSetMetadata.html'>oceSetMetadata</a></span>(<span class='no'>ctd</span>, <span class='st'>"latitude"</span>, <span class='fl'>44</span>)
-<span class='no'>ctd</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='oceSetMetadata.html'>oceSetMetadata</a></span>(<span class='no'>ctd</span>, <span class='st'>"longitude"</span>, -<span class='fl'>63</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>ctd</span>, <span class='kw'>eos</span><span class='kw'>=</span><span class='st'>"gsw"</span>)</div><div class='img'><img src='initialize-ctd-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='va'>ctd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='oceSetMetadata.html'>oceSetMetadata</a></span><span class='op'>(</span><span class='va'>ctd</span>, <span class='st'>"latitude"</span>, <span class='fl'>44</span><span class='op'>)</span>
+<span class='va'>ctd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='oceSetMetadata.html'>oceSetMetadata</a></span><span class='op'>(</span><span class='va'>ctd</span>, <span class='st'>"longitude"</span>, <span class='op'>-</span><span class='fl'>63</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>ctd</span>, eos<span class='op'>=</span><span class='st'>"gsw"</span><span class='op'>)</span>
+</div><div class='img'><img src='initialize-ctd-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -320,7 +324,7 @@ on elements stored in <code>ctd</code> objects.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
