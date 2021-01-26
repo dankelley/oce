@@ -61,22 +61,27 @@ plot(subset(argo, longitude > mean(longitude)))
 plot(subset(argoGrid(argo), pressure > 500 & pressure < 1000), which=5)
 
 # Example 2: restrict attention to delayed-mode profiles.
+\dontrun{
 par(mfrow=c(1, 1))
 plot(subset(argo, dataMode == "D"))
+}
 
 # Example 3: contrast adjusted and unadjusted data
+\dontrun{
 par(mfrow=c(1, 2))
 plotTS(argo)
 plotTS(subset(argo, "adjusted"))
+}
 
 # Example 4. Subset by a polygon determined with locator()
+\dontrun{
 par(mfrow=c(1, 2))
 plot(argo, which="map")
 ## Can get a boundary with e.g. locator(4)
 boundary <- list(x=c(-65, -40, -40, -65), y=c(65, 65, 45, 45))
 argoSubset <- subset(argo, within=boundary)
 plot(argoSubset, which="map")
-
+}
 }
 \seealso{
 Other things related to argo data: 
