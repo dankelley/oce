@@ -28,12 +28,10 @@ Using
 ```R
 devtools:::check_win()
 ```
-yields no errors, but there is a WARNING on R-3.6.3, relating to a PNG
-reference in the README.md file.  This WARNING does not show up for the other
-tested windows systems.  I am a bit mystified, since there are no WARNINGs for
-the other PNGs referred to in README.md. Although it's easy to delete the image
-references, I hope to retain them, since they make the github page more
-informative.
+yields no errors, notes, or warnings on all three tested systems:
+* R version 3.6.3 (2020-02-29)
+* R version 4.0.3 (2020-10-10)
+* R Under development (unstable) (2021-01-25 r79883)
 
 # Reverse Dependency Checks
 
