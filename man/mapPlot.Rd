@@ -472,16 +472,17 @@ Professional Paper: 1395
 \doi{10.3133/pp1395}
 \item Natural Resources Canada
 \url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
-\item "List of Map Projections." In Wikipedia, July 13, 2020.
+\item "List of Map Projections." In Wikipedia, January 26, 2021.
 \url{https://en.wikipedia.org/w/index.php?title=List_of_map_projections}.
 \item PROJ contributors (2020).
 "PROJ Coordinate Transformation Software Library."
 Open Source Geospatial Foundation, n.d.
 \url{https://proj.org}.
 \item Bivand, Roger (2020) Why have CRS, projections and transformations changed?
-Vignette for rgdal 1.5-13 \url{https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html}
+Vignette for rgdal 1.5-13
+\url{https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html}
 \item A gallery of map plots is provided at
-\url{https://dankelley.github.io/r/2020/08/02/oce-proj.html}.
+\url{https://dankelley.github.io/r/2020/08/02/oce-proj.html}
 \item Snyder, John Parr.
 Flattening the Earth: Two Thousand Years of Map Projections.
 Chicago, IL: University of Chicago Press, 1993.

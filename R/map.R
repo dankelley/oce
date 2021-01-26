@@ -1498,7 +1498,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' 2. Natural Resources Canada
 #' \url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
 #'
-#' 3. "List of Map Projections." In Wikipedia, July 13, 2020.
+#' 3. "List of Map Projections." In Wikipedia, January 26, 2021.
 #' \url{https://en.wikipedia.org/w/index.php?title=List_of_map_projections}.
 #'
 #' 4. PROJ contributors (2020).
@@ -1507,10 +1507,11 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' \url{https://proj.org}.
 #'
 #' 5. Bivand, Roger (2020) Why have CRS, projections and transformations changed?
-#' Vignette for rgdal 1.5-13 \url{https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html}
+#' Vignette for rgdal 1.5-13
+#' \url{https://rgdal.r-forge.r-project.org/articles/CRS_projections_transformations.html}
 #'
 #' 6. A gallery of map plots is provided at
-#' \url{https://dankelley.github.io/r/2020/08/02/oce-proj.html}.
+#' \url{https://dankelley.github.io/r/2020/08/02/oce-proj.html}
 #'
 #' 7. Snyder, John Parr.
 #' Flattening the Earth: Two Thousand Years of Map Projections.
