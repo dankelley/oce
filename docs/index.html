@@ -104,15 +104,91 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-Supports the analysis of Oceanographic data, including 'ADCP'
-    measurements, measurements made with 'argo' floats, 'CTD' measurements,
-    sectional data, sea-level time series, coastline and topographic data, etc.
-    Provides specialized functions for calculating seawater properties such as
-    potential temperature in either the 'UNESCO' or 'TEOS-10' equation of state.
-    Produces graphical displays that conform to the conventions of the
-    Oceanographic literature. This package is discussed extensively in
-    Dan Kelley's book Oceanographic Analysis with R, published
-    in 2018 by 'Springer-Verlag' with ISBN 978-1-4939-8842-6.
+<div id="oce-" class="section level1">
+<div class="page-header"><h1 class="hasAnchor">
+<a href="#oce-" class="anchor"></a>oce <img src="reference/figures/oce-logo-3.png" align="right" height="95">
+</h1></div>
+<!-- badges: start -->
+
+<div id="about-oce" class="section level2">
+<h2 class="hasAnchor">
+<a href="#about-oce" class="anchor"></a>About oce</h2>
+<p>Oce is an R package for processing oceanographic data. Its <a href="https://dankelley.github.io/oce/">webpage</a> provides details, of which this README file is just a sketch. A book by one of the oce co-authors provides more information on the package and its potential for oceanographic research (Kelley, Dan E., 2018. <a href="https://www.springer.com/us/book/9781493988426">Oceanographic Analysis with R</a>. New York. Springer-Verlag ISBN 978-1-4939-8844-0).</p>
+</div>
+<div id="installing-oce" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installing-oce" class="anchor"></a>Installing oce</h2>
+<p>Stable versions of oce are available from CRAN, and may be installed from within R, in the same way as other packages. However, the CRAN version is only updated a few times a year (pursuant to policy), so many users install the <code>"develop"</code> branch instead. This branch may be updated several times per day, as the authors fix bugs or add features that are motivated by day-to-day usage. This is the branch favoured by users who need new features or who would wish to contribute to Oce development.</p>
+<p>The easy way to install the <code>"develop"</code> branch is to execute the following commands in R.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"dankelley/oce"</span>, <span class="at">ref=</span><span class="st">"develop"</span>)</span></code></pre></div>
+<p>and most readers should also install Ocedata, with</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"dankelley/ocedata"</span>, <span class="at">ref=</span><span class="st">"master"</span>)</span></code></pre></div>
+</div>
+<div id="evolution-of-oce" class="section level2">
+<h2 class="hasAnchor">
+<a href="#evolution-of-oce" class="anchor"></a>Evolution of oce</h2>
+<p>Oce is emphatically an open-source system, and so the participation of users is very important. This is why Git is used for version control of the Oce source code, and why GitHub is the host for that code. Users are invited to take part in the development process, by suggesting features, by reporting bugs, or just by watching as others do such things. Oceanography is a collaborative discipline, so it makes sense that the evolution of Oce be similarly collaborative.</p>
+</div>
+<div id="examples-using-built-in-datasets" class="section level2">
+<h2 class="hasAnchor">
+<a href="#examples-using-built-in-datasets" class="anchor"></a>Examples using built-in datasets</h2>
+<div id="ctd" class="section level3">
+<h3 class="hasAnchor">
+<a href="#ctd" class="anchor"></a>CTD</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(ctd)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ctd, <span class="at">which=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">5</span>), <span class="at">type=</span><span class="st">"l"</span>, <span class="at">span=</span><span class="dv">150</span>)</span></code></pre></div>
+<p><img src="reference/figures/oce-demo-1.png" alt="Sample CTD plot."></p>
+</div>
+<div id="acoustic-doppler-profiler" class="section level3">
+<h3 class="hasAnchor">
+<a href="#acoustic-doppler-profiler" class="anchor"></a>Acoustic Doppler profiler</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(adp)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(adp)</span></code></pre></div>
+<p><img src="reference/figures/oce-demo-2.png" alt="Sample adp plot."></p>
+</div>
+<div id="sealevel-and-tides" class="section level3">
+<h3 class="hasAnchor">
+<a href="#sealevel-and-tides" class="anchor"></a>Sealevel and tides</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(sealevel)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">tidem</span>(sealevel)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sealevel, <span class="at">which=</span><span class="dv">1</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m)</span></code></pre></div>
+<p><img src="reference/figures/oce-demo-3.png" alt="Sample sealevel plot."></p>
+</div>
+<div id="echosounder" class="section level3">
+<h3 class="hasAnchor">
+<a href="#echosounder" class="anchor"></a>Echosounder</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(echosounder)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(echosounder, <span class="at">which=</span><span class="dv">2</span>, <span class="at">drawTimeRange=</span><span class="cn">TRUE</span>, <span class="at">drawBottom=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="reference/figures/oce-demo-4.png" alt="Sample echosounder plot."></p>
+</div>
+<div id="map" class="section level3">
+<h3 class="hasAnchor">
+<a href="#map" class="anchor"></a>Map</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">rep</span>(<span class="fl">0.5</span>, <span class="dv">4</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(endeavour, <span class="at">package=</span><span class="st">"ocedata"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(coastlineWorld, <span class="at">package=</span><span class="st">"oce"</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mapPlot</span>(coastlineWorld, <span class="at">col=</span><span class="st">"gray"</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mapPoints</span>(endeavour<span class="sc">$</span>longitude, endeavour<span class="sc">$</span>latitude, <span class="at">pch=</span><span class="dv">20</span>, <span class="at">col=</span><span class="st">"red"</span>)</span></code></pre></div>
+<p><img src="reference/figures/oce-demo-5.png" alt="Sample map plot."></p>
+</div>
+<div id="landsat-image" class="section level3">
+<h3 class="hasAnchor">
+<a href="#landsat-image" class="anchor"></a>Landsat image</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ocedata)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(landsat)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(landsat)</span></code></pre></div>
+<p><img src="reference/figures/oce-demo-6.png" alt="Sample landsat image plot."></p>
+</div>
+</div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -149,7 +225,16 @@ Supports the analysis of Oceanographic data, including 'ADCP'
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/dankelley/oce/actions"><img src="https://github.com/dankelley/oce/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/dankelley/oce?branch=develop"><img src="https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://cran.r-project.org/package=oce"><img src="https://www.r-pkg.org/badges/version/oce" alt="CRAN_Status_Badge"></a></li>
+<li><a href="https://www.rdocumentation.org/packages/oce"><img src="https://www.rdocumentation.org/badges/version/oce" alt="Rdoc"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 
