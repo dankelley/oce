@@ -106,7 +106,7 @@
   <div class="contents col-md-9">
 <div id="oce-" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#oce-" class="anchor"></a>oce <img src="reference/figures/oce-logo-3.png" align="right" height="95">
+<a href="#oce-" class="anchor"></a>oce <img src="https://raw.githubusercontent.com/dankelley/oce/develop/man/figures/oce-logo-3.png" align="right" height="95">
 </h1></div>
 <!-- badges: start -->
 
@@ -120,11 +120,9 @@
 <a href="#installing-oce" class="anchor"></a>Installing oce</h2>
 <p>Stable versions of oce are available from CRAN, and may be installed from within R, in the same way as other packages. However, the CRAN version is only updated a few times a year (pursuant to policy), so many users install the <code>"develop"</code> branch instead. This branch may be updated several times per day, as the authors fix bugs or add features that are motivated by day-to-day usage. This is the branch favoured by users who need new features or who would wish to contribute to Oce development.</p>
 <p>The easy way to install the <code>"develop"</code> branch is to execute the following commands in R.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"dankelley/oce"</span>, ref<span class="op">=</span><span class="st">"develop"</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"dankelley/oce"</span>, <span class="at">ref=</span><span class="st">"develop"</span>)</span></code></pre></div>
 <p>and most readers should also install Ocedata, with</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"dankelley/ocedata"</span>, ref<span class="op">=</span><span class="st">"master"</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"dankelley/ocedata"</span>, <span class="at">ref=</span><span class="st">"master"</span>)</span></code></pre></div>
 </div>
 <div id="evolution-of-oce" class="section level2">
 <h2 class="hasAnchor">
@@ -137,63 +135,57 @@
 <div id="ctd" class="section level3">
 <h3 class="hasAnchor">
 <a href="#ctd" class="anchor"></a>CTD</h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/">oce</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">ctd</span>, which<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">5</span><span class="op">)</span>, type<span class="op">=</span><span class="st">"l"</span>, span<span class="op">=</span><span class="fl">150</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/oce-demo-1.png" alt="Sample CTD plot."></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(ctd)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ctd, <span class="at">which=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">5</span>), <span class="at">type=</span><span class="st">"l"</span>, <span class="at">span=</span><span class="dv">150</span>)</span></code></pre></div>
+<p><img src="https://raw.githubusercontent.com/dankelley/oce/develop/man/figures/oce-demo-1.png" alt="Sample CTD plot."></p>
 </div>
 <div id="acoustic-doppler-profiler" class="section level3">
 <h3 class="hasAnchor">
 <a href="#acoustic-doppler-profiler" class="anchor"></a>Acoustic Doppler profiler</h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/">oce</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">adp</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">adp</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/oce-demo-2.png" alt="Sample adp plot."></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(adp)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(adp)</span></code></pre></div>
+<p><img src="https://raw.githubusercontent.com/dankelley/oce/develop/man/figures/oce-demo-2.png" alt="Sample adp plot."></p>
 </div>
 <div id="sealevel-and-tides" class="section level3">
 <h3 class="hasAnchor">
 <a href="#sealevel-and-tides" class="anchor"></a>Sealevel and tides</h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/">oce</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">sealevel</span><span class="op">)</span>
-<span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/tidem.html">tidem</a></span><span class="op">(</span><span class="va">sealevel</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">sealevel</span>, which<span class="op">=</span><span class="fl">1</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/oce-demo-3.png" alt="Sample sealevel plot."></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(sealevel)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">tidem</span>(sealevel)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sealevel, <span class="at">which=</span><span class="dv">1</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m)</span></code></pre></div>
+<p><img src="https://raw.githubusercontent.com/dankelley/oce/develop/man/figures/oce-demo-3.png" alt="Sample sealevel plot."></p>
 </div>
 <div id="echosounder" class="section level3">
 <h3 class="hasAnchor">
 <a href="#echosounder" class="anchor"></a>Echosounder</h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/">oce</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">echosounder</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">echosounder</span>, which<span class="op">=</span><span class="fl">2</span>, drawTimeRange<span class="op">=</span><span class="cn">TRUE</span>, drawBottom<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/oce-demo-4.png" alt="Sample echosounder plot."></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(echosounder)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(echosounder, <span class="at">which=</span><span class="dv">2</span>, <span class="at">drawTimeRange=</span><span class="cn">TRUE</span>, <span class="at">drawBottom=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="https://raw.githubusercontent.com/dankelley/oce/develop/man/figures/oce-demo-4.png" alt="Sample echosounder plot."></p>
 </div>
 <div id="map" class="section level3">
 <h3 class="hasAnchor">
 <a href="#map" class="anchor"></a>Map</h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/">oce</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">endeavour</span>, package<span class="op">=</span><span class="st">"ocedata"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, package<span class="op">=</span><span class="st">"oce"</span><span class="op">)</span>
-<span class="fu"><a href="reference/mapPlot.html">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>, col<span class="op">=</span><span class="st">"gray"</span><span class="op">)</span>
-<span class="fu"><a href="reference/mapPoints.html">mapPoints</a></span><span class="op">(</span><span class="va">endeavour</span><span class="op">$</span><span class="va">longitude</span>, <span class="va">endeavour</span><span class="op">$</span><span class="va">latitude</span>, pch<span class="op">=</span><span class="fl">20</span>, col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/oce-demo-5.png" alt="Sample map plot."></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">rep</span>(<span class="fl">0.5</span>, <span class="dv">4</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(endeavour, <span class="at">package=</span><span class="st">"ocedata"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(coastlineWorld, <span class="at">package=</span><span class="st">"oce"</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mapPlot</span>(coastlineWorld, <span class="at">col=</span><span class="st">"gray"</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mapPoints</span>(endeavour<span class="sc">$</span>longitude, endeavour<span class="sc">$</span>latitude, <span class="at">pch=</span><span class="dv">20</span>, <span class="at">col=</span><span class="st">"red"</span>)</span></code></pre></div>
+<p><img src="https://raw.githubusercontent.com/dankelley/oce/develop/man/figures/oce-demo-5.png" alt="Sample map plot."></p>
 </div>
 <div id="landsat-image" class="section level3">
 <h3 class="hasAnchor">
 <a href="#landsat-image" class="anchor"></a>Landsat image</h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/ocedata">ocedata</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/">oce</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">landsat</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">landsat</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/oce-demo-6.png" alt="Sample landsat image plot."></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ocedata)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(landsat)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(landsat)</span></code></pre></div>
+<p><img src="https://raw.githubusercontent.com/dankelley/oce/develop/man/figures/oce-demo-6.png" alt="Sample landsat image plot."></p>
 </div>
 </div>
 </div>
