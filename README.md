@@ -1,5 +1,3 @@
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # oce <img src="https://github.com/dankelley/oce/blob/develop/man/figures/oce-logo-3.png" align="right" height="95" />
 
 <!-- badges: start -->
