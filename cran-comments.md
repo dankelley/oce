@@ -7,8 +7,7 @@ This is a resubmission. In this version I have:
   that possibly resulted from time spent retrying that link.
 * Corrected an error in the documentation for a function.  (This was not
   related to the submission failure.)
-* Updated the version number in DESCRIPTION and in NEWS, and noted the
-  above-stated changes in the latter.
+* Updated the NEWS file to note the above-stated changes.
 
 I also ran `devtools::check()` again, as recommended at the
 https://r-pkgs.org/release.html#release-submission website.
