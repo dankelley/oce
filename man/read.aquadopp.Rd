@@ -153,6 +153,6 @@ Other things related to adp data:
 \code{\link{xyzToEnu}()}
 }
 \author{
-Dan Kelley
+Dan Kelley and Clark Richards
 }
 \concept{things related to adp data}
