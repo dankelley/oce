@@ -2199,7 +2199,7 @@ read.adp.ad2cp <- function(file, from=1, to=0, by=1, tz=getOption("oceTz"),
 #'
 #' @template adpTemplate
 #'
-#' @author Dan Kelley
+#' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to adp data
 read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
