@@ -1,12 +1,9 @@
 # oce (development version)
 
-## 1.3.1
+## 1.3.0
 
 * Remove a broken link (OK locally but failing in CRAN tests).
 * Fix an error in the example for `setFlags,ctd-method`.
-
-## 1.3.0
-
 * Add `addSpine()` for defining section spines.
 * Add `angle2hms()`.
 * Add `argoJuldToTime()`.
