@@ -261,8 +261,8 @@ and these are assembled into a section to be returned.</p>
 #&gt;     2  fake -63.6339  44.6843     181    44
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2021-01-27 11:57:15 UTC: `create 'section' object`
-#&gt;     - 2021-01-27 11:57:15 UTC: `as.section(salinity = c("ctd", "fake"))`</div><div class='input'><span class='co'>## vector of CTD objects</span>
+#&gt;     - 2021-01-27 13:27:54 UTC: `create 'section' object`
+#&gt;     - 2021-01-27 13:27:54 UTC: `as.section(salinity = c("ctd", "fake"))`</div><div class='input'><span class='co'>## vector of CTD objects</span>
 <span class='va'>ctds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/vector.html'>vector</a></span><span class='op'>(</span><span class='st'>"list"</span>, <span class='fl'>2</span><span class='op'>)</span>
 <span class='va'>ctds</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>ctd</span>
 <span class='va'>ctds</span><span class='op'>[[</span><span class='fl'>2</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>fake</span>
@@ -279,8 +279,8 @@ and these are assembled into a section to be returned.</p>
 #&gt;     2  fake -63.6339  44.6843     181    44
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2021-01-27 11:57:15 UTC: `create 'section' object`
-#&gt;     - 2021-01-27 11:57:15 UTC: `as.section(salinity = ctds)`</div><div class='input'><span class='co'>## argo data (a subset)</span>
+#&gt;     - 2021-01-27 13:27:54 UTC: `create 'section' object`
+#&gt;     - 2021-01-27 13:27:54 UTC: `as.section(salinity = ctds)`</div><div class='input'><span class='co'>## argo data (a subset)</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>argo</span><span class='op'>)</span>
 <span class='va'>sec3</span> <span class='op'>&lt;-</span> <span class='fu'>as.section</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>argo</span>, <span class='va'>profile</span><span class='op'>&lt;</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>sec3</span><span class='op'>)</span>
@@ -297,8 +297,8 @@ and these are assembled into a section to be returned.</p>
 #&gt;     4     4 -22.4160  61.2520      56  1768
 #&gt; * Processing Log
 #&gt; 
-#&gt;     - 2021-01-27 11:57:15 UTC: `create 'section' object`
-#&gt;     - 2021-01-27 11:57:15 UTC: `as.section(salinity = subset(argo, profile &lt; 5))`</div><div class='input'>
+#&gt;     - 2021-01-27 13:27:54 UTC: `create 'section' object`
+#&gt;     - 2021-01-27 13:27:54 UTC: `as.section(salinity = subset(argo, profile &lt; 5))`</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

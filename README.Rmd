@@ -70,7 +70,7 @@ collaborative.
 
 ### CTD
 
-```{r, eval = FALSE}
+```{r}
 library(oce)
 data(ctd)
 plot(ctd, which=c(1,2,3,5), type="l", span=150)
