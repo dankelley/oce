@@ -12,7 +12,7 @@
 #'
 #' @references
 #' Information about ice-tethered profile data is provided at
-#' \url{https://www.whoi.edu/page.do?pid=23096}, which also provides a link for
+#' \code{https://www.whoi.edu/page.do?pid=23096}, which also provides a link for
 #' downloading data.  Note that the present version only handles data in
 #' profiler-mode, not fixed-depth mode.
 #'

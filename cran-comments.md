@@ -1,3 +1,18 @@
+## Resubmission
+
+This is a resubmission. In this version I have:
+
+* Removed a timed-out failing link.  I think this was the cause for the
+  submission failure, although I also saw a note about a long test (18 minutes)
+  that possibly resulted from time spent retrying that link.
+* Corrected an error in the documentation for a function.  (This was not
+  related to the submission failure.)
+* Updated the version number in DESCRIPTION and in NEWS, and noted the
+  above-stated changes in the latter.
+
+I also ran `devtools::check()` again, as recommended at the
+https://r-pkgs.org/release.html#release-submission website.
+
 # Tests
 
 ## Local Tests
