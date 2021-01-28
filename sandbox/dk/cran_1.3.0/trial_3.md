@@ -76,7 +76,19 @@ The top 4 files now are
 and the first two cannot really be trimmed easily.  That leaves landsat.rda;
 I'll try halving its size.
 
-# 1.3.0 trial 3C (not submitted) with landsat.rda trimmed
+# 1.3.0 trial 3C (not submitted) with vignette image size reduced
 
+Previously, the figure size was set to 5in by 5in.  Switching to 4 by 4 trims
+the source tarball to 4.1M (cf previous value 4.3M).  The details with 4 by 4
+are:
+```
+N  checking installed package size ...
+     installed size is 10.0Mb
+     sub-directories of 1Mb or more:
+       R      3.0Mb
+       data   1.0Mb
+       doc    2.1Mb
+       help   2.8Mb
+```
 
 

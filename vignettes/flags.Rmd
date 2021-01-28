@@ -7,8 +7,8 @@ output:
     toc: true
     number_sections: true
     fig_caption: yes
-    fig_width: 5
-    fig_height: 5
+    fig_width: 4
+    fig_height: 4
     dpi: 72
     dev.args: list(pointsize=11)
 vignette: >
