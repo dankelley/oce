@@ -2,8 +2,9 @@
 
 This is a second resubmission. In this version I have:
 
-* Removed the topoNS.rda dataset
-* Trimmed the amsr.rda dataset
+* Reduce tarball file size from 5.2M to 4.1M, by (a) using links for some
+  images, (b) removing the topoNS.rda dataset, and (c) trimming the
+  geographical extent of the amsr.rda dataset.
 * Removed a timed-out failing link.
 * Corrected an error in the documentation for a function.  (This was not
   related to the submission failure.)
