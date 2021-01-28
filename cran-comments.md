@@ -1,10 +1,10 @@
 ## Resubmission
 
-This is a resubmission. In this version I have:
+This is a second resubmission. In this version I have:
 
-* Removed a timed-out failing link.  I think this was the cause for the
-  submission failure, although I also saw a note about a long test (18 minutes)
-  that possibly resulted from time spent retrying that link.
+* Removed the topoNS.rda dataset
+* Trimmed the amsr.rda dataset
+* Removed a timed-out failing link.
 * Corrected an error in the documentation for a function.  (This was not
   related to the submission failure.)
 * Updated the NEWS file to note the above-stated changes.
