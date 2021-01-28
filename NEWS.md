@@ -9,7 +9,6 @@
 * Add `argoJuldToTime()`.
 * Add `data(amsr)` and improve `subset,amsr-method()`.
 * Add `data(tidalCurrent)` dataset of tidal currents from Foreman.
-* Add `data(topoNS)` dataset of Nova Scotia topography.
 * Add `oceAxis()`.
 * Add `preferAdjusted()` for `argo-class` data.
 * Add `read.ctd.odv()`.

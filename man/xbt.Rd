@@ -45,7 +45,6 @@ Other datasets provided with oce:
 \code{\link{sealevelTuktoyaktuk}},
 \code{\link{sealevel}},
 \code{\link{section}},
-\code{\link{topoNS}},
 \code{\link{topoWorld}},
 \code{\link{wind}}
 

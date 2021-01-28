@@ -1,5 +1,7 @@
 what=topoNS
-all: create_$(what).out check_$(what).out
+all:
+	echo "NO LONGER PART OF OCE"
+allold: create_$(what).out check_$(what).out
 %.out: %.R
 	R --no-save < $< > $@
 clean:

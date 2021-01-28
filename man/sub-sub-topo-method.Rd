@@ -133,7 +133,6 @@ Other things related to topo data:
 \code{\link{summary,topo-method}},
 \code{\link{topo-class}},
 \code{\link{topoInterpolate}()},
-\code{\link{topoNS}},
 \code{\link{topoWorld}}
 }
 \concept{functions that extract parts of oce objects}

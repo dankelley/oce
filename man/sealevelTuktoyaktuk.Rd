@@ -75,7 +75,6 @@ Other datasets provided with oce:
 \code{\link{rsk}},
 \code{\link{sealevel}},
 \code{\link{section}},
-\code{\link{topoNS}},
 \code{\link{topoWorld}},
 \code{\link{wind}},
 \code{\link{xbt}}

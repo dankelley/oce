@@ -77,7 +77,6 @@ Other datasets provided with oce:
 \code{\link{sealevelTuktoyaktuk}},
 \code{\link{sealevel}},
 \code{\link{section}},
-\code{\link{topoNS}},
 \code{\link{wind}},
 \code{\link{xbt}}
 
@@ -91,8 +90,7 @@ Other things related to topo data:
 \code{\link{subset,topo-method}},
 \code{\link{summary,topo-method}},
 \code{\link{topo-class}},
-\code{\link{topoInterpolate}()},
-\code{\link{topoNS}}
+\code{\link{topoInterpolate}()}
 }
 \concept{datasets provided with oce}
 \concept{things related to topo data}
