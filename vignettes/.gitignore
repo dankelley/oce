@@ -1,8 +1,5 @@
 *.html
-map_projections.R
-adp.R
-flags.R
-oce.R
+*.R
 rsconnect
 flags_files
 *.md
