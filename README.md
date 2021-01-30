@@ -1,4 +1,4 @@
-# oce <img src="https://raw.githubusercontent.com/dankelley/oce/develop/man/figures/oce-logo-3.png" align="right" height="95" />
+# oce <img src="https://raw.githubusercontent.com/dankelley/oce/develop/oce-logo-3.png" align="right" height="95" />
 
 <!-- badges: start -->
 
@@ -61,7 +61,7 @@ evolution of Oce be similarly collaborative.
     data(ctd)
     plot(ctd, which=c(1,2,3,5), type="l", span=150)
 
-![Sample CTD plot.](https://raw.githubusercontent.com/dankelley/oce/develop/man/figures/oce-demo-1.png)
+![Sample CTD plot.](https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-1.png)
 
 
 ### Acoustic Doppler profiler
@@ -70,7 +70,7 @@ evolution of Oce be similarly collaborative.
     data(adp)
     plot(adp)
 
-![Sample adp plot.](https://raw.githubusercontent.com/dankelley/oce/develop/man/figures/oce-demo-2.png)
+![Sample adp plot.](https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-2.png)
 
 ### Sealevel and tides
 
@@ -81,7 +81,7 @@ evolution of Oce be similarly collaborative.
     plot(sealevel, which=1)
     plot(m)
 
-![Sample sealevel plot.](https://raw.githubusercontent.com/dankelley/oce/develop/man/figures/oce-demo-3.png)
+![Sample sealevel plot.](https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-3.png)
 
 ### Echosounder
 
@@ -89,7 +89,7 @@ evolution of Oce be similarly collaborative.
     data(echosounder)
     plot(echosounder, which=2, drawTimeRange=TRUE, drawBottom=TRUE)
 
-![Sample echosounder plot.](https://raw.githubusercontent.com/dankelley/oce/develop/man/figures/oce-demo-4.png)
+![Sample echosounder plot.](https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-4.png)
 
 ### Map
 
@@ -100,7 +100,7 @@ evolution of Oce be similarly collaborative.
     mapPlot(coastlineWorld, col="gray")
     mapPoints(endeavour$longitude, endeavour$latitude, pch=20, col="red")
 
-![Sample map plot.](https://raw.githubusercontent.com/dankelley/oce/develop/man/figures/oce-demo-5.png)
+![Sample map plot.](https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-5.png)
 
 ### Landsat image
 
@@ -109,5 +109,5 @@ evolution of Oce be similarly collaborative.
     data(landsat)
     plot(landsat)
 
-![Sample landsat image plot.](https://raw.githubusercontent.com/dankelley/oce/develop/man/figures/oce-demo-6.png)
+![Sample landsat image plot.](https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-6.png)
 

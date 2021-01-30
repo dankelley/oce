@@ -35,7 +35,6 @@ Other things related to topo data:
 \code{\link{subset,topo-method}},
 \code{\link{topo-class}},
 \code{\link{topoInterpolate}()},
-\code{\link{topoNS}},
 \code{\link{topoWorld}}
 }
 \author{

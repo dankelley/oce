@@ -1,6 +1,6 @@
 ^marmap.*csv$
 ^.git$
-^.github$
+^\.github$
 ^issue[0-9]+\.R$
 ^sandbox$
 ^.*.odf$
@@ -14,7 +14,6 @@
 ^LICENSE$
 ^vignettes/figure$
 ^.*.org$
-^.github$
 .RData
 .travis.yml
 ^.*.nc$
@@ -56,11 +55,12 @@ R/check_urls.R
 ^pkgdown$
 ^oce-demo-[0-9].png$
 ^oce-logo-[0-9].png$
-
 ^codecov\.yml$
 ar_index_global_prof.rda
 argo_bio-profile_index.rda
 Rplots.pdf
 ^create_readme$
-^\.github$
-README.Rmd
+^README\.md$
+^NEWS\.md$
+CRAN-RELEASE
+

@@ -266,7 +266,7 @@ setMethod("handleFlags", signature=c(object="ctd", flags="ANY", actions="ANY", w
 #' # Compare results in TS space
 #' par(mfrow=c(2, 1))
 #' plotTS(ctdRaw)
-#' plotTS(handleFlags(qc, flags=list(1, 3:9)))
+#' plotTS(handleFlags(qc, flags=c(1, 3:9)))
 #'
 #' # Example 2: Interactive flag assignment based on TS plot, using
 #' # WHP scheme to define 'acceptable' and 'bad' codes

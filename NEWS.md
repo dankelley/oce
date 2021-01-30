@@ -2,12 +2,13 @@
 
 ## 1.3.0
 
+* Remove a broken link (OK locally but failing in CRAN tests).
+* Fix an error in the example for `setFlags,ctd-method`.
 * Add `addSpine()` for defining section spines.
 * Add `angle2hms()`.
 * Add `argoJuldToTime()`.
 * Add `data(amsr)` and improve `subset,amsr-method()`.
 * Add `data(tidalCurrent)` dataset of tidal currents from Foreman.
-* Add `data(topoNS)` dataset of Nova Scotia topography.
 * Add `oceAxis()`.
 * Add `preferAdjusted()` for `argo-class` data.
 * Add `read.ctd.odv()`.

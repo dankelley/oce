@@ -5,9 +5,9 @@ context("amsr")
 test_that("amsr[['SSST']]", {
           data(amsr)
           SST <- amsr[["SST"]]
-          expect_equal(dim(SST), c(160, 120))
-          expect_equal(mean(SST, na.rm=TRUE), 22.2395922219 )
-          expect_equal(SST[1, 1], 31.35)
+          expect_equal(dim(SST), c(44, 36))
+          expect_equal(mean(SST, na.rm=TRUE), 25.96231)
+          expect_equal(SST[1, 1], 30.00)
 })
 
 test_that("composite amsr", {
@@ -30,9 +30,9 @@ test_that("composite amsr", {
 
 test_that("subset(amsr)", {
           data(amsr)
-          sub <- subset(amsr,  34 <= latitude & latitude <=  53)
-          expect_equal(dim(sub[["SST"]]), c(160, 76))
-          sub <- subset(sub,  -75 <= longitude & longitude <= -50)
-          expect_equal(dim(sub[["SST"]]), c(100, 76))
+          sub <- subset(amsr,  37 <= latitude & latitude <=  39)
+          expect_equal(dim(sub[["SST"]]), c(44, 8))
+          sub <- subset(sub,  -68 <= longitude & longitude <= -65)
+          expect_equal(dim(sub[["SST"]]), c(12, 8))
 })
 

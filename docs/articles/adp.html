@@ -100,7 +100,7 @@
       <h1 data-toc-skip>3. Analysis of acoustic-Doppler data</h1>
                         <h4 class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 class="date">2021-01-27</h4>
+            <h4 class="date">2021-01-30</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/master/vignettes/adp.Rmd"><code>vignettes/adp.Rmd</code></a></small>
       <div class="hidden name"><code>adp.Rmd</code></div>
@@ -320,8 +320,8 @@
 <span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
 <span class="co">#&gt; * Processing Log</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt;     - 2021-01-27 14:21:32 UTC: `create 'tidem' object`</span>
-<span class="co">#&gt;     - 2021-01-27 14:21:32 UTC: `tidem(t = as.sealevel(pressure, time))`</span></code></pre></div>
+<span class="co">#&gt;     - 2021-01-30 13:37:01 UTC: `create 'tidem' object`</span>
+<span class="co">#&gt;     - 2021-01-30 13:37:01 UTC: `tidem(t = as.sealevel(pressure, time))`</span></code></pre></div>
 <p>(Note that it fitted for M2, but not S2, because the Rayleigh criterion prevents inferring both, and the conventional tidal analysis favours M2 over S2 if the time series is too short to fit for more than one semi-diurnal constituent.)</p>
 <p>A useful step might be to draw a tidal fit along with the data. It makes sense to construct a finer time grid, to get a smooth curve, as in the following (see <code><a href="../reference/predict.tidem.html">?predict.tidem</a></code>).</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
