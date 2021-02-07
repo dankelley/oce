@@ -4461,11 +4461,11 @@ plotTS <- function (x,
     if (eos == "gsw") {
         salinity <- x[["SA"]]
         y <- x[["CT"]]
-        oceDebug(debug, "salinity as SA, with range", paste(range(salinity,na.rm=TRUE), collapse=" to "), "\n")
+        oceDebug(debug, "Absolute Salinity ranges ", paste(range(salinity,na.rm=TRUE), collapse=" to "), "\n")
     } else {
-        oceDebug(debug, "salinity as Practical Salinity, with range ", paste(range(salinity,na.rm=TRUE), collapse=" to "), "\n")
-        y <- if (inSitu) x[["temperature"]] else swTheta(x, referencePressure=referencePressure, eos=eos)
         salinity <- x[["salinity"]]
+        y <- if (inSitu) x[["temperature"]] else swTheta(x, referencePressure=referencePressure, eos=eos)
+        oceDebug(debug, "Practical Salinity ranges ", paste(range(salinity,na.rm=TRUE), collapse=" to "), "\n")
     }
     ## Can only plot if both S and T are finite, so we trim S and T, at
     ## this point called salinity and y, and also bg, col, cex, and pch.
