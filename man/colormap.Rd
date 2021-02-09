@@ -9,7 +9,7 @@ colormap(
   zlim,
   zclip = FALSE,
   breaks,
-  col = oceColorsJet,
+  col = oceColorsViridis,
   name,
   x0,
   x1,
