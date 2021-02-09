@@ -480,7 +480,9 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #' colors (see `col`).
 #'
 #' @param col either a vector of colors or a function taking a numerical value
-#' as its single argument and returning a vector of colors.  The value of
+#' as its single argument and returning a vector of colors.  Prior to 2021-02-08,
+#' the default for `col` was `oceColorsJet`, but it was switched to
+#' `oceColorsViridis` on that date.  The value of
 #' `col` is ignored if `name` is provided, or if `x0` through
 #' `col1` are provided.
 #'
