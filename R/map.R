@@ -1723,7 +1723,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 plot(x, y, type=type,
                      xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
                      xlab="", ylab="", asp=1, axes=FALSE,
-                     col=col, bg=bg, cex=cex,
+                     col=if (missing(col)) NULL else col,
+                     bg=if (missing(bg)) NULL else bg,
+                     cex=if (missing(cex)) NULL else cex,
                      ...)
             }
             ## points(jitter(box$x), jitter(box$y), pch=1, col='red')
@@ -1743,7 +1745,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 #> message("ISSUE 1783, at map.R:1743")
                 plot(x, y, type=type,
                      xlab="", ylab="", asp=1, axes=FALSE,
-                     col=col, bg=bg, cex=cex,
+                     col=if (missing(col)) NULL else col,
+                     bg=if (missing(bg)) NULL else bg,
+                     cex=if (missing(cex)) NULL else cex,
                      ...)
             }
         }
