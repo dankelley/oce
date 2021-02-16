@@ -60,11 +60,9 @@ and the scale set to \code{""}.
 \examples{
 data(ctd)
 Tf <- swTFreeze(ctd)
-ctd <- oceSetData(ctd, "freezing", Tf, list(unit=expression(degree*C), scale="ITS-90"))
-feet <- swDepth(ctd) / 0.3048
-ctd <- oceSetData(ctd, name="depthInFeet", value=feet, expression("feet"))
-fathoms <- feet / 6
-ctd <- oceSetData(ctd, "depthInFathoms", fathoms, "fathoms")
+ctd <- oceSetData(ctd, "freezing", Tf,
+    unit=list(unit=expression(degree*C), scale="ITS-90"))
+plotProfile(ctd, "freezing")
 
 }
 \seealso{

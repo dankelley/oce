@@ -5815,6 +5815,23 @@ plotProfile <- function(x,
         w <- which(names(x@data) == xtype)
         if (length(w) < 1)
             stop("unknown xtype value (\"", xtype, "\")")
+        # Try to compute a top-axis label with units, unless 'xlab' was given.
+        if (is.null(xlab)) {
+            label <- if (xtype %in% names(x@metadata$units)) {
+                #. tmp <- getOption("oceUnitSep")
+                #. sep <- if (!is.null(tmp)) tmp else ""
+                #. if (getOption("oceUnitBracket") == "[") {
+                #.     L <- paste(" [", sep, sep="")
+                #.     R <- paste(sep, " ]", sep="")
+                #. } else {
+                #.     L <- paste(" (", sep, sep="")
+                #.     R <- paste(sep, " )", sep="")
+                #. }
+                label <- resizableLabel(as.character(xtype), "x", unit=x@metadata$units[[xtype]]$unit)
+            } else {
+                as.character(xtype)
+            }
+        }
         look <- if (keepNA) seq_along(y) else !is.na(x@data[[xtype]]) & !is.na(y)
         dots <- list(...)
         ## message("names(dots)=", paste(names(dots), collapse=" "))
@@ -5830,7 +5847,6 @@ plotProfile <- function(x,
             mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
             ## label <- if (w <= length(x@metadata$labels)) x@metadata$labels[w] else
             ##     as.character(xtype)
-            label <- as.character(xtype)
             if (is.character(label) && label == "sigmaTheta")
                 label <- resizableLabel("sigmaTheta", "x", debug=debug-1)
             ##issue1684/2020-04-20 label <- resizableLabel(label, "x", unit=x@metadata$units[[xtype]], debug=debug-1)
