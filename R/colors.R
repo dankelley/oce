@@ -26,7 +26,7 @@ colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe", "gmt_gebco")
 ## keeping this (which was called 'colorize' until 2014-05-07) for a while, but not in NAMESPACE.
 colormap_colorize <- function(z=NULL,
                               zlim, zclip=FALSE,
-                              breaks, col=oceColorsJet, colormap=NULL, segments=1,
+                              breaks, col=oceColorsViridis, colormap=NULL, segments=1,
                               missingColor="gray",
                               debug=getOption("oceDebug"))
 {
@@ -480,7 +480,9 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #' colors (see `col`).
 #'
 #' @param col either a vector of colors or a function taking a numerical value
-#' as its single argument and returning a vector of colors.  The value of
+#' as its single argument and returning a vector of colors.  Prior to 2021-02-08,
+#' the default for `col` was `oceColorsJet`, but it was switched to
+#' `oceColorsViridis` on that date.  The value of
 #' `col` is ignored if `name` is provided, or if `x0` through
 #' `col1` are provided.
 #'
@@ -622,7 +624,7 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #' @family things related to colors
 colormap <- function(z=NULL,
                      zlim, zclip=FALSE,
-                     breaks, col=oceColorsJet,
+                     breaks, col=oceColorsViridis,
                      name, x0, x1, col0, col1, blend=0,
                      missingColor,
                      debug=getOption("oceDebug"))

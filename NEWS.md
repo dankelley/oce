@@ -1,5 +1,9 @@
 # oce (development version)
 
+## 1.4.0
+
+* Change `colormap()` to use `oceColorsViridis` as default colour scheme.
+
 ## 1.3.0
 
 * Remove a broken link (OK locally but failing in CRAN tests).

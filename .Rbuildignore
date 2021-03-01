@@ -60,6 +60,7 @@ ar_index_global_prof.rda
 argo_bio-profile_index.rda
 Rplots.pdf
 ^create_readme$
-README.Rmd
+^README\.md$
 ^NEWS\.md$
 CRAN-RELEASE
+

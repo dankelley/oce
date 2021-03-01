@@ -9,7 +9,7 @@ colormap(
   zlim,
   zclip = FALSE,
   breaks,
-  col = oceColorsJet,
+  col = oceColorsViridis,
   name,
   x0,
   x1,
@@ -53,7 +53,9 @@ indicating the desired number of break points to be computed with
 colors (see \code{col}).}
 
 \item{col}{either a vector of colors or a function taking a numerical value
-as its single argument and returning a vector of colors.  The value of
+as its single argument and returning a vector of colors.  Prior to 2021-02-08,
+the default for \code{col} was \code{oceColorsJet}, but it was switched to
+\code{oceColorsViridis} on that date.  The value of
 \code{col} is ignored if \code{name} is provided, or if \code{x0} through
 \code{col1} are provided.}
 

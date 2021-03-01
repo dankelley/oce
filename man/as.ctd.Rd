@@ -47,8 +47,6 @@ matrix form (as can happen with some objects of \linkS4class{argo}),
 then only the first column is used, and a warning to that effect is given,
 unless the \code{profile} argument is specified and then that specific
 profile is extracted.
-\item It can be an \linkS4class{rsk} object (see \dQuote{Converting rsk objects} for details).
-\item It can be an \linkS4class{rsk} object (see \dQuote{Converting rsk objects} for details).
 \item It can be unspecified, in which case \code{conductivity} becomes a mandatory
 argument, because it will be needed for computing actual salinity,
 using \code{\link[=swSCTp]{swSCTp()}}.
