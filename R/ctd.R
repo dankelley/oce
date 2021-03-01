@@ -945,11 +945,11 @@ setMethod(f="[[<-",
 #' Assemble data into a [ctd-class] object.
 #'
 #' @param salinity There are several distinct choices for `salinity`.
-#' * It can be an [rsk-class] object (see \dQuote{Converting rsk objects} for details).
 #'
 #' * It can be a
 #' vector indicating the practical salinity through the water column. In that case,
 #' `as.ctd` employs the other arguments listed below.
+#'
 #' * It can be an [rsk-class] object (see \dQuote{Converting rsk objects} for details).
 #'
 #' * It can be something (a data frame, a list or an `oce` object)
