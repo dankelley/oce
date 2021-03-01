@@ -33,7 +33,6 @@ as.ctd(
 \arguments{
 \item{salinity}{There are several distinct choices for \code{salinity}.
 \itemize{
-\item It can be an \linkS4class{rsk} object (see \dQuote{Converting rsk objects} for details).
 \item It can be a
 vector indicating the practical salinity through the water column. In that case,
 \code{as.ctd} employs the other arguments listed below.
