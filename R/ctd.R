@@ -961,9 +961,6 @@ setMethod(f="[[<-",
 #' then only the first column is used, and a warning to that effect is given,
 #' unless the `profile` argument is specified and then that specific
 #' profile is extracted.
-#' * It can be an [rsk-class] object (see \dQuote{Converting rsk objects} for details).
-#'
-#' * It can be an [rsk-class] object (see \dQuote{Converting rsk objects} for details).
 #'
 #' * It can be unspecified, in which case `conductivity` becomes a mandatory
 #' argument, because it will be needed for computing actual salinity,
