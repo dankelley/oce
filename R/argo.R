@@ -970,22 +970,28 @@ argoDecodeFlags <- function(f) # local function
 #'
 #' @details
 #'
-#' Items are extracted from the data file using
-#' [ncdf4::ncvar_get()], after which one-column matrices
-#' are converted to vectors, and leading and trailing blank space in character
-#' values is removed using [trimString()].
-#'
 #' See the Argo documentation (see references 2 and 3) for some details on what files contain.
 #' Many items listed in section 2.2.3 of reference 3 are read from the
 #' file and stored in the `metadata` slot, with the exception of
 #' `longitude` and `latitude`, which are stored in the
 #' `data` slot, alongside hydrographic information.
 #'
-#' The following global attributes stored within the netcdf file are stored in the
-#' `metadata` slot: `title`, `institution`, `source`,
-#' `history`, `references`, `userManualVersion`, `conventions`,
-#' and `featureType`. These names are derived from those in the netcdf
-#' file, as explained in the \dQuote{Variable renaming convention} section below.
+#' The names of several data parameters stored within the netCDF file
+#' are altered to fit the oce context. For example, `PRES` becomes `pressure`,
+#' matching the name of this variable in other oce data types.
+#' The original names are reported by `summary,argo-method`, and
+#' data may be extracted with `[[,argo-method` using those names, so
+#' the renaming should not be too inconvenient to Argo experts who
+#' are new to oce.
+#'
+#' Several of the netCDF global attributes are also renamed before
+#' placement in the `metadata` slot of the return value.  These include
+#' `conventions`, `featureType`, `history`, `institution`,
+#' `nParameters`, `nProfiles`,  `references`, `source`, `title`,
+#' and `userManualVersion`.
+#' These names are derived from those in the netcdf
+#' file, and mainly follow the pattern explained in the
+#' \dQuote{Variable renaming convention} section.
 #'
 #' It is assumed that the profile data are as listed in the NetCDF variable
 #' called `STATION_PARAMETERS`. Each item can have variants, as
@@ -1206,6 +1212,8 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     oceDebug(debug-1, "Extracting PI_NAME\n")
     oceDebug(debug-1, "At processing step  3, varnames: c(\"", paste(sort(varNames), collapse="\",\""), "\")\n", sep="")
     res@metadata$stationParameters <- NULL
+    res@metadata$nParameters <- file$dim$N_PARAM$len
+    res@metadata$nProfiles <- file$dim$N_PROF$len
     if (maybeLC("STATION_PARAMETERS", lc) %in% varNames) {
         res@metadata$stationParameters <- trimString(ncdf4::ncvar_get(file, maybeLC("STATION_PARAMETERS", lc)))
         if (is.null(res@metadata$stationParameters))

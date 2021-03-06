@@ -27,22 +27,28 @@ The file must be in the ARGO-style NetCDF format described
 in the Argo documentation (see references 2 and 3).
 }
 \details{
-Items are extracted from the data file using
-\code{\link[ncdf4:ncvar_get]{ncdf4::ncvar_get()}}, after which one-column matrices
-are converted to vectors, and leading and trailing blank space in character
-values is removed using \code{\link[=trimString]{trimString()}}.
-
 See the Argo documentation (see references 2 and 3) for some details on what files contain.
 Many items listed in section 2.2.3 of reference 3 are read from the
 file and stored in the \code{metadata} slot, with the exception of
 \code{longitude} and \code{latitude}, which are stored in the
 \code{data} slot, alongside hydrographic information.
 
-The following global attributes stored within the netcdf file are stored in the
-\code{metadata} slot: \code{title}, \code{institution}, \code{source},
-\code{history}, \code{references}, \code{userManualVersion}, \code{conventions},
-and \code{featureType}. These names are derived from those in the netcdf
-file, as explained in the \dQuote{Variable renaming convention} section below.
+The names of several data parameters stored within the netCDF file
+are altered to fit the oce context. For example, \code{PRES} becomes \code{pressure},
+matching the name of this variable in other oce data types.
+The original names are reported by \verb{summary,argo-method}, and
+data may be extracted with \verb{[[,argo-method} using those names, so
+the renaming should not be too inconvenient to Argo experts who
+are new to oce.
+
+Several of the netCDF global attributes are also renamed before
+placement in the \code{metadata} slot of the return value.  These include
+\code{conventions}, \code{featureType}, \code{history}, \code{institution},
+\code{nParameters}, \code{nProfiles},  \code{references}, \code{source}, \code{title},
+and \code{userManualVersion}.
+These names are derived from those in the netcdf
+file, and mainly follow the pattern explained in the
+\dQuote{Variable renaming convention} section.
 
 It is assumed that the profile data are as listed in the NetCDF variable
 called \code{STATION_PARAMETERS}. Each item can have variants, as
