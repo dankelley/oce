@@ -5860,8 +5860,8 @@ plotProfile <- function(x,
         } else if (type == "b" || type == "o") {
             lines(x@data[[w]], y, lwd=lwd, col=col)
             points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty, cex=cex)
-        } else {
-            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty, cex=cex)
+        # issue1791 } else {
+        # issue1791     points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty, cex=cex)
         }
         if (grid) {
             at <- par("xaxp")
