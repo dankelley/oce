@@ -394,6 +394,10 @@ setMethod(f="subset",
 #' If `colormap` is provided, it takes precedence over `breaks` and `col`.
 #' See \dQuote{Examples} for an example of using the "turbo" colour scheme.
 #'
+#' @param zlim optional numeric vector of length 2, giving the limits
+#' of the plotted quantity.  A reasonable default is computed, if this
+#' is not given.
+#'
 #' @param missingColor List of colors for problem cases. The names of the
 #' elements in this list must be as in the default, but the colors may
 #' be changed to any desired values. These default values work reasonably
@@ -429,7 +433,7 @@ setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
           definition=function(x, y, asp=NULL,
-                              breaks, col, colormap,
+                              breaks, col, colormap, zlim,
                               missingColor=list(land='papayaWhip',
                                                 none='lightGray',
                                                 bad='gray',
@@ -440,6 +444,7 @@ setMethod(f="plot",
               dots <- list(...)
               oceDebug(debug, "plot.amsr(..., y=c(",
                        if (missing(y)) "(missing)" else y, ", ...) {\n", sep="", style="bold", unindent=1)
+              zlimGiven <- !missing(zlim)
               if (missing(y))
                   y <- "SST"
               lon <- x[["longitude"]]
@@ -481,21 +486,25 @@ setMethod(f="plot",
               oceDebug(debug, "zrange: ", paste(zrange, collapse=" to "), "\n")
               ## Determine colormap, if not given as an argument.
               if (missing(colormap)) {
+                  oceDebug(debug, "case 1: 'colormap' not given, so will be computed here\n")
                   if (!missing(breaks)) {
+                      oceDebug(debug, "case 1.1: 'breaks' was specified\n")
+                      cat("FYI breaks are as follows:\n");print(breaks)
                       if (!missing(col)) {
-                          oceDebug(debug, "computing colormap from specified breaks and specified col\n")
-                          colormap <- oce::colormap(zlim=range(breaks), col=col)
+                          oceDebug(debug, "case 1.1.1: computing colormap from specified breaks and specified col\n")
+                          colormap <- oce::colormap(zlim=if (zlimGiven) zlim else range(breaks), col=col)
                       } else {
-                          oceDebug(debug, "computing colormap from specified breaks and computed col\n")
-                          colormap <- oce::colormap(zlim=range(breaks), col=oceColorsTemperature)
+                          oceDebug(debug, "case 1.1.2: computing colormap from specified breaks and computed col\n")
+                          colormap <- oce::colormap(zlim=if (zlimGiven) zlim else range(breaks), col=oceColorsTemperature)
                       }
                   } else {
+                      oceDebug(debug, "case 1.2: 'breaks' was not specified\n")
                       if (!missing(col)) {
-                          oceDebug(debug, "computing colormap from and computed breaks and specified col\n")
-                          colormap <- oce::colormap(zlim=zrange, col=col)
+                          oceDebug(debug, "case 1.2.1: computing colormap from and computed breaks and specified col\n")
+                          colormap <- oce::colormap(zlim=if (zlimGiven) zlim else zrange, col=col)
                       } else {
-                          oceDebug(debug, "computing colormap from computed breaks and computed col\n")
-                          colormap <- oce::colormap(zlim=zrange, col=oceColorsTemperature)
+                          oceDebug(debug, "case 1.2.2: computing colormap from computed breaks and computed col\n")
+                          colormap <- oce::colormap(zlim=if (zlimGiven) zlim else zrange, col=oceColorsTemperature)
                       }
                   }
               } else {
@@ -503,10 +512,10 @@ setMethod(f="plot",
               }
               i <- if ("zlab" %in% names(dots)) {
                   oceDebug(debug, "calling imagep() with asp=", asp, ", and zlab=\"", dots$zlab, "\"\n", sep="")
-                  imagep(lon, lat, z, colormap=colormap, asp=asp, ...)
+                  imagep(lon, lat, z, colormap=colormap, asp=asp, debug=debug-1, ...)
               } else {
                   oceDebug(debug, "calling imagep() with asp=", asp, ", and no zlab argument\n", sep="")
-                  imagep(lon, lat, z, colormap=colormap, zlab=y, asp=asp, ...)
+                  imagep(lon, lat, z, colormap=colormap, zlab=y, asp=asp, debug=debug-1, ...)
               }
               ## Handle missing-data codes by redrawing the (decimate) image.
               ## Perhaps imagep() should be able to do this, but imagep() is a

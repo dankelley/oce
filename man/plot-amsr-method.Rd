@@ -19,6 +19,7 @@
   breaks,
   col,
   colormap,
+  zlim,
   missingColor = list(land = "papayaWhip", none = "lightGray", bad = "gray", rain =
     "plum", ice = "mediumVioletRed"),
   debug = getOption("oceDebug"),
@@ -51,6 +52,10 @@ a colormap is created to cover the range of data values, using
 \link{oceColorsTemperature} colour scheme.
 If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.
 See \dQuote{Examples} for an example of using the "turbo" colour scheme.}
+
+\item{zlim}{optional numeric vector of length 2, giving the limits
+of the plotted quantity.  A reasonable default is computed, if this
+is not given.}
 
 \item{missingColor}{List of colors for problem cases. The names of the
 elements in this list must be as in the default, but the colors may
