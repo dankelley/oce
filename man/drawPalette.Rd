@@ -88,7 +88,7 @@ helpful if the palette panel is to be created with \code{\link[=layout]{layout()
 illustrated in the \dQuote{Examples}.}
 
 \item{drawTriangles}{logical value indicating whether to draw triangles on
-the top and bottom of the palette.  If a single value is provide, it applies
+the top and bottom of the palette.  If a single value is provided, it applies
 to both ends of the palette.  If a pair is provided, the first refers to the
 lower range of the palette, and the second to the upper range.}
 
