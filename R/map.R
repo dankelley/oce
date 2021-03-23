@@ -48,7 +48,7 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran, legacy, passNA, debug=g
         warning("passNA is ignored in oce 1.3-0, and will be disallowed thereafter\n")
     if (!requireNamespace("sf", quietly=TRUE))
         stop('must install.packages("sf") to do map projections')
-    oceDebug(debug, "oceProject(xy, proj=\"", proj, "\", ...) {\n", sep="", unindent=1, style="bold")
+    oceDebug(debug, "oceProject(xy, proj=\"", proj, "\", inv=", inv, ", ...) {\n", sep="", unindent=1, style="bold")
     owarn <- options()$warn # this, and the capture.output, quieten the processing
     options(warn=-1)
     ## <1629> ## {{{ OLD 'rgdal' method
@@ -95,6 +95,12 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran, legacy, passNA, debug=g
         ##oceDebug(debug, "after moving poles: ", vectorShow(xy[,2]))
     }
     ## Use capture.output() to discard any stray printing that sf might do.
+    if (debug > 0) {
+        cat("summary(xy[,1]) i.e. input lon follows\n")
+        print(summary(xy[,1]))
+        cat("summary(xy[,2]) i.e. input lat follows\n")
+        print(summary(xy[,2]))
+    }
     if (inv) {
         capture.output({XY <- try(unname(sf::sf_project(proj, longlatProj, xy, keep=TRUE)), silent=TRUE)})
     } else {
@@ -102,6 +108,12 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran, legacy, passNA, debug=g
     }
     if (inherits(XY, "try-error"))
         stop("oceProject() : sf_project() yielded errors\n")
+    if (debug > 0) {
+        cat("summary(XY[,1]) i.e. output x follows\n")
+        print(summary(XY[,1]))
+        cat("summary(XY[,2]) i.e. output y follows\n")
+        print(summary(XY[,2]))
+    }
     XY[na, ] <- NA
     ## <1629> ## Test rgdal/sf agreement to 1m.
     ## <1629> canCompare <- is.finite(XY) & is.finite(XYSF)
@@ -1439,9 +1451,11 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' # are somewhat limited for serious use on large scales.  See Section 20 of
 #' # reference 1. Note that filling is not employed because it causes a problem with
 #' # Antarctica.
-#' par(mar=c(3, 3, 1, 1))
-#' mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
-#' mtext("Orthographic", adj=1)
+#' if (FALSE) { # Skip this to avoid bug in "sf" version 0.9-8
+#'     par(mar=c(3, 3, 1, 1))
+#'     mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
+#'     mtext("Orthographic", adj=1)
+#' }
 #'
 #' # Example 4.
 #' # The Lambert conformal conic projection is an equal-area projection
@@ -1469,7 +1483,8 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' # Spinning globe: create PNG files that can be assembled into a movie
 #'}
 #'
-#'\dontrun{
+#' if (FALSE) { # Skip this to avoid bug in "sf" version 0.9-8
+#' \dontrun{
 #' png("globe-%03d.png")
 #' lons <- seq(360, 0, -15)
 #' par(mar=rep(0, 4))
@@ -1484,7 +1499,9 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'                 xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
 #'     }
 #' }
-#' dev.off()}
+#' dev.off()
+#' }
+#' }
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -1570,8 +1587,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         if (is.na(tmp)) {
             oceDebug(debug, "original projection\n      '", projection, "'\n  not converted, owing to an error with sf::st_crs()\n", sep="")
         } else {
-            oceDebug(debug, "original projection\n      '", projection, "'\n", sep="")
-            oceDebug(debug, "new SF-style projection\n      '", tmp, "'\n", sep="")
+            oceDebug(debug, "used sf::st_crs() to convert projection to \"", tmp, "\"\n", sep="")
             projection <- tmp
         }
     }
@@ -1612,7 +1628,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     drawGrid <- (is.logical(grid[1]) && grid[1]) || (is.numeric(grid[1]) && grid[1] > 0)
     oceDebug(debug, "drawGrid=", drawGrid, "\n")
     if (nchar(projection) && substr(projection, 1, 1) != "+") {
-        stop("use PROJ. format, e.g. projection=\"+proj=merc\" for Mercator\n", sep="")
+        stop("use PROJ format, e.g. projection=\"+proj=merc\" for Mercator\n", sep="")
     }
     xy <- lonlat2map(longitude, latitude, projection=projection, debug=debug-1)
     if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("latitudelim must contain two distinct values")
@@ -2079,6 +2095,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #' truncated to 3.
 #'
 #' @examples
+#' if (FALSE) { # Skip this to avoid bug in "sf" version 0.9-8
 #'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
@@ -2087,7 +2104,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #' # prevent over-plotting of defaults.
 #' mapPlot(coastlineWorld, type="l", projection="+proj=ortho",
 #'         axes=FALSE, grid=FALSE)
-#' mapGrid(15, 15)}
+#' mapGrid(15, 15)
+#' }
+#' }
 #'
 #' @return A [data.frame], returned silently, containing
 #' `"side"`, `"value"`, `"type"`, and `"at"`.
@@ -2593,6 +2612,7 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 #' @param \dots optional arguments passed to [lines()].
 #'
 #' @examples
+#' if (FALSE) { # Skip this to avoid bug in "sf" version 0.9-8
 #'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
@@ -2603,6 +2623,7 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 #' lat <- c(44.6479, 51.5171)
 #' mapPoints(lon, lat, col='red')
 #' mapLines(lon, lat, col='red')
+#'}
 #'}
 #'
 #' @author Dan Kelley
@@ -3836,6 +3857,7 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceDebug"))
 {
     ##oceDebug(debug, "lonlat2map() {\n", unindent=1, sep="", style="bold")
+    oceDebug(debug, "lonlat2map(longitude, latitude, projection=\"", projection, "\") {\n", sep="", unindent=1, style="bold")
     if (missing(longitude))
         stop("must supply longitude")
     if (is.list(longitude)) {
@@ -3853,14 +3875,17 @@ lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceD
         projection <- projection@projargs
     }
     pr <- gsub(".*\\+proj=([^ ]*).*", "\\1", projection)
+    oceDebug(debug, "in lonlat2map(), projection=\"", projection, "\"\n", sep="")
+    oceDebug(debug, "in lonlat2map(), pr=        \"", projection, "\"\n", sep="")
     #gsub(" .*$", "", gsub("^\\+proj=", "", projection))
     if (!(pr %in% knownProj4))
         stop("projection '", pr, "' is unknown; try one of: ", paste(knownProj4, collapse=','))
     n <- length(longitude)
     if (n != length(latitude))
         stop("lengths of longitude and latitude must match, but they are ", n, " and ", length(latitude))
-    XY <- oceProject(xy=cbind(longitude, latitude), proj=projection, inv=FALSE, debug=debug)
+    XY <- oceProject(xy=cbind(longitude, latitude), proj=projection, inv=FALSE, debug=debug-1)
     .Projection(list(type="proj4", projection=projection))
     ## oceDebug(debug, "} # lonlat2map()\n", unindent=1, sep="", style="bold")
+    oceDebug(debug, "} # lonlat2map\n", sep="", unindent=1, style="bold")
     list(x=XY[, 1], y=XY[, 2])
 }

@@ -73,6 +73,7 @@ first two arguments of the latter supply the number of lines in the grid,
 whereas the present function has increments for the first two arguments.
 }
 \examples{
+if (FALSE) { # Skip this to avoid bug in "sf" version 0.9-8
 \donttest{
 library(oce)
 data(coastlineWorld)
@@ -81,7 +82,9 @@ par(mar=c(2, 2, 1, 1))
 # prevent over-plotting of defaults.
 mapPlot(coastlineWorld, type="l", projection="+proj=ortho",
         axes=FALSE, grid=FALSE)
-mapGrid(15, 15)}
+mapGrid(15, 15)
+}
+}
 
 }
 \seealso{

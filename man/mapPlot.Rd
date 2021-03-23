@@ -416,9 +416,11 @@ mtext("Mollweide with coastlineCut", adj=1)
 # are somewhat limited for serious use on large scales.  See Section 20 of
 # reference 1. Note that filling is not employed because it causes a problem with
 # Antarctica.
-par(mar=c(3, 3, 1, 1))
-mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
-mtext("Orthographic", adj=1)
+if (FALSE) { # Skip this to avoid bug in "sf" version 0.9-8
+    par(mar=c(3, 3, 1, 1))
+    mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
+    mtext("Orthographic", adj=1)
+}
 
 # Example 4.
 # The Lambert conformal conic projection is an equal-area projection
@@ -446,6 +448,7 @@ mtext("Stereographic", adj=1)
 # Spinning globe: create PNG files that can be assembled into a movie
 }
 
+if (FALSE) { # Skip this to avoid bug in "sf" version 0.9-8
 \dontrun{
 png("globe-\%03d.png")
 lons <- seq(360, 0, -15)
@@ -461,7 +464,9 @@ for (i in seq_along(lons)) {
                 xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
     }
 }
-dev.off()}
+dev.off()
+}
+}
 
 }
 \references{

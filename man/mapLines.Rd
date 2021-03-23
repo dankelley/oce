@@ -23,6 +23,7 @@ segments as great circles.  (Ignored.)}
 Plot lines on an existing map, by analogy to \code{\link[=lines]{lines()}}.
 }
 \examples{
+if (FALSE) { # Skip this to avoid bug in "sf" version 0.9-8
 \donttest{
 library(oce)
 data(coastlineWorld)
@@ -33,6 +34,7 @@ lon <- c(-63.5744, 0.1062)             # Halifax CA to London UK
 lat <- c(44.6479, 51.5171)
 mapPoints(lon, lat, col='red')
 mapLines(lon, lat, col='red')
+}
 }
 
 }
