@@ -416,7 +416,8 @@ mtext("Mollweide with coastlineCut", adj=1)
 # are somewhat limited for serious use on large scales.  See Section 20 of
 # reference 1. Note that filling is not employed because it causes a problem with
 # Antarctica.
-if (FALSE) { # Skip this to avoid bug in "sf" version 0.9-8
+if (utils::packageVersion("sf") != "0.9.8") {
+    # sf version 0.9-8 has a problem with this projection
     par(mar=c(3, 3, 1, 1))
     mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
     mtext("Orthographic", adj=1)
@@ -448,23 +449,24 @@ mtext("Stereographic", adj=1)
 # Spinning globe: create PNG files that can be assembled into a movie
 }
 
-if (FALSE) { # Skip this to avoid bug in "sf" version 0.9-8
 \dontrun{
-png("globe-\%03d.png")
-lons <- seq(360, 0, -15)
-par(mar=rep(0, 4))
-for (i in seq_along(lons)) {
-    p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
-    if (i == 1) {
-        mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
-        xlim <- par("usr")[1:2]
-        ylim <- par("usr")[3:4]
-    } else {
-        mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
-                xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
+if (utils::packageVersion("sf") != "0.9.8") {
+    # sf version 0.9-8 has a problem with this projection
+    png("globe-\%03d.png")
+    lons <- seq(360, 0, -15)
+    par(mar=rep(0, 4))
+    for (i in seq_along(lons)) {
+        p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
+        if (i == 1) {
+            mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
+            xlim <- par("usr")[1:2]
+            ylim <- par("usr")[3:4]
+        } else {
+            mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
+                    xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
+        }
     }
-}
-dev.off()
+    dev.off()
 }
 }
 

@@ -73,16 +73,17 @@ first two arguments of the latter supply the number of lines in the grid,
 whereas the present function has increments for the first two arguments.
 }
 \examples{
-if (FALSE) { # Skip this to avoid bug in "sf" version 0.9-8
 \donttest{
-library(oce)
-data(coastlineWorld)
-par(mar=c(2, 2, 1, 1))
-# In mapPlot() call, note axes and grid args, to
-# prevent over-plotting of defaults.
-mapPlot(coastlineWorld, type="l", projection="+proj=ortho",
-        axes=FALSE, grid=FALSE)
-mapGrid(15, 15)
+if (utils::packageVersion("sf") != "0.9.8") {
+    # sf version 0.9-8 has a problem with this projection
+    library(oce)
+    data(coastlineWorld)
+    par(mar=c(2, 2, 1, 1))
+    # In mapPlot() call, note axes and grid args, to
+    # prevent over-plotting of defaults.
+    mapPlot(coastlineWorld, type="l", projection="+proj=ortho",
+            axes=FALSE, grid=FALSE)
+    mapGrid(15, 15)
 }
 }
 

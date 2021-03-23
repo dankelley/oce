@@ -1451,7 +1451,8 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' # are somewhat limited for serious use on large scales.  See Section 20 of
 #' # reference 1. Note that filling is not employed because it causes a problem with
 #' # Antarctica.
-#' if (FALSE) { # Skip this to avoid bug in "sf" version 0.9-8
+#' if (utils::packageVersion("sf") != "0.9.8") {
+#'     # sf version 0.9-8 has a problem with this projection
 #'     par(mar=c(3, 3, 1, 1))
 #'     mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
 #'     mtext("Orthographic", adj=1)
@@ -1483,25 +1484,26 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' # Spinning globe: create PNG files that can be assembled into a movie
 #'}
 #'
-#' if (FALSE) { # Skip this to avoid bug in "sf" version 0.9-8
 #' \dontrun{
-#' png("globe-%03d.png")
-#' lons <- seq(360, 0, -15)
-#' par(mar=rep(0, 4))
-#' for (i in seq_along(lons)) {
-#'     p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
-#'     if (i == 1) {
-#'         mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
-#'         xlim <- par("usr")[1:2]
-#'         ylim <- par("usr")[3:4]
-#'     } else {
-#'         mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
-#'                 xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
+#' if (utils::packageVersion("sf") != "0.9.8") {
+#'     # sf version 0.9-8 has a problem with this projection
+#'     png("globe-%03d.png")
+#'     lons <- seq(360, 0, -15)
+#'     par(mar=rep(0, 4))
+#'     for (i in seq_along(lons)) {
+#'         p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
+#'         if (i == 1) {
+#'             mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
+#'             xlim <- par("usr")[1:2]
+#'             ylim <- par("usr")[3:4]
+#'         } else {
+#'             mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
+#'                     xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
+#'         }
 #'     }
+#'     dev.off()
 #' }
-#' dev.off()
-#' }
-#' }
+#'}
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -2095,18 +2097,19 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #' truncated to 3.
 #'
 #' @examples
-#' if (FALSE) { # Skip this to avoid bug in "sf" version 0.9-8
 #'\donttest{
-#' library(oce)
-#' data(coastlineWorld)
-#' par(mar=c(2, 2, 1, 1))
-#' # In mapPlot() call, note axes and grid args, to
-#' # prevent over-plotting of defaults.
-#' mapPlot(coastlineWorld, type="l", projection="+proj=ortho",
-#'         axes=FALSE, grid=FALSE)
-#' mapGrid(15, 15)
+#' if (utils::packageVersion("sf") != "0.9.8") {
+#'     # sf version 0.9-8 has a problem with this projection
+#'     library(oce)
+#'     data(coastlineWorld)
+#'     par(mar=c(2, 2, 1, 1))
+#'     # In mapPlot() call, note axes and grid args, to
+#'     # prevent over-plotting of defaults.
+#'     mapPlot(coastlineWorld, type="l", projection="+proj=ortho",
+#'             axes=FALSE, grid=FALSE)
+#'     mapGrid(15, 15)
 #' }
-#' }
+#'}
 #'
 #' @return A [data.frame], returned silently, containing
 #' `"side"`, `"value"`, `"type"`, and `"at"`.
@@ -2612,18 +2615,19 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 #' @param \dots optional arguments passed to [lines()].
 #'
 #' @examples
-#' if (FALSE) { # Skip this to avoid bug in "sf" version 0.9-8
 #'\donttest{
-#' library(oce)
-#' data(coastlineWorld)
-#' mapPlot(coastlineWorld, type='l',
-#'         longitudelim=c(-80, 10), latitudelim=c(0, 120),
-#'         projection="+proj=ortho +lon_0=-40")
-#' lon <- c(-63.5744, 0.1062)             # Halifax CA to London UK
-#' lat <- c(44.6479, 51.5171)
-#' mapPoints(lon, lat, col='red')
-#' mapLines(lon, lat, col='red')
-#'}
+#' if (utils::packageVersion("sf") != "0.9.8") {
+#'     # sf version 0.9-8 has a problem with this projection
+#'     library(oce)
+#'     data(coastlineWorld)
+#'     mapPlot(coastlineWorld, type='l',
+#'             longitudelim=c(-80, 10), latitudelim=c(0, 120),
+#'             projection="+proj=ortho +lon_0=-40")
+#'     lon <- c(-63.5744, 0.1062)             # Halifax CA to London UK
+#'     lat <- c(44.6479, 51.5171)
+#'     mapPoints(lon, lat, col='red')
+#'     mapLines(lon, lat, col='red')
+#' }
 #'}
 #'
 #' @author Dan Kelley
