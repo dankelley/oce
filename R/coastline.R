@@ -1075,7 +1075,9 @@ read.coastline <- function(file,
 #' @references
 #' 1. The ``shapefile'' format is described in
 #' *ESRI Shapefile Technical Description*, March 1998, available at
-#' \url{https://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
+## \url{https://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
+#' \url{https://www.esri.com/content/dam/esrisites/sitecore-archive/Files/Pdfs/library/whitepapers/pdfs/shapefile.pdf}
+#' (last checked 2021-03-24).
 #'
 #' 2. The NaturalEarth website \url{https://www.naturalearthdata.com/downloads/}
 #' provides coastline datasets in three resolutions, along with similar files
