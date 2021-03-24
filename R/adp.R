@@ -1690,7 +1690,7 @@ setMethod(f="plot",
                               useLayout=FALSE,
                               coastline="coastlineWorld", span=300,
                               main="",
-                              grid=FALSE, grid.col='darkgray', grid.lty='dotted', grid.lwd=1,
+                              grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
                               debug=getOption("oceDebug"),
                               ...)
           {

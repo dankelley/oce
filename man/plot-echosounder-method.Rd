@@ -134,12 +134,10 @@ with the \code{which=2} method, but arguably a gridding method should be
 used, and this may be added in the future.
 }
 \examples{
-
-\donttest{
 library(oce)
 data(echosounder)
-plot(echosounder, which=c(1,2), drawBottom=TRUE)
-}
+plot(echosounder, drawBottom=TRUE)
+
 }
 \seealso{
 Other things related to echosounder data: 

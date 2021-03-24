@@ -42,13 +42,11 @@ setClass("argo", contains="oce")
 #' @docType data
 #'
 #' @examples
-#'\donttest{
 #' library(oce)
 #' data(argo)
 #' summary(argo)
 #' data(coastlineWorld)
 #' plot(argo, which="trajectory")
-#'}
 #'
 #' @source The netcdf file used by [read.argo()] to create this [argo-class]
 #' object was downloaded from

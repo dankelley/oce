@@ -45,8 +45,7 @@ to \code{breaks[1]}.  If \code{breaks} is given, then all
 other arguments except \code{x} are ignored. Using \code{breaks}
 is handy in cases where other schemes fail, or when the author
 has independent knowledge of how the profiles are strung together
-in \code{x}; see example 3 for how \code{breaks} might be used
-for towyo data.}
+in \code{x}.}
 
 \item{arr.ind}{Logical indicating whether the array indices should be returned;
 the alternative is to return a vector of ctd objects.}
@@ -99,30 +98,32 @@ relying on e.g. \code{\link[=plotScan]{plotScan()}} to identify profiles visuall
 }
 \examples{
 library(oce)
-if (file.exists("towyow.csv")) {
-    ## Example 1.
-    d <- read.csv("towyow.csv", header=TRUE)
-    towyow <- as.ctd(d$salinity, d$temperature, d$pressure)
 
-    casts <- ctdFindProfiles(towyow)
-    par(mfrow=c(length(casts), 3))
-    for (cast in casts) {
-      plotProfile(cast, "salinity")
-      plotProfile(cast, "temperature")
-      plotTS(cast, type='o')
-    }
+\dontrun{
+# Example 1. Find profiles within a towyo file, as can result
+# if the CTD is cycled within the water column as the ship
+# moves.
+profiles <- ctdFindProfiles(towyo)
+}
 
-    ## Example 2.
-    ## Using a moving average to smooth pressure, instead of the default
-    ## smooth.spline() method. This avoids a tendency of smooth.spline()
-    ## to smooth out the profiles in a tow-yo with many (dozens or more) cycles.
-    movingAverage <- function(x, n = 11, ...)
-    {
-       f <- rep(1/n, n)
-       stats::filter(x, f, ...)
-    }
-    casts <- ctdFindProfiles(towyo, smoother=movingAverage)
+\dontrun{
+# Example 2. Use a moving average to smooth pressure, instead of the
+# default smooth.spline() method. This might avoid a tendency of
+# the default scheme to miss some profiles in a long towyo.
+movingAverage <- function(x, n = 11, ...)
+{
+    f <- rep(1/n, n)
+    stats::filter(x, f, ...)
+}
+casts <- ctdFindProfiles(towyo, smoother=movingAverage)
+}
 
+\dontrun{
+# Example 3: glider data read into a ctd object. Chop
+# into profiles by looking for pressure jumps exceeding
+# 10 dbar.
+breaks <- which(diff(gliderAsCtd[["pressure"]]) > 10))
+profiles <- ctdFindProfiles(gliderAsCtd, breaks=breaks)
 }
 
 }

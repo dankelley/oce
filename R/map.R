@@ -678,7 +678,7 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
 #' than in [contour()].
 #'
 #' @examples
-#'\donttest{
+#'\dontrun{
 #' library(oce)
 #' data(coastlineWorld)
 #' if (requireNamespace("ocedata", quietly=TRUE)) {
@@ -875,7 +875,7 @@ mapContour <- function(longitude, latitude, z,
 #' see \dQuote{Examples} for how to control the arrow-head size.
 #'
 #' @examples
-#'\donttest{
+#'\dontrun{
 #' library(oce)
 #' if (requireNamespace("ocedata", quietly=TRUE)) {
 #'     data(coastlineWorldFine, package='ocedata')
@@ -942,7 +942,7 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #'     fields.
 #'
 #' @examples
-#'\donttest{
+#'\dontrun{
 #' library(oce)
 #' data(coastlineWorld)
 #' par(mar=rep(2, 4))
@@ -3621,11 +3621,9 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
 #' downloaded May 31, 2014.
 #'
 #' @examples
-#'\donttest{
 #' library(oce)
 #' ## Cape Split, in the Minas Basin of the Bay of Fundy
 #' lonlat2utm(-64.496567, 45.334626)
-#'}
 #'
 #' @family functions related to maps
 lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
@@ -3717,11 +3715,9 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
 #' downloaded May 31, 2014.
 #'
 #' @examples
-#'\donttest{
 #' library(oce)
 #' ## Cape Split, in the Minas Basin of the Bay of Fundy
 #' utm2lonlat(852863, 5029997, 19)
-#'}
 #'
 #' @family functions related to maps
 utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)

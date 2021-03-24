@@ -47,7 +47,7 @@ output from a numerical model.  In another, \code{longitude} and
 vectors with lengths that match appropriately.
 }
 \examples{
-\donttest{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 par(mar=rep(2, 4))

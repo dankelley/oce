@@ -79,12 +79,10 @@ setMethod(f="initialize",
 #' server and then read with [read.lobo()].
 #'
 #' @examples
-#'\donttest{
 #' library(oce)
 #' data(lobo)
 #' summary(lobo)
 #' plot(lobo)
-#'}
 #'
 #' @family datasets provided with oce
 #' @family things related to lobo data
