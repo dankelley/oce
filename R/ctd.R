@@ -1981,8 +1981,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #' other arguments except `x` are ignored. Using `breaks`
 #' is handy in cases where other schemes fail, or when the author
 #' has independent knowledge of how the profiles are strung together
-#' in `x`; see example 3 for how `breaks` might be used
-#' for towyo data.
+#' in `x`.
 #'
 #' @param arr.ind Logical indicating whether the array indices should be returned;
 #' the alternative is to return a vector of ctd objects.
