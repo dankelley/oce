@@ -1,4 +1,4 @@
-# oce (development version)
+# oce
 
 ## 1.4.0
 
