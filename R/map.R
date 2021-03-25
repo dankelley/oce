@@ -1059,13 +1059,15 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' See the \dQuote{Details} for a list of
 #' available projections.
 #'
-#' Map projections are provided by the
-#' interface that the \CRANpkg{sf} package provides to the PROJ
-#' system command (supplied with R).  However, it is important to note that
-#' not all the \CRANpkg{sf} projections are
-#' available. The `oce` choices are tabulated
+#' The calculations for map projections are done with
+#' the \CRANpkg{sf} package.  Importantly, though, not all
+#' the \CRANpkg{sf} projections are
+#' available in `oce`, for reasons relating to limitations
+#' of \CRANpkg{sf}, for example relating to inverse-projection
+#' calculations. The `oce` choices are tabulated
 #' below, e.g. `projection="+proj=aea"` selects the Albers equal area
-#' projection.
+#' projection.  (See also the warning, below, about a problem
+#' with \CRANpkg{sf} version 0.9-8.)
 #'
 #' Further details of the vast array of map projections provided by PROJ
 #' are given in reference 4.  This system has been in rapid development
@@ -1076,6 +1078,15 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' in reference 7.  To get an idea of how projections are being created
 #' nowadays, see reference 8, about the `eqearth` projection that was added
 #' to \CRANpkg{oce} in August 2020.
+#'
+#' @section A warning about 'sf' version 0.9-8:
+#' This version of \CRANpkg{sf}, released in March of 2021, has errors
+#' with respect to some projections.  This was noticed for the `"ortho"`
+#' projection, but the problem may occur for other projections as well.
+#' Therefore, the user ought to use \CRANpkg{sf} versions prior to 0.9-8,
+#' or subsequent to it.  Most likely, this message will become moot
+#' in the summer of 2021, when a new version of \CRANpkg{sf} will
+#' become available on CRAN.
 #'
 #' @section Available Projections:
 #'
