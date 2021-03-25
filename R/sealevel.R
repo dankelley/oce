@@ -42,7 +42,7 @@ setClass("sealevel", contains="oce")
 #' the western hemisphere.
 #'
 #' @references
-#' 1. Fisheries and Oceans Canada \url{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/index-eng.html}
+#' 1. Fisheries and Oceans Canada \code{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/index-eng.html}
 #'
 #' @family datasets provided with oce
 #' @family things related to sealevel data
@@ -656,7 +656,7 @@ setMethod(f="plot",
 #' Web searches did not uncover documentation on this format, so the
 #' decoding scheme was developed solely through examination of
 #' data files, which means that it might be not be correct.
-#' The MEDS repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
+#' The MEDS repository (\code{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
 #' provides Type 2 data.
 #'
 #' @param file a connection or a character string giving the name of the file

@@ -59,7 +59,7 @@ format had been changed to what is called Type 3 by \code{read.sealevel}.
 Web searches did not uncover documentation on this format, so the
 decoding scheme was developed solely through examination of
 data files, which means that it might be not be correct.
-The MEDS repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
+The MEDS repository (\code{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
 provides Type 2 data.
 }
 \seealso{

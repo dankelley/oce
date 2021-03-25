@@ -87,7 +87,7 @@ Note that label placement in \code{mapContour} is handled differently
 than in \code{\link[=contour]{contour()}}.
 }
 \examples{
-\donttest{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 if (requireNamespace("ocedata", quietly=TRUE)) {

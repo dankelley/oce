@@ -91,7 +91,7 @@ setMethod(f="summary",
                       nt <- length(time)
                       deltat <- mean(diff(as.numeric(time)), na.rm=TRUE)
                       if (is.na(deltat)) {
-                          cat("* Time:               ", format(from), "\n")
+                          cat("* Time:                ", format(from), "\n", sep="")
                       } else {
                           if (deltat < 60) {
                               cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean increment", deltat, "s\n")

@@ -85,40 +85,6 @@ setClass("topo", contains="oce")
 #' @family things related to topo data
 NULL
 
-## High-resolution Topographic Dataset for Nova Scotia
-##
-## One-minute (under 2km) dataset in a region including Nova Scotia, Prince
-## Edward Island and part of New Brunswick, Canada.
-##
-## @name topoNS
-## @docType data
-##
-## @usage data(topoNS)
-##
-## @source
-## This is created with [read.topo()], using a file downloaded with
-## [download.topo]`(-67,-59.5,43.3,47.2,resolution=1)`.
-##
-## @examples
-## \donttest{
-## library(oce)
-## data(coastlineWorldFine, package="ocedata")
-## data(topoNS)
-## # 1. Contour plot (with no legend)
-## plot(topoNS, location="none")
-## # 2. Image plot (note that whitespace can occur if plot does not match aspect ratio)
-## H <- quantile(abs(topoNS[["z"]]), 0.98)
-## cm <- colormap(H*c(-1, 1),
-##                col=function(n) oceColorsGebco(region="both",n=n))
-## imagep(topoNS, colormap=cm, xlab="", ylab="")
-## lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
-## }
-##
-## @family datasets provided with oce
-## @family things related to topo data
-## NULL
-
-
 setMethod(f="initialize",
           signature="topo",
           definition=function(.Object, longitude, latitude, z, filename="", units, ...) {

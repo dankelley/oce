@@ -189,13 +189,15 @@ See the \dQuote{Details} for a list of
 available projections.
 }
 \details{
-Map projections are provided by the
-interface that the \CRANpkg{sf} package provides to the PROJ
-system command (supplied with R).  However, it is important to note that
-not all the \CRANpkg{sf} projections are
-available. The \code{oce} choices are tabulated
+The calculations for map projections are done with
+the \CRANpkg{sf} package.  Importantly, though, not all
+the \CRANpkg{sf} projections are
+available in \code{oce}, for reasons relating to limitations
+of \CRANpkg{sf}, for example relating to inverse-projection
+calculations. The \code{oce} choices are tabulated
 below, e.g. \code{projection="+proj=aea"} selects the Albers equal area
-projection.
+projection.  (See also the warning, below, about a problem
+with \CRANpkg{sf} version 0.9-8.)
 
 Further details of the vast array of map projections provided by PROJ
 are given in reference 4.  This system has been in rapid development
@@ -207,6 +209,17 @@ in reference 7.  To get an idea of how projections are being created
 nowadays, see reference 8, about the \code{eqearth} projection that was added
 to \CRANpkg{oce} in August 2020.
 }
+\section{A warning about 'sf' version 0.9-8}{
+
+This version of \CRANpkg{sf}, released in March of 2021, has errors
+with respect to some projections.  This was noticed for the \code{"ortho"}
+projection, but the problem may occur for other projections as well.
+Therefore, the user ought to use \CRANpkg{sf} versions prior to 0.9-8,
+or subsequent to it.  Most likely, this message will become moot
+in the summer of 2021, when a new version of \CRANpkg{sf} will
+become available on CRAN.
+}
+
 \section{Available Projections}{
 
 
@@ -416,9 +429,12 @@ mtext("Mollweide with coastlineCut", adj=1)
 # are somewhat limited for serious use on large scales.  See Section 20 of
 # reference 1. Note that filling is not employed because it causes a problem with
 # Antarctica.
-par(mar=c(3, 3, 1, 1))
-mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
-mtext("Orthographic", adj=1)
+if (utils::packageVersion("sf") != "0.9.8") {
+    # sf version 0.9-8 has a problem with this projection
+    par(mar=c(3, 3, 1, 1))
+    mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
+    mtext("Orthographic", adj=1)
+}
 
 # Example 4.
 # The Lambert conformal conic projection is an equal-area projection
@@ -447,21 +463,25 @@ mtext("Stereographic", adj=1)
 }
 
 \dontrun{
-png("globe-\%03d.png")
-lons <- seq(360, 0, -15)
-par(mar=rep(0, 4))
-for (i in seq_along(lons)) {
-    p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
-    if (i == 1) {
-        mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
-        xlim <- par("usr")[1:2]
-        ylim <- par("usr")[3:4]
-    } else {
-        mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
-                xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
+if (utils::packageVersion("sf") != "0.9.8") {
+    # sf version 0.9-8 has a problem with this projection
+    png("globe-\%03d.png")
+    lons <- seq(360, 0, -15)
+    par(mar=rep(0, 4))
+    for (i in seq_along(lons)) {
+        p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
+        if (i == 1) {
+            mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray")
+            xlim <- par("usr")[1:2]
+            ylim <- par("usr")[3:4]
+        } else {
+            mapPlot(coastlineCut(coastlineWorld, lons[i]), projection=p, col="gray",
+                    xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
+        }
     }
+    dev.off()
 }
-dev.off()}
+}
 
 }
 \references{

@@ -19,7 +19,7 @@ website, the record ends on the 8th of October.
 }
 \references{
 \enumerate{
-\item Fisheries and Oceans Canada \url{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/index-eng.html}
+\item Fisheries and Oceans Canada \code{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/index-eng.html}
 }
 }
 \seealso{

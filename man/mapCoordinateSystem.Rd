@@ -28,7 +28,7 @@ This is a preliminary version of this function. It only
 works if the lines of constant latitude are horizontal on the plot.
 }
 \examples{
-\donttest{
+\dontrun{
 library(oce)
 if (requireNamespace("ocedata", quietly=TRUE)) {
     data(coastlineWorldFine, package='ocedata')

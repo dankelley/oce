@@ -237,7 +237,7 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #' illustrated in the \dQuote{Examples}.
 #'
 #' @param drawTriangles logical value indicating whether to draw triangles on
-#' the top and bottom of the palette.  If a single value is provide, it applies
+#' the top and bottom of the palette.  If a single value is provided, it applies
 #' to both ends of the palette.  If a pair is provided, the first refers to the
 #' lower range of the palette, and the second to the upper range.
 #'

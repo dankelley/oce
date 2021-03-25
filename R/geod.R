@@ -280,9 +280,9 @@ geodDist <- function (longitude1, latitude1=NULL, longitude2=NULL, latitude2=NUL
 #'\donttest{
 #' library(oce)
 #' data(coastlineWorld)
-#' mapPlot(coastlineWorld, type='l',
+#' mapPlot(coastlineWorld, type="l",
 #'         longitudelim=c(-80,10), latitudelim=c(35,80),
-#'         projection="+proj=ortho")
+#'         projection="+proj=merc")
 #' ## Great circle from New York to Paris (Lindberg's flight)
 #' l <- geodGc(c(-73.94,2.35), c(40.67,48.86), 1)
 #' mapLines(l$longitude, l$latitude, col='red', lwd=2)

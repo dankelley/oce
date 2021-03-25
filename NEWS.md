@@ -2,7 +2,11 @@
 
 ## 1.4.0
 
-* Change `colormap()` to use `oceColorsViridis` as default colour scheme.
+* `colormap()` uses `oceColorsViridis` as default colour scheme.
+* `download.topo()` uses new NOAA server.
+* `mapPlot()` docs warn about problems with version 0.9-8 of sf package.
+* `plotProfile()` handles units of added columns.
+* `read.argo()` reads more metadata.
 
 ## 1.3.0
 
