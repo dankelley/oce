@@ -2034,7 +2034,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #' # Example 3: glider data read into a ctd object. Chop
 #' # into profiles by looking for pressure jumps exceeding
 #' # 10 dbar.
-#' breaks <- which(diff(gliderAsCtd[["pressure"]]) > 10))
+#' breaks <- which(diff(gliderAsCtd[["pressure"]]) > 10)
 #' profiles <- ctdFindProfiles(gliderAsCtd, breaks=breaks)
 #'}
 #'

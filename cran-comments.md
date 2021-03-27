@@ -1,13 +1,12 @@
-## Resubmission
+# Resubmission of 1.4-0 (rejected at pretest stage)
 
-A prime reason for uploading at this time is that there is an error with the
-"sf" package on CRAN (version 0.9-8) which leads to failed map projections.
+This resubmission addresses a pretest problems relating to (a) the tarball exceeding 5e6 bytes and (b) an unlinkable reference to a function in the marmap package.  I have trimmed the tarball and changed the link{} to code{}.
 
 # Tests
 
 ## Local Tests
 
-Local MacOS-11.1 R-4.0.3 CMD (BUILD, INSTALL, CHECK): no ERRORs or WARNINGs but
+Local MacOS-11.1 R-4.0.4 CMD (BUILD, INSTALL, CHECK): no ERRORs or WARNINGs but
 the usual note on the author, plus another NOTE on sub-directories of 1MB or
 more: (R 3.0Mb, data 1.2Mb, doc 2.3Mb, help 2.8Mb).
 
@@ -34,7 +33,7 @@ reports any errors.
 
 Using
 ```
-## devtools::install_github("r-lib/revdepcheck")
+# devtools::install_github("r-lib/revdepcheck")
 revdepcheck::revdep_check(timeout=30*60,num_workers=4)
 ```
 identified no errors.

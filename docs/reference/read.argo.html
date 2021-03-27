@@ -74,7 +74,7 @@ in the Argo documentation (see references 2 and 3)." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4-0</span>
       </span>
     </div>
 
@@ -182,22 +182,36 @@ better for normal calls by a user.)</p></td>
     <p>An <a href='argo-class.html'>argo</a> object.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Items are extracted from the data file using
-<code><a href='https://rdrr.io/pkg/ncdf4/man/ncvar_get.html'>ncdf4::ncvar_get()</a></code>, after which one-column matrices
-are converted to vectors, and leading and trailing blank space in character
-values is removed using <code><a href='trimString.html'>trimString()</a></code>.</p>
-<p>See the Argo documentation (see references 2 and 3) for some details on what files contain.
+    <p>See the Argo documentation (see references 2 and 3) for some details on what files contain.
 Many items listed in section 2.2.3 of reference 3 are read from the
 file and stored in the <code>metadata</code> slot, with the exception of
 <code>longitude</code> and <code>latitude</code>, which are stored in the
 <code>data</code> slot, alongside hydrographic information.</p>
-<p>The following global attributes stored within the netcdf file are stored in the
-<code>metadata</code> slot: <code>title</code>, <code>institution</code>, <code>source</code>,
-<code>history</code>, <code>references</code>, <code>userManualVersion</code>, <code>conventions</code>,
-and <code>featureType</code>. These names are derived from those in the netcdf
-file, as explained in the &#8220;Variable renaming convention&#8221; section below.</p>
-<p>It is assumed that the profile data are as listed in the NetCDF variable
-called <code>STATION_PARAMETERS</code>. Each item can have variants, as
+<p>The names of several data parameters stored within the netCDF file
+are altered to fit the oce context. For example, <code>PRES</code> becomes <code>pressure</code>,
+matching the name of this variable in other oce data types.
+The original names are reported by <code>summary,argo-method</code>, and
+data may be extracted with <code>[[,argo-method</code> using those names, so
+the renaming should not be too inconvenient to Argo experts who
+are new to oce.</p>
+<p>Several of the netCDF global attributes are also renamed before
+placement in the <code>metadata</code> slot of the return value.  These include
+<code>conventions</code>, <code>featureType</code>, <code>history</code>, <code>institution</code>,
+<code>nParameters</code>, <code>nProfiles</code>,  <code>references</code>, <code>source</code>, <code>title</code>,
+and <code>userManualVersion</code>.
+These names are derived from those in the netcdf
+file, and mainly follow the pattern explained in the
+&#8220;Variable renaming convention&#8221; section.</p>
+<p>For profile data (as indicated by the NetCDF global attribute
+named <code>"featureType"</code> being equal to <code>"trajectoryProfile"</code>),
+the NetCDF item named <code>"STATION_PARAMETERS"</code> controls
+whether variables in the source file will be stored in the
+<code>metadata</code> or <code>data</code> slot of the returned object.
+If <code>STATION_PARAMETERS</code> is not present, as is the case for
+trajectory files (which are detected by <code>featureType</code> being
+<code>"trajectory"</code>), some guesses are made as to what goes in
+<code>data</code> and <code>metadata</code> slots.</p>
+<p>Each data item can have variants, as
 described in Sections 2.3.4 of reference 3.
 For example, if <code>"PRES"</code> is found in <code>STATION_PARAMETERS</code>,
 then <code>PRES</code> (pressure) data are sought in the file, along with

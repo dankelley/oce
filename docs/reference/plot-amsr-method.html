@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4-0</span>
       </span>
     </div>
 
@@ -155,6 +155,7 @@
   <span class='va'>breaks</span>,
   <span class='va'>col</span>,
   <span class='va'>colormap</span>,
+  <span class='va'>zlim</span>,
   missingColor <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>land <span class='op'>=</span> <span class='st'>"papayaWhip"</span>, none <span class='op'>=</span> <span class='st'>"lightGray"</span>, bad <span class='op'>=</span> <span class='st'>"gray"</span>, rain <span class='op'>=</span>
     <span class='st'>"plum"</span>, ice <span class='op'>=</span> <span class='st'>"mediumVioletRed"</span><span class='op'>)</span>,
   debug <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"oceDebug"</span><span class='op'>)</span>,
@@ -201,6 +202,12 @@ a colormap is created to cover the range of data values, using
 <a href='oceColorsTemperature.html'>oceColorsTemperature</a> colour scheme.
 If <code>colormap</code> is provided, it takes precedence over <code>breaks</code> and <code>col</code>.
 See &#8220;Examples&#8221; for an example of using the "turbo" colour scheme.</p></td>
+    </tr>
+    <tr>
+      <th>zlim</th>
+      <td><p>optional numeric vector of length 2, giving the limits
+of the plotted quantity.  A reasonable default is computed, if this
+is not given.</p></td>
     </tr>
     <tr>
       <th>missingColor</th>
