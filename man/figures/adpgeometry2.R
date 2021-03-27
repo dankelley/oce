@@ -1,4 +1,5 @@
-png("adpgeometry2.png", width=500, height=300, pointsize=14)
+# png("adpgeometry2.png", width=500, height=300, pointsize=14)
+png("adpgeometry2.png", width=400, height=300*400/500, pointsize=14)
 sensorLocation <- c(0,0)
 beamAngle <- 20
 beamWidth <- 2.5

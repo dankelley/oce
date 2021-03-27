@@ -1,6 +1,6 @@
 # towards-sensor view of 4-beam adcp (left) and 3-beam adv (right)
 #pdf("ad-coords.pdf", width=7, height=3.3, pointsize=14)
-png("adp_beams.png", width=3.5, height=1.6, unit="in", res=140, pointsize=9)
+png("adp_beams.png", width=3.5, height=1.6, unit="in", res=120, pointsize=9)
 par(mar=c(0,0,0,0))
 lwd.beam <- 1.75
 lwd.axis <- 2
