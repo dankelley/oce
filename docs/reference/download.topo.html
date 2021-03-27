@@ -45,7 +45,7 @@ dataset (Amante, C. and B.W. Eakins, 2009), and saved as a netCDF file whose
 name specifies the data request, if a file of that name is not already
 present on the local file system.  The return value is the name of the data
 file, and its typical use is as the filename for a call to read.topo().
-Given the rules on file naming, subsequent calls to download.topo()
+Given the rules on file naming, subsequent calls to download.topo
 with identical parameters will simply return the name of the cached file,
 assuming the user has not deleted it in the meantime." />
 
@@ -156,7 +156,7 @@ dataset (Amante, C. and B.W. Eakins, 2009), and saved as a netCDF file whose
 name specifies the data request, if a file of that name is not already
 present on the local file system.  The return value is the name of the data
 file, and its typical use is as the filename for a call to <code><a href='read.topo.html'>read.topo()</a></code>.
-Given the rules on file naming, subsequent calls to <code>download.topo()</code>
+Given the rules on file naming, subsequent calls to <code>download.topo</code>
 with identical parameters will simply return the name of the cached file,
 assuming the user has not deleted it in the meantime.</p>
     </div>
@@ -241,16 +241,17 @@ by specifying higher <code>debug</code> values.</p></td>
     <p>The specified longitude and latitude limits are rounded to 2 digits
 (corresponding to a footprint of approximately 1km), and these are used
 in the server request. If the resultant request would generate under
-1 row or column in the result, download.topo generates an
+1 row or column in the result, <code>download.topo</code> generates an
 error message and stops.</p>
     <h2 class="hasAnchor" id="historical-note-relating-to-noaa-server-changes"><a class="anchor" href="#historical-note-relating-to-noaa-server-changes"></a>Historical note relating to NOAA server changes</h2>
 
     
 
-<p>In May of 2020, <code>download.topo()</code> stopped working, evidently owing
+<p>In May of 2020, <code>download.topo</code> stopped working, evidently owing
 to changes in the NOAA server API, which had been inferred by reverse
-engineering a NOAA data-request website. Luckily, <code><a href='https://rdrr.io/pkg/marmap/man/getNOAA.bathy.html'>marmap::getNOAA.bathy()</a></code>
-was found to be working at that time, and so <code>download.topo()</code> was revised based on
+engineering a NOAA data-request website. However, the
+<code>marmap</code> function <code>getNOAA.bathy</code>
+was found to be working at that time, and so <code>download.topo</code> was revised based on
 that function.  The problem of keeping up with changing data-server APIs should
 be easier in the future, since NOAA has made the API public.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
