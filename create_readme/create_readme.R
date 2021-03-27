@@ -1,7 +1,7 @@
 library(oce)
 data(ctd)
 
-f <- 0.8 # trim files, in hopes of making package under 5e6 bytes
+f <- 0.75 # trim files, in hopes of making package under 5e6 bytes
 
 ## ../oce-demo-1.png: PNG image data, 1050 x 1050, 8-bit/color RGBA, non-interlaced
 png("oce-demo-1.png", width=f*1050, height=f*1050, pointsize=26)
@@ -58,8 +58,10 @@ dev.off()
 #
 #  Using f=0.8 keeps figures nice and clean, but trims as follows, which, at
 #  0.208e6, will get us (just) under the limit.
-newSize <- 126188+101694+166633+80698+133887+42474
+newSize <- 113201+97499+151569+77962+122147+38587
 oldSize <- 167435+124723+237887+95196+185154+49166
 cat("Trimming by using f=", f, "is", oldSize-newSize, "bytes\n")
+
+
 
 
