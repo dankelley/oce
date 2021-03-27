@@ -1,8 +1,7 @@
 # Resubmission of 1.4-0 (rejected at pretest stage)
 
-This resubmission addresses a pretest problems relating to (a) the tarball
-exceeding 5e6 bytes and (b) an unlinkable reference to a function in the marmap
-package.  I have trimmed the tarball and changed the link{} to code{}.
+This resubmission addresses a pretest problem relating to an unlinkable
+reference to a function in the marmap package that I had missed before.
 
 # Tests
 
