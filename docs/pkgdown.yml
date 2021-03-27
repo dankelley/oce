@@ -1,0 +1,12 @@
+pandoc: '2.13'
+pkgdown: 1.6.1
+pkgdown_sha: ~
+articles:
+  adp: adp.html
+  ctd: ctd.html
+  flags: flags.html
+  map_projections: map_projections.html
+  oce: oce.html
+  subclassing: subclassing.html
+last_built: 2021-03-27T20:04Z
+
