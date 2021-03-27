@@ -237,7 +237,7 @@ setMethod(f="subset",
 #' @section Historical note relating to NOAA server changes:
 #' In May of 2020, [download.topo()] stopped working, evidently owing
 #' to changes in the NOAA server API, which had been inferred by reverse
-#' engineering a NOAA data-request website. Luckily, [marmap::getNOAA.bathy()]
+#' engineering a NOAA data-request website. Luckily, \code{marmap::getNOAA.bathy()}
 #' was found to be working at that time, and so [download.topo()] was revised based on
 #' that function.  The problem of keeping up with changing data-server APIs should
 #' be easier in the future, since NOAA has made the API public.
