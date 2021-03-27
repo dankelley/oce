@@ -50,8 +50,17 @@ These names are derived from those in the netcdf
 file, and mainly follow the pattern explained in the
 \dQuote{Variable renaming convention} section.
 
-It is assumed that the profile data are as listed in the NetCDF variable
-called \code{STATION_PARAMETERS}. Each item can have variants, as
+For profile data (as indicated by the NetCDF global attribute
+named \code{"featureType"} being equal to \code{"trajectoryProfile"}),
+the NetCDF item named \code{"STATION_PARAMETERS"} controls
+whether variables in the source file will be stored in the
+\code{metadata} or \code{data} slot of the returned object.
+If \code{STATION_PARAMETERS} is not present, as is the case for
+trajectory files (which are detected by \code{featureType} being
+\code{"trajectory"}), some guesses are made as to what goes in
+\code{data} and \code{metadata} slots.
+
+Each data item can have variants, as
 described in Sections 2.3.4 of reference 3.
 For example, if \code{"PRES"} is found in \code{STATION_PARAMETERS},
 then \code{PRES} (pressure) data are sought in the file, along with

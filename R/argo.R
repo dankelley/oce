@@ -841,6 +841,8 @@ setMethod(f="summary",
               if (1 == nid)
                    cat("* id:                  \"", object@metadata$id[1], "\"\n", sep="")
               else cat("* id list:             \"", object@metadata$id[1], "\", \"", object@metadata$id[2], "\", ...\n", sep="")
+              if ("featureType" %in% names(object@metadata))
+                  cat("* feature type:        \"", object@metadata$featureType, "\"\n", sep="")
               nD <- sum(object@metadata$dataMode == "D")
               nA <- sum(object@metadata$dataMode == "A")
               nR <- sum(object@metadata$dataMode == "R")
@@ -991,8 +993,17 @@ argoDecodeFlags <- function(f) # local function
 #' file, and mainly follow the pattern explained in the
 #' \dQuote{Variable renaming convention} section.
 #'
-#' It is assumed that the profile data are as listed in the NetCDF variable
-#' called `STATION_PARAMETERS`. Each item can have variants, as
+#' For profile data (as indicated by the NetCDF global attribute
+#' named `"featureType"` being equal to `"trajectoryProfile"`),
+#' the NetCDF item named `"STATION_PARAMETERS"` controls
+#' whether variables in the source file will be stored in the
+#' `metadata` or `data` slot of the returned object.
+#' If `STATION_PARAMETERS` is not present, as is the case for
+#' trajectory files (which are detected by `featureType` being
+#' `"trajectory"`), some guesses are made as to what goes in
+#' `data` and `metadata` slots.
+#'
+#' Each data item can have variants, as
 #' described in Sections 2.3.4 of reference 3.
 #' For example, if `"PRES"` is found in `STATION_PARAMETERS`,
 #' then `PRES` (pressure) data are sought in the file, along with
@@ -1218,7 +1229,8 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
             warning("This file has nothing listed in its STATION_PARAMETERS item, so pressure, salinity, temperature, etc. are being stored in the metadata slot instead of the data slot. This will cause problems in further processing.")
     } else {
         ## print(sort(names(file$var)))
-        warning("This file has no STATION_PARAMETERS item, so an attempt is made to discover some important fields for inclusion in the data slot of the return value. However, other variabiles will go in the metadata slot, so be aware of this problem during further processing.")
+        if (res@metadata$featureType != "trajectory")
+            warning("This 'profile'-type file lacks a STATION_PARAMETERS item, so guesses were on whether to store items in the 'metadata' or 'data' slot. This may lead cause problems.")
         for (want in c("PSAL", "TEMP", "PRES")) {
             if (want %in% toupper(varNames)) {
                 res@metadata$stationParameters <- c(res@metadata$stationParameters, want)
