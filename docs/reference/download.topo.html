@@ -249,7 +249,7 @@ error message and stops.</p>
 
 <p>In May of 2020, <code>download.topo()</code> stopped working, evidently owing
 to changes in the NOAA server API, which had been inferred by reverse
-engineering a NOAA data-request website. Luckily, <code><a href='https://rdrr.io/pkg/marmap/man/getNOAA.bathy.html'>marmap::getNOAA.bathy()</a></code>
+engineering a NOAA data-request website. Luckily, <code>marmap::getNOAA.bathy()</code>
 was found to be working at that time, and so <code>download.topo()</code> was revised based on
 that function.  The problem of keeping up with changing data-server APIs should
 be easier in the future, since NOAA has made the API public.</p>
