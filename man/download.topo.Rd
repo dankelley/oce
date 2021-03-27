@@ -65,7 +65,7 @@ dataset (Amante, C. and B.W. Eakins, 2009), and saved as a netCDF file whose
 name specifies the data request, if a file of that name is not already
 present on the local file system.  The return value is the name of the data
 file, and its typical use is as the filename for a call to \code{\link[=read.topo]{read.topo()}}.
-Given the rules on file naming, subsequent calls to \code{download.topo()}
+Given the rules on file naming, subsequent calls to \code{download.topo}
 with identical parameters will simply return the name of the cached file,
 assuming the user has not deleted it in the meantime.
 }
@@ -73,15 +73,16 @@ assuming the user has not deleted it in the meantime.
 The specified longitude and latitude limits are rounded to 2 digits
 (corresponding to a footprint of approximately 1km), and these are used
 in the server request. If the resultant request would generate under
-1 row or column in the result, \link{download.topo} generates an
+1 row or column in the result, \code{download.topo} generates an
 error message and stops.
 }
 \section{Historical note relating to NOAA server changes}{
 
-In May of 2020, \code{\link[=download.topo]{download.topo()}} stopped working, evidently owing
+In May of 2020, \code{download.topo} stopped working, evidently owing
 to changes in the NOAA server API, which had been inferred by reverse
-engineering a NOAA data-request website. Luckily, \code{marmap::getNOAA.bathy()}
-was found to be working at that time, and so \code{\link[=download.topo]{download.topo()}} was revised based on
+engineering a NOAA data-request website. However, the
+\code{marmap} function \code{getNOAA.bathy}
+was found to be working at that time, and so \code{download.topo} was revised based on
 that function.  The problem of keeping up with changing data-server APIs should
 be easier in the future, since NOAA has made the API public.
 }

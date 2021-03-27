@@ -41,7 +41,7 @@ points(depth1, depth1, col=2, pch=20, cex=1/2)
 \enumerate{
 \item Sverdrup, H U, Martin W Johnson, and Richard H Fleming. The Oceans,
 Their Physics, Chemistry, and General Biology. New York: Prentice-Hall, 1942.
-\url{http://ark.cdlib.org/ark:/13030/kt167nb66r}
+\url{https://publishing.cdlib.org/ucpressebooks/view?docId=kt167nb66r}
 }
 
 2.Locarnini, R. A., A. V. Mishonov, J. I. Antonov, T. P. Boyer,

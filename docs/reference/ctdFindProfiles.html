@@ -307,7 +307,36 @@ of CTD objects, and also outlines the other functions dealing with them.</p>
     <p>Dan Kelley and Clark Richards</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"></pre>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dankelley.github.io/oce/'>oce</a></span><span class='op'>)</span>
+
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='co'># Example 1. Find profiles within a towyo file, as can result</span>
+<span class='co'># if the CTD is cycled within the water column as the ship</span>
+<span class='co'># moves.</span>
+<span class='va'>profiles</span> <span class='op'>&lt;-</span> <span class='fu'>ctdFindProfiles</span><span class='op'>(</span><span class='va'>towyo</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='co'># Example 2. Use a moving average to smooth pressure, instead of the</span>
+<span class='co'># default smooth.spline() method. This might avoid a tendency of</span>
+<span class='co'># the default scheme to miss some profiles in a long towyo.</span>
+<span class='va'>movingAverage</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>n</span> <span class='op'>=</span> <span class='fl'>11</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='op'>{</span>
+    <span class='va'>f</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>/</span><span class='va'>n</span>, <span class='va'>n</span><span class='op'>)</span>
+    <span class='fu'>stats</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>f</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='op'>}</span>
+<span class='va'>casts</span> <span class='op'>&lt;-</span> <span class='fu'>ctdFindProfiles</span><span class='op'>(</span><span class='va'>towyo</span>, smoother<span class='op'>=</span><span class='va'>movingAverage</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='co'># Example 3: glider data read into a ctd object. Chop</span>
+<span class='co'># into profiles by looking for pressure jumps exceeding</span>
+<span class='co'># 10 dbar.</span>
+<span class='va'>breaks</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/which.html'>which</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/diff.html'>diff</a></span><span class='op'>(</span><span class='va'>gliderAsCtd</span><span class='op'>[[</span><span class='st'>"pressure"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span> <span class='op'>&gt;</span> <span class='fl'>10</span><span class='op'>)</span>
+<span class='va'>profiles</span> <span class='op'>&lt;-</span> <span class='fu'>ctdFindProfiles</span><span class='op'>(</span><span class='va'>gliderAsCtd</span>, breaks<span class='op'>=</span><span class='va'>breaks</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
