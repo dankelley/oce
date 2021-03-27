@@ -7,8 +7,8 @@ output:
     toc: true
     number_sections: true
     fig_caption: yes
-    fig_width: 4
-    fig_height: 4
+    fig_width: 3.5
+    fig_height: 3.5
     dpi: 72
     dev.args: list(pointsize=11)
 vignette: >
@@ -67,7 +67,7 @@ str(o)
 ```
 
 As noted previously, it's possible to insert `t`, `u`, and `v` directly into
-the `data` slot, but it's better to use `oceSetData` to do that, because it 
+the `data` slot, but it's better to use `oceSetData` to do that, because it
 can set up units, and it leaves a trail in the processing log.
 ```{R}
 o <- oceSetData(o, "t", t, list(unit=expression(s), scale=""))
@@ -77,7 +77,7 @@ o <- oceSetData(o, "v", v, list(unit=expression(m/s), scale=""))
 
 Astute readers will realize that these data are akin to tidal velocities, and
 so might agree with the author that `lon` and `lat` belong in the `metadata`
-slot, not the `data` slot. 
+slot, not the `data` slot.
 ```{R}
 o <- oceSetMetadata(o, "longitude", lon)
 o <- oceSetMetadata(o, "latitude", lat)

@@ -7,16 +7,16 @@ output:
     toc: true
     number_sections: true
     fig_caption: yes
-    fig_width: 4
-    fig_height: 4
+    fig_width: 3.5
+    fig_height: 3.5
     dpi: 72
     dev.args: list(pointsize=11)
 vignette: >
   %\VignetteIndexEntry{1. Introduction to Oce}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
-  markdown: 
+editor_options:
+  markdown:
     wrap: 72
 ---
 
@@ -208,7 +208,7 @@ and a better way to store `temperatureAboveFreezing` would be
 
 ```{r eval=FALSE}
 ctd <- oceSetData(ctd, name="temperatureAboveFreezing",
-                      value=ctd[["temperature"]] - swTFreeze(ctd), 
+                      value=ctd[["temperature"]] - swTFreeze(ctd),
                       unit=list(unit=expression(degree*C), scale="ITS-90"),
                       originalName="-",
                       note="add temperatureAboveFreezing, for ice-related calculations")
@@ -594,7 +594,7 @@ library(oce)
 data(sealevel)
 m <- tidem(sealevel)
 oce.plot.ts(sealevel[['time']], sealevel[['elevation']] - predict(m),
-            ylab="Detided sealevel [m]", 
+            ylab="Detided sealevel [m]",
             xlim=c(as.POSIXct("2003-09-20"), as.POSIXct("2003-10-08")))
 ```
 
