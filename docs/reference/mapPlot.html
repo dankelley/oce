@@ -78,7 +78,7 @@ available projections." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4-0</span>
       </span>
     </div>
 
@@ -394,13 +394,15 @@ reproduce a scale exactly between two plots.</p></td>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Map projections are provided by the
-interface that the <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a> package provides to the PROJ
-system command (supplied with R).  However, it is important to note that
-not all the <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a> projections are
-available. The <code>oce</code> choices are tabulated
+    <p>The calculations for map projections are done with
+the <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a> package.  Importantly, though, not all
+the <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a> projections are
+available in <code>oce</code>, for reasons relating to limitations
+of <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a>, for example relating to inverse-projection
+calculations. The <code>oce</code> choices are tabulated
 below, e.g. <code>projection="+proj=aea"</code> selects the Albers equal area
-projection.</p>
+projection.  (See also the warning, below, about a problem
+with <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a> version 0.9-8.)</p>
 <p>Further details of the vast array of map projections provided by PROJ
 are given in reference 4.  This system has been in rapid development
 since about 2018, and reference 5 provides a helpful overview of the changes
@@ -410,6 +412,17 @@ A fascinating treatment of the history of map projections is provided
 in reference 7.  To get an idea of how projections are being created
 nowadays, see reference 8, about the <code>eqearth</code> projection that was added
 to <a href='https://CRAN.R-project.org/package=oce'><span class="pkg">oce</span></a> in August 2020.</p>
+    <h2 class="hasAnchor" id="a-warning-about-sf-version-"><a class="anchor" href="#a-warning-about-sf-version-"></a>A warning about 'sf' version 0.9-8</h2>
+
+    
+
+<p>This version of <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a>, released in March of 2021, has errors
+with respect to some projections.  This was noticed for the <code>"ortho"</code>
+projection, but the problem may occur for other projections as well.
+Therefore, the user ought to use <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a> versions prior to 0.9-8,
+or subsequent to it.  Most likely, this message will become moot
+in the summer of 2021, when a new version of <a href='https://CRAN.R-project.org/package=sf'><span class="pkg">sf</span></a> will
+become available on CRAN.</p>
     <h2 class="hasAnchor" id="available-projections"><a class="anchor" href="#available-projections"></a>Available Projections</h2>
 
     
@@ -690,10 +703,13 @@ projections (with graphs).</p>
 <span class='co'># are somewhat limited for serious use on large scales.  See Section 20 of</span>
 <span class='co'># reference 1. Note that filling is not employed because it causes a problem with</span>
 <span class='co'># Antarctica.</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'>mapPlot</span><span class='op'>(</span><span class='va'>coastlineWorld</span>, projection<span class='op'>=</span><span class='st'>"+proj=ortho +lon_0=-180"</span><span class='op'>)</span>
-</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span><span class='op'>(</span><span class='st'>"Orthographic"</span>, adj<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
-</div><div class='img'><img src='mapPlot-3.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='kw'>if</span> <span class='op'>(</span><span class='fu'>utils</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/utils/packageDescription.html'>packageVersion</a></span><span class='op'>(</span><span class='st'>"sf"</span><span class='op'>)</span> <span class='op'>!=</span> <span class='st'>"0.9.8"</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='co'># sf version 0.9-8 has a problem with this projection</span>
+    <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+    <span class='fu'>mapPlot</span><span class='op'>(</span><span class='va'>coastlineWorld</span>, projection<span class='op'>=</span><span class='st'>"+proj=ortho +lon_0=-180"</span><span class='op'>)</span>
+    <span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span><span class='op'>(</span><span class='st'>"Orthographic"</span>, adj<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
+<span class='op'>}</span>
+
 <span class='co'># Example 4.</span>
 <span class='co'># The Lambert conformal conic projection is an equal-area projection</span>
 <span class='co'># recommended by reference 1, page 95, for regions of large east-west extent</span>
@@ -703,7 +719,7 @@ projections (with graphs).</p>
         longitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>130</span>,<span class='op'>-</span><span class='fl'>55</span><span class='op'>)</span>, latitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>35</span>, <span class='fl'>60</span><span class='op'>)</span>,
         projection<span class='op'>=</span><span class='st'>"+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100"</span>, col<span class='op'>=</span><span class='st'>'gray'</span><span class='op'>)</span>
 </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span><span class='op'>(</span><span class='st'>"Lambert conformal"</span>, adj<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
-</div><div class='img'><img src='mapPlot-4.png' alt='' width='700' height='433' /></div><div class='input'>
+</div><div class='img'><img src='mapPlot-3.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Example 5.</span>
 <span class='co'># The stereographic projection (reference 1, page 120) is conformal, used</span>
 <span class='co'># below for an Arctic view with a Canadian focus.  Note the trick of going</span>
@@ -715,27 +731,31 @@ projections (with graphs).</p>
         longitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>130</span>, <span class='fl'>50</span><span class='op'>)</span>, latitudelim<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>70</span>, <span class='fl'>110</span><span class='op'>)</span>,
         projection<span class='op'>=</span><span class='st'>"+proj=stere +lat_0=90 +lon_0=-135"</span>, col<span class='op'>=</span><span class='st'>'gray'</span><span class='op'>)</span>
 </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/mtext.html'>mtext</a></span><span class='op'>(</span><span class='st'>"Stereographic"</span>, adj<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
-</div><div class='img'><img src='mapPlot-5.png' alt='' width='700' height='433' /></div><div class='input'>
+</div><div class='img'><img src='mapPlot-4.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Example 6.</span>
 <span class='co'># Spinning globe: create PNG files that can be assembled into a movie</span>
 <span class='co'># }</span>
 
 <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'><a href='https://rdrr.io/r/grDevices/png.html'>png</a></span><span class='op'>(</span><span class='st'>"globe-%03d.png"</span><span class='op'>)</span>
-<span class='va'>lons</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>360</span>, <span class='fl'>0</span>, <span class='op'>-</span><span class='fl'>15</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>4</span><span class='op'>)</span><span class='op'>)</span>
-<span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_along</a></span><span class='op'>(</span><span class='va'>lons</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
-    <span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"+proj=ortho +lat_0=30 +lon_0="</span>, <span class='va'>lons</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span>, sep<span class='op'>=</span><span class='st'>""</span><span class='op'>)</span>
-    <span class='kw'>if</span> <span class='op'>(</span><span class='va'>i</span> <span class='op'>==</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'>{</span>
-        <span class='fu'>mapPlot</span><span class='op'>(</span><span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, <span class='va'>lons</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>)</span>, projection<span class='op'>=</span><span class='va'>p</span>, col<span class='op'>=</span><span class='st'>"gray"</span><span class='op'>)</span>
-        <span class='va'>xlim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"usr"</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>]</span>
-        <span class='va'>ylim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"usr"</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>3</span><span class='op'>:</span><span class='fl'>4</span><span class='op'>]</span>
-    <span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
-        <span class='fu'>mapPlot</span><span class='op'>(</span><span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, <span class='va'>lons</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>)</span>, projection<span class='op'>=</span><span class='va'>p</span>, col<span class='op'>=</span><span class='st'>"gray"</span>,
-                xlim<span class='op'>=</span><span class='va'>xlim</span>, ylim<span class='op'>=</span><span class='va'>ylim</span>, xaxs<span class='op'>=</span><span class='st'>"i"</span>, yaxs<span class='op'>=</span><span class='st'>"i"</span><span class='op'>)</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='fu'>utils</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/utils/packageDescription.html'>packageVersion</a></span><span class='op'>(</span><span class='st'>"sf"</span><span class='op'>)</span> <span class='op'>!=</span> <span class='st'>"0.9.8"</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='co'># sf version 0.9-8 has a problem with this projection</span>
+    <span class='fu'><a href='https://rdrr.io/r/grDevices/png.html'>png</a></span><span class='op'>(</span><span class='st'>"globe-%03d.png"</span><span class='op'>)</span>
+    <span class='va'>lons</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>360</span>, <span class='fl'>0</span>, <span class='op'>-</span><span class='fl'>15</span><span class='op'>)</span>
+    <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>4</span><span class='op'>)</span><span class='op'>)</span>
+    <span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_along</a></span><span class='op'>(</span><span class='va'>lons</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+        <span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"+proj=ortho +lat_0=30 +lon_0="</span>, <span class='va'>lons</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span>, sep<span class='op'>=</span><span class='st'>""</span><span class='op'>)</span>
+        <span class='kw'>if</span> <span class='op'>(</span><span class='va'>i</span> <span class='op'>==</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'>{</span>
+            <span class='fu'>mapPlot</span><span class='op'>(</span><span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, <span class='va'>lons</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>)</span>, projection<span class='op'>=</span><span class='va'>p</span>, col<span class='op'>=</span><span class='st'>"gray"</span><span class='op'>)</span>
+            <span class='va'>xlim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"usr"</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>]</span>
+            <span class='va'>ylim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='st'>"usr"</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>3</span><span class='op'>:</span><span class='fl'>4</span><span class='op'>]</span>
+        <span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
+            <span class='fu'>mapPlot</span><span class='op'>(</span><span class='fu'><a href='coastlineCut.html'>coastlineCut</a></span><span class='op'>(</span><span class='va'>coastlineWorld</span>, <span class='va'>lons</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>)</span>, projection<span class='op'>=</span><span class='va'>p</span>, col<span class='op'>=</span><span class='st'>"gray"</span>,
+                    xlim<span class='op'>=</span><span class='va'>xlim</span>, ylim<span class='op'>=</span><span class='va'>ylim</span>, xaxs<span class='op'>=</span><span class='st'>"i"</span>, yaxs<span class='op'>=</span><span class='st'>"i"</span><span class='op'>)</span>
+        <span class='op'>}</span>
     <span class='op'>}</span>
+    <span class='fu'><a href='https://rdrr.io/r/grDevices/dev.html'>dev.off</a></span><span class='op'>(</span><span class='op'>)</span>
 <span class='op'>}</span>
-<span class='fu'><a href='https://rdrr.io/r/grDevices/dev.html'>dev.off</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>}</span>
+<span class='op'>}</span>
 
 </div></pre>
   </div>

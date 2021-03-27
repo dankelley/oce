@@ -122,7 +122,7 @@ casts <- ctdFindProfiles(towyo, smoother=movingAverage)
 # Example 3: glider data read into a ctd object. Chop
 # into profiles by looking for pressure jumps exceeding
 # 10 dbar.
-breaks <- which(diff(gliderAsCtd[["pressure"]]) > 10))
+breaks <- which(diff(gliderAsCtd[["pressure"]]) > 10)
 profiles <- ctdFindProfiles(gliderAsCtd, breaks=breaks)
 }
 

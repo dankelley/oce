@@ -74,7 +74,7 @@ cases that extend far beyond the examples." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">oce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3-0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4-0</span>
       </span>
     </div>
 
@@ -156,7 +156,7 @@ cases that extend far beyond the examples.</p>
   <span class='va'>zlim</span>,
   zclip <span class='op'>=</span> <span class='cn'>FALSE</span>,
   <span class='va'>breaks</span>,
-  col <span class='op'>=</span> <span class='va'>oceColorsJet</span>,
+  col <span class='op'>=</span> <span class='va'>oceColorsViridis</span>,
   <span class='va'>name</span>,
   <span class='va'>x0</span>,
   <span class='va'>x1</span>,
@@ -212,7 +212,9 @@ colors (see <code>col</code>).</p></td>
     <tr>
       <th>col</th>
       <td><p>either a vector of colors or a function taking a numerical value
-as its single argument and returning a vector of colors.  The value of
+as its single argument and returning a vector of colors.  Prior to 2021-02-08,
+the default for <code>col</code> was <code>oceColorsJet</code>, but it was switched to
+<code>oceColorsViridis</code> on that date.  The value of
 <code>col</code> is ignored if <code>name</code> is provided, or if <code>x0</code> through
 <code>col1</code> are provided.</p></td>
     </tr>

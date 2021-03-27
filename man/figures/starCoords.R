@@ -1,5 +1,5 @@
 if (!interactive())
-    png("starCoords.png", width=3.5, height=2.5, unit="in", res=140, pointsize=8)
+    png("starCoords.png", width=3.5, height=2.5, unit="in", res=120, pointsize=8)
 ellipse <- function(xc, yc, a, b, thetaStart=0, thetaEnd=2*pi,
                     lwd=par('lwd'), col="black", lty=1)
 {
