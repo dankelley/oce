@@ -1,5 +1,9 @@
 # oce
 
+## 1.5.0
+
+* TBA
+
 ## 1.4.0
 
 * `colormap()` uses `oceColorsViridis` as default colour scheme.
