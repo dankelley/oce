@@ -224,8 +224,7 @@ setMethod(f="summary",
                       thisStn <- object@data$station[[i]]
                       id <- if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
                           thisStn@metadata$station else ""
-                      depth <- if (!is.finite(thisStn@metadata$waterDepth) || 0 == thisStn@metadata$waterDepth)
-                          max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
+                      depth <- if ("waterDepth" %in% names(thisStn@metadata)) thisStn@metadata$waterDepth else NA
                       cat(sprintf("%5d %5s %8.4f %8.4f %7.0f %5.0f\n",
                                   i, id,
                                   thisStn[["longitude"]][1], thisStn[["latitude"]][1],
@@ -3177,6 +3176,10 @@ sectionSmooth <- function(section, method="spline",
 #'
 #' @param sectionId Section identifier.
 #'
+#' @param debug an integer value that controlls whether `as.section()` prints information
+#' during its work.  The function works quietly if this is 0 and prints out some
+#' information if it is positive.
+#'
 #' @return An object of [section-class].
 #'
 #' @examples
@@ -3204,8 +3207,10 @@ sectionSmooth <- function(section, method="spline",
 #' @author Dan Kelley
 #'
 #' @family things related to section data
-as.section <- function(salinity, temperature, pressure, longitude, latitude, station, sectionId="")
+as.section <- function(salinity, temperature, pressure, longitude, latitude, station, sectionId="", debug=getOption("oceDebug"))
 {
+    debug <- as.integer(min(1, max(0, debug))) # make it be 0 or 1
+    oceDebug(debug, "as.section() {\n", sep="", style="bold", unindent=1)
     if (missing(salinity))
         stop("argument 'salinity' is missing")
     res <- new("section", sectionId="")
@@ -3259,6 +3264,7 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
             }
         }
     } else if (inherits(salinity, "list")) {
+        oceDebug(debug, "first argument is a list (assumed to be a list of oce objects)\n")
         thelist <- salinity            # prevent accidental overwriting
         if (!length(thelist))
             stop("no data in this list")
@@ -3266,14 +3272,22 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
             nstation <- length(salinity)
             ctds <- vector("list", nstation)
             badDepths <- NULL
-            for (i in 1:nstation) {
+            for (i in seq_len(nstation)) {
+                oceDebug(debug, "processing item", i, "of", nstation, "\n")
                 if (!("pressure" %in% names(thelist[[i]]@data)))
-                    stop("cannot create a section from this list because element number ", i, " lacks pressure")
-                if (is.na(thelist[[i]][["waterDepth"]])) {
-                    thelist[[i]][["waterDepth"]] <- max(thelist[[i]][["pressure"]], na.rm=TRUE)
-                    badDepths <- c(badDepths, i)
+                    stop("cannot create a section from this first argument, because its ", i, "-th element lacks pressure")
+                # Replace NA water depth with highest pressure. Note that this action is skipped
+                # if there is no water depth (e.g. if the first argument is a list of Argo objects).
+                # See https://github.com/dankelley/oce/issues/1797
+                if ("waterDepth" %in% names(thelist[[i]]@metadata)) {
+                    if (is.na(thelist[[i]]@metadata$waterDepth)) {
+                        thelist[[i]]@metadata$waterDepth <- max(thelist[[i]]@data$pressure, na.rm=TRUE)
+                        badDepths <- c(badDepths, i)
+                    }
+                } else {
+                    thelist[[i]]@metadata$waterDepth <- NA
                 }
-                ctds[[i]] <- thelist[[i]]
+                ctds[[i]] <- as.ctd(thelist[[i]])
             }
             if (length(badDepths))
                 warning("estimated waterDepth as max(pressure) for CTDs numbered ",
@@ -3298,6 +3312,7 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
     res@metadata$time <- numberAsPOSIXct(unlist(lapply(ctds, function(x) x[["time"]][1])))
     res@data <- list(station=ctds)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # as.section()\n", sep="", style="bold", unindent=1)
     res
 }
 
