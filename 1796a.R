@@ -1,5 +1,4 @@
 library(oce)
-source("~/git/oce/R/colors.R")
 par(mar=c(3,3,1,1), mfrow=c(2,1))
 z <- seq(-10e3, 10e3, 250)
 cm <- colormap(z=z, name="gmt_globe", debug=2)
