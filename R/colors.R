@@ -160,9 +160,8 @@ colormap_colorize <- function(z=NULL,
     res
 }
 
-## Q: Why does this name contain "GMT"?
 ## NB: I've not documented this, because it is not in the NAMESPACE.
-colormapGMT <- function(x0, x1, col0, col1, bpl=1)
+colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 {
     n <- length(x0)
     if (length(x1) != n)
@@ -186,22 +185,259 @@ colormapGMT <- function(x0, x1, col0, col1, bpl=1)
     res
 }
 
-## Q: Why does this name contain "Gmt"?
-## NB: I've not documented this, because it is not in the NAMESPACE.
-colormapFromGmt <- function(file, debug=getOption("oceDebug"))
+#>> #' Read a colormap from a GMT-type file
+#>> #'
+#>> #' Files of the GMT type may be found at
+#>> #' \url{https://beamreach.org/maps/gmt/share/cpt/}, and consist
+#>> #' of one or more lines starting with the `#` character, followed by a sequence
+#>> #' of lines containing 8 numbers that, taken together, describe the colour
+#>> #' scheme, followed by a line with the character `F` followed by three integers
+#>> #' giving red, green and blue values in the range 0 to 255, followed
+#>> #' by a similar line starting with the character `B`, and finally by a line starting
+#>> #' with the character `N`.  The last two lines are ignored, and the one before
+#>> #' that is taken as the missing-value colour.  As for the lines of 8 numbers, these
+#>> #' each consist of two sequences of 4 numbers, in which the first is a value for
+#>> #' the value being coloured, and the others are red, green and blue values in the
+#>> #' range from 0 to 255.
+#>> #'
+#>> #' @param text character value specifying a colormap, in GMT format.
+#>> #'
+#>> #' @param debug integer that, if positive, indicates to print some debugging output
+#>> #'
+#>> #' @return a list, in the same format as the return value for [colormap()].
+#>> #'
+#>> #' @author Dan Kelley
+#>> #'
+#>> #' @family things related to colors
+#>> colormap_OLD_DELETE <- function(name, debug=getOption("oceDebug"))
+#>> {
+#>>     oceDebug(debug, "colormap_OLD_DELETE(\"", name, "\", debug=", debug, ")\n", sep="", unindent=1)
+#>>     if (missing(name))
+#>>         stop("must give 'name'\n")
+#>>     if (!is.character(name))
+#>>         stop("'name' must be a character value")
+#>>     text <- readLines(filename)
+#>>     textData <- text[grep("^[ ]*[-0-9]", text)]
+#>>     textData <- gsub("/", " ", textData) # sometimes it is R/G/B
+#>>     d <- read.table(text=textData, col.names=c("x0", "r0", "g0", "b0", "x1", "r1", "g1", "b1"))
+#>>     col0 <- rgb(d$r0, d$g0, d$b0, maxColorValue=255)
+#>>     col1 <- rgb(d$r1, d$g1, d$b1, maxColorValue=255)
+#>>     ## Decode (F, B) and N=missingColor.  Note step by step approach,
+#>>     ## which may be useful in debugging different formats, e.g.
+#>>     ## tabs and spaces etc.
+#>>     ## "F" unused at present
+#>>     F <- "#FFFFFF"
+#>>     if (length(grep("^\\sF", text))) {
+#>>         line <- text[grep("\\s*F", text)]
+#>>         line <- gsub("^\\sF", "", line)
+#>>         F <- scan(text=line, quiet=TRUE)
+#>>         Flen <- length(F)
+#>>         if (1 == Flen) {
+#>>             F <- if (length(grep("[a-zA-Z]", F))) F else gray(as.numeric(F) / 255)
+#>>         } else if (3 == Flen) {
+#>>             F <- rgb(F[1], F[2], F[3], maxColorValue=255)
+#>>         } else {
+#>>             warning("cannot decode \"F\" from \"", line, "\"")
+#>>         }
+#>>     }
+#>>     ## "B" unused at present
+#>>     B <- "#000000"
+#>>     if (length(grep("^\\sB", text))) {
+#>>         line <- text[grep("\\s*B", text)]
+#>>         line <- gsub("^\\sB", "", line)
+#>>         B <- scan(text=line, quiet=TRUE)
+#>>         Blen <- length(B)
+#>>         if (1 == Blen) {
+#>>             B <- if (length(grep("[a-zA-Z]", B))) B else gray(as.numeric(B) / 255)
+#>>         } else if (3 == Blen) {
+#>>             B <- rgb(B[1], B[2], B[3], maxColorValue=255)
+#>>         } else {
+#>>             warning("cannot decode \"B\" from \"", line, "\"")
+#>>         }
+#>>     }
+#>>     ## "N" named here as missingColor to match e.g. imagep()
+#>>     N <- "gray"
+#>>     if (length(grep("^\\s*N", text))) {
+#>>         line <- text[grep("^\\s*N", text)]
+#>>         line <- gsub("\\s*N", "", line)
+#>>         N <- scan(text=line, what=character(), quiet=TRUE)
+#>>         Nlen <- length(N)
+#>>         if (1 == Nlen) {
+#>>             N <- if (length(grep("[a-zA-Z]", N))) N else gray(as.numeric(N) / 255)
+#>>         } else if (3 == Nlen) {
+#>>             N <- rgb(N[1], N[2], N[3], maxColorValue=255)
+#>>         } else {
+#>>             warning("cannot decode missingColor from \"", line, "\"")
+#>>         }
+#>>     }
+#>>     res <- list(x0=d$x0, x1=d$x1, col0=col0, col1=col1, missingColor=N)
+#>>     class(res) <- c("list", "colormap")
+#>>     oceDebug(debug, "} # colormapFromFile()\n", sep="", unindent=1)
+#>>     res
+#>> }
+
+#' Define a colormap based on a GMT-type scheme
+#'
+#' Files of the GMT type may be found at
+#' \url{https://beamreach.org/maps/gmt/share/cpt/}, and consist
+#' of one or more lines starting with the `#` character, followed by a sequence
+#' of lines containing 8 numbers that will be described in a moment,
+#' followed by a line with the character `F` followed by three integers
+#' giving red, green and blue values in the range 0 to 255, followed
+#' by a similar line starting with the character `B`, and finally by a line starting
+#' with the character `N`.  The last two lines are ignored, and the one before
+#' that is taken as the missing-value colour.  The lines containing 8 numbers each
+#' describe a colour band. The first number is the minimum value in the band,
+#' and this is followed by integers in the range 0:255 that specify the
+#' red, green and blue components of the colour.  The fourth to eight numbers
+#' similarly describe the upper end of the colour band.
+#'
+#' @param name character value specifying the GMT scheme, or a source for such
+#' a scheme. Four pre-defined schemes are available, accessed by setting `name` to
+#' `"gmt_gebco"`, `"gmt_globe"`, `"gmt_ocean"`, or `"gmt_relief"`. If `name` is
+#' not one of these values, then it is taken to be the name of a local file
+#' in GMT format or, if no such file is found, a URL holding such a file.
+#'
+#' @param debug integer that, if positive, indicates to print some debugging output
+#'
+#' @return a list, in the same format as the return value for [colormap()].
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to colors
+colormapGMT <- function(name, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "colormapFromGmt(..., debug=", debug, ")\n", sep="", unindent=1)
-    if (missing(file))
-        stop("must give 'file'\n")
-    if (is.character(file)) {
-        ## It's a string to read
-        con <- textConnection(file)
-        on.exit(close(con))
-    } else if (inherits(file, "connection")) {
-        ## It's a connection (i.e. a file). Q: does this ever happen??
-        con <- file
+    oceDebug(debug, "colormapGMT(name=\"", name, "...)\n", sep="", unindent=1)
+    if (name %in% colormapNames) {
+        oceDebug(debug, "case 1: built-in GMT name\n")
+        if (name == "gmt_relief") {
+            oceDebug(debug, "case 1.1: built-in gmt_relief\n")
+            ## $Id: GMT_relief.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+            ##
+            ## Colortable for whole earth relief used in Wessel topomaps
+            ## Designed by P. Wessel and F. Martinez, SOEST
+            ## COLOR_MODEL = RGB
+            text <- "-8000   0       0       0       -7000   0       5       25
+            -7000   0       5       25      -6000   0       10      50
+            -6000   0       10      50      -5000   0       80      125
+            -5000   0       80      125     -4000   0       150     200
+            -4000   0       150     200     -3000   86      197     184
+            -3000   86      197     184     -2000   172     245     168
+            -2000   172     245     168     -1000   211     250     211
+            -1000   211     250     211     0       250     255     255
+            0       70      120     50      500     120     100     50
+            500     120     100     50      1000    146     126     60
+            1000    146     126     60      2000    198     178     80
+            2000    198     178     80      3000    250     230     100
+            3000    250     230     100     4000    250     234     126
+            4000    250     234     126     5000    252     238     152
+            5000    252     238     152     6000    252     243     177
+            6000    252     243     177     7000    253     249     216
+            7000    253     249     216     8000    255     255     255
+            F       255     255     255
+            B       0       0       0
+            N       255     255     255"
+        } else if (name == "gmt_ocean") {
+            oceDebug(debug, "case 1.2: built-in gmt_ocean\n")
+            ## $Id: GMT_ocean.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+            ##
+            ## Colortable for oceanic areas as used in Wessel maps
+            ## Designed by P. Wessel and F. Martinez, SOEST.
+            ## COLOR_MODEL = RGB
+            text <- "-8000   0       0       0       -7000   0       5       25
+            -7000   0       5       25      -6000   0       10      50
+            -6000   0       10      50      -5000   0       80      125
+            -5000   0       80      125     -4000   0       150     200
+            -4000   0       150     200     -3000   86      197     184
+            -3000   86      197     184     -2000   172     245     168
+            -2000   172     245     168     -1000   211     250     211
+            -1000   211     250     211     0       250     255     255
+            F       255     255     255
+            B       0       0       0"
+        } else if (name == "gmt_globe") {
+            oceDebug(debug, "case 1.3: built-in gmt_globe\n")
+            ##       $Id: GMT_globe.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+            ##
+            ## Colormap using in global relief maps
+            ## Bathymetry colors manually redefined for blue-shade effect and
+            ## new topography color scheme for use with Generic Mapping Tools.
+            ## Designed by Lester M. Anderson (CASP, UK) lester.anderson@casp.cam.ac.uk
+            ## COLOR_MODEL = RGB
+            text <- "-10000  153     0       255     -9500   153     0       255
+            -9500   153     0       255     -9000   153     0       255
+            -9000   153     0       255     -8500   153     0       255
+            -8500   136     17      255     -8000   136     17      255
+            -8000   119     34      255     -7500   119     34      255
+            -7500   102     51      255     -7000   102     51      255
+            -7000   85      68      255     -6500   85      68      255
+            -6500   68      85      255     -6000   68      85      255
+            -6000   51      102     255     -5500   51      102     255
+            -5500   34      119     255     -5000   34      119     255
+            -5000   17      136     255     -4500   17      136     255
+            -4500   0       153     255     -4000   0       153     255
+            -4000   27      164     255     -3500   27      164     255
+            -3500   54      175     255     -3000   54      175     255
+            -3000   81      186     255     -2500   81      186     255
+            -2500   108     197     255     -2000   108     197     255
+            -2000   134     208     255     -1500   134     208     255
+            -1500   161     219     255     -1000   161     219     255
+            -1000   188     230     255     -500    188     230     255
+            -500    215     241     255     -200    215     241     255
+            -200    241     252     255     0       241     252     255
+            0       51      102     0       100     51      204     102
+            100     51      204     102     200     187     228     146
+            200     187     228     146     500     255     220     185
+            500     255     220     185     1000    243     202     137
+            1000    243     202     137     1500    230     184     88
+            1500    230     184     88      2000    217     166     39
+            2000    217     166     39      2500    168     154     31
+            2500    168     154     31      3000    164     144     25
+            3000    164     144     25      3500    162     134     19
+            3500    162     134     19      4000    159     123     13
+            4000    159     123     13      4500    156     113     7
+            4500    156     113     7       5000    153     102     0
+            5000    153     102     0       5500    162     89      89
+            5500    162     89      89      6000    178     118     118
+            6000    178     118     118     6500    183     147     147
+            6500    183     147     147     7000    194     176     176
+            7000    194     176     176     7500    204     204     204
+            7500    204     204     204     8000    229     229     229
+            8000    229     229     229     8500    242     242     242
+            8500    242     242     242     9000    255     255     255
+            9000    255     255     255     9500    255     255     255
+            9500    255     255     255     10000   255     255     255
+            F       255     255     255
+            B       0       0       0
+            N       128     128     128"
+        } else if (name == "gmt_gebco") {
+            oceDebug(debug, "case 1.4: built-in gmt_gebco\n")
+            ## $Id: GMT_gebco.cpt,v 1.1.1.1 2000/12/28 01:23:45 gmt Exp $
+            ##
+            ## Bathymetry colors approximating the GEBCO charts
+            ## Designed by Andrew Goodwillie, Scripps
+            ## COLOR_MODEL = RGB
+            text <- "-7000   0       240     255     -6000   0       240     255
+            -6000   35      255     255     -5000   35      255     255
+            -5000   90      255     255     -4000   90      255     255
+            -4000   140     255     230     -3000   140     255     230
+            -3000   165     255     215     -2000   165     255     215
+            -2000   195     255     215     -1000   195     255     215
+            -1000   210     255     215     -500    210     255     215
+            -500    230     255     240     -200    230     255     240
+            -200    235     255     255     -0      235     255     255
+            F       255     255     255
+            B       0       0       0
+            N       128     128     128"
+        }
+        text <- gsub("^[ ]*", "", strsplit(text, "\\n")[[1]])
+    } else {
+        oceDebug(debug, "case 2: file or URL\n")
+        # Look for local file or URL
+        text <- try(readLines(name), silent=TRUE)
+        if (inherits(text, "try-error"))
+            stop("unknown colormap name: \"", name, "\" (not built-in, not local file, not working URL)")
     }
-    text <- readLines(con)
+    text <- text[!grepl("^#", text)] # remove comments, if any exist (as in files read in)
     textData <- text[grep("^[ ]*[-0-9]", text)]
     textData <- gsub("/", " ", textData) # sometimes it is R/G/B
     d <- read.table(text=textData, col.names=c("x0", "r0", "g0", "b0", "x1", "r1", "g1", "b1"))
@@ -255,143 +491,11 @@ colormapFromGmt <- function(file, debug=getOption("oceDebug"))
             warning("cannot decode missingColor from \"", line, "\"")
         }
     }
-    res <- list(x0=d$x0, x1=d$x1, col0=col0, col1=col1, missingColor=N)
+    col <- head(rgb(d$r0, d$g0, d$b0, maxColorValue=255L), -1L)
+    #colbreaks <- colormapGmtNumeric(d$x0, d$x1, d$col0, d$col1)
+    res <- list(x0=d$x0, x1=d$x1, col0=col0, col1=col1, breaks=d$x0, col=col, missingColor=N)
     class(res) <- c("list", "colormap")
-    oceDebug(debug, "} # colormapFromGmt()\n", sep="", unindent=1)
-    res
-}
-
-colormapFromName <- function(name, debug=getOption("oceDebug"))
-{
-    oceDebug(debug, "colormapFromName(name=\"", name, "\", debug=", debug, ")\n", sep="", unindent=1)
-    id <- pmatch(name, colormapNames)
-    if (is.na(id))
-        stop("unknown colormap name \"", name, "\"; try one of: ", paste(names, collapse=", "))
-    name <- colormapNames[id]
-    oceDebug(debug, "name=", name, "\n")
-    if (name == "gmt_relief") {
-        ## $Id: GMT_relief.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
-        ##
-        ## Colortable for whole earth relief used in Wessel topomaps
-        ## Designed by P. Wessel and F. Martinez, SOEST
-        ## COLOR_MODEL = RGB
-        text <- "
-        -8000   0       0       0       -7000   0       5       25
-        -7000   0       5       25      -6000   0       10      50
-        -6000   0       10      50      -5000   0       80      125
-        -5000   0       80      125     -4000   0       150     200
-        -4000   0       150     200     -3000   86      197     184
-        -3000   86      197     184     -2000   172     245     168
-        -2000   172     245     168     -1000   211     250     211
-        -1000   211     250     211     0       250     255     255
-        0       70      120     50      500     120     100     50
-        500     120     100     50      1000    146     126     60
-        1000    146     126     60      2000    198     178     80
-        2000    198     178     80      3000    250     230     100
-        3000    250     230     100     4000    250     234     126
-        4000    250     234     126     5000    252     238     152
-        5000    252     238     152     6000    252     243     177
-        6000    252     243     177     7000    253     249     216
-        7000    253     249     216     8000    255     255     255
-        F       255     255     255
-        B       0       0       0
-        N       255     255     255"
-    } else if (name == "gmt_ocean") {
-        ## $Id: GMT_ocean.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
-        ##
-        ## Colortable for oceanic areas as used in Wessel maps
-        ## Designed by P. Wessel and F. Martinez, SOEST.
-        ## COLOR_MODEL = RGB
-        text <- "
-        -8000   0       0       0       -7000   0       5       25
-        -7000   0       5       25      -6000   0       10      50
-        -6000   0       10      50      -5000   0       80      125
-        -5000   0       80      125     -4000   0       150     200
-        -4000   0       150     200     -3000   86      197     184
-        -3000   86      197     184     -2000   172     245     168
-        -2000   172     245     168     -1000   211     250     211
-        -1000   211     250     211     0       250     255     255
-        F       255     255     255
-        B       0       0       0"
-    } else if (name == "gmt_globe") {
-        ##       $Id: GMT_globe.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
-        ##
-        ## Colormap using in global relief maps
-        ## Bathymetry colors manually redefined for blue-shade effect and
-        ## new topography color scheme for use with Generic Mapping Tools.
-        ## Designed by Lester M. Anderson (CASP, UK) lester.anderson@casp.cam.ac.uk
-        ## COLOR_MODEL = RGB
-        text <- "
-        -10000  153     0       255     -9500   153     0       255
-        -9500   153     0       255     -9000   153     0       255
-        -9000   153     0       255     -8500   153     0       255
-        -8500   136     17      255     -8000   136     17      255
-        -8000   119     34      255     -7500   119     34      255
-        -7500   102     51      255     -7000   102     51      255
-        -7000   85      68      255     -6500   85      68      255
-        -6500   68      85      255     -6000   68      85      255
-        -6000   51      102     255     -5500   51      102     255
-        -5500   34      119     255     -5000   34      119     255
-        -5000   17      136     255     -4500   17      136     255
-        -4500   0       153     255     -4000   0       153     255
-        -4000   27      164     255     -3500   27      164     255
-        -3500   54      175     255     -3000   54      175     255
-        -3000   81      186     255     -2500   81      186     255
-        -2500   108     197     255     -2000   108     197     255
-        -2000   134     208     255     -1500   134     208     255
-        -1500   161     219     255     -1000   161     219     255
-        -1000   188     230     255     -500    188     230     255
-        -500    215     241     255     -200    215     241     255
-        -200    241     252     255     0       241     252     255
-        0       51      102     0       100     51      204     102
-        100     51      204     102     200     187     228     146
-        200     187     228     146     500     255     220     185
-        500     255     220     185     1000    243     202     137
-        1000    243     202     137     1500    230     184     88
-        1500    230     184     88      2000    217     166     39
-        2000    217     166     39      2500    168     154     31
-        2500    168     154     31      3000    164     144     25
-        3000    164     144     25      3500    162     134     19
-        3500    162     134     19      4000    159     123     13
-        4000    159     123     13      4500    156     113     7
-        4500    156     113     7       5000    153     102     0
-        5000    153     102     0       5500    162     89      89
-        5500    162     89      89      6000    178     118     118
-        6000    178     118     118     6500    183     147     147
-        6500    183     147     147     7000    194     176     176
-        7000    194     176     176     7500    204     204     204
-        7500    204     204     204     8000    229     229     229
-        8000    229     229     229     8500    242     242     242
-        8500    242     242     242     9000    255     255     255
-        9000    255     255     255     9500    255     255     255
-        9500    255     255     255     10000   255     255     255
-        F       255     255     255
-        B       0       0       0
-        N       128     128     128"
-    } else if (name == "gmt_gebco") {
-        ## $Id: GMT_gebco.cpt,v 1.1.1.1 2000/12/28 01:23:45 gmt Exp $
-        ##
-        ## Bathymetry colors approximating the GEBCO charts
-        ## Designed by Andrew Goodwillie, Scripps
-        ## COLOR_MODEL = RGB
-        text <- "
-        -7000   0       240     255     -6000   0       240     255
-        -6000   35      255     255     -5000   35      255     255
-        -5000   90      255     255     -4000   90      255     255
-        -4000   140     255     230     -3000   140     255     230
-        -3000   165     255     215     -2000   165     255     215
-        -2000   195     255     215     -1000   195     255     215
-        -1000   210     255     215     -500    210     255     215
-        -500    230     255     240     -200    230     255     240
-        -200    235     255     255     -0      235     255     255
-        F       255     255     255
-        B       0       0       0
-        N       128     128     128"
-    } else {
-        stop("unknown colormap name; try one of: ", paste(colormapNames, collapse=", "))
-    }
-    res <- colormapFromGmt(text, debug=debug-1)
-    oceDebug(debug, "} # colormapFromName()\n", sep="", unindent=1)
+    oceDebug(debug, "} # colormapGMT()\n", sep="", unindent=1)
     res
 }
 
@@ -490,9 +594,10 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #' `"gmt_relief"`, `"gmt_ocean"`, `"gmt_globe"` or
 #' `"gmt_gebco"`) or the name of a file or URL that contains a color map
 #' specification in GMT format, e.g. one of the `.cpt` files from
-#' \url{https://beamreach.org/maps/gmt/share/cpt/}). If `name` is
-#' provided, then `x0`, `x1`, `col0` and `col1` are all
-#' ignored.
+#' \url{https://beamreach.org/maps/gmt/share/cpt/}).  Since providing `name`
+#' declares a desire for a fixed colour scheme, all other arguments
+#' are ignored except `z`. Supplying both `name` and `z` can make
+#' sense for deciding on colours to be used for symbols on a plot.
 #'
 #' @param x0,x1,col0,col1 Vectors that specify a color map.  They must all be
 #' the same length, with `x0` and `x1` being numerical values, and
@@ -516,8 +621,7 @@ colormapFromName <- function(name, debug=getOption("oceDebug"))
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #'
-#' @return A list containing the following (not necessarily in this order)
-#'
+#' @return a list containing the following (not necessarily in this order)
 #'
 #' * `zcol`, a vector of colors for `z`, if `z` was
 #' provided, otherwise `"black"`
@@ -629,10 +733,31 @@ colormap <- function(z=NULL,
                      missingColor,
                      debug=getOption("oceDebug"))
 {
-    debug <- min(debug, 3)
+    debug <- min(max(0, debug), 2)
     oceDebug(debug, "colormap(..., debug=", debug, ") {\n", sep="", unindent=1)
     zKnown <- !is.null(z)
     zlimKnown <- !missing(zlim)
+    breaksKnown <- !missing(breaks)
+    nameKnown <- !missing(name)
+    missingColorKnown <- !missing(missingColor)
+    if (blend < 0 || blend > 1)
+        stop("blend must be between 0 and 1")
+    if (nameKnown) {
+        oceDebug(debug, "case 1: 'name' was given, so other arguments (except 'z') will be ignored\n")
+        res <- colormap_colormap(name=name, debug=debug-1)
+        if (zKnown) {
+            oceDebug(debug, "computing zcol, since 'z' argument was given\n")
+            res$zcol <- res$col0[findInterval(z, res$x0, all.inside=TRUE)]
+        }
+        if (zlimKnown) {
+            res$zlim <- zlim 
+            oceDebug(debug, "set zlim=c(", paste(res$zlim, collapse=","), ") based on 'zlim' argument\n", sep="")
+        } else {
+            res$zlim <- range(c(res$x0, res$x1))
+            oceDebug(debug, "set zlim=c(", paste(res$zlim, collapse=","), ") based on named colormap\n", sep="")
+        }
+        return(res)
+    }
     if (zlimKnown) {
         if (length(zlim) != 2)
             stop("length of 'zlim' must be 2")
@@ -641,16 +766,11 @@ colormap <- function(z=NULL,
         if (zlim[2] == zlim[1])
             stop("'zlim' values must be distinct")
     }
-    breaksKnown <- !missing(breaks)
-    nameKnown <- !missing(name)
-    missingColorKnown <- !missing(missingColor)
     if (missingColorKnown)
         oceDebug(debug, 'missingColor:', missingColor, '\n')
-    if (blend < 0 || blend > 1)
-        stop("blend must be between 0 and 1")
     x0Known <- !missing(x0) && !missing(x1) && !missing(col0) && !missing(col1)
     if (x0Known) {
-        oceDebug(debug, "case D\n")
+        oceDebug(debug, "case 2: 'x0', 'x2', etc. were given, but not 'name'\n")
         ## This is case D in help(colormap). Focus on x0, etc, ignoring breaks
         ## and col, even if the latter two items were given.
         if (length(x0) != length(x1))
@@ -859,11 +979,18 @@ colormap <- function(z=NULL,
     res
 }
 
-## keeping this (which was called 'colormap' until 2014-05-07) for a while, but not in NAMESPACE.
+## keeping this (which was called 'colormap' until 2014-05-07), but not in NAMESPACE.
 colormap_colormap <- function(name, x0, x1, col0, col1, n=1, zclip=FALSE, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "colormap_colormap(..., debug=", debug, ") {\n", sep="", unindent=1)
-    if (missing(name)) {
+    nameKnown <- !missing(name)
+    oceDebug(debug, "colormap_colormap(name=",
+             if (nameKnown) paste0("\"", name, "\"") else "(MISSING)",
+             ", ...) {\n", sep="", unindent=1)
+    if (nameKnown) {
+        oceDebug(debug, "name was specified, so using colormapGMT() to compute colormap\n")
+        res <- colormapGMT(name, debug=debug-1)
+    } else {
+        oceDebug(debug, "name was not specified, so using x0, x1, etc., to compute colormap\n")
         if (missing(x0) || missing(x1) || missing(col0) || missing(col1))
             stop('give either "name" or all of: "x0", "x1", "col0" and "col1"')
         xlen <- length(x0)
@@ -900,11 +1027,6 @@ colormap_colormap <- function(name, x0, x1, col0, col1, n=1, zclip=FALSE, debug=
         col0r <- c(col0r, tail(col0, 1))
         col1r <- c(col1r, tail(col1, 1))
         res <- list(x0=x0r, x1=x1r, col0=col0r, col1=col1r)
-    } else {
-        id <- pmatch(name, colormapNames)
-        oceDebug(debug, "id=", id, "\n")
-        ## NB> next two functions not in NAMESPACE
-        res <- if (is.na(id)) colormapFromGmt(name, debug=debug-1) else colormapFromName(colormapNames[id], debug=debug-1)
     }
     res$zclip <- zclip
     class(res) <- c("list", "colormap")

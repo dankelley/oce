@@ -37,6 +37,7 @@ Other datasets provided with oce:
 \code{\link{xbt}}
 
 Other things related to colors: 
+\code{\link{colormapGMT}()},
 \code{\link{colormap}()},
 \code{\link{oceColors9B}()},
 \code{\link{oceColorsCDOM}()},

@@ -63,9 +63,10 @@ the default for \code{col} was \code{oceColorsJet}, but it was switched to
 \code{"gmt_relief"}, \code{"gmt_ocean"}, \code{"gmt_globe"} or
 \code{"gmt_gebco"}) or the name of a file or URL that contains a color map
 specification in GMT format, e.g. one of the \code{.cpt} files from
-\url{https://beamreach.org/maps/gmt/share/cpt/}). If \code{name} is
-provided, then \code{x0}, \code{x1}, \code{col0} and \code{col1} are all
-ignored.}
+\url{https://beamreach.org/maps/gmt/share/cpt/}).  Since providing \code{name}
+declares a desire for a fixed colour scheme, all other arguments
+are ignored except \code{z}. Supplying both \code{name} and \code{z} can make
+sense for deciding on colours to be used for symbols on a plot.}
 
 \item{x0, x1, col0, col1}{Vectors that specify a color map.  They must all be
 the same length, with \code{x0} and \code{x1} being numerical values, and
@@ -90,7 +91,7 @@ from that color table.}
 amount of debugging information, or to 2 to get more.}
 }
 \value{
-A list containing the following (not necessarily in this order)
+a list containing the following (not necessarily in this order)
 \itemize{
 \item \code{zcol}, a vector of colors for \code{z}, if \code{z} was
 provided, otherwise \code{"black"}
@@ -242,6 +243,7 @@ color maps are at \url{https://beamreach.org/maps/gmt/share/cpt/},
 }
 \seealso{
 Other things related to colors: 
+\code{\link{colormapGMT}()},
 \code{\link{oceColors9B}()},
 \code{\link{oceColorsCDOM}()},
 \code{\link{oceColorsChlorophyll}()},

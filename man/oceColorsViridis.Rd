@@ -45,6 +45,7 @@ graphics,'' by A. Light and P. J. Bartlein. \emph{Eos Trans. AGU}, 86(20).
 }
 \seealso{
 Other things related to colors: 
+\code{\link{colormapGMT}()},
 \code{\link{colormap}()},
 \code{\link{oceColors9B}()},
 \code{\link{oceColorsCDOM}()},

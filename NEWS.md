@@ -2,7 +2,8 @@
 
 ## 1.5.0
 
-* TBA
+* `as.section()` handles list of `argo` objects as first argument.
+* `colormap()` handles `name` argument.
 
 ## 1.4.0
 

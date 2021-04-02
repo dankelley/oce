@@ -6,6 +6,10 @@ z <- rnorm(20)
 
 context("colormap")
 
+test_that("colormap with name that is invalid", {
+          expect_warning(expect_error(colormap(name="no_such_name"), "unknown colormap name"), "cannot open")
+})
+
 test_that("colormap with z alone or with zlim", {
           cm <- colormap(z=z)
           expect_equal(length(cm$breaks), 1 + length(cm$col))
@@ -32,11 +36,14 @@ test_that("colormap with name alone or with zlim", {
           expect_equal(cm$zlim, c(-1, 1))
 })
 
-test_that("colormap with breaks and name", {
-          cm <- colormap(breaks=0:5, name="gmt_globe")
-          expect_equal(length(cm$breaks), 1 + length(cm$col))
-          expect_equal(cm$zlim, range(c(0, 5)))
-})
+## This test was removed in 2021-04-02 since it made no sense with alterations
+## made to colormap() then.  It never made any sense, in fact, since gmt_globe
+## has 43 colours, so what would it mean to have 6 breaks?
+# test_that("colormap with breaks and name", {
+#          cm <- colormap(breaks=0:5, name="gmt_globe")
+#          expect_equal(length(cm$breaks), 1 + length(cm$col))
+#          expect_equal(cm$zlim, range(c(0, 5)))
+#})
 
 test_that("colormap with (x0,col0,x1,col1) alone or with zlim", {
           ## without blending
