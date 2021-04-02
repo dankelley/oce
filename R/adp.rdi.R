@@ -1026,6 +1026,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                                    nrow=4, byrow=TRUE)
                     if (debug > 0) {
                         cat('Transformation matrix:\n')
+                        oceDebug(debug, vectorShow(tmx, paste("tmx", sep="")), "\n")
                         oceDebug(debug, vectorShow(tmy, paste("tmy", sep="")), "\n")
                         oceDebug(debug, vectorShow(tmz, paste("tmz", sep="")), "\n")
                         oceDebug(debug, vectorShow(tme, paste("tme", sep="")), "\n")
