@@ -20,10 +20,10 @@ a list, in the same format as the return value for \code{\link[=colormap]{colorm
 }
 \description{
 \code{colormapGMT} creates colormaps in the Generic Mapping Tools (GMT)
-scheme (see Reference 1).  A few such schemes are built-in, and may be referred to
+scheme (see References 1 and 2).  A few such schemes are built-in, and may be referred to
 by name (\code{"gmt_gebco"}, \code{"gmt_globe"}, \code{"gmt_ocean"}, or \code{"gmt_relief"})
 while others are handled by reading local files that are in GMT
-format, or URLs providing such files (see Reference 2).
+format, or URLs providing such files (see Reference 3).
 }
 \details{
 GMT files start with optional comment lines that begin with
@@ -41,8 +41,12 @@ similarly describe the upper end of that color band.
 }
 \references{
 \enumerate{
-\item \url{https://docs.generic-mapping-tools.org/dev/cookbook/cpts.html}
-\item \url{https://beamreach.org/maps/gmt/share/cpt}
+\item General overview of GMT system
+\url{https://www.generic-mapping-tools.org}.
+\item Information on GMT color schemes
+\url{https://docs.generic-mapping-tools.org/dev/cookbook/cpts.html}
+\item Source of GMT specification files
+\url{https://beamreach.org/maps/gmt/share/cpt}
 }
 }
 \seealso{

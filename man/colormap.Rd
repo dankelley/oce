@@ -233,15 +233,6 @@ plot(x, y, pch=21, bg=cm$colfunction(z), cex=3)
 }
 
 }
-\references{
-Information on GMT software is given at
-\verb{http://gmt.soest.hawaii.edu} (link worked for years but failed
-2015-12-12).  Diagrams showing the GMT color schemes are at
-\verb{http://www.geos.ed.ac.uk/it/howto/GMT/CPT/palettes.html} (link worked
-for years but failed 2015-12-08), and numerical specifications for some
-color maps are at \url{https://beamreach.org/maps/gmt/share/cpt/},
-\url{http://soliton.vm.bytemark.co.uk/pub/cpt-city/}, and other sources.
-}
 \seealso{
 Other things related to colors: 
 \code{\link{colormapGMT}()},

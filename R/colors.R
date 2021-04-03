@@ -279,10 +279,10 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 #' Create a GMT-type colormap
 #'
 #' `colormapGMT` creates colormaps in the Generic Mapping Tools (GMT)
-#' scheme (see Reference 1).  A few such schemes are built-in, and may be referred to
+#' scheme (see References 1 and 2).  A few such schemes are built-in, and may be referred to
 #' by name (`"gmt_gebco"`, `"gmt_globe"`, `"gmt_ocean"`, or `"gmt_relief"`)
 #' while others are handled by reading local files that are in GMT
-#' format, or URLs providing such files (see Reference 2).
+#' format, or URLs providing such files (see Reference 3).
 #'
 #' GMT files start with optional comment lines that begin with
 #' the `#` character, followed by a sequence of lines containing 8 numbers,
@@ -310,8 +310,12 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 #' @author Dan Kelley
 #'
 #' @references
-#' 1. <https://docs.generic-mapping-tools.org/dev/cookbook/cpts.html>
-#' 2. <https://beamreach.org/maps/gmt/share/cpt>
+#' 1. General overview of GMT system
+#' <https://www.generic-mapping-tools.org>.
+#' 2. Information on GMT color schemes 
+#' <https://docs.generic-mapping-tools.org/dev/cookbook/cpts.html>
+#' 3. Source of GMT specification files
+#' <https://beamreach.org/maps/gmt/share/cpt>
 #'
 #' @family things related to colors
 colormapGMT <- function(name, debug=getOption("oceDebug"))
@@ -663,14 +667,6 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #'
 #' @author Dan Kelley
 #'
-#' @references Information on GMT software is given at
-#' `http://gmt.soest.hawaii.edu` (link worked for years but failed
-#' 2015-12-12).  Diagrams showing the GMT color schemes are at
-#' `http://www.geos.ed.ac.uk/it/howto/GMT/CPT/palettes.html` (link worked
-#' for years but failed 2015-12-08), and numerical specifications for some
-#' color maps are at \url{https://beamreach.org/maps/gmt/share/cpt/},
-#' \url{http://soliton.vm.bytemark.co.uk/pub/cpt-city/}, and other sources.
-#'
 #' @examples
 #' library(oce)
 #' ## Example 1. color scheme for points on xy plot
@@ -753,20 +749,14 @@ colormap <- function(z=NULL,
     missingColorKnown <- !missing(missingColor)
     if (blend < 0 || blend > 1)
         stop("blend must be between 0 and 1")
+    # Case 1: 'name' was given: only 'name' and possibly 'z' are examined.
     if (nameKnown) {
-        oceDebug(debug, "case 1: 'name' was given, so other arguments (except 'z') will be ignored\n")
+        oceDebug(debug, "case 1: 'name' was given, so ignore other arguments (except 'z', if given)\n")
         res <- colormap_colormap(name=name, debug=debug-1)
-        if (zKnown) {
-            oceDebug(debug, "computing zcol, since 'z' argument was given\n")
-            res$zcol <- res$col0[findInterval(z, res$x0, all.inside=TRUE)]
-        }
-        if (zlimKnown) {
-            res$zlim <- zlim
-            oceDebug(debug, "set zlim=c(", paste(res$zlim, collapse=","), ") based on 'zlim' argument\n", sep="")
-        } else {
-            res$zlim <- range(c(res$x0, res$x1))
-            oceDebug(debug, "set zlim=c(", paste(res$zlim, collapse=","), ") based on named colormap\n", sep="")
-        }
+        res$zlim <- range(c(res$x0, res$x1)) # ignore argument 'zlim'
+        res$colfunction <- function(z) res$col0[findInterval(z, res$x0, all.inside=TRUE)]
+        if (zKnown)
+            res$zcol <- res$colfunction(z)
         return(res)
     }
     if (zlimKnown) {
@@ -781,7 +771,7 @@ colormap <- function(z=NULL,
         oceDebug(debug, 'missingColor:', missingColor, '\n')
     x0Known <- !missing(x0) && !missing(x1) && !missing(col0) && !missing(col1)
     if (x0Known) {
-        oceDebug(debug, "case 2: 'x0', 'x2', etc. were given, but not 'name'\n")
+        oceDebug(debug, "case 2: 'x0', 'x2', etc. were given\n")
         ## This is case D in help(colormap). Focus on x0, etc, ignoring breaks
         ## and col, even if the latter two items were given.
         if (length(x0) != length(x1))
@@ -982,9 +972,7 @@ colormap <- function(z=NULL,
     if (!nameKnown)
         res$missingColor <- if (missingColorKnown) missingColor else "gray"
     res$zclip <- zclip
-    res$colfunction <- function(z) {
-        res$col0[findInterval(z, res$x0)]
-    }
+    res$colfunction <- function(z) res$col0[findInterval(z, res$x0)]
     class(res) <- c("list", "colormap")
     oceDebug(debug, "} # colormap()\n", sep="", unindent=1)
     res
