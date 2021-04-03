@@ -62,11 +62,12 @@ the default for \code{col} was \code{oceColorsJet}, but it was switched to
 \item{name}{an optional string naming a built-in colormap (one of
 \code{"gmt_relief"}, \code{"gmt_ocean"}, \code{"gmt_globe"} or
 \code{"gmt_gebco"}) or the name of a file or URL that contains a color map
-specification in GMT format, e.g. one of the \code{.cpt} files from
-\url{https://beamreach.org/maps/gmt/share/cpt/}).  Since providing \code{name}
-declares a desire for a fixed colour scheme, all other arguments
-are ignored except \code{z}. Supplying both \code{name} and \code{z} can make
-sense for deciding on colours to be used for symbols on a plot.}
+specification in GMT format.  If \code{name} is given, then it is
+passed to \code{\link[=colormapGMT]{colormapGMT()}}, which creates the colormap.
+Note that the colormap thus created has a fixed
+relationship between value and color, and \code{zlim},
+only other argument that is examined is \code{z}, which may be used
+so that \code{zcol} will be defined in the return value.}
 
 \item{x0, x1, col0, col1}{Vectors that specify a color map.  They must all be
 the same length, with \code{x0} and \code{x1} being numerical values, and

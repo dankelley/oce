@@ -2,7 +2,7 @@
 % Please edit documentation in R/colors.R
 \name{colormapGMT}
 \alias{colormapGMT}
-\title{Define a colormap based on a GMT-type scheme}
+\title{Create a GMT-type colormap}
 \usage{
 colormapGMT(name, debug = getOption("oceDebug"))
 }
@@ -19,19 +19,31 @@ in GMT format or, if no such file is found, a URL holding such a file.}
 a list, in the same format as the return value for \code{\link[=colormap]{colormap()}}.
 }
 \description{
-Files of the GMT type may be found at
-\url{https://beamreach.org/maps/gmt/share/cpt/}, and consist
-of one or more lines starting with the \verb{#} character, followed by a sequence
-of lines containing 8 numbers that will be described in a moment,
+\code{colormapGMT} creates colormaps in the Generic Mapping Tools (GMT)
+scheme (see Reference 1).  A few such schemes are built-in, and may be referred to
+by name (\code{"gmt_gebco"}, \code{"gmt_globe"}, \code{"gmt_ocean"}, or \code{"gmt_relief"})
+while others are handled by reading local files that are in GMT
+format, or URLs providing such files (see Reference 2).
+}
+\details{
+GMT files start with optional comment lines that begin with
+the \verb{#} character, followed by a sequence of lines containing 8 numbers,
 followed by a line with the character \code{F} followed by three integers
 giving red, green and blue values in the range 0 to 255, followed
-by a similar line starting with the character \code{B}, and finally by a line starting
-with the character \code{N}.  The last two lines are ignored, and the one before
-that is taken as the missing-value colour.  The lines containing 8 numbers each
-describe a colour band. The first number is the minimum value in the band,
+by a similar line starting with the character \code{B},
+and finally by a similar line starting
+with the character \code{N}. The last line
+is interpreted as the missing-value color.  The lines containing 8 numbers each
+describe a color band. The first number is the minimum value in the band,
 and this is followed by integers in the range 0:255 that specify the
-red, green and blue components of the colour.  The fourth to eight numbers
-similarly describe the upper end of the colour band.
+red, green and blue components of the color.  The fourth to eight numbers
+similarly describe the upper end of that color band.
+}
+\references{
+\enumerate{
+\item \url{https://docs.generic-mapping-tools.org/dev/cookbook/cpts.html}
+\item \url{https://beamreach.org/maps/gmt/share/cpt}
+}
 }
 \seealso{
 Other things related to colors: 

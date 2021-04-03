@@ -190,14 +190,14 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 #>> #' Files of the GMT type may be found at
 #>> #' \url{https://beamreach.org/maps/gmt/share/cpt/}, and consist
 #>> #' of one or more lines starting with the `#` character, followed by a sequence
-#>> #' of lines containing 8 numbers that, taken together, describe the colour
+#>> #' of lines containing 8 numbers that, taken together, describe the color
 #>> #' scheme, followed by a line with the character `F` followed by three integers
 #>> #' giving red, green and blue values in the range 0 to 255, followed
 #>> #' by a similar line starting with the character `B`, and finally by a line starting
 #>> #' with the character `N`.  The last two lines are ignored, and the one before
-#>> #' that is taken as the missing-value colour.  As for the lines of 8 numbers, these
+#>> #' that is taken as the missing-value color.  As for the lines of 8 numbers, these
 #>> #' each consist of two sequences of 4 numbers, in which the first is a value for
-#>> #' the value being coloured, and the others are red, green and blue values in the
+#>> #' the value being colored, and the others are red, green and blue values in the
 #>> #' range from 0 to 255.
 #>> #'
 #>> #' @param text character value specifying a colormap, in GMT format.
@@ -276,21 +276,26 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 #>>     res
 #>> }
 
-#' Define a colormap based on a GMT-type scheme
+#' Create a GMT-type colormap
 #'
-#' Files of the GMT type may be found at
-#' \url{https://beamreach.org/maps/gmt/share/cpt/}, and consist
-#' of one or more lines starting with the `#` character, followed by a sequence
-#' of lines containing 8 numbers that will be described in a moment,
+#' `colormapGMT` creates colormaps in the Generic Mapping Tools (GMT)
+#' scheme (see Reference 1).  A few such schemes are built-in, and may be referred to
+#' by name (`"gmt_gebco"`, `"gmt_globe"`, `"gmt_ocean"`, or `"gmt_relief"`)
+#' while others are handled by reading local files that are in GMT
+#' format, or URLs providing such files (see Reference 2).
+#'
+#' GMT files start with optional comment lines that begin with
+#' the `#` character, followed by a sequence of lines containing 8 numbers,
 #' followed by a line with the character `F` followed by three integers
 #' giving red, green and blue values in the range 0 to 255, followed
-#' by a similar line starting with the character `B`, and finally by a line starting
-#' with the character `N`.  The last two lines are ignored, and the one before
-#' that is taken as the missing-value colour.  The lines containing 8 numbers each
-#' describe a colour band. The first number is the minimum value in the band,
+#' by a similar line starting with the character `B`,
+#' and finally by a similar line starting
+#' with the character `N`. The last line
+#' is interpreted as the missing-value color.  The lines containing 8 numbers each
+#' describe a color band. The first number is the minimum value in the band,
 #' and this is followed by integers in the range 0:255 that specify the
-#' red, green and blue components of the colour.  The fourth to eight numbers
-#' similarly describe the upper end of the colour band.
+#' red, green and blue components of the color.  The fourth to eight numbers
+#' similarly describe the upper end of that color band.
 #'
 #' @param name character value specifying the GMT scheme, or a source for such
 #' a scheme. Four pre-defined schemes are available, accessed by setting `name` to
@@ -303,6 +308,10 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 #' @return a list, in the same format as the return value for [colormap()].
 #'
 #' @author Dan Kelley
+#'
+#' @references
+#' 1. <https://docs.generic-mapping-tools.org/dev/cookbook/cpts.html>
+#' 2. <https://beamreach.org/maps/gmt/share/cpt>
 #'
 #' @family things related to colors
 colormapGMT <- function(name, debug=getOption("oceDebug"))
@@ -593,11 +602,13 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #' @param name an optional string naming a built-in colormap (one of
 #' `"gmt_relief"`, `"gmt_ocean"`, `"gmt_globe"` or
 #' `"gmt_gebco"`) or the name of a file or URL that contains a color map
-#' specification in GMT format, e.g. one of the `.cpt` files from
-#' \url{https://beamreach.org/maps/gmt/share/cpt/}).  Since providing `name`
-#' declares a desire for a fixed colour scheme, all other arguments
-#' are ignored except `z`. Supplying both `name` and `z` can make
-#' sense for deciding on colours to be used for symbols on a plot.
+#' specification in GMT format.  If `name` is given, then it is
+#' passed to [colormapGMT()], which creates the colormap.
+#' Note that the colormap thus created has a fixed
+#' relationship between value and color, and `zlim`,
+#` `z0`, etc. are ignored when `name` is provided. Indeed, the
+#' only other argument that is examined is `z`, which may be used
+#' so that `zcol` will be defined in the return value.
 #'
 #' @param x0,x1,col0,col1 Vectors that specify a color map.  They must all be
 #' the same length, with `x0` and `x1` being numerical values, and
@@ -750,7 +761,7 @@ colormap <- function(z=NULL,
             res$zcol <- res$col0[findInterval(z, res$x0, all.inside=TRUE)]
         }
         if (zlimKnown) {
-            res$zlim <- zlim 
+            res$zlim <- zlim
             oceDebug(debug, "set zlim=c(", paste(res$zlim, collapse=","), ") based on 'zlim' argument\n", sep="")
         } else {
             res$zlim <- range(c(res$x0, res$x1))
