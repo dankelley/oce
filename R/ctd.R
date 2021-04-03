@@ -725,9 +725,13 @@ setMethod(f="[[",
                   gsw::gsw_Sstar_from_SA(SA=SA, p=x[["pressure"]], longitude=lon, latitude=lat)
               } else if (i == "temperature") {
                   scale <- metadata$units[["temperature"]]$scale
-                  if (!is.null(scale) && "IPTS-68" == scale)
-                      T90fromT68(data$temperature)
-                  else data$temperature
+                  if (!is.null(scale) && "IPTS-48" == scale) {
+                      T90fromT48(x@data$temperature)
+                  } else if (!is.null(scale) && "IPTS-68" == scale) {
+                      T90fromT68(x@data$temperature)
+                  } else {
+                      x@data$temperature
+                  }
               } else if (i == "pressure") {
                   if ("pressure" %in% dataNames) {
                       pressure <- data$pressure

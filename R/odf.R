@@ -946,12 +946,14 @@ ODFListFromHeader <- function(header)
 #'
 #' @return An [oce-class] object.
 #'
-#' @section Caution:
-#' ODF files do not store information on the temperature or salinity scale, and [read.odf()]
-#' assumes these to be ITS-90 and PSS-78, respectively. These scales may be incorrect for old
-#' data files. Note that the temperature scale can be converted from old scales
-#' using [T90fromT68()] and [T90fromT48()], although the change will be in
-#' a fraction of a millidegree, which probably exceeds reasonable confidence in old data.
+#' @section Handling of temperature scales:
+#' `read.odf()` stores temperature data directly as read from the file, which
+#' might mean the IPTS68 scale.  These values should not be used to calculate
+#' other seawater quantities, because formulae are generally based in ITS90
+#' temperatures. To avoid problems, the accessor function converts to the modern
+#' scale, e.g. `x[["temperature"]]` yields temperature in the ITS90
+#' scale, whether temperatures in the original file were reported on that scale
+#' or the older IPTS68 scale.
 #'
 #' @seealso [ODF2oce()] will be an alternative to this, once (or perhaps if) a `ODF`
 #' package is released by the Canadian Department of Fisheries and Oceans.

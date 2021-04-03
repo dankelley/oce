@@ -112,13 +112,15 @@ that suffices are used to disambiguate sibling items of identical
 name in the ODF header).
 }
 
-\section{Caution}{
+\section{Handling of temperature scales}{
 
-ODF files do not store information on the temperature or salinity scale, and \code{\link[=read.odf]{read.odf()}}
-assumes these to be ITS-90 and PSS-78, respectively. These scales may be incorrect for old
-data files. Note that the temperature scale can be converted from old scales
-using \code{\link[=T90fromT68]{T90fromT68()}} and \code{\link[=T90fromT48]{T90fromT48()}}, although the change will be in
-a fraction of a millidegree, which probably exceeds reasonable confidence in old data.
+\code{read.odf()} stores temperature data directly as read from the file, which
+might mean the IPTS68 scale.  These values should not be used to calculate
+other seawater quantities, because formulae are generally based in ITS90
+temperatures. To avoid problems, the accessor function converts to the modern
+scale, e.g. \code{x[["temperature"]]} yields temperature in the ITS90
+scale, whether temperatures in the original file were reported on that scale
+or the older IPTS68 scale.
 }
 
 \examples{

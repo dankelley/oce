@@ -129,3 +129,28 @@ test_that("ODF header", {
           expect_true(is.list(d[["header"]][[1]]))
 })
 
+
+# temperature unit/scale (issue 1601)
+# https://github.com/dankelley/oce/issues/1801
+test_that("ODF temperature scale, IPTS68 and ITS90", {
+          file <- system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce")
+          # Read temperature from file (which is IPTS68) and convert to ITS90
+          Tref68 <- read.table(file, skip=675, header=FALSE)$V4
+          Tref90 <- T90fromT68(Tref68)
+          # read.odf()
+          ctd1 <- expect_warning(read.odf(file), "should be unitless")
+          expect_equal(ctd1@metadata$units$temperature, list(unit=expression(degree*C), scale="IPTS-68"))
+          expect_equal(ctd1@data$temperature, Tref68)
+          expect_equal(ctd1[["temperature"]], Tref90)
+          # read.ctd.odf()
+          ctd2 <- expect_warning(read.ctd.odf(file), "should be unitless")
+          expect_equal(ctd2@metadata$units$temperature, list(unit=expression(degree*C), scale="IPTS-68"))
+          expect_equal(ctd2@data$temperature, Tref68)
+          expect_equal(ctd2[["temperature"]], Tref90)
+          # read.oce()
+          ctd3 <- expect_warning(read.oce(file), "should be unitless")
+          expect_equal(ctd3@metadata$units$temperature, list(unit=expression(degree*C), scale="IPTS-68"))
+          expect_equal(ctd3@data$temperature, Tref68)
+          expect_equal(ctd3[["temperature"]], Tref90)
+})
+
