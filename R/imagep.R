@@ -439,7 +439,7 @@ drawPalette <- function(zlim, zlab="",
                 stop("pos must be 1, 2, 3 or 4") # cannot be reached
             }
         } else {
-            oceDebug(debug, "'breaks' was given\n")
+            oceDebug(debug, "'breaks' was given, starting with", vectorShow(breaks), "\n")
             palette <- seq(zlim[1], zlim[2], length.out=PLEN)
             oceDebug(debug, "drawing palette image, with", vectorShow(par('mai')))
             oceDebug(debug, "palette image width =",
@@ -540,7 +540,15 @@ drawPalette <- function(zlim, zlab="",
         ## FIXME: just guessing on best 'line', used below
         if (!missing(axisPalette))
             axis <- axisPalette
-        oceDebug(debug, "about to label palette zlab='", zlab, "' with cex=", cex, "\n")
+        oceDebug(debug, "about to draw palette axis at pos=", pos, " with zlab=\"", zlab, "\" with cex=", cex, "\n", sep="")
+        # If zlim was given, we use that to determine the palette labels
+        if (zlimGiven) {
+            oceDebug(debug, "setting palette axis based on zlim\n")
+            at <- pretty(zlim)
+            labels <- at
+        }
+        oceDebug(debug, "palette axis labels:", vectorShow(labels))
+        oceDebug(debug, "palette axis labels positions:", vectorShow(at))
         if (pos == 1) {
             axis(side=1, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex, las=las)
             if (haveZlab) mtext(zlab, side=1, line=getOption("oceMgp")[1], cex=cex)
