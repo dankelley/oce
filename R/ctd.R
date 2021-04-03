@@ -1187,8 +1187,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    ##1108 src="",
                    debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1, style="bold")
     if (!missing(salinity) && inherits(salinity, "rsk")) {
-        oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
+        oceDebug(debug, "first argument is an 'rsk' object\n")
         res <- rsk2ctd(salinity,
                        pressureAtmospheric=pressureAtmospheric,
                        longitude=longitude,
@@ -1198,32 +1199,41 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                        cruise=cruise,
                        deploymentType=deploymentType,
                        debug=debug-1)
-        oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
+        oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1, style="bold")
         return(res)
     }
-    oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
     res <- new('ctd')
     waterDepth <- NA
     unitsGiven <- !is.null(units)
+    salinityGiven <- !missing(salinity)
     if (!is.null(startTime) && is.character(startTime))
         startTime <- as.POSIXct(startTime, tz="UTC")
     ##1108 if (!is.null(recovery) && is.character(recovery))
     ##1108     recovery <- as.POSIXct(recovery, tz="UTC")
-    if (missing(salinity)) {
+
+    if (salinityGiven) {
+        firstArg <- salinity
+    } else {
         if (!missing(conductivity) && !missing(temperature) && !missing(pressure)) {
             salinity <- swSCTp(conductivity=conductivity, temperature=temperature, pressure=pressure)
         } else {
             stop("if salinity is not provided, conductivity, temperature and pressure must all be provided")
         }
+        firstArg <- NULL
     }
     filename <- ""
+    ounits <- NULL # replace with metadata$units if first arg is an oce object
     if (inherits(salinity, "oce")) {
-        if (inherits(salinity, "ctd"))
+        if (inherits(salinity, "ctd")) {
+            oceDebug(debug, "first argument is a ctd object already, so returning as-is\n")
+            oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1, style="bold")
             return(salinity)
-        oceDebug(debug, "'salinity' is an oce object, so ignoring other arguments\n")
+        }
+        oceDebug(debug, "first argument is an oce object, so ignoring other arguments\n")
         o <- salinity
         d <- o@data
         m <- o@metadata
+        ounits <- o@metadata$units
         dnames <- names(d)
         mnames <- names(m)
         ship <- m$ship
@@ -1265,7 +1275,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             d$pressure <- d$pressure - pressureAtmospheric
         }
         salinity <- d$salinity
-        res@metadata$units <- units
+        res@metadata$units <- o@metadata$units
         if (!is.null(flags))
             res@metadata$flags <- flags
         if (!is.null(o@metadata$flags))
@@ -1580,10 +1590,19 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         }
         res@data <- data
     }
-    if (!unitsGiven) {
+    if (!is.null(ounits)) {
+        oceDebug(debug, "copying units from first argument\n")
+        res@metadata$units <- ounits
+    } else if (!unitsGiven) {
+        oceDebug(debug, "assuming standard modern units, since none provide or available in first argument\n")
         ## guess on units
         names <- names(res@data)
-        if ("salinity" %in% names) res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+        if ("salinity" %in% names)
+            res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+        if ("temperature" %in% names)
+            res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+        if ("pressure" %in% names)
+            res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
     }
     ## the 'units' argument takes precedence over guesses
     dataNames <- names(res@data)
@@ -1592,12 +1611,14 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         res@metadata$flags <- flags
 
     ## Default some units (FIXME: this may be a bad idea)
-    if ("salinity" %in% dataNames && !("salinity" %in% unitsNames))
-        res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
-    if ("temperature" %in% dataNames && !("temperature" %in% unitsNames))
-        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-    if ("pressure" %in% dataNames && !("pressure" %in% unitsNames))
-        res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    if (is.null(res@metadata$units)) {
+        if ("salinity" %in% dataNames && !("salinity" %in% unitsNames))
+            res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+        if ("temperature" %in% dataNames && !("temperature" %in% unitsNames))
+            res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+        if ("pressure" %in% dataNames && !("pressure" %in% unitsNames))
+            res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    }
     ## FIXME: setting waterDepth can have tricky results ... we've had issues with this
     if (is.na(res@metadata$waterDepth) && !is.na(waterDepth))
         res@metadata$waterDepth <- waterDepth
@@ -1611,7 +1632,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         res@metadata$latitude <- NULL
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
+    oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1, style="bold")
     res
 }
 

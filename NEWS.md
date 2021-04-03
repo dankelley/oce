@@ -2,7 +2,8 @@
 
 ## 1.5.0
 
-* TBA
+* Fix `[[` so make it return temperature in ITS90 for all classes, not just `ctd` class.
+* Fix `as.ctd()` to retain the temperature scale of the first argument, if it has a scale.
 
 ## 1.4.0
 
