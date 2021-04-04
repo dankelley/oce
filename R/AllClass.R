@@ -424,6 +424,15 @@ setMethod(f="[[",
                   return(swSigma0(x))
               } else if (i == "spice") {
                   return(swSpice(x))
+              } else if (i == "temperature") {
+                  scale <- x@metadata$units[["temperature"]]$scale
+                  if (!is.null(scale) && "IPTS-48" == scale) {
+                      T90fromT48(x@data$temperature)
+                  } else if (!is.null(scale) && "IPTS-68" == scale) {
+                      T90fromT68(x@data$temperature)
+                  } else {
+                      x@data$temperature
+                  }
               } else {
                   ##DEBUG oceDebug(debug, "[[ at base level. i='", i, "'\n", sep="", unindent=1, style="bold")
                   if (missing(j) || j == "") {
