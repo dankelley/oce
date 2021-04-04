@@ -66,14 +66,14 @@ specification in GMT format.  If \code{name} is given, then it is
 passed to \code{\link[=colormapGMT]{colormapGMT()}}, which creates the colormap.
 Note that the colormap thus created has a fixed
 relationship between value and color, and \code{zlim},
-only other argument that is examined is \code{z}, which may be used
-so that \code{zcol} will be defined in the return value.}
+only other argument that is examined is \code{z} (which may be used
+so that \code{zcol} will be defined in the return value), and warnings
+are issued if some irrelevant arguments are provided.}
 
 \item{x0, x1, col0, col1}{Vectors that specify a color map.  They must all be
 the same length, with \code{x0} and \code{x1} being numerical values, and
 \code{col0} and \code{col1} being colors.  The colors may be strings (e.g.
-\code{"red"}) or colors as defined by \code{\link[=rgb]{rgb()}} or
-\code{\link[=hsv]{hsv()}}.}
+\code{"red"}) or colors as defined by \code{\link[=rgb]{rgb()}} or \code{\link[=hsv]{hsv()}}.}
 
 \item{blend}{a number indicating how to blend colors within each band.
 This is ignored except when \code{x0} through \code{col1} are supplied.  A

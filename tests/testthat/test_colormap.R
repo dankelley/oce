@@ -27,14 +27,34 @@ test_that("colormap with breaks alone (illegal to also give zlim)", {
           expect_equal(cm$zlim, range(c(0, 3)))
 })
 
-test_that("colormap with name alone or with zlim", {
+test_that("colormap with name", {
           cm <- colormap(name="gmt_globe")
           expect_equal(length(cm$breaks), 1 + length(cm$col))
-          expect_equal(cm$zlim, range(c(-10000, 10000)))
-          cm <- colormap(name="gmt_globe", zlim=c(-1, 1))
-          expect_equal(length(cm$breaks), 1 + length(cm$col))
-          expect_equal(cm$zlim, c(-1, 1))
+          expect_equal(cm$zlim, c(-10000, 10000))
 })
+
+test_that("colormap with name plus zlim (catch warning re latter)", {
+          cm <- expect_warning(colormap(name="gmt_globe", zlim=c(-1, 1)), "zlim ignored, since name was given")
+          expect_equal(length(cm$breaks), 1 + length(cm$col))
+          expect_equal(cm$zlim, c(-10000, 10000))
+})
+
+test_that("colormap with name plus breaks (catch warning re latter)", {
+          cm <- expect_warning(colormap(name="gmt_globe", breaks=seq(-1000,0,100), "breaks ignored, since name was given"))
+          expect_equal(cm$breaks,
+                       c(-10000, -9500, -9000, -8500, -8000, -7500, -7000,
+                         -6500, -6000, -5500, -5000, -4500, -4000, -3500, -3000,
+                         -2500, -2000, -1500, -1000, -500, -200, 0, 100, 200,
+                         500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500,
+                         5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000,
+                         9500))
+})
+
+test_that("colormap with name plus missingColor (catch warning re latter)", {
+          cm <- expect_warning(colormap(name="gmt_globe", missingColor="pink", "missingColor ignored, since name was given"))
+          expect_equal(cm$missingColor, "#808080")
+})
+
 
 ## This test was removed in 2021-04-02 since it made no sense with alterations
 ## made to colormap() then.  It never made any sense, in fact, since gmt_globe
@@ -76,9 +96,10 @@ test_that("colormap with z plus name, alone or with zlim", {
           expect_equal(length(cm$breaks), 1 + length(cm$col))
           expect_equal(cm$zlim, range(c(-10000, 10000)))
           expect_true(!any(is.na(cm$zcol)))
-          cm <- colormap(z=z, name="gmt_globe", zlim=c(-1,1))
+          z <- seq(-5000, 0, 100)
+          cm <- expect_warning(colormap(z=z, name="gmt_globe", zlim=c(-1, 1)), "zlim ignored, since name was given")
           expect_equal(length(cm$breaks), 1 + length(cm$col))
-          expect_equal(cm$zlim, c(-1, 1))
+          expect_equal(cm$zlim, c(-10000, 10000))
           expect_true(!any(is.na(cm$zcol)))
 })
 
