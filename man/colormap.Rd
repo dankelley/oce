@@ -127,34 +127,29 @@ values to colors.  The return value can specify colors for points on a
 graph, or \code{breaks} and `col` vectors that are suitable for use by
 \code{\link[=drawPalette]{drawPalette()}}, \code{\link[=imagep]{imagep()}} or \code{\link[=image]{image()}}.
 
-There are three ways of specifying color schemes, and \code{colormap} works
-by checking for each condition in turn.
+There are several ways of specifying color schemes, of which
+the following are common.
 \itemize{
-\item \strong{Case A.} Supply \code{z} but nothing else.  In this case,
-\code{breaks} will be set to \code{[}pretty\verb{]}(z,10)` and things are
-otherwise as in case B.
-\item \strong{Case B.} Supply \code{breaks}.  In this case, \code{breaks} and
-\code{col} are used together to specify a color scheme.  If \code{col} is a
-function, then it is expected to take a single numerical argument that
-specifies the number of colors, and this number will be set to
-\code{length(breaks)-1}.  Otherwise, \code{col} may be a vector of colors,
-and its length must be one less than the number of breaks.  (NB. if
-\code{breaks} is given, then all other arguments except \code{col} and
-\code{missingColor} are ignored.) \if{html}{The figure below explains the
+\item \strong{Case A.} Supply some combination of arguments that
+is sufficient to define a mapping of value to colour, without
+providing \code{x0}, \code{col0}, \code{x1} or \code{col1} (see case B for these),
+or providing \code{name} (see Case C). There are several ways to
+do this.  A common approach is to supply only \code{z} but no
+other argument, in which case \code{zlim}, and \code{breaks} will be determined
+from \code{z}, and the default \code{col} will be used.  Another approach is
+to specify \code{breaks} and \code{col} together, in the same way as they
+might be specified for the base R function \code{\link[=image]{image()}}.  It is
+also possible to supply only \code{zlim}, in which case \code{breaks} is
+inferred from that value.
+\if{html}{The figure below explains the
 (`breaks`, `col`) method of specifying a color mapping.  Note
 that there must be one more break than color.  This is the method used by
 e.g. [image()].}
 \if{html}{\figure{colormap_fig_1.png}}
-\item \strong{Case C.} Do not supply \code{breaks}, but supply \code{name}
-instead.  This \code{name} may be the name of a pre-defined color palette
-(\code{"gmt_relief"}, \code{"gmt_ocean"}, \code{"gmt_globe"} or
-\code{"gmt_gebco"}), or it may be the name of a file (including a URL)
-containing a color map in the GMT format (see \dQuote{References}).  (NB.
-if \code{name} is given, then all other arguments except \code{z} and
-\code{missingColor} are ignored.)
-\item \strong{Case D.} Do not supply either \code{breaks} or \code{name}, but
-instead supply each of \code{x0}, \code{x1}, \code{col0}, and \code{col1}.
-These values are specify a value-color mapping that is similar to that used
+\item \strong{Case B.} Supply \code{x0}, \code{col0}, \code{x1}, and \code{col1}, but \emph{not}
+\code{zlim}, \code{breaks}, \code{col} or \code{name}.
+The \code{x0}, \code{col0}, \code{x1} and \code{col1} values specify a
+value-color mapping that is similar to that used
 for GMT color maps.  The method works by using \code{\link[=seq]{seq()}} to
 interpolate between the elements of the \code{x0} vector.  The same is done
 for \code{x1}.  Similarly, \code{\link[=colorRampPalette]{colorRampPalette()}} is used to
@@ -165,6 +160,16 @@ Note that the each of the items has the same length. The case of
 `blend=0`, which has color `col0[i]` between `x0[i]` and
 `x1[i]`, is illustrated below.}
 \if{html}{\figure{colormap_fig_2.png}}
+\item \strong{Case C.} Supply \code{name} and possibly also \code{z}, but \emph{not}
+\code{zlim}, \code{breaks}, \code{col}, \code{x0}, \code{col0}, \code{x1} or \code{col1}.
+The \code{name} may be the name of a pre-defined color palette
+(\code{"gmt_relief"}, \code{"gmt_ocean"}, \code{"gmt_globe"} or
+\code{"gmt_gebco"}), or it may be the name of a file (or URL pointing to a file)
+that contains a color map in the GMT format (see \dQuote{References}). If
+\code{z} is supplied along with \code{name}, then \code{zcol} will be set up in the
+return value, e.g. for use in colourizing points.  Another method
+for finding colours for data points is to use the \code{colfunction()}
+function in the return value.
 }
 }
 \examples{

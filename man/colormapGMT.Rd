@@ -16,7 +16,7 @@ in GMT format or, if no such file is found, a URL holding such a file.}
 \item{debug}{integer that, if positive, indicates to print some debugging output}
 }
 \value{
-a list, in the same format as the return value for \code{\link[=colormap]{colormap()}}.
+\code{colormap} returns a list, in the same format as the return value for \code{\link[=colormap]{colormap()}}.
 }
 \description{
 \code{colormapGMT} creates colormaps in the Generic Mapping Tools (GMT)

@@ -199,15 +199,13 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
         return("")
     name <- paste(substitute(expr=x, env=environment()))
     res <- ""
+    nx <- length(x)
     if (missing(x)) {
         res <- "(missing)"
     } else {
         if (is.null(x)) {
             res <- NULL
         } else {
-            nx <- length(x)
-            ##if (nx > 1)
-            ##    name <- paste(name, "[", nx, "]", sep="")
             if (is.function(x)) {
                 res <- "(provided)"
             } else if (nx==1) {
