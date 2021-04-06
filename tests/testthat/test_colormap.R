@@ -27,15 +27,15 @@ test_that("colormap Case B with missing 'x1' arg", {
 })
 
 test_that("colormap Case B with extraneous 'name' arg", {
-          expect_warning(colormap(x0=1:2, col0=1:2, x1=1:2, col1=1:2, name="dan"), "'name' is ignored for case B")
+          expect_error(colormap(x0=1:2, col0=1:2, x1=1:2, col1=1:2, name="dan"), "cannot supply 'x0'")
 })
 
 test_that("colormap Case C with invalid name", {
           expect_warning(expect_error(colormap(name="no_such_name"), "unknown colormap name"), "No such file")
 })
 
-test_that("colormap Case C with extraneous 'x0'", {
-          expect_error(colormap(name="gmt_gebco", x0=1:2), "must all be supplied, if any is")
+test_that("colormap Case B with only 'x0' but not siblings", {
+          expect_error(colormap(x0=1:2), "must all be supplied, if any is")
 })
 
 test_that("colormap with z alone or with zlim", {
@@ -71,14 +71,17 @@ test_that("colormap with name", {
           expect_equal(cm$zlim, c(-10000, 10000))
 })
 
-test_that("colormap with name plus zlim (catch warning re latter)", {
-          cm <- expect_warning(colormap(name="gmt_globe", zlim=c(-1, 1)), "ignoring 'zlim'")
-          expect_equal(length(cm$breaks), 1 + length(cm$col))
-          expect_equal(cm$zlim, c(-10000, 10000))
+test_that("colormap with name plus disallowed other parameters", {
+          expect_error(colormap(name="gmt_globe", x0=3), "cannot supply 'x0'")
+          expect_error(colormap(name="gmt_globe", col0=3), "cannot supply 'col0'")
+          expect_error(colormap(name="gmt_globe", x1=3), "cannot supply 'x1'")
+          expect_error(colormap(name="gmt_globe", col1=3), "cannot supply 'col1'")
+          expect_error(colormap(name="gmt_globe", breaks=seq(-1000,0,100)), "cannot supply 'breaks'")
+          expect_error(colormap(name="gmt_globe", zlim=c(0,1)), "cannot supply 'zlim'")
 })
 
-test_that("colormap with name plus breaks (catch warning re latter)", {
-          cm <- expect_warning(colormap(name="gmt_globe", breaks=seq(-1000,0,100), "breaks ignored, since name was given"))
+test_that("colormap with name", {
+          cm <- colormap(name="gmt_globe")
           expect_equal(cm$breaks,
                        c(-10000, -9500, -9000, -8500, -8000, -7500, -7000,
                          -6500, -6000, -5500, -5000, -4500, -4000, -3500, -3000,
@@ -129,16 +132,12 @@ test_that("colormap with z plus breaks", {
           expect_equal(cm$zlim, range(c(0, 3)))
 })
 
-test_that("colormap with z plus name, alone or with zlim", {
+test_that("colormap with z plus name", {
           cm <- colormap(z=z, name="gmt_globe")
           expect_equal(length(cm$breaks), 1 + length(cm$col))
           expect_equal(cm$zlim, range(c(-10000, 10000)))
           expect_true(!any(is.na(cm$zcol)))
           z <- seq(-5000, 0, 100)
-          cm <- expect_warning(colormap(z=z, name="gmt_globe", zlim=c(-1, 1)), "ignoring 'zlim'")
-          expect_equal(length(cm$breaks), 1 + length(cm$col))
-          expect_equal(cm$zlim, c(-10000, 10000))
-          expect_true(!any(is.na(cm$zcol)))
 })
 
 test_that("colormap with z plus (x0,col0,x1,col1) alone [z wins] or with zlim [zlim wins]", {

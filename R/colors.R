@@ -514,23 +514,18 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 
 #' Calculate color map
 #'
-#' Map values to colors, for use in palettes and plots. There are many ways to
-#' use this function, and some study of the arguments should prove fruitful in
-#' cases that extend far beyond the examples.
+#' Create a mapping between numeric values and colors, for use in palettes and plots.
+#' The return value can be used in various ways, including colorizing points
+#' on scattergraphs, controlling images created by [image()] or [imagep()],
+#' drawing palettes with [drawPalette()], etc.
 #'
-#' This is a multi-purpose function that generally links (``maps'') numerical
-#' values to colors.  The return value can specify colors for points on a
-#' graph, or `breaks` and `col` vectors that are suitable for use by
-#' [drawPalette()], [imagep()] or [image()].
-#'
-#' There are several ways of specifying color schemes, of which
-#' the following are common.
+#' `colormap` can be used in a variety of ways, including the following.
 #'
 #' * **Case A.** Supply some combination of arguments that
-#' is sufficient to define a mapping of value to colour, without
+#' is sufficient to define a mapping of value to color, without
 #' providing `x0`, `col0`, `x1` or `col1` (see case B for these),
 #' or providing `name` (see Case C). There are several ways to
-#' do this.  A common approach is to supply only `z` but no
+#' do this.  One approach is to supply `z` but no
 #' other argument, in which case `zlim`, and `breaks` will be determined
 #' from `z`, and the default `col` will be used.  Another approach is
 #' to specify `breaks` and `col` together, in the same way as they
@@ -565,8 +560,8 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #' `"gmt_gebco"`), or it may be the name of a file (or URL pointing to a file)
 #' that contains a color map in the GMT format (see \dQuote{References}). If
 #' `z` is supplied along with `name`, then `zcol` will be set up in the
-#' return value, e.g. for use in colourizing points.  Another method
-#' for finding colours for data points is to use the `colfunction()`
+#' return value, e.g. for use in colorizing points.  Another method
+#' for finding colors for data points is to use the `colfunction()`
 #' function in the return value.
 #'
 #' @param z an optional vector or other set of numerical values to be examined.
@@ -633,9 +628,10 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #' is a plan to use this to indicate subintervals, so a smooth palette can be
 #' created from a few colors.
 #'
-#' @param missingColor color to use for missing values.  If not provided, this
-#' will be `"gray"`, unless `name` is given, in which case it comes
-#' from that color table.
+#' @param missingColor color to use for missing values. This cannot be provided
+#' if `name` is also provided (case C), because named schemes have pre-defined
+#' colors.  For other cases, `missingColor` defaults to `"gray"`, if it
+#' is not provided as an argument.
 #'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
@@ -661,10 +657,7 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #' 3 in \dQuote{Examples}.
 #'
 #' * `missingColor`, a color that could be used to specify missing
-#' values, e.g. as the same-named argument to [imagep()].  If this is
-#' supplied as an argument, its value is repeated in the return value.
-#' Otherwise, its value is either `"gray"` or, in the case of `name`
-#' being given, the value in the GMT color map specification.
+#' values, e.g. as the same-named argument to [imagep()].
 #'
 #' * `colfunction`, a univariate function that returns a vector
 #' of colors, given a vector of `z` values; see Example 6.
@@ -757,39 +750,7 @@ colormap <- function(z=NULL,
     col0Known <- !missing(col0)
     col1Known <- !missing(col1)
     missingColorKnown <- !missing(missingColor)
-    # Find cases (as a way to clarify code, and link it with the docs).
-    if (x0Known || col0Known || x1Known || col1Known) {
-        case <- "B"
-    } else if (nameKnown) {
-        case <- "C"
-    } else if (zKnown || zlimKnown || breaksKnown) {
-        case <- "A"
-    } else {
-        case <- "A"
-        warning("defaulting to case A, which may be incorrect\n")
-    }
-
-    # Case C: 'name' was given: only 'name' and possibly 'z' are examined.
-    if (case == "C") {
-        oceDebug(debug, "Case C: name given\n", style="bold")
-        if (zlimKnown) warning("ignoring 'zlim', since 'name' was given (i.e. Case C)\n")
-        if (breaksKnown) warning("ignoring 'breaks', since 'name' was given (i.e. Case C)\n")
-        if (colKnown) warning("ignoring 'col', since 'name' was given (i.e. Case C)\n")
-        if (x0Known) warning("ignoring 'x0', since 'name' was given (i.e. Case C)\n")
-        if (col0Known) warning("ignoring 'col0', since 'name' was given (i.e. Case C)\n")
-        if (x1Known) warning("ignoring 'x1', since 'name' was given (i.e. Case C)\n")
-        if (col1Known) warning("ignoring 'col1', since 'name' was given (i.e. Case C)\n")
-        if (missingColorKnown) warning("ignoring 'missingColor', since 'name' was given (i.e. Case C)\n")
-        res <- colormap_colormap(name=name, debug=debug-1)
-        res$zclip <- zclip
-        res$zlim <- range(c(res$x0, res$x1)) # ignore argument 'zlim'
-        res$colfunction <- function(z) res$col0[findInterval(z, res$x0, all.inside=TRUE)]
-        if (zKnown)
-            res$zcol <- res$colfunction(z)
-        oceDebug(debug, "} # colormap()\n", style="bold", sep="", unindent=1)
-        return(res)
-    }
-    # Sanity checks on blend and zlim
+    # Sanity checks on args
     if (blend < 0 || blend > 1)
         stop("blend must be between 0 and 1")
     if (zlimKnown) {
@@ -800,8 +761,38 @@ colormap <- function(z=NULL,
         if (zlim[2] <= zlim[1])
             stop("'zlim' values must be ordered and distinct")
     }
-    if (missingColorKnown)
-        oceDebug(debug, 'missingColor:', missingColor, '\n')
+    if (zlimKnown && breaksKnown && length(breaks) > 1)
+        stop("cannot specify both zlim and breaks, unless length(breaks)==1")
+
+    # Find cases (as a way to clarify code, and link it with the docs).
+    if (nameKnown) {
+        case <- "C"
+    } else if (x0Known || col0Known || x1Known || col1Known) {
+        case <- "B"
+    } else if (zKnown || zlimKnown || breaksKnown) {
+        case <- "A"
+    } else {
+        case <- "A"
+        warning("defaulting to case A, which may be incorrect\n")
+    }
+
+    # Case C: 'name' was given: only 'name' and possibly 'z' are examined.
+    if (case == "C") {
+        oceDebug(debug, "Case C: name given\n", style="bold")
+        for (item in c("zlim", "breaks", "col", "x0", "col0", "x1", "col1"))
+            if (get(paste0(item, "Known")))
+                stop("cannot supply '", item, "' since 'name' was given (i.e. in case C)\n")
+        if (missingColorKnown)
+            warning("ignoring 'missingColor', since 'name' was given (i.e. Case C)\n")
+        res <- colormap_colormap(name=name, debug=debug-1)
+        res$zclip <- zclip
+        res$zlim <- range(c(res$x0, res$x1)) # ignore argument 'zlim'
+        res$colfunction <- function(z) res$col0[findInterval(z, res$x0, all.inside=TRUE)]
+        if (zKnown)
+            res$zcol <- res$colfunction(z)
+        oceDebug(debug, "} # colormap() case C\n", style="bold", sep="", unindent=1)
+        return(res)
+    } # end of case C
     if (case == "B") {
         oceDebug(debug, "Case B\n", style="bold")
         if (!(x0Known && col0Known && x1Known && col1Known))
@@ -860,12 +851,10 @@ colormap <- function(z=NULL,
                      col=col,
                      zcol=zcol)
         class(res) <- c("list", "colormap")
-        oceDebug(debug, "} # colormap()\n", style="bold", sep="", unindent=1)
+        oceDebug(debug, "} # colormap() case B\n", style="bold", sep="", unindent=1)
         return(res)
-    }
+    } # end of case B
     oceDebug(debug, "case 3: name not given, x0 (and related) not given\n")
-    if (zlimKnown && breaksKnown && length(breaks) > 1)
-        stop("cannot specify both zlim and breaks, unless length(breaks)==1")
     if (!zlimKnown) {
         if (breaksKnown) {
             oceDebug(debug, "zlimKnown=", zlimKnown, ", so inferring zlim from breaks\n", sep="")
@@ -999,7 +988,7 @@ colormap <- function(z=NULL,
     res$zclip <- zclip
     res$colfunction <- function(z) res$col0[findInterval(z, res$x0)]
     class(res) <- c("list", "colormap")
-    oceDebug(debug, "} # colormap()\n", style="bold", sep="", unindent=1)
+    oceDebug(debug, "} # colormap() case A\n", style="bold", sep="", unindent=1)
     res
 }
 

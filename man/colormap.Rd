@@ -84,9 +84,10 @@ the stated fraction.  Values exceeding 1 are an error at present, but there
 is a plan to use this to indicate subintervals, so a smooth palette can be
 created from a few colors.}
 
-\item{missingColor}{color to use for missing values.  If not provided, this
-will be \code{"gray"}, unless \code{name} is given, in which case it comes
-from that color table.}
+\item{missingColor}{color to use for missing values. This cannot be provided
+if \code{name} is also provided (case C), because named schemes have pre-defined
+colors.  For other cases, \code{missingColor} defaults to \code{"gray"}, if it
+is not provided as an argument.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
@@ -108,33 +109,25 @@ colors.  The meaning is the same as on input.  The purpose of returning
 these four vectors is to permit users to alter color mapping, as in example
 3 in \dQuote{Examples}.
 \item \code{missingColor}, a color that could be used to specify missing
-values, e.g. as the same-named argument to \code{\link[=imagep]{imagep()}}.  If this is
-supplied as an argument, its value is repeated in the return value.
-Otherwise, its value is either \code{"gray"} or, in the case of \code{name}
-being given, the value in the GMT color map specification.
+values, e.g. as the same-named argument to \code{\link[=imagep]{imagep()}}.
 \item \code{colfunction}, a univariate function that returns a vector
 of colors, given a vector of \code{z} values; see Example 6.
 }
 }
 \description{
-Map values to colors, for use in palettes and plots. There are many ways to
-use this function, and some study of the arguments should prove fruitful in
-cases that extend far beyond the examples.
+Create a mapping between numeric values and colors, for use in palettes and plots.
+The return value can be used in various ways, including colorizing points
+on scattergraphs, controlling images created by \code{\link[=image]{image()}} or \code{\link[=imagep]{imagep()}},
+drawing palettes with \code{\link[=drawPalette]{drawPalette()}}, etc.
 }
 \details{
-This is a multi-purpose function that generally links (``maps'') numerical
-values to colors.  The return value can specify colors for points on a
-graph, or \code{breaks} and `col` vectors that are suitable for use by
-\code{\link[=drawPalette]{drawPalette()}}, \code{\link[=imagep]{imagep()}} or \code{\link[=image]{image()}}.
-
-There are several ways of specifying color schemes, of which
-the following are common.
+\code{colormap} can be used in a variety of ways, including the following.
 \itemize{
 \item \strong{Case A.} Supply some combination of arguments that
-is sufficient to define a mapping of value to colour, without
+is sufficient to define a mapping of value to color, without
 providing \code{x0}, \code{col0}, \code{x1} or \code{col1} (see case B for these),
 or providing \code{name} (see Case C). There are several ways to
-do this.  A common approach is to supply only \code{z} but no
+do this.  One approach is to supply \code{z} but no
 other argument, in which case \code{zlim}, and \code{breaks} will be determined
 from \code{z}, and the default \code{col} will be used.  Another approach is
 to specify \code{breaks} and \code{col} together, in the same way as they
@@ -167,8 +160,8 @@ The \code{name} may be the name of a pre-defined color palette
 \code{"gmt_gebco"}), or it may be the name of a file (or URL pointing to a file)
 that contains a color map in the GMT format (see \dQuote{References}). If
 \code{z} is supplied along with \code{name}, then \code{zcol} will be set up in the
-return value, e.g. for use in colourizing points.  Another method
-for finding colours for data points is to use the \code{colfunction()}
+return value, e.g. for use in colorizing points.  Another method
+for finding colors for data points is to use the \code{colfunction()}
 function in the return value.
 }
 }
