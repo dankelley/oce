@@ -28,15 +28,16 @@ a color for each point.  If \code{z} is not given, \code{zcol} will contain
 just one item, the color \code{"black"}.}
 
 \item{zlim}{optional vector containing two numbers that specify the \code{z}
-limits for the color scale.  If provided, it overrides defaults as describe
-in the following.  If \code{name} is given, then the \code{\link[=range]{range()}} of
-numerical values contained therein will be used for \code{zlim}.  Otherwise,
-if \code{z} is given, then its \code{\link[=rangeExtended]{rangeExtended()}} sets \code{zlim}.
-Otherwise, if \code{x0} and \code{x1} are given, then their
-\code{\link[=range]{range()}} sets \code{zlim}.  Otherwise, there is no way to infer
-\code{zlim} and indeed there is no way to construct a colormap, so an error
-is reported.  It is an error to specify both \code{zlim} and \code{breaks},
-if the length of the latter does not equal 1.}
+limits for the color scale. This can only be provided in cases A
+and B, as defined in \dQuote{Details}.  For case A, if \code{zlim} is not
+provided, then it is inferred by using \code{\link[=rangeExtended]{rangeExtended()}}
+on \code{breaks}, if that is provided, or from \code{z} otherwise.  Also,
+in case A, it is an error to provide both \code{zlim} and \code{breaks},
+unless the latter is of length 1, meaning the number of
+subdivisions to use within the range set by \code{zlim}.
+In case B, \code{zlim} is inferred from using \code{\link[=rangeExtended]{rangeExtended()}} on \code{c(x0,x1)}.
+In case C, providing \code{zlim} yields an error message, because it makes no
+sense in the context of a named, predefined color scheme.}
 
 \item{zclip}{logical, with \code{TRUE} indicating that z values outside the
 range of \code{zlim} or \code{breaks} should be painted with

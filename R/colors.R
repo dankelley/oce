@@ -571,15 +571,16 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #' just one item, the color `"black"`.
 #'
 #' @param zlim optional vector containing two numbers that specify the `z`
-#' limits for the color scale.  If provided, it overrides defaults as describe
-#' in the following.  If `name` is given, then the [range()] of
-#' numerical values contained therein will be used for `zlim`.  Otherwise,
-#' if `z` is given, then its [rangeExtended()] sets `zlim`.
-#' Otherwise, if `x0` and `x1` are given, then their
-#' [range()] sets `zlim`.  Otherwise, there is no way to infer
-#' `zlim` and indeed there is no way to construct a colormap, so an error
-#' is reported.  It is an error to specify both `zlim` and `breaks`,
-#' if the length of the latter does not equal 1.
+#' limits for the color scale. This can only be provided in cases A
+#' and B, as defined in \dQuote{Details}.  For case A, if `zlim` is not
+#' provided, then it is inferred by using [rangeExtended()]
+#' on `breaks`, if that is provided, or from `z` otherwise.  Also,
+#' in case A, it is an error to provide both `zlim` and `breaks`,
+#' unless the latter is of length 1, meaning the number of
+#' subdivisions to use within the range set by `zlim`.
+#' In case B, `zlim` is inferred from using [rangeExtended()] on `c(x0,x1)`.
+#' In case C, providing `zlim` yields an error message, because it makes no
+#' sense in the context of a named, predefined color scheme.
 #'
 #' @param zclip logical, with `TRUE` indicating that z values outside the
 #' range of `zlim` or `breaks` should be painted with
@@ -779,11 +780,9 @@ colormap <- function(z=NULL,
     # Case C: 'name' was given: only 'name' and possibly 'z' are examined.
     if (case == "C") {
         oceDebug(debug, "Case C: name given\n", style="bold")
-        for (item in c("zlim", "breaks", "col", "x0", "col0", "x1", "col1"))
-            if (get(paste0(item, "Known")))
-                stop("cannot supply '", item, "' since 'name' was given (i.e. in case C)\n")
-        if (missingColorKnown)
-            warning("ignoring 'missingColor', since 'name' was given (i.e. Case C)\n")
+        for (disallowed in c("zlim", "breaks", "col", "x0", "col0", "x1", "col1", "missingColor"))
+            if (get(paste0(disallowed, "Known")))
+                stop("cannot supply '", disallowed, "' since 'name' was supplied (i.e. in Case C)\n")
         res <- colormap_colormap(name=name, debug=debug-1)
         res$zclip <- zclip
         res$zlim <- range(c(res$x0, res$x1)) # ignore argument 'zlim'
@@ -793,19 +792,23 @@ colormap <- function(z=NULL,
         oceDebug(debug, "} # colormap() case C\n", style="bold", sep="", unindent=1)
         return(res)
     } # end of case C
-    if (case == "B") {
+    if (case == "B") {                 # x0 col0 x1 col1
         oceDebug(debug, "Case B\n", style="bold")
         if (!(x0Known && col0Known && x1Known && col1Known))
             stop("'x0', 'col0', 'x1', 'col1' must all be supplied, if any is supplied")
-        for (unwanted in c("name", "breaks", "col"))
-            if (get(paste0(unwanted, "Known")))
-                warning("'", unwanted, "' is ignored for case ", case, "\n", sep="")
+        for (disallowed in c("name", "breaks", "col"))
+            if (get(paste0(disallowed, "Known")))
+                stop("cannot supply '", disallowed, "' since `x0`, `col0`, `x1` and `col1` were supplied (i.e. in Case B)\n")
         if (length(x0) != length(x1))
             stop("lengths of x0 and x1 must agree")
         if (length(col0) != length(col1))
             stop("lengths of col0 and col1 must agree")
         if (length(x0) != length(col0))
             stop("lengths of x0 and col0 must agree")
+        if (!identical(x0, sort(x0)))
+            stop("'x0' must be ordered from small to large")
+        if (!identical(x1, sort(x1)))
+            stop("'x1' must be ordered from small to large")
         breaks <- c(x0, tail(x1, 1))
         ## blend colors
         col <- col2rgb(col0) # will overwrite
@@ -834,19 +837,10 @@ colormap <- function(z=NULL,
         } else {
             zcol <- "black"
         }
-        if (!zlimKnown) {
-            #? bandwidth <- x1[1] - x0[1]
-            #? if (bandwidth > 0) {
-            #?     zlim <- c(min(x0) - bandwidth, max(x1) + bandwidth)
-            #? } else {
-            #?     zlim <- range(c(x0, x1))
-            #? }
-            zlim <- range(c(x0, x1))
-        }
         res <- list(x0=x0, x1=x1, col0=col0, col1=col1,
                      missingColor=missingColor,
                      zclip=zclip,
-                     zlim=zlim,
+                     zlim=if (zlimKnown) zlim else rangeExtended(c(x0, x1)),
                      breaks=breaks,
                      col=col,
                      zcol=zcol)
