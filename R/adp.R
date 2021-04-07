@@ -1695,24 +1695,36 @@ setMethod(f="plot",
                               ...)
           {
               debug <- max(0, min(debug, 4))
-              oceDebug(debug, "plot,adp-method(x, ",
-                       argShow(mar),
-                       "\n", sep="", unindent=1, style="bold")
-              oceDebug(debug, "                ",
-                       argShow(mgp),
-                       "\n", sep="", unindent=1, style="bold")
-              oceDebug(debug, "                ",
-                       argShow(which),
-                       "\n", sep="", unindent=1, style="bold")
-              oceDebug(debug, "                ",
-                       argShow(cex),
-                       argShow(cex.axis),
-                       argShow(cex.lab),
-                       "\n", sep="", unindent=1, style="bold")
-              oceDebug(debug, "                ",
-                       argShow(breaks),
-                       argShow(j),
-                       "...) {\n", sep="", unindent=1, style="bold")
+              theCall <- gsub(" = [^,)]*", "", deparse(expr=match.call()))
+              theCall <- paste(theCall, collapse=" ")
+              theCall <- gsub("[ ]+", " ", theCall)
+              theCall <- gsub(".local", "plot,adp-method", theCall)
+              oceDebug(debug, theCall, " {\n", style="bold", sep="", unindent=1)
+              #> oceDebug(debug, "plot,adp-method(x, ",
+              #>          argShow(mar),
+              #>          "\n", sep="", unindent=1, style="bold")
+              #> oceDebug(debug, "                ",
+              #>          argShow(mgp),
+              #>          "\n", sep="", unindent=1, style="bold")
+              #> oceDebug(debug, "                ",
+              #>          argShow(which),
+              #>          "\n", sep="", unindent=1, style="bold")
+              #> oceDebug(debug, "                ",
+              #>          argShow(cex),
+              #>          argShow(cex.axis),
+              #>          argShow(cex.lab),
+              #>          "\n", sep="", unindent=1, style="bold")
+              #> oceDebug(debug, "                ",
+              #>          argShow(breaks),
+              #>          argShow(j),
+              #>          "...) {\n", sep="", unindent=1, style="bold")
+              dots <- list(...)
+              dotsNames <- names(dots)
+              # Catch some errors users might make
+              if ("colormap" %in% dotsNames)
+                  warning("In plot,adp-method() : \"colormap\" is handled by this function\n", call.=FALSE)
+
+
               ## oceDebug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
               ## oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
               ## oceDebug(debug, "par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
@@ -1767,10 +1779,10 @@ setMethod(f="plot",
               fac <- if (nw < 3) 1 else 0.66 # try to emulate par(mfrow)
               ## par(cex=cex*fac, cex.axis=fac*cex.axis, cex.lab=fac*cex.lab) # BUILD-TEST FAILURE
               ## par(cex=cex*fac)                                             # OK
-              oceDebug(debug, "adp.R:1759 cex=", cex, ", original par('cex')=", par('cex'), style="blue")
+              oceDebug(debug, "adp.R:1759 cex=", cex, ", original par('cex')=", par('cex'), "\n")
               ##par(cex=cex*fac, cex.axis=fac*cex.axis)                         # OK
               par(cex.axis=fac*cex.axis, cex.lab=fac*cex.lab) # OK
-              oceDebug(debug, "adp.R:1761 ... after par() call, have par('cex')=", par('cex'), style="blue")
+              oceDebug(debug, "adp.R:1761 ... after par() call, have par('cex')=", par('cex'), "\n")
               rm(fac)
               numberOfBeams <- x[["numberOfBeams", j]]
               oceDebug(debug, "numberOfBeams=", numberOfBeams, " (note: j=\"", j, "\")\n", sep="")
@@ -1805,7 +1817,6 @@ setMethod(f="plot",
                   whichFraction <- rep(0, length(which))
               }
               par(mgp=mgp, mar=mar, cex=cex)
-              dots <- list(...)
               ytype <- match.arg(ytype)
               ## user may specify a matrix for xlim and ylim
               if (ylimGiven) {
@@ -1928,7 +1939,7 @@ setMethod(f="plot",
               if (showBottom)
                   bottom <- apply(x@data$bottomRange, 1, mean, na.rm=TRUE)
               oceDebug(debug, "showBottom=", showBottom, "\n")
-              oceDebug(debug, "cex=", cex, ", par('cex')=", par('cex'), style="blue")
+              oceDebug(debug, "cex=", cex, ", par('cex')=", par('cex'), "\n")
               if (useLayout) {
                   if (any(which %in% images) || marginsAsImage) {
                       w <- 1.5
@@ -1955,24 +1966,24 @@ setMethod(f="plot",
               oceDebug(debug, 'haveTimeImages=', haveTimeImages, '(if TRUE, it means any timeseries graphs get padding on RHS)\n')
               par(mar=mar, mgp=mgp)
               if (haveTimeImages) {
-                  oceDebug(debug, "setting up margin spacing before plotting\n", style="italic")
-                  oceDebug(debug, "  before: ", vectorShow(par("mar")), unindent=1, style="blue")
+                  oceDebug(debug, "setting up margin spacing before plotting\n")
+                  oceDebug(debug, "before: ", vectorShow(par("mar")))
                   ## Since zlim not given, this just does calculations
                   drawPalette(#cex.axis=cex * (1 - min(nw / 8, 1/4)),
                               debug=debug-1)
-                  oceDebug(debug, "  after: ", vectorShow(par("mar")), unindent=1, style="blue")
+                  oceDebug(debug, "after: ", vectorShow(par("mar")))
               }
               omar <- par("mar")
-              oceDebug(debug, vectorShow(omar), style="red")
+              oceDebug(debug, vectorShow(omar))
               ##oceDebug(debug, "drawTimeRange=", drawTimeRange, "\n", sep="")
-              oceDebug(debug, "cex=", cex, ", par('cex')=", par('cex'), style="blue")
+              oceDebug(debug, "cex=", cex, ", par('cex')=", par('cex'), "\n")
               for (w in 1:nw) {
-                  oceDebug(debug, "plot,adp-method top of loop (before setting par('mar'))\n", style="italic")
-                  oceDebug(debug, vectorShow(par("mar")), style="blue")
-                  oceDebug(debug, vectorShow(par("mai")), style="blue")
-                  oceDebug(debug, vectorShow(omar), style="blue")
+                  oceDebug(debug, "plot,adp-method top of loop (before setting par('mar'))\n")
+                  oceDebug(debug, vectorShow(par("mar")))
+                  oceDebug(debug, vectorShow(par("mai")))
+                  oceDebug(debug, vectorShow(omar))
                   par(mar=omar) # ensures all panels start with original mar
-                  oceDebug(debug, "which[", w, "]=", which[w], "\n", sep="", style="red")
+                  oceDebug(debug, "which[", w, "]=", which[w], "\n", sep="")
                   if (which[w] %in% images) {
                       ## image types
                       skip <- FALSE
@@ -2015,9 +2026,7 @@ setMethod(f="plot",
                                       }
                                   }
                               }
-                              oceDebug(debug, "zlim: ", paste(zlim, collapse=" "), "\n")
                           }
-                          oceDebug(debug, "flipy =", flipy, "\n")
                       } else if (which[w] %in% 5:8) {
                           oceDebug(debug, "which[", w, "]=", which[w], "; this is some type of amplitude\n", sep="")
                           ## amplitude
@@ -2150,7 +2159,7 @@ setMethod(f="plot",
                       if (!skip) {
                           if (numberOfCells > 1) {
                               if (xlimGiven) {
-                                  oceDebug(debug, "about to call imagep() with xlim given: par('cex')=", par("cex"), ", cex=", cex, style="blue")
+                                  oceDebug(debug, "about to call imagep() with xlim given and par('cex')=", par("cex"), ", cex=", cex, "\n", sep="")
                                   oceDebug(debug, "xlimGiven case\n")
                                   ats <- imagep(x=tt, y=x[["distance", j]], z=z,
                                                 xlim=xlim[w, ],
@@ -2176,10 +2185,7 @@ setMethod(f="plot",
                                                 debug=debug-1,
                                                 ...)
                               } else {
-                                  oceDebug(debug, "about to call imagep() with no xlim. cex=", cex, ", par('cex')=", par("cex"), ", par('cex.axis')=", par("cex.axis"), style="blue")
-                                  oceDebug(debug, "about to do an image plot with no xlim given, with cex=", cex, ", par(\"cex\")=", par("cex"), ", nw=", nw, ", cex sent to oce.plots=", cex*(1-min(nw/8, 1/4)), "\n")
-                                  oceDebug(debug, "   with par('mar')=c(", paste(par('mar'),collapse=","), ", mar=c(", paste(mar,collapse=","), ") and mgp=c(",paste(mgp,collapse=","),")", "\n")
-                                  oceDebug(debug, "   with time[1]=", format(tt[[1]], "%Y-%m-%d %H:%M:%S"), "\n")
+                                  oceDebug(debug, "about to call imagep() with time[1]=", format(tt[[1]], "%Y-%m-%d %H:%M:%S"), "\n")
                                   ats <- imagep(x=tt, y=x[["distance", j]], z=z,
                                                 zlim=zlim,
                                                 flipy=flipy,
@@ -2304,12 +2310,12 @@ setMethod(f="plot",
                                                  tformat=tformat,
                                                  debug=debug-1)
                           } else {
-                              oceDebug(debug, "about to do non-diagnostic pressure plot, with cex=", cex, ", par(\"cex\")=", par("cex"), ", nw=", nw, ", cex sent to oce.plots=", cex*(1-min(nw/8, 1/4)), "\n", sep="", style="italic")
-                              oceDebug(debug, vectorShow(mar), style="blue")
-                              oceDebug(debug, vectorShow(par("mar")), style="blue")
-                              oceDebug(debug, vectorShow(par("mai")), style="blue")
-                              oceDebug(debug, vectorShow(haveTimeImages), style="blue")
-                              oceDebug(debug, "time[1]=", format(x[["time",j]][1], "%Y-%m-%d %H:%M:%S"), "\n", style="blue")
+                              oceDebug(debug, "about to do non-diagnostic pressure plot, with cex=", cex, ", par(\"cex\")=", par("cex"), ", nw=", nw, ", cex sent to oce.plots=", cex*(1-min(nw/8, 1/4)), "\n", sep="")
+                              oceDebug(debug, vectorShow(mar))
+                              oceDebug(debug, vectorShow(par("mar")))
+                              oceDebug(debug, vectorShow(par("mai")))
+                              oceDebug(debug, vectorShow(haveTimeImages))
+                              oceDebug(debug, "time[1]=", format(x[["time",j]][1], "%Y-%m-%d %H:%M:%S"), "\n")
                               ats <- oce.plot.ts(x[["time", j]], x[["pressure", j]],
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
@@ -2872,13 +2878,13 @@ setMethod(f="plot",
                   }
                   if (is.logical(grid[1]) && grid[1])
                       grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
-                  oceDebug(debug, "plot,adp-method bottom of loop, before reseting par('mar'):\n", style="italic")
-                  oceDebug(debug, vectorShow(par("mar")), style="blue")
-                  oceDebug(debug, vectorShow(par("mai")), style="blue")
+                  oceDebug(debug, "plot,adp-method bottom of loop, before reseting par('mar'):\n")
+                  oceDebug(debug, vectorShow(par("mar")))
+                  oceDebug(debug, vectorShow(par("mai")))
                   par(mar=omar)        # prevent margin creep if we have non-images after images (issue 1632 item 2)
-                  oceDebug(debug, "...after reseting par('mar'):", style="italic")
-                  oceDebug(debug, vectorShow(par("mar")), style="blue")
-                  oceDebug(debug, vectorShow(par("mai")), style="blue")
+                  oceDebug(debug, "...after reseting par('mar').\n")
+                  oceDebug(debug, vectorShow(par("mar")))
+                  oceDebug(debug, vectorShow(par("mai")))
               }
               par(cex=opar$cex, cex.axis=opar$cex.axis, cex.lab=opar$cex.lab)
               if (exists("ats")) {
