@@ -2,7 +2,7 @@
 % Please edit documentation in R/colors.R
 \name{colormapGMT}
 \alias{colormapGMT}
-\title{Create a GMT-type colormap}
+\title{Create a GMT-type (CPT) colormap}
 \usage{
 colormapGMT(name, debug = getOption("oceDebug"))
 }
@@ -20,24 +20,30 @@ in GMT format or, if no such file is found, a URL holding such a file.}
 }
 \description{
 \code{colormapGMT} creates colormaps in the Generic Mapping Tools (GMT)
-scheme (see References 1 and 2).  A few such schemes are built-in, and may be referred to
+scheme (see References 1 to 4).  A few such schemes are built-in, and may be referred to
 by name (\code{"gmt_gebco"}, \code{"gmt_globe"}, \code{"gmt_ocean"}, or \code{"gmt_relief"})
 while others are handled by reading local files that are in GMT
 format, or URLs providing such files (see Reference 3).
 }
 \details{
-GMT files start with optional comment lines that begin with
-the \verb{#} character, followed by a sequence of lines containing 8 numbers,
-followed by a line with the character \code{F} followed by three integers
-giving red, green and blue values in the range 0 to 255, followed
-by a similar line starting with the character \code{B},
-and finally by a similar line starting
-with the character \code{N}. The last line
-is interpreted as the missing-value color.  The lines containing 8 numbers each
-describe a color band. The first number is the minimum value in the band,
-and this is followed by integers in the range 0:255 that specify the
-red, green and blue components of the color.  The fourth to eight numbers
-similarly describe the upper end of that color band.
+The GMT files understood by \link{colormapGMT} are what GMT calls
+"Regular CPT files" (see reference 4).  This is a text format that
+can be read and (with care) edited in a text editor.  There
+are three categories of lines within this file.  (1) Any
+line starting with the \code{"#"} character is a comment, and is ignored
+by \link{colormapGMT}. (2) Lines with 8 numbers specify colour bands.
+The first number is a z value, and the three numbers after that
+are red, green and blue values in the range from 0 to 255. This
+set of 4 numbers is followed on the same line with similar values.
+Think of this sequence as describing a band of colours between
+two z values. (3) Lines starting with a character, followed
+by three numbers, specify particular codings.  The character \code{"B"}
+specifies background colour, while \code{"F"} specifies foreground
+colour, and \code{"N"} specifies the colour to be used for missing
+data (the letter stands for not-a-number).  Only \code{"N"} is used
+by \link{colormapGMT}, and it takes on the role that the \code{missingColor}
+argument would otherwise have.  (This is why \code{missingColor} is not
+permitted if \code{name} is given.)
 }
 \references{
 \enumerate{
@@ -47,6 +53,8 @@ similarly describe the upper end of that color band.
 \url{https://docs.generic-mapping-tools.org/dev/cookbook/cpts.html}
 \item Source of GMT specification files
 \url{https://beamreach.org/maps/gmt/share/cpt}
+\item CPT (color palette table) format
+\url{https://www.soest.hawaii.edu/gmt/gmt/html/GMT_Docs.html#x1-820004.15}
 }
 }
 \seealso{

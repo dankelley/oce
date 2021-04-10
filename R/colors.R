@@ -276,26 +276,32 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 #>>     res
 #>> }
 
-#' Create a GMT-type colormap
+#' Create a GMT-type (CPT) colormap
 #'
 #' `colormapGMT` creates colormaps in the Generic Mapping Tools (GMT)
-#' scheme (see References 1 and 2).  A few such schemes are built-in, and may be referred to
+#' scheme (see References 1 to 4).  A few such schemes are built-in, and may be referred to
 #' by name (`"gmt_gebco"`, `"gmt_globe"`, `"gmt_ocean"`, or `"gmt_relief"`)
 #' while others are handled by reading local files that are in GMT
 #' format, or URLs providing such files (see Reference 3).
 #'
-#' GMT files start with optional comment lines that begin with
-#' the `#` character, followed by a sequence of lines containing 8 numbers,
-#' followed by a line with the character `F` followed by three integers
-#' giving red, green and blue values in the range 0 to 255, followed
-#' by a similar line starting with the character `B`,
-#' and finally by a similar line starting
-#' with the character `N`. The last line
-#' is interpreted as the missing-value color.  The lines containing 8 numbers each
-#' describe a color band. The first number is the minimum value in the band,
-#' and this is followed by integers in the range 0:255 that specify the
-#' red, green and blue components of the color.  The fourth to eight numbers
-#' similarly describe the upper end of that color band.
+#' The GMT files understood by [colormapGMT] are what GMT calls
+#' "Regular CPT files" (see reference 4).  This is a text format that
+#' can be read and (with care) edited in a text editor.  There
+#' are three categories of lines within this file.  (1) Any
+#' line starting with the `"#"` character is a comment, and is ignored
+#' by [colormapGMT]. (2) Lines with 8 numbers specify colour bands.
+#' The first number is a z value, and the three numbers after that
+#' are red, green and blue values in the range from 0 to 255. This
+#' set of 4 numbers is followed on the same line with similar values.
+#' Think of this sequence as describing a band of colours between
+#' two z values. (3) Lines starting with a character, followed
+#' by three numbers, specify particular codings.  The character `"B"`
+#' specifies background colour, while `"F"` specifies foreground
+#' colour, and `"N"` specifies the colour to be used for missing
+#' data (the letter stands for not-a-number).  Only `"N"` is used
+#' by [colormapGMT], and it takes on the role that the `missingColor`
+#' argument would otherwise have.  (This is why `missingColor` is not
+#' permitted if `name` is given.)
 #'
 #' @param name character value specifying the GMT scheme, or a source for such
 #' a scheme. Four pre-defined schemes are available, accessed by setting `name` to
@@ -316,6 +322,8 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 #' <https://docs.generic-mapping-tools.org/dev/cookbook/cpts.html>
 #' 3. Source of GMT specification files
 #' <https://beamreach.org/maps/gmt/share/cpt>
+#' 4. CPT (color palette table) format
+#' <https://www.soest.hawaii.edu/gmt/gmt/html/GMT_Docs.html#x1-820004.15>
 #'
 #' @family things related to colors
 colormapGMT <- function(name, debug=getOption("oceDebug"))
