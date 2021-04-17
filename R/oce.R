@@ -1153,6 +1153,23 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' @param drawTimeRange an optional indication of whether/how to draw a time range,
 #' in the top-left margin of the plot; see [oce.axis.POSIXct()] for details.
 #'
+#' @param simplify an integer value that indicates
+#' whether to speed up `type="l"` plots by replacing the data
+#' with minimum and maximum values within a subsampled time mesh.
+#' This can speed up plots of large datasets (e.g. by factor 20 for 10^7 points),
+#' sometimes with minor changes in appearance.
+#' This procedure is skipped if `simplify` is `NA` or
+#' an integer exceeding the number of data points in view.
+#' Otherwise, `oce.plot.ts` creates `simplify` intervals ranging across
+#' the visible time range. Intervals with under 2 finite
+#' `y` data are ignored. In the rest, `y` values
+#' are replaced with their range, and `x` values are replaced
+#' with the repeated midpoint time. Thus, each retained subinterval
+#' has exactly 2 data points.
+#' A warning is printed if this replacment is done.
+#' The default value of `simplify` means that cases with
+#' under 2560 visible points are plotted conventionally.
+#'
 #' @param fill boolean, set `TRUE` to fill the curve to zero (which it
 #' does incorrectly if there are missing values in `y`).
 #' @param col The colours for points (if `type=="p"`) or lines (if `type=="l"`).
@@ -1247,7 +1264,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' # Flip the y axis
 #' oce.plot.ts(t, y, flipy=TRUE)
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=FALSE, xlab, ylab,
-                        drawTimeRange, fill=FALSE, col=par("col"), pch=par("pch"),
+                        drawTimeRange, simplify=2560, fill=FALSE, col=par("col"), pch=par("pch"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.lab=par("cex.lab"), cex.main=par("cex.main"),
                         xaxs=par("xaxs"), yaxs=par("yaxs"),
                         mgp=getOption("oceMgp"),
@@ -1291,6 +1308,9 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
         stop("flipy must be TRUE or FALSE")
     if (!log %in% c("", "y"))
         stop("log must be either an empty string or \"y\", not \"", log, "\" as given")
+    if (!is.na(simplify) && (!is.numeric(simplify) || simplify <= 0))
+        stop("simplify must be NA or a positive number, but it is ", simplify)
+
     #oceDebug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
     #oceDebug(debug, "marginsAsImage=", marginsAsImage, ")\n")
     oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
@@ -1310,6 +1330,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
     par(mgp=mgp, mar=mar)
     args <- list(...)
     xlimGiven <- !missing(xlim)
+    # Trim data to visible window (to improve speed and to facilitate 'simplify' calculation)
     if (xlimGiven) {
         if (2 != length(xlim))
             stop("'xlim' must be of length 2, but it is of length ", length(xlim))
@@ -1354,6 +1375,25 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
             x <- x[!yBAD]
             y <- y[!yBAD]
         }
+    }
+    # Handle 'simplify' argument
+    nx <- length(x)
+    if (type == "l" && is.numeric(simplify) & nx > simplify) {
+        warning("simplifying a large dataset; use simplify=NA to use raw data\n")
+        xgrid <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=simplify+1)
+        df <- data.frame(x, y)
+        dfSplit <- split(df, cut(df$x, xgrid))
+        # Compute within the subintervals, inserting NAs when no data there
+        tz <- attr(x, "tzone") # need for new version
+        x <- rep(unname(sapply(dfSplit, function(DF) if (length(DF$x) > 2) mean(DF$x, na.rm=TRUE) else NA)), each=2)
+        x <- numberAsPOSIXct(x, tz=tz)
+        ymin <- unname(sapply(dfSplit, function(DF) if (length(DF$y) > 2) min(DF$y, na.rm=TRUE) else NA))
+        ymax <- unname(sapply(dfSplit, function(DF) if (length(DF$y) > 2) max(DF$y, na.rm=TRUE) else NA))
+        y <- as.vector(rbind(ymin, ymax))
+        # Remove any segments for which min and max could not be computed
+        bad <- !is.finite(y)
+        x <- x[!bad]
+        y <- y[!bad]
     }
     xrange <- range(x, na.rm=TRUE)
     yrange <- range(y, finite=TRUE)
