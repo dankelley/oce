@@ -26,7 +26,7 @@ test_that("multi-panel plots leave usr as it was originally", {
           expect_silent(plot(lobo))
           expect_equal(par('usr'), orig)
           data(rsk)
-          expect_warning(plot(rsk), "simplifying a large dataset")
+          expect_silent(plot(rsk))
           expect_equal(par('usr'), orig)
           data(sealevel)
           expect_silent(plot(sealevel))

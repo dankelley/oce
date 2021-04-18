@@ -1159,7 +1159,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' This can speed up plots of large datasets (e.g. by factor 20 for 10^7 points),
 #' sometimes with minor changes in appearance.
 #' This procedure is skipped if `simplify` is `NA` or
-#' an integer exceeding the number of data points in view.
+#' if the number of visible data points is less than 5 times `simplify`.
 #' Otherwise, `oce.plot.ts` creates `simplify` intervals ranging across
 #' the visible time range. Intervals with under 2 finite
 #' `y` data are ignored. In the rest, `y` values
@@ -1371,18 +1371,19 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
         nyBAD <- sum(yBAD)
         if (nyBAD > 0L) {
             warning(nyBAD, " y value <= 0 omitted from logarithmic oce.plot.ts\n")
-            ##> Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value <= 0 omitted from
             x <- x[!yBAD]
             y <- y[!yBAD]
         }
     }
     # Handle 'simplify' argument
     nx <- length(x)
-    if (type == "l" && is.numeric(simplify) & nx > simplify) {
+    if (type == "l" && is.numeric(simplify) & nx > (5L*simplify)) {
         warning("simplifying a large dataset; use simplify=NA to use raw data\n")
-        xgrid <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=simplify+1)
+        xgrid <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=simplify)
         df <- data.frame(x, y)
-        dfSplit <- split(df, cut(df$x, xgrid))
+        # Tests N=1e8 suggest split(X,findInterval()) is 2X faster than split(X,cut())
+        #>>> dfSplit <- split(df, cut(df$x, xgrid))
+        dfSplit <- split(df, as.factor(findInterval(df$x, xgrid)))
         # Compute within the subintervals, inserting NAs when no data there
         tz <- attr(x, "tzone") # need for new version
         x <- rep(unname(sapply(dfSplit, function(DF) if (length(DF$x) > 2) mean(DF$x, na.rm=TRUE) else NA)), each=2)
@@ -2327,7 +2328,7 @@ read.netcdf <- function(file, ...)
 
 
 #' Draw an axis, possibly with decade-style logarithmic scaling
-#' 
+#'
 #' @param logStyle a character value that indicates how to draw the y axis, if
 #' `log="y"`.  If it is `"r"` (the default) then the conventional R style is used,
 #' in which a logarithmic transform connects y values to position on the "page"
@@ -2343,7 +2344,7 @@ read.netcdf <- function(file, ...)
 #' whether to draw such labels.  The first form only works if the coordinate is not logarithmic,
 #' and if `logStyle` is `"r"`.
 #' @param \dots other graphical parameters, passed to [axis()].
-#' 
+#'
 #' @return Numerical values at which tick marks were drawn (or would have been drawn, if `labels`
 #' specified to draw them).
 #'

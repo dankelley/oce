@@ -90,7 +90,7 @@ with minimum and maximum values within a subsampled time mesh.
 This can speed up plots of large datasets (e.g. by factor 20 for 10^7 points),
 sometimes with minor changes in appearance.
 This procedure is skipped if \code{simplify} is \code{NA} or
-an integer exceeding the number of data points in view.
+if the number of visible data points is less than 5 times \code{simplify}.
 Otherwise, \code{oce.plot.ts} creates \code{simplify} intervals ranging across
 the visible time range. Intervals with under 2 finite
 \code{y} data are ignored. In the rest, \code{y} values
