@@ -1457,11 +1457,15 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     ## Move flags into metadata (could have done it above).
     dnames <- names(res@data)
     iflags <- grep("Flag", dnames)
+    oceDebug(debug, "iflags=", paste(iflags, collapse=" "), "\n")
+    message("iflags=", paste(iflags, collapse=" "), "\n")
     if (length(iflags)) {
         for (iflag in iflags) {
-            fname <- gsub("Flag", "", dnames[iflag])
+            fname <- gsub("Flag$", "", dnames[iflag])
             if (fname == "C")
                 fname <- "QC"
+            oceDebug(debug, "iflag=", iflag, ", fname=\"", fname, "\"", sep="")
+            message("iflag=", iflag, ", fname=\"", fname, "\"", sep="")
             res@metadata$flags[[fname]] <- res@data[[iflag]]
             res@metadata$dataNamesOriginal[[iflag]] <- ""
         }
