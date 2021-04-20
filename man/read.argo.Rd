@@ -103,7 +103,7 @@ work can be required to track down the data.
 
 Some servers provide data for floats that surfaced in a given ocean
 on a given day, the anonymous FTP server
-\code{ftp://usgodae.org/pub/outgoing/argo/geo/} being an example.
+\code{usgodae.org/pub/outgoing/argo/geo/} being an example.
 
 Other servers provide data on a per-float basis. A complicating
 factor is that these data tend to be categorized by "dac" (data

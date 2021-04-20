@@ -6,8 +6,8 @@
 \title{ARGO float dataset}
 \source{
 The netcdf file used by \code{\link[=read.argo]{read.argo()}} to create this \linkS4class{argo}
-object was downloaded from
-\url{ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc}
+object was downloaded using FTP to
+\code{ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc}
 on 2020 June 24.
 }
 \description{

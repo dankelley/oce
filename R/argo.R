@@ -49,8 +49,8 @@ setClass("argo", contains="oce")
 #' plot(argo, which="trajectory")
 #'
 #' @source The netcdf file used by [read.argo()] to create this [argo-class]
-#' object was downloaded from
-#'\url{ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc}
+#' object was downloaded using FTP to
+#' \code{ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc}
 #' on 2020 June 24.
 #'
 #' @family datasets provided with oce
@@ -1097,7 +1097,7 @@ argoDecodeFlags <- function(f) # local function
 #'
 #' Some servers provide data for floats that surfaced in a given ocean
 #' on a given day, the anonymous FTP server
-#' \code{ftp://usgodae.org/pub/outgoing/argo/geo/} being an example.
+#' \code{usgodae.org/pub/outgoing/argo/geo/} being an example.
 #'
 #' Other servers provide data on a per-float basis. A complicating
 #' factor is that these data tend to be categorized by "dac" (data

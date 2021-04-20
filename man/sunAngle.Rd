@@ -56,8 +56,9 @@ cat(sprintf("Infer Halifax latitude \%.2f and longitude \%.2f; distance mismatch
 Regarding \code{declination} and \code{rightAscension}, see
 references in the documentation for \code{\link[=sunDeclinationRightAscension]{sunDeclinationRightAscension()}}.
 The other items are based on Fortran code retrieved from
-ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f on
-2009-11-1.  Comments in that code list as references:
+the file \code{sunae.f}, downloaded from the ftp site
+\code{climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles}
+on 2009-11-1.  Comments in that code list as references:
 
 Michalsky, J., 1988: The Astronomical Almanac's algorithm for approximate
 solar position (1950-2050), Solar Energy 40, 227-235
