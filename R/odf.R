@@ -972,7 +972,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         stop("can only handle one file at a time (the length of 'file' is ", length(file), ", not 1)")
     if (is.character(file) && 0 == file.info(file)$size)
         stop("the file named '", file, "' is empty, and so cannot be read")
-    oceDebug(debug, "read.odf(\"", file, "\", exclude=", if (is.null(exclude)) "NULL" else "'", exclude, "', ...) {\n", unindent=1, sep="")
+    oceDebug(debug, "read.odf(\"", file, "\", exclude=", if (is.null(exclude)) "NULL" else "'", exclude, "', ...) {\n", unindent=1, sep="", style="bold")
     if (!is.null(header)) {
         if (!is.character(header))
             stop("the header argument must be NULL, \"character\", or \"list\"")
@@ -1110,6 +1110,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     ODForiginalNames <- NULL
     ODFnames <- NULL
     ODFunits <- NULL
+    flagTranslationTable <- list()
     for (l in linePARAMETER_HEADER) {
         ## message("\nl=", l)
         lstart <- l + 1
@@ -1131,14 +1132,18 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
             stop("cannot handle two CODE lines in a PARAMETER_HEADER block starting at line ", lstart-1)
         ## message("lines[", lstart+iCODE-1, "] is \"", lines[lstart+iCODE-1], "\"")
         CODE <- gsub("^\\s*(WMO_)?CODE\\s*=\\s*'?([^',]*)'?,?\\s*$", "\\2", lines[lstart+iCODE-1])
-        ## message("    CODE = \"", CODE, "\"")
-        if (length(grep("QQQQ", CODE))) {
+        oceDebug(debug, "CODE \"", CODE, "\" at line ", lstart+iCODE-1, "\n", sep="")
+        if (grepl("QQQQ", CODE)) {
             iNAME <- grep("^\\s*NAME\\s*=\\s*'", lines[lstart:lend])
             if (length(iNAME) == 1) {
-                ## Sample input line: "  NAME= 'Quality Flag for Parameter: TEMP_01',"
+                ## Sample input lines (two leading spaces):
+                ##   NAME= 'Quality Flag for Parameter: TEMP_01',
+                ##   NAME= 'Quality flag: Sea Temperature (IPTS-68)',
                 ## NAME <- paste(gsub("^.*:\\s*'?(.*)([_0-9]*)'?.*$", "\\1", lines[lstart+iNAME-1]), "Flag", sep="")
                 NAME <- paste(gsub(".*:[ ]*([A-Z0-9_]*).*", "\\1", lines[lstart+iNAME-1]), "Flag", sep="")
-                oceDebug(debug, "quality-control code '", lines[lstart+iNAME-1], "' yielded NAME='", NAME, "'")
+                #?IML? NAME <- gsub("^.*:[ ]*(.*)',[ ]*$","\\1", lines[lstart+iNAME-1])
+                oceDebug(debug, "   \"", lines[lstart+iNAME-1], "\" -> flag name \"", NAME, "\"\n", sep="")
+                flagTranslationTable[CODE] <- NAME
             } else {
                 stop("cannot link flag to variable name in a PARAMETER_HEADER block starting at line ", lstart-1)
             }
@@ -1245,6 +1250,9 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     ##> oceDebug(debug, "ODFnames: ", paste(ODFnames, collapse=" "), "\n")
     ##> ODFnames <- gsub("_1$", "", ODFnames)
     ##> oceDebug(debug, "ODFnames: ", paste(ODFnames, collapse=" "), "\n")
+    oceDebug(debug, "next is flagTranslationTable:\n")
+    if (debug > 0)
+        print(flagTranslationTable)
 
     namesUnits <- ODFNames2oceNames(ODFnames, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
     ## check for missing units, and warn if pressure and/or temperature lack units
@@ -1255,7 +1263,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     }
 
     ##names <- ODFName2oceName(ODFnames, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
-    oceDebug(debug, "oce names:", paste(namesUnits$names, collapse=" "), "\n")
+    oceDebug(debug, "oce names: c(\"", paste(namesUnits$names, collapse="\",\""), ")\n", sep="")
 
     res@metadata$depthOffBottom <- findInHeader("DEPTH_OFF_BOTTOM", lines, returnOnlyFirst=TRUE, numeric=TRUE)
     res@metadata$initialLatitude <- findInHeader("INITIAL_LATITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
@@ -1424,7 +1432,8 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         for (name in names(data)) {
             bad <- data[[name]] == NAvalueList[[name]]
             data[[name]][bad] <- NA
-            oceDebug(debug, "set ", sum(bad), " values in '", name, "' to NA, because they matched the NULL_VALUE (", NAvalueList[[name]], ")\n", sep="")
+            if (sum(bad) > 0)
+                oceDebug(debug, "set ", sum(bad), " values in '", name, "' to NA, because they matched the NULL_VALUE (", NAvalueList[[name]], ")\n", sep="")
         }
     }
     ##. if (length(NAvalue) > 0 && !is.na(NAvalue)) {
