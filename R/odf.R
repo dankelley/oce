@@ -972,6 +972,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         stop("can only handle one file at a time (the length of 'file' is ", length(file), ", not 1)")
     if (is.character(file) && 0 == file.info(file)$size)
         stop("the file named '", file, "' is empty, and so cannot be read")
+    debug <- as.integer(min(max(debug, 0), 3))
     oceDebug(debug, "read.odf(\"", file, "\", exclude=",
              if (is.null(exclude)) "NULL" else paste0("'", exclude, "'"), ", ...) {\n", unindent=1, sep="", style="bold")
     if (!is.null(header)) {
@@ -1476,15 +1477,28 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
 
     ## Move flags into metadata (could have done it above).
     dnames <- names(res@data)
-    iflags <- grep("Flag", dnames)
+    iflags <- grep("Flag$", dnames)
+    oceDebug(debug, "About to move flags from @data to @metadata\n")
     oceDebug(debug, "iflags=", paste(iflags, collapse=" "), "\n")
+    oceDebug(debug, "names(@data) = c(\"", paste(names(res@data), collapse="\", \""), "\")\n", sep="")
+    oceDebug(debug, "names(@data)[iflags] = c(\"", paste(names(res@data)[iflags], collapse="\", \""), "\")\n", sep="")
     if (length(iflags)) {
         for (iflag in iflags) {
             fname <- gsub("Flag$", "", dnames[iflag])
             if (fname == "C")
                 fname <- "QC"
-            oceDebug(debug, "iflag=", iflag, ", fname=\"", fname, "\"n", sep="")
-            res@metadata$flags[[fname]] <- res@data[[iflag]]
+            # oceDebug(debug, " -> \"", NAME2CODE[[fname]], "\"\n", sep="")
+            fnameBase <- ODFNames2oceNames(NAME2CODE[[fname]])$names
+            # oceDebug(debug, " -> \"", fnameBase, "\"\n", sep="")
+            # oceDebug(debug, "-> \"", ODFNames2oceNames(NAME2CODE[[fname]]$names), "\"\n", sep="")
+            # oceDebug(debug, "fnameBase=\"", fnameBase, "\"\n", sep="")
+            if (length(fnameBase)) {
+                oceDebug(debug, "transfer @data[\"", names(res@data)[iflag], "\"] to @metadata$flag[\"", fnameBase, "\"]\n", sep="")
+                res@metadata$flags[[fnameBase]] <- res@data[[iflag]]
+            } else {
+                oceDebug(debug, "transfer @data[\"", names(res@data)[iflag], "\"] to @metadata$flag[\"", fname, "\"]\n", sep="")
+                res@metadata$flags[[fname]] <- res@data[[iflag]]
+            }
             res@metadata$dataNamesOriginal[[iflag]] <- ""
         }
         ## remove flags from data, and then remove their orig names
@@ -1498,6 +1512,6 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
                                              paste("read.odf(\"", filename, "\", ",
                                                    "columns=c(\"", paste(columns, collapse="\", \""), "\"), ",
                                                    "debug=", debug, ")", sep=""))
-    oceDebug(debug, "} # read.odf()\n")
+    oceDebug(debug, "} # read.odf()\n", sep="", style="bold", unindent=1)
     res
 }
