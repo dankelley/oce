@@ -972,7 +972,8 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         stop("can only handle one file at a time (the length of 'file' is ", length(file), ", not 1)")
     if (is.character(file) && 0 == file.info(file)$size)
         stop("the file named '", file, "' is empty, and so cannot be read")
-    oceDebug(debug, "read.odf(\"", file, "\", exclude=", if (is.null(exclude)) "NULL" else "'", exclude, "', ...) {\n", unindent=1, sep="", style="bold")
+    oceDebug(debug, "read.odf(\"", file, "\", exclude=",
+             if (is.null(exclude)) "NULL" else paste0("'", exclude, "'"), ", ...) {\n", unindent=1, sep="", style="bold")
     if (!is.null(header)) {
         if (!is.character(header))
             stop("the header argument must be NULL, \"character\", or \"list\"")
@@ -1111,6 +1112,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     ODFnames <- NULL
     ODFunits <- NULL
     flagTranslationTable <- list()
+    NAME2CODE <- list()
     for (l in linePARAMETER_HEADER) {
         ## message("\nl=", l)
         lstart <- l + 1
@@ -1124,15 +1126,29 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         }
         if (lend < 0)
             stop("cannot find the end of a PARAMETER_HEADER block starting at line ", lstart-1)
-        ## CODE (which is mandatory)
+        # CODE (taken to be mandatory)
         iCODE <- grep("^\\s*(WMO_)?CODE\\s*=\\s*'?", lines[lstart:lend])
         if (length(iCODE) == 0)
-            stop("cannot locate a CODE line in a PARAMETER_HEADER block starting at line ", lstart-1)
+            stop("cannot locate a CODE line in PARAMETER_HEADER block starting at line ", lstart-1)
         if (length(iCODE) > 1)
-            stop("cannot handle two CODE lines in a PARAMETER_HEADER block starting at line ", lstart-1)
-        ## message("lines[", lstart+iCODE-1, "] is \"", lines[lstart+iCODE-1], "\"")
+            stop("cannot handle more than one CODE line in PARAMETER_HEADER block starting at line ", lstart-1)
+        #oceDebug(debug, "iCODE=", iCODE, "\n")
         CODE <- gsub("^\\s*(WMO_)?CODE\\s*=\\s*'?([^',]*)'?,?\\s*$", "\\2", lines[lstart+iCODE-1])
-        oceDebug(debug, "CODE \"", CODE, "\" at line ", lstart+iCODE-1, "\n", sep="")
+        oceDebug(debug, "CODE \"", CODE, "\" in PARAMETER_HEADER starting at line ", lstart-1, "\n", sep="")
+        # NAME (take to be mandatory), e.g. next lines (start with 2 spaces, end with comma)
+        # "  NAME= 'Sea Temperature (IPTS-68)',"
+        # "  NAME= 'CNTR_01',"
+        iNAME <- grep("^\\s*?NAME\\s*=\\s*'?", lines[lstart:lend])
+        if (length(iNAME) == 0)
+            stop("cannot locate a NAME line in PARAMETER_HEADER block starting at line ", lstart-1)
+        if (length(iNAME) > 1)
+            stop("cannot handle more than one NAME line in PARAMETER_HEADER block starting at line ", lstart-1)
+        #oceDebug(debug, "iNAME=", iNAME, "\n")
+        NAME <- gsub("^\\s*NAME\\s*=\\s*'?([^']*)'?,?\\s*$", "\\1", lines[lstart+iNAME-1])
+        oceDebug(debug, "NAME \"", NAME, "\" in PARAMETER_HEADER starting at line ", lstart-1, "\n", sep="")
+
+        NAME2CODE[NAME] <- CODE
+
         if (grepl("QQQQ", CODE)) {
             iNAME <- grep("^\\s*NAME\\s*=\\s*'", lines[lstart:lend])
             if (length(iNAME) == 1) {
@@ -1141,6 +1157,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
                 ##   NAME= 'Quality flag: Sea Temperature (IPTS-68)',
                 ## NAME <- paste(gsub("^.*:\\s*'?(.*)([_0-9]*)'?.*$", "\\1", lines[lstart+iNAME-1]), "Flag", sep="")
                 NAME <- paste(gsub(".*:[ ]*([A-Z0-9_]*).*", "\\1", lines[lstart+iNAME-1]), "Flag", sep="")
+                NAME <- paste(gsub(".*:[ ]*([^']*).*$", "\\1", lines[lstart+iNAME-1]), "Flag", sep="")
                 #?IML? NAME <- gsub("^.*:[ ]*(.*)',[ ]*$","\\1", lines[lstart+iNAME-1])
                 oceDebug(debug, "   \"", lines[lstart+iNAME-1], "\" -> flag name \"", NAME, "\"\n", sep="")
                 flagTranslationTable[CODE] <- NAME
@@ -1253,6 +1270,9 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     oceDebug(debug, "next is flagTranslationTable:\n")
     if (debug > 0)
         print(flagTranslationTable)
+    oceDebug(debug, "next is NAME2CODE:\n")
+    if (debug > 0)
+        print(NAME2CODE)
 
     namesUnits <- ODFNames2oceNames(ODFnames, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
     ## check for missing units, and warn if pressure and/or temperature lack units
@@ -1458,14 +1478,12 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     dnames <- names(res@data)
     iflags <- grep("Flag", dnames)
     oceDebug(debug, "iflags=", paste(iflags, collapse=" "), "\n")
-    message("iflags=", paste(iflags, collapse=" "), "\n")
     if (length(iflags)) {
         for (iflag in iflags) {
             fname <- gsub("Flag$", "", dnames[iflag])
             if (fname == "C")
                 fname <- "QC"
-            oceDebug(debug, "iflag=", iflag, ", fname=\"", fname, "\"", sep="")
-            message("iflag=", iflag, ", fname=\"", fname, "\"", sep="")
+            oceDebug(debug, "iflag=", iflag, ", fname=\"", fname, "\"n", sep="")
             res@metadata$flags[[fname]] <- res@data[[iflag]]
             res@metadata$dataNamesOriginal[[iflag]] <- ""
         }
