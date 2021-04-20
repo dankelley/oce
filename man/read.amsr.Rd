@@ -17,13 +17,15 @@ Read a compressed amsr file, generating an \linkS4class{amsr} object.
 Note that only compressed files are read in this version.
 }
 \details{
-AMSR files are provided at the FTP site
-\verb{ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/} and login as "guest",
-enter a year-based directory (e.g. \code{y2016} for the year 2016),
+AMSR files are provided at the FTP site, at
+\code{ftp.ssmi.com/amsr2/bmaps_v07.2} as of April 2021.
+To acquire such files,
+log in as "guest",
+then enter a year-based directory (e.g. \code{y2016} for the year 2016),
 then enter a month-based directory (e.g. \code{m08} for August, the 8th
 month), and then download a file for the present date, e.g.
 \code{f34_20160803v7.2.gz} for August 3rd, 2016. Do not uncompress
-this file, since \code{read.amsr} can only read uncompressed files.
+this file, since \code{read.amsr} can only read the raw files from the server.
 If \code{read.amsr} reports an error on the number of chunks, try
 downloading a similarly-named file (e.g. in the present example,
 \code{read.amsr("f34_20160803v7.2_d3d.gz")} will report an error
