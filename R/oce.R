@@ -1385,7 +1385,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
         #>>> dfSplit <- split(df, cut(df$x, xgrid))
         dfSplit <- split(df, as.factor(findInterval(df$x, xgrid)))
         # Compute within the subintervals, inserting NAs when no data there
-        tz <- attr(x, "tzone") # need for new version
+        tz <- attr(x, "tzone")         # cause gridded x to inherit timezone from original x
         x <- rep(unname(sapply(dfSplit, function(DF) if (length(DF$x) > 2) mean(DF$x, na.rm=TRUE) else NA)), each=2)
         x <- numberAsPOSIXct(x, tz=tz)
         ymin <- unname(sapply(dfSplit, function(DF) if (length(DF$y) > 2) min(DF$y, na.rm=TRUE) else NA))
@@ -3435,7 +3435,8 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
         type <- typeAllowed[type]
     }
     if (type == "unix") {
-        tref <- as.POSIXct("2000-01-01", tz=tz) # arbitrary
+        # We add something with a timezone, and then subtract it, as a trick to inherit the timezone
+        tref <- if (!is.null(tz)) as.POSIXct("2000-01-01", tz=tz) else as.POSIXct("2000-01-01")
         return(tref + as.numeric(t) - as.numeric(tref))
     } else if (type == "matlab") {
         ## R won't take a day "0", so subtract one
