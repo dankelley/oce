@@ -1378,7 +1378,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
     # Handle 'simplify' argument
     nx <- length(x)
     if (type == "l" && is.numeric(simplify) & nx > (5L*simplify)) {
-        warning("simplifying a large dataset; use simplify=NA to use raw data\n")
+        warning("simplifying a large dataset; set simplify=NA to see raw data\n")
         xgrid <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=simplify)
         df <- data.frame(x, y)
         # Tests N=1e8 suggest split(X,findInterval()) is 2X faster than split(X,cut())
