@@ -1448,15 +1448,15 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     ##res@metadata$names <- namesUnits$names
     ##res@metadata$labels <- namesUnits$names
     res@data <- as.list(data)
-
-    ## Return to water depth issue. In a BIO file, I found that the missing-value code was
-    ## -99, but that a SOUNDING was given as -99.9, so this is an extra check.
-    if (is.na(res@metadata$waterDepth) || res@metadata$waterDepth < 0) {
-        if ('pressure' %in% names(res@data)) {
-            res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
-            warning("estimating waterDepth from maximum pressure")
-        }
-    }
+    # Removed for issue 1810
+    #(REMOVED) ## Return to water depth issue. In a BIO file, I found that the missing-value code was
+    #(REMOVED) ## -99, but that a SOUNDING was given as -99.9, so this is an extra check.
+    #(REMOVED) if (is.na(res@metadata$waterDepth) || res@metadata$waterDepth < 0) {
+    #(REMOVED)     if ('pressure' %in% names(res@data)) {
+    #(REMOVED)         res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
+    #(REMOVED)         warning("estimating waterDepth from maximum pressure")
+    #(REMOVED)     }
+    #(REMOVED) }
     ## Move flags into metadata.
     dnames <- names(res@data)
     iflags <- grep("Flag$", dnames)
@@ -1491,7 +1491,6 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         flagNamesForMetadata <- unduplicateNames(flagNamesForMetadata)
         oceDebug(debug, "unduplicated flagNamesForMetadata=c(\"", paste(flagNamesForMetadata, collapse="\", \""), "\")\n", sep="")
         # Step 3: copy "Flag" columns from data to metadata
-        message("names(dataNamesOriginal): ", paste(names(res@metadata$dataNamesOriginal), collapse=","))
         for (I in seq_along(iflags)) {
             oceDebug(debug, "move @data[\"", dnames[iflags[I]], "\"] to @metadata$flags[\"", flagNamesForMetadata[I], "\"]\n", sep="")
             res@metadata$flags[[flagNamesForMetadata[I]]] <- res@data[[iflags[I]]]
