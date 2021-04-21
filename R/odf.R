@@ -319,9 +319,9 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #'  `DOXY_*.*` \tab `oxygen`             \tab Used mainly in `ctd` objects                   \cr
 #'  `ERRV_*.*` \tab `error`              \tab Used in `adp` objects                          \cr
 #'  `EWCT_*.*` \tab `u`                  \tab Used in `adp` and `cm` objects                 \cr
-#'  `FFFF_*.*` \tab `flagArchaic`        \tab Old flag name, replaced by `QCFF`              \cr
+#'  `FFFF_*.*` \tab `overall(FFFF)`      \tab Archaic overall flag, replaced by `QCFF`       \cr
 #'  `FLOR_*.*` \tab `fluorometer`        \tab Used mainly in `ctd` objects                   \cr
-#'  `FWETLABS` \tab `fwetlabs`           \tab Used in ??                                     \cr
+#'  `FWETLABS` \tab `fwetlabs`           \tab                                                \cr
 #'  `GEOP`     \tab `geopotential`       \tab                                                \cr
 #'  `HCDM`     \tab `directionMagnetic`  \tab                                                \cr
 #'  `HCDT`     \tab `directionTrue`      \tab                                                \cr
@@ -339,7 +339,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #'  `PRES_*.*` \tab `pressure`           \tab Used mainly in `ctd` objects                   \cr
 #'  `PSAL_*.*` \tab `salinity`           \tab Used mainly in `ctd` objects                   \cr
 #'  `PSAR_*.*` \tab `par`                \tab Used mainly in `ctd` objects                   \cr
-#'  `QCFF_*.*` \tab `flag`               \tab Overall flag                                   \cr
+#'  `QCFF_*.*` \tab `overall(QCFF)`      \tab Overall flag (see also archaic FFFF)           \cr 
 #'  `REFR_*.*` \tab `reference`          \tab                                                \cr
 #'  `SIGP_*.*` \tab `sigmaTheta`         \tab Used mainly in `ctd` objects                   \cr
 #'  `SIGT_*.*` \tab `sigmat`             \tab Used mainly in `ctd` objects                   \cr
@@ -460,7 +460,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("DOXY", "oxygen", names)
     names <- gsub("ERRV", "error", names)
     names <- gsub("EWCT", "u", names)
-    names <- gsub("FFFF", "overallFlag", names)
+    names <- gsub("FFFF", "overall(FFFF)Flag", names)
     names <- gsub("FLOR", "fluorometer", names)
     names <- gsub("FWETLABS", "fwetlabs", names) # FIXME: what is this?
     names <- gsub("GEOP", "geopotential", names)
@@ -480,7 +480,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("PRES", "pressure", names)
     names <- gsub("PSAL", "salinity", names)
     names <- gsub("PSAR", "par", names)
-    names <- gsub("QCFF", "QCFlag", names)
+    names <- gsub("QCFF", "overall(QCFF)Flag", names)
     names <- gsub("REFR", "reference", names)
     names <- gsub("SIGP", "sigmaTheta", names)
     names <- gsub("SIGT", "sigmat", names) # in a moored ctd file examined 2014-05-15
@@ -494,25 +494,13 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("UNKN", "unknown", names)
     names <- gsub("VAIS", "BVFrequency", names)
     names <- gsub("VCSP", "w", names)
-    ## Step 3: recognize something from moving-vessel CTDs
-    ## Step 4: some meanings inferred (guessed, really) from file CTD_HUD2014030_163_1_DN.ODF
-    ## Finally, fix up suffixes.
-    ##message("names (line 324): ", paste(names, collapse="|"))
+    ## Fix up suffixes.
     names <- gsub("_[0-9][0-9]", "", names)
     oceDebug(debug, "STAGE 2 names: ", paste(names, collapse=" "), "\n")
-    if (n > 1) {
-        for (i in 2:n) {
-            ##message("names[", i, "] = '", names[i], "'")
-            if (1 == length(grep("^QQQQ", names[i])))
-                names[i] <- paste(names[i-1], "Flag", sep="")
-            if (substr(names[i], 1, 1) == "Q")
-                names[i] <- gsub("Q(.*)", "\\1Flag", names[i])
-        }
-    }
     oceDebug(debug, "STAGE 3 names: ", paste(names, collapse=" "), "\n")
     names <- unduplicateNames(names)
     oceDebug(debug, "STAGE 4 names: ", paste(names, collapse=" "), "\n")
-    ## Now deal with units
+    ## Handle units
     units <- list()
     oceDebug(debug, "STAGE 5 units: ", paste(units, collapse=" "), "\n")
     ODFunits <- gsub("^/", "1/",ODFunits)
@@ -766,11 +754,6 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
             }
         }
     }
-    ## FIXME: accept the IML-style flags, e.g. QPSAL for salinity
-
-    ## use old (FFFF) flag if there is no modern (QCFF) flag
-    ##if ("overall2Flag" %in% names && !("flag" %in% names))
-    ##    names <- gsub("flagArchaic", "flag", names)
     names(res@data) <- names
     res
 }
@@ -1268,12 +1251,12 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     ##> oceDebug(debug, "ODFnames: ", paste(ODFnames, collapse=" "), "\n")
     ##> ODFnames <- gsub("_1$", "", ODFnames)
     ##> oceDebug(debug, "ODFnames: ", paste(ODFnames, collapse=" "), "\n")
-    oceDebug(debug, "next is flagTranslationTable:\n")
-    if (debug > 0)
+    if (debug > 0) {
+        oceDebug(debug, "next is flagTranslationTable:\n")
         print(flagTranslationTable)
-    oceDebug(debug, "next is NAME2CODE:\n")
-    if (debug > 0)
+        oceDebug(debug, "next is NAME2CODE:\n")
         print(NAME2CODE)
+    }
 
     namesUnits <- ODFNames2oceNames(ODFnames, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
     ## check for missing units, and warn if pressure and/or temperature lack units
@@ -1474,37 +1457,63 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
             warning("estimating waterDepth from maximum pressure")
         }
     }
-
-    ## Move flags into metadata (could have done it above).
+    ## Move flags into metadata.
     dnames <- names(res@data)
     iflags <- grep("Flag$", dnames)
     oceDebug(debug, "About to move flags from @data to @metadata\n")
     oceDebug(debug, "iflags=", paste(iflags, collapse=" "), "\n")
     oceDebug(debug, "names(@data) = c(\"", paste(names(res@data), collapse="\", \""), "\")\n", sep="")
     oceDebug(debug, "names(@data)[iflags] = c(\"", paste(names(res@data)[iflags], collapse="\", \""), "\")\n", sep="")
+    flagNamesForMetadata <- NULL
     if (length(iflags)) {
+        if (debug > 0) {
+            oceDebug(debug, "Following is str(res@data) before transferring 'Flag' columns to metadata\n")
+            cat(str(res@data, 1))
+        }
+        # Step 1: determine names to be used in metadata
         for (iflag in iflags) {
             fname <- gsub("Flag$", "", dnames[iflag])
-            if (fname == "C")
-                fname <- "QC"
-            # oceDebug(debug, " -> \"", NAME2CODE[[fname]], "\"\n", sep="")
-            fnameBase <- ODFNames2oceNames(NAME2CODE[[fname]])$names
-            # oceDebug(debug, " -> \"", fnameBase, "\"\n", sep="")
-            # oceDebug(debug, "-> \"", ODFNames2oceNames(NAME2CODE[[fname]]$names), "\"\n", sep="")
-            # oceDebug(debug, "fnameBase=\"", fnameBase, "\"\n", sep="")
-            if (length(fnameBase)) {
-                oceDebug(debug, "transfer @data[\"", names(res@data)[iflag], "\"] to @metadata$flag[\"", fnameBase, "\"]\n", sep="")
-                res@metadata$flags[[fnameBase]] <- res@data[[iflag]]
-            } else {
-                oceDebug(debug, "transfer @data[\"", names(res@data)[iflag], "\"] to @metadata$flag[\"", fname, "\"]\n", sep="")
-                res@metadata$flags[[fname]] <- res@data[[iflag]]
-            }
-            res@metadata$dataNamesOriginal[[iflag]] <- ""
+            oceDebug(debug, "\"", dnames[iflag], "\" -> \"", fname, "\"\n", sep="")
+            # Handle low-level and high-level names differently.  At least with
+            # test files available to me in April 2021, it seems that the BIO 
+            # dialectd of ODF uses low-level names, so we have e.g. PSALFlag,
+            # but the IML variant uses high-level names, so we have e.g.
+            # "Practical SalinityFlag". We use ODFNames2oceNames to determine
+            # which case it is. Admittedly, this is a guessing game, though,
+            # and I hear that there is a west-coast dialect as well. Sigh.
+            fnameBase <- ODFNames2oceNames(NAME2CODE[[fname]])$names # "" if not <known>Flag
+            oceDebug(debug, "fname=\"", fname, "\"; fnameBase=\"", fnameBase, "\"\n", sep="")
+            flagNamesForMetadata <- c(flagNamesForMetadata, 
+                                      if (length(fnameBase)) fnameBase else fname)
         }
-        ## remove flags from data, and then remove their orig names
+        # Step 2: unduplicate names (e.g. if "salinity" is repeated, second becomes "salinity2")
+        oceDebug(debug, "preliminary  flagNamesForMetadata=c(\"", paste(flagNamesForMetadata, collapse="\", \""), "\")\n", sep="")
+        flagNamesForMetadata <- unduplicateNames(flagNamesForMetadata)
+        oceDebug(debug, "unduplicated flagNamesForMetadata=c(\"", paste(flagNamesForMetadata, collapse="\", \""), "\")\n", sep="")
+        # Step 3: copy "Flag" columns from data to metadata
+        message("names(dataNamesOriginal): ", paste(names(res@metadata$dataNamesOriginal), collapse=","))
+        for (I in seq_along(iflags)) {
+            oceDebug(debug, "move @data[\"", dnames[iflags[I]], "\"] to @metadata$flags[\"", flagNamesForMetadata[I], "\"]\n", sep="")
+            res@metadata$flags[[flagNamesForMetadata[I]]] <- res@data[[iflags[I]]]
+        }
+        if (debug > 1) {
+            oceDebug(debug, "before Step 4: res@metadata$dataNamesOriginal:\n")
+            print(res@metadata$dataNamesOriginal)
+        }
+        # Step 4: remove Flag entries from @metadata$dataNamesOriginal
+        remove <- grep("Flag$", names(res@metadata$dataNamesOriginal))
+        if (length(remove))
+            res@metadata$dataNamesOriginal[remove] <- NULL
+        if (debug > 1) {
+            oceDebug(debug, "after Step 4: res@metadata$dataNamesOriginal:\n")
+            print(res@metadata$dataNamesOriginal)
+        }
+        # Step 5: remove "Flag" entries from @data
         res@data[iflags] <- NULL
-        res@metadata$dataNamesOriginal <- res@metadata$dataNamesOrigina[res@metadata$dataNamesOriginal!=""]
-        ##res@metadata$dataNamesOriginal[[iflags]] <- NULL
+        if (debug > 0) {
+            oceDebug(debug, "after Step 5: str(res@data):\n")
+            cat(str(res@data, 1))
+        }
     }
     if (exists("DATA_TYPE") && DATA_TYPE == "CTD")
         res@metadata$pressureType <- "sea"

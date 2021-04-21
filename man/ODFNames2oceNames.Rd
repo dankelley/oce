@@ -59,9 +59,9 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
 \verb{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                   \cr
 \verb{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                          \cr
 \verb{EWCT_*.*} \tab \code{u}                  \tab Used in \code{adp} and \code{cm} objects                 \cr
-\verb{FFFF_*.*} \tab \code{flagArchaic}        \tab Old flag name, replaced by \code{QCFF}              \cr
+\verb{FFFF_*.*} \tab \code{overall(FFFF)}      \tab Archaic overall flag, replaced by \code{QCFF}       \cr
 \verb{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                   \cr
-\code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                     \cr
+\code{FWETLABS} \tab \code{fwetlabs}           \tab                                                \cr
 \code{GEOP}     \tab \code{geopotential}       \tab                                                \cr
 \code{HCDM}     \tab \code{directionMagnetic}  \tab                                                \cr
 \code{HCDT}     \tab \code{directionTrue}      \tab                                                \cr
@@ -79,7 +79,7 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
 \verb{PRES_*.*} \tab \code{pressure}           \tab Used mainly in \code{ctd} objects                   \cr
 \verb{PSAL_*.*} \tab \code{salinity}           \tab Used mainly in \code{ctd} objects                   \cr
 \verb{PSAR_*.*} \tab \code{par}                \tab Used mainly in \code{ctd} objects                   \cr
-\verb{QCFF_*.*} \tab \code{flag}               \tab Overall flag                                   \cr
+\verb{QCFF_*.*} \tab \code{overall(QCFF)}      \tab Overall flag (see also archaic FFFF)           \cr
 \verb{REFR_*.*} \tab \code{reference}          \tab                                                \cr
 \verb{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objects                   \cr
 \verb{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                   \cr
