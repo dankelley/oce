@@ -3170,6 +3170,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
             tr2 <- format(time.range[2])
         }
         if (abbreviateTimeRange) {
+            oceDebug(debug, "abbreviating time format\n")
             if (time.range[1]$year == time.range[2]$year) {
                 tr2 <- substr(tr2, 6, nchar(tr2)) # remove the "YYYY-"
                 if (time.range[1]$mon == time.range[2]$mon) {
@@ -3187,22 +3188,23 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         oceDebug(debug, "round(time.range[1], 'days'):", format(round(time.range[1], 'days')), "\n")
         oceDebug(debug, "time.range[2]:", format(time.range[2]), "\n")
         oceDebug(debug, "round(time.range[2], 'days'):", format(round(time.range[2], 'days')), "\n")
+        tzone <- c(attr(time.range[1], "tzone"), attr(time.range[2], "tzone"))
+        # Only show tzone if it is UTC (https://github.com/dankelley/oce/issues/1811)
+        tzone <- if (all(tzone == "UTC")) c("", "UTC") else rep("", 2)
         ## The below is not fool-proof, depending on how xlim might have been supplied; see
         ##    https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=14449
         if (diff(as.numeric(time.range)) > 7*86400) {
             label <- paste(tr1, tr2, sep=" to ")
         } else {
-            label <- paste(tr1, attr(time.range[1], "tzone")[1], " to ", tr2,  attr(time.range[2], "tzone")[1], sep="")
+            label <- paste(tr1, tzone[1], " to ", tr2,  tzone[2], sep="")
         }
         if (drawFrequency && is.finite(1/deltat))
             label <- paste(label, "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
-        oceDebug(debug, "label=", label, " at cex.lab=", cex.lab, "\n")
-        ## message("DANNY about to write time range with size cex.lab=", cex.lab, " resulting in ", cex.lab*par('cex'))
+        oceDebug(debug, "label=\"", label, "\" at cex.lab=", cex.lab, "\n", sep="")
         mtext(label, side=if (side==1) 3 else 1, cex=cex.lab*par('cex'), adj=0)
         oceDebug(debug, "cex.axis=", cex.axis, "; par('cex')=", par('cex'), "\n")
     }
     if (nchar(main) > 0) {
-        ## message("DANNIE about to write label with cex.lab=", cex.lab, " resulting in ", cex.lab*par('cex'))
         mtext(main, side=if (side==1) 3 else 1, cex=cex.lab*par('cex'), adj=1)
     }
     oceDebug(debug, vectorShow(z, "z="))
