@@ -65,6 +65,7 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
 \code{GEOP}     \tab \code{geopotential}       \tab                                                \cr
 \code{HCDM}     \tab \code{directionMagnetic}  \tab                                                \cr
 \code{HCDT}     \tab \code{directionTrue}      \tab                                                \cr
+\code{HEAD}     \tab \code{heading}            \tab                                                \cr
 \code{HCSP}     \tab \code{speedHorizontal}    \tab                                                \cr
 \verb{LATD_*.*} \tab \code{latitude}           \tab                                                \cr
 \verb{LOND_*.*} \tab \code{longitude}          \tab                                                \cr
@@ -79,8 +80,10 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
 \verb{PRES_*.*} \tab \code{pressure}           \tab Used mainly in \code{ctd} objects                   \cr
 \verb{PSAL_*.*} \tab \code{salinity}           \tab Used mainly in \code{ctd} objects                   \cr
 \verb{PSAR_*.*} \tab \code{par}                \tab Used mainly in \code{ctd} objects                   \cr
+\verb{PTCH_*.*} \tab \code{pitch}              \tab                                                \cr
 \verb{QCFF_*.*} \tab \code{overall(QCFF)}      \tab Overall flag (see also archaic FFFF)           \cr
 \verb{REFR_*.*} \tab \code{reference}          \tab                                                \cr
+\verb{ROLL_*.*} \tab \code{roll}               \tab                                                \cr
 \verb{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objects                   \cr
 \verb{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                   \cr
 \verb{SNCN_*.*} \tab \code{scanCounter}        \tab Used mainly in \code{ctd} objects                   \cr

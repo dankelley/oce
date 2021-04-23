@@ -325,6 +325,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #'  `GEOP`     \tab `geopotential`       \tab                                                \cr
 #'  `HCDM`     \tab `directionMagnetic`  \tab                                                \cr
 #'  `HCDT`     \tab `directionTrue`      \tab                                                \cr
+#'  `HEAD`     \tab `heading`            \tab                                                \cr
 #'  `HCSP`     \tab `speedHorizontal`    \tab                                                \cr
 #'  `LATD_*.*` \tab `latitude`           \tab                                                \cr
 #'  `LOND_*.*` \tab `longitude`          \tab                                                \cr
@@ -339,8 +340,10 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #'  `PRES_*.*` \tab `pressure`           \tab Used mainly in `ctd` objects                   \cr
 #'  `PSAL_*.*` \tab `salinity`           \tab Used mainly in `ctd` objects                   \cr
 #'  `PSAR_*.*` \tab `par`                \tab Used mainly in `ctd` objects                   \cr
+#'  `PTCH_*.*` \tab `pitch`              \tab                                                \cr
 #'  `QCFF_*.*` \tab `overall(QCFF)`      \tab Overall flag (see also archaic FFFF)           \cr 
 #'  `REFR_*.*` \tab `reference`          \tab                                                \cr
+#'  `ROLL_*.*` \tab `roll`               \tab                                                \cr
 #'  `SIGP_*.*` \tab `sigmaTheta`         \tab Used mainly in `ctd` objects                   \cr
 #'  `SIGT_*.*` \tab `sigmat`             \tab Used mainly in `ctd` objects                   \cr
 #'  `SNCN_*.*` \tab `scanCounter`        \tab Used mainly in `ctd` objects                   \cr
@@ -467,6 +470,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("HCSP", "speedHorizontal", names)
     names <- gsub("HCDM", "directionMagnetic", names)
     names <- gsub("HCDT", "directionTrue", names)
+    names <- gsub("HEAD", "heading", names)
     names <- gsub("LATD", "latitude", names)
     names <- gsub("LOND", "longitude", names)
     names <- gsub("NONE", "noWMOcode", names)
@@ -480,8 +484,10 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("PRES", "pressure", names)
     names <- gsub("PSAL", "salinity", names)
     names <- gsub("PSAR", "par", names)
+    names <- gsub("PTCH", "pitch", names)
     names <- gsub("QCFF", "overall(QCFF)Flag", names)
     names <- gsub("REFR", "reference", names)
+    names <- gsub("ROLL", "roll", names)
     names <- gsub("SIGP", "sigmaTheta", names)
     names <- gsub("SIGT", "sigmat", names) # in a moored ctd file examined 2014-05-15
     names <- gsub("SNCN", "scanCounter", names)
@@ -613,10 +619,13 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression("%"), scale="")
         } else if (1 == length(grep("^volts", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(V), scale="")
+        } else if (1 == length(grep("^True degrees$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(degree), scale="")
         } else if (nchar(ODFunits[i]) == 0) {
             list(unit=expression(), scale="")
         } else {
-            warning("unable to interpret ODFunits[", i, "]='", ODFunits[i], "', for item named '", names[i], "', so making an educated guess using parse() or, as a last-ditch effort, simply copying the string", sep="")
+            print(names)
+            warning("unable to interpret ODFunits[", i, "]='", ODFunits[i], "', for item code-named '", names[i], "', so making an educated guess using parse() or, as a last-ditch effort, simply copying the string", sep="")
             uu <- try(parse(text=ODFunits[i]), silent=TRUE)
             if (class(uu) == "try-error")
                 uu <- ODFunits[i]
@@ -1434,10 +1443,12 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     names(data) <- namesUnits$names
     if (length(NAvalueList)) {
         for (name in names(data)) {
-            bad <- data[[name]] == NAvalueList[[name]]
-            data[[name]][bad] <- NA
-            if (sum(bad) > 0)
-                oceDebug(debug, "set ", sum(bad), " values in '", name, "' to NA, because they matched the NULL_VALUE (", NAvalueList[[name]], ")\n", sep="")
+            if (is.finite(NAvalueList[[name]])) {
+                bad <- data[[name]] == NAvalueList[[name]]
+                data[[name]][bad] <- NA
+                if (sum(bad) > 0)
+                    oceDebug(debug, "set ", sum(bad), " values in '", name, "' to NA, because they matched the NULL_VALUE (", NAvalueList[[name]], ")\n", sep="")
+            }
         }
     }
     ##. if (length(NAvalue) > 0 && !is.na(NAvalue)) {

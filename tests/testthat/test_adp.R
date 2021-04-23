@@ -95,7 +95,8 @@ test_that("adpEnsembleAverage() produces correctly-dimensioned results", {
 f <- "~/Dropbox/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
 if (file.exists(f)) {
     test_that("details of a local RDI", {
-              d <- read.oce(f, 1, 3, 1, 0)
+              # args for read.adp.rdi() are file, from, to, by and tz
+              d <- expect_silent(read.oce(f, 1, 3, 1, "UTC"))
               expect_equal(d[["time"]], as.POSIXct(c("2008-06-25 10:00:00",
                                                      "2008-06-25 10:00:10",
                                                      "2008-06-25 10:00:20"), tz="UTC"))

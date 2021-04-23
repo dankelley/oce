@@ -2062,14 +2062,15 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
 #' plotTS(x) # just the TS
 read.oce <- function(file, ...)
 {
+    dots <- list(...)
+    debug <- if ("debug" %in% names(dots)) dots$debug else 0L
+    debug <- round(max(0L, debug))
     if (missing(file))
         stop("must supply 'file'")
     if (is.character(file) && "http://" != substr(file, 1, 7) && !file.exists(file))
         stop("In read.oce() : cannot open '", file, "' because there is no such file or directory", call.=FALSE)
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
         stop("empty file")
-    dots <- list(...)
-    debug <- if ("debug" %in% names(dots)) dots$debug else 0
     type <- oceMagic(file, debug=debug-1)
     oceDebug(debug,
              "read.oce(\"", as.character(file), "\", ...) inferred type=\"", type, "\"\n",
@@ -2078,7 +2079,7 @@ read.oce <- function(file, ...)
         stop("empty file")
     ##> OLD: deparse is unhelpful if "file" is a variable in the calling code
     ##> OLD: processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    processingLog <- paste('read.oce("', file, '"', ifelse(length(dots), ", ...)", ")"), sep="")
+    processingLog <- paste('read.oce("', file, '"', ifelse(length(list(...)), ", ...)", ")"), sep="")
 
     ## read.index if (type == "index")
     ## read.index     return(read.index(file))
@@ -2118,7 +2119,7 @@ read.oce <- function(file, ...)
     } else if (type == "ctd/odf" || type == "mctd/odf" || type == "mvctd/odf") {
         res <- read.ctd.odf(file, processingLog=processingLog, ...)
     } else if (length(grep(".odf$", type))) {
-        res <- read.odf(file, ..., debug=debug, ...)
+        res <- read.odf(file, ..., ...)
     } else if (type == "mtg/odf") {
         ## FIXME: document this data type
         ## Moored tide gauge: returns a data frame.
