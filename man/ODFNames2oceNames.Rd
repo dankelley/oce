@@ -37,65 +37,95 @@ A vector of strings.
 Translate data names in the ODF convention to similar names in the Oce convention.
 }
 \details{
-The following table gives the regular expressions that define recognized
-ODF names, along with the translated names as used in oce objects.
-If an item is repeated, then the second one has a \code{2} appended
-at the end, etc.  Note that quality-control columns (with names starting with
-\code{"QQQQ"}) are not handled with regular expressions. Instead, if such
-a flag is found in the i-th column, then a name is constructed by taking
-the name of the (i-1)-th column and appending \code{"Flag"}.
+The following table gives the recognized ODF code names for variables,
+along with the translated names as used in oce objects. Note that the
+code names are appended with strings such as \code{"_01"}, \code{"_02"}, etc,
+for repeats. The converted name for an \code{"_01"} item is as shown below,
+and for e.g. \code{"_02"} a suffix 2 is added to the oce name, etc.
+Note that quality-control items (with names starting with \code{"QQQQ"})
+are given matching names.
 \tabular{lll}{
-\strong{Regexp} \tab \strong{Result}           \tab \strong{Notes}                                      \cr
-\verb{ALTB_*.*} \tab \code{altimeter}          \tab                                                \cr
-\verb{ATTU_*.*} \tab \code{attenuation}        \tab                                                \cr
-\verb{BATH_*.*} \tab \code{barometricDepth}    \tab Barometric depth (of sensor? of water column?) \cr
-\verb{BEAM_*.*} \tab \code{a}                  \tab Used in \code{adp} objects                          \cr
-\verb{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                          \cr
-\verb{CRAT_*.*} \tab \code{conductivity}       \tab Conductivity ratio                             \cr
-\verb{COND_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)   \cr
-\verb{CNDC_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)   \cr
-\verb{DCHG_*.*} \tab \code{discharge}          \tab                                                \cr
-\verb{DEPH_*.*} \tab \code{pressure}           \tab Sensor depth below sea level                   \cr
-\verb{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                   \cr
-\verb{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                          \cr
-\verb{EWCT_*.*} \tab \code{u}                  \tab Used in \code{adp} and \code{cm} objects                 \cr
-\verb{FFFF_*.*} \tab \code{overall(FFFF)}      \tab Archaic overall flag, replaced by \code{QCFF}       \cr
-\verb{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                   \cr
-\code{FWETLABS} \tab \code{fwetlabs}           \tab                                                \cr
-\code{GEOP}     \tab \code{geopotential}       \tab                                                \cr
-\code{HCDM}     \tab \code{directionMagnetic}  \tab                                                \cr
-\code{HCDT}     \tab \code{directionTrue}      \tab                                                \cr
-\code{HEAD}     \tab \code{heading}            \tab                                                \cr
-\code{HCSP}     \tab \code{speedHorizontal}    \tab                                                \cr
-\verb{LATD_*.*} \tab \code{latitude}           \tab                                                \cr
-\verb{LOND_*.*} \tab \code{longitude}          \tab                                                \cr
-\verb{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                          \cr
-\verb{NONE_*.*} \tab \code{noWMOcode}          \tab                                                \cr
-\verb{OCUR_*.*} \tab \code{oxygenCurrent}      \tab Used mainly in \code{ctd} objects                   \cr
-\verb{OSAT_*.*} \tab \code{oxygenSaturation}   \tab Used mainly in \code{ctd} objects                   \cr
-\verb{OTMP_*.*} \tab \code{oxygenTemperature}  \tab Used mainly in \code{ctd} objects                   \cr
-\verb{OXYV_*.*} \tab \code{oxygenVoltage}      \tab Used mainly in \code{ctd} objects                   \cr
-\verb{PHPH_*.*} \tab \code{pH}                 \tab                                                \cr
-\verb{POTM_*.*} \tab \code{theta}              \tab Used mainly in \code{ctd} objects                   \cr
-\verb{PRES_*.*} \tab \code{pressure}           \tab Used mainly in \code{ctd} objects                   \cr
-\verb{PSAL_*.*} \tab \code{salinity}           \tab Used mainly in \code{ctd} objects                   \cr
-\verb{PSAR_*.*} \tab \code{par}                \tab Used mainly in \code{ctd} objects                   \cr
-\verb{PTCH_*.*} \tab \code{pitch}              \tab                                                \cr
-\verb{QCFF_*.*} \tab \code{overall(QCFF)}      \tab Overall flag (see also archaic FFFF)           \cr
-\verb{REFR_*.*} \tab \code{reference}          \tab                                                \cr
-\verb{ROLL_*.*} \tab \code{roll}               \tab                                                \cr
-\verb{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objects                   \cr
-\verb{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                   \cr
-\verb{SNCN_*.*} \tab \code{scanCounter}        \tab Used mainly in \code{ctd} objects                   \cr
-\verb{SPAR_*.*} \tab \code{SPAR}               \tab                                                \cr
-\verb{SPVA_*.*} \tab \code{specificVolumeAnomaly} \tab                                             \cr
-\verb{SYTM_*.*} \tab \code{time}               \tab Used in many objects                           \cr
-\verb{TE90_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                   \cr
-\verb{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                   \cr
-\verb{TOTP_*.*} \tab \code{pressureAbsolute}   \tab Used mainly in \code{ctd} objects                   \cr
-\verb{UNKN_*.*} \tab \code{-}                  \tab The result is context-dependent                \cr
-\verb{VAIS_*.*} \tab \code{BVFrequency}        \tab                                                \cr
-\verb{VCSP_*.*} \tab \code{w}                  \tab Used in \code{adp} objects                          \cr
+\strong{ODF name} \tab \strong{Oce name}      \tab \strong{Notes}                                    \cr
+\code{ACO2} \tab \code{CO2Atmosphere}         \tab                                              \cr
+\code{ALTB} \tab \code{altimeter}             \tab                                              \cr
+\code{ALKW} \tab \code{alkalinity}            \tab                                              \cr
+\code{AMON} \tab \code{ammonium}              \tab                                              \cr
+\code{ATMP} \tab \code{pressureAtmosphere}    \tab                                              \cr
+\code{ATTU} \tab \code{attenuation}           \tab                                              \cr
+\code{BATH} \tab \code{barometricDepth}       \tab                                              \cr
+\code{BEAM} \tab \code{a}                     \tab                                              \cr
+\code{CNTR} \tab \code{scan}                  \tab                                              \cr
+\code{CPHL} \tab \code{chlorophyll}           \tab                                              \cr
+\code{CRAT} \tab \code{conductivity}          \tab Conductivity ratio (may have spurious unit)  \cr
+\code{COND} \tab \code{conductivity}          \tab Conductivity in mS/cm or S/m                 \cr
+\code{CNDC} \tab \code{conductivity}          \tab Conductivity in mS/cm or S/m                 \cr
+\code{DCHG} \tab \code{discharge}             \tab                                              \cr
+\code{DENS} \tab \code{density}               \tab                                              \cr
+\code{DEPH} \tab \code{pressure}              \tab                                              \cr
+\code{DOXY} \tab \code{oxygen}                \tab                                              \cr
+\code{DPDT} \tab \code{dpdt}                  \tab                                              \cr
+\code{DRYT} \tab \code{temperatureDryBulb}    \tab                                              \cr
+\code{ERRV} \tab \code{error}                 \tab                                              \cr
+\code{EWCT} \tab \code{u}                     \tab                                              \cr
+\code{FFFF} \tab \code{overall(FFFF)}         \tab Archaic overall flag, replaced by \code{QCFF}     \cr
+\code{FLOR} \tab \code{fluorometer}           \tab                                              \cr
+\code{FWETLABS} \tab \code{fwetlabs}          \tab                                              \cr
+\code{GEOP} \tab \code{geopotential}          \tab                                              \cr
+\code{GSPD} \tab \code{windSpeedGust}         \tab                                              \cr
+\code{HCDM} \tab \code{directionMagnetic}     \tab                                              \cr
+\code{HCDT} \tab \code{directionTrue}         \tab                                              \cr
+\code{HCSP} \tab \code{speedHorizontal}       \tab                                              \cr
+\code{HEAD} \tab \code{heading}               \tab                                              \cr
+\code{LABT} \tab \code{temperatureLaboratory} \tab                                              \cr
+\code{LATD} \tab \code{latitude}              \tab                                              \cr
+\code{LOND} \tab \code{longitude}             \tab                                              \cr
+\code{LPHT} \tab \code{pHLaboratory}          \tab                                              \cr
+\code{NSCT} \tab \code{v}                     \tab                                              \cr
+\code{NONE} \tab \code{noWMOcode}             \tab                                              \cr
+\code{NTRI} \tab \code{nitrite}               \tab                                              \cr
+\code{NTRZ} \tab \code{nitrite+nitrate}       \tab                                              \cr
+\code{OCUR} \tab \code{oxygenCurrent}         \tab                                              \cr
+\code{OSAT} \tab \code{oxygenSaturation}      \tab                                              \cr
+\code{OTMP} \tab \code{oxygenTemperature}     \tab                                              \cr
+\code{OXYV} \tab \code{oxygenVoltage}         \tab                                              \cr
+\code{OXV_} \tab \code{oxygenVoltageRaw}      \tab                                              \cr
+\code{PCO2} \tab \code{CO2}                   \tab                                              \cr
+\code{PHA_} \tab \code{phaeopigment}          \tab                                              \cr
+\code{PHOS} \tab \code{phosphate}             \tab                                              \cr
+\code{PHPH} \tab \code{pH}                    \tab                                              \cr
+\code{PHT_} \tab \code{pHTotal}               \tab                                              \cr
+\code{PHY_} \tab \code{phytoplanktonCount}    \tab                                              \cr
+\code{POTM} \tab \code{theta}                 \tab                                              \cr
+\code{PRES} \tab \code{pressure}              \tab                                              \cr
+\code{PSAL} \tab \code{salinity}              \tab                                              \cr
+\code{PSAR} \tab \code{par}                   \tab                                              \cr
+\code{PTCH} \tab \code{pitch}                 \tab                                              \cr
+\code{QCFF} \tab \code{overall(QCFF)}         \tab Overall flag (see also archaic FFFF)         \cr
+\code{REFR} \tab \code{reference}             \tab                                              \cr
+\code{RELH} \tab \code{humidityRelative}      \tab                                              \cr
+\code{ROLL} \tab \code{roll}                  \tab                                              \cr
+\code{SECC} \tab \code{SecchiDepth}           \tab                                              \cr
+\code{SIGP} \tab \code{sigmaTheta}            \tab                                              \cr
+\code{SIGT} \tab \code{sigmat}                \tab                                              \cr
+\code{SLCA} \tab \code{silicate}              \tab                                              \cr
+\code{SNCN} \tab \code{scanCounter}           \tab                                              \cr
+\code{SPAR} \tab \code{SPAR}                  \tab                                              \cr
+\code{SPVA} \tab \code{specificVolumeAnomaly} \tab                                              \cr
+\code{SYTM} \tab \code{time}                  \tab                                              \cr
+\code{TE90} \tab \code{temperature}           \tab                                              \cr
+\code{TEMP} \tab \code{temperature}           \tab                                              \cr
+\code{TICW} \tab \code{totalInorganicCarbon}  \tab                                              \cr
+\code{TILT} \tab \code{tilt}                  \tab                                              \cr
+\code{TOTP} \tab \code{pressureAbsolute}      \tab                                              \cr
+\code{TRB_} \tab \code{turbidity}             \tab                                              \cr
+\code{UNKN} \tab \code{-}                     \tab                                              \cr
+\code{VAIS} \tab \code{BVFrequency}           \tab                                              \cr
+\code{VCSP} \tab \code{w}                     \tab                                              \cr
+\code{VMXL} \tab \code{waveHeightMaximum}     \tab                                              \cr
+\code{VRMS} \tab \code{waveHeightMean}        \tab                                              \cr
+\code{VTCA} \tab \code{wavePeriod}            \tab                                              \cr
+\code{WDIR} \tab \code{windDirection}         \tab                                              \cr
+\code{WSPD} \tab \code{windSpeed}             \tab                                              \cr
 }
 Any code not shown in the list is transferred to the oce object without renaming, apart from
 the adjustment of suffix numbers. The following code have been seen in data files from

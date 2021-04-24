@@ -297,65 +297,95 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #'
 #' Translate data names in the ODF convention to similar names in the Oce convention.
 #'
-#' The following table gives the regular expressions that define recognized
-#' ODF names, along with the translated names as used in oce objects.
-#' If an item is repeated, then the second one has a `2` appended
-#' at the end, etc.  Note that quality-control columns (with names starting with
-#' `"QQQQ"`) are not handled with regular expressions. Instead, if such
-#' a flag is found in the i-th column, then a name is constructed by taking
-#' the name of the (i-1)-th column and appending `"Flag"`.
+#' The following table gives the recognized ODF code names for variables,
+#' along with the translated names as used in oce objects. Note that the
+#' code names are appended with strings such as `"_01"`, `"_02"`, etc,
+#' for repeats. The converted name for an `"_01"` item is as shown below,
+#' and for e.g. `"_02"` a suffix 2 is added to the oce name, etc.
+#' Note that quality-control items (with names starting with `"QQQQ"`)
+#' are given matching names.
 #' \tabular{lll}{
-#'  **Regexp** \tab **Result**           \tab **Notes**                                      \cr
-#'  `ALTB_*.*` \tab `altimeter`          \tab                                                \cr
-#'  `ATTU_*.*` \tab `attenuation`        \tab                                                \cr
-#'  `BATH_*.*` \tab `barometricDepth`    \tab Barometric depth (of sensor? of water column?) \cr
-#'  `BEAM_*.*` \tab `a`                  \tab Used in `adp` objects                          \cr
-#'  `CNTR_*.*` \tab `scan`               \tab Used in `ctd` objects                          \cr
-#'  `CRAT_*.*` \tab `conductivity`       \tab Conductivity ratio                             \cr
-#'  `COND_*.*` \tab `conductivity`       \tab Conductivity in mS/cm or S/m (unit detected)   \cr
-#'  `CNDC_*.*` \tab `conductivity`       \tab Conductivity in mS/cm or S/m (unit detected)   \cr
-#'  `DCHG_*.*` \tab `discharge`          \tab                                                \cr
-#'  `DEPH_*.*` \tab `pressure`           \tab Sensor depth below sea level                   \cr
-#'  `DOXY_*.*` \tab `oxygen`             \tab Used mainly in `ctd` objects                   \cr
-#'  `ERRV_*.*` \tab `error`              \tab Used in `adp` objects                          \cr
-#'  `EWCT_*.*` \tab `u`                  \tab Used in `adp` and `cm` objects                 \cr
-#'  `FFFF_*.*` \tab `overall(FFFF)`      \tab Archaic overall flag, replaced by `QCFF`       \cr
-#'  `FLOR_*.*` \tab `fluorometer`        \tab Used mainly in `ctd` objects                   \cr
-#'  `FWETLABS` \tab `fwetlabs`           \tab                                                \cr
-#'  `GEOP`     \tab `geopotential`       \tab                                                \cr
-#'  `HCDM`     \tab `directionMagnetic`  \tab                                                \cr
-#'  `HCDT`     \tab `directionTrue`      \tab                                                \cr
-#'  `HEAD`     \tab `heading`            \tab                                                \cr
-#'  `HCSP`     \tab `speedHorizontal`    \tab                                                \cr
-#'  `LATD_*.*` \tab `latitude`           \tab                                                \cr
-#'  `LOND_*.*` \tab `longitude`          \tab                                                \cr
-#'  `NSCT_*.*` \tab `v`                  \tab Used in `adp` objects                          \cr
-#'  `NONE_*.*` \tab `noWMOcode`          \tab                                                \cr
-#'  `OCUR_*.*` \tab `oxygenCurrent`      \tab Used mainly in `ctd` objects                   \cr
-#'  `OSAT_*.*` \tab `oxygenSaturation`   \tab Used mainly in `ctd` objects                   \cr
-#'  `OTMP_*.*` \tab `oxygenTemperature`  \tab Used mainly in `ctd` objects                   \cr
-#'  `OXYV_*.*` \tab `oxygenVoltage`      \tab Used mainly in `ctd` objects                   \cr
-#'  `PHPH_*.*` \tab `pH`                 \tab                                                \cr
-#'  `POTM_*.*` \tab `theta`              \tab Used mainly in `ctd` objects                   \cr
-#'  `PRES_*.*` \tab `pressure`           \tab Used mainly in `ctd` objects                   \cr
-#'  `PSAL_*.*` \tab `salinity`           \tab Used mainly in `ctd` objects                   \cr
-#'  `PSAR_*.*` \tab `par`                \tab Used mainly in `ctd` objects                   \cr
-#'  `PTCH_*.*` \tab `pitch`              \tab                                                \cr
-#'  `QCFF_*.*` \tab `overall(QCFF)`      \tab Overall flag (see also archaic FFFF)           \cr 
-#'  `REFR_*.*` \tab `reference`          \tab                                                \cr
-#'  `ROLL_*.*` \tab `roll`               \tab                                                \cr
-#'  `SIGP_*.*` \tab `sigmaTheta`         \tab Used mainly in `ctd` objects                   \cr
-#'  `SIGT_*.*` \tab `sigmat`             \tab Used mainly in `ctd` objects                   \cr
-#'  `SNCN_*.*` \tab `scanCounter`        \tab Used mainly in `ctd` objects                   \cr
-#'  `SPAR_*.*` \tab `SPAR`               \tab                                                \cr
-#'  `SPVA_*.*` \tab `specificVolumeAnomaly` \tab                                             \cr
-#'  `SYTM_*.*` \tab `time`               \tab Used in many objects                           \cr
-#'  `TE90_*.*` \tab `temperature`        \tab Used mainly in `ctd` objects                   \cr
-#'  `TEMP_*.*` \tab `temperature`        \tab Used mainly in `ctd` objects                   \cr
-#'  `TOTP_*.*` \tab `pressureAbsolute`   \tab Used mainly in `ctd` objects                   \cr
-#'  `UNKN_*.*` \tab `-`                  \tab The result is context-dependent                \cr
-#'  `VAIS_*.*` \tab `BVFrequency`        \tab                                                \cr
-#'  `VCSP_*.*` \tab `w`                  \tab Used in `adp` objects                          \cr
+#' **ODF name** \tab **Oce name**      \tab **Notes**                                    \cr
+#' `ACO2` \tab `CO2Atmosphere`         \tab                                              \cr
+#' `ALTB` \tab `altimeter`             \tab                                              \cr
+#' `ALKW` \tab `alkalinity`            \tab                                              \cr
+#' `AMON` \tab `ammonium`              \tab                                              \cr
+#' `ATMP` \tab `pressureAtmosphere`    \tab                                              \cr
+#' `ATTU` \tab `attenuation`           \tab                                              \cr
+#' `BATH` \tab `barometricDepth`       \tab                                              \cr
+#' `BEAM` \tab `a`                     \tab                                              \cr
+#' `CNTR` \tab `scan`                  \tab                                              \cr
+#' `CPHL` \tab `chlorophyll`           \tab                                              \cr
+#' `CRAT` \tab `conductivity`          \tab Conductivity ratio (may have spurious unit)  \cr
+#' `COND` \tab `conductivity`          \tab Conductivity in mS/cm or S/m                 \cr
+#' `CNDC` \tab `conductivity`          \tab Conductivity in mS/cm or S/m                 \cr
+#' `DCHG` \tab `discharge`             \tab                                              \cr
+#' `DENS` \tab `density`               \tab                                              \cr
+#' `DEPH` \tab `pressure`              \tab                                              \cr
+#' `DOXY` \tab `oxygen`                \tab                                              \cr
+#' `DPDT` \tab `dpdt`                  \tab                                              \cr
+#' `DRYT` \tab `temperatureDryBulb`    \tab                                              \cr
+#' `ERRV` \tab `error`                 \tab                                              \cr
+#' `EWCT` \tab `u`                     \tab                                              \cr
+#' `FFFF` \tab `overall(FFFF)`         \tab Archaic overall flag, replaced by `QCFF`     \cr
+#' `FLOR` \tab `fluorometer`           \tab                                              \cr
+#' `FWETLABS` \tab `fwetlabs`          \tab                                              \cr
+#' `GEOP` \tab `geopotential`          \tab                                              \cr
+#' `GSPD` \tab `windSpeedGust`         \tab                                              \cr
+#' `HCDM` \tab `directionMagnetic`     \tab                                              \cr
+#' `HCDT` \tab `directionTrue`         \tab                                              \cr
+#' `HCSP` \tab `speedHorizontal`       \tab                                              \cr
+#' `HEAD` \tab `heading`               \tab                                              \cr
+#' `LABT` \tab `temperatureLaboratory` \tab                                              \cr
+#' `LATD` \tab `latitude`              \tab                                              \cr
+#' `LOND` \tab `longitude`             \tab                                              \cr
+#' `LPHT` \tab `pHLaboratory`          \tab                                              \cr
+#' `NSCT` \tab `v`                     \tab                                              \cr
+#' `NONE` \tab `noWMOcode`             \tab                                              \cr
+#' `NTRI` \tab `nitrite`               \tab                                              \cr
+#' `NTRZ` \tab `nitrite+nitrate`       \tab                                              \cr
+#' `OCUR` \tab `oxygenCurrent`         \tab                                              \cr
+#' `OSAT` \tab `oxygenSaturation`      \tab                                              \cr
+#' `OTMP` \tab `oxygenTemperature`     \tab                                              \cr
+#' `OXYV` \tab `oxygenVoltage`         \tab                                              \cr
+#' `OXV_` \tab `oxygenVoltageRaw`      \tab                                              \cr
+#' `PCO2` \tab `CO2`                   \tab                                              \cr
+#' `PHA_` \tab `phaeopigment`          \tab                                              \cr
+#' `PHOS` \tab `phosphate`             \tab                                              \cr
+#' `PHPH` \tab `pH`                    \tab                                              \cr
+#' `PHT_` \tab `pHTotal`               \tab                                              \cr
+#' `PHY_` \tab `phytoplanktonCount`    \tab                                              \cr
+#' `POTM` \tab `theta`                 \tab                                              \cr
+#' `PRES` \tab `pressure`              \tab                                              \cr
+#' `PSAL` \tab `salinity`              \tab                                              \cr
+#' `PSAR` \tab `par`                   \tab                                              \cr
+#' `PTCH` \tab `pitch`                 \tab                                              \cr
+#' `QCFF` \tab `overall(QCFF)`         \tab Overall flag (see also archaic FFFF)         \cr
+#' `REFR` \tab `reference`             \tab                                              \cr
+#' `RELH` \tab `humidityRelative`      \tab                                              \cr
+#' `ROLL` \tab `roll`                  \tab                                              \cr
+#' `SECC` \tab `SecchiDepth`           \tab                                              \cr
+#' `SIGP` \tab `sigmaTheta`            \tab                                              \cr
+#' `SIGT` \tab `sigmat`                \tab                                              \cr
+#' `SLCA` \tab `silicate`              \tab                                              \cr
+#' `SNCN` \tab `scanCounter`           \tab                                              \cr
+#' `SPAR` \tab `SPAR`                  \tab                                              \cr
+#' `SPVA` \tab `specificVolumeAnomaly` \tab                                              \cr
+#' `SYTM` \tab `time`                  \tab                                              \cr
+#' `TE90` \tab `temperature`           \tab                                              \cr
+#' `TEMP` \tab `temperature`           \tab                                              \cr
+#' `TICW` \tab `totalInorganicCarbon`  \tab                                              \cr
+#' `TILT` \tab `tilt`                  \tab                                              \cr
+#' `TOTP` \tab `pressureAbsolute`      \tab                                              \cr
+#' `TRB_` \tab `turbidity`             \tab                                              \cr
+#' `UNKN` \tab `-`                     \tab                                              \cr
+#' `VAIS` \tab `BVFrequency`           \tab                                              \cr
+#' `VCSP` \tab `w`                     \tab                                              \cr
+#' `VMXL` \tab `waveHeightMaximum`     \tab                                              \cr
+#' `VRMS` \tab `waveHeightMean`        \tab                                              \cr
+#' `VTCA` \tab `wavePeriod`            \tab                                              \cr
+#' `WDIR` \tab `windDirection`         \tab                                              \cr
+#' `WSPD` \tab `windSpeed`             \tab                                              \cr
 #' }
 #' Any code not shown in the list is transferred to the oce object without renaming, apart from
 #' the adjustment of suffix numbers. The following code have been seen in data files from
@@ -450,36 +480,55 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     ## really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
     ## or whatever), this is a place to look.
     oceDebug(debug, "STAGE 1 names: ", paste(names, collapse=" "), "\n")
+    names <- gsub("ACO2", "CO2Atmosphere", names)
     names <- gsub("ALTB", "altimeter", names)
+    names <- gsub("ALKW", "alkalinity", names)
+    names <- gsub("AMON", "ammonium", names)
+    names <- gsub("ATMP", "pressureAtmosphere", names)
     names <- gsub("ATTU", "attenuation", names)
     names <- gsub("BATH", "waterDepth", names) # FIXME: is this water column depth or sensor depth?
     names <- gsub("BEAM", "a", names)  # FIXME: is this sensible?
     names <- gsub("CNTR", "scan", names)
+    names <- gsub("CPHL", "chlorophyll", names)
     names <- gsub("CRAT", "conductivity", names)
     names <- gsub("COND", "conductivity", names)
     names <- gsub("CNDC", "conductivity", names)
     names <- gsub("DCHG", "discharge", names)
+    names <- gsub("DENS", "density", names)
     names <- gsub("DEPH", "depth", names)
     names <- gsub("DOXY", "oxygen", names)
+    names <- gsub("DPDT", "dpdt", names)
+    names <- gsub("DRYT", "temperatureDryBulb", names)
     names <- gsub("ERRV", "error", names)
     names <- gsub("EWCT", "u", names)
     names <- gsub("FFFF", "overall(FFFF)Flag", names)
     names <- gsub("FLOR", "fluorometer", names)
     names <- gsub("FWETLABS", "fwetlabs", names) # FIXME: what is this?
     names <- gsub("GEOP", "geopotential", names)
+    names <- gsub("GSPD", "windSpeedGust", names)
     names <- gsub("HCSP", "speedHorizontal", names)
     names <- gsub("HCDM", "directionMagnetic", names)
     names <- gsub("HCDT", "directionTrue", names)
     names <- gsub("HEAD", "heading", names)
+    names <- gsub("LABT", "temperatureLaboratory", names)
     names <- gsub("LATD", "latitude", names)
     names <- gsub("LOND", "longitude", names)
+    names <- gsub("LPHT", "pHLaboratory", names)
     names <- gsub("NONE", "noWMOcode", names)
+    names <- gsub("NTRI", "nitrite", names)
+    names <- gsub("NTRZ", "nitrite+nitrate", names)
     names <- gsub("NSCT", "v", names)
     names <- gsub("OCUR", "oxygenCurrent", names)
     names <- gsub("OSAT", "oxygenSaturation", names)
     names <- gsub("OTMP", "oxygenTemperature", names)
     names <- gsub("OXYV", "oxygenVoltage", names)
+    names <- gsub("OXV_", "oxygenVoltageRaw", names)
+    names <- gsub("PCO2", "CO2", names)
+    names <- gsub("PHA_", "phaeopigment", names)
+    names <- gsub("PHOS", "phosphate", names)
     names <- gsub("PHPH", "pH", names)
+    names <- gsub("PHT_", "pHTotal", names)
+    names <- gsub("PHY_", "phytoplanktonCount", names)
     names <- gsub("POTM", "theta", names) # in a moored ctd file examined 2014-05-15
     names <- gsub("PRES", "pressure", names)
     names <- gsub("PSAL", "salinity", names)
@@ -487,19 +536,30 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("PTCH", "pitch", names)
     names <- gsub("QCFF", "overall(QCFF)Flag", names)
     names <- gsub("REFR", "reference", names)
+    names <- gsub("RELH", "humdidityRelative", names)
     names <- gsub("ROLL", "roll", names)
+    names <- gsub("SECC", "SecchiDepth", names)
     names <- gsub("SIGP", "sigmaTheta", names)
     names <- gsub("SIGT", "sigmat", names) # in a moored ctd file examined 2014-05-15
+    names <- gsub("SLCA", "silicate", names)
     names <- gsub("SNCN", "scanCounter", names)
     names <- gsub("SPAR", "SPAR", names)
     names <- gsub("SPVA", "specificVolumeAnomaly", names)
     names <- gsub("SYTM", "time", names) # in a moored ctd file examined 2014-05-15
     names <- gsub("TE90", "temperature", names)
     names <- gsub("TEMP", "temperature", names)
+    names <- gsub("TICW", "totalInorganicCarbon", names)
+    names <- gsub("TILT", "tilt", names)
     names <- gsub("TOTP", "pressureAbsolute", names)
+    names <- gsub("TRB_", "turbidity", names)
     names <- gsub("UNKN", "unknown", names)
     names <- gsub("VAIS", "BVFrequency", names)
     names <- gsub("VCSP", "w", names)
+    names <- gsub("VMXL", "waveHeightMaximum", names)
+    names <- gsub("VRMS", "waveHeightMean", names)
+    names <- gsub("VTCA", "wavePeriod", names)
+    names <- gsub("WDIR", "windDirection", names)
+    names <- gsub("WSPD", "windSpeed", names)
     ## Fix up suffixes.
     names <- gsub("_[0-9][0-9]", "", names)
     oceDebug(debug, "STAGE 2 names: ", paste(names, collapse=" "), "\n")
@@ -518,117 +578,136 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         ## original code expected kg/m^3 but then (issue 1051) I ran
         ## across an ODF file that wrote density as Kg/m^3.
         oceDebug(debug, paste("ODFnames[",i,"]='",ODFnames[i],"', names[",i,"]='", names[i], "', ODFunits[", i, "]='", ODFunits[i], "'\n", sep=""))
-        units[[names[i]]] <- if (ODFunits[i] == "code") {
+        thisUnit <- trimws(ODFunits[i])
+        units[[names[i]]] <- if (thisUnit == "10**3cells/L") {
+            list(unit=expression(10^3*cells/l), scale="")
+        } else if (thisUnit == "code") {
             list(unit=expression(), scale="")
-        } else if (ODFunits[i] == "counts") {
+        } else if (thisUnit == "counts") {
             list(unit=expression(), scale="")
-        } else if (ODFunits[i] == "db") {
+        } else if (thisUnit == "db") {
             list(unit=expression(dbar), scale="")
-        } else if (ODFunits[i] == "decibars") {
+        } else if (thisUnit == "decibars") {
             list(unit=expression(dbar), scale="")
-        } else if (1 == length(grep("^deg(ree)?(s)?$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (grepl("^deg(ree)?(s)?$", thisUnit, ignore.case=TRUE)) {
             list(unit=expression(degree), scale="")
-        } else if (1 == length(grep("^I[P]?TS-68, deg C$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "degrees C" || thisUnit == "Degrees C") {
+            list(unit=expression(degree*C), scale="ITS-90") # guess on scale
+        } else if (thisUnit == "IPTS-68, deg C" || thisUnit == "ITS-68, deg C") {
             ## handles both the correct IPTS and the incorrect ITS.
             list(unit=expression(degree*C), scale="IPTS-68")
-        } else if (ODFunits[i] == "degrees C") {
-            ## guess on scale
-            list(unit=expression(degree*C), scale="ITS-90")
-        } else if (1 == length(grep("^FTU$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "FTU") {
             list(unit=expression(FTU), scale="")
-        } else if (ODFunits[i] == "ITS-90, deg C") {
+        } else if (thisUnit == "g") {
+            list(unit=expression(g), scale="")
+        } else if (thisUnit == "GMT") {
+            list(unit=expression(), scale="")
+        } else if (thisUnit == "hPa") {
+            list(unit=expression(hPa), scale="")
+        } else if (thisUnit == "ITS-90, deg C4") {
             list(unit=expression(degree*C), scale="ITS-90")
-        } else if (1 == length(grep("^hertz", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "hertz" || thisUnit == "Hertz") {
             list(unit=expression(Hz), scale="")
-        } else if (1 == length(grep("^m$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "kg/m^3" || thisUnit == "kg/m**3") {
+            list(unit=expression(kg/m^3), scale="")
+        } else if (thisUnit == "m") {
             list(unit=expression(m), scale="")
-        } else if (1 == length(grep("^m\\*\\*3/s$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "m**3/s") {
             list(unit=expression(m^3/s), scale="")
-        } else if (1 == length(grep("^metres$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "metres") {
             list(unit=expression(m), scale="")
-        } else if (ODFunits[i] == "m**3/kg") {
+        } else if (thisUnit == "m**3/kg") {
             list(unit=expression(m^3/kg), scale="")
-        } else if (ODFunits[i] == "mg/m^3") {
+        } else if (thisUnit == "mg/m^3") {
             list(unit=expression(mg/m^3), scale="")
-        } else if (ODFunits[i] == "mg/m**3") {
+        } else if (thisUnit == "mg/m**3") {
             list(unit=expression(mg/m^3), scale="")
-        } else if (ODFunits[i] == "ml/l") {
+        } else if (thisUnit == "ml/l") {
             list(unit=expression(ml/l), scale="")
-        } else if (1 == length(grep("^\\s*m/s\\s*$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "m/s" || thisUnit == "M/s") {
             list(unit=expression(m/s), scale="")
-        } else if (1 == length(grep("^\\s*m/sec\\s*$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "m/sec") { #1 == length(grep("^\\s*m/sec\\s*$", thisUnit, ignore.case=TRUE))) {
             list(unit=expression(m/s), scale="")
-        } else if (1 == length(grep("^\\s*m\\^-1/sr\\s*$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "m^-1/sr") { #1 == length(grep("^\\s*m\\^-1/sr\\s*$", thisUnit, ignore.case=TRUE))) {
             list(unit=expression(1/m/sr), scale="")
-        } else if (1 == length(grep("^\\s*mho[s]{0,1}/m\\s*$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (grepl("^\\s*mho[s]{0,1}/m\\s*$", thisUnit, ignore.case=TRUE)) {
             ##20200207 warning('Changed unit mho/m to S/m for conductivity')
             list(unit=expression(S/m), scale="")
-        #} else if (1 == length(grep("^\\s*micro[ ]?mols/m2/s\\s*$", ODFunits[i], ignore.case=TRUE))) {
+        #} else if (1 == length(grep("^\\s*micro[ ]?mols/m2/s\\s*$", thisUnit, ignore.case=TRUE))) {
         #    list(unit=expression(mu*mol/m^2/s), scale="")
-        } else if (1 == length(grep("^\\s*mmho[s]?/cm\\s*$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (grepl("^\\s*mmho[s]?/cm\\s*$", thisUnit, ignore.case=TRUE)) {
             ##20200207 warning('Changed unit mmho/cm to mS/cm for conductivity')
             list(unit=expression(mS/cm), scale="")
-        } else if (ODFunits[i] == "mmHo") {
+        } else if (thisUnit == "mmHo") {
             ##20200207 warning('Changed unit mmHo to S/m for conductivity')
             list(unit=expression(S/m), scale="")
-        ##} else if (ODFunits[i] == "[(]*none[)]$") {
-        } else if (1 == length(grep("^[(]*none[)]*$", ODFunits[i], ignore.case=TRUE))) {
+        ##} else if (thisUnit == "[(]*none[)]$") {
+        } else if (grepl("^[(]*none[)]*$", thisUnit, ignore.case=TRUE)) {
             list(unit=expression(), scale="")
-        ##} else if (ODFunits[i] == "PSU") {
-        } else if (1 == length(grep("^NTU$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "NBS scale") {
+            list(unit=expression(), scale="NBS scale")
+        } else if (thisUnit == "NTU") {
             list(unit=expression(NTU), scale="")
-        } else if (1 == length(grep("^psu$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "ppm" || thisUnit == "PPM") {
+            list(unit=expression(ppm), scale="")
+        } else if (thisUnit == "psu" || thisUnit == "PSU") {
             list(unit=expression(), scale="PSS-78")
-        } else if (1 == length(grep("^\\s*kg/m\\^3$", ODFunits[i], ignore.case=TRUE))) {
-            list(unit=expression(kg/m^3), scale="")
-        } else if (1 == length(grep("^\\s*kg/m\\*\\*3\\s*$", ODFunits[i], ignore.case=TRUE))) {
-            list(unit=expression(kg/m^3), scale="")
-        } else if (1 == length(grep("^\\s*ma\\s*$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "ma") { # grepl("^\\s*ma\\s*$", thisUnit, ignore.case=TRUE)) {
             list(unit=expression(ma), scale="")
-        } else if (1 == length(grep("^\\s*micro[ ]?mol[e]?s/m(\\*){0,2}2/s(ec)?\\s*$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "metres/sec") {
+            list(unit=expression(m/s), scale="")
+        } else if (thisUnit == "microns") {
+            list(unit=expression(mu*m), scale="")
+        } else if (grepl("^\\s*micro[ ]?mol[e]?s/m(\\*){0,2}2/s(ec)?\\s*$", thisUnit, ignore.case=TRUE)) {
             list(unit=expression(mu*mol/m^2/s), scale="")
-        } else if (1 == length(grep("^sigma-theta,\\s*kg/m\\^3$", ODFunits[i], ignore.case=TRUE))) {
-            list(unit=expression(kg/m^3), scale="")
-        } else if (1 == length(grep("^seconds$", ODFunits[i], ignore.case=TRUE))) {
-            list(unit=expression(s), scale="")
-        } else if (ODFunits[i] == "S/m") {
-            list(unit=expression(S/m), scale="")
-        } else if (ODFunits[i] == "ratio") {
+        } else if (thisUnit == "ratio") {
             list(unit=expression(ratio), scale="")
-        } else if (1 == length(grep("^uA$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (grepl("^\\s*sigma-theta,\\s*kg/m\\^3\\s*$", thisUnit, ignore.case=TRUE)) {
+            list(unit=expression(kg/m^3), scale="")
+        } else if (thisUnit == "s" || thisUnit == "seconds") {
+            list(unit=expression(s), scale="")
+        } else if (thisUnit == "S/m") {
+            list(unit=expression(S/m), scale="")
+        } else if (thisUnit == "Total scale") {
+            list(unit=expression(), scale="")
+        } else if (thisUnit == "True degrees") {
+            list(unit=expression(), scale="")
+        } else if (thisUnit == "uA") {
             list(unit=expression(mu*a), scale="")
-        } else if (1 == length(grep("^ueinsteins/s/m\\*\\*2$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "ueinsteins/s/m**2") { # grepl("^\\s*ueinsteins/s/m\\*\\*2\\s*$", thisUnit, ignore.case=TRUE)) {
             list(unit=expression(mu*einstein/s/m^2), scale="")
-        } else if (1 == length(grep("^ug/l$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "ug/l") { # grepl("^\\s*ug/l\\s*$", thisUnit, ignore.case=TRUE)) {
             list(unit=expression(mu*g/l), scale="")
-        } else if (1 == length(grep("^umol/m\\*\\*2/s$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (grepl("^\\s*mmol/m\\*\\*3\\s*$", thisUnit, ignore.case=TRUE)) {
+            list(unit=expression(m*mol/m^3), scale="")
+        } else if (thisUnit == "umol/kg") { # grepl("^\\s*umol/kg\\s*$", thisUnit, ignore.case=TRUE)) {
+            list(unit=expression(m*mol/kg), scale="")
+        } else if (thisUnit == "umol/m**3") { # grepl("^\\s*umol/m\\*\\*3\\s*$", thisUnit, ignore.case=TRUE)) {
+            list(unit=expression(mu*mol/m^3), scale="")
+        } else if (thisUnit == "umol/m**2/s") { # grepl("^\\s*umol/m\\*\\*2/s\\s*$", thisUnit, ignore.case=TRUE)) {
             list(unit=expression(mu*mol/m^2/s), scale="")
-        } else if (1 == length(grep("^umol[ ]*photons/m2/s$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "umol photons/m2/s") { # grepl("^\\s*umol[ ]*photons/m2/s\\s*$", thisUnit, ignore.case=TRUE)) {
             list(unit=expression(mu*mol/m^2/s), scale="")
-        } else if (1 == length(grep("^UTC$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "UTC") {
             list(unit=expression(), scale="")
-        } else if (1 == length(grep("^GMT$", ODFunits[i], ignore.case=TRUE))) {
-            list(unit=expression(), scale="")
-        } else if (ODFunits[i] == "V") {
+        } else if (thisUnit == "V") {
             list(unit=expression(V), scale="")
-        } else if (ODFunits[i] == "1/cm") {
+        } else if (thisUnit == "1/cm") {
             list(unit=expression(1/cm), scale="")
-        } else if (ODFunits[i] == "1/m") {
+        } else if (thisUnit == "1/m") {
             list(unit=expression(1/m), scale="")
-        } else if (1 == length(grep("^%$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "%") {
             list(unit=expression("%"), scale="")
-        } else if (1 == length(grep("^volts", ODFunits[i], ignore.case=TRUE))) {
+        } else if (thisUnit == "volts") {
             list(unit=expression(V), scale="")
-        } else if (1 == length(grep("^True degrees$", ODFunits[i], ignore.case=TRUE))) {
-            list(unit=expression(degree), scale="")
-        } else if (nchar(ODFunits[i]) == 0) {
+        } else if (nchar(thisUnit) == 0) {
             list(unit=expression(), scale="")
         } else {
-            print(names)
-            warning("unable to interpret ODFunits[", i, "]='", ODFunits[i], "', for item code-named '", names[i], "', so making an educated guess using parse() or, as a last-ditch effort, simply copying the string", sep="")
-            uu <- try(parse(text=ODFunits[i]), silent=TRUE)
+            # print(names)
+            warning("unable to interpret ODFunits[", i, "]='", thisUnit, "', for item code-named '", names[i], "', so making an educated guess using parse() or, as a last-ditch effort, simply copying the string", sep="")
+            uu <- try(parse(text=thisUnit), silent=TRUE)
             if (class(uu) == "try-error")
-                uu <- ODFunits[i]
+                uu <- thisUnit
             list(unit=uu, scale="")
         }
     }
@@ -1486,7 +1565,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
             fname <- gsub("Flag$", "", dnames[iflag])
             oceDebug(debug, "\"", dnames[iflag], "\" -> \"", fname, "\"\n", sep="")
             # Handle low-level and high-level names differently.  At least with
-            # test files available to me in April 2021, it seems that the BIO 
+            # test files available to me in April 2021, it seems that the BIO
             # dialectd of ODF uses low-level names, so we have e.g. PSALFlag,
             # but the IML variant uses high-level names, so we have e.g.
             # "Practical SalinityFlag". We use ODFNames2oceNames to determine
@@ -1494,7 +1573,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
             # and I hear that there is a west-coast dialect as well. Sigh.
             fnameBase <- ODFNames2oceNames(NAME2CODE[[fname]])$names # "" if not <known>Flag
             oceDebug(debug, "fname=\"", fname, "\"; fnameBase=\"", fnameBase, "\"\n", sep="")
-            flagNamesForMetadata <- c(flagNamesForMetadata, 
+            flagNamesForMetadata <- c(flagNamesForMetadata,
                                       if (length(fnameBase)) fnameBase else fname)
         }
         # Step 2: unduplicate names (e.g. if "salinity" is repeated, second becomes "salinity2")

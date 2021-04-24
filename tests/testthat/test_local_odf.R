@@ -7,16 +7,15 @@ library(oce)
 
 context("ODF files")
 
-test_that("Flemish Cap adcp file (with malformed CODE tokens that lack ' characters)", {
+test_that("Flemish Cap adcp file (with malformed CODEs and units)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
+              # some CODE values lack ' characters (like EWCT_01, line 252
               d <- read.oce("local_data/flemish_cap/MADCPS_hud2013021_1840_12556-106_3600.ODF")
-              ## oce names
               expect_equal(names(d[["data"]]), c("u", "v", "w", "error", "a", "unknown", "time"))
-              ## original names
               orig <-  list(u="EWCT_01", v="NSCT_01", w="VCSP_01", error="ERRV_01",
                             a="BEAM_01", unknown="UNKN_01", time="SYTM_01")
               expect_equal(d[["dataNamesOriginal"]], orig)
-              ## units
+              # units (erroneously, 'M/s' in file, instead of 'm/s')
               expect_equal(d[["uUnit"]]$unit, expression(m/s))
               expect_equal(d[["vUnit"]]$unit, expression(m/s))
               expect_equal(d[["wUnit"]]$unit, expression(m/s))

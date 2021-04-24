@@ -2119,7 +2119,7 @@ read.oce <- function(file, ...)
     } else if (type == "ctd/odf" || type == "mctd/odf" || type == "mvctd/odf") {
         res <- read.ctd.odf(file, processingLog=processingLog, ...)
     } else if (length(grep(".odf$", type))) {
-        res <- read.odf(file, ..., ...)
+        res <- read.odf(file, ...)
     } else if (type == "mtg/odf") {
         ## FIXME: document this data type
         ## Moored tide gauge: returns a data frame.
