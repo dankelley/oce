@@ -317,13 +317,15 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `CNTR` \tab `scan`                  \tab                                              \cr
 #' `CPHL` \tab `chlorophyll`           \tab                                              \cr
 #' `CRAT` \tab `conductivity`          \tab Conductivity ratio (may have spurious unit)  \cr
-#' `COND` \tab `conductivity`          \tab Conductivity in mS/cm or S/m                 \cr
+#' `CMNT` \tab `comment`               \tab                                              \cr
 #' `CNDC` \tab `conductivity`          \tab Conductivity in mS/cm or S/m                 \cr
+#' `COND` \tab `conductivity`          \tab Conductivity in mS/cm or S/m                 \cr
 #' `DCHG` \tab `discharge`             \tab                                              \cr
 #' `DENS` \tab `density`               \tab                                              \cr
 #' `DEPH` \tab `pressure`              \tab                                              \cr
 #' `DOXY` \tab `oxygen`                \tab                                              \cr
 #' `DPDT` \tab `dpdt`                  \tab                                              \cr
+#' `DPWT` \tab `dryWeight`             \tab                                              \cr
 #' `DRYT` \tab `temperatureDryBulb`    \tab                                              \cr
 #' `ERRV` \tab `error`                 \tab                                              \cr
 #' `EWCT` \tab `u`                     \tab                                              \cr
@@ -341,6 +343,9 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `LOND` \tab `longitude`             \tab                                              \cr
 #' `LPHT` \tab `pHLaboratory`          \tab                                              \cr
 #' `NSCT` \tab `v`                     \tab                                              \cr
+#' `MNSZ` \tab `organismSizeMinimum`   \tab                                     \cr
+#' `MODF` \tab `additionalTaxonomicInformation` \tab                                     \cr
+#' `MXSZ` \tab `organismSizeMaximum`   \tab                                     \cr
 #' `NONE` \tab `noWMOcode`             \tab                                              \cr
 #' `NTRI` \tab `nitrite`               \tab                                              \cr
 #' `NTRZ` \tab `nitrite+nitrate`       \tab                                              \cr
@@ -365,19 +370,23 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `RELH` \tab `humidityRelative`      \tab                                              \cr
 #' `ROLL` \tab `roll`                  \tab                                              \cr
 #' `SECC` \tab `SecchiDepth`           \tab                                              \cr
+#' `SEX_` \tab `sex`                   \tab                                              \cr
 #' `SIGP` \tab `sigmaTheta`            \tab                                              \cr
 #' `SIGT` \tab `sigmat`                \tab                                              \cr
 #' `SLCA` \tab `silicate`              \tab                                              \cr
 #' `SNCN` \tab `scanCounter`           \tab                                              \cr
 #' `SPAR` \tab `SPAR`                  \tab                                              \cr
+#' `SPFR` \tab `sampleFraction`        \tab                                              \cr
 #' `SPVA` \tab `specificVolumeAnomaly` \tab                                              \cr
 #' `SYTM` \tab `time`                  \tab                                              \cr
+#' `TAXN` \tab `taxonomicName`         \tab                                              \cr
 #' `TE90` \tab `temperature`           \tab                                              \cr
 #' `TEMP` \tab `temperature`           \tab                                              \cr
 #' `TICW` \tab `totalInorganicCarbon`  \tab                                              \cr
 #' `TILT` \tab `tilt`                  \tab                                              \cr
 #' `TOTP` \tab `pressureAbsolute`      \tab                                              \cr
 #' `TRB_` \tab `turbidity`             \tab                                              \cr
+#' `TSN_` \tab `taxonomicSerialNumber` \tab                                              \cr
 #' `UNKN` \tab `-`                     \tab                                              \cr
 #' `VAIS` \tab `BVFrequency`           \tab                                              \cr
 #' `VCSP` \tab `w`                     \tab                                              \cr
@@ -386,6 +395,8 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `VTCA` \tab `wavePeriod`            \tab                                              \cr
 #' `WDIR` \tab `windDirection`         \tab                                              \cr
 #' `WSPD` \tab `windSpeed`             \tab                                              \cr
+#' `WTWT` \tab `wetWeight`             \tab                                              \cr
+#' `ZOO_` \tab `zooplanktonCount`      \tab                                              \cr
 #' }
 #' Any code not shown in the list is transferred to the oce object without renaming, apart from
 #' the adjustment of suffix numbers. The following code have been seen in data files from
@@ -491,13 +502,15 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("CNTR", "scan", names)
     names <- gsub("CPHL", "chlorophyll", names)
     names <- gsub("CRAT", "conductivity", names)
-    names <- gsub("COND", "conductivity", names)
+    names <- gsub("CMNT", "comment", names)
     names <- gsub("CNDC", "conductivity", names)
+    names <- gsub("COND", "conductivity", names)
     names <- gsub("DCHG", "discharge", names)
     names <- gsub("DENS", "density", names)
     names <- gsub("DEPH", "depth", names)
     names <- gsub("DOXY", "oxygen", names)
     names <- gsub("DPDT", "dpdt", names)
+    names <- gsub("DRWT", "dryWeight", names)
     names <- gsub("DRYT", "temperatureDryBulb", names)
     names <- gsub("ERRV", "error", names)
     names <- gsub("EWCT", "u", names)
@@ -514,6 +527,9 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("LATD", "latitude", names)
     names <- gsub("LOND", "longitude", names)
     names <- gsub("LPHT", "pHLaboratory", names)
+    names <- gsub("MNSZ", "organismSizeMinimum", names)
+    names <- gsub("MODF", "additionalTaxonomicInformation", names)
+    names <- gsub("MXSZ", "organismSizeMaximum", names)
     names <- gsub("NONE", "noWMOcode", names)
     names <- gsub("NTRI", "nitrite", names)
     names <- gsub("NTRZ", "nitrite+nitrate", names)
@@ -539,19 +555,23 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("RELH", "humdidityRelative", names)
     names <- gsub("ROLL", "roll", names)
     names <- gsub("SECC", "SecchiDepth", names)
+    names <- gsub("SEX_", "sex", names)
     names <- gsub("SIGP", "sigmaTheta", names)
     names <- gsub("SIGT", "sigmat", names) # in a moored ctd file examined 2014-05-15
     names <- gsub("SLCA", "silicate", names)
     names <- gsub("SNCN", "scanCounter", names)
     names <- gsub("SPAR", "SPAR", names)
+    names <- gsub("SPFR", "sampleFraction", names)
     names <- gsub("SPVA", "specificVolumeAnomaly", names)
     names <- gsub("SYTM", "time", names) # in a moored ctd file examined 2014-05-15
+    names <- gsub("TAXN", "taxonomicName", names)
     names <- gsub("TE90", "temperature", names)
     names <- gsub("TEMP", "temperature", names)
     names <- gsub("TICW", "totalInorganicCarbon", names)
     names <- gsub("TILT", "tilt", names)
     names <- gsub("TOTP", "pressureAbsolute", names)
     names <- gsub("TRB_", "turbidity", names)
+    names <- gsub("TSN_", "taxonomicSerialNumber", names)
     names <- gsub("UNKN", "unknown", names)
     names <- gsub("VAIS", "BVFrequency", names)
     names <- gsub("VCSP", "w", names)
@@ -560,6 +580,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("VTCA", "wavePeriod", names)
     names <- gsub("WDIR", "windDirection", names)
     names <- gsub("WSPD", "windSpeed", names)
+    names <- gsub("WTWT", "wetWeight", names)
+    names <- gsub("ZOO_", "zooplanktonCount", names)
     ## Fix up suffixes.
     names <- gsub("_[0-9][0-9]", "", names)
     oceDebug(debug, "STAGE 2 names: ", paste(names, collapse=" "), "\n")
@@ -570,7 +592,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     units <- list()
     oceDebug(debug, "STAGE 5 units: ", paste(units, collapse=" "), "\n")
     ODFunits <- gsub("^/", "1/",ODFunits)
-    oceDebug(debug, "STAGE 6 units: ", paste(units, collapse=" "), " (after changing e.g. '/m' to '1/m'\n")
+    oceDebug(debug, "STAGE 6 units: ", paste(units, collapse=" "), " (after changing '/*' to '1/*')\n")
     for (i in seq_along(names)) {
         ## NOTE: this was originally coded with ==, but as errors in ODF
         ## formatting have been found, I've moved to grep() instead; for
@@ -1394,10 +1416,14 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     ## FIXME: numerical NULL_VALUE and (c) what should we do if there are elements in
     ## FIXME: the header, which are not in columns?
     NAvalue <- unlist(findInHeader("NULL_VALUE", lines, FALSE))
+    oceDebug(debug, "NAvalue (step 1): ", paste(deparse(NAvalue),collapse=""), "\n", sep="")
     ##> message("NAvalue=", paste(NAvalue, collapse=" "))
     NAvalue <- gsub("D([+-])+", "e\\1", NAvalue)
+    oceDebug(debug, "NAvalue (step 2): ", paste(deparse(NAvalue),collapse=""), "\n", sep="")
     ##> message("NAvalue=", paste(NAvalue, collapse=" "))
-    NAvalue <- NAvalue[!grepl("[a-df-zA-DFZ]+", NAvalue)] # remove e.g. times
+    #? NAvalue <- NAvalue[!grepl("[a-df-zA-DFZ]+", NAvalue)] # remove e.g. times
+    NAvalue[NAvalue == "NA"] <- NA
+    oceDebug(debug, "NAvalue (step 3): ", paste(deparse(NAvalue),collapse=""), "\n", sep="")
     ##> message("NAvalue=", paste(NAvalue, collapse=" "))
     if (length(NAvalue) > 1) {
         NAvalue <- gsub("D", "e", NAvalue) # R does not like e.g. "-.99D+02"
@@ -1430,7 +1456,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         ##>     NAvalue <- NAvalue[[1]]
         ##> }
     }
-    oceDebug(debug, "NAvalueList=", paste(deparse(NAvalueList),collapse=""), "\n")
+    oceDebug(debug, "NAvalue (step 4): ", paste(deparse(NAvalue),collapse=""), "\n", sep="")
     ##oceDebug(debug, "NAvalue=", NAvalue, "; it's class is ", class(NAvalue), "\n")
 
     res@metadata$depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
@@ -1506,15 +1532,16 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     data <- scan(text=lines, what="character", skip=dataStart, quiet=TRUE)
     data <- matrix(data, ncol=length(namesUnits$names), byrow=TRUE)
     data <- as.data.frame(data, stringsAsFactors=FALSE)
-    ## some files have text string (e.g. dates)
-    colIsChar <- as.logical(lapply(data[1,], function(l) length(grep("[a-zA-Z]", l))))
+    ## some files have text string (e.g. dates, species lengths given as strings)
+    colIsChar <- as.logical(lapply(seq_len(dim(data)[2]),
+                                   function(j) any(grep("[ a-zA-Z\\(\\)]", data[,j]))))
     for (j in 1:dim(data)[2]) {
         if (!colIsChar[j]) {
-            ##message("colIsChar[", j, "]=", colIsChar[j], " so making col ", j, " be numeric. First value=", data[1,j])
+            oceDebug(debug, "setting data[[,", j, "]] to numeric mode\n", sep="")
             data[[j]] <- as.numeric(data[[j]])
         } else {
+            oceDebug(debug, "setting data[[,", j, "]] to character mode\n", sep="")
             data[[j]] <- as.character(data[[j]])
-            ##message("colIsChar[", j, "]=", colIsChar[j], " so leaving col ", j, " alone. First value=", data[1,j])
         }
     }
     if (length(data) != length(namesUnits$names))
