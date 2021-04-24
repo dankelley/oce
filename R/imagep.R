@@ -349,11 +349,11 @@ drawPalette <- function(zlim, zlab="",
             stop("colormap zlim values must be ordered and distinct")
     }
     zIsTime <- zlimGiven && inherits(zlim[1], "POSIXt")
+    zlimTZ <- if (zlimGiven) attr(zlim[1], "tzone") else NA
+    oceDebug(debug, "zIsTime=", zIsTime, "\n")
     if (zIsTime) {
-        ##zlimOrig <- zlim
         zlim <- as.numeric(zlim)
     }
-    oceDebug(debug, "zIsTime=", zIsTime, "\n")
     omai <- par("mai")
     oceDebug(debug, "original mai: omai=c(", paste(format(omai, digits=3), collapse=","), ")\n")
     if (!maiGiven)
@@ -545,9 +545,17 @@ drawPalette <- function(zlim, zlab="",
         oceDebug(debug, "about to draw palette axis at pos=", pos, " with zlab=\"", zlab, "\" with cex=", cex, "\n", sep="")
         # If zlim was given, we use that to determine the palette labels
         if (zlimGiven) {
-            oceDebug(debug, "setting palette axis based on zlim\n")
-            at <- pretty(zlim)
-            labels <- at
+            if (zIsTime) {
+                oceDebug(debug, "palette axis labels inferred from temporal zlim=c(",
+                         paste(numberAsPOSIXct(zlim), collapse=","), ")\n", sep="")
+                labels <- pretty(numberAsPOSIXct(zlim, tz=if (is.null(zlimTZ)) "UTC" else zlimTZ))
+                at <- labels
+            } else {
+                oceDebug(debug, "palette axis labels inferred from numeric zlim=c(",
+                         paste(zlim, collapse=","), ")\n", sep="")
+                labels <- pretty(zlim)
+                at <- labels
+            }
         }
         oceDebug(debug, "palette axis labels:", vectorShow(labels))
         oceDebug(debug, "palette axis labels positions:", vectorShow(at))
