@@ -52,18 +52,22 @@ are given matching names.
 \code{AMON} \tab \code{ammonium}              \tab                                              \cr
 \code{ATMP} \tab \code{pressureAtmosphere}    \tab                                              \cr
 \code{ATTU} \tab \code{attenuation}           \tab                                              \cr
+\code{AUTH} \tab \code{authority}             \tab                                              \cr
 \code{BATH} \tab \code{barometricDepth}       \tab                                              \cr
 \code{BEAM} \tab \code{a}                     \tab                                              \cr
+\code{BNO7} \tab \code{bestNODC7Number}       \tab that is an "oh" letter, not a zero           \cr
 \code{CNTR} \tab \code{scan}                  \tab                                              \cr
 \code{CPHL} \tab \code{chlorophyll}           \tab                                              \cr
 \code{CRAT} \tab \code{conductivity}          \tab Conductivity ratio (may have spurious unit)  \cr
-\code{COND} \tab \code{conductivity}          \tab Conductivity in mS/cm or S/m                 \cr
+\code{CMNT} \tab \code{comment}               \tab                                              \cr
 \code{CNDC} \tab \code{conductivity}          \tab Conductivity in mS/cm or S/m                 \cr
+\code{COND} \tab \code{conductivity}          \tab Conductivity in mS/cm or S/m                 \cr
 \code{DCHG} \tab \code{discharge}             \tab                                              \cr
 \code{DENS} \tab \code{density}               \tab                                              \cr
 \code{DEPH} \tab \code{pressure}              \tab                                              \cr
 \code{DOXY} \tab \code{oxygen}                \tab                                              \cr
 \code{DPDT} \tab \code{dpdt}                  \tab                                              \cr
+\code{DPWT} \tab \code{dryWeight}             \tab                                              \cr
 \code{DRYT} \tab \code{temperatureDryBulb}    \tab                                              \cr
 \code{ERRV} \tab \code{error}                 \tab                                              \cr
 \code{EWCT} \tab \code{u}                     \tab                                              \cr
@@ -76,11 +80,18 @@ are given matching names.
 \code{HCDT} \tab \code{directionTrue}         \tab                                              \cr
 \code{HCSP} \tab \code{speedHorizontal}       \tab                                              \cr
 \code{HEAD} \tab \code{heading}               \tab                                              \cr
+\code{IDEN} \tab \code{sampleNumber}          \tab                                              \cr
 \code{LABT} \tab \code{temperatureLaboratory} \tab                                              \cr
 \code{LATD} \tab \code{latitude}              \tab                                              \cr
+\code{LHIS} \tab \code{lifeHistory}           \tab                                              \cr
 \code{LOND} \tab \code{longitude}             \tab                                              \cr
 \code{LPHT} \tab \code{pHLaboratory}          \tab                                              \cr
 \code{NSCT} \tab \code{v}                     \tab                                              \cr
+\code{NUM_} \tab \code{scansPerAverage}       \tab                                              \cr
+\code{MNSV} \tab \code{retentionFilterSize}   \tab                                              \cr
+\code{MNSZ} \tab \code{organismSizeMinimum}   \tab                                              \cr
+\code{MODF} \tab \code{additionalTaxonomicInformation} \tab                                     \cr
+\code{MXSZ} \tab \code{organismSizeMaximum}   \tab                                              \cr
 \code{NONE} \tab \code{noWMOcode}             \tab                                              \cr
 \code{NTRI} \tab \code{nitrite}               \tab                                              \cr
 \code{NTRZ} \tab \code{nitrite+nitrate}       \tab                                              \cr
@@ -104,20 +115,26 @@ are given matching names.
 \code{REFR} \tab \code{reference}             \tab                                              \cr
 \code{RELH} \tab \code{humidityRelative}      \tab                                              \cr
 \code{ROLL} \tab \code{roll}                  \tab                                              \cr
+\code{SDEV} \tab \code{pressureStdDev}        \tab                                              \cr
 \code{SECC} \tab \code{SecchiDepth}           \tab                                              \cr
+\code{SEX_} \tab \code{sex}                   \tab                                              \cr
 \code{SIGP} \tab \code{sigmaTheta}            \tab                                              \cr
 \code{SIGT} \tab \code{sigmat}                \tab                                              \cr
 \code{SLCA} \tab \code{silicate}              \tab                                              \cr
 \code{SNCN} \tab \code{scanCounter}           \tab                                              \cr
 \code{SPAR} \tab \code{SPAR}                  \tab                                              \cr
+\code{SPFR} \tab \code{sampleFraction}        \tab                                              \cr
 \code{SPVA} \tab \code{specificVolumeAnomaly} \tab                                              \cr
 \code{SYTM} \tab \code{time}                  \tab                                              \cr
+\code{TAXN} \tab \code{taxonomicName}         \tab                                              \cr
 \code{TE90} \tab \code{temperature}           \tab                                              \cr
 \code{TEMP} \tab \code{temperature}           \tab                                              \cr
 \code{TICW} \tab \code{totalInorganicCarbon}  \tab                                              \cr
 \code{TILT} \tab \code{tilt}                  \tab                                              \cr
 \code{TOTP} \tab \code{pressureAbsolute}      \tab                                              \cr
 \code{TRB_} \tab \code{turbidity}             \tab                                              \cr
+\code{TRBH} \tab \code{trophicDescriptor}     \tab                                              \cr
+\code{TSN_} \tab \code{taxonomicSerialNumber} \tab                                              \cr
 \code{UNKN} \tab \code{-}                     \tab                                              \cr
 \code{VAIS} \tab \code{BVFrequency}           \tab                                              \cr
 \code{VCSP} \tab \code{w}                     \tab                                              \cr
@@ -126,6 +143,8 @@ are given matching names.
 \code{VTCA} \tab \code{wavePeriod}            \tab                                              \cr
 \code{WDIR} \tab \code{windDirection}         \tab                                              \cr
 \code{WSPD} \tab \code{windSpeed}             \tab                                              \cr
+\code{WTWT} \tab \code{wetWeight}             \tab                                              \cr
+\code{ZOO_} \tab \code{zooplanktonCount}      \tab                                              \cr
 }
 Any code not shown in the list is transferred to the oce object without renaming, apart from
 the adjustment of suffix numbers. The following code have been seen in data files from

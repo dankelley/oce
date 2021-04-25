@@ -312,8 +312,10 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `AMON` \tab `ammonium`              \tab                                              \cr
 #' `ATMP` \tab `pressureAtmosphere`    \tab                                              \cr
 #' `ATTU` \tab `attenuation`           \tab                                              \cr
+#' `AUTH` \tab `authority`             \tab                                              \cr
 #' `BATH` \tab `barometricDepth`       \tab                                              \cr
 #' `BEAM` \tab `a`                     \tab                                              \cr
+#' `BNO7` \tab `bestNODC7Number`       \tab that is an "oh" letter, not a zero           \cr
 #' `CNTR` \tab `scan`                  \tab                                              \cr
 #' `CPHL` \tab `chlorophyll`           \tab                                              \cr
 #' `CRAT` \tab `conductivity`          \tab Conductivity ratio (may have spurious unit)  \cr
@@ -338,14 +340,18 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `HCDT` \tab `directionTrue`         \tab                                              \cr
 #' `HCSP` \tab `speedHorizontal`       \tab                                              \cr
 #' `HEAD` \tab `heading`               \tab                                              \cr
+#' `IDEN` \tab `sampleNumber`          \tab                                              \cr
 #' `LABT` \tab `temperatureLaboratory` \tab                                              \cr
 #' `LATD` \tab `latitude`              \tab                                              \cr
+#' `LHIS` \tab `lifeHistory`           \tab                                              \cr
 #' `LOND` \tab `longitude`             \tab                                              \cr
 #' `LPHT` \tab `pHLaboratory`          \tab                                              \cr
 #' `NSCT` \tab `v`                     \tab                                              \cr
-#' `MNSZ` \tab `organismSizeMinimum`   \tab                                     \cr
+#' `NUM_` \tab `scansPerAverage`       \tab                                              \cr
+#' `MNSV` \tab `retentionFilterSize`   \tab                                              \cr
+#' `MNSZ` \tab `organismSizeMinimum`   \tab                                              \cr
 #' `MODF` \tab `additionalTaxonomicInformation` \tab                                     \cr
-#' `MXSZ` \tab `organismSizeMaximum`   \tab                                     \cr
+#' `MXSZ` \tab `organismSizeMaximum`   \tab                                              \cr
 #' `NONE` \tab `noWMOcode`             \tab                                              \cr
 #' `NTRI` \tab `nitrite`               \tab                                              \cr
 #' `NTRZ` \tab `nitrite+nitrate`       \tab                                              \cr
@@ -369,6 +375,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `REFR` \tab `reference`             \tab                                              \cr
 #' `RELH` \tab `humidityRelative`      \tab                                              \cr
 #' `ROLL` \tab `roll`                  \tab                                              \cr
+#' `SDEV` \tab `pressureStdDev`        \tab                                              \cr
 #' `SECC` \tab `SecchiDepth`           \tab                                              \cr
 #' `SEX_` \tab `sex`                   \tab                                              \cr
 #' `SIGP` \tab `sigmaTheta`            \tab                                              \cr
@@ -386,6 +393,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `TILT` \tab `tilt`                  \tab                                              \cr
 #' `TOTP` \tab `pressureAbsolute`      \tab                                              \cr
 #' `TRB_` \tab `turbidity`             \tab                                              \cr
+#' `TRBH` \tab `trophicDescriptor`     \tab                                              \cr
 #' `TSN_` \tab `taxonomicSerialNumber` \tab                                              \cr
 #' `UNKN` \tab `-`                     \tab                                              \cr
 #' `VAIS` \tab `BVFrequency`           \tab                                              \cr
@@ -497,8 +505,10 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("AMON", "ammonium", names)
     names <- gsub("ATMP", "pressureAtmosphere", names)
     names <- gsub("ATTU", "attenuation", names)
+    names <- gsub("AUTH", "authority", names)
     names <- gsub("BATH", "waterDepth", names) # FIXME: is this water column depth or sensor depth?
     names <- gsub("BEAM", "a", names)  # FIXME: is this sensible?
+    names <- gsub("BNO7", "bestNODC7Number", names)
     names <- gsub("CNTR", "scan", names)
     names <- gsub("CPHL", "chlorophyll", names)
     names <- gsub("CRAT", "conductivity", names)
@@ -523,17 +533,22 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("HCDM", "directionMagnetic", names)
     names <- gsub("HCDT", "directionTrue", names)
     names <- gsub("HEAD", "heading", names)
+    names <- gsub("IDEN", "sampleNumber", names)
     names <- gsub("LABT", "temperatureLaboratory", names)
     names <- gsub("LATD", "latitude", names)
+    names <- gsub("LHIS", "lifeHistory", names)
     names <- gsub("LOND", "longitude", names)
     names <- gsub("LPHT", "pHLaboratory", names)
+    names <- gsub("MNSV", "retentionFilterSize", names)
     names <- gsub("MNSZ", "organismSizeMinimum", names)
     names <- gsub("MODF", "additionalTaxonomicInformation", names)
+    names <- gsub("MXSV", "largestSieveUsed", names)
     names <- gsub("MXSZ", "organismSizeMaximum", names)
     names <- gsub("NONE", "noWMOcode", names)
     names <- gsub("NTRI", "nitrite", names)
     names <- gsub("NTRZ", "nitrite+nitrate", names)
     names <- gsub("NSCT", "v", names)
+    names <- gsub("NUM_", "scansPerAverage", names)
     names <- gsub("OCUR", "oxygenCurrent", names)
     names <- gsub("OSAT", "oxygenSaturation", names)
     names <- gsub("OTMP", "oxygenTemperature", names)
@@ -554,6 +569,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("REFR", "reference", names)
     names <- gsub("RELH", "humdidityRelative", names)
     names <- gsub("ROLL", "roll", names)
+    names <- gsub("SDEV", "pressureStdDev", names)
     names <- gsub("SECC", "SecchiDepth", names)
     names <- gsub("SEX_", "sex", names)
     names <- gsub("SIGP", "sigmaTheta", names)
@@ -571,6 +587,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("TILT", "tilt", names)
     names <- gsub("TOTP", "pressureAbsolute", names)
     names <- gsub("TRB_", "turbidity", names)
+    names <- gsub("TRPH", "trophicDescriptor", names)
     names <- gsub("TSN_", "taxonomicSerialNumber", names)
     names <- gsub("UNKN", "unknown", names)
     names <- gsub("VAIS", "BVFrequency", names)
