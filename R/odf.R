@@ -1,4 +1,4 @@
-# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4
 
 
 #' Class to Store ODF Data
@@ -631,6 +631,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(degree), scale="")
         } else if (thisUnit == "degrees C" || thisUnit == "Degrees C") {
             list(unit=expression(degree*C), scale="ITS-90") # guess on scale
+        } else if (thisUnit == "degrees") {
+            list(unit=expression(degree), scale="")
         } else if (thisUnit == "IPTS-68, deg C" || thisUnit == "ITS-68, deg C") {
             ## handles both the correct IPTS and the incorrect ITS.
             list(unit=expression(degree*C), scale="IPTS-68")
@@ -717,9 +719,9 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         } else if (thisUnit == "ug/l") { # grepl("^\\s*ug/l\\s*$", thisUnit, ignore.case=TRUE)) {
             list(unit=expression(mu*g/l), scale="")
         } else if (grepl("^\\s*mmol/m\\*\\*3\\s*$", thisUnit, ignore.case=TRUE)) {
-            list(unit=expression(m*mol/m^3), scale="")
+            list(unit=expression(mmol/m^3), scale="")
         } else if (thisUnit == "umol/kg") { # grepl("^\\s*umol/kg\\s*$", thisUnit, ignore.case=TRUE)) {
-            list(unit=expression(m*mol/kg), scale="")
+            list(unit=expression(mmol/kg), scale="")
         } else if (thisUnit == "umol/m**3") { # grepl("^\\s*umol/m\\*\\*3\\s*$", thisUnit, ignore.case=TRUE)) {
             list(unit=expression(mu*mol/m^3), scale="")
         } else if (thisUnit == "umol/m**2/s") { # grepl("^\\s*umol/m\\*\\*2/s\\s*$", thisUnit, ignore.case=TRUE)) {
@@ -752,14 +754,13 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     ## Catch some problems I've seen in data
     directionVariables <- which(names == "directionMagnetic" | names == "directionTrue")
     for (directionVariable in directionVariables) {
-        ## message("directionVariable=",directionVariable)
         unit <- units[[directionVariable]]$unit
         if (is.null(unit)) {
             warning("no unit found for '",
                     names[[directionVariable]], "'; this will not affect calculations, though")
             ## units[[directionVariable]]$unit <- expression(degree)
-        } else if ("degree" != as.character(unit)) {
-            warning("odd unit, '", as.character(unit), "', for '",
+        } else if (is.character(unit) && "degree" != unit && "degrees" != unit) {
+            warning("odd unit, '", unit, "', for '",
                     names[directionVariable], "'; this will not affect calculations, though")
             ## units[[directionVariable]]$unit <- expression(degree)
         }
@@ -1226,9 +1227,13 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     ODFunits <- NULL
     flagTranslationTable <- list()
     NAME2CODE <- list()
-    DANNY <- list(NAME0=NULL, NAME=NULL, CODE=NULL, oceName=NULL)
+    # This list, later converted to a data frame, is used for renaming the data in the file, for
+    # inclusion in either the 'data' or 'metadata' slot of the returned object.  We add to it as we
+    # read through the PARAMETER_HEADER blocks, and later transform it to handle name duplication
+    # and the establishment of flag-data connections.  The data wll be read in with column names
+    # equal to 'NAME', and then get moved and renamed according to 'oceName'.
+    nameTable <- list(NAME0=NULL, NAME=NULL, CODE=NULL, oceName=NULL)
     for (l in linePARAMETER_HEADER) {
-        ## message("\nl=", l)
         lstart <- l + 1
         ## Isolate this block. Note that there seem to be two ways to end blocks.
         lend <- 0
@@ -1246,9 +1251,8 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
             stop("cannot locate a CODE line in PARAMETER_HEADER block starting at line ", lstart-1)
         if (length(iCODE) > 1)
             stop("cannot handle more than one CODE line in PARAMETER_HEADER block starting at line ", lstart-1)
-        #oceDebug(debug, "iCODE=", iCODE, "\n")
         CODE <- gsub("^\\s*(WMO_)?CODE\\s*=\\s*'?([^',]*)'?,?\\s*$", "\\2", lines[lstart+iCODE-1])
-        DANNY$CODE <- c(DANNY$CODE, CODE)
+        nameTable$CODE <- c(nameTable$CODE, CODE)
         oceDebug(debug, "CODE \"", CODE, "\" in PARAMETER_HEADER starting at line ", lstart-1, "\n", sep="")
         # NAME (take to be mandatory), e.g. next lines (start with 2 spaces, end with comma)
         # "  NAME= 'Sea Temperature (IPTS-68)',"
@@ -1258,10 +1262,10 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
             stop("cannot locate a NAME line in PARAMETER_HEADER block starting at line ", lstart-1)
         if (length(iNAME) > 1)
             stop("cannot handle more than one NAME line in PARAMETER_HEADER block starting at line ", lstart-1)
-        #oceDebug(debug, "iNAME=", iNAME, "\n")
         NAME0 <- gsub("^\\s*NAME\\s*=\\s*'?([^']*)'?,?\\s*$", "\\1", lines[lstart+iNAME-1])
-        DANNY$NAME0 <- c(DANNY$NAME0, NAME0)
+        nameTable$NAME0 <- c(nameTable$NAME0, NAME0)
         oceDebug(debug, "NAME0 \"", NAME0, "\" in PARAMETER_HEADER starting at line ", lstart-1, "\n", sep="")
+        # FIXME: seee if we need this (or whether we use unduplicatename() for this)
         number <- sum(names(NAME2CODE) == NAME0)
         if (number > 0)
             NAME0 <- paste0(NAME0, number+1)
@@ -1295,186 +1299,46 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         if (length(iUNITS) == 0) {
             UNITS <- ""
         } else {
-            ##message("lines[", lstart+iUNITS-1, "] is \"", lines[lstart+iUNITS-1], "\"")
             UNITS <- gsub("^\\s*UNITS\\s*=\\s*'?(.*)',?\\s*$", "\\1", lines[lstart+iUNITS[1]-1])
         }
-        ##message("    UNITS = \"", UNITS, "\"")
         ODFnames <- c(ODFnames, NAME0)
         ODFunits <- c(ODFunits, UNITS)
         ODForiginalNames <- c(ODForiginalNames, CODE)
-
-        ##> for (ll in seq.int(l+1, min(l+100, nlines))) {
-        ##>     ## message("; ll=", ll)
-        ##>     ##> if (length(grep(",\\s*$", lines[ll], invert=TRUE))) break
-        ##>     ## It is not clear how we can know when a block ends. Some files follow
-        ##>     ## a pattern that the last line of the block does not have a trailing
-        ##>     ## comma, but I coded for that (##> above) and it fails on other files,
-        ##>     ## so I am going to break when I see some patterns that come up in file
-        ##>     ## that are in my possession.
-        ##>     ## FIXME: find the official syntax of PARAMETER_HEADER blocks.
-        ##>     ## /Library/Frameworks/R.framework/Versions/3.4/Resources/library/oce/extdata/CTD_BCD2014666_008_1_DN.ODF
-        ##>     ##if (length(grep("^\\s*NAME\\s*=\\s*'", lines[ll]))) {
-        ##>     message("FIXME: detect flags by finding QQQQ?")
-        ##>     if (length(grep("^\\s*CODE\\s*=\\s*'", lines[ll]))) {
-        ##>         message("CODE at ll = ", ll, "; line is: <", lines[ll], ">")
-        ##>         ## Trim start/end material for both data and flag cases.
-        ##>         tmp <- gsub("^\\s*CODE\\s*=\\s*'(.*)\\s*',\\s*$", "\\1", lines[ll])
-        ##>         message("tmp \"", tmp, "\"")
-        ##>         if (length(grep("Quality Flag for Parameter:", tmp, ignore.case=TRUE))) {
-        ##>             ## "  NAME= 'Quality Flag for Parameter: SIGP_01',"
-        ##>             ##thisName <- paste(gsub("'.*$", "", gsub("^.*:\\s*", "", lines[ll])), "Flag", sep="")
-        ##>             thisName <- gsub("^.*:\\s*", "", tmp)
-        ##>             message(" flag thisName \"", thisName, "\"")
-        ##>             ODForiginalNames <- c(ODForiginalNames, paste("...", thisName, sep=""))
-        ##>             thisNameShortened <- gsub("_[0-9]*", "", thisName)
-        ##>             thisFlag <- paste(thisNameShortened, "Flag", sep="")
-        ##>             message("    flag '", thisFlag, "'")
-        ##>             ODFnames <- c(ODFnames, thisFlag)
-        #>         } else if (length(grep("Quality Flag:", tmp, ignore.case=TRUE))) {
-        ##>             ## "  NAME= 'Quality flag: QCFF',"
-        ##>             thisName <- gsub("^.*:\\s*", "", tmp)
-        ##>             message(" flag thisName \"", thisName, "\"")
-        ##>             ODForiginalNames <- c(ODForiginalNames, paste("...", thisName, sep=""))
-        ##>             thisNameShortened <- gsub("_[0-9]*", "", thisName)
-        ##>             thisFlag <- "QCFlag"
-        ##>             message("    flag '", thisFlag, "'")
-        ##>             ODFnames <- c(ODFnames, thisFlag)
-        ##>         } else {
-        ##>             ## "  NAME= 'SIGP_01',"
-        ##>             ##thisName <- gsub("^\\s*NAME\\s*=\\s*'(.*)\\s*'.*$","\\1", lines[ll])
-        ##>             thisName <- tmp
-        ##>             ODForiginalNames <- c(ODForiginalNames, thisName)
-        ##>             thisNameShortened <- gsub("_[0-9]*", "", thisName)
-        ##>             message("    name '", thisName, "' (from CODE)")
-        ##>             ##ODFnames <- c(ODFnames, gsub("\\s*',\\s*$", "", gsub("^\\s*NAME\\s*=\\s*'", "", lines[ll])))
-        ##>             ODFnames <- c(ODFnames, thisNameShortened)
-        ##>         }
-        ##>     }
-        ##>     if (length(grep("^\\s*UNITS\\s*=\\s*'", lines[ll]))) {
-        ##>         message("UNIT at ll = ", ll, "; line is: <", lines[ll], ">")
-        ##>         thisUnit <- gsub("\\s*',\\s*$", "", gsub("^\\s*UNITS\\s*=\\s*'", "", lines[ll]))
-        ##>         message("    unit '", thisUnit, "'")
-        ##>         ODFunits <- c(ODFunits, thisUnit)
-        ##>     }
-        ##>     ##message("> ", lines[ll])
-        ##> }
     }
-    ## print(data.frame(ODFnames, ODFunits, ODForiginalNames))
-    ##> ODFunits <- lines[grep("^\\s*UNITS\\s*=", lines)]
-    ##> ODFunits <- gsub("^[^']*'(.*)'.*$", "\\1", ODFunits) # e.g.  "  UNITS= 'none',"
-    ##> ODFunits <- trimws(ODFunits)
-
     if (TRUE) {
-        #>> A0 <- flagTranslationTable
-        #>> A1 <- NAME2CODE
-        #>> A2 <- NAME2CODE[grep("^QQQQ_.*$", NAME2CODE)]
-        #>> A3 <- gsub("^quality flag of ", "", names(A2))
-        #>> A4 <- list()
-        #>> for (A3item in A3) {
-        #>>     A3itemFlag <- paste0(A3item, "Flag")
-        #>>     #cat("A3item=\"", A3item, "\"\n", sep="")
-        #>>     match <- A1[names(A1) == A3item]
-        #>>     nmatch <- length(match)
-        #>>     # See a single match, but fall back to a match of leading text, as required for salinity in a test file as discussed
-        #>>     # at https://github.com/dankelley/oce/issues/1817#issuecomment-826325334
-        #>>     if (nmatch == 0) {
-        #>>         found <- grep(paste0("^", A3item),names(A1))
-        #>>         if (length(found) == 1) {
-        #>>             A4[A3itemFlag] <- A1[found]
-        #>>         } else {
-        #>>             warning("ignorining QC flag \"", A3item, "\" because no match to variable found\n", sep="")
-        #>>         }
-        #>>     } else if (nmatch == 1) {
-        #>>         A4[A3itemFlag] <- A1[names(A1) == A3item]
-        #>>     } else {
-        #>>         warning("multiple matches for QC flag \"", A3item, "\"\n", sep="")
-        #>>         A4[A3itemFlag] <- A1[found[1]]
-        #>>     }
-        #>> }
-        #>> #> message("next is A0");cat(str(A0))
-        #>> #> message("next is A1");cat(str(A1))
-        #>> #> message("next is A2");cat(str(A2))
-        #>> #> message("next is A3");print(A3)
-        #>> #> message("next is A4");cat(str(A4))
-        #>> #> message("next is flagTranslationTable");cat(str(flagTranslationTable))
-        #>> #> message("next is NAME2CODE");cat(str(NAME2CODE))
-        #>> #> print(A4[1])
-        #>> #> DAN<<-list(A0=A0,A1=A1,A2=A2,A3=A3,A4=A4,flagTranslationTable=flagTranslationTable,NAME2CODE=NAME2CODE)
-        #>> #
-        #>> #?DF <- data.frame(CODE=CODEs,
-        #>> #?                 isFlag=grepl("^QQQQ", CODEs),
-        #>> #?                 ODFname=names(NAME2CODE))
-        #>> #?DF
-        DANNY$isFlag <- grepl("^(QQQQ)|(QCFF)", DANNY$CODE)
-        DANNY$NAME <- unduplicateNames(DANNY$NAME0)
+        nameTable$isFlag <- grepl("^(QQQQ)|(QCFF)", nameTable$CODE)
+        nameTable$NAME <- unduplicateNames(nameTable$NAME0)
         # Remove extraneous units in S and T names, which are present
         # for the variables but *not* for the quality-control flags
-        DANNY$NAME <- gsub(" ITS-90$", "", DANNY$NAME)
-        DANNY$NAME <- gsub(" PSS-78$", "", DANNY$NAME)
-        on <- ODFNames2oceNames(DANNY$CODE)$name
-        for (i in seq_along(DANNY$CODE)) {
-            #> if (i < 25) {
-            #>     message("i: ",i, ", code: ", DANNY$CODE[i], ", isFlag: ", DANNY$isFlag[i],
-            #>             "\n  NAME0: ", DANNY$NAME0[i],
-            #>             "\n  NAME:  ", DANNY$NAME[i])
-            #> }
-            DANNY$oceName[i] <- if (DANNY$isFlag[i]) {
-                iref <- which(DANNY$NAME == gsub("quality flag of ", "", DANNY$NAME[i]))
+        nameTable$NAME <- gsub(" ITS-90$", "", nameTable$NAME)
+        nameTable$NAME <- gsub(" PSS-78$", "", nameTable$NAME)
+        on <- ODFNames2oceNames(nameTable$CODE, debug=debug)$name
+        for (i in seq_along(nameTable$CODE)) {
+            nameTable$oceName[i] <- if (nameTable$isFlag[i]) {
+                iref <- which(nameTable$NAME == gsub("quality flag of ", "", nameTable$NAME[i]))
                 if (length(iref) == 1) {
-                    ref <- DANNY$oceName[iref]
+                    ref <- nameTable$oceName[iref]
                     if (is.na(ref)) {
-                        paste0("flag$", gsub("_.*$", "", DANNY$CODE[i]))
+                        paste0("flag$", gsub("_.*$", "", nameTable$CODE[i]))
                     } else {
-                        paste0("flag$", DANNY$oceName[iref])
+                        paste0("flag$", nameTable$oceName[iref])
                     }
                 } else {
-                    message("problem with flag lookup for ODF code=", DANNY$CODE, "; expect errors in flags and possibly in data, too\n", sep="")
+                    message("problem with flag lookup for ODF code=", nameTable$CODE, "; expect errors in flags and possibly in data, too\n", sep="")
                 }
             } else {
                 on[i]
             }
         }
-        #?DANNY$oceName <- ODFNames2oceNames(DANNY$CODE)$names
-        DANNY <- data.frame(DANNY)
-        print(DANNY[2:4])
-        browser()
+        nameTable <- data.frame(nameTable)
+        # print(nameTable[2:4])
     }
-
-
     options(warn=options$warn)
-    ##> oceDebug(debug, "nullValue=", nullValue, "; it's class is ", class(nullValue), "\n")
-
-    ##OLD ODFunits <- lines[grep("^\\s*UNITS\\s*=", lines)]
-    ##OLD ODFunits <- gsub("^[^']*'(.*)'.*$", "\\1", ODFunits) # e.g.  "  UNITS= 'none',"
     ODFunits <- trimws(ODFunits)
-    ##message("below is ODFunits...")
-    ##print(ODFunits)
-
-    ##> ODFnames <- lines[grep("^\\s*CODE\\s*=", lines)]
-    ##> ODFnames <- gsub("^.*CODE=", "", ODFnames)
-    ##> ODFnames <- gsub(",", "", ODFnames)
-    ##> ODFnames <- gsub("^[^']*'(.*)'.*$", "\\1", ODFnames) # e.g. "  CODE= 'CNTR_01',"
-
-    ##> if (length(ODFnames) < 1) {
-    ##>     ODFnames <- lines[grep("^\\s*WMO_CODE\\s*=", lines)]
-    ##>     ODFnames <- gsub("^.*WMO_CODE=", "", ODFnames)
-    ##>     ODFnames <- gsub(",", "", ODFnames)
-    ##>     ODFnames <- gsub("^[^']*'(.*)'.*$", "\\1", ODFnames) # e.g. "  CODE= 'CNTR_01',"
-    ##> }
-    ##message("below is ODFnames...")
-    ##print(ODFnames)
-
-    ##> oceDebug(debug, "ODFnames: ", paste(ODFnames, collapse=" "), "\n")
-    ##> ODFnames <- gsub("_1$", "", ODFnames)
-    ##> oceDebug(debug, "ODFnames: ", paste(ODFnames, collapse=" "), "\n")
     if (debug > 0) {
         oceDebug(debug, "next is flagTranslationTable:\n")
         print(flagTranslationTable)
-        oceDebug(debug, "next is NAME2CODE:\n")
-        DAN.NAME2CODE<<-NAME2CODE
-        print(NAME2CODE)
     }
-
     namesUnits <- ODFNames2oceNames(ODFnames, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
     ## check for missing units, and warn if pressure and/or temperature lack units
     w <- which(namesUnits[[1]]=="pressure")
@@ -1482,10 +1346,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         if (!length(namesUnits[[2]]["pressure"][[1]]$unit))
             warning("source file does not indicate a unit for pressure (and perhaps for other items)\n")
     }
-
-    ##names <- ODFName2oceName(ODFnames, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
     oceDebug(debug, "oce names: c(\"", paste(namesUnits$names, collapse="\",\""), ")\n", sep="")
-
     res@metadata$depthOffBottom <- findInHeader("DEPTH_OFF_BOTTOM", lines, returnOnlyFirst=TRUE, numeric=TRUE)
     res@metadata$initialLatitude <- findInHeader("INITIAL_LATITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
     res@metadata$initialLongitude <- findInHeader("INITIAL_LONGITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
@@ -1540,32 +1401,8 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         NAvalueList <- NAvalue
         names(NAvalueList) <- namesUnits$names
         options(warn=options$warn)
-        ##> isNumeric <- is.numeric(NAvalue)
-        ##> if (any(!isNumeric)) {
-        ##>     warning("ignoring non-numeric NULL_VALUE (", NAvalue, ")")
-        ##> }
-        ##> if (any(isNumeric)) {
-        ##>     tmp <- NAvalue[isNumeric]
-        ##>     if (any(!is.finite(tmp)))
-        ##>         tmp <- tmp[is.finite(tmp)]
-        ##>     tmp <- unique(tmp)
-        ##>     ltmp <- length(tmp)
-        ##>     if (ltmp == 0) {
-        ##>         NAvalue <- NA
-        ##>     } else if (1 == ltmp) {
-        ##>         NAvalue <- tmp
-        ##>     } else if (1 < ltmp) {
-        ##>         warning("using first of ", ltmp, " unique NULL_VALUEs")
-        ##>         tmp <- tmp[is.finite(tmp)]
-        ##>         NAvalue <- tmp[[1]]
-        ##>     }
-        ##> } else {
-        ##>     NAvalue <- NAvalue[[1]]
-        ##> }
     }
     oceDebug(debug, "NAvalue (step 4): ", paste(deparse(NAvalue),collapse=""), "\n", sep="")
-    ##oceDebug(debug, "NAvalue=", NAvalue, "; it's class is ", class(NAvalue), "\n")
-
     res@metadata$depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     res@metadata$depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
     res@metadata$sounding <- as.numeric(findInHeader("SOUNDING", lines))
@@ -1578,8 +1415,6 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
             res@metadata$waterDepth <- res@metadata$depthMax[1]
     }
     res@metadata$type <- findInHeader("INST_TYPE", lines)
-    ##if (length(grep("sea", res@metadata$type, ignore.case=TRUE)))
-    ##    res@metadata$type <- "SBE"
     res@metadata$serialNumber <- findInHeader("SERIAL_NUMBER", lines)
     res@metadata$model <- findInHeader("MODEL", lines)
     if (is.null(header)) {
@@ -1591,7 +1426,6 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     } else {
         stop("problem decoding header argument; please report an error")
     }
-
     ## catch erroneous units on CRAT, which should be in a ratio, and hence have no units.
     ## This is necessary for the sample file inst/extdata/CTD_BCD2014666_008_1_DN.ODF.gz
     if (length(grep("CRAT", ODFnames))) {
@@ -1602,35 +1436,11 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
                 warning("\"", ODFnames[w], "\" should be unitless, but the file states the unit as \"", ustring, "\" so that is retained in the object metadata. This will likely cause problems.  See ?read.odf for an example of rectifying this unit error.")
         }
     }
-
     res@metadata$units <- namesUnits$units
-    ## res@metadata$dataNamesOriginal <- ODFnames
-    ##> res@metadata$dataNamesOriginal <- as.list(ODFnames)
     res@metadata$dataNamesOriginal <- as.list(ODForiginalNames)
     names(res@metadata$dataNamesOriginal) <- namesUnits$names
-    ##res@metadata$type <- type
-    ##res@metadata$model <- model
-    ##res@metadata$serialNumber <- serialNumber
-    ##res@metadata$eventNumber <- eventNumber
-    ##res@metadata$eventQualifier <- eventQualifier
-    ##res@metadata$ship <- ship
-    ##res@metadata$scientist <- scientist
-    ##res@metadata$institute <- institute
     res@metadata$address <- NULL
-    ##res@metadata$cruise <- cruise
-    ##res@metadata$station <- station
-    ##res@metadata$countryInstituteCode <- countryInstituteCode
-    ##res@metadata$cruiseNumber <- cruiseNumber
-    ##res@metadata$deploymentType <- deploymentType
-    ##res@metadata$date <- startTime
-    ##res@metadata$startTime <- startTime
-    ##res@metadata$latitude <- latitude
-    ##res@metadata$longitude <- longitude
     res@metadata$recovery <- NULL
-    ##res@metadata$waterDepth <- waterDepth
-    ##res@metadata$depthMin <- depthMin
-    ##res@metadata$depthMax <- depthMax
-    ##res@metadata$sounding <- sounding
     res@metadata$sampleInterval <- NA
     res@metadata$filename <- filename
     ##> ## fix issue 768
@@ -1639,7 +1449,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     data <- scan(text=lines, what="character", skip=dataStart, quiet=TRUE)
     data <- matrix(data, ncol=length(namesUnits$names), byrow=TRUE)
     data <- as.data.frame(data, stringsAsFactors=FALSE)
-    ## some files have text string (e.g. dates, species lengths given as strings)
+    ## some files have text string for e.g. dates, species lengths, etc.
     colIsChar <- as.logical(lapply(seq_len(dim(data)[2]),
                                    function(j) any(grep("[ a-zA-Z\\(\\)]", data[,j]))))
     for (j in 1:dim(data)[2]) {
@@ -1664,23 +1474,9 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
             }
         }
     }
-    ##. if (length(NAvalue) > 0 && !is.na(NAvalue)) {
-    ##.     data[data==NAvalue[1]] <- NA
-    ##. }
     if ("time" %in% namesUnits$names)
         data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
-    ##res@metadata$names <- namesUnits$names
-    ##res@metadata$labels <- namesUnits$names
     res@data <- as.list(data)
-    # Removed for issue 1810
-    #(REMOVED) ## Return to water depth issue. In a BIO file, I found that the missing-value code was
-    #(REMOVED) ## -99, but that a SOUNDING was given as -99.9, so this is an extra check.
-    #(REMOVED) if (is.na(res@metadata$waterDepth) || res@metadata$waterDepth < 0) {
-    #(REMOVED)     if ('pressure' %in% names(res@data)) {
-    #(REMOVED)         res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
-    #(REMOVED)         warning("estimating waterDepth from maximum pressure")
-    #(REMOVED)     }
-    #(REMOVED) }
     ## Move flags into metadata.
     dnames <- names(res@data)
     iflags <- grep("Flag$", dnames)
@@ -1688,56 +1484,21 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     oceDebug(debug, "iflags=", paste(iflags, collapse=" "), "\n")
     oceDebug(debug, "names(@data) = c(\"", paste(names(res@data), collapse="\", \""), "\")\n", sep="")
     oceDebug(debug, "names(@data)[iflags] = c(\"", paste(names(res@data)[iflags], collapse="\", \""), "\")\n", sep="")
-    flagNamesForMetadata <- NULL
-    if (length(iflags)) {
-        if (debug > 0) {
-            oceDebug(debug, "Following is str(res@data) before transferring 'Flag' columns to metadata\n")
-            cat(str(res@data, 1))
-        }
-        # Step 1: determine names to be used in metadata
-        for (iflag in iflags) {
-            fname <- gsub("Flag$", "", dnames[iflag])
-            oceDebug(debug, "\"", dnames[iflag], "\" -> \"", fname, "\"\n", sep="")
-            # Handle low-level and high-level names differently.  At least with
-            # test files available to me in April 2021, it seems that the BIO
-            # dialectd of ODF uses low-level names, so we have e.g. PSALFlag,
-            # but the IML variant uses high-level names, so we have e.g.
-            # "Practical SalinityFlag". We use ODFNames2oceNames to determine
-            # which case it is. Admittedly, this is a guessing game, though,
-            # and I hear that there is a west-coast dialect as well. Sigh.
-            fnameBase <- ODFNames2oceNames(NAME2CODE[[fname]])$names # "" if not <known>Flag
-            oceDebug(debug, "fname=\"", fname, "\"; fnameBase=\"", fnameBase, "\"\n", sep="")
-            flagNamesForMetadata <- c(flagNamesForMetadata,
-                                      if (length(fnameBase)) fnameBase else fname)
-        }
-        # Step 2: unduplicate names (e.g. if "salinity" is repeated, second becomes "salinity2")
-        oceDebug(debug, "preliminary  flagNamesForMetadata=c(\"", paste(flagNamesForMetadata, collapse="\", \""), "\")\n", sep="")
-        flagNamesForMetadata <- unduplicateNames(flagNamesForMetadata)
-        oceDebug(debug, "unduplicated flagNamesForMetadata=c(\"", paste(flagNamesForMetadata, collapse="\", \""), "\")\n", sep="")
-        # Step 3: copy "Flag" columns from data to metadata
-        for (I in seq_along(iflags)) {
-            oceDebug(debug, "move @data[\"", dnames[iflags[I]], "\"] to @metadata$flags[\"", flagNamesForMetadata[I], "\"]\n", sep="")
-            res@metadata$flags[[flagNamesForMetadata[I]]] <- res@data[[iflags[I]]]
-        }
-        if (debug > 1) {
-            oceDebug(debug, "before Step 4: res@metadata$dataNamesOriginal:\n")
-            print(res@metadata$dataNamesOriginal)
-        }
-        # Step 4: remove Flag entries from @metadata$dataNamesOriginal
-        remove <- grep("Flag$", names(res@metadata$dataNamesOriginal))
-        if (length(remove))
-            res@metadata$dataNamesOriginal[remove] <- NULL
-        if (debug > 1) {
-            oceDebug(debug, "after Step 4: res@metadata$dataNamesOriginal:\n")
-            print(res@metadata$dataNamesOriginal)
-        }
-        # Step 5: remove "Flag" entries from @data
-        res@data[iflags] <- NULL
-        if (debug > 0) {
-            oceDebug(debug, "after Step 5: str(res@data):\n")
-            cat(str(res@data, 1))
-        }
+    # Copy flag columns to res@metadata...
+    for (iflag in which(nameTable$isFlag)) {
+        oceDebug(debug, "iflag=", iflag, "(FLAG) nameTable$oceName=", nameTable$oceName[iflag], "\n", sep="")
+        flagName <- gsub("^flag\\$", "", nameTable$oceName[iflag])
+        res@metadata$flags[[flagName]] <- data[, iflag]
+        oceDebug(debug, "transferring data column ", iflag, " to @metadata$flags$", flagName, "\n", sep="")
     }
+    # ... and then remove those columns from res@data
+    nflagged <- sum(nameTable$isFlag)
+    if (nflagged > 0) {
+        oceDebug(debug, "deleting", nflagged, "data columns that were moved to @metadata$flags\n")
+        res@data <- res@data[which(!nameTable$isFlag)]
+    }
+    # FIXME: what about units?
+    # FIXME: what about originalNames?
     if (exists("DATA_TYPE") && DATA_TYPE == "CTD")
         res@metadata$pressureType <- "sea"
     res@processingLog <- processingLogAppend(res@processingLog,
