@@ -1755,7 +1755,7 @@ standardDepths <- function(n=0)
 oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
-    oceDebug(debug, paste("oceMagic(file=\"", filename, "\") {\n", sep=""), unindent=1)
+    oceDebug(debug, paste("oceMagic(file=\"", filename, "\") {\n", sep=""), unindent=1, style="bold", sep="")
     isdir<- file.info(file)$isdir
     if (is.finite(isdir) && isdir) {
         tst <- file.info(paste(file, "/", file, "_MTL.txt", sep=""))$isdir
@@ -1793,6 +1793,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             subtype <- gsub("\\s*$", "", subtype)
             res <- paste(subtype, "odf", sep="/")
             oceDebug(debug, "file type:", res, "\n")
+            oceDebug(debug, "} # oceMagic()\n", unindent=1, style="bold")
             return(res)
         }
         if (length(grep(".WCT$", filename, ignore.case=TRUE))) {
@@ -2072,9 +2073,7 @@ read.oce <- function(file, ...)
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
         stop("empty file")
     type <- oceMagic(file, debug=debug-1)
-    oceDebug(debug,
-             "read.oce(\"", as.character(file), "\", ...) inferred type=\"", type, "\"\n",
-             sep="", unindent=1)
+    oceDebug(debug, "read.oce(\"", as.character(file), "\") {\n", sep="", unindent=1, style="bold")
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size)
         stop("empty file")
     ##> OLD: deparse is unhelpful if "file" is a variable in the calling code
@@ -2196,7 +2195,7 @@ read.oce <- function(file, ...)
     } else {
         stop("unknown file type \"", type, "\"")
     }
-    oceDebug(debug, "} # read.oce()\n", unindent=1)
+    oceDebug(debug, "} # read.oce()\n", unindent=1, sep="", style="bold")
     res
 }
 
