@@ -664,6 +664,7 @@ setMethod(f="subset",
                   stn <- x@metadata$stationId[indices]
                   lat <- x@metadata$lat[indices]
                   lon <- x@metadata$lon[indices]
+                  time <- x@metadata$time[indices]
                   station <- vector("list", length(indices))
                   for (i in seq_along(indices)) {
                       station[[i]] <- x@data$station[[indices[i]]]
@@ -672,6 +673,7 @@ setMethod(f="subset",
                   res@metadata$stationId <- stn
                   res@metadata$longitude <- lon
                   res@metadata$latitude <- lat
+                  res@metadata$time <- time
                   res@data <- data
                   res@processingLog <- x@processingLog
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, indices=c(", paste(dots$indices, collapse=","), "))", sep=""))
@@ -743,6 +745,7 @@ setMethod(f="subset",
                       res@metadata$longitude <- res@metadata$longitude[keep]
                       res@metadata$latitude <- res@metadata$latitude[keep]
                       res@metadata$stationId <- res@metadata$stationId[keep]
+                      res@metadata$time <- x@metadata$time[keep]
                       res@data$station <- res@data$station[keep]
                   } else if (length(grep("levels", subsetString))) {
                       levels <- unlist(lapply(x[["station"]], function(stn) length(stn[["pressure"]])))
@@ -750,6 +753,7 @@ setMethod(f="subset",
                       res@metadata$longitude <- res@metadata$longitude[keep]
                       res@metadata$latitude <- res@metadata$latitude[keep]
                       res@metadata$stationId <- res@metadata$stationId[keep]
+                      res@metadata$time <- x@metadata$time[keep]
                       res@data$station <- res@data$station[keep]
                   } else if (length(grep("latitude", subsetString)) || length(grep("longitude", subsetString))) {
                       n <- length(x@data$station)
@@ -761,6 +765,7 @@ setMethod(f="subset",
                       stn <- vector("character", nn)
                       lon <- vector("numeric", nn)
                       lat <- vector("numeric", nn)
+                      time <- vector("POSIXct", nn)
                       j <- 1
                       for (i in 1:n) {
                           if (keep[i]) {
@@ -768,6 +773,7 @@ setMethod(f="subset",
                               lon[j] <- x@metadata$longitude[i]
                               lat[j] <- x@metadata$latitude[i]
                               station[[j]] <- x@data$station[[i]]
+                              time[[j]] <- x@data$time[[i]]
                               j <- j + 1
                           }
                       }
@@ -778,15 +784,17 @@ setMethod(f="subset",
                       res@metadata$stationId <- stn
                       res@metadata$longitude <- lon
                       res@metadata$latitude <- lat
+                      res@metadata$time <- time
                       res@processingLog <- x@processingLog
                   } else {
                       res <- new("section")
                       res@data$station <- list()
                       res@metadata$header <- x@metadata$header
-                      res@metadata$sectionId <- NULL
+                      res@metadata$sectionId <- NULL # R will let us index into these later
                       res@metadata$stationId <- NULL
                       res@metadata$longitude <- NULL
                       res@metadata$latitude <- NULL
+                      res@metadata$time <- NULL
                       res@processingLog <- x@processingLog
                       n <- length(x@data$station)
                       j <- 1
@@ -813,6 +821,7 @@ setMethod(f="subset",
                               res@metadata$stationId[j] <- x@metadata$stationId[i]
                               res@metadata$latitude[j] <- x@metadata$latitude[i]
                               res@metadata$longitude[j] <- x@metadata$longitude[i]
+                              res@metadata$time[j] <- x@metadata$time[i]
                               j <- j + 1
                           } else {
                               oceDebug(debug, "    skipping this station\n")
