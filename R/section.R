@@ -762,10 +762,10 @@ setMethod(f="subset",
                           keep[i] <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data$station[[i]]@metadata, enclos=parent.frame(2))
                       nn <- sum(keep)
                       station <- vector("list", nn)
-                      stn <- vector("character", nn)
-                      lon <- vector("numeric", nn)
-                      lat <- vector("numeric", nn)
-                      time <- vector("POSIXct", nn)
+                      stn <- NULL # we can later index this to accumulate
+                      lon <- NULL
+                      lat <- NULL
+                      time <- NULL
                       j <- 1
                       for (i in 1:n) {
                           if (keep[i]) {
