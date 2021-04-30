@@ -455,9 +455,9 @@ setMethod(f="summary",
               mnames <- names(object@metadata)
               if (!is.null(type) && nchar(type)) {
                   if (is.null(model)) {
-                      cat("* Instrument:         ", type, "\n")
+                      cat("* Instrument:         ", type, "\n", sep="")
                   } else {
-                      cat("* Instrument:         ", type, model, "\n")
+                      cat("* Instrument:         ", type, " ", model, "\n", sep="")
                   }
               }
               ##showMetadataItem(object, "type",                      "Instrument:          ")
