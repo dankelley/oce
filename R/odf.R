@@ -617,7 +617,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         ## across an ODF file that wrote density as Kg/m^3.
         oceDebug(debug, paste("ODFnames[",i,"]='",ODFnames[i],"', names[",i,"]='", names[i], "', ODFunits[", i, "]='", ODFunits[i], "'\n", sep=""))
         thisUnit <- trimws(ODFunits[i])
-        message("i=", i, ", name=\"", names[i], "\", thisUnit='", thisUnit, "'")
+        #- message("i=", i, ", name=\"", names[i], "\", thisUnit='", thisUnit, "'")
         units[[names[i]]] <- if (thisUnit == "10**3cells/L") {
             list(unit=expression(10^3*cells/l), scale="")
         } else if (thisUnit == "code") {
@@ -1146,7 +1146,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     nh <- length(h)
     for (i in seq_len(nh)) {
         oceDebug(debug>3, "examine header line ", i, " of ", nh, "\n", sep="")
-        if (length(grep("^[a-zA-Z]", h[i]))) {
+        if (grepl("^[a-zA-Z]", h[i])) {
             indexCategory <- indexCategory + 1
             headerlist[[indexCategory]] <- list()
             ##> message("* '", h[i], "' is indexCategory ", indexCategory)
@@ -1287,25 +1287,36 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     # for the variables but *not* for the quality-control flags
     nameTable$NAME <- gsub(" ITS-90$", "", nameTable$NAME)
     nameTable$NAME <- gsub(" PSS-78$", "", nameTable$NAME)
-    on <- ODFNames2oceNames(nameTable$CODE, debug=debug)$name
+    nameTable$oceName <- ODFNames2oceNames(nameTable$CODE, debug=debug)$name
     for (i in seq_along(nameTable$CODE)) {
-        nameTable$oceName[i] <- if (nameTable$isFlag[i]) {
-            iref <- which(nameTable$NAME == gsub("quality flag of ", "", nameTable$NAME[i]))
+        #- message("nameTable$isFlag[", i, "]=", nameTable$isFlag[i])
+        # Find cross-references for flags.
+        if (nameTable$isFlag[i]) {
+            oceDebug(debug, "find variable name referred to by flag with description \"", nameTable$NAME[i], "\"\n", sep="")
+            # To accomodate both DFO and IML variants, we must check multiple variants of the syntax
+            # in the QQQQ name. And we must also check against both variable NAME and CODE, because
+            # the DFO file provided with this package sometimes has NAME==CODE but other times
+            # it is not CODE. The uniformity of ODF files is not high.
+            iref <- which(nameTable$NAME == gsub("(quality flag of )|(Quality Flag for Parameter: )", "", nameTable$NAME[i]))
+            oceDebug(debug, "iref=", iref, " from NAME lookup\n")
+            if (length(iref) == 0) {
+                iref <- which(nameTable$CODE == gsub("(quality flag of )|(Quality Flag for Parameter: )", "", nameTable$NAME[i]))
+                oceDebug(debug, "iref=", iref, " from CODE lookup\n")
+            }
             if (length(iref) == 1) {
                 ref <- nameTable$oceName[iref]
                 if (is.na(ref)) {
-                    paste0("flag$", gsub("_.*$", "", nameTable$CODE[i]))
+                    nameTable$oceName[i] <- paste0("flag$", gsub("_.*$", "", nameTable$CODE[i]))
                 } else {
-                    paste0("flag$", nameTable$oceName[iref])
+                    nameTable$oceName[i] <- paste0("flag$", nameTable$oceName[iref])
                 }
             } else {
-                message("problem with flag lookup for ODF code=", nameTable$CODE, "; expect errors in flags and possibly in data, too\n", sep="")
+                warning("cannot determine variable referred to by flag with description \"", nameTable$NAME[i], "\"\n", sep="")
             }
-        } else {
-            on[i]
         }
     }
     nameTable <- data.frame(nameTable)
+    #- message("next is nameTable");print(nameTable)
     options(warn=options$warn)
     ODFunits <- trimws(ODFunits)
     #? if (debug > 0) {
@@ -1313,7 +1324,6 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     #?     print(flagTranslationTable)
     #? }
     namesUnits <- ODFNames2oceNames(ODFnames, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
-    browser()
     ## check for missing units, and warn if pressure and/or temperature lack units
     w <- which(namesUnits[[1]]=="pressure")
     if (length(w)) {
@@ -1441,10 +1451,10 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     if (length(data) != length(namesUnits$names))
         stop("mismatch between length of data names (", length(namesUnits$names), ") and number of columns in data matrix (", length(data), ")")
     names(data) <- nameTable$oceName #namesUnits$names
-    print(NAvalueList)
+    #- print(NAvalueList)
     if (length(NAvalueList)) {
         for (name in names(data)) {
-            message("name=", name)
+            #- message("name=", name)
             if (is.finite(NAvalueList[[name]])) {
                 bad <- data[[name]] == NAvalueList[[name]]
                 data[[name]][bad] <- NA
