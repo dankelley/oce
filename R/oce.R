@@ -1153,6 +1153,23 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' @param drawTimeRange an optional indication of whether/how to draw a time range,
 #' in the top-left margin of the plot; see [oce.axis.POSIXct()] for details.
 #'
+#' @param simplify an integer value that indicates
+#' whether to speed up `type="l"` plots by replacing the data
+#' with minimum and maximum values within a subsampled time mesh.
+#' This can speed up plots of large datasets (e.g. by factor 20 for 10^7 points),
+#' sometimes with minor changes in appearance.
+#' This procedure is skipped if `simplify` is `NA` or
+#' if the number of visible data points is less than 5 times `simplify`.
+#' Otherwise, `oce.plot.ts` creates `simplify` intervals ranging across
+#' the visible time range. Intervals with under 2 finite
+#' `y` data are ignored. In the rest, `y` values
+#' are replaced with their range, and `x` values are replaced
+#' with the repeated midpoint time. Thus, each retained subinterval
+#' has exactly 2 data points.
+#' A warning is printed if this replacment is done.
+#' The default value of `simplify` means that cases with
+#' under 2560 visible points are plotted conventionally.
+#'
 #' @param fill boolean, set `TRUE` to fill the curve to zero (which it
 #' does incorrectly if there are missing values in `y`).
 #' @param col The colours for points (if `type=="p"`) or lines (if `type=="l"`).
@@ -1247,7 +1264,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' # Flip the y axis
 #' oce.plot.ts(t, y, flipy=TRUE)
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=FALSE, xlab, ylab,
-                        drawTimeRange, fill=FALSE, col=par("col"), pch=par("pch"),
+                        drawTimeRange, simplify=2560, fill=FALSE, col=par("col"), pch=par("pch"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.lab=par("cex.lab"), cex.main=par("cex.main"),
                         xaxs=par("xaxs"), yaxs=par("yaxs"),
                         mgp=getOption("oceMgp"),
@@ -1291,6 +1308,9 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
         stop("flipy must be TRUE or FALSE")
     if (!log %in% c("", "y"))
         stop("log must be either an empty string or \"y\", not \"", log, "\" as given")
+    if (!is.na(simplify) && (!is.numeric(simplify) || simplify <= 0))
+        stop("simplify must be NA or a positive number, but it is ", simplify)
+
     #oceDebug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
     #oceDebug(debug, "marginsAsImage=", marginsAsImage, ")\n")
     oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
@@ -1310,6 +1330,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
     par(mgp=mgp, mar=mar)
     args <- list(...)
     xlimGiven <- !missing(xlim)
+    # Trim data to visible window (to improve speed and to facilitate 'simplify' calculation)
     if (xlimGiven) {
         if (2 != length(xlim))
             stop("'xlim' must be of length 2, but it is of length ", length(xlim))
@@ -1350,10 +1371,30 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
         nyBAD <- sum(yBAD)
         if (nyBAD > 0L) {
             warning(nyBAD, " y value <= 0 omitted from logarithmic oce.plot.ts\n")
-            ##> Warning in xy.coords(x, y, xlabel, ylabel, log): 1 y value <= 0 omitted from
             x <- x[!yBAD]
             y <- y[!yBAD]
         }
+    }
+    # Handle 'simplify' argument
+    nx <- length(x)
+    if (type == "l" && is.numeric(simplify) & nx > (5L*simplify)) {
+        warning("simplifying a large dataset; set simplify=NA to see raw data\n")
+        xgrid <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=simplify)
+        df <- data.frame(x, y)
+        # Tests N=1e8 suggest split(X,findInterval()) is 2X faster than split(X,cut())
+        #>>> dfSplit <- split(df, cut(df$x, xgrid))
+        dfSplit <- split(df, as.factor(findInterval(df$x, xgrid)))
+        # Compute within the subintervals, inserting NAs when no data there
+        tz <- attr(x, "tzone")         # cause gridded x to inherit timezone from original x
+        x <- rep(unname(sapply(dfSplit, function(DF) if (length(DF$x) > 2) mean(DF$x, na.rm=TRUE) else NA)), each=2)
+        x <- numberAsPOSIXct(x, tz=tz)
+        ymin <- unname(sapply(dfSplit, function(DF) if (length(DF$y) > 2) min(DF$y, na.rm=TRUE) else NA))
+        ymax <- unname(sapply(dfSplit, function(DF) if (length(DF$y) > 2) max(DF$y, na.rm=TRUE) else NA))
+        y <- as.vector(rbind(ymin, ymax))
+        # Remove any segments for which min and max could not be computed
+        bad <- !is.finite(y)
+        x <- x[!bad]
+        y <- y[!bad]
     }
     xrange <- range(x, na.rm=TRUE)
     yrange <- range(y, finite=TRUE)
@@ -2287,7 +2328,7 @@ read.netcdf <- function(file, ...)
 
 
 #' Draw an axis, possibly with decade-style logarithmic scaling
-#' 
+#'
 #' @param logStyle a character value that indicates how to draw the y axis, if
 #' `log="y"`.  If it is `"r"` (the default) then the conventional R style is used,
 #' in which a logarithmic transform connects y values to position on the "page"
@@ -2303,7 +2344,7 @@ read.netcdf <- function(file, ...)
 #' whether to draw such labels.  The first form only works if the coordinate is not logarithmic,
 #' and if `logStyle` is `"r"`.
 #' @param \dots other graphical parameters, passed to [axis()].
-#' 
+#'
 #' @return Numerical values at which tick marks were drawn (or would have been drawn, if `labels`
 #' specified to draw them).
 #'
@@ -3396,7 +3437,8 @@ numberAsPOSIXct <- function(t, type, tz="UTC")
         type <- typeAllowed[type]
     }
     if (type == "unix") {
-        tref <- as.POSIXct("2000-01-01", tz=tz) # arbitrary
+        # We add something with a timezone, and then subtract it, as a trick to inherit the timezone
+        tref <- if (!is.null(tz)) as.POSIXct("2000-01-01", tz=tz) else as.POSIXct("2000-01-01")
         return(tref + as.numeric(t) - as.numeric(tref))
     } else if (type == "matlab") {
         ## R won't take a day "0", so subtract one

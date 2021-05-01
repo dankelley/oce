@@ -16,6 +16,7 @@ oce.plot.ts(
   xlab,
   ylab,
   drawTimeRange,
+  simplify = 2560,
   fill = FALSE,
   col = par("col"),
   pch = par("pch"),
@@ -82,6 +83,23 @@ the bottom of the page.}
 
 \item{drawTimeRange}{an optional indication of whether/how to draw a time range,
 in the top-left margin of the plot; see \code{\link[=oce.axis.POSIXct]{oce.axis.POSIXct()}} for details.}
+
+\item{simplify}{an integer value that indicates
+whether to speed up \code{type="l"} plots by replacing the data
+with minimum and maximum values within a subsampled time mesh.
+This can speed up plots of large datasets (e.g. by factor 20 for 10^7 points),
+sometimes with minor changes in appearance.
+This procedure is skipped if \code{simplify} is \code{NA} or
+if the number of visible data points is less than 5 times \code{simplify}.
+Otherwise, \code{oce.plot.ts} creates \code{simplify} intervals ranging across
+the visible time range. Intervals with under 2 finite
+\code{y} data are ignored. In the rest, \code{y} values
+are replaced with their range, and \code{x} values are replaced
+with the repeated midpoint time. Thus, each retained subinterval
+has exactly 2 data points.
+A warning is printed if this replacment is done.
+The default value of \code{simplify} means that cases with
+under 2560 visible points are plotted conventionally.}
 
 \item{fill}{boolean, set \code{TRUE} to fill the curve to zero (which it
 does incorrectly if there are missing values in \code{y}).}
