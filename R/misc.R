@@ -399,44 +399,122 @@ snakeToCamel <- function(s, specialCases=NULL)
 
 #' Decode units, from strings
 #'
-#' @param s A string.
+#' This is mainly intended for internal use within the package, and so the
+#' listing of translations is not documented here. The focus here is on
+#' units that are found in oceanographic files, *not* on all possible units.
+#' Since files sometimes store units in lower-case and sometimes in upper-case,
+#' the lookup is done independent of case, in this version of the function
+#' Thus, for example, `"S/m"` is converted to `"S/M"` and then matched to
+#' Siemens/metre.  This has not proved to be a problem to date, since no
+#' data files examined to date have contained inverse velocity units.
+#'
+#' @param unit a character value indicating the unit, which is converted
+#' to upper-case before it is checked against supported valeus.
+#'
+#' @param scale a character value indicating the scale.  The default value
+#' of `NULL` dictates that the scale is to be inferred from the unit. If
+#' a non-`NULL` value is supplied, it will be used, even if it makes no sense
+#' in relation to value of `unit`.
 #'
 #' @return A [list()] of two items: `unit` which is an
 #' [expression()], and `scale`, which is a string.
 #'
 #' @examples
-#' unitFromString("DB") # dbar
+#' unitFromString("dbar")   # dbar (no scale)
+#' unitFromString("deg c")  # modern temperature (ITS-90 scale)
 #' @family functions that interpret variable names and units from headers
-unitFromString <- function(s)
+unitFromString <- function(unit, scale=NULL)
 {
+    if (length(unit) > 1L)
+        stop("cannot work with a vector of strings")
+    U <- toupper(unit) # save match tests below
+    message("unit=\"", unit, "\", scale=\"", scale, "\"")
     ## 1. Strings that have been encountered in WOCE secton (.csv) files
     ## ",,,,,,,,,,,,DBAR,IPTS-68,PSS-78,,PSS-78,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,"
     ##> message("unitFromString(", s, ")")
-    if (s == "DB" || s == "DBAR")
-        return(list(unit=expression(db), scale=""))
-    if (s == "DEG C")
-        return(list(unit=expression(degree*C), scale="")) # unknown scale
-    if (s == "FMOL/KG")
-        return(list(unit=expression(fmol/kg), scale=""))
-    if (s == "ITS-90 DEGC" || s == "ITS-90")
-        return(list(unit=expression(degree*C), scale="ITS-90"))
-    if (s == "IPTS-68 DEGC" || s == "IPTS-68")
-        return(list(unit=expression(degree*C), scale="IPTS-68"))
-    if (s == "PSS-78")
-        return(list(unit=expression(), scale="PSS-78"))
-    if (s == "PMOL/KG")
-        return(list(unit=expression(pmol/kg), scale=""))
-    if (s == "PSU")
-        return(list(unit=expression(), scale="PSS-78"))
-    if (s == "ML/L")
-        return(list(unit=expression(ml/l), scale=""))
-    if (s == "UG/L")
-        return(list(unit=expression(mu*g/l), scale=""))
-    if (s == "UMOL/KG")
-        return(list(unit=expression(mu*mol/kg), scale=""))
-    if (s == "%")
-        return(list(unit=expression(percent), scale=""))
-    return(list(unit=as.expression(s), scale=""))
+    if (U == "" || U == "NONE")
+        return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
+    if (U == "10**3CELLS/L")
+        return(list(unit=expression(10^3*cells/l), scale=if (is.null(scale)) "" else scale))
+    if (U == "CODE")
+        return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
+    if (U == "COUNTS")
+        return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
+    if (U == "DBAR" || U == "DECIBAR" || U == "DECIBARS")
+        return(list(unit=expression(dbar), scale=if (is.null(scale)) "" else scale))
+    if (U == "DEG C" || U == "DEGREES C")
+        return(list(unit=expression(degree*C), scale=if (is.null(scale)) "ITS-90" else scale))
+    if (U == "FMOL/KG")
+        return(list(unit=expression(fmol/kg), scale=if (is.null(scale)) "" else scale))
+    if (U == "G")
+        return(list(unit=expression(g), scale=if (is.null(scale)) "" else scale))
+    if (U == "GMT")
+        return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
+    if (U == "HPA")
+        return(list(unit=expression(hPa), scale=if (is.null(scale)) "" else scale))
+    if (U == "HZ")
+        return(list(unit=expression(Hz), scale=if (is.null(scale)) "" else scale))
+    if (U == "ITS-90" || U == "ITS-90 DEGC")
+        return(list(unit=expression(degree*C), scale=if (is.null(scale)) "ITS-90" else scale))
+    if (U == "IPTS-68" || U == "IPTS-68 DEGC" || U == "IPTS-68, DEG C")
+        return(list(unit=expression(degree*C), scale=if (is.null(scale)) "IPTS-68" else scale))
+    if (U == "ITS-68" || U == "ITS-68 DEGC" || U == "ITS-68, DEG C") # not an accepted unit, but seen in ODF files
+        return(list(unit=expression(degree*C), scale=if (is.null(scale)) "IPTS-68" else scale))
+    if (U == "KG/M^3" || U == "KG/M**3")
+        return(list(unit=expression(kg/m^3), scale=if (is.null(scale)) "" else scale))
+    if (U == "M" || U == "METER" || U == "METRE" || U == "METERS" || U == "METRES")
+        return(list(unit=expression(m), scale=if (is.null(scale)) "" else scale))
+    if (U == "M**3/KG" || U == "M^3/KG")
+        return(list(unit=expression(m^3/kg), scale=if (is.null(scale)) "" else scale))
+    if (U == "MA")
+        return(list(unit=expression(ma), scale=if (is.null(scale)) "" else scale))
+    if (U == "M/S" || U == "METER/SEC" || U == "M/S" || U == "METRE/SEC")
+        return(list(unit=expression(m), scale=if (is.null(scale)) "" else scale))
+    if (U == "MG/M^3" || U == "MG/M**3")
+        return(list(unit=expression(mg/m^3), scale=if (is.null(scale)) "" else scale))
+    if (U == "MICRON" || U == "MICRONS")
+        return(list(unit=expression(mu*m), scale=if (is.null(scale)) "" else scale))
+    if (grepl("^\\s*MICRO[ ]?MOL[E]?S/M(\\*){0,2}2/S(EC)?\\s*$", U))
+        return(list(unit=expression(mu*mol/m/s), scale=if (is.null(scale)) "" else scale))
+    if (U == "ML/L")
+        return(list(unit=expression(ml/l), scale=if (is.null(scale)) "" else scale))
+    if (U == "M/S" || U == "M/SEC")
+        return(list(unit=expression(m/s), scale=if (is.null(scale)) "" else scale))
+    if (U == "M^-1/SR")
+        return(list(unit=expression(1/m/sr), scale=if (is.null(scale)) "" else scale))
+    if (U == "MHO/CM" || U == "MHOS/CM") # 1 mho (archaic) = 1 Siemen (modern)
+        return(list(unit=expression(S/cm), scale=if (is.null(scale)) "" else scale))
+    if (U == "MHO/M" || U == "MHOS/M") # 1 mho (archaic) = 1 Siemen (modern)
+        return(list(unit=expression(S/m), scale=if (is.null(scale)) "" else scale))
+    if (U == "MHO/CM" || U == "MHOS/CM") # 1 mho (archaic) = 1 Siemen (modern)
+        return(list(unit=expression(S/cm), scale=if (is.null(scale)) "" else scale))
+    if (U == "MMHO") # 1 mho (archaic) = 1 Siemen (modern)
+        return(list(unit=expression(mS), scale=if (is.null(scale)) "" else scale))
+    if (U == "NBS SCALE")
+        return(list(unit=expression(), scale=if (is.null(scale)) "NBS" else scale))
+    if (U == "NTU")
+        return(list(unit=expression(NTU), scale=if (is.null(scale)) "" else scale))
+    if (U == "PPM")
+        return(list(unit=expression(ppm), scale=if (is.null(scale)) "" else scale))
+    if (U == "PSS-78" || U == "PSU")
+        return(list(unit=expression(), scale=if (is.null(scale)) "PSS-78" else scale))
+    if (U == "PMOL/KG")
+        return(list(unit=expression(pmol/kg), scale=if (is.null(scale)) "" else scale))
+    if (U == "PSU")
+        return(list(unit=expression(), scale=if (is.null(scale)) "PSS-78" else scale))
+    if (U == "ML/L")
+        return(list(unit=expression(ml/l), scale=if (is.null(scale)) "" else scale))
+    if (U == "S" || U == "SEC" || U == "SECOND")
+        return(list(unit=expression(s), scale=if (is.null(scale)) "" else scale))
+    if (U == "S/M")
+        return(list(unit=expression(S/m), scale=if (is.null(scale)) "" else scale))
+    if (U == "UEINSTEINS/S/M**2" || U == "UEINSTEINS/S/M^2")
+        return(list(unit=expression(mu*mol*" "*m^-2*s^-1), scale=if (is.null(scale)) "" else scale))
+    if (U == "UMOL/KG")
+        return(list(unit=expression(mu*mol/kg), scale=if (is.null(scale)) "" else scale))
+    if (U == "%")
+        return(list(unit=expression(percent), scale=if (is.null(scale)) "" else scale))
+    return(list(unit=as.expression(unit), scale=if (is.null(scale)) "" else scale))
 }
 
 ## #' Rename a duplicated item (used in reading CTD files)

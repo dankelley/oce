@@ -2,7 +2,7 @@
 % Please edit documentation in R/odf.R
 \name{ODFNames2oceNames}
 \alias{ODFNames2oceNames}
-\title{Translate from ODF Names to Oce Names}
+\title{Translate ODF CODE strings to Oce Variable Names}
 \usage{
 ODFNames2oceNames(
   ODFnames,
@@ -34,7 +34,9 @@ by specifying higher \code{debug} values.}
 A vector of strings.
 }
 \description{
-Translate data names in the ODF convention to similar names in the Oce convention.
+Translate ODF CODE strings to Oce Variable Names. In the BIO dialect, these
+CODE strings are often identical to the NAME strings, but in the IML dialect,
+this seems never to be the case.
 }
 \details{
 The following table gives the recognized ODF code names for variables,
@@ -73,7 +75,6 @@ are given matching names.
 \code{EWCT} \tab \code{u}                     \tab                                              \cr
 \code{FFFF} \tab \code{overall(FFFF)}         \tab Archaic overall flag, replaced by \code{QCFF}     \cr
 \code{FLOR} \tab \code{fluorometer}           \tab                                              \cr
-\code{FWETLABS} \tab \code{fwetlabs}          \tab                                              \cr
 \code{GEOP} \tab \code{geopotential}          \tab                                              \cr
 \code{GSPD} \tab \code{windSpeedGust}         \tab                                              \cr
 \code{HCDM} \tab \code{directionMagnetic}     \tab                                              \cr
@@ -162,13 +163,6 @@ indicate a problem with the file or the data scanning; rather,
 it was a simple matter of nudging towards uniformity in a way
 that ought to confuse no users, akin to converting \code{m**3} to
 \code{m^3}, which is also done here without warning.)
-}
-
-\section{Consistency warning}{
-
-There are disagreements on variable names. For example, the ``DFO
-Common Data Dictionary'' (reference 1)
-has unit millimole/m^3 for NODC and MEDS, but it has unit mL/L for BIO and IML.
 }
 
 \references{

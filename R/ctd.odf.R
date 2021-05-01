@@ -49,6 +49,6 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, deploym
         res@metadata[[mname]] <- odf@metadata[[mname]]
     res@metadata$pressureType <- "sea"
     res@metadata$deploymentType <- deploymentType
-    oceDebug(debug, "} # read.ctd.odf()\n", unindent=1)
+    oceDebug(debug, "} # read.ctd.odf()\n", unindent=1, style="bold")
     res
 }

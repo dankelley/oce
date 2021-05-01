@@ -19,7 +19,7 @@ read.odf(
 data names to resultant variable names.  For example,
 \verb{columns=list(salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))}
 states that a short-name of \code{"salt"} represents salinity, and that the unit is
-as indicated. This is passed to \code{\link[=cnvName2oceName]{cnvName2oceName()}} or \code{\link[=ODFNames2oceNames]{ODFNames2oceNames()}},
+as indicated. This is passed to \code{\link[=cnvName2oceName]{cnvName2oceName()}} or \code{\link[=ODFCodes2oceNames]{ODFCodes2oceNames()}},
 as appropriate, and takes precedence over the lookup table in that function.}
 
 \item{header}{An indication of whether, or how, to store the entire
@@ -83,10 +83,10 @@ item \code{waterDepth}, which is used in \code{ctd} objects to refer to
 the total water depth, is set to \code{sounding} if that is finite,
 or to \code{maxDepth} otherwise.
 
-The function \code{\link[=ODFNames2oceNames]{ODFNames2oceNames()}} is used to translate
+The function \code{\link[=ODFCodes2oceNames]{ODFCodes2oceNames()}} is used to translate
 data names from the ODF file to standard \code{oce} names, and
 handles conversion for a few non-standard units. The documentation
-of \code{\link[=ODFNames2oceNames]{ODFNames2oceNames()}} should be consulted for more
+of \code{\link[=ODFCodes2oceNames]{ODFCodes2oceNames()}} should be consulted for more
 details.
 }
 \section{Metadata conventions}{
