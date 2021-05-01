@@ -399,17 +399,16 @@ snakeToCamel <- function(s, specialCases=NULL)
 
 #' Decode units, from strings
 #'
-#' This is mainly intended for internal use within the package, and so the
-#' listing of translations is not documented here. The focus here is on
-#' units that are found in oceanographic files, *not* on all possible units.
-#' Since files sometimes store units in lower-case and sometimes in upper-case,
-#' the lookup is done independent of case, in this version of the function
-#' Thus, for example, `"S/m"` is converted to `"S/M"` and then matched to
-#' Siemens/metre.  This has not proved to be a problem to date, since no
-#' data files examined to date have contained inverse velocity units.
+#' This is mainly intended for internal use within the package, e.g. by
+#' [read.odf()], and so the list of string-to-unit mappings is not
+#' documented, since developers can learn it from simple examination
+#' of the code.  The focus of `unitFromString()` is on strings that are
+#' found in oceanographic files available to the author, *not* on all
+#' possible units.
 #'
-#' @param unit a character value indicating the unit, which is converted
-#' to upper-case before it is checked against supported valeus.
+#' @param unit a character value indicating the unit. These
+#' are matched according to rules developed to work with actual
+#' data files, and so the list is not by any means exhaustive.
 #'
 #' @param scale a character value indicating the scale.  The default value
 #' of `NULL` dictates that the scale is to be inferred from the unit. If
@@ -427,11 +426,9 @@ unitFromString <- function(unit, scale=NULL)
 {
     if (length(unit) > 1L)
         stop("cannot work with a vector of strings")
-    U <- toupper(unit) # save match tests below
-    message("unit=\"", unit, "\", scale=\"", scale, "\"")
-    ## 1. Strings that have been encountered in WOCE secton (.csv) files
-    ## ",,,,,,,,,,,,DBAR,IPTS-68,PSS-78,,PSS-78,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,"
-    ##> message("unitFromString(", s, ")")
+    u <- trimws(unit)                  # remove any leading/trailing whitespace
+    U <- toupper(u)                    # simplify some match tests
+    #> message("unit=\"", unit, "\", scale=\"", scale, "\"")
     if (U == "" || U == "NONE")
         return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
     if (U == "10**3CELLS/L")
@@ -506,14 +503,47 @@ unitFromString <- function(unit, scale=NULL)
         return(list(unit=expression(ml/l), scale=if (is.null(scale)) "" else scale))
     if (U == "S" || U == "SEC" || U == "SECOND")
         return(list(unit=expression(s), scale=if (is.null(scale)) "" else scale))
-    if (U == "S/M")
+    if (u == "s/m")
+        return(list(unit=expression(s/m), scale=if (is.null(scale)) "" else scale))
+    if (u == "S/m")
         return(list(unit=expression(S/m), scale=if (is.null(scale)) "" else scale))
+    if (u == "Total scale")
+        return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
+    if (u == "True degrees")
+        return(list(unit=expression(degree), scale=if (is.null(scale)) "" else scale))
+    if (u == "uA")
+        return(list(unit=expression(mu*a), scale=if (is.null(scale)) "" else scale))
     if (U == "UEINSTEINS/S/M**2" || U == "UEINSTEINS/S/M^2")
         return(list(unit=expression(mu*mol*" "*m^-2*s^-1), scale=if (is.null(scale)) "" else scale))
     if (U == "UMOL/KG")
         return(list(unit=expression(mu*mol/kg), scale=if (is.null(scale)) "" else scale))
+    if (u == "ug/l")
+        return(list(unit=expression(mu*g/l), scale=if (is.null(scale)) "" else scale))
+    if (grepl("^mmol/m\\*\\*3$", unit, ignore.case=TRUE))
+        return(list(unit=expression(mmol/m^3), scale=if (is.null(scale)) "" else scale))
+    if (grepl("^mmol/m\\^3$", unit, ignore.case=TRUE))
+        return(list(unit=expression(mmol/m^3), scale=if (is.null(scale)) "" else scale))
+    if (U == "UMOL/KG")
+        return(list(unit=expression(mmol/kg), scale=if (is.null(scale)) "" else scale))
+    if (U == "UMOL/M**3")
+        return(list(unit=expression(mu*mol/m^3), scale=if (is.null(scale)) "" else scale))
+    if (U == "UMOL/M**2/S")
+        return(list(unit=expression(mu*mol/m^2/s), scale=if (is.null(scale)) "" else scale))
+    if (U == "UMOL PHOTONS/M2/S")
+        return(list(unit=expression(mu*mol/m^2/s), scale=if (is.null(scale)) "" else scale))
+    if (U == "UTC")
+        return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
+    if (U == "V")
+        return(list(unit=expression(V), scale=if (is.null(scale)) "" else scale))
+    if (U == "1/CM")
+        return(list(unit=expression(1/cm), scale=if (is.null(scale)) "" else scale))
+    if (U == "1/M")
+        return(list(unit=expression(1/m), scale=if (is.null(scale)) "" else scale))
+    if (U == "VOLT" || U == "VOLTS")
+        return(list(unit=expression(V), scale=if (is.null(scale)) "" else scale))
     if (U == "%")
         return(list(unit=expression(percent), scale=if (is.null(scale)) "" else scale))
+    # If none of the above worked, just try our best.
     return(list(unit=as.expression(unit), scale=if (is.null(scale)) "" else scale))
 }
 

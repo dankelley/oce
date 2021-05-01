@@ -5,7 +5,7 @@
 #'
 #' This class is for data stored in a format used at Canadian
 #' Department of Fisheries and Oceans laboratories. It is somewhat
-#' similar to the [bremen-class], in the sense
+#' similar to the [bremen-class] class, in the sense
 #' that it does not apply just to a particular instrument.
 #'
 #' @templateVar class odf
@@ -28,11 +28,14 @@
 #'
 #' 2. (Unknown authors), October 2014. \emph{ODF Format Description (MLI)},
 #' \url{https://ogsl.ca/wp-content/uploads/ODF_format_desc_en_0.pdf},
-#' (Link verified on June 4, 2020.)
+#' (Link verified on May 1, 2021.)
 #'
-#' 3. A sample ODF file in the MLI format is available at
+#' 3. A sample ODF file in the DFO format is available at
+#' \code{system.file("extdata","CTD_BCD2014666_008_1_DN.ODF.gz",package="oce")}
+#'
+#' 4. A sample ODF file in the MLI format is available at
 #' \url{https://ogsl.ca/wp-content/uploads/ODF_file_example_en_0.pdf}.
-#' (Link verified on June 4, 2020.)
+#' (Link verified on May 1, 2021.)
 #'
 #' @author Dan Kelley
 #' @family things related to odf data
@@ -628,12 +631,14 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(dbar), scale="")
         } else if (grepl("^deg(ree)?(s)?$", thisUnit, ignore.case=TRUE)) {
             list(unit=expression(degree), scale="")
-        } else if (thisUnit == "degrees C" || thisUnit == "Degrees C") {
+        } else if (thisUnit == "deg C" || thisUnit == "degrees C" || thisUnit == "Degrees C") {
             list(unit=expression(degree*C), scale="ITS-90") # guess on scale
         } else if (thisUnit == "degrees") {
             list(unit=expression(degree), scale="")
-        } else if (thisUnit == "IPTS-68, deg C" || thisUnit == "ITS-68, deg C") {
-            # Actually, I think ITS-68 is an invalid unit, but it may appear in some files.
+        } else if (thisUnit == "IPTS-68, deg C") {
+            list(unit=expression(degree*C), scale="IPTS-68")
+        } else if (thisUnit == "ITS-68, deg C") {
+            # I think ITS-68 is an invalid scale, but it appears in some files.
             list(unit=expression(degree*C), scale="IPTS-68")
         } else if (thisUnit == "FTU") {
             list(unit=expression(FTU), scale="")
@@ -952,9 +957,7 @@ ODFListFromHeader <- function(header)
 #' (see references 1 and 2).
 #' It can hold various types of time-series data, which includes a variety
 #' of instrument types. Thus, [read.odf()]
-#' is used by `read.ctd.odf` for CTD data, etc. As of mid-2018,
-#' [read.odf()] is still in development, with features being added as a
-#' project with DFO makes available more files.
+#' is used by `read.ctd.odf` for CTD data, etc.
 #'
 #' Note that some elements of the metadata are particular to ODF objects,
 #' e.g. `depthMin`, `depthMax` and `sounding`, which
@@ -965,11 +968,7 @@ ODFListFromHeader <- function(header)
 #' or to `maxDepth` otherwise.
 #'
 #' The function [ODFCodes2oceNames()] is used to translate
-#' data names from the ODF file to standard `oce` names, and
-#' handles conversion for a few non-standard units. The documentation
-#' of [ODFCodes2oceNames()] should be consulted for more
-#' details.
-#'
+#' data names from the ODF file to standard `oce` names.
 #'
 #' @section Metadata conventions:
 #'
@@ -1053,26 +1052,26 @@ ODFListFromHeader <- function(header)
 #' of lines that would be excluded by using
 #' `exclude="PROCESS='Nulled the .* value"` in the function call.
 #'
-#' @template debugTemplate
-#'
 #' @return An [oce-class] object.
 #'
 #' @section Handling of temperature scales:
 #' `read.odf()` stores temperature data directly as read from the file, which
-#' might mean the IPTS68 scale.  These values should not be used to calculate
+#' might mean the IPTS-68 scale.  These values should not be used to calculate
 #' other seawater quantities, because formulae are generally based in ITS90
 #' temperatures. To avoid problems, the accessor function converts to the modern
 #' scale, e.g. `x[["temperature"]]` yields temperature in the ITS90
 #' scale, whether temperatures in the original file were reported on that scale
-#' or the older IPTS68 scale.
+#' or the older IPTS-68 scale.
 #'
 #' @seealso [ODF2oce()] will be an alternative to this, once (or perhaps if) a `ODF`
 #' package is released by the Canadian Department of Fisheries and Oceans.
 #'
+#' @template odfTemplate
+#'
 #' @references
 #'
 #' For sources that describe the ODF format, see the documentation
-#' for the [odf-class].
+#' for the [odf-class] class.
 #'
 #' @family things related to odf data
 read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getOption("oceDebug"))
@@ -1240,10 +1239,8 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         units <- if (length(iunits) == 0) "" else gsub("^\\s*UNITS\\s*=\\s*'?(.*)',?\\s*$", "\\1", lines[lstart+iunits[1]-1])
         if (length(iunits) == 1) {
             if (grepl("IPTS\\-68", units)) {
-                units <- gsub("IPTS\\-68[, ]*", "", units)
                 scale <- "IPTS-68"
             }  else if (grepl("ITS\\-90", units)) {
-                units <- gsub("ITS\\-90[, ]*", "", units)
                 scale <- "ITS-90"
             } else {
                 scale <- ""
@@ -1269,19 +1266,18 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     # Rename flags (assuming, as in CIOSS code, that they refer to just-previous item)
     irename <- grep("^QQQQ", parameterTable$code)
     if (length(irename)) {
-        message("rename: ", paste(irename, collapse=" "))
-        message("old name: ", paste(parameterTable$name[irename], collapse=" "))
+        #> message("rename: ", paste(irename, collapse=" "))
+        #> message("old name: ", paste(parameterTable$name[irename], collapse=" "))
         if (all(irename > 1)) {
             newname <- paste0(parameterTable$oceName[irename-1], "Flag")
-            message("new name: ", paste(newname, collapse=" "))
+            #> message("new name: ", paste(newname, collapse=" "))
             parameterTable$oceName[irename] <- newname
         } else {
             warning("cannot determine connection between QC flags and parameter names.\n")
         }
     }
-    sink("parameterTable");print(parameterTable);sink() # FIXME: debug
-    sink("parameterTable2");print(as.data.frame(parameterTable),width=200);sink() # FIXME: debug
-    DAN<<-parameterTable
+    #> sink("parameterTable");print(parameterTable);sink() # FIXME: debug
+    #> sink("parameterTable2");print(as.data.frame(parameterTable),width=200);sink() # FIXME: debug
 
     # FIXME: get rid of next 3 items -- want everything in parameter table
     ODFunits <- parameterTable$units   # FIXME: archaic
@@ -1338,9 +1334,9 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     oceDebug(debug, "about to compute namesUnits\n")
     # FIXME: if we use parameterTable$code we get good units BUT missing flags
     # FIXME: if we use ODFnames we get flags but wrong units on FWETLABS and upoly (BIO test file)
-    namesUnits <- ODFNames2oceNames(parameterTable$code, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug)
+    #- namesUnits <- ODFNames2oceNames(parameterTable$code, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug)
     namesUnits <- ODFNames2oceNames(ODFnames, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug)
-    DAN<<-list(parameterTable=parameterTable, ODFnames=ODFnames, namesUnits=namesUnits)
+    #- DAN<<-list(parameterTable=parameterTable, ODFnames=ODFnames, namesUnits=namesUnits)
     ## check for missing units, and warn if pressure and/or temperature lack units
     w <- which(namesUnits[[1]]=="pressure")
     if (length(w)) {
@@ -1437,17 +1433,17 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
                 warning("\"", ODFnames[w], "\" should be unitless, but the file states the unit as \"", ustring, "\" so that is retained in the object metadata. This will likely cause problems.  See ?read.odf for an example of rectifying this unit error.")
         }
     }
-    # Trim the two overall flag names from some metadata items (we get rest later)
-    notFlag <- !grepl("(FFFF)|(QCFF)", ODForiginalNames)
-    res@metadata$units <- namesUnits$units[notFlag]
-    DAN <- lapply(parameterTable$units, unitFromString)
-    names(DAN) <- names(res@metadata$units)
-    message("try DAN")
-    browser() # FIXME
-    #names(res@metadata$units)<-parameterTable$oceName[!parameterTable$isFlag]
-    res@metadata$dataNamesOriginal <- as.list(ODForiginalNames[notFlag])
-    names(res@metadata$dataNamesOriginal) <- parameterTable$oceName[notFlag] #namesUnits$names[notFlag]
-    # Other things go in directly
+    # Store @metadata$units
+    tmp <- lapply(parameterTable$units, unitFromString)
+    names(tmp) <- parameterTable$oceName
+    res@metadata$units <- tmp
+    # Store @metadata$namesOriginal
+    namesOriginal <- list()
+    for (i in seq_len(nrow(parameterTable)))
+        if (!parameterTable$isFlag[i])
+            namesOriginal[parameterTable$oceName[i]] <- parameterTable$nameOrig[i]
+    res@metadata$dataNamesOriginal <- namesOriginal
+    # Store other things more directly
     res@metadata$address <- NULL
     res@metadata$recovery <- NULL
     res@metadata$sampleInterval <- NA
@@ -1456,6 +1452,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
     ## issue1226 data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
     data <- scan(text=lines, what="character", skip=dataStart, quiet=TRUE)
+    #- data <- matrix(data, ncol=length(namesUnits$names), byrow=TRUE)
     data <- matrix(data, ncol=length(namesUnits$names), byrow=TRUE)
     data <- as.data.frame(data, stringsAsFactors=FALSE)
     ## some files have text string for e.g. dates, species lengths, etc.
@@ -1498,7 +1495,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     # Copy flag columns to res@metadata...
     for (iflag in which(parameterTable$isFlag)) {
         oceDebug(debug, "iflag=", iflag, "(FLAG) parameterTable$oceName=", parameterTable$oceName[iflag], "\n", sep="")
-        flagName <- gsub("^flag\\$", "", parameterTable$oceName[iflag])
+        flagName <- gsub("Flag$", "", parameterTable$oceName[iflag])
         res@metadata$flags[[flagName]] <- data[, iflag]
         oceDebug(debug, "transferring data column ", iflag, " to @metadata$flags$", flagName, "\n", sep="")
     }
@@ -1508,8 +1505,10 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         oceDebug(debug, "deleting", nflagged, "data columns that were moved to @metadata$flags\n")
         res@data <- res@data[which(!parameterTable$isFlag)]
     }
-    # Remove flag units
+    # Remove flag units that are remnants from parameter-based QQQQ entries
     res@metadata$units <- res@metadata$units[!grepl("Quality Flag", names(res@metadata$units), ignore.case=TRUE)]
+    # Remove flag units that are remnants from overall flag (QCFF and FFFF) entries
+    res@metadata$units <- res@metadata$units[!is.na(names(res@metadata$units))]
     # Rename units (DFO files are ok already, but IML files need renaming)
     unitNames <- names(res@metadata$units)
     for (i in seq_along(unitNames)) {
@@ -1536,3 +1535,57 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     oceDebug(debug, "} # read.odf()\n", sep="", style="bold", unindent=1)
     res
 }
+
+#' Read a CTD file in ODF format
+#'
+#' @template readCtdTemplate
+#'
+#' @param exclude either a character value holding a regular
+#' expression that is used with [grep()] to remove lines from the
+#' header before processing, or `NULL` (the default), meaning
+#' not to exclude any such lines.  The purpose of this argument
+#' is to solve problems with some files, which can have
+#' thousands of lines that indicate details that are may be of
+#' little value in processing.  For example, some files have thousands
+#' of lines that would be excluded by using
+#' `exclude="PROCESS='Nulled the .* value"` in the function call.
+#'
+#' @details
+#' `read.ctd.odf` reads files stored in Ocean Data Format, used in
+#' some Canadian hydrographic databases.
+#'
+#' @template odfTemplate
+#'
+#' @references
+#'
+#' For sources that describe the ODF format, see the documentation
+#' for the [odf-class] class.
+#'
+#' @family things related to ctd data
+#' @family things related to odf data
+#' @family functions that read ctd data
+#'
+#' @author Dan Kelley
+read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
+                         monitor=FALSE, exclude=NULL, debug=getOption("oceDebug"), processingLog, ...)
+{
+    oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {\n", sep="", unindent=1, style="bold")
+    if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
+    odf <- read.odf(file=file, columns=columns, exclude=exclude, debug=debug-1)
+    res <- as.ctd(odf, debug=debug-1)
+    ## replace any missingValue with NA
+    if (!missing(missingValue) && !is.null(missingValue)) {
+        for (item in names(res@data)) {
+            res@data[[item]] <- ifelse(res@data[[item]]==missingValue, NA, res@data[[item]])
+        }
+    }
+    if (!is.null(station))
+        res@metadata$station <- station
+    for (mname in names(odf@metadata))
+        res@metadata[[mname]] <- odf@metadata[[mname]]
+    res@metadata$pressureType <- "sea"
+    res@metadata$deploymentType <- deploymentType
+    oceDebug(debug, "} # read.ctd.odf()\n", unindent=1, style="bold")
+    res
+}
+

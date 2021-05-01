@@ -7,7 +7,7 @@
 \description{
 This class is for data stored in a format used at Canadian
 Department of Fisheries and Oceans laboratories. It is somewhat
-similar to the \linkS4class{bremen}, in the sense
+similar to the \linkS4class{bremen} class, in the sense
 that it does not apply just to a particular instrument.
 }
 \section{Slots}{
@@ -79,10 +79,12 @@ Version 2.0}. (This is a .doc file obtained in June 2011 by Dan Kelley,
 which no longer seems to be made available at any DFO website.)
 \item (Unknown authors), October 2014. \emph{ODF Format Description (MLI)},
 \url{https://ogsl.ca/wp-content/uploads/ODF_format_desc_en_0.pdf},
-(Link verified on June 4, 2020.)
+(Link verified on May 1, 2021.)
+\item A sample ODF file in the DFO format is available at
+\code{system.file("extdata","CTD_BCD2014666_008_1_DN.ODF.gz",package="oce")}
 \item A sample ODF file in the MLI format is available at
 \url{https://ogsl.ca/wp-content/uploads/ODF_file_example_en_0.pdf}.
-(Link verified on June 4, 2020.)
+(Link verified on May 1, 2021.)
 }
 }
 \seealso{

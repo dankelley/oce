@@ -4,16 +4,11 @@ library(oce)
 context("ODF")
 file <- system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce")
 
-## This ODF file is modified from the one in inst/extdata, by having a sequence
-## of distinct NULL_VALUE entries, one per data item, and by having the
-## first few data entries modified. This tests the ability to handle
-## a different code for each data type.
 test_that("ODF CTD file", {
           d <- expect_warning(read.ctd.odf(file), "\"CRAT_01\" should be unitless")
           expect_equal(d[["temperatureUnit"]]$unit, expression(degree*C))
           expect_equal(d[["temperatureUnit"]]$scale, "IPTS-68")
-          ## FIXME: following works manually but fails in Rstudio build
-          ## expect_equal(d[["conductivityUnit"]]$unit, expression()) # was S/m in the .cnv but ratio in ODF
+          expect_equal(d[["conductivityUnit"]]$unit, expression(S/m))
           expect_equal(d[["pressureType"]], "sea")
           expect_equal(d[["ship"]], "CCGS SIGMA T (Call Sign: unknown)")
           expect_equal(d[["cruise"]], "Scotian Shelf")
@@ -26,7 +21,6 @@ test_that("ODF CTD file", {
           ## there are some flagged data in this file
           expect_equal(which(d[["salinityFlag"]]!=1), 121)
           expect_equal(c(110,120,121,142), which(d[["sigmaThetaFlag"]]!=1))
-
 })
 
 test_that("ODF CTD file (not as CTD)", {
