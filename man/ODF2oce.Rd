@@ -30,7 +30,7 @@ copying some of the header
 information into more standard names (e.g.  \code{metadata@longitude} is a
 copy of \code{metadata@odfHeader$EVENT_HEADER$INITIAL_LATITUDE}).  As for
 the \code{DATA}, they are stored in the \code{data} slot, after renaming
-from ODF to oce convention using \code{\link[=ODFCodes2oceNames]{ODFCodes2oceNames()}}.
+from ODF to oce convention using \code{\link[=ODFNames2oceNames]{ODFNames2oceNames()}}.
 }
 \section{Caution}{
  This function may change as the \code{ODF} package

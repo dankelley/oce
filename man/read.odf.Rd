@@ -19,7 +19,7 @@ read.odf(
 data names to resultant variable names.  For example,
 \verb{columns=list(salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))}
 states that a short-name of \code{"salt"} represents salinity, and that the unit is
-as indicated. This is passed to \code{\link[=cnvName2oceName]{cnvName2oceName()}} or \code{\link[=ODFCodes2oceNames]{ODFCodes2oceNames()}},
+as indicated. This is passed to \code{\link[=cnvName2oceName]{cnvName2oceName()}} or \code{\link[=ODFNames2oceNames]{ODFNames2oceNames()}},
 as appropriate, and takes precedence over the lookup table in that function.}
 
 \item{header}{An indication of whether, or how, to store the entire
@@ -51,6 +51,14 @@ thousands of lines that indicate details that are may be of
 little value in processing.  For example, some files have thousands
 of lines that would be excluded by using
 \code{exclude="PROCESS='Nulled the .* value"} in the function call.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 An \linkS4class{oce} object.
@@ -73,7 +81,7 @@ item \code{waterDepth}, which is used in \code{ctd} objects to refer to
 the total water depth, is set to \code{sounding} if that is finite,
 or to \code{maxDepth} otherwise.
 
-The function \code{\link[=ODFCodes2oceNames]{ODFCodes2oceNames()}} is used to translate
+The function \code{\link[=ODFNames2oceNames]{ODFNames2oceNames()}} is used to translate
 data names from the ODF file to standard \code{oce} names.
 }
 \section{Metadata conventions}{

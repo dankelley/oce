@@ -490,7 +490,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             }
         }
         ## do something with units too; check this block generally for new spelling
-        warning("FIXME(Kelley): code 'columns' support into ODFCodes2oceNames")
+        warning("FIXME(Kelley): code 'columns' support into ODFNames2oceNames")
     }
 
 
@@ -625,7 +625,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(), scale="")
         } else if (thisUnit == "counts") {
             list(unit=expression(), scale="")
-        } else if (thisUnit == "db") {
+        } else if (thisUnit == "db") { # this ought to be decibel ... does it ever occur in ODF?
             list(unit=expression(dbar), scale="")
         } else if (thisUnit == "decibars") {
             list(unit=expression(dbar), scale="")
@@ -789,7 +789,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
 #' information into more standard names (e.g.  `metadata@@longitude` is a
 #' copy of `metadata@@odfHeader$EVENT_HEADER$INITIAL_LATITUDE`).  As for
 #' the `DATA`, they are stored in the `data` slot, after renaming
-#' from ODF to oce convention using [ODFCodes2oceNames()].
+#' from ODF to oce convention using [ODFNames2oceNames()].
 #'
 #' @param ODF A list as returned by `read_ODF` in the `ODF` package
 #'
@@ -865,7 +865,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     ## Stage 2. insert data (renamed to Oce convention)
     xnames <- names(ODF$DATA)
     res@data <- as.list(ODF$DATA)
-    resNames <- ODFCods2oceNames(xnames, columns=NULL, PARAMETER_HEADER=ODF$PARAMETER_HEADER, debug=debug)
+    resNames <- ODFNames2oceNames(xnames, columns=NULL, PARAMETER_HEADER=ODF$PARAMETER_HEADER, debug=debug)
     names(res@data) <- resNames
     ## Obey missing values ... only for numerical things (which might be everything, for all I know)
     nd <- length(resNames)
@@ -967,7 +967,7 @@ ODFListFromHeader <- function(header)
 #' the total water depth, is set to `sounding` if that is finite,
 #' or to `maxDepth` otherwise.
 #'
-#' The function [ODFCodes2oceNames()] is used to translate
+#' The function [ODFNames2oceNames()] is used to translate
 #' data names from the ODF file to standard `oce` names.
 #'
 #' @section Metadata conventions:
@@ -1019,7 +1019,7 @@ ODFListFromHeader <- function(header)
 #' data names to resultant variable names.  For example,
 #' `columns=list(salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))`
 #' states that a short-name of `"salt"` represents salinity, and that the unit is
-#' as indicated. This is passed to [cnvName2oceName()] or [ODFCodes2oceNames()],
+#' as indicated. This is passed to [cnvName2oceName()] or [ODFNames2oceNames()],
 #' as appropriate, and takes precedence over the lookup table in that function.
 #'
 #' @param header An indication of whether, or how, to store the entire
@@ -1051,6 +1051,8 @@ ODFListFromHeader <- function(header)
 #' little value in processing.  For example, some files have thousands
 #' of lines that would be excluded by using
 #' `exclude="PROCESS='Nulled the .* value"` in the function call.
+#'
+#' @template debugTemplate
 #'
 #' @return An [oce-class] object.
 #'
@@ -1234,7 +1236,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         if (length(iname) > 1L)
             stop("cannot handle more than one NAME line in PARAMETER_HEADER block starting at line ", lstart-1)
         nameOrig <- gsub("^\\s*NAME\\s*=\\s*'?([^']*)'?,?\\s*$", "\\1", lines[lstart+iname-1])
-        parameterTable$nameOrig <- c(parameterTable$nameOrig, nameOrig)
+        parameterTable$nameOrig <- c(parameterTable$nameOrig, code)
         iunits <- grep("^\\s*UNITS\\s*=\\s*'?", lines[lstart:lend])
         units <- if (length(iunits) == 0) "" else gsub("^\\s*UNITS\\s*=\\s*'?(.*)',?\\s*$", "\\1", lines[lstart+iunits[1]-1])
         if (length(iunits) == 1) {
@@ -1246,7 +1248,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
                 scale <- ""
             }
         } else {
-            scale <- c(parameterTable$scale, "")
+            scale <- ""
         }
         #> message("units \"", units, "\"")
         #> message("scale \"", scale, "\"")
@@ -1336,14 +1338,6 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     # FIXME: if we use ODFnames we get flags but wrong units on FWETLABS and upoly (BIO test file)
     #- namesUnits <- ODFNames2oceNames(parameterTable$code, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug)
     namesUnits <- ODFNames2oceNames(ODFnames, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug)
-    #- DAN<<-list(parameterTable=parameterTable, ODFnames=ODFnames, namesUnits=namesUnits)
-    ## check for missing units, and warn if pressure and/or temperature lack units
-    w <- which(namesUnits[[1]]=="pressure")
-    if (length(w)) {
-        if (!length(namesUnits[[2]]["pressure"][[1]]$unit))
-            warning("source file does not indicate a unit for pressure (and perhaps for other items)\n")
-    }
-    oceDebug(debug, "namesUnits$names: c(\"", paste(namesUnits$names, collapse="\",\""), ")\n", sep="")
     res@metadata$depthOffBottom <- findInHeader("DEPTH_OFF_BOTTOM", lines, returnOnlyFirst=TRUE, numeric=TRUE)
     res@metadata$initialLatitude <- findInHeader("INITIAL_LATITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
     res@metadata$initialLongitude <- findInHeader("INITIAL_LONGITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
@@ -1396,7 +1390,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         options(warn=-1)
         NAvalue <- try({as.numeric(unlist(NAvalue))}, silent=TRUE)
         NAvalueList <- NAvalue
-        names(NAvalueList) <- parameterTable$oceName #namesUnits$names
+        names(NAvalueList) <- parameterTable$oceName
         options(warn=options$warn)
     }
     oceDebug(debug, "NAvalue (step 4): ", paste(deparse(NAvalue),collapse=""), "\n", sep="")
@@ -1425,12 +1419,12 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     }
     ## catch erroneous units on CRAT, which should be in a ratio, and hence have no units.
     ## This is necessary for the sample file inst/extdata/CTD_BCD2014666_008_1_DN.ODF.gz
-    if (length(grep("CRAT", ODFnames))) {
-        which <- grep("CRAT", ODFnames)
+    if (length(grep("CRAT", parameterTable$code))) {
+        which <- grep("CRAT", parameterTable$code)
         for (w in which) {
-            ustring <- as.character(namesUnits$units[[w]]$unit)
+            ustring <- parameterTable$units[w]
             if (length(ustring) && ustring != "" && ustring != "ratio")
-                warning("\"", ODFnames[w], "\" should be unitless, but the file states the unit as \"", ustring, "\" so that is retained in the object metadata. This will likely cause problems.  See ?read.odf for an example of rectifying this unit error.")
+                warning("\"", parameterTable$oceName[w], "\" (code name \"", parameterTable$code[w], "\") is a conductivity ratio, which has no units, but the file lists \"", ustring, "\" as a unit. Consult ?read.odf to see how to rectify this error.")
         }
     }
     # Store @metadata$units

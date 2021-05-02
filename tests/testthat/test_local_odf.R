@@ -4,6 +4,7 @@
 ## some tests here.
 
 library(oce)
+CRATwarning <- "\"conductivity\" \\(code name \"CRAT_01\"\\)" # portion of the warning
 
 context("ODF files")
 
@@ -25,7 +26,7 @@ test_that("Flemish Cap adcp file (with malformed CODEs and units)", {
 
 test_that("Flemish Cap microcat file (with malformed CODE tokens that lack ' characters)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
-              d <- read.oce("local_data/flemish_cap/MCM_HUD2013021_1840_2305_300.ODF")
+              d <- expect_warning(read.oce("local_data/flemish_cap/MCM_HUD2013021_1840_2305_300.ODF"), CRATwarning)
               ## oce names
               expect_equal(names(d[["data"]]), c("temperature", "pressure", "time", "conductivity", "salinity", "theta", "sigmaTheta"))
               ## original names
@@ -45,7 +46,7 @@ test_that("Flemish Cap microcat file (with malformed CODE tokens that lack ' cha
 
 test_that("Bedford Basin CTD profile 1 (with proper CODE tokens)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
-              d <- read.oce("local_data/bedford_basin/CTD_BCD2010667_001_01_DN.ODF")
+              d <- expect_warning(read.oce("local_data/bedford_basin/CTD_BCD2010667_001_01_DN.ODF"), CRATwarning)
               expect_equal(d[['startTime']], as.POSIXct("2010-01-05 13:23:29", tz="UTC"))
               ## oce names
               expect_equal(names(d[["data"]]),
@@ -65,14 +66,14 @@ test_that("Bedford Basin CTD profile 1 (with proper CODE tokens)", {
               expect_equal(d[["oxygenCurrentUnit"]]$unit, expression(mu*a))
               expect_equal(d[["oxygenTemperatureUnit"]]$unit, expression(degree*C))
               expect_equal(d[["fluorescenceUnit"]]$unit, expression(mg/m^3))
-              expect_equal(d[["parUnit"]]$unit, expression(mu*einstein/s/m^2))
+              expect_equal(d[["parUnit"]]$unit, expression(mu*mol*" " * m^-2 * s^-1))
               expect_equal(d[["sigmaThetaUnit"]]$unit, expression(kg/m^3))
           }
 })
 
 test_that("Bedford Basin CTD profile 2 (with proper CODE tokens)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
-              d <- read.oce("local_data/bedford_basin/CTD_BCD2011667_001_01_DN.ODF")
+              d <- expect_warning(read.oce("local_data/bedford_basin/CTD_BCD2011667_001_01_DN.ODF"), CRATwarning)
               expect_equal(d[['startTime']], as.POSIXct("2011-01-05 09:10:36", tz="UTC"))
               ## oce names
               expect_equal(names(d[["data"]]),
@@ -92,14 +93,14 @@ test_that("Bedford Basin CTD profile 2 (with proper CODE tokens)", {
               expect_equal(d[["oxygenCurrentUnit"]]$unit, expression(mu*a))
               expect_equal(d[["oxygenTemperatureUnit"]]$unit, expression(degree*C))
               expect_equal(d[["fluorescenceUnit"]]$unit, expression(mg/m^3))
-              expect_equal(d[["parUnit"]]$unit, expression(mu*einstein/s/m^2))
+              expect_equal(d[["parUnit"]]$unit, expression(mu*mol*" " * m^-2 * s^-1))
               expect_equal(d[["sigmaThetaUnit"]]$unit, expression(kg/m^3))
            }
 })
 
 test_that("Bedford Basin CTD profile 3 (with proper CODE tokens)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
-              d <- read.oce("local_data/bedford_basin/CTD_BCD2012667_01_01_DN.ODF")
+              d <- expect_warning(read.oce("local_data/bedford_basin/CTD_BCD2012667_01_01_DN.ODF"), CRATwarning)
               expect_equal(d[['startTime']], as.POSIXct("2012-01-04 12:53:38", tz="UTC"))
               ## oce names
               expect_equal(names(d[["data"]]),
@@ -120,7 +121,7 @@ test_that("Bedford Basin CTD profile 3 (with proper CODE tokens)", {
               expect_equal(d[["oxygenCurrentUnit"]]$unit, expression(mu*a))
               expect_equal(d[["oxygenTemperatureUnit"]]$unit, expression(degree*C))
               expect_equal(d[["fluorescenceUnit"]]$unit, expression(mg/m^3))
-              expect_equal(d[["parUnit"]]$unit, expression(mu*einstein/s/m^2))
+              expect_equal(d[["parUnit"]]$unit, expression(mu*mol*" " * m^-2 * s^-1))
               expect_equal(d[["sigmaThetaUnit"]]$unit, expression(kg/m^3))
            }
 })
@@ -128,8 +129,7 @@ test_that("Bedford Basin CTD profile 3 (with proper CODE tokens)", {
 test_that("Bedford Basin CTD profile 4 (with proper CODE tokens but no units for OCUR_01, OTMP_01, CRAT_01, FLOR_01, PSAR_01, PSAL_01,
           DOXY_01, or SIGP_01)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
-              d <- expect_warning(read.oce("local_data/bedford_basin/CTD_BCD2013667_001_01_DN.ODF"),
-                                  "source file does not indicate a unit for pressure \\(and perhaps for other items\\)")
+              d <- expect_silent(read.oce("local_data/bedford_basin/CTD_BCD2013667_001_01_DN.ODF"))
               expect_equal(d[['startTime']], as.POSIXct("2013-01-02 15:04:39", tz="UTC"))
               ## oce names
               expect_equal(names(d[["data"]]),
@@ -157,8 +157,7 @@ test_that("Bedford Basin CTD profile 4 (with proper CODE tokens but no units for
 
 test_that("Bedford Basin CTD profile 5 (with proper CODE tokens but no unit for PSAR_01)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
-              d <- expect_warning(read.oce("local_data/bedford_basin/CTD_BCD2014667_001_01_DN.ODF"),
-                                  "\"CRAT_01\" should be unitless")
+              d <- expect_warning(read.oce("local_data/bedford_basin/CTD_BCD2014667_001_01_DN.ODF"), CRATwarning)
               expect_equal(d[['startTime']], as.POSIXct("2014-01-08 13:37:15", tz="UTC"))
               ## oce names
               expect_equal(names(d[["data"]]),
@@ -176,7 +175,7 @@ test_that("Bedford Basin CTD profile 5 (with proper CODE tokens but no unit for 
               expect_equal(d[["conductivityUnit"]]$unit, expression(S/m))
               expect_equal(d[["oxygenVoltageUnit"]]$unit, expression(V))
               expect_equal(d[["fluorescenceUnit"]]$unit, expression(mg/m^3))
-              ## expect_equal(d[["parUnit"]]$unit, expression(mu*einstein/s/m^2))
+              expect_equal(d[["parUnit"]]$unit, expression())
               expect_equal(d[["oxygenUnit"]]$unit, expression(ml/l))
               expect_equal(d[["sigmaThetaUnit"]]$unit, expression(kg/m^3))
            }
@@ -184,8 +183,7 @@ test_that("Bedford Basin CTD profile 5 (with proper CODE tokens but no unit for 
 
 test_that("Bedford Basin CTD profile 6 (with proper CODE tokens)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
-              d <- expect_warning(read.oce("local_data/bedford_basin/CTD_BCD2015667_001_01_DN.ODF"),
-                                  "\"CRAT_01\" should be unitless")
+              d <- expect_warning(read.oce("local_data/bedford_basin/CTD_BCD2015667_001_01_DN.ODF"), CRATwarning)
               expect_equal(d[['startTime']], as.POSIXct("2015-01-07 13:28:34", tz="UTC"))
               ## oce names
               expect_equal(names(d[["data"]]),
@@ -212,8 +210,7 @@ test_that("Bedford Basin CTD profile 6 (with proper CODE tokens)", {
 
 test_that("Bedford Basin CTD profile 7 (with proper CODE tokens but no PSAR_01 unit)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
-              d <- expect_warning(read.oce("local_data/bedford_basin/D16667001.ODF"),
-                                  "\"CRAT_01\" should be unitless")
+              d <- expect_warning(read.oce("local_data/bedford_basin/D16667001.ODF"), CRATwarning)
               expect_equal(d[['startTime']], as.POSIXct("2016-01-06 13:17:37",tz="UTC"))
               ## oce names
               expect_equal(names(d[["data"]]),
@@ -231,7 +228,7 @@ test_that("Bedford Basin CTD profile 7 (with proper CODE tokens but no PSAR_01 u
               expect_equal(d[["conductivityUnit"]]$unit, expression(S/m))
               expect_equal(d[["oxygenVoltageUnit"]]$unit, expression(V))
               expect_equal(d[["fluorescenceUnit"]]$unit, expression(mg/m^3))
-              ## expect_equal(d[["parUnit"]]$unit, expression(mu*einstein/s/m^2))
+              expect_equal(d[["parUnit"]]$unit, expression())
               expect_equal(d[["salinityUnit"]]$unit, expression())
               expect_equal(d[["oxygenUnit"]]$unit, expression(ml/l))
               expect_equal(d[["sigmaThetaUnit"]]$unit, expression(kg/m^3))

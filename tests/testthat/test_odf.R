@@ -3,9 +3,10 @@ library(oce)
 
 context("ODF")
 file <- system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce")
+CRATwarning <- "\"conductivity\" \\(code name \"CRAT_01\"\\)" # portion of the warning
 
 test_that("ODF CTD file", {
-          d <- expect_warning(read.ctd.odf(file), "\"CRAT_01\" should be unitless")
+          d <- expect_warning(read.odf(file), CRATwarning)
           expect_equal(d[["temperatureUnit"]]$unit, expression(degree*C))
           expect_equal(d[["temperatureUnit"]]$scale, "IPTS-68")
           expect_equal(d[["conductivityUnit"]]$unit, expression(S/m))
@@ -24,7 +25,7 @@ test_that("ODF CTD file", {
 })
 
 test_that("ODF CTD file (not as CTD)", {
-          d <- expect_warning(read.odf(file), "\"CRAT_01\" should be unitless")
+          d <- expect_warning(read.odf(file), CRATwarning)
           # Test whether the file marked sigmaTheta as bad, when salinity was
           # bad (line 121)
           badSTp <- which(d[["salinityFlag"]]!=1 | d[["temperatureFlag"]]!=1 | d[["pressureFlag"]]!=1)
@@ -32,14 +33,14 @@ test_that("ODF CTD file (not as CTD)", {
 })
 
 test_that("ODF header", {
-          d <- expect_warning(read.odf(file), "\"CRAT_01\" should be unitless")
+          d <- expect_warning(read.odf(file), CRATwarning)
           expect_true(is.list((d[["header"]])))
           expect_equal(length(d[["header"]]), 32)
-          d <- expect_warning(read.odf(file, header="character"), "\"CRAT_01\" should be unitless")
+          d <- expect_warning(read.odf(file, header="character"), CRATwarning)
           expect_true(is.vector(d[["header"]]))
           expect_equal(32, length(grep("^[A-Z].*,$", d[["header"]])))
           expect_true(is.character(d[["header"]]))
-          d <- expect_warning(read.odf(file, header="list"), "\"CRAT_01\" should be unitless")
+          d <- expect_warning(read.odf(file, header="list"), CRATwarning)
           expect_true(is.list(d[["header"]]))
           expect_equal(32, length(d[["header"]]))
           expect_true(is.list(d[["header"]][[1]]))
@@ -56,17 +57,17 @@ test_that("ODF temperature scale, IPTS68 and ITS90", {
           Tref90 <- T90fromT68(Tref68)
           unit <- list(unit=expression(degree*C), scale="IPTS-68")
           # read.odf()
-          ctd1 <- expect_warning(read.odf(file), "should be unitless")
+          ctd1 <- expect_warning(read.odf(file), CRATwarning)
           expect_equal(ctd1@metadata$units$temperature, unit)
           expect_equal(ctd1@data$temperature, Tref68)
           expect_equal(ctd1[["temperature"]], Tref90)
           # read.ctd.odf()
-          ctd2 <- expect_warning(read.ctd.odf(file), "should be unitless")
+          ctd2 <- expect_warning(read.ctd.odf(file), CRATwarning)
           expect_equal(ctd2@metadata$units$temperature, unit)
           expect_equal(ctd2@data$temperature, Tref68)
           expect_equal(ctd2[["temperature"]], Tref90)
           # read.oce()
-          ctd3 <- expect_warning(read.oce(file), "should be unitless")
+          ctd3 <- expect_warning(read.oce(file), CRATwarning)
           expect_equal(ctd3@metadata$units$temperature, unit)
           expect_equal(ctd3@data$temperature, Tref68)
           expect_equal(ctd3[["temperature"]], Tref90)
