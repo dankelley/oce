@@ -298,9 +298,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 
 #' Translate ODF CODE strings to Oce Variable Names
 #'
-#' Translate ODF CODE strings to Oce Variable Names. In the BIO dialect, these
-#' CODE strings are often identical to the NAME strings, but in the IML dialect,
-#' this seems never to be the case.
+#' Translate ODF CODE strings to oce variable names.
 #'
 #' The following table gives the recognized ODF code names for variables,
 #' along with the translated names as used in oce objects. Note that the
@@ -310,7 +308,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' Note that quality-control items (with names starting with `"QQQQ"`)
 #' are given matching names.
 #' \tabular{lll}{
-#' **ODF name** \tab **Oce name**      \tab **Notes**                                    \cr
+#' **ODF Code** \tab **Oce Name**      \tab **Notes**                                    \cr
 #' `ACO2` \tab `CO2Atmosphere`         \tab                                              \cr
 #' `ALTB` \tab `altimeter`             \tab                                              \cr
 #' `ALKW` \tab `alkalinity`            \tab                                              \cr
@@ -320,7 +318,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `AUTH` \tab `authority`             \tab                                              \cr
 #' `BATH` \tab `barometricDepth`       \tab                                              \cr
 #' `BEAM` \tab `a`                     \tab                                              \cr
-#' `BNO7` \tab `bestNODC7Number`       \tab that is an "oh" letter, not a zero           \cr
+#' `BNO7` \tab `bestNODC7Number`       \tab That is an "oh" letter, not a zero           \cr
 #' `CNTR` \tab `scan`                  \tab                                              \cr
 #' `CPHL` \tab `chlorophyll`           \tab                                              \cr
 #' `CRAT` \tab `conductivity`          \tab Conductivity ratio (may have spurious unit)  \cr
@@ -415,21 +413,19 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' the adjustment of suffix numbers. The following code have been seen in data files from
 #' the Bedford Institute of Oceanography: `ALTB`, `PHPH` and `QCFF`.
 #'
-#' @section A note on unit conventions:
-#' Some older ODF files contain non-standard units for conductivity,
-#' including `mho/m`, `mmho/cm`, and `mmHo`. As the
-#' units for conductivity are important for derived quantities
-#' (e.g. salinity), such units are converted to standard units
-#' (e.g. `S/m` and `mS/cm`).  (This was once done with a warning,
-#' but on 2020-02-07 the warning was removed, since it did not
-#' indicate a problem with the file or the data scanning; rather,
-#' it was a simple matter of nudging towards uniformity in a way
-#' that ought to confuse no users, akin to converting `m**3` to
-#' `m^3`, which is also done here without warning.)
+## @section A note on unit conventions:
+## Some older ODF files contain non-standard units for conductivity,
+## including `mho/m`, `mmho/cm`, and `mmHo`. As the
+## units for conductivity are important for derived quantities
+## (e.g. salinity), such units are converted to standard units
+## (e.g. `S/m` and `mS/cm`).  (This was once done with a warning,
+## but on 2020-02-07 the warning was removed, since it did not
+## indicate a problem with the file or the data scanning; rather,
+## it was a simple matter of nudging towards uniformity in a way
+## that ought to confuse no users, akin to converting `m**3` to
+## `m^3`, which is also done here without warning.)
 #'
-#' @param ODFnames Vector of strings holding ODF names.
-#'
-#' @param ODFunits Vector of strings holding ODF units.
+#' @param ODFnames vector of character values that hold ODF names.
 #'
 #' @param columns Optional list containing name correspondances, as described for
 #' [read.ctd.odf()].
@@ -437,11 +433,14 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' @param PARAMETER_HEADER Optional list containing information on the data variables.
 #' @template debugTemplate
 #'
-#' @return A vector of strings.
+#' @return A list relating ODF names to oce names (see \dQuote{Examples}).
 #'
 #' @author Dan Kelley
 #'
 #' @family functions that interpret variable names and units from headers
+#'
+#' @examples
+#' ODFNames2oceNames("TEMP_01")$names # "temperature"
 #'
 #' @references
 #'
@@ -449,55 +448,27 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' for the [odf-class].
 #'
 #' @family things related to odf data
-ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
+ODFNames2oceNames <- function(ODFnames,
+                              # ODFunits=NULL,
                               columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "ODFNames2oceNames() {\n", unindent=1, sep="", style="bold")
     n <- length(ODFnames)
-    if (n != length(ODFunits)) {
-        if (debug>0) cat("ODFnames: '", paste(ODFnames, collapse="' '"), "'\n", sep="")
-        if (debug>0) cat("ODFunits: '", paste(ODFunits, collapse="' '"), "'\n", sep="")
-        if (0 == length(ODFunits)) {
-            ## Handle the case of missing UNITS
-            ODFunits <- rep("", n)
-        } else {
-            warning("length of ODFnames and ODFunits should agree but they are ", n, " and ", length(ODFunits), ". Padding with empty units" )
-            ODFunits <- c(ODFunits, rep("", n-length(ODFunits)))
-        }
-    }
     names <- ODFnames
-    #- # Capture names for UNKN_* items, and key on them.  Possibly this should be done to get all the
-    #- # names, but then we just transfer the problem of decyphering keys to one of decyphering
-    #- # strings, and that might yield problems with encoding, etc. NOTE (2021-04-30): this does not
-    #- # seem to be used in the test files.
-    #- if (!is.null(PARAMETER_HEADER)) {
-    #-     if (length(grep("^UNKN_.*", PARAMETER_HEADER[[i]]$code))) {
-    #-         uname <- PARAMETER_HEADER[[i]]$name
-    #-         name <- if (length(grep("Percent Good Pings", uname ))) "g" else uname
-    #-         #- message(uname, " -> ", name)
-    #-     }
-    #- }
-    ## If 'name' is mentioned in columns, then use columns and ignore the lookup table.
+    # If 'name' is mentioned in columns, then use columns and ignore the lookup table.
     if (!is.null(columns)) {
-        ##message("name:", name)
-        ## d<-read.ctd("~/src/oce/create_data/ctd/ctd.cnv",columns=list(salinity=list(name="sal00",unit=list(expression(), scale="PSS-78monkey"))))
         cnames <- names(columns)
         for (i in seq_along(cnames)) {
             if (name[i] == columns[[i]]$name) {
-                ##message("HIT; name=", cnames[i])
-                ##message("HIT; unit$scale=", columns[[i]]$unit$scale)
                 name[i] <- names
             }
         }
-        ## do something with units too; check this block generally for new spelling
         warning("FIXME(Kelley): code 'columns' support into ODFNames2oceNames")
     }
-
-
-    ## Infer standardized names for columns, partly based on documentation (e.g. PSAL for salinity), but
-    ## mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
-    ## really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
-    ## or whatever), this is a place to look.
+    # Infer standardized names for columns, partly based on documentation (e.g. PSAL for salinity), but
+    # mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
+    # really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
+    # or whatever), this is a place to look.
     oceDebug(debug, "STAGE 1 names: ", paste(names, collapse=" "), "\n")
     names <- gsub("ACO2", "CO2Atmosphere", names)
     names <- gsub("ALTB", "altimeter", names)
@@ -600,179 +571,180 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("WSPD", "windSpeed", names)
     names <- gsub("WTWT", "wetWeight", names)
     names <- gsub("ZOO_", "zooplanktonCount", names)
-    ## Fix up suffixes.
+    # Fix up suffixes.
     names <- gsub("_[0-9][0-9]", "", names)
     oceDebug(debug, "STAGE 2 names: ", paste(names, collapse=" "), "\n")
     names <- unduplicateNames(names)
-    oceDebug(debug, "STAGE 3 names: ", paste(names, collapse=" "), "\n")
-    ## Handle units
-    units <- list()
-    oceDebug(debug, "STAGE 4 units: ", paste(units, collapse=" "), "\n")
-    ODFunits <- gsub("^/", "1/", ODFunits)
-    oceDebug(debug, "STAGE 5 units: ", paste(units, collapse=" "), " (after changing '/*' to '1/*')\n")
-    for (i in seq_along(names)) {
-        ## NOTE: this was originally coded with ==, but as errors in ODF
-        ## formatting have been found, I've moved to grep() instead; for
-        ## example, the sigma-theta case is done that way, because the
-        ## original code expected kg/m^3 but then (issue 1051) I ran
-        ## across an ODF file that wrote density as Kg/m^3.
-        oceDebug(debug, paste("ODFnames[",i,"]='",ODFnames[i],"', names[",i,"]='", names[i], "', ODFunits[", i, "]='", ODFunits[i], "'\n", sep=""))
-        thisUnit <- trimws(ODFunits[i])
-        #- message("i=", i, ", name=\"", names[i], "\", thisUnit='", thisUnit, "'")
-        units[[names[i]]] <- if (thisUnit == "10**3cells/L") {
-            list(unit=expression(10^3*cells/l), scale="")
-        } else if (thisUnit == "code") {
-            list(unit=expression(), scale="")
-        } else if (thisUnit == "counts") {
-            list(unit=expression(), scale="")
-        } else if (thisUnit == "db") { # this ought to be decibel ... does it ever occur in ODF?
-            list(unit=expression(dbar), scale="")
-        } else if (thisUnit == "decibars") {
-            list(unit=expression(dbar), scale="")
-        } else if (grepl("^deg(ree)?(s)?$", thisUnit, ignore.case=TRUE)) {
-            list(unit=expression(degree), scale="")
-        } else if (thisUnit == "deg C" || thisUnit == "degrees C" || thisUnit == "Degrees C") {
-            list(unit=expression(degree*C), scale="ITS-90") # guess on scale
-        } else if (thisUnit == "degrees") {
-            list(unit=expression(degree), scale="")
-        } else if (thisUnit == "IPTS-68, deg C") {
-            list(unit=expression(degree*C), scale="IPTS-68")
-        } else if (thisUnit == "ITS-68, deg C") {
-            # I think ITS-68 is an invalid scale, but it appears in some files.
-            list(unit=expression(degree*C), scale="IPTS-68")
-        } else if (thisUnit == "FTU") {
-            list(unit=expression(FTU), scale="")
-        } else if (thisUnit == "g") {
-            list(unit=expression(g), scale="")
-        } else if (thisUnit == "GMT") {
-            list(unit=expression(), scale="")
-        } else if (thisUnit == "hPa") {
-            list(unit=expression(hPa), scale="")
-        } else if (thisUnit == "ITS-90, deg C") {
-            list(unit=expression(degree*C), scale="ITS-90")
-        } else if (thisUnit == "hertz" || thisUnit == "Hertz") {
-            list(unit=expression(Hz), scale="")
-        } else if (thisUnit == "kg/m^3" || thisUnit == "kg/m**3") {
-            list(unit=expression(kg/m^3), scale="")
-        } else if (thisUnit == "m") {
-            list(unit=expression(m), scale="")
-        } else if (thisUnit == "m**3/s") {
-            list(unit=expression(m^3/s), scale="")
-        } else if (thisUnit == "metres" || thisUnit == "meters") {
-            list(unit=expression(m), scale="")
-        } else if (thisUnit == "m**3/kg") {
-            list(unit=expression(m^3/kg), scale="")
-        } else if (thisUnit == "mg/m^3") {
-            list(unit=expression(mg/m^3), scale="")
-        } else if (thisUnit == "mg/m**3") {
-            list(unit=expression(mg/m^3), scale="")
-        } else if (thisUnit == "ml/l") {
-            list(unit=expression(ml/l), scale="")
-        } else if (thisUnit == "m/s" || thisUnit == "M/s") {
-            list(unit=expression(m/s), scale="")
-        } else if (thisUnit == "m/sec") {
-            list(unit=expression(m/s), scale="")
-        } else if (thisUnit == "m^-1/sr") {
-            list(unit=expression(1/m/sr), scale="")
-        } else if (grepl("^\\s*mho[s]{0,1}/m\\s*$", thisUnit, ignore.case=TRUE)) {
-            ##20200207 warning('Changed unit mho/m to S/m for conductivity')
-            list(unit=expression(S/m), scale="")
-        #} else if (1 == length(grep("^\\s*micro[ ]?mols/m2/s\\s*$", thisUnit, ignore.case=TRUE))) {
-        #    list(unit=expression(mu*mol/m^2/s), scale="")
-        } else if (grepl("^\\s*mmho[s]?/cm\\s*$", thisUnit, ignore.case=TRUE)) {
-            ##20200207 warning('Changed unit mmho/cm to mS/cm for conductivity')
-            list(unit=expression(mS/cm), scale="")
-        } else if (thisUnit == "mmHo") { # FIXME: this must be an error, unless ODF is very strange, but see unitFromString() anyway
-            ##20200207 warning('Changed unit mmHo to S/m for conductivity')
-            list(unit=expression(S/m), scale="")
-        ##} else if (thisUnit == "[(]*none[)]$") {
-        } else if (thisUnit == "none") {
-            list(unit=expression(), scale="")
-        } else if (grepl("^[\\(]*none[\\)]*$", thisUnit, ignore.case=TRUE)) {
-            list(unit=expression(), scale="")
-        } else if (thisUnit == "NBS scale") {
-            list(unit=expression(), scale="NBS scale")
-        } else if (thisUnit == "NTU") {
-            list(unit=expression(NTU), scale="")
-        } else if (thisUnit == "ppm" || thisUnit == "PPM") {
-            list(unit=expression(ppm), scale="")
-        } else if (thisUnit == "psu" || thisUnit == "PSU") {
-            list(unit=expression(), scale="PSS-78")
-        } else if (thisUnit == "ma") {
-            list(unit=expression(ma), scale="")
-        } else if (thisUnit == "metres/sec") {
-            list(unit=expression(m/s), scale="")
-        } else if (thisUnit == "microns") {
-            list(unit=expression(mu*m), scale="")
-        } else if (grepl("^\\s*micro[ ]?mol[e]?s/m(\\*){0,2}2/s(ec)?\\s*$", thisUnit, ignore.case=TRUE)) {
-            list(unit=expression(mu*mol/m^2/s), scale="")
-        } else if (thisUnit == "ratio") {
-            list(unit=expression(ratio), scale="")
-        } else if (grepl("^\\s*sigma-theta,\\s*kg/m\\^3\\s*$", thisUnit, ignore.case=TRUE)) {
-            list(unit=expression(kg/m^3), scale="")
-        } else if (thisUnit == "s" || thisUnit == "seconds") {
-            list(unit=expression(s), scale="")
-        } else if (thisUnit == "S/m") {
-            list(unit=expression(S/m), scale="")
-        } else if (thisUnit == "Total scale") {
-            list(unit=expression(), scale="")
-        } else if (thisUnit == "True degrees") {
-            list(unit=expression(), scale="")
-        } else if (thisUnit == "uA") {
-            list(unit=expression(mu*a), scale="")
-        } else if (thisUnit == "ueinsteins/s/m**2") {
-            list(unit=expression(mu*einstein/s/m^2), scale="")
-        } else if (thisUnit == "ug/l") {
-            list(unit=expression(mu*g/l), scale="")
-        } else if (grepl("^\\s*mmol/m\\*\\*3\\s*$", thisUnit, ignore.case=TRUE)) {
-            list(unit=expression(mmol/m^3), scale="")
-        } else if (thisUnit == "umol/kg") {
-            list(unit=expression(mmol/kg), scale="")
-        } else if (thisUnit == "umol/m**3") {
-            list(unit=expression(mu*mol/m^3), scale="")
-        } else if (thisUnit == "umol/m**2/s") {
-            list(unit=expression(mu*mol/m^2/s), scale="")
-        } else if (thisUnit == "umol photons/m2/s") {
-            list(unit=expression(mu*mol/m^2/s), scale="")
-        } else if (thisUnit == "UTC") {
-            list(unit=expression(), scale="")
-        } else if (thisUnit == "V") {
-            list(unit=expression(V), scale="")
-        } else if (thisUnit == "1/cm") {
-            list(unit=expression(1/cm), scale="")
-        } else if (thisUnit == "1/m") {
-            list(unit=expression(1/m), scale="")
-        } else if (thisUnit == "%") {
-            list(unit=expression("%"), scale="")
-        } else if (thisUnit == "volts") {
-            list(unit=expression(V), scale="")
-        } else if (nchar(thisUnit) == 0) {
-            list(unit=expression(), scale="")
-        } else {
-            # print(names)
-            warning("unable to interpret ODFunits[", i, "]='", thisUnit, "', for item code-named '", names[i], "', so making an educated guess using parse() or, as a last-ditch effort, simply copying the string", sep="")
-            uu <- try(parse(text=thisUnit), silent=TRUE)
-            if (class(uu) == "try-error")
-                uu <- thisUnit
-            list(unit=uu, scale="")
-        }
-    }
-    ## Catch some problems I've seen in data
-    directionVariables <- which(names == "directionMagnetic" | names == "directionTrue")
-    for (directionVariable in directionVariables) {
-        unit <- units[[directionVariable]]$unit
-        if (is.null(unit)) {
-            warning("no unit found for '",
-                    names[[directionVariable]], "'; this will not affect calculations, though")
-            ## units[[directionVariable]]$unit <- expression(degree)
-        } else if (is.character(unit) && "degree" != unit && "degrees" != unit) {
-            warning("odd unit, '", unit, "', for '",
-                    names[directionVariable], "'; this will not affect calculations, though")
-            ## units[[directionVariable]]$unit <- expression(degree)
-        }
-    }
+    oceDebug(debug, "STAGE 3 names (i.e. after unduplicating): ", paste(names, collapse=" "), "\n")
+    #- # Handle units
+    #- units <- list()
+    #- oceDebug(debug, "STAGE 4 units: ", paste(units, collapse=" "), "\n")
+    #- ODFunits <- gsub("^/", "1/", ODFunits)
+    #- oceDebug(debug, "STAGE 5 units: ", paste(units, collapse=" "), " (after changing '/*' to '1/*')\n")
+    #- for (i in seq_along(names)) {
+    #-     ## NOTE: this was originally coded with ==, but as errors in ODF
+    #-     ## formatting have been found, I've moved to grep() instead; for
+    #-     ## example, the sigma-theta case is done that way, because the
+    #-     ## original code expected kg/m^3 but then (issue 1051) I ran
+    #-     ## across an ODF file that wrote density as Kg/m^3.
+    #-     oceDebug(debug, paste("ODFnames[",i,"]='",ODFnames[i],"', names[",i,"]='", names[i], "', ODFunits[", i, "]='", ODFunits[i], "'\n", sep=""))
+    #-     thisUnit <- trimws(ODFunits[i])
+    #-     #- message("i=", i, ", name=\"", names[i], "\", thisUnit='", thisUnit, "'")
+    #-     units[[names[i]]] <- if (thisUnit == "10**3cells/L") {
+    #-         list(unit=expression(10^3*cells/l), scale="")
+    #-     } else if (thisUnit == "code") {
+    #-         list(unit=expression(), scale="")
+    #-     } else if (thisUnit == "counts") {
+    #-         list(unit=expression(), scale="")
+    #-     } else if (thisUnit == "db") { # this ought to be decibel ... does it ever occur in ODF?
+    #-         list(unit=expression(dbar), scale="")
+    #-     } else if (thisUnit == "decibars") {
+    #-         list(unit=expression(dbar), scale="")
+    #-     } else if (grepl("^deg(ree)?(s)?$", thisUnit, ignore.case=TRUE)) {
+    #-         list(unit=expression(degree), scale="")
+    #-     } else if (thisUnit == "deg C" || thisUnit == "degrees C" || thisUnit == "Degrees C") {
+    #-         list(unit=expression(degree*C), scale="ITS-90") # guess on scale
+    #-     } else if (thisUnit == "degrees") {
+    #-         list(unit=expression(degree), scale="")
+    #-     } else if (thisUnit == "IPTS-68, deg C") {
+    #-         list(unit=expression(degree*C), scale="IPTS-68")
+    #-     } else if (thisUnit == "ITS-68, deg C") {
+    #-         # I think ITS-68 is an invalid scale, but it appears in some files.
+    #-         list(unit=expression(degree*C), scale="IPTS-68")
+    #-     } else if (thisUnit == "FTU") {
+    #-         list(unit=expression(FTU), scale="")
+    #-     } else if (thisUnit == "g") {
+    #-         list(unit=expression(g), scale="")
+    #-     } else if (thisUnit == "GMT") {
+    #-         list(unit=expression(), scale="")
+    #-     } else if (thisUnit == "hPa") {
+    #-         list(unit=expression(hPa), scale="")
+    #-     } else if (thisUnit == "ITS-90, deg C") {
+    #-         list(unit=expression(degree*C), scale="ITS-90")
+    #-     } else if (thisUnit == "hertz" || thisUnit == "Hertz") {
+    #-         list(unit=expression(Hz), scale="")
+    #-     } else if (thisUnit == "kg/m^3" || thisUnit == "kg/m**3") {
+    #-         list(unit=expression(kg/m^3), scale="")
+    #-     } else if (thisUnit == "m") {
+    #-         list(unit=expression(m), scale="")
+    #-     } else if (thisUnit == "m**3/s") {
+    #-         list(unit=expression(m^3/s), scale="")
+    #-     } else if (thisUnit == "metres" || thisUnit == "meters") {
+    #-         list(unit=expression(m), scale="")
+    #-     } else if (thisUnit == "m**3/kg") {
+    #-         list(unit=expression(m^3/kg), scale="")
+    #-     } else if (thisUnit == "mg/m^3") {
+    #-         list(unit=expression(mg/m^3), scale="")
+    #-     } else if (thisUnit == "mg/m**3") {
+    #-         list(unit=expression(mg/m^3), scale="")
+    #-     } else if (thisUnit == "ml/l") {
+    #-         list(unit=expression(ml/l), scale="")
+    #-     } else if (thisUnit == "m/s" || thisUnit == "M/s") {
+    #-         list(unit=expression(m/s), scale="")
+    #-     } else if (thisUnit == "m/sec") {
+    #-         list(unit=expression(m/s), scale="")
+    #-     } else if (thisUnit == "m^-1/sr") {
+    #-         list(unit=expression(1/m/sr), scale="")
+    #-     } else if (grepl("^\\s*mho[s]{0,1}/m\\s*$", thisUnit, ignore.case=TRUE)) {
+    #-         ##20200207 warning('Changed unit mho/m to S/m for conductivity')
+    #-         list(unit=expression(S/m), scale="")
+    #-     #} else if (1 == length(grep("^\\s*micro[ ]?mols/m2/s\\s*$", thisUnit, ignore.case=TRUE))) {
+    #-     #    list(unit=expression(mu*mol/m^2/s), scale="")
+    #-     } else if (grepl("^\\s*mmho[s]?/cm\\s*$", thisUnit, ignore.case=TRUE)) {
+    #-         ##20200207 warning('Changed unit mmho/cm to mS/cm for conductivity')
+    #-         list(unit=expression(mS/cm), scale="")
+    #-     } else if (thisUnit == "mmHo") { # FIXME: this must be an error, unless ODF is very strange, but see unitFromString() anyway
+    #-         ##20200207 warning('Changed unit mmHo to S/m for conductivity')
+    #-         list(unit=expression(S/m), scale="")
+    #-     ##} else if (thisUnit == "[(]*none[)]$") {
+    #-     } else if (thisUnit == "none") {
+    #-         list(unit=expression(), scale="")
+    #-     } else if (grepl("^[\\(]*none[\\)]*$", thisUnit, ignore.case=TRUE)) {
+    #-         list(unit=expression(), scale="")
+    #-     } else if (thisUnit == "NBS scale") {
+    #-         list(unit=expression(), scale="NBS scale")
+    #-     } else if (thisUnit == "NTU") {
+    #-         list(unit=expression(NTU), scale="")
+    #-     } else if (thisUnit == "ppm" || thisUnit == "PPM") {
+    #-         list(unit=expression(ppm), scale="")
+    #-     } else if (thisUnit == "psu" || thisUnit == "PSU") {
+    #-         list(unit=expression(), scale="PSS-78")
+    #-     } else if (thisUnit == "ma") {
+    #-         list(unit=expression(ma), scale="")
+    #-     } else if (thisUnit == "metres/sec") {
+    #-         list(unit=expression(m/s), scale="")
+    #-     } else if (thisUnit == "microns") {
+    #-         list(unit=expression(mu*m), scale="")
+    #-     } else if (grepl("^\\s*micro[ ]?mol[e]?s/m(\\*){0,2}2/s(ec)?\\s*$", thisUnit, ignore.case=TRUE)) {
+    #-         list(unit=expression(mu*mol/m^2/s), scale="")
+    #-     } else if (thisUnit == "ratio") {
+    #-         list(unit=expression(ratio), scale="")
+    #-     } else if (grepl("^\\s*sigma-theta,\\s*kg/m\\^3\\s*$", thisUnit, ignore.case=TRUE)) {
+    #-         list(unit=expression(kg/m^3), scale="")
+    #-     } else if (thisUnit == "s" || thisUnit == "seconds") {
+    #-         list(unit=expression(s), scale="")
+    #-     } else if (thisUnit == "S/m") {
+    #-         list(unit=expression(S/m), scale="")
+    #-     } else if (thisUnit == "Total scale") {
+    #-         list(unit=expression(), scale="")
+    #-     } else if (thisUnit == "True degrees") {
+    #-         list(unit=expression(), scale="")
+    #-     } else if (thisUnit == "uA") {
+    #-         list(unit=expression(mu*a), scale="")
+    #-     } else if (thisUnit == "ueinsteins/s/m**2") {
+    #-         list(unit=expression(mu*einstein/s/m^2), scale="")
+    #-     } else if (thisUnit == "ug/l") {
+    #-         list(unit=expression(mu*g/l), scale="")
+    #-     } else if (grepl("^\\s*mmol/m\\*\\*3\\s*$", thisUnit, ignore.case=TRUE)) {
+    #-         list(unit=expression(mmol/m^3), scale="")
+    #-     } else if (thisUnit == "umol/kg") {
+    #-         list(unit=expression(mmol/kg), scale="")
+    #-     } else if (thisUnit == "umol/m**3") {
+    #-         list(unit=expression(mu*mol/m^3), scale="")
+    #-     } else if (thisUnit == "umol/m**2/s") {
+    #-         list(unit=expression(mu*mol/m^2/s), scale="")
+    #-     } else if (thisUnit == "umol photons/m2/s") {
+    #-         list(unit=expression(mu*mol/m^2/s), scale="")
+    #-     } else if (thisUnit == "UTC") {
+    #-         list(unit=expression(), scale="")
+    #-     } else if (thisUnit == "V") {
+    #-         list(unit=expression(V), scale="")
+    #-     } else if (thisUnit == "1/cm") {
+    #-         list(unit=expression(1/cm), scale="")
+    #-     } else if (thisUnit == "1/m") {
+    #-         list(unit=expression(1/m), scale="")
+    #-     } else if (thisUnit == "%") {
+    #-         list(unit=expression("%"), scale="")
+    #-     } else if (thisUnit == "volts") {
+    #-         list(unit=expression(V), scale="")
+    #-     } else if (nchar(thisUnit) == 0) {
+    #-         list(unit=expression(), scale="")
+    #-     } else {
+    #-         # print(names)
+    #-         warning("unable to interpret ODFunits[", i, "]='", thisUnit, "', for item code-named '", names[i], "', so making an educated guess using parse() or, as a last-ditch effort, simply copying the string", sep="")
+    #-         uu <- try(parse(text=thisUnit), silent=TRUE)
+    #-         if (class(uu) == "try-error")
+    #-             uu <- thisUnit
+    #-         list(unit=uu, scale="")
+    #-     }
+    #- }
+    #- # Catch some problems I've seen in data
+    #- directionVariables <- which(names == "directionMagnetic" | names == "directionTrue")
+    #- for (directionVariable in directionVariables) {
+    #-     unit <- units[[directionVariable]]$unit
+    #-     if (is.null(unit)) {
+    #-         warning("no unit found for '",
+    #-                 names[[directionVariable]], "'; this will not affect calculations, though")
+    #-         ## units[[directionVariable]]$unit <- expression(degree)
+    #-     } else if (is.character(unit) && "degree" != unit && "degrees" != unit) {
+    #-         warning("odd unit, '", unit, "', for '",
+    #-                 names[directionVariable], "'; this will not affect calculations, though")
+    #-         ## units[[directionVariable]]$unit <- expression(degree)
+    #-     }
+    #- }
     oceDebug(debug, "} # ODFNames2oceNames()\n", unindent=1, sep="", style="bold")
-    list(names=names, units=units)
+    #list(names=names, units=units)
+    list(names=names)
 }
 
 
@@ -1329,15 +1301,9 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     #- message("next is parameterTable");print(parameterTable)
     options(warn=options$warn)
     ODFunits <- trimws(ODFunits)
-    #? if (debug > 0) {
-    #?     oceDebug(debug, "next is flagTranslationTable:\n")
-    #?     print(flagTranslationTable)
-    #? }
-    oceDebug(debug, "about to compute namesUnits\n")
-    # FIXME: if we use parameterTable$code we get good units BUT missing flags
-    # FIXME: if we use ODFnames we get flags but wrong units on FWETLABS and upoly (BIO test file)
-    #- namesUnits <- ODFNames2oceNames(parameterTable$code, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug)
-    namesUnits <- ODFNames2oceNames(ODFnames, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug)
+    # FIXME: document why we need to find names again (already in parameterTable)
+    oceDebug(debug, "about to compute oceNames2\n")
+    oceNames2 <- ODFNames2oceNames(ODFnames, columns=columns, PARAMETER_HEADER=NULL, debug=debug)
     res@metadata$depthOffBottom <- findInHeader("DEPTH_OFF_BOTTOM", lines, returnOnlyFirst=TRUE, numeric=TRUE)
     res@metadata$initialLatitude <- findInHeader("INITIAL_LATITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
     res@metadata$initialLongitude <- findInHeader("INITIAL_LONGITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
@@ -1446,8 +1412,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
     ## issue1226 data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
     data <- scan(text=lines, what="character", skip=dataStart, quiet=TRUE)
-    #- data <- matrix(data, ncol=length(namesUnits$names), byrow=TRUE)
-    data <- matrix(data, ncol=length(namesUnits$names), byrow=TRUE)
+    data <- matrix(data, ncol=length(oceNames2$names), byrow=TRUE)
     data <- as.data.frame(data, stringsAsFactors=FALSE)
     ## some files have text string for e.g. dates, species lengths, etc.
     colIsChar <- as.logical(lapply(seq_len(dim(data)[2]),
@@ -1461,9 +1426,9 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
             data[[j]] <- as.character(data[[j]])
         }
     }
-    if (length(data) != length(namesUnits$names))
-        stop("mismatch between length of data names (", length(namesUnits$names), ") and number of columns in data matrix (", length(data), ")")
-    names(data) <- parameterTable$oceName #namesUnits$names
+    if (length(data) != length(oceNames2$names))
+        stop("mismatch between length of data names (", length(oceNames2$names), ") and number of columns in data matrix (", length(data), ")")
+    names(data) <- parameterTable$oceName
     #- print(NAvalueList)
     if (length(NAvalueList)) {
         for (name in names(data)) {
@@ -1476,7 +1441,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
             }
         }
     }
-    if ("time" %in% namesUnits$names)
+    if ("time" %in% oceNames2$names)
         data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
     res@data <- as.list(data)
     ## Move flags into metadata.

@@ -462,7 +462,7 @@ metNames2oceNames <- function(names, scheme)
     res <- names
     if (!missing(scheme)) {
         if (scheme == "ODF") {
-            res <- ODFNames2oceNames(ODFnames=names, ODFunits=NULL)
+            res <- ODFNames2oceNames(ODFnames=names)
         } else if (scheme == "met") {
             ## next block handles monthly data
             res[grep("^Date.Time$", res)] <- "DateTime"

@@ -6,16 +6,13 @@
 \usage{
 ODFNames2oceNames(
   ODFnames,
-  ODFunits = NULL,
   columns = NULL,
   PARAMETER_HEADER = NULL,
   debug = getOption("oceDebug")
 )
 }
 \arguments{
-\item{ODFnames}{Vector of strings holding ODF names.}
-
-\item{ODFunits}{Vector of strings holding ODF units.}
+\item{ODFnames}{vector of character values that hold ODF names.}
 
 \item{columns}{Optional list containing name correspondances, as described for
 \code{\link[=read.ctd.odf]{read.ctd.odf()}}.}
@@ -31,12 +28,10 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-A vector of strings.
+A list relating ODF names to oce names (see \dQuote{Examples}).
 }
 \description{
-Translate ODF CODE strings to Oce Variable Names. In the BIO dialect, these
-CODE strings are often identical to the NAME strings, but in the IML dialect,
-this seems never to be the case.
+Translate ODF CODE strings to oce variable names.
 }
 \details{
 The following table gives the recognized ODF code names for variables,
@@ -47,7 +42,7 @@ and for e.g. \code{"_02"} a suffix 2 is added to the oce name, etc.
 Note that quality-control items (with names starting with \code{"QQQQ"})
 are given matching names.
 \tabular{lll}{
-\strong{ODF name} \tab \strong{Oce name}      \tab \strong{Notes}                                    \cr
+\strong{ODF Code} \tab \strong{Oce Name}      \tab \strong{Notes}                                    \cr
 \code{ACO2} \tab \code{CO2Atmosphere}         \tab                                              \cr
 \code{ALTB} \tab \code{altimeter}             \tab                                              \cr
 \code{ALKW} \tab \code{alkalinity}            \tab                                              \cr
@@ -57,7 +52,7 @@ are given matching names.
 \code{AUTH} \tab \code{authority}             \tab                                              \cr
 \code{BATH} \tab \code{barometricDepth}       \tab                                              \cr
 \code{BEAM} \tab \code{a}                     \tab                                              \cr
-\code{BNO7} \tab \code{bestNODC7Number}       \tab that is an "oh" letter, not a zero           \cr
+\code{BNO7} \tab \code{bestNODC7Number}       \tab That is an "oh" letter, not a zero           \cr
 \code{CNTR} \tab \code{scan}                  \tab                                              \cr
 \code{CPHL} \tab \code{chlorophyll}           \tab                                              \cr
 \code{CRAT} \tab \code{conductivity}          \tab Conductivity ratio (may have spurious unit)  \cr
@@ -151,20 +146,10 @@ Any code not shown in the list is transferred to the oce object without renaming
 the adjustment of suffix numbers. The following code have been seen in data files from
 the Bedford Institute of Oceanography: \code{ALTB}, \code{PHPH} and \code{QCFF}.
 }
-\section{A note on unit conventions}{
+\examples{
+ODFNames2oceNames("TEMP_01")$names # "temperature"
 
-Some older ODF files contain non-standard units for conductivity,
-including \code{mho/m}, \code{mmho/cm}, and \code{mmHo}. As the
-units for conductivity are important for derived quantities
-(e.g. salinity), such units are converted to standard units
-(e.g. \code{S/m} and \code{mS/cm}).  (This was once done with a warning,
-but on 2020-02-07 the warning was removed, since it did not
-indicate a problem with the file or the data scanning; rather,
-it was a simple matter of nudging towards uniformity in a way
-that ought to confuse no users, akin to converting \code{m**3} to
-\code{m^3}, which is also done here without warning.)
 }
-
 \references{
 For sources that describe the ODF format, see the documentation
 for the \linkS4class{odf}.
