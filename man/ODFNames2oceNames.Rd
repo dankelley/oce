@@ -31,7 +31,9 @@ by specifying higher \code{debug} values.}
 A list relating ODF names to oce names (see \dQuote{Examples}).
 }
 \description{
-Translate ODF CODE strings to oce variable names.
+Translate ODF CODE strings to oce variable names. This
+is done differently for data names and quality-control
+(QC) names.
 }
 \details{
 The following table gives the recognized ODF code names for variables,
@@ -39,8 +41,17 @@ along with the translated names as used in oce objects. Note that the
 code names are appended with strings such as \code{"_01"}, \code{"_02"}, etc,
 for repeats. The converted name for an \code{"_01"} item is as shown below,
 and for e.g. \code{"_02"} a suffix 2 is added to the oce name, etc.
-Note that quality-control items (with names starting with \code{"QQQQ"})
-are given matching names.
+
+QC items (which get stored as \code{flags} in object's
+\code{metadata} slots) are assigned names that match those of the
+parameters to which they refer.  In parsing ODF files, it is assumed
+that QC items refer to the data items that precede them.  This pattern
+does not seem to be documented, but it has held in all the files
+examined by the author, and a similar assumption is made in other
+software systems.  QC items have \code{CODE} values that are
+either start with \code{"QQQQ"} or equal \code{"Q<CODE>"},
+where \verb{<CODE>} matches the corresponding data item.
+
 \tabular{lll}{
 \strong{ODF Code} \tab \strong{Oce Name}      \tab \strong{Notes}                                    \cr
 \code{ACO2} \tab \code{CO2Atmosphere}         \tab                                              \cr
@@ -89,11 +100,15 @@ are given matching names.
 \code{MODF} \tab \code{additionalTaxonomicInformation} \tab                                     \cr
 \code{MXSZ} \tab \code{organismSizeMaximum}   \tab                                              \cr
 \code{NONE} \tab \code{noWMOcode}             \tab                                              \cr
+\code{NTOT} \tab \code{nitrogenTotal}         \tab                                              \cr
+\code{NTRA} \tab \code{nitrate}               \tab                                              \cr
 \code{NTRI} \tab \code{nitrite}               \tab                                              \cr
 \code{NTRZ} \tab \code{nitrite+nitrate}       \tab                                              \cr
 \code{OCUR} \tab \code{oxygenCurrent}         \tab                                              \cr
+\code{OPPR} \tab \code{oxygenPartialPressure} \tab                                              \cr
 \code{OSAT} \tab \code{oxygenSaturation}      \tab                                              \cr
 \code{OTMP} \tab \code{oxygenTemperature}     \tab                                              \cr
+\code{OXYM} \tab \code{oxygenDissolved}       \tab                                              \cr
 \code{OXYV} \tab \code{oxygenVoltage}         \tab                                              \cr
 \code{OXV_} \tab \code{oxygenVoltageRaw}      \tab                                              \cr
 \code{PCO2} \tab \code{CO2}                   \tab                                              \cr
@@ -105,7 +120,7 @@ are given matching names.
 \code{POTM} \tab \code{theta}                 \tab                                              \cr
 \code{PRES} \tab \code{pressure}              \tab                                              \cr
 \code{PSAL} \tab \code{salinity}              \tab                                              \cr
-\code{PSAR} \tab \code{par}                   \tab                                              \cr
+\code{PSAR} \tab \code{PAR}                   \tab                                              \cr
 \code{PTCH} \tab \code{pitch}                 \tab                                              \cr
 \code{QCFF} \tab \code{overall(QCFF)}         \tab Overall flag (see also archaic FFFF)         \cr
 \code{REFR} \tab \code{reference}             \tab                                              \cr
@@ -128,6 +143,7 @@ are given matching names.
 \code{TICW} \tab \code{totalInorganicCarbon}  \tab                                              \cr
 \code{TILT} \tab \code{tilt}                  \tab                                              \cr
 \code{TOTP} \tab \code{pressureAbsolute}      \tab                                              \cr
+\code{TRAN} \tab \code{lightTransmission}     \tab                                              \cr
 \code{TRB_} \tab \code{turbidity}             \tab                                              \cr
 \code{TRBH} \tab \code{trophicDescriptor}     \tab                                              \cr
 \code{TSN_} \tab \code{taxonomicSerialNumber} \tab                                              \cr

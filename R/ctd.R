@@ -455,9 +455,9 @@ setMethod(f="summary",
               mnames <- names(object@metadata)
               if (!is.null(type) && nchar(type)) {
                   if (is.null(model)) {
-                      cat("* Instrument:         ", type, "\n", sep="")
+                      cat("* Instrument:          ", type, "\n", sep="")
                   } else {
-                      cat("* Instrument:         ", type, " ", model, "\n", sep="")
+                      cat("* Instrument:          ", type, " ", model, "\n", sep="")
                   }
               }
               ##showMetadataItem(object, "type",                      "Instrument:          ")
@@ -482,9 +482,9 @@ setMethod(f="summary",
               if (!is.null(deploymentType) && deploymentType != "unknown")
                   showMetadataItem(object, "deploymentType",            "Deployment type:     ")
               if ("longitude" %in% names(object@data)) {
-                  cat("* Mean location:      ",       latlonFormat(mean(object@data$latitude, na.rm=TRUE),
+                  cat("* Mean location:       ",       latlonFormat(mean(object@data$latitude, na.rm=TRUE),
                                                                    mean(object@data$longitude, na.rm=TRUE),
-                                                                   digits=5), "\n")
+                                                                   digits=5), "\n", sep="")
               } else if ("longitude" %in% names(object@metadata) && !is.na(object@metadata$longitude)) {
                   cat("* Location:            ",       latlonFormat(object@metadata$latitude,
                                                                     object@metadata$longitude,

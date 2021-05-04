@@ -298,15 +298,26 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 
 #' Translate ODF CODE strings to Oce Variable Names
 #'
-#' Translate ODF CODE strings to oce variable names.
+#' Translate ODF CODE strings to oce variable names. This
+#' is done differently for data names and quality-control
+#' (QC) names.
 #'
 #' The following table gives the recognized ODF code names for variables,
 #' along with the translated names as used in oce objects. Note that the
 #' code names are appended with strings such as `"_01"`, `"_02"`, etc,
 #' for repeats. The converted name for an `"_01"` item is as shown below,
 #' and for e.g. `"_02"` a suffix 2 is added to the oce name, etc.
-#' Note that quality-control items (with names starting with `"QQQQ"`)
-#' are given matching names.
+#'
+#' QC items (which get stored as `flags` in object's
+#' `metadata` slots) are assigned names that match those of the
+#' parameters to which they refer.  In parsing ODF files, it is assumed
+#' that QC items refer to the data items that precede them.  This pattern
+#' does not seem to be documented, but it has held in all the files
+#' examined by the author, and a similar assumption is made in other
+#' software systems.  QC items have `CODE` values that are
+#' either start with `"QQQQ"` or equal `"Q<CODE>"`,
+#' where `<CODE>` matches the corresponding data item.
+#'
 #' \tabular{lll}{
 #' **ODF Code** \tab **Oce Name**      \tab **Notes**                                    \cr
 #' `ACO2` \tab `CO2Atmosphere`         \tab                                              \cr
@@ -356,11 +367,15 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `MODF` \tab `additionalTaxonomicInformation` \tab                                     \cr
 #' `MXSZ` \tab `organismSizeMaximum`   \tab                                              \cr
 #' `NONE` \tab `noWMOcode`             \tab                                              \cr
+#' `NTOT` \tab `nitrogenTotal`         \tab                                              \cr
+#' `NTRA` \tab `nitrate`               \tab                                              \cr
 #' `NTRI` \tab `nitrite`               \tab                                              \cr
 #' `NTRZ` \tab `nitrite+nitrate`       \tab                                              \cr
 #' `OCUR` \tab `oxygenCurrent`         \tab                                              \cr
+#' `OPPR` \tab `oxygenPartialPressure` \tab                                              \cr
 #' `OSAT` \tab `oxygenSaturation`      \tab                                              \cr
 #' `OTMP` \tab `oxygenTemperature`     \tab                                              \cr
+#' `OXYM` \tab `oxygenDissolved`       \tab                                              \cr
 #' `OXYV` \tab `oxygenVoltage`         \tab                                              \cr
 #' `OXV_` \tab `oxygenVoltageRaw`      \tab                                              \cr
 #' `PCO2` \tab `CO2`                   \tab                                              \cr
@@ -372,7 +387,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `POTM` \tab `theta`                 \tab                                              \cr
 #' `PRES` \tab `pressure`              \tab                                              \cr
 #' `PSAL` \tab `salinity`              \tab                                              \cr
-#' `PSAR` \tab `par`                   \tab                                              \cr
+#' `PSAR` \tab `PAR`                   \tab                                              \cr
 #' `PTCH` \tab `pitch`                 \tab                                              \cr
 #' `QCFF` \tab `overall(QCFF)`         \tab Overall flag (see also archaic FFFF)         \cr
 #' `REFR` \tab `reference`             \tab                                              \cr
@@ -395,6 +410,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `TICW` \tab `totalInorganicCarbon`  \tab                                              \cr
 #' `TILT` \tab `tilt`                  \tab                                              \cr
 #' `TOTP` \tab `pressureAbsolute`      \tab                                              \cr
+#' `TRAN` \tab `lightTransmission`     \tab                                              \cr
 #' `TRB_` \tab `turbidity`             \tab                                              \cr
 #' `TRBH` \tab `trophicDescriptor`     \tab                                              \cr
 #' `TSN_` \tab `taxonomicSerialNumber` \tab                                              \cr
@@ -517,13 +533,17 @@ ODFNames2oceNames <- function(ODFnames,
     names <- gsub("MXSV", "largestSieveUsed", names)
     names <- gsub("MXSZ", "organismSizeMaximum", names)
     names <- gsub("NONE", "noWMOcode", names)
+    names <- gsub("NTRA", "nitrate", names)
+    names <- gsub("NTOT", "nitrogenTotal", names)
     names <- gsub("NTRI", "nitrite", names)
     names <- gsub("NTRZ", "nitrite+nitrate", names)
     names <- gsub("NSCT", "v", names)
     names <- gsub("NUM_", "scansPerAverage", names)
     names <- gsub("OCUR", "oxygenCurrent", names)
+    names <- gsub("OPPR", "oxygenPartialPressure", names)
     names <- gsub("OSAT", "oxygenSaturation", names)
     names <- gsub("OTMP", "oxygenTemperature", names)
+    names <- gsub("OXYM", "oxygenDissolved", names)
     names <- gsub("OXYV", "oxygenVoltage", names)
     names <- gsub("OXV_", "oxygenVoltageRaw", names)
     names <- gsub("PCO2", "CO2", names)
@@ -535,7 +555,7 @@ ODFNames2oceNames <- function(ODFnames,
     names <- gsub("POTM", "theta", names) # in a moored ctd file examined 2014-05-15
     names <- gsub("PRES", "pressure", names)
     names <- gsub("PSAL", "salinity", names)
-    names <- gsub("PSAR", "par", names)
+    names <- gsub("PSAR", "PAR", names)
     names <- gsub("PTCH", "pitch", names)
     names <- gsub("QCFF", "overall(QCFF)", names)
     names <- gsub("REFR", "reference", names)
@@ -558,6 +578,7 @@ ODFNames2oceNames <- function(ODFnames,
     names <- gsub("TICW", "totalInorganicCarbon", names)
     names <- gsub("TILT", "tilt", names)
     names <- gsub("TOTP", "pressureAbsolute", names)
+    names <- gsub("TRAN", "lightTransmission", names)
     names <- gsub("TRB_", "turbidity", names)
     names <- gsub("TRPH", "trophicDescriptor", names)
     names <- gsub("TSN_", "taxonomicSerialNumber", names)
@@ -1389,7 +1410,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         which <- grep("CRAT", parameterTable$code)
         for (w in which) {
             ustring <- parameterTable$units[w]
-            if (length(ustring) && ustring != "" && ustring != "ratio")
+            if (length(ustring) && ustring != "" && ustring != "ratio" && ustring != "none")
                 warning("\"", parameterTable$oceName[w], "\" (code name \"", parameterTable$code[w], "\") is a conductivity ratio, which has no units, but the file lists \"", ustring, "\" as a unit. Consult ?read.odf to see how to rectify this error.")
         }
     }
