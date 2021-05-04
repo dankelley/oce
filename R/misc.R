@@ -429,7 +429,6 @@ unitFromString <- function(unit, scale=NULL)
     u <- trimws(unit)                  # remove any leading/trailing whitespace
     U <- toupper(u)                    # simplify some match tests
     #> message("unit=\"", unit, "\", scale=\"", scale, "\"")
-    message("u=\"", u, "\"")
     if (U == "" || U == "NONE" || U == "(NONE)")
         return(list(unit=expression(), scale=if (is.null(scale)) "" else scale))
     if (U == "10**3CELLS/L")
@@ -516,9 +515,11 @@ unitFromString <- function(unit, scale=NULL)
         return(list(unit=expression(degree), scale=if (is.null(scale)) "" else scale))
     if (u == "uA")
         return(list(unit=expression(mu*a), scale=if (is.null(scale)) "" else scale))
-    if (u == "µeinsteins/s/m^2" || U == "UEINSTEINS/S/M**2" || U == "UEINSTEINS/S/M^2")
+    # > stringi::stri_escape_unicode() indicates that Greek mu is "\u00b5"
+    if (u == "\u00b5einsteins/s/m^2" || U == "UEINSTEINS/S/M**2" || U == "UEINSTEINS/S/M^2")
         return(list(unit=expression(mu*mol/m^2/s), scale=if (is.null(scale)) "" else scale))
-    if (u == "µM")
+    # > stringi::stri_escape_unicode() indicates that Greek mu is "\u00b5"
+    if (u == "\u00b5M")
         return(list(unit=expression(mu*M), scale=if (is.null(scale)) "" else scale))
     if (U == "UMOL/KG")
         return(list(unit=expression(mu*mol/kg), scale=if (is.null(scale)) "" else scale))

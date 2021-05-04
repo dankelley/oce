@@ -873,13 +873,15 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     }
     ## Stage 3. rename QQQQ_* columns as flags on the previous column
     names <- names(res@data)
+    #- message("names 1");print(names)
     for (i in seq_along(names)) {
-        if (substr(names[i], 1, 4) == "QQQQ") {
+        if (substr(names[i], 1, 4) == "QQQQ" || (i > 1 && names[i] == paste0("Q", names[i-1]))) {
             if (i > 1) {
                 names[i] <- paste(names[i-1], "Flag", sep="")
             }
         }
     }
+    #- message("names 2");print(names)
     names(res@data) <- names
     res
 }
@@ -1249,7 +1251,18 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
         parameterTable$scale <- c(parameterTable$scale, scale)
     }
     # Add entries for flag status and unduplicated names
-    parameterTable$isFlag <- grepl("^(QQQQ)|(QCFF)|(FFFF)", parameterTable$code)
+    nparameter <- length(parameterTable$code)
+    # Find which items are QC flags.  There are 4 ways to recognize these. and in the fourth,
+    # we set Qprefix=TRUE as a way to rename the Q<...> to <...>Test, without danger
+    # that a valid data parameter might start with the letter 'Q'.
+    parameterTable$isFlag <- rep(FALSE, nparameter)
+    for (i in seq_along(parameterTable$code)) {
+        if (grepl("^(QQQQ)|(QCFF)|(FFFF)", parameterTable$code[i])) {
+            parameterTable$isFlag[i] <- TRUE
+        } else if (i > 1 && (parameterTable$code[i] == paste0("Q", parameterTable$code[i-1]))) {
+            parameterTable$isFlag[i] <- TRUE
+        }
+    }
     parameterTable$name <- unduplicateNames(parameterTable$nameOrig)
     # Clean up extraneous units (which are in parameter NAME but not in corresponding flag NAME)
     parameterTable$name <- gsub(" ITS-90$", "", parameterTable$name)
@@ -1259,18 +1272,17 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     # Add oce names
     parameterTable$oceName <- ODFNames2oceNames(parameterTable$code, debug=debug)$name
     # Rename flags (assuming, as in CIOSS code, that they refer to just-previous item)
-    irename <- grep("^QQQQ", parameterTable$code)
-    if (length(irename)) {
+    #- message("parameterTable$oceName 1");print(parameterTable$oceName)
+    for (i in which(parameterTable$isFlag)) {
         #> message("rename: ", paste(irename, collapse=" "))
         #> message("old name: ", paste(parameterTable$name[irename], collapse=" "))
-        if (all(irename > 1)) {
-            newname <- paste0(parameterTable$oceName[irename-1], "Flag")
+        if (i > 1L && !grepl("^overall", parameterTable$oceName[i])) {
+            newname <- paste0(parameterTable$oceName[i-1], "Flag")
             #> message("new name: ", paste(newname, collapse=" "))
-            parameterTable$oceName[irename] <- newname
-        } else {
-            warning("cannot determine connection between QC flags and parameter names.\n")
+            parameterTable$oceName[i] <- newname
         }
     }
+    #- message("parameterTable$oceName 2");print(parameterTable$oceName)
     #> sink("parameterTable");print(parameterTable);sink() # FIXME: debug
     #> sink("parameterTable2");print(as.data.frame(parameterTable),width=200);sink() # FIXME: debug
 
@@ -1406,10 +1418,10 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
     }
     ## catch erroneous units on CRAT, which should be in a ratio, and hence have no units.
     ## This is necessary for the sample file inst/extdata/CTD_BCD2014666_008_1_DN.ODF.gz
-    if (length(grep("CRAT", parameterTable$code))) {
-        which <- grep("CRAT", parameterTable$code)
-        for (w in which) {
-            ustring <- parameterTable$units[w]
+    wCRAT <- grep("CRAT", parameterTable$code, ignore.case=TRUE)
+    if (length(wCRAT)) {
+        for (w in wCRAT) {
+            ustring <- tolower(parameterTable$units[w])
             if (length(ustring) && ustring != "" && ustring != "ratio" && ustring != "none")
                 warning("\"", parameterTable$oceName[w], "\" (code name \"", parameterTable$code[w], "\") is a conductivity ratio, which has no units, but the file lists \"", ustring, "\" as a unit. Consult ?read.odf to see how to rectify this error.")
         }
@@ -1501,7 +1513,7 @@ read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getO
                 w <- w[1]
             }
             oceDebug(debug, "unit renamed from \"", unitNames[i], "\" to \"", parameterTable$oceName[w], "\"\n", sep="")
-            message("unit renamed from \"", unitNames[i], "\" to \"", parameterTable$oceName[w], "\"")
+            # message("unit renamed from \"", unitNames[i], "\" to \"", parameterTable$oceName[w], "\"")
             unitNames[i] <- parameterTable$oceName[w]
         }
     }

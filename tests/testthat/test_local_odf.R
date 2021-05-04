@@ -51,12 +51,12 @@ test_that("Bedford Basin CTD profile 1 (with proper CODE tokens)", {
               ## oce names
               expect_equal(names(d[["data"]]),
                            c("scan", "pressure", "temperature", "conductivity", "oxygenCurrent", "oxygenTemperature", "unknown",
-                             "fluorescence", "par", "salinity", "oxygen", "sigmaTheta"))
+                             "fluorescence", "PAR", "salinity", "oxygen", "sigmaTheta"))
               ## original names
               orig <- list(scan="CNTR_01", pressure="PRES_01", temperature="TEMP_01",
                            conductivity="CRAT_01", oxygenCurrent="OCUR_01",
                            oxygenTemperature="OTMP_01", unknown="UNKN_01",
-                           fluorescence="FLOR_01", par="PSAR_01",
+                           fluorescence="FLOR_01", PAR="PSAR_01",
                            salinity="PSAL_01", oxygen="DOXY_01", sigmaTheta="SIGP_01")
               expect_equal(d[["dataNamesOriginal"]], orig)
               ## units
@@ -66,7 +66,7 @@ test_that("Bedford Basin CTD profile 1 (with proper CODE tokens)", {
               expect_equal(d[["oxygenCurrentUnit"]]$unit, expression(mu*a))
               expect_equal(d[["oxygenTemperatureUnit"]]$unit, expression(degree*C))
               expect_equal(d[["fluorescenceUnit"]]$unit, expression(mg/m^3))
-              expect_equal(d[["parUnit"]]$unit, expression(mu*mol*" " * m^-2 * s^-1))
+              expect_equal(d[["PARUnit"]]$unit, expression(mu*mol/m^2/s))
               expect_equal(d[["sigmaThetaUnit"]]$unit, expression(kg/m^3))
           }
 })
@@ -78,12 +78,12 @@ test_that("Bedford Basin CTD profile 2 (with proper CODE tokens)", {
               ## oce names
               expect_equal(names(d[["data"]]),
                            c("scan", "pressure", "temperature", "conductivity", "oxygenCurrent", "oxygenTemperature", "unknown",
-                             "fluorescence", "par", "salinity", "oxygen", "sigmaTheta"))
+                             "fluorescence", "PAR", "salinity", "oxygen", "sigmaTheta"))
               ## original names
               orig <- list(scan="CNTR_01", pressure="PRES_01", temperature="TEMP_01",
                            conductivity="CRAT_01", oxygenCurrent="OCUR_01",
                            oxygenTemperature="OTMP_01", unknown="UNKN_01",
-                           fluorescence="FLOR_01", par="PSAR_01",
+                           fluorescence="FLOR_01", PAR="PSAR_01",
                            salinity="PSAL_01", oxygen="DOXY_01", sigmaTheta="SIGP_01")
               expect_identical(d[["dataNamesOriginal"]], orig)
               ## units
@@ -93,7 +93,7 @@ test_that("Bedford Basin CTD profile 2 (with proper CODE tokens)", {
               expect_equal(d[["oxygenCurrentUnit"]]$unit, expression(mu*a))
               expect_equal(d[["oxygenTemperatureUnit"]]$unit, expression(degree*C))
               expect_equal(d[["fluorescenceUnit"]]$unit, expression(mg/m^3))
-              expect_equal(d[["parUnit"]]$unit, expression(mu*mol*" " * m^-2 * s^-1))
+              expect_equal(d[["PARUnit"]]$unit, expression(mu*mol/m^2/s))
               expect_equal(d[["sigmaThetaUnit"]]$unit, expression(kg/m^3))
            }
 })
@@ -105,12 +105,12 @@ test_that("Bedford Basin CTD profile 3 (with proper CODE tokens)", {
               ## oce names
               expect_equal(names(d[["data"]]),
                            c("scan", "pressure", "temperature", "conductivity", "oxygenCurrent", "oxygenTemperature", "unknown",
-                             "fluorescence", "par", "salinity", "oxygen", "sigmaTheta", "oxygenSaturation"))
+                             "fluorescence", "PAR", "salinity", "oxygen", "sigmaTheta", "oxygenSaturation"))
               ## original names
               orig <- list(scan="CNTR_01", pressure="PRES_01", temperature="TEMP_01",
                            conductivity="CRAT_01", oxygenCurrent="OCUR_01",
                            oxygenTemperature="OTMP_01", unknown="UNKN_01",
-                           fluorescence="FLOR_01", par="PSAR_01",
+                           fluorescence="FLOR_01", PAR="PSAR_01",
                            salinity="PSAL_01", oxygen="DOXY_01", sigmaTheta="SIGP_01",
                            oxygenSaturation="OSAT_01")
               expect_identical(d[["dataNamesOriginal"]], orig)
@@ -121,7 +121,7 @@ test_that("Bedford Basin CTD profile 3 (with proper CODE tokens)", {
               expect_equal(d[["oxygenCurrentUnit"]]$unit, expression(mu*a))
               expect_equal(d[["oxygenTemperatureUnit"]]$unit, expression(degree*C))
               expect_equal(d[["fluorescenceUnit"]]$unit, expression(mg/m^3))
-              expect_equal(d[["parUnit"]]$unit, expression(mu*mol*" " * m^-2 * s^-1))
+              expect_equal(d[["PARUnit"]]$unit, expression(mu*mol/m^2/s))
               expect_equal(d[["sigmaThetaUnit"]]$unit, expression(kg/m^3))
            }
 })
@@ -134,12 +134,12 @@ test_that("Bedford Basin CTD profile 4 (with proper CODE tokens but no units for
               ## oce names
               expect_equal(names(d[["data"]]),
                            c("scan", "pressure", "temperature", "conductivity", "oxygenCurrent", "oxygenTemperature", "unknown",
-                             "fluorescence", "par", "salinity", "oxygen", "sigmaTheta"))
+                             "fluorescence", "PAR", "salinity", "oxygen", "sigmaTheta"))
               ## original names
               orig <- list(scan="CNTR_01", pressure="PRES_01", temperature="TEMP_01",
                            conductivity="CRAT_01", oxygenCurrent="OCUR_01",
                            oxygenTemperature="OTMP_01", unknown="UNKN_01",
-                           fluorescence="FLOR_01", par="PSAR_01",
+                           fluorescence="FLOR_01", PAR="PSAR_01",
                            salinity="PSAL_01", oxygen="DOXY_01", sigmaTheta="SIGP_01")
               expect_identical(d[["dataNamesOriginal"]], orig)
               ## units -- note that this is a weird file, which lacks units.
@@ -149,7 +149,7 @@ test_that("Bedford Basin CTD profile 4 (with proper CODE tokens but no units for
               ## expect_equal(d[["oxygenCurrentUnit"]]$unit, expression(mu*a))
               ## expect_equal(d[["oxygenTemperatureUnit"]]$unit, expression(degree*C))
               ## expect_equal(d[["fluorescenceUnit"]]$unit, expression(mg/m^3))
-              ## expect_equal(d[["parUnit"]]$unit, expression(mu*einstein/s/m^2))
+              ## expect_equal(d[["PARUnit"]]$unit, expression(mu*einstein/s/m^2))
               ## expect_equal(d[["oxygenUnit"]]$unit, expression(kg/m^3))
               ## expect_equal(d[["sigmaThetaUnit"]]$unit, expression(kg/m^3))
            }
@@ -162,11 +162,11 @@ test_that("Bedford Basin CTD profile 5 (with proper CODE tokens but no unit for 
               ## oce names
               expect_equal(names(d[["data"]]),
                            c("scan", "pressure", "temperature", "conductivity", "oxygenVoltage", "unknown",
-                             "fluorescence", "par", "salinity", "oxygen", "sigmaTheta"))
+                             "fluorescence", "PAR", "salinity", "oxygen", "sigmaTheta"))
               ## original names
               orig <- list(scan="CNTR_01", pressure="PRES_01", temperature="TEMP_01",
                            conductivity="CRAT_01", oxygenVoltage="OXYV_01",
-                           unknown="UNKN_01", fluorescence="FLOR_01", par="PSAR_01",
+                           unknown="UNKN_01", fluorescence="FLOR_01", PAR="PSAR_01",
                            salinity="PSAL_01", oxygen="DOXY_01", sigmaTheta="SIGP_01")
               expect_identical(d[["dataNamesOriginal"]], orig)
               ## units
@@ -175,7 +175,7 @@ test_that("Bedford Basin CTD profile 5 (with proper CODE tokens but no unit for 
               expect_equal(d[["conductivityUnit"]]$unit, expression(S/m))
               expect_equal(d[["oxygenVoltageUnit"]]$unit, expression(V))
               expect_equal(d[["fluorescenceUnit"]]$unit, expression(mg/m^3))
-              expect_equal(d[["parUnit"]]$unit, expression())
+              expect_equal(d[["PARUnit"]]$unit, expression())
               expect_equal(d[["oxygenUnit"]]$unit, expression(ml/l))
               expect_equal(d[["sigmaThetaUnit"]]$unit, expression(kg/m^3))
            }
@@ -188,11 +188,11 @@ test_that("Bedford Basin CTD profile 6 (with proper CODE tokens)", {
               ## oce names
               expect_equal(names(d[["data"]]),
                            c("scan", "pressure", "temperature", "conductivity", "oxygenVoltage", "fluorescence",
-                             "par", "salinity", "oxygen", "sigmaTheta"))
+                             "PAR", "salinity", "oxygen", "sigmaTheta"))
               ## original names
               orig <- list(scan="CNTR_01", pressure="PRES_01", temperature="TEMP_01",
                            conductivity="CRAT_01", oxygenVoltage="OXYV_01",
-                           fluorescence="FLOR_01", par="PSAR_01",
+                           fluorescence="FLOR_01", PAR="PSAR_01",
                            salinity="PSAL_01", oxygen="DOXY_01", sigmaTheta="SIGP_01")
               expect_identical(d[["dataNamesOriginal"]], orig)
               ## units
@@ -201,7 +201,7 @@ test_that("Bedford Basin CTD profile 6 (with proper CODE tokens)", {
               expect_equal(d[["conductivityUnit"]]$unit, expression(S/m))
               expect_equal(d[["oxygenVoltageUnit"]]$unit, expression(V))
               expect_equal(d[["fluorescenceUnit"]]$unit, expression(mg/m^3))
-              expect_equal(d[["parUnit"]]$unit, expression())
+              expect_equal(d[["PARUnit"]]$unit, expression())
               expect_equal(d[["salinityUnit"]]$unit, expression())
               expect_equal(d[["oxygenUnit"]]$unit, expression(ml/l))
               expect_equal(d[["sigmaThetaUnit"]]$unit, expression(kg/m^3))
@@ -215,11 +215,11 @@ test_that("Bedford Basin CTD profile 7 (with proper CODE tokens but no PSAR_01 u
               ## oce names
               expect_equal(names(d[["data"]]),
                            c("scan", "pressure", "temperature", "conductivity", "oxygenVoltage", "unknown",
-                             "fluorescence", "par", "salinity", "oxygen", "sigmaTheta"))
+                             "fluorescence", "PAR", "salinity", "oxygen", "sigmaTheta"))
               ## original names
               orig <- list(scan="CNTR_01", pressure="PRES_01", temperature="TEMP_01",
                            conductivity="CRAT_01", oxygenVoltage="OXYV_01",
-                           unknown="UNKN", fluorescence="FLOR_01", par="PSAR_01",
+                           unknown="UNKN", fluorescence="FLOR_01", PAR="PSAR_01",
                            salinity="PSAL_01", oxygen="DOXY_01", sigmaTheta="SIGP_01")
               expect_identical(d[["dataNamesOriginal"]], orig)
               ## units
@@ -228,7 +228,7 @@ test_that("Bedford Basin CTD profile 7 (with proper CODE tokens but no PSAR_01 u
               expect_equal(d[["conductivityUnit"]]$unit, expression(S/m))
               expect_equal(d[["oxygenVoltageUnit"]]$unit, expression(V))
               expect_equal(d[["fluorescenceUnit"]]$unit, expression(mg/m^3))
-              expect_equal(d[["parUnit"]]$unit, expression())
+              expect_equal(d[["PARUnit"]]$unit, expression())
               expect_equal(d[["salinityUnit"]]$unit, expression())
               expect_equal(d[["oxygenUnit"]]$unit, expression(ml/l))
               expect_equal(d[["sigmaThetaUnit"]]$unit, expression(kg/m^3))

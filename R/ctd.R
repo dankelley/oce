@@ -1388,7 +1388,6 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         }
         res@metadata$deploymentType <- deploymentType
         res@metadata$dataNamesOriginal <- m$dataNamesOriginal
-        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         ## move e.g. salinityFlag from data slot to metadata$flags
         dataNames <- names(res@data)
         flagNameIndices <- grep(".*Flag$", dataNames)
