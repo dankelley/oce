@@ -206,11 +206,11 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     unsigned short header_checksum;
   } header;
   unsigned int dbuflen = 10000; // may be increased later
-  unsigned char *dbuf = (unsigned char *)Calloc((size_t)dbuflen, unsigned char);
+  unsigned char *dbuf = (unsigned char *)R_Calloc((size_t)dbuflen, unsigned char);
   unsigned int nchunk = 100000;
-  unsigned int *index_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
-  unsigned int *length_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
-  unsigned int *id_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
+  unsigned int *index_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
+  unsigned int *length_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
+  unsigned int *id_buf = (unsigned int*)R_Calloc((size_t)nchunk, unsigned int);
   int early_EOF = 0;
   int reset_cindex = 0; // set to 1 if we skipped to find a new header start, after a bad checksum
   while (chunk < to_value) { // FIXME: use whole file here
@@ -220,9 +220,9 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       if (debug)
         Rprintf("  increasing 'index_buf' size from %d", nchunk);
       nchunk = (unsigned int) floor(chunk * 1.4); // increase buffer size by sqrt(2)
-      index_buf = (unsigned int*)Realloc(index_buf, nchunk, unsigned int);
-      length_buf = (unsigned int*)Realloc(length_buf, nchunk, unsigned int);
-      id_buf = (unsigned int*)Realloc(id_buf, nchunk, unsigned int);
+      index_buf = (unsigned int*)R_Realloc(index_buf, nchunk, unsigned int);
+      length_buf = (unsigned int*)R_Realloc(length_buf, nchunk, unsigned int);
+      id_buf = (unsigned int*)R_Realloc(id_buf, nchunk, unsigned int);
       if (debug)
         Rprintf("  to %d\n", nchunk);
     }
@@ -311,7 +311,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
         Rprintf("  *BUG*: cindex is out of synch with ftell()\n");
 
       dbuflen = header.data_size;
-      dbuf = (unsigned char *)Realloc(dbuf, dbuflen, unsigned char);
+      dbuf = (unsigned char *)R_Realloc(dbuf, dbuflen, unsigned char);
     }
     // Read the data
     bytes_read = fread(dbuf, 1, header.data_size, fp);
@@ -402,9 +402,9 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     length[i] = length_buf[i];
     id[i] = id_buf[i];
   }
-  Free(index_buf);
-  Free(length_buf);
-  Free(id_buf);
+  R_Free(index_buf);
+  R_Free(length_buf);
+  R_Free(id_buf);
   if (debug)
     Rprintf("} # do_ldc_ad2cp_in_file()\n");
   return(List::create(Named("index")=index,

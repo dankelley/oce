@@ -242,8 +242,8 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // retur
     if (j > (clen - 2)) {                                                         \
         /*Rprintf("INCREASE storage from %d to %d [a]\n", clen, (int)(100 + clen));*/ \
         clen += 100;                                                              \
-        xbp = (double*)Realloc(xbp, clen, double);                                \
-        ybp = (double*)Realloc(ybp, clen, double);                                \
+        xbp = (double*)R_Realloc(xbp, clen, double);                                \
+        ybp = (double*)R_Realloc(ybp, clen, double);                                \
     }                                                                             \
     j++;
 
@@ -268,8 +268,8 @@ SEXP map_clip_xy_OLD_BROKEN(SEXP x, SEXP y, SEXP usr) // returns list with new x
         error("must have at least two 'x' and 'y' pairs");
     // xbp and xbp are growable buffers
     int clen = xlen + 100; // the 100 may save reallocs
-    double *xbp = (double*)Calloc((size_t)clen, double);
-    double *ybp = (double*)Calloc((size_t)clen, double);
+    double *xbp = (double*)R_Calloc((size_t)clen, double);
+    double *ybp = (double*)R_Calloc((size_t)clen, double);
 #ifdef DEBUG
     double distMIN = 10e6; // FIXME: temporary to find problem in Greenland
 #endif
@@ -388,8 +388,8 @@ SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vect
         error("must have at least two 'x' and 'y' pairs");
     // xb and yb are growable buffers; we copy to xc and yc near the end.
     int clen = xlen + 100; // the 100 may save reallocs
-    double *xbp = (double*)Calloc((size_t)clen, double);
-    double *ybp = (double*)Calloc((size_t)clen, double);
+    double *xbp = (double*)R_Calloc((size_t)clen, double);
+    double *ybp = (double*)R_Calloc((size_t)clen, double);
 #ifdef DEBUG
     double distMIN = 10e6; // FIXME: temporary to find problem in Greenland
 #endif
