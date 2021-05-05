@@ -1823,13 +1823,13 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             oceDebug(debug, "file names contains \".s4a.\", so this is an interocean S4 file.\n")
             return("interocean/s4")
         }
-        if (length(grep(".ODF$", filename, ignore.case=TRUE))) {
+        if (grepl(".ODF$", filename, ignore.case=TRUE)) {
             ## in BIO files, the data type seems to be on line 14.  Read more, for safety.
-            someLines <- readLines(file, n=100, encoding="UTF-8")
-            dt <- grep("DATA_TYPE=", someLines)
+            lines <- readLines(file, encoding="UTF-8")
+            dt <- grep("DATA_TYPE[ \t]*=", lines)
             if (length(dt) < 1)
                 stop("cannot infer type of ODF file")
-            subtype <- gsub("[',]", "", tolower(strsplit(someLines[dt[1]], "=")[[1]][2]))
+            subtype <- gsub("[',]", "", tolower(strsplit(lines[dt[1]], "=")[[1]][2]))
             subtype <- gsub("^\\s*", "", subtype)
             subtype <- gsub("\\s*$", "", subtype)
             res <- paste(subtype, "odf", sep="/")
