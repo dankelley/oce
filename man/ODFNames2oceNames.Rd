@@ -147,6 +147,7 @@ where \verb{<CODE>} matches the corresponding data item.
 \code{TRB_} \tab \code{turbidity}             \tab                                              \cr
 \code{TRBH} \tab \code{trophicDescriptor}     \tab                                              \cr
 \code{TSN_} \tab \code{taxonomicSerialNumber} \tab                                              \cr
+\code{TURB} \tab \code{turbidity}             \tab                                              \cr
 \code{UNKN} \tab \code{-}                     \tab                                              \cr
 \code{VAIS} \tab \code{BVFrequency}           \tab                                              \cr
 \code{VCSP} \tab \code{w}                     \tab                                              \cr

@@ -414,6 +414,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `TRB_` \tab `turbidity`             \tab                                              \cr
 #' `TRBH` \tab `trophicDescriptor`     \tab                                              \cr
 #' `TSN_` \tab `taxonomicSerialNumber` \tab                                              \cr
+#' `TURB` \tab `turbidity`             \tab                                              \cr
 #' `UNKN` \tab `-`                     \tab                                              \cr
 #' `VAIS` \tab `BVFrequency`           \tab                                              \cr
 #' `VCSP` \tab `w`                     \tab                                              \cr
@@ -582,6 +583,7 @@ ODFNames2oceNames <- function(ODFnames,
     names <- gsub("TRB_", "turbidity", names)
     names <- gsub("TRPH", "trophicDescriptor", names)
     names <- gsub("TSN_", "taxonomicSerialNumber", names)
+    names <- gsub("TURB", "turbidity", names)
     names <- gsub("UNKN", "unknown", names)
     names <- gsub("VAIS", "BVFrequency", names)
     names <- gsub("VCSP", "w", names)
