@@ -226,7 +226,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   // 'obuf' is a growable C buffer to hold the output, which eventually
   // gets saved in the R item "buf".
   unsigned long int nobuf = 100000; // BUFFER SIZE
-  unsigned char *obuf = (unsigned char *)Calloc((size_t)nobuf, unsigned char);
+  unsigned char *obuf = (unsigned char *)R_Calloc((size_t)nobuf, unsigned char);
   unsigned long int iobuf = 0;
 
   // 'ensembles', 'times' and 'sec100s' are growable buffers of equal length, with one
@@ -237,12 +237,12 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   // Note that we do not check the Calloc() results because the R docs say that
   // Calloc() performs its won tests, and that R will handle any problems.
   unsigned long int nensembles = 100000; // BUFFER SIZE
-  unsigned int *ensemble_in_files = (unsigned int *)Calloc((size_t)nensembles, unsigned int);
-  int *ensembles = (int *)Calloc((size_t)nensembles, int);
-  int *times = (int *)Calloc((size_t)nensembles, int);
-  int *sec100s = (int *)Calloc((size_t)nensembles, int);
+  unsigned int *ensemble_in_files = (unsigned int *)R_Calloc((size_t)nensembles, unsigned int);
+  int *ensembles = (int *)R_Calloc((size_t)nensembles, int);
+  int *times = (int *)R_Calloc((size_t)nensembles, int);
+  int *sec100s = (int *)R_Calloc((size_t)nensembles, int);
   unsigned long int nebuf = 50000; // BUFFER SIZE
-  unsigned char *ebuf = (unsigned char *)Calloc((size_t)nebuf, unsigned char);
+  unsigned char *ebuf = (unsigned char *)R_Calloc((size_t)nebuf, unsigned char);
 
   unsigned long int in_ensemble = 1, out_ensemble = 0;
   int b1, b2;
@@ -291,10 +291,10 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
       if (debug_value > 0)
         Rprintf("\nbytes_to_check=%d based on b1=%d(0x%02x) and b2=%d(0x%02x)\n", bytes_to_check, b1, b1, b2, b2);
       if (bytes_to_check < 5) { // this will only happen in error; we check so bytes_to_read won't be crazy
-        Free(ensembles);
-        Free(times);
-        Free(sec100s);
-        Free(ebuf);
+        R_Free(ensembles);
+        R_Free(times);
+        R_Free(sec100s);
+        R_Free(ebuf);
         ::Rf_error("cannot decode the length of ensemble number %d", in_ensemble);
       }
       if (bytes_to_check < 4)
@@ -305,7 +305,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
       if (bytes_to_read > nebuf) {
         if (debug_value > 0)
           Rprintf("Increasing 'ebuf' buffer size from %d bytes to %d bytes\n", nebuf, bytes_to_read);
-        ebuf = (unsigned char *)Realloc(ebuf, bytes_to_read, unsigned char);
+        ebuf = (unsigned char *)R_Realloc(ebuf, bytes_to_read, unsigned char);
         nebuf = bytes_to_read;
       }
       // Read the bytes in one operation, because fgetc() is too slow.
@@ -351,10 +351,10 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
           nensembles = 3 * nensembles / 2;
           if (debug_value > -1)
             Rprintf("Increasing ensembles,times,sec100s storage to %d elements ...\n", nensembles);
-          ensemble_in_files = (unsigned int *) Realloc(ensemble_in_files, nensembles, unsigned int);
-          ensembles = (int *) Realloc(ensembles, nensembles, int);
-          times = (int *) Realloc(times, nensembles, int);
-          sec100s = (int *)Realloc(sec100s, nensembles, int);
+          ensemble_in_files = (unsigned int *) R_Realloc(ensemble_in_files, nensembles, unsigned int);
+          ensembles = (int *) R_Realloc(ensembles, nensembles, int);
+          times = (int *) R_Realloc(times, nensembles, int);
+          sec100s = (int *)R_Realloc(sec100s, nensembles, int);
         }
         // We will decide whether to keep this ensemble, based on ensemble
         // number, if mode_value==0 or on time, if mode_value==1. That
@@ -407,7 +407,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
               nobuf = nobuf + 100 + bytes_to_read + nobuf / 2;
               if (debug_value > 0)
                 Rprintf("about to enlarge obuf storage to %d elements ...\n", nobuf);
-              obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
+              obuf = (unsigned char *)R_Realloc(obuf, nobuf, unsigned char);
               if (debug_value > 0)
                 Rprintf("    ... allocation was successful\n");
             }
@@ -540,15 +540,15 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
     sec100[i] = sec100s[i];
     //Rprintf("i=%d ensemble=%d time=%d sec100=%d\n", i, ensemble[i], time[i], (int)sec100[i]);
   }
-  Free(ensemble_in_files);
-  Free(ensembles);
-  Free(times);
-  Free(sec100s);
-  Free(ebuf);
+  R_Free(ensemble_in_files);
+  R_Free(ensembles);
+  R_Free(times);
+  R_Free(sec100s);
+  R_Free(ebuf);
   for (unsigned long int i = 0; i < iobuf; i++) {
     buf[i] = obuf[i];
   }
-  Free(obuf);
+  R_Free(obuf);
   if (debug_value > 0)
     Rprintf("Returning from C++ function named do_ldc_rdi_in_file.\n");
   return(List::create(Named("ensembleStart")=ensemble, Named("time")=time,
