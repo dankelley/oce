@@ -4344,9 +4344,37 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' [read.ctd()] scans it from a file.
 #'
 #' @examples
+#' ## For a simple ctd object
 #' library(oce)
 #' data(ctd)
 #' plotTS(ctd)
+#'
+#' ## For a section object (note the outlier!)
+#' data(section)
+#' plotTS(section)
+#'
+#' ## Adding a colormap based on a different variable, e.g. oxygen
+#' marOrig <- par("mar") # so later plots with palettes have same margins
+#' cm <- colormap(section[['oxygen']])
+#' drawPalette(colormap=cm, zlab='Oxygen')
+#' plotTS(section, pch=19, col=cm$zcol, mar=par('mar')) # the mar adjusts for the palette
+#'
+#' ## Coloring based on station:
+#' Tlim <- range(section[['temperature']], na.rm=TRUE)
+#' Slim <- range(section[['salinity']], na.rm=TRUE)
+#' cm <- colormap(seq_along(section[['latitude', 'byStation']]))
+#' par(mar=marOrig) # same as previous plot
+#' drawPalette(colormap=cm, zlab='Latitude')
+#' plotTS(section, Tlim=Tlim, Slim=Slim, pch=NA, mar=par('mar'))
+#' jnk <- mapply(
+#'     function(s, col) {
+#'         plotTS(s, col=col, add=TRUE, type='l')
+#'     },
+#'     section[['station']], col=cm$zcol)
+#'
+#' ## Show TS for an argo object
+#' data(argo)
+#' plotTS(handleFlags(argo))
 #'
 #' @references
 #'
@@ -4564,6 +4592,7 @@ plotTS <- function (x,
             } else if (type != 'n') {
                 points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty)
             }
+            return()
         } else {
             oceDebug(debug, "add=FALSE, so making new plot panel based on Slim and Tlim\n")
             plot(Slim, Tlim,
