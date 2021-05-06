@@ -56,20 +56,25 @@ where \verb{<CODE>} matches the corresponding data item.
 \strong{ODF Code} \tab \strong{Oce Name}      \tab \strong{Notes}                                    \cr
 \code{ABSH} \tab \code{humidityAbsolute}      \tab                                              \cr
 \code{ACO2} \tab \code{CO2Atmosphere}         \tab                                              \cr
-\code{ALTB} \tab \code{altimeter}             \tab                                              \cr
 \code{ALKW} \tab \code{alkalinity}            \tab                                              \cr
 \code{ALKY} \tab \code{alkalinityTotal}       \tab                                              \cr
+\code{ALP0} \tab \code{apha0}                 \tab                                              \cr
+\code{ALTB} \tab \code{altimeter}             \tab                                              \cr
 \code{ALTS} \tab \code{altitude}              \tab                                              \cr
 \code{AMON} \tab \code{ammonium}              \tab                                              \cr
 \code{ATMP} \tab \code{pressureAtmosphere}    \tab                                              \cr
 \code{ATMS} \tab \code{pressureAtmosphereSealevel} \tab                                         \cr
+\code{ATRK} \tab \code{alongTrackDisplacement} \tab                                             \cr
 \code{ATTU} \tab \code{attenuation}           \tab                                              \cr
 \code{AUTH} \tab \code{authority}             \tab                                              \cr
 \code{BATH} \tab \code{barometricDepth}       \tab                                              \cr
 \code{BATT} \tab \code{batteryVoltage}        \tab                                              \cr
 \code{BEAM} \tab \code{a}                     \tab                                              \cr
 \code{BNO7} \tab \code{bestNODC7Number}       \tab That is an "oh" letter, not a zero           \cr
-\code{CNDC} \tab \code{conductivy}            \tab                                              \cr
+\code{CALK} \tab \code{carbonateAlkalinity}   \tab                                              \cr
+\code{CHLR} \tab \code{chlorinity}            \tab                                              \cr
+\code{CHLS} \tab \code{chlorosity}            \tab                                              \cr
+\code{CNDC} \tab \code{conductivity}          \tab                                              \cr
 \code{CNTR} \tab \code{scan}                  \tab                                              \cr
 \code{COND} \tab \code{conductivity}          \tab                                              \cr
 \code{CORG} \tab \code{carbonOrganic}         \tab                                              \cr
@@ -92,6 +97,7 @@ where \verb{<CODE>} matches the corresponding data item.
 \code{DRYT} \tab \code{temperatureDryBulb}    \tab                                              \cr
 \code{DYNH} \tab \code{dynamicHeight}         \tab                                              \cr
 \code{ERRV} \tab \code{errorVelocity}         \tab                                              \cr
+\code{EWCM} \tab \code{uMagnetic}             \tab                                              \cr
 \code{EWCT} \tab \code{u}                     \tab                                              \cr
 \code{FFFF} \tab \code{overall(FFFF)}         \tab Archaic overall flag, replaced by \code{QCFF}     \cr
 \code{FLOR} \tab \code{fluorometer}           \tab                                              \cr
@@ -113,8 +119,10 @@ where \verb{<CODE>} matches the corresponding data item.
 \code{MNSZ} \tab \code{organismSizeMinimum}   \tab                                              \cr
 \code{MODF} \tab \code{additionalTaxonomicInformation} \tab                                     \cr
 \code{MXSZ} \tab \code{organismSizeMaximum}   \tab                                              \cr
+\code{NETR} \tab \code{netSolarRadiation}     \tab                                              \cr
 \code{NONE} \tab \code{noWMOcode}             \tab                                              \cr
 \code{NORG} \tab \code{nitrogenOrganic}       \tab                                              \cr
+\code{NSCM} \tab \code{vMagnetic}             \tab                                              \cr
 \code{NSCT} \tab \code{v}                     \tab                                              \cr
 \code{NTOT} \tab \code{nitrogenTotal}         \tab                                              \cr
 \code{NTRA} \tab \code{nitrate}               \tab                                              \cr
@@ -146,8 +154,10 @@ where \verb{<CODE>} matches the corresponding data item.
 \code{PSAR} \tab \code{photosyntheticActiveRadiation} \tab                                      \cr
 \code{PTCH} \tab \code{pitch}                 \tab                                              \cr
 \code{QCFF} \tab \code{overall(QCFF)}         \tab Overall flag (see also archaic FFFF)         \cr
+\code{RANG} \tab \code{range}                 \tab                                              \cr
 \code{REFR} \tab \code{reference}             \tab                                              \cr
 \code{RELH} \tab \code{humidityRelative}      \tab                                              \cr
+\code{RELP} \tab \code{relativeTotalPressure} \tab                                              \cr
 \code{ROLL} \tab \code{roll}                  \tab                                              \cr
 \code{SDEV} \tab \code{standardDeviation}     \tab                                              \cr
 \code{SECC} \tab \code{SecchiDepth}           \tab                                              \cr
@@ -162,6 +172,10 @@ where \verb{<CODE>} matches the corresponding data item.
 \code{SPFR} \tab \code{sampleFraction}        \tab                                              \cr
 \code{SPV0} \tab \code{specificVolume}        \tab                                              \cr
 \code{SPVA} \tab \code{specificVolumeAnomaly} \tab                                              \cr
+\code{STRA} \tab \code{stressAmplitude}       \tab                                              \cr
+\code{STRD} \tab \code{stressDirection}       \tab                                              \cr
+\code{STRU} \tab \code{stressU}               \tab                                              \cr
+\code{STRV} \tab \code{stressV}               \tab                                              \cr
 \code{SSAL} \tab \code{salinity}              \tab                                              \cr
 \code{SVEL} \tab \code{soundVelocity}         \tab                                              \cr
 \code{SYTM} \tab \code{time}                  \tab                                              \cr
