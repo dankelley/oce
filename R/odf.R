@@ -320,61 +320,79 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #'
 #' \tabular{lll}{
 #' **ODF Code** \tab **Oce Name**      \tab **Notes**                                    \cr
+#' `ABSH` \tab `humidityAbsolute`      \tab                                              \cr
 #' `ACO2` \tab `CO2Atmosphere`         \tab                                              \cr
 #' `ALTB` \tab `altimeter`             \tab                                              \cr
 #' `ALKW` \tab `alkalinity`            \tab                                              \cr
+#' `ALKY` \tab `alkalinityTotal`       \tab                                              \cr
+#' `ALTS` \tab `altitude`              \tab                                              \cr
 #' `AMON` \tab `ammonium`              \tab                                              \cr
 #' `ATMP` \tab `pressureAtmosphere`    \tab                                              \cr
+#' `ATMS` \tab `pressureAtmosphereSealevel` \tab                                         \cr
 #' `ATTU` \tab `attenuation`           \tab                                              \cr
 #' `AUTH` \tab `authority`             \tab                                              \cr
 #' `BATH` \tab `barometricDepth`       \tab                                              \cr
+#' `BATT` \tab `batteryVoltage`        \tab                                              \cr
 #' `BEAM` \tab `a`                     \tab                                              \cr
 #' `BNO7` \tab `bestNODC7Number`       \tab That is an "oh" letter, not a zero           \cr
+#' `CNDC` \tab `conductivy`            \tab                                              \cr
 #' `CNTR` \tab `scan`                  \tab                                              \cr
+#' `COND` \tab `conductivity`          \tab                                              \cr
+#' `CORG` \tab `carbonOrganic`         \tab                                              \cr
 #' `CPHL` \tab `chlorophyll`           \tab                                              \cr
 #' `CRAT` \tab `conductivity`          \tab Conductivity ratio (may have spurious unit)  \cr
 #' `CMNT` \tab `comment`               \tab                                              \cr
-#' `CNDC` \tab `conductivity`          \tab Conductivity in mS/cm or S/m                 \cr
-#' `COND` \tab `conductivity`          \tab Conductivity in mS/cm or S/m                 \cr
+#' `CNDC` \tab `conductivity`          \tab                                              \cr
+#' `COND` \tab `conductivity`          \tab                                              \cr
+#' `CTOT` \tab `carbonTotal`           \tab                                              \cr
 #' `DCHG` \tab `discharge`             \tab                                              \cr
 #' `DENS` \tab `density`               \tab                                              \cr
 #' `DEPH` \tab `pressure`              \tab                                              \cr
+#' `DEWT` \tab `temperatureDewpoint`   \tab                                              \cr
+#' `DOC_` \tab `carbonOrganicDissolved` \tab                                             \cr
+#' `DON_` \tab `nitrogenOrganicDissolved` \tab                                           \cr
 #' `DOXY` \tab `oxygen`                \tab                                              \cr
 #' `DPDT` \tab `dpdt`                  \tab                                              \cr
+#' `DRDP` \tab `drogueDepth`           \tab                                              \cr
 #' `DPWT` \tab `dryWeight`             \tab                                              \cr
 #' `DRYT` \tab `temperatureDryBulb`    \tab                                              \cr
-#' `ERRV` \tab `error`                 \tab                                              \cr
+#' `DYNH` \tab `dynamicHeight`         \tab                                              \cr
+#' `ERRV` \tab `errorVelocity`         \tab                                              \cr
 #' `EWCT` \tab `u`                     \tab                                              \cr
 #' `FFFF` \tab `overall(FFFF)`         \tab Archaic overall flag, replaced by `QCFF`     \cr
 #' `FLOR` \tab `fluorometer`           \tab                                              \cr
-## `FWETLABS` \tab `fwetlabs`          \tab                                              \cr
+#' `GDIR` \tab `windDirectionGust`     \tab                                              \cr
 #' `GEOP` \tab `geopotential`          \tab                                              \cr
 #' `GSPD` \tab `windSpeedGust`         \tab                                              \cr
 #' `HCDM` \tab `directionMagnetic`     \tab                                              \cr
 #' `HCDT` \tab `directionTrue`         \tab                                              \cr
 #' `HCSP` \tab `speedHorizontal`       \tab                                              \cr
 #' `HEAD` \tab `heading`               \tab                                              \cr
+#' `HSUL` \tab `hydrogenSulphide`      \tab                                              \cr
 #' `IDEN` \tab `sampleNumber`          \tab                                              \cr
 #' `LABT` \tab `temperatureLaboratory` \tab                                              \cr
 #' `LATD` \tab `latitude`              \tab                                              \cr
 #' `LHIS` \tab `lifeHistory`           \tab                                              \cr
 #' `LOND` \tab `longitude`             \tab                                              \cr
 #' `LPHT` \tab `pHLaboratory`          \tab                                              \cr
-#' `NSCT` \tab `v`                     \tab                                              \cr
-#' `NUM_` \tab `scansPerAverage`       \tab                                              \cr
 #' `MNSV` \tab `retentionFilterSize`   \tab                                              \cr
 #' `MNSZ` \tab `organismSizeMinimum`   \tab                                              \cr
 #' `MODF` \tab `additionalTaxonomicInformation` \tab                                     \cr
 #' `MXSZ` \tab `organismSizeMaximum`   \tab                                              \cr
 #' `NONE` \tab `noWMOcode`             \tab                                              \cr
+#' `NORG` \tab `nitrogenOrganic`       \tab                                              \cr
+#' `NSCT` \tab `v`                     \tab                                              \cr
 #' `NTOT` \tab `nitrogenTotal`         \tab                                              \cr
 #' `NTRA` \tab `nitrate`               \tab                                              \cr
 #' `NTRI` \tab `nitrite`               \tab                                              \cr
 #' `NTRZ` \tab `nitrite+nitrate`       \tab                                              \cr
+#' `NUM_` \tab `scansPerAverage`       \tab                                              \cr
+#' `OBKS` \tab `backscatter(?)`        \tab                                              \cr
 #' `OCUR` \tab `oxygenCurrent`         \tab                                              \cr
 #' `OPPR` \tab `oxygenPartialPressure` \tab                                              \cr
 #' `OSAT` \tab `oxygenSaturation`      \tab                                              \cr
 #' `OTMP` \tab `oxygenTemperature`     \tab                                              \cr
+#' `OXYG` \tab `oxygenDissolved`       \tab                                              \cr
 #' `OXYM` \tab `oxygenDissolved`       \tab                                              \cr
 #' `OXYV` \tab `oxygenVoltage`         \tab                                              \cr
 #' `OXV_` \tab `oxygenVoltageRaw`      \tab                                              \cr
@@ -383,45 +401,59 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `PHOS` \tab `phosphate`             \tab                                              \cr
 #' `PHPH` \tab `pH`                    \tab                                              \cr
 #' `PHT_` \tab `pHTotal`               \tab                                              \cr
+#' `PIM_` \tab `particulateInorganicMatter` \tab                                         \cr
 #' `PHY_` \tab `phytoplanktonCount`    \tab                                              \cr
+#' `POC_` \tab `particulateOrganicCarbon` \tab                                           \cr
+#' `POM_` \tab `particulateOrganicMatter` \tab                                           \cr
+#' `PON_` \tab `particulateOrganicNitrogen` \tab                                         \cr
 #' `POTM` \tab `theta`                 \tab                                              \cr
 #' `PRES` \tab `pressure`              \tab                                              \cr
 #' `PSAL` \tab `salinity`              \tab                                              \cr
-#' `PSAR` \tab `PAR`                   \tab                                              \cr
+#' `PSAR` \tab `photosyntheticActiveRadiation` \tab                                      \cr
 #' `PTCH` \tab `pitch`                 \tab                                              \cr
 #' `QCFF` \tab `overall(QCFF)`         \tab Overall flag (see also archaic FFFF)         \cr
 #' `REFR` \tab `reference`             \tab                                              \cr
 #' `RELH` \tab `humidityRelative`      \tab                                              \cr
 #' `ROLL` \tab `roll`                  \tab                                              \cr
-#' `SDEV` \tab `pressureStdDev`        \tab                                              \cr
+#' `SDEV` \tab `standardDeviation`     \tab                                              \cr
 #' `SECC` \tab `SecchiDepth`           \tab                                              \cr
 #' `SEX_` \tab `sex`                   \tab                                              \cr
+#' `SIG0` \tab `sigma0`                \tab                                              \cr
 #' `SIGP` \tab `sigmaTheta`            \tab                                              \cr
 #' `SIGT` \tab `sigmat`                \tab                                              \cr
 #' `SLCA` \tab `silicate`              \tab                                              \cr
 #' `SNCN` \tab `scanCounter`           \tab                                              \cr
 #' `SPAR` \tab `SPAR`                  \tab                                              \cr
+#' `SPEH` \tab `humiditySpecific`      \tab                                              \cr
 #' `SPFR` \tab `sampleFraction`        \tab                                              \cr
+#' `SPV0` \tab `specificVolume`        \tab                                              \cr
 #' `SPVA` \tab `specificVolumeAnomaly` \tab                                              \cr
+#' `SSAL` \tab `salinity`              \tab                                              \cr
+#' `SVEL` \tab `soundVelocity`         \tab                                              \cr
 #' `SYTM` \tab `time`                  \tab                                              \cr
 #' `TAXN` \tab `taxonomicName`         \tab                                              \cr
 #' `TE90` \tab `temperature`           \tab                                              \cr
 #' `TEMP` \tab `temperature`           \tab                                              \cr
+#' `TEXZT` \tab `text`                 \tab                                              \cr
 #' `TICW` \tab `totalInorganicCarbon`  \tab                                              \cr
 #' `TILT` \tab `tilt`                  \tab                                              \cr
 #' `TOTP` \tab `pressureAbsolute`      \tab                                              \cr
+#' `TPHS` \tab `phosphorousTotal`      \tab                                              \cr
 #' `TRAN` \tab `lightTransmission`     \tab                                              \cr
 #' `TRB_` \tab `turbidity`             \tab                                              \cr
 #' `TRBH` \tab `trophicDescriptor`     \tab                                              \cr
+#' `TSM_` \tab `suspendedMatterTotal`  \tab                                              \cr
 #' `TSN_` \tab `taxonomicSerialNumber` \tab                                              \cr
 #' `TURB` \tab `turbidity`             \tab                                              \cr
 #' `UNKN` \tab `-`                     \tab                                              \cr
+#' `UREA` \tab `urea`                  \tab                                              \cr
 #' `VAIS` \tab `BVFrequency`           \tab                                              \cr
 #' `VCSP` \tab `w`                     \tab                                              \cr
 #' `VMXL` \tab `waveHeightMaximum`     \tab                                              \cr
 #' `VRMS` \tab `waveHeightMean`        \tab                                              \cr
 #' `VTCA` \tab `wavePeriod`            \tab                                              \cr
 #' `WDIR` \tab `windDirection`         \tab                                              \cr
+#' `WETT` \tab `temperatureWetBulb`    \tab                                              \cr
 #' `WSPD` \tab `windSpeed`             \tab                                              \cr
 #' `WTWT` \tab `wetWeight`             \tab                                              \cr
 #' `ZOO_` \tab `zooplanktonCount`      \tab                                              \cr
@@ -487,41 +519,56 @@ ODFNames2oceNames <- function(ODFnames,
     # really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
     # or whatever), this is a place to look.
     oceDebug(debug, "STAGE 1 names: ", paste(names, collapse=" "), "\n")
+    names <- gsub("ABSH", "humidityAbsolute", names)
     names <- gsub("ACO2", "CO2Atmosphere", names)
     names <- gsub("ALTB", "altimeter", names)
     names <- gsub("ALKW", "alkalinity", names)
+    names <- gsub("ALKY", "alkalinityTotal", names)
+    names <- gsub("ALTS", "altitude", names)
     names <- gsub("AMON", "ammonium", names)
     names <- gsub("ATMP", "pressureAtmosphere", names)
+    names <- gsub("ATMS", "pressureAtmosphereSealevel", names)
     names <- gsub("ATTU", "attenuation", names)
     names <- gsub("AUTH", "authority", names)
     names <- gsub("BATH", "waterDepth", names) # FIXME: is this water column depth or sensor depth?
+    names <- gsub("BATT", "batteryVoltage", names)
     names <- gsub("BEAM", "a", names)  # FIXME: is this sensible?
     names <- gsub("BNO7", "bestNODC7Number", names)
+    names <- gsub("CNDC", "conductivity", names)
     names <- gsub("CNTR", "scan", names)
+    names <- gsub("COND", "conductivity", names)
+    names <- gsub("CORG", "carbonOrganic", names)
     names <- gsub("CPHL", "chlorophyll", names)
     names <- gsub("CRAT", "conductivity", names)
     names <- gsub("CMNT", "comment", names)
     names <- gsub("CNDC", "conductivity", names)
     names <- gsub("COND", "conductivity", names)
+    names <- gsub("CTOT", "carbonTotal", names)
     names <- gsub("DCHG", "discharge", names)
     names <- gsub("DENS", "density", names)
     names <- gsub("DEPH", "depth", names)
+    names <- gsub("DEWT", "temperatureDewpoint", names)
+    names <- gsub("DOC_", "carbonOrganicDissolved", names)
+    names <- gsub("DON_", "nitrogenOrganicDissolved", names)
     names <- gsub("DOXY", "oxygen", names)
     names <- gsub("DPDT", "dpdt", names)
+    names <- gsub("DRDP", "drogueDepth", names)
     names <- gsub("DRWT", "dryWeight", names)
     names <- gsub("DRYT", "temperatureDryBulb", names)
-    names <- gsub("ERRV", "error", names)
+    names <- gsub("DYNH", "dynamicHeight", names)
+    names <- gsub("ERRV", "errorVelocity", names)
     names <- gsub("EWCT", "u", names)
     names <- gsub("FFFF", "overall(FFFF)", names)
-    # until 2021-04-30 names <- gsub("FLOR", "fluorometer", names)
+    # 2021-04-30: rename "fluorometer" as "fluorescence"
     names <- gsub("FLOR", "fluorescence", names)
-    # names <- gsub("FWETLABS", "fwetlabs", names) # FIXME: what is this?
+    names <- gsub("GDIR", "windDirectionGust", names)
     names <- gsub("GEOP", "geopotential", names)
     names <- gsub("GSPD", "windSpeedGust", names)
     names <- gsub("HCSP", "speedHorizontal", names)
     names <- gsub("HCDM", "directionMagnetic", names)
     names <- gsub("HCDT", "directionTrue", names)
     names <- gsub("HEAD", "heading", names)
+    names <- gsub("HSUL", "hydrogenSulphide", names)
     names <- gsub("IDEN", "sampleNumber", names)
     names <- gsub("LABT", "temperatureLaboratory", names)
     names <- gsub("LATD", "latitude", names)
@@ -534,16 +581,19 @@ ODFNames2oceNames <- function(ODFnames,
     names <- gsub("MXSV", "largestSieveUsed", names)
     names <- gsub("MXSZ", "organismSizeMaximum", names)
     names <- gsub("NONE", "noWMOcode", names)
+    names <- gsub("NORG", "nitrogenOrganic", names)
     names <- gsub("NTRA", "nitrate", names)
     names <- gsub("NTOT", "nitrogenTotal", names)
     names <- gsub("NTRI", "nitrite", names)
     names <- gsub("NTRZ", "nitrite+nitrate", names)
     names <- gsub("NSCT", "v", names)
     names <- gsub("NUM_", "scansPerAverage", names)
+    names <- gsub("OBKS", "backscatter(?)", names)
     names <- gsub("OCUR", "oxygenCurrent", names)
     names <- gsub("OPPR", "oxygenPartialPressure", names)
     names <- gsub("OSAT", "oxygenSaturation", names)
     names <- gsub("OTMP", "oxygenTemperature", names)
+    names <- gsub("OXYG", "oxygenDissolved", names)
     names <- gsub("OXYM", "oxygenDissolved", names)
     names <- gsub("OXYV", "oxygenVoltage", names)
     names <- gsub("OXV_", "oxygenVoltageRaw", names)
@@ -552,45 +602,59 @@ ODFNames2oceNames <- function(ODFnames,
     names <- gsub("PHOS", "phosphate", names)
     names <- gsub("PHPH", "pH", names)
     names <- gsub("PHT_", "pHTotal", names)
+    names <- gsub("PHM_", "particulateInorganicMatter", names)
     names <- gsub("PHY_", "phytoplanktonCount", names)
-    names <- gsub("POTM", "theta", names) # in a moored ctd file examined 2014-05-15
+    names <- gsub("POC_", "particulateOrganicCarbon", names)
+    names <- gsub("POM_", "particulateOrganicMatter", names)
+    names <- gsub("PON_", "particulateOrganicNitrogen", names)
+    names <- gsub("POTM", "theta", names)
     names <- gsub("PRES", "pressure", names)
     names <- gsub("PSAL", "salinity", names)
-    names <- gsub("PSAR", "PAR", names)
+    names <- gsub("PSAR", "photosyntheticActiveRadiation", names)
     names <- gsub("PTCH", "pitch", names)
     names <- gsub("QCFF", "overall(QCFF)", names)
     names <- gsub("REFR", "reference", names)
     names <- gsub("RELH", "humdidityRelative", names)
     names <- gsub("ROLL", "roll", names)
-    names <- gsub("SDEV", "pressureStdDev", names)
+    names <- gsub("SDEV", "standardDeviation", names)
     names <- gsub("SECC", "SecchiDepth", names)
     names <- gsub("SEX_", "sex", names)
+    names <- gsub("SIG0", "sigma0", names)
     names <- gsub("SIGP", "sigmaTheta", names)
     names <- gsub("SIGT", "sigmat", names) # in a moored ctd file examined 2014-05-15
     names <- gsub("SLCA", "silicate", names)
     names <- gsub("SNCN", "scanCounter", names)
     names <- gsub("SPAR", "SPAR", names)
+    names <- gsub("SPEH", "humiditySpecific", names)
     names <- gsub("SPFR", "sampleFraction", names)
+    names <- gsub("SPV0", "specificVolume", names)
     names <- gsub("SPVA", "specificVolumeAnomaly", names)
+    names <- gsub("SSAL", "salinity", names)
+    names <- gsub("SVEL", "soundVelocity", names)
     names <- gsub("SYTM", "time", names) # in a moored ctd file examined 2014-05-15
     names <- gsub("TAXN", "taxonomicName", names)
     names <- gsub("TE90", "temperature", names)
     names <- gsub("TEMP", "temperature", names)
+    names <- gsub("TEXT", "text", names)
     names <- gsub("TICW", "totalInorganicCarbon", names)
     names <- gsub("TILT", "tilt", names)
     names <- gsub("TOTP", "pressureAbsolute", names)
+    names <- gsub("TPHS", "phosphorousTotal", names)
     names <- gsub("TRAN", "lightTransmission", names)
     names <- gsub("TRB_", "turbidity", names)
     names <- gsub("TRPH", "trophicDescriptor", names)
+    names <- gsub("TSM_", "suspendedMatterTotal", names)
     names <- gsub("TSN_", "taxonomicSerialNumber", names)
     names <- gsub("TURB", "turbidity", names)
     names <- gsub("UNKN", "unknown", names)
+    names <- gsub("UREA", "urea", names)
     names <- gsub("VAIS", "BVFrequency", names)
     names <- gsub("VCSP", "w", names)
     names <- gsub("VMXL", "waveHeightMaximum", names)
     names <- gsub("VRMS", "waveHeightMean", names)
     names <- gsub("VTCA", "wavePeriod", names)
     names <- gsub("WDIR", "windDirection", names)
+    names <- gsub("WETT", "temperatureWetBulb", names)
     names <- gsub("WSPD", "windSpeed", names)
     names <- gsub("WTWT", "wetWeight", names)
     names <- gsub("ZOO_", "zooplanktonCount", names)
@@ -1071,6 +1135,8 @@ ODFListFromHeader <- function(header)
 #'
 #' For sources that describe the ODF format, see the documentation
 #' for the [odf-class] class.
+#'
+#' @author Dan Kelley, with help from Chantelle Layton
 #'
 #' @family things related to odf data
 read.odf <- function(file, columns=NULL, header="list", exclude=NULL, debug=getOption("oceDebug"))

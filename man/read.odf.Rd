@@ -188,4 +188,7 @@ Other things related to odf data:
 \code{\link{subset,odf-method}},
 \code{\link{summary,odf-method}}
 }
+\author{
+Dan Kelley, with help from Chantelle Layton
+}
 \concept{things related to odf data}
