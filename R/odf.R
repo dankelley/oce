@@ -395,7 +395,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `NTRI` \tab `nitrite`               \tab                                              \cr
 #' `NTRZ` \tab `nitrite+nitrate`       \tab                                              \cr
 #' `NUM_` \tab `scansPerAverage`       \tab                                              \cr
-#' `OBKS` \tab `backscatter`           \tab This oce name is a guess                     \cr
+#' `OBKS` \tab `turbidity`             \tab                                              \cr
 #' `OCUR` \tab `oxygenCurrent`         \tab                                              \cr
 #' `OPPR` \tab `oxygenPartialPressure` \tab                                              \cr
 #' `OSAT` \tab `oxygenSaturation`      \tab                                              \cr
@@ -610,7 +610,7 @@ ODFNames2oceNames <- function(ODFnames,
     names <- gsub("NSCM", "vMagnetic", names)
     names <- gsub("NSCT", "v", names)
     names <- gsub("NUM_", "scansPerAverage", names)
-    names <- gsub("OBKS", "backscatter", names)
+    names <- gsub("OBKS", "turbidity", names)
     names <- gsub("OCUR", "oxygenCurrent", names)
     names <- gsub("OPPR", "oxygenPartialPressure", names)
     names <- gsub("OSAT", "oxygenSaturation", names)

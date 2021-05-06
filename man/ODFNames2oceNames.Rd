@@ -129,7 +129,7 @@ where \verb{<CODE>} matches the corresponding data item.
 \code{NTRI} \tab \code{nitrite}               \tab                                              \cr
 \code{NTRZ} \tab \code{nitrite+nitrate}       \tab                                              \cr
 \code{NUM_} \tab \code{scansPerAverage}       \tab                                              \cr
-\code{OBKS} \tab \code{backscatter}           \tab This oce name is a guess                     \cr
+\code{OBKS} \tab \code{turbidity}             \tab                                              \cr
 \code{OCUR} \tab \code{oxygenCurrent}         \tab                                              \cr
 \code{OPPR} \tab \code{oxygenPartialPressure} \tab                                              \cr
 \code{OSAT} \tab \code{oxygenSaturation}      \tab                                              \cr
