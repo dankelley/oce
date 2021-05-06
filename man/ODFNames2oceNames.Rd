@@ -170,7 +170,7 @@ where \verb{<CODE>} matches the corresponding data item.
 \code{SPAR} \tab \code{SPAR}                  \tab                                              \cr
 \code{SPEH} \tab \code{humiditySpecific}      \tab                                              \cr
 \code{SPFR} \tab \code{sampleFraction}        \tab                                              \cr
-\code{SPV0} \tab \code{specificVolume}        \tab                                              \cr
+\code{SPVO} \tab \code{specificVolume}        \tab                                              \cr
 \code{SPVA} \tab \code{specificVolumeAnomaly} \tab                                              \cr
 \code{STRA} \tab \code{stressAmplitude}       \tab                                              \cr
 \code{STRD} \tab \code{stressDirection}       \tab                                              \cr

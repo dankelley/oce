@@ -436,7 +436,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `SPAR` \tab `SPAR`                  \tab                                              \cr
 #' `SPEH` \tab `humiditySpecific`      \tab                                              \cr
 #' `SPFR` \tab `sampleFraction`        \tab                                              \cr
-#' `SPV0` \tab `specificVolume`        \tab                                              \cr
+#' `SPVO` \tab `specificVolume`        \tab                                              \cr
 #' `SPVA` \tab `specificVolumeAnomaly` \tab                                              \cr
 #' `STRA` \tab `stressAmplitude`       \tab                                              \cr
 #' `STRD` \tab `stressDirection`       \tab                                              \cr
@@ -651,7 +651,7 @@ ODFNames2oceNames <- function(ODFnames,
     names <- gsub("SPAR", "SPAR", names)
     names <- gsub("SPEH", "humiditySpecific", names)
     names <- gsub("SPFR", "sampleFraction", names)
-    names <- gsub("SPV0", "specificVolume", names)
+    names <- gsub("SPVO", "specificVolume", names)
     names <- gsub("SPVA", "specificVolumeAnomaly", names)
     names <- gsub("SSAL", "salinity", names)
     names <- gsub("STRA", "stressAmplitude", names)
