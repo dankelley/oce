@@ -417,7 +417,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
 #' `POTM` \tab `theta`                 \tab                                              \cr
 #' `PRES` \tab `pressure`              \tab                                              \cr
 #' `PSAL` \tab `salinity`              \tab                                              \cr
-#' `PSAR` \tab `photosyntheticActiveRadiation` \tab                                      \cr
+#' `PSAR` \tab `PSAR`                  \tab                                              \cr
 #' `PTCH` \tab `pitch`                 \tab                                              \cr
 #' `QCFF` \tab `overall(QCFF)`         \tab Overall flag (see also archaic FFFF)         \cr
 #' `RANG` \tab `range`                 \tab                                              \cr
@@ -632,7 +632,7 @@ ODFNames2oceNames <- function(ODFnames,
     names <- gsub("POTM", "theta", names)
     names <- gsub("PRES", "pressure", names)
     names <- gsub("PSAL", "salinity", names)
-    names <- gsub("PSAR", "photosyntheticActiveRadiation", names)
+    # leave "PSAR" alone, since oceanographers will likely know what it means
     names <- gsub("PTCH", "pitch", names)
     names <- gsub("QCFF", "overall(QCFF)", names)
     names <- gsub("RANG", "range", names)
@@ -648,7 +648,7 @@ ODFNames2oceNames <- function(ODFnames,
     names <- gsub("SIGT", "sigmat", names) # in a moored ctd file examined 2014-05-15
     names <- gsub("SLCA", "silicate", names)
     names <- gsub("SNCN", "scanCounter", names)
-    names <- gsub("SPAR", "SPAR", names)
+    # leave "SPAR" alone
     names <- gsub("SPEH", "humiditySpecific", names)
     names <- gsub("SPFR", "sampleFraction", names)
     names <- gsub("SPVO", "specificVolume", names)

@@ -151,7 +151,7 @@ where \verb{<CODE>} matches the corresponding data item.
 \code{POTM} \tab \code{theta}                 \tab                                              \cr
 \code{PRES} \tab \code{pressure}              \tab                                              \cr
 \code{PSAL} \tab \code{salinity}              \tab                                              \cr
-\code{PSAR} \tab \code{photosyntheticActiveRadiation} \tab                                      \cr
+\code{PSAR} \tab \code{PSAR}                  \tab                                              \cr
 \code{PTCH} \tab \code{pitch}                 \tab                                              \cr
 \code{QCFF} \tab \code{overall(QCFF)}         \tab Overall flag (see also archaic FFFF)         \cr
 \code{RANG} \tab \code{range}                 \tab                                              \cr
