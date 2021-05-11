@@ -87,7 +87,7 @@ with `f` as defined above. This also illustrates that it is possibly to specify
 the location of an instrument; the further processing that was done to create
 `data(adp)` will be explained in due course.
 
-+**Note**: User's who are not familiar with ADP data may noticed that there is a combination of many file types when dealing with ADP data. Some of these include: .ENR, which are raw data only recieved from the ADP, .ENS, similar to .ENR but also contain data merged from other file types without processing, .ENX, merged data that are processed including calculations to transformed data including east, north, and vertical velocities, .STA, which are a short term average of measurements, and .LTA, which are a long term average of measurements.
++**Note**: Users who are not familiar with ADP data may noticed that there is a combination of many file types when dealing with ADP data. Some of these include: .ENR, which are raw data only received from the ADP, .ENS, similar to .ENR but also contain data merged from other file types without processing, .ENX, merged data that are processed including calculations to transformed data including east, north, and vertical velocities, .STA, which are a short term average of measurements, and .LTA, which are a long term average of measurements.
 
 
 # Summarizing adp data
@@ -267,6 +267,7 @@ plot(adp, which="uv")
 
 ```{r, eval=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 library(oce)
+download.files("https://github.com/dankelley/oce/tree/develop/extras/COR2019002_20190818T064815_007_000000.ENS")
 ADP <- read.adp("/Users/jaimiekeeping/Documents/GitHub/oce/COR2019002_20190818T064815_007_000000.ENS") # Note this is the path wherever you saved your .ENS file
 enu <- toEnu(ADP)
 removeShipSpeed <- subtractBottomVelocity(enu)

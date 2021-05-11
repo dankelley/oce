@@ -6,7 +6,6 @@
 ^sandbox$
 ^.*.odf$
 ^.*.ODF$
-^.*.ENS$
 ^R/check_urls\.R$
 ^Meta$
 ^revdep$
@@ -37,6 +36,7 @@ autom4te.cache
 man-roxygen
 tests/testthat/*png
 tests/testthat/*pdf
+extras
 man/figures/Makefile
 man/figures/*.R
 tests_private
