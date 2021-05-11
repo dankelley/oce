@@ -6,6 +6,7 @@
 ^sandbox$
 ^.*.odf$
 ^.*.ODF$
+^.*.ENS$
 ^R/check_urls\.R$
 ^Meta$
 ^revdep$
