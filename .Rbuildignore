@@ -1,4 +1,4 @@
-^[0-9]+[a-z].R$
+^[0-9]+[0-9a-zA-Z_]*.R$
 ^marmap.*csv$
 ^.git$
 ^\.github$

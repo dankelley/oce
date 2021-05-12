@@ -7,6 +7,7 @@
 * Fix `as.ctd()` handling of temperature scale of first argument.
 * Fix `as.section()` handling of list of `argo` objects as first argument.
 * Fix `colormap()` handling of `name` argument.
+* `read.odf()` handles many new CODE and UNIT possibilities.
 
 ## 1.4.0
 
