@@ -168,12 +168,11 @@ etc.
 Dozens of other plot types are also provided; see `?"plot,adp-method"` for
 details -- but be warned that a complex plot requires many arguments!
 
-It's important to note, when dealing with ship-based adp data, in order to get the true `east`, `north`, and `up` velocity, the user must remove the speed of the ship. To do this, use the `subtractBottomVelocity` function, which subtracts the bottom tracking velocities from an adp object.
+When dealing with ship-based adp data, in order to get the true `east`, `north`, and `up` velocity, the user must remove the speed of the ship. To do this, use the `subtractBottomVelocity` function, which subtracts the bottom tracking velocities from an adp object.
 
 **Exercise 2.** Create a u-v scatterplot.
 
-**Exercise 3.** Download the ship based adp data file (COR2019002_20190818T064815_007_000000.ENS) found at the top directory of oce and plot the `east`, `north`, and `up` velocity without the speed of the ship.
-
+**Exercise 3.** Write the steps to plot the `east`, `north`, and `up` velocity without the speed of the ship for a file namedCOR2019002_20190818T064815_007_000000.ENS.
 
 # Subsetting
 
@@ -260,18 +259,16 @@ reveals the steps in the data transformation.
 plot(adp, which="uv")
 ```
 
-**Exercise 3.** Download the ship based adp data file
-(COR2019002_20190818T064815_007_000000.ENS) found at the top directory of oce and plot the `east`, `north`, and `up` velocity without the speed of the ship.
+**Exercise 3.** Write the steps to plot the `east`, `north`, and `up` velocity without the speed of the ship for a file named COR2019002_20190818T064815_007_000000.ENS.
 
 **Solution.**
 
 ```{r, eval=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 library(oce)
-download.files("https://github.com/dankelley/oce/tree/develop/extras/COR2019002_20190818T064815_007_000000.ENS")
-ADP <- read.adp("/Users/jaimiekeeping/Documents/GitHub/oce/COR2019002_20190818T064815_007_000000.ENS") # Note this is the path wherever you saved your .ENS file
-enu <- toEnu(ADP)
+adcp <- read.adp("COR2019002_20190818T064815_007_000000.ENS")
+enu <- toEnu(adcp)
 removeShipSpeed <- subtractBottomVelocity(enu)
-plot(removeShipSpeed)
+plot(removeShipSpeed, which=1:3)
 ```
 
 
