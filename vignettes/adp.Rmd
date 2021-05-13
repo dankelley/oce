@@ -25,7 +25,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
 **Abstract.** This vignette explains the basics of using the oce package to
-handle measurements made by acoustic Doppler profilers.  As in the related
+handle measurements made by both mooring and ship based acoustic Doppler profilers.  As in the related
 vignette about working with [data-quality flags](flags.html), the material is
 organized to reflect typical workflow.  See [the main oce vignette](oce.html)
 for general information about oce.  The sample code
@@ -87,6 +87,8 @@ with `f` as defined above. This also illustrates that it is possibly to specify
 the location of an instrument; the further processing that was done to create
 `data(adp)` will be explained in due course.
 
++**Note**: Users who are not familiar with ADP data may noticed that there is a combination of many file types when dealing with ADP data. Some of these include: .ENR, which are raw data only received from the ADP, .ENS, similar to .ENR but also contain data merged from other file types without processing, .ENX, merged data that are processed including calculations to transformed data including east, north, and vertical velocities, .STA, which are a short term average of measurements, and .LTA, which are a long term average of measurements.
+
 
 # Summarizing adp data
 
@@ -113,6 +115,8 @@ Note that the summary reveals that instrument had been set up to record in
 
 **Exercise 1.** Determine the name of the `metadata` item that holds the
 coordinate system of an adp object.
+
+After completing exercise 1, the user will notice that both `latitude` and `longitude` are available in the metadata for this built in, moored, adp dataset. It should be noted that if this dataset was a ship-based adp, `latitude` and `longitude` would not be included. Instead, the data would include, `firstLatitude`, `firstLongitude`, `lastLatitude`, and `lastLongitude` to account for the drift of the ship during sampling.
 
 # Changing coordinate systems
 
@@ -164,8 +168,11 @@ etc.
 Dozens of other plot types are also provided; see `?"plot,adp-method"` for
 details -- but be warned that a complex plot requires many arguments!
 
+When dealing with ship-based adp data, in order to get the true `east`, `north`, and `up` velocity, the user must remove the speed of the ship. To do this, use the `subtractBottomVelocity` function, which subtracts the bottom tracking velocities from an adp object.
+
 **Exercise 2.** Create a u-v scatterplot.
 
+**Exercise 3.** Write the steps to plot the `east`, `north`, and `up` velocity without the speed of the ship for a file namedCOR2019002_20190818T064815_007_000000.ENS.
 
 # Subsetting
 
@@ -177,7 +184,7 @@ plot(subset(adp, distance<20))
 plots only data within 20m of the instrument.  See `?"subset,adp-method"` for
 more on subsetting.
 
-**Exercise 3.** Plot the adp data for the first half of the sampling interval.
+**Exercise 4.** Plot the adp data for the first half of the sampling interval.
 
 # Accessing data within adp objects
 
@@ -210,11 +217,11 @@ a <- adp[["a", "numeric"]]
 
 This has the advantage of returning an object with the same matrix dimensions as the original (note that functions like `as.numeric()` typically discard dimension information, thereby converting an array to a vector).
 
-**Exercise 4.** Plot a time series of mid-depth and depth-averaged eastward velocities.
+**Exercise 5.** Plot a time series of mid-depth and depth-averaged eastward velocities.
 
-**Exercise 5.** Perform an eigen analysis of eastward and northward velocity.
+**Exercise 6.** Perform an eigen analysis of eastward and northward velocity.
 
-**Exercise 6.** Plot a time series of pressure variations, to reveal tidal
+**Exercise 7.** Plot a time series of pressure variations, to reveal tidal
 height.
 
 
@@ -252,8 +259,20 @@ reveals the steps in the data transformation.
 plot(adp, which="uv")
 ```
 
+**Exercise 3.** Write the steps to plot the `east`, `north`, and `up` velocity without the speed of the ship for a file named COR2019002_20190818T064815_007_000000.ENS.
 
-**Exercise 3.** Plot the adp data for the first half of the sampling interval.
+**Solution.**
+
+```{r, eval=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+library(oce)
+adcp <- read.adp("COR2019002_20190818T064815_007_000000.ENS")
+enu <- toEnu(adcp)
+removeShipSpeed <- subtractBottomVelocity(enu)
+plot(removeShipSpeed, which=1:3)
+```
+
+
+**Exercise 4.** Plot the adp data for the first half of the sampling interval.
 
 **Solution.**
 
@@ -262,7 +281,7 @@ plot(subset(adp, time < median(adp[["time"]])))
 ```
 
 
-**Exercise 4.** Plot a time series of mid-depth and depth-averaged eastward velocities.
+**Exercise 5.** Plot a time series of mid-depth and depth-averaged eastward velocities.
 
 **Solution.**
 ```{r}
@@ -284,7 +303,7 @@ Here, `oce.plot.ts()` is used instead of the basic R function `plot()`, because
 it provides a margin note on the detailed time interval.
 
 
-**Exercise 5.** Perform an eigen analysis of eastward and northward velocity.
+**Exercise 6.** Perform an eigen analysis of eastward and northward velocity.
 
 **Solution.**
 ```{r}
@@ -311,7 +330,7 @@ but has the advantage of having associated methods, including for plotting.
 
 
 
-**Exercise 6.** Plot a time series of pressure variations, to reveal tidal
+**Exercise 7.** Plot a time series of pressure variations, to reveal tidal
 height.
 
 **Solution.**

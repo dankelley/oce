@@ -231,7 +231,7 @@ setClass("adp", contains="oce")
 #' Sample adp (acoustic-doppler profiler) dataset
 #'
 #' This is degraded subsample of measurements that were made with an
-#' upward-pointing ADP manufactured by Teledyne-RDI, as part of the St Lawrence
+#' upward-pointing, moored, ADP manufactured by Teledyne-RDI, as part of the St Lawrence
 #' Internal Wave Experiment (SLEIWEX).
 #'
 #' @name adp
