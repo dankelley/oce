@@ -116,7 +116,7 @@ Note that the summary reveals that instrument had been set up to record in
 **Exercise 1.** Determine the name of the `metadata` item that holds the
 coordinate system of an adp object.
 
-After completing exercise 1, the user will notice that there is both `latitude` and `longitude` available in the metadata for this built in, moored, adp dataset. It should be noted that if this dataset was a ship-based adp, `latitude` and `longitude` would not be included. Instead, the data would include, `firstLatitude`, `firstLongitude`, `lastLatitude`, and `lastLongitude` to account for the drift of the ship during sampling.
+After completing exercise 1, the user will notice that both `latitude` and `longitude` are available in the metadata for this built in, moored, adp dataset. It should be noted that if this dataset was a ship-based adp, `latitude` and `longitude` would not be included. Instead, the data would include, `firstLatitude`, `firstLongitude`, `lastLatitude`, and `lastLongitude` to account for the drift of the ship during sampling.
 
 # Changing coordinate systems
 
