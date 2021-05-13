@@ -25,11 +25,11 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
 **Abstract.** This vignette explains the basics of using the oce package to
-handle measurements made by both mooring and ship based acoustic Doppler profilers.  As in the related
-vignette about working with [data-quality flags](flags.html), the material is
-organized to reflect typical workflow.  See [the main oce vignette](oce.html)
-for general information about oce.  The sample code
-provided here relies on the oce package, loaded as follows.
+handle measurements made by both mooring and ship based acoustic Doppler
+profilers.  As in the related vignette about working with [data-quality
+flags](flags.html), the material is organized to reflect typical workflow.  See
+[the main oce vignette](oce.html) for general information about oce.  The
+sample code provided here relies on the oce package, loaded as follows.
 ```{r}
 library(oce)
 ```
@@ -37,14 +37,15 @@ library(oce)
 # Reading adp files
 
 Acoustic Doppler profiling instruments are called ADCPs by some manufacturers
-and ADPs by others.  The class name `adp` is used in oce, to handle both
-types. It is important to realize that there are *many* data formats for data
-of this type, and that the files are normally in a dense binary format that
-cannot be read with a text editor. It is necessary to use software to work with
-such files. Although oce can handle many file formats, and although its
-authors do their best to keep up with changes to file formats (at least for
-popular instruments), users will sometimes be forced to use manufacturer
-software to read the data, or at least convert to a format that can be manually read into R, and then converted to an `adp` object using the `as.adp()` function.
+and ADPs by others.  The class name `adp` is used in oce, to handle both types.
+It is important to realize that there are *many* data formats for data of this
+type, and that the files are normally in a dense binary format that cannot be
+read with a text editor. It is necessary to use software to work with such
+files. Although oce can handle many file formats, and although its authors do
+their best to keep up with changes to file formats (at least for popular
+instruments), users will sometimes be forced to use manufacturer software to
+read the data, or at least convert to a format that can be manually read into
+R, and then converted to an `adp` object using the `as.adp()` function.
 
 Suppose `f` is a character string naming a data file. In many cases,
 ```{r eval=FALSE}
@@ -87,7 +88,14 @@ with `f` as defined above. This also illustrates that it is possibly to specify
 the location of an instrument; the further processing that was done to create
 `data(adp)` will be explained in due course.
 
-+**Note**: Users who are not familiar with ADP data may noticed that there is a combination of many file types when dealing with ADP data. Some of these include: .ENR, which are raw data only received from the ADP, .ENS, similar to .ENR but also contain data merged from other file types without processing, .ENX, merged data that are processed including calculations to transformed data including east, north, and vertical velocities, .STA, which are a short term average of measurements, and .LTA, which are a long term average of measurements.
++**Note**: Users who are not familiar with ADP data may noticed that there is a
+combination of many file types when dealing with ADP data. Some of these
+include: .ENR, which are raw data only received from the ADP, .ENS, similar to
+.ENR but also contain data merged from other file types without processing,
+.ENX, merged data that are processed including calculations to transformed data
+including east, north, and vertical velocities, .STA, which are a short term
+average of measurements, and .LTA, which are a long term average of
+measurements.
 
 
 # Summarizing adp data
@@ -116,7 +124,12 @@ Note that the summary reveals that instrument had been set up to record in
 **Exercise 1.** Determine the name of the `metadata` item that holds the
 coordinate system of an adp object.
 
-After completing exercise 1, the user will notice that both `latitude` and `longitude` are available in the metadata for this built in, moored, adp dataset. It should be noted that if this dataset was a ship-based adp, `latitude` and `longitude` would not be included. Instead, the data would include, `firstLatitude`, `firstLongitude`, `lastLatitude`, and `lastLongitude` to account for the drift of the ship during sampling.
+After completing Exercise 1, the user will notice that both `latitude` and
+`longitude` are available in the metadata for this built-in, moored, adp
+dataset. It should be noted that if this dataset was a ship-based adp dataset,
+then `latitude` and `longitude` would not be included. Instead, the data would
+include `firstLatitude`, `firstLongitude`, `lastLatitude`, and `lastLongitude`,
+which provide an indication of the ship drift during sampling.
 
 # Changing coordinate systems
 
@@ -168,11 +181,16 @@ etc.
 Dozens of other plot types are also provided; see `?"plot,adp-method"` for
 details -- but be warned that a complex plot requires many arguments!
 
-When dealing with ship-based adp data, in order to get the true `east`, `north`, and `up` velocity, the user must remove the speed of the ship. To do this, use the `subtractBottomVelocity` function, which subtracts the bottom tracking velocities from an adp object.
+When dealing with ship-based adp data, in order to get the true `east`,
+`north`, and `up` velocity, the user must remove the speed of the ship. To do
+this, use the `subtractBottomVelocity()` function, which subtracts the bottom
+tracking velocities from an adp object.
 
 **Exercise 2.** Create a u-v scatterplot.
 
-**Exercise 3.** Write the steps to plot the `east`, `north`, and `up` velocity without the speed of the ship for a file namedCOR2019002_20190818T064815_007_000000.ENS.
+**Exercise 3.** Write the steps to plot the `east`, `north`, and `up` velocity
+without the speed of the ship for a file named
+`COR2019002_20190818T064815_007_000000.ENS`.
 
 # Subsetting
 
@@ -200,8 +218,8 @@ For example,
 time <- adp[["time"]]
 distance <- adp[["distance"]]
 ```
-extracts the times and distances of the profiles within `data(adp)`, while the array holding
-the velocities is extract with
+extracts the times and distances of the profiles within `data(adp)`, while the
+array holding the velocities is extract with
 ```{r}
 v <- adp[["v"]]
 ```
@@ -210,12 +228,19 @@ Altering values uses the `[[` to the left of the assignment operator, but this
 is not commonly required in simple work, so it is best for readers to focus
 first on accessing data. The exercises may help with this.
 
-Some of the fields contained in `adp` objects, particularly the amplitude, correlation, and percent good fields (`a`, `q`, and `g`) are stored as `raw`-type. This is done primarly to save memory space, as expanded all of those fields into `numeric` types can be slow and they get large quickly. However, to actually work with the numbers, users can extract a "numeric" version by supplying the second argument to the `[[` function, e.g.
+Some of the fields contained in adp objects, particularly the amplitude,
+correlation, and percent good fields (`a`, `q`, and `g`) are stored as
+`raw`-type. This is done primarly to save memory space, as expanded all of
+those fields into `numeric` types can be slow and they get large quickly.
+However, to actually work with the numbers, users can extract a "numeric"
+version by supplying the second argument to the `[[` function, e.g.
 ```{r}
 a <- adp[["a", "numeric"]]
 ```
 
-This has the advantage of returning an object with the same matrix dimensions as the original (note that functions like `as.numeric()` typically discard dimension information, thereby converting an array to a vector).
+This has the advantage of returning an object with the same matrix dimensions
+as the original (note that functions like `as.numeric()` typically discard
+dimension information, thereby converting an array to a vector).
 
 **Exercise 5.** Plot a time series of mid-depth and depth-averaged eastward velocities.
 
@@ -259,7 +284,9 @@ reveals the steps in the data transformation.
 plot(adp, which="uv")
 ```
 
-**Exercise 3.** Write the steps to plot the `east`, `north`, and `up` velocity without the speed of the ship for a file named COR2019002_20190818T064815_007_000000.ENS.
+**Exercise 3.** Write the steps to plot the `east`, `north`, and `up` velocity
+without the speed of the ship for a file named
+`COR2019002_20190818T064815_007_000000.ENS`.
 
 **Solution.**
 
