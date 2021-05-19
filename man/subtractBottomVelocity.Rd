@@ -9,7 +9,8 @@ subtractBottomVelocity(x, despike = FALSE, debug = getOption("oceDebug"))
 \arguments{
 \item{x}{an \linkS4class{adp} object that contains bottom-tracking velocities.}
 
-\item{despike}{boolean that indicates if the bottom velocities should be despiked}
+\item{despike}{a logical value that indicates whether each velocity beam
+should be despiked separately, with the matching bv value, using \code{\link[=despike]{despike()}}.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

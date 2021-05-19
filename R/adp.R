@@ -3788,7 +3788,8 @@ display.bytes <- function(b, label="", ...)
 #'
 #' @param x an [adp-class] object that contains bottom-tracking velocities.
 #'
-#' @param despike boolean that indicates if the bottom velocities should be despiked
+#' @param despike a logical value that indicates whether each velocity beam
+#' should be despiked separately, with the matching bv value, using [despike()].
 #'
 #' @template debugTemplate
 #'
