@@ -3788,6 +3788,8 @@ display.bytes <- function(b, label="", ...)
 #'
 #' @param x an [adp-class] object that contains bottom-tracking velocities.
 #'
+#' @param despike boolean that indicates if the bottom velocities should be despiked
+#'
 #' @template debugTemplate
 #'
 #' @author Dan Kelley and Clark Richards
@@ -3797,7 +3799,7 @@ display.bytes <- function(b, label="", ...)
 #' object class.
 #'
 #' @family things related to adp data
-subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
+subtractBottomVelocity <- function(x, despike=FALSE, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "subtractBottomVelocity(x) {\n", unindent=1)
     if (!("bv" %in% names(x@data))) {
@@ -3808,7 +3810,11 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
     numberOfBeams <- dim(x[["v"]])[3] # could also get from metadata but this is less brittle
     for (beam in 1:numberOfBeams) {
         oceDebug(debug, "beam #", beam, "\n")
-        res@data$v[, , beam] <- x[["v"]][, , beam] - x@data$bv[, beam]
+        if (despike == FALSE) {
+            res@data$v[, , beam] <- x[["v"]][, , beam] - x@data$bv[, beam]
+        } else {
+            res@data$v[, , beam] <- x[["v"]][, , beam] - despike(x@data$bv[, beam])
+        }
     }
     oceDebug(debug, "} # subtractBottomVelocity()\n", unindent=1)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(expr=match.call()), sep="", collapse=""))

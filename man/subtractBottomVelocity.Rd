@@ -4,10 +4,12 @@
 \alias{subtractBottomVelocity}
 \title{Subtract Bottom Velocity from ADP}
 \usage{
-subtractBottomVelocity(x, debug = getOption("oceDebug"))
+subtractBottomVelocity(x, despike = FALSE, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{an \linkS4class{adp} object that contains bottom-tracking velocities.}
+
+\item{despike}{boolean that indicates if the bottom velocities should be despiked}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
