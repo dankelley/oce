@@ -53,6 +53,6 @@ jobs:
           name: paper
           path: |
             inst/joss/paper.*
-            inst/joss/fig-*.png
+            inst/joss/*.png
             inst/joss/apa.csl
 
