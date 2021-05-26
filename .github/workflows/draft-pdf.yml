@@ -7,6 +7,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      # using and old version of pandoc to get around a bug:
+      # https://stackoverflow.com/questions/67004645/r-knitting-error-rticles-vadjust-in-vertical-mode
+      - name: Install pandoc
+        uses: r-lib/actions/setup-pandoc@v1
+        with:
+          pandoc-version: '2.11.4'
+      - name: Install packages
+        run: |
+          install.packages("remotes")
+          remotes::install_cran(c("rticles", "oce", "ocedata"))
+        shell: Rscript {0}
+
+      - name: Build paper
+        run: |
+          rmarkdown::render("paper.Rmd")
+          print(list.files())
+        shell: Rscript {0}
+
       - name: Build draft PDF
         uses: openjournals/openjournals-draft-action@master
         with:
