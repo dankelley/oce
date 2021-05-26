@@ -3,7 +3,7 @@ on:
     branches:
       - develop
 
-name: blogdown
+name: draft-pdf
 
 jobs:
   build:
@@ -42,6 +42,7 @@ jobs:
 
       - name: Build paper
         run: |
+          setwd("inst/joss")
           rmarkdown::render("paper.Rmd")
           print(list.files())
         shell: Rscript {0}
@@ -54,3 +55,4 @@ jobs:
             paper.*
             fig-*.png
             apa.csl
+
