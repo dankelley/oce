@@ -75,10 +75,11 @@ slotNames(ctd)                         # see 'slot' names
 
 The next step after loading an object, or reading it from a data file, is often
 to get a textual overview with `summary(ctd)`, or a graphical overview, e.g. with
-```{r results="hide", fig.cap="CTD analysis example. Top left: depth variation of temperature and salinity. This uses pressure as a surrogate for depth, with 1 decibar corresponding to approximately 1 metre of depth. Top right: variation of density excess over 1000 kg/m$^3$, and $N^2$, a measure of the gravitational stability of the water column. Bottom left: co-variation of salinity and temperature. Bottom-right: map of the study region, with gray being land in a coarse representation of the coastline.", dev.args=list(pointsize=9)}
+`plot(ctd)` producing Figure 1.
+
+```{r echo=FALSE,results="hide", fig.cap="CTD analysis example. Top left: depth variation of temperature and salinity. This uses pressure as a surrogate for depth, with 1 decibar corresponding to approximately 1 metre of depth. Top right: variation of density excess over 1000 kg/m$^3$, and $N^2$, a measure of the gravitational stability of the water column. Bottom left: co-variation of salinity and temperature. Bottom-right: map of the study region, with gray being land in a coarse representation of the coastline.", dev.args=list(pointsize=9)}
 plot(ctd)
 ```
-producing Figure 1.
 
 It is also common to exert fine-grained control of graphical representations,
 with e.g.
