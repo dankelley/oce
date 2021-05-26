@@ -63,4 +63,5 @@ Rplots.pdf
 ^create_readme$
 ^README\.md$
 CRAN-RELEASE
+inst/joss
 
