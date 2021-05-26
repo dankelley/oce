@@ -70,7 +70,7 @@ oceanographic sampling.
 ```{r setup, include=FALSE}
 library(oce)
 options(width=70)
-knitr::opts_chunk$set(fig.path="", dev="ragg_png", dpi=300, pointsize=8)
+knitr::opts_chunk$set(fig.path="", dev="png", dpi=300, pointsize=8)
 data(ctd)
 ```
 ```{r eval=FALSE}
