@@ -51,5 +51,8 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: paper
-          path: inst/joss/paper.pdf
+          path: |
+            inst/joss/paper.*
+            inst/joss/fig-*.png
+            inst/joss/apa.csl
 
