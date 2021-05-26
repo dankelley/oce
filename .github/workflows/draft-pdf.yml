@@ -15,8 +15,7 @@ jobs:
           pandoc-version: '2.11.4'
       - name: Install packages
         run: |
-          install.packages("remotes")
-          remotes::install_cran(c("rticles", "oce", "ocedata"))
+          install.packages("oce")
         shell: Rscript {0}
 
       - name: Build paper
