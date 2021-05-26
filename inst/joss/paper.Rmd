@@ -36,8 +36,8 @@ Oceanographic field experiments often employ a suite of instrument types, each
 reporting data in a different format. Many of these formats are complex and
 difficult to decode. Although manufacturers usually provide software for
 accessing data produced by their instruments, it tends to be proprietary and
-closed-source. This is a problem for researchers who must analyse their data in
-novel ways, or combine data from multiple instruments. The `oce` package
+closed-source. This is a problem for researchers seeking to analyse their data
+in novel ways, or combine data from multiple instruments. The `oce` package
 [@kelley__aut_oce_2021] addresses such issues by providing functions that
 handle dozens of data formats. In addition, it facilitates specialized
 calculations and data displays that are particular to the discipline.  Since
@@ -56,14 +56,13 @@ to download and build the development branch. Those wishing to view or
 participate in the development process are welcome to do so, at
 \url{https://github.com/dankelley/oce}.
 
-The package has functions for decoding many instrument-specific data formats.
-The return values of those functions are expressed in the S4 object-orientation
-scheme, with slots for (a) the actual data, (b) related metadata, and (c) a log
-of the `oce` function calls used in creating the object.  This is illustrated
-by the results of executing the following in an R session, for the case of an
-object of the `"ctd"` subclass, which holds data acquired from a CTD
-(Conductivity-Depth-Pressure) instrument, a workhorse of oceanographic
-sampling.
+The package has functions for decoding many data formats.  The return values of
+those functions are expressed in the S4 object-orientation scheme, with slots
+for (a) the actual data, (b) related metadata, and (c) a log of the `oce`
+function calls used in creating the object.  This is illustrated by the results
+of executing the following in an R session, for the case of an object of the
+`"ctd"` subclass, which holds data acquired from a CTD
+(Conductivity-Depth-Pressure) instrument.
 
 ```{r setup, include=FALSE}
 library(oce)
@@ -80,21 +79,12 @@ slotNames(ctd)                         # see 'slot' names
 The last function call shown above is provided to explain the structure, but it
 is seldom used in practice. Rather, the next step after loading an object, or
 reading it from a data file, is often to view textual summary, using
-
-```{r results="hide"}
-summary(ctd)
-```
-
-(results not shown), or
-
+`summary(ctd)`, or using
 ```{r results="hide", fig.cap="CTD analysis example. Top left: depth variation of temperature and salinity. This uses pressure as a surrogate for depth, with 1 decibar corresponding to approximately 1 metre of depth. Top right: variation of density excess over 1000 kg/m$^3$, and $N^2$, a measure of the gravitational stability of the water column. Bottom left: co-variation of salinity and temperature. Bottom-right: map of the study region, with gray being land in a coarse representation of the coastline.", dev.args=list(pointsize=9)}
 plot(ctd)
 ```
-
-which produces Figure 1.
-
-While such summary diagrams provide useful overviews, it is also common to
-exert fine-grained control of graphical representations, with e.g.
+to produce a graphical summary, as shown here in Figure 1.  It is also common
+to exert fine-grained control of graphical representations, with e.g.
 ```{r eval=FALSE}
 plot(ctd, which="temperature")
 ```
@@ -103,13 +93,13 @@ variations of other properties may be shown by setting `which` appropriately,
 and this argument can also be used to specify other types of plots, in addition
 to the depth-variation form.
 
-Besides this `"ctd"` subclass, `oce` supports over two dozen other subclasses
-that cover a wide range of oceanographic instrumentation.  In every case, the
-same `"summary()"` and `"plot()"` function calls provide textual and graphical
-representations of the contents of the object.  This specialization of these
-two generic functions simplifies analysis considerably.  For example, if
-`PATTERN` is a regular expression that specifies a set of data files, whether
-of a single instrument type or multiple instrument types, then
+Besides this `"ctd"` subclass, `oce` supports dozens of other subclasses that
+cover a wide range of oceanographic instrumentation.  In every case, the same
+`"summary()"` and `"plot()"` function calls provide textual and graphical
+representations of the data.  This specialization of these two generic
+functions simplifies analysis considerably.  For example, if `PATTERN` is a
+regular expression that specifies a set of data files, whether of a single
+instrument type or multiple instrument types, then
 ```{r eval=FALSE}
 for (file in list.files(PATTERN)) {
     d <- read.oce(file)
@@ -118,14 +108,14 @@ for (file in list.files(PATTERN)) {
 }
 ```
 will provide information about each data file of interest, forming a good
-first stage of analysis.  More detailed plot calls are usually required for the
-second stage of analysis, but a feature of `oce` (and R) is that it is often
-quite easy to undertake such analyses.
+first stage of analysis.
 
-Oce provides other generic functions, such as `subset()` for focusing on
+Oce also provides other generic functions, such as `subset()` for focusing on
 subsets of data, `handleFlags()` for processing data-quality flags, and `[[`
-for accessing data.  This accessor operation is particularly worthy of note,
-for several reasons, of which two stand out.
+for accessing data.
+
+The accessor operation is particularly worthy of note, for several reasons, of
+which two stand out.
 
 1. `[[` lets users access information regardless of where it occurs in the
    object. For example, a CTD does not measure longitude and latitude, but
@@ -133,24 +123,23 @@ these things are often streamed into data files separately, so they are stored
 in the object's `metadata` slot, not the `data` slot.  Users do not need to
 know this detail, though, because e.g. `ctd[["longitude"]]` will extract
 longitude from whichever slot holds it.  For other data types, e.g. from a GPS
-instrument, the `[[` operation would get it from the `data` slot.  Importantly,
-a single line of code would work for both types of data, so, again, code
-written for one object type will work for another.
+instrument, the `[[` operation might get it from the `data` slot.  Importantly,
+the same code fragment will would work for both data structures.  As above, the
+benefit is that code written for one object type will work for another.
 
 2. `[[` can access not just information stored within the object, but also
    things that can be calculated from that information. For example, CTD files
 typically hold temperature along with other properties from which seawater
 density may be computed [@millero_history_2010;@mcdougall_getting_2011].
 Density is an important dynamical factor, and so `oce` is set up so that e.g.
-`ctd[["density"]]` will compute it, if the object named `ctd` contains the
+`ctd[["density"]]` will compute it, provided that the named object contains the
 required elements.  This also applies for other elements that are commonly
 needed for oceanographic analysis, but not measured directly.
 
-The significance of `[[` is that it forms a bridge from the oceanographic realm
-to the general R realm, letting users extract the data into whatever form will
-facilitate further analysis.  With tens of thousands of well-vetted R packages
-covering a wide array of statistical and other methods, this lets
-oceanographers focus on their work, not on tool generation.
+Importantly, `[[` acts as a bridge from the oceanographic realm to the general
+R realm, letting users transform their data for further analysis.  With tens of
+thousands of R packages being available, this lets oceanographers focus on
+their work, not on tool generation.
 
 # Example: Tidal Analysis
 
@@ -159,17 +148,15 @@ Many readers will have an interest in tides, so we will work with a year-long
 record of sea level, $\eta=\eta(t)$ in Halifax Harbour, in the year 2003,
 during which the city was struck by Hurricane Juan.
 
-Consider the code given below, which produces Figure 2.
-Comments made within the code ought to be reasonably self-explanatory. A
-built-in sealevel file is used, to make a reproducible example, but replacing
-the `data()` call with a `read.sealevel()` call will handle data files in
-standard formats.  Note that the `tidem()` function is quite sophisticated,
-covering over 500 lines of R code in order to apply specialized procedures
-developed in the tidal-research community
+Consider the code given below, which produces Figure 2.  A built-in sealevel
+file is used, to make a reproducible example, but replacing the `data()` call
+with a `read.sealevel()` call will handle data files in standard formats.  Note
+that the `tidem()` function is fairly sophisticated with over 500 lines of R
+code being used to apply the specialized procedures of tidal analysis
 [@godin_analysis_1972;@pawlowicz_classical_2002;@foreman_versatile_2009].
-Readers with R experience may notice that the function name evoke the `lm()`
-function for linear models, and they may not be surprised that `oce` provides a
-function named `predict()`, for generating tidal predictions from tidal models.
+Readers who see that the function evokes the `lm()` function for linear models,
+may not be surprised that `oce` provides a function named `predict()`, for
+generating tidal predictions.
 
 ```{r results="hide", fig.cap="Tidal analysis example. Top: a year of sea level variation in Halifax Harbour. Bottom: sea level after removing a fit to the tides.", dev.args=list(pointsize=9)}
 library(oce)                           # load library
@@ -185,16 +172,15 @@ oce.plot.ts(t, etaDetided, xaxs="i",   # bottom: de-tided sea level
     grid=TRUE, ylab="De-tided sea level [m]")
 ```
 
-A comparison of the panels of Figure 2 reveals that tides
-explain much of the sea level variation in Halifax Harbour.  The lower panel
-illustrates an increase of detided variance during the winter months, as is
-expected for a site at a northern mid-latitude.  More surprising is the large
-spike towards the end of September.  This is a result of Hurricane Juan, which
-swept over Halifax at that time, causing a storm surge of in sea level
-amounting to approximately 1.5m that, along with high waves, caused major
-damage in the harbour [@xu_extreme_2012].  (Readers with an interest might find
-it informative to supply an `xlim` argument to the plot calls, to narrow in on
-the event.)
+A comparison of the panels of Figure 2 reveals that tides explain much of the
+sea level variation in Halifax Harbour.  The lower panel illustrates an
+increase of detided variance during the winter months, as expected at a
+northern mid-latitude.  More surprising is the large spike towards the end of
+September.  This is a result of Hurricane Juan, which swept over Halifax at
+that time, causing a storm surge of approximately 1.5m that, along with high
+waves, caused major damage in the harbour [@xu_extreme_2012].  (Readers might
+find it informative to supply an `xlim` argument to the plot calls, to narrow
+in on the event.)
 
 # Conclusions
 
@@ -204,11 +190,10 @@ have benefited from a supportive user community, members of which have
 contributed insightful bug reports and suggestions for improvements.  New
 features are added continually, to handle new instrument types, new data
 repositories, and new methods. Physical oceanography is a major focus of the
-package, but our goal in writing this paper is to develop interest from other
-communities, ranging from climatologists to those in marine disciplines such as
-chemistry and biology.  We also hope to encourage and facilitate new R
-packages, such as `argoFloats` [@kelley_argofloats_2021], that build upon
-`oce`.
+package, but we hope this paper will generate interest in other communities,
+ranging from climatologists to those in marine disciplines such as chemistry
+and biology.  Our other goal is to encourage the development of new R packages,
+such as `argoFloats` [@kelley_argofloats_2021], that build upon `oce`.
 
 # References
 
