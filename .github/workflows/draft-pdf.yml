@@ -7,12 +7,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      # Next, and other parts of this yml file, from paleolimbot (the argodata-joss repo)
       # using and old version of pandoc to get around a bug:
       # https://stackoverflow.com/questions/67004645/r-knitting-error-rticles-vadjust-in-vertical-mode
       - name: Install pandoc
         uses: r-lib/actions/setup-pandoc@v1
         with:
           pandoc-version: '2.11.4'
+
+      - name: Restore R package cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: pkg-cache-3
+          restore-keys: pkg-cache-2
+
       - name: Install packages
         run: |
           install.packages("oce")
