@@ -61,39 +61,47 @@ return S4 objects with slots holding (a) the data, (b) related metadata, and
 (c) a log of `oce` functions that made the object.  This is illustrated by
 executing the following in an R session, for a built-in object creating by
 reading a profiling instrument called a CTD.
-```{r setup, include=FALSE}
-library(oce)
-options(width=70)
-knitr::opts_chunk$set(fig.path="", dev="png", dpi=300, pointsize=8)
-data(ctd)
-```
-```{r eval=FALSE}
+
+
+```r
 library(oce)                           # load library
 data(ctd)                              # load a built-in sample file
 slotNames(ctd)                         # see 'slot' names
 ```
 
+![CTD analysis example. Top left: depth variation of temperature and salinity. This uses pressure as a surrogate for depth, with 1 decibar corresponding to approximately 1 metre of depth. Top right: variation of potential density density anomaly (a form of density, minus $1000$ kg/m$^3$), along with $N^2$, the square of the buoyancy frequency, which indicates the gravitational stability of the water column. Bottom left: co-variation of salinity and temperature, with contours of potential data anomaly. Bottom-right: map of the study region, with gray being land in a coarse representation of the coastline.](figure_1.png)
+
 The next step after loading an object, or reading it from a data file, is often
 to get a textual overview with `summary(ctd)`, or a graphical overview, e.g.
-with `plot(ctd)` producing Figure 1.  It is also common to exert fine-grained
-control of graphical representations, with e.g.  `plot(ctd,
-which="temperature")` to plot just the temperature variation with depth
-(results not shown here). The variations of other properties may be shown by
-setting `which` appropriately, and this argument can also be used to specify
-other types of plots, in addition to the depth-variation form.
+with
 
-```{r echo=FALSE,results="hide", fig.cap="CTD analysis example. Top left: depth variation of temperature and salinity. This uses pressure as a surrogate for depth, with 1 decibar corresponding to approximately 1 metre of depth. Top right: variation of density excess over 1000 kg/m$^3$, and $N^2$, a measure of the gravitational stability of the water column. Bottom left: co-variation of salinity and temperature. Bottom-right: map of the study region, with gray being land in a coarse representation of the coastline.", dev.args=list(pointsize=10)}
+```r
 plot(ctd)
 ```
+producing Figure 1.
+
+It is also common to exert fine-grained control of graphical representations,
+e.g.
+```r
+plot(ctd, which="temperature")         # results not shown
+```
+plots just the temperature variation with depth. The variations of other
+properties may be shown by setting `which` appropriately, and this argument can
+also be used to specify other types of plots, in addition to the
+depth-variation form.
+
 
 Besides this `"ctd"` subclass, `oce` supports dozens of other subclasses that
 cover a wide range of oceanographic instrumentation.  In every case, the same
 `"summary()"` and `"plot()"` function calls provide textual and graphical
 representations of the data.  This specialization of these two generic
-functions simplifies analysis considerably.  For example, if `PATTERN` is a
-regular expression that specifies a set of data files, whether of a single
-instrument type or multiple instrument types, then
-```{r eval=FALSE}
+functions simplifies analysis considerably.
+
+For example, if `PATTERN` is a regular expression that specifies a set of data
+files, whether of a single instrument type or multiple instrument types, then
+
+
+```r
 for (file in list.files(PATTERN)) {
     d <- read.oce(file)
     summary(d)
@@ -144,7 +152,8 @@ Readers who see that the function evokes the `lm()` function for linear models,
 may not be surprised that `oce` provides a function named `predict()`, for
 generating tidal predictions.
 
-```{r results="hide", fig.cap="Tidal analysis example. Top: a year of sea level variation in Halifax Harbour. Bottom: sea level after removing a fit to the tides.", dev.args=list(pointsize=10)}
+
+```r
 library(oce)                           # load library
 data(sealevel)                         # use built-in example dataset
 t <- sealevel[["time"]]                # extract time
@@ -157,6 +166,9 @@ oce.plot.ts(t, eta, xaxs="i",          # top: observed sea level
 oce.plot.ts(t, etaDetided, xaxs="i",   # bottom: de-tided sea level
     grid=TRUE, ylab="De-tided sea level [m]")
 ```
+
+![Tidal analysis example. Top: a year of sea level variation in Halifax Harbour. Bottom: sea level after removing a fit to the tides.](figure_2.png)
+
 
 A comparison of the panels in Figure 2 reveals that tides explain much of the
 sea level variation in Halifax Harbour.  The lower panel illustrates an
@@ -180,6 +192,8 @@ package, but we hope this paper will generate interest in other communities,
 ranging from climatologists to those in marine disciplines such as chemistry
 and biology.  Our other goal is to encourage the development of new R packages,
 such as `argoFloats` [@kelley_argofloats_2021], that build upon `oce`.
+
+
 
 # References
 
