@@ -3788,6 +3788,13 @@ display.bytes <- function(b, label="", ...)
 #'
 #' @param x an [adp-class] object that contains bottom-tracking velocities.
 #'
+#' @param despike either a logical value or a univariate function. This
+#' controls whether the bottom velocity (`bv`) values should be altered before they are
+#' subtracted from the beam velocities. If it is `TRUE` then the `bv` values are despiked
+#' first by calling [despike()]. If it is a function, then that function is used instead of
+#' [despike()], e.g. `function(x) despike(x, reference="smooth")` would change the reference
+#' function for despiking from its default of `"median"`.
+#'
 #' @template debugTemplate
 #'
 #' @author Dan Kelley and Clark Richards
@@ -3797,7 +3804,7 @@ display.bytes <- function(b, label="", ...)
 #' object class.
 #'
 #' @family things related to adp data
-subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
+subtractBottomVelocity <- function(x, despike=FALSE, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "subtractBottomVelocity(x) {\n", unindent=1)
     if (!("bv" %in% names(x@data))) {
@@ -3808,7 +3815,17 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
     numberOfBeams <- dim(x[["v"]])[3] # could also get from metadata but this is less brittle
     for (beam in 1:numberOfBeams) {
         oceDebug(debug, "beam #", beam, "\n")
-        res@data$v[, , beam] <- x[["v"]][, , beam] - x@data$bv[, beam]
+        if (is.logical(despike)) {
+            if (despike == FALSE) {
+                res@data$v[, , beam] <- x[["v"]][, , beam] - x@data$bv[, beam]
+            } else {
+                res@data$v[, , beam] <- x[["v"]][, , beam] - despike(x@data$bv[, beam])
+            }
+        } else if (is.function(despike)) {
+            res@data$v[, , beam] <- x[["v"]][, , beam] - despike(x@data$bv[, beam])
+        } else {
+            stop("despike must be a logical value or a function")
+        }
     }
     oceDebug(debug, "} # subtractBottomVelocity()\n", unindent=1)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(expr=match.call()), sep="", collapse=""))
