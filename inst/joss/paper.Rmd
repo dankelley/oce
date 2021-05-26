@@ -59,11 +59,11 @@ participate in the development process are welcome to do so, at
 The package has functions for decoding many data formats.  The return values of
 those functions are expressed in the S4 object-orientation scheme, with slots
 for (a) the actual data, (b) related metadata, and (c) a log of the `oce`
-function calls used in creating the object.  This is illustrated by the results
-of executing the following in an R session, for the case of an object of the
-`"ctd"` subclass, which holds data acquired from a CTD
-(Conductivity-Depth-Pressure) instrument.
+function calls used in creating the object.
 
+The object layout is illustrated by the results of executing the following in
+an R session, for the case of an object of the `"ctd"` subclass, which holds
+data acquired from a CTD (Conductivity-Depth-Pressure) instrument.
 ```{r setup, include=FALSE}
 library(oce)
 options(width=70)
@@ -76,15 +76,15 @@ data(ctd)                              # load a built-in sample file
 slotNames(ctd)                         # see 'slot' names
 ```
 
-The last function call shown above is provided to explain the structure, but it
-is seldom used in practice. Rather, the next step after loading an object, or
-reading it from a data file, is often to view textual summary, using
-`summary(ctd)`, or using
+The next step after loading an object, or reading it from a data file, is often
+to get a textual overview with `summary(ctd)`, or a graphical overview, e.g. with
 ```{r results="hide", fig.cap="CTD analysis example. Top left: depth variation of temperature and salinity. This uses pressure as a surrogate for depth, with 1 decibar corresponding to approximately 1 metre of depth. Top right: variation of density excess over 1000 kg/m$^3$, and $N^2$, a measure of the gravitational stability of the water column. Bottom left: co-variation of salinity and temperature. Bottom-right: map of the study region, with gray being land in a coarse representation of the coastline.", dev.args=list(pointsize=9)}
 plot(ctd)
 ```
-to produce a graphical summary, as shown here in Figure 1.  It is also common
-to exert fine-grained control of graphical representations, with e.g.
+producing Figure 1.
+
+It is also common to exert fine-grained control of graphical representations,
+with e.g.
 ```{r eval=FALSE}
 plot(ctd, which="temperature")
 ```
