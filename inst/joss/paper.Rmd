@@ -82,7 +82,7 @@ which="temperature")` to plot just the temperature variation with depth
 setting `which` appropriately, and this argument can also be used to specify
 other types of plots, in addition to the depth-variation form.
 
-```{r echo=FALSE,results="hide", fig.cap="CTD analysis example. Top left: depth variation of temperature and salinity. This uses pressure as a surrogate for depth, with 1 decibar corresponding to approximately 1 metre of depth. Top right: variation of density excess over 1000 kg/m$^3$, and $N^2$, a measure of the gravitational stability of the water column. Bottom left: co-variation of salinity and temperature. Bottom-right: map of the study region, with gray being land in a coarse representation of the coastline.", dev.args=list(pointsize=9)}
+```{r echo=FALSE,results="hide", fig.cap="CTD analysis example. Top left: depth variation of temperature and salinity. This uses pressure as a surrogate for depth, with 1 decibar corresponding to approximately 1 metre of depth. Top right: variation of density excess over 1000 kg/m$^3$, and $N^2$, a measure of the gravitational stability of the water column. Bottom left: co-variation of salinity and temperature. Bottom-right: map of the study region, with gray being land in a coarse representation of the coastline.", dev.args=list(pointsize=10)}
 plot(ctd)
 ```
 
@@ -103,36 +103,29 @@ for (file in list.files(PATTERN)) {
 will provide information about each data file of interest, forming a good
 first stage of analysis.
 
-Oce also provides other generic functions, such as `subset()` for focusing on
+Oce also provides other generic functions, including `subset()` for focusing on
 subsets of data, `handleFlags()` for processing data-quality flags, and `[[`
-for accessing data.
+for accessing data.  The last of these is particularly worthy of note, for two
+reasons.
 
-The accessor operation is particularly worthy of note, for several reasons, of
-which two stand out.
-
-1. `[[` lets users access information regardless of where it occurs in the
-   object. For example, a CTD does not measure longitude and latitude, but
-these things are often streamed into data files separately, so they are stored
-in the object's `metadata` slot, not the `data` slot.  Users do not need to
-know this detail, though, because e.g. `ctd[["longitude"]]` will extract
-longitude from whichever slot holds it.  For other data types, e.g. from a GPS
-instrument, the `[[` operation might get it from the `data` slot.  Importantly,
-the same code fragment will would work for both data structures.  As above, the
-benefit is that code written for one object type will work for another.
+1. `[[` finds information regardless of where it is stored in the object. For
+   example, a CTD does not measure longitude and latitude, but if these things
+   are known, they are stored in the `metadata` slot, not the `data` slot.
+   Other objects might have longitude in the `data` slot. This detail is
+   immaterial to users, because `[[` looks in both slots.  Therefore, code
+   written for one object type will often work for another type.
 
 2. `[[` can access not just information stored within the object, but also
    things that can be calculated from that information. For example, CTD files
-typically hold temperature along with other properties from which seawater
-density may be computed [@millero_history_2010;@mcdougall_getting_2011].
-Density is an important dynamical factor, and so `oce` is set up so that e.g.
-`ctd[["density"]]` will compute it, provided that the named object contains the
-required elements.  This also applies for other elements that are commonly
-needed for oceanographic analysis, but not measured directly.
+   typically hold information which seawater density may be computed
+   [@millero_history_2010;@mcdougall_getting_2011], and so `[[` is set up to
+   compute it, if requested. This same scheme works for other computable
+   elements.
 
-Importantly, `[[` acts as a bridge from the oceanographic realm to the general
-R realm, letting users transform their data for further analysis.  With tens of
-thousands of R packages being available, this lets oceanographers focus on
-their work, not on tool generation.
+The `[[` function acts as a sort of bridge from the oceanographic realm to the
+general R realm, with its thousands of useful and well-vetted packages.  This
+reduces the need to create new tools, letting analysts focus on oceanography,
+not coding.
 
 # Example: Tidal Analysis
 
@@ -151,7 +144,7 @@ Readers who see that the function evokes the `lm()` function for linear models,
 may not be surprised that `oce` provides a function named `predict()`, for
 generating tidal predictions.
 
-```{r results="hide", fig.cap="Tidal analysis example. Top: a year of sea level variation in Halifax Harbour. Bottom: sea level after removing a fit to the tides.", dev.args=list(pointsize=9)}
+```{r results="hide", fig.cap="Tidal analysis example. Top: a year of sea level variation in Halifax Harbour. Bottom: sea level after removing a fit to the tides.", dev.args=list(pointsize=10)}
 library(oce)                           # load library
 data(sealevel)                         # use built-in example dataset
 t <- sealevel[["time"]]                # extract time
@@ -165,7 +158,7 @@ oce.plot.ts(t, etaDetided, xaxs="i",   # bottom: de-tided sea level
     grid=TRUE, ylab="De-tided sea level [m]")
 ```
 
-A comparison of the panels of Figure 2 reveals that tides explain much of the
+A comparison of the panels in Figure 2 reveals that tides explain much of the
 sea level variation in Halifax Harbour.  The lower panel illustrates an
 increase of detided variance during the winter months, as expected at a
 northern mid-latitude.  More surprising is the large spike towards the end of
