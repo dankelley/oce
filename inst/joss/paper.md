@@ -193,7 +193,11 @@ ranging from climatologists to those in marine disciplines such as chemistry
 and biology.  Our other goal is to encourage the development of new R packages,
 such as `argoFloats` [@kelley_argofloats_2021], that build upon `oce`.
 
+# Acknowledgments
 
+We thank the many users who have helped with `oce` development over the years,
+by finding bugs, suggesting new features, and providing us with manufacturers'
+documentation about data formats used by various oceanographic instruments.
 
 # References
 
