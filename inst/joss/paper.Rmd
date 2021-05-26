@@ -55,18 +55,19 @@ The `oce` package has been hosted on CRAN [@noauthor_comprehensive_2021] since
 the year 2009. The CRAN version, which is updated once or twice a year, may be
 installed by typing `install.packages("oce")` in an R console. Users who need
 newer features may use `remotes::install_github("dankelley/oce",ref="develop")`
-to download and build the development branch. Those wishing to investigate or
+to download and build the development branch. Those wishing to view or
 participate in the development process are welcome to do so, at
 \url{https://github.com/dankelley/oce}.
 
-The package has functions for decoding a long list of instrument-specific data
-formats.  The return values of those functions are expressed in the S4
-object-orientation scheme, with slots for (a) the actual data, (b) related
-metadata, and (c) a log of the `oce` function calls used in creating the
-object.  This is illustrated by the results of executing the following in an R
-session, for the case of an object of the `"ctd"` subclass, which holds data
-acquired from a CTD (Conductivity-Depth-Pressure) instrument, a workhorse of
-oceanographic sampling.
+The package has functions for decoding many instrument-specific data formats.
+The return values of those functions are expressed in the S4 object-orientation
+scheme, with slots for (a) the actual data, (b) related metadata, and (c) a log
+of the `oce` function calls used in creating the object.  This is illustrated
+by the results of executing the following in an R session, for the case of an
+object of the `"ctd"` subclass, which holds data acquired from a CTD
+(Conductivity-Depth-Pressure) instrument, a workhorse of oceanographic
+sampling.
+
 ```{r setup, include=FALSE}
 library(oce)
 options(width=70)
@@ -87,11 +88,10 @@ reading it from a data file, is often to view textual summary, using
 summary(ctd)
 ```
 
-(results not shown), or 
+(results not shown), or
 
 ```{r results="hide", fig.cap="CTD analysis example. Top left: depth variation of temperature and salinity. This uses pressure as a surrogate for depth, with 1 decibar corresponding to approximately 1 metre of depth. Top right: variation of density excess over 1000 kg/m$^3$, and $N^2$, a measure of the gravitational stability of the water column. Bottom left: co-variation of salinity and temperature. Bottom-right: map of the study region, with gray being land in a coarse representation of the coastline.", dev.args=list(pointsize=9)}
-summary(ctd)                           # results not shown here
-plot(ctd)                              # results in Figure 1
+plot(ctd)
 ```
 
 which produces Figure 1.
