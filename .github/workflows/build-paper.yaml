@@ -1,19 +1,32 @@
-on: [push]
+on:
+  push:
+    branches:
+      - main
+      - master
+
+name: blogdown
 
 jobs:
-  paper:
-    runs-on: ubuntu-latest
-    name: Paper Draft
+  build:
+    runs-on: macOS-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v2
-      # Next, and other parts of this yml file, from paleolimbot (the argodata-joss repo)
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v1
+
       # using and old version of pandoc to get around a bug:
       # https://stackoverflow.com/questions/67004645/r-knitting-error-rticles-vadjust-in-vertical-mode
       - name: Install pandoc
         uses: r-lib/actions/setup-pandoc@v1
         with:
           pandoc-version: '2.11.4'
+
+      - name: Install TinyTeX
+        uses: r-lib/actions/setup-tinytex@v1
 
       - name: Restore R package cache
         uses: actions/cache@v2
@@ -24,7 +37,8 @@ jobs:
 
       - name: Install packages
         run: |
-          install.packages("oce")
+          install.packages("remotes")
+          remotes::install_cran(c("rticles", "oce", "ocedata"))
         shell: Rscript {0}
 
       - name: Build paper
@@ -33,18 +47,11 @@ jobs:
           print(list.files())
         shell: Rscript {0}
 
-      - name: Build draft PDF
-        uses: openjournals/openjournals-draft-action@master
+      - name: Upload draft
+        uses: actions/upload-artifact@v2
         with:
-          journal: joss
-          # This should be the path to the paper within your repo.
-          paper-path: inst/joss/paper.md
-      - name: Upload
-        uses: actions/upload-artifact@v1
-        with:
-            name: paper
-            # This is the output path where Pandoc will write the compiled
-            # PDF. Note, this should be the same directory as the input
-            # paper.md
-            path: inst/joss/paper.pdf
-
+          name: paper
+          path: |
+            paper.*
+            fig-*.png
+            apa.csl
