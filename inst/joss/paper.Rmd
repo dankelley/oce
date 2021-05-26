@@ -89,7 +89,7 @@ summary(ctd)
 
 (results not shown), or 
 
-```{r results="hide", fig.cap="CTD analysis example. Top left: depth variation of temperature and salinity. This uses pressure as a surrogate for depth, with 1 decibar corresponding to approximately 1 metre of depth. Top right: variation of density excess over 1000 kg/m^3, and N^2, a measure of the gravitational stability of the water column. Bottom left: co-variation of salinity and temperature. Bottom-right: map of the study region, with gray being land in a coarse representation of the coastline.", dev.args=list(pointsize=9)}
+```{r results="hide", fig.cap="CTD analysis example. Top left: depth variation of temperature and salinity. This uses pressure as a surrogate for depth, with 1 decibar corresponding to approximately 1 metre of depth. Top right: variation of density excess over 1000 kg/m$^3$, and $N^2$, a measure of the gravitational stability of the water column. Bottom left: co-variation of salinity and temperature. Bottom-right: map of the study region, with gray being land in a coarse representation of the coastline.", dev.args=list(pointsize=9)}
 summary(ctd)                           # results not shown here
 plot(ctd)                              # results in Figure 1
 ```
