@@ -56,14 +56,11 @@ to download and build the development branch. Those wishing to view or
 participate in the development process are welcome to do so, at
 \url{https://github.com/dankelley/oce}.
 
-The package has functions for decoding many data formats.  The return values of
-those functions are expressed in the S4 object-orientation scheme, with slots
-for (a) the actual data, (b) related metadata, and (c) a log of the `oce`
-function calls used in creating the object.
-
-The object layout is illustrated by the results of executing the following in
-an R session, for the case of an object of the `"ctd"` subclass, which holds
-data acquired from a CTD (Conductivity-Depth-Pressure) instrument.
+The package has functions for decoding many data formats.  These functions
+return S4 objects with slots holding (a) the data, (b) related metadata, and
+(c) a log of `oce` functions that made the object.  This is illustrated by
+executing the following in an R session, for a built-in object creating by
+reading a profiling instrument called a CTD.
 ```{r setup, include=FALSE}
 library(oce)
 options(width=70)
