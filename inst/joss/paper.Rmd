@@ -82,14 +82,11 @@ plot(ctd)
 ```
 
 It is also common to exert fine-grained control of graphical representations,
-with e.g.
-```{r eval=FALSE}
-plot(ctd, which="temperature")
-```
-to plot just the temperature variation with depth (results not shown here). The
-variations of other properties may be shown by setting `which` appropriately,
-and this argument can also be used to specify other types of plots, in addition
-to the depth-variation form.
+with e.g.  `plot(ctd, which="temperature")` to plot just the temperature
+variation with depth (results not shown here). The variations of other
+properties may be shown by setting `which` appropriately, and this argument can
+also be used to specify other types of plots, in addition to the
+depth-variation form.
 
 Besides this `"ctd"` subclass, `oce` supports dozens of other subclasses that
 cover a wide range of oceanographic instrumentation.  In every case, the same
