@@ -32,21 +32,18 @@ journal: JOSS
 
 # Statement of Need
 
-Oceanographic field experiments often employ a wide variety of instrument
-types, each of which reports data in an individual format.  Many of these
-formats are quite complex, and decoding them can be a challenge, partly owing
-to weaknesses in the documentation provided by manufacturers. Although
-manufacturers usually provide software for accessing data from their
-instruments, it is usually proprietary and closed-source, which does not help
-researchers who need to investigate the data in new ways, and also to combine
-data from multiple instruments. The `oce` package [@kelley__aut_oce_2021] was
-developed to simplify data input, and to do so in an integrated way that
-facilitates open-ended analysis that employs multiple data types. It also
-provides tools for undertaking specialized oceanographic calculations (e.g.,
-relating to seawater properties) and providing graphical displays that follow
-oceanographic conventions. This is all done in the R language
-[@ihaka_r_1996;@r_core_team_introduction_2021], which provides wide-ranging
-data analysis tools that are needed for oceanographic research
+Oceanographic field experiments often employ a suite of instrument types, each
+reporting data in a different format. Many of these formats are complex and
+difficult to decode. Although manufacturers usually provide software for
+accessing data produced by their instruments, it tends to be proprietary and
+closed-source. This is a problem for researchers who must analyse their data in
+novel ways, or combine data from multiple instruments. The `oce` package
+[@kelley__aut_oce_2021] addresses such issues by providing functions that
+handle dozens of data formats. In addition, it facilitates specialized
+calculations and data displays that are particular to the discipline.  Since
+`oce` is written in the R language
+[@ihaka_r_1996;@r_core_team_introduction_2021], it forms a link to an array of
+more general tools that oceanographers may need in their work
 [@kelley_oceanographic_2018].
 
 # Overview
