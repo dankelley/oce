@@ -34,16 +34,15 @@ journal: JOSS
 
 Oceanographic field experiments often employ a suite of instrument types, each
 reporting data in a different format. Many of these formats are complex and
-difficult to decode. Although manufacturers usually provide software for
-accessing data produced by their instruments, it tends to be proprietary and
-closed-source. This is a problem for researchers seeking to analyse their data
-in novel ways, or combine data from multiple instruments. The `oce` package
-[@kelley__aut_oce_2021] addresses such issues by providing functions that
-handle dozens of data formats. In addition, it facilitates specialized
-calculations and data displays that are particular to the discipline.  Since
-`oce` is written in the R language
-[@ihaka_r_1996;@r_core_team_introduction_2021], it forms a link to an array of
-more general tools that oceanographers may need in their work
+difficult to decode. Manufacturers usually provide software for accessing data
+produced by their instruments, but it is usually proprietary and closed-source,
+making it difficult for researchers to analyse their data in novel ways or to
+combine data from multiple instruments. The `oce` package
+[@kelley__aut_oce_2021] addresses such issues with functions that handle dozens
+of data formats. It also has facilities for the specialized calculations and
+data displays that are particular to oceanography.  Since `oce` is written in
+the R language [@ihaka_r_1996;@r_core_team_introduction_2021], it forms a link
+to a vast array of general tools that oceanographers use in their work
 [@kelley_oceanographic_2018].
 
 # Overview
@@ -69,16 +68,16 @@ data(ctd)                              # load a built-in sample file
 slotNames(ctd)                         # see 'slot' names
 ```
 
-![CTD analysis example. Top left: depth variation of temperature and salinity. This uses pressure as a surrogate for depth, with 1 decibar corresponding to approximately 1 metre of depth. Top right: variation of potential density density anomaly (a form of density, minus $1000$ kg/m$^3$), along with $N^2$, the square of the buoyancy frequency, which indicates the gravitational stability of the water column. Bottom left: co-variation of salinity and temperature, with contours of potential data anomaly. Bottom-right: map of the study region, with gray being land in a coarse representation of the coastline.](figure_1.png)
+![CTD analysis example. Top left: depth variation of temperature and salinity, with pressure as a surrogate for depth (1 decibar corresponds to approximately 1 metre of depth). Top right: depth variation of a potential density anomaly and the square of the buoyancy frequency, two measures indicating the gravitational stability of the water column. Bottom left: co-variation of salinity and temperature, with contours of potential data anomaly. Bottom-right: map of the study region, gray indicating land.](figure_1.png)
 
-The next step after loading an object, or reading it from a data file, is often
-to get a textual overview with `summary(ctd)`, or a graphical overview, e.g.
-with
-
+In practice, `slotNames()` is seldom used. Rather, the second step after
+loading an object, or reading it from a data file, is often to get a textual
+overview with `summary(ctd)`, or a graphical overview. For example,
 ```r
 plot(ctd)
 ```
-producing Figure 1.
+produces Figure 1, which shows the basic information needed in oceanographic
+studies.
 
 It is also common to exert fine-grained control of graphical representations,
 e.g.
@@ -90,16 +89,13 @@ properties may be shown by setting `which` appropriately, and this argument can
 also be used to specify other types of plots, in addition to the
 depth-variation form.
 
-
 Besides this `"ctd"` subclass, `oce` supports dozens of other subclasses that
 cover a wide range of oceanographic instrumentation.  In every case, the same
 `"summary()"` and `"plot()"` function calls provide textual and graphical
 representations of the data.  This specialization of these two generic
-functions simplifies analysis considerably.
-
-For example, if `PATTERN` is a regular expression that specifies a set of data
-files, whether of a single instrument type or multiple instrument types, then
-
+functions simplifies analysis considerably.  For example, if `PATTERN` is a
+regular expression that specifies a set of data files, whether of a single
+instrument type or multiple instrument types, then
 
 ```r
 for (file in list.files(PATTERN)) {
@@ -118,40 +114,34 @@ reasons.
 
 1. `[[` finds information regardless of where it is stored in the object. For
    example, a CTD does not measure longitude and latitude, but if these things
-   are known, they are stored in the `metadata` slot, not the `data` slot.
-   Other objects might have longitude in the `data` slot. This detail is
-   immaterial to users, because `[[` looks in both slots.  Therefore, code
-   written for one object type will often work for another type.
+are known, they will be stored in the `metadata` slot, not the `data` slot.
+Other objects might have longitude in the `data` slot. This detail is
+immaterial to users, because `[[` looks in both slots.  Therefore, code written
+for one object type will often work for another type.
 
 2. `[[` can access not just information stored within the object, but also
    things that can be calculated from that information. For example, CTD files
-   typically hold information which seawater density may be computed
-   [@millero_history_2010;@mcdougall_getting_2011], and so `[[` is set up to
-   compute it, if requested. This same scheme works for other computable
-   elements.
+typically hold information from which seawater density may be computed
+[@millero_history_2010;@mcdougall_getting_2011], and so `[[` is set up to
+compute it, if requested. This same scheme works for other computable elements.
 
 The `[[` function acts as a sort of bridge from the oceanographic realm to the
 general R realm, with its thousands of useful and well-vetted packages.  This
-reduces the need to create new tools, letting analysts focus on oceanography,
-not coding.
+is one of the ways in which `oce` reduces the need to create new tools, letting
+analysts focus on oceanography, not coding.
 
 # Example: Tidal Analysis
 
 A more detailed example may help to solidify some of the key aspects of `oce`.
 Many readers will have an interest in tides, so we will work with a year-long
-record of sea level, $\eta=\eta(t)$ in Halifax Harbour, in the year 2003,
-during which the city was struck by Hurricane Juan.
+record of sea level, $\eta=\eta(t)$ in Halifax Harbour.
 
 Consider the code given below, which produces Figure 2.  A built-in sealevel
 file is used, to make a reproducible example, but replacing the `data()` call
 with a `read.sealevel()` call will handle data files in standard formats.  Note
-that the `tidem()` function is fairly sophisticated with over 500 lines of R
+that the `tidem()` function is fairly sophisticated, with over 500 lines of R
 code being used to apply the specialized procedures of tidal analysis
 [@godin_analysis_1972;@pawlowicz_classical_2002;@foreman_versatile_2009].
-Readers who see that the function evokes the `lm()` function for linear models,
-may not be surprised that `oce` provides a function named `predict()`, for
-generating tidal predictions.
-
 
 ```r
 library(oce)                           # load library
@@ -167,7 +157,7 @@ oce.plot.ts(t, etaDetided, xaxs="i",   # bottom: de-tided sea level
     grid=TRUE, ylab="De-tided sea level [m]")
 ```
 
-![Tidal analysis example. Top: a year of sea level variation in Halifax Harbour. Bottom: sea level after removing a fit to the tides.](figure_2.png)
+![Tidal analysis example. Top: sea level variation in Halifax Harbour during the year 2003. Bottom: sea level after removing a fit to the tides.](figure_2.png)
 
 
 A comparison of the panels in Figure 2 reveals that tides explain much of the
@@ -183,15 +173,17 @@ in on the event.)
 # Conclusions
 
 The `oce` package provides for many aspects of oceanographic analysis, having
-evolved in an open-source environment for more than a decade.  The developers
-have benefited from a supportive user community, members of which have
-contributed insightful bug reports and suggestions for improvements.  New
-features are added continually, to handle new instrument types, new data
-repositories, and new methods. Physical oceanography is a major focus of the
-package, but we hope this paper will generate interest in other communities,
-ranging from climatologists to those in marine disciplines such as chemistry
-and biology.  Our other goal is to encourage the development of new R packages,
-such as `argoFloats` [@kelley_argofloats_2021], that build upon `oce`.
+evolved in an open-source environment for more than a decade. For much of that
+time, the hosting has been on github.com/dankelley/oce, where users can see the
+details of about 9000 git commits and 1700 closed issues.  The developers have
+benefited from a supportive user community, members of which have contributed
+insightful bug reports and suggestions for improvements.  New features are
+added continually, to handle new instrument types, new data repositories, and
+new methods. Physical oceanography is a major focus of the package, but we hope
+this paper will generate interest in other communities, ranging from
+climatologists to those in marine disciplines such as chemistry and biology.
+Our other goal is to encourage the development of new R packages, such as
+`argoFloats` [@kelley_argofloats_2021], that build upon `oce`.
 
 # Acknowledgments
 
