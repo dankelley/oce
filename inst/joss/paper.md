@@ -85,13 +85,13 @@ e.g.
 plot(ctd, which="temperature")         # results not shown
 ```
 plots just the temperature variation with depth. The variations of other
-properties may be shown by setting `which` appropriately, and this argument can
+properties may be shown by setting `which` appropriately, and this argument may
 also be used to specify other types of plots, in addition to the
 depth-variation form.
 
 Besides this `"ctd"` subclass, `oce` supports dozens of other subclasses that
 cover a wide range of oceanographic instrumentation.  In every case, the same
-`"summary()"` and `"plot()"` function calls provide textual and graphical
+`summary()` and `plot()` function calls provide textual and graphical
 representations of the data.  This specialization of these two generic
 functions simplifies analysis considerably.  For example, if `PATTERN` is a
 regular expression that specifies a set of data files, whether of a single
@@ -123,7 +123,8 @@ for one object type will often work for another type.
    things that can be calculated from that information. For example, CTD files
 typically hold information from which seawater density may be computed
 [@millero_history_2010;@mcdougall_getting_2011], and so `[[` is set up to
-compute it, if requested. This same scheme works for other computable elements.
+compute it, with e.g. `ctd[["density"]]`. This same scheme works for other
+computable elements.
 
 The `[[` function acts as a sort of bridge from the oceanographic realm to the
 general R realm, with its thousands of useful and well-vetted packages.  This
@@ -133,8 +134,8 @@ analysts focus on oceanography, not coding.
 # Example: Tidal Analysis
 
 A more detailed example may help to solidify some of the key aspects of `oce`.
-Many readers will have an interest in tides, so we will work with a year-long
-record of sea level, $\eta=\eta(t)$ in Halifax Harbour.
+Many readers will have an interest in tides, so we will work with a record of
+sea level in Halifax Harbour.
 
 Consider the code given below, which produces Figure 2.  A built-in sealevel
 file is used, to make a reproducible example, but replacing the `data()` call
@@ -168,7 +169,8 @@ September.  This is a result of Hurricane Juan, which swept over Halifax at
 that time, causing a storm surge of approximately 1.5m that, along with high
 waves, caused major damage in the harbour [@xu_extreme_2012].  (Readers might
 find it informative to supply an `xlim` argument to the plot calls, to narrow
-in on the event.)
+in on the event and ponder the significance of its timing with respect to the
+tide.)
 
 # Conclusions
 
