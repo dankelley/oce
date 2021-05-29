@@ -47,13 +47,14 @@ to a vast array of general tools that oceanographers use in their work
 
 # Overview
 
-The `oce` package has been hosted on CRAN [@noauthor_comprehensive_2021] since
-the year 2009. The CRAN version, which is updated once or twice a year, may be
-installed by typing `install.packages("oce")` in an R console. Users who need
-newer features may use `remotes::install_github("dankelley/oce",ref="develop")`
-to download and build the development branch. Those wishing to view or
-participate in the development process are welcome to do so, at
-\url{https://github.com/dankelley/oce}.
+The `oce` package has been hosted since 2019 on
+CRAN^[https://cran.r-project.org], the Comprehensive R Archive Network
+[@hornik_comprehensive_2012].  The CRAN version, which is updated once or twice
+a year, may be installed by typing `install.packages("oce")` in an R console.
+Users who need newer features may use
+`remotes::install_github("dankelley/oce",ref="develop")` to download and build
+the development branch. Those wishing to view or participate in the development
+process are welcome to do so, at \url{https://github.com/dankelley/oce}.
 
 The package has functions for decoding many data formats.  These functions
 return S4 objects with slots holding (a) the data, (b) related metadata, and
