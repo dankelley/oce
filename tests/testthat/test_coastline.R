@@ -2,8 +2,6 @@
 
 library(oce)
 
-context("coastline")
-
 test_that("various methods of coastline creation", {
           lon <- c(1,2,1)
           lat <- c(0,1,0)

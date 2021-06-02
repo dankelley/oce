@@ -2,8 +2,6 @@
 library(oce)
 data(argo)
 
-context("Argo")
-
 test_that("as.ctd works with multi-column argo", {
           expect_silent(as.ctd(argo[["profile", 1]]))
 })

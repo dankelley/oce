@@ -3,8 +3,6 @@ library(oce)
 data("ctd")
 data("argo")
 
-context("CTD")
-
 test_that("plotTS() handles differently EOSs correctly", {
           data(ctd)
           options(oceEOS="unesco")
@@ -247,8 +245,6 @@ test_that("ability to change conductivityUnit", {
           ctd3[['conductivityUnit']] <- list(unit=expression(S/m), scale="")
           expect_equal(swSCTp(ctd3), ctd3[['salinity']], scale=1, tolerance=1e-8) # OK on 64-bit OSX
 })
-
-context("Read ctd files")
 
 test_that("column renaming with a cnv file", {
           d1 <- expect_warning(read.oce(system.file("extdata", "ctd.cnv", package="oce")),

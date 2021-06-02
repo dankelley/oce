@@ -4,8 +4,6 @@ data(sealevel)
 
 rms <- function(x) sqrt(mean(x^2, na.rm=TRUE))
 
-context("tidem")
-
 ## Set up coefficients that should be resolvable with data(sealevel).
 standard <- c("Z0", "SA", "SSA", "MSM", "MM", "MSF", "MF", "ALP1", "2Q1", "SIG1", "Q1", "RHO1", "O1", "TAU1", "BET1",
               "NO1", "CHI1", "PI1", "P1", "S1", "K1", "PSI1", "PHI1", "THE1", "J1", "SO1", "OO1", "UPS1", "OQ2", "EPS2",

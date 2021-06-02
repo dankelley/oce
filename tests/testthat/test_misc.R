@@ -1,6 +1,5 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
-context("General tests")
 
 test_that("approx3d", {
           ## Test values from the .c code, before converting to .cpp

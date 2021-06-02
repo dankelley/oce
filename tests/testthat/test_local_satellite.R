@@ -1,5 +1,4 @@
 library(oce)
-context("satellite")
 test_that("amsr", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               amsr <- read.amsr("local_data/f34_20160808v7.2.gz")

@@ -1,5 +1,4 @@
 library(oce)
-context("sw")
 ## Table of contents.
 ##  1. rho and sigma
 ##  2. potential temperature and temperature scales

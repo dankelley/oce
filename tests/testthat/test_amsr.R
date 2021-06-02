@@ -1,7 +1,5 @@
 library(oce)
 
-context("amsr")
-
 test_that("amsr[['SSST']]", {
           data(amsr)
           SST <- amsr[["SST"]]

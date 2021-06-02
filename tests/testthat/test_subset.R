@@ -6,8 +6,6 @@
 
 library(oce)
 
-context("subset")
-
 test_that("subset a CTD by pressure (1)", {
           make_ctd <- function(start, end) {
               p <- seq(0, 100, 1)

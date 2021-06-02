@@ -1,5 +1,4 @@
 library(oce)
-context("Flags")
 CRATwarning <- "\"conductivity\" \\(code name \"CRAT_01\"\\)" # portion of the warning
 
 test_that("argument existence", {

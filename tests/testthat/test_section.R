@@ -4,8 +4,6 @@ library(oce)
 ## Many of these tests will fail if data(section) is changed. This is on
 ## purpose, because changing a long-standing dataset is to be avoided!
 
-context("section")
-
 test_that("data(section) has not altered", {
           data(section)
           expect_equal(124, length(section[["station"]]))

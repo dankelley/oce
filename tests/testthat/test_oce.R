@@ -3,8 +3,6 @@
 
 library(oce)
 
-context("oce")
-
 test_that("as.oce", {
           d <- data.frame(x=seq(0,1,length.out=20), y=seq(0,100,length.out=20))
           o <- as.oce(d)

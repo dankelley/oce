@@ -10,8 +10,6 @@
 
 library(oce)
 
-context("Nortek AD2CP Signature 100")
-
 file <- list.files(path="local_data", pattern="ad2cp_01.ad2cp", full.names=TRUE)
 if (1 == length(file)) {
 

@@ -1,6 +1,4 @@
 library(oce)
-context("landsat")
-
 
 f <- "~/Dropbox/data/archive/landsat/LC80080292014065LGN00"
 

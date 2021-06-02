@@ -1,7 +1,6 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
 
-context("ODF")
 file <- system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce")
 CRATwarning <- "\"conductivity\" \\(code name \"CRAT_01\"\\)" # portion of the warning
 

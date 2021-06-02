@@ -1,7 +1,5 @@
 library(oce)
 
-context("met")
-
 csv1 <- system.file("extdata", "test_met_vsn1.csv", package="oce")
 csv2 <- system.file("extdata", "test_met_vsn2.csv", package="oce")
 xml2 <- system.file("extdata", "test_met_xml2.xml", package="oce")

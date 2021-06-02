@@ -6,8 +6,6 @@
 library(oce)
 CRATwarning <- "\"conductivity\" \\(code name \"CRAT_01\"\\)" # portion of the warning
 
-context("ODF files")
-
 test_that("Flemish Cap adcp file (with malformed CODEs and units)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               # some CODE values lack ' characters (like EWCT_01, line 252

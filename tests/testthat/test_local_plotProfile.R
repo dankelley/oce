@@ -1,5 +1,4 @@
 library(oce)
-context("plotProfile handling of *lim")
 ## Need to set EOS because we are testing ranges on salinity profiles,
 ## and these vary according to the EOS.
 options(oceEOS="gsw")

@@ -6,7 +6,6 @@
 ## 2. Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA, USA. 429 pages.
 
 library(oce)
-context("Astronomical")
 
 RPD <- atan2(1, 1) / 45            # radians per degree
 

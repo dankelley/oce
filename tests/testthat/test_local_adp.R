@@ -1,5 +1,4 @@
 library(oce)
-context("read adp data")
 
 f <- "~/Dropbox/data/archive/sleiwex/2008/moorings/m07/adp/sontek_h53/raw/adp_sontek_h53.adp"
 if (file.exists(f)) {

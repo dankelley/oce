@@ -1,8 +1,6 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
 
-context("Accessors")
-
 test_that("get/set/delete data", {
           data("ctd")
           S <- oceGetData(ctd, "salinity")

@@ -2,8 +2,6 @@
 library(oce)
 data(adp)
 
-context("ADP (not AD2CP)")
-
 test_that("test all 'which' values listed in ?'plot,adp-method' on 2019 May 23", {
           ## Most of the numerical tests have character equivalents, but we
           ## test both. All this test really does is to ensure that the plots

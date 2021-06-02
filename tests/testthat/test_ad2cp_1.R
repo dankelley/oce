@@ -28,7 +28,6 @@ library(oce)
 ## REFERENCES
 ## 1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
 
-context("Nortek AD2CP")
 f1 <- "~/Dropbox/oce_secret_data/ad2cp_secret_1.ad2cp"
 f2 <- "~/Dropbox/oce_secret_data/ad2cp_secret_2.ad2cp"
 f3 <- "~/Dropbox/oce_secret_data/ad2cp_secret_3.ad2cp"
