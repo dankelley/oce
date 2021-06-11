@@ -2429,6 +2429,11 @@ oce.spectrum <- oceSpectrum
 #' @param n number of elements to show at start and end. If `n`
 #' is negative, then all the elements are shown.
 #'
+#' @param showNA logical value indicating whether to show the number
+#' of `NA` values. This is done only if the output contains ellipses,
+#' meaning that some values are skipped, because if all values are shown,
+#' it will be perfectly obvious whether there are any `NA` values.
+#'
 #' @return A string ending in a newline character, suitable for
 #' display with [cat()] or [oceDebug()].
 #'
@@ -2440,7 +2445,7 @@ oce.spectrum <- oceSpectrum
 #' vectorShow("January", msg="The first month is")
 #'
 #' @author Dan Kelley
-vectorShow <- function(v, msg="", postscript="", digits=5, n=2L)
+vectorShow <- function(v, msg="", postscript="", digits=5, n=2L, showNA=FALSE)
 {
     DIM <- dim(v)
     nv <- length(v)
@@ -2475,6 +2480,8 @@ vectorShow <- function(v, msg="", postscript="", digits=5, n=2L)
                 res <- paste(msg, paste(format(v[1:n], digits=digits), collapse=", "),
                              ", ..., ", paste(format(v[nv-seq.int(n-1, 0)], digits=digits), collapse=", "),
                              sep="")
+                if (showNA)
+                    res <- paste0(res, " (", sum(is.na(v)), " NA)")
             }
         } else {
             if (showAll) {
@@ -2482,6 +2489,8 @@ vectorShow <- function(v, msg="", postscript="", digits=5, n=2L)
             } else {
                 res <- paste(msg, paste(v[1:n], collapse=", "),
                              ", ..., ", paste(v[nv-seq.int(n-1, 0)], collapse=", "), sep="")
+                if (showNA)
+                    res <- paste0(res, " (", sum(is.na(v)), " NA)")
             }
         }
     }

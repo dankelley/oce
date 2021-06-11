@@ -4,7 +4,7 @@
 \alias{vectorShow}
 \title{Show some values from a vector}
 \usage{
-vectorShow(v, msg = "", postscript = "", digits = 5, n = 2L)
+vectorShow(v, msg = "", postscript = "", digits = 5, n = 2L, showNA = FALSE)
 }
 \arguments{
 \item{v}{the vector.}
@@ -24,6 +24,11 @@ to use, in formatting the numbers with \code{\link[=format]{format()}}; otherwis
 
 \item{n}{number of elements to show at start and end. If \code{n}
 is negative, then all the elements are shown.}
+
+\item{showNA}{logical value indicating whether to show the number
+of \code{NA} values. This is done only if the output contains ellipses,
+meaning that some values are skipped, because if all values are shown,
+it will be perfectly obvious whether there are any \code{NA} values.}
 }
 \value{
 A string ending in a newline character, suitable for
