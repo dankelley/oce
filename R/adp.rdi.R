@@ -1136,6 +1136,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                                      ensembleCount=ensembleCount,
                                                      deploymentStart=deploymentStart)
                 header$vBeamHeader <- vBeamHeader
+                # Handle vertical beam, if one exists.  This creates va, vg, vq and vv.
                 if (vvFound) {
                     vv <- array(numeric(), dim=c(profilesToRead, numberOfVCells))
                     oceDebug(debug, "set up 'vv' (vertical velocity) storage for", profilesToRead, "profiles, and",

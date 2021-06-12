@@ -1088,10 +1088,19 @@ setMethod(f="subset",
                   ## keep <- eval(substitute(subset), x@data, parent.frame(2))
                   keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
                   res <- x
-                  res@data$v <- res@data$v[keep, , ]
-                  res@data$a <- res@data$a[keep, , ]
-                  res@data$q <- res@data$q[keep, , ]
+                  datanames <- names(x@data)
+                  # trim 1D things
                   res@data$time <- res@data$time[keep]
+                  # trim 2D things (from a vertical beam, if one exists)
+                  for (item in c("va", "vg", "vq", "vv")) {
+                      if (item %in% datanames)
+                          res@data[[item]] <- res@data[[item]][keep, ]
+                  }
+                  # trim 3D things
+                  for (item in c("a", "q", "v")) {
+                      if (item %in% datanames)
+                          res@data[[item]] <- res@data[[item]][keep, , ]
+                  }
                   if ("v" %in% names(x@metadata$flags)) {
                       dim <- dim(x@metadata$flags$v)
                       res@metadata$flags$v <- x@metadata$flags$v[keep, , drop=FALSE]
