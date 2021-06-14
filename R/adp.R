@@ -1072,7 +1072,7 @@ setMethod(f="subset",
                       # Handle vertical beam.  These items are 2D fields, index1=profile index2=cell. We
                       # use vdistance (a vector) for the subset.
                       if (name %in% c("va", "vg", "vq", "vv")) {
-                          message("should handle va, vg, v1 and vv now.  But we need to debug this first...")
+                          message("should handle va, vg, vq and vv now.  But we need to debug this first...")
                           message("next is vdistance:")
                           print(vdistance)
                           message("FIXME: code the subset now")
