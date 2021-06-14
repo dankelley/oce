@@ -550,6 +550,8 @@ drawPalette <- function(zlim, zlab="",
                          paste(numberAsPOSIXct(zlim), collapse=","), ")\n", sep="")
                 labels <- pretty(numberAsPOSIXct(zlim, tz=if (is.null(zlimTZ)) "UTC" else zlimTZ))
                 at <- labels
+                if (!missing(tformat))
+                    labels <- format(labels, format=tformat)
             } else {
                 oceDebug(debug, "palette axis labels inferred from numeric zlim=c(",
                          paste(zlim, collapse=","), ")\n", sep="")
