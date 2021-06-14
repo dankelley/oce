@@ -1858,7 +1858,7 @@ in case conversion to ENU is to be done later.")
     if (length(junkProfiles) > 0) {
         ## remove all data from the profile
         for (field in names(res@data)) {
-            if (!(field %in% c('distance', 'vdistance'))) {
+            if (!(field %in% c("distance", "vdistance"))) {
                 dim <- dim(res@data[[field]])
                 if (is.null(dim)) {
                     res@data[[field]] <- res@data[[field]][-junkProfiles]

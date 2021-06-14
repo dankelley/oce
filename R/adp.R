@@ -1069,11 +1069,20 @@ setMethod(f="subset",
                   for (name in names(x@data)) {
                       if (name == "time")
                           next
-                      if (is.array(x@data[[name]]) && 3 == length(dim(x@data[[name]]))) {
-                          oceDebug(debug, "subsetting array data[[", name, "]] by distance\n")
-                          oceDebug(debug, "before, dim(", name, ") =", dim(res@data[[name]]), "\n")
-                          res@data[[name]] <- x@data[[name]][, keep, , drop=FALSE]
-                          oceDebug(debug, "after, dim(", name, ") =", dim(res@data[[name]]), "\n")
+                      # Handle vertical beam.  These items are 2D fields, index1=profile index2=cell. We
+                      # use vdistance (a vector) for the subset.
+                      if (name %in% c("va", "vg", "vq", "vv")) {
+                          message("should handle va, vg, v1 and vv now.  But we need to debug this first...")
+                          message("next is vdistance:")
+                          print(vdistance)
+                          message("FIXME: code the subset now")
+                      } else {
+                          if (is.array(x@data[[name]]) && 3 == length(dim(x@data[[name]]))) {
+                              oceDebug(debug, "subsetting array data[[", name, "]] by distance\n")
+                              oceDebug(debug, "before, dim(", name, ") =", dim(res@data[[name]]), "\n")
+                              res@data[[name]] <- x@data[[name]][, keep, , drop=FALSE]
+                              oceDebug(debug, "after, dim(", name, ") =", dim(res@data[[name]]), "\n")
+                          }
                       }
                   }
                   oceDebug(debug, "names of flags: ", paste(names(x@metadata$flags), collapse=" "), "\n")
