@@ -1061,26 +1061,38 @@ setMethod(f="subset",
                       stop("cannot subset by both time and distance; split into multiple calls")
                   ## keep <- eval(substitute(subset), x@data, parent.frame(2))
                   keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
-                  oceDebug(debug, vectorShow(keep, "keeping bins:"), "\n")
+                  oceDebug(debug, vectorShow(keep, "keeping ordinary bins:"), "\n")
+                  haveVerticalBeam <- "vv" %in% names(x@data) # assume, later, that va, vg, vq and vdistance exist
+                  if (haveVerticalBeam) {
+                      oceDebug(debug, "have a vertical beam\n")
+                      vkeep <- eval(expr=substitute(expr=subset,env=environment()),envir=list(distance=x@data$vdistance),enclos=parent.frame(2))
+                      oceDebug(debug, vectorShow(vkeep, "keeping vertical-beam bins:"), "\n")
+                  }
+                  #>cat("keep:\n");print(keep)
+                  #>cat("vkeep:\n");print(vkeep)
                   if (sum(keep) < 2)
                       stop("must keep at least 2 bins")
                   res <- x
                   res@data$distance <- x@data$distance[keep] # FIXME: broken for AD2CP
+                  if (haveVerticalBeam)
+                      res@data$vdistance <- x@data$vdistance[vkeep]
                   for (name in names(x@data)) {
                       if (name == "time")
                           next
                       # Handle vertical beam.  These items are 2D fields, index1=profile index2=cell. We
-                      # use vdistance (a vector) for the subset.
-                      if (name %in% c("va", "vg", "vq", "vv")) {
-                          message("vertical beam ... handling name=\"", name, "\"")
-                          message("should handle va, vg, vq and vv now.  But we need to debug this first...")
-                          if (exists("vdistance")) {
-                              message("next is vdistance:")
-                              print(vdistance)
-                          } else {
-                              message("PROBLEM: why are va, vg, vq and vv defined, but not vdistance?")
-                          }
-                          message("FIXME: code the subset now")
+                      # use vkeep, based on vdistance, for the subset.
+                      if (haveVerticalBeam && (name %in% c("va", "vg", "vq", "vv"))) {
+                          oceDebug(debug, "subsetting vertical beam item \"", name, "\"\n", sep="")
+                          res@data[[name]] <- x@data[[name]][, vkeep, drop=FALSE]
+                          #> message("vertical beam ... handling name=\"", name, "\"")
+                          #> message("  should handle va, vg, vq and vv now.  But we need to debug this first...")
+                          #> if (exists("vdistance")) {
+                          #>     message("  next is vdistance:")
+                          #>     print(x@data$vdistance)
+                          #> } else {
+                          #>     message("  PROBLEM: why are va, vg, vq and vv defined, but not vdistance?")
+                          #> }
+                          #> browser()
                       } else {
                           if (is.array(x@data[[name]]) && 3 == length(dim(x@data[[name]]))) {
                               oceDebug(debug, "subsetting array data[[", name, "]] by distance\n")
