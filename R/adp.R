@@ -1110,40 +1110,50 @@ setMethod(f="subset",
                                paste(vdim, collapse="x"), "; new dim=",
                                paste(dim(res@metadata$flags$v), collapse="x"), "\n")
                   }
-              } else if (length(grep("pressure", subsetString))) {
+              } else if (grepl("pressure", subsetString)) {
+                  if (grepl("distance", subsetString))
+                      stop("cannot mix subset by pressure with subset by distance")
                   ## keep <- eval(substitute(subset), x@data, parent.frame(2))
                   keep <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data, enclos=parent.frame(2))
+                  oceDebug(debug, "subset() will retain", sum(keep), "of", length(keep), "profiles\n")
+                  nkeep <- length(keep)
                   res <- x
-                  datanames <- names(x@data)
-                  # trim 1D things
-                  res@data$time <- res@data$time[keep]
-                  # trim 2D things (from a vertical beam, if one exists)
-                  for (item in c("va", "vg", "vq", "vv")) {
-                      if (item %in% datanames)
-                          res@data[[item]] <- res@data[[item]][keep, ]
+                  for (name in names(x@data)) {
+                      if (name == "time") {
+                          res@data$time <- x@data$time[keep]
+                          oceDebug(debug, "  handled time\n")
+                      } else if (name %in% c("va", "vg", "vq", "vv")) {
+                          if (is.matrix(x@data[[name]]) && dim(x@data[[name]])[1] == nkeep) {
+                              res@data[[name]] <- x@data[[name]][keep,]
+                              oceDebug(debug, "  handled vertical beam", name, "\n")
+                          } else {
+                              oceDebug(debug, "  skipped vertical beam", name, "(first dimention mismatch)\n")
+                          }
+                      } else if (is.vector(x@data[[name]])) {
+                          if (length(x@data[[name]]) == nkeep) {
+                              res@data[[name]] <- x@data[[name]][keep]
+                              oceDebug(debug, "  handled vector", name, "\n")
+                          } else {
+                              oceDebug(debug, "  skipped vector", name, "(length mismatch)\n")
+                          }
+                      } else if (is.matrix(x@data[[name]])) {
+                          if (dim(x@data[[name]])[1] == nkeep) {
+                              res@data[[name]] <- x@data[[name]][keep,]
+                              oceDebug(debug, "  handled matrix", name, "\n")
+                          } else {
+                              oceDebug(debug, "  skipped matrix", name, "(first dimension mismatch)\n")
+                          }
+                      } else if (is.array(x@data[[name]])) {
+                          if (dim(x@data[[name]])[1] == nkeep) {
+                              res@data[[name]] <- x@data[[name]][keep,,]
+                              oceDebug(debug, "  handled array", name, "\n")
+                          } else {
+                              oceDebug(debug, "  skipped array", name, "(first dimension mismatch)\n")
+                          }
+                      } else if (!is.null(x@data[[name]])) {
+                          warning("In subset() : Skipping data@", name, " because it is not a vector, matrix, or array\n", sep="", call.=FALSE)
+                      }
                   }
-                  # trim 3D things
-                  for (item in c("a", "q", "v")) {
-                      if (item %in% datanames)
-                          res@data[[item]] <- res@data[[item]][keep, , ]
-                  }
-                  if ("v" %in% names(x@metadata$flags)) {
-                      dim <- dim(x@metadata$flags$v)
-                      res@metadata$flags$v <- x@metadata$flags$v[keep, , drop=FALSE]
-                      oceDebug(debug, "subsetting flags$v original dim=",
-                               paste(dim, collapse="x"), "; new dim=",
-                               paste(dim(res@metadata$flags$v), collapse="x"))
-                  }
-                  ## the items below may not be in the dataset
-                  names <- names(res@data)
-                  if ("bottomRange" %in% names) res@data$bottomRange <- res@data$bottomRange[keep, ]
-                  if ("pressure" %in% names) res@data$pressure <- res@data$pressure[keep]
-                  if ("temperature" %in% names) res@data$temperature <- res@data$temperature[keep]
-                  if ("salinity" %in% names) res@data$salinity <- res@data$salinity[keep]
-                  if ("depth" %in% names) res@data$depth <- res@data$depth[keep]
-                  if ("heading" %in% names) res@data$heading <- res@data$heading[keep]
-                  if ("pitch" %in% names) res@data$pitch <- res@data$pitch[keep]
-                  if ("roll" %in% names) res@data$roll <- res@data$roll[keep]
               } else if (length(grep("average", subsetString))) {
                   res@data$burst <- NULL
                   res@data$interleavedBurst <- NULL
@@ -1154,7 +1164,7 @@ setMethod(f="subset",
                   res@data$average <- NULL
                   res@data$burst <- NULL
               } else {
-                  stop('subset should be "distance", "time", "average", "burst", or "interleavedBurst"; "',
+                  stop('subset should be by "distance", "time", "average", "burst", or "interleavedBurst"; "',
                        subsetString, '" is not permitted')
               }
               res@metadata$numberOfSamples <- dim(res@data$v)[1] # FIXME: handle AD2CP
