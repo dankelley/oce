@@ -133,7 +133,7 @@ test_that("Sontek (PCADP)", {
           }
 })
 
-test_that("Teledyn/RDI Sentinel V subset by pressure", {
+test_that("Teledyne/RDI Sentinel V subset by pressure", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               d <- read.oce("local_data/adp_sentinel_v.pd0")
               keep <- d[["pressure"]] < median(d[["pressure"]])
@@ -146,7 +146,7 @@ test_that("Teledyn/RDI Sentinel V subset by pressure", {
           }
 })
 
-test_that("Teledyn/RDI Sentinel V subset by distance", {
+test_that("Teledyne/RDI Sentinel V subset by distance", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               d <- read.oce("local_data/adp_sentinel_v.pd0")
               keepSlant <- sum(d[["distance"]] < median(d[["distance"]]))
