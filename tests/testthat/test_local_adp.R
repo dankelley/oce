@@ -133,3 +133,34 @@ test_that("Sontek (PCADP)", {
           }
 })
 
+test_that("Teledyn/RDI Sentinel V subset by pressure", {
+          if (1 == length(list.files(path=".", pattern="local_data"))) {
+              d <- read.oce("local_data/adp_sentinel_v.pd0")
+              keep <- d[["pressure"]] < median(d[["pressure"]])
+              dsp <- subset(d, pressure < median(d[["pressure"]]))
+              expect_equal(sum(keep), dim(dsp[["v"]])[1])
+              expect_equal(sum(keep), length(dsp[["time"]]))
+              for (slant in c("v", "a")) { # "g" is NULL
+                  expect_equal(sum(keep), dim(dsp[[slant]])[1])
+              }
+          }
+})
+
+test_that("Teledyn/RDI Sentinel V subset by distance", {
+          if (1 == length(list.files(path=".", pattern="local_data"))) {
+              d <- read.oce("local_data/adp_sentinel_v.pd0")
+              keepSlant <- sum(d[["distance"]] < median(d[["distance"]]))
+              keepVertical <- sum(d[["vdistance"]] < median(d[["distance"]]))
+
+              dsd <- subset(d, distance < median(d[["distance"]]))
+              expect_equal(keepSlant, length(dsd[["distance"]]))
+              expect_equal(keepVertical , length(dsd[["vdistance"]]))
+              for (vert in c("va", "vq", "vv")) { # no "vg" in this dataset
+                  expect_equal(keepVertical, dim(dsd[[vert]])[2])
+              }
+              for (slant in c("v", "a")) { # "g" is NULL
+                  expect_equal(keepSlant, dim(dsd[[slant]])[2])
+              }
+          }
+})
+
