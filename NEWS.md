@@ -4,6 +4,7 @@
 
 * Add `showNA` argument to `vectorShow()`.
 * Change `oce.plot.ts()` by adding `simplify` argument.
+* Change `pwelch()`, improving low-frequency results.
 * Fix `[[` to yield ITS90 temperature for all classes, not just `ctd`.
 * Fix `as.ctd()` handling of temperature scale of first argument.
 * Fix `as.section()` handling of list of `argo` objects as first argument.
