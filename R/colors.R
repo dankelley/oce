@@ -321,7 +321,7 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl=1)
 #' 2. Information on GMT color schemes
 #' <https://docs.generic-mapping-tools.org/dev/cookbook/cpts.html>
 #' 3. Source of GMT specification files
-#' <https://beamreach.org/maps/gmt/share/cpt>
+#' <https://beamreach.org/maps/gmt/share/cpt/>
 #' 4. CPT (color palette table) format
 #' <https://www.soest.hawaii.edu/gmt/gmt/html/GMT_Docs.html#x1-820004.15>
 #'

@@ -52,7 +52,7 @@ permitted if \code{name} is given.)
 \item Information on GMT color schemes
 \url{https://docs.generic-mapping-tools.org/dev/cookbook/cpts.html}
 \item Source of GMT specification files
-\url{https://beamreach.org/maps/gmt/share/cpt}
+\url{https://beamreach.org/maps/gmt/share/cpt/}
 \item CPT (color palette table) format
 \url{https://www.soest.hawaii.edu/gmt/gmt/html/GMT_Docs.html#x1-820004.15}
 }
