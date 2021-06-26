@@ -11,7 +11,6 @@ downloads](https://cranlogs.r-pkg.org/badges/last-month/oce) ![RStudio
 CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)
 ![RStudio CRAN mirror
 downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
-[![Rdoc](https://www.rdocumentation.org/badges/version/oce)](https://www.rdocumentation.org/packages/oce)
 <!-- badges: end -->
 
 ## About oce
