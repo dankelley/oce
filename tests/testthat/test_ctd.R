@@ -1,7 +1,5 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
-data("ctd")
-data("argo")
 
 test_that("plotTS() handles differently EOSs correctly", {
           data(ctd)
@@ -23,7 +21,7 @@ test_that("as.ctd() with specified arguments, including salinity", {
           expect_equal(ctd[["pressure"]], ctd_ctd[["pressure"]])
           expect_equal(ctd_ctd[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
           expect_equal(ctd_ctd[["pressureType"]], "sea")
-                                        # check addition of a new column
+          # check addition of a new column
           fluo <- rep(1, length(ctd_ctd[["salinity"]]))
           ctd_ctd <- oceSetData(ctd_ctd, name="fluorescence", value=fluo,
                                 unit=list(unit=expression(mg/m^3), scale=""))
@@ -43,7 +41,7 @@ test_that("as.ctd() with a list of oce objects", {
           a[[3]] <- a3
           A <- as.ctd(a)
           expect_equal(length(A[["salinity"]]),
-                       length(a1[["salinity"]]) + length(a2[["salinity"]]), length(a3[["salinity"]]))
+                       length(a1[["salinity"]]) + length(a2[["salinity"]]) + length(a3[["salinity"]]))
           expect_equal(length(A[["salinity"]]), length(A[["pressure"]]))
           expect_equal(length(A[["temperature"]]), length(A[["pressure"]]))
           expect_equal(length(A[["latitude"]]), length(A[["pressure"]]))
@@ -102,6 +100,7 @@ test_that("as.ctd() with a list", {
 })
 
 test_that("as.ctd() with an argo object, by profile", {
+          data(argo)
           ctdProfile1 <- as.ctd(argo, profile=1)
           ctdProfile2 <- as.ctd(argo, profile=2)
           expect_equal(ctdProfile1[["salinity"]], argo[["salinity"]][,1])
@@ -251,10 +250,11 @@ test_that("column renaming with a cnv file", {
                                "this CNV file has temperature in the IPTS\\-68 scale")
           expect_equal(names(d1[["data"]]),
                              c("scan","timeS","pressure","depth","temperature","salinity","flag"))
-          d2 <- expect_warning(read.oce(system.file("extdata", "ctd.cnv", package="oce"),
-                                        columns=list(FAKE=list(name="sal00",
-                                                               unit=list(unit=expression(), scale="PSS-78")))),
-                               "this CNV file has temperature in the IPTS\\-68 scale")
+          d2 <- expect_warning(expect_warning(read.oce(system.file("extdata", "ctd.cnv", package="oce"),
+                                                       columns=list(FAKE=list(name="sal00",
+                                                                              unit=list(unit=expression(), scale="PSS-78")))),
+                                              "this CNV file has temperature in the IPTS\\-68 scale"),
+                               "cannot find salinity or conductivity in .cnv file")
           expect_equal(names(d2[["data"]]),
                              c("scan","timeS","pressure","depth","temperature","FAKE","flag"))
 })
@@ -532,8 +532,6 @@ test_that("conductivity unit", {
 
 test_that("as.ctd() handles multiple longitude and latitude", {
           ## test code for issue 1440 (https://github.com/dankelley/oce/issues/1440)
-          library(oce)
-          library(testthat)
           for (n in c(1, 20)) {
             T <- seq(2,3, length.out=n)
             S <- seq(31.4, 31.6, length.out=n)
