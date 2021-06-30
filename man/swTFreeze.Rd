@@ -53,7 +53,7 @@ also applies to the \code{longitude} and \code{latitude} arguments.
 # in the newer ITS-90 scale, so we must convert before checking.
 Tcheck <- -2.588567 # IPTS-68
 T <- swTFreeze(salinity=40, pressure=500, eos="unesco")
-expect_equal(Tcheck, T68fromT90(T), tolerance=1e-6)
+stopifnot(abs(Tcheck - T68fromT90(T)) < 1e-6)
 
 # 2. Compare unesco and gsw formulations.
 data(ctd)

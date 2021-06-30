@@ -30,9 +30,9 @@ importFrom("stats", "approx", "approxfun", "coef", "confint", "cor", "cov",
            "printCoefmat", "quantile", "rnorm", "runmed", "sd", "smooth",
            "smooth.spline", "spectrum", "ts", "uniroot", "var",
            "weighted.mean", "window")
-importFrom("testthat", "expect_equal", "expect_error", "expect_false",
-           "expect_identical", "expect_lt", "expect_null", "expect_output",
-           "expect_silent", "expect_true", "expect_warning")
+#importFrom("testthat", "expect_equal", "expect_error", "expect_false",
+#           "expect_identical", "expect_lt", "expect_null", "expect_output",
+#           "expect_silent", "expect_true", "expect_warning")
 importFrom("utils", "capture.output", "data", "download.file", "head",
            "flush.console", "packageVersion", "read.csv", "read.delim",
            "read.table", "setTxtProgressBar", "str", "tail", "txtProgressBar",

@@ -239,11 +239,11 @@ test_that("ability to change conductivityUnit", {
           ctd2 <- ctd
           ctd2@data$conductivity <- swCSTp(ctd2) * 42.914
           ctd2[['conductivityUnit']] <- list(unit=expression(mS/cm), scale="")
-          expect_equal(swSCTp(ctd2), ctd2[['salinity']], scale=1, tolerance=1e-8) # OK on 64-bit OSX
+          expect_equal(swSCTp(ctd2), ctd2[['salinity']], tolerance=1e-8) # OK on 64-bit OSX
           ctd3 <- ctd
           ctd3@data$conductivity <- swCSTp(ctd3) * 4.2914
           ctd3[['conductivityUnit']] <- list(unit=expression(S/m), scale="")
-          expect_equal(swSCTp(ctd3), ctd3[['salinity']], scale=1, tolerance=1e-8) # OK on 64-bit OSX
+          expect_equal(swSCTp(ctd3), ctd3[['salinity']], tolerance=1e-8) # OK on 64-bit OSX
 })
 
 test_that("column renaming with a cnv file", {

@@ -255,7 +255,7 @@ test_that("interpBarnes 2D", {
 test_that("magneticField() handles both POSIX times and dates", {
           A <- magneticField(-63.562, 44.640, as.POSIXct("2013-01-01", tz="UTC"), version=12)$declination
           B <- magneticField(-63.562, 44.640, as.Date("2013-01-01"), version=12)$declination
-          expect_equal(A, B, scale=1, tolerance=1e-8)
+          expect_equal(A, B, tolerance=1e-8)
 })
 
 test_that("magneticField version 12 (why not perfect?)", {
@@ -264,11 +264,11 @@ test_that("magneticField version 12 (why not perfect?)", {
           ## page now only works for present and future dates (and it's quite
           ## hard to figure out, frankly).
           expect_equal(-17.976, magneticField(-63.562,44.640,2013, version=12)$declination,
-                       scale=1, tolerance=0.001)
+                       tolerance=0.001)
           expect_equal(67.562, magneticField(-63.562,44.640,2013, version=12)$inclination,
-                       scale=1, tolerance=0.006) # Q: why does tol=0.001 fail?
+                       tolerance=0.006) # Q: why does tol=0.001 fail?
           expect_equal(52096, magneticField(-63.562,44.640,2013, version=12)$intensity,
-                       scale=1, tolerance=16) # Q: why does tol=1 fail?
+                       tolerance=16) # Q: why does tol=1 fail?
 })
 
 test_that("magneticField version 13 (why not perfect?)", {
@@ -277,9 +277,9 @@ test_that("magneticField version 13 (why not perfect?)", {
           mf <- magneticField(-63.562, 44.640, as.POSIXct("2020-03-03 00:00:00", tz="UTC"), version=13)
           mf2 <- magneticField(-63.562, 44.640, as.Date("2020-03-03", tz="UTC"), version=13)
           cbind(mf, mf2) # Q: why so much difference here?
-          expect_equal(-16.972, mf$declination, scale=1, tolerance=0.005) # Q: why does tol=0.001 fail?
-          expect_equal(66.855, mf$inclination, scale=1, tolerance=0.001)
-          expect_equal(51498, mf$intensity, scale=1, tolerance=3) # Q: why does tol=1 fail?
+          expect_equal(-16.972, mf$declination, tolerance=0.005) # Q: why does tol=0.001 fail?
+          expect_equal(66.855, mf$inclination, tolerance=0.001)
+          expect_equal(51498, mf$intensity, tolerance=3) # Q: why does tol=1 fail?
 })
 
 test_that("matchBytes", {

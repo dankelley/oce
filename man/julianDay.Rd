@@ -61,9 +61,10 @@ function is to match the other Meeus formulae, so that suggestion is ignored
 here.
 }
 \examples{
+library(oce)
 ## example from Meeus
 t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="UTC")+0.4*86400
-expect_equal(julianDay(t), 2443259.9)
+stopifnot(all.equal(julianDay(t), 2443259.9))
 
 }
 \references{
