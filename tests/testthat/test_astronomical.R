@@ -28,13 +28,13 @@ test_that("Times", {
           ## [1] chapter 3 page 24-25
           ## FIXME: previously this had the unintelligble tz="ET" but it is *exact* as is
           t <- ISOdatetime(1957, 10, 4, hour=0, min=0, sec=0, tz="UTC")+0.81*86400
-          expect_equal(julianDay(t), 2436116.31, tolerance=0.01, scale=1)
+          expect_equal(julianDay(t), 2436116.31, tolerance=0.01)
           ## [1] example 15.a
           t <- ISOdatetime(1978, 11, 13, 4, 35, 0, tz="UTC")
           jd <- julianDay(t)
           jca <- julianCenturyAnomaly(jd)
-          expect_equal(jd, 2443825.69, tolerance=0.01, scale=1)
-          expect_equal(jca, 0.788656810, tolerance=1e-7, scale=1) # fractional error 3e-8
+          expect_equal(jd, 2443825.69, tolerance=0.01)
+          expect_equal(jca, 0.788656810, tolerance=1e-7) # fractional error 3e-8
           ## [1] page 40
           t <- ISOdatetime(1978, 11, 13, 0, 0, 0, tz="UTC")
           expect_equal(siderealTime(t), 3.4503696, tolerance=0.0000001)
@@ -101,16 +101,11 @@ test_that("Sun Declination and Right Ascension", {
           ## This is *apparent* declination and right ascension
           time <- as.POSIXct("1992-10-13 00:00:00", tz="UTC")
           a <- sunDeclinationRightAscension(time, apparent=TRUE)
-          expect_equal(a$declination, -7.78507,
-                       tol=            0.00004, scale=1)
-          expect_equal(a$rightAscension, -161.61919,
-                       tol=                 0.00003, scale=1)
+          expect_equal(a$declination, -7.78507, tolerance=0.00004)
+          expect_equal(a$rightAscension, -161.61919, tolerance=0.00003)
           b <- sunDeclinationRightAscension(time)
           ## check against previous results, to protect aginst code-drift errors
           ## This is *actual* declination and right ascension
-          expect_equal(b$declination, -7.785464443,
-                       tol=            0.000000001, scale=1)
-          expect_equal(b$rightAscension, -161.6183305,
-                       tol=                 0.0000001, scale=1)
-})
+          expect_equal(b$declination, -7.785464443, tolerance=0.000000001)
+          expect_equal(b$rightAscension, -161.6183305, tolerance=0.0000001) })
 

@@ -1,3 +1,5 @@
+# vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
+
 library(oce)
 
 csv1 <- system.file("extdata", "test_met_vsn1.csv", package="oce")

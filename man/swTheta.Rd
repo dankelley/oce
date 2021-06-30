@@ -58,7 +58,7 @@ the corresponding arguments to the present function are ignored.
 \examples{
 library(oce)
 ## test value from Fofonoff et al., 1983
-expect_equal(36.8818748026, swTheta(40, T90fromT68(40), 10000, 0, eos="unesco"))
+stopifnot(abs(36.8818748026 - swTheta(40, T90fromT68(40), 10000, 0, eos="unesco")) < 0.0000000001)
 
 # Example from a cross-Atlantic section
 data(section)

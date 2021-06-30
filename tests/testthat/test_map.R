@@ -48,8 +48,8 @@ test_that("lonlat2utm() on image for issue 707 (corners cross zones)", {
           utm <- lonlat2utm(longitude, latitude, zone=zone)
           ## Use tolerance to check to within a metre, surely sufficient
           ## for any purpose with landsat-8, given its pixel size.
-          expect_equal(utm$northing, northing, scale=1, tolerance=0.5)
-          expect_equal(utm$easting, easting, scale=1, tolerance=0.5)
+          expect_equal(utm$northing, northing, tolerance=0.5)
+          expect_equal(utm$easting, easting, tolerance=0.5)
 })
 
 test_that("lonlat2map() near Cape Split", {

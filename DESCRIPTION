@@ -7,7 +7,7 @@ Authors@R: c(
     person(given="Chantelle", family="Layton", email="chantelle.layton@dal.ca", role=c("ctb"), comment=c(ORCID="https://orcid.org/0000-0002-3199-5763", "curl() coauthor")),
     person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field subroutine"))
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
-Depends: R (>= 2.15), gsw, methods, sf (>= 0.9.0), testthat, utils
+Depends: R (>= 2.15), gsw, methods, sf (>= 0.9.0), utils
 Suggests:
     akima,
     automap,
@@ -24,6 +24,7 @@ Suggests:
     RSQLite,
     R.utils,
     sp,
+    testthat (>= 3.0.0),
     tiff,
     XML
 BugReports: https://github.com/dankelley/oce/issues
@@ -48,3 +49,4 @@ NeedsCompilation: yes
 LinkingTo: Rcpp
 Imports: Rcpp
 Packaged: Dan Kelley
+Config/testthat/edition: 3

@@ -1482,7 +1482,6 @@ in case conversion to ENU is to be done later.")
             oceDebug(debug, "length(time)=", length(time), "\n")
             if (length(time) > length(profileStart)) {
                 warning("length(time)=", length(time), " exceeds length(profileStart)=", length(profileStart), " so trimming time\n")
-                message("length(time)=", length(time), " exceeds length(profileStart)=", length(profileStart), " so trimming time")
                 time <- time[seq_len(length(profileStart))]
             }
             oceDebug(debug, "length(time)=", length(time), " after possible shortening to match length(profileStart)\n")

@@ -195,8 +195,8 @@ oceSetData <- function(object, name, value, unit, originalName, note="")
 #' library(oce)
 #' data(ctd)
 #' CTD <- oceRenameData(ctd, "salinity", "SALT")
-#' expect_equal(ctd[["salinity"]], CTD[["SALT"]])
-#' expect_equal(ctd[["sal00"]], CTD[["SALT"]])
+#' stopifnot(all.equal(ctd[["salinity"]], CTD[["SALT"]]))
+#' stopifnot(all.equal(ctd[["sal00"]], CTD[["SALT"]]))
 #'
 #' @author Dan Kelley
 #'

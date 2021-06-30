@@ -72,7 +72,7 @@ m1 <- as.tidem(mean(sealevelTuktoyaktuk[["time"]]), sealevelTuktoyaktuk[["latitu
                m0[["name"]], m0[["amplitude"]], m0[["phase"]])
 # Test agreement with tidem() result, by comparing predicted sealevels.
 p1 <- predict(m1, sealevelTuktoyaktuk[["time"]])
-expect_lt(max(abs(p1 - p0), na.rm=TRUE), 1e-10)
+stopifnot(max(abs(p1 - p0), na.rm=TRUE) < 1e-10)
 # Simplified harmonic model, using large constituents
 # > m0[["name"]][which(m[["amplitude"]]>0.05)]
 # [1] "Z0"  "MM"  "MSF" "O1"  "K1"  "OO1" "N2"  "M2"  "S2"
@@ -92,7 +92,7 @@ m2 <- as.tidem(mean(sealevelTuktoyaktuk[["time"]]),
                sealevelTuktoyaktuk[["latitude"]],
                coef$name, coef$amplitude, coef$phase)
 p2 <- predict(m2, sealevelTuktoyaktuk[["time"]])
-expect_lt(max(abs(p2 - p0), na.rm=TRUE), 1)
+stopifnot(max(abs(p2 - p0), na.rm=TRUE) < 1)
 par(mfrow=c(3, 1))
 oce.plot.ts(sealevelTuktoyaktuk[["time"]], p0)
 ylim <- par("usr")[3:4] # to match scales in other panels
