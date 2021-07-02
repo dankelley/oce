@@ -143,6 +143,8 @@ within the file.
 a value of 1 means to retrieve all the profiles, while a value of 2
 means to get every second profile.
 
+@param startIndex integer giving the location of the first 7f7f byte pair.
+
 @param mode integer, 0 if 'from' etc are profile numbers or 1 if they
 are the numerical values of unix times.
 
@@ -182,7 +184,10 @@ Dan Kelley
 */
 
 // [[Rcpp::export]]
-List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector mode,
+List do_ldc_rdi_in_file(StringVector filename,
+    IntegerVector from, IntegerVector to, IntegerVector by,
+    IntegerVector startIndex,
+    IntegerVector mode,
     IntegerVector debug)
 {
   struct tm etime; // time of the ensemble under examination
@@ -202,6 +207,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   if (by[0] < 0)
     ::Rf_error("'by' must be positive");
   unsigned long int by_value = by[0];
+  unsigned long int start_index = startIndex[0];
   int mode_value = mode[0];
   if (mode_value != 0 && mode_value != 1)
     ::Rf_error("'mode' must be 0 or 1");
@@ -209,7 +215,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   if (debug_value < 0)
     debug_value = 0;
   if (debug_value > 0)
-    Rprintf("In C++ function named do_ldc_rdi_in_file. Diagnostics will be printed because debug>0\n");
+    Rprintf("In C++ function named do_ldc_rdi_in_file: diagnostics will be printed because debug>0\n");
   //Rprintf("from=%d, to=%d, by=%d, mode_value=%d\n", from_value, to_value, by_value, mode_value);
   int c, clast=0x00;
   int byte1 = 0x7f;
@@ -219,6 +225,13 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   unsigned int bytes_to_check_last = 0; // used to prevent freakouts if the chunk length is wrong (issue 1437)
   unsigned long int cindex = 0;
   unsigned long outEnsemblePointer = 1;
+  if (start_index > 1) {
+    Rprintf("In C++ function named ldc_rdi_in_file: skipping %d bytes at the start of the file, to get to 7F7F byte pair\n", start_index-1);
+    for (unsigned int i=1; i < start_index; i++) {
+      fgetc(fp);
+      cindex++;
+    }
+  }
   clast = fgetc(fp);
   cindex++;
   if (clast == EOF)

@@ -801,7 +801,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     }
     type <- match.arg(type)
 
-    ## Read whole file into 'buf'
+    ## Determine file size
     seek(file, 0, "start")
     seek(file, where=0, origin="end")
     fileSize <- seek(file, where=0)
@@ -814,7 +814,15 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     ## but let's read 10000 just in case. It might be worth thinking about this in more
     ## detail, in case a file might have a header that is much longer than any studied
     ## in writing this code.
+    startIndex <- 1L                   # index of byte pair 0x7f 0x7f
     buf <- readBin(file, what="raw", n=min(fileSize, 10000), endian="little")
+    if (buf[1] != 0x7F || buf[2] != 0x7F) {
+        startIndex <- matchBytes(buf, 0x7f, 0x7f)[1]
+        if (!length(startIndex))
+            stop("cannot find a 0x7f 0x7f byte sequence near the start of this file")
+        message("file does not start with 7F7F byte sequence, so skipping to byte ", startIndex)
+        buf <- buf[seq(startIndex, length(buf))]
+    }
     header <- decodeHeaderRDI(buf, debug=debug-1)
     if (header$haveActualData) {
         numberOfBeams <- header$numberOfBeams
@@ -845,7 +853,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                     }
                 }
             }
-            ldc <- do_ldc_rdi_in_file(filename, from, to, by, 0L, debug-1)
+            ldc <- do_ldc_rdi_in_file(filename=filename, from=from, to=to, by=by, startIndex=startIndex, mode=0L, debug=debug-1)
             ##if (debug > 9) {
             ##    message("since debug > 9, exporting ldc to ldcDEBUG")
             ##    ldcDEBUG <<- ldc
@@ -859,7 +867,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             if (is.character(by))
                 by <- ctimeToSeconds(by)
             ##ldc <- .Call("ldc_rdi_in_file", filename, as.integer(from), as.integer(to), as.integer(by), 1L)
-            ldc <- do_ldc_rdi_in_file(filename, from, to, by, 1L, debug-1)
+            ldc <- do_ldc_rdi_in_file(filename=filename, from=from, to=to, by=by, startIndex=startIndex, mode=1L, debug=debug-1)
             ##if (debug > 9) {
             ##    message("since debug > 9, exporting ldc to ldcDEBUG")
             ##    ldcDEBUG <<- ldc
