@@ -7,7 +7,7 @@ Authors@R: c(
     person(given="Chantelle", family="Layton", email="chantelle.layton@dal.ca", role=c("ctb"), comment=c(ORCID="https://orcid.org/0000-0002-3199-5763", "curl() coauthor")),
     person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field subroutine"))
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
-Depends: R (>= 2.15), gsw, methods, sf (>= 0.9.0), utils
+Depends: R (>= 2.15), gsw, methods, utils
 Suggests:
     akima,
     automap,
@@ -23,6 +23,7 @@ Suggests:
     rmarkdown,
     RSQLite,
     R.utils,
+    sf (>= 0.9.0),
     sp,
     testthat (>= 3.0.0),
     tiff,
