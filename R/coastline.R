@@ -1443,7 +1443,7 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' @param coastline a [coastline-class] object.
 #'
 #' @param lon_0 longitude as would be given in a `+lon_0=` item in a
-#' call to the [sf::sf_project()] function in the \CRANpkg{sf} package.
+#' call to [sf::sf_project()].
 #'
 #' @examples
 #'\donttest{

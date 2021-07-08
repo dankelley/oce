@@ -10,7 +10,7 @@ coastlineCut(coastline, lon_0 = 0)
 \item{coastline}{a \linkS4class{coastline} object.}
 
 \item{lon_0}{longitude as would be given in a \verb{+lon_0=} item in a
-call to the \code{\link[sf:sf_project]{sf::sf_project()}} function in the \CRANpkg{sf} package.}
+call to \code{\link[sf:sf_project]{sf::sf_project()}}.}
 }
 \value{
 a new coastline object

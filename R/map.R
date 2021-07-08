@@ -5,7 +5,11 @@
     function(new) if (!missing(new)) val <<- new else val
 })
 
-longlatProj <- sf::st_crs("+proj=longlat")$proj4string
+# FIXME: update this if the sf::st_crs() call produces a different
+# result.
+# > sf::st_crs("+proj=longlat")$proj4string
+# [1] "+proj=longlat +datum=WGS84 +no_defs"
+longlatProj <- "+proj=longlat +datum=WGS84 +no_defs"
 
 .Projection <- local({
     ## Save state, in a way that emulates mapproj.
@@ -27,7 +31,7 @@ longlatProj <- sf::st_crs("+proj=longlat")$proj4string
 #' and northing values (in metres).
 #'
 #' @param proj character string indicating the desired map projection, or an object of class `crs`;
-#' see [sf::sf_project()].
+#' see the documentation for [sf::sf_project()].
 #'
 #' @param inv logical value, False by default, indicating whether an inverse projection is requested.
 #'
@@ -2995,7 +2999,8 @@ mapLocator <- function(n=512, type='n', ...)
 #' @template debugTemplate
 #'
 #' @section Bugs:
-#' `oce` uses [sf::sf_project()] to handle projections. Only those projections that
+#' `oce` uses the [sf::sf_project()] function to handle projections.
+#' Only those projections that
 #' have inverses are permitted within `oce`, and of that subset, some are omitted
 #' because the `oce` developers have experienced problems with them.
 #'
