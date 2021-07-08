@@ -38,7 +38,8 @@ handled well; see \sQuote{Bugs}.
 }
 \section{Bugs}{
 
-\code{oce} uses \code{\link[sf:sf_project]{sf::sf_project()}} to handle projections. Only those projections that
+\code{oce} uses the \code{\link[sf:sf_project]{sf::sf_project()}} function to handle projections.
+Only those projections that
 have inverses are permitted within \code{oce}, and of that subset, some are omitted
 because the \code{oce} developers have experienced problems with them.
 }

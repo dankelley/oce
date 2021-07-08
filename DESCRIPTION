@@ -23,7 +23,7 @@ Suggests:
     rmarkdown,
     RSQLite,
     R.utils,
-    sf (>= 0.9.0),
+    sf,
     sp,
     testthat (>= 3.0.0),
     tiff,
