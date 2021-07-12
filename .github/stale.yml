@@ -9,8 +9,8 @@ exemptLabels:
 staleLabel: stale
 # Comment to post when marking an issue as stale. Set to `false` to disable
 markComment: >
-  This issue has been automatically marked as stale because no comments have been made in two weeks.  Unless comments are made in the next two weeks (or the 'pinned' label is applied), this issue will be closed automatically in a week.
+  This issue has been automatically marked as stale because no comments have been made in two weeks.  Unless comments are made in the next two weeks (or the 'pinned' label is applied), this issue will be closed automatically in a week. Please note that this is not a reflection on the quality or importance of the issue, but merely a reminder of the march of time.  A simple comment is all it takes to keep this issue from being closed automatically, two weeks from now.
 # Comment to post when closing a stale issue. Set to `false` to disable
 closeComment: >
-  This issue has been closed automatically, because no comments have been made in the two weeks since inactivity caused the 'stale' bot to mark it as stale.
+  This issue has been closed automatically, because no comments have been made in the two weeks since inactivity caused the 'stale' bot to mark it as stale.  Reporters should note that it's easy to reopen an issue, and also to write comments on a closed issue.
 
