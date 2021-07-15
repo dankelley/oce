@@ -6,7 +6,6 @@ iii <- c(6,7,34,35,36,72,73,80,81,90,92,102,104,119,120,122,146,185,197,198,211,
 if (!interactive()) pdf("eow04.pdf", width=7, height=4, pointsize=9)
 par(mar=rep(1,4))
 library(oce)
-source("~/git/oce/R/map.R")
 library(sf)
 data(coastlineWorld)
 projs <- c("ortho +lon_0=-30 +lat_0=-20",

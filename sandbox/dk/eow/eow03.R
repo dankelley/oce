@@ -6,14 +6,15 @@ iii <- c(6,7,34,35,36,72,73,80,81,90,92,102,104,119,120,122,146,185,197,198,211,
 if (!interactive()) pdf("eow03.pdf", width=7, height=4, pointsize=9)
 par(mar=rep(1,4))
 library(oce)
-source("~/git/oce/R/map.R")
+#source("~/git/oce/R/map.R")
 library(sf)
 data(coastlineWorld)
-projs <- c("ortho",
+projs <- c("ortho +lon_0=-30 +lat_0=-20",
            "robin",
-           "moll")[1]
+           "moll")
 for (proj in projs) {
-    load(paste0("eow_", proj, ".rda"))
+    message(proj)
+    load(paste0("eow_", gsub(" .*$", "", proj) , ".rda"))
     lon <- coastlineWorld[["longitude"]]
     lat <- coastlineWorld[["latitude"]]
     mapPlot(lon, lat, proj=paste0("+proj=",proj), col="lightgray")
@@ -73,18 +74,16 @@ for (proj in projs) {
                 # 3 just on edge (not visible to my eye)
                 # 4 okay (Bolivia)
                 # 5 badly split (Brazil). in points 71:74, jumps far south.
-                if (i %in% iii[dan]) { # 26 in total (bad in 1:5)
-                    mapPolygon(LON, LAT, col=if (i %in% iii) 2 else 4)
-                    print(data.frame(LON,LAT))
-                    DAN<-list(LON=LON,LAT=LAT);message("exported DAN at i=", i, " (dan=", dan, ")")
+                mapPolygon(LON, LAT, col=if (i %in% iii) 2 else 4)
+                #print(data.frame(LON,LAT))
+                #DAN<-list(LON=LON,LAT=LAT);message("exported DAN at i=", i)
                 }
             } else {
                 for (L in seq_len(length(pvisible))) {
                     #if (i %in% iii) message("  multiple (L=", L, ")")
                     LON <- pvisible[[L]][[1]][,1]
                     LAT <- pvisible[[L]][[1]][,2]
-                    if (i == iii[1])
-                        mapPolygon(LON, LAT, col=if (i %in% iii) 2 else 4)
+                    mapPolygon(LON, LAT, col=if (i %in% iii) 2 else 4)
                 }
             }
         }
