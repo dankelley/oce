@@ -3112,13 +3112,18 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
         xy <- lonlat2map(longitude, latitude)
         x <- xy$x
         y <- xy$y
-        xorig <- xy$x
-        yorig <- xy$y
         ## 1181 necessitated a change in badFillFix1()
-        xy <- badFillFix1(x=x, y=y, latitude=latitude, projection="")
-        xy <- badFillFix2(x=xy$x, y=xy$y, xorig=xorig, yorig=yorig)
-        x <- xy$x
-        y <- xy$y
+        if (!is.null(options()$oceEOW)) {
+            message("mapPlot() skipping badFillFix1() and badFillFix2(), because options(\"oceEOW\") was not set")
+        } else {
+            message("mapPlot() using badFillFix1() and badFillFix2(), because options(\"oceEOW\") was not set")
+            xorig <- xy$x
+            yorig <- xy$y
+            xy <- badFillFix1(x=x, y=y, latitude=latitude, projection="")
+            xy <- badFillFix2(x=xy$x, y=xy$y, xorig=xorig, yorig=yorig)
+            x <- xy$x
+            y <- xy$y
+        }
         polygon(x, y, density=density, angle=angle, border=border, col=col, lty=lty, ..., fillOddEven=fillOddEven)
     }
 }
