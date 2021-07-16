@@ -36,7 +36,7 @@
           GEOS           GDAL         proj.4 GDAL_with_GEOS     USE_PROJ_H           PROJ
        "3.9.1"        "3.3.1"        "7.2.1"         "true"         "true"        "7.2.1"
 
-## windows-10-x64  R-4.0.2 sf-0.9.5 (@clayton)
+## windows-10-x64  R-4.0.2 sf-0.9.5 (@clayton33)
 
 * x and y span +-6400km, as expected
 * all red dots, indicating no uninvertible points on globe
