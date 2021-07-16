@@ -128,7 +128,7 @@ for (proj in projs) {
     }
     projBase <- gsub(".*=", "", gsub(" .*$", "", proj))
     projBase <- paste0("eow_", projBase , ".rda")
-    save(eow, file=projBase)
+    ### save(eow, file=projBase)
     message("saved to ", projBase)
     clon <- coastlineWorld[["longitude"]]
     clat <- coastlineWorld[["latitude"]]
@@ -161,10 +161,3 @@ for (iii in seq_len(dim(xxxyyy)[1])) {
     else cat("iii=", iii, " non convergent\n")
 }
 
-
-if (FALSE) {
-    download.file("http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/physical/ne_10m_coastline.zip",
-                  destfile = "CL.zip")
-    unzip("CL.zip", exdir="CL")
-    CL <- rgdal::readOGR("CL/ne_10m_coastline.shp")
-}
