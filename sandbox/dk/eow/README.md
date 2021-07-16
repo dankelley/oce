@@ -5,7 +5,9 @@
 * install old versions with e.g.
   `devtools::install_version("sf",version="0.9.5",repos="http://cran.us.r-project.org")`
 
-# Test results with eow05.R
+# Test results with https://github.com/dankelley/oce/blob/EOW/sandbox/dk/eow/eow05.R
+
+
 
 ## macOS R-4.1.0 sf-0.9.5 (@dankelley)
 
