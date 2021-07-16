@@ -13,3 +13,14 @@ plot(xy[,1]/1e3, xy[,2]/1e3, asp=1,
      pch=20, cex=0.3, col=ifelse(ok, "red", "blue"))
 grid()
 
+# Try an offworld point
+N <- 30
+for (X in seq(-7000, 7000, 500)) {
+    off <- 1e3*cbind(rep(X, N), seq(-6500,6500,length.out=N))
+    #points(off[,1], off[,2])
+    rm(offLONLAT)
+    offLONLAT <- try(project(off, proj, inv=TRUE), silent=TRUE)
+    ok <- is.finite(offLONLAT[,1]) & is.finite(offLONLAT[,2])
+    points(off[,1]/1e3, off[,2]/1e3, pch=20, col=ifelse(ok, 2, 4), cex=1)
+}
+data.frame(off, ok)

@@ -1,6 +1,9 @@
 # Demonstrate problem with +proj=ortho forward/backward
 library(sf)
 sessionInfo()
+packageVersion("sf")
+sf::sf_extSoftVersion()
+
 proj <- "+proj=ortho +lat_0=-20 +datum=WGS84 +no_defs"
 proj0 <- "+proj=longlat +datum=WGS84 +no_defs"
 
