@@ -1,9 +1,13 @@
-rm(list=ls())
+# ortho_app.R patterned on eow02sf_02.R
 library(oce)
-doplot <- !FALSE
-gridTest <- !FALSE
-lon0 <- -20
-lat0 <- -30
+library(shiny)
+data(coastlineWorld)
+load("coastlineWorldPolygon.rda")      # polygonzed coastlineWorld, made with eow00coastline.R
+
+drawRadii <- FALSE
+drawCircumferance <- TRUE
+plotHeight <- 300
+mapWidth <- 200
 
 projFix <- function(crs) # FIXME: check sf version (?)
 {
@@ -31,18 +35,17 @@ ntheta <- 360 # 4.3  s with nlowroot=15
 ntheta <- 180 # 2.5  s with nlowroot=15
 ntheta <- 180 # 1.8  s with nlowroot=12
 ntheta <- 90  # 1.0  s with nlowroot=12
-ntheta <- 90  # 0.83 s with nlowroot=10
 ntheta <- 45
-# Time ntheta nlowroot Notes
-#  4.3    360       15
-#  2.5    180       15
-#  1.8    180       12
-#  1.1     90       15
-#  0.91    90       12
-#  2.7     90       16
-#  1.4     90       14 eow03.pdf looks good, acceptably slow
+ntheta <- 20
 
-if (!interactive()) pdf("eow02sf.pdf")
+func <- function(r, theta, proj, proj0)
+{
+    #message("in func, proj=", proj)
+    x <- x0 + r*cos(theta)
+    y <- y0 + r*sin(theta)
+    t <- try(sf::sf_project(proj, proj0, cbind(x, y), warn=FALSE), silent=TRUE)
+    if (inherits(t, "try-error")) -1 else 1
+}
 
 #' assume decreasing function.
 #' @param f a function that decreases as x increases
@@ -75,67 +78,153 @@ lowroot <- function(f, xlow, xhigh, n=15L, ...)
     list(x=xlow, dx=xhigh-xlow)
 }
 
-FAC <- 0.99
-data(coastlineWorld)
-projs <- c("+proj=ortho +lon_0=-30 +lat_0=-20",
-           "+proj=robin",
-           "+proj=moll")
-if (interactive())
-    projs <- projs[1]
-nprojs <- length(projs)
-par(mar=c(1,1,2,1))
-if (interactive())
-    par(mfrow=c(1,nprojs))
+projs <- projFix("+proj=ortho +lon_0=-30 +lat_0=-20")
+proj0 <- projFix("+proj=longlat +datum=WGS84 +no_defs +R=6378137 +f=0")
 
-func <- function(r, theta)         # +1 if (r,theta) is visible, -1 otherwise
-{
-    x <- x0 + r*cos(theta)
-    y <- y0 + r*sin(theta)
-    ifelse(is.na(map2lonlat(x, y)$longitude), -1, 1)
+ui <- fluidPage(fluidRow(span(HTML("<center>Click in left panel to adjust view</center>"))),
+                fluidRow(column(5, plotOutput("plotL", click="click")),
+                         column(6, plotOutput("plotMR"))))
+
+server <- function(input, output, session) {
+    state <- reactiveValues(x=0.0, y=0.0)
+    observeEvent(input$click,
+                 {
+                     state$x <- input$click$x
+                     state$y <- input$click$y
+                 }
+    )
+
+    output$plotL <- renderPlot({ # left panel (clickable)
+        plot(coastlineWorld, mar=c(2,2,3,1))
+        mtext(sprintf("+proj=ortho +lon_0=%.2f +lat_0=%.2f", state$x, state$y), line=1)
+        points(state$x, state$y, pch=20, col=2)
+    }, height=plotHeight)
+
+    output$plotMR <- renderPlot({ # middle and right panels (not clickable)
+        par(mar=c(2,2,2,2), mfrow=c(1,2))
+        mapPlot(coastlineWorld,
+                proj=projFix(sprintf("+proj=ortho +lon_0=%.2f +lat_0=%.2f", state$x, state$y)),
+                col="lightgray")
+        plot((1:10)+state$y)
+    }, height=plotHeight)
+
 }
 
-proj <- projFix(paste0("+proj=ortho +lon_0=", lon0, " +lat_0=", lat0))
-message(proj)
-mapPlot(coastlineWorld, proj=proj, col="black", type=if(doplot) "l" else "n")
-mtext(proj)
-usr <- par("usr")
-x0 <- mean(usr[1:2])
-y0 <- mean(usr[3:4])
-R <- X <- Y <- vector("numeric", ntheta) # FIXME: for testing
-Rmax <- (1/2) * sqrt((usr[2]-usr[1])^2 + (usr[4]-usr[3])^2) # hypotenuese
-thetas <- seq(0.0, 2*pi, length.out=ntheta)
-for (i in seq_along(thetas)) {
-    lr <- lowroot(func, xlow=0, xhigh=Rmax, n=nlowroot, theta=thetas[i])
-    R[i] <- lr$x
-    if (debug>1L)
-        message(sprintf("i=%d, theta=%6.4f, f(%.0f+-%.0f)=%.0f (Rmax=%.0f)",
-                        i, thetas[i], R[i], lr$dx, func(R[i], thetas[i]), Rmax))
-    X[i] <- x0 + R[i] * cos(thetas[i])
-    Y[i] <- y0 + R[i] * sin(thetas[i])
-}
-LL <- map2lonlat(X, Y)
-DF <- data.frame(theta=thetas,
-                 lon=LL$longitude, lat=LL$latitude,
-                 X=X, Y=Y)
-print(DF[1:6,], digits=3)
-ok <- is.finite(LL$longitude) & is.finite(LL$latitude)
-LL$longitude <- LL$longitude[ok]
-LL$latitude <- LL$latitude[ok]
 
-mapLines(LL$longitude, LL$latitude, col="forestgreen")
+#OLD mapPlot(coastlineWorld, proj=proj, col="lightgray")
+#OLD axis(1)
+#OLD axis(2)
+#OLD mtext(proj, cex=par("cex"))
+#OLD mtext("eow02sf_02.R", line=1, cex=par("cex"))
+#OLD usr <- par("usr")
+#OLD x0 <- mean(usr[1:2])
+#OLD y0 <- mean(usr[3:4])
+#OLD R <- X <- Y <- vector("numeric", ntheta) # FIXME: for testing
+#OLD Rmax <- (1/2) * sqrt((usr[2]-usr[1])^2 + (usr[4]-usr[3])^2) # hypotenuese
+#OLD thetas <- seq(0.0, 2*pi, length.out=ntheta)
+#OLD for (i in seq_along(thetas)) {
+#OLD     #message("i=",i, ", theta=", thetas[i], ", proj=", proj, ", proj0=", proj0)
+#OLD     lr <- lowroot(func, xlow=0, xhigh=Rmax, n=nlowroot, theta=thetas[i], proj=proj, proj0=proj0)
+#OLD     R[i] <- lr$x
+#OLD     if (debug>1L)
+#OLD         message(sprintf("i=%d, theta=%6.4f, f(%.0f+-%.0f)=%.0f (Rmax=%.0f)",
+#OLD                         i, thetas[i], R[i], lr$dx, func(R[i], thetas[i]), Rmax))
+#OLD     X[i] <- x0 + R[i] * cos(thetas[i])
+#OLD     Y[i] <- y0 + R[i] * sin(thetas[i])
+#OLD     if (drawRadii)
+#OLD         lines(x0+c(0,R[i]*cos(thetas[i])), y0+c(0,R[i]*sin(thetas[i])), col=4)
+#OLD }
+#OLD if (drawCircumferance)
+#OLD     lines(X, Y, col="red")
+#OLD LL <- map2lonlat(X, Y)
+#OLD DF <- data.frame(theta=thetas,
+#OLD                  lon=LL$longitude, lat=LL$latitude,
+#OLD                  X=X, Y=Y)
+#OLD print(DF[1:6,], digits=3)
+#OLD if (!all(is.finite(DF$lon) & is.finite(DF$lat))) {
+#OLD     warning("edge-of-world encountered some non-finite values")
+#OLD     ok <- is.finite(DF$lon) & is.finite(DF$lat)
+#OLD     DF <- df[ok,]
+#OLD }
+#OLD if (drawCircumferance)
+#OLD     mapLines(DF$lon, DF$lat, col="forestgreen", lty="dotted")
+#OLD # Earth polygon (ends mismatch by 1e-8 for ortho)
+#OLD XX <- X
+#OLD YY <- Y
+#OLD XX[length(XX)] <- XX[1]
+#OLD YY[length(YY)] <- YY[1]
+#OLD eow <- sf::st_polygon(list(outer=cbind(XX, YY)))
+#OLD projBase <- gsub(".*=", "", gsub(" .*$", "", proj))
+#OLD projBase <- paste0("eow_", projBase , ".rda")
+#OLD save(eow, file=projBase)
+#OLD message("saved to ", projBase)
+#OLD 
+#OLD # Middle panel: coastline plot, to check eowLL
+#OLD plot(coastlineWorld)
+#OLD 
+#OLD #> # a point on AA, on "back side", from locator(1)
+#OLD #> AAXY <- cbind(107596.6, -6133536)
+#OLD #> AALL <- sf::sf_project(proj, proj0, AAXY, warn=FALSE)
+#OLD #> AALL
+#OLD #>points(AALL[1,1], AALL[1,2], col=2, pch=20)
+#OLD 
+#OLD eowLL <- sf::sf_project(proj, proj0, eow, keep=TRUE, warn=!FALSE)
+#OLD if (grepl("=ortho", proj)) { # ortho is tricky: add lines to whichever pole is visible
+#OLD     NPoleVisible <- !anyNA(sf::sf_project(proj0, proj, cbind(0,90), keep=TRUE, warn=FALSE))
+#OLD     SPoleVisible <- !anyNA(sf::sf_project(proj0, proj, cbind(0,-90), keep=TRUE, warn=FALSE))
+#OLD     lonOrder <- order(eowLL[,1])
+#OLD     eowLL <- eowLL[lonOrder,]
+#OLD     #t <- function(){plot(eowLL[,1],eowLL[,2]);polygon(eowLL[,1],eowLL[,2],col='pink');abline(h=-90);abline(v=c(-180,180))}
+#OLD     if (SPoleVisible) {
+#OLD         neow <- dim(eowLL)[1]
+#OLD         eowLL <- rbind(c(-180, eowLL[1L, 2L]), eowLL)
+#OLD         eowLL <- rbind(c(-180, -90), eowLL)
+#OLD         eowLL <- rbind(eowLL, c(180, eowLL[neow+2L,2L]))
+#OLD         eowLL <- rbind(eowLL, c(180, -90))
+#OLD     }
+#OLD     if (NPoleVisible) {
+#OLD         neow <- dim(eowLL)[1]
+#OLD         eowLL <- rbind(c(-180, eowLL[1L, 2L]), eowLL)
+#OLD         eowLL <- rbind(c(-180, 90), eowLL)
+#OLD         eowLL <- rbind(eowLL, c(180, eowLL[neow+2L,2L]))
+#OLD         eowLL <- rbind(eowLL, c(180, 90))
+#OLD     }
+#OLD     # close the polygon
+#OLD     eowLL <- rbind(eowLL, c(eowLL[1,]))
+#OLD }
+#OLD points(eowLL[,1], eowLL[,2], col=2)
+#OLD polygon(eowLL[,1], eowLL[,2], border="blue", col=rgb(1,0,0,0.1))
+#OLD mtext("pink shows visible polygon (extended to pole)", cex=par("cex"))
+#OLD 
+#OLD # Right panel: mapPlot again
+#OLD mapPlot(coastlineWorld, proj=proj, type="n")
+#OLD 
+#OLD 
+#OLD 
+#OLD eowLLpoly <- sf::st_polygon(list(eowLL))
+#OLD 
+#OLD for (i in seq_along(coastlineWorldPolygon)) {
+#OLD     #i <- 218
+#OLD     cll <- coastlineWorldPolygon[[i]][[1]]
+#OLD     cpoly <-sf::st_polygon(list(cll))
+#OLD     vcpoly <- sf::st_intersection(cpoly, eowLLpoly)
+#OLD     if (length(vcpoly) > 0L) {
+#OLD         #message("i=", i, " is visible")
+#OLD         if (inherits(vcpoly, "MULTIPOLYGON")) {
+#OLD             for (ipoly in seq_len(length(vcpoly))) { # how to find n polys?
+#OLD                 message("multipolygon at i=", i, ", ipoly=", ipoly)
+#OLD                 P <- sf::sf_project(proj0, proj, vcpoly[[ipoly]][[1]], keep=TRUE, warn=FALSE)
+#OLD                 polygon(P, col="tan")
+#OLD             }
+#OLD         } else {
+#OLD             P <- sf::sf_project(proj0, proj, vcpoly[[1]], keep=TRUE, warn=FALSE)
+#OLD             polygon(P, col="tan")
+#OLD         }
+#OLD     }
+#OLD }
+#OLD mtext("tan shows trimmed nation outlines", cex=par("cex"))
+#OLD mtext("the Zimbabwe hole is under investigation", cex=par("cex"), side=1)
+#OLD }
 
-# Earth polygon (ends mismatch by 1e-8 for ortho)
-XX <- X
-YY <- Y
-XX[length(XX)] <- XX[1]
-YY[length(YY)] <- YY[1]
-eow <- sf::st_polygon(list(outer=cbind(XX, YY)))
-projBase <- gsub(".*=", "", gsub(" .*$", "", proj))
-projBase <- paste0("eow_", projBase , ".rda")
-### save(eow, file=projBase)
-### message("saved to ", projBase)
-
-
-
-
+shinyApp(ui=ui, server=server)
 
