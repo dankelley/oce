@@ -4,8 +4,19 @@ sessionInfo()
 packageVersion("sf")
 sf::sf_extSoftVersion()
 
-proj <- "+proj=ortho +lat_0=-20 +datum=WGS84 +no_defs"
-proj0 <- "+proj=longlat +datum=WGS84 +no_defs"
+projFix <- function(crs) # FIXME: check sf version (?)
+{
+    if (grepl("+proj=ortho", crs)) {
+        if (!grepl("+R=", crs))
+            crs <- paste(crs, "+R=6378137")
+        if (!grepl("+f=", crs))
+            crs <- paste(crs, "+f=0")
+    }
+    crs
+}
+
+proj <- projFix("+proj=ortho +lat_0=-20 +datum=WGS84 +no_defs")
+proj0 <- projFix("OGC:CRS84") # ? "+proj=longlat +datum=WGS84 +no_defs"
 
 grid <- expand.grid(lon=seq(-180,180,2.5), lat=seq(-90,90,2.5))
 lonlat <- cbind(grid$lon, grid$lat)

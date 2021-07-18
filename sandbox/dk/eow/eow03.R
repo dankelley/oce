@@ -8,20 +8,29 @@ par(mar=rep(1,4))
 library(oce)
 #source("~/git/oce/R/map.R")
 library(sf)
+library(rgdal)
 data(coastlineWorld)
-projs <- c("ortho +lon_0=-30 +lat_0=-20",
-           "robin",
-           "moll")
+
+projs <- c("+proj=ortho +lon_0=-30 +lat_0=-20",
+           "+proj=robin",
+           "+proj=moll")
 for (proj in projs) {
     message(proj)
-    load(paste0("eow_", gsub(" .*$", "", proj) , ".rda"))
     lon <- coastlineWorld[["longitude"]]
     lat <- coastlineWorld[["latitude"]]
-    mapPlot(lon, lat, proj=paste0("+proj=",proj), col="lightgray")
+    mapPlot(lon, lat, proj=proj, col="lightgray")
+    # eow is stored in an rda file created by eow02rgdal.R
+    projRda <- gsub(".*=", "", gsub(" .*$", "", proj))
+    projRda <- paste0("eow_", projRda, ".rda")
+    message("loading \"", projRda, "\"")
+    load(projRda)
     LL <- eow[[1]]
-    eowLL <- oce::map2lonlat(LL[,1], LL[,2])
-    mapLines(eowLL$longitude, eowLL$latitude, col=4)
-    eow2 <- sf::st_polygon(list(cbind(eowLL$longitude, eowLL$latitude)))
+    eowLL <- rgdal::project(LL, proj, inv=TRUE)
+    mapLines(eowLL[,1], eowLL[,2], col=4)
+    # make eow polygon be valid (e.g. not self-intersecting)
+    eow2tmp <- sf::st_polygon(list(cbind(eowLL[,1], eowLL[,2])))
+    eow2 <- st_make_valid(eow2tmp)
+    stopifnot(st_is_valid(eow2))
 
     NAs <- which(is.na(lon))
     par(mar=c(3,3,1,1))
@@ -41,15 +50,13 @@ for (proj in projs) {
         p <- sf::st_polygon(list(cbind(lonPortion, latPortion)))
         pvisible <- sf::st_intersection(p, eow2)
         #if (min(latPortion) > -70 && max(latPortion) < 20 && -90 <= min(lonPortion) && max(lonPortion) < -30) {
-        if (i %in% iii) {
-            plot(pvisible, add=TRUE, col="pink")
-        }
+        plot(pvisible, add=TRUE, col=if (i %in% iii) "red" else "blue")
     }
-    lines(eowLL$longitude, eowLL$latitude, col=4)
+
     # the real test
     par(mar=rep(1, 4))
 
-    mapPlot(coastlineWorld, proj=paste0("+proj=",proj), type="n")
+    mapPlot(coastlineWorld, proj=proj, type="n")
     for (i in seq(1L, length(NAs)-1L)) {
         look <- seq(NAs[i]+1L, NAs[i+1]-1L)
         lonPortion <- lon[look]
@@ -66,29 +73,14 @@ for (proj in projs) {
         if (length(pvisible)) {
             #if (i %in% iii) message("i=",i, " length=", length(pvisible))
             if (1 == length(pvisible)) {
-                #if (i %in% iii) message("  single")
+                message("i=", i, " visible")
                 LON <- pvisible[[1]][,1]
                 LAT <- pvisible[[1]][,2]
-                # iii[1,5] split badly (some in 1:4 also)
-                # 1 tiny island
-                # 3 just on edge (not visible to my eye)
-                # 4 okay (Bolivia)
-                # 5 badly split (Brazil). in points 71:74, jumps far south.
                 mapPolygon(LON, LAT, col=if (i %in% iii) 2 else 4)
-                #print(data.frame(LON,LAT))
-                #DAN<-list(LON=LON,LAT=LAT);message("exported DAN at i=", i)
-                }
             } else {
-                for (L in seq_len(length(pvisible))) {
-                    #if (i %in% iii) message("  multiple (L=", L, ")")
-                    LON <- pvisible[[L]][[1]][,1]
-                    LAT <- pvisible[[L]][[1]][,2]
-                    mapPolygon(LON, LAT, col=if (i %in% iii) 2 else 4)
-                }
+                message("i=", i, " not visible")
             }
         }
-        #plot(pvisible, add=TRUE, col="pink")
-        #mapPolygon(lonPortion, latPortion, col=2, lwd=2)
     }
     mapLines(eowLL$longitude, eowLL$latitude, col="forestgreen")
  }

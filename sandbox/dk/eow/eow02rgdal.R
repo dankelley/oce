@@ -22,7 +22,7 @@ ntheta <- 180
 ntheta <- 180
 ntheta <- 90
 
-if (!interactive()) pdf("eow02.pdf")
+if (!interactive()) pdf("eow02rgdal.pdf")
 
 #' assume decreasing function.
 #' @param f a function that decreases as x increases
@@ -37,8 +37,12 @@ lowroot <- function(f, xlow, xhigh, n=15L, ...)
     if (flow <= 0.0)
         stop("f(xlow) must be positive, but it is ", flow)
     fhigh <- f(xhigh, ...)
+    # Handle case where xhigh is invertible.  This includes +proj=robin, which
+    # gets limited in the y direction but not in the x direction.
     if (fhigh > 0.0)
-        return(fhigh) # +ve at xhigh
+        return(list(x=xhigh, dx=xhigh-xlow))
+    # Handle case where xhigh is not invertible, so that bisection is required.
+    # Note how we return the last point that is invertible.
     while (n > 0)
     {
         xmid <- 0.5 * (xlow + xhigh)
@@ -57,11 +61,11 @@ lowroot <- function(f, xlow, xhigh, n=15L, ...)
 
 FAC <- 0.99
 data(coastlineWorld)
-projs <- c("ortho +lon_0=-30 +lat_0=-20",
-           "robin",
-           "moll")
+projs <- c("+proj=ortho +lon_0=-30 +lat_0=-20",
+           "+proj=robin",
+           "+proj=moll")
 if (interactive())
-    projs <- projs[1]
+    projs <- projs[2]
 nprojs <- length(projs)
 par(mar=c(1,1,2,1))
 if (interactive())
@@ -77,7 +81,6 @@ func <- function(r, theta)         # +1 if (r,theta) is visible, -1 otherwise
 
 
 for (proj in projs) {
-    proj <- paste0("+proj=", proj)
     message(proj)
     mapPlot(coastlineWorld, proj=proj, col="black", type=if(doplot) "l" else "n")
     mtext(proj)
@@ -94,7 +97,7 @@ for (proj in projs) {
     #      1.09       10     90   6 km resolution
     #      1.05        9     90  12 km resolution (insignificant speedup)
     #      2.08       10    180   6 km resolution (time scales as ntheta)
-    print(system.time({
+    #>>> print(system.time({
     for (i in seq_along(thetas)) {
         capture.output({
             lr <- lowroot(func, xlow=0, xhigh=Rmax, n=nlowroot, theta=thetas[i])
@@ -103,7 +106,7 @@ for (proj in projs) {
         if (!FALSE&&doplot)
             lines(x0+c(0,R[i]*cos(thetas[i])), y0+c(0,R[i]*sin(thetas[i])), col=4)
     }
-    }))
+    #>>> }))
     X <- x0 + R * cos(thetas)
     Y <- y0 + R * sin(thetas)
     options(warn=owarn)
@@ -123,8 +126,8 @@ for (proj in projs) {
     eow <- sf::st_polygon(list(outer=cbind(X, Y)))
     projBase <- gsub(".*=", "", gsub(" .*$", "", proj))
     projBase <- paste0("eow_", projBase , ".rda")
-    save(eow, file=projBase)
-    message("saved to ", projBase)
+    ##> save(eow, file=projBase)
+    ##> message("saved to ", projBase)
     clon <- coastlineWorld[["longitude"]]
     clat <- coastlineWorld[["latitude"]]
 }
