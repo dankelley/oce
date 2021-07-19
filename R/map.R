@@ -35,27 +35,19 @@ longlatProj <- "+proj=longlat +datum=WGS84 +no_defs"
 #'
 #' @param inv logical value, False by default, indicating whether an inverse projection is requested.
 #'
-#' @param use_ob_tran,legacy,passNA ignored in oce 1.0.3, and will be disallowed in oce 1.0.4.
-#'
 #' @template debugTemplate
 #'
 #' @return A two-column matrix, with first column holding either
 #' `longitude` or `x`, and second column holding either
 #' `latitude` or `y`.
-oceProject <- function(xy, proj, inv=FALSE, use_ob_tran, legacy, passNA, debug=getOption("oceDebug"))
+oceProject <- function(xy, proj, inv=FALSE, debug=getOption("oceDebug"))
 {
-    if (!missing(use_ob_tran))
-        warning("use_ob_tran is ignored in oce 1.3-0, and will be disallowed thereafter\n")
-    if (!missing(legacy))
-        warning("legacy is ignored in oce 1.3-0, and will be disallowed thereafter\n")
-    if (!missing(passNA))
-        warning("passNA is ignored in oce 1.3-0, and will be disallowed thereafter\n")
     if (!requireNamespace("sf", quietly=TRUE))
         stop('must install.packages("sf") to do map projections')
     oceDebug(debug, "oceProject(xy, proj=\"", proj, "\", inv=", inv, ", ...) {\n", sep="", unindent=1, style="bold")
     owarn <- options()$warn # this, and the capture.output, quieten the processing
     options(warn=-1)
-    ## <1629> ## {{{ OLD 'rgdal' method
+    ## <1629> ##  OLD 'rgdal' method
     ## <1629> if (passNA) {
     ## <1629>     na <- which(is.na(xy[,1]))
     ## <1629>     xy[na, ] <- 0
@@ -80,7 +72,7 @@ oceProject <- function(xy, proj, inv=FALSE, use_ob_tran, legacy, passNA, debug=g
     ## <1629>         )
     ## <1629>     }
     ## <1629> }
-    ## <1629> ## }}}
+    ## <1629> ##
     na <- which(!is.finite(xy[,1]))
     xy[na, ] <- 0
     ## sf_project() with proj=lcc fails at S. pole. We will never need things
