@@ -8,6 +8,9 @@ drawRadii <- FALSE
 drawCircumferance <- TRUE
 plotHeight <- 300
 mapWidth <- 200
+pch <- 20
+col <- 2
+cex <- 1
 
 projFix <- function(crs) # FIXME: check sf version (?)
 {
@@ -21,14 +24,15 @@ projFix <- function(crs) # FIXME: check sf version (?)
 }
 
 debug <- 0L
-nlowroot <- 16                         #  0.09 km (= 6371/2^16)
-nlowroot <- 15                         #  0.19 km (= 6371/2^15)
-nlowroot <- 14                         #  0.39 km (= 6371/2^14)
-nlowroot <- 13                         #  0.79 km (= 6371/2^13)
-nlowroot <- 12                         #  1.5  km (= 6371/2^12)
-nlowroot <- 11                         #  3.1  km (= 6371/2^11)
-nlowroot <- 10                         #  6.2  km (= 6371/2^10)
-nlowroot <- 9                          # 12    km (= 6371/2^9)
+nlowroot <- 16                         #   0.09 km (= 6371/2^16)
+nlowroot <- 15                         #   0.19 km (= 6371/2^15)
+nlowroot <- 14                         #   0.39 km (= 6371/2^14)
+nlowroot <- 13                         #   0.79 km (= 6371/2^13)
+nlowroot <- 12                         #   1.5  km (= 6371/2^12)
+nlowroot <- 11                         #   3.1  km (= 6371/2^11)
+nlowroot <- 10                         #   6.2  km (= 6371/2^10)
+nlowroot <- 9                          #  12    km (= 6371/2^9)
+nlowroot <- 5                          # 199    km (= 6371/2^5)
 #nlowroot <- 12 # 1.5 km # eow03_20210714T074152.pdf
 #nlowroot <- 10 # 6.2 km
 ntheta <- 360 # 4.3  s with nlowroot=15
@@ -81,35 +85,43 @@ lowroot <- function(f, xlow, xhigh, n=15L, ...)
 projs <- projFix("+proj=ortho +lon_0=-30 +lat_0=-20")
 proj0 <- projFix("+proj=longlat +datum=WGS84 +no_defs +R=6378137 +f=0")
 
-ui <- fluidPage(fluidRow(span(HTML("<center>Click in left panel to adjust view</center>"))),
-                fluidRow(column(5, plotOutput("plotL", click="click")),
-                         column(6, plotOutput("plotMR"))))
+ui <- fluidPage(fluidRow(span(HTML("<center>Click in middle panel to adjust view</center>"))),
+                fluidRow(column(4, plotOutput("plotL")),
+                         column(4, plotOutput("plotM", click="click")),
+                         column(4, plotOutput("plotR"))))
 
 server <- function(input, output, session) {
-    state <- reactiveValues(x=0.0, y=0.0)
+    state <- reactiveValues(x=0.0, y=0.0, eowLL=NULL)
     observeEvent(input$click,
                  {
-                     state$x <- input$click$x
-                     state$y <- input$click$y
+                     state$x <- max(min(input$click$x, 180), -180)
+                     state$y <- max(min(input$click$y, 90), -90)
                  }
     )
 
-    output$plotL <- renderPlot({ # left panel (clickable)
-        plot(coastlineWorld, mar=c(2,2,3,1))
-        mtext(sprintf("+proj=ortho +lon_0=%.2f +lat_0=%.2f", state$x, state$y), line=1)
-        points(state$x, state$y, pch=20, col=2)
-    }, height=plotHeight)
-
-    output$plotMR <- renderPlot({ # middle and right panels (not clickable)
-        par(mar=c(2,2,2,2), mfrow=c(1,2))
+    output$plotL <- renderPlot({ # left panel (not clickable)
         mapPlot(coastlineWorld,
                 proj=projFix(sprintf("+proj=ortho +lon_0=%.2f +lat_0=%.2f", state$x, state$y)),
-                col="lightgray")
-        plot((1:10)+state$y)
+                col="lightgray",
+                axes=FALSE)
+        mapPoints(state$x, state$y, pch=pch, col=col, cex=cex)
+    }, height=plotHeight)
+
+    output$plotM <- renderPlot({ # middle panel (clickable)
+        plot(coastlineWorld, mar=c(2,2,1,1))
+        mtext(sprintf("+proj=ortho +lon_0=%.2f +lat_0=%.2f", state$x, state$y), line=1)
+        points(state$x, state$y, pch=pch, col=col, cex=cex)
+    }, height=plotHeight)
+
+    output$plotR <- renderPlot({ # right panel (not clickable)
+        mapPlot(coastlineWorld,
+                proj=projFix(sprintf("+proj=ortho +lon_0=%.2f +lat_0=%.2f", state$x, state$y)),
+                col="lightgray",
+                axes=FALSE)
+        mapPoints(state$x, state$y, pch=pch, col=col, cex=cex)
     }, height=plotHeight)
 
 }
-
 
 #OLD mapPlot(coastlineWorld, proj=proj, col="lightgray")
 #OLD axis(1)
