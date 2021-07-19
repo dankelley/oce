@@ -113,15 +113,16 @@ lowroot <- function(f, xlow, xhigh, n=15L, ...)
 }
 
 
-ui <- fluidPage(fluidRow(span(HTML("<center>Click in any panel to adjust view</center>"))),
-                fluidRow(column(9, plotOutput("plot1", click="click1"))),
+ui <- fluidPage(fluidRow(span(HTML("<center>Click to recenter view</center>"))),
+                #fluidRow(column(9, plotOutput("plot1", click="click1"))),
                 fluidRow(column(6, plotOutput("plot2", click="click2")),
                          column(6, plotOutput("plot3", click="click2"))))
 
 server <- function(input, output, session) {
     state <- reactiveValues(x=0.0,
                             y=0.0,
-                            eow=NULL,
+                            eowXY=NULL,
+                            eowLL=NULL,
                             proj=projFix("+proj=ortho +lon_0=0 +lat_0=0"))
 
     observeEvent(input$click1,
@@ -136,10 +137,12 @@ server <- function(input, output, session) {
                  {
                      LL <- sf::sf_project(state$proj, proj0,
                                           cbind(input$click2$x, input$click2$y), keep=TRUE, warn=!FALSE)
-                     state$x <- max(min(LL[1,1], 180), -180)
-                     state$y <- max(min(LL[1,2], 90), -90)
-                     state$proj <- projFix(sprintf("+proj=%s +lon_0=%.2f +lat_0=%.2f",
-                                                   PROJ, state$x, state$y))
+                     if (is.finite(LL[1,1]) && is.finite(LL[1,2])) {
+                         state$x <- max(min(LL[1,1], 180), -180)
+                         state$y <- max(min(LL[1,2], 90), -90)
+                         state$proj <- projFix(sprintf("+proj=%s +lon_0=%.2f +lat_0=%.2f",
+                                                       PROJ, state$x, state$y))
+                     }
                  }
     )
 
@@ -147,16 +150,17 @@ server <- function(input, output, session) {
         #par(mar=c(1.5, 10.5, 1.5, 1.5))
         plot(coastlineWorld, mar=c(1,15,1,1.5))
         points(state$x, state$y, pch=pch, col=col, cex=cex)
-        if (!is.null(state$eow))
-            polygon(state$eow[,1], state$eow[,2], col=colRegion)
+        if (!is.null(state$eowLL))
+            polygon(state$eowLL[,1], state$eowLL[,2], col=colRegion)
         mtext(state$proj)
     }, height=300)
 
     output$plot2 <- renderPlot({ # left panel (not clickable)
-        par(mar=c(0.2,0.2,1,0.2))
+        par(mar=rep(1,4))#c(0.2,0.2,1,0.2))
         mapPlot(coastlineWorld, proj=state$proj, col=colLand, axes=FALSE)
         mapPoints(state$x, state$y, pch=pch, col=col, cex=cex)
-        mtext("Existing mapPlot() Method (blue=edge of earth)")
+        mtext("Existing", adj=0, cex=par("cex"))
+        mtext(state$proj, adj=1, cex=par("cex"))
         usr <- par("usr")
         x0 <- mean(usr[1:2])
         y0 <- mean(usr[3:4])
@@ -169,42 +173,67 @@ server <- function(input, output, session) {
         x <- x0 + R * cos(thetas)
         y <- y0 + R * sin(thetas)
         eow <- cbind(x=x, y=y)
-        message("next is eos (x y)")
-        print(file=stderr(), eow)
-        state$eow <- eowToLongLat(eow=eow, proj=state$proj, proj0=proj0)
-        message("next is state$eos (long lat)")
-        print(file=stderr(), state$eow)
-        lines(x, y, col=2, lwd=3)
-        mapLines(state$eow[,1], state$eow[,2], col=4, lty="dotted", lwd=3)
-        mapPolygon(state$eow[,1], state$eow[,2], col=colRegion)
+        # Close eow, by replacing it with the first value. In my tests, they
+        # differ at the nanometre level, i.e. at machine resolution, so it
+        # seems reasonable to replace instead of tacking on a repeat.
+        eow[dim(eow)[1],] <- eow[1,]
+        state$eowXY <- eow
+        state$eowLL <- eowToLongLat(eow=eow, proj=state$proj, proj0=proj0)
+        if (debug > 0L) {
+            message("next is state$eos (long lat)")
+            print(file=stderr(), state$eowLL)
+        }
+        lines(x, y, col="magenta", lwd=2)
+        #mapLines(state$eowLL[,1], state$eowLL[,2], col=4, lty="dotted", lwd=3)
+        #mapPolygon(state$eowLL[,1], state$eowLL[,2], col=colRegion)
     }, height=280)
 
-    output$plot3 <- renderPlot({ # right panel (not clickable)
-        par(mar=c(0.2,0.2,1,0.2))
-        mapPlot(coastlineWorld, proj=state$proj, type="n", axes=FALSE)
-        print(file=stderr(), state$eow)
-        eowpoly <- sf::st_polygon(list(state$eow))
+    output$plot3 <- renderPlot({ # new method
+        par(mar=rep(1,4))#c(0.2,0.2,1,0.2))
+        mapPlot(coastlineWorld, proj=state$proj, type="n", pch=20, col=4, cex=1/3, axes=FALSE)
+        #message("next is state$eowXY:")
+        #print(file=stderr(), state$eowXY)
+        #DAN<<-state$eowXY
+        eowpoly <- sf::st_polygon(list(state$eowXY))
         for (i in seq_along(coastlineWorldPolygon)) {
-            #i <- 218
-            cll <- coastlineWorldPolygon[[i]][[1]]
-            cpoly <- sf::st_polygon(list(cll))
-            vcpoly <- sf::st_intersection(cpoly, eowpoly)
-            if (length(vcpoly) > 0L) {
-                #message("i=", i, " is visible")
-                if (inherits(vcpoly, "MULTIPOLYGON")) {
-                    for (ipoly in seq_len(length(vcpoly))) { # how to find n polys?
-                        #message("multipolygon at i=", i, ", ipoly=", ipoly)
-                        P <- sf::sf_project(proj0, state$proj, vcpoly[[ipoly]][[1]], keep=TRUE, warn=FALSE)
-                        polygon(P, col=colLand)
+            xy <- sf::sf_project(proj0, state$proj, coastlineWorldPolygon[[i]][[1]], keep=TRUE, warn=FALSE)
+            #print(file=stderr(), xypoly) # Q: is it multipolygon
+            #message("dan 0:");print(file=stderr(), head(xypoly))
+            ok <- is.finite(xy[,1]) & is.finite(xy[,2])
+            if (sum(ok) > 5L) { # my tests show need 4 or more points
+                if (debug > 0L)
+                    message("i=", i, ": polygon dim=", paste(dim(xy), collapse="x"), ": ", sum(ok), " non-NA points")
+                xy <- xy[ok,]
+                xy <- rbind(xy, xy[1,])
+                xypoly <- sf::st_polygon(list(xy))
+                DAN<<-xypoly
+                if (!sf::st_is_valid(xypoly)) {
+                    if (debug > 0L)
+                        message("fixing polygon for i=", i)
+                    xypoly <- sf::st_make_valid(xypoly)
+                }
+                visible <- sf::st_intersection(xypoly, eowpoly)
+                if (length(visible) > 0L) {
+                    if (inherits(visible, "MULTIPOLYGON")) {
+                        if (debug > 0L)
+                            message("  multi-polygon with length=", length(visible), "?? (FIXME: code this)")
+                        for (ipoly in seq_len(length(visible))) { # how to find n polys?
+                            if (debug > 0L)
+                                message("    ipoly=", ipoly)
+                        P <- visible[[ipoly]][[1]]
+                        polygon(P[,1], P[,2], col=colLand)
+                        }
+                    } else {
+                        if (debug > 0L)
+                            message("  single polygon")
+                        polygon(visible[[1]][,1], visible[[1]][,2], col=colLand)
+                        #message("DAN 4 (done drawing polygon)")
                     }
-                } else {
-                    #message("simple polygon at i=", i)
-                    P <- sf::sf_project(proj0, state$proj, vcpoly[[1]], keep=TRUE, warn=FALSE)
-                    polygon(P, col=colLand)
                 }
             }
         }
         mapPoints(state$x, state$y, pch=pch, col=col, cex=cex)
+        axis(1);axis(2)
         mtext("Trial of New Method")
     }, height=280)
 

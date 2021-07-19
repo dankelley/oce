@@ -204,7 +204,8 @@ for (i in seq_along(coastlineWorldPolygon)) {
         #message("i=", i, " is visible")
         if (inherits(vcpoly, "MULTIPOLYGON")) {
             for (ipoly in seq_len(length(vcpoly))) { # how to find n polys?
-                message("multipolygon at i=", i, ", ipoly=", ipoly)
+                if (debug>1L)
+                    message("multipolygon at i=", i, ", ipoly=", ipoly)
                 P <- sf::sf_project(proj0, proj, vcpoly[[ipoly]][[1]], keep=TRUE, warn=FALSE)
                 polygon(P, col="tan")
             }
