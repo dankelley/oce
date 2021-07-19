@@ -62,15 +62,15 @@ nlowroot <- 15                         #   0.19 km (= 6371/2^15)
 nlowroot <- 14                         #   0.39 km (= 6371/2^14)
 nlowroot <- 13                         #   0.79 km (= 6371/2^13)
 nlowroot <- 12                         #   1.5  km (= 6371/2^12)
-nlowroot <- 11                         #   3.1  km (= 6371/2^11)
-nlowroot <- 10                         #   6.2  km (= 6371/2^10)
+#nlowroot <- 11                         #   3.1  km (= 6371/2^11)
+#nlowroot <- 10                         #   6.2  km (= 6371/2^10)
 #nlowroot <- 12 # 1.5 km # eow03_20210714T074152.pdf
 #nlowroot <- 10 # 6.2 km
 ntheta <- 360 # 4.3  s with nlowroot=15
 ntheta <- 180 # 2.5  s with nlowroot=15
 ntheta <- 180 # 1.8  s with nlowroot=12
 ntheta <- 90  # 1.0  s with nlowroot=12
-ntheta <- 45
+ntheta <- 60
 
 func <- function(r, theta, x0, y0, proj, proj0)
 {
