@@ -114,12 +114,6 @@ See reference 4 for a deeper explanation of the meanings of these codes.
 
 See reference 4 for a deeper explanation of the meanings of these codes.
 }
-\section{Caution}{
-
-This function was added in early May, 2018, and is likely to undergo
-changes until the autumn of that year.  Use with caution.
-}
-
 \references{
 \enumerate{
 \item The codes for \code{"argo"} are derived from information in Table 4.1

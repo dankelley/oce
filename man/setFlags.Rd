@@ -57,12 +57,6 @@ See \dQuote{Details} for the particular case of \linkS4class{oce} objects.
 \details{
 This generic function is overridden by specialized functions for some object classes.
 }
-\section{Caution}{
-
-This function was added in early May, 2018, and is likely to undergo
-changes until the mid-summer of that year.  Use with caution.
-}
-
 \seealso{
 Other functions relating to data-quality flags: 
 \code{\link{defaultFlags}()},

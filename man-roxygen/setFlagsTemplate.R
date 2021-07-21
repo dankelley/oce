@@ -34,10 +34,6 @@
 #' @details
 #' <%=note%>
 #'
-#' @section Caution:
-#' This function was added in early May, 2018, and is likely to undergo
-#' changes until the mid-summer of that year.  Use with caution.
-#'
 #' @param object An oce object.
 #'
 #' @param name Character string indicating the name of the variable to be flagged. If

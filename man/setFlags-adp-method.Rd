@@ -63,12 +63,6 @@ See \dQuote{Details} for the particular case of \linkS4class{adp} objects.
 \details{
 The only flag that may be set is \code{v}, for the array holding velocity. See \dQuote{Indexing rules}, noting that adp data are stored in 3D arrays; Example 1 shows using a data frame for \code{i}, while Example 2 shows using an array.
 }
-\section{Caution}{
-
-This function was added in early May, 2018, and is likely to undergo
-changes until the mid-summer of that year.  Use with caution.
-}
-
 \examples{
 library(oce)
 data(adp)
