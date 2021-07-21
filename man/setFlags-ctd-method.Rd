@@ -63,12 +63,6 @@ See \dQuote{Details} for the particular case of \linkS4class{ctd} objects.
 \details{
 Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector (either logical as in Example 1 or integer as in Example 2), or a function taking a \code{ctd} object and returning such a vector (see \dQuote{Indexing rules}).
 }
-\section{Caution}{
-
-This function was added in early May, 2018, and is likely to undergo
-changes until the mid-summer of that year.  Use with caution.
-}
-
 \examples{
 library(oce)
 # Example 1: Range-check salinity

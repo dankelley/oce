@@ -71,11 +71,6 @@
 #' ```
 #' See reference 4 for a deeper explanation of the meanings of these codes.
 #'
-#'
-#' @section Caution:
-#' This function was added in early May, 2018, and is likely to undergo
-#' changes until the autumn of that year.  Use with caution.
-#'
 #' @param object An oce object.
 #'
 #' @param name a character value naming the scheme. If this refers
