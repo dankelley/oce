@@ -50,6 +50,15 @@ witnessed to cause problems on the oce developer's computers, including
 infinite loops and core dumps. See the help for the oce function `mapPlot` for
 a list of the available projections, and some advice on choosing them.
 
+You must ensure that the `sf` package is installed for the examples provided
+in this vignette to work.  If this package is not installed, it may be installed
+with
+```{r eval=FALSE}
+install.packages("sf")
+```
+(Of course, this step need not be repeated to use `oce`.)
+
+
 There are far too many projections to illustrate here. See
 <https://dankelley.github.io/r/2015/04/03/oce-proj.html> for a blog item that
 provides examples of the available projections. Note that some have a problem
