@@ -351,8 +351,6 @@ setMethod("initializeFlags",
               oceDebug(debug, "setFlags,adp-method name=", name, ", value=", value, "\n")
               if (is.null(name))
                   stop("must supply 'name'")
-              if (name != "v")
-                  stop("the only flag that adp objects can handle is for \"v\"")
               res <- initializeFlagsInternal(object, name, value, debug-1)
               res
           })
