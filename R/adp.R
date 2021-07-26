@@ -395,8 +395,6 @@ setMethod("setFlags",
           function(object, name=NULL, i=NULL, value=NULL, debug=getOption("oceDebug")) {
               if (is.null(name))
                   stop("must specify 'name'")
-              if (name != "v")
-                  stop("in adp objects, the only flag that can be set is for \"v\"")
               setFlagsInternal(object, name, i, value, debug-1)
           })
 
