@@ -2,6 +2,17 @@
 library(oce)
 data(adp)
 
+test_that("array values in data slot of 'adp' dataset are well-formed", {
+          dataNames <- names(adp[["data"]])
+          dimExpected <- c(25L, 84L, 4L)
+          for (name in c("a", "g", "q", "v")) {
+              expect_true(name %in% dataNames)
+              expect_true(identical(dimExpected, dim(adp[[name]])))
+              if (name %in% c("a", "g", "q"))
+                  expect_true(is.raw(adp[[name]]))
+          }
+})
+
 test_that("test all 'which' values listed in ?'plot,adp-method' on 2019 May 23", {
           ## Most of the numerical tests have character equivalents, but we
           ## test both. All this test really does is to ensure that the plots
