@@ -514,7 +514,12 @@ setMethod(f="summary",
               metadataNames <- names(object@metadata)
               cat("* Frequency:         ", object[["frequency"]], "kHz\n", ...)
               if ("ensembleNumber" %in% names(object@metadata)) {
-                  cat(paste("* Ensemble Numbers:  ", vectorShow(object@metadata$ensembleNumber, msg="")))
+                  en <- object@metadata$ensembleNumber
+                  nen <- length(en)
+                  if (nen > 4)
+                      cat("* Ensemble Numbers:   ", en[1], ", ", en[2], ", ..., ", en[nen-1L], ", ", en[nen], "\n", sep="")
+                  else
+                      cat("* Ensemble Numbers:   ", paste(en, collapse=", "), "\n", sep="")
               }
               if (!isAD2CP) {
                   if ("numberOfCells" %in% metadataNames) {
