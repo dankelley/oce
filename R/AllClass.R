@@ -406,16 +406,16 @@ setMethod(f="[[",
                   return(x@data)
               } else if (i == "processingLog") {
                   return(x@processingLog)
-              } else if (length(grep("Unit$", i))) {
+              } else if (grepl("Unit$", i)) {
                   ## returns a list
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$", "", i)]] else x@metadata[[i]])
-              } else if (length(grep(" unit$", i))) {
+              } else if (grepl(" unit$", i)) {
                   ## returns just the unit, an expression
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub(" unit$", "", i)]][[1]] else "")
-              } else if (length(grep(" scale$", i))) {
+              } else if (grepl(" scale$", i)) {
                   ## returns just the scale, a character string
                   return(if ("units" %in% names(x@metadata)) as.character(x@metadata$units[[gsub(" scale$", "", i)]][[2]]) else "")
-              } else if (length(grep("Flag$", i))) {
+              } else if (grepl("Flag$", i)) {
                   ## returns a list
                   return(if ("flags" %in% names(x@metadata)) x@metadata$flags[[gsub("Flag$", "", i)]] else NULL)
               } else if (i == "sigmaTheta") {
@@ -501,11 +501,11 @@ setMethod(f="[[<-",
               } else if (i %in% names(x@metadata)) {
                   x@metadata[[i]] <- value
               } else {
-                  if (length(grep("Unit$", i))) {
+                  if (grepl("Unit$", i)) {
                       if (!("units" %in% names(x@metadata)))
                           x@metadata$units <- list()
                       x@metadata$units[[gsub("Unit$", "", i)]] <- value
-                  } else if (length(grep("Flag$", i))) {
+                  } else if (grepl("Flag$", i)) {
                       if (!("flags" %in% names(x@metadata)))
                           x@metadata$flags <- list()
                       x@metadata$flags[[gsub("Flag$", "", i)]] <- value

@@ -643,37 +643,8 @@ setMethod(f="[[",
           signature(x="adp", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
               ##>message("top: i='", i, "'")
-              ## if (i == "a") {
-              ##     if (!missing(j) && j == "numeric") {
-              ##         res <- x@data$a
-              ##         dim <- dim(res)
-              ##         res <- as.numeric(res)
-              ##         dim(res) <- dim
-              ##     } else {
-              ##         res <- x@data$a
-              ##     }
-              ##     res
-              ## } else if (i == "q") {
-              ##     if (!missing(j) && j == "numeric") {
-              ##         res <- x@data$q
-              ##         dim <- dim(res)
-              ##         res <- as.numeric(res)
-              ##         dim(res) <- dim
-              ##     } else {
-              ##         res <- x@data$q
-              ##     }
-              ##     res
-              ## if (i == "g") {
-              ##     if (!missing(j) && 1 == length("numeric", j)) {
-              ##         res <- x@data$g
-              ##         dim <- dim(res)
-              ##         res <- as.numeric(res)
-              ##         dim(res) <- dim
-              ##     } else {
-              ##         res <- x@data$g
-              ##     }
-              ##     res
-              ##} else
+              if (length(i) != 1L)
+                  stop("In [[,adp-method() : may only extract 1 item at a time.\n", call.=FALSE)
               ISAD2CP <- is.ad2cp(x)
               ##>message("ISAD2CP=", ISAD2CP)
               if (i == "distance") {
