@@ -54,7 +54,7 @@ T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature * (100-tempe
 #' ## 4. How it is used by swRho()
 #' rho1 <- swRho(ctd, eos="unesco")
 #' rho2 <- swRho(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]], eos="unesco")
-#' expect_equal(rho1, rho2)
+#' stopifnot(all.equal(rho1, rho2))
 lookWithin <- function(list)
 {
     ##>>> message("in lookWithin")
@@ -432,9 +432,9 @@ swPressure <- function(depth, latitude=45, eos=getOption("oceEOS", default="gsw"
 #' *5*, pp 22-23.
 #'
 #' @examples
-#' expect_equal(1, swCSTp(35, T90fromT68(15), 0, eos="unesco")) # by definition of cond. ratio
-#' expect_equal(1, swCSTp(34.25045, T90fromT68(15), 2000, eos="unesco"), tolerance=1e-7)
-#' expect_equal(1, swCSTp(34.25045, T90fromT68(15), 2000, eos="gsw"), tolerance=1e-7)
+#' stopifnot(abs(1.0 - swCSTp(35, T90fromT68(15), 0, eos="unesco")) < 1e-7)
+#' stopifnot(abs(1.0 - swCSTp(34.25045, T90fromT68(15), 2000, eos="unesco")) < 1e-7)
+#' stopifnot(abs(1.0 - swCSTp(34.25045, T90fromT68(15), 2000, eos="gsw")) < 1e-7)
 #'
 #' @family functions that calculate seawater properties
 swCSTp <- function(salinity, temperature=15, pressure=0,
@@ -836,7 +836,7 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #' # in the newer ITS-90 scale, so we must convert before checking.
 #' Tcheck <- -2.588567 # IPTS-68
 #' T <- swTFreeze(salinity=40, pressure=500, eos="unesco")
-#' expect_equal(Tcheck, T68fromT90(T), tolerance=1e-6)
+#' stopifnot(abs(Tcheck - T68fromT90(T)) < 1e-6)
 #'
 #' # 2. Compare unesco and gsw formulations.
 #' data(ctd)
@@ -1754,7 +1754,7 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
 #' @references See citations provided in the [swRho()] documentation.
 #'
 #' @examples
-#' expect_equal(26.4212790994, swSigmaTheta(35, 13, 1000, eos="unesco"))
+#' stopifnot(abs(26.4212790994 - swSigmaTheta(35, 13, 1000, eos="unesco")) < 1e-7)
 #'
 #' @family functions that calculate seawater properties
 swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
@@ -2361,7 +2361,7 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL,
 #' @examples
 #' library(oce)
 #' ## test value from Fofonoff et al., 1983
-#' expect_equal(36.8818748026, swTheta(40, T90fromT68(40), 10000, 0, eos="unesco"))
+#' stopifnot(abs(36.8818748026 - swTheta(40, T90fromT68(40), 10000, 0, eos="unesco")) < 0.0000000001)
 #'
 #' # Example from a cross-Atlantic section
 #' data(section)

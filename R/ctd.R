@@ -215,13 +215,13 @@ NULL
 #' for (flagName in names(A[["flags"]]))
 #'     A[[paste(flagName, "Flag", sep="")]] <- flag
 #' Af <- handleFlags(A)
-#' expect_equal(is.na(Af[["salinity"]]), deep)
+#' stopifnot(all.equal(is.na(Af[["salinity"]]), deep))
 #'
 #' # 5. Single-variable flags (list specification)
 #' B <- section[["station", 100]]
 #' B[["flags"]] <- list(flag)
 #' Bf <- handleFlags(B)
-#' expect_equal(is.na(Bf[["salinity"]]), deep)
+#' stopifnot(all.equal(is.na(Bf[["salinity"]]), deep))
 #'
 #' @family things related to ctd data
 setMethod("handleFlags", signature=c(object="ctd", flags="ANY", actions="ANY", where="ANY", debug="ANY"),
@@ -455,9 +455,9 @@ setMethod(f="summary",
               mnames <- names(object@metadata)
               if (!is.null(type) && nchar(type)) {
                   if (is.null(model)) {
-                      cat("* Instrument:         ", type, "\n")
+                      cat("* Instrument:          ", type, "\n", sep="")
                   } else {
-                      cat("* Instrument:         ", type, model, "\n")
+                      cat("* Instrument:          ", type, " ", model, "\n", sep="")
                   }
               }
               ##showMetadataItem(object, "type",                      "Instrument:          ")
@@ -482,9 +482,9 @@ setMethod(f="summary",
               if (!is.null(deploymentType) && deploymentType != "unknown")
                   showMetadataItem(object, "deploymentType",            "Deployment type:     ")
               if ("longitude" %in% names(object@data)) {
-                  cat("* Mean location:      ",       latlonFormat(mean(object@data$latitude, na.rm=TRUE),
+                  cat("* Mean location:       ",       latlonFormat(mean(object@data$latitude, na.rm=TRUE),
                                                                    mean(object@data$longitude, na.rm=TRUE),
-                                                                   digits=5), "\n")
+                                                                   digits=5), "\n", sep="")
               } else if ("longitude" %in% names(object@metadata) && !is.na(object@metadata$longitude)) {
                   cat("* Location:            ",       latlonFormat(object@metadata$latitude,
                                                                     object@metadata$longitude,
@@ -725,9 +725,13 @@ setMethod(f="[[",
                   gsw::gsw_Sstar_from_SA(SA=SA, p=x[["pressure"]], longitude=lon, latitude=lat)
               } else if (i == "temperature") {
                   scale <- metadata$units[["temperature"]]$scale
-                  if (!is.null(scale) && "IPTS-68" == scale)
-                      T90fromT68(data$temperature)
-                  else data$temperature
+                  if (!is.null(scale) && "IPTS-48" == scale) {
+                      T90fromT48(x@data$temperature)
+                  } else if (!is.null(scale) && "IPTS-68" == scale) {
+                      T90fromT68(x@data$temperature)
+                  } else {
+                      x@data$temperature
+                  }
               } else if (i == "pressure") {
                   if ("pressure" %in% dataNames) {
                       pressure <- data$pressure
@@ -1183,8 +1187,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    ##1108 src="",
                    debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1, style="bold")
     if (!missing(salinity) && inherits(salinity, "rsk")) {
-        oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
+        oceDebug(debug, "first argument is an 'rsk' object\n")
         res <- rsk2ctd(salinity,
                        pressureAtmospheric=pressureAtmospheric,
                        longitude=longitude,
@@ -1194,32 +1199,41 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                        cruise=cruise,
                        deploymentType=deploymentType,
                        debug=debug-1)
-        oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
+        oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1, style="bold")
         return(res)
     }
-    oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
     res <- new('ctd')
     waterDepth <- NA
     unitsGiven <- !is.null(units)
+    salinityGiven <- !missing(salinity)
     if (!is.null(startTime) && is.character(startTime))
         startTime <- as.POSIXct(startTime, tz="UTC")
     ##1108 if (!is.null(recovery) && is.character(recovery))
     ##1108     recovery <- as.POSIXct(recovery, tz="UTC")
-    if (missing(salinity)) {
+
+    if (salinityGiven) {
+        firstArg <- salinity
+    } else {
         if (!missing(conductivity) && !missing(temperature) && !missing(pressure)) {
             salinity <- swSCTp(conductivity=conductivity, temperature=temperature, pressure=pressure)
         } else {
             stop("if salinity is not provided, conductivity, temperature and pressure must all be provided")
         }
+        firstArg <- NULL
     }
     filename <- ""
+    ounits <- NULL # replace with metadata$units if first arg is an oce object
     if (inherits(salinity, "oce")) {
-        if (inherits(salinity, "ctd"))
+        if (inherits(salinity, "ctd")) {
+            oceDebug(debug, "first argument is a ctd object already, so returning as-is\n")
+            oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1, style="bold")
             return(salinity)
-        oceDebug(debug, "'salinity' is an oce object, so ignoring other arguments\n")
+        }
+        oceDebug(debug, "first argument is an oce object, so ignoring other arguments\n")
         o <- salinity
         d <- o@data
         m <- o@metadata
+        ounits <- o@metadata$units
         dnames <- names(d)
         mnames <- names(m)
         ship <- m$ship
@@ -1261,7 +1275,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             d$pressure <- d$pressure - pressureAtmospheric
         }
         salinity <- d$salinity
-        res@metadata$units <- units
+        res@metadata$units <- o@metadata$units
         if (!is.null(flags))
             res@metadata$flags <- flags
         if (!is.null(o@metadata$flags))
@@ -1374,7 +1388,6 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         }
         res@metadata$deploymentType <- deploymentType
         res@metadata$dataNamesOriginal <- m$dataNamesOriginal
-        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         ## move e.g. salinityFlag from data slot to metadata$flags
         dataNames <- names(res@data)
         flagNameIndices <- grep(".*Flag$", dataNames)
@@ -1576,10 +1589,19 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         }
         res@data <- data
     }
-    if (!unitsGiven) {
+    if (!is.null(ounits)) {
+        oceDebug(debug, "copying units from first argument\n")
+        res@metadata$units <- ounits
+    } else if (!unitsGiven) {
+        oceDebug(debug, "assuming standard modern units, since none provide or available in first argument\n")
         ## guess on units
         names <- names(res@data)
-        if ("salinity" %in% names) res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+        if ("salinity" %in% names)
+            res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+        if ("temperature" %in% names)
+            res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+        if ("pressure" %in% names)
+            res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
     }
     ## the 'units' argument takes precedence over guesses
     dataNames <- names(res@data)
@@ -1588,12 +1610,14 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         res@metadata$flags <- flags
 
     ## Default some units (FIXME: this may be a bad idea)
-    if ("salinity" %in% dataNames && !("salinity" %in% unitsNames))
-        res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
-    if ("temperature" %in% dataNames && !("temperature" %in% unitsNames))
-        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-    if ("pressure" %in% dataNames && !("pressure" %in% unitsNames))
-        res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    if (is.null(res@metadata$units)) {
+        if ("salinity" %in% dataNames && !("salinity" %in% unitsNames))
+            res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+        if ("temperature" %in% dataNames && !("temperature" %in% unitsNames))
+            res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+        if ("pressure" %in% dataNames && !("pressure" %in% unitsNames))
+            res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    }
     ## FIXME: setting waterDepth can have tricky results ... we've had issues with this
     if (is.na(res@metadata$waterDepth) && !is.na(waterDepth))
         res@metadata$waterDepth <- waterDepth
@@ -1607,7 +1631,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         res@metadata$latitude <- NULL
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
+    oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1, style="bold")
     res
 }
 
@@ -4320,9 +4344,37 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' [read.ctd()] scans it from a file.
 #'
 #' @examples
+#' ## For a simple ctd object
 #' library(oce)
 #' data(ctd)
 #' plotTS(ctd)
+#'
+#' ## For a section object (note the outlier!)
+#' data(section)
+#' plotTS(section)
+#'
+#' ## Adding a colormap based on a different variable, e.g. oxygen
+#' marOrig <- par("mar") # so later plots with palettes have same margins
+#' cm <- colormap(section[['oxygen']])
+#' drawPalette(colormap=cm, zlab='Oxygen')
+#' plotTS(section, pch=19, col=cm$zcol, mar=par('mar')) # the mar adjusts for the palette
+#'
+#' ## Coloring based on station:
+#' Tlim <- range(section[['temperature']], na.rm=TRUE)
+#' Slim <- range(section[['salinity']], na.rm=TRUE)
+#' cm <- colormap(seq_along(section[['latitude', 'byStation']]))
+#' par(mar=marOrig) # same as previous plot
+#' drawPalette(colormap=cm, zlab='Latitude')
+#' plotTS(section, Tlim=Tlim, Slim=Slim, pch=NA, mar=par('mar'))
+#' jnk <- mapply(
+#'     function(s, col) {
+#'         plotTS(s, col=col, add=TRUE, type='l')
+#'     },
+#'     section[['station']], col=cm$zcol)
+#'
+#' ## Show TS for an argo object
+#' data(argo)
+#' plotTS(handleFlags(argo))
 #'
 #' @references
 #'
@@ -4540,6 +4592,7 @@ plotTS <- function (x,
             } else if (type != 'n') {
                 points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty)
             }
+            return()
         } else {
             oceDebug(debug, "add=FALSE, so making new plot panel based on Slim and Tlim\n")
             plot(Slim, Tlim,

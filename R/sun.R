@@ -30,8 +30,9 @@
 #' @references Regarding `declination` and `rightAscension`, see
 #' references in the documentation for [sunDeclinationRightAscension()].
 #' The other items are based on Fortran code retrieved from
-#' ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f on
-#' 2009-11-1.  Comments in that code list as references:
+#' the file `sunae.f`, downloaded from the ftp site
+#' \code{climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles}
+#' on 2009-11-1.  Comments in that code list as references:
 #'
 #' Michalsky, J., 1988: The Astronomical Almanac's algorithm for approximate
 #' solar position (1950-2050), Solar Energy 40, 227-235
@@ -229,16 +230,12 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
 #' ## Example 24.a in Meeus (1991) (page 158 PDF, 153 print)
 #' time <- as.POSIXct("1992-10-13 00:00:00", tz="UTC")
 #' a <- sunDeclinationRightAscension(time, apparent=TRUE)
-#' expect_equal(a$declination, -7.78507,
-#'              tol=            0.00004, scale=1)
-#' expect_equal(a$rightAscension, -161.61919,
-#'              tol=                 0.00003, scale=1)
+#' stopifnot(abs(a$declination - (-7.78507)) < 0.00004)
+#' stopifnot(abs(a$rightAscension - (-161.61919)) < 0.00003)
 #' b <- sunDeclinationRightAscension(time)
 #' ## check against previous results, to protect aginst code-drift errors
-#' expect_equal(b$declination, -7.785464443,
-#'              tol=            0.000000001, scale=1)
-#' expect_equal(b$rightAscension, -161.6183305,
-#'              tol=                 0.0000001, scale=1)
+#' stopifnot(abs(b$declination - (-7.785464443)) < 0.000000001)
+#' stopifnot(abs(b$rightAscension - (-161.6183305)) < 0.0000001)
 #'
 #' @references
 #' * Meeus, Jean. Astronomical Algorithms. Second Edition.

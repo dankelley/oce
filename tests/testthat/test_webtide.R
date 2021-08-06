@@ -1,8 +1,6 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
 
-context("webtide")
-
 if (file.exists("/data/nwatl")) {
   test_that("webtide", {
             path <- paste(getOption("webtide"), "/data/nwatl", sep="")

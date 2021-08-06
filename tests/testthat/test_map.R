@@ -1,7 +1,7 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
 
-context("Map calculations")
+if (requireNamespace("sf", quietly=TRUE)) {
 
 test_that("utm2lonlat() and lonlat2utm() on some points known from Landsat metadata", {
           longitude <- c(-40.27900, -38.22680, -40.28255, -38.22465,
@@ -50,8 +50,8 @@ test_that("lonlat2utm() on image for issue 707 (corners cross zones)", {
           utm <- lonlat2utm(longitude, latitude, zone=zone)
           ## Use tolerance to check to within a metre, surely sufficient
           ## for any purpose with landsat-8, given its pixel size.
-          expect_equal(utm$northing, northing, scale=1, tolerance=0.5)
-          expect_equal(utm$easting, easting, scale=1, tolerance=0.5)
+          expect_equal(utm$northing, northing, tolerance=0.5)
+          expect_equal(utm$easting, easting, tolerance=0.5)
 })
 
 test_that("lonlat2map() near Cape Split", {
@@ -63,4 +63,6 @@ test_that("lonlat2map() near Cape Split", {
             expect_equal(cs, cs2)
           }
 })
+
+}
 

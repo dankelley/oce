@@ -462,7 +462,7 @@ metNames2oceNames <- function(names, scheme)
     res <- names
     if (!missing(scheme)) {
         if (scheme == "ODF") {
-            res <- ODFNames2oceNames(ODFnames=names, ODFunits=NULL)
+            res <- ODFNames2oceNames(ODFnames=names)
         } else if (scheme == "met") {
             ## next block handles monthly data
             res[grep("^Date.Time$", res)] <- "DateTime"
@@ -683,13 +683,13 @@ read.met.csv1 <- function(file, skip=NULL, tz=getOption("oceTz"), debug=getOptio
     options(warn=owarn)
     names <- names(rawData)
     ## FIXME: handle daily data, if the column names differ
-    if ("Day" %in% names && "Time" %in% names) {
+    time <- if ("Day" %in% names && "Time" %in% names) {
         ## hourly data
-        time <- strptime(paste(rawData$Year, rawData$Month, rawData$Day, rawData$Time),
-                         "%Y %m %d %H:%M", tz=tz)
+        as.POSIXct(strptime(paste(rawData$Year, rawData$Month, rawData$Day, rawData$Time),
+                            "%Y %m %d %H:%M", tz=tz))
     } else {
         ## monthly data
-        time <- ISOdatetime(rawData$Year, rawData$Month, 15, 0, 0, 0, tz="UTC")
+        ISOdatetime(rawData$Year, rawData$Month, 15, 0, 0, 0, tz="UTC")
     }
     ## deltat <- if ("Date.Time" %in% names) "monthly" else "hourly"
     ## print(data.frame(old=names, new=metNames2oceNames(names, "met")))

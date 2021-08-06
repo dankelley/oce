@@ -1,8 +1,6 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
 
-context("ODV")
-
 ## This ODV file was provided in an issue report; see
 ## https://github.com/dankelley/oce/issues/1696
 test_that("local sample01.txt (from a user)", {

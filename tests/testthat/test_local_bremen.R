@@ -1,5 +1,4 @@
 library(oce)
-context("Bremen data format")
 
 test_that("lowered adcp", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {

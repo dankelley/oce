@@ -28,15 +28,16 @@ a color for each point.  If \code{z} is not given, \code{zcol} will contain
 just one item, the color \code{"black"}.}
 
 \item{zlim}{optional vector containing two numbers that specify the \code{z}
-limits for the color scale.  If provided, it overrides defaults as describe
-in the following.  If \code{name} is given, then the \code{\link[=range]{range()}} of
-numerical values contained therein will be used for \code{zlim}.  Otherwise,
-if \code{z} is given, then its \code{\link[=rangeExtended]{rangeExtended()}} sets \code{zlim}.
-Otherwise, if \code{x0} and \code{x1} are given, then their
-\code{\link[=range]{range()}} sets \code{zlim}.  Otherwise, there is no way to infer
-\code{zlim} and indeed there is no way to construct a colormap, so an error
-is reported.  It is an error to specify both \code{zlim} and \code{breaks},
-if the length of the latter does not equal 1.}
+limits for the color scale. This can only be provided in cases A
+and B, as defined in \dQuote{Details}.  For case A, if \code{zlim} is not
+provided, then it is inferred by using \code{\link[=rangeExtended]{rangeExtended()}}
+on \code{breaks}, if that is provided, or from \code{z} otherwise.  Also,
+in case A, it is an error to provide both \code{zlim} and \code{breaks},
+unless the latter is of length 1, meaning the number of
+subdivisions to use within the range set by \code{zlim}.
+In case B, \code{zlim} is inferred from using \code{\link[=rangeExtended]{rangeExtended()}} on \code{c(x0,x1)}.
+In case C, providing \code{zlim} yields an error message, because it makes no
+sense in the context of a named, predefined color scheme.}
 
 \item{zclip}{logical, with \code{TRUE} indicating that z values outside the
 range of \code{zlim} or \code{breaks} should be painted with
@@ -62,16 +63,18 @@ the default for \code{col} was \code{oceColorsJet}, but it was switched to
 \item{name}{an optional string naming a built-in colormap (one of
 \code{"gmt_relief"}, \code{"gmt_ocean"}, \code{"gmt_globe"} or
 \code{"gmt_gebco"}) or the name of a file or URL that contains a color map
-specification in GMT format, e.g. one of the \code{.cpt} files from
-\url{https://beamreach.org/maps/gmt/share/cpt/}). If \code{name} is
-provided, then \code{x0}, \code{x1}, \code{col0} and \code{col1} are all
-ignored.}
+specification in GMT format.  If \code{name} is given, then it is
+passed to \code{\link[=colormapGMT]{colormapGMT()}}, which creates the colormap.
+Note that the colormap thus created has a fixed
+relationship between value and color, and \code{zlim},
+only other argument that is examined is \code{z} (which may be used
+so that \code{zcol} will be defined in the return value), and warnings
+are issued if some irrelevant arguments are provided.}
 
 \item{x0, x1, col0, col1}{Vectors that specify a color map.  They must all be
 the same length, with \code{x0} and \code{x1} being numerical values, and
 \code{col0} and \code{col1} being colors.  The colors may be strings (e.g.
-\code{"red"}) or colors as defined by \code{\link[=rgb]{rgb()}} or
-\code{\link[=hsv]{hsv()}}.}
+\code{"red"}) or colors as defined by \code{\link[=rgb]{rgb()}} or \code{\link[=hsv]{hsv()}}.}
 
 \item{blend}{a number indicating how to blend colors within each band.
 This is ignored except when \code{x0} through \code{col1} are supplied.  A
@@ -82,15 +85,16 @@ the stated fraction.  Values exceeding 1 are an error at present, but there
 is a plan to use this to indicate subintervals, so a smooth palette can be
 created from a few colors.}
 
-\item{missingColor}{color to use for missing values.  If not provided, this
-will be \code{"gray"}, unless \code{name} is given, in which case it comes
-from that color table.}
+\item{missingColor}{color to use for missing values. This cannot be provided
+if \code{name} is also provided (case C), because named schemes have pre-defined
+colors.  For other cases, \code{missingColor} defaults to \code{"gray"}, if it
+is not provided as an argument.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
 }
 \value{
-A list containing the following (not necessarily in this order)
+a list containing the following (not necessarily in this order)
 \itemize{
 \item \code{zcol}, a vector of colors for \code{z}, if \code{z} was
 provided, otherwise \code{"black"}
@@ -106,53 +110,40 @@ colors.  The meaning is the same as on input.  The purpose of returning
 these four vectors is to permit users to alter color mapping, as in example
 3 in \dQuote{Examples}.
 \item \code{missingColor}, a color that could be used to specify missing
-values, e.g. as the same-named argument to \code{\link[=imagep]{imagep()}}.  If this is
-supplied as an argument, its value is repeated in the return value.
-Otherwise, its value is either \code{"gray"} or, in the case of \code{name}
-being given, the value in the GMT color map specification.
+values, e.g. as the same-named argument to \code{\link[=imagep]{imagep()}}.
 \item \code{colfunction}, a univariate function that returns a vector
 of colors, given a vector of \code{z} values; see Example 6.
 }
 }
 \description{
-Map values to colors, for use in palettes and plots. There are many ways to
-use this function, and some study of the arguments should prove fruitful in
-cases that extend far beyond the examples.
+Create a mapping between numeric values and colors, for use in palettes and plots.
+The return value can be used in various ways, including colorizing points
+on scattergraphs, controlling images created by \code{\link[=image]{image()}} or \code{\link[=imagep]{imagep()}},
+drawing palettes with \code{\link[=drawPalette]{drawPalette()}}, etc.
 }
 \details{
-This is a multi-purpose function that generally links (``maps'') numerical
-values to colors.  The return value can specify colors for points on a
-graph, or \code{breaks} and `col` vectors that are suitable for use by
-\code{\link[=drawPalette]{drawPalette()}}, \code{\link[=imagep]{imagep()}} or \code{\link[=image]{image()}}.
-
-There are three ways of specifying color schemes, and \code{colormap} works
-by checking for each condition in turn.
+\code{colormap} can be used in a variety of ways, including the following.
 \itemize{
-\item \strong{Case A.} Supply \code{z} but nothing else.  In this case,
-\code{breaks} will be set to \code{[}pretty\verb{]}(z,10)` and things are
-otherwise as in case B.
-\item \strong{Case B.} Supply \code{breaks}.  In this case, \code{breaks} and
-\code{col} are used together to specify a color scheme.  If \code{col} is a
-function, then it is expected to take a single numerical argument that
-specifies the number of colors, and this number will be set to
-\code{length(breaks)-1}.  Otherwise, \code{col} may be a vector of colors,
-and its length must be one less than the number of breaks.  (NB. if
-\code{breaks} is given, then all other arguments except \code{col} and
-\code{missingColor} are ignored.) \if{html}{The figure below explains the
+\item \strong{Case A.} Supply some combination of arguments that
+is sufficient to define a mapping of value to color, without
+providing \code{x0}, \code{col0}, \code{x1} or \code{col1} (see case B for these),
+or providing \code{name} (see Case C). There are several ways to
+do this.  One approach is to supply \code{z} but no
+other argument, in which case \code{zlim}, and \code{breaks} will be determined
+from \code{z}, and the default \code{col} will be used.  Another approach is
+to specify \code{breaks} and \code{col} together, in the same way as they
+might be specified for the base R function \code{\link[=image]{image()}}.  It is
+also possible to supply only \code{zlim}, in which case \code{breaks} is
+inferred from that value.
+\if{html}{The figure below explains the
 (`breaks`, `col`) method of specifying a color mapping.  Note
 that there must be one more break than color.  This is the method used by
 e.g. [image()].}
 \if{html}{\figure{colormap_fig_1.png}}
-\item \strong{Case C.} Do not supply \code{breaks}, but supply \code{name}
-instead.  This \code{name} may be the name of a pre-defined color palette
-(\code{"gmt_relief"}, \code{"gmt_ocean"}, \code{"gmt_globe"} or
-\code{"gmt_gebco"}), or it may be the name of a file (including a URL)
-containing a color map in the GMT format (see \dQuote{References}).  (NB.
-if \code{name} is given, then all other arguments except \code{z} and
-\code{missingColor} are ignored.)
-\item \strong{Case D.} Do not supply either \code{breaks} or \code{name}, but
-instead supply each of \code{x0}, \code{x1}, \code{col0}, and \code{col1}.
-These values are specify a value-color mapping that is similar to that used
+\item \strong{Case B.} Supply \code{x0}, \code{col0}, \code{x1}, and \code{col1}, but \emph{not}
+\code{zlim}, \code{breaks}, \code{col} or \code{name}.
+The \code{x0}, \code{col0}, \code{x1} and \code{col1} values specify a
+value-color mapping that is similar to that used
 for GMT color maps.  The method works by using \code{\link[=seq]{seq()}} to
 interpolate between the elements of the \code{x0} vector.  The same is done
 for \code{x1}.  Similarly, \code{\link[=colorRampPalette]{colorRampPalette()}} is used to
@@ -163,6 +154,16 @@ Note that the each of the items has the same length. The case of
 `blend=0`, which has color `col0[i]` between `x0[i]` and
 `x1[i]`, is illustrated below.}
 \if{html}{\figure{colormap_fig_2.png}}
+\item \strong{Case C.} Supply \code{name} and possibly also \code{z}, but \emph{not}
+\code{zlim}, \code{breaks}, \code{col}, \code{x0}, \code{col0}, \code{x1} or \code{col1}.
+The \code{name} may be the name of a pre-defined color palette
+(\code{"gmt_relief"}, \code{"gmt_ocean"}, \code{"gmt_globe"} or
+\code{"gmt_gebco"}), or it may be the name of a file (or URL pointing to a file)
+that contains a color map in the GMT format (see \dQuote{References}). If
+\code{z} is supplied along with \code{name}, then \code{zcol} will be set up in the
+return value, e.g. for use in colorizing points.  Another method
+for finding colors for data points is to use the \code{colfunction()}
+function in the return value.
 }
 }
 \examples{
@@ -231,17 +232,9 @@ plot(x, y, pch=21, bg=cm$colfunction(z), cex=3)
 }
 
 }
-\references{
-Information on GMT software is given at
-\verb{http://gmt.soest.hawaii.edu} (link worked for years but failed
-2015-12-12).  Diagrams showing the GMT color schemes are at
-\verb{http://www.geos.ed.ac.uk/it/howto/GMT/CPT/palettes.html} (link worked
-for years but failed 2015-12-08), and numerical specifications for some
-color maps are at \url{https://beamreach.org/maps/gmt/share/cpt/},
-\url{http://soliton.vm.bytemark.co.uk/pub/cpt-city/}, and other sources.
-}
 \seealso{
 Other things related to colors: 
+\code{\link{colormapGMT}()},
 \code{\link{oceColors9B}()},
 \code{\link{oceColorsCDOM}()},
 \code{\link{oceColorsChlorophyll}()},

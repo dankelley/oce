@@ -224,8 +224,7 @@ setMethod(f="summary",
                       thisStn <- object@data$station[[i]]
                       id <- if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
                           thisStn@metadata$station else ""
-                      depth <- if (!is.finite(thisStn@metadata$waterDepth) || 0 == thisStn@metadata$waterDepth)
-                          max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
+                      depth <- if ("waterDepth" %in% names(thisStn@metadata)) thisStn@metadata$waterDepth else NA
                       cat(sprintf("%5d %5s %8.4f %8.4f %7.0f %5.0f\n",
                                   i, id,
                                   thisStn[["longitude"]][1], thisStn[["latitude"]][1],
@@ -665,6 +664,7 @@ setMethod(f="subset",
                   stn <- x@metadata$stationId[indices]
                   lat <- x@metadata$lat[indices]
                   lon <- x@metadata$lon[indices]
+                  time <- x@metadata$time[indices]
                   station <- vector("list", length(indices))
                   for (i in seq_along(indices)) {
                       station[[i]] <- x@data$station[[indices[i]]]
@@ -673,6 +673,7 @@ setMethod(f="subset",
                   res@metadata$stationId <- stn
                   res@metadata$longitude <- lon
                   res@metadata$latitude <- lat
+                  res@metadata$time <- time
                   res@data <- data
                   res@processingLog <- x@processingLog
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, indices=c(", paste(dots$indices, collapse=","), "))", sep=""))
@@ -729,7 +730,7 @@ setMethod(f="subset",
                   ##subsetString <- deparse(substitute(subset))
                   ##oceDebug(debug, "subsetString='", subsetString, "'\n")
                   res <- x
-                  if (length(grep("stationId", subsetString))) {
+                  if (grepl("stationId", subsetString)) {
                       keep <- eval(expr=substitute(expr=subset, env=environment()),
                                    envir=data.frame(stationId=as.numeric(x@metadata$stationId)))
                       res@metadata$stationId <- x@metadata$stationId[keep]
@@ -738,30 +739,33 @@ setMethod(f="subset",
                       res@metadata$time <- x@metadata$time[keep]
                       res@data$station <- x@data$station[keep]
                       res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
-                  } else if (length(grep("distance", subsetString))) {
+                  } else if (grepl("distance", subsetString)) {
                       l <- list(distance=geodDist(res))
                       keep <- eval(expr=substitute(expr=subset, env=environment()), envir=l, enclos=parent.frame(2))
                       res@metadata$longitude <- res@metadata$longitude[keep]
                       res@metadata$latitude <- res@metadata$latitude[keep]
                       res@metadata$stationId <- res@metadata$stationId[keep]
+                      res@metadata$time <- x@metadata$time[keep]
                       res@data$station <- res@data$station[keep]
-                  } else if (length(grep("levels", subsetString))) {
+                  } else if (grepl("levels", subsetString)) {
                       levels <- unlist(lapply(x[["station"]], function(stn) length(stn[["pressure"]])))
                       keep <- eval(expr=substitute(expr=subset, env=environment()), envir=list(levels=levels))
                       res@metadata$longitude <- res@metadata$longitude[keep]
                       res@metadata$latitude <- res@metadata$latitude[keep]
                       res@metadata$stationId <- res@metadata$stationId[keep]
+                      res@metadata$time <- x@metadata$time[keep]
                       res@data$station <- res@data$station[keep]
-                  } else if (length(grep("latitude", subsetString)) || length(grep("longitude", subsetString))) {
+                  } else if (grepl("latitude", subsetString) || grepl("longitude", subsetString)) {
                       n <- length(x@data$station)
                       keep <- vector(length=n)
                       for (i in 1:n)
                           keep[i] <- eval(expr=substitute(expr=subset, env=environment()), envir=x@data$station[[i]]@metadata, enclos=parent.frame(2))
                       nn <- sum(keep)
                       station <- vector("list", nn)
-                      stn <- vector("character", nn)
-                      lon <- vector("numeric", nn)
-                      lat <- vector("numeric", nn)
+                      stn <- NULL # we can later index this to accumulate
+                      lon <- NULL
+                      lat <- NULL
+                      time <- NULL
                       j <- 1
                       for (i in 1:n) {
                           if (keep[i]) {
@@ -769,6 +773,7 @@ setMethod(f="subset",
                               lon[j] <- x@metadata$longitude[i]
                               lat[j] <- x@metadata$latitude[i]
                               station[[j]] <- x@data$station[[i]]
+                              time[[j]] <- x@data$time[[i]]
                               j <- j + 1
                           }
                       }
@@ -779,15 +784,17 @@ setMethod(f="subset",
                       res@metadata$stationId <- stn
                       res@metadata$longitude <- lon
                       res@metadata$latitude <- lat
+                      res@metadata$time <- time
                       res@processingLog <- x@processingLog
                   } else {
                       res <- new("section")
                       res@data$station <- list()
                       res@metadata$header <- x@metadata$header
-                      res@metadata$sectionId <- NULL
+                      res@metadata$sectionId <- NULL # R will let us index into these later
                       res@metadata$stationId <- NULL
                       res@metadata$longitude <- NULL
                       res@metadata$latitude <- NULL
+                      res@metadata$time <- NULL
                       res@processingLog <- x@processingLog
                       n <- length(x@data$station)
                       j <- 1
@@ -814,6 +821,7 @@ setMethod(f="subset",
                               res@metadata$stationId[j] <- x@metadata$stationId[i]
                               res@metadata$latitude[j] <- x@metadata$latitude[i]
                               res@metadata$longitude[j] <- x@metadata$longitude[i]
+                              res@metadata$time[j] <- x@metadata$time[i]
                               j <- j + 1
                           } else {
                               oceDebug(debug, "    skipping this station\n")
@@ -2465,7 +2473,7 @@ read.section <- function(file, directory, sectionId="", flags,
         isFlag <- rep(TRUE, sum(!colSkip))
         for (idata in seq_along(dataNames)) {
             ## Split flags into metadata
-            isFlag[idata] <- 0 < length(grep("Flag$", dataNames[idata]))
+            isFlag[idata] <- grepl("Flag$", dataNames[idata])
             if (isFlag[idata]) {
                 thisStation@metadata$flags[[gsub("Flag$", "", dataNames[idata])]] <- as.numeric(DATA[select, idata])
             } else {
@@ -3177,6 +3185,10 @@ sectionSmooth <- function(section, method="spline",
 #'
 #' @param sectionId Section identifier.
 #'
+#' @param debug an integer value that controlls whether `as.section()` prints information
+#' during its work.  The function works quietly if this is 0 and prints out some
+#' information if it is positive.
+#'
 #' @return An object of [section-class].
 #'
 #' @examples
@@ -3204,8 +3216,10 @@ sectionSmooth <- function(section, method="spline",
 #' @author Dan Kelley
 #'
 #' @family things related to section data
-as.section <- function(salinity, temperature, pressure, longitude, latitude, station, sectionId="")
+as.section <- function(salinity, temperature, pressure, longitude, latitude, station, sectionId="", debug=getOption("oceDebug"))
 {
+    debug <- as.integer(min(1, max(0, debug))) # make it be 0 or 1
+    oceDebug(debug, "as.section() {\n", sep="", style="bold", unindent=1)
     if (missing(salinity))
         stop("argument 'salinity' is missing")
     res <- new("section", sectionId="")
@@ -3259,6 +3273,7 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
             }
         }
     } else if (inherits(salinity, "list")) {
+        oceDebug(debug, "first argument is a list (assumed to be a list of oce objects)\n")
         thelist <- salinity            # prevent accidental overwriting
         if (!length(thelist))
             stop("no data in this list")
@@ -3266,14 +3281,22 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
             nstation <- length(salinity)
             ctds <- vector("list", nstation)
             badDepths <- NULL
-            for (i in 1:nstation) {
+            for (i in seq_len(nstation)) {
+                oceDebug(debug, "processing item", i, "of", nstation, "\n")
                 if (!("pressure" %in% names(thelist[[i]]@data)))
-                    stop("cannot create a section from this list because element number ", i, " lacks pressure")
-                if (is.na(thelist[[i]][["waterDepth"]])) {
-                    thelist[[i]][["waterDepth"]] <- max(thelist[[i]][["pressure"]], na.rm=TRUE)
-                    badDepths <- c(badDepths, i)
+                    stop("cannot create a section from this first argument, because its ", i, "-th element lacks pressure")
+                # Replace NA water depth with highest pressure. Note that this action is skipped
+                # if there is no water depth (e.g. if the first argument is a list of Argo objects).
+                # See https://github.com/dankelley/oce/issues/1797
+                if ("waterDepth" %in% names(thelist[[i]]@metadata)) {
+                    if (is.na(thelist[[i]]@metadata$waterDepth)) {
+                        thelist[[i]]@metadata$waterDepth <- max(thelist[[i]]@data$pressure, na.rm=TRUE)
+                        badDepths <- c(badDepths, i)
+                    }
+                } else {
+                    thelist[[i]]@metadata$waterDepth <- NA
                 }
-                ctds[[i]] <- thelist[[i]]
+                ctds[[i]] <- as.ctd(thelist[[i]])
             }
             if (length(badDepths))
                 warning("estimated waterDepth as max(pressure) for CTDs numbered ",
@@ -3298,6 +3321,7 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
     res@metadata$time <- numberAsPOSIXct(unlist(lapply(ctds, function(x) x[["time"]][1])))
     res@data <- list(station=ctds)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # as.section()\n", sep="", style="bold", unindent=1)
     res
 }
 

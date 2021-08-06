@@ -1,5 +1,4 @@
 library(oce)
-context("Geodesics")
 test_that("forward=inverse", {
           data(section)
           lon <- section[["longitude", "byStation"]]

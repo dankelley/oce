@@ -9,8 +9,6 @@ library(oce)
 ##data("adv")
 ##data("argo")
 
-context("datasets")
-
 test_that("cm", {
           data("cm")
           S <- cm[["salinity"]]

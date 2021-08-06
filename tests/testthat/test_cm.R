@@ -1,6 +1,5 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
-context("cm")
 
 test_that("as.cm() works with vectors", {
           n <- 10

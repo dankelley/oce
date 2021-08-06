@@ -2,8 +2,6 @@
 library(oce)
 data("xbt")
 
-context("xbt (expendible bathythermograph)")
-
 test_that("as.xbt() works", {
           XBT <- as.xbt(z=-xbt[["depth"]], temperature=xbt[["temperature"]])
           expect_equal(XBT[["units"]], list(temperature=list(unit=expression(degree*C), scale="ITS-90"),

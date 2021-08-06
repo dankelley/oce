@@ -1,5 +1,4 @@
 library(oce)
-context("local section")
 test_that("BOTTLE type", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               s <- read.oce("local_data/77DN20020420_hy1.csv")

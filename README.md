@@ -1,7 +1,7 @@
 # oce <img src="https://raw.githubusercontent.com/dankelley/oce/develop/oce-logo-3.png" align="right" height="95" />
 
 <!-- badges: start -->
-
+[![status](https://joss.theoj.org/papers/4e11074685a0c614345560332cfd27e8/status.svg)](https://joss.theoj.org/papers/4e11074685a0c614345560332cfd27e8)
 [![R-CMD-check](https://github.com/dankelley/oce/workflows/R-CMD-check/badge.svg)](https://github.com/dankelley/oce/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://codecov.io/gh/dankelley/oce?branch=develop)
@@ -11,7 +11,6 @@ downloads](https://cranlogs.r-pkg.org/badges/last-month/oce) ![RStudio
 CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)
 ![RStudio CRAN mirror
 downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
-[![Rdoc](https://www.rdocumentation.org/badges/version/oce)](https://www.rdocumentation.org/packages/oce)
 <!-- badges: end -->
 
 ## About oce

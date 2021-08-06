@@ -70,9 +70,7 @@ at other Canadian Department of Fisheries and Oceans (DFO) facilities
 (see references 1 and 2).
 It can hold various types of time-series data, which includes a variety
 of instrument types. Thus, \code{\link[=read.odf]{read.odf()}}
-is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2018,
-\code{\link[=read.odf]{read.odf()}} is still in development, with features being added as a
-project with DFO makes available more files.
+is used by \code{read.ctd.odf} for CTD data, etc.
 }
 \details{
 Note that some elements of the metadata are particular to ODF objects,
@@ -84,10 +82,7 @@ the total water depth, is set to \code{sounding} if that is finite,
 or to \code{maxDepth} otherwise.
 
 The function \code{\link[=ODFNames2oceNames]{ODFNames2oceNames()}} is used to translate
-data names from the ODF file to standard \code{oce} names, and
-handles conversion for a few non-standard units. The documentation
-of \code{\link[=ODFNames2oceNames]{ODFNames2oceNames()}} should be consulted for more
-details.
+data names from the ODF file to standard \code{oce} names.
 }
 \section{Metadata conventions}{
 
@@ -112,13 +107,41 @@ that suffices are used to disambiguate sibling items of identical
 name in the ODF header).
 }
 
+\section{Handling of temperature scales}{
+
+\code{read.odf()} stores temperature data directly as read from the file, which
+might mean the IPTS-68 scale.  These values should not be used to calculate
+other seawater quantities, because formulae are generally based in ITS90
+temperatures. To avoid problems, the accessor function converts to the modern
+scale, e.g. \code{x[["temperature"]]} yields temperature in the ITS90
+scale, whether temperatures in the original file were reported on that scale
+or the older IPTS-68 scale.
+}
+
 \section{Caution}{
 
-ODF files do not store information on the temperature or salinity scale, and \code{\link[=read.odf]{read.odf()}}
-assumes these to be ITS-90 and PSS-78, respectively. These scales may be incorrect for old
-data files. Note that the temperature scale can be converted from old scales
-using \code{\link[=T90fromT68]{T90fromT68()}} and \code{\link[=T90fromT48]{T90fromT48()}}, although the change will be in
-a fraction of a millidegree, which probably exceeds reasonable confidence in old data.
+
+Lacking detailed documentation of the ODF file format, the \code{\link[=read.odf]{read.odf()}} and
+\code{\link[=read.ctd.odf]{read.ctd.odf()}} functions were crafted based on inspection of data files, and
+so some guesses had to be made.
+
+The \code{PARAMETER_HEADER} chunks describing quality-control flags are
+a case in point.  These contain \code{NAME} components that
+refer to other \code{PARAMETER_HEADER} chunks that hold measured data.  However,
+those references are not always matched well with the data names, and
+even if they do match, the cross-reference syntax used by
+the Bedford Institute of Oceanography differs from that used by
+l’Institut Maurice-Lamontagne. To simplify coding, it was assumed that
+each quality-control sequence applies to the data sequence
+immediately preceding it.  (This assumption is made in other
+analysis systems.)
+
+It is also prudent to pay attention to the units decoding,
+which \code{\link[=read.odf]{read.odf()}} handles by calling \code{\link[=unitFromString]{unitFromString()}}.
+Be on the lookout for incorrect temperature scales, which
+are sometimes reported with nonstandard strings in ODF files.
+Also, note that you may see warnings about conductivity ratios,
+which some ODF files incorrectly suggest have dimensions.
 }
 
 \examples{
@@ -146,7 +169,7 @@ points(ctd[['salinity']][bad],ctd[['theta']][bad],col='red',pch=20)
 }
 \references{
 For sources that describe the ODF format, see the documentation
-for the \linkS4class{odf}.
+for the \linkS4class{odf} class.
 }
 \seealso{
 \code{\link[=ODF2oce]{ODF2oce()}} will be an alternative to this, once (or perhaps if) a \code{ODF}
@@ -164,5 +187,8 @@ Other things related to odf data:
 \code{\link{read.ctd.odf}()},
 \code{\link{subset,odf-method}},
 \code{\link{summary,odf-method}}
+}
+\author{
+Dan Kelley, with help from Chantelle Layton
 }
 \concept{things related to odf data}

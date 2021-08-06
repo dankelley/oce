@@ -40,3 +40,5 @@ dan[0-9]*
 ar_index_global_prof.rda
 argo_bio-profile_index.rda
 Rplots.pdf
+inst/joss
+

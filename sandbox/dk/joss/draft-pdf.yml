@@ -1,0 +1,58 @@
+on:
+  push:
+    branches:
+      - develop
+
+name: draft-pdf
+
+jobs:
+  build:
+    runs-on: macOS-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v1
+
+      # using and old version of pandoc to get around a bug:
+      # https://stackoverflow.com/questions/67004645/r-knitting-error-rticles-vadjust-in-vertical-mode
+      - name: Install pandoc
+        uses: r-lib/actions/setup-pandoc@v1
+        with:
+          pandoc-version: '2.11.4'
+
+      - name: Install TinyTeX
+        uses: r-lib/actions/setup-tinytex@v1
+
+      - name: Restore R package cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: pkg-cache-3
+          restore-keys: pkg-cache-2
+
+      - name: Install packages
+        run: |
+          install.packages("remotes")
+          remotes::install_cran(c("rticles", "oce", "ocedata"))
+        shell: Rscript {0}
+
+      - name: Build paper
+        run: |
+          setwd("inst/joss")
+          rmarkdown::render("paper.Rmd")
+          print(list.files())
+        shell: Rscript {0}
+
+      - name: Upload draft
+        uses: actions/upload-artifact@v2
+        with:
+          name: paper
+          path: |
+            inst/joss/paper.*
+            inst/joss/*.png
+            inst/joss/apa.csl
+

@@ -74,7 +74,7 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
         stop("'pos' must be 1, 2, 3 or 4")
     oceDebug(debug, "paletteCalculations(separation=", separation,
              ", width=", width, ", pos=", pos,
-             ", zlab=", if (missing(zlab)) "(missing)" else "(given)",
+             ", zlab=", if (missing(zlab)) "(missing)" else zlab,
              ", maidiff=c(", paste(maidiff, collapse=","), ")",
              ", debug=", debug, ") {\n", sep="", style="bold", unindent=1)
     haveZlab <- !missing(zlab) && !is.null(zlab) && sum(nchar(zlab)) > 0
@@ -309,7 +309,9 @@ drawPalette <- function(zlim, zlab="",
                         axisPalette, tformat,
                         debug=getOption("oceDebug"), ...)
 {
-    debug <- max(0, min(debug, 4))
+    debug <- max(0, min(debug, 2))
+    oceDebug(debug, gsub(" = [^,)]*", "", deparse(expr=match.call())), " {\n", style="bold", sep="", unindent=1)
+
     oceDebug(debug, "drawPalette(",
              argShow(zlab),
              argShow(zlim),
@@ -347,11 +349,11 @@ drawPalette <- function(zlim, zlab="",
             stop("colormap zlim values must be ordered and distinct")
     }
     zIsTime <- zlimGiven && inherits(zlim[1], "POSIXt")
+    zlimTZ <- if (zlimGiven) attr(zlim[1], "tzone") else NA
+    oceDebug(debug, "zIsTime=", zIsTime, "\n")
     if (zIsTime) {
-        ##zlimOrig <- zlim
         zlim <- as.numeric(zlim)
     }
-    oceDebug(debug, "zIsTime=", zIsTime, "\n")
     omai <- par("mai")
     oceDebug(debug, "original mai: omai=c(", paste(format(omai, digits=3), collapse=","), ")\n")
     if (!maiGiven)
@@ -439,7 +441,7 @@ drawPalette <- function(zlim, zlab="",
                 stop("pos must be 1, 2, 3 or 4") # cannot be reached
             }
         } else {
-            oceDebug(debug, "'breaks' was given\n")
+            oceDebug(debug, "'breaks' was given, starting with", vectorShow(breaks), "\n")
             palette <- seq(zlim[1], zlim[2], length.out=PLEN)
             oceDebug(debug, "drawing palette image, with", vectorShow(par('mai')))
             oceDebug(debug, "palette image width =",
@@ -540,7 +542,25 @@ drawPalette <- function(zlim, zlab="",
         ## FIXME: just guessing on best 'line', used below
         if (!missing(axisPalette))
             axis <- axisPalette
-        oceDebug(debug, "about to label palette zlab='", zlab, "' with cex=", cex, "\n")
+        oceDebug(debug, "about to draw palette axis at pos=", pos, " with zlab=\"", zlab, "\" with cex=", cex, "\n", sep="")
+        # If zlim was given, we use that to determine the palette labels
+        if (zlimGiven) {
+            if (zIsTime) {
+                oceDebug(debug, "palette axis labels inferred from temporal zlim=c(",
+                         paste(numberAsPOSIXct(zlim), collapse=","), ")\n", sep="")
+                labels <- pretty(numberAsPOSIXct(zlim, tz=if (is.null(zlimTZ)) "UTC" else zlimTZ))
+                at <- labels
+                if (!missing(tformat))
+                    labels <- format(labels, format=tformat)
+            } else {
+                oceDebug(debug, "palette axis labels inferred from numeric zlim=c(",
+                         paste(zlim, collapse=","), ")\n", sep="")
+                labels <- pretty(zlim)
+                at <- labels
+            }
+        }
+        oceDebug(debug, "palette axis labels:", vectorShow(labels))
+        oceDebug(debug, "palette axis labels positions:", vectorShow(at))
         if (pos == 1) {
             axis(side=1, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex, las=las)
             if (haveZlab) mtext(zlab, side=1, line=getOption("oceMgp")[1], cex=cex)
@@ -567,7 +587,6 @@ drawPalette <- function(zlim, zlab="",
             par(mai=pc$mai2)
         }
     }
-    oceDebug(debug, "just before drawPalette() returns\n")
     oceDebug(debug, vectorShow(par("mar")))
     oceDebug(debug, vectorShow(par("mai")))
     oceDebug(debug, "} # drawPalette()\n", unindent=1, style="bold")
@@ -899,10 +918,8 @@ imagep <- function(x, y, z,
                    debug=getOption("oceDebug"),
                    ...)
 {
-    oceDebug(debug, "imagep(x,y,z,",
-             argShow(xlab),
-             argShow(ylab),
-             argShow(ylab),
+    debug <- max(0, min(debug, 3))
+    oceDebug(debug, "imagep(x,y,z,xlab,ylab,",
              argShow(zlim),
              argShow(flipy),
              argShow(cex),
@@ -913,7 +930,7 @@ imagep <- function(x, y, z,
              argShow(mar),
              argShow(mai.palette),
              argShow(breaks),
-             style="bold")
+             ")\n", sep="", style="bold", unindent=1)
     zlabPosition <- match.arg(zlabPosition)
     if (!is.logical(flipy))
         stop("flipy must be TRUE or FALSE")
@@ -934,7 +951,7 @@ imagep <- function(x, y, z,
                 zclip <- colormap$zclip
             }
             if (!zclip) {
-                oceDebug(debug, "using zlim[1:2]=c(", zlim[1], ",", zlim[2], ") for out-of-range values\n")
+                oceDebug(debug, "using zlim=c(", zlim[1], ",", zlim[2], ") for out-of-range values\n", sep="")
                 z[z < zlim[1]] <- zlim[1]
                 z[z > zlim[2]] <- zlim[2]
             } else {
@@ -1143,7 +1160,7 @@ imagep <- function(x, y, z,
     ocex <- par("cex")
     if (missing(mar))
         mar <- c(mgp[1]+if (nchar(xlab[1])>0) 1.5 else 1, mgp[1]+if (nchar(ylab[1])>0) 1.5 else 1, mgp[2]+1/2, 1/2)
-    oceDebug(debug, "after possibly recalculating, mar=c(", paste(mar, collapse=", "), "); based on mgp=c(", paste(mgp, collapse=","),")\n", sep="")
+    oceDebug(debug, "after possibly recalculating, mar=c(", paste(mar, collapse=", "), ")\n", sep="")
     if (missing(mai.palette)) {
         ##mai.palette <- c(0, 1/8, 0, 3/8 + if (haveZlab && zlabPosition=="side") 1.5*par('cin')[2] else 0)
         mai.palette <- rep(0, 4)
@@ -1386,12 +1403,12 @@ imagep <- function(x, y, z,
         }
         if (axes) {
             box()
-            oceDebug(debug,"about to call oce.axis.POSIXct() with par('mar')=c(", paste(par('mar'),collapse=","), ", mar=c(", paste(mar,collapse=","), ") and mgp=c(",paste(mgp,collapse=","),")\n")
+            oceDebug(debug,"about to call oce.axis.POSIXct()\n")
             xat <- oce.axis.POSIXct(side=1, x=x, cex.axis=cex, cex.lab=cex, cex.main=cex,
                                     drawTimeRange=drawTimeRange,
                                     mar=mar, mgp=mgp, tformat=tformat, debug=debug-1)
             ##yat <- axis(2, cex.axis=cex.axis*par("cex"))
-            oceDebug(debug, "doing y axis with cex.axis=", cex.axis, " then naming it with cex=", cex.lab*par('cex'), " (note par('cex')=", par('cex'), style="blue")
+            oceDebug(debug, "doing y axis with cex.axis\n")
             ##yat <- axis(2, cex.axis=cex.axis)
             yat <- axis(2, cex.axis=cex.axis)
             mtext(side=2, ylab, line=mgp[1], cex=cex.lab*par("cex"))
@@ -1447,9 +1464,8 @@ imagep <- function(x, y, z,
     if (zlabPosition == "top")
         mtext(zlab, side=3, adj=1, line=1/8, cex=cex.main*par("cex"))
     par(cex=ocex)
-    oceDebug(debug, "par('mai')=c(",
-             paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",
-             paste(format(par('mar'), digits=2), collapse=","), ")\n", sep='')
-    oceDebug(debug, "} # imagep()\n", unindent=1, style="bold")
+    oceDebug(debug, "at return, par('mai')=c(", paste(format(par('mai'), digits=2), collapse=","), ")\n", sep="")
+    oceDebug(debug, "at return, par('mar')=c(", paste(format(par('mar'), digits=2), collapse=","), ")\n", sep="")
+    oceDebug(debug, "} # imagep()\n", unindent=1, style="bold", sep="")
     invisible(list(xat=xat, yat=yat, decimate=decimate))
 }                                      # imagep()

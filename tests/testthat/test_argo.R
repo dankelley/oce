@@ -2,8 +2,6 @@
 library(oce)
 data(argo)
 
-context("Argo")
-
 test_that("as.ctd works with multi-column argo", {
           expect_silent(as.ctd(argo[["profile", 1]]))
 })
@@ -70,6 +68,8 @@ test_that("subset(argo, pressure < 500))", {
           }
 })
 
+if (requireNamespace("sf", quietly=TRUE)) {
+
 test_that("subset(argo, within=(POLYGON))", {
           ## Labrador Sea (this test will fail if data(argo) is changed)
           nlevel <- 56
@@ -91,6 +91,8 @@ test_that("subset(argo, within=(POLYGON))", {
           for (item in N)
             expect_equal(nnew, nchar(argoSubset[[item]]))
 })
+
+}
 
 test_that("preferAdjusted() works on data", {
           a2 <- preferAdjusted(argo) # defaults to which="all"

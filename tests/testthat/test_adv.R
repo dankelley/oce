@@ -2,8 +2,6 @@
 library(oce)
 data(adp)
 
-context("ADV")
-
 test_that("enuToOther(adv) test of rotation", {
           data(adv)
           ## 1. test with zero heading,pitch,roll (default)

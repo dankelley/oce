@@ -119,13 +119,13 @@ flag <- ifelse(deep, 7, 2)
 for (flagName in names(A[["flags"]]))
     A[[paste(flagName, "Flag", sep="")]] <- flag
 Af <- handleFlags(A)
-expect_equal(is.na(Af[["salinity"]]), deep)
+stopifnot(all.equal(is.na(Af[["salinity"]]), deep))
 
 # 5. Single-variable flags (list specification)
 B <- section[["station", 100]]
 B[["flags"]] <- list(flag)
 Bf <- handleFlags(B)
-expect_equal(is.na(Bf[["salinity"]]), deep)
+stopifnot(all.equal(is.na(Bf[["salinity"]]), deep))
 
 }
 \references{

@@ -1,3 +1,7 @@
+^TAGS$
+^R/TAGS$
+^src/TAGS$
+^[0-9]+[0-9a-zA-Z_]*.R$
 ^marmap.*csv$
 ^.git$
 ^\.github$
@@ -62,4 +66,5 @@ Rplots.pdf
 ^create_readme$
 ^README\.md$
 CRAN-RELEASE
+inst/joss
 

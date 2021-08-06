@@ -3,7 +3,6 @@
 
 
 library(oce)
-context("argo")
 
 test_that("the data(argo) dataset",
           {

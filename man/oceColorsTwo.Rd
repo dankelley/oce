@@ -29,6 +29,7 @@ imagep(volcano-mean(range(volcano)), col=oceColorsTwo(128),
 }
 \seealso{
 Other things related to colors: 
+\code{\link{colormapGMT}()},
 \code{\link{colormap}()},
 \code{\link{oceColors9B}()},
 \code{\link{oceColorsCDOM}()},

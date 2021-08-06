@@ -1,9 +1,11 @@
+# vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
+
 library(oce)
-context("read adp data")
 
 f <- "~/Dropbox/data/archive/sleiwex/2008/moorings/m07/adp/sontek_h53/raw/adp_sontek_h53.adp"
 if (file.exists(f)) {
-    test_that("Sontek adp", {
+  test_that("Sontek adp",
+            {
               n <- 5000
               adp <- read.oce(f, from=n+1, to=n+3)
               ## numeric time comparison is easier for these whacky times
@@ -55,12 +57,14 @@ if (file.exists(f)) {
                                                 0.85, 0.89, 0.93, 0.97, 1.01,
                                                 1.05, 1.09, 1.13, 1.17, 1.21,
                                                 1.25, 1.29))
-})
+            }
+  )
 }
 
 
-test_that("Teledyn/RDI read (integer from,to) and check", {
-          if (1 == length(list.files(path=".", pattern="local_data"))) {
+if (1 == length(list.files(path=".", pattern="local_data"))) {
+  test_that("Teledyn/RDI read (integer from,to) and check",
+            {
               beam <- read.oce("local_data/adp_rdi",
                                from=1, to=10, latitude=47.88126, longitude=-69.73433)
               xyz <- beamToXyzAdp(beam)
@@ -75,34 +79,39 @@ test_that("Teledyn/RDI read (integer from,to) and check", {
               expect_equal(xyz[["longitude"]], -69.73433)
               expect_equal(enu[["longitude"]], -69.73433)
               ## FIXME: add more tests on the data
-          }
-})
+            }
+  )
+}
 
-test_that("Teledyn/RDI read (POSIXct from,to)", {
-          if (1 == length(list.files(path=".", pattern="local_data"))) {
+if (1 == length(list.files(path=".", pattern="local_data"))) {
+  test_that("Teledyn/RDI read (POSIXct from,to)",
+            {
               beam <- read.oce("local_data/adp_rdi",
                                from=as.POSIXct("2008-06-25 10:01:00",tz="UTC"),
                                to=as.POSIXct("2008-06-25 10:03:00",tz="UTC"))
               expect_true(is.na(beam[["latitude"]]))
               expect_true(is.na(beam[["longitude"]]))
               expect_equal(dim(beam[["v"]]), c(13,84,4))
-          }
-})
+            }
+  )
+}
 
-test_that("Teledyn/RDI binmap", {
-          if (1 == length(list.files(path=".", pattern="local_data"))) {
+if (1 == length(list.files(path=".", pattern="local_data"))) {
+  test_that("Teledyn/RDI binmap",
+            {
               beam <- read.oce("local_data/adp_rdi",
                                from=1, to=10, latitude=47.88126, longitude=-69.73433)
               beam2 <- expect_silent(binmapAdp(beam))
-              ## FIXME: add tests on the data
-          }
-})
+              # FIXME: add tests on the data
+            }
+  )
+}
 
-test_that("Nortek aquadopp read and check", {
-          if (1 == length(list.files(path=".", pattern="local_data"))) {
+if (1 == length(list.files(path=".", pattern="local_data"))) {
+  test_that("Nortek aquadopp read and check",
+            {
               beam <- read.oce("local_data/adp_nortek_aquadopp",
                                from=1, to=10, latitude=47.87943, longitude=-69.72533)
-              ##summary(beam)
               xyz <- beamToXyzAdp(beam)
               enu <- xyzToEnuAdp(xyz, declination=-18.1)
               expect_equal(c(10, 25, 3), dim(beam[["v"]]))
@@ -114,15 +123,16 @@ test_that("Nortek aquadopp read and check", {
               expect_equal(beam[["longitude"]], -69.72533)
               expect_equal(xyz[["longitude"]], -69.72533)
               expect_equal(enu[["longitude"]], -69.72533)
-               ## FIXME: add more tests on the data
-          }
-})
+              # FIXME: add more tests on the data
+            }
+  )
+}
 
-test_that("Sontek (PCADP)", {
-          if (1 == length(list.files(path=".", pattern="local_data"))) {
+if (1 == length(list.files(path=".", pattern="local_data"))) {
+  test_that("Sontek (PCADP)",
+            {
               beam <- read.oce("local_data/adp_sontek",
                                from=1, to=10, latitude=48.87961, longitude=-69.72706)
-              ##summary(beam)
               expect_equal(48.87961, beam[["latitude"]])
               expect_equal(-69.72706, beam[["longitude"]])
               expect_equal(dim(beam[["v"]]), c(10, 32, 3))
@@ -131,6 +141,42 @@ test_that("Sontek (PCADP)", {
                                 to=as.POSIXct("2008-06-25 10:01:30", tz="UTC"),
                                 latitude=48.87961, longitude=-69.72706)
               expect_equal(dim(beam2[["v"]]), c(6, 32, 3))
-          }
-})
+            }
+  )
+}
+
+if (1 == length(list.files(path=".", pattern="local_data"))) {
+  test_that("Teledyne/RDI Sentinel V subset by pressure",
+            {
+              d <- expect_warning(expect_warning(expect_warning(expect_output(read.oce("local_data/adp_sentinel_v.pd0"),"Got to end of data"),"skipping the first ensemble"),"A list of unhandled segment codes"),"so trimming time")
+              keep <- d[["pressure"]] < median(d[["pressure"]])
+              dsp <- subset(d, pressure < median(d[["pressure"]]))
+              expect_equal(sum(keep), dim(dsp[["v"]])[1])
+              expect_equal(sum(keep), length(dsp[["time"]]))
+              for (slant in c("v", "a")) { # "g" is NULL
+                expect_equal(sum(keep), dim(dsp[[slant]])[1])
+              }
+            }
+  )
+}
+
+if (1 == length(list.files(path=".", pattern="local_data"))) {
+  test_that("Teledyne/RDI Sentinel V subset by distance",
+            {
+              d <- expect_warning(expect_warning(expect_warning(expect_output(read.oce("local_data/adp_sentinel_v.pd0"),"Got to end of data"),"skipping the first ensemble"),"A list of unhandled segment codes"),"so trimming time")
+              keepSlant <- sum(d[["distance"]] < median(d[["distance"]]))
+              keepVertical <- sum(d[["vdistance"]] < median(d[["distance"]]))
+
+              dsd <- subset(d, distance < median(d[["distance"]]))
+              expect_equal(keepSlant, length(dsd[["distance"]]))
+              expect_equal(keepVertical , length(dsd[["vdistance"]]))
+              for (vert in c("va", "vq", "vv")) { # no "vg" in this dataset
+                expect_equal(keepVertical, dim(dsd[[vert]])[2])
+              }
+              for (slant in c("v", "a")) { # "g" is NULL
+                expect_equal(keepSlant, dim(dsd[[slant]])[2])
+              }
+            }
+  )
+}
 

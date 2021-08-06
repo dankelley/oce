@@ -4,10 +4,17 @@
 \alias{subtractBottomVelocity}
 \title{Subtract Bottom Velocity from ADP}
 \usage{
-subtractBottomVelocity(x, debug = getOption("oceDebug"))
+subtractBottomVelocity(x, despike = FALSE, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{an \linkS4class{adp} object that contains bottom-tracking velocities.}
+
+\item{despike}{either a logical value or a univariate function. This
+controls whether the bottom velocity (\code{bv}) values should be altered before they are
+subtracted from the beam velocities. If it is \code{TRUE} then the \code{bv} values are despiked
+first by calling \code{\link[=despike]{despike()}}. If it is a function, then that function is used instead of
+\code{\link[=despike]{despike()}}, e.g. \code{function(x) despike(x, reference="smooth")} would change the reference
+function for despiking from its default of \code{"median"}.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

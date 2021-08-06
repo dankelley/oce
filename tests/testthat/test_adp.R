@@ -2,7 +2,16 @@
 library(oce)
 data(adp)
 
-context("ADP (not AD2CP)")
+test_that("array values in data slot of 'adp' dataset are well-formed", {
+          dataNames <- names(adp[["data"]])
+          dimExpected <- c(25L, 84L, 4L)
+          for (name in c("a", "g", "q", "v")) {
+              expect_true(name %in% dataNames)
+              expect_true(identical(dimExpected, dim(adp[[name]])))
+              if (name %in% c("a", "g", "q"))
+                  expect_true(is.raw(adp[[name]]))
+          }
+})
 
 test_that("test all 'which' values listed in ?'plot,adp-method' on 2019 May 23", {
           ## Most of the numerical tests have character equivalents, but we
@@ -95,7 +104,8 @@ test_that("adpEnsembleAverage() produces correctly-dimensioned results", {
 f <- "~/Dropbox/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
 if (file.exists(f)) {
     test_that("details of a local RDI", {
-              d <- read.oce(f, 1, 3, 1, 0)
+              # args for read.adp.rdi() are file, from, to, by and tz
+              d <- expect_silent(read.oce(f, 1, 3, 1, "UTC"))
               expect_equal(d[["time"]], as.POSIXct(c("2008-06-25 10:00:00",
                                                      "2008-06-25 10:00:10",
                                                      "2008-06-25 10:00:20"), tz="UTC"))

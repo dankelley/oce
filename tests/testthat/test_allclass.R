@@ -1,8 +1,6 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
 
-context("allclass")
-
 test_that("general", {
           o <- new("oce")
           expect_equal(c("data", "metadata", "processingLog"), sort(slotNames(o)))

@@ -20,7 +20,7 @@ longitude and \code{xy[,2]} will hold latitude, but if \code{inv} is True, then 
 and northing values (in metres).}
 
 \item{proj}{character string indicating the desired map projection, or an object of class \code{crs};
-see \code{\link[sf:sf_project]{sf::sf_project()}}.}
+see the documentation for \code{\link[sf:sf_project]{sf::sf_project()}}.}
 
 \item{inv}{logical value, False by default, indicating whether an inverse projection is requested.}
 

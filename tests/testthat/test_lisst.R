@@ -1,8 +1,6 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
 
-context("LISST")
-
 test_that("as.lisst()", {
           set.seed(1333334L)
           t <- seq(0, 6, 1/15) * 3600 + as.POSIXct("2012-01-01 00:00:00", tz="UTC")

@@ -1,5 +1,4 @@
 library(oce)
-context("read adv data")
 test_that("nortek vector with integer from,to", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               beam <- read.oce("local_data/adv_nortek_vector", from=1, to=10,

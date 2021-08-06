@@ -21,6 +21,7 @@ imagep(volcano, col=oceColorsJet, zlab="oceColorsJet")
 }
 \seealso{
 Other things related to colors: 
+\code{\link{colormapGMT}()},
 \code{\link{colormap}()},
 \code{\link{oceColors9B}()},
 \code{\link{oceColorsCDOM}()},

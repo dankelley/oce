@@ -11,7 +11,8 @@ as.section(
   longitude,
   latitude,
   station,
-  sectionId = ""
+  sectionId = "",
+  debug = getOption("oceDebug")
 )
 }
 \arguments{
@@ -32,6 +33,10 @@ other arguments are ignored; see \sQuote{Details}.}
 \item{station}{Station identifiers, in a vector holding values for all stations.}
 
 \item{sectionId}{Section identifier.}
+
+\item{debug}{an integer value that controlls whether \code{as.section()} prints information
+during its work.  The function works quietly if this is 0 and prints out some
+information if it is positive.}
 }
 \value{
 An object of \linkS4class{section}.

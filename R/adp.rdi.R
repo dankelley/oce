@@ -703,88 +703,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     if (!toGiven)
         to <- 0
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
-    ## bisectAdpRdiBuf <- function(buf, t.find, add=0, debug=0) {
-    ##     oceDebug(debug, "bisectAdpRdiBuffer(t.find=", format(t.find), ", add=", add, ") {\n", unindent=1)
-    ##     len <- length(profileStart)
-    ##     lower <- 1
-    ##     upper <- len
-    ##     passes <- floor(10 + log(len, 2)) # won't need this many; only do this to catch coding errors
-    ##     for (pass in 1:passes) {
-    ##         middle <- floor( (upper + lower) / 2 )
-    ##         year   <- unabbreviateYear(readBin(buf[profileStart[middle] +  4], what="integer", n=1, size=1, signed=FALSE))
-    ##         month  <- readBin(buf[profileStart[middle] +  5], what="integer", n=1, size=1, signed=FALSE)
-    ##         day    <- readBin(buf[profileStart[middle] +  6], what="integer", n=1, size=1, signed=FALSE)
-    ##         hour   <- readBin(buf[profileStart[middle] +  7], what="integer", n=1, size=1, signed=FALSE)
-    ##         minute <- readBin(buf[profileStart[middle] +  8], what="integer", n=1, size=1, signed=FALSE)
-    ##         second <- readBin(buf[profileStart[middle] +  9], what="integer", n=1, size=1, signed=FALSE)
-    ##         sec100 <- readBin(buf[profileStart[middle] + 10], what="integer", n=1, size=1, signed=FALSE)
-    ##         t <- ISOdatetime(year, month, day, hour, minute, second + sec100/100, tz=tz)
-    ##         oceDebug(debug, "t=", format(t), "| y=", year, " m=", month, " d=",
-    ##                  format(day, width=2), " h=", format(hour, width=2), " m=",
-    ##                  format(minute, width=2), "s=", format(second, width=2), "sec100=", sec100, "| pass",
-    ##                  format(pass, width=2), "/", passes, "| middle=", middle, "(",
-    ##                  format(middle/upper*100, digits=4), "%)\n")
-    ##         if (t.find < t)
-    ##             upper <- middle
-    ##         else
-    ##             lower <- middle
-    ##         if (upper - lower < 2)
-    ##             break
-    ##     }
-    ##     middle <- middle + add          # may use add to extend before and after window
-    ##     if (middle < 1)
-    ##         middle <- 1
-    ##     if (middle > len)
-    ##         middle <- len
-    ##     t <- ISOdatetime(unabbreviateYear(readBin(buf[profileStart[middle]+4], "integer", size=1, signed=FALSE, endian="little")),
-    ##                      as.integer(buf[profileStart[middle]+5]), # month
-    ##                      as.integer(buf[profileStart[middle]+6]), # day
-    ##                      as.integer(buf[profileStart[middle]+7]), # hour
-    ##                      as.integer(buf[profileStart[middle]+8]), # min
-    ##                      as.integer(buf[profileStart[middle]+9])+0.01*as.integer(buf[profileStart[middle]+10]), # decimal second
-    ##                      tz=tz)
-    ##     oceDebug(debug, "result: t=", format(t), " at vsdStart[", middle, "]=", profileStart[middle], "\n")
-    ##     oceDebug(debug, "} # bisectAdpRdiBuffer()\n", unindent=1)
-    ##     return(list(index=middle, time=t))
-    ## }
-    ##
-    ## bisectAdpRdiLdc<- function(ldc, tFind, add=0, debug=0) {
-    ##     oceDebug(debug, "bisectAdpRdiLdc(tFind=", format(tFind), ", add=", add, ") {\n", unindent=1, sep="")
-    ##     len <- length(ldc$year)
-    ##     lower <- 1
-    ##     upper <- len
-    ##     passes <- floor(10 + log(len, 2)) # won't need this many; only do this to catch coding errors
-    ##     for (pass in 1:passes) {
-    ##         middle <- floor( (upper + lower) / 2 )
-    ##         t <- ISOdatetime(unabbreviateYear(as.numeric(ldc$year[middle])),
-    ##                          as.numeric(ldc$month[middle]),
-    ##                          as.numeric(ldc$day[middle]),
-    ##                          as.numeric(ldc$hour[middle]),
-    ##                          as.numeric(ldc$minute[middle]),
-    ##                          as.numeric(ldc$second[middle]) + 0.01*as.numeric(ldc$sec100[middle]),
-    ##                          tz=tz)
-    ##         oceDebug(debug, "middle t=", format(t), "\n")
-    ##         if (tFind < t)
-    ##             upper <- middle
-    ##         else
-    ##             lower <- middle
-    ##         if (upper - lower < 2)
-    ##             break
-    ##     }
-    ##     middle <- middle + add          # may use add to extend before and after window
-    ##     if (middle < 1)
-    ##         middle <- 1
-    ##     if (middle > len)
-    ##         middle <- len
-    ##     oceDebug(debug, "result: t=", format(t), " at middle=", middle, "\n")
-    ##     oceDebug(debug, "} # bisectAdpRdiLdc()\n", unindent=1)
-    ##     return(list(index=middle, time=t))
-    ## }
-
-    ## gaveFromTo <- !missing(from) && !missing(to)
-    ## if (gaveFromTo) {
-    ##     oceDebug(debug, "class(from)=", class(from), "; class(to)=", class(to), "\n")
-    ## }
     if (is.character(file)) {
         if (0 == file.info(file)$size)
             stop("empty file")
@@ -801,7 +719,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     }
     type <- match.arg(type)
 
-    ## Read whole file into 'buf'
+    ## Determine file size
     seek(file, 0, "start")
     seek(file, where=0, origin="end")
     fileSize <- seek(file, where=0)
@@ -814,7 +732,15 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     ## but let's read 10000 just in case. It might be worth thinking about this in more
     ## detail, in case a file might have a header that is much longer than any studied
     ## in writing this code.
+    startIndex <- 1L                   # index of byte pair 0x7f 0x7f
     buf <- readBin(file, what="raw", n=min(fileSize, 10000), endian="little")
+    if (buf[1] != 0x7F || buf[2] != 0x7F) {
+        startIndex <- matchBytes(buf, 0x7f, 0x7f)[1]
+        if (!length(startIndex))
+            stop("cannot find a 0x7f 0x7f byte sequence near the start of this file")
+        message("file does not start with 7F7F byte sequence, so skipping to byte ", startIndex)
+        buf <- buf[seq(startIndex, length(buf))]
+    }
     header <- decodeHeaderRDI(buf, debug=debug-1)
     if (header$haveActualData) {
         numberOfBeams <- header$numberOfBeams
@@ -845,7 +771,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                     }
                 }
             }
-            ldc <- do_ldc_rdi_in_file(filename, from, to, by, 0L, debug-1)
+            ldc <- do_ldc_rdi_in_file(filename=filename, from=from, to=to, by=by, startIndex=startIndex, mode=0L, debug=debug-1)
             ##if (debug > 9) {
             ##    message("since debug > 9, exporting ldc to ldcDEBUG")
             ##    ldcDEBUG <<- ldc
@@ -859,7 +785,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             if (is.character(by))
                 by <- ctimeToSeconds(by)
             ##ldc <- .Call("ldc_rdi_in_file", filename, as.integer(from), as.integer(to), as.integer(by), 1L)
-            ldc <- do_ldc_rdi_in_file(filename, from, to, by, 1L, debug-1)
+            ldc <- do_ldc_rdi_in_file(filename=filename, from=from, to=to, by=by, startIndex=startIndex, mode=1L, debug=debug-1)
             ##if (debug > 9) {
             ##    message("since debug > 9, exporting ldc to ldcDEBUG")
             ##    ldcDEBUG <<- ldc
@@ -1026,6 +952,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                                    nrow=4, byrow=TRUE)
                     if (debug > 0) {
                         cat('Transformation matrix:\n')
+                        oceDebug(debug, vectorShow(tmx, paste("tmx", sep="")), "\n")
                         oceDebug(debug, vectorShow(tmy, paste("tmy", sep="")), "\n")
                         oceDebug(debug, vectorShow(tmz, paste("tmz", sep="")), "\n")
                         oceDebug(debug, vectorShow(tme, paste("tme", sep="")), "\n")
@@ -1135,6 +1062,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                                      ensembleCount=ensembleCount,
                                                      deploymentStart=deploymentStart)
                 header$vBeamHeader <- vBeamHeader
+                # Handle vertical beam, if one exists.  This creates va, vg, vq and vv.
                 if (vvFound) {
                     vv <- array(numeric(), dim=c(profilesToRead, numberOfVCells))
                     oceDebug(debug, "set up 'vv' (vertical velocity) storage for", profilesToRead, "profiles, and",
@@ -1480,7 +1408,6 @@ in case conversion to ENU is to be done later.")
             oceDebug(debug, "length(time)=", length(time), "\n")
             if (length(time) > length(profileStart)) {
                 warning("length(time)=", length(time), " exceeds length(profileStart)=", length(profileStart), " so trimming time\n")
-                message("length(time)=", length(time), " exceeds length(profileStart)=", length(profileStart), " so trimming time")
                 time <- time[seq_len(length(profileStart))]
             }
             oceDebug(debug, "length(time)=", length(time), " after possible shortening to match length(profileStart)\n")
@@ -1856,7 +1783,7 @@ in case conversion to ENU is to be done later.")
     if (length(junkProfiles) > 0) {
         ## remove all data from the profile
         for (field in names(res@data)) {
-            if (!(field %in% c('distance', 'vdistance'))) {
+            if (!(field %in% c("distance", "vdistance"))) {
                 dim <- dim(res@data[[field]])
                 if (is.null(dim)) {
                     res@data[[field]] <- res@data[[field]][-junkProfiles]

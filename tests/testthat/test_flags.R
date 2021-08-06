@@ -1,5 +1,5 @@
 library(oce)
-context("Flags")
+CRATwarning <- "\"conductivity\" \\(code name \"CRAT_01\"\\)" # portion of the warning
 
 test_that("argument existence", {
           data(ctd)
@@ -222,7 +222,7 @@ test_that("ctd flag with subset() (issue 1410)", {
 
 test_that("odf flag with subset() (issue 1410)", {
           file <- system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce")
-          odf <- expect_warning(read.odf(file), "should be unitless")
+          odf <- expect_warning(read.odf(file), CRATwarning)
           ## # Find a region with interesting flags
           ## > which(odf[["sigmaThetaFlag"]]!=1)
           ## [1] 110 120 121 142

@@ -1,7 +1,5 @@
 library(oce)
 
-context("tides")
-
 ## See page 2 of Foreman 1977 for the format of tide3.dat,
 ## which is provided in t-tide as (what seems to be) an exact
 ## copy of the appendix in Foreman (1977).

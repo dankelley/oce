@@ -1,8 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
-context("topo")
-
 data(topoWorld)
 test_that("topoInterpolate", {
           ## Test for same values after rewriting the C code in C++.

@@ -24,6 +24,7 @@ imagep(volcano, col=oceColors9B(128),
 }
 \seealso{
 Other things related to colors: 
+\code{\link{colormapGMT}()},
 \code{\link{colormap}()},
 \code{\link{oceColorsCDOM}()},
 \code{\link{oceColorsChlorophyll}()},

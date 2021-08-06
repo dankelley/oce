@@ -29,8 +29,8 @@ still work with the original name that was stored in the data.
 library(oce)
 data(ctd)
 CTD <- oceRenameData(ctd, "salinity", "SALT")
-expect_equal(ctd[["salinity"]], CTD[["SALT"]])
-expect_equal(ctd[["sal00"]], CTD[["SALT"]])
+stopifnot(all.equal(ctd[["salinity"]], CTD[["SALT"]]))
+stopifnot(all.equal(ctd[["sal00"]], CTD[["SALT"]]))
 
 }
 \seealso{
