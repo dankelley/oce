@@ -922,7 +922,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             # docs), and store in the metadata.
             ii <- which(codes[, 1]==0x00 & codes[, 2]==0x30)
             if (length(ii)) {
-                message("debug=",debug)
                 oceDebug(debug, "As a test, displaying 'Binary Fixed Attitude Header' in first 10 ensembles...\n")
                 for (ensemble in seq_len(10)) {
                     J <- ensembleStart[ensemble] + header$dataOffset[ii]
