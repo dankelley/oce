@@ -50,22 +50,17 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         warning("dataOffset and numberOfDataTypes are inconsistent -- this dataset seems damaged")
     oceDebug(debug, "dataOffset=", paste(dataOffset, sep=" "), "\n")
     oceDebug(debug, "sort(diff(dataOffset))=", paste(sort(diff(dataOffset)), sep=" "), "\n")
-    ##
-    ## See if this is a sentinel file by looking for dataType ID bytes
-    ## of 0x00 and 0x70 (V series system configuration)
+    # Set up codes
     codes <- cbind(buf[1 + c(0, dataOffset)], buf[1+c(0, dataOffset) + 1])
-    oceDebug(debug, "buf[1:10] near line 95: ", paste("0x", paste(buf[1:10], sep=" "), sep=""), "\n")
-    oceDebug(debug, "codes[,1]=", paste("0x", paste(codes[,1], sep=""), sep=""), "\n")
-    oceDebug(debug, "codes[,2]=", paste("0x", paste(codes[,2], sep=""), sep=""), "\n")
-    if (any(codes[, 1] == 0x00 & codes[, 2] == 0x70)) {
-        oceDebug(debug, "Detected dataType 0x00 0x70 for Sentinel V series configuration")
-        isSentinel <- TRUE
-    } else {
-        isSentinel <- FALSE
-    }
-    oceDebug(debug, "isSentinel=", isSentinel, " as inferred from whether we have 0x00 0x70 ID\n")
-    ##
-    ## Fixed Leader Data, abbreviated FLD, pointed to by the dataOffset
+    oceDebug(debug, "set up codes starting at buf[1:10]=", paste("0x", paste(buf[1:10], sep=", "), sep=""), "\n")
+    oceDebug(debug, " codes[,1]=", paste("0x", paste(codes[,1], sep=""), sep=""), "\n")
+    oceDebug(debug, " codes[,2]=", paste("0x", paste(codes[,2], sep=""), sep=""), "\n")
+    # Determine whether this is a Sentinel V file.
+    isSentinel <- FALSE
+    isSentinel <- any(codes[, 1] == 0x00 & codes[, 2] == 0x70)
+    oceDebug(debug, "isSentinel =", isSentinel, "(inferred from whether we have 0x00 0x70 ID)\n")
+    #
+    # Fixed Leader Data, abbreviated FLD, pointed to by the dataOffset
     FLD <- buf[dataOffset[1]+1:(dataOffset[2] - dataOffset[1])]
     oceDebug(debug, "Fixed Leader Data:", paste(FLD, collapse=" "), "\n")
     if (FLD[1] != 0x00 && FLD[1] != 0x01)
@@ -79,6 +74,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "firmwareVersion=", firmwareVersion, "(numerically, it is", firmwareVersionNumeric, ")\n")
     ##if (firmwareVersion < 16.28) warning("firmwareVersion ", firmwareVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
 
+    # If no actual data, return something minimal
     if (!haveActualData)
         return(list(instrumentType="adcp",
                     firmwareVersionMajor=firmwareVersionMajor,
@@ -89,16 +85,16 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ## FLD[5] = SYSTEM CONFIGURATION LSB (Table 5.2, page 126, System Integrator Guide, Nov 2007)
     ## FLD[6] = SYSTEM CONFIGURATION MSB
     systemConfiguration <- paste(byteToBinary(FLD[5], endian="big"), byteToBinary(FLD[6], endian="big"), sep="-")
-    oceDebug(debug, "systemConfiguration='", systemConfiguration, "'\n", sep="")
+    oceDebug(debug, "systemConfiguration='", systemConfiguration, "'\n")
     oceDebug(debug, "FLD[4]=", byteToBinary(FLD[4], endian="big"), "(looking near the systemConfiguration bytes to find a problem)\n")
     oceDebug(debug, "FLD[5]=", byteToBinary(FLD[5], endian="big"), "(should be one of the systemConfiguration bytes)\n")
     oceDebug(debug, "FLD[6]=", byteToBinary(FLD[6], endian="big"), "(should be one of the systemConfiguration bytes)\n")
     oceDebug(debug, "FLD[7]=", byteToBinary(FLD[7], endian="big"), "(looking near the systemConfiguration bytes to find a problem)\n")
     bits <- substr(systemConfiguration, 6, 8)
     bitsFLD5 <- rawToBits(FLD[5])
-    oceDebug(debug, "LSB=", paste(bitsFLD5, collapse=" "), "\n", sep="")
+    oceDebug(debug, "LSB=", paste(bitsFLD5, collapse=" "), "\n")
     bitsFLD6 <- rawToBits(FLD[6])
-    oceDebug(debug, "MSB=", paste(bitsFLD6, collapse=" "), "\n", sep="")
+    oceDebug(debug, "MSB=", paste(bitsFLD6, collapse=" "), "\n")
     ## NOTE: the nearby code should perhaps use .Call("get_bit", ...) for speed and clarity
     if (isSentinel) {
         if (bits == "010") frequency <- 250        # kHz
@@ -214,14 +210,14 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
                               readBin(FLD[48], "integer", n=1, size=1, signed=FALSE),
                               readBin(FLD[49], "integer", n=1, size=1, signed=FALSE),
                               readBin(FLD[50], "integer", n=1, size=1, signed=FALSE))
-    oceDebug(debug, paste("cpuBoardSerialNumber = '", paste(cpuBoardSerialNumber, collapse=""), "'\n", sep=""))
+    oceDebug(debug, paste("cpuBoardSerialNumber = '", paste(cpuBoardSerialNumber, collapse=""), "'\n"))
     systemBandwidth <- readBin(FLD[51:52], "integer", n=1, size=2, endian="little")
     ##systemPower <- readBin(FLD[53], "integer", n=1, size=1)
     ## FLD[54] spare
     ## "WorkHorse Commands and Output Data Format_Mar05.pdf" p130: bytes 55:58 = serialNumber only for REMUS, else spare
     ## "WorkHorse Commands and Output Data Format_Nov07.pdf" p127: bytes 55:58 = serialNumber
     serialNumber <- readBin(FLD[55:58], "integer", n=1, size=4, endian="little")
-    oceDebug(debug, "serialNumber=", serialNumber, ", based on bytes 55:58 of the Fixed Leader Header, which are: 0x", FLD[55], " 0x", FLD[56], " 0x", FLD[57], " 0x", FLD[58], "\n", sep="")
+    oceDebug(debug, "serialNumber=", serialNumber, ", based on bytes 55:58 of the Fixed Leader Header, which are: 0x", FLD[55], " 0x", FLD[56], " 0x", FLD[57], " 0x", FLD[58], "\n")
     if (serialNumber == 0)
         serialNumber <- "unknown"
     ##beamAngle <- readBin(FLD[59], "integer", n=1, size=1) # NB 0 in first test case
@@ -279,7 +275,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         ##> warning("unexpected length ", FLDLength, " of fixed-leader-data header; expecting 50 for
         ##>         'surveyor/observor' or 59 for 'workhorse'.")
     }
-    oceDebug(debug, "instrumentSubtype='", instrumentSubtype, "' in R/adp.rdi.R near line 311\n", sep="")
+    oceDebug(debug, "instrumentSubtype='", instrumentSubtype, "'\n")
     nVLD <- 65 # FIXME: should use the proper length, but we won't use it all anyway
     VLD <- buf[dataOffset[2]+1:nVLD]
     oceDebug(debug, "Variable Leader Data (", length(VLD), "bytes):", paste(VLD, collapse=" "), "\n")
@@ -809,7 +805,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         from <- 1
         to <- length(ensembleStart)
         by <- 1
-        oceDebug(debug, "NEW method from=", from, ", by=", by, ", to=", to, "\n", sep="")
+        oceDebug(debug, "NEW method from=", from, ", by=", by, ", to=", to, "\n")
 
         ## 20170108 ## These three things no longer make sense, since we are not reading
         ## 20170108 ## the file to the end, in this updated scheme.
@@ -849,7 +845,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         oceDebug(debug, "profilesInFile=", profilesInFile, "\n")
         if (profilesInFile > 0)  {
             profilesToRead <- length(profileStart)
-            oceDebug(debug, "filename: \"", filename, "\"\n", sep="")
+            oceDebug(debug, "filename: \"", filename, "\"\n")
             oceDebug(debug, "profilesToRead:", profilesToRead, "\n")
             oceDebug(debug, "numberOfBeams:", numberOfBeams, "\n")
             oceDebug(debug, "numberOfCells:", numberOfCells, "\n")
@@ -926,17 +922,16 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             # docs), and store in the metadata.
             ii <- which(codes[, 1]==0x00 & codes[, 2]==0x30)
             if (length(ii)) {
-                oceDebug(debug, "Reading 'Binary Fixed Attitude Header' in first 3 ensembles...\n")
-                for (ensemble in 1:3) {
-                    oceDebug(debug, "ensemble: ", ensemble, "\n")
+                message("debug=",debug)
+                oceDebug(debug, "As a test, displaying 'Binary Fixed Attitude Header' in first 10 ensembles...\n")
+                for (ensemble in seq_len(10)) {
                     J <- ensembleStart[ensemble] + header$dataOffset[ii]
-                    oceDebug(debug, "  ensembleStart[", ensemble, "]=",ensembleStart[ensemble], "\n")
-                    oceDebug(debug, "  header$dataOffset[",ii,"]=",header$dataOffset[ii], "\n")
-                    oceDebug(debug, "  therefore J=", J, " (sum of previous two numbers)\n")
-                    oceDebug(debug, "  buf[J+1:34]: ", paste(buf[J+1:34],collapse=" "), "\n")
+                    oceDebug(debug, "ensembleStart[", ensemble, "]=",ensembleStart[ensemble],
+                        ", header$dataOffset[",ii,"]=",header$dataOffset[ii],
+                        "; buf[", J, "+1:34]=", paste(buf[J+1:34],collapse=" "), "\n", sep="")
                 }
-                header$binaryFixedAttitudeHeader <- buf[J+1:34]
-                warning("stored binaryFixedAttitudeHeader in metadata, but only as 34 raw bytes; this may change, if the developers learn enough about the format.\n")
+                header$binaryFixedAttitudeHeaderRaw <- buf[J+1:34]
+                warning("provisionally, metadata$binaryFixedAttitudeHeaderRaw holds the 34 raw bytes of the Binary Fixed Attitude header\n")
             }
             ii <- which(codes[, 1]==0x01 & codes[, 2]==0x0f)
             if (isSentinel & length(ii) < 1) {
@@ -1210,7 +1205,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         rangeLSB <- readBin(buf[o+c(16:23)], "integer", n=4, size=2, signed=FALSE, endian="little")
                         rangeMSB <- readBin(buf[o+77:80], "integer", n=4, size=1, signed=FALSE, endian="little")
                         if (is.null(br)) {
-                            warning("cannot store bottom-track data for profile ", i, " because profile 1 lacked such data so no storage was set up (adp.rdi.R near line 964)\n")
+                            warning("cannot store bottom-track data for profile ", i, " because profile 1 lacked such data so no storage was set up\n")
                         } else {
                             br[i, ] <- 0.01 * (65536 * rangeMSB + rangeLSB)
                             bv[i, ] <- 0.001 * readBin(buf[o+c(24:31)], "integer", n=4, size=2, signed=TRUE, endian="little")
