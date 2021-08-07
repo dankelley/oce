@@ -250,7 +250,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ## dataOffset[2] = within-ensemble byte offset for VLD (e.g. Table D-1 of Surveyor manual)
     ## thus, length of FLD is dataOffset[2]-dataOffset[1]
     FLDLength <- dataOffset[2] - dataOffset[1]
-    oceDebug(debug, "FLDLength", FLDLength, " (expect 59 for Workhorse, or 50 for Surveyor/Observer)\n")
+    oceDebug(debug, "FLDLength=", FLDLength, " as inferred from dataOffset[2]-dataOffset[1]. Is this right? See GH issue #1861. I have sometimes seen 59 for Workhorse, or 50 for Surveyor/Observer.\n")
 
     ## ----------
     ## RISKY CODE
@@ -1407,9 +1407,16 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             }
             if (length(warningUnknownCode) > 0) {
                 msg <- "A list of unhandled segment codes follows. Several Teledyne RDI manuals\n  describe such codes; see e.g. Table 33 of Teledyne RD Instruments, 2014.\n  Ocean Surveyor/Ocean Observer Technical Manual.\n  P/N 95A-6012-00 April 2014 (OS_TM_Apr14.pdf)\n"
-                for (name in names(warningUnknownCode))
-                    msg <- paste(msg, "    Code ", name, " occurred ", warningUnknownCode[[name]], " times\n", sep="")
-                warning(msg)
+                for (name in names(warningUnknownCode)) {
+                    # Recognize some cases:
+                    # 0x40 0x30 through 0xFC 0x30: Binary Variable Attitude Data
+                    testBytes <- as.raw(strsplit(name, " ")[[1]])
+                    info <- ""
+                    if (testBytes[2] == as.raw(0x30) && (as.raw(0x40) <= testBytes[1] && testBytes[1] <= as.raw(0xFC)))
+                        info <- " (a Variable Attitude ID; see Table 47 of Teledyne-RDI 'Ocean Surveyor Technical Manual_Dec20.pdf')"
+                    msg <- paste(msg, "    Code ", name, " occurred ", warningUnknownCode[[name]], " times", info, "\n", sep="")
+                    warning(msg)
+                }
             }
             if (1 != length(unique(orientation)))
                 warning("the instrument orientation is not constant. The user is advised to determine
