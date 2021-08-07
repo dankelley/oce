@@ -1746,7 +1746,10 @@ oce.write.table <- function (x, file="", ...)
 #' 1. Sverdrup, H U, Martin W Johnson, and Richard H Fleming. The Oceans,
 #' Their Physics, Chemistry, and General Biology. New York: Prentice-Hall, 1942.
 ## \url{https://ark.cdlib.org/ark:/13030/kt167nb66r}
-#' \url{https://publishing.cdlib.org/ucpressebooks/view?docId=kt167nb66r}
+## next worked well most of the time, but I got a failure on 2021-08-07 and
+## I just don't see the point in retaining a link that will *ever* fail, given
+## the possible consequence in terms of CRAN.
+#' \code{https://publishing.cdlib.org/ucpressebooks/view?docId=kt167nb66r}
 #'
 #' 2.Locarnini, R. A., A. V. Mishonov, J. I. Antonov, T. P. Boyer,
 #' H. E. Garcia, O. K. Baranova, M. M. Zweng, D. R. Johnson, and
