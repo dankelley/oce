@@ -29,10 +29,9 @@
 
 decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceTz"), ...)
 {
-
-    ##
-    ## header, of length 6 + 2 * numberOfDataTypes bytes
-    ##
+    #
+    # header length 6+2*numberOfDataTypes bytes (see e.g. Figure 44, page 160 of Surveyor docs)
+    #
     oceDebug(debug, "decodeHeaderRDI(buf, debug=", debug, ") {\n", unindent=1)
     if (buf[1] != 0x7f || buf[2] != 0x7f)
         stop("first two bytes in file must be 0x7f 0x7f, but they are 0x", buf[1], " 0x", buf[2])
@@ -247,6 +246,10 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ##       HEADER  (6+2*num.types) bytes
     ##       FLD 50 bytes
     ##       VLD 60 bytes
+    # Ocean Surveyor Technical Manual_Dec20.pdf figure 44 page 160
+    #       HEADER (6+2*num.types) bytes
+    #       FLD 50 bytes
+    #       VLD 60 bytes
     ## dataOffset[1] = within-ensemble byte offset for FLD (e.g. Table D-1 of Surveyor manual)
     ## dataOffset[2] = within-ensemble byte offset for VLD (e.g. Table D-1 of Surveyor manual)
     ## thus, length of FLD is dataOffset[2]-dataOffset[1]
@@ -367,6 +370,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
                 ##salinity=salinity
                 ##headingAlignment,
                 ##headingBias,
+                haveBinaryFixedAttitudeHeader=any(codes[, 1] == 0x00 & codes[, 2] == 0x30),
                 haveActualData=haveActualData)
     oceDebug(debug, "} # decodeHeaderRDI()\n", unindent=1)
     res
@@ -586,7 +590,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'   \tab 0x00 \tab 0x0c \tab Sentinel vertical beam amplitude\cr
 #'   \tab 0x00 \tab 0x0d \tab Sentinel vertical beam percent good\cr
 #'   \tab 0x00 \tab 0x20 \tab VMDASS\cr
-#' \*\tab 0x00 \tab 0x30 \tab binary fixed attitude (see p169 of reference 3 for format)\cr
+#'   \tab 0x00 \tab 0x30 \tab Binary Fixed Attitude header\cr
 #'   \tab 0x00 \tab 0x32 \tab Sentinel transformation matrix\cr
 #'   \tab 0x00 \tab 0x0a \tab Sentinel data\cr
 #'   \tab 0x00 \tab 0x0b \tab Sentinel correlation\cr
@@ -742,6 +746,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         buf <- buf[seq(startIndex, length(buf))]
     }
     header <- decodeHeaderRDI(buf, debug=debug-1)
+    oceDebug(debug, "have Binary Fixed Attitude Header: ", header$haveBinaryFixedAttitudeHeader, "\n")
     if (header$haveActualData) {
         numberOfBeams <- header$numberOfBeams
         numberOfCells <- header$numberOfCells
@@ -858,7 +863,9 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             codes <- header$codes
             oceDebug(debug, "codes[,1]=", paste("0x", paste(codes[,1], sep=""), sep=""), "\n")
             oceDebug(debug, "codes[,2]=", paste("0x", paste(codes[,2], sep=""), sep=""), "\n")
-            oceDebug(debug, "NOTE: only the following codes are recognized (FIXME: quote page in RDI docs):\n")
+            oceDebug(debug, "NOTE: only the following codes are recognized. See e.g. Table 45 of the\n")
+            oceDebug(debug, "Teledyn-RDI document entitled `Ocean Surveyor Technical Manual_Dec20.pdf`,\n")
+            oceDebug(debug, "P/N 95A-6012-00 (December 2020)\n")
             ## the comments indicate the variable names used below
             oceDebug(debug, "  0x00 0x01 velocity\n") # vFound
             oceDebug(debug, "  0x00 0x02 correlation\n") # qfound
@@ -870,20 +877,21 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             oceDebug(debug, "  0x00 0x0c Sentinel vertical beam amplitude\n") # vv
             oceDebug(debug, "  0x00 0x0d Sentinel vertical beam percent good\n") # vv
             oceDebug(debug, "  0x00 0x20 VMDASS\n") # VMDASSStorageInitialized; many other variables
+            oceDebug(debug, "  0x00 0x30 Variable Fixed Attitude header\n")
             oceDebug(debug, "  0x00 0x32 Sentinel transformation matrix\n") # tmFound
             oceDebug(debug, "  0x00 0x0a Sentinel data\n") # vvFound
             oceDebug(debug, "  0x00 0x0b Sentinel correlation\n") # vqFound
             oceDebug(debug, "  0x00 0x0c Sentinel amplitude\n") # vaFound
             oceDebug(debug, "  0x00 0x0d Sentinel percent good\n") # vgFoiund
             oceDebug(debug, "  0x01 0x0f ? something to do with V series and 4-beam\n")
-            oceDebug(debug, "buf[1:10] near line 745: ", paste("0x", paste(buf[1:10], sep=" "), sep=""), "\n")
+            #oceDebug(debug, "buf[1:10] near line 745: ", paste("0x", paste(buf[1:10], sep=" "), sep=""), "\n")
             vFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x01) # velo
             qFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x02) # corr
             aFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x03) # echo intensity
             gFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x04) # percent good
             ##sFound <- sum(codes[,1]==0x00 & codes[,2]==0x05) # status
             bFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x06) # bottom-track
-            ##nFound <- sum(codes[,1]==0x00 & codes[,2]==0x20) # navigation
+            nFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x20) # navigation
             tmFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x32) # transformation matrix
             if (vFound) {
                 v <- array(numeric(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
@@ -912,6 +920,23 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          numberOfCells, "cells, and", numberOfBeams, "beams\n")
             } else {
                 g <- NULL
+            }
+            # Read Binary Fixed Attitude Header (signalled by code 0x00 0x30) from first ensemble
+            # (skipping others, because I think this is unchangeable, based on the names and the
+            # docs), and store in the metadata.
+            ii <- which(codes[, 1]==0x00 & codes[, 2]==0x30)
+            if (length(ii)) {
+                oceDebug(debug, "Reading 'Binary Fixed Attitude Header' in first 3 ensembles...\n")
+                for (ensemble in 1:3) {
+                    oceDebug(debug, "ensemble: ", ensemble, "\n")
+                    J <- ensembleStart[ensemble] + header$dataOffset[ii]
+                    oceDebug(debug, "  ensembleStart[", ensemble, "]=",ensembleStart[ensemble], "\n")
+                    oceDebug(debug, "  header$dataOffset[",ii,"]=",header$dataOffset[ii], "\n")
+                    oceDebug(debug, "  therefore J=", J, " (sum of previous two numbers)\n")
+                    oceDebug(debug, "  buf[J+1:34]: ", paste(buf[J+1:34],collapse=" "), "\n")
+                }
+                header$binaryFixedAttitudeHeader <- buf[J+1:34]
+                warning("stored binaryFixedAttitudeHeader in metadata, but only as 34 raw bytes; this may change, if the developers learn enough about the format.\n")
             }
             ii <- which(codes[, 1]==0x01 & codes[, 2]==0x0f)
             if (isSentinel & length(ii) < 1) {
@@ -1326,6 +1351,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                             nmeaLen <- nmeaLen + 1
                             nmea[nmeaLen] <- nmeaTmp
                         }
+                    } else if (buf[o] == 0x00 & buf[1+o] == 0x30) {
+                        ; # already handled above
                     } else if (buf[o] == 0x01 & buf[1+o] == 0x21) {
                         ## 94 bytes (table 5 [WinRiver User Guide International Verion.pdf.pdf])
                         end <- .C("nmea_len", buf[o+2+0:91], 92L, integer(1))[[3]]
