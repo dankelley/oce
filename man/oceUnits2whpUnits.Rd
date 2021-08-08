@@ -20,8 +20,7 @@ to match patterns.
 }
 \references{
 Several online sources list WOCE names. An example is
-\verb{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
-(a link that was noticed to be failing on May 31, 2020).
+\url{https://cchdo.github.io/hdo-assets/documentation/manuals/pdf/90_1/chap4.pdf}
 }
 \seealso{
 Other things related to ctd data: 

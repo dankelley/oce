@@ -573,7 +573,7 @@ mapAxis <- function(side=1:2, longitude=TRUE, latitude=TRUE,
             options(warn=-1) # avoid warnings from regularize()
             tfcn <- try(approxfun(tt$longitude, tx), silent=TRUE)
             options(warn=owarn)
-            if (!inherits(tfcn, "try=error")) {
+            if (!inherits(tfcn, "try-error")) {
                 at <- tfcn(longitude)
                 if (any(is.finite(at))) {
                     axis(side=1, at=at, label=formatLonLat(longitude, "longitude", axisStyle=axisStyle))

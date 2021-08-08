@@ -730,7 +730,7 @@ setMethod(f="subset",
                   ##subsetString <- deparse(substitute(subset))
                   ##oceDebug(debug, "subsetString='", subsetString, "'\n")
                   res <- x
-                  if (length(grep("stationId", subsetString))) {
+                  if (grepl("stationId", subsetString)) {
                       keep <- eval(expr=substitute(expr=subset, env=environment()),
                                    envir=data.frame(stationId=as.numeric(x@metadata$stationId)))
                       res@metadata$stationId <- x@metadata$stationId[keep]
@@ -739,7 +739,7 @@ setMethod(f="subset",
                       res@metadata$time <- x@metadata$time[keep]
                       res@data$station <- x@data$station[keep]
                       res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
-                  } else if (length(grep("distance", subsetString))) {
+                  } else if (grepl("distance", subsetString)) {
                       l <- list(distance=geodDist(res))
                       keep <- eval(expr=substitute(expr=subset, env=environment()), envir=l, enclos=parent.frame(2))
                       res@metadata$longitude <- res@metadata$longitude[keep]
@@ -747,7 +747,7 @@ setMethod(f="subset",
                       res@metadata$stationId <- res@metadata$stationId[keep]
                       res@metadata$time <- x@metadata$time[keep]
                       res@data$station <- res@data$station[keep]
-                  } else if (length(grep("levels", subsetString))) {
+                  } else if (grepl("levels", subsetString)) {
                       levels <- unlist(lapply(x[["station"]], function(stn) length(stn[["pressure"]])))
                       keep <- eval(expr=substitute(expr=subset, env=environment()), envir=list(levels=levels))
                       res@metadata$longitude <- res@metadata$longitude[keep]
@@ -755,7 +755,7 @@ setMethod(f="subset",
                       res@metadata$stationId <- res@metadata$stationId[keep]
                       res@metadata$time <- x@metadata$time[keep]
                       res@data$station <- res@data$station[keep]
-                  } else if (length(grep("latitude", subsetString)) || length(grep("longitude", subsetString))) {
+                  } else if (grepl("latitude", subsetString) || grepl("longitude", subsetString)) {
                       n <- length(x@data$station)
                       keep <- vector(length=n)
                       for (i in 1:n)
@@ -2473,7 +2473,7 @@ read.section <- function(file, directory, sectionId="", flags,
         isFlag <- rep(TRUE, sum(!colSkip))
         for (idata in seq_along(dataNames)) {
             ## Split flags into metadata
-            isFlag[idata] <- 0 < length(grep("Flag$", dataNames[idata]))
+            isFlag[idata] <- grepl("Flag$", dataNames[idata])
             if (isFlag[idata]) {
                 thisStation@metadata$flags[[gsub("Flag$", "", dataNames[idata])]] <- as.numeric(DATA[select, idata])
             } else {

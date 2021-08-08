@@ -351,8 +351,6 @@ setMethod("initializeFlags",
               oceDebug(debug, "setFlags,adp-method name=", name, ", value=", value, "\n")
               if (is.null(name))
                   stop("must supply 'name'")
-              if (name != "v")
-                  stop("the only flag that adp objects can handle is for \"v\"")
               res <- initializeFlagsInternal(object, name, value, debug-1)
               res
           })
@@ -397,8 +395,6 @@ setMethod("setFlags",
           function(object, name=NULL, i=NULL, value=NULL, debug=getOption("oceDebug")) {
               if (is.null(name))
                   stop("must specify 'name'")
-              if (name != "v")
-                  stop("in adp objects, the only flag that can be set is for \"v\"")
               setFlagsInternal(object, name, i, value, debug-1)
           })
 
@@ -518,7 +514,12 @@ setMethod(f="summary",
               metadataNames <- names(object@metadata)
               cat("* Frequency:         ", object[["frequency"]], "kHz\n", ...)
               if ("ensembleNumber" %in% names(object@metadata)) {
-                  cat(paste("* Ensemble Numbers:  ", vectorShow(object@metadata$ensembleNumber, msg="")))
+                  en <- object@metadata$ensembleNumber
+                  nen <- length(en)
+                  if (nen > 4)
+                      cat("* Ensemble Numbers:   ", en[1], ", ", en[2], ", ..., ", en[nen-1L], ", ", en[nen], "\n", sep="")
+                  else
+                      cat("* Ensemble Numbers:   ", paste(en, collapse=", "), "\n", sep="")
               }
               if (!isAD2CP) {
                   if ("numberOfCells" %in% metadataNames) {
@@ -642,37 +643,8 @@ setMethod(f="[[",
           signature(x="adp", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
               ##>message("top: i='", i, "'")
-              ## if (i == "a") {
-              ##     if (!missing(j) && j == "numeric") {
-              ##         res <- x@data$a
-              ##         dim <- dim(res)
-              ##         res <- as.numeric(res)
-              ##         dim(res) <- dim
-              ##     } else {
-              ##         res <- x@data$a
-              ##     }
-              ##     res
-              ## } else if (i == "q") {
-              ##     if (!missing(j) && j == "numeric") {
-              ##         res <- x@data$q
-              ##         dim <- dim(res)
-              ##         res <- as.numeric(res)
-              ##         dim(res) <- dim
-              ##     } else {
-              ##         res <- x@data$q
-              ##     }
-              ##     res
-              ## if (i == "g") {
-              ##     if (!missing(j) && 1 == length("numeric", j)) {
-              ##         res <- x@data$g
-              ##         dim <- dim(res)
-              ##         res <- as.numeric(res)
-              ##         dim(res) <- dim
-              ##     } else {
-              ##         res <- x@data$g
-              ##     }
-              ##     res
-              ##} else
+              if (length(i) != 1L)
+                  stop("In [[,adp-method() : may only extract 1 item at a time.\n", call.=FALSE)
               ISAD2CP <- is.ad2cp(x)
               ##>message("ISAD2CP=", ISAD2CP)
               if (i == "distance") {

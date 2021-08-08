@@ -4815,6 +4815,9 @@ ctimeToSeconds <- function(ctime)
 #' @param unindent integer giving the number of levels to un-indent,
 #' e.g. for start and end lines from a called function.
 #'
+#' @param sep character to insert between elements of `...`, by passing
+#' it to [cat()].
+#'
 #' @author Dan Kelley
 #'
 #' @examples
@@ -4826,7 +4829,7 @@ ctimeToSeconds <- function(ctime)
 #' oceDebug(debug=1, "Example", 6, "Blue", style="blue")
 #' mycyan <- function(...) paste("\033[36m", paste(..., sep=" "), "\033[0m", sep="")
 #' oceDebug(debug=1, "Example", 7, "User-set cyan", style=mycyan)
-oceDebug <- function(debug=0, ..., style="plain", unindent=0)
+oceDebug <- function(debug=0, ..., style="plain", unindent=0, sep="")
 {
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     if (debug > 0) {
@@ -4834,45 +4837,45 @@ oceDebug <- function(debug=0, ..., style="plain", unindent=0)
         if (is.character(style) && style == "plain") {
             if (n > 0)
                 cat(paste(rep("  ", n), collapse=""))
-            cat(...)
+            cat(..., sep=sep)
         } else if (is.character(style) && style == "bold") {
             cat("\033[1m")
             if (n > 0)
                 cat(paste(rep("  ", n), collapse=""))
-            cat(...)
+            cat(..., sep=sep)
             cat("\033[0m")
         } else if (is.character(style) && style == "italic") {
             cat("\033[3m")
             if (n > 0)
                 cat(paste(rep("  ", n), collapse=""))
-            cat(...)
+            cat(..., sep=sep)
             cat("\033[0m")
         } else if (is.character(style) && style == "red") {
             cat("\033[31m")
             if (n > 0)
                 cat(paste(rep("  ", n), collapse=""))
-            cat(...)
+            cat(..., sep=sep)
             cat("\033[0m")
         } else if (is.character(style) && style == "green") {
             cat("\033[32m")
             if (n > 0)
                 cat(paste(rep("  ", n), collapse=""))
-            cat(...)
+            cat(..., sep=sep)
             cat("\033[0m")
         } else if (is.character(style) && style == "blue") {
             cat("\033[34m")
             if (n > 0)
                 cat(paste(rep("  ", n), collapse=""))
-            cat(...)
+            cat(..., sep=sep)
             cat("\033[0m")
         } else if (is.function(style)) {
             if (n > 0)
                 cat(style(paste(rep("  ", n), collapse="")))
-            cat(style(...))
+            cat(style(...), sep=sep)
         } else { # fallback
             if (n > 0)
                 cat(paste(rep("  ", n), collapse=""))
-            cat(...)
+            cat(..., sep=sep)
         }
         flush.console()
     }
