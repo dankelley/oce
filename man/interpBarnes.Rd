@@ -23,7 +23,7 @@ interpBarnes(
 )
 }
 \arguments{
-\item{x, y}{a vector of x and ylocations.}
+\item{x, y}{a vector of x and y locations.}
 
 \item{z}{a vector of z values, one at each (x,y) location.}
 
@@ -40,14 +40,15 @@ these values are inferred from the data, using e.g. \code{pretty(x, n=50)}.}
 \code{\link[=seq]{seq()}} spanning the data range.  These values \code{xgl} are only
 examined if \code{xg} and \code{yg} are not supplied.}
 
-\item{xr, yr}{optional values defining the width of the radius ellipse in the
-x and y directions.  If not supplied, these are calculated as the span of x
+\item{xr, yr}{optional values defining the x and y radii of the weighting ellipse.
+If not supplied, these are calculated as the span of x
 and y over the square root of the number of data.}
 
-\item{gamma}{grid-focussing parameter.  At each iteration, \code{xr} and
+\item{gamma}{grid-focussing parameter.  At each successive iteration, \code{xr} and
 \code{yr} are reduced by a factor of \code{sqrt(gamma)}.}
 
-\item{iterations}{number of iterations.}
+\item{iterations}{number of iterations.  Set this to 1 to perform just
+one iteration, using the radii as described at \verb{xr,yr} above.}
 
 \item{trim}{a number between 0 and 1, indicating the quantile of data weight
 to be used as a criterion for blanking out the gridded value (using
@@ -81,10 +82,11 @@ interpolation at its final iteration; and \code{zd}, a vector of the same
 length as \code{x}, which holds the interpolated values at the data points.
 }
 \description{
-The algorithm follows that described by Koch et al. (1983), with the
-addition of the ability to blank out the grid in spots where data are
-sparse, using the \code{trim} argument, and the ability to pre-grid, with
-the \code{pregrid} argument.
+The algorithm follows that described by Koch et al. (1983), except
+that \code{interpBarnes} adds (1) the ability to
+blank out the grid where data are
+sparse, using the \code{trim} argument, and (2) the ability to
+pre-grid, with the \code{pregrid} argument.
 }
 \examples{
 library(oce)
@@ -107,7 +109,6 @@ contour(u$xg, u$yg, u$zg, labcex=1)
 mismatch <- 100 * (wind$z - u$zd) / wind$z
 text(wind$x, wind$y, round(mismatch), col="blue")
 title("Numbers are percent mismatch between grid and data")
-
 
 # 4. As 3, but contour the mismatch
 mismatchGrid <- interpBarnes(wind$x, wind$y, mismatch)

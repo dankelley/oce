@@ -3456,12 +3456,13 @@ oce.filter <- oceFilter
 
 #' Grid data using Barnes algorithm
 #'
-#' The algorithm follows that described by Koch et al. (1983), with the
-#' addition of the ability to blank out the grid in spots where data are
-#' sparse, using the `trim` argument, and the ability to pre-grid, with
-#' the `pregrid` argument.
+#' The algorithm follows that described by Koch et al. (1983), except
+#' that `interpBarnes` adds (1) the ability to
+#' blank out the grid where data are
+#' sparse, using the `trim` argument, and (2) the ability to
+#' pre-grid, with the `pregrid` argument.
 #'
-#' @param x,y a vector of x and ylocations.
+#' @param x,y a vector of x and y locations.
 #'
 #' @param z a vector of z values, one at each (x,y) location.
 #'
@@ -3478,14 +3479,15 @@ oce.filter <- oceFilter
 #' [seq()] spanning the data range.  These values `xgl` are only
 #' examined if `xg` and `yg` are not supplied.
 #'
-#' @param xr,yr optional values defining the width of the radius ellipse in the
-#' x and y directions.  If not supplied, these are calculated as the span of x
+#' @param xr,yr optional values defining the x and y radii of the weighting ellipse.
+#' If not supplied, these are calculated as the span of x
 #' and y over the square root of the number of data.
 #'
-#' @param gamma grid-focussing parameter.  At each iteration, `xr` and
+#' @param gamma grid-focussing parameter.  At each successive iteration, `xr` and
 #' `yr` are reduced by a factor of `sqrt(gamma)`.
 #'
-#' @param iterations number of iterations.
+#' @param iterations number of iterations.  Set this to 1 to perform just
+#' one iteration, using the radii as described at `xr,yr` above.
 #'
 #' @param trim a number between 0 and 1, indicating the quantile of data weight
 #' to be used as a criterion for blanking out the gridded value (using
@@ -3547,7 +3549,6 @@ oce.filter <- oceFilter
 #' text(wind$x, wind$y, round(mismatch), col="blue")
 #' title("Numbers are percent mismatch between grid and data")
 #'
-#'
 #' # 4. As 3, but contour the mismatch
 #' mismatchGrid <- interpBarnes(wind$x, wind$y, mismatch)
 #' contour(mismatchGrid$xg, mismatchGrid$yg, mismatchGrid$zg, labcex=1)
@@ -3568,7 +3569,23 @@ interpBarnes <- function(x, y, z, w,
                          debug=getOption("oceDebug"))
 {
     debug <- max(0, debug)
-    oceDebug(debug, "interpBarnes(x, ...) {\n", unindent=1, sep="")
+    oceDebug(debug, "interpBarnes(",
+        argShow(x),
+        argShow(y),
+        argShow(z),
+        argShow(w),
+        argShow(xg),
+        argShow(xg),
+        argShow(yg),
+        argShow(xgl),
+        argShow(ygl),
+        argShow(xr),
+        argShow(yr),
+        argShow(gamma),
+        argShow(iterations),
+        argShow(trim),
+        argShow(pregrid, last=TRUE),
+        ") {\n", unindent=1, sep="")
     if (!is.vector(x))
         stop("x must be a vector")
     n <- length(x)
@@ -3576,6 +3593,8 @@ interpBarnes <- function(x, y, z, w,
         stop("lengths of x and y disagree; they are ", n, " and ", length(y))
     if (length(z) != n)
         stop("lengths of x and z disagree; they are ", n, " and ", length(z))
+    xrGiven <- !missing(xr)
+    yrGiven <- !missing(yr)
     if (missing(w))
         w <- rep(1.0, length(x))
     if (missing(xg)) {
@@ -3588,6 +3607,7 @@ interpBarnes <- function(x, y, z, w,
         } else {
             xg <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=xgl)
         }
+        oceDebug(debug, "computed ", vectorShow(xg))
     }
     if (missing(yg)) {
         if (missing(ygl)) {
@@ -3599,16 +3619,19 @@ interpBarnes <- function(x, y, z, w,
         } else {
             yg <- seq(min(y, na.rm=TRUE), max(y, na.rm=TRUE), length.out=ygl)
         }
+        oceDebug(debug, "computed ", vectorShow(yg))
     }
-    if (missing(xr)) {
+    if (!xrGiven) {
         xr <- diff(range(x, na.rm=TRUE)) / sqrt(n)
         if (xr == 0)
             xr <- 1
+        oceDebug(debug, "computed xr=", xr, " based on data density\n")
     }
-    if (missing(yr)) {
+    if (!yrGiven) {
         yr <- diff(range(y, na.rm=TRUE)) / sqrt(n)
         if (yr == 0)
             yr <- 1
+        oceDebug(debug, "computed yr=", yr, " based on data density\n")
     }
     ## Handle pre-gridding (code not DRY but short enough to be ok)
     if (is.logical(pregrid)) {
@@ -3640,10 +3663,8 @@ interpBarnes <- function(x, y, z, w,
         y <- pg$y
         z <- pg$f
     }
-
-    oceDebug(debug, vectorShow(xg))
-    oceDebug(debug, vectorShow(yg))
-    oceDebug(debug, "xr=", xr, ", yr=", yr, ", gamma=", gamma, ", iterations=", iterations, "\n")
+    for (i in seq_len(iterations))
+        oceDebug(debug, "  Iteration ", i, ": use xr=", xr*gamma^((i-1)/2), " and yr=", yr*gamma^((i-1)/2), "\n")
 
     ok <- !is.na(x) & !is.na(y) & !is.na(z) & !is.na(w)
     if (sum(ok) > 0) {
