@@ -202,6 +202,16 @@ setMethod(f="[[",
                       stop("coding error: unknown item '", i, "'")
                   }
                   dim(res) <- dim
+              } else if (i == "z") {
+                  # See note at "depth", below.
+                  if (is.matrix(x@data$pressure)) {
+                      n <- dim(x@data$pressure)[1]
+                      latitude <- matrix(rep(x@data$latitude, each=n),
+                                         nrow=n, byrow=TRUE)
+                      res <- -swDepth(x@data$pressure, latitude)
+                  } else {
+                      res <- -swDepth(x@data$pressure, x@data$latitude)
+                  }
               } else if (i == "depth") {
                   ## This accessor added for issue 1333. Note that the
                   ## fix for that issue was sometimes calling with
