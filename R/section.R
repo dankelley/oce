@@ -1049,9 +1049,20 @@ sectionAddCtd <- sectionAddStation
 #'
 #' @param ylim Optional limit for y axis (only in sections, not map)
 #'
-#' @param zlim Optional two-element numerical vector specifying the
-#' limit on the plotted field. This is used only if `ztype="image"`;
-#' see also `zbreaks` and `zcol`.
+#' @param zlim,zbreaks,zcol Elements that control colours for `image` and `points`
+#' plot types, i.e. if `ztype` is either `"points"` or `"image"`. 
+#' `zlim` is a two-element numerical vector specifying the
+#' limit on the plotted field.  If not provided, it defaults to the data
+#' range.
+#' `zbreaks` controls the colour breaks, in a manner that is similar to
+#' the [image()] parameter named `breaks`.  If not provided, `zbreaks` is
+#' inferred from `zlim`.
+#' `zcol`, which controls the colour scheme, may be a vector of colours
+#' (of length 1 less than `zbreaks`), or a function that takes an
+#' integer as its sole argument and returns that number of colours.
+#' If not provided, `zcol` defaults to [oceColoursViridis()].
+#' These three parameters are used in Example 6, an illustration of
+#' Atlantic salinity along 36N.
 #'
 #' @param map.xlim,map.ylim Optional limits for station map; `map.ylim` is
 #' ignored if `map.xlim` is provided.
@@ -1084,13 +1095,6 @@ sectionAddCtd <- sectionAddStation
 #' `filledContours=TRUE`), or `"points"` to draw points.
 #' In the first two cases, the data must be gridded, with identical pressures at
 #' each station.
-#'
-#' @param zbreaks,zcol Indication of breaks and colors to be used if `ztype="points"` or
-#' `"image"`. If not provided, reasonable default are used. If `zlim`
-#' is given but `breaks` is not given, then `breaks` is computed to
-#' run from `zlim[1]` to `zlim[2]`. If `zcol` is a function,
-#' it will be invoked with an argument equal to
-#' `1+length(zbreaks)`.
 #'
 #' @param legend.loc Location of legend, as supplied to [legend()], or
 #' set to the empty string to avoid plotting a legend.
@@ -1143,8 +1147,8 @@ sectionAddCtd <- sectionAddStation
 #' @param mar Value to be used with [`par`]`("mar")`. If not provided,
 #' a default is set up.
 #'
-#' @param col Color, which defaults to [`par`]`("col")` for line types, but
-#' to [oceColorsViridis] for image types.
+#' @param col Color for line types.  If not provided, this defaults to
+#' [`par`]`("col")`.  See `zcol`, for `ztype="image"` and `ztype="points"`.
 #'
 #' @param cex Numerical character-expansion factor, which defaults to [`par`]`("cex")`.
 #'
@@ -1172,10 +1176,10 @@ sectionAddCtd <- sectionAddStation
 #' data(section)
 #' sg <- sectionGrid(section)
 #'
-#' ## 1. start of section, default fields.
+#' # 1. start of section, default fields.
 #' plot(head(section))
 #'
-#' ## 2. Gulf Stream
+#' # 2. Gulf Stream
 #' GS <- subset(section, 109<=stationId&stationId<=129)
 #' GSg <- sectionGrid(GS, p=seq(0, 2000, 100))
 #' plot(GSg, which=c(1, 99), map.ylim=c(34, 42))
@@ -1186,7 +1190,7 @@ sectionAddCtd <- sectionAddStation
 #'
 #' par(mfrow=c(1, 1))
 #'
-#' ## 3. Image, with colored dots to indicate grid-data mismatch.
+#' # 3. Image, with colored dots to indicate grid-data mismatch.
 #'\dontrun{
 #' plot(GSg, which=1, ztype='image')
 #' T <- GS[['temperature']]
@@ -1210,22 +1214,30 @@ sectionAddCtd <- sectionAddStation
 ## #' points(distance[look], depth[look], col='red')
 #'
 #'\dontrun{
-#' ## 4. Image of Absolute Salinity, with 4-minute bathymetry
-#' ## It's easy to calculate the desired area for the bathymetry,
-#' ## but for brevity we'll hard-code it. Note that download.topo()
-#' ## caches the file locally.
+#' # 4. Image of Absolute Salinity, with 4-minute bathymetry
+#' # It's easy to calculate the desired area for the bathymetry,
+#' # but for brevity we'll hard-code it. Note that download.topo()
+#' # caches the file locally.
 #' f <- download.topo(west=-80, east=0, south=35, north=40, resolution=4)
 #' t <- read.topo(f)
 #' plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
 #'}
 #'
 #'\dontrun{
-#' ## 5. Temperature with salinity added in red
+#' # 5. Temperature with salinity added in red
 #' s <- plot(section, which="temperature")
 #' distance <- s[["distance", "byStation"]]
 #' depth <- s[["station", 1]][["depth"]]
 #' salinity <- matrix(s[["salinity"]], byrow=TRUE, nrow=length(s[["station"]]))
 #' contour(distance, depth, salinity, col=2, add=TRUE)
+#'}
+#'
+#'\dontrun{
+#' # 6. Image with controlled colours
+#' plot(section, which="salinity", ztype="image",
+#'     zlim=c(35, 37.5),
+#'     zbreaks=seq(35, 37.5, 0.25),
+#'     zcol=oceColorsTurbo)
 #'}
 #'
 #' @author Dan Kelley
@@ -1246,13 +1258,13 @@ setMethod(f="plot",
                               contourLabels=NULL,
                               stationIndices,
                               coastline="best",
-                              xlim=NULL, ylim=NULL, zlim=NULL,
+                              xlim=NULL, ylim=NULL,
+                              zlim=NULL, zbreaks=NULL, zcol=NULL,
                               map.xlim=NULL, map.ylim=NULL,
                               clongitude, clatitude, span,
                               projection=NULL,
                               xtype="distance", ytype="depth", ztype="contour",
                               longitude0, latitude0,
-                              zbreaks=NULL, zcol=NULL,
                               legend.loc="bottomright",
                               showStations=FALSE,
                               showStart=TRUE,
