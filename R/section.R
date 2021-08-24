@@ -1050,7 +1050,7 @@ sectionAddCtd <- sectionAddStation
 #' @param ylim Optional limit for y axis (only in sections, not map)
 #'
 #' @param zlim,zbreaks,zcol Elements that control colours for `image` and `points`
-#' plot types, i.e. if `ztype` is either `"points"` or `"image"`. 
+#' plot types, i.e. if `ztype` is either `"points"` or `"image"`.
 #' `zlim` is a two-element numerical vector specifying the
 #' limit on the plotted field.  If not provided, it defaults to the data
 #' range.
@@ -1060,7 +1060,7 @@ sectionAddCtd <- sectionAddStation
 #' `zcol`, which controls the colour scheme, may be a vector of colours
 #' (of length 1 less than `zbreaks`), or a function that takes an
 #' integer as its sole argument and returns that number of colours.
-#' If not provided, `zcol` defaults to [oceColoursViridis()].
+#' If not provided, `zcol` defaults to [oceColorsViridis()].
 #' These three parameters are used in Example 6, an illustration of
 #' Atlantic salinity along 36N.
 #'
@@ -3412,7 +3412,7 @@ longitudeTighten <- function(section)
     res <- section
     longitude <- section[["longitude", "byStation"]]
     longitudeShifted <- ifelse(longitude > 180, longitude - 360, longitude)
-    if (diff(range(longitude)) > diff(range(longitudeShifted))) 
+    if (diff(range(longitude)) > diff(range(longitudeShifted)))
         longitude <- longitudeShifted
     res <- oceSetMetadata(res, "longitude", longitude, "longitudeTighten")
     ctds <- section@data$station

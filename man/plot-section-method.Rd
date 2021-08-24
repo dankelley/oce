@@ -106,7 +106,7 @@ inferred from \code{zlim}.
 \code{zcol}, which controls the colour scheme, may be a vector of colours
 (of length 1 less than \code{zbreaks}), or a function that takes an
 integer as its sole argument and returns that number of colours.
-If not provided, \code{zcol} defaults to \code{\link[=oceColoursViridis]{oceColoursViridis()}}.
+If not provided, \code{zcol} defaults to \code{\link[=oceColorsViridis]{oceColorsViridis()}}.
 These three parameters are used in Example 6, an illustration of
 Atlantic salinity along 36N.}
 
