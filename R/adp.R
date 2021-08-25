@@ -328,6 +328,13 @@ setMethod("handleFlags", signature=c(object="adp", flags="ANY", actions="ANY", w
           definition=function(object, flags=NULL, actions=NULL, where=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               ## Flag=1 means bad velocity; 0 means good
+              names <- names(object[["flags"]])
+              for (name in names) {
+                  for (j in 1:length(object[[name]])) {
+                      if (any(class(object[[name]][j]) == "raw"))
+                          stop("use adpConvertRawToNumeric() first to convert raw values to numeric")
+                  }
+              }
               if (is.null(flags)) {
                   flags <- defaultFlags(object)
                   if (is.null(flags))
