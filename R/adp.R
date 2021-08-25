@@ -4055,3 +4055,139 @@ adpEnsembleAverage <- function(x, n=5, leftover=FALSE, na.rm=TRUE, ...)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
+
+# vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+
+#' Convert Raw to Numeric Values For adp Objects
+#'
+#' Convert variables in an [adp-class] object from raw to numeric format.
+#'
+#' @param object an [adp-class] object.
+#'
+#' @param variables variables stored in an [adp-class] object that has
+#' the same dimensional as `v` and is stored in a raw format.
+#'
+#' @return `adpConvertRawToNumeric` returns an [adp-class] object whose specified
+#' variables have been converted from raw to numerical format.
+#' @template debugTemplate
+#' @family things related to adp data
+#' @author Jaimie Harbin and Dan Kelley
+#' @export
+#'
+#' @examples
+#' library(oce)
+#' data(adp)
+#' adp[["a"]][,,1][,1]
+#' ADP <- adpConvertRawToNumeric(adp)
+#' ADP[["a"]][,,1][,1]
+adpConvertRawToNumeric <- function(object=NULL, variables=NULL, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "adpConvertRawToNumeric() {\n", sep="", unindent=1, style="bold")
+    if (!inherits(object, "adp"))
+        stop("object must be an adp object")
+    v <- object[["v"]]
+    if (!exists("v"))
+        stop("the adp object must contain \"v\"")
+    # Find relevant variables if variable=NULL
+    dimNeeded <- dim(object[["v"]])
+    if (is.null(variables)) {
+        dataNames <- names(object@data)
+        keep <- sapply(dataNames,
+            function(variableTrial) {
+                dimtest <- dim(object[[variableTrial]])
+                length(dimtest) == 3 && all(dimtest == dimNeeded)
+            })
+        variables <- dataNames[keep]
+        oceDebug(debug, "inferred variables:", paste(variables, collapse=", "), "\n")
+    }
+    for (variable in variables) {
+        # Catch errors
+        if (length(dim(object[[variable]])) != 3)
+            stop("\"", variable, "\" does not have three dimensions")
+        if (all(dim(object[[variable]]) != dimNeeded))
+            stop("\"", variable, "\" must have dimension ", paste(dimNeeded, collapse="x"))
+        # Convert this relevant variable from raw to numeric 
+        object[[variable]] <- object[[variable, "numeric"]]
+    }
+    object@processingLog <- processingLogAppend(object@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # adpConvertRawToNumeric()\n", sep="", unindent=1, style="bold")
+    object
+}
+
+# vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+
+#' Flag adp Data Past Water Column Boundary
+#'
+#' Flag variables with the same dimension of `v` in
+#' an [adp-class] object that are beyond the water column boundary.
+#' Currently, this operation can only be performed on [adp-class]
+#' objects that contain bottom ranges. Commonly, [handleFlags()] would
+#' then be used to remove such data.
+#'
+#' This works by fitting a smoothing spline to a bottom range with a defined
+#' number of degrees of freedom. For each time, it then searches to determine
+#' which associated distances are greater than the predicted smooth spline
+#' multiplied by \eqn{1-trim}.
+#'
+#' @param x an [adp-class] object containing bottom ranges.
+#'
+#' @param fields a variable contained within `x` indicating which field to flag.
+#'
+#' @param df the degrees of freedom to use during the smoothing spline operation.
+#'
+#' @param trim a scale factor for boundary trimming (see \dQuote{Details}).
+#'
+#' @param good number stored in flags to indicate good data.
+#'
+#' @param bad number stored in flags to indicate bad data.
+#' @template debugTemplate
+#'
+#' @return `adpFlagPastBoundary` returns an [adp-class] object with flags
+#' adjusted in the specified fields if data are beyond the water column boundary.
+#'
+#' @author Jaimie Harbin, Clark Richards, and Dan Kelley
+#'
+#' @family things related to adp data
+#'
+#' @export
+adpFlagPastBoundary <- function(x=NULL, fields=NULL, df=20, trim=0.15, good=1, bad=4, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "adpFlagPastBoundary() {\n", sep="", unindent=1, style="bold")
+    if (!inherits(x, "adp"))
+        stop("x must be an adp object")
+    if (!"br" %in% names(x@data))
+        stop("adpFlagPastBoundary can only flag fields that have the same dimension as \"v\"")
+    dimNeeded <- dim(x[["v"]])
+    if (is.null(fields)) {
+        dataNames <- names(x@data)
+        keep <- sapply(dataNames,
+            function(variableTrial) {
+                dimtest <- dim(x[[variableTrial]])
+                length(dimtest) == 3 && all(dimtest == dimNeeded)
+            })
+        fields <- dataNames[keep]
+        oceDebug(debug, "inferred fields:", paste(fields, collapse=", "), "\n")
+    }
+    mask <- array(good, dim=dim(x[["v"]]))
+    time <- x[["time"]]
+    for (kbeam in seq_len(x[["numberOfBeams"]])) {
+        timeSeconds <- as.numeric(time)
+        br <- x[["br"]][,kbeam]
+        ok <- is.finite(br)
+        X <- timeSeconds[ok]
+        y <- br[ok]
+        s <- smooth.spline(X, y, df=df)
+        p <- predict(s, timeSeconds)$y
+        for (itime in seq_along(x[["time"]])) {
+            jbad <- x[["distance"]] > (1-trim)*p[itime]
+            mask[itime, jbad, kbeam] <- bad
+        }
+    }
+    for (f in fields) {
+        x[["flags"]][[f]] <- mask
+        oceDebug(debug, "handled field '",f, "'\n", sep="")
+    }
+    x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # adpFlagPastBoundary()\n", sep="", unindent=1, style="bold")
+    return(x)
+}

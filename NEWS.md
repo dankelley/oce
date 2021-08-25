@@ -10,6 +10,8 @@
 * Fix `as.section()` handling of list of `argo` objects as first argument.
 * Fix `colormap()` handling of `name` argument.
 * `read.odf()` handles many new CODE and UNIT possibilities.
+* Add `adpConvertRawToNumeric`.
+* Add `adpFlagPastBoundary`.
 
 ## 1.4.0
 
