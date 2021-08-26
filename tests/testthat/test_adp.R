@@ -311,3 +311,8 @@ test_that("subset by ensembleNumber", {
           expect_equal(dim(firstTen[["v"]])[1], n)
 })
 
+test_that("adpConvertRawToNumeric", {
+          expect_equal(class(adp[["a"]][,,1][,1][1]), "raw")
+          ADP <- adpConvertRawToNumeric(adp)
+          expect_equal(class(ADP[["a"]][,,1][,1][1]), "numeric")
+})
