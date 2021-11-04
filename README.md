@@ -13,15 +13,31 @@ CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)
 downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
 <!-- badges: end -->
 
+## Why use R for oceanographic analysis?
+
+The R language is popular in many branches of science, and Oceanography is not
+an exception. Perhaps because of its broad statistical support, R is especially
+popular in Biological Oceanography, and its popularity seems to be growing also
+among Chemical and Geological Oceanographers. In the remaining subdiscipline of
+Physical Oceanography, many researchers remain attached to Matlab, which was
+the strongest choice for interactive work in the late 1900s. However, the
+commercial and closed-source nature of Matlab is a problem in the eyes of many
+people, and so open-source alternatives have become increasingly popular.  Of
+these, Python and R are the most popular languages at the moment, and many
+Oceanographers are conversant with each, switching between the two according to
+the task at hand. A strength of R in this regard is the availability of
+well-vetted and well-documented packages for handling a wide spectrum of
+specialized tasks. Of these, the oce package is particularly important.
+
 ## About oce
 
-Oce is an R package for processing oceanographic data. Its
-[webpage](https://dankelley.github.io/oce/) provides details, of which
-this README file is just a sketch. A book by one of the oce co-authors
-provides more information on the package and its potential for
-oceanographic research (Kelley, Dan E., 2018. [Oceanographic Analysis
-with R](https://www.springer.com/us/book/9781493988426). New York.
-Springer-Verlag ISBN 978-1-4939-8844-0).
+The oce package handles a wide variety of tasks that come up in the analysis of
+Oceanographic data. Its [webpage](https://dankelley.github.io/oce/) provides
+details, of which this README file is just a sketch. A book by one of the oce
+co-authors provides more information on the package and its potential for
+oceanographic research (Kelley, Dan E., 2018. [Oceanographic Analysis with
+R](https://www.springer.com/us/book/9781493988426). New York. Springer-Verlag
+ISBN 978-1-4939-8844-0).
 
 ## Installing oce
 
