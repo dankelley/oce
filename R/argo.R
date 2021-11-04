@@ -234,6 +234,8 @@ setMethod(f="[[",
                   }
               } else if (i == "ID" || i == "id") {
                   res <- x@metadata$id
+              } else if (i == "cycleNumber" || i == "cycle") {
+                  res <- x@metadata$cycle
               } else if (i == "latitude") {
                   res <- x@data$latitude
               } else if (i == "longitude") {
@@ -394,7 +396,7 @@ getData <- function(file, name, quiet=FALSE)
 #' `CNDC` \tab `conductivity`\cr
 #' `CHLA` \tab `chlorophyllA`\cr
 #' `CP` \tab `beamAttenuation`\cr
-#' `CYCLE_NUMBER` \tab `cycleNumber`\cr
+#' `CYCLE_NUMBER` \tab `cycleNumber` (both this and `cycle` are handled by the [[ operator)\cr
 #' `DATA_CENTRE` \tab `dataCentre`\cr
 #' `DATA_MODE` \tab `dataMode`\cr
 #' `DATA_STATE_INDICATOR` \tab `dataStateIndicator`\cr
@@ -1032,6 +1034,7 @@ argoDecodeFlags <- function(f) # local function
 #' used in oce. Since argo objects are just a small part of oce, a decision
 #' was made to rename argo items. For example, `"CYCLE_NUMBER"` in the netcdf file
 #' becomes `"cycleNumber"` in the oce object returned by `read.argo`.
+#' (Note that `[[,argo-method` also accepts `"cycle"` for this item.)
 #' The conversion for objects in the `data` slot often also involves
 #' expanding on argo abbreviations, e.g. `"PSAL"` becomes `"salinity"`.
 #' The renaming work is carried out with [argoNames2oceNames()] for

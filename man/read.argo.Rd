@@ -80,6 +80,7 @@ using lower case) that is inconsistent with the \code{"camelCase"} scheme
 used in oce. Since argo objects are just a small part of oce, a decision
 was made to rename argo items. For example, \code{"CYCLE_NUMBER"} in the netcdf file
 becomes \code{"cycleNumber"} in the oce object returned by \code{read.argo}.
+(Note that \verb{[[,argo-method} also accepts \code{"cycle"} for this item.)
 The conversion for objects in the \code{data} slot often also involves
 expanding on argo abbreviations, e.g. \code{"PSAL"} becomes \code{"salinity"}.
 The renaming work is carried out with \code{\link[=argoNames2oceNames]{argoNames2oceNames()}} for

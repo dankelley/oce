@@ -54,7 +54,7 @@ are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 \code{CNDC} \tab \code{conductivity}\cr
 \code{CHLA} \tab \code{chlorophyllA}\cr
 \code{CP} \tab \code{beamAttenuation}\cr
-\code{CYCLE_NUMBER} \tab \code{cycleNumber}\cr
+\code{CYCLE_NUMBER} \tab \code{cycleNumber} (both this and \code{cycle} are handled by the [[ operator)\cr
 \code{DATA_CENTRE} \tab \code{dataCentre}\cr
 \code{DATA_MODE} \tab \code{dataMode}\cr
 \code{DATA_STATE_INDICATOR} \tab \code{dataStateIndicator}\cr
