@@ -25,19 +25,17 @@ inline double exp_approx(double x)
 }
 #endif
 
-static time_t start;
-
 static double interpolate_barnes(double xx, double yy, double zz, /* interpolate to get zz value at (xx,yy) */
     int skip, /* value in (x,y,z) to skip, or -1 if no skipping */
     unsigned int nx, double *x, double *y, double *z, double *w, /* data num, locations, values, weights */
     double *z_last, /* last estimate of z at (x,y) */
-    double xr, double yr, int debug) /* influence radii */
+    double xr, double yr) /* influence radii */
 {
   double sum = 0.0, sum_w = 0.0;
+  double dx, dy, d, weight;
   for (unsigned int k = 0; k < nx; k++) {
     // R trims NA (x,y values so no need to check here
     if ((int)k != skip) {
-      double dx, dy, d, weight;
       dx = (xx - x[k]) / xr;
       dy = (yy - y[k]) / yr;
       d = dx*dx + dy*dy;
@@ -59,8 +57,7 @@ static double weight_barnes(double xx, double yy,
     unsigned int n, double *x, double *y, double *z, double *w,
     double xr, double yr)
 {
-  double sum_w, dx, dy, d, weight;
-  sum_w = 0.0;
+  double sum_w = 0.0, dx, dy, d, weight;
   for (unsigned int k = 0; k < n; k++) {
     if ((int)k != skip) {
       dx = (xx - x[k]) / xr;
@@ -79,42 +76,39 @@ static double weight_barnes(double xx, double yy,
 
 
 // [[Rcpp::export]]
-List do_interp_barnes(NumericVector x, NumericVector y, NumericVector z, NumericVector w, NumericVector xg, NumericVector yg, NumericVector xr, NumericVector yr, NumericVector gamma, NumericVector iterations)
+List do_interp_barnes(NumericVector x, NumericVector y, NumericVector z, NumericVector w,
+    NumericVector xg, NumericVector yg,
+    NumericVector xr, NumericVector yr,
+    NumericVector gamma, NumericVector iterations)
 {
-  start = time(NULL);
   int nx = x.size();
   int nxg = xg.size();
   int nyg = yg.size();
-  NumericMatrix zg(nxg, nyg), wg(nxg, nyg); // predictions on the grid
-  NumericVector zd(nx); // predictions at the data
-
-  //Rprintf("xg[0]=%f; size=%d\n", xg[0], xg.size());
-  //Rprintf("yg[0]=%f; size=%d\n", yg[0], yg.size());
-
   double rgamma = gamma[0]; // gamma
   if (rgamma < 0.0)
-    ::Rf_error("gamma=%f cannot be non-positive", rgamma);
+    ::Rf_error("cannot have gamma < 0, but got gamma=%f", rgamma);
   int niter = floor(0.5 + iterations[0]); // number of iterations
-  if (niter < 0)
-    ::Rf_error("cannot have a negative number of iterations.  Got %d ", niter);
+  if (niter < 1)
+    ::Rf_error("cannot have fewer than 1 iteration, but got niter=%d ", niter);
   if (niter > 20)
-    ::Rf_error("cannot have more than 20 iterations.  Got %d ", niter);
+    ::Rf_error("cannot have more than 20 iterations, but got niter=%d ", niter);
   if (xr[0] <= 0)
-    ::Rf_error("cannot have xr<=0 but it is %f", xr[0]);
+    ::Rf_error("cannot have xr<=0 but got xr=%f", xr[0]);
   if (yr[0] <= 0)
-    ::Rf_error("cannot have yr<=0 but it is %f", yr[0]);
+    ::Rf_error("cannot have yr<=0 but got yr=%f", yr[0]);
   double xr2 = xr[0]; // local radius, which will vary with iteration
   double yr2 = yr[0]; // local radius, which will vary with iteration
-
-  /* previous values and working matrix */
-  NumericVector z_last(nx); // .c had nx+100000 (??!!??)
-  NumericMatrix zz(nxg, nyg);
-
-  // initialize (Q: needed? I can't find docs on initialization)
+  // Get storage
+  NumericMatrix zg(nxg, nyg); // predictions on grid
+  NumericMatrix wg(nxg, nyg); // weights on the grid
+  NumericVector zd(nx);       // predictions at the data
+  NumericVector z_last(nx);   // previous (last) values at data points
+  NumericMatrix zz(nxg, nyg); // working matrix on grid
+  // initialize storage to 0.  I don't know if this is needed, because
+  // https://teuder.github.io/rcpp4everyone_en/080_vector.html
+  // implies not, but without saying so explicitly.
   std::fill(zz.begin(), zz.end(), 0.0);
   std::fill(z_last.begin(), z_last.end(), 0.0);
-  std::fill(zd.begin(), zd.end(), 0.0);
-
 
   for (int iter = 0; iter < niter; iter++) {
     //Rprintf("iter=%d xr2=%f yr2=%f\n", iter, xr2, yr2);
@@ -123,9 +117,8 @@ List do_interp_barnes(NumericVector x, NumericVector y, NumericVector z, Numeric
       for (int j = 0; j < nyg; j++) {
         zz(i, j) = interpolate_barnes(xg[i], yg[j], zz(i, j),
             -1, /* no skip */
-            nx, &x[0], &y[0], &z[0], &w[0],
-            &z_last(0),
-            xr2, yr2, i==(nxg-1)&&j==(nyg-1));
+            nx, &x[0], &y[0], &z[0], &w[0], &z_last(0),
+            xr2, yr2);
       }
       R_CheckUserInterrupt();
     }
@@ -134,14 +127,20 @@ List do_interp_barnes(NumericVector x, NumericVector y, NumericVector z, Numeric
       //Rprintf("  zd[%d] = %f (iter %d)\n", k, zd[k], iter);
       zd[k] = interpolate_barnes(x[k], y[k], z_last[k],
           -1, /* BUG: why not skip? */
-          nx, &x[0], &y[0], &z[0], &w[0],
-          &z_last(0),
-          xr2, yr2, 0);
+          nx, &x[0], &y[0], &z[0], &w[0], &z_last(0),
+          xr2, yr2);
       //Rprintf("  -> zd[%d] = %f (iter %d)\n", k, zd[k], iter);
     }
     R_CheckUserInterrupt();
-    for (int k = 0; k < nx; k++)
-      z_last[k] = zd[k];
+    // Note that we have to clone, or the final z_last results will be wrong.
+    // I think the error stems from Rcpp using pointers sometimes,
+    // although I don't see any reason to figure this out, since clone
+    // seems to be the recommended approach, in the quickref at
+    // https://cran.r-project.org/web/packages/Rcpp/vignettes/Rcpp-quickref.pdf
+    //OLD for (int k = 0; k < nx; k++)
+    //OLD   z_last[k] = zd[k];
+    z_last = clone(zd);
+
     if (rgamma > 0.0) {
       // refine search range for next iteration
       xr2 *= sqrt(rgamma);
@@ -150,9 +149,10 @@ List do_interp_barnes(NumericVector x, NumericVector y, NumericVector z, Numeric
   }
 
   // copy matrix to return value
-  for (int i = 0; i < nxg; i++)
-    for (int j = 0; j < nyg; j++)
-      zg(i, j) = zz(i, j);
+  //OLD for (int i = 0; i < nxg; i++)
+  //OLD   for (int j = 0; j < nyg; j++)
+  //OLD     zg(i, j) = zz(i, j);
+  zg = clone(zz);
 
   // weights at final region-of-influence radii
   for (int i = 0; i < nxg; i++) {
