@@ -1,5 +1,7 @@
 /* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 
+// Comments like //t3 refer to trial t3 in git/oce-issues/18xx/1880/README.md
+
 #include <Rcpp.h>
 using namespace Rcpp;
 
@@ -110,11 +112,13 @@ List do_interp_barnes(NumericVector x, NumericVector y, NumericVector z, Numeric
   std::fill(zz.begin(), zz.end(), 0.0);
   std::fill(z_last.begin(), z_last.end(), 0.0);
 
+  //t3 double *zzp = &zz[0];
   for (int iter = 0; iter < niter; iter++) {
     //Rprintf("iter=%d xr2=%f yr2=%f\n", iter, xr2, yr2);
     /* update grid */
     for (int i = 0; i < nxg; i++) {
       for (int j = 0; j < nyg; j++) {
+        //t3 *(zzp+i+j*nxg) = interpolate_barnes(xg[i], yg[j], *(zzp+i+j*nxg),
         zz(i, j) = interpolate_barnes(xg[i], yg[j], zz(i, j),
             -1, /* no skip */
             nx, &x[0], &y[0], &z[0], &w[0], &z_last(0),
@@ -137,9 +141,9 @@ List do_interp_barnes(NumericVector x, NumericVector y, NumericVector z, Numeric
     // although I don't see any reason to figure this out, since clone
     // seems to be the recommended approach, in the quickref at
     // https://cran.r-project.org/web/packages/Rcpp/vignettes/Rcpp-quickref.pdf
-    //OLD for (int k = 0; k < nx; k++)
-    //OLD   z_last[k] = zd[k];
-    z_last = clone(zd);
+    for (int k = 0; k < nx; k++)
+      z_last[k] = zd[k];
+    //t5 z_last = clone(zd);
 
     if (rgamma > 0.0) {
       // refine search range for next iteration
@@ -149,10 +153,10 @@ List do_interp_barnes(NumericVector x, NumericVector y, NumericVector z, Numeric
   }
 
   // copy matrix to return value
-  //OLD for (int i = 0; i < nxg; i++)
-  //OLD   for (int j = 0; j < nyg; j++)
-  //OLD     zg(i, j) = zz(i, j);
-  zg = clone(zz);
+  for (int i = 0; i < nxg; i++)
+    for (int j = 0; j < nyg; j++)
+      zg(i, j) = zz(i, j);
+  //t5 zg = clone(zz);
 
   // weights at final region-of-influence radii
   for (int i = 0; i < nxg; i++) {

@@ -3634,7 +3634,6 @@ interpBarnes <- function(x, y, z, w,
         oceDebug(debug, "computed yr=", yr, " based on data density\n")
     }
     ## Handle pre-gridding (code not DRY but short enough to be ok)
-    initialGrid <- NULL
     if (is.logical(pregrid)) {
         if (pregrid) {
             pregrid <- c(4, 4)
@@ -3647,14 +3646,6 @@ interpBarnes <- function(x, y, z, w,
             y <- pg$y
             z <- pg$f
             w <- rep(1, length(x))
-        }
-    } else if (is.character(pregrid)) {
-        if (pregrid == "akima") {
-            if (!requireNamespace("akima", quietly=TRUE))
-                stop("must install.packages(\"akima\") to pregrid using akima::interp()")
-            initialGrid <- akima::interp(x, y, z, xg, yg, linear=FALSE)$z
-        } else {
-            stop("pregrid='", pregrid, "' not permitted; it must be logical, numeric, or 'akima'")
         }
     } else {
         if (!is.numeric(pregrid))
