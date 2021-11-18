@@ -211,8 +211,8 @@ test_that("argo time conversion", {
 })
 
 test_that("[[ handles both cycleNumber and cycle", {
-    identical(argo[["cycleNumber"]], 1:223)
-    identical(argo[["cycle"]], 1:223)
+    expect_equal(argo[["cycleNumber"]], 1:223)
+    expect_equal(argo[["cycle"]], 1:223)
 })
 
 
