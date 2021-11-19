@@ -137,7 +137,7 @@ permitted units are: either \code{""} or \code{"ratio"} (for ratio),
 \code{"uS/cm"}, \code{"mS/cm"} and \code{"S/m"}. The calculations are based on
 the definition of conductivity ratio as the ratio between measured conductivity
 and the standard value 4.2914 S/m.
-\item \code{CT}, \verb{conservative temperature} or \verb{Conservative Temperature}: Conservative Temperature,
+\item \code{CT} or \verb{Conservative Temperature}: Conservative Temperature,
 computed with \code{\link[gsw:gsw_CT_from_t]{gsw::gsw_CT_from_t()}}.
 \item \code{density}: seawater density, computed with \link{swRho}\code{(x)}.
 (Note that it may be better to call that function directly, to gain
@@ -149,7 +149,7 @@ with \link{swDepth}\code{(x)}.
 UNESCO formulation, computed with \link{swTheta}\code{(x)}.
 This is a synonym for \code{theta}.
 \item \code{Rrho}: Density ratio, computed with \link{swRrho}\code{(x)}.
-\item \code{SA}, \verb{absolute salinity} or \verb{Absolute Salinity}: Absolute Salinity,
+\item \code{SA} or \verb{Absolute Salinity}: Absolute Salinity,
 computed with \code{\link[gsw:gsw_SA_from_SP]{gsw::gsw_SA_from_SP()}}.
 The calculation involves location as well as measured water properties.
 If the object \code{x} does not containing information on the location,

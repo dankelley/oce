@@ -560,7 +560,7 @@ setMethod(f="summary",
 #' the definition of conductivity ratio as the ratio between measured conductivity
 #' and the standard value 4.2914 S/m.
 #'
-#' * `CT`, `conservative temperature` or `Conservative Temperature`: Conservative Temperature,
+#' * `CT` or `Conservative Temperature`: Conservative Temperature,
 #' computed with [gsw::gsw_CT_from_t()].
 #'
 #' * `density`: seawater density, computed with [swRho]`(x)`.
@@ -578,7 +578,7 @@ setMethod(f="summary",
 #'
 #' * `Rrho`: Density ratio, computed with [swRrho]`(x)`.
 #'
-#' * `SA`, `absolute salinity` or `Absolute Salinity`: Absolute Salinity,
+#' * `SA` or `Absolute Salinity`: Absolute Salinity,
 #' computed with [gsw::gsw_SA_from_SP()].
 #' The calculation involves location as well as measured water properties.
 #' If the object `x` does not containing information on the location,
@@ -863,7 +863,7 @@ setMethod(f="[[",
                   swRrho(x)
               } else if (i == "spice" || i == "spiciness") {
                   swSpice(x)
-              } else if (i %in% c("SA", "Absolute Salinity", "absolute salinity")) {
+              } else if (i %in% c("SA", "Absolute Salinity")) {
                   if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
                       stop("object lacks location information, so SA cannot be computed")
                   SP <- x[["salinity"]]
@@ -889,7 +889,7 @@ setMethod(f="[[",
                   ##: lon[!is.finite(lon)] <- NA
                   ##: lat[!is.finite(lat)] <- NA
                   gsw::gsw_SA_from_SP(SP, p, lon, lat)
-              } else if (i %in% c("CT", "Conservative Temperature", "conservative temperature")) {
+              } else if (i %in% c("CT", "Conservative Temperature")) {
                   if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
                       stop("object lacks location information, so CT cannot be computed")
                   gsw::gsw_CT_from_t(SA=x[["SA"]], t=x[["temperature"]], p=x[["pressure"]])
