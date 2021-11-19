@@ -230,18 +230,14 @@ test_that("accessors work as functions and [[", {
     expect_equal(swSigmaTheta(ctd), ctd[["sigmaTheta"]])
 })
 
-test_that("[[ works on SA, CT and variants", {
+test_that("[[ works on SA, CT and spelled-out variants", {
     data(ctd)
     SA1 <- ctd[["SA"]]
     SA2 <- ctd[["Absolute Salinity"]]
-    SA3 <- ctd[["absolute salinity"]]
     expect_equal(SA1, SA2)
-    expect_equal(SA1, SA3)
     CT1 <- ctd[["CT"]]
     CT2 <- ctd[["Conservative Temperature"]]
-    CT3 <- ctd[["conservative temperature"]]
     expect_equal(CT1, CT2)
-    expect_equal(CT1, CT3)
 })
 
 test_that("ability to change conductivityUnit", {
