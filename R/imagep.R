@@ -321,6 +321,8 @@ drawPalette <- function(zlim, zlab="",
              argShow(fullpage),
              "...) {\n", sep="", unindent=1, style="bold")
     zlimGiven <- !missing(zlim)
+    if (zlimGiven && !is.numeric(zlim))
+        stop("if zlim is provided, its class must be 'numeric', not '", class(zlim), "'")
     if (zlimGiven && length(zlim) != 2)
         stop("'zlim' must be of length 2")
     if (zlimGiven && zlim[2] < zlim[1])
