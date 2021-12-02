@@ -2,9 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{swSpecificHeat}
 \alias{swSpecificHeat}
-\title{Seawater specific heat
-Source= http://sam.ucsd.edu/sio210/propseawater/ppsw_fortran/ppsw.f
-check value: cpsw = 3849.500 j/(kg deg. c) for s = 40 (ipss-78),}
+\title{Seawater specific heat}
 \usage{
 swSpecificHeat(
   salinity,

@@ -2062,7 +2062,7 @@ swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
 #'
 #' @family functions that calculate seawater properties
 swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
-                         longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
+    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -2109,8 +2109,8 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
 
 
 #' Seawater specific heat
-##' Source= http://sam.ucsd.edu/sio210/propseawater/ppsw_fortran/ppsw.f
-##' check value: cpsw = 3849.500 j/(kg deg. c) for s = 40 (ipss-78),
+## Source= http://sam.ucsd.edu/sio210/propseawater/ppsw_fortran/ppsw.f
+## check value: cpsw = 3849.500 j/(kg deg. c) for s = 40 (ipss-78),
 #'
 #' Compute specific heat of seawater.
 #'
@@ -2138,7 +2138,7 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
 #'
 #' @family functions that calculate seawater properties
 swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
-                           longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
+    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must provide salinity")
