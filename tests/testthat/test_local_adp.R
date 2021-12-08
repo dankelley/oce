@@ -131,10 +131,20 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
         expect_warning(
             expect_warning(
                 expect_warning(
-                    expect_output(
-                        d <- read.oce("local_data/adp_sentinel_v.pd0"),
-                        "Got to end of data"),
-                    "skipping the first ensemble"),
+                    expect_warning(
+                        expect_warning(
+                            expect_warning(
+                                expect_warning(
+                                    expect_warning(
+                                        expect_output(
+                                            d <- read.oce("local_data/adp_sentinel_v.pd0"),
+                                            "Got to end of data"),
+                                        "skipping the first ensemble"),
+                                    "A list of unhandled segment codes"),
+                                "A list of unhandled segment codes"),
+                            "A list of unhandled segment codes"),
+                        "A list of unhandled segment codes"),
+                    "A list of unhandled segment codes"),
                 "A list of unhandled segment codes"),
             "so trimming time")
         keep <- d[["pressure"]] < median(d[["pressure"]])
@@ -149,12 +159,22 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
 if (1 == length(list.files(path=".", pattern="local_data"))) {
     test_that("Teledyne/RDI Sentinel V subset by distance", {
         expect_warning(
-            expect_warning(
                 expect_warning(
-                    expect_output(
-                        d <- read.oce("local_data/adp_sentinel_v.pd0"),
-                        "Got to end of data"),
-                    "skipping the first ensemble"),
+                    expect_warning(
+                        expect_warning(
+                            expect_warning(
+                                expect_warning(
+                                    expect_warning(
+                                        expect_warning(
+                                            expect_output(
+                                                d <- read.oce("local_data/adp_sentinel_v.pd0"),
+                                                "Got to end of data"),
+                                            "skipping the first ensemble"),
+                                        "A list of unhandled segment codes"),
+                                    "A list of unhandled segment codes"),
+                            "A list of unhandled segment codes"),
+                        "A list of unhandled segment codes"),
+                    "A list of unhandled segment codes"),
                 "A list of unhandled segment codes"),
             "so trimming time")
         keepSlant <- sum(d[["distance"]] < median(d[["distance"]]))
