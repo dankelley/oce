@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store CTD (or general hydrographic) Data
 #'
@@ -512,7 +512,7 @@ setMethod(f="summary",
 #' Some uses of \code{\link{[[,ctd-method}} involve direct retrieval of
 #' items within the `data` slot of the `ctd` object,
 #' while other uses involve calculations based on items in that
-#' `data` slot. For an example, all `ctd` objects
+#' `data` slot. For example, all `ctd` objects
 #' should hold an item named `temperature` in the `data`
 #' slot, so for example `x[["temperature"]]` will retrieve that
 #' item. By contrast, `x[["sigmaTheta"]]` is taken to be a
@@ -525,6 +525,13 @@ setMethod(f="summary",
 #' object under analysis, to determine whether that item will be looked
 #' up or computed. Nothing is lost in this scheme, since the data
 #' within the object are always accessible with [oceGetData()].
+#'
+#' Before proceeding to details for various entries, note that using
+#' e.g. `ctd[["?"]]` will return an alphabetically sorted
+#' character vector listing the items that are available.
+#' It is consists of the names of items within the `data`
+#' and `metadata` slots, along with certain computed entries
+#' (e.g. `"Absolute Salinity"`).
 #'
 #' It should be noted that the accessor is set up to retrieve quantities
 #' in conventional units. For example, [read.ctd.sbe()] is
@@ -646,6 +653,24 @@ setMethod(f="[[",
               metadata <- x@metadata
               dataNames <- names(data)
               metadataNames <- names(metadata)
+              # For 1891: ctd[["?"]] lists known items, stored or computed
+              # https://github.com/dankelley/oce/issues/1891
+              # Use paste() for two-word items so a text editor won't break strings
+              iKnown <- sort(unique(c(names(x@data), names(x@metadata), "SP",
+                          "SR", "Sstar", "time", "N2", "density", "sigmaTheta",
+                          "sigma0", "sigma1", "sigma2", "sigma3", "sigma4",
+                          "theta", paste("potential", "temperature"), "Rrho",
+                          "spice", "spiciness", "SA", paste("Absolute",
+                              "Salinity"), "CT", paste("Conservative",
+                              "Temperature"), "z", "depth")))
+
+              if (i == "?")
+                  return(iKnown)
+              #>if (!i %in% iKnown) {
+              #>    # message("FIXME: make ctd[[\"", i, "\"]] work")
+              #>    return(NULL)
+              #>}
+
               ## message("i=\"", i, "\"")
               if (i == "conductivity") {
                   C <- data$conductivity
@@ -913,8 +938,6 @@ setMethod(f="[[",
                   swZ(x) # FIXME-gsw: permit gsw version here
               } else if (i == "depth") {
                   if ("depth" %in% names(data)) data$depth else swDepth(x) # FIXME-gsw: permit gsw version here
-              } else if (i == "N2") {
-                  swN2(x)
               } else {
                   ## message("FIXME: [[,ctd-method calling next method")
                   callNextMethod()     # [[ defined in R/AllClass.R

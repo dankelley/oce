@@ -1,6 +1,20 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+test_that("ctd[[\"?\"]] works (issue 1891)", {
+    data(section)
+    ctd <- section[["station", 10]]
+    # Test listing
+    available <- ctd[["?"]]
+    expect_true("SA" %in% available)
+    # Test whether missing still works
+    expect_true(is.null(ctd[["bark"]]))
+    # Test whether a stored value still works
+    expect_equal(ctd[["salinity"]], ctd@data$salinity)
+    # Test whether a computed value still works
+    expect_equal(ctd[["SA"]], swAbsoluteSalinity(ctd))
+})
+
 test_that("plotTS() handles differently EOSs correctly", {
     data(ctd)
     options(oceEOS="unesco")

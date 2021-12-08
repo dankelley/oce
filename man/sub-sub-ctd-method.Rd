@@ -90,7 +90,7 @@ is employed so that \code{[[} will behave like the normal R version.)
 Some uses of \code{\link{[[,ctd-method}} involve direct retrieval of
 items within the \code{data} slot of the \code{ctd} object,
 while other uses involve calculations based on items in that
-\code{data} slot. For an example, all \code{ctd} objects
+\code{data} slot. For example, all \code{ctd} objects
 should hold an item named \code{temperature} in the \code{data}
 slot, so for example \code{x[["temperature"]]} will retrieve that
 item. By contrast, \code{x[["sigmaTheta"]]} is taken to be a
@@ -103,6 +103,13 @@ user would be forced to check the contents of any \code{ctd}
 object under analysis, to determine whether that item will be looked
 up or computed. Nothing is lost in this scheme, since the data
 within the object are always accessible with \code{\link[=oceGetData]{oceGetData()}}.
+
+Before proceeding to details for various entries, note that using
+e.g. \code{ctd[["?"]]} will return an alphabetically sorted
+character vector listing the items that are available.
+It is consists of the names of items within the \code{data}
+and \code{metadata} slots, along with certain computed entries
+(e.g. \code{"Absolute Salinity"}).
 
 It should be noted that the accessor is set up to retrieve quantities
 in conventional units. For example, \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} is
