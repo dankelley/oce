@@ -71,16 +71,19 @@ NULL
 #' preference for the latter may be set with [preferAdjusted()], the
 #' documentation of which explains (fairly complex) details.
 #'
-#' The results from `argo[[i]]` depend on the nature of `i` and,
-#' in some cases, an additional argument named `j`.
+#' The results from `argo[[i]]` or `argo[[i,j]]` depend on the
+#' nature of `i` and (if provided) `j`.
 #' The possibilities are as follows.
 #'
 #' * If `i` is `"?"`, then the return value is an
 #' alphabetically sorted character vector that holds
-#' the names of the available data items.  This is constructed
+#' the names of the items that can be returned by `[[`.
+#' This vector is constructed
 #' from the names of items in the `data`
 #' and `metadata` slots, combined with certain computed entries
-#' (e.g. `"Absolute Salinity"`).
+#' (e.g. `"Absolute Salinity"`).  Flags and units can also be
+#' retrieved, as explained under the heading \dQuote{Details of the general
+#' method}.
 #'
 #' * If `i` is `"profile"` and `j` is an integer vector,
 #' then an argo object is returned, as specified by `j`. For example,
