@@ -35,12 +35,21 @@ if that fails, then a general function is used
 \section{Details of the specialized \code{argo} method}{
 
 
-There are several possibilities, depending on the nature of \code{i}.
 Note that \linkS4class{argo} data may contain both unadjusted data and adjusted
 data.  By default, this extraction function refers to the former, but a
 preference for the latter may be set with \code{\link[=preferAdjusted]{preferAdjusted()}}, the
 documentation of which explains (fairly complex) details.
+
+There are several possibilities for how argo[\link{i}] works,
+depending on the nature of \code{i}. The possibilities are as
+follows.
 \itemize{
+\item If \code{i} is \code{"?"}, then the return value is an
+alphabetically sorted character vector that holds
+the names of the available data items.  This is constructed
+from the names of items in the \code{data}
+and \code{metadata} slots, combined with certain computed entries
+(e.g. \code{"Absolute Salinity"}).
 \item If \code{i} is \code{"profile"} and \code{j} is an integer vector,
 then an argo object is returned, as specified by \code{j}. For example,
 \code{argo[["profile", 2:5]]} is equivalent to
