@@ -71,7 +71,7 @@ NULL
 #' preference for the latter may be set with [preferAdjusted()], the
 #' documentation of which explains (fairly complex) details.
 #'
-#' There are several possibilities for how argo[[i]] works,
+#' There are several possibilities for how `argo[[i]]` works,
 #' depending on the nature of `i`. The possibilities are as
 #' follows.
 #'
@@ -85,7 +85,7 @@ NULL
 #' * If `i` is `"profile"` and `j` is an integer vector,
 #' then an argo object is returned, as specified by `j`. For example,
 #' `argo[["profile", 2:5]]` is equivalent to
-#' `subset(argo, profile \%in\% 2:5)`.
+#' `subset(argo, profile %in% 2:5)`.
 #'
 #' * If `i` is `"CT"`, then
 #' Conservative Temperature is returned, as computed with
