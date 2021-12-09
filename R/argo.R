@@ -71,9 +71,9 @@ NULL
 #' preference for the latter may be set with [preferAdjusted()], the
 #' documentation of which explains (fairly complex) details.
 #'
-#' There are several possibilities for how `argo[[i]]` works,
-#' depending on the nature of `i`. The possibilities are as
-#' follows.
+#' The results from `argo[[i]]` depend on the nature of `i` and,
+#' in some cases, an additional argument named `j`.
+#' The possibilities are as follows.
 #'
 #' * If `i` is `"?"`, then the return value is an
 #' alphabetically sorted character vector that holds

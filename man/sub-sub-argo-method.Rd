@@ -40,9 +40,9 @@ data.  By default, this extraction function refers to the former, but a
 preference for the latter may be set with \code{\link[=preferAdjusted]{preferAdjusted()}}, the
 documentation of which explains (fairly complex) details.
 
-There are several possibilities for how \code{argo[[i]]} works,
-depending on the nature of \code{i}. The possibilities are as
-follows.
+The results from \code{argo[[i]]} depend on the nature of \code{i} and,
+in some cases, an additional argument named \code{j}.
+The possibilities are as follows.
 \itemize{
 \item If \code{i} is \code{"?"}, then the return value is an
 alphabetically sorted character vector that holds
