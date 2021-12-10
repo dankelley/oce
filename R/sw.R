@@ -295,19 +295,22 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
         if (derivs == "simple") {
             sigmaThetaDeriv <- c(0, diff(sigmaTheta) / diff(pressure))
         } else if (derivs == "smoothing") {
-            depths <- sum(!is.na(pressure))
+            depthsAll <- sum(ok)
+            depths <- length(unique(pressure[ok]))
             if (missing(df)) {
-                df <- if (depths > 100) f <- floor(depths / 10) # at least 10
-                    else if (depths > 20) f <- floor(depths / 3) # at least 7
-                    else if (depths > 10) f <- floor(depths / 2) # at least 5
+                df <- if (depths > 100) floor(depths / 10) # at least 10
+                    else if (depths > 20) floor(depths / 3) # at least 7
+                    else if (depths > 10) floor(depths / 2) # at least 5
                     else depths
-                    oceDebug(getOption("oceDebug"), "df not supplied, so set to ", df, "(note: #depths=", depths, ")\n")
+                    oceDebug(debug, "df not supplied; set to ", df, ", given ", depthsAll, " depths, ", depths, " of which are distinct\n", sep="")
             }
             if (depths > 4 && df > 5) {
+                oceDebug(debug, "using smooth.spline with df=", df, "\n", sep="")
                 sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
                 sigmaThetaDeriv <- rep(NA, length(pressure))
                 sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv=1)$y
             } else {
+                oceDebug(debug, "using smooth.spline with df not specified\n")
                 sigmaThetaSmooth <- as.numeric(smooth(sigmaTheta[ok]))
                 sigmaThetaDeriv <- rep(NA, length(pressure))
                 sigmaThetaDeriv[ok] <- c(0, diff(sigmaThetaSmooth) / diff(pressure[ok]))
