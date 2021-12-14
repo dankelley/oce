@@ -53,9 +53,9 @@ may optionally be done with \code{\link[=smooth.spline]{smooth.spline()}}, unles
 provided, a possibly reasonable value computed from an analysis of the
 profile, based on the number of pressure levels.
 
-The core of the
-method involves differentiating potential density (referenced to median
-pressure) with respect to pressure, and the \code{derivs} argument is used
+The core of the method involves computing potential density referenced to median
+pressure, using the UNESCO-style \link{swSigmaTheta} function, and then differentiating
+this with respect to pressure. The \code{derivs} argument is used
 to control how this is done, as follows.
 \itemize{
 \item If \code{derivs} is not supplied, the action is as though it were

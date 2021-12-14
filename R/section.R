@@ -357,11 +357,38 @@ setMethod(f="[[",
                   }
               }
               nstation <- length(x@data$station)
-              ## some derived things (not all ... be sure to document when adding things!)
-              ##20160809 if (i %in% c("theta", "potential temperature", "sigmaTheta")) {
-              ##20160809     res <- unlist(lapply(x@data$station, function(ctd) ctd[[i]]))
-              ##20160809     return(res)
-              ##20160809 }
+              if (i == "station") {
+                  if (missing(j)) {    # all stations
+                      res <- x@data$station
+                  } else {             # specified stations
+                      if (is.character(j)) {
+                          nj <- length(j)
+                          stationNames <- unlist(lapply(x@data$station,
+                                  function(x) x@metadata$station))
+                          if (nj == 1) {
+                              w <- which(stationNames == j)
+                              res <- if (length(w)) x@data$station[[w[1]]] else NULL
+                          } else {
+                              res <- vector("list", nj)
+                              for (jj in j) {
+                                  w <- which(stationNames == j)
+                                  res[[jj]] <- if (length(w)) x@data$station[[w[1]]]
+                                      else NULL
+                              }
+                          }
+                      } else {
+                          nj <- length(j)
+                          if (nj == 1) {
+                              res <- x@data$station[[j]]
+                          } else {
+                              res <- vector("list", nj)
+                              for (jj in j)
+                                  res[[jj]] <- x@data$station[[jj]]
+                          }
+                      }
+                  }
+                  return(res)
+              }
               if (i %in% names(x@metadata)) {
                   if (i %in% c("longitude", "latitude")) {
                       if (!missing(j) && j == "byStation") {
@@ -375,12 +402,12 @@ setMethod(f="[[",
                   } else {
                       return(x@metadata[[i]])
                   }
-              } else if (i %in% c("absolute salinity", "CT", "conservative temperature",
+              }
+              if (i %in% c("absolute salinity", "CT", "conservative temperature",
                                   "density", "depth", "nitrite", "nitrate",
                                   "potential temperature", "SA", "sigmaTheta",
                                   "spice", "theta", "z",
                                   names(x@data$station[[1]]@data))) {
-                  ##message('section.R:311 section[["', i, '"]]')
                   if (!missing(j) && substr(j, 1, 4) == "grid") {
                       if (j == "grid:distance-pressure") {
                           numStations <- length(x@data$station)
@@ -424,41 +451,16 @@ setMethod(f="[[",
                       }
                       return(res)
                   }
-              } else if (i == "station") {
-                  if (missing(j)) {
-                      res <- x@data$station
-                  } else {
-                      if (is.character(j)) {
-                          nj <- length(j)
-                          stationNames <- unlist(lapply(x@data$station, function(x) x@metadata$station))
-                          if (nj == 1) {
-                              w <- which(stationNames == j)
-                              res <- if (length(w)) x@data$station[[w[1]]] else NULL
-                          } else {
-                              res <- vector("list", nj)
-                              for (jj in j) {
-                                  w <- which(stationNames == j)
-                                  res[[jj]] <- if (length(w)) x@data$station[[w[1]]] else NULL
-                              }
-                          }
-                      } else {
-                          nj <- length(j)
-                          if (nj == 1) {
-                              res <- x@data$station[[j]]
-                          } else {
-                              res <- vector("list", nj)
-                              for (jj in j)
-                                  res[[jj]] <- x@data$station[[jj]]
-                          }
-                      }
-                  }
-              } else if ("station ID" == i) {
+              }
+              if ("station ID" == i) {
                   res <- NULL
                   for (stn in x[['station']])
                       res <- c(res, stn[['station']])
-              } else if ("dynamic height" == i) {
-                  res <- swDynamicHeight(x)
-              } else if ("distance" == i) {
+                  return(res)
+              }
+              if ("dynamic height" == i)
+                  return(swDynamicHeight(x))
+              if ("distance" == i) {
                   res <- NULL
                   for (stn in seq_along(x@data$station)) {
                       distance <- geodDist(x@data$station[[stn]][["longitude"]][1],
@@ -471,15 +473,14 @@ setMethod(f="[[",
                           res <- c(res, rep(distance, length(x@data$station[[stn]]@data$temperature)))
 
                   }
-              } else if ("time" == i) {
-                  ## time is not in the overall metadata ... look in the individual objects
-                  res <- unlist(lapply(x@data$station, function(stn) stn[["time"]]))
-                  res <- numberAsPOSIXct(res)
-              } else {
-                  res <- callNextMethod()     # [[
+                  return(res)
               }
-              res
-          })
+              if ("time" == i) {
+                  ## time is not in the overall metadata ... look in the individual objects
+                  return(numberAsPOSIXct(unlist(lapply(x@data$station, function(stn) stn[["time"]]))))
+              }
+              callNextMethod()
+          })                           # [[
 
 #' Replace Parts of a Section Object
 #'
@@ -2640,17 +2641,18 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
     ##warningMessages <- NULL
     n <- length(section@data$station)
     nxg <- n
-    oceDebug(debug, "have", n, "stations in this section\n")
-    dp.list <- NULL
+    oceDebug(debug, "have ", nxg, " stations in this section\n")
     pMax <- max(section[["pressure"]], na.rm=TRUE)
     if (missing(p)) {
+        dplist <- vector("numeric", n)
         ## p.max <- 0
         for (i in 1:n) {
             p <- section@data$station[[i]]@data$pressure
-            dp.list <- c(dp.list, mean(diff(p), na.rm=TRUE))
+            dplist[i] <- mean(diff(p), na.rm=TRUE)
         }
-        dp <- mean(dp.list, na.rm=TRUE) / 5 # make it a little smaller
+        dp <- mean(dplist, na.rm=TRUE) / 5 # make it a little smaller
         pt <- pretty(c(0, pMax), n=min(200, floor(abs(pMax / dp))))
+        oceDebug(debug, "p not given, so inferring from data\n")
         ## oceDebug(debug, "pMax=", pMax, "; dp=", dp, "\n")
         ## oceDebug(debug, "pt=", pt, "\n")
         ## oceDebug(debug, "length(pt)=", length(pt), "\n")
@@ -2669,16 +2671,14 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
             pt <- p
         }
     }
+    oceDebug(debug, vectorShow(pt))
     if (trim) {
         ## allow one extra level, for bracketing
-        ##. message("pMax=", pMax)
         w <- which(pt > pMax)
-        ##. message("w=", paste(w, collapse=" "))
-        ##. message("pt=", paste(pt, collapse=" "))
         if (length(w)) {
             pt <- pt[1:w[1]]
-            ##> message("pt=", paste(pt, collapse=" "))
         }
+        oceDebug(debug, "trimmed ", vectorShow(pt))
     }
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
@@ -2688,8 +2688,10 @@ sectionGrid <- function(section, p, method="approx", trim=TRUE, debug=getOption(
 
     ## The core of the work -- use ctdDecimate() on each station
     for (i in seq_len(nstation)) {
-        suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]],
-                                                              p=pt, method=method, debug=debug-1, ...))
+        oceDebug(debug, "decimating station i=", i, "\n")
+        suppressWarnings(
+            res@data$station[[i]] <- ctdDecimate(section@data$station[[i]],
+                p=pt, method=method, debug=debug-1, ...))
     }
     ## Find all units in *any* station, and then insert them into *all* stations.
     units <- list()

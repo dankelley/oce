@@ -133,6 +133,7 @@ Other things related to ctd data:
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.woce.other}()},
 \code{\link{read.ctd.woce}()},
+\code{\link{repairCtd}()},
 \code{\link{setFlags,ctd-method}},
 \code{\link{subset,ctd-method}},
 \code{\link{summary,ctd-method}},

@@ -1,6 +1,15 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+test_that("repairCtd() works as expected", {
+    data(ctd)
+    expect_warning(ctd <- repairCtd(ctd), "^changed metadata\\$recoveryTime")
+    ctd@data$latitude <- ctd@metadata$latitude
+    expect_warning(ctd <- repairCtd(ctd), "^moving unit\\-length data")
+    ctd@data$longitude <- ctd@metadata$longitude
+    expect_warning(ctd <- repairCtd(ctd), "^moving unit\\-length data")
+})
+
 test_that("plotTS() handles differently EOSs correctly", {
     data(ctd)
     options(oceEOS="unesco")
