@@ -134,14 +134,14 @@ setAs("list", "ctd", function(from) {
 #' # Insert location information into 'data', although it belongs in 'metadata'.
 #' ctd@data$latitude <- ctd@metadata$latitude   # do NOT do this!
 #' ctd@data$longitude <- ctd@metadata$longitude # do NOT do this!
-#' repaired <- repairCtd(ctd)
+#' repaired <- ctdRepair(ctd)
 #'
 #' @family things related to ctd data
 #'
 #' @author Dan Kelley
-repairCtd <- function(x, debug=getOption("oceDebug"))
+ctdRepair <- function(x, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "repairCtd(x) {\n", sep="", unindent=1, style="bold")
+    oceDebug(debug, "ctdRepair(x) {\n", sep="", unindent=1, style="bold")
     dnames <- names(x@data)
     mnames <- names(x@metadata)
     # 1: move things from data to metadata
@@ -176,9 +176,9 @@ repairCtd <- function(x, debug=getOption("oceDebug"))
         }
     }
     x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # repairCtd()\n", sep="", unindent=1, style="bold")
+    oceDebug(debug, "} # ctdRepair()\n", sep="", unindent=1, style="bold")
     x
-}                                      # repairCtd()
+}                                      # ctdRepair()
 
 #' A CTD profile in Halifax Harbour
 #'
