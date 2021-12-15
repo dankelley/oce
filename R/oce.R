@@ -2600,37 +2600,28 @@ oceColorsClosure <- function(spec) {
 #' library(oce)
 #' imagep(volcano, col=oceColorsTurbo(128),
 #'        zlab="oceColorsTurbo")
+#'
+#' @template colourBlindnessTemplate
 #' @family things related to colors
 oceColorsTurbo <- oce.colorsTurbo <- oceColorsClosure("turbo")
 
 
 #' Create colors similar to the matlab Viridis scheme
 #'
-#' This is patterned on a \proglang{matlab}/\proglang{python} scheme (reference 1) that blends
+#' This is patterned on a \proglang{matlab}/\proglang{python} scheme that blends
 #' from yellow to blue in a way that is designed to reproduce well
 #' in black-and-white, and to be interpretable by those with
-#' certain forms of color blindness (references 3-4).  An alternative
-#' to this is provide in the \CRANpkg{viridis} package, as illustrated
+#' certain forms of color blindness.  See the references for
+#' notes about issues of colour blindness in computer graphics.
+#' An alternative
+#' to [oceColorsViridis] is provided in the \CRANpkg{viridis} package, as illustrated
 #' in Example 2.
 #'
 #' @aliases oce.colorsViridis oceColorsViridis
 #'
 #' @param n number of colors to create.
 #'
-#' @references
-#' 1. A blog item on the Viridis (and related) matplotlib color
-#' scales is at \url{http://bids.github.io/colormap/}.
-#'
-#' 2. Light, A., and P. J. Bartlein, 2004. The End of the Rainbow? Color
-#' Schemes for Improved Data Graphics. *Eos Trans. AGU*, 85(40),
-#' \doi{doi:10.1029/2004EO400002}.
-#'
-#' 3. Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
-#' Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
-#' \samp{https://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}.
-#'
-#' 4. Stephenson, David B., 2005. Comment on ``Color schemes for improved data
-#' graphics,'' by A. Light and P. J. Bartlein. *Eos Trans. AGU*, 86(20).
+#' @template colourBlindnessTemplate
 #'
 #' @author Dan Kelley
 #'
@@ -2645,66 +2636,92 @@ oceColorsTurbo <- oce.colorsTurbo <- oceColorsClosure("turbo")
 #'        zlab="viridis::viridis")}
 #'
 #' @family things related to colors
+#'
+#' @template colourBlindnessTemplate
 oceColorsViridis <- oce.colorsViridis <- oceColorsClosure("viridis")
 
 #' @templateVar colorItem CDOM
 #' @templateVar colorItemUC CDOM
 #' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
 oceColorsCDOM <- oce.colorsCDOM <- oceColorsClosure("cdom")
 
 #' @templateVar colorItem chlorophyll
 #' @templateVar colorItemUC Chlorophyll
 #' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
 oceColorsChlorophyll <- oce.colorsChlorophyll <- oceColorsClosure("chlorophyll")
 
 #' @templateVar colorItem density
 #' @templateVar colorItemUC Density
 #' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
 oceColorsDensity <- oce.colorsDensity <- oceColorsClosure("density")
 
 #' @templateVar colorItem freesurface
 #' @templateVar colorItemUC Freesurface
 #' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
 oceColorsFreesurface <- oce.colorsFreesurface <- oceColorsClosure("freesurface")
 
 #' @templateVar colorItem oxygen
 #' @templateVar colorItemUC Oxygen
 #' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
 oceColorsOxygen <- oce.colorsOxygen <- oceColorsClosure("oxygen")
 
 #' @templateVar colorItem PAR
 #' @templateVar colorItemUC PAR
 #' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
 oceColorsPAR <- oce.colorsPAR <- oceColorsClosure("par")
 
 #' @templateVar colorItem phase
 #' @templateVar colorItemUC Phase
 #' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
 oceColorsPhase <- oce.colorsPhase <- oceColorsClosure("phase")
 
 #' @templateVar colorItem salinity
 #' @templateVar colorItemUC Salinity
 #' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
 oceColorsSalinity <- oce.colorsSalinity <- oceColorsClosure("salinity")
 
 #' @templateVar colorItem temperature
 #' @templateVar colorItemUC Temperature
 #' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
 oceColorsTemperature <- oce.colorsTemperature <- oceColorsClosure("temperature")
 
 #' @templateVar colorItem turbidity
 #' @templateVar colorItemUC Turbidity
 #' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
 oceColorsTurbidity <- oce.colorsTurbidity <- oceColorsClosure("turbidity")
 
 #' @templateVar colorItem velocity
 #' @templateVar colorItemUC Velocity
 #' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
 oceColorsVelocity <- oce.colorsVelocity <- oceColorsClosure("velocity")
 
 #' @templateVar colorItem vorticity
 #' @templateVar colorItemUC Vorticity
 #' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
 oceColorsVorticity <- oce.colorsVorticity <- oceColorsClosure("vorticity")
 
 
@@ -2714,6 +2731,8 @@ oceColorsVorticity <- oce.colorsVorticity <- oceColorsClosure("vorticity")
 #' @examples
 #' library(oce)
 #' imagep(volcano, col=oceColorsJet, zlab="oceColorsJet")
+#'
+#' @template colourBlindnessTemplate
 #' @family things related to colors
 oceColorsJet <- function(n)
 {
@@ -2743,6 +2762,8 @@ oce.colors9A <- oceColors9A <- oce.colorsJet <- oceColorsJet
 #' library(oce)
 #' imagep(volcano, col=oceColors9B(128),
 #'        zlab="oceColors9B")
+#'
+#' @template colourBlindnessTemplate
 #' @family things related to colors
 oceColors9B <- function(n)
 {
@@ -2770,6 +2791,8 @@ oce.colors9B <- oceColors9B
 #' to use; see \dQuote{Details}.
 #'
 #' @aliases oce.colorsPalette oceColorsPalette
+#'
+#' @template colourBlindnessTemplate
 #'
 #' @family things related to colors
 oceColorsPalette <- function(n, which=1)

@@ -5,6 +5,7 @@
 * Add `showNA` argument to `vectorShow()`.
 * Add `adpConvertRawToNumeric()`.
 * Add `adpFlagPastBoundary()`.
+* Add `ctdRepair()`.
 * Change `read.odf()` to handle new CODEs and UNITs.
 * Change `oce.plot.ts()` by adding `simplify` argument.
 * Change `pwelch()`, improving low-frequency results.

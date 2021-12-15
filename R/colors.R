@@ -15,8 +15,13 @@
 #'
 #' @source The data come from the matplotlib site
 #' \url{https://github.com/matplotlib/matplotlib}.
+#'
+#' @template colourBlindnessTemplate
+#'
 #' @family datasets provided with oce
 #' @family things related to colors
+#'
+#' @template colourBlindnessTemplate
 NULL
 
 
@@ -740,6 +745,8 @@ colormapGMT <- function(name, debug=getOption("oceDebug"))
 #'}
 #'
 #' @family things related to colors
+#'
+#' @template colourBlindnessTemplate
 colormap <- function(z=NULL,
                      zlim, zclip=FALSE,
                      breaks, col=oceColorsViridis,
