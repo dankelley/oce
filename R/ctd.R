@@ -612,7 +612,7 @@ setMethod(f="summary",
 #' character vector listing the items that are available.
 #' It is consists of the names of items within the `data`
 #' and `metadata` slots, along with certain computed entries
-#' (e.g. `"Absolute Salinity"`).
+#' called `dataDerived` and `metadataDerived`.
 #'
 #' It should be noted that the accessor is set up to retrieve quantities
 #' in conventional units. For example, [read.ctd.sbe()] is

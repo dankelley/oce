@@ -109,7 +109,7 @@ e.g. \code{ctd[["?"]]} will return an alphabetically sorted
 character vector listing the items that are available.
 It is consists of the names of items within the \code{data}
 and \code{metadata} slots, along with certain computed entries
-(e.g. \code{"Absolute Salinity"}).
+called \code{dataDerived} and \code{metadataDerived}.
 
 It should be noted that the accessor is set up to retrieve quantities
 in conventional units. For example, \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} is

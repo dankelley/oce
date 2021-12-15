@@ -1,20 +1,21 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
-<<<<<<< HEAD
 test_that("ctd[[\"?\"]] works (issue 1891)", {
     data(section)
     ctd <- section[["station", 10]]
     # Test listing
     available <- ctd[["?"]]
-    expect_true("SA" %in% available)
+    expect_true("time" %in% available$metadataDerived)
+    expect_true("SA" %in% available$dataDerived)
     # Test whether missing still works
     expect_true(is.null(ctd[["bark"]]))
     # Test whether a stored value still works
     expect_equal(ctd[["salinity"]], ctd@data$salinity)
     # Test whether a computed value still works
     expect_equal(ctd[["SA"]], swAbsoluteSalinity(ctd))
-=======
+})
+
 test_that("ctdRepair() works as expected", {
     data(ctd)
     expect_warning(ctd <- ctdRepair(ctd), "^changed metadata\\$recoveryTime")
@@ -22,7 +23,6 @@ test_that("ctdRepair() works as expected", {
     expect_warning(ctd <- ctdRepair(ctd), "^moving unit\\-length data")
     ctd@data$longitude <- ctd@metadata$longitude
     expect_warning(ctd <- ctdRepair(ctd), "^moving unit\\-length data")
->>>>>>> develop
 })
 
 test_that("plotTS() handles differently EOSs correctly", {
