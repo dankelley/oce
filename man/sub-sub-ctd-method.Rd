@@ -134,59 +134,75 @@ latter with name \code{NO2+NO3}. In this case, e.g. \code{x[["nitrate"]]}
 will detect the setup, and subtract nitrite from the sum to yield
 nitrate.
 
-The list given below provides notes on some quantities that are,
-or may be, computed.
+The list given below provides notes on some quantities that are
+available using e.g. \code{ctd[[i]]}.
 \itemize{
-\item \code{conductivity} without a second argument (e.g. \code{a[["conductivity"]]})
-returns the value stored in the object. However, if a second argument is given,
+\item If \code{i} is \code{"?"}, then the return value is a list
+containing four items, each of which is a character vector
+holding the names of things that can be accessed with \code{[[}.
+The \code{data} and \code{metadata} items hold the names of
+entries in the object's data and metadata
+slots, respectively. The \code{dataDerived}
+and \code{metadataDerived} items hold the names of things
+that can be inferred from the object's contents, e.g.
+\code{"SA"} is named in \code{dataDerived}, indicating that
+\code{argo[["SA"]]} is permitted (to compute Absolute Salinity).
+\item If \code{i} is \code{"conductivity"} without a second argument (e.g. \code{a[["conductivity"]]})
+then the return value is the seawater electrical conductivity (if available
+or computable). However, if a second argument is given,
 and it is string specifying a unit, then conversion is made to that unit. The
 permitted units are: either \code{""} or \code{"ratio"} (for ratio),
 \code{"uS/cm"}, \code{"mS/cm"} and \code{"S/m"}. The calculations are based on
 the definition of conductivity ratio as the ratio between measured conductivity
 and the standard value 4.2914 S/m.
-\item \code{CT} or \verb{Conservative Temperature}: Conservative Temperature,
-computed with \code{\link[gsw:gsw_CT_from_t]{gsw::gsw_CT_from_t()}}.
-\item \code{density}: seawater density, computed with \link{swRho}\code{(x)}.
-(Note that it may be better to call that function directly, to gain
+\item If \code{i} is \code{"CT"} or \code{"Conservative Temperature"} then Conservative
+Temperature, computed with \code{\link[gsw:gsw_CT_from_t]{gsw::gsw_CT_from_t()}}, is returned.
+\item If \code{i} is \code{"density"} then seawater density, computed with \link{swRho}\code{(x)},
+is returned. (Note that it may be better to call that function directly, to gain
 control of the choice of equation of state, etc.)
-\item \code{depth}: Depth in metres below the surface, computed
-with \link{swDepth}\code{(x)}.
-\item \code{N2}: Square of Brunt-Vaisala frequency, computed  with \link{swN2}\code{(x)}.
-\item \verb{potential temperature}: Potential temperature in the
-UNESCO formulation, computed with \link{swTheta}\code{(x)}.
-This is a synonym for \code{theta}.
-\item \code{Rrho}: Density ratio, computed with \link{swRrho}\code{(x)}.
-\item \code{SA} or \verb{Absolute Salinity}: Absolute Salinity,
-computed with \code{\link[gsw:gsw_SA_from_SP]{gsw::gsw_SA_from_SP()}}.
+\item If \code{i} is \code{"depth"} then the depth in metres below the surface, computed
+with \link{swDepth}\code{(x)}, is returned.
+\item If \code{i} is \code{"N2"} then the square of Brunt-Vaisala frequency, computed  with
+\link{swN2}\code{(x)}, is returned.
+\item If \code{i} is \code{"potential temperature"} or \code{"theta"}, then potential temperature in the
+UNESCO formulation, computed with \link{swTheta}\code{(x)}, is returned.
+\item If \code{i} is \code{"Rrho"} then density ratio, computed with \link{swRrho}\code{(x)}, is
+returned.
+\item If \code{i} is \code{"SA"} or \code{"Absolute Salinity"} then Absolute Salinity,
+computed with \code{\link[gsw:gsw_SA_from_SP]{gsw::gsw_SA_from_SP()}}, is returned.
 The calculation involves location as well as measured water properties.
 If the object \code{x} does not containing information on the location,
 then 30N and 60W is used for the calculation, and a warning is generated.
-\item \code{sigmaTheta}: A form of potential density anomaly, computed with
-\link{swSigmaTheta}\code{(x)}.
-\item \code{sigma0} Equal to \code{sigmaTheta}, i.e. potential density anomaly
-referenced to a pressure of 0dbar, computed with \link{swSigma0}\code{(x)}.
-\item \code{sigma1}: Potential density anomaly
-referenced to a pressure of 1000dbar, computed with \link{swSigma1}\code{(x)}.
-\item \code{sigma2}: Potential density anomaly
-referenced to a pressure of 2000dbar, computed with \link{swSigma2}\code{(x)}.
-\item \code{sigma3}: Potential density anomaly
-referenced to a pressure of 3000dbar, computed with \link{swSigma3}\code{(x)}.
-\item \code{sigma4}: potential density anomaly
-referenced to a pressure of 4000dbar, computed with \link{swSigma4}\code{(x)}.
-\item \code{SP}: Salinity on the Practical Salinity Scale, which is
-\code{salinity} in the \code{data} slot.
-\item \code{spice} or \code{spiciness0}: a variable that is in some sense
-orthogonal to density, calculated with \link{swSpice}\code{(x)}.
+\item If \code{i} is \code{"sigmaTheta"} then a form of potential density anomaly, computed with
+\link{swSigmaTheta}\code{(x)}, is returned.
+\item If \code{i} is \code{"sigma0"} then potential density anomaly
+referenced to a sea pressure of 0dbar (the surface), computed with \link{swSigma0}\code{(x)},
+is returned.
+\item If \code{i} is \code{"sigma2"} then potential density anomaly
+referenced to a sea pressure of 1000dbar, computed with \link{swSigma1}\code{(x)},
+is returned.
+\item If \code{i} is \code{"sigma2"} then potential density anomaly
+referenced to a sea pressure of 2000dbar, computed with \link{swSigma2}\code{(x)},
+is returned.
+\item If \code{i} is \code{"sigma3"} then potential density anomaly
+referenced to a sea pressure of 3000dbar, computed with \link{swSigma3}\code{(x)},
+is returned.
+\item If \code{i} is \code{"sigma4"} then potential density anomaly
+referenced to a sea pressure of 4000dbar, computed with \link{swSigma4}\code{(x)},
+is returned.
+\item If \code{i} is \code{"SP"} then salinity on the Practical Salinity Scale, which is
+\code{salinity} in the \code{data} slot, is returned.
+\item If \code{i} is \code{"spice"} or \code{"spiciness0"} then a variable that is in some sense
+orthogonal to density, calculated with \link{swSpice}\code{(x)}, is returned.
 Note that this is defined differently for \code{eos="unesco"} and
 \code{eos="gsw"}.
-\item \code{SR}: Reference Salinity computed with \code{\link[gsw:gsw_SR_from_SP]{gsw::gsw_SR_from_SP()}}.
-\item \code{Sstar}: Preformed Salinity computed with \code{\link[gsw:gsw_SR_from_SP]{gsw::gsw_SR_from_SP()}}.
+\item If \code{i} is \code{"SR"} then Reference Salinity, computed with
+\code{\link[gsw:gsw_SR_from_SP]{gsw::gsw_SR_from_SP()}}, is returned.
+\item If \code{i} is \code{"Sstar"} then Preformed Salinity, computed with
+\code{\link[gsw:gsw_SR_from_SP]{gsw::gsw_SR_from_SP()}}, is returned.
 See \code{SA} for a note on longitude and latitude.
-\item \code{theta}: potential temperature in the UNESCO formulation,
-computed with \link{swTheta}\code{(x)}. This is a synonym for
-\verb{potential temperature}.
-\item \code{time}: returns either a vector of times, a single
-time, or \code{NULL}. A vector is returned if \code{time}
+\item If \code{i} is \code{"time"} then either vector of times or a single
+time, is returned, if available. A vector is returned if \code{time}
 is present in the \code{data} slot, or if a time can be
 inferred from other entries in the \code{data} slot (some of which,
 such as the common \code{timeS}, also employ
@@ -197,8 +213,8 @@ slot. If it is impossible to determine the sampling time, then
 \code{NULL} is returned. These time variants occur, in the
 present version of oce, only for data read by \code{\link[=read.ctd.sbe]{read.ctd.sbe()}},
 the documentation of which explains how times are computed.
-\item \code{z}: Vertical coordinate in metres above the surface, computed with
-\link{swZ}\code{(x)}.
+\item If \code{i} is \code{"z"} then vertical coordinate in metres above the surface, computed with
+\link{swZ}\code{(x)}, is returned.
 }
 }
 

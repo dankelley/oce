@@ -637,78 +637,94 @@ setMethod(f="summary",
 #' will detect the setup, and subtract nitrite from the sum to yield
 #' nitrate.
 #'
-#' The list given below provides notes on some quantities that are,
-#' or may be, computed.
+#' The list given below provides notes on some quantities that are
+#' available using e.g. `ctd[[i]]`.
 #'
-#' * `conductivity` without a second argument (e.g. `a[["conductivity"]]`)
-#' returns the value stored in the object. However, if a second argument is given,
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items hold the names of things
+#' that can be inferred from the object's contents, e.g.
+#' `"SA"` is named in `dataDerived`, indicating that
+#' `argo[["SA"]]` is permitted (to compute Absolute Salinity).
+#'
+#' * If `i` is `"conductivity"` without a second argument (e.g. `a[["conductivity"]]`)
+#' then the return value is the seawater electrical conductivity (if available
+#' or computable). However, if a second argument is given,
 #' and it is string specifying a unit, then conversion is made to that unit. The
 #' permitted units are: either `""` or `"ratio"` (for ratio),
 #' `"uS/cm"`, `"mS/cm"` and `"S/m"`. The calculations are based on
 #' the definition of conductivity ratio as the ratio between measured conductivity
 #' and the standard value 4.2914 S/m.
 #'
-#' * `CT` or `Conservative Temperature`: Conservative Temperature,
-#' computed with [gsw::gsw_CT_from_t()].
+#' * If `i` is `"CT"` or `"Conservative Temperature"` then Conservative
+#' Temperature, computed with [gsw::gsw_CT_from_t()], is returned.
 #'
-#' * `density`: seawater density, computed with [swRho]`(x)`.
-#' (Note that it may be better to call that function directly, to gain
+#' * If `i` is `"density"` then seawater density, computed with [swRho]`(x)`,
+#' is returned. (Note that it may be better to call that function directly, to gain
 #' control of the choice of equation of state, etc.)
 #'
-#' * `depth`: Depth in metres below the surface, computed
-#' with [swDepth]`(x)`.
+#' * If `i` is `"depth"` then the depth in metres below the surface, computed
+#' with [swDepth]`(x)`, is returned.
 #'
-#' * `N2`: Square of Brunt-Vaisala frequency, computed  with [swN2]`(x)`.
+#' * If `i` is `"N2"` then the square of Brunt-Vaisala frequency, computed  with
+#' [swN2]`(x)`, is returned.
 #'
-#' * `potential temperature`: Potential temperature in the
-#' UNESCO formulation, computed with [swTheta]`(x)`.
-#' This is a synonym for `theta`.
+#' * If `i` is `"potential temperature"` or `"theta"`, then potential temperature in the
+#' UNESCO formulation, computed with [swTheta]`(x)`, is returned.
 #'
-#' * `Rrho`: Density ratio, computed with [swRrho]`(x)`.
+#' * If `i` is `"Rrho"` then density ratio, computed with [swRrho]`(x)`, is
+#' returned.
 #'
-#' * `SA` or `Absolute Salinity`: Absolute Salinity,
-#' computed with [gsw::gsw_SA_from_SP()].
+#' * If `i` is `"SA"` or `"Absolute Salinity"` then Absolute Salinity,
+#' computed with [gsw::gsw_SA_from_SP()], is returned.
 #' The calculation involves location as well as measured water properties.
 #' If the object `x` does not containing information on the location,
 #' then 30N and 60W is used for the calculation, and a warning is generated.
 #'
-#' * `sigmaTheta`: A form of potential density anomaly, computed with
-#' [swSigmaTheta]`(x)`.
+#' * If `i` is `"sigmaTheta"` then a form of potential density anomaly, computed with
+#' [swSigmaTheta]`(x)`, is returned.
 #'
-#' * `sigma0` Equal to `sigmaTheta`, i.e. potential density anomaly
-#' referenced to a pressure of 0dbar, computed with [swSigma0]`(x)`.
+#' * If `i` is `"sigma0"` then potential density anomaly
+#' referenced to a sea pressure of 0dbar (the surface), computed with [swSigma0]`(x)`,
+#' is returned.
 #'
-#' * `sigma1`: Potential density anomaly
-#' referenced to a pressure of 1000dbar, computed with [swSigma1]`(x)`.
+#' * If `i` is `"sigma2"` then potential density anomaly
+#' referenced to a sea pressure of 1000dbar, computed with [swSigma1]`(x)`,
+#' is returned.
 #'
-#' * `sigma2`: Potential density anomaly
-#' referenced to a pressure of 2000dbar, computed with [swSigma2]`(x)`.
+#' * If `i` is `"sigma2"` then potential density anomaly
+#' referenced to a sea pressure of 2000dbar, computed with [swSigma2]`(x)`,
+#' is returned.
 #'
-#' * `sigma3`: Potential density anomaly
-#' referenced to a pressure of 3000dbar, computed with [swSigma3]`(x)`.
+#' * If `i` is `"sigma3"` then potential density anomaly
+#' referenced to a sea pressure of 3000dbar, computed with [swSigma3]`(x)`,
+#' is returned.
 #'
-#' * `sigma4`: potential density anomaly
-#' referenced to a pressure of 4000dbar, computed with [swSigma4]`(x)`.
+#' * If `i` is `"sigma4"` then potential density anomaly
+#' referenced to a sea pressure of 4000dbar, computed with [swSigma4]`(x)`,
+#' is returned.
 #'
-#' * `SP`: Salinity on the Practical Salinity Scale, which is
-#' `salinity` in the `data` slot.
+#' * If `i` is `"SP"` then salinity on the Practical Salinity Scale, which is
+#' `salinity` in the `data` slot, is returned.
 #'
-#' * `spice` or `spiciness0`: a variable that is in some sense
-#' orthogonal to density, calculated with [swSpice]`(x)`.
+#' * If `i` is `"spice"` or `"spiciness0"` then a variable that is in some sense
+#' orthogonal to density, calculated with [swSpice]`(x)`, is returned.
 #' Note that this is defined differently for `eos="unesco"` and
 #' `eos="gsw"`.
 #'
-#' * `SR`: Reference Salinity computed with [gsw::gsw_SR_from_SP()].
+#' * If `i` is `"SR"` then Reference Salinity, computed with
+#' [gsw::gsw_SR_from_SP()], is returned.
 #'
-#' * `Sstar`: Preformed Salinity computed with [gsw::gsw_SR_from_SP()].
+#' * If `i` is `"Sstar"` then Preformed Salinity, computed with
+#' [gsw::gsw_SR_from_SP()], is returned.
 #' See `SA` for a note on longitude and latitude.
 #'
-#' * `theta`: potential temperature in the UNESCO formulation,
-#' computed with [swTheta]`(x)`. This is a synonym for
-#' `potential temperature`.
-#'
-#' * `time`: returns either a vector of times, a single
-#' time, or `NULL`. A vector is returned if `time`
+#' * If `i` is `"time"` then either vector of times or a single
+#' time, is returned, if available. A vector is returned if `time`
 #' is present in the `data` slot, or if a time can be
 #' inferred from other entries in the `data` slot (some of which,
 #' such as the common `timeS`, also employ
@@ -720,8 +736,8 @@ setMethod(f="summary",
 #' present version of oce, only for data read by [read.ctd.sbe()],
 #' the documentation of which explains how times are computed.
 #'
-#' * `z`: Vertical coordinate in metres above the surface, computed with
-#' [swZ]`(x)`.
+#' * If `i` is `"z"` then vertical coordinate in metres above the surface, computed with
+#' [swZ]`(x)`, is returned.
 #'
 #'
 #' @author Dan Kelley
@@ -737,7 +753,7 @@ setMethod(f="[[",
               # For 1891: ctd[["?"]] lists known items, stored or computed
               # https://github.com/dankelley/oce/issues/1891
               # Use paste() for two-word items so a text editor won't break strings
-              metadataDerived <- c("time")
+              metadataDerived <- c("time", "*Flag", "*Unit")
               dataDerived <- c("SP", "SR", "Sstar", "N2", "density",
                   "sigmaTheta", "sigma0", "sigma1", "sigma2", "sigma3",
                   "sigma4", "theta", paste("potential", "temperature"), "Rrho",

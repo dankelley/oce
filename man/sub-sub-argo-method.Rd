@@ -41,18 +41,18 @@ preference for the latter may be set with \code{\link[=preferAdjusted]{preferAdj
 documentation of which explains (fairly complex) details.
 
 The results from \code{argo[[i]]} or \code{argo[[i,j]]} depend on the
-nature of \code{i} and (if provided) \code{j}.
-The possibilities are as follows.
+nature of \code{i} and (if provided) \code{j}. The details are as follows.
 \itemize{
-\item If \code{i} is \code{"?"}, then the return value is an
-alphabetically sorted character vector that holds
-the names of the items that can be returned by \code{[[}.
-This vector is constructed
-from the names of items in the \code{data}
-and \code{metadata} slots, combined with certain computed entries
-(e.g. \code{"Absolute Salinity"}).  Flags and units can also be
-retrieved, as explained under the heading \dQuote{Details of the general
-method}.
+\item If \code{i} is \code{"?"}, then the return value is a list
+containing four items, each of which is a character vector
+holding the names of things that can be accessed with \code{[[}.
+The \code{data} and \code{metadata} items hold the names of
+entries in the object's data and metadata
+slots, respectively. The \code{dataDerived}
+and \code{metadataDerived} items hold the names of things
+that can be inferred from the object's contents, e.g.
+\code{"SA"} is named in \code{dataDerived}, indicating that
+\code{argo[["SA"]]} is permitted (to compute Absolute Salinity).
 \item If \code{i} is \code{"profile"} and \code{j} is an integer vector,
 then an argo object is returned, as specified by \code{j}. For example,
 \code{argo[["profile", 2:5]]} is equivalent to
