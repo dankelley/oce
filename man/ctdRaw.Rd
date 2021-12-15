@@ -38,6 +38,7 @@ Other things related to ctd data:
 \code{\link{ctd.cnv}},
 \code{\link{ctdDecimate}()},
 \code{\link{ctdFindProfiles}()},
+\code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
 \code{\link{ctd}},
 \code{\link{d200321-001.ctd}},

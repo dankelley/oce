@@ -11,11 +11,13 @@ oceColorsViridis(n)
 \item{n}{number of colors to create.}
 }
 \description{
-This is patterned on a \proglang{matlab}/\proglang{python} scheme (reference 1) that blends
+This is patterned on a \proglang{matlab}/\proglang{python} scheme that blends
 from yellow to blue in a way that is designed to reproduce well
 in black-and-white, and to be interpretable by those with
-certain forms of color blindness (references 3-4).  An alternative
-to this is provide in the \CRANpkg{viridis} package, as illustrated
+certain forms of color blindness.  See the references for
+notes about issues of colour blindness in computer graphics.
+An alternative
+to \link{oceColorsViridis} is provided in the \CRANpkg{viridis} package, as illustrated
 in Example 2.
 }
 \examples{
@@ -30,18 +32,43 @@ imagep(volcano, col=viridis::viridis,
 
 }
 \references{
-\enumerate{
-\item A blog item on the Viridis (and related) matplotlib color
-scales is at \url{http://bids.github.io/colormap/}.
-\item Light, A., and P. J. Bartlein, 2004. The End of the Rainbow? Color
-Schemes for Improved Data Graphics. \emph{Eos Trans. AGU}, 85(40),
-\doi{doi:10.1029/2004EO400002}.
-\item Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
-Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
-\samp{https://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}.
-\item Stephenson, David B., 2005. Comment on ``Color schemes for improved data
-graphics,'' by A. Light and P. J. Bartlein. \emph{Eos Trans. AGU}, 86(20).
-}
+The following references provide information on choosing
+colour schemes, that are suitable for viewers who have
+colour deficiencies.
+
+Light, Adam, and Patrick J. Bartlein. "The End of the Rainbow? Color
+Schemes for Improved Data Graphics." \emph{Eos, Transactions American Geophysical
+Union} 85, no. 40 (2004): 385.
+\url{https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2004EO400002}
+
+Stephenson, David B. "Comment on 'Color Schemes for Improved Data
+Graphics,' by A Light and P.J. Bartlein." \emph{Eos, Transactions American
+Geophysical Union} 86, no.  20 (2005): 196.
+\url{https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2005EO200005}.
+
+Light, Adam, and Patrick J. Bartlein. "Reply [to 'Comment on Color
+Schemes for Improved Data Graphics,’ by A. Light and P.J.  Bartlein']."
+\emph{Eos, Transactions American Geophysical Union} 86, no. 20 (2005): 196–196.
+\url{https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2005EO200006}
+
+The following references provide information on choosing
+colour schemes, that are suitable for viewers who have
+colour deficiencies.
+
+Light, Adam, and Patrick J. Bartlein. "The End of the Rainbow? Color
+Schemes for Improved Data Graphics." \emph{Eos, Transactions American Geophysical
+Union} 85, no. 40 (2004): 385.
+\url{https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2004EO400002}
+
+Stephenson, David B. "Comment on 'Color Schemes for Improved Data
+Graphics,' by A Light and P.J. Bartlein." \emph{Eos, Transactions American
+Geophysical Union} 86, no.  20 (2005): 196.
+\url{https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2005EO200005}.
+
+Light, Adam, and Patrick J. Bartlein. "Reply [to 'Comment on Color
+Schemes for Improved Data Graphics,’ by A. Light and P.J.  Bartlein']."
+\emph{Eos, Transactions American Geophysical Union} 86, no. 20 (2005): 196–196.
+\url{https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2005EO200006}
 }
 \seealso{
 Other things related to colors: 

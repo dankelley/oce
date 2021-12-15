@@ -98,6 +98,87 @@ setAs("list", "ctd", function(from) {
       as.ctd(from) #salinity=from$salinity, temperature=from$temperature, pressure=from$pressure)
 })
 
+#' Repair a malformed ctd object
+#'
+#' Make a [ctd-class] object adhere more closely with the expected form, e.g. by
+#' moving certain things from the `data` slot to the `metadata` slot, where
+#' other oce functions may assume they will be located.
+#' This can be handy for objects that were set up
+#' incorrectly, perhaps by inappropriate user insertions.
+#'
+#' The possible changes fall into the following categories.
+#'
+#' 1. If unit-length values for `latitude`, `longitude`, `time`, or `station`
+#' exist in the `data` slot, move them to the `metadata` slot.  However,
+#' leave them in `data`  if their length exceeds 1, because this can
+#' arise with towyo data.
+#'
+#' 2. If the `metadata` or `data` slot contains items named
+#' `time`, `recoveryTime`, `startTime`, or `systemUploadTime`,
+#' and if these are not in POSIXt format, then use [as.POSIXct()] with
+#'`tz="UTC"` to convert them to POSIXt format. If that conversion fails,
+#' owing to an unrecognizable format, then the original value
+#' is retained, unaltered.
+#'
+#' @param x a [ctd-class] object.
+#'
+#' @template debugTemplate
+#'
+#' @return A [ctd-class] object that is based on `x`, but possibly
+#' with some elements changed as described in the \dQuote{Details}
+#' section.
+#'
+#' @examples
+#' library(oce)
+#' data(ctd)
+#' # Insert location information into 'data', although it belongs in 'metadata'.
+#' ctd@data$latitude <- ctd@metadata$latitude   # do NOT do this!
+#' ctd@data$longitude <- ctd@metadata$longitude # do NOT do this!
+#' repaired <- ctdRepair(ctd)
+#'
+#' @family things related to ctd data
+#'
+#' @author Dan Kelley
+ctdRepair <- function(x, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "ctdRepair(x) {\n", sep="", unindent=1, style="bold")
+    dnames <- names(x@data)
+    mnames <- names(x@metadata)
+    # 1: move things from data to metadata
+    for (item in c("longitude", "latitude", "time", "station")) {
+        if (item %in% dnames) {
+            if (length(x@data[[item]]) == 1L) {
+                warning("moving unit-length data$", item, " to metadata$", item, "\n", sep="")
+                x@metadata[[item]] <- x@data[[item]]
+                x@data[[item]] <- NULL
+            }
+        }
+    }
+    # 2: make as POSIXct: time recoveryTime startTime systemUploadTime
+    for (item in c("recoveryTime", "startTime", "systemUploadTime", "time")) {
+        if (item %in% names(x@metadata) && !inherits(x@metadata[[item]], "POSIXt")) {
+            trial <- try(as.POSIXct(x@metadata[[item]], tz="UTC"), silent=TRUE)
+            if (!inherits(trial, "try-error")) {
+                x@metadata[[item]] <- trial
+                warning(paste0("changed metadata$", item, " to a POSIXct value\n"))
+            } else {
+                warning(paste0("cannot change metadata$", item, " to a POSIXct value due to faulty format\n"))
+            }
+        }
+        if (item %in% names(x@data) && !inherits(x@data[[item]], "POSIXt")) {
+            trial <- try(as.POSIXct(x@data[[item]], tz="UTC"), silent=TRUE)
+            if (!inherits(trial, "try-error")) {
+                x@data[[item]] <- trial
+                warning(paste0("changed data$", item, " to a POSIXct value\n"))
+            } else {
+                warning(paste0("cannot change data$", item, " to a POSIXct value due to faulty format\n"))
+            }
+        }
+    }
+    x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # ctdRepair()\n", sep="", unindent=1, style="bold")
+    x
+}                                      # ctdRepair()
 
 #' A CTD profile in Halifax Harbour
 #'
@@ -656,16 +737,17 @@ setMethod(f="[[",
               # For 1891: ctd[["?"]] lists known items, stored or computed
               # https://github.com/dankelley/oce/issues/1891
               # Use paste() for two-word items so a text editor won't break strings
-              iKnown <- sort(unique(c(names(x@data), names(x@metadata), "SP",
-                          "SR", "Sstar", "time", "N2", "density", "sigmaTheta",
-                          "sigma0", "sigma1", "sigma2", "sigma3", "sigma4",
-                          "theta", paste("potential", "temperature"), "Rrho",
-                          "spice", "spiciness", "SA", paste("Absolute",
-                              "Salinity"), "CT", paste("Conservative",
-                              "Temperature"), "z", "depth")))
-
+              metadataDerived <- c("time")
+              dataDerived <- c("SP", "SR", "Sstar", "N2", "density",
+                  "sigmaTheta", "sigma0", "sigma1", "sigma2", "sigma3",
+                  "sigma4", "theta", paste("potential", "temperature"), "Rrho",
+                  "spice", "spiciness", "SA", paste("Absolute", "Salinity"),
+                  "CT", paste("Conservative", "Temperature"), "z", "depth")
               if (i == "?")
-                  return(iKnown)
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=sort(metadataDerived),
+                          data=sort(names(x@data)),
+                          dataDerived=sort(dataDerived)))
               #>if (!i %in% iKnown) {
               #>    # message("FIXME: make ctd[[\"", i, "\"]] work")
               #>    return(NULL)
@@ -1778,7 +1860,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
              if (methodFunction) "(a function)" else paste('"', method, '"', sep=""),
              ", rule=c(", paste(rule, collapse=","), ")",
              ", e=", e,
-             "\", ...) {\n", sep="", unindent=1)
+             ", ...) {\n", sep="", unindent=1)
     ## if (!inherits(x, "ctd"))
     ##     stop("method is only for objects of class '", "ctd", "'")
     res <- x
@@ -1835,7 +1917,6 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
                         good <- length(wgood)
                         if (good > 2) {
                             dataNew[[datumName]] <- approx(x@data[["pressure"]], x@data[[datumName]], pt, rule=c(2, 1), yleft=x@data[[datumName]][wgood[1]])$y
-                            ##.message("yleft=", x@data[[datumName]][wgood[1]])
                             dataNew[[datumName]][tooDeep] <- NA
                         } else {
                             dataNew[[datumName]] <- rep(NA, npt)
@@ -1848,11 +1929,17 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
             if (numGoodPressures > 0)
                 tooDeep <- pt > max(x@data[["pressure"]], na.rm=TRUE)
             for (datumName in dataNames) {
-                ## oceDebug(debug, "decimating \"", datumName, "\"\n", sep="")
-                if (numGoodPressures < 2 || !length(x[[datumName]])) {
+                oceDebug(debug, "decimating \"", datumName, "\"\n", sep="")
+                if (numGoodPressures < 2 || length(x[[datumName]]) < 1L || !is.numeric(x[[datumName]])) {
+                    oceDebug(debug, "  setting to NA because too few pressures, no data, or non-numeric data\n")
                     dataNew[[datumName]] <- rep(NA, npt)
                 } else {
-                    if (datumName != "pressure") {
+                    # Do not interpolate pressure (of course).  Also, skip any
+                    # datum that has only a single number.  This is because I
+                    # have seen longitude and latitude stored as single numbers
+                    # in the data slot (in user-built objects), even though they
+                    # *should* be in the metadata slot.
+                    if (datumName != "pressure" && length(x@data[[datumName]]) > 1L && is.numeric(x@data[[datumName]])) {
                         good <- sum(!is.na(x@data[[datumName]]))
                         if (good > 2) {
                             dataNew[[datumName]] <- approx(x@data[["pressure"]], x@data[[datumName]], pt, rule=rule)$y
@@ -1962,8 +2049,8 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
     ##1108     dataNew[['scan']] <- NULL
     ##1108     warningMessages <- c(warningMessages, "Removed scan field from decimated ctd object")
     ##1108 }
-    if ('flag' %in% names(dataNew)) {
-        dataNew[['flag']] <- NULL
+    if ("flag" %in% names(dataNew)) {
+        dataNew[["flag"]] <- NULL
         warningMessages <- c(warningMessages, "Removed flag field from decimated ctd object")
     }
     dataNew[["pressure"]] <- pt
@@ -3282,24 +3369,18 @@ setMethod(f="plot",
                   par(mfcol=c(nnn, ceiling(lw/nnn)))
                   rm(nnn)
               }
-              ##20181114 if (lw > 1) {
-              ##20181114     ##oldpar <- par(no.readonly=TRUE)
-              ##20181114     if (lw > 2) layout(matrix(1:4, nrow=2, byrow=TRUE)) else
-              ##20181114         layout(matrix(1:2, nrow=2, byrow=TRUE))
-              ##20181114     ##layout.show(lay)
-              ##20181114     ##stop()
-              ##20181114 }
               ## Ignore any bottom region consisting of NA for temperature and salinity, e.g.
               ## as created by as.section() or read.section().
               if (0 == length(x[["salinity"]])) {
                   warning("no data to plot in this object")
                   return(invisible(NULL))
               }
-              last.good <- which(rev(is.na(x[["salinity"]]))==FALSE)[1]
-              if (!is.na(last.good) && length(last.good) > 0) {
+              last.good <- tail(which(!is.na(x[["salinity"]])),1)
+              if (length(last.good) > 0 && last.good < length("salinity")) {
                   last.good <- length(x[["temperature"]]) - last.good + 1
                   for (nc in seq_along(x@data)) {
-                      if (!is.null(x@data[[nc]])) {
+                      if (length(x@data[[nc]]) > 1L) { # the 1L prevents extending scalars
+                          cat("last.good action on ", names(x@data)[nc], "\n")
                           x@data[[nc]] <- x@data[[nc]][1:last.good]
                       }
                   }
@@ -3533,15 +3614,15 @@ setMethod(f="plot",
                       lwd.rho <- if ("lwd.rho" %in% names(dots)) dots$lwd.rho else par('lwd')
                       lty.rho <- if ("lty.rho" %in% names(dots)) dots$lty.rho else par('lty')
                       plotTS(x, Slim=Slim, Tlim=Tlim,
-                             grid=grid, col.grid="lightgray", lty.grid="dotted",
-                             eos=eos,
-                             lwd.rho=lwd.rho, lty.rho=lty.rho,
-                             useSmoothScatter=useSmoothScatter,
-                             col=col, pch=pch, cex=cex,
-                             type=if (!missing(type)) type[w],
-                             inset=inset,
-                             add=add,
-                             debug=debug-1, ...) # FIXME use inset here
+                          grid=grid, col.grid="lightgray", lty.grid="dotted",
+                          eos=eos,
+                          lwd.rho=lwd.rho, lty.rho=lty.rho,
+                          useSmoothScatter=useSmoothScatter,
+                          col=col, pch=pch, cex=cex,
+                          type=if (!missing(type)) type[w],
+                          inset=inset,
+                          add=add,
+                          debug=debug-1, ...) # FIXME use inset here
                   } else if (which[w] == 4) {
                       textItem<-function(xloc, yloc, item, label, cex=0.8, d.yloc=0.8) {
                           if (!is.null(item) && !is.na(item))
@@ -5113,17 +5194,13 @@ plotProfile <- function(x,
     if (ytype %in% c("pressure", "z", "depth", "sigmaTheta")) {
         yy <- x[[ytype]]
         extra <- 0.05 * diff(range(yy, na.rm=TRUE)) # note larger than 0.04, just in case
-        if (is.na(extra)) examineIndices <- seq_along(yy)
-        else examineIndices <- (min(ylim) - extra) <= yy & yy <= (max(ylim) + extra)
+        examineIndices <- if (is.na(extra)) seq_along(yy)
+            else (min(ylim) - extra) <= yy & yy <= (max(ylim) + extra)
     } else {
         warning("unknown \"ytype\"; must be one of \"pressure\", \"z\", \"depth\" or \"sigmaTheta\"")
-        examineIndices <- seq_along(x[["pressure"]]) # we know for sure this will work
+        examineIndices <- seq_along(x[["pressure"]])
     }
-    ##1137 examineIndices <- switch(ytype,
-    ##1137                    pressure=g[1]*min(ylim) <= x[["pressure"]] & x[["pressure"]] <= g[2]*max(ylim),
-    ##1137                    z=g[1]*min(ylim) <= x[["z"]] & x[["z"]] <= g[2]*max(ylim),
-    ##1137                    depth=g[1]*min(ylim) <= x[["depth"]] & x[["depth"]] <= g[2]*max(ylim),
-    ##1137                    sigmaTheta=g[1]*min(ylim) <= x[["sigmaTheta"]] & x[["sigmaTheta"]] <= g[2]*max(ylim))
+    examineIndicesLength <- length(examineIndices)
     if (0 == sum(examineIndices) && ytype == 'z' && ylim[1] >= 0 && ylim[2] >= 0) {
         warning("nothing is being plotted, because z is always negative and ylim specified a positive interval")
         return(invisible(NULL))
@@ -5137,7 +5214,13 @@ plotProfile <- function(x,
         x@data <- x@data[examineIndices, ]
     } else {
         for (dataName in dataNames) {
-            x@data[[dataName]] <- x@data[[dataName]][examineIndices]
+            # Only do this for items with the same length as pressure; this
+            # is to avoid problems if @data holds scalar longitude
+            # and latitude values, which otherwise get replaced by those
+            # values, and then NAs to fill out the vector.
+            if (length(x@data[[dataName]]) == examineIndicesLength) {
+                x@data[[dataName]] <- x@data[[dataName]][examineIndices]
+            }
         }
     }
     axisNameLoc <- mgp[1]

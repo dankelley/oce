@@ -196,9 +196,9 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
 #' provided, a possibly reasonable value computed from an analysis of the
 #' profile, based on the number of pressure levels.
 #'
-#' The core of the
-#' method involves differentiating potential density (referenced to median
-#' pressure) with respect to pressure, and the `derivs` argument is used
+#' The core of the method involves computing potential density referenced to median
+#' pressure, using the UNESCO-style [swSigmaTheta] function, and then differentiating
+#' this with respect to pressure. The `derivs` argument is used
 #' to control how this is done, as follows.
 #'
 #' * If `derivs` is not supplied, the action is as though it were
@@ -278,14 +278,18 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
 #'
 #' @family functions that calculate seawater properties
 swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
-                 debug=getOption("oceDebug"),  ...)
+    debug=getOption("oceDebug"),  ...)
 {
     oceDebug(debug, "swN2(...) {\n", sep="", unindent=1)
     ##cat("swN2(..., df=", df, ")\n",sep="")
     ##useSmoothing <- !missing(df) && is.finite(df)
     if (inherits(pressure, "ctd")) {
+        if (!is.null(sigmaTheta))
+            warning("sigmaTheta is ignored, since first argument was a ctd object\n")
+        oceDebug(debug, "first parameter is a 'ctd', so get data from it\n")
         pref <- median(pressure[["pressure"]], na.rm=TRUE)
-        sigmaTheta <- swSigmaTheta(pressure, referencePressure=pref)
+        oceDebug(debug, "setting referencePressure to ", pref, "\n", sep="")
+        sigmaTheta <- swSigmaTheta(pressure, referencePressure=pref, eos="unesco") # NOTE: UNESCO used
         pressure <- pressure[['pressure']] # over-writes pressure
     }
     if (missing(derivs))
@@ -1761,7 +1765,7 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
 #'
 #' @family functions that calculate seawater properties
 swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
-                         longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
+    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
        stop("must provide salinity")
