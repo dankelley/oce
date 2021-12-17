@@ -32,12 +32,6 @@ tries to find it, but
 if that fails, then a general function is used
 (see next section).
 }
-\section{Details of the specialized topo method}{
-
-There are no special features for \linkS4class{topo} data;
-the general method is used directly.
-}
-
 \section{Details of the general method}{
 
 
@@ -87,6 +81,20 @@ and it directs where to look.
 }
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
+}
+
+\section{Details of the specialized \code{topo} method}{
+
+\itemize{
+\item If \code{i} is \code{"?"}, then the return value is a list
+containing four items, each of which is a character vector
+holding the names of things that can be accessed with \code{[[}.
+The \code{data} and \code{metadata} items hold the names of
+entries in the object's data and metadata
+slots, respectively. The \code{dataDerived}
+and \code{metadataDerived} items are each \code{""}, because
+no derived values are defined by \code{topo} objects.
+}
 }
 
 \examples{
