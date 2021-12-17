@@ -34,12 +34,6 @@ if that fails, then a general function is used
 }
 \section{Details of the specialized \code{tidem} method}{
 
-
-A vector of the frequencies of fitted constituents is recovered
-with e.g. \code{x[["frequency"]]}. Similarly, amplitude is
-recovered with e.g. \code{x[["amplitude"]]} and phase with
-e.g. \code{x[["phase"]]}. If any other string is specified, then
-the underlying accessor \code{\link{[[,oce-method}}) is used.
 }
 
 \section{Details of the general method}{
@@ -91,6 +85,27 @@ and it directs where to look.
 }
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
+}
+
+\section{Details of the specialized \code{tides} method}{
+
+\itemize{
+\item If \code{i} is \code{"?"}, then the return value is a list
+containing four items, each of which is a character vector
+holding the names of things that can be accessed with \code{[[}.
+The \code{data} and \code{metadata} items hold the names of
+entries in the object's data and metadata
+slots, respectively. The
+\code{metadataDerived} holds only \code{""}, because
+no derived metadata values are defined for \code{cm} objects.
+\item If \code{i} is \code{"frequency"} or \code{"freq"}, then a vector of
+constituent frequencies (stored
+as \code{freq} in the data slot) is returned.
+\item If \code{i} is \code{"amplitude"} then a vector of constituent amplitudes
+is returned.
+\item If \code{i} is \code{"phase"} then a vector of constituent phases
+is returned.
+}
 }
 
 \seealso{
