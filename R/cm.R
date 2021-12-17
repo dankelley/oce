@@ -1,4 +1,4 @@
-## vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4
 
 
 #' Class to Store Current Meter Data
@@ -61,10 +61,8 @@ NULL
 #' The `data` and `metadata` items hold the names of
 #' entries in the object's data and metadata
 #' slots, respectively. The `dataDerived`
-#' and `metadataDerived` items hold the names of things
-#' that can be inferred from the object's contents, e.g.
-#' `"SA"` is named in `dataDerived`, indicating that
-#' `argo[["SA"]]` is permitted (to compute Absolute Salinity).
+#' and `metadataDerived` items are each `""`, because
+#' no derived values are defined by `cm` objects.
 #'
 #' @family things related to cm data
 setMethod(f="[[",

@@ -49,7 +49,8 @@ those slots.
 \item If \code{i} is a string ending in the
 \code{"Unit"}, then the characters preceding that string
 are taken to be the name of an item in the data object, and a list
-containing the unit is returned. This list consists of an item
+containing the unit is returned (or \code{NULL} if
+there is no such unit). This list consists of an item
 named \code{unit}, which is an \code{\link[=expression]{expression()}}, and
 an item named \code{scale}, which is a string describing the
 measurement scale.  If the string ends in \code{" unit"}, e.g.
@@ -58,9 +59,9 @@ then just the expression is returned, and if it ends in
 \code{" scale"}, then just the scale is returned.
 \item If \code{i} is a string ending in \code{"Flag"}, then the corresponding
 data-quality flag is returned (or \code{NULL} if there is no such flag).
-For example, \code{x[["salinityFlag"]]} returns a vector of salinity
-flags if \code{x} is a ctd object.
-\item If \code{i} is \code{"sigmaTheta"}, then the value of
+\item If the object holds hydrographic information (pressure,
+salinity, temperature, longitude and latitude) then another
+set of possibilities arises.  If \code{i} is \code{"sigmaTheta"}, then the value of
 \code{\link[=swSigmaTheta]{swSigmaTheta()}} is called with \code{x} as the sole
 argument, and the results are returned. Similarly,
 \code{\link[=swSigma0]{swSigma0()}} is used if \code{i="sigma0"}, and
@@ -79,9 +80,7 @@ it must be either the string \code{"metadata"} or \code{"data"},
 and it directs where to look.
 }
 
-If none of the above-listed conditions holds, then \code{NULL} is returned,
-without the issuance of a warning or error message. (This silent operation
-is employed so that \code{[[} will behave like the normal R version.)
+If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
 
 \section{Details of the specialized \code{adp} method}{

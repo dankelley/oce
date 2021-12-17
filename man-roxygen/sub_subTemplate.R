@@ -39,7 +39,8 @@
 #' 2. If `i` is a string ending in the
 #' `"Unit"`, then the characters preceding that string
 #' are taken to be the name of an item in the data object, and a list
-#' containing the unit is returned. This list consists of an item
+#' containing the unit is returned (or `NULL` if
+#' there is no such unit). This list consists of an item
 #' named `unit`, which is an [expression()], and
 #' an item named `scale`, which is a string describing the
 #' measurement scale.  If the string ends in `" unit"`, e.g.
@@ -49,10 +50,10 @@
 #'
 #' 3. If `i` is a string ending in `"Flag"`, then the corresponding
 #' data-quality flag is returned (or `NULL` if there is no such flag).
-#' For example, `x[["salinityFlag"]]` returns a vector of salinity
-#' flags if `x` is a ctd object.
 #'
-#' 4. If `i` is `"sigmaTheta"`, then the value of
+#' 4. If the object holds hydrographic information (pressure,
+#' salinity, temperature, longitude and latitude) then another
+#' set of possibilities arises.  If `i` is `"sigmaTheta"`, then the value of
 #' [swSigmaTheta()] is called with \code{x} as the sole
 #' argument, and the results are returned. Similarly,
 #' [swSigma0()] is used if `i="sigma0"`, and
@@ -71,9 +72,7 @@
 #' it must be either the string `"metadata"` or `"data"`,
 #' and it directs where to look.
 #'
-#' If none of the above-listed conditions holds, then `NULL` is returned,
-#' without the issuance of a warning or error message. (This silent operation
-#' is employed so that `[[` will behave like the normal R version.)
+#' If none of the above-listed conditions holds, then `NULL` is returned.
 #'
 #' @family functions that extract parts of oce objects
 
