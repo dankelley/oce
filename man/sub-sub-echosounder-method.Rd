@@ -27,10 +27,14 @@ the data, data-quality flags, etc.
 }
 \details{
 A two-step process is used to try to find the
-requested information. First, a class-specific function
-tries to find it, but
-if that fails, then a general function is used
-(see next section).
+requested information. First, a class-specific
+function is used to find it. If that function
+fails to yield a result, then a general,
+lower-level, function is used. These situations
+are described in inverse order below.
+First, the general method is described. Note that
+the text of this is identical for all oce object classes.
+Second, the class-specific method is described.
 }
 \section{Details of the specialized \code{echosounder} method}{
 
@@ -60,7 +64,8 @@ Otherwise, the generic \code{[[} is used.
 \section{Details of the general method}{
 
 
-If the specialized method produces no matches, the following generalized
+If the specialized method (see next section)
+produces no matches, the following generalized
 method is applied. As with the specialized method, the procedure hinges
 first on the values of \code{i} and, optionally, \code{j}. The work
 proceeds in steps, by testing a sequence of possible conditions

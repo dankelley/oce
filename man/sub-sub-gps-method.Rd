@@ -27,15 +27,20 @@ the data, data-quality flags, etc.
 }
 \details{
 A two-step process is used to try to find the
-requested information. First, a class-specific function
-tries to find it, but
-if that fails, then a general function is used
-(see next section).
+requested information. First, a class-specific
+function is used to find it. If that function
+fails to yield a result, then a general,
+lower-level, function is used. These situations
+are described in inverse order below.
+First, the general method is described. Note that
+the text of this is identical for all oce object classes.
+Second, the class-specific method is described.
 }
 \section{Details of the general method}{
 
 
-If the specialized method produces no matches, the following generalized
+If the specialized method (see next section)
+produces no matches, the following generalized
 method is applied. As with the specialized method, the procedure hinges
 first on the values of \code{i} and, optionally, \code{j}. The work
 proceeds in steps, by testing a sequence of possible conditions
@@ -81,6 +86,28 @@ and it directs where to look.
 }
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
+}
+
+\section{Details of the specialized \code{cm} method}{
+
+\itemize{
+\item If \code{i} is \code{"?"}, then the return value is a list
+containing four items, each of which is a character vector
+holding the names of things that can be accessed with \code{[[}.
+The \code{data} and \code{metadata} items hold the names of
+entries in the object's data and metadata
+slots, respectively. The \code{dataDerived}
+and \code{metadataDerived} items are each \code{""}, because
+no derived values are defined by \code{gps} objects.
+\item If \code{i} is \code{"longitude"} or \code{"latitude"}, then the corresponding
+vector is returned.
+\item If \code{i} is \code{"filename"} then a filename is returned, if
+known (i.e. if the object was created with \code{\link[=read.gps]{read.gps()}} or
+with \code{\link[=as.gps]{as.gps()}} with the \code{filename} argument specified).
+\item Otherwise, control is passed to \link{[[,oce-method}, which can
+return other values that a user might have inserted into the
+object.
+}
 }
 
 \seealso{

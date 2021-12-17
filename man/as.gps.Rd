@@ -25,6 +25,11 @@ Coerces a sequence of longitudes and latitudes into a GPS dataset.
 This may be used when \code{\link[=read.gps]{read.gps()}} cannot read a file, or when the
 data have been manipulated.
 }
+\examples{
+# Location of the Tower Tank at Dalhousie University
+towerTank <- as.gps(-63.59428, 44.63572)
+
+}
 \seealso{
 Other things related to gps data: 
 \code{\link{[[,gps-method}},
