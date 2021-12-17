@@ -1074,8 +1074,9 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' extractAIC(tide[["model"]])
 #'
 #' # Fake data at M2
+#' M2 <- tidedata$const$freq[tidedata$const$name=="M2"] # 0.080511401 cph
 #' t <- seq(0, 10*86400, 3600)
-#' eta <- sin(0.080511401 * t * 2 * pi / 3600)
+#' eta <- sin(M2 * t * 2 * pi / 3600)
 #' sl <- as.sealevel(eta)
 #' m <- tidem(sl)
 #' summary(m)
