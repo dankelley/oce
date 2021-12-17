@@ -607,13 +607,6 @@ setMethod(f="summary",
 #' up or computed. Nothing is lost in this scheme, since the data
 #' within the object are always accessible with [oceGetData()].
 #'
-#' Before proceeding to details for various entries, note that using
-#' e.g. `ctd[["?"]]` will return an alphabetically sorted
-#' character vector listing the items that are available.
-#' It is consists of the names of items within the `data`
-#' and `metadata` slots, along with certain computed entries
-#' called `dataDerived` and `metadataDerived`.
-#'
 #' It should be noted that the accessor is set up to retrieve quantities
 #' in conventional units. For example, [read.ctd.sbe()] is
 #' used on a `.cnv` file that stores pressure in psi, it will

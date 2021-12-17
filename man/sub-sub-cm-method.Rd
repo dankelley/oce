@@ -84,6 +84,22 @@ without the issuance of a warning or error message. (This silent operation
 is employed so that \code{[[} will behave like the normal R version.)
 }
 
+\section{Details of the specialized \code{cm} method}{
+
+\itemize{
+\item If \code{i} is \code{"?"}, then the return value is a list
+containing four items, each of which is a character vector
+holding the names of things that can be accessed with \code{[[}.
+The \code{data} and \code{metadata} items hold the names of
+entries in the object's data and metadata
+slots, respectively. The \code{dataDerived}
+and \code{metadataDerived} items hold the names of things
+that can be inferred from the object's contents, e.g.
+\code{"SA"} is named in \code{dataDerived}, indicating that
+\code{argo[["SA"]]} is permitted (to compute Absolute Salinity).
+}
+}
+
 \seealso{
 Other functions that extract parts of oce objects: 
 \code{\link{[[,adp-method}},

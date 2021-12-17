@@ -104,13 +104,6 @@ object under analysis, to determine whether that item will be looked
 up or computed. Nothing is lost in this scheme, since the data
 within the object are always accessible with \code{\link[=oceGetData]{oceGetData()}}.
 
-Before proceeding to details for various entries, note that using
-e.g. \code{ctd[["?"]]} will return an alphabetically sorted
-character vector listing the items that are available.
-It is consists of the names of items within the \code{data}
-and \code{metadata} slots, along with certain computed entries
-called \code{dataDerived} and \code{metadataDerived}.
-
 It should be noted that the accessor is set up to retrieve quantities
 in conventional units. For example, \code{\link[=read.ctd.sbe]{read.ctd.sbe()}} is
 used on a \code{.cnv} file that stores pressure in psi, it will
