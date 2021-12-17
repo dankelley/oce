@@ -1281,7 +1281,7 @@ setMethod(f="plot",
                               axes=TRUE, mgp, mar,
                               col, cex, pch,
                               labcex=1,
-                              transect=NULL,
+                             # transect=NULL,
                               debug, ...)
           {
               if (missing(debug))
@@ -1377,7 +1377,7 @@ setMethod(f="plot",
                                          legend=TRUE,
                                          debug=0,
                                          axes=TRUE,
-                                         transect=NULL,
+                                         # transect=NULL,
                                          col=par("col"),
                                          ...)
               {
@@ -1593,8 +1593,10 @@ setMethod(f="plot",
 
 
                       if (class (transect) != "NULL"){  ## FIX - MR -- need to dfine xxrange and yyrange from transect -- test
-                          xxrange <- range (transect@data$coordinates [,1], na.rm = TRUE)
-                          yyrange <- range (transect@data$coordinates [,2], na.rm = TRUE)
+                          # xxrange <- range (transect@data$coordinates [,1], na.rm = TRUE)
+                          # yyrange <- range (transect@data$coordinates [,2], na.rm = TRUE)
+                          xxrange <- range (transect$longitude, na.rm = TRUE)
+                          yyrange <- range (transect$latitude, na.rm = TRUE)
                       }else{
                       ## FIXME: contours don't get to plot edges
                       xxrange <- range(xx, na.rm=TRUE)
@@ -1953,7 +1955,7 @@ setMethod(f="plot",
               zz <- array(NA_real_, dim=c(numStations, num.depths))
               xx <- rep(NA, numStations)
               yy <- rep(NA, num.depths)
-              if (class (transect) == "NULL"){
+              # if (class (transect) == "NULL"){
               if (is.null(at)) {
                   lon0 <- if (missing(longitude0)) mean(firstStation[["longitude"]], na.rm=TRUE) else longitude0
                   lat0 <- if (missing(latitude0)) mean(firstStation[["latitude"]], na.rm=TRUE) else latitude0
@@ -1995,9 +1997,9 @@ setMethod(f="plot",
               } else {
                   xx <- at
               }
-              }else{
-                  ## map xx station locations onto transect distance
-              }
+              #}else{
+              #    ## map xx station locations onto transect distance
+              #}
               ##> message("which.xtype: ", which.xtype)
               if (which.xtype == 5) {
                   xx <- numberAsPOSIXct(xx)
@@ -2027,13 +2029,13 @@ setMethod(f="plot",
                                                      }))
                   }
                   ## Map points back to the spine
-                  if (class (transect)!="NULL"){
+                  #if (class (transect)!="NULL"){
                       ## map xx onto distance along transect rather than geoDist
-                  }else{
+                  #}else{
                   longitudeRemapped <- lonfun(ss[closest])
                   latitudeRemapped <- latfun(ss[closest])
                   xx <- geodDist(longitudeRemapped, latitudeRemapped, alongPath=TRUE)
-                }
+                  #}
               }
               ## Grid is regular (so need only first station) unless which=="data"
               ## FIXME: why checking just first which[] value?
