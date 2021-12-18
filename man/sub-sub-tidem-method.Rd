@@ -2,7 +2,7 @@
 % Please edit documentation in R/tides.R
 \name{[[,tidem-method}
 \alias{[[,tidem-method}
-\title{Extract Something From a Tidem Object}
+\title{Extract Something From a tidem Object}
 \usage{
 \S4method{[[}{tidem}(x, i, j, ...)
 }
@@ -35,8 +35,25 @@ then a general method is used, as described in
 If neither of these methods finds the requested
 information, then \code{NULL} is returned.
 }
-\section{Details of the specialized \code{tidem} method}{
+\section{Details of the Specialized Method}{
 
+\itemize{
+\item If \code{i} is \code{"?"}, then the return value is a list
+containing four items, each of which is a character vector
+holding the names of things that can be accessed with \code{[[}.
+The \code{data} and \code{metadata} items hold the names of
+entries in the object's data and metadata
+slots, respectively. The
+\code{metadataDerived} holds only \code{""}, because
+no derived metadata values are defined for \code{cm} objects.
+\item If \code{i} is \code{"frequency"} or \code{"freq"}, then a vector of
+constituent frequencies (stored
+as \code{freq} in the data slot) is returned.
+\item If \code{i} is \code{"amplitude"} then a vector of constituent amplitudes
+is returned.
+\item If \code{i} is \code{"phase"} then a vector of constituent phases
+is returned.
+}
 }
 
 \section{Details of the General Method}{
@@ -89,27 +106,6 @@ and it directs where to look.
 }
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
-}
-
-\section{Details of the specialized \code{tides} method}{
-
-\itemize{
-\item If \code{i} is \code{"?"}, then the return value is a list
-containing four items, each of which is a character vector
-holding the names of things that can be accessed with \code{[[}.
-The \code{data} and \code{metadata} items hold the names of
-entries in the object's data and metadata
-slots, respectively. The
-\code{metadataDerived} holds only \code{""}, because
-no derived metadata values are defined for \code{cm} objects.
-\item If \code{i} is \code{"frequency"} or \code{"freq"}, then a vector of
-constituent frequencies (stored
-as \code{freq} in the data slot) is returned.
-\item If \code{i} is \code{"amplitude"} then a vector of constituent amplitudes
-is returned.
-\item If \code{i} is \code{"phase"} then a vector of constituent phases
-is returned.
-}
 }
 
 \seealso{

@@ -51,9 +51,6 @@ NULL
 #'
 #' @param x a [cm-class] object.
 #'
-## FIXME: Q: can we move this to below specialized?
-## @template sub_subTemplate
-#'
 #' @section Details of the Specialized Method:
 #'
 #' * If `i` is `"?"`, then the return value is a list

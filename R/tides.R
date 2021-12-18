@@ -252,15 +252,11 @@ setMethod(f="summary",
               invisible(NULL)
           })
 
-#' Extract Something From a Tidem Object
+#' Extract Something From a tidem Object
 #'
 #' @param x a [tidem-class] object.
 #'
-#' @section Details of the specialized `tidem` method:
-#'
-#' @template sub_subTemplate
-#'
-#' @section Details of the specialized `tides` method:
+#' @section Details of the Specialized Method:
 #'
 #' * If `i` is `"?"`, then the return value is a list
 #' containing four items, each of which is a character vector
@@ -280,6 +276,8 @@ setMethod(f="summary",
 #'
 #' * If `i` is `"phase"` then a vector of constituent phases
 #' is returned.
+#'
+#' @template sub_subTemplate
 #'
 #' @family things related to tides
 setMethod(f="[[",
@@ -621,8 +619,9 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 #'
 #' @examples
 #' ## Look up values for the M2 constituent in Halifax Harbour, Canada.
+#' library(oce)
 #' data("tidedata")
-#' j  <- which(tidedata$const$name=="M2")
+#' j <- with(tidedata$const, which(name=="M2"))
 #' tidemVuf(t=as.POSIXct("2008-01-22 18:50:24"), j=j, lat=44.63)
 #'
 #' @references
@@ -1074,7 +1073,9 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' extractAIC(tide[["model"]])
 #'
 #' # Fake data at M2
-#' M2 <- tidedata$const$freq[tidedata$const$name=="M2"] # 0.080511401 cph
+#' library(oce)
+#' data("tidedata")
+#' M2 <- with(tidedata$const, freq[name=="M2"])
 #' t <- seq(0, 10*86400, 3600)
 #' eta <- sin(M2 * t * 2 * pi / 3600)
 #' sl <- as.sealevel(eta)
