@@ -16,30 +16,29 @@
 \item{...}{Optional additional information (ignored).}
 }
 \description{
-The \code{[[} method works for all \code{oce} objects, i.e.
-objects inheriting from \linkS4class{oce}.  The purpose
-is to insulate users from the internal details of \code{oce}
-objects, by looking for items within the various storage
-slots of the object. Items that are not actually stored in
-the object can also be extracted, including derived data such
-as potential temperature, the units of measurement for
-the data, data-quality flags, etc.
+\code{[[} provides a way to look up information
+within \code{oce} objects, without knowing
+the details of how that information is stored
+within the object. For some object classes,
+\code{[[} can also return quantities are not actually stored
+within the object, but that can be computed from
+such information.
 }
 \details{
 A two-step process is used to try to find the
 requested information. First, a class-specific
-function is used to find it. If that function
-fails to yield a result, then a general,
-lower-level, function is used. These situations
-are described in inverse order below.
-First, the general method is described. Note that
-the text of this is identical for all oce object classes.
-Second, the class-specific method is described.
+function is used, as described in
+\dQuote{Details of the Specialized Method}.
+If this method cannot locate the information,
+then a general method is used, as described in
+\dQuote{Details of the General Method}.
+If neither of these methods finds the requested
+information, then \code{NULL} is returned.
 }
-\section{Details of the general method}{
+\section{Details of the General Method}{
 
 
-If the specialized method (see next section)
+If the specialized method
 produces no matches, the following generalized
 method is applied. As with the specialized method, the procedure hinges
 first on the values of \code{i} and, optionally, \code{j}. The work

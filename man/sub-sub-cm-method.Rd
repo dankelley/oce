@@ -2,7 +2,7 @@
 % Please edit documentation in R/cm.R
 \name{[[,cm-method}
 \alias{[[,cm-method}
-\title{Extract Something From a CM Object}
+\title{Extract Something From a cm Object}
 \usage{
 \S4method{[[}{cm}(x, i, j, ...)
 }
@@ -16,30 +16,43 @@
 \item{...}{Optional additional information (ignored).}
 }
 \description{
-The \code{[[} method works for all \code{oce} objects, i.e.
-objects inheriting from \linkS4class{oce}.  The purpose
-is to insulate users from the internal details of \code{oce}
-objects, by looking for items within the various storage
-slots of the object. Items that are not actually stored in
-the object can also be extracted, including derived data such
-as potential temperature, the units of measurement for
-the data, data-quality flags, etc.
+\code{[[} provides a way to look up information
+within \code{oce} objects, without knowing
+the details of how that information is stored
+within the object. For some object classes,
+\code{[[} can also return quantities are not actually stored
+within the object, but that can be computed from
+such information.
 }
 \details{
 A two-step process is used to try to find the
 requested information. First, a class-specific
-function is used to find it. If that function
-fails to yield a result, then a general,
-lower-level, function is used. These situations
-are described in inverse order below.
-First, the general method is described. Note that
-the text of this is identical for all oce object classes.
-Second, the class-specific method is described.
+function is used, as described in
+\dQuote{Details of the Specialized Method}.
+If this method cannot locate the information,
+then a general method is used, as described in
+\dQuote{Details of the General Method}.
+If neither of these methods finds the requested
+information, then \code{NULL} is returned.
 }
-\section{Details of the general method}{
+\section{Details of the Specialized Method}{
+
+\itemize{
+\item If \code{i} is \code{"?"}, then the return value is a list
+containing four items, each of which is a character vector
+holding the names of things that can be accessed with \code{[[}.
+The \code{data} and \code{metadata} items hold the names of
+entries in the object's data and metadata
+slots, respectively. The \code{dataDerived}
+and \code{metadataDerived} items are each \code{""}, because
+no derived values are defined by \code{cm} objects.
+}
+}
+
+\section{Details of the General Method}{
 
 
-If the specialized method (see next section)
+If the specialized method
 produces no matches, the following generalized
 method is applied. As with the specialized method, the procedure hinges
 first on the values of \code{i} and, optionally, \code{j}. The work
@@ -86,20 +99,6 @@ and it directs where to look.
 }
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
-}
-
-\section{Details of the specialized \code{cm} method}{
-
-\itemize{
-\item If \code{i} is \code{"?"}, then the return value is a list
-containing four items, each of which is a character vector
-holding the names of things that can be accessed with \code{[[}.
-The \code{data} and \code{metadata} items hold the names of
-entries in the object's data and metadata
-slots, respectively. The \code{dataDerived}
-and \code{metadataDerived} items are each \code{""}, because
-no derived values are defined by \code{cm} objects.
-}
 }
 
 \seealso{

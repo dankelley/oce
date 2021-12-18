@@ -47,13 +47,14 @@ setClass("cm", contains="oce")
 #' @family things related to cm data
 NULL
 
-#' Extract Something From a CM Object
+#' Extract Something From a cm Object
 #'
 #' @param x a [cm-class] object.
 #'
-#' @template sub_subTemplate
+## FIXME: Q: can we move this to below specialized?
+## @template sub_subTemplate
 #'
-#' @section Details of the specialized `cm` method:
+#' @section Details of the Specialized Method:
 #'
 #' * If `i` is `"?"`, then the return value is a list
 #' containing four items, each of which is a character vector
@@ -63,6 +64,8 @@ NULL
 #' slots, respectively. The `dataDerived`
 #' and `metadataDerived` items are each `""`, because
 #' no derived values are defined by `cm` objects.
+#'
+#' @template sub_subTemplate
 #'
 #' @family things related to cm data
 setMethod(f="[[",
