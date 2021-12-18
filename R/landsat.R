@@ -258,7 +258,7 @@ setMethod(f="summary",
 #'
 #' @template sub_subTemplate
 #'
-#' @section Details of the specialized `landsat` method:
+#' @section Details of the Specialized Method:
 #'
 #' Users are isolated from the details of the two-byte storage system
 #' by using the `[[` operator.

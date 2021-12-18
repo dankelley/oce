@@ -33,33 +33,43 @@ general method is used, as described in \dQuote{Details of the General
 Method}.  If neither of these methods finds the requested information, then
 \code{NULL} is returned.
 }
-\section{Details of the specialized \code{echosounder} method}{
+\section{Details of the Specialized Method}{
 
-
-If \code{i} is the string \code{"Sv"}, the return value is calculated according to
+\itemize{
+\item If \code{i} is \code{"?"}, then the return value is a list
+containing four items, each of which is a character vector
+holding the names of things that can be accessed with \code{[[}.
+The \code{data} and \code{metadata} items hold the names of
+entries in the object's data and metadata
+slots, respectively. The \code{metadataDerived} item
+is NULL, while the \code{dataDerived} item holds
+\code{"Sv"} and \code{"TS"} (see next).
+\item If \code{i} is \code{"Sv"}, then the following is returned.
 \preformatted{
-Sv <- 20*log10(a) -
+20*log10(a) -
   (x@metadata$sourceLevel+x@metadata$receiverSensitivity+x@metadata$transmitPower) +
   20*log10(r) +
   2*absorption*r -
   x@metadata$correction +
   10*log10(soundSpeed*x@metadata$pulseDuration/1e6*psi/2)
 }
-
-If \code{i} is the string \code{"TS"},
+\item If \code{i} is \code{"TS"}, then the following is returned.
 \preformatted{
-TS <- 20*log10(a) -
+20*log10(a) -
   (x@metadata$sourceLevel+x@metadata$receiverSensitivity+x@metadata$transmitPower) +
   40*log10(r) +
   2*absorption*r +
   x@metadata$correction
 }
-
-Otherwise, the generic \code{[[} is used.
+}
 }
 
 \section{Details of the General Method}{
 
+
+Note: the text of this section is identical for all \code{oce} subclasses, and so
+some of what you read here may not be relevant to the class being described
+in this help page.
 
 If the specialized method produces no matches, the following generalized
 method is applied. As with the specialized method, the procedure hinges first
@@ -136,6 +146,9 @@ Other things related to echosounder data:
 \code{\link{read.echosounder}()},
 \code{\link{subset,echosounder-method}},
 \code{\link{summary,echosounder-method}}
+}
+\author{
+Dan Kelley
 }
 \concept{functions that extract parts of oce objects}
 \concept{things related to echosounder data}

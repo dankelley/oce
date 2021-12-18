@@ -33,7 +33,7 @@ general method is used, as described in \dQuote{Details of the General
 Method}.  If neither of these methods finds the requested information, then
 \code{NULL} is returned.
 }
-\section{Details of the specialized \code{section} method}{
+\section{Details of the Specialized Method}{
 
 
 There are several possibilities, depending on the nature of \code{i}.
@@ -73,6 +73,10 @@ one (unnamed) item per station.
 
 \section{Details of the General Method}{
 
+
+Note: the text of this section is identical for all \code{oce} subclasses, and so
+some of what you read here may not be relevant to the class being described
+in this help page.
 
 If the specialized method produces no matches, the following generalized
 method is applied. As with the specialized method, the procedure hinges first

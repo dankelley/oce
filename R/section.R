@@ -279,7 +279,7 @@ setMethod(f="summary",
 #'
 #' @templateVar class section
 #'
-#' @section Details of the specialized `section` method:
+#' @section Details of the Specialized Method:
 #'
 #' There are several possibilities, depending on the nature of `i`.
 #'

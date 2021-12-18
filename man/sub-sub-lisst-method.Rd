@@ -33,8 +33,26 @@ general method is used, as described in \dQuote{Details of the General
 Method}.  If neither of these methods finds the requested information, then
 \code{NULL} is returned.
 }
+\section{Details of the Specialized Method}{
+
+\itemize{
+\item If \code{i} is \code{"?"}, then the return value is a list
+containing four items, each of which is a character vector
+holding the names of things that can be accessed with \code{[[}.
+The \code{data} and \code{metadata} items hold the names of
+entries in the object's data and metadata
+slots, respectively. The \code{dataDerived}
+and \code{metadataDerived} items are each NULL, because
+no derived values are defined by \linkS4class{lisst} objects.
+}
+}
+
 \section{Details of the General Method}{
 
+
+Note: the text of this section is identical for all \code{oce} subclasses, and so
+some of what you read here may not be relevant to the class being described
+in this help page.
 
 If the specialized method produces no matches, the following generalized
 method is applied. As with the specialized method, the procedure hinges first
@@ -108,6 +126,9 @@ Other things related to lisst data:
 \code{\link{plot,lisst-method}},
 \code{\link{read.lisst}()},
 \code{\link{summary,lisst-method}}
+}
+\author{
+Dan Kelley
 }
 \concept{functions that extract parts of oce objects}
 \concept{things related to lisst data}

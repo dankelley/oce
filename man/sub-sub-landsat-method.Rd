@@ -36,6 +36,10 @@ Method}.  If neither of these methods finds the requested information, then
 \section{Details of the General Method}{
 
 
+Note: the text of this section is identical for all \code{oce} subclasses, and so
+some of what you read here may not be relevant to the class being described
+in this help page.
+
 If the specialized method produces no matches, the following generalized
 method is applied. As with the specialized method, the procedure hinges first
 on the values of \code{i} and, optionally, \code{j}. The work proceeds in steps, by
@@ -73,7 +77,7 @@ directs where to look.
 }
 }
 
-\section{Details of the specialized \code{landsat} method}{
+\section{Details of the Specialized Method}{
 
 
 Users are isolated from the details of the two-byte storage system

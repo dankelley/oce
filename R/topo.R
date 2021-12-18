@@ -136,7 +136,7 @@ setMethod(f="summary",
 #' data(topoWorld)
 #' dim(topoWorld[['z']])
 #'
-#' @section Details of the specialized `topo` method:
+#' @section Details of the Specialized Method:
 #'
 #' * If `i` is `"?"`, then the return value is a list
 #' containing four items, each of which is a character vector
