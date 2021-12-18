@@ -285,7 +285,7 @@ setMethod(f="[[",
           definition=function(x, i, j, ...) {
               if (i == "?")
                   return(list(metadata=sort(names(x@metadata)),
-                          metadataDerived="",
+                          metadataDerived=NULL,
                           data=sort(names(x@data)),
                           dataDerived="frequency"))
               if (i == "frequency")

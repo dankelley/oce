@@ -136,8 +136,6 @@ setMethod(f="summary",
 #' data(topoWorld)
 #' dim(topoWorld[['z']])
 #'
-#' @template sub_subTemplate
-#'
 #' @section Details of the specialized `topo` method:
 #'
 #' * If `i` is `"?"`, then the return value is a list
@@ -146,8 +144,12 @@ setMethod(f="summary",
 #' The `data` and `metadata` items hold the names of
 #' entries in the object's data and metadata
 #' slots, respectively. The `dataDerived`
-#' and `metadataDerived` items are each `""`, because
-#' no derived values are defined by `topo` objects.
+#' and `metadataDerived` items are each NULL, because
+#' no derived values are available for `topo` objects.
+#'
+#' @template sub_subTemplate
+#'
+#' @author Dan Kelley
 #'
 #' @family things related to topo data
 setMethod(f="[[",
@@ -155,9 +157,9 @@ setMethod(f="[[",
           definition=function(x, i, j, ...) {
               if (i == "?")
                   return(list(metadata=sort(names(x@metadata)),
-                          metadataDerived="",
+                          metadataDerived=NULL,
                           data=sort(names(x@data)),
-                          dataDerived=""))
+                          dataDerived=NULL))
               callNextMethod()         # [[
           })
 

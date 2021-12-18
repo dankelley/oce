@@ -179,7 +179,7 @@ setMethod(f="[[",
                   "heading", "pitch", "roll")
               if (i == "?")
                   return(list(metadata=sort(names(x@metadata)),
-                          metadataDerived="",
+                          metadataDerived=NULL,
                           data=sort(names(x@data)),
                           dataDerived=sort(dataDerived)))
 

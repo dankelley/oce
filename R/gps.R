@@ -69,7 +69,7 @@ setMethod(f="summary",
 #' The `data` and `metadata` items hold the names of
 #' entries in the object's data and metadata
 #' slots, respectively. The `dataDerived`
-#' and `metadataDerived` items are each `""`, because
+#' and `metadataDerived` items are each NULL, because
 #' no derived values are defined by `gps` objects.
 #'
 #' * If `i` is `"longitude"` or `"latitude"`, then the corresponding
@@ -89,9 +89,9 @@ setMethod(f="[[",
           definition=function(x, i, j, ...) {
               if (i == "?")
                   return(list(metadata=sort(names(x@metadata)),
-                          metadataDerived="",
+                          metadataDerived=NULL,
                           data=sort(names(x@data)),
-                          dataDerived=""))
+                          dataDerived=NULL))
               callNextMethod()         # [[
           })
 
