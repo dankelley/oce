@@ -16,7 +16,7 @@
 \item{...}{Optional additional information (ignored).}
 }
 \description{
-\code{[[} provides a way to look up information
+Generally, \code{[[} provides a way to look up information
 within \code{oce} objects, without knowing
 the details of how that information is stored
 within the object. For some object classes,
@@ -139,6 +139,9 @@ Other things related to cm data:
 \code{\link{rotateAboutZ}()},
 \code{\link{subset,cm-method}},
 \code{\link{summary,cm-method}}
+}
+\author{
+Dan Kelley
 }
 \concept{functions that extract parts of oce objects}
 \concept{things related to cm data}

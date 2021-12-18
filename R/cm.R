@@ -64,6 +64,8 @@ NULL
 #'
 #' @template sub_subTemplate
 #'
+#' @author Dan Kelley
+#'
 #' @family things related to cm data
 setMethod(f="[[",
           signature(x="cm", i="ANY", j="ANY"),

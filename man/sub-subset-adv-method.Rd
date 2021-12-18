@@ -18,7 +18,7 @@
 \item{value}{The value to be inserted into \code{x}.}
 }
 \description{
-\code{[[} provides a way to look up information
+Generally, \code{[[} provides a way to look up information
 within \code{oce} objects, without knowing
 the details of how that information is stored
 within the object. For some object classes,

@@ -27,7 +27,7 @@ Partial matches for \code{i}
 are permitted for \code{metadata}, and \code{j} is ignored for
 \code{metadata}.
 
-\code{[[} provides a way to look up information
+Generally, \code{[[} provides a way to look up information
 within \code{oce} objects, without knowing
 the details of how that information is stored
 within the object. For some object classes,

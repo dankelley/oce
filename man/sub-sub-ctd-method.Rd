@@ -16,7 +16,7 @@
 \item{...}{Optional additional information (ignored).}
 }
 \description{
-\code{[[} provides a way to look up information
+Generally, \code{[[} provides a way to look up information
 within \code{oce} objects, without knowing
 the details of how that information is stored
 within the object. For some object classes,
@@ -35,59 +35,7 @@ then a general method is used, as described in
 If neither of these methods finds the requested
 information, then \code{NULL} is returned.
 }
-\section{Details of the General Method}{
-
-
-If the specialized method
-produces no matches, the following generalized
-method is applied. As with the specialized method, the procedure hinges
-first on the values of \code{i} and, optionally, \code{j}. The work
-proceeds in steps, by testing a sequence of possible conditions
-in sequence.
-\enumerate{
-\item A check is made as to whether \code{i} names one of the standard
-\code{oce} slots. If so, \code{[[} returns the slot contents of that slot.
-Thus, \code{x[["metadata"]]} will retrieve the \code{metadata} slot,
-while \code{x[["data"]]} and \code{x[["processingLog"]]} return
-those slots.
-\item If \code{i} is a string ending in the
-\code{"Unit"}, then the characters preceding that string
-are taken to be the name of an item in the data object, and a list
-containing the unit is returned (or \code{NULL} if
-there is no such unit). This list consists of an item
-named \code{unit}, which is an \code{\link[=expression]{expression()}}, and
-an item named \code{scale}, which is a string describing the
-measurement scale.  If the string ends in \code{" unit"}, e.g.
-\code{x[["temperature unit"]]} (note the space),
-then just the expression is returned, and if it ends in
-\code{" scale"}, then just the scale is returned.
-\item If \code{i} is a string ending in \code{"Flag"}, then the corresponding
-data-quality flag is returned (or \code{NULL} if there is no such flag).
-\item If the object holds hydrographic information (pressure,
-salinity, temperature, longitude and latitude) then another
-set of possibilities arises.  If \code{i} is \code{"sigmaTheta"}, then the value of
-\code{\link[=swSigmaTheta]{swSigmaTheta()}} is called with \code{x} as the sole
-argument, and the results are returned. Similarly,
-\code{\link[=swSigma0]{swSigma0()}} is used if \code{i="sigma0"}, and
-\code{\link[=swSpice]{swSpice()}} is used if \code{i="spice"}. Of course, these
-actions only make sense for objects that contain
-the relevant items within their \code{data} slot.
-\item After these possibilities are eliminated,
-the action depends on whether \code{j} has been provided.
-If \code{j} is not provided, or is the string \code{""},
-then \code{i} is sought
-in the \code{metadata} slot, and then in the \code{data} slot,
-returning whichever is found first.  In other words, if \code{j}
-is not provided, the \code{metadata} slot takes preference over
-the \code{data} slot. However, if \code{j} is provided, then
-it must be either the string \code{"metadata"} or \code{"data"},
-and it directs where to look.
-}
-
-If none of the above-listed conditions holds, then \code{NULL} is returned.
-}
-
-\section{Details of the specialized \code{ctd} method}{
+\section{Details of the Specialized Method}{
 
 
 Some uses of \code{\link{[[,ctd-method}} involve direct retrieval of
@@ -209,9 +157,61 @@ slot. If it is impossible to determine the sampling time, then
 \code{NULL} is returned. These time variants occur, in the
 present version of oce, only for data read by \code{\link[=read.ctd.sbe]{read.ctd.sbe()}},
 the documentation of which explains how times are computed.
-\item If \code{i} is \code{"z"} then vertical coordinate in metres above the surface, computed with
-\link{swZ}\code{(x)}, is returned.
+\item If \code{i} is \code{"z"} then vertical coordinate in metres
+above the surface, computed with \link{swZ}\code{(x)}, is returned.
 }
+}
+
+\section{Details of the General Method}{
+
+
+If the specialized method
+produces no matches, the following generalized
+method is applied. As with the specialized method, the procedure hinges
+first on the values of \code{i} and, optionally, \code{j}. The work
+proceeds in steps, by testing a sequence of possible conditions
+in sequence.
+\enumerate{
+\item A check is made as to whether \code{i} names one of the standard
+\code{oce} slots. If so, \code{[[} returns the slot contents of that slot.
+Thus, \code{x[["metadata"]]} will retrieve the \code{metadata} slot,
+while \code{x[["data"]]} and \code{x[["processingLog"]]} return
+those slots.
+\item If \code{i} is a string ending in the
+\code{"Unit"}, then the characters preceding that string
+are taken to be the name of an item in the data object, and a list
+containing the unit is returned (or \code{NULL} if
+there is no such unit). This list consists of an item
+named \code{unit}, which is an \code{\link[=expression]{expression()}}, and
+an item named \code{scale}, which is a string describing the
+measurement scale.  If the string ends in \code{" unit"}, e.g.
+\code{x[["temperature unit"]]} (note the space),
+then just the expression is returned, and if it ends in
+\code{" scale"}, then just the scale is returned.
+\item If \code{i} is a string ending in \code{"Flag"}, then the corresponding
+data-quality flag is returned (or \code{NULL} if there is no such flag).
+\item If the object holds hydrographic information (pressure,
+salinity, temperature, longitude and latitude) then another
+set of possibilities arises.  If \code{i} is \code{"sigmaTheta"}, then the value of
+\code{\link[=swSigmaTheta]{swSigmaTheta()}} is called with \code{x} as the sole
+argument, and the results are returned. Similarly,
+\code{\link[=swSigma0]{swSigma0()}} is used if \code{i="sigma0"}, and
+\code{\link[=swSpice]{swSpice()}} is used if \code{i="spice"}. Of course, these
+actions only make sense for objects that contain
+the relevant items within their \code{data} slot.
+\item After these possibilities are eliminated,
+the action depends on whether \code{j} has been provided.
+If \code{j} is not provided, or is the string \code{""},
+then \code{i} is sought
+in the \code{metadata} slot, and then in the \code{data} slot,
+returning whichever is found first.  In other words, if \code{j}
+is not provided, the \code{metadata} slot takes preference over
+the \code{data} slot. However, if \code{j} is provided, then
+it must be either the string \code{"metadata"} or \code{"data"},
+and it directs where to look.
+}
+
+If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
 
 \examples{

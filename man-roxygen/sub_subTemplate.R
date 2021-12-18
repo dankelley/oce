@@ -5,7 +5,7 @@
 #' @param ... Optional additional information (ignored).
 #'
 #' @description
-#' \code{[[} provides a way to look up information
+#' Generally, \code{[[} provides a way to look up information
 #' within `oce` objects, without knowing
 #' the details of how that information is stored
 #' within the object. For some object classes,
@@ -24,6 +24,11 @@
 #' \dQuote{Details of the General Method}.
 #' If neither of these methods finds the requested
 #' information, then `NULL` is returned.
+#'
+## NOTE: Roxygen2 puts this after the Specialized method,
+## which is where I want it.  I don't understand why, though
+## and therefore will be on the lookout for changes that
+## might occur in either R itself, or in Roxygen2.
 #'
 #' @section Details of the General Method:
 #'

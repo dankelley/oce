@@ -586,9 +586,7 @@ setMethod(f="summary",
 #' data(ctd)
 #' head(ctd[["temperature"]])
 #'
-#' @template sub_subTemplate
-#'
-#' @section Details of the specialized `ctd` method:
+#' @section Details of the Specialized Method:
 #'
 #' Some uses of \code{\link{[[,ctd-method}} involve direct retrieval of
 #' items within the `data` slot of the `ctd` object,
@@ -729,9 +727,11 @@ setMethod(f="summary",
 #' present version of oce, only for data read by [read.ctd.sbe()],
 #' the documentation of which explains how times are computed.
 #'
-#' * If `i` is `"z"` then vertical coordinate in metres above the surface, computed with
-#' [swZ]`(x)`, is returned.
+#' * If `i` is `"z"` then vertical coordinate in metres
+#' above the surface, computed with [swZ]`(x)`, is returned.
 #'
+#'
+#' @template sub_subTemplate
 #'
 #' @author Dan Kelley
 #'
