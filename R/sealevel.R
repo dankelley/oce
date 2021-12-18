@@ -207,9 +207,7 @@ setMethod(f="subset",
 #'
 #' @param x a [sealevel-class] object.
 #'
-#' @template sub_subTemplate
-#'
-#' @section Details of the specialized `cm` method:
+#' @section Details of the Specialized Method:
 #'
 #' * If `i` is `"?"`, then the return value is a list
 #' containing four items, each of which is a character vector
@@ -218,7 +216,18 @@ setMethod(f="subset",
 #' entries in the object's data and metadata
 #' slots, respectively. The `dataDerived`
 #' and `metadataDerived` items are each `""`, because
-#' no derived values are defined by `sealevel` objects.
+#' no derived values are defined by [sealevel-class] objects.
+#'
+#' * In many cases, the focus will be on variations of
+#' sealevel elevation over time, so it is common to use e.g.
+#' `x[["time"]]` and `x[["elevation"]]` to retrieve vectors
+#' of these quantities. Another common task is to retrieve
+#' the location of the observations, using e.g. `x[["longitude"]]`
+#' and `x[["latitude"]]`.
+#'
+#' @template sub_subTemplate
+#'
+#' @author Dan Kelley
 #'
 #' @family things related to sealevel data
 setMethod(f="[[",

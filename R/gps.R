@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store GPS Data
 #'
@@ -61,9 +61,7 @@ setMethod(f="summary",
 #'
 #' @param x a [gps-class] object.
 #'
-#' @template sub_subTemplate
-#'
-#' @section Details of the specialized `cm` method:
+#' @section Details of the Specialized Method:
 #'
 #' * If `i` is `"?"`, then the return value is a list
 #' containing four items, each of which is a character vector
@@ -81,10 +79,9 @@ setMethod(f="summary",
 #' known (i.e. if the object was created with [read.gps()] or
 #' with [as.gps()] with the `filename` argument specified).
 #'
-#' * Otherwise, control is passed to \link{[[,oce-method}, which can
-#' return other values that a user might have inserted into the
-#' object.
-#' 
+#' @template sub_subTemplate
+#'
+#' @author Dan Kelley
 #'
 #' @family things related to gps data
 setMethod(f="[[",

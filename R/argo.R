@@ -64,7 +64,7 @@ NULL
 #'
 #' @templateVar class argo
 #'
-#' @section Details of the specialized `argo` method:
+#' @section Details of the Specialized Method:
 #'
 #' Note that [argo-class] data may contain both unadjusted data and adjusted
 #' data.  By default, this extraction function refers to the former, but a
@@ -143,8 +143,9 @@ NULL
 #' fivenum(argo[["salinity"]],na.rm=TRUE)
 #' fivenum(argo[["salinity"]][argo[["salinityFlag"]]==1],na.rm=TRUE)
 #'
-#' @family things related to argo data
 #' @author Dan Kelley
+#'
+#' @family things related to argo data
 setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {

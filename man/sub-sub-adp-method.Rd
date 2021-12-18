@@ -16,86 +16,90 @@
 \item{...}{Optional additional information (ignored).}
 }
 \description{
-Generally, \code{[[} provides a way to look up information
-within \code{oce} objects, without knowing
-the details of how that information is stored
-within the object. For some object classes,
-\code{[[} can also return quantities are not actually stored
-within the object, but that can be computed from
-such information.
+Generally, \code{[[} lets users extract information from \code{oce} objects,
+without having to learn the details of the internal storage.  In some cases,
+\code{[[} can also return quantities that are computed from the object's contents.
+
+For some subclasses, \code{x[["?"]]} returns a list of items that can be accessed
+with \code{[[}.  This can be helpful when dealing with unfamiliar data.  The first
+entry of \dQuote{Details of the Specialized Method} provides more
+information, for those subclasses that provide this capability.
 }
 \details{
-A two-step process is used to try to find the
-requested information. First, a class-specific
-function is used, as described in
-\dQuote{Details of the Specialized Method}.
-If this method cannot locate the information,
-then a general method is used, as described in
-\dQuote{Details of the General Method}.
-If neither of these methods finds the requested
-information, then \code{NULL} is returned.
+A two-step process is used to try to find the requested information. First, a
+class-specific function is used, as described in \dQuote{Details of the
+Specialized Method}.  If this method cannot locate the information, then a
+general method is used, as described in \dQuote{Details of the General
+Method}.  If neither of these methods finds the requested information, then
+\code{NULL} is returned.
 }
+\section{Details of the Specialized Method}{
+
+
+Note that the entries within \linkS4class{adp} objects vary greatly, from
+instrument to instrument, and so are only sketched here, and in the output
+from \verb{[["?"]]}.
+\itemize{
+\item If \code{i} is \code{"?"}, then the return value is a list
+containing four items, each of which is a character vector
+holding the names of things that can be accessed with \code{[[}.
+The \code{data} and \code{metadata} items hold the names of
+entries in the object's data and metadata
+slots, respectively. The \code{dataDerived}
+and \code{metadataDerived} items are \emph{not} authoritative, because
+information provided by different instruments is so varied.
+\item If \code{i} is \code{"u1"} then the return value is \code{v[,1]}. The
+same holds for 2, etc., depending on the number of beams in
+the instrument.
+\item If \code{i} is \code{"a1"} then signal amplitude is returned, and similarly
+for other digits. The results can be in \code{\link[=raw]{raw()}} or numeric form,
+as shown in the examples.
+\item If \code{i} is \code{"q1"} then signal quality is returned, and similarly
+for other digits.  As with amplitude, the result can be in \code{\link[=raw]{raw()}}
+or numeric form.
+\item If \code{i} is \code{"coordinate"}, then the coordinate system is
+retrieved.
+}
+}
+
 \section{Details of the General Method}{
 
 
-If the specialized method
-produces no matches, the following generalized
-method is applied. As with the specialized method, the procedure hinges
-first on the values of \code{i} and, optionally, \code{j}. The work
-proceeds in steps, by testing a sequence of possible conditions
-in sequence.
+If the specialized method produces no matches, the following generalized
+method is applied. As with the specialized method, the procedure hinges first
+on the values of \code{i} and, optionally, \code{j}. The work proceeds in steps, by
+testing a sequence of possible conditions in sequence.
 \enumerate{
-\item A check is made as to whether \code{i} names one of the standard
-\code{oce} slots. If so, \code{[[} returns the slot contents of that slot.
-Thus, \code{x[["metadata"]]} will retrieve the \code{metadata} slot,
-while \code{x[["data"]]} and \code{x[["processingLog"]]} return
-those slots.
-\item If \code{i} is a string ending in the
-\code{"Unit"}, then the characters preceding that string
-are taken to be the name of an item in the data object, and a list
-containing the unit is returned (or \code{NULL} if
-there is no such unit). This list consists of an item
-named \code{unit}, which is an \code{\link[=expression]{expression()}}, and
-an item named \code{scale}, which is a string describing the
-measurement scale.  If the string ends in \code{" unit"}, e.g.
-\code{x[["temperature unit"]]} (note the space),
-then just the expression is returned, and if it ends in
-\code{" scale"}, then just the scale is returned.
-\item If \code{i} is a string ending in \code{"Flag"}, then the corresponding
-data-quality flag is returned (or \code{NULL} if there is no such flag).
-\item If the object holds hydrographic information (pressure,
-salinity, temperature, longitude and latitude) then another
-set of possibilities arises.  If \code{i} is \code{"sigmaTheta"}, then the value of
-\code{\link[=swSigmaTheta]{swSigmaTheta()}} is called with \code{x} as the sole
-argument, and the results are returned. Similarly,
-\code{\link[=swSigma0]{swSigma0()}} is used if \code{i="sigma0"}, and
-\code{\link[=swSpice]{swSpice()}} is used if \code{i="spice"}. Of course, these
-actions only make sense for objects that contain
-the relevant items within their \code{data} slot.
-\item After these possibilities are eliminated,
-the action depends on whether \code{j} has been provided.
-If \code{j} is not provided, or is the string \code{""},
-then \code{i} is sought
-in the \code{metadata} slot, and then in the \code{data} slot,
-returning whichever is found first.  In other words, if \code{j}
-is not provided, the \code{metadata} slot takes preference over
-the \code{data} slot. However, if \code{j} is provided, then
-it must be either the string \code{"metadata"} or \code{"data"},
-and it directs where to look.
+\item A check is made as to whether \code{i} names one of the standard \code{oce} slots.
+If so, \code{[[} returns the slot contents of that slot.  Thus, \code{x[["metadata"]]}
+will retrieve the \code{metadata} slot, while \code{x[["data"]]} and
+\code{x[["processingLog"]]} return those slots.
+\item If \code{i} is a string ending in the \code{"Unit"}, then the characters preceding
+that string are taken to be the name of an item in the data object, and a
+list containing the unit is returned (or \code{NULL} if there is no such unit).
+This list consists of an item named \code{unit}, which is an \code{\link[=expression]{expression()}}, and
+an item named \code{scale}, which is a string describing the measurement scale.
+If the string ends in \code{" unit"}, e.g.  \code{x[["temperature unit"]]} (note the
+space), then just the expression is returned, and if it ends in \code{" scale"},
+then just the scale is returned.
+\item If \code{i} is a string ending in \code{"Flag"}, then the corresponding data-quality
+flag is returned (or \code{NULL} if there is no such flag).
+\item If the object holds hydrographic information (pressure, salinity,
+temperature, longitude and latitude) then another set of possibilities
+arises.  If \code{i} is \code{"sigmaTheta"}, then the value of \code{\link[=swSigmaTheta]{swSigmaTheta()}} is
+called with \code{x} as the sole argument, and the results are returned.
+Similarly, \code{\link[=swSigma0]{swSigma0()}} is used if \code{i="sigma0"}, and \code{\link[=swSpice]{swSpice()}} is used if
+\code{i="spice"}. Of course, these actions only make sense for objects that
+contain the relevant items within their \code{data} slot.
+\item After these possibilities are eliminated, the action depends on whether
+\code{j} has been provided.  If \code{j} is not provided, or is the string \code{""}, then
+\code{i} is sought in the \code{metadata} slot, and then in the \code{data} slot, returning
+whichever is found first.  In other words, if \code{j} is not provided, the
+\code{metadata} slot takes preference over the \code{data} slot. However, if \code{j} is
+provided, then it must be either the string \code{"metadata"} or \code{"data"}, and it
+directs where to look.
+\item If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
-
-If none of the above-listed conditions holds, then \code{NULL} is returned.
-}
-
-\section{Details of the specialized \code{adp} method}{
-
-
-In addition to the usual extraction of elements by name, some shortcuts
-are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly
-for the other velocity components. The \code{a} and \code{q}
-data can be retrieved in \code{\link[=raw]{raw()}} form or numeric
-form (see examples). The coordinate system may be
-retrieved with e.g. \code{x[["coordinate"]]}.
 }
 
 \examples{
