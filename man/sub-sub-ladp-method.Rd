@@ -34,6 +34,17 @@ first use \code{x[["?"]]} to get a listing of the retrievable items. The first
 entry of \dQuote{Details of the Specialized Method} provides more information
 on this.
 }
+\section{Details of the Specialized Method}{
+
+
+If \code{i} is \code{"?"}, then the return value is a list containing four items, each
+of which is a character vector holding the names of things that can be
+accessed with \code{[[}. The \code{data} and \code{metadata} items hold the names of entries
+in the object's data and metadata slots, respectively. The \code{metadataDerived}
+item is NULL, and the \code{dataDerived} item holds the following synonyms: \code{"p"}
+for \code{"pressure"}, \code{"t"} for \code{"temperature"} and \code{"S"} for \code{"salinity"}.
+}
+
 \section{Details of the General Method}{
 
 
@@ -78,11 +89,6 @@ directs where to look.
 }
 }
 
-\examples{
-data(ctd)
-head(ctd[["temperature"]])
-
-}
 \seealso{
 Other functions that extract parts of oce objects: 
 \code{\link{[[,adp-method}},

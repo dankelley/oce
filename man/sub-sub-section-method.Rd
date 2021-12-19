@@ -39,14 +39,20 @@ on this.
 
 There are several possibilities, depending on the nature of \code{i}.
 \itemize{
-\item If \code{i} is the string \code{"station"}, then the method
-will return a \code{\link[=list]{list()}} of
-\linkS4class{ctd} objects holding the station data.
-If \code{j} is also given, it specifies a station (or set of stations) to be returned.
-if \code{j} contains just a single value, then that station is returned, but otherwise
-a list is returned. If \code{j} is an integer, then the stations are specified by index,
-but if it is character, then stations are specified by the names stored within
-their metadata. (Missing stations yield \code{NULL} in the return value.)
+\item If \code{i} is \code{"?"}, then the return value is a list containing four items,
+each of which is a character vector holding the names of things that can be
+accessed with \code{[[}. This list is compiled by examining all the stations in
+the object, and reporting an entry if it is found in any one of them. The
+\code{data} and \code{metadata} items hold the names of entries in the object's data
+and metadata slots, respectively. The \code{dataDerived} and \code{metadataDerived}
+items hold data-like and metadata-like things that can be derived from these.
+\item If \code{i} is \code{"station"}, then \code{[[} will return a \code{\link[=list]{list()}} of \linkS4class{ctd}
+objects holding the station data. If \code{j} is also given, it specifies a
+station (or set of stations) to be returned. if \code{j} contains just a single
+value, then that station is returned, but otherwise a list is returned. If
+\code{j} is an integer, then the stations are specified by index, but if it is
+character, then stations are specified by the names stored within their
+metadata. (Missing stations yield \code{NULL} in the return value.)
 \item If \code{i} is \code{"station ID"}, then the IDs of the stations in the
 section are returned.
 \item If \code{i} is \code{"dynamic height"}, then an estimate of dynamic

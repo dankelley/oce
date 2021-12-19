@@ -752,6 +752,10 @@ setMethod(f="[[",
                   "sigma4", "theta", paste("potential", "temperature"), "Rrho",
                   "spice", "spiciness", "SA", paste("Absolute", "Salinity"),
                   "CT", paste("Conservative", "Temperature"), "z", "depth")
+              # We can compute nitrate from NO2+NO3 and nitrite
+              if ("NO2+NO3" %in% dataNames && "nitrite" %in% dataNames &&
+                  !("nitrate" %in% dataNames))
+                  dataDerived <- c(dataDerived, "nitrate")
               if (i == "?")
                   return(list(metadata=sort(names(x@metadata)),
                           metadataDerived=sort(metadataDerived),

@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 
 #' Class to Store Hydrographic Section Data
 #'
@@ -283,14 +283,21 @@ setMethod(f="summary",
 #'
 #' There are several possibilities, depending on the nature of `i`.
 #'
-#' * If `i` is the string `"station"`, then the method
-#' will return a [list()] of
-#' [ctd-class] objects holding the station data.
-#' If `j` is also given, it specifies a station (or set of stations) to be returned.
-#' if `j` contains just a single value, then that station is returned, but otherwise
-#' a list is returned. If `j` is an integer, then the stations are specified by index,
-#' but if it is character, then stations are specified by the names stored within
-#' their metadata. (Missing stations yield `NULL` in the return value.)
+#' * If `i` is `"?"`, then the return value is a list containing four items,
+#' each of which is a character vector holding the names of things that can be
+#' accessed with `[[`. This list is compiled by examining all the stations in
+#' the object, and reporting an entry if it is found in any one of them. The
+#' `data` and `metadata` items hold the names of entries in the object's data
+#' and metadata slots, respectively. The `dataDerived` and `metadataDerived`
+#' items hold data-like and metadata-like things that can be derived from these.
+#'
+#' * If `i` is `"station"`, then `[[` will return a [list()] of [ctd-class]
+#' objects holding the station data. If `j` is also given, it specifies a
+#' station (or set of stations) to be returned. if `j` contains just a single
+#' value, then that station is returned, but otherwise a list is returned. If
+#' `j` is an integer, then the stations are specified by index, but if it is
+#' character, then stations are specified by the names stored within their
+#' metadata. (Missing stations yield `NULL` in the return value.)
 #'
 #' * If `i` is `"station ID"`, then the IDs of the stations in the
 #' section are returned.
@@ -326,8 +333,6 @@ setMethod(f="summary",
 ## #' `field` (in whatever unit is used for `i`). See Example
 ## #' for in the documentation for [plot,section-method()].
 #'
-#' @template sub_subTemplate
-#'
 #' @examples
 #' data(section)
 #' length(section[["latitude"]])
@@ -339,14 +344,41 @@ setMethod(f="summary",
 #' # First station salinities
 #' Sl[[1]]
 #'
-#' @family things related to section data
+#' @template sub_subTemplate
 #'
 #' @author Dan Kelley
+#'
+#' @family things related to section data
 setMethod(f="[[",
           signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              ## Data-quality flags are a special case
+              # Determine all possible values, station by station. The results
+              # are used by [["?"]] and also for lookups.
+              metadataStn <- dataStn <- metadataDerivedStn <- 
+                  dataDerivedStn <- NULL
+              for (station in x@data$station) {
+                  q <- station[["?"]]
+                  metadataStn <- c(metadataStn, q$metadata)
+                  metadataDerivedStn <- c(metadataDerivedStn, q$metadataDerived)
+                  dataStn <- c(dataStn, q$data)
+                  dataDerivedStn <- c(dataDerivedStn, q$dataDerived)
+              }
+              metadataStn <- sort(unique(metadataStn))
+              metadataDerivedStn <- sort(c(
+                      "distance",
+                      paste("station", "ID"),
+                      paste("dynamic", "height"),
+                      unique(metadataDerivedStn)))
+              dataStn <- sort(unique(dataStn))
+              dataDerivedStn <- sort(unique(dataDerivedStn))
+              if (i == "?") {
+                  return(list(metadata=metadataStn,
+                          metadataDerived=metadataDerivedStn,
+                          data=dataStn,
+                          dataDerived=dataDerivedStn))
+              }
               res <- NULL
+              ## Data-quality flags are a special case
               if (1 == length(grep(".*Flag$", i))) {
                   baseName <- gsub("Flag$", "", i)
                   if (baseName %in% names(x@data$station[[1]]@metadata$flags)) {
@@ -403,11 +435,12 @@ setMethod(f="[[",
                       return(x@metadata[[i]])
                   }
               }
-              if (i %in% c("absolute salinity", "CT", "conservative temperature",
-                                  "density", "depth", "nitrite", "nitrate",
-                                  "potential temperature", "SA", "sigmaTheta",
-                                  "spice", "theta", "z",
-                                  names(x@data$station[[1]]@data))) {
+              if (i %in% c(dataStn, dataDerivedStn)) {
+                  #if (i %in% c("absolute salinity", "CT", "conservative temperature",
+                  #                    "density", "depth", "nitrite", "nitrate",
+                  #                    "potential temperature", "SA", "sigmaTheta",
+                  #                    "spice", "theta", "z",
+                  #                    names(x@data$station[[1]]@data))) {
                   if (!missing(j) && substr(j, 1, 4) == "grid") {
                       if (j == "grid:distance-pressure") {
                           numStations <- length(x@data$station)

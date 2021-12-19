@@ -34,6 +34,19 @@ first use \code{x[["?"]]} to get a listing of the retrievable items. The first
 entry of \dQuote{Details of the Specialized Method} provides more information
 on this.
 }
+\section{Details of the Specialized Method}{
+
+
+If \code{i} is \code{"?"}, then the return value is a list
+containing four items, each of which is a character vector
+holding the names of things that can be accessed with \code{[[}.
+The \code{data} and \code{metadata} items hold the names of
+entries in the object's data and metadata
+slots, respectively. The \code{dataDerived}
+and \code{metadataDerived} items are each NULL, because
+no derived values are defined by \linkS4class{odf} objects.
+}
+
 \section{Details of the General Method}{
 
 
