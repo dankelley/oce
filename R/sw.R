@@ -2609,10 +2609,19 @@ swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=NULL, latitude
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "oce")) {
-        if (is.null(longitude))
+        pressure <- salinity@data$pressure
+        n <- length(pressure)
+        if (is.null(longitude)) {
             longitude <- salinity[["longitude"]]
-        if (is.null(latitude))
+            if (length(longitude) < n)
+                longitude <- rep(longitude[1], n)
+        }
+        if (is.null(latitude)) {
             latitude <- salinity[["latitude"]]
+            if (length(latitude) < n)
+                latitude <- rep(latitude[1], n)
+        }
+        salinity <- salinity@data$salinity
     }
     if (is.null(longitude))
         stop("must supply longitude")

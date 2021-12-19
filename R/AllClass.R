@@ -422,6 +422,16 @@ setMethod(f="[[",
                   return(swSigmaTheta(x))
               } else if (i == "sigma0") {
                   return(swSigma0(x))
+              } else if (i == "sigma1") {
+                  return(swSigma1(x))
+              } else if (i == "sigma2") {
+                  return(swSigma2(x))
+              } else if (i == "sigma3") {
+                  return(swSigma3(x))
+              } else if (i == "sigma4") {
+                  return(swSigma4(x))
+              } else if (i == "SA") {
+                  return(swAbsoluteSalinity(x))
               } else if (i == "spice") {
                   return(swSpice(x))
               } else if (i == "temperature") {
