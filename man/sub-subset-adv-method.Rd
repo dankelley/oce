@@ -18,14 +18,10 @@
 \item{value}{The value to be inserted into \code{x}.}
 }
 \description{
-Generally, \code{[[} lets users extract information from \code{oce} objects,
-without having to learn the details of the internal storage.  In some cases,
-\code{[[} can also return quantities that are computed from the object's contents.
-
-For some subclasses, \code{x[["?"]]} returns a list of items that can be accessed
-with \code{[[}.  This can be helpful when dealing with unfamiliar data.  The first
-entry of \dQuote{Details of the Specialized Method} provides more
-information, for those subclasses that provide this capability.
+Generally, the \code{[[} method lets users extract information from \code{oce}
+objects, without having to know the details of the internal storage.  For
+many \code{oce} sub-classes, \code{[[} can also return quantities that are computed
+from the object's contents.
 }
 \details{
 If the \code{adv} object holds slow variables (i.e. if \code{timeSlow} is
@@ -36,11 +32,16 @@ message will be issued if the assigned value is not of the same length
 as \code{timeSlow}.
 
 A two-step process is used to try to find the requested information. First, a
-class-specific function is used, as described in \dQuote{Details of the
-Specialized Method}.  If this method cannot locate the information, then a
-general method is used, as described in \dQuote{Details of the General
-Method}.  If neither of these methods finds the requested information, then
-\code{NULL} is returned.
+class-specific function is used (see \dQuote{Details of the Specialized
+Method}).  If this yields nothing, then a general method is used (see
+\dQuote{Details of the General Method}).  If both methods fail, then \code{[[}
+returns NULL.
+
+Some understanding of the subclass is required to know what can be retrieved
+with \code{[[}. When dealing with an unfamiliar subclass, it can be useful to
+first use \code{x[["?"]]} to get a listing of the retrievable items. The first
+entry of \dQuote{Details of the Specialized Method} provides more information
+on this.
 }
 \section{Details of the General Method}{
 

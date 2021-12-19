@@ -22,21 +22,36 @@ the raw data equal \code{as.raw(251:255)}, as explained
 in \dQuote{Details}.
 }
 \description{
-Extract something from the \code{metadata} or \code{data} slot of an \linkS4class{amsr} object.
-Partial matches for \code{i}
-are permitted for \code{metadata}, and \code{j} is ignored for
-\code{metadata}.
-
-Generally, \code{[[} lets users extract information from \code{oce} objects,
-without having to learn the details of the internal storage.  In some cases,
-\code{[[} can also return quantities that are computed from the object's contents.
-
-For some subclasses, \code{x[["?"]]} returns a list of items that can be accessed
-with \code{[[}.  This can be helpful when dealing with unfamiliar data.  The first
-entry of \dQuote{Details of the Specialized Method} provides more
-information, for those subclasses that provide this capability.
+Generally, the \code{[[} method lets users extract information from \code{oce}
+objects, without having to know the details of the internal storage.  For
+many \code{oce} sub-classes, \code{[[} can also return quantities that are computed
+from the object's contents.
 }
 \details{
+A two-step process is used to try to find the requested information. First, a
+class-specific function is used (see \dQuote{Details of the Specialized
+Method}).  If this yields nothing, then a general method is used (see
+\dQuote{Details of the General Method}).  If both methods fail, then \code{[[}
+returns NULL.
+
+Some understanding of the subclass is required to know what can be retrieved
+with \code{[[}. When dealing with an unfamiliar subclass, it can be useful to
+first use \code{x[["?"]]} to get a listing of the retrievable items. The first
+entry of \dQuote{Details of the Specialized Method} provides more information
+on this.
+}
+\section{Details of the Specialized Method}{
+
+
+If \code{i} is \code{"?"}, then the return value is a list
+containing four items, each of which is a character vector
+holding the names of things that can be accessed with \code{[[}.
+The \code{data} and \code{metadata} items hold the names of
+entries in the object's data and metadata
+slots, respectively. The \code{dataDerived}
+and \code{metadataDerived} items are each NULL, because
+no derived values are defined by \linkS4class{cm} objects.
+
 Data within the \code{data} slot may be found directly, e.g.
 \code{i="SSTDay"} will yield sea-surface temperature in the daytime
 satellite, and \code{i="SSTNight"} is used to access the nighttime data. In
@@ -71,14 +86,8 @@ result will be 255. If A is 254 (i.e. there is no observation),
 then B is returned, and the reverse holds also. Similarly, if either
 A or B equals 253 (bad observation), then the other is returned.
 The same is done for code 252 (ice) and code 251 (rain).
-
-A two-step process is used to try to find the requested information. First, a
-class-specific function is used, as described in \dQuote{Details of the
-Specialized Method}.  If this method cannot locate the information, then a
-general method is used, as described in \dQuote{Details of the General
-Method}.  If neither of these methods finds the requested information, then
-\code{NULL} is returned.
 }
+
 \section{Details of the General Method}{
 
 

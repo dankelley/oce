@@ -8,23 +8,24 @@
 #'
 #' @description
 #'
-#' Generally, \code{[[} lets users extract information from `oce` objects,
-#' without having to learn the details of the internal storage.  In some cases,
-#' `[[` can also return quantities that are computed from the object's contents.
-#'
-#' For some subclasses, `x[["?"]]` returns a list of items that can be accessed
-#' with `[[`.  This can be helpful when dealing with unfamiliar data.  The first
-#' entry of \dQuote{Details of the Specialized Method} provides more
-#' information, for those subclasses that provide this capability.
+#' Generally, the \code{[[} method lets users extract information from `oce`
+#' objects, without having to know the details of the internal storage.  For
+#' many `oce` sub-classes, `[[` can also return quantities that are computed
+#' from the object's contents.
 #'
 #' @details
 #'
 #' A two-step process is used to try to find the requested information. First, a
-#' class-specific function is used, as described in \dQuote{Details of the
-#' Specialized Method}.  If this method cannot locate the information, then a
-#' general method is used, as described in \dQuote{Details of the General
-#' Method}.  If neither of these methods finds the requested information, then
-#' `NULL` is returned.
+#' class-specific function is used (see \dQuote{Details of the Specialized
+#' Method}).  If this yields nothing, then a general method is used (see
+#' \dQuote{Details of the General Method}).  If both methods fail, then `[[`
+#' returns NULL.
+#'
+#' Some understanding of the subclass is required to know what can be retrieved
+#' with `[[`. When dealing with an unfamiliar subclass, it can be useful to
+#' first use `x[["?"]]` to get a listing of the retrievable items. The first
+#' entry of \dQuote{Details of the Specialized Method} provides more information
+#' on this.
 #'
 ## NOTE: Roxygen2 puts this after the Specialized method, which is where I want
 ## it.  I don't understand why, though and therefore will be on the lookout for

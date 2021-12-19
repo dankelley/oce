@@ -134,10 +134,18 @@ setMethod(f="summary",
 
 #' Extract Something From an amsr Object
 #'
-#' Extract something from the `metadata` or `data` slot of an [amsr-class] object.
-#' Partial matches for `i`
-#' are permitted for `metadata`, and `j` is ignored for
-#' `metadata`.
+#' @param x an [amsr-class] object.
+#'
+#' @section Details of the Specialized Method:
+#'
+#' If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items are each NULL, because
+#' no derived values are defined by [cm-class] objects.
 #'
 #' Data within the `data` slot may be found directly, e.g.
 #' `i="SSTDay"` will yield sea-surface temperature in the daytime
@@ -180,17 +188,15 @@ setMethod(f="summary",
 #' the raw data equal `as.raw(251:255)`, as explained
 #' in \dQuote{Details}.
 #'
-#' @param x an [amsr-class] object.
-#'
-#' @author Dan Kelley
-#'
-#' @template sub_subTemplate
-#'
 #' @examples
 #' # Histogram of SST values
 #' library(oce)
 #' data(amsr)
 #' hist(amsr[["SST"]])
+#'
+#' @template sub_subTemplate
+#'
+#' @author Dan Kelley
 #'
 #' @family things related to amsr data
 setMethod(f="[[",
@@ -203,11 +209,18 @@ setMethod(f="[[",
               i <- i[1]                # drop extras if more than one given
               if (!is.character(i))
                   stop("amsr item must be specified by name", call.=FALSE)
+              dataDerived <- c("cloud", "LFwind", "MFwind", "rain", "SST",
+                  "time", "vapor")
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=sort(dataDerived)))
               if (is.character(i) && !is.na(pmatch(i, names(x@metadata)))) {
                   oceDebug(debug, "} # amsr [[\n", unindent=1)
                   return(x@metadata[[i]])
               }
-              namesAllowed <- c(names(x@data), "SST", "LFwindDay", "MFwindDay", "vaporDay", "cloudDay", "rainDay")
+              namesAllowed <- c(names(x@data), dataDerived)
               if (!(i %in% namesAllowed))
                   stop("band '", i, "' is not available in this object; try one of: ",
                        paste(namesAllowed, collapse=" "))
