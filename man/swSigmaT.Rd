@@ -17,7 +17,8 @@ swSigmaT(
 \item{salinity}{either practical salinity (in which case \code{temperature}
 and \code{pressure} must be provided) \emph{or} an \code{oce} object, in
 which case \code{salinity}, \code{temperature} (in the ITS-90 scale; see
-next item), etc. are inferred from the object.}
+next item), etc. are inferred from the object, ignoring the
+other parameters, if they are supplied.}
 
 \item{temperature}{\emph{in-situ} temperature (\eqn{^\circ}{deg}C), defined
 on the ITS-90 scale.  This scale is used by GSW-style calculation (as

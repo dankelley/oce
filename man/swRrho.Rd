@@ -13,7 +13,9 @@ swRrho(
 )
 }
 \arguments{
-\item{ctd}{an object of class \code{ctd}}
+\item{ctd}{an \linkS4class{oce} object that holds \code{salinity}, \code{temperature}, and
+\code{pressure}.  If \code{eos} is \code{"gsw"}, then it must also hold \code{longitude} and
+\code{latitude}.}
 
 \item{sense}{an indication of the sense of double diffusion under study and
 therefore of the definition of Rrho; see \sQuote{Details}}

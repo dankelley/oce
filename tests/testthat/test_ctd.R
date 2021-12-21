@@ -389,7 +389,8 @@ test_that("pressure accessor handles psi unit", {
     ## fake data in psi ... [[]] should return in dbar
     ctd@data$pressure <- porig / 0.6894757 # 1 psi=6894.757Pa=0.6894756 dbar
     ctd@metadata$units$pressure <- list(unit=expression(psi), scale="")
-    expect_equal(porig, ctd[['pressure']])
+    expect_warning(ptest <- ctd[["pressure"]], "converting pressure from PSI to dbar")
+    expect_equal(porig, ptest)
 })
 
 test_that("pressure accessor handles missing pressure", {

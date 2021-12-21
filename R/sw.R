@@ -10,23 +10,28 @@
 #' @param x An [oce-class] object.
 #'
 #' @return A character vector listing the names of computable
-#' water properties.
+#' water properties, or NULL, if there are none.
 #'
 #' @author Dan Kelley
 #'
 #' @family functions that calculate seawater properties
 computableWaterProperties <- function(x)
 {
-    if (inherits(x, "oce")
-        && (3L == sum(c("salinity", "temperature", "pressure")
+    res <- NULL
+    if (inherits(x, "oce") && (3L == sum(c("salinity", "temperature", "pressure")
                 %in% c(names(x@metadata), names(x@data))))) {
-        c("SP", "SR", "Sstar", "N2", "density", "sigmaTheta", paste0("sigma",
-                0:4), "theta", paste("potential", "temperature"), "Rrho",
-            "spice", "spiciness", "SA", paste("Absolute", "Salinity"), "CT",
-            paste("Conservative", "Temperature"), "z", "depth")
-    } else {
-        vector("character", 0L)
+        dataNames <- names(x@data)
+        res <- c("SP", "SR", "Sstar", "N2", "density", "sigmaTheta",
+            paste0("sigma", 0:4), "theta", paste("potential", "temperature"),
+            "Rrho", "spice", "spiciness", "SA", paste("Absolute", "Salinity"),
+            "CT", paste("Conservative", "Temperature"), "z", "depth")
+        # It is possible to compute nitrate from NO2+NO3 and nitrite, if
+        # it's not stored in the object already.
+        if (!("nitrate" %in% dataNames) && ("NO2+NO3" %in% dataNames) && ("nitrite" %in% dataNames))
+            res <- c(res, "nitrate")
+        res <- sort(res) # makes it easier to scan results
     }
+    res
 }
 
 #' Convert from ITS-90 to IPTS-68 temperature
@@ -145,7 +150,9 @@ lookWithin <- function(list)
 #' If the default arguments are acceptable, `ctd[["Rrho"]]` may be used
 #' instead of `swRrho(ctd)`.
 #'
-#' @param ctd an object of class `ctd`
+#' @param ctd an [oce-class] object that holds `salinity`, `temperature`, and
+#' `pressure`.  If `eos` is `"gsw"`, then it must also hold `longitude` and
+#' `latitude`.
 #' @param sense an indication of the sense of double diffusion under study and
 #' therefore of the definition of Rrho; see \sQuote{Details}
 #' @param smoothingLength ignored if `df` supplied, but otherwise the
@@ -168,10 +175,10 @@ lookWithin <- function(list)
 #'
 #' @family functions that calculate seawater properties
 swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
-                   eos=getOption("oceEOS", default="gsw"))
+    eos=getOption("oceEOS", default="gsw"))
 {
-    if (!inherits(ctd, "ctd"))
-        stop("first argument must be of class \"ctd\"")
+    if (!inherits(ctd, "oce"))
+        stop("first argument must be of class \"oce\"")
     sense <- match.arg(sense)
     eos <- match.arg(eos, c("unesco", "gsw"))
     p <- ctd[['pressure']]
@@ -314,15 +321,21 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
     oceDebug(debug, "swN2(...) {\n", sep="", unindent=1)
     ##cat("swN2(..., df=", df, ")\n",sep="")
     ##useSmoothing <- !missing(df) && is.finite(df)
-    if (inherits(pressure, "ctd")) {
-        if (!is.null(sigmaTheta))
-            warning("sigmaTheta is ignored, since first argument was a ctd object\n")
-        oceDebug(debug, "first parameter is a 'ctd', so get data from it\n")
-        pref <- median(pressure[["pressure"]], na.rm=TRUE)
-        oceDebug(debug, "setting referencePressure to ", pref, "\n", sep="")
-        sigmaTheta <- swSigmaTheta(pressure, referencePressure=pref, eos="unesco") # NOTE: UNESCO used
-        pressure <- pressure[['pressure']] # over-writes pressure
+    if (inherits(pressure, "oce")) {
+        p <- pressure[["pressure"]]
+        pref <- median(p, na.rm=TRUE)
+        sigmaTheta <- swSigmaTheta(pressure, referencePressure=pref, eos="unesco")
+        pressure <- p
     }
+    #>if (inherits(pressure, "ctd")) {
+    #>    if (!is.null(sigmaTheta))
+    #>        warning("sigmaTheta is ignored, since first argument was a ctd object\n")
+    #>    oceDebug(debug, "first parameter is a 'ctd', so get data from it\n")
+    #>    pref <- median(pressure[["pressure"]], na.rm=TRUE)
+    #>    oceDebug(debug, "setting referencePressure to ", pref, "\n", sep="")
+    #>    sigmaTheta <- swSigmaTheta(pressure, referencePressure=pref, eos="unesco") # NOTE: UNESCO used
+    #>    pressure <- pressure[['pressure']] # over-writes pressure
+    #>}
     if (missing(derivs))
         derivs <- "smoothing"
     ok <- !is.na(pressure) & !is.na(sigmaTheta)
@@ -1571,7 +1584,8 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
 #' @param salinity either practical salinity (in which case `temperature`
 #' and `pressure` must be provided) *or* an `oce` object, in
 #' which case `salinity`, `temperature` (in the ITS-90 scale; see
-#' next item), etc. are inferred from the object.
+#' next item), etc. are inferred from the object, ignoring the
+#' other parameters, if they are supplied.
 #'
 #' @param temperature *in-situ* temperature (\eqn{^\circ}{deg}C), defined
 #' on the ITS-90 scale.  This scale is used by GSW-style calculation (as
@@ -1644,13 +1658,16 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL,
 {
     if (missing(salinity))
         stop("must provide salinity")
-    if (eos == "gsw") {
-        if (inherits(salinity, "oce")) {
-            if (is.null(longitude))
-                longitude <- salinity[["longitude"]]
-            if (is.null(latitude))
-                latitude <- salinity[["latitude"]]
+    if (inherits(salinity, "oce")) {
+        if (eos == "gsw") { # do not need these for UNESCO calculations
+            longitude <- salinity[["longitude"]]
+            latitude <- salinity[["latitude"]]
         }
+        temperature <- salinity[["temperature"]]
+        pressure <- salinity[["pressure"]]
+        salinity <- salinity[["salinity"]]
+    }
+    if (eos == "gsw") {
         if (is.null(longitude))
             stop("must supply longitude")
         if (is.null(latitude))

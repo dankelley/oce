@@ -1,3 +1,5 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
 #' Get the present time, in a stated timezone
 #'
 #' @param tz String indicating the desired timezone. The default is
@@ -400,24 +402,106 @@ setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
               ##DEBUG debug <- 1               # DEVELOPER: set manually to test code
-              if (i == "metadata") {
+              metadataNames <- sort(names(x@metadata))
+              dataNames <- sort(names(x@data))
+              if (i == "?")
+                  return(list(metadata=metadataNames,
+                          metadataDerived=NULL,
+                          data=dataNames,
+                          dataDerived=sort(computableWaterProperties(x))))
+              if (i == "metadata")
                   return(x@metadata)
-              } else if (i == "data") {
+              if (i == "data")
                   return(x@data)
-              } else if (i == "processingLog") {
+              if (i == "processingLog")
                   return(x@processingLog)
-              } else if (grepl("Unit$", i)) {
-                  ## returns a list
+              if (grepl("Unit$", i)) # returns a list
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$", "", i)]] else x@metadata[[i]])
-              } else if (grepl(" unit$", i)) {
-                  ## returns just the unit, an expression
+              if (grepl(" unit$", i)) # returns just the unit, an expression
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub(" unit$", "", i)]][[1]] else "")
-              } else if (grepl(" scale$", i)) {
-                  ## returns just the scale, a character string
+              if (grepl(" scale$", i)) # returns just the scale, a character string
                   return(if ("units" %in% names(x@metadata)) as.character(x@metadata$units[[gsub(" scale$", "", i)]][[2]]) else "")
-              } else if (grepl("Flag$", i)) {
-                  ## returns a list
+              if (grepl("Flag$", i)) # returns a list
                   return(if ("flags" %in% names(x@metadata)) x@metadata$flags[[gsub("Flag$", "", i)]] else NULL)
+              # NOTE: we do not pass data and metadata through directly because e.g. we want
+              # [[ to convert to the modern temperature scale, if the data are
+              # in an old scale.
+              if (i == "conductivity") {
+                  C <- x@data$conductivity
+                  ##message("i=", i, ", j=", if (missing(j)) "(missing)" else j)
+                  if (!is.null(C) && !missing(j)) {
+                      if (!(j %in% c("", "ratio", "uS/cm", "mS/cm", "S/m")))
+                          stop("unknown conductivity unit \"", j, "\"; must be \"\", \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
+                      if (j == "")
+                          j <- "ratio" # lets us use switch()
+                      unit <- x@metadata$units$conductivity$unit
+                      if (is.null(unit) || !length(unit)) {
+                          ## FIXME: maybe should look at median value, to make a guess
+                          ## warning("ctd object lack conductivity units; assuming \"ratio\"")
+                          unit <- "ratio"
+                      }
+                      ##message("A")
+                      unit <- as.character(unit)
+                      ##message("next is unit:")
+                      ##print(dput(unit))
+                      C <- x@data$conductivity
+                      ##message("B")
+                      ## Rather than convert from 3 inputs to 3 outputs, express as ratio, then convert as desired
+                      if (!unit %in% c("ratio", "uS/cm", "mS/cm", "S/m"))
+                          stop("object has unknown conductivity unit \"", unit, "\"; must be \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
+                      C <- C / switch(unit, "uS/cm"=42914, "mS/cm"=42.914, "S/m"=4.2914, "ratio"=1)
+                      C <- C * switch(j, "uS/cm"=42914, "mS/cm"=42.914, "S/m"=4.2914, "ratio"=1)
+                  }
+                  return(C)
+              } else if (i %in% c("CT", "Conservative Temperature")) {
+                  if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
+                      stop("object lacks location information, so CT cannot be computed")
+                  return(gsw::gsw_CT_from_t(SA=x[["SA"]], t=x[["temperature"]], p=x[["pressure"]]))
+              } else if (i == "density") {
+                  return(swRho(x))
+              } else if (i == "depth") {
+                  return(if ("depth" %in% dataNames) x@data$depth else swDepth(x))
+
+              } else if (i == "nitrate") {
+                  if ("nitrate" %in% dataNames) {
+                      return(x@data$nitrate)
+                  } else {
+                      if ("nitrite" %in% dataNames && "NO2+NO3" %in% dataNames)
+                          return(x@data[["NO2+NO3"]] - x@data$nitrite)
+                      else return(NULL)
+                  }
+              } else if (i == "nitrite") {
+                  if ("nitrite" %in% dataNames) {
+                      x@data$nitrite
+                  } else {
+                      if ("nitrate" %in% dataNames && "NO2+NO3" %in% dataNames)
+                          x@data[["NO2+NO3"]] - x@data$nitrate
+                      else NULL
+                  }
+              } else if (i == "N2") {
+                  return(swN2(x))
+              } else if (i == "pressure") {
+                  if ("pressure" %in% dataNames) {
+                      pressure <- x@data$pressure
+                      # Handle files with pressure in PSI. This unit is so weird
+                      # that we issue a warning, because there may be other
+                      # strange things about the file, that are not handled.
+                      if ("units" %in% metadataNames &&
+                          "pressure" %in% names(x@metadata$units) &&
+                          is.list(x@metadata$units$pressure) &&
+                          "unit" %in% names(x@metadata$units$pressure) &&
+                          "psi" == tolower(as.character(x@metadata$units$pressure$unit))) {
+                          warning("converting pressure from PSI to dbar\n")
+                          pressure  <- pressure * 0.6894757
+                      }
+                      return(pressure)
+                  } else if ("depth" %in% dataNames) {
+                      return(swPressure(x@data$depth))
+                  } else {
+                      return(NULL)
+                  }
+              } else if (i == "Rrho") {
+                  return(swRrho(x))
               } else if (i == "sigmaTheta") {
                   return(swSigmaTheta(x))
               } else if (i == "sigma0") {
@@ -430,10 +514,59 @@ setMethod(f="[[",
                   return(swSigma3(x))
               } else if (i == "sigma4") {
                   return(swSigma4(x))
-              } else if (i == "SA") {
+              } else if (i == "salinity" || i == "SP") {
+                  if ("salinity" %in% dataNames) {
+                      S <- x@data$salinity
+                  } else {
+                      C <- x@data$conductivity
+                      if (!is.null(C)) {
+                          if (is.null(x@metadata$units$conductivity)) {
+                              warning("conductivity has no unit, so guessing it is conductivity-ratio. Be cautious on calculated salinity.")
+                          } else {
+                              unit <- as.character(x@metadata$units$conductivity$unit)
+                              if (0 == length(unit)) {
+                                  S <- swSCTp(C, x[["temperature"]], x[["pressure"]])
+                                  warning("constructed salinity from temperature, conductivity-ratio and pressure")
+                              } else if (unit == "uS/cm") {
+                                  S <- swSCTp(C/42914.0, x[["temperature"]], x[["pressure"]])
+                                  warning("constructed salinity from temperature, conductivity and pressure")
+                              } else if (unit == "mS/cm") {
+                                  ## e.g. RSK
+                                  S <- swSCTp(C/42.914, x[["temperature"]], x[["pressure"]])
+                                  warning("constructed salinity from temperature, conductivity and pressure")
+                              } else if (unit == "S/m") {
+                                  S <- swSCTp(C/4.2914, x[["temperature"]], x[["pressure"]])
+                                  warning("constructed salinity from temperature, conductivity and pressure")
+                              } else {
+                                  stop("unrecognized conductivity unit '", unit, "'; only uS/cm, mS/cm and S/m are handled")
+                              }
+                          }
+                      } else {
+                          stop("the object's data slot lacks 'salinity', and it cannot be calculated since 'conductivity' is also missing")
+                      }
+                  }
+                  return(S)
+              } else if (i == "SA" || i == "Absolute Salinity") {
                   return(swAbsoluteSalinity(x))
-              } else if (i == "spice") {
+              } else if (i == "spice" || i == "spiciness") {
                   return(swSpice(x))
+              } else if (i == "SR") {
+                  return(gsw::gsw_SR_from_SP(SP=x[["salinity"]]))
+              } else if (i == "Sstar") {
+                  if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
+                      stop("object lacks location information, so Sstar cannot be computed")
+                  n <- length(x@data$salinity)
+                  ## Lengthen lon and lat if necessary, by repeating.
+                  lon <- x@metadata$longitude
+                  if (n != length(lon))
+                      lon <- rep(x@metadata$longitude, length.out=n)
+                  lat <- x@metadata$latitude
+                  if (n != length(lat))
+                      lat <- rep(x@metadata$latitude, length.out=n)
+                  lon <- ifelse(lon < 0, lon + 360, lon) # not required because gsw_saar() does this ... but UNDOCUMENTED
+                  ## Do the calculation in two steps
+                  SA <- gsw::gsw_SA_from_SP(SP=x[["salinity"]], p=x[["pressure"]], longitude=lon, latitude=lat)
+                  return(gsw::gsw_Sstar_from_SA(SA=SA, p=x[["pressure"]], longitude=lon, latitude=lat))
               } else if (i == "temperature") {
                   scale <- x@metadata$units[["temperature"]]$scale
                   if (!is.null(scale) && "IPTS-48" == scale) {
@@ -443,6 +576,10 @@ setMethod(f="[[",
                   } else {
                       x@data$temperature
                   }
+              } else if (i %in% c("theta", "potential temperature")) {
+                  return(swTheta(x))
+              } else if (i == "z") {
+                  return(if ("z" %in% dataNames) x@data$z else swZ(x))
               } else {
                   ##DEBUG oceDebug(debug, "[[ at base level. i='", i, "'\n", sep="", unindent=1, style="bold")
                   if (missing(j) || j == "") {

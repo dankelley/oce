@@ -11,7 +11,7 @@ computableWaterProperties(x)
 }
 \value{
 A character vector listing the names of computable
-water properties.
+water properties, or NULL, if there are none.
 }
 \description{
 This checks to see whether \code{x} is an \code{oce} object containing
