@@ -53,6 +53,7 @@ Other functions that calculate seawater properties:
 \code{\link{T68fromT90}()},
 \code{\link{T90fromT48}()},
 \code{\link{T90fromT68}()},
+\code{\link{computableWaterProperties}()},
 \code{\link{swAlphaOverBeta}()},
 \code{\link{swAlpha}()},
 \code{\link{swBeta}()},

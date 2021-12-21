@@ -1,3 +1,34 @@
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+
+#' Available derived water properties
+#'
+#' This checks to see whether `x` is an `oce` object containing
+#' `salinity`, `temperature`, `pressure`, `latitude` and `longitude`.
+#' If this holds, then it returns a list of items that can be accessed
+#' with `[[`.
+#'
+#' @param x An [oce-class] object.
+#'
+#' @return A character vector listing the names of computable
+#' water properties.
+#'
+#' @author Dan Kelley
+#'
+#' @family functions that calculate seawater properties
+computableWaterProperties <- function(x)
+{
+    if (inherits(x, "oce")
+        && (3L == sum(c("salinity", "temperature", "pressure")
+                %in% c(names(x@metadata), names(x@data))))) {
+        c("SP", "SR", "Sstar", "N2", "density", "sigmaTheta", paste0("sigma",
+                0:4), "theta", paste("potential", "temperature"), "Rrho",
+            "spice", "spiciness", "SA", paste("Absolute", "Salinity"), "CT",
+            paste("Conservative", "Temperature"), "z", "depth")
+    } else {
+        vector("character", 0L)
+    }
+}
+
 #' Convert from ITS-90 to IPTS-68 temperature
 #'
 #' @template temperatureConversionTemplate

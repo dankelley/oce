@@ -38,6 +38,7 @@ http://www.nodc.noaa.gov/woce/wdiu/wocedocs/newsltr/news10/contents.htm
 Other functions that calculate seawater properties: 
 \code{\link{T90fromT48}()},
 \code{\link{T90fromT68}()},
+\code{\link{computableWaterProperties}()},
 \code{\link{swAbsoluteSalinity}()},
 \code{\link{swAlphaOverBeta}()},
 \code{\link{swAlpha}()},
