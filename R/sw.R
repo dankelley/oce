@@ -2580,7 +2580,7 @@ swViscosity <- function(salinity, temperature)
 #'
 #' @family functions that calculate seawater properties
 swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
-                                      longitude=NULL, latitude=NULL)
+    longitude=NULL, latitude=NULL)
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -2590,10 +2590,8 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
         if (is.null(latitude))
             latitude <- salinity[["latitude"]]
     }
-    if (is.null(longitude))
-        stop("must supply longitude")
-    if (is.null(latitude))
-        stop("must supply latitude")
+    if (is.null(longitude) || is.null(latitude))
+        stop("object lacks location information, so CT cannot be computed")
     l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                          longitude=longitude, latitude=latitude))
     dim <- dim(l$salinity)
@@ -2671,10 +2669,8 @@ swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=NULL, latitude
         }
         salinity <- salinity@data$salinity
     }
-    if (is.null(longitude))
-        stop("must supply longitude")
-    if (is.null(latitude))
-        stop("must supply latitude")
+    if (is.null(longitude) || is.null(latitude))
+        stop("object lacks location information, so CT cannot be computed")
     l <- lookWithin(list(salinity=salinity, pressure=pressure, longitude=longitude, latitude=latitude))
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
