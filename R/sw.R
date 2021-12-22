@@ -18,18 +18,25 @@
 computableWaterProperties <- function(x)
 {
     res <- NULL
-    if (inherits(x, "oce") && (3L == sum(c("salinity", "temperature", "pressure")
-                %in% c(names(x@metadata), names(x@data))))) {
-        dataNames <- names(x@data)
-        res <- c("SP", "SR", "Sstar", "N2", "density", "sigmaTheta",
-            paste0("sigma", 0:4), "theta", paste("potential", "temperature"),
-            "Rrho", "spice", "spiciness", "SA", paste("Absolute", "Salinity"),
-            "CT", paste("Conservative", "Temperature"), "z", "depth")
+    if (inherits(x, "oce")) {
+        names <- unique(c(names(x@metadata), names(x@data)))
+        haveSTP <- all(c("salinity", "temperature", "pressure") %in% names)
+        haveLocation <- all(c("longitude", "latitude") %in% names)
+        if (haveSTP) {
+            res <- c(res, c("theta", paste("potential", "temperature"), "z",
+                    "depth", "spice", "spiciness", "Rrho", "sigmaTheta", "SP",
+                    "density", "N2"))
+            if (haveLocation) {
+                res <- c(res, "SR", "Sstar", paste0("sigma", 0:4),
+                    "SA", paste("Absolute", "Salinity"),
+                    "CT",  paste("Conservative", "Temperature"))
+            }
+        }
         # It is possible to compute nitrate from NO2+NO3 and nitrite, if
         # it's not stored in the object already.
-        if (!("nitrate" %in% dataNames) && ("NO2+NO3" %in% dataNames) && ("nitrite" %in% dataNames))
+        if (!("nitrate" %in% names) && ("NO2+NO3" %in% names) && ("nitrite" %in% names))
             res <- c(res, "nitrate")
-        res <- sort(res) # makes it easier to scan results
+        res <- sort(res)               # make it easier to scan results
     }
     res
 }
