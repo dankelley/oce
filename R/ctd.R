@@ -1,4 +1,4 @@
-## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to Store CTD (or general hydrographic) Data
 #'
@@ -1530,10 +1530,18 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             } else {
                 stop("the first argument must contain salinity, temperature, and pressure")
             }
-            if ("longitude" %in% names)
+            if ("longitude" %in% names) {
                 res@metadata$longitude <- if (1 == length(longitude)) longitude else x$longitude
-            if ("latitude" %in% names)
+            } else {
+                if (!is.null(longitude))
+                    res@metadata$longitude <- longitude
+            }
+            if ("latitude" %in% names) {
                 res@metadata$latitude <- if (1 == length(latitude)) latitude else x$latitude
+            } else {
+                if (!is.null(latitude))
+                    res@metadata$latitude <- latitude
+            }
             if ("conductivity" %in% names) res@data$conductivity <- x$conductivity
             if ("COND" %in% names) res@data$conductivity <- x$COND # FIXME accept other WOCE names
             if ("quality" %in% names) res@data$quality <- x$quality
