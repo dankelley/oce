@@ -1068,69 +1068,69 @@ setMethod(f="[[<-",
 
 #' Coerce data into CTD object
 #'
-#' Assemble data into a [ctd-class] object.
+#' Assemble data into a [ctd-class] object.  This function is complicated
+#' (spanning approximately 500 lines of code) because it tries to handle many
+#' special cases, and tries to make sensible defaults for unspecified
+#' parameters.  If odd results are found, users might find it helpful to call
+#' this function with the first argument being a simple vector of Practical
+#' Salinity values, in which case the processing of the other arguments is
+#' relatively straightforward.
 #'
-#' @param salinity There are several distinct choices for `salinity`.
+#' @param salinity a numeric vector holding Practical Salinity, or something
+#' else from which it and other hydrographic variables can be inferred.  The
+#' choices are as follows.  (As noted in the \dQuote{Description}, the simplest
+#' case is the first, and users should try this, if other cases yield unexpected
+#' results.)
 #'
-#' * It can be a
-#' vector indicating the practical salinity through the water column. In that case,
-#' `as.ctd` employs the other arguments listed below.
+#' * It can be a vector holding values of Practical Salinity through the water
+#' column. In this case, `as.ctd()` uses the other function parameters
+#' (`temperature`, `pressure` etc) as specified.
+#'
+#' * It can be a [ctd-class] object, in which case `as.ctd()` simply returns
+#' it, unaltered.
 #'
 #' * It can be an [rsk-class] object (see \dQuote{Converting rsk objects} for details).
 #'
-#' * It can be something (a data frame, a list or an `oce` object)
-#' from which practical salinity, temperature, pressure, and conductivity
-#' can be inferred. In this case, the relevant information
-#' is extracted  and the other arguments to `as.ctd` are ignored, except for
-#' `pressureAtmospheric`. If the first argument has salinity, etc., in
-#' matrix form (as can happen with some objects of [argo-class]),
-#' then only the first column is used, and a warning to that effect is given,
-#' unless the `profile` argument is specified and then that specific
-#' profile is extracted.
+#' * It can be something (a data frame, a list or an `oce` object) from which
+#' Practical Salinity, in-situ temperature, sea pressure, and possibly
+#' conductivity) can be inferred. In this case, the relevant information is
+#' extracted  and the other arguments to `as.ctd` are ignored, except for
+#' `longitude`, `latitude` and `pressureAtmospheric`, each of which must be
+#' specified.  If the first argument has salinity, etc., in matrix form (as can
+#' happen with some objects of [argo-class]), then only the first column is
+#' used, and a warning to that effect is given, unless the `profile` argument is
+#' specified and then that specific profile is extracted.
 #'
 #' * It can be unspecified, in which case `conductivity` becomes a mandatory
-#' argument, because it will be needed for computing actual salinity,
-#' using [swSCTp()].
+#' argument, because it will be needed for computing actual salinity, using
+#' [swSCTp()].
 #'
-#' @param temperature *in-situ* temperature in \eqn{^\circ}{deg}C
-#' on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
-#' [swRho()].
+#' @param temperature a numeric vector containing *in-situ* temperature in
+#' \eqn{^\circ}{deg}C on the ITS-90 scale; see \dQuote{Temperature units} in the
+#' documentation for [swRho()].
 #'
-#' @param pressure Vector of pressure values, one for each `salinity` and
-#' `temperature` pair, or just a single pressure, which is repeated to match
-#' the length of `salinity`.
+#' @param pressure a numeric vector containing sea pressure values, in decibars.
+#' Typically, this vector has the same length as `salinity` and `temperature`,
+#' but it also possible to supply just one value, which will be repeated
+#' to get the right length. Note that `as.ctd()` stores the
+#' sum of `pressure` and `pressureAtmospheric` in the returned object,
+#' although the default value for `pressureAtmospheric` is zero, so
+#' in the default case, `pressure` is stored directly.
 #'
-#' @param conductivity electrical conductivity ratio through the water column
-#' (optional). To convert from raw conductivity in milliSeimens per centimeter
-#' divide by 42.914 to get conductivity ratio (see Culkin and Smith, 1980).
+#' @param conductivity an optional numeric vector containing electrical
+#' conductivity ratio through the water column. To convert from raw conductivity
+#' in milliSeimens per centimeter divide by 42.914 to get conductivity ratio
+#' (see Culkin and Smith, 1980).
 #'
-##1108 @param SA absolute salinity (as in TEOS-10).  If given, the supplied absolute
-##1108 salinity is converted internally to UNESCO-defined practical salinity.
-##1108
-##1108 @param CT conservative temperature (as in TEOS-10).  If given, the supplied
-##1108 conservative temperature is converted internally to UNESCO-defined in-situ
-##1108 temperature.
-##1108
-##1108 @param oxygen optional oxygen concentration
-##1108
-##1108 @param nitrate optional nitrate concentration
-##1108
-##1108 @param nitrite optional nitrite concentration
-##1108
-##1108 @param phosphate optional phosphate concentration
-##1108
-##1108 @param silicate optional silicate concentration
-##1108
-#' @param scan optional scan number.  If not provided, this will be set to
-#' [seq_along]`(salinity)`.
+#' @param scan optional numeric vector holding scan number.  If not provided,
+#' this is set to [seq_along]`(salinity)`.
 #'
-#' @param time optional vector of times of observation
+#' @param time optional vector of times of observation.
 #'
-#' @param other optional list of other data columns that are not in the standard
-#' list. Note that this argument is **deprecated**, meaning that it
-#' will be removed soon. Please use `as.ctd()` to construct a [ctd-class]
-#' object, and then use [oceSetData()] later, to add other data,
-#' as needed.
+## @param other **deprecated** optional list of other data columns that are not
+## in the standard list. Note that this argument will be removed soon. Please
+## use `as.ctd()` to construct a [ctd-class] object, and then use [oceSetData()]
+## later, to add other data, as needed.
 #'
 #' @param units an optional list containing units.  If not supplied,
 #' defaults are set for `pressure`, `temperature`, `salinity`,
@@ -1288,46 +1288,38 @@ setMethod(f="[[<-",
 #'
 #' @family things related to ctd data
 as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
-                   ##1108 SA=NULL, CT=NULL, oxygen=NULL, nitrate=NULL, nitrite=NULL, phosphate=NULL, silicate=NULL,
-                   scan=NULL,
-                   time=NULL, other=NULL,
-                   units=NULL, flags=NULL,
-                   ##1108 pressureType="sea",
-                   missingValue=NULL,
-                   ##1108 quality=NULL, filename="",
-                   type="", serialNumber="",
-                   ship=NULL, cruise=NULL, station=NULL,
-                   ##1108 date=NULL,
-                   startTime=NULL,
-                   ##1108 recovery=NULL,
-                   longitude=NULL, latitude=NULL,
-                   deploymentType="unknown",
-                   pressureAtmospheric=0,
-                   ##1108 waterDepth=NA,
-                   sampleInterval=NA,
-                   profile=NULL,
-                   ##1108 src="",
-                   debug=getOption("oceDebug"))
+    scan=NULL, time=NULL, units=NULL, flags=NULL, missingValue=NULL,
+    type="", serialNumber=NULL, ship=NULL, cruise=NULL, station=NULL,
+    startTime=NULL, longitude=NULL, latitude=NULL, deploymentType="unknown",
+    pressureAtmospheric=0, sampleInterval=NULL, profile=NULL,
+    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1, style="bold")
-    if (!missing(salinity) && inherits(salinity, "rsk")) {
-        oceDebug(debug, "first argument is an 'rsk' object\n")
+    unitsGiven <- !is.null(units)
+    salinityGiven <- !missing(salinity)
+    # Already a ctd-class object.
+    if (salinityGiven && inherits(salinity, "ctd")) {
+        oceDebug(debug, "first argument is 'ctd-class', so returning as-is\n")
+        oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1, style="bold")
+        return(salinity)
+    }
+    # An rsk-class object.
+    if (salinityGiven && inherits(salinity, "rsk")) {
+        oceDebug(debug, "first argument is 'rsk-class', so converting with rsk2ctd()\n")
         res <- rsk2ctd(salinity,
-                       pressureAtmospheric=pressureAtmospheric,
-                       longitude=longitude,
-                       latitude=latitude,
-                       ship=ship,
-                       station=station,
-                       cruise=cruise,
-                       deploymentType=deploymentType,
-                       debug=debug-1)
+            pressureAtmospheric=pressureAtmospheric,
+            longitude=longitude,
+            latitude=latitude,
+            ship=ship,
+            station=station,
+            cruise=cruise,
+            deploymentType=deploymentType,
+            debug=debug-1)
         oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1, style="bold")
         return(res)
     }
-    res <- new('ctd')
+    res <- new("ctd")
     waterDepth <- NA
-    unitsGiven <- !is.null(units)
-    salinityGiven <- !missing(salinity)
     if (!is.null(startTime) && is.character(startTime))
         startTime <- as.POSIXct(startTime, tz="UTC")
     ##1108 if (!is.null(recovery) && is.character(recovery))
@@ -1338,6 +1330,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
     } else {
         if (!missing(conductivity) && !missing(temperature) && !missing(pressure)) {
             salinity <- swSCTp(conductivity=conductivity, temperature=temperature, pressure=pressure)
+            oceDebug(debug, "computed salinity using swSCTp() with stated conductivity, temperature and pressure\n")
         } else {
             stop("if salinity is not provided, conductivity, temperature and pressure must all be provided")
         }
@@ -1346,23 +1339,25 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
     filename <- ""
     ounits <- NULL # replace with metadata$units if first arg is an oce object
     if (inherits(salinity, "oce")) {
-        if (inherits(salinity, "ctd")) {
-            oceDebug(debug, "first argument is a ctd object already, so returning as-is\n")
-            oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1, style="bold")
-            return(salinity)
-        }
-        oceDebug(debug, "first argument is an oce object, so ignoring other arguments\n")
+        oceDebug(debug, "first argument is an oce object, so ignoring some other arguments\n")
         o <- salinity
         d <- o@data
         m <- o@metadata
         ounits <- o@metadata$units
         dnames <- names(d)
         mnames <- names(m)
-        ship <- m$ship
-        cruise <- m$cruise
-        station <- m$station
-        startTime <- if (is.character(m$startTime)) startTime <- as.POSIXct(m$startTime, tz="UTC") else m$startTime
-        ## Look for lon and lat first in data slot, second in metadata slot
+        filename <- if ("filename" %in% mnames) m$filename else ""
+        # Check whether various things have been specified in this call to
+        # as.ctd().  If not, try looking for values in the metadata or data of
+        # the first parameter.
+        if (is.null(ship) && "ship" %in% mnames)
+            ship <- m$ship
+        if (is.null(cruise) && "cruise" %in% mnames)
+            cruise <- m$cruise
+        if (is.null(station) && "station" %in% mnames)
+            station <- m$station
+        if (is.null(startTime) && "startTime" %in% mnames)
+            startTime <- as.POSIXct(m$startTime, tz="UTC")
         if (is.null(longitude)) {
             if ("longitude" %in% dnames) {
                 longitude <- d$longitude
@@ -1377,20 +1372,18 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                 latitude <- m$latitude
             }
         }
-        ##1108 if (missing(date) && "date" %in% names(m)) {
-        ##1108     date <- m$date
-        ##1108 }
-        filename <- if ("filename" %in% mnames) m$filename else ""
-        ##1108 model <- m$model
-        serialNumber <- m$serialNumber
-        sampleInterval <- m$sampleInterval
-        if (!is.null(m$waterDepth))
+        if (is.null(serialNumber) && "serialNumber" %in% mnames)
+            serialNumber <- m$serialNumber
+        if (is.null(sampleInterval) && "sampleInterval" %in% mnames)
+            sampleInterval <- m$sampleInterval
+        if (is.na(waterDepth) && "waterDepth" %in% mnames)
             waterDepth <- m$waterDepth
-        ## Copy some WOCE things into oce-convention names (originals retained)
+        # Copy some WOCE-named quantities into oce names, whilst retaining the
+        # originals.
         if ("PSAL" %in% dnames && !("salinity" %in% dnames)) d$salinity <- d$PSAL
         if ("TEMP" %in% dnames && !("temperature" %in% dnames)) d$temperature <- d$TEMP
         if ("PRES" %in% dnames && !("pressure" %in% dnames)) d$pressure <- d$PRES
-        if (!missing(pressureAtmospheric)) {
+        if (pressureAtmospheric != 0.0) {
             len <- length(pressureAtmospheric)
             if (1 != len && len != length(pressure))
                 stop("length(pressureAtmospheric) must be 1 or length(pressure)")
@@ -1521,13 +1514,13 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             }
         }
     } else if (is.list(salinity) || is.data.frame(salinity)) {
+        ## 2. coerce a data-frame or list
         if (length(salinity) == 0)
             stop("first argument cannot be a zero-length list or data frame")
-        oceDebug(debug, "salinity is a list or data frame\n")
-        ## 2. coerce a data-frame or list
+        oceDebug(debug, "case 1: first argument is a list or data frame\n")
         x <- salinity
         if (is.list(x) && inherits(x[[1]], "oce")) {
-            oceDebug(debug, "list made up of oce objects (all expected to be in same form as first)\n")
+            oceDebug(debug, "case 1A: list holds oce objects\n")
             ## Copy data over
             dataNames <- names(x[[1]]@data)
             oceDebug(debug, 'copying data entries: "', paste(dataNames, collapse='", "'), '"\n', sep="")
@@ -1551,10 +1544,12 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             ## Units
             res@metadata$units <- x[[1]]@metadata$units
         } else {
-            oceDebug(debug, "list or data frame not made up of oce objects (as tested by first entry)\n")
+            oceDebug(debug, "case 1B: list made up of non-oce objects\n")
             names <- names(x)
+            oceDebug(debug, "names: \"", paste(names, collapse="\" \""), "\"\n",sep="")
             ## Permit oce-style names or WOCE-style names for the three key variables (FIXME: handle more)
             if (3 == sum(c("salinity", "temperature", "pressure") %in% names)) {
+                oceDebug(debug, "found 'salinity', 'temperature' and 'pressure' in names\n")
                 res@data$pressure <- x$pressure
                 res@data$salinity <- x$salinity
                 res@data$temperature <- x$temperature
@@ -1562,6 +1557,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                 ##1108 res@metadata$pressureType <- pressureType
                 res@metadata$pressureType <- "sea"
             } else if (3 == sum(c("PSAL", "TEMP", "PRES") %in% names)) {
+                oceDebug(debug, "found 'PSAL', 'TEMP' and 'PRES' in names\n")
                 res@data$pressure <- x$PRES
                 res@data$salinity <- x$PSAL
                 res@data$temperature <- x$TEMP
@@ -1571,22 +1567,39 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             } else {
                 stop("the first argument must contain salinity, temperature, and pressure")
             }
-            if ("longitude" %in% names)
-                res@metadata$longitude <- if (1 == length(longitude)) longitude else x$longitude
-            if ("latitude" %in% names)
-                res@metadata$latitude <- if (1 == length(latitude)) latitude else x$latitude
-            if ("conductivity" %in% names) res@data$conductivity <- x$conductivity
-            if ("COND" %in% names) res@data$conductivity <- x$COND # FIXME accept other WOCE names
-            if ("quality" %in% names) res@data$quality <- x$quality
-            if ("oxygen" %in% names) res@data$oxygen <- x$oxygen
-            if ("nitrate" %in% names) res@data$nitrate <- x$nitrate
-            if ("nitrite" %in% names) res@data$nitrite <- x$nitrite
-            if ("phosphate" %in% names) res@data$phosphate <- x$phosphate
-            if ("silicate" %in% names) res@data$silicate <- x$silicate
-            if ("time" %in% names) res@data$time <- x$time
+            if (is.null(longitude)) {
+                if ("longitude" %in% names) {
+                    longitude <- x$longitude
+                    oceDebug(debug, "retrieved longitude from first argument\n")
+                }
+            }
+            if (is.null(latitude)) {
+                if ("latitude" %in% names) {
+                    latitude <- x$latitude
+                    oceDebug(debug, "retrieved latitude from first argument\n")
+                }
+            }
+            #if ("conductivity" %in% names) res@data$conductivity <- x$conductivity
+            if ("COND" %in% names)
+                res@data$conductivity <- x$COND # FIXME accept other WOCE names
+            #if ("quality" %in% names) res@data$quality <- x$quality
+            #if ("oxygen" %in% names) res@data$oxygen <- x$oxygen
+            #if ("nitrate" %in% names) res@data$nitrate <- x$nitrate
+            #if ("nitrite" %in% names) res@data$nitrite <- x$nitrite
+            #if ("phosphate" %in% names) res@data$phosphate <- x$phosphate
+            #if ("silicate" %in% names) res@data$silicate <- x$silicate
+            if ("time" %in% names)
+                res@data$time <- x$time
+            haveAlready <- names(res@data)
+            # add any remaining items
+            for (field in names) {
+                if (field != "time" && !(field %in% haveAlready)) {
+                    res@data[[field]] <- x[[field]]
+                }
+            }
         }
     } else {
-        oceDebug(debug, "salinity, temperature, pressure (etc) supplied\n")
+        oceDebug(debug, "case 2: salinity, temperature, pressure (etc) supplied\n")
         ## 3. explicit mode
         ##1108 if (missing(temperature) && missing(CT)) stop("must give temperature or CT")
         if (missing(temperature)) stop("must give temperature")
@@ -1644,18 +1657,19 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ##1108 if (!missing(nitrite)) data$nitrite <- nitrite
         ##1108 if (!missing(phosphate)) data$phosphate <- phosphate
         ##1108 if (!missing(silicate)) data$silicate <- silicate
-        if (!missing(time)) data$time <- time
-        if (!missing(other)) {
-            names <- names(other)
-            for (i in seq_along(names)) {
-                if (names[i] != "") {
-                    data[[names[i]]] <- other[[names[i]]]
-                } else {
-                    warning("'other' item number ", i, " has no name")
-                }
-            }
-            warning("the 'other' argument will be removed soon; use oceSetData() instead, as in the examples. See ?'oce-deprecated'.")
-        }
+        if (!missing(time))
+            data$time <- time
+        #deprecated if (!missing(other)) {
+        #deprecated     names <- names(other)
+        #deprecated     for (i in seq_along(names)) {
+        #deprecated         if (names[i] != "") {
+        #deprecated             data[[names[i]]] <- other[[names[i]]]
+        #deprecated         } else {
+        #deprecated             warning("'other' item number ", i, " has no name")
+        #deprecated         }
+        #deprecated     }
+        #deprecated     warning("the 'other' argument will be removed soon; use oceSetData() instead, as in the examples. See ?'oce-deprecated'.")
+        #deprecated }
         ## Handle missing value code (changes on July 24, 2016 fix issue 1028)
         if (!is.null(missingValue)) {
             for (dname in names(data)) {
@@ -1663,11 +1677,6 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                 data[[dname]][bad] <- NA
             }
         }
-        ##20150712 if (is.na(waterDepth)) {
-        ##20150712     waterDepth <- max(abs(data$pressure), na.rm=TRUE)
-        ##20150712     res@processingLog <- processingLogAppend(res@processingLog,
-        ##20150712                                              "inferred water depth from maximum pressure")
-        ##20150712 }
         names <- names(data)
         ##labels <- titleCase(names) # paste(toupper(substring(names,1,1)),substring(names,2),sep="")
         if (length(longitude) != length(latitude))
@@ -1715,7 +1724,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         oceDebug(debug, "copying units from first argument\n")
         res@metadata$units <- ounits
     } else if (!unitsGiven) {
-        oceDebug(debug, "assuming standard modern units, since none provide or available in first argument\n")
+        oceDebug(debug, "assuming modern units, since none provided\n")
         ## guess on units
         names <- names(res@data)
         if ("salinity" %in% names)
@@ -1740,15 +1749,18 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if ("pressure" %in% dataNames && !("pressure" %in% unitsNames))
             res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
     }
-    ## FIXME: setting waterDepth can have tricky results ... we've had issues with this
+    # FIXME: setting waterDepth can have tricky results ... we've had issues with this
     if (is.na(res@metadata$waterDepth) && !is.na(waterDepth))
         res@metadata$waterDepth <- waterDepth
-    ## Remove lon and lat form metadata, if they are in data. This is so plot() will
-    ## show multiple stations, as can be the case in converting from multi-station
-    ## data.
+    # Remove lon and lat form metadata, if they are in data. This is so plot()
+    # will show multiple stations, as can be the case in converting from
+    # multi-station data.
+    res@metadata$longitude <- longitude
+    res@metadata$latitude <- latitude
     if ("longitude" %in% names(res@metadata) && "longitude" %in% names(res@data) &&
         "latitude" %in% names(res@metadata) && "latitude" %in% names(res@data))
     {
+        oceDebug(debug, "retaining longitude and latitude in data slot but not metadata slot\n")
         res@metadata$longitude <- NULL
         res@metadata$latitude <- NULL
     }

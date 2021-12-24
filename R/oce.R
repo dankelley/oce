@@ -91,7 +91,7 @@ NULL
 #'
 #' \tabular{lllll}{
 #' **Deprecated**             \tab **Replacement**   \tab **Deprecated**  \tab **Defunct** \tab **Removed** \cr
-#' `byteToBinary(x,"endian")` \tab [rawToBits()]     \tab 1.1-1           \tab 1.1-3       \tab 1.1-4       \cr
+## `byteToBinary(x,"endian")` \tab [rawToBits()]     \tab 1.1-1           \tab 1.1-3       \tab 1.1-4       \cr
 #' `renameData()`             \tab [oceRenameData()] \tab 1.1-2           \tab 1.1-3       \tab 1.1-4       \cr
 #' }
 #'
@@ -102,11 +102,12 @@ NULL
 #'
 #'\tabular{lll}{
 #' **Defunct**         \tab **Replacement**                \tab **Version**\cr
-#' (none)              \tab (none)                         \tab (none)     \cr
+#' `renameData()`      \tab [oceRenameData()]              \tab 1.5        \cr
+#' `byteToBinary()`    \tab [rawToBits()]                  \tab 1.5        \cr
 #'}
 #'
 #' The following functions were removed after having been marked as "deprecated"
-#' in at least one CRAN release, and thereafter as "defunct" in at least
+#' in at least one CRAN release, and possibly as "defunct" in at least
 #' one CRAN release.  (The version number in the table is the first
 #' version to lack the named function.)
 #'
@@ -149,14 +150,6 @@ NULL
 #'
 #' Several \sQuote{oce} function arguments are considered "defunct", which
 #' means they will be removed in the next CRAN release. They are as follows.
-#'
-#' * The `date` argument of [as.ctd()]
-#' was discovered to have been unused in early 2016. Since
-#' the `startTime` actually fills its role, `date`
-#' was considered to be deprecated in June 2016.
-#'
-#' * The `quality` flag of [as.ctd()] was
-#' marked as deprecated in March 2016.
 #'
 #' * The `fill` argument of [mapPlot()] was confusing
 #' to users, so it was designated as deprecated in June 2016.
