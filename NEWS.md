@@ -6,6 +6,7 @@
 * Add `adpConvertRawToNumeric()`.
 * Add `adpFlagPastBoundary()`.
 * Add `ctdRepair()`.
+* Change `as.ctd()` to drop `other` parameter, deprecated 4y ago.
 * Change `read.odf()` to handle new CODEs and UNITs.
 * Change `oce.plot.ts()` by adding `simplify` argument.
 * Change `pwelch()`, improving low-frequency results.
@@ -13,6 +14,8 @@
 * Fix `as.ctd()` handling of temperature scale of first argument.
 * Fix `as.section()` handling of list of `argo` objects as first argument.
 * Fix `colormap()` handling of `name` argument.
+* Mark `byteToBinary()` as defunct (slated for removal in 1.6.0).
+* Mark `renameData()` as defunct (slated for removal in 1.6.0).
 
 ## 1.4.0
 

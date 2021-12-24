@@ -635,21 +635,23 @@ unduplicateNames <- function(strings, style=1)
 }
 
 
-#' Rename items in the data slot of an oce object (**deprecated**)
+#' Rename items in the data slot of an oce object (defunct)
 #'
-#' This was deprecated in December 2019, because [oceRenameData()] does
-#' a better job and is more consistent with other functions that work
-#' with items in the `data` and `metadata` slots.
+#' **WARNING:** This function will be removed in oce 1.6.0; see [oce-defunct].
+##
+## This was deprecated in December 2019, because [oceRenameData()] does
+## a better job and is more consistent with other functions that work
+## with items in the `data` and `metadata` slots.
 ## This function may be used to rename elements within the
 ## `data` slot of `oce` objects. It also updates
 ## the processing log of the returned object, indicating
 ## the changes.
 #'
-#' @param x an [oce-class] object.
+#' @param x Ignored, since this function is defunct.
 #'
-#' @param old Vector of strings, containing old names.
+#' @param old Ignored, since this function is defunct.
 #'
-#' @param new Vector of strings, containing old names.
+#' @param new Ignored, since this function is defunct.
 #'
 ## @examples
 ## data(ctd)
@@ -657,8 +659,14 @@ unduplicateNames <- function(strings, style=1)
 ## new <- oceSetData(new, name="temperature",
 ##                   value=T90fromT68(new[["temperature68"]]),
 ##                   unit=list(unit=expression(degree*C),scale="ITS=90"))
+#'
+#' @author Dan Kelley
+#'
+#' @family deprecated functions
 renameData <- function(x, old=NULL, new=NULL)
 {
+    #1.6.0 .Defunct("renameData",
+    #1.6.0     msg="renameData() is disallowed and will be removed in oce 1.6.0.  Use oceRenameData() instead. See ?'oce-defunct'."
     .Deprecated("oceRenameData", msg="Superceded by oceRenameData(), as of December 2019")
     if (is.null(old)) stop("need to supply old")
     if (is.null(new)) stop("need to supply new")
@@ -673,7 +681,7 @@ renameData <- function(x, old=NULL, new=NULL)
         ## message("i: ", i, ", old[i]: ", old[i], ", w:", w)
         New[w] <- new[i]
     }
-    ## ensure unique ... this is a common user error
+    # ensure unique ... this is a common user error
     if (length(New) != length(unique(New))) stop("cannot have two columns of same name")
     names(x@data) <- New
     x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
@@ -1528,25 +1536,6 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
         }
     }
 }
-
-
-#' Find indices of times in an ordered vector (defunct)
-#'
-#' **WARNING:** This function will be removed soon; see [oce-defunct].
-#'
-#' @param x Ignored, since this function is defunct.
-#'
-#' @param f Ignored, since this function is defunct.
-#'
-#' @author Dan Kelley
-#'
-#' @family functions that will be removed soon
-findInOrdered <- function(x, f)
-{
-    .Defunct("findInterval",
-             msg="findInOrdered() is disallowed and will be removed soon. Use findInterval() instead. See ?'oce-defunct'.")
-}
-
 
 filterSomething <- function(x, filter)
 {
