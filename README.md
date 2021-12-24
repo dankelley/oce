@@ -18,8 +18,8 @@ downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
 The R language is popular in many branches of science, and Oceanography is not
 an exception. Perhaps because of its broad statistical support, R is especially
 popular in Biological Oceanography, and its popularity seems to be growing also
-among Chemical and Geological Oceanographers. In the remaining subdiscipline of
-Physical Oceanography, many researchers remain attached to Matlab, which was
+among Chemical and Geological Oceanographers. In
+Physical Oceanography, however, many researchers remain attached to Matlab, which was
 the strongest choice for interactive work in the late 1900s. However, the
 commercial and closed-source nature of Matlab is a problem in the eyes of many
 people, and so open-source alternatives have become increasingly popular.  Of
