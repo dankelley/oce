@@ -1,10 +1,10 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
  
-#' @param i Character string indicating the name of an item to extract.
+#' @param i character value indicating the name of an item to extract.
 #'
-#' @param j Optional additional information on the `i` item.
+#' @param j optional additional information on the `i` item.
 #'
-#' @param ... Optional additional information (ignored).
+#' @param ... ignored.
 #'
 #' @description
 #'
@@ -23,9 +23,8 @@
 #'
 #' Some understanding of the subclass is required to know what can be retrieved
 #' with `[[`. When dealing with an unfamiliar subclass, it can be useful to
-#' first use `x[["?"]]` to get a listing of the retrievable items. The first
-#' entry of \dQuote{Details of the Specialized Method} provides more information
-#' on this.
+#' first use `x[["?"]]` to get a listing of the retrievable items. See
+#' \dQuote{Details of the Specialized Method} for more information.
 #'
 ## NOTE: Roxygen2 puts this after the Specialized method, which is where I want
 ## it.  I don't understand why, though and therefore will be on the lookout for

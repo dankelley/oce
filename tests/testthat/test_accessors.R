@@ -1,6 +1,19 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+test_that("[[\"?\"]] is handled by all object classes", {
+    # The object names was created by saving the output of `git grep setClass R`
+    # and reformulating into R code.
+    objectNames <- c("adp", "adv", "amsr", "argo", "bremen", "cm", "coastline",
+        "ctd", "echosounder", "satellite", "g1sst", "gps", "ladp", "landsat",
+        "lisst", "lobo", "met", "odf", "rsk", "satellite", "sealevel",
+        "section", "tidem", "topo", "windrose", "xbt")
+    for (objectName in objectNames) {
+        o <- new(objectName)
+        expect_equal(4, length(o[["?"]]))
+    }
+})
+
 test_that("get/set/delete data", {
     data("ctd")
     S <- oceGetData(ctd, "salinity")

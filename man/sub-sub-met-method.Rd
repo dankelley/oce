@@ -9,11 +9,11 @@
 \arguments{
 \item{x}{a \linkS4class{met} object.}
 
-\item{i}{Character string indicating the name of an item to extract.}
+\item{i}{character value indicating the name of an item to extract.}
 
-\item{j}{Optional additional information on the \code{i} item.}
+\item{j}{optional additional information on the \code{i} item.}
 
-\item{...}{Optional additional information (ignored).}
+\item{...}{ignored.}
 }
 \description{
 Generally, the \code{[[} method lets users extract information from \code{oce}
@@ -30,9 +30,8 @@ returns NULL.
 
 Some understanding of the subclass is required to know what can be retrieved
 with \code{[[}. When dealing with an unfamiliar subclass, it can be useful to
-first use \code{x[["?"]]} to get a listing of the retrievable items. The first
-entry of \dQuote{Details of the Specialized Method} provides more information
-on this.
+first use \code{x[["?"]]} to get a listing of the retrievable items. See
+\dQuote{Details of the Specialized Method} for more information.
 }
 \section{Details of the Specialized Method}{
 

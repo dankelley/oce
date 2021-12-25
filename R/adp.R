@@ -677,9 +677,13 @@ setMethod(f="[[",
               ##>message("ISAD2CP=", ISAD2CP)
               metadataDerived <- c("coordinate")
               numberOfBeams <- if (ISAD2CP) 4 else x@metadata$numberOfBeams
-              dataDerived <- c(paste0("u", seq_len(numberOfBeams)),
-                  paste0("a", seq_len(numberOfBeams)),
-                  paste0("q", seq_len(numberOfBeams)))
+              if (is.null(numberOfBeams)) {
+                  dataDerived <- c("a", "u", "q")
+              } else {
+                  dataDerived <- c(paste0("u", seq_len(numberOfBeams)),
+                      paste0("a", seq_len(numberOfBeams)),
+                      paste0("q", seq_len(numberOfBeams)))
+              }
               if (i == "?")
                   return(list(metadata=sort(names(x@metadata)),
                           metadataDerived=sort(metadataDerived),
