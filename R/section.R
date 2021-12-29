@@ -1,3 +1,4 @@
+NEW<-TRUE
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 
 #' Class to Store Hydrographic Section Data
@@ -239,8 +240,9 @@ setMethod(f="summary",
                           padding <- rep(" ", width - nchar(name))
                           cat("    ", name, ":", padding, sep="")
                           flags <- NULL
+                          flagName <- paste0(name, "Flag")
                           for (i in seq_len(numStations)) {
-                              flags <- c(flags, as.numeric(object[["station", i]][[paste(name, "Flag", sep="")]]))
+                              flags <- c(flags, as.numeric(object@data$station[[i]][[flagName]]))
                           }
                           flagTable <- table(flags)
                           flagTableLength <- length(flagTable)
@@ -352,10 +354,59 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              # Catch "station" this early since "?" is slow
+              # FIXME: NEW_POSITION_FOR_SPEED {{{
+              if (NEW&&i == "station") {
+                  # All stations.
+                  if (missing(j))
+                      return(x@data$station)
+                  # A subset of stations, specified with j, which is either a
+                  # character value for station ID(s) or a numeric value for
+                  # sequence number(s).
+                  nj <- length(j)
+                  if (is.character(j)) { # station ID(s)
+                      stationNames <- unlist(lapply(x@data$station,
+                              function(station)
+                                  station@metadata$station))
+                      if (nj == 1L) {
+                          w <- which(stationNames == j)
+                          res <- if (length(w)) x@data$station[[w[1]]] else NULL
+                      } else {
+                          res <- vector("list", nj)
+                          for (jj in seq_len(nj)) {
+                              w <- which(stationNames == j[jj])
+                              res[[jj]] <- if (length(w)) x@data$station[[w[1]]] else NULL
+                          }
+                      }
+                  } else {             # sequence number(s)
+                      if (nj == 1L) {
+                          res <- x@data$station[[j]]
+                      } else {
+                          res <- vector("list", nj)
+                          for (jj in seq_len(nj)) {
+                              res[[jj]] <- x@data$station[[j[jj]]]
+                          }
+                      }
+                  }
+                  return(res)
+              }
+              # FIXME: }}} NEW_POSITION_FOR_SPEED
+
+              # FIXME: NEW_POSITION_FOR_SPEED {
+              # Data-quality flags are a special case
+              if (1 == length(grep(".*Flag$", i))) {
+                  baseName <- gsub("Flag$", "", i)
+                  # FIXME: should check all stations, not just the first
+                  if (baseName %in% names(x@data$station[[1]]@metadata$flags)) {
+                      return(unlist(lapply(x@data$station, function(ctd) ctd[[i]])))
+                  } else {
+                      stop("the stations within this section do not contain a '", baseName, "' flag")
+                  }
+              }
+
               # Determine all possible values, station by station. The results
               # are used by [["?"]] and also for lookups.
-              metadataStn <- dataStn <- metadataDerivedStn <- 
-                  dataDerivedStn <- NULL
+              metadataStn <- dataStn <- metadataDerivedStn <- dataDerivedStn <- NULL
               for (station in x@data$station) {
                   q <- station[["?"]]
                   metadataStn <- c(metadataStn, q$metadata)
@@ -378,18 +429,21 @@ setMethod(f="[[",
                           dataDerived=dataDerivedStn))
               }
               res <- NULL
-              ## Data-quality flags are a special case
+              # Data-quality flags are a special case
+              # FIXME: OLD_SHOULD_DELETE{
               if (1 == length(grep(".*Flag$", i))) {
                   baseName <- gsub("Flag$", "", i)
+                  # FIXME: should check all stations, not just the first
                   if (baseName %in% names(x@data$station[[1]]@metadata$flags)) {
-                      res <- unlist(lapply(x@data$station, function(ctd) ctd[[i]]))
-                      return(res)
+                      return(unlist(lapply(x@data$station, function(ctd) ctd[[i]])))
                   } else {
                       stop("the stations within this section do not contain a '", baseName, "' flag")
                   }
               }
+              ### FIXME: } OLD_SHOULD_DELETE
               nstation <- length(x@data$station)
-              if (i == "station") {
+              if (!NEW && i == "station") {
+                  message("OLD [[")
                   if (missing(j)) {    # all stations
                       res <- x@data$station
                   } else {             # specified stations
@@ -411,6 +465,7 @@ setMethod(f="[[",
                       } else {
                           nj <- length(j)
                           if (nj == 1) {
+                              message("OLD singular")
                               res <- x@data$station[[j]]
                           } else {
                               res <- vector("list", nj)
