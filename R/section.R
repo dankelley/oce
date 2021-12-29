@@ -1,4 +1,3 @@
-NEW<-TRUE
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 
 #' Class to Store Hydrographic Section Data
@@ -354,9 +353,14 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              # Catch "station" this early since "?" is slow
-              # FIXME: NEW_POSITION_FOR_SPEED {{{
-              if (NEW&&i == "station") {
+              # This is broken down into 3 cases.
+              #
+              # Case 1. Things that can be computed without looking deeply
+              # enough within @data$station to determine computable things.
+              # This determination is a bit slow, and is taken up in SECTION 2.
+              #
+              # Case 1.1 "station".
+              if (i == "station") {
                   # All stations.
                   if (missing(j))
                       return(x@data$station)
@@ -390,22 +394,61 @@ setMethod(f="[[",
                   }
                   return(res)
               }
-              # FIXME: }}} NEW_POSITION_FOR_SPEED
-
-              # FIXME: NEW_POSITION_FOR_SPEED {
-              # Data-quality flags are a special case
+              # Case 1.2: data-quality flags.
               if (1 == length(grep(".*Flag$", i))) {
                   baseName <- gsub("Flag$", "", i)
                   # FIXME: should check all stations, not just the first
                   if (baseName %in% names(x@data$station[[1]]@metadata$flags)) {
                       return(unlist(lapply(x@data$station, function(ctd) ctd[[i]])))
                   } else {
-                      stop("the stations within this section do not contain a '", baseName, "' flag")
+                      stop("First station lacks a '", baseName, "' flag, so assuming the same for all.")
                   }
               }
+              # Case 1.3: things stored in section@metadata.
+              if (i %in% names(x@metadata)) {
+                  if (i %in% c("longitude", "latitude")) {
+                      if (!missing(j) && j == "byStation") {
+                          return(x@metadata[[i]])
+                      } else {
+                          res <- NULL
+                          for (stn in seq_along(x@data$station))
+                              res <- c(res, rep(x@data$station[[stn]]@metadata[[i]], length(x@data$station[[stn]][["salinity"]])))
+                          return(res)
+                      }
+                  } else {
+                      return(x@metadata[[i]])
+                  }
+              }
+              # Case 1.4: station IDs.
+              if (i == "station ID")
+                  return(unlist(lapply(x@data$station, function(stn) stn[["station"]])))
+              # Case 1.5: dynamic height.
+              if (i == "dynamic height")
+                  return(swDynamicHeight(x))
+              # Case 1.6: distance along track.
+              if (i == "distance") {
+                  res <- NULL
+                  for (stn in seq_along(x@data$station)) {
+                      distance <- geodDist(x@data$station[[stn]][["longitude"]][1],
+                                           x@data$station[[stn]][["latitude"]][1],
+                                           x@data$station[[1]][["longitude"]][1],
+                                           x@data$station[[1]][["latitude"]][1])
+                      if (!missing(j) && j == "byStation")
+                          res <- c(res, distance)
+                      else
+                          res <- c(res, rep(distance, length(x@data$station[[stn]]@data$temperature)))
 
-              # Determine all possible values, station by station. The results
-              # are used by [["?"]] and also for lookups.
+                  }
+                  return(res)
+              }
+              # Case 1.7: time.
+              if (i == "time")
+                  return(numberAsPOSIXct(unlist(lapply(x@data$station, function(stn) stn[["time"]]))))
+
+              # Case 2. We are now done with things that can be determined by
+              # looking one level deep.  To extract individual data, we will
+              # need to know what is in each of the stations (and what can be
+              # computed from this content).
               metadataStn <- dataStn <- metadataDerivedStn <- dataDerivedStn <- NULL
               for (station in x@data$station) {
                   q <- station[["?"]]
@@ -422,80 +465,17 @@ setMethod(f="[[",
                       unique(metadataDerivedStn)))
               dataStn <- sort(unique(dataStn))
               dataDerivedStn <- sort(unique(dataDerivedStn))
+              # Case 2.1: indication of available values for i.
               if (i == "?") {
                   return(list(metadata=metadataStn,
                           metadataDerived=metadataDerivedStn,
                           data=dataStn,
                           dataDerived=dataDerivedStn))
               }
+              # Case 2.2: something inside stations (or computable from such).
               res <- NULL
-              # Data-quality flags are a special case
-              # FIXME: OLD_SHOULD_DELETE{
-              if (1 == length(grep(".*Flag$", i))) {
-                  baseName <- gsub("Flag$", "", i)
-                  # FIXME: should check all stations, not just the first
-                  if (baseName %in% names(x@data$station[[1]]@metadata$flags)) {
-                      return(unlist(lapply(x@data$station, function(ctd) ctd[[i]])))
-                  } else {
-                      stop("the stations within this section do not contain a '", baseName, "' flag")
-                  }
-              }
-              ### FIXME: } OLD_SHOULD_DELETE
               nstation <- length(x@data$station)
-              if (!NEW && i == "station") {
-                  message("OLD [[")
-                  if (missing(j)) {    # all stations
-                      res <- x@data$station
-                  } else {             # specified stations
-                      if (is.character(j)) {
-                          nj <- length(j)
-                          stationNames <- unlist(lapply(x@data$station,
-                                  function(x) x@metadata$station))
-                          if (nj == 1) {
-                              w <- which(stationNames == j)
-                              res <- if (length(w)) x@data$station[[w[1]]] else NULL
-                          } else {
-                              res <- vector("list", nj)
-                              for (jj in j) {
-                                  w <- which(stationNames == j)
-                                  res[[jj]] <- if (length(w)) x@data$station[[w[1]]]
-                                      else NULL
-                              }
-                          }
-                      } else {
-                          nj <- length(j)
-                          if (nj == 1) {
-                              message("OLD singular")
-                              res <- x@data$station[[j]]
-                          } else {
-                              res <- vector("list", nj)
-                              for (jj in j)
-                                  res[[jj]] <- x@data$station[[jj]]
-                          }
-                      }
-                  }
-                  return(res)
-              }
-              if (i %in% names(x@metadata)) {
-                  if (i %in% c("longitude", "latitude")) {
-                      if (!missing(j) && j == "byStation") {
-                          return(x@metadata[[i]])
-                      } else {
-                          res <- NULL
-                          for (stn in seq_along(x@data$station))
-                              res <- c(res, rep(x@data$station[[stn]]@metadata[[i]], length(x@data$station[[stn]][["salinity"]])))
-                          return(res)
-                      }
-                  } else {
-                      return(x@metadata[[i]])
-                  }
-              }
               if (i %in% c(dataStn, dataDerivedStn)) {
-                  #if (i %in% c("absolute salinity", "CT", "conservative temperature",
-                  #                    "density", "depth", "nitrite", "nitrate",
-                  #                    "potential temperature", "SA", "sigmaTheta",
-                  #                    "spice", "theta", "z",
-                  #                    names(x@data$station[[1]]@data))) {
                   if (!missing(j) && substr(j, 1, 4) == "grid") {
                       if (j == "grid:distance-pressure") {
                           numStations <- length(x@data$station)
@@ -523,50 +503,20 @@ setMethod(f="[[",
                           return(NULL)
                       }
                   } else {
-                      ## Note that nitrite and nitrate might be computed, not stored
+                      # Note that nitrite and nitrate might be computed, not stored
                       if (!missing(j) && j == "byStation") {
-                          ##message("section[['", i, "', 'byStation']] START")
                           res <- vector("list", nstation)
                           for (istation in seq_len(nstation))
                               res[[istation]] <- x@data$station[[istation]][[i]]
-                          ##message("section[['", i, "', 'byStation']] END")
                       } else {
-                          ##message("section[['", i, "']] START")
                           res <- NULL
                           for (station in x[["station"]])
                               res <- c(res, station[[i]])
-                          ##message("section[['", i, "']] END")
                       }
                       return(res)
                   }
               }
-              if ("station ID" == i) {
-                  res <- NULL
-                  for (stn in x[['station']])
-                      res <- c(res, stn[['station']])
-                  return(res)
-              }
-              if ("dynamic height" == i)
-                  return(swDynamicHeight(x))
-              if ("distance" == i) {
-                  res <- NULL
-                  for (stn in seq_along(x@data$station)) {
-                      distance <- geodDist(x@data$station[[stn]][["longitude"]][1],
-                                           x@data$station[[stn]][["latitude"]][1],
-                                           x@data$station[[1]][["longitude"]][1],
-                                           x@data$station[[1]][["latitude"]][1])
-                      if (!missing(j) && j == "byStation")
-                          res <- c(res, distance)
-                      else
-                          res <- c(res, rep(distance, length(x@data$station[[stn]]@data$temperature)))
-
-                  }
-                  return(res)
-              }
-              if ("time" == i) {
-                  ## time is not in the overall metadata ... look in the individual objects
-                  return(numberAsPOSIXct(unlist(lapply(x@data$station, function(stn) stn[["time"]]))))
-              }
+              # Case 3: unknown, so drop down a level.
               callNextMethod()
           })                           # [[
 
