@@ -136,14 +136,30 @@ setMethod(f="summary",
 #' data(topoWorld)
 #' dim(topoWorld[['z']])
 #'
-#' @section Details of the specialized topo method:
-#' There are no special features for [topo-class] data;
-#' the general method is used directly.
+#' @section Details of the Specialized Method:
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items are each NULL, because
+#' no derived values are available for `topo` objects.
+#'
 #' @template sub_subTemplate
+#'
+#' @author Dan Kelley
+#'
 #' @family things related to topo data
 setMethod(f="[[",
           signature(x="topo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=NULL))
               callNextMethod()         # [[
           })
 

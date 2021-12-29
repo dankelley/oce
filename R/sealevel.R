@@ -1,3 +1,6 @@
+# vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4
+
+
 #' Class to Store Sealevel Data
 #'
 #' This class stores sealevel data, e.g. from a tide gauge.
@@ -204,12 +207,37 @@ setMethod(f="subset",
 #'
 #' @param x a [sealevel-class] object.
 #'
+#' @section Details of the Specialized Method:
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items are each NULL, because
+#' no derived values are defined by [sealevel-class] objects.
+#'
+#' * In many cases, the focus will be on variations of
+#' sealevel elevation over time, so it is common to use e.g.
+#' `x[["time"]]` and `x[["elevation"]]` to retrieve vectors
+#' of these quantities. Another common task is to retrieve
+#' the location of the observations, using e.g. `x[["longitude"]]`
+#' and `x[["latitude"]]`.
+#'
 #' @template sub_subTemplate
+#'
+#' @author Dan Kelley
 #'
 #' @family things related to sealevel data
 setMethod(f="[[",
           signature(x="sealevel", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=NULL))
               callNextMethod()         # [[
           })
 

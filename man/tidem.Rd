@@ -231,8 +231,11 @@ summary(tide)
 extractAIC(tide[["model"]])
 
 # Fake data at M2
+library(oce)
+data("tidedata")
+M2 <- with(tidedata$const, freq[name=="M2"])
 t <- seq(0, 10*86400, 3600)
-eta <- sin(0.080511401 * t * 2 * pi / 3600)
+eta <- sin(M2 * t * 2 * pi / 3600)
 sl <- as.sealevel(eta)
 m <- tidem(sl)
 summary(m)

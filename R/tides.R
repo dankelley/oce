@@ -252,17 +252,30 @@ setMethod(f="summary",
               invisible(NULL)
           })
 
-#' Extract Something From a Tidem Object
+#' Extract Something From a tidem Object
 #'
 #' @param x a [tidem-class] object.
 #'
-#' @section Details of the specialized `tidem` method:
+#' @section Details of the Specialized Method:
 #'
-#' A vector of the frequencies of fitted constituents is recovered
-#' with e.g. `x[["frequency"]]`. Similarly, amplitude is
-#' recovered with e.g. `x[["amplitude"]]` and phase with
-#' e.g. `x[["phase"]]`. If any other string is specified, then
-#' the underlying accessor \code{\link{[[,oce-method}}) is used.
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The 
+#' `metadataDerived` holds only `""`, because
+#' no derived metadata values are defined for `cm` objects.
+#'
+#' * If `i` is `"frequency"` or `"freq"`, then a vector of
+#' constituent frequencies (stored
+#' as `freq` in the data slot) is returned.
+#'
+#' * If `i` is `"amplitude"` then a vector of constituent amplitudes
+#' is returned.
+#'
+#' * If `i` is `"phase"` then a vector of constituent phases
+#' is returned.
 #'
 #' @template sub_subTemplate
 #'
@@ -270,15 +283,14 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature(x="tidem", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              if (i == "frequency") {
-                  x@data$freq
-              } else if (i == "amplitude") {
-                  x@data$amplitude
-              } else if (i == "phase") {
-                  x@data$phase
-              } else {
-                  callNextMethod()         # [[
-              }
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived="frequency"))
+              if (i == "frequency")
+                  return(x@data$freq)
+              callNextMethod()         # [[
           })
 
 #' Replace Parts of a Tidem Object
@@ -607,8 +619,9 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oc
 #'
 #' @examples
 #' ## Look up values for the M2 constituent in Halifax Harbour, Canada.
+#' library(oce)
 #' data("tidedata")
-#' j  <- which(tidedata$const$name=="M2")
+#' j <- with(tidedata$const, which(name=="M2"))
 #' tidemVuf(t=as.POSIXct("2008-01-22 18:50:24"), j=j, lat=44.63)
 #'
 #' @references
@@ -1060,8 +1073,11 @@ tidemConstituentNameFix <- function(names, debug=1)
 #' extractAIC(tide[["model"]])
 #'
 #' # Fake data at M2
+#' library(oce)
+#' data("tidedata")
+#' M2 <- with(tidedata$const, freq[name=="M2"])
 #' t <- seq(0, 10*86400, 3600)
-#' eta <- sin(0.080511401 * t * 2 * pi / 3600)
+#' eta <- sin(M2 * t * 2 * pi / 3600)
 #' sl <- as.sealevel(eta)
 #' m <- tidem(sl)
 #' summary(m)

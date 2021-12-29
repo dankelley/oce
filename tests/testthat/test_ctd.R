@@ -1,6 +1,22 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+# https://github.com/dankelley/oce/issues/1891
+test_that("ctd[[\"?\"]] works (issue 1891)", {
+    data(section)
+    ctd <- section[["station", 10]]
+    # Test listing
+    available <- ctd[["?"]]
+    expect_true("time" %in% available$metadataDerived)
+    expect_true("SA" %in% available$dataDerived)
+    # Test whether missing still works
+    expect_true(is.null(ctd[["bark"]]))
+    # Test whether a stored value still works
+    expect_equal(ctd[["salinity"]], ctd@data$salinity)
+    # Test whether a computed value still works
+    expect_equal(ctd[["SA"]], swAbsoluteSalinity(ctd))
+})
+
 # https://github.com/dankelley/oce/issues/1898
 test_that("as.ctd() handles location well (issue 1898)", {
     data(ctd)
@@ -14,7 +30,6 @@ test_that("as.ctd() handles location well (issue 1898)", {
     expect_true("longitude" %in% names(ctd2@metadata))
     expect_true("latitude" %in% names(ctd2@metadata))
 })
-
 
 test_that("ctdRepair() works as expected", {
     data(ctd)
@@ -383,7 +398,8 @@ test_that("pressure accessor handles psi unit", {
     # fake data in psi ... [[]] should return in dbar
     ctd@data$pressure <- porig / 0.6894757 # 1 psi=6894.757Pa=0.6894756 dbar
     ctd@metadata$units$pressure <- list(unit=expression(psi), scale="")
-    expect_equal(porig, ctd[['pressure']])
+    expect_warning(ptest <- ctd[["pressure"]], "converting pressure from PSI to dbar")
+    expect_equal(porig, ptest)
 })
 
 test_that("pressure accessor handles missing pressure", {

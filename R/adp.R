@@ -1,4 +1,4 @@
-## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+# vim: tw=80 shiftwidth=4 softtabstop=4 expandtab:
 
 #' Class to Store adp (ADCP) Data
 #'
@@ -624,6 +624,38 @@ setMethod(f="concatenate",
 #'
 #' @param x an [adp-class] object.
 #'
+#' @section Details of the Specialized Method:
+#'
+#' Note that the entries within [adp-class] objects vary greatly, from
+#' instrument to instrument, and so are only sketched here, and in the output
+#' from `[["?"]]`.
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items are *not* authoritative, because
+#' information provided by different instruments is so varied.
+#'
+#' * If `i` is `"u1"` then the return value is `v[,1]`. The
+#' same holds for 2, etc., depending on the number of beams in
+#' the instrument.
+#'
+#' * If `i` is `"a1"` then signal amplitude is returned, and similarly
+#' for other digits. The results can be in [raw()] or numeric form,
+#' as shown in the examples.
+#'
+#' * If `i` is `"q1"` then signal quality is returned, and similarly
+#' for other digits.  As with amplitude, the result can be in [raw()]
+#' or numeric form.
+#'
+#' * If `i` is `"coordinate"`, then the coordinate system is
+#' retrieved.
+#'
+#' @template sub_subTemplate
+#'
 #' @examples
 #' data(adp)
 #' # Tests for beam 1, distance bin 1, first 5 observation times
@@ -631,17 +663,6 @@ setMethod(f="concatenate",
 #' adp[["a"]][1:5,1,1]
 #' adp[["a", "numeric"]][1:5,1,1]
 #' as.numeric(adp[["a"]][1:5,1,1]) # same as above
-#'
-#' @template sub_subTemplate
-#'
-#' @section Details of the specialized `adp` method:
-#'
-#' In addition to the usual extraction of elements by name, some shortcuts
-#' are also provided, e.g. `x[["u1"]]` retrieves `v[,1]`, and similarly
-#' for the other velocity components. The `a` and `q`
-#' data can be retrieved in [raw()] form or numeric
-#' form (see examples). The coordinate system may be
-#' retrieved with e.g. `x[["coordinate"]]`.
 #'
 #' @author Dan Kelley
 #'
@@ -654,6 +675,20 @@ setMethod(f="[[",
                   stop("In [[,adp-method() : may only extract 1 item at a time.\n", call.=FALSE)
               ISAD2CP <- is.ad2cp(x)
               ##>message("ISAD2CP=", ISAD2CP)
+              metadataDerived <- c("coordinate")
+              numberOfBeams <- if (ISAD2CP) 4 else x@metadata$numberOfBeams
+              if (is.null(numberOfBeams)) {
+                  dataDerived <- c("a", "u", "q")
+              } else {
+                  dataDerived <- c(paste0("u", seq_len(numberOfBeams)),
+                      paste0("a", seq_len(numberOfBeams)),
+                      paste0("q", seq_len(numberOfBeams)))
+              }
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=sort(metadataDerived),
+                          data=sort(names(x@data)),
+                          dataDerived=sort(dataDerived)))
               if (i == "distance") {
                   ##>message("asking for 'distance'")
                   if (ISAD2CP) {

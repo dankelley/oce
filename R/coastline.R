@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
+# vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 
 #' Class to Store Coastline Data
 #'
@@ -70,10 +70,20 @@ setMethod(f="initialize",
 #'
 #' @templateVar class coastline
 #'
-#' @section Details of the specialized `coastline` method:
-#' There are no specialized methods, and invocations such as
-#' `coastline[["longitude"]]` and `coastline[["latitude"]]`
-#' probably account for the vast majority of use cases.
+#' @section Details of the Specialized Method:
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items are each NULL, because
+#' no derived values are defined for [coastline-class] objects.
+#'
+#' * In many cases, the focus will be on the coastline trace
+#' in longitude-latitude space, so `x[["longitude"]]`
+#' and `x[["latitude"]]` are commonly used.
 #'
 #' @template sub_subTemplate
 #'
@@ -83,6 +93,11 @@ setMethod(f="initialize",
 setMethod(f="[[",
           signature(x="coastline", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=NULL,
+                          data=sort(names(x@data)),
+                          dataDerived=NULL))
               callNextMethod()         # [[
           })
 

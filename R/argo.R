@@ -1,4 +1,4 @@
-# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 #' Class to Store Argo Data
 #'
 #' This class stores data from Argo floats.
@@ -64,18 +64,31 @@ NULL
 #'
 #' @templateVar class argo
 #'
-#' @section Details of the specialized `argo` method:
+#' @section Details of the Specialized Method:
 #'
-#' There are several possibilities, depending on the nature of `i`.
 #' Note that [argo-class] data may contain both unadjusted data and adjusted
 #' data.  By default, this extraction function refers to the former, but a
 #' preference for the latter may be set with [preferAdjusted()], the
 #' documentation of which explains (fairly complex) details.
 #'
+#' The results from `argo[[i]]` or `argo[[i,j]]` depend on the
+#' nature of `i` and (if provided) `j`. The details are as follows.
+#'
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items hold the names of things
+#' that can be inferred from the object's contents, e.g.
+#' `"SA"` is named in `dataDerived`, indicating that
+#' `argo[["SA"]]` is permitted (to compute Absolute Salinity).
+#'
 #' * If `i` is `"profile"` and `j` is an integer vector,
 #' then an argo object is returned, as specified by `j`. For example,
 #' `argo[["profile", 2:5]]` is equivalent to
-#' `subset(argo, profile \%in\% 2:5)`.
+#' `subset(argo, profile %in% 2:5)`.
 #'
 #' * If `i` is `"CT"`, then
 #' Conservative Temperature is returned, as computed with
@@ -130,8 +143,9 @@ NULL
 #' fivenum(argo[["salinity"]],na.rm=TRUE)
 #' fivenum(argo[["salinity"]][argo[["salinityFlag"]]==1],na.rm=TRUE)
 #'
-#' @family things related to argo data
 #' @author Dan Kelley
+#'
+#' @family things related to argo data
 setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -139,6 +153,16 @@ setMethod(f="[[",
               dots <- list(...)
               debug <- if ("debug" %in% names(dots)) dots$debug else 0
               oceDebug(debug, "[[,argo-method(\"", i, "\") {\n", sep="", style="bold", unindent=1)
+              metadataDerived <- c("ID", "cycle", "*Flag", "*Unit")
+              dataDerived <- c("profile", "CT", "N2", "SA", "sigmaTheta",
+                  "theta", "sigma0", "sigma1", "sigma2", "sigma3", "sigma4",
+                  "z", "depth", paste("Absolute", "Salinity"),
+                  paste("Conservative", "Temperature"))
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=sort(metadataDerived),
+                          data=sort(names(x@data)),
+                          dataDerived=sort(dataDerived)))
               if (i == "profile") {
                   ## This assignment to profile is merely to prevent a NOTE from
                   ## the syntax checker. It is needed because of issues with non-standard
@@ -153,7 +177,10 @@ setMethod(f="[[",
               }
               namesData <- names(x@data)
               ## handle some computed items
-              if (i %in% c("CT", "N2", "SA", "sigmaTheta", "theta", "sigma0", "sigma1", "sigma2", "sigma3", "sigma4")) {
+              if (i %in% c("CT", paste("conservative", "temperature"), "N2",
+                      "SA", paste("Absolute", "Salinity"), "sigmaTheta",
+                      "theta", "sigma0", "sigma1", "sigma2", "sigma3",
+                      "sigma4")) {
                   salinity <- x[["salinity", debug=debug-1]]
                   pressure <- x[["pressure", debug=debug-1]]
                   temperature <- x[["temperature", debug=debug-1]]
@@ -161,7 +188,7 @@ setMethod(f="[[",
                   ## Do not need longitude and latitude if eos="unesco", but retain for code clarity
                   longitude <- rep(x@data$longitude, each=dim[1])
                   latitude <- rep(x@data$latitude, each=dim[1])
-                  if (i == "CT") {
+                  if (i %in% c("CT", "Conservative Temperature")) {
                       res <- gsw_CT_from_t(x[["SA"]], temperature, pressure)
                   } else if (i == "N2") {
                       ##nprofile <- dim[2]
@@ -180,7 +207,7 @@ setMethod(f="[[",
                               res[,i] <- rep(NA, length(salinity[,i]))
                           }
                       }
-                  } else if (i == "SA") {
+                  } else if (i %in% c("SA", "Absolute Salinity")) {
                       res <- gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)
                   } else if (i %in% c("sigma0", "sigma1", "sigma2", "sigma3", "sigma4")) {
                       SA <- gsw_SA_from_SP(salinity, pressure, longitude=longitude, latitude=latitude)

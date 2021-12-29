@@ -586,14 +586,12 @@ setMethod(f="summary",
 #' data(ctd)
 #' head(ctd[["temperature"]])
 #'
-#' @template sub_subTemplate
-#'
-#' @section Details of the specialized `ctd` method:
+#' @section Details of the Specialized Method:
 #'
 #' Some uses of \code{\link{[[,ctd-method}} involve direct retrieval of
 #' items within the `data` slot of the `ctd` object,
 #' while other uses involve calculations based on items in that
-#' `data` slot. For an example, all `ctd` objects
+#' `data` slot. For example, all `ctd` objects
 #' should hold an item named `temperature` in the `data`
 #' slot, so for example `x[["temperature"]]` will retrieve that
 #' item. By contrast, `x[["sigmaTheta"]]` is taken to be a
@@ -630,78 +628,94 @@ setMethod(f="summary",
 #' will detect the setup, and subtract nitrite from the sum to yield
 #' nitrate.
 #'
-#' The list given below provides notes on some quantities that are,
-#' or may be, computed.
+#' The list given below provides notes on some quantities that are
+#' available using e.g. `ctd[[i]]`.
 #'
-#' * `conductivity` without a second argument (e.g. `a[["conductivity"]]`)
-#' returns the value stored in the object. However, if a second argument is given,
+#' * If `i` is `"?"`, then the return value is a list
+#' containing four items, each of which is a character vector
+#' holding the names of things that can be accessed with `[[`.
+#' The `data` and `metadata` items hold the names of
+#' entries in the object's data and metadata
+#' slots, respectively. The `dataDerived`
+#' and `metadataDerived` items hold the names of things
+#' that can be inferred from the object's contents, e.g.
+#' `"SA"` is named in `dataDerived`, indicating that
+#' `argo[["SA"]]` is permitted (to compute Absolute Salinity).
+#'
+#' * If `i` is `"conductivity"` without a second argument (e.g. `a[["conductivity"]]`)
+#' then the return value is the seawater electrical conductivity (if available
+#' or computable). However, if a second argument is given,
 #' and it is string specifying a unit, then conversion is made to that unit. The
 #' permitted units are: either `""` or `"ratio"` (for ratio),
 #' `"uS/cm"`, `"mS/cm"` and `"S/m"`. The calculations are based on
 #' the definition of conductivity ratio as the ratio between measured conductivity
 #' and the standard value 4.2914 S/m.
 #'
-#' * `CT` or `Conservative Temperature`: Conservative Temperature,
-#' computed with [gsw::gsw_CT_from_t()].
+#' * If `i` is `"CT"` or `"Conservative Temperature"` then Conservative
+#' Temperature, computed with [gsw::gsw_CT_from_t()], is returned.
 #'
-#' * `density`: seawater density, computed with [swRho]`(x)`.
-#' (Note that it may be better to call that function directly, to gain
+#' * If `i` is `"density"` then seawater density, computed with [swRho]`(x)`,
+#' is returned. (Note that it may be better to call that function directly, to gain
 #' control of the choice of equation of state, etc.)
 #'
-#' * `depth`: Depth in metres below the surface, computed
-#' with [swDepth]`(x)`.
+#' * If `i` is `"depth"` then the depth in metres below the surface, computed
+#' with [swDepth]`(x)`, is returned.
 #'
-#' * `N2`: Square of Brunt-Vaisala frequency, computed  with [swN2]`(x)`.
+#' * If `i` is `"N2"` then the square of Brunt-Vaisala frequency, computed  with
+#' [swN2]`(x)`, is returned.
 #'
-#' * `potential temperature`: Potential temperature in the
-#' UNESCO formulation, computed with [swTheta]`(x)`.
-#' This is a synonym for `theta`.
+#' * If `i` is `"potential temperature"` or `"theta"`, then potential temperature in the
+#' UNESCO formulation, computed with [swTheta]`(x)`, is returned.
 #'
-#' * `Rrho`: Density ratio, computed with [swRrho]`(x)`.
+#' * If `i` is `"Rrho"` then density ratio, computed with [swRrho]`(x)`, is
+#' returned.
 #'
-#' * `SA` or `Absolute Salinity`: Absolute Salinity,
-#' computed with [gsw::gsw_SA_from_SP()].
+#' * If `i` is `"SA"` or `"Absolute Salinity"` then Absolute Salinity,
+#' computed with [gsw::gsw_SA_from_SP()], is returned.
 #' The calculation involves location as well as measured water properties.
 #' If the object `x` does not containing information on the location,
 #' then 30N and 60W is used for the calculation, and a warning is generated.
 #'
-#' * `sigmaTheta`: A form of potential density anomaly, computed with
-#' [swSigmaTheta]`(x)`.
+#' * If `i` is `"sigmaTheta"` then a form of potential density anomaly, computed with
+#' [swSigmaTheta]`(x)`, is returned.
 #'
-#' * `sigma0` Equal to `sigmaTheta`, i.e. potential density anomaly
-#' referenced to a pressure of 0dbar, computed with [swSigma0]`(x)`.
+#' * If `i` is `"sigma0"` then potential density anomaly
+#' referenced to a sea pressure of 0dbar (the surface), computed with [swSigma0]`(x)`,
+#' is returned.
 #'
-#' * `sigma1`: Potential density anomaly
-#' referenced to a pressure of 1000dbar, computed with [swSigma1]`(x)`.
+#' * If `i` is `"sigma2"` then potential density anomaly
+#' referenced to a sea pressure of 1000dbar, computed with [swSigma1]`(x)`,
+#' is returned.
 #'
-#' * `sigma2`: Potential density anomaly
-#' referenced to a pressure of 2000dbar, computed with [swSigma2]`(x)`.
+#' * If `i` is `"sigma2"` then potential density anomaly
+#' referenced to a sea pressure of 2000dbar, computed with [swSigma2]`(x)`,
+#' is returned.
 #'
-#' * `sigma3`: Potential density anomaly
-#' referenced to a pressure of 3000dbar, computed with [swSigma3]`(x)`.
+#' * If `i` is `"sigma3"` then potential density anomaly
+#' referenced to a sea pressure of 3000dbar, computed with [swSigma3]`(x)`,
+#' is returned.
 #'
-#' * `sigma4`: potential density anomaly
-#' referenced to a pressure of 4000dbar, computed with [swSigma4]`(x)`.
+#' * If `i` is `"sigma4"` then potential density anomaly
+#' referenced to a sea pressure of 4000dbar, computed with [swSigma4]`(x)`,
+#' is returned.
 #'
-#' * `SP`: Salinity on the Practical Salinity Scale, which is
-#' `salinity` in the `data` slot.
+#' * If `i` is `"SP"` then salinity on the Practical Salinity Scale, which is
+#' `salinity` in the `data` slot, is returned.
 #'
-#' * `spice` or `spiciness0`: a variable that is in some sense
-#' orthogonal to density, calculated with [swSpice]`(x)`.
+#' * If `i` is `"spice"` or `"spiciness0"` then a variable that is in some sense
+#' orthogonal to density, calculated with [swSpice]`(x)`, is returned.
 #' Note that this is defined differently for `eos="unesco"` and
 #' `eos="gsw"`.
 #'
-#' * `SR`: Reference Salinity computed with [gsw::gsw_SR_from_SP()].
+#' * If `i` is `"SR"` then Reference Salinity, computed with
+#' [gsw::gsw_SR_from_SP()], is returned.
 #'
-#' * `Sstar`: Preformed Salinity computed with [gsw::gsw_SR_from_SP()].
+#' * If `i` is `"Sstar"` then Preformed Salinity, computed with
+#' [gsw::gsw_SR_from_SP()], is returned.
 #' See `SA` for a note on longitude and latitude.
 #'
-#' * `theta`: potential temperature in the UNESCO formulation,
-#' computed with [swTheta]`(x)`. This is a synonym for
-#' `potential temperature`.
-#'
-#' * `time`: returns either a vector of times, a single
-#' time, or `NULL`. A vector is returned if `time`
+#' * If `i` is `"time"` then either vector of times or a single
+#' time, is returned, if available. A vector is returned if `time`
 #' is present in the `data` slot, or if a time can be
 #' inferred from other entries in the `data` slot (some of which,
 #' such as the common `timeS`, also employ
@@ -713,9 +727,11 @@ setMethod(f="summary",
 #' present version of oce, only for data read by [read.ctd.sbe()],
 #' the documentation of which explains how times are computed.
 #'
-#' * `z`: Vertical coordinate in metres above the surface, computed with
-#' [swZ]`(x)`.
+#' * If `i` is `"z"` then vertical coordinate in metres
+#' above the surface, computed with [swZ]`(x)`, is returned.
 #'
+#'
+#' @template sub_subTemplate
 #'
 #' @author Dan Kelley
 #'
@@ -723,117 +739,140 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              # message("i=\"", i, "\"")
               data <- x@data
               metadata <- x@metadata
               dataNames <- names(data)
               metadataNames <- names(metadata)
-              ## message("i=\"", i, "\"")
-              if (i == "conductivity") {
-                  C <- data$conductivity
-                  ##message("i=", i, ", j=", if (missing(j)) "(missing)" else j)
-                  if (!is.null(C) && !missing(j)) {
-                      if (!(j %in% c("", "ratio", "uS/cm", "mS/cm", "S/m")))
-                          stop("unknown conductivity unit \"", j, "\"; must be \"\", \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
-                      if (j == "")
-                          j <- "ratio" # lets us use switch()
-                      unit <- metadata$units$conductivity$unit
-                      if (is.null(unit) || !length(unit)) {
-                          ## FIXME: maybe should look at median value, to make a guess
-                          ## warning("ctd object lack conductivity units; assuming \"ratio\"")
-                          unit <- "ratio"
-                      }
-                      ##message("A")
-                      unit <- as.character(unit)
-                      ##message("next is unit:")
-                      ##print(dput(unit))
-                      C <- data$conductivity
-                      ##message("B")
-                      ## Rather than convert from 3 inputs to 3 outputs, express as ratio, then convert as desired
-                      if (!unit %in% c("ratio", "uS/cm", "mS/cm", "S/m"))
-                          stop("object has unknown conductivity unit \"", unit, "\"; must be \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
-                      C <- C / switch(unit, "uS/cm"=42914, "mS/cm"=42.914, "S/m"=4.2914, "ratio"=1)
-                      C <- C * switch(j, "uS/cm"=42914, "mS/cm"=42.914, "S/m"=4.2914, "ratio"=1)
-                  }
-                  C
-              } else if (i == "salinity" || i == "SP") {
-                  if ("salinity" %in% dataNames) {
-                      S <- data$salinity
-                  } else {
-                      C <- data$conductivity
-                      if (!is.null(C)) {
-                          if (is.null(metadata$units$conductivity)) {
-                              warning("conductivity has no unit, so guessing it is conductivity-ratio. Be cautious on calculated salinity.")
-                          } else {
-                              unit <- as.character(metadata$units$conductivity$unit)
-                              if (0 == length(unit)) {
-                                  S <- swSCTp(C, x[["temperature"]], x[["pressure"]])
-                                  warning("constructed salinity from temperature, conductivity-ratio and pressure")
-                              } else if (unit == "uS/cm") {
-                                  S <- swSCTp(C/42914.0, x[["temperature"]], x[["pressure"]])
-                                  warning("constructed salinity from temperature, conductivity and pressure")
-                              } else if (unit == "mS/cm") {
-                                  ## e.g. RSK
-                                  S <- swSCTp(C/42.914, x[["temperature"]], x[["pressure"]])
-                                  warning("constructed salinity from temperature, conductivity and pressure")
-                              } else if (unit == "S/m") {
-                                  S <- swSCTp(C/4.2914, x[["temperature"]], x[["pressure"]])
-                                  warning("constructed salinity from temperature, conductivity and pressure")
-                              } else {
-                                  stop("unrecognized conductivity unit '", unit, "'; only uS/cm, mS/cm and S/m are handled")
-                              }
-                          }
-                      } else {
-                          stop("the object's data slot lacks 'salinity', and it cannot be calculated since 'conductivity' is also missing")
-                      }
-                  }
-                  S
-              } else if (i == "SR") {
-                  gsw::gsw_SR_from_SP(SP=x[["salinity"]])
-              } else if (i == "Sstar") {
-                  if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
-                      stop("object lacks location information, so Sstar cannot be computed")
-                  n <- length(data$salinity)
-                  ## Lengthen lon and lat if necessary, by repeating.
-                  lon <- metadata$longitude
-                  if (n != length(lon))
-                      lon <- rep(metadata$longitude, length.out=n)
-                  lat <- metadata$latitude
-                  if (n != length(lat))
-                      lat <- rep(metadata$latitude, length.out=n)
-                  lon <- ifelse(lon < 0, lon + 360, lon) # not required because gsw_saar() does this ... but UNDOCUMENTED
-                  ## Do the calculation in two steps
-                  SA <- gsw::gsw_SA_from_SP(SP=x[["salinity"]], p=x[["pressure"]], longitude=lon, latitude=lat)
-                  gsw::gsw_Sstar_from_SA(SA=SA, p=x[["pressure"]], longitude=lon, latitude=lat)
-              } else if (i == "temperature") {
-                  scale <- metadata$units[["temperature"]]$scale
-                  if (!is.null(scale) && "IPTS-48" == scale) {
-                      T90fromT48(x@data$temperature)
-                  } else if (!is.null(scale) && "IPTS-68" == scale) {
-                      T90fromT68(x@data$temperature)
-                  } else {
-                      x@data$temperature
-                  }
-              } else if (i == "pressure") {
-                  if ("pressure" %in% dataNames) {
-                      pressure <- data$pressure
-                      unit <- metadata$units[["pressure"]]$unit
-                      ## NOTE: 2019-04-29: The next will always return pressure, from the
-                      ## else part of the conditional. This is because oce
-                      ## stores pressure as dbar, and copies any original PSI data
-                      ## into data$pressurePSI.
-                      if (!is.null(unit) && "psi" == as.character(unit))
-                          pressure * 0.6894757 # 1 psi=6894.757 Pa
-                      else pressure
-                  } else {
-                      if ("depth" %in% dataNames)
-                          swPressure(data$depth)
-                      else stop("object's data slot does not contain 'pressure' or 'depth'")
-                  }
+              # For 1891: ctd[["?"]] lists known items, stored or computed
+              # https://github.com/dankelley/oce/issues/1891
+              # Use paste() for two-word items so a text editor won't break strings
+              metadataDerived <- c("time", "*Flag", "*Unit")
+              #>dataDerived <- c("SP", "SR", "Sstar", "N2", "density",
+              #>    "sigmaTheta", "sigma0", "sigma1", "sigma2", "sigma3",
+              #>    "sigma4", "theta", paste("potential", "temperature"), "Rrho",
+              #>    "spice", "spiciness", "SA", paste("Absolute", "Salinity"),
+              #>    "CT", paste("Conservative", "Temperature"), "z", "depth")
+              if (i == "?")
+                  return(list(metadata=sort(names(x@metadata)),
+                          metadataDerived=sort(metadataDerived),
+                          data=sort(names(x@data)),
+                          dataDerived=computableWaterProperties(x)))
+              #>if (!i %in% iKnown) {
+              #>    # message("FIXME: make ctd[[\"", i, "\"]] work")
+              #>    return(NULL)
+              #>}
+              #>if (i == "conductivity") {
+              #>    C <- data$conductivity
+              #>    ##message("i=", i, ", j=", if (missing(j)) "(missing)" else j)
+              #>    if (!is.null(C) && !missing(j)) {
+              #>        if (!(j %in% c("", "ratio", "uS/cm", "mS/cm", "S/m")))
+              #>            stop("unknown conductivity unit \"", j, "\"; must be \"\", \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
+              #>        if (j == "")
+              #>            j <- "ratio" # lets us use switch()
+              #>        unit <- metadata$units$conductivity$unit
+              #>        if (is.null(unit) || !length(unit)) {
+              #>            ## FIXME: maybe should look at median value, to make a guess
+              #>            ## warning("ctd object lack conductivity units; assuming \"ratio\"")
+              #>            unit <- "ratio"
+              #>        }
+              #>        ##message("A")
+              #>        unit <- as.character(unit)
+              #>        ##message("next is unit:")
+              #>        ##print(dput(unit))
+              #>        C <- data$conductivity
+              #>        ##message("B")
+              #>        ## Rather than convert from 3 inputs to 3 outputs, express as ratio, then convert as desired
+              #>        if (!unit %in% c("ratio", "uS/cm", "mS/cm", "S/m"))
+              #>            stop("object has unknown conductivity unit \"", unit, "\"; must be \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
+              #>        C <- C / switch(unit, "uS/cm"=42914, "mS/cm"=42.914, "S/m"=4.2914, "ratio"=1)
+              #>        C <- C * switch(j, "uS/cm"=42914, "mS/cm"=42.914, "S/m"=4.2914, "ratio"=1)
+              #>    }
+              #>    C
+              #>} else if (i == "salinity" || i == "SP") {
+              #>    message("OLD")
+              #>    if ("salinity" %in% dataNames) {
+              #>        S <- data$salinity
+              #>    } else {
+              #>        C <- data$conductivity
+              #>        if (!is.null(C)) {
+              #>            if (is.null(metadata$units$conductivity)) {
+              #>                warning("conductivity has no unit, so guessing it is conductivity-ratio. Be cautious on calculated salinity.")
+              #>            } else {
+              #>                unit <- as.character(metadata$units$conductivity$unit)
+              #>                if (0 == length(unit)) {
+              #>                    S <- swSCTp(C, x[["temperature"]], x[["pressure"]])
+              #>                    warning("constructed salinity from temperature, conductivity-ratio and pressure")
+              #>                } else if (unit == "uS/cm") {
+              #>                    S <- swSCTp(C/42914.0, x[["temperature"]], x[["pressure"]])
+              #>                    warning("constructed salinity from temperature, conductivity and pressure")
+              #>                } else if (unit == "mS/cm") {
+              #>                    ## e.g. RSK
+              #>                    S <- swSCTp(C/42.914, x[["temperature"]], x[["pressure"]])
+              #>                    warning("constructed salinity from temperature, conductivity and pressure")
+              #>                } else if (unit == "S/m") {
+              #>                    S <- swSCTp(C/4.2914, x[["temperature"]], x[["pressure"]])
+              #>                    warning("constructed salinity from temperature, conductivity and pressure")
+              #>                } else {
+              #>                    stop("unrecognized conductivity unit '", unit, "'; only uS/cm, mS/cm and S/m are handled")
+              #>                }
+              #>            }
+              #>        } else {
+              #>            stop("the object's data slot lacks 'salinity', and it cannot be calculated since 'conductivity' is also missing")
+              #>        }
+              #>    }
+              #>    S
+              #>} else if (i == "SR") {
+              #>    message("old SR")
+              #>    gsw::gsw_SR_from_SP(SP=x[["salinity"]])
+              #>} else if (i == "Sstar") {
+              #>    message("OLD Sstar")
+              #>    if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
+              #>        stop("object lacks location information, so Sstar cannot be computed")
+              #>    n <- length(data$salinity)
+              #>    ## Lengthen lon and lat if necessary, by repeating.
+              #>    lon <- metadata$longitude
+              #>    if (n != length(lon))
+              #>        lon <- rep(metadata$longitude, length.out=n)
+              #>    lat <- metadata$latitude
+              #>    if (n != length(lat))
+              #>        lat <- rep(metadata$latitude, length.out=n)
+              #>    lon <- ifelse(lon < 0, lon + 360, lon) # not required because gsw_saar() does this ... but UNDOCUMENTED
+              #>    ## Do the calculation in two steps
+              #>    SA <- gsw::gsw_SA_from_SP(SP=x[["salinity"]], p=x[["pressure"]], longitude=lon, latitude=lat)
+              #>    gsw::gsw_Sstar_from_SA(SA=SA, p=x[["pressure"]], longitude=lon, latitude=lat)
+              #>} else if (i == "temperature") {
+              #>    message("OLD temperature, in [[,ctd-object")
+              #>    scale <- metadata$units[["temperature"]]$scale
+              #>    if (!is.null(scale) && "IPTS-48" == scale) {
+              #>        T90fromT48(x@data$temperature)
+              #>    } else if (!is.null(scale) && "IPTS-68" == scale) {
+              #>        T90fromT68(x@data$temperature)
+              #>    } else {
+              #>        x@data$temperature
+              #>    }
+              #>} else if (i == "pressure") {
+              #>    message("[[,ctd-method pressure")
+              #>    if ("pressure" %in% dataNames) {
+              #>        pressure <- data$pressure
+              #>        unit <- metadata$units[["pressure"]]$unit
+              #>        ## NOTE: 2019-04-29: The next will always return pressure, from the
+              #>        ## else part of the conditional. This is because oce
+              #>        ## stores pressure as dbar, and copies any original PSI data
+              #>        ## into data$pressurePSI.
+              #>        if (!is.null(unit) && "psi" == as.character(unit))
+              #>            pressure * 0.6894757 # 1 psi=6894.757 Pa
+              #>        else pressure
+              #>    } else {
+              #>        if ("depth" %in% dataNames)
+              #>            swPressure(data$depth)
+              #>        else stop("object's data slot does not contain 'pressure' or 'depth'")
+              #>    }
               ## } else if (i == "longitude") {
               ##     if ("longitude" %in% metadataNames) metadata$longitude else data$longitude
               ## } else if (i == "latitude") {
               ##     if ("latitude" %in% metadataNames) metadata$latitude else data$latitude
-              } else if (i == "time") {
+              if (i == "time") {
                   ## After checking for 'time' literally in the metadata
                   ## and data slots, we turn to the 10 time variants
                   ## listed in the SBE Seasoft data processing manual,
@@ -922,80 +961,82 @@ setMethod(f="[[",
                       NULL
                   }
                   ## end of time decoding (whew!)
-              } else if (i == "N2") {
-                  swN2(x)
-              } else if (i == "density") {
-                  swRho(x)
-              } else if (i == "sigmaTheta") {
-                  swSigmaTheta(x)
-              } else if (i == "sigma0") {
-                  swSigma0(x)
-              } else if (i == "sigma1") {
-                  swSigma1(x)
-              } else if (i == "sigma2") {
-                  swSigma2(x)
-              } else if (i == "sigma3") {
-                  swSigma3(x)
-              } else if (i == "sigma4") {
-                  swSigma4(x)
-              } else if (i %in% c("theta", "potential temperature")) {
-                  swTheta(x)
-              } else if (i == "Rrho") {
-                  swRrho(x)
-              } else if (i == "spice" || i == "spiciness") {
-                  swSpice(x)
-              } else if (i %in% c("SA", "Absolute Salinity")) {
-                  if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
-                      stop("object lacks location information, so SA cannot be computed")
-                  SP <- x[["salinity"]]
-                  p <- x[["pressure"]]
-                  n <- length(SP)
-                  ## Lengthen lon and lat if necessary, by repeating.
-                  lon <- x[["longitude"]]
-                  if (n != length(lon))
-                      lon <- rep(lon, length.out=n)
-                  lat <- x[["latitude"]]
-                  if (n != length(lat))
-                      lat <- rep(lat, length.out=n)
-                  lon <- ifelse(lon < 0, lon + 360, lon) # not required because gsw_saar() does this ... but UNDOCUMENTED
-                  ##: Change e.g. NaN to NA ... FIXME: tests show that this is not required:
-                  ##:     > a<-as.ctd(10:11, c(35, asin(3)), 1:2, lon=-60, lat=50)
-                  ##:                        a[["SA"]]
-                  ##:     [1] 10.0472934071578 11.0520223880037
-                  ##:     > a<-as.ctd(10:11, c(35, NA), 1:2, lon=-60, lat=50)
-                  ##:     > a[["SA"]]
-                  ##:     [1] 10.0472934071578 11.0520223880037
-                  ##: SP[!is.finite(SP)] <- NA
-                  ##: p[!is.finite(p)] <- NA
-                  ##: lon[!is.finite(lon)] <- NA
-                  ##: lat[!is.finite(lat)] <- NA
-                  gsw::gsw_SA_from_SP(SP, p, lon, lat)
-              } else if (i %in% c("CT", "Conservative Temperature")) {
-                  if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
-                      stop("object lacks location information, so CT cannot be computed")
-                  gsw::gsw_CT_from_t(SA=x[["SA"]], t=x[["temperature"]], p=x[["pressure"]])
-              } else if (i == "nitrate") {
-                  if ("nitrate" %in% dataNames) {
-                      data$nitrate
-                  } else {
-                      if ("nitrite" %in% dataNames && "NO2+NO3" %in% dataNames)
-                          data[["NO2+NO3"]] - data$nitrite
-                      else NULL
-                  }
-              } else if (i == "nitrite") {
-                  if ("nitrite" %in% dataNames) {
-                      data$nitrite
-                  } else {
-                      if ("nitrate" %in% dataNames && "NO2+NO3" %in% dataNames)
-                          data[["NO2+NO3"]] - data$nitrate
-                      else NULL
-                  }
-              } else if (i == "z") {
-                  swZ(x) # FIXME-gsw: permit gsw version here
-              } else if (i == "depth") {
-                  if ("depth" %in% names(data)) data$depth else swDepth(x) # FIXME-gsw: permit gsw version here
-              } else if (i == "N2") {
-                  swN2(x)
+                  #>} else if (i == "N2") {
+                  #>    swN2(x)
+                  #>} else if (i == "density") {
+                  #>    swRho(x)
+                  #>} else if (i == "sigmaTheta") {
+                  #>    swSigmaTheta(x)
+                  #>} else if (i == "sigma0") {
+                  #>    swSigma0(x)
+                  #>} else if (i == "sigma1") {
+                  #>    swSigma1(x)
+                  #>} else if (i == "sigma2") {
+                  #>    swSigma2(x)
+                  #>} else if (i == "sigma3") {
+                  #>    swSigma3(x)
+                  #>} else if (i == "sigma4") {
+                  #>    swSigma4(x)
+                  #>} else if (i %in% c("theta", "potential temperature")) {
+                  #>    message("OLD")
+                  #>    swTheta(x)
+                  #>} else if (i == "Rrho") {
+                  #>    message("OLD")
+                  #>    swRrho(x)
+                  #>} else if (i == "spice" || i == "spiciness") {
+                  #>    swSpice(x)
+                  #> } else if (i %in% c("SA", "Absolute Salinity")) {
+                  #>     if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
+                  #>         stop("object lacks location information, so SA cannot be computed")
+                  #>     SP <- x[["salinity"]]
+                  #>     p <- x[["pressure"]]
+                  #>     n <- length(SP)
+                  #>     ## Lengthen lon and lat if necessary, by repeating.
+                  #>     lon <- x[["longitude"]]
+                  #>     if (n != length(lon))
+                  #>         lon <- rep(lon, length.out=n)
+                  #>     lat <- x[["latitude"]]
+                  #>     if (n != length(lat))
+                  #>         lat <- rep(lat, length.out=n)
+                  #>     lon <- ifelse(lon < 0, lon + 360, lon) # not required because gsw_saar() does this ... but UNDOCUMENTED
+                  #>     ##: Change e.g. NaN to NA ... FIXME: tests show that this is not required:
+                  #>     ##:     > a<-as.ctd(10:11, c(35, asin(3)), 1:2, lon=-60, lat=50)
+                  #>     ##:                        a[["SA"]]
+                  #>     ##:     [1] 10.0472934071578 11.0520223880037
+                  #>     ##:     > a<-as.ctd(10:11, c(35, NA), 1:2, lon=-60, lat=50)
+                  #>     ##:     > a[["SA"]]
+                  #>     ##:     [1] 10.0472934071578 11.0520223880037
+                  #>     ##: SP[!is.finite(SP)] <- NA
+                  #>     ##: p[!is.finite(p)] <- NA
+                  #>     ##: lon[!is.finite(lon)] <- NA
+                  #>     ##: lat[!is.finite(lat)] <- NA
+                  #>     gsw::gsw_SA_from_SP(SP, p, lon, lat)
+                  #>} else if (i %in% c("CT", "Conservative Temperature")) {
+                  #>    message("OLD CT")
+                  #>    if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
+                  #>        stop("object lacks location information, so CT cannot be computed")
+                  #>    gsw::gsw_CT_from_t(SA=x[["SA"]], t=x[["temperature"]], p=x[["pressure"]])
+                  #>} else if (i == "nitrate") {
+                  #>    if ("nitrate" %in% dataNames) {
+                  #>        data$nitrate
+                  #>    } else {
+                  #>        if ("nitrite" %in% dataNames && "NO2+NO3" %in% dataNames)
+                  #>            data[["NO2+NO3"]] - data$nitrite
+                  #>        else NULL
+                  #>    }
+                  #>} else if (i == "nitrite") {
+                  #>    if ("nitrite" %in% dataNames) {
+                  #>        data$nitrite
+                  #>    } else {
+                  #>        if ("nitrate" %in% dataNames && "NO2+NO3" %in% dataNames)
+                  #>            data[["NO2+NO3"]] - data$nitrate
+                  #>        else NULL
+                  #>    }
+                  #>} else if (i == "z") {
+                  #>    message("OLD")
+                  #>    swZ(x) # FIXME-gsw: permit gsw version here
+                  #>} else if (i == "depth") {
+                  #>    if ("depth" %in% names(data)) data$depth else swDepth(x) # FIXME-gsw: permit gsw version here
               } else {
                   ## message("FIXME: [[,ctd-method calling next method")
                   callNextMethod()     # [[ defined in R/AllClass.R

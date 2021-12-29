@@ -2,6 +2,7 @@
 
 ## 1.5.0
 
+* Add `[["?"]]` facility to all objects.
 * Add `showNA` argument to `vectorShow()`.
 * Add `adpConvertRawToNumeric()`.
 * Add `adpFlagPastBoundary()`.
