@@ -33,6 +33,7 @@
   longitude0,
   latitude0,
   legend.loc = "bottomright",
+  legend.text = NULL,
   showStations = FALSE,
   showStart = TRUE,
   stationTicks = TRUE,
@@ -145,6 +146,10 @@ These values are ignored unless \code{xtype} is \code{"distance"}.}
 \item{legend.loc}{Location of legend, as supplied to \code{\link[=legend]{legend()}}, or
 set to the empty string to avoid plotting a legend.}
 
+\item{legend.text}{character value indicating the text for the legend.
+If this is NULL (the default) then the legend is automatically
+constructed, based on the value of \code{which}.}
+
 \item{showStations}{Logical indicating whether to draw station numbers on maps.}
 
 \item{showStart}{Logical indicating whether to indicate the first station with}
@@ -213,8 +218,8 @@ Creates a summary plot for a CTD section, with one panel for each value of
 \details{
 The type of plot is governed by \code{which}, as follows.
 \itemize{
-\item \code{which=0} or \code{"potential temperature"} for temperature contours
-\item \code{which=1} or \code{"temperature"} for temperature contours (the default)
+\item \code{which=0} or \code{"potential temperature"} for potential temperature contours
+\item \code{which=1} or \code{"temperature"} for in-situ temperature contours (the default)
 \item \code{which=2} or \code{"salinity"} for salinity contours
 \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
 \item \code{which=4} or \code{"nitrate"} for nitrate concentration contours

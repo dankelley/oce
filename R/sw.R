@@ -36,9 +36,20 @@ computableWaterProperties <- function(x)
         # it's not stored in the object already.
         if (!("nitrate" %in% names) && ("NO2+NO3" %in% names) && ("nitrite" %in% names))
             res <- c(res, "nitrate")
-        res <- sort(res)               # make it easier to scan results
+        # Add some synonyms.  This can yield duplicates but we use unique()
+        # later, so that's not a problem.
+        if ("nitrate" %in% names || "NO3" %in% names)
+            res <- c(res, "nitrate", "NO3")
+        if ("nitrite" %in% names || "NO2" %in% names)
+            res <- c(res, "nitrite", "NO2")
+        if ("phosphate" %in% names || "PO3" %in% names)
+            res <- c(res, "phosphate", "PO3")
+        if ("silicate" %in% names || "SiO4" %in% names) {
+            res <- c(res, "silicate", "SiO4")
+        }
     }
-    res
+    # Sorted values, cleared of duplicates (e.g. from nitrate handling).
+    sort(unique(res))                 
 }
 
 #' Convert from ITS-90 to IPTS-68 temperature
