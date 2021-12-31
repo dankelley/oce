@@ -1352,13 +1352,9 @@ setMethod(f="plot",
               # the value of 'unit' for some things, because modern convention
               # dictates the unit.  Besides, a user can set legend.text if a
               # custom unit is required.
-              # FIXME: do we need 'eos'?
-              vtitleCreate <- function(zname, eos=NULL, unit=NULL)
+              vtitleCreate <- function(zname, unit=NULL)
               {
-                  UNIT<<-unit
-                  u <- as.character(unit$unit)
-                  print(unit)
-                  u <- unit
+                  u <- if (length(unit$unit)) unit$unit[[1]] else "unitless"
                   L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
                   R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
                   # Note that the code is alphabetical in the first item of
@@ -1369,6 +1365,8 @@ setMethod(f="plot",
                       rval <- bquote(S[A]*.(L)*g/kg*.(R))
                   } else if (zname %in% c(paste("Conservative", "Temperature"), "CT")) {
                       rval <- bquote(Theta*.(L)*degree*C*.(R))
+                  } else if (zname %in% c("nitrate", "N2")) {
+                      rval <- bquote(N^2*.(L)*s^-2*.(R))
                   } else if (zname %in% c("nitrate", "NO3")) {
                       rval <- if (is.null(unit)) bquote(NO[3]) else bquote(NO[3]*.(L)*.(u)*.(R))
                   } else if (zname %in% c("nitrite", "NO2")) {
@@ -1378,16 +1376,13 @@ setMethod(f="plot",
                   } else if (zname == "oxygen") {
                       rval <- if (is.null(unit)) bquote(O[2]) else bquote(O[2]*.(L)*.(u)*.(R))
                   } else if (zname %in% c("phosphate", "PO4")) {
-                      message("PHOSPHATE")
-                      rval <- if (is.null(unit)) bquote(PO[4]) else bquote(PO[4]*.(L)*.(unit$unit)*.(R))
-                      RVAL<<-rval
-                      print(rval)
+                      rval <- if (is.null(unit)) bquote(PO[4]) else bquote(PO[4]*.(L)*.(u)*.(R))
                   } else if (zname %in% c(paste("potential", "temperature"), "theta")) {
                       rval <- bquote(theta*.(L)*degree*C*.(R))
                   } else if (zname %in% c("salinity", "SP")) {
                       rval <- expression("S")
                   } else if (zname %in% c("silicate", "SiO4")) {
-                      rval <- if (is.null(unit)) bquote(SiO[4]) else bquote(SiO[4]*.(L)*.(u[[1]])*.(R))
+                      rval <- if (is.null(unit)) bquote(SiO[4]) else bquote(SiO[4]*.(L)*.(u)*.(R))
                   } else if (zname == "Sstar") {
                       rval <- bquote(S["*"]*.(L)*g/kg*.(R))
                   } else if (zname == "temperature") {
@@ -1993,7 +1988,7 @@ setMethod(f="plot",
                           }
                       }
                       if (is.character(vtitle) && vtitle == "sigmaTheta") {
-                          vtitle <- if (eos == "gsw") expression(sigma[0]) else expression(sigma[theta])
+                          vtitle <- expression(sigma[theta])
                           unit <- expression(kg/m^3)
                       }
                       vtitleOrig <- vtitle
@@ -2183,50 +2178,40 @@ setMethod(f="plot",
                                          axes=axes, col=col, debug=debug-1, ...)
                       }
                   } else {
-                      oceDebug(debug, "contourLevels was not given\n")
                       # contourLevels not given
-                      if (which[w] == "OLD temperature") {
-                          oceDebug(debug, "plotting temperature with contourLevels not provided\n")
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "temperature",
-                                         if (eos == "unesco") "T" else expression(Theta),
-                                         unit=unit,
-                                         eos=eos,
-                                         xlim=xlim, ylim=ylim, ztype=ztype,
-                                         zbreaks=zbreaks, zcol=zcol,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == "OLD potential temperature") {
-                          oceDebug(debug, "plotting potential temperature with contourLevels not provided\n")
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "potential temperature",
-                                         if (eos=="unesco") expression(theta*" ["*degree*"C]") else expression(Theta),
-                                         unit=unit,
-                                         eos=eos,
-                                         xlim=xlim, ylim=ylim, ztype=ztype,
-                                         zbreaks=zbreaks, zcol=zcol,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == "OLD salinity") {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "salinity",
-                                         if (eos == "unesco") "S" else expression(S[A]),
-                                         unit=unit,
-                                         eos=eos,
-                                         xlim=xlim, ylim=ylim, ztype=ztype,
-                                         zbreaks=zbreaks, zcol=zcol,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] != "map" && which[w] != 99) {
-                          vtitle <- vtitleCreate(which[w], eos=eos,
-                              unit=station1[[paste0(which[w],"Unit")]])
-                          if (debug+1) {
-                              # TEST (why is my method not working, if this works??)
-                              # plot(1,1)
-                              # legend("topright",pch=1,legend=bquote(S[A]*" ["*.(expression(mu*g/kg)[[1]])*"]"))
-                              message("in new code; next is vtitle")
-                              print(vtitle)
-                              VTITLE<<-vtitle
-                              message("in new code; next is unit sent to vtitleCreate()")
-                              print(station1[[paste0(which[w],"Unit")]])
-                          }
+                      oceDebug(debug, "contourLevels was not given\n")
+                      #OLD if (which[w] == "OLD temperature") {
+                      #OLD     oceDebug(debug, "plotting temperature with contourLevels not provided\n")
+                      #OLD     plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                      #OLD                    "temperature",
+                      #OLD                    if (eos == "unesco") "T" else expression(Theta),
+                      #OLD                    unit=unit,
+                      #OLD                    eos=eos,
+                      #OLD                    xlim=xlim, ylim=ylim, ztype=ztype,
+                      #OLD                    zbreaks=zbreaks, zcol=zcol,
+                      #OLD                    axes=axes, col=col, debug=debug-1, ...)
+                      #OLD } else if (which[w] == "OLD potential temperature") {
+                      #OLD     oceDebug(debug, "plotting potential temperature with contourLevels not provided\n")
+                      #OLD     plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                      #OLD                    "potential temperature",
+                      #OLD                    if (eos=="unesco") expression(theta*" ["*degree*"C]") else expression(Theta),
+                      #OLD                    unit=unit,
+                      #OLD                    eos=eos,
+                      #OLD                    xlim=xlim, ylim=ylim, ztype=ztype,
+                      #OLD                    zbreaks=zbreaks, zcol=zcol,
+                      #OLD                    axes=axes, col=col, debug=debug-1, ...)
+                      #OLD } else if (which[w] == "OLD salinity") {
+                      #OLD     plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                      #OLD                    "salinity",
+                      #OLD                    if (eos == "unesco") "S" else expression(S[A]),
+                      #OLD                    unit=unit,
+                      #OLD                    eos=eos,
+                      #OLD                    xlim=xlim, ylim=ylim, ztype=ztype,
+                      #OLD                    zbreaks=zbreaks, zcol=zcol,
+                      #OLD                    axes=axes, col=col, debug=debug-1, ...)
+                      #OLD } else if (which[w] != "map" && which[w] != 99) {
+                      if (which[w] != "map" && which[w] != 99) {
+                          vtitle <- vtitleCreate(which[w], unit=station1[[paste0(which[w],"Unit")]])
                           plotSubsection(xx, yy, zz,
                               which.xtype=which.xtype,
                               which.ytype=which.ytype,
