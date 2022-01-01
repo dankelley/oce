@@ -148,7 +148,7 @@ set to the empty string to avoid plotting a legend.}
 
 \item{legend.text}{character value indicating the text for the legend.
 If this is NULL (the default) then the legend is automatically
-constructed, based on the value of \code{which}.}
+constructed by \code{\link[=labelWithUnit]{labelWithUnit()}}, based on the value of \code{which}.}
 
 \item{showStations}{Logical indicating whether to draw station numbers on maps.}
 

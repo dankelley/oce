@@ -1140,7 +1140,7 @@ sectionAddCtd <- sectionAddStation
 #'
 #' @param legend.text character value indicating the text for the legend.
 #' If this is NULL (the default) then the legend is automatically
-#' constructed, based on the value of `which`.
+#' constructed by [labelWithUnit()], based on the value of `which`.
 #'
 #' @param showStations Logical indicating whether to draw station numbers on maps.
 #'
@@ -1348,51 +1348,6 @@ setMethod(f="plot",
               L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
               R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
 
-              # Internal function to create z label with units (if known) Ignore
-              # the value of 'unit' for some things, because modern convention
-              # dictates the unit.  Besides, a user can set legend.text if a
-              # custom unit is required.
-              vtitleCreate <- function(zname, unit=NULL)
-              {
-                  u <- if (length(unit$unit)) unit$unit[[1]] else "unitless"
-                  L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
-                  R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
-                  # Note that the code is alphabetical in the first item of
-                  # equivalents. Please follow that convention if adding new
-                  # entries. Also, use paste() to combine words, to prevent
-                  # text-editor reflow operations from inserting line breaks.
-                  if (zname %in% c(paste("Absolute", "Salinity"), "SA")) {
-                      rval <- bquote(S[A]*.(L)*g/kg*.(R))
-                  } else if (zname %in% c(paste("Conservative", "Temperature"), "CT")) {
-                      rval <- bquote(Theta*.(L)*degree*C*.(R))
-                  } else if (zname %in% c("nitrate", "N2")) {
-                      rval <- bquote(N^2*.(L)*s^-2*.(R))
-                  } else if (zname %in% c("nitrate", "NO3")) {
-                      rval <- if (is.null(unit)) bquote(NO[3]) else bquote(NO[3]*.(L)*.(u)*.(R))
-                  } else if (zname %in% c("nitrite", "NO2")) {
-                      rval <- if (is.null(unit)) bquote(NO[2]) else bquote(NO[2]*.(L)*.(u)*.(R))
-                  } else if (zname == "NO2+NO3") {
-                      rval <- if (is.null(unit)) bquote(NO[2]+NO[3]) else bquote(NO[2]+NO[3]*.(L)*.(u)*.(R))
-                  } else if (zname == "oxygen") {
-                      rval <- if (is.null(unit)) bquote(O[2]) else bquote(O[2]*.(L)*.(u)*.(R))
-                  } else if (zname %in% c("phosphate", "PO4")) {
-                      rval <- if (is.null(unit)) bquote(PO[4]) else bquote(PO[4]*.(L)*.(u)*.(R))
-                  } else if (zname %in% c(paste("potential", "temperature"), "theta")) {
-                      rval <- bquote(theta*.(L)*degree*C*.(R))
-                  } else if (zname %in% c("salinity", "SP")) {
-                      rval <- expression("S")
-                  } else if (zname %in% c("silicate", "SiO4")) {
-                      rval <- if (is.null(unit)) bquote(SiO[4]) else bquote(SiO[4]*.(L)*.(u)*.(R))
-                  } else if (zname == "Sstar") {
-                      rval <- bquote(S["*"]*.(L)*g/kg*.(R))
-                  } else if (zname == "temperature") {
-                      rval <- bquote(T*.(L)*degree*C*.(R))
-                  } else {
-                      rval <- zname
-                  }
-                  rval
-              }
-
               ## Make 'which' be character, to simplify following code
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
               lw <- length(which)
@@ -1450,21 +1405,23 @@ setMethod(f="plot",
               x@metadata$latitude <- x@metadata$latitude[haveData]
               x@metadata$longitude <- x@metadata$longitude[haveData]
               x@metadata$time <- x@metadata$time[haveData]
-              plotSubsection <- function(xx, yy, zz, which.xtype, which.ytype,
-                                         variable="temperature", vtitle="T", unit=NULL,
-                                         eos=getOption("oceEOS", default="gsw"),
-                                         indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
-                                         showStations=FALSE,
-                                         xlim=NULL, ylim=NULL,
-                                         clongitude, clatitude, span,
-                                         projection=NULL,
-                                         zbreaks=NULL, zcol=NULL,
-                                         ztype=c("contour", "image", "points"),
-                                         legend=TRUE,
-                                         debug=0,
-                                         axes=TRUE,
-                                         col=par("col"),
-                                         ...)
+              plotSubsection <- function(xx, yy, zz,
+                  which.xtype, which.ytype,
+                  variable="temperature", vtitle="T", unit=NULL,
+                  eos=getOption("oceEOS", default="gsw"),
+                  indicate.stations=TRUE,
+                  contourLevels=NULL, contourLabels=NULL,
+                  showStations=FALSE,
+                  xlim=NULL, ylim=NULL,
+                  clongitude, clatitude, span,
+                  projection=NULL,
+                  zbreaks=NULL, zcol=NULL,
+                  ztype=c("contour", "image", "points"),
+                  legend=TRUE,
+                  debug=0,
+                  axes=TRUE,
+                  col=par("col"),
+                  ...)
               {
                   oceDebug(debug, "plotSubsection(variable=\"", variable,
                            "\", eos=\"", eos,
@@ -1640,7 +1597,8 @@ setMethod(f="plot",
                       }
                   } else {
                       ## not a map
-                      zAllMissing <- all(is.na(x[[variable]]))
+                      z <- x[[variable]]
+                      zAllMissing <- all(is.na(z))
                       ##> message("zAllMissing=", zAllMissing)
                       ##> message("drawPoints=", drawPoints)
                       ##> message("ztype='", ztype, "'")
@@ -1649,7 +1607,7 @@ setMethod(f="plot",
                           if (is.null(zbreaks)) {
                               if (is.null(zlim)) {
                                   ## Use try() to quiet warnings if all data are NA
-                                  zRANGE <- try(range(x[[variable]], na.rm=TRUE), silent=TRUE)
+                                  zRANGE <- try(range(z, na.rm=TRUE), silent=TRUE)
                                   if (is.null(zcol) || is.function(zcol)) {
                                       zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
                                   } else {
@@ -1751,6 +1709,8 @@ setMethod(f="plot",
                       ## for the contour or image plot.
                       for (i in 1:numStations) {
                           thisStation <- x[["station", i]]
+                          p <- thisStation[["pressure"]] # assume that we always have pressure
+                          np <- length(p)
                           ##oceDebug(debug, "filling matrix with \"", variable, "\" data at station", i, "\n", sep="")
                           if (variable != "data") {
                               ## CAUTION: the assignment to 'v' and 'zz' is tricky:
@@ -1763,49 +1723,17 @@ setMethod(f="plot",
                               ## and
                               ## https://github.com/dankelley/oce/issues/1540
                               ## and there is a chance of breakage starting at that time.
+                              v <- thisStation[[variable]]
+                              if (is.null(v))
+                                  v <- rep(NA, length(p))
                               if (drawPoints) {
                                   p <- thisStation[["pressure"]]
-                                  ## Compute sigma0 and sigmaTheta, whether they are in the dataset or not
-                                  if (variable == "sigma0") {
-                                      v <- swSigma0(thisStation, eos=eos)
-                                  } else if (variable == "sigmaTheta") {
-                                      v <- swSigmaTheta(thisStation, eos=eos)
-                                  } else if (eos == "gsw" && variable == "temperature")
-                                      v <- thisStation[["CT"]]
-                                  else if (eos == "gsw" && variable == "salinity")
-                                      v <- thisStation[["SA"]]
-                                  else if (eos == "unesco" && variable == "potential temperature")
-                                      v <- thisStation[["theta"]]
-                                  else if (variable %in% names(thisStation[["data"]]))
-                                      v <- thisStation[[variable]]
-                                  else
-                                      v <- rep(NA, length(p))
-                                  points(rep(xx[i], length(p)), -p,
+                                  points(rep(xx[i], np), -p,
                                          pch=pch, cex=cex,
                                          col=zcol[rescale(v, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=nbreaks)])
                               } else {
                                   ## Compute sigma0 and sigmaTheta, whether they are in the dataset or not
-                                  if (variable == "sigma0") {
-                                      zz[i, ] <- rev(swSigma0(thisStation, eos=eos))
-                                  } else if (variable == "sigmaTheta") {
-                                      zz[i, ] <- rev(swSigmaTheta(thisStation, eos=eos))
-                                  } else if (eos == "gsw" && variable == "temperature") {
-                                      zz[i, ] <- rev(thisStation[["CT"]])
-                                  } else if (eos == "gsw" && variable == "salinity") {
-                                      zz[i, ] <- rev(thisStation[["SA"]])
-                                  } else if (eos == "unesco" && variable == "potential temperature") {
-                                      zz[i, ] <- rev(thisStation[["theta"]])
-                                  } else {
-                                      #> message("variable=",variable)
-                                      zzi <- thisStation[[variable]]
-                                      zz[i, ] <- if (length(zzi)) rev(zzi) else rep(NA, length(thisStation[["pressure"]]))
-                                      #> message("zz[",i,",]:", paste(head(zz[i,]), collapse=" "))
-                                  }
-                                  ## if (all(dim(zz) > 2)) {
-                                  ##     oceDebug(debug, "zz[1,1:3]=", paste(zz[1,1:3], collapse=" "), "\n")
-                                  ##     oceDebug(debug, "zz[2,1:3]=", paste(zz[2,1:3], collapse=" "), "\n")
-                                  ##     oceDebug(debug, "zz[3,1:3]=", paste(zz[3,1:3], collapse=" "), "\n")
-                                  ## }
+                                  zz[i, ] <- rev(v)
                               }
                           }
                           if (grid && !drawPoints)
@@ -1815,40 +1743,17 @@ setMethod(f="plot",
                           if ("waterDepth" %in% names(x@data$station[[stationIndices[i]]]@metadata)
                               && is.finite(x@data$station[[stationIndices[i]]]@metadata$waterDepth)) {
                               wd <- x@data$station[[stationIndices[i]]]@metadata$waterDepth
-                              ##oceDebug(debug, "known waterDepth", wd, "for station i=", i, "\n")
                           } else {
                               wd <- NA
-                              ## 20160116 if (is.na(temp[len])) {
-                              ## 20160116     wdi <- len - which(!is.na(rev(temp)))[1] + 1
-                              ## 20160116     wd <- max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE)
-                              ## 20160116     message("FAKE waterDepth:", wd, ", station:", i)
-                              ## 20160116     ##oceDebug(debug, "inferred waterDepth", wd, "for station i=", i, "\n")
-                              ## 20160116 } else {
-                              ## 20160116     ##oceDebug(debug, "cannot infer waterDepth for station i=", i, "\n")
-                              ## 20160116 }
                           }
                           in.land <- which(is.na(x@data$station[[stationIndices[i]]]@data$temperature[-3])) # skip first 3 points
                           waterDepth <- c(waterDepth, wd)
-                          ## 20160116: it's a bad idea guessing on the water depth (e.g. argo)
-                          ## if (!is.na(wd)) {
-                          ##     waterDepth <- c(waterDepth, wd)
-                          ## } else {
-                          ##     waterDepth <- c(waterDepth, max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE))
-                          ## }
                       }
-
-                      ##oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
-                      ##waterDepth <- -waterDepth
                       if (!grid && axes && stationTicks)
                           Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
                       bottom.x <- c(xx[1], xx, xx[length(xx)])
                       bottom.y <- if (any(is.finite(waterDepth))) c(graph.bottom, -waterDepth, graph.bottom)
                           else rep(NA, length(bottom.x)+2)
-                      ##cat("bottom.x: (length", length(bottom.x),")");print(bottom.x)
-                      ##cat("bottom.y: (length", length(bottom.y),")");print(bottom.y)
-
-                      ##par(xaxs="i", yaxs="i")
-
                       ## Put x in order, if it's not already
                       xx[!is.finite(xx)] <- NA # for issue 1583: grid larger than data range can get NaN values
                       ox <- order(xx)
@@ -1858,17 +1763,15 @@ setMethod(f="plot",
                           xx <- xx[ox]
                           zz <- zz[ox, ] ## FIXME keep this???
                           ii <- ii[ox]
-                          ##warning("plot.section() reordered the stations to make x monotonic")
                           bottom.x <- c(min(xxOrig), xxOrig[ox], max(xxOrig))
                           bottom.y <- c(graph.bottom, -waterDepth[ox], graph.bottom)
                       }
-
-                      ## cannot contour with duplicates in x or y; the former is the only problem
+                      # cannot contour with duplicates in x or y; the former is the only problem
                       xx.unique <- c(TRUE, 0 != diff(xx))
                       yy.unique <- c(TRUE, 0 != diff(yy))
                       xx.unique <- xx.unique & !is.na(xx.unique)
                       yy.unique <- yy.unique & !is.na(yy.unique)
-                      ## a problem with mbari data revealed that we need to chop NA valaues too
+                      # a problem with mbari data revealed that we need to chop NA valaues too
                       if (variable == "data") {
                           for (i in 1:numStations) {
                               thisStation <- x[["station", i]]
@@ -1885,11 +1788,11 @@ setMethod(f="plot",
                           ## Use try() to quiet warnings if all data are NA
                           if (zAllMissing) {
                               if (nchar(legend.loc)) {
-                                  if (is.character(vtitle) && vtitle == "sigmaTheta") {
-                                      vtitle <- if (eos == "gsw") expression(sigma[0]) else expression(sigma[theta])
-                                      unit <- expression(kg/m^3)
-                                      vtitle <- bquote(.(vtitle[[1]])*.(L)*.(unit[[1]])*.(R))
-                                  }
+                                  #>if (is.character(vtitle) && vtitle == "sigmaTheta") {
+                                  #>    vtitle <- if (eos == "gsw") expression(sigma[0]) else expression(sigma[theta])
+                                  #>    unit <- expression(kg/m^3)
+                                  #>    vtitle <- bquote(.(vtitle[[1]])*.(L)*.(unit[[1]])*.(R))
+                                  #>}
                                   legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5, cex=1)
                               }
                               return()
@@ -1987,12 +1890,12 @@ setMethod(f="plot",
                               }
                           }
                       }
-                      if (is.character(vtitle) && vtitle == "sigmaTheta") {
-                          vtitle <- expression(sigma[theta])
-                          unit <- expression(kg/m^3)
-                      }
-                      vtitleOrig <- vtitle
-                      vtitle <- if (length(unit) == 0) vtitle else bquote(.(vtitle[[1]])*.(L)*.(unit[[1]])*.(R))
+                      #if (is.character(vtitle) && vtitle == "sigmaTheta") {
+                      #    vtitle <- expression(sigma[theta])
+                      #    unit <- expression(kg/m^3)
+                      #}
+                      #vtitleOrig <- vtitle
+                      #vtitle <- if (length(unit) == 0) vtitle else bquote(.(vtitle[[1]])*.(L)*.(unit[[1]])*.(R))
                       if (nchar(legend.loc)) {
                           legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5, cex=1)
                       }
@@ -2141,81 +2044,34 @@ setMethod(f="plot",
                           paste(available, collapse="\",\""),
                           "\")", call.=FALSE)
                   station1 <- x[["station", 1]]
-                  unit <- station1[[paste(which[w], "Unit", sep="")]][[1]] # FIXME: what if not in that station?
+                  #OLD unit <- station1[[paste(which[w], "Unit", sep="")]][[1]] # FIXME: what if not in that station?
                   if (!missing(contourLevels)) {
-                      oceDebug(debug, "contourLevels was given\n")
                       # contourLevels given
-                      contourLabels <- format(contourLevels)
-                      if (which[w] == "temperature") {
-                          oceDebug(debug, "plotting temperature with contourLevels provided\n")
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "temperature",
-                                         if (eos=="unesco") "T" else expression(Theta),
-                                         unit=unit,
-                                         eos=eos, ylab="",
-                                         levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == "potential temperature") {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "potential temperature",
-                                         if (eos=="unesco") expression(theta*" ["*degree*"]") else expression(S[A]),
-                                         unit=unit,
-                                         eos=eos, ylab="",
-                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == "salinity") {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "salinity", if (eos=="unesco") "S" else expression(S[A]), unit=unit,
-                                         eos=eos, ylab="",
-                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else {
-                          # contourLevels given
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         whichOriginal[w], whichOriginal[w], unit=unit,
-                                         eos=eos, # ylab="",
-                                         levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      }
+                      oceDebug(debug, "contourLevels was given\n")
+                      #> cat(vectorShow(contourLabels))
+                      if (is.null(contourLabels))
+                          contourLabels <- format(contourLevels)
+                      vtitle <- labelWithUnit(which[w],
+                          unit=station1[[paste0(which[w],"Unit")]])
+                      plotSubsection(xx, yy, zz,
+                          which.xtype=which.xtype,
+                          which.ytype=which.ytype,
+                          variable=which[w], # which[w],
+                          vtitle=if (is.null(legend.text[w])) vtitle else legend.text[w],
+                          eos=eos,
+                          levels=contourLevels, labels=contourLabels,
+                          xlim=xlim, ylim=ylim, ztype=ztype,
+                          axes=axes, col=col, debug=debug-1, ...)
                   } else {
                       # contourLevels not given
                       oceDebug(debug, "contourLevels was not given\n")
-                      #OLD if (which[w] == "OLD temperature") {
-                      #OLD     oceDebug(debug, "plotting temperature with contourLevels not provided\n")
-                      #OLD     plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                      #OLD                    "temperature",
-                      #OLD                    if (eos == "unesco") "T" else expression(Theta),
-                      #OLD                    unit=unit,
-                      #OLD                    eos=eos,
-                      #OLD                    xlim=xlim, ylim=ylim, ztype=ztype,
-                      #OLD                    zbreaks=zbreaks, zcol=zcol,
-                      #OLD                    axes=axes, col=col, debug=debug-1, ...)
-                      #OLD } else if (which[w] == "OLD potential temperature") {
-                      #OLD     oceDebug(debug, "plotting potential temperature with contourLevels not provided\n")
-                      #OLD     plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                      #OLD                    "potential temperature",
-                      #OLD                    if (eos=="unesco") expression(theta*" ["*degree*"C]") else expression(Theta),
-                      #OLD                    unit=unit,
-                      #OLD                    eos=eos,
-                      #OLD                    xlim=xlim, ylim=ylim, ztype=ztype,
-                      #OLD                    zbreaks=zbreaks, zcol=zcol,
-                      #OLD                    axes=axes, col=col, debug=debug-1, ...)
-                      #OLD } else if (which[w] == "OLD salinity") {
-                      #OLD     plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                      #OLD                    "salinity",
-                      #OLD                    if (eos == "unesco") "S" else expression(S[A]),
-                      #OLD                    unit=unit,
-                      #OLD                    eos=eos,
-                      #OLD                    xlim=xlim, ylim=ylim, ztype=ztype,
-                      #OLD                    zbreaks=zbreaks, zcol=zcol,
-                      #OLD                    axes=axes, col=col, debug=debug-1, ...)
-                      #OLD } else if (which[w] != "map" && which[w] != 99) {
                       if (which[w] != "map" && which[w] != 99) {
-                          vtitle <- vtitleCreate(which[w], unit=station1[[paste0(which[w],"Unit")]])
+                          vtitle <- labelWithUnit(which[w],
+                              unit=station1[[paste0(which[w],"Unit")]])
                           plotSubsection(xx, yy, zz,
                               which.xtype=which.xtype,
                               which.ytype=which.ytype,
-                              variable=which[w], # which[w],
+                              variable=which[w],
                               vtitle=if (is.null(legend.text[w])) vtitle else legend.text[w],
                               eos=eos,
                               xlim=xlim, ylim=ylim, ztype=ztype,
@@ -2224,14 +2080,19 @@ setMethod(f="plot",
                       }
                   }
                   if (!is.na(which[w]) && which[w] == 20)
-                      plotSubsection(xx, yy, zz, which.xtype, which.ytype, "data", "", unit=unit,
-                                     xlim=xlim, ylim=ylim, col=col, debug=debug-1, legend=FALSE, ...)
+                      plotSubsection(xx, yy, zz,
+                          which.xtype=which.xtype, which.ytype=which.ytype,
+                          variable="data", vtitle="", unit=NULL,
+                          xlim=xlim, ylim=ylim, col=col, legend=FALSE,
+                          debug=debug-1, ...)
                   if (!is.na(which[w]) && (which[w] == 99 || which[w] == "map")) {
-                      plotSubsection(xx, yy, zz, which.xtype, which.ytype, "map", unit=unit,
-                                     indicate.stations=FALSE,
-                                     clongitude=clongitude, clatitude=clatitude, span=span,
-                                     projection=projection,
-                                     debug=debug-1, ...)
+                      plotSubsection(xx, yy, zz,
+                          which.xtype=which.xtype, which.ytype=which.ytype,
+                          variable="map", vtitle="", unit=NULL,
+                          indicate.stations=FALSE,
+                          clongitude=clongitude, clatitude=clatitude, span=span,
+                          projection=projection,
+                          debug=debug-1, ...)
                   }
               }
               oceDebug(debug, "} # plot.section()\n", unindent=1)

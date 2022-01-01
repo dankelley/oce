@@ -758,120 +758,6 @@ setMethod(f="[[",
                           metadataDerived=sort(metadataDerived),
                           data=sort(names(x@data)),
                           dataDerived=computableWaterProperties(x)))
-              #>if (!i %in% iKnown) {
-              #>    # message("FIXME: make ctd[[\"", i, "\"]] work")
-              #>    return(NULL)
-              #>}
-              #>if (i == "conductivity") {
-              #>    C <- data$conductivity
-              #>    ##message("i=", i, ", j=", if (missing(j)) "(missing)" else j)
-              #>    if (!is.null(C) && !missing(j)) {
-              #>        if (!(j %in% c("", "ratio", "uS/cm", "mS/cm", "S/m")))
-              #>            stop("unknown conductivity unit \"", j, "\"; must be \"\", \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
-              #>        if (j == "")
-              #>            j <- "ratio" # lets us use switch()
-              #>        unit <- metadata$units$conductivity$unit
-              #>        if (is.null(unit) || !length(unit)) {
-              #>            ## FIXME: maybe should look at median value, to make a guess
-              #>            ## warning("ctd object lack conductivity units; assuming \"ratio\"")
-              #>            unit <- "ratio"
-              #>        }
-              #>        ##message("A")
-              #>        unit <- as.character(unit)
-              #>        ##message("next is unit:")
-              #>        ##print(dput(unit))
-              #>        C <- data$conductivity
-              #>        ##message("B")
-              #>        ## Rather than convert from 3 inputs to 3 outputs, express as ratio, then convert as desired
-              #>        if (!unit %in% c("ratio", "uS/cm", "mS/cm", "S/m"))
-              #>            stop("object has unknown conductivity unit \"", unit, "\"; must be \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
-              #>        C <- C / switch(unit, "uS/cm"=42914, "mS/cm"=42.914, "S/m"=4.2914, "ratio"=1)
-              #>        C <- C * switch(j, "uS/cm"=42914, "mS/cm"=42.914, "S/m"=4.2914, "ratio"=1)
-              #>    }
-              #>    C
-              #>} else if (i == "salinity" || i == "SP") {
-              #>    message("OLD")
-              #>    if ("salinity" %in% dataNames) {
-              #>        S <- data$salinity
-              #>    } else {
-              #>        C <- data$conductivity
-              #>        if (!is.null(C)) {
-              #>            if (is.null(metadata$units$conductivity)) {
-              #>                warning("conductivity has no unit, so guessing it is conductivity-ratio. Be cautious on calculated salinity.")
-              #>            } else {
-              #>                unit <- as.character(metadata$units$conductivity$unit)
-              #>                if (0 == length(unit)) {
-              #>                    S <- swSCTp(C, x[["temperature"]], x[["pressure"]])
-              #>                    warning("constructed salinity from temperature, conductivity-ratio and pressure")
-              #>                } else if (unit == "uS/cm") {
-              #>                    S <- swSCTp(C/42914.0, x[["temperature"]], x[["pressure"]])
-              #>                    warning("constructed salinity from temperature, conductivity and pressure")
-              #>                } else if (unit == "mS/cm") {
-              #>                    ## e.g. RSK
-              #>                    S <- swSCTp(C/42.914, x[["temperature"]], x[["pressure"]])
-              #>                    warning("constructed salinity from temperature, conductivity and pressure")
-              #>                } else if (unit == "S/m") {
-              #>                    S <- swSCTp(C/4.2914, x[["temperature"]], x[["pressure"]])
-              #>                    warning("constructed salinity from temperature, conductivity and pressure")
-              #>                } else {
-              #>                    stop("unrecognized conductivity unit '", unit, "'; only uS/cm, mS/cm and S/m are handled")
-              #>                }
-              #>            }
-              #>        } else {
-              #>            stop("the object's data slot lacks 'salinity', and it cannot be calculated since 'conductivity' is also missing")
-              #>        }
-              #>    }
-              #>    S
-              #>} else if (i == "SR") {
-              #>    message("old SR")
-              #>    gsw::gsw_SR_from_SP(SP=x[["salinity"]])
-              #>} else if (i == "Sstar") {
-              #>    message("OLD Sstar")
-              #>    if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
-              #>        stop("object lacks location information, so Sstar cannot be computed")
-              #>    n <- length(data$salinity)
-              #>    ## Lengthen lon and lat if necessary, by repeating.
-              #>    lon <- metadata$longitude
-              #>    if (n != length(lon))
-              #>        lon <- rep(metadata$longitude, length.out=n)
-              #>    lat <- metadata$latitude
-              #>    if (n != length(lat))
-              #>        lat <- rep(metadata$latitude, length.out=n)
-              #>    lon <- ifelse(lon < 0, lon + 360, lon) # not required because gsw_saar() does this ... but UNDOCUMENTED
-              #>    ## Do the calculation in two steps
-              #>    SA <- gsw::gsw_SA_from_SP(SP=x[["salinity"]], p=x[["pressure"]], longitude=lon, latitude=lat)
-              #>    gsw::gsw_Sstar_from_SA(SA=SA, p=x[["pressure"]], longitude=lon, latitude=lat)
-              #>} else if (i == "temperature") {
-              #>    message("OLD temperature, in [[,ctd-object")
-              #>    scale <- metadata$units[["temperature"]]$scale
-              #>    if (!is.null(scale) && "IPTS-48" == scale) {
-              #>        T90fromT48(x@data$temperature)
-              #>    } else if (!is.null(scale) && "IPTS-68" == scale) {
-              #>        T90fromT68(x@data$temperature)
-              #>    } else {
-              #>        x@data$temperature
-              #>    }
-              #>} else if (i == "pressure") {
-              #>    message("[[,ctd-method pressure")
-              #>    if ("pressure" %in% dataNames) {
-              #>        pressure <- data$pressure
-              #>        unit <- metadata$units[["pressure"]]$unit
-              #>        ## NOTE: 2019-04-29: The next will always return pressure, from the
-              #>        ## else part of the conditional. This is because oce
-              #>        ## stores pressure as dbar, and copies any original PSI data
-              #>        ## into data$pressurePSI.
-              #>        if (!is.null(unit) && "psi" == as.character(unit))
-              #>            pressure * 0.6894757 # 1 psi=6894.757 Pa
-              #>        else pressure
-              #>    } else {
-              #>        if ("depth" %in% dataNames)
-              #>            swPressure(data$depth)
-              #>        else stop("object's data slot does not contain 'pressure' or 'depth'")
-              #>    }
-              ## } else if (i == "longitude") {
-              ##     if ("longitude" %in% metadataNames) metadata$longitude else data$longitude
-              ## } else if (i == "latitude") {
-              ##     if ("latitude" %in% metadataNames) metadata$latitude else data$latitude
               if (i == "time") {
                   ## After checking for 'time' literally in the metadata
                   ## and data slots, we turn to the 10 time variants
@@ -1434,11 +1320,11 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ## if ("nitrite" %in% dnames) res@data$nitrite <- d$nitrite
         ## if ("phosphate" %in% dnames) res@data$phosphate <- d$phosphate
         ## if ("silicate" %in% dnames) res@data$silicate <- d$silicate
-        if (inherits(o, 'argo')) {
+        if (inherits(o, "argo")) {
             if (is.null(profile)) {
                 profile <- 1
                 if (dim(o[["pressure"]])[2] != 1)
-                    warning("using just column 1 of matrix data; use the 'profile' argument to select a specific profile or try as.section() to keep all columns")
+                    warning("using just column 1 of matrix data; use the \"profile\" argument to select a specific profile or try as.section() to keep all columns")
             }
             if (!is.numeric(profile) || length(profile) != 1 || profile < 1) {
                 stop("profile must be a positive integer")
@@ -1457,7 +1343,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                     ncol <- length(d[[field]])
                     if (profile > ncol)
                         stop("profile cannot exceed ", ncol, " for a data matrix with ", ncol, " columns")
-                    if (field %in% c('longitude', 'latitude')) {
+                    if (field %in% c("longitude", "latitude")) {
                         res@metadata[[field]] <- d[[field]][profile]
                     } else {
                         res@data[[field]] <- d[[field]][profile]
@@ -1468,12 +1354,12 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                         stop("profile cannot exceed ", ncol, " for a data matrix with ", ncol, " columns")
                     res@data[[field]] <- d[[field]][, profile]
                 } else if (is.array(dataInField)) { ## argo can sometimes come out this (odd) way
-                    warning("argo data '", field, "' converted from 1-D array to 1-col matrix")
+                    warning("argo data \"", field, "\" converted from 1-D array to 1-col matrix")
                     if (1 == length(dim(d[[field]])))
                         d[[field]] <- as.vector(d[[field]])
                     res@data[[field]] <- d[[field]]
                 } else {
-                    warning("not storing '", field, "' because it is in an unknown format")
+                    warning("not storing \"", field, "\" because it is in an unknown format")
                 }
             }
             ## argo
@@ -1523,11 +1409,11 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             oceDebug(debug, "case 1A: list holds oce objects\n")
             ## Copy data over
             dataNames <- names(x[[1]]@data)
-            oceDebug(debug, 'copying data entries: "', paste(dataNames, collapse='", "'), '"\n', sep="")
+            oceDebug(debug, "copying data entries: \"", paste(dataNames, collapse="\", \""), "\"\n", sep="")
             for (name in dataNames) {
                 res@data[[name]] <- unlist(lapply(x, function(xx) xx[[name]]))
             }
-            ## If longitude and latitude are not in 'data', the next will copy from metadata (if present there)
+            ## If longitude and latitude are not in data, the next will copy from metadata (if present there)
             if (!("longitude" %in% dataNames))
                 res@data$longitude <- unlist(lapply(x, function(xx) rep(xx[["longitude"]], length.out=length(xx[["salinity"]]))))
             if (!("latitude" %in% dataNames))

@@ -415,7 +415,7 @@ setMethod(f="[[",
                   return(x@data)
               if (i == "processingLog")
                   return(x@processingLog)
-              if (grepl("Unit$", i)) # returns a list
+              if (grepl("Unit$", i))  # returns a list
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$", "", i)]] else x@metadata[[i]])
               if (grepl(" unit$", i)) # returns just the unit, an expression
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub(" unit$", "", i)]][[1]] else "")
@@ -461,7 +461,6 @@ setMethod(f="[[",
                   return(swRho(x))
               } else if (i == "depth") {
                   return(if ("depth" %in% dataNames) x@data$depth else swDepth(x))
-
               } else if (i == "nitrate") {
                   if ("nitrate" %in% dataNames) {
                       return(x@data$nitrate)
@@ -472,11 +471,11 @@ setMethod(f="[[",
                   }
               } else if (i == "nitrite") {
                   if ("nitrite" %in% dataNames) {
-                      x@data$nitrite
+                      return(x@data$nitrite)
                   } else {
                       if ("nitrate" %in% dataNames && "NO2+NO3" %in% dataNames)
-                          x@data[["NO2+NO3"]] - x@data$nitrate
-                      else NULL
+                          return(x@data[["NO2+NO3"]] - x@data$nitrate)
+                      else return(NULL)
                   }
               } else if (i == "N2") {
                   return(swN2(x))
@@ -502,19 +501,7 @@ setMethod(f="[[",
                   }
               } else if (i == "Rrho") {
                   return(swRrho(x))
-              } else if (i == "sigmaTheta") {
-                  return(swSigmaTheta(x))
-              } else if (i == "sigma0") {
-                  return(swSigma0(x))
-              } else if (i == "sigma1") {
-                  return(swSigma1(x))
-              } else if (i == "sigma2") {
-                  return(swSigma2(x))
-              } else if (i == "sigma3") {
-                  return(swSigma3(x))
-              } else if (i == "sigma4") {
-                  return(swSigma4(x))
-              } else if (i == "salinity" || i == "SP") {
+              } else if (i %in% c("salinity", "SP")) {
                   if ("salinity" %in% dataNames) {
                       S <- x@data$salinity
                   } else {
@@ -546,9 +533,23 @@ setMethod(f="[[",
                       }
                   }
                   return(S)
-              } else if (i == "SA" || i == "Absolute Salinity") {
+              } else if (i %in% c("SA", "Absolute Salinity")) {
                   return(swAbsoluteSalinity(x))
-              } else if (i == "spice" || i == "spiciness") {
+              } else if (i == "sigmaTheta") {
+                  return(swSigmaTheta(x))
+              } else if (i == "sigma0") {
+                  return(if (missing(j)) swSigma0(x) else swSigma0(x, eos=j))
+              } else if (i == "sigma1") {
+                  return(if (missing(j)) swSigma1(x) else swSigma1(x, eos=j))
+              } else if (i == "sigma2") {
+                  return(if (missing(j)) swSigma2(x) else swSigma2(x, eos=j))
+              } else if (i == "sigma3") {
+                  return(if (missing(j)) swSigma3(x) else swSigma3(x, eos=j))
+              } else if (i == "sigma4") {
+                  return(if (missing(j)) swSigma4(x) else swSigma4(x, eos=j))
+              } else if (i == "silicate") {
+                  return(x@data$silicate)
+              } else if (i == "spice") {
                   return(swSpice(x))
               } else if (i == "SR") {
                   return(gsw::gsw_SR_from_SP(SP=x[["salinity"]]))

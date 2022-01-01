@@ -223,6 +223,125 @@ argShow <- function(x, nshow=4, last=FALSE, sep="=")
     res
 }
 
+#' Create label with unit
+#'
+#' `labelWithUnit` creates a label with a unit, for graphical
+#' display, e.g. by \code{\link{plot,section-method}}.
+#' The unit is enclosed in square brackets, although setting
+#' `options(oceUnitBracket="(")` will cause parentheses to be
+#' used, instead.
+#'
+#' If `name` is in a standard list, then alterations are made as appropriate,
+#' e.g. `"SA"` or `"Absolute Salinity"` yields an S with subscript A; `"CT"` or
+#' `"Conservative Temperature"` yields an upper-case Theta, `sigmaTheta`
+#' yields a sigma with subscript theta, `sigma0` yields
+#' sigma with subscript 0 (with similar for 1 through 4), `"N2"` yields "N" with
+#' superscript 2, and `"pressure"` yields "p".
+#' These basic hydrographic quantities have default units that will
+#' be used if `unit` is not supplied (see \dQuote{Examples}).
+#'
+#' In addition to the above, several chemical names are recognized,
+#' but no unit is guessed for them, because the oceanographic
+#' community lacks agreed-upon standards.
+#'
+#' If `name` is not recognized, then it is simply repeated in the
+#' return value.
+#'
+#' @param name character value naming a quantity.
+#'
+#' @param unit a list containing items `unit` and (optionally) `scale`, only the
+#' first of which, an [expression()], is used.  If `unit` is not provided,
+#' then a default will be used (see \dQuote{Details}).
+#'
+#' @return `labelWithUnit` returns a language object, created with [bquote()],
+#' that that may supplied as a text string to [legend()], [mtext()], [text()],
+#' etc.
+#'
+#' @examples
+#' library(oce)
+#' # 1. temperature has a predefined unit, but this can be overruled
+#' labelWithUnit("temperature")
+#' labelWithUnit("temperature",
+#'     list(unit=expression(m/s), scale="erroneous"))
+#' # 2. phosphate lacks a predefined unit
+#' labelWithUnit("phosphate")
+#' data(section)
+#' labelWithUnit("phosphate",
+#'     section[["station",1]][["phosphateUnit"]])
+#'
+#' @family functions that create labels
+#'
+#' @author Dan Kelley
+labelWithUnit <- function(name, unit=NULL)
+{
+    u <- if (!is.null(unit) && length(unit$unit) > 0L) unit$unit[[1]] else "unitless"
+    L <- if (getOption("oceUnitBracket", "[") == "[") " [" else " ("
+    R <- if (getOption("oceUnitBracket", "[") == "[")  "]" else  ")"
+    # Note that the code is alphabetical in the first item of
+    # equivalents. Please follow that convention if adding new
+    # entries. Also, use paste() to combine words, to prevent
+    # text-editor reflow operations from inserting line breaks.
+    #
+    # There's no need to handle unitless quantities that don't
+    # need renaming, since they are handled by the final else.
+    if (name %in% c(paste("Absolute", "Salinity"), "SA")) {
+        rval <- if (is.null(unit)) bquote(S[A]*.(L)*g/kg*.(R)) else bquote(S[A]*.(L)*.(u)*.(R))
+    } else if (name %in% c(paste("Conservative", "Temperature"), "CT")) {
+        rval <- if (is.null(unit)) bquote(Theta*.(L)*degree*C*.(R)) else bquote(Theta*.(L)*.(u)*.(R))
+    } else if (name %in% c("density")) {
+        rval <- if (is.null(unit)) bquote(rho*.(L)*kg/m^3*.(R)) else bquote(rho*.(L)*.(u)*.(R))
+    } else if (name %in% c("depth")) {
+        rval <- if (is.null(unit)) bquote(depth*.(L)*m*.(R)) else bquote(depth*.(L)*.(u)*.(R))
+    } else if (name %in% "N2") {
+        rval <- if (is.null(unit)) bquote(N^2*.(L)*s^-2*.(R)) else bquote(N^2*.(L)*.(u)*.(R))
+    } else if (name == "nitrate") {
+        rval <- if (is.null(unit)) bquote(NO[3]) else bquote(NO[3]*.(L)*.(u)*.(R))
+    } else if (name == "nitrite") {
+        rval <- if (is.null(unit)) bquote(NO[2]) else bquote(NO[2]*.(L)*.(u)*.(R))
+    } else if (name == "NO2+NO3") {
+        rval <- if (is.null(unit)) bquote(NO[2]+NO[3]) else bquote(NO[2]+NO[3]*.(L)*.(u)*.(R))
+    } else if (name == "oxygen") {
+        rval <- if (is.null(unit)) bquote(O[2]) else bquote(O[2]*.(L)*.(u)*.(R))
+    } else if (name == "pressure") {
+        rval <- if (is.null(unit)) bquote(p*.(L)*dbar*.(R)) else bquote(p*.(L)*.(u)*.(R))
+    } else if (name == "phosphate") {
+        rval <- if (is.null(unit)) bquote(PO[4]) else bquote(PO[4]*.(L)*.(u)*.(R))
+    } else if (name %in% c(paste("potential", "temperature"), "theta")) {
+        rval <- if (is.null(unit)) bquote(theta*.(L)*degree*C*.(R)) else bquote(theta*.(L)*.(u)*.(R))
+    } else if (name == "Rrho") {
+        rval <- expression(R[rho])
+    } else if (name %in% c("salinity", "SP")) {
+        rval <- expression("S")
+    } else if (name == "sigma0") {
+        rval <- if (is.null(unit)) bquote(sigma[0]*.(L)*kg/m^3*.(R)) else bquote(sigma[0]*.(L)*.(u)*.(R))
+    } else if (name == "sigma1") {
+        rval <- if (is.null(unit)) bquote(sigma[1]*.(L)*kg/m^3*.(R)) else bquote(sigma[1]*.(L)*.(u)*.(R))
+    } else if (name == "sigma2") {
+        rval <- if (is.null(unit)) bquote(sigma[2]*.(L)*kg/m^3*.(R)) else bquote(sigma[2]*.(L)*.(u)*.(R))
+    } else if (name == "sigma3") {
+        rval <- if (is.null(unit)) bquote(sigma[3]*.(L)*kg/m^3*.(R)) else bquote(sigma[3]*.(L)*.(u)*.(R))
+    } else if (name == "sigma4") {
+        rval <- if (is.null(unit)) bquote(sigma[4]*.(L)*kg/m^3*.(R)) else bquote(sigma[4]*.(L)*.(u)*.(R))
+    } else if (name == "sigmaTheta") {
+        rval <- if (is.null(unit)) bquote(sigma[theta]*.(L)*kg/m^3*.(R)) else bquote(sigma[theta]*.(L)*.(u)*.(R))
+    } else if (name == "silicate") {
+        rval <- if (is.null(unit)) bquote(SiO[4]) else bquote(SiO[4]*.(L)*.(u)*.(R))
+    } else if (name == "spice") {
+        rval <- if (is.null(unit)) bquote(spice*.(L)*kg/m^3*.(R)) else bquote(spice*.(L)*.(u)*.(R))
+    } else if (name == "SR") {
+        rval <- if (is.null(unit)) bquote(S[R]*.(L)*kg/m^3*.(R)) else bquote(S[R]*.(L)*.(u)*.(R))
+    } else if (name == "Sstar") {
+        rval <- if (is.null(unit)) bquote(S["*"]*.(L)*kg/m^3*.(R)) else bquote(S["*"]*.(L)*.(u)*.(R))
+    } else if (name == "temperature") {
+        rval <- if (is.null(unit)) bquote(T*.(L)*degree*C*.(R)) else bquote(T*.(L)*.(u)*.(R))
+    } else if (name == "z") {
+        rval <- if (is.null(unit)) bquote(z*.(L)*m*.(R)) else bquote(z*.(L)*.(u)*.(R))
+    } else {
+        rval <- name
+    }
+    rval
+}
+
 #' Get first finite value in a vector or array, or NULL if none
 #' @param v A numerical vector or array.
 firstFinite <- function(v)
@@ -2553,6 +2672,8 @@ fullFilename <- function(filename)
 #' value of `getOption("oceUnitBracket")`, which may be `"["` or
 #' `"("`.  Whether spaces are used between the unit and these deliminators
 #' is set by `psep` or [`getOption`]`("oceUnitSep")`.
+#'
+#' @family functions that create labels
 #'
 #' @author Dan Kelley
 resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceDebug"))

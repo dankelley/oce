@@ -24,7 +24,7 @@ computableWaterProperties <- function(x)
         haveLocation <- all(c("longitude", "latitude") %in% names)
         if (haveSTP) {
             res <- c(res, c("theta", paste("potential", "temperature"), "z",
-                    "depth", "spice", "spiciness", "Rrho", "sigmaTheta", "SP",
+                    "depth", "spice", "Rrho", "sigmaTheta", "SP",
                     "density", "N2"))
             if (haveLocation) {
                 res <- c(res, "SR", "Sstar", paste0("sigma", 0:4),
@@ -33,23 +33,33 @@ computableWaterProperties <- function(x)
             }
         }
         # It is possible to compute nitrate from NO2+NO3 and nitrite, if
-        # it's not stored in the object already.
+        # it's not stored in the object already.  This occurs in data(section).
+        # I also added a similar scheme for nitrite, although I don't know
+        # whether that condition ever happens, in practice.
         if (!("nitrate" %in% names) && ("NO2+NO3" %in% names) && ("nitrite" %in% names))
             res <- c(res, "nitrate")
-        # Add some synonyms.  This can yield duplicates but we use unique()
-        # later, so that's not a problem.
-        if ("nitrate" %in% names || "NO3" %in% names)
-            res <- c(res, "nitrate", "NO3")
-        if ("nitrite" %in% names || "NO2" %in% names)
-            res <- c(res, "nitrite", "NO2")
-        if ("phosphate" %in% names || "PO3" %in% names)
-            res <- c(res, "phosphate", "PO3")
-        if ("silicate" %in% names || "SiO4" %in% names) {
-            res <- c(res, "silicate", "SiO4")
-        }
+        if (!("nitrite" %in% names) && ("NO2+NO3" %in% names) && ("nitrate" %in% names))
+            res <- c(res, "nitrite")
+        # Below is a bad idea that I had for a while.  But it just gets
+        # confusing, dealing with synonyms, and it will mess things up terribly
+        # if e.g. the user has "nitrate" and wants to make a calibrated version,
+        # which they might call "NO4".
+        #<bad idea> # Add some synonyms.  This can yield duplicates but we use unique()
+        #<bad idea> # later, so that's not a problem.
+        #<bad idea> if ("nitrate" %in% names || "NO3" %in% names)
+        #<bad idea>     res <- c(res, "nitrate", "NO3")
+        #<bad idea> if ("nitrite" %in% names || "NO2" %in% names)
+        #<bad idea>     res <- c(res, "nitrite", "NO2")
+        #<bad idea> if ("phosphate" %in% names || "PO4" %in% names)
+        #<bad idea>     res <- c(res, "phosphate", "PO4")
+        #<bad idea> if ("silicate" %in% names || "SiO4" %in% names) {
+        #<bad idea>     res <- c(res, "silicate", "SiO4")
+        #<bad idea> }
     }
-    # Sorted values, cleared of duplicates (e.g. from nitrate handling).
-    sort(unique(res))                 
+    # Remove things that were in the original data.
+    res <- res[!(res %in% names)]
+    # remove duplicates, and sort
+    sort(unique(res))
 }
 
 #' Convert from ITS-90 to IPTS-68 temperature
@@ -192,23 +202,31 @@ lookWithin <- function(list)
 #' legend("topright", lty=1:2, legend=c("unesco", "gsw"), col=c("black", "red"))
 #'
 #' @family functions that calculate seawater properties
-swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
+swRrho <- function(ctd,
+    sense=c("diffusive", "finger"),
+    smoothingLength=10, df,
     eos=getOption("oceEOS", default="gsw"))
 {
     if (!inherits(ctd, "oce"))
         stop("first argument must be of class \"oce\"")
     sense <- match.arg(sense)
     eos <- match.arg(eos, c("unesco", "gsw"))
-    p <- ctd[['pressure']]
-    n <- length(p)
-    if (n < 4)
-        return(rep(NA, length.out=n))
+    p <- ctd[["pressure"]]
+    salinity <- ctd[["salinity"]]
+    temperature <- ctd[["temperature"]]
+    ok <- !is.na(p) & !is.na(salinity) & !is.na(temperature)
+    nok <- sum(ok)
+    np <- length(p)
+    # smooth.spline issues warnings if under 4 good data, and we
+    # don't want that noise.
+    if (nok < 4L)
+        return(rep(NA, length.out=np))
     A <- smoothingLength / mean(diff(p), na.rm=TRUE)
     if (missing(df))
-        df <- n / A
+        df <- nok / A
+    if (df > nok)
+        df <- nok/2
     if (eos == "unesco") {
-        salinity <- ctd[['salinity']]
-        temperature <- ctd[['temperature']]
         theta <- ctd[['theta']]
         ok <- !is.na(p) & !is.na(salinity) & !is.na(temperature)
         ## infer d(theta)/dp and d(salinity)/dp from smoothing splines

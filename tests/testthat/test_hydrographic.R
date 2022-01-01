@@ -37,7 +37,7 @@ test_that("base-level [[\"?\"]] gives expected names (UNESCO)", {
     # character values.
     expect_equal(sort(nu[["?"]]$dataDerived), sort(c("density", "depth", "N2",
                 paste("potential", "temperature"), "Rrho", "sigmaTheta", "SP",
-                "spice", "spiciness", "theta", "z")))
+                "spice", "theta", "z")))
 })
 
 test_that("base-level [[\"?\"]] works on some hydrographic things (UNESCO)", {
@@ -54,7 +54,7 @@ test_that("base-level [[\"?\"]] gives expected names (GSW)", {
                     "Salinity"), paste("Conservative", "Temperature"), "CT",
                 "density", "depth", "N2", paste("potential", "temperature"),
                 "Rrho", "SA", "sigma0", "sigma1", "sigma2", "sigma3", "sigma4",
-                "sigmaTheta", "SP", "spice", "spiciness", "SR", "Sstar",
+                "sigmaTheta", "SP", "spice", "SR", "Sstar",
                 "theta", "z")))
 })
 

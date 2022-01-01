@@ -7,10 +7,12 @@
 * Add `adpConvertRawToNumeric()`.
 * Add `adpFlagPastBoundary()`.
 * Add `ctdRepair()`.
+* Add `labelWithUnit()`.
 * Change `as.ctd()` to drop `other` parameter, deprecated 4y ago.
 * Change `read.odf()` to handle new CODEs and UNITs.
 * Change `oce.plot.ts()` by adding `simplify` argument.
-* Change `plot,section-method()` temperature label to "T".
+* Change `plot,section-method()`, correcting temperature label to "T" and
+  adding many more plot types.
 * Change `pwelch()`, improving low-frequency results.
 * Fix `[[` to yield ITS90 temperature for all classes, not just `ctd`.
 * Fix `as.ctd()` handling of temperature scale of first argument.
