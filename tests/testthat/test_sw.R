@@ -70,6 +70,31 @@ test_that("rho and sigma", {
     # The sigmaT tests are not from definititive test values, and so are just
     # checks against future changes.
     expect_equal(swSigmaT(35, T90fromT68(13), 1000, eos="unesco"), 26.393538,tolerance=0.000001)
+
+    # Tests from issue 1904
+    data(section)
+    stn <- section[["station", 100]] # 4.3km deep
+    # Ensure that the sigmaTheta is the same whether called directly or with [[
+    expect_equal(swSigmaTheta(stn,eos="unesco"), stn[["sigmaTheta", "unesco"]])
+    expect_equal(swSigmaTheta(stn,eos="gsw"), stn[["sigmaTheta", "gsw"]])
+
+    # The oceEOS option must be obeyed.
+    options(oceEOS="unesco")
+    expect_equal(stn[["sigmaTheta"]], stn[["sigma0", "unesco"]])
+    options(oceEOS="gsw")
+    expect_equal(stn[["sigmaTheta"]], stn[["sigma0", "gsw"]])
+
+    # sigmaTheta and sigma0 should match within each EOS.
+    expect_equal(stn[["sigmaTheta", "unesco"]], stn[["sigma0", "unesco"]])
+    expect_equal(stn[["sigmaTheta", "gsw"]], stn[["sigma0", "gsw"]])
+
+    # sigmaTheta and sigma0 ([[ form) should not match between unesco and gsw
+    expect_false(identical(stn[["sigmaTheta", "gsw"]], stn[["sigmaTheta", "unesco"]]))
+    expect_false(identical(stn[["sigma0", "gsw"]], stn[["sigma0", "unesco"]]))
+
+    # sigmaTheta and sigma0 (function form) should not match between unesco and gsw
+    expect_false(identical(swSigmaTheta(stn,eos="unesco"), swSigmaTheta(stn,eos="gsw")))
+    expect_false(identical(swSigma0(stn,eos="unesco"), swSigma0(stn,eos="gsw")))
 })
 
 test_that("potential_temperature (UNESCO)", {

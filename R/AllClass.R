@@ -536,7 +536,7 @@ setMethod(f="[[",
               } else if (i %in% c("SA", "Absolute Salinity")) {
                   return(swAbsoluteSalinity(x))
               } else if (i == "sigmaTheta") {
-                  return(swSigmaTheta(x))
+                  return(if (missing(j)) swSigmaTheta(x) else swSigmaTheta(x, eos=j))
               } else if (i == "sigma0") {
                   return(if (missing(j)) swSigma0(x) else swSigma0(x, eos=j))
               } else if (i == "sigma1") {
