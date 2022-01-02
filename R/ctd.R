@@ -5320,7 +5320,7 @@ plotProfile <- function(x,
         }
     } else if (xtype == "S" || xtype == "SA" || xtype == "salinity") {
         oceDebug(debug, "recognized S, SA, or salinity\n")
-        salinity <- if (eos == "gsw" || xtype == "SA") swAbsoluteSalinity(x) else x[["salinity"]]
+        salinity <- if (xtype == "SA") swAbsoluteSalinity(x) else x[["salinity"]]
         if (!any(is.finite(salinity))) {
             warning("no valid salinity data")
             return(invisible(NULL))
@@ -5333,7 +5333,7 @@ plotProfile <- function(x,
             axis(2)
             axis(3)
             box()
-            if (eos == "gsw" || xtype == "SA") {
+            if (xtype == "SA") {
                 mtext(if (is.null(xlab)) resizableLabel("absolute salinity", "x", unit=NULL, debug=debug-1) else xlab,
                       side=3, line=axisNameLoc, cex=par("cex"))
             } else {
@@ -5346,7 +5346,7 @@ plotProfile <- function(x,
                 plot(salinity[look], y[look],
                      xlim=Slim, ylim=ylim, lty=lty, cex=cex, pch=pch,
                      type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-                if (eos == "gsw" || xtype == "SA") {
+                if (xtype == "SA") {
                     mtext(if (is.null(xlab)) resizableLabel("absolute salinity", "x", unit=NULL, debug=debug-1) else xlab,
                           side=3, line=axisNameLoc, cex=par("cex"))
                 } else {
