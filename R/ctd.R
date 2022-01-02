@@ -3330,11 +3330,16 @@ setMethod(f="plot",
                                        "Tts"=31,
                                        "pts"=32,
                                        "rhots"=33))
+              # Permit plotting anything contained in the data slot, along with
+              # some things that can be computed from those contents.
+              q <- x[["?"]]
+              available <- c(q$data,q$dataDerived)
+              #> message("available: c(\"", paste(available, collapse="\", \""), "\")")
               for (w in seq_along(which)) {
                   if (is.na(which[w])) {
-                      if (whichOrig[w] %in% names(x@data)) {
+                      if (whichOrig[w] %in% available) {
                           xlab <- resizableLabel(item=whichOrig[w], axis="x",
-                                                 unit=x@metadata$units[[whichOrig[w]]], debug=debug-1)
+                              unit=x@metadata$units[[whichOrig[w]]], debug=debug-1)
                           oceDebug(debug, "about to call plotProfile() with which=\"", whichOrig[w], "\" and xlab=\"", as.character(xlab), "\"\n", sep="")
                           plotProfile(x, xtype=x[[whichOrig[w]]],
                                       xlab=xlab,# whichOrig[w],
@@ -3350,9 +3355,7 @@ setMethod(f="plot",
                       } else {
                           warning("plot,ctd-method(): unknown plot type \"", whichOrig[w], "\" requested\n", call.=FALSE)
                       }
-                      next
-                  }
-                  if (which[w] == 1) {
+                  } else if (which[w] == 1) {
                       plotProfile(x, xtype="salinity+temperature",
                                   plim=plim, Slim=Slim, Tlim=Tlim,
                                   eos=eos,
@@ -5557,7 +5560,9 @@ plotProfile <- function(x,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "T" || xtype == "CT" || xtype == "temperature") {
         oceDebug(debug, "recognized T, CT, or temperature\n")
-        temperature <- if (eos == "gsw" || xtype == "CT") swConservativeTemperature(x) else x[["temperature"]]
+        #>temperature <- if (eos == "gsw" || xtype == "CT") swConservativeTemperature(x) else x[["temperature"]]
+        temperature <- if (xtype %in% c("T", "temperature")) x[["temperature"]] 
+            else if (xtype == "CT") x[["CT"]]
         unit <- x@metadata$units[["temperature"]]
         if (!any(is.finite(temperature))) {
             warning("no valid temperature data")
@@ -5571,7 +5576,7 @@ plotProfile <- function(x,
             axis(2)
             axis(3)
             box()
-            if (eos == "gsw" || xtype == "CT") {
+            if (xtype == "CT") {
                 mtext(if (is.null(xlab)) resizableLabel("conservative temperature", "x", unit=unit, debug=debug-1) else xlab,
                       side=3, line=axisNameLoc, cex=par("cex"))
             } else {
@@ -5584,9 +5589,12 @@ plotProfile <- function(x,
                 plot(temperature[look], y[look], lty=lty,
                      xlim=Tlim, ylim=ylim, cex=cex, pch=pch,
                      type="n", xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-                if (eos == "gsw") {
-                    mtext(if (is.null(xlab)) resizableLabel("conservative temperature", "x", unit=unit, debug=debug-1) else xlab,
-                          side=3, line=axisNameLoc, cex=par("cex"))
+                if (xtype == "CT") {
+                    mtext(
+                        if (is.null(xlab))
+                        resizableLabel(paste("conservative", "temperature"), "x", unit=unit, debug=debug-1)
+                    else xlab,
+                        side=3, line=axisNameLoc, cex=par("cex"))
                 } else {
                     mtext(if (is.null(xlab)) resizableLabel("T", "x", unit=unit, debug=debug-1) else xlab,
                           side=3, line=axisNameLoc, cex=par("cex"))

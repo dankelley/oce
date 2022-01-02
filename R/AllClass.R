@@ -549,6 +549,8 @@ setMethod(f="[[",
                   return(if (missing(j)) swSigma4(x) else swSigma4(x, eos=j))
               } else if (i == "silicate") {
                   return(x@data$silicate)
+              } else if (i == paste("sound", "speed")) {
+                  return(if (missing(j)) swSoundSpeed(x) else swSoundSpeed(x, eos=j))
               } else if (i == "spice") {
                   return(swSpice(x))
               } else if (i == "SR") {

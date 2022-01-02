@@ -2676,29 +2676,31 @@ fullFilename <- function(filename)
 #' @family functions that create labels
 #'
 #' @author Dan Kelley
-resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceDebug"))
+resizableLabel <- function(item, axis="x", sep, unit=NULL,
+    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "resizableLabel(item=\"", item,
-             "\", axis=\"", axis,
-             "\", sep=\"", if (missing(sep)) "(missing)" else sep, "\", ...) {\n",
-            sep="", unindent=1, style="bold")
+        "\", axis=\"", axis,
+        "\", sep=\"", if (missing(sep)) "(missing)" else sep, "\", ...) {\n",
+        sep="", unindent=1, style="bold")
     if (missing(item))
         stop("must provide 'item'")
     if (axis != "x" && axis != "y")
         stop("axis must be \"x\" or \"y\"")
-    itemAllowed <- c("S", "SA", "C", "CT", "conductivity mS/cm", "conductivity S/m", "T",
-                     "theta", "sigmaTheta", "conservative temperature",
-                     "absolute salinity", "N2", "nitrate", "nitrite",
-                     "oxygen", "oxygen saturation", "oxygen mL/L", "oxygen umol/L", "oxygen umol/kg",
-                     "phosphate", "silicate", "tritium", "spice",
-                     "fluorescence", "p", "z", "distance", "distance km",
-                     "along-spine distance km",
-                     "along-track distance km",
-                     "heading", "pitch", "roll", "u",
-                     "v", "w", "speed", "direction", "eastward", "northward",
-                     "depth", "elevation", "latitude", "longitude", "frequency cph",
-                     "sound speed", "spectral density m2/cph",
-                     "sigma0", "sigma1", "sigma2", "sigma3", "sigma4")
+    itemAllowed <- c("S", "SA", "C", "CT", paste("conductivity", "mS/cm"),
+        paste("conductivity", "S/m"), "T", "theta", "sigmaTheta",
+        paste("Conservative", "Temperature"), paste("Absolute", "Salinity"),
+        "N2", "nitrate", "nitrite", "oxygen", paste("oxygen", "saturation"),
+        paste("oxygen", "mL/L"), paste("oxygen", "umol/L"), paste("oxygen",
+            "umol/kg"), "phosphate", "silicate", "tritium", "spice",
+        "fluorescence", "p", "z", "distance", "distance km",
+        paste("along-spine", "distance", "km"), paste("along-track", "distance",
+            "km"), "heading", "pitch", "roll", "u", "v", "w", "speed",
+        "direction", "eastward", "northward", "depth", "elevation", "latitude",
+        "longitude", paste("frequency", "cph"), paste("sound", "speed"),
+        paste("spectral", "density", "m2/cph"), "sigma0", "sigma1", "sigma2",
+        "sigma3", "sigma4", "Sstar", "SR")
+
     ## FIXME: if anything is added, run the next, and paste results into roxygen.
     ## > A<-paste0("'",paste(sort(itemAllowed), collapse="'`, `'"),"'");A
     ## NOTE: some hand-tweaking must be done to fix linebreaks and (preferably) to
@@ -2738,11 +2740,11 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
             abbreviated <- bquote("T"*.(L)*.(unit[[1]])*.(R))
         }
-    } else if (item == "conductivity mS/cm") {
+    } else if (item == paste("conductivity", "mS/cm")) {
         var <- gettext("Conductivity", domain="R-oce")
         full <- bquote(.(var)*.(L)*mS/cm*.(R))
         abbreviated <- bquote("C"*.(L)*mS/cm*.(R))
-    } else if (item == "conductivity S/m") {
+    } else if (item == paste("conductivity", "S/m")) {
         var <- gettext("Conductivity", domain="R-oce")
         full <- bquote(.(var)*.(L)*S/m*.(R))
         abbreviated <- bquote("C"*.(L)*S/m*.(R))
@@ -2752,7 +2754,9 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
         unit <- gettext("unitless", domain="R-oce")
         full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
         abbreviated <- bquote("C")
-    } else if (item %in% c("CT", "conservative temperature")) {
+    } else if (item %in% c("CT",
+            paste("conservative", "temperature"),
+            paste("Conservative", "Temperature"))) {
         var <- gettext("Conservative Temperature", domain="R-oce")
         full <- bquote(.(var)*.(L)*degree*"C"*.(R))
         abbreviated <- bquote(Theta*.(L)*degree*"C"*.(R))
@@ -2780,6 +2784,15 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
         var <- gettext("Potential density anomaly wrt 4000 dbar", domain="R-oce")
         full <- bquote(.(var)*.(L)*kg/m^3*.(R))
         abbreviated <- bquote(sigma[4]*.(L)*kg/m^3*.(R))
+    } else if (item == "SP") {
+        var <- "Salinity"
+        abbreviated <- full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+    } else if (item == "SR") {
+        var <- "SR"
+        abbreviated <- full <- bquote(S[R]*.(L)*kg/m^3*.(R))
+    } else if (item == "Sstar") {
+        var <- "Sstar"
+        abbreviated <- full <- bquote(S["*"]*.(L)*kg/m^3*.(R))
     } else if (item == "theta") {
         var <- gettext("Potential Temperature", domain="R-oce")
         full <- bquote(.(var)*.(L)*degree*"C"*.(R))
@@ -2824,19 +2837,19 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
             abbreviated <- bquote(O[2]*.(L)*.(unit[[1]])*.(R))
         }
-    } else if (item == "oxygen saturation") {
+    } else if (item == paste("oxygen", "saturation")) {
         var <- gettext("Oxygen saturation", domain="R-oce")
         full <- bquote(.(var))
         abbreviated <- bquote(O[2]*.(L)*percent*saturation*.(R))
-    } else if (item ==  "oxygen mL/L") {
+    } else if (item ==  paste("oxygen", "mL/L")) {
         var <- gettext("Oxygen", domain="R-oce")
         full <- bquote(.(var)*.(L)*mL/L*.(R))
         abbreviated <- bquote(O[2]*.(L)*mL/L*.(R))
-    } else if (item == "oxygen umol/L") {
+    } else if (item == paste("oxygen", "umol/L")) {
         var <- gettext("Oxygen", domain="R-oce")
         full <- bquote(.(var)*.(L)*mu*mol/L*.(R))
         abbreviated <- bquote(O[2]*.(L)*mu*mol/L*.(R))
-    } else if (item == "oxygen umol/kg") {
+    } else if (item == paste("oxygen", "umol/kg")) {
         var <- gettext("Oxygen", domain="R-oce")
         full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
         abbreviated <- bquote(O[2]*.(L)*mu*mol/kg*.(R))
@@ -2880,7 +2893,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
     } else if (item == "S") {
         full <- gettext("Practical Salinity", domain="R-oce")
         abbreviated <- expression(S)
-    } else if (item %in% c("SA", "absolute salinity")) {
+    } else if (item %in% c("SA", paste("absolute", "salinity"))) {
         var <- gettext("Absolute Salinity", domain="R-oce")
         full <- bquote(.(var)*.(L)*g/kg*.(R))
         abbreviated <- bquote(S[A]*.(L)*g/kg*.(R))
@@ -2897,10 +2910,10 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
     } else if (item == "distance km") {
         var <- gettext("Distance", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*km*.(R))
-    } else if (item == "along-spine distance km") {
+    } else if (item == paste("along-spine", "distance", "km")) {
         var <- gettext("Along-spine Distance", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*km*.(R))
-    } else if (item == "along-track distance km") {
+    } else if (item == paste("along-track", "distance", "km")) {
         var <- gettext("Along-track Distance", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*km*.(R))
     } else if (item == "heading") {
@@ -2937,15 +2950,15 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
         var <- gettext("Longitude", domain="R-oce")
         ## maybe add deg "E" "W" etc here, but maybe not (aesthetics)
         abbreviated <- full <- var
-    } else if (item == "frequency cph") {
+    } else if (item == paste("frequency", "cph")) {
         var <- gettext("Frequency", domain="R-oce")
         unit <- gettext("cph", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
-    } else if (item == "sound speed") {
+    } else if (item == paste("sound", "speed")) {
         var <- gettext("Sound Speed", domain="R-oce")
         unit <- gettext("m/s", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
-    } else if (item == "spectral density m2/cph") {
+    } else if (item == paste("spectral", "density", "m2/cph")) {
         var <- gettext("Spectral density", domain="R-oce")
         full <- bquote(.(var)*.(L)*m^2/cph*.(R))
         var <- gettext("Spec. dens.", domain="R-oce")
