@@ -2786,7 +2786,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
         abbreviated <- bquote(sigma[4]*.(L)*kg/m^3*.(R))
     } else if (item == "SP") {
         var <- "Salinity"
-        abbreviated <- full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+        abbreviated <- full <- bquote(.(var))
     } else if (item == "SR") {
         var <- "SR"
         abbreviated <- full <- bquote(S[R]*.(L)*kg/m^3*.(R))
@@ -2829,7 +2829,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
             abbreviated <- bquote(N*O[2]*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "oxygen") {
-        var <- gettext("oxygen", domain="R-oce")
+        var <- gettext("Oxygen", domain="R-oce")
         if (is.null(unit)) {
             full <- bquote(.(var))
             abbreviated <- bquote(O[2])
@@ -2838,7 +2838,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
             abbreviated <- bquote(O[2]*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == paste("oxygen", "saturation")) {
-        var <- gettext("Oxygen saturation", domain="R-oce")
+        var <- gettext("Oxygen Saturation", domain="R-oce")
         full <- bquote(.(var))
         abbreviated <- bquote(O[2]*.(L)*percent*saturation*.(R))
     } else if (item ==  paste("oxygen", "mL/L")) {
@@ -2861,6 +2861,24 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
         } else {
             full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
             abbreviated <- bquote(P*O[4]*.(L)*.(unit[[1]])*.(R))
+        }
+    } else if (item == paste("potential", "temperature")) {
+        var <- gettext("Potential Temperature", domain="R-oce")
+        if (is.null(unit)) {
+            full <- bquote(.(var)*.(L)*degree*C*.(R))
+            abbreviated <- bquote(theta*.(L)*degree*C*.(R))
+        } else {
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(theta*.(L)*.(unit[[1]])*.(R))
+        }
+    } else if (item == "pressure") {
+        var <- gettext("Pressure", domain="R-oce")
+        if (is.null(unit)) {
+            full <- bquote(.(var)*.(L)*dbar*.(R))
+            abbreviated <- bquote(theta*.(L)*dbar*.(R))
+        } else {
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(theta*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "silicate") {
         var <- gettext("Silicate", domain="R-oce")
@@ -2891,9 +2909,9 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
             abbreviated <- full
         }
     } else if (item == "S") {
-        full <- gettext("Practical Salinity", domain="R-oce")
+        full <- gettext("Salinity", domain="R-oce")
         abbreviated <- expression(S)
-    } else if (item %in% c("SA", paste("absolute", "salinity"))) {
+    } else if (item %in% c("SA", paste("Absolute", "Salinity"))) {
         var <- gettext("Absolute Salinity", domain="R-oce")
         full <- bquote(.(var)*.(L)*g/kg*.(R))
         abbreviated <- bquote(S[A]*.(L)*g/kg*.(R))
