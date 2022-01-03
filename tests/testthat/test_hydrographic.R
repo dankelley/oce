@@ -36,8 +36,8 @@ test_that("base-level [[\"?\"]] gives expected names (UNESCO)", {
     # RStudio.  I guess RStudio is using a different default for sorting
     # character values.
     expect_equal(sort(nu[["?"]]$dataDerived), sort(c("density", "depth", "N2",
-                paste("potential", "temperature"), "Rrho", "sigmaTheta", "SP",
-                "spice", "theta", "z")))
+                paste("potential", "temperature"), "Rrho", "sigmaTheta",
+                paste("sound", "speed"), "SP", "spice", "theta", "z")))
 })
 
 test_that("base-level [[\"?\"]] works on some hydrographic things (UNESCO)", {
@@ -54,8 +54,8 @@ test_that("base-level [[\"?\"]] gives expected names (GSW)", {
                     "Salinity"), paste("Conservative", "Temperature"), "CT",
                 "density", "depth", "N2", paste("potential", "temperature"),
                 "Rrho", "SA", "sigma0", "sigma1", "sigma2", "sigma3", "sigma4",
-                "sigmaTheta", "SP", "spice", "SR", "Sstar",
-                "theta", "z")))
+                "sigmaTheta", paste("sound", "speed"), "SP", "spice", "SR",
+                "Sstar", "theta", "z")))
 })
 
 test_that("base-level [[\"?\"]] works on some hydrographic things (GSW)", {
