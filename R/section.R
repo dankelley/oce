@@ -218,17 +218,18 @@ setMethod(f="summary",
               ##stn.sum <- matrix(nrow=numStations, ncol=5)
               if (numStations > 0) {
                   cat("* Overview of stations\n")
-                  cat(sprintf("%5s %5s %8s %8s %7s %5s\n", "Index", "ID", "Lon", "Lat", "Levels", "Depth"))
+                  cat(sprintf("%5s %5s %8s %8s %7s %5s %16s\n", "Index", "ID", "Lon", "Lat", "Levels", "Depth", "StartTime"))
                   for (i in seq_len(numStations)) {
                       ##stn <- object@data$station[[i]]
                       thisStn <- object@data$station[[i]]
                       id <- if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
                           thisStn@metadata$station else ""
                       depth <- if ("waterDepth" %in% names(thisStn@metadata)) thisStn@metadata$waterDepth else NA
-                      cat(sprintf("%5d %5s %8.4f %8.4f %7.0f %5.0f\n",
+                      cat(sprintf("%5d %5s %8.4f %8.4f %7.0f %5.0f %16s\n",
                                   i, id,
                                   thisStn[["longitude"]][1], thisStn[["latitude"]][1],
-                                  length(thisStn@data$pressure), depth))
+                                  length(thisStn@data$pressure), depth,
+                                  format(thisStn[["startTime"]][1], "%Y-%m-%d %H:%M")))
                   }
                   names <- names(object@data$station[[1]]@metadata$flags)
                   if (!is.null(names)) {
@@ -2158,9 +2159,9 @@ setMethod(f="plot",
 #'
 #' @family things related to section data
 read.section <- function(file, directory, sectionId="", flags,
-                         ship="", scientist="", institute="",
-                         missingValue=-999,
-                         debug=getOption("oceDebug"), processingLog)
+    ship="", scientist="", institute="",
+    missingValue=-999,
+    debug=getOption("oceDebug"), processingLog)
 {
     if (!missing(file) && is.character(file) && 0 == file.info(file)$size)
         stop("empty file")
@@ -2401,12 +2402,12 @@ read.section <- function(file, directory, sectionId="", flags,
     ## Names and units are the same for every station, so determine them
     ## before going through the data.
     for (i in 1:numStations) {
-        oceDebug(debug, "reading station", i, "... ")
         select <- which(stationId == stationList[i])
         ## "199309232222"
         ## "1993-09-23 22:22:00"
         time[i] <- as.numeric(strptime(paste(stn.date[select[1]], stn.time[select[1]], sep=""), "%Y%m%d%H%M", tz="UTC"))
         stn[i] <- sub("^ *", "", stationId[select[1]])
+        oceDebug(debug, "reading station i=", i, ", stn=", stn[i], "\n")
         lon[i] <- longitude[select[1]]
         lat[i] <- latitude[select[1]]
         ## ## FIXME: chop flags up
@@ -2459,8 +2460,7 @@ read.section <- function(file, directory, sectionId="", flags,
         thisStation@metadata$startTime <- numberAsPOSIXct(time[i])
         thisStation@metadata$longitude <- lon[i]
         thisStation@metadata$latitude <- lat[i]
-        thisStation@metadata$time[i] <- as.numeric(strptime(paste(stn.date[select[1]], stn.time[select[1]], sep=""), "%Y%m%d%H%M", tz="UTC"))
-        thisStation@metadata$stn[i] <- sub("^ *", "", stationId[select[1]])
+        thisStation@metadata$stn <- sub("^ *", "", stationId[select[1]])
         thisStation@metadata$time <- as.numeric(strptime(paste(stn.date[select[1]], stn.time[select[1]], sep=""), "%Y%m%d%H%M", tz="UTC"))
         thisStation@metadata$station <- sub("^ *", "", stationId[select[1]])
         thisStation@metadata$longitude <- longitude[select[1]]
@@ -2495,7 +2495,7 @@ read.section <- function(file, directory, sectionId="", flags,
         ## if (!is.null(oxygenUnit)) thisStation@metadata$units$oxygen <- oxygenUnit
         ## if (!is.null(silicateUnit)) thisStation@metadata$units$silicate <- silicateUnit
         ## if (!is.null(phosphateUnit)) thisStation@metadata$units$phosphate <- phosphateUnit
-        if (debug) cat(length(select), "levels @ ", lat[i], "N ", lon[i], "W\n")
+        oceDebug(debug, "    ", length(select), " levels ", lat[i], "N,", lon[i], "W", " (", format(thisStation@metadata$startTime), ")\n")
         station[[i]] <- thisStation
     }
     res@metadata$header <- header
