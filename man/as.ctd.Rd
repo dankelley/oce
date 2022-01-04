@@ -30,31 +30,12 @@ as.ctd(
 )
 }
 \arguments{
-\item{salinity}{a numeric vector holding Practical Salinity, or something
-else from which it and other hydrographic variables can be inferred.  The
-choices are as follows.  (As noted in the \dQuote{Description}, the simplest
-case is the first, and users should try this, if other cases yield unexpected
-results.)
-\itemize{
-\item It can be a vector holding values of Practical Salinity through the water
-column. In this case, \code{as.ctd()} uses the other function parameters
-(\code{temperature}, \code{pressure} etc) as specified.
-\item It can be a \linkS4class{ctd} object, in which case \code{as.ctd()} simply returns
-it, unaltered.
-\item It can be an \linkS4class{rsk} object (see \dQuote{Converting rsk objects} for details).
-\item It can be something (a data frame, a list or an \code{oce} object) from which
-Practical Salinity, in-situ temperature, sea pressure, and possibly
-conductivity) can be inferred. In this case, the relevant information is
-extracted  and the other arguments to \code{as.ctd} are ignored, except for
-\code{longitude}, \code{latitude} and \code{pressureAtmospheric}, each of which must be
-specified.  If the first argument has salinity, etc., in matrix form (as can
-happen with some objects of \linkS4class{argo}), then only the first column is
-used, and a warning to that effect is given, unless the \code{profile} argument is
-specified and then that specific profile is extracted.
-\item It can be unspecified, in which case \code{conductivity} becomes a mandatory
-argument, because it will be needed for computing actual salinity, using
-\code{\link[=swSCTp]{swSCTp()}}.
-}}
+\item{salinity}{may be (1) a numeric vector holding Practical Salinity,
+(2) a list or data frame holding \code{salinity} and other
+hydrographic variables or (3) an \code{oce-class} object that holds
+hydrographic information. If \code{salinity} is not provided,
+then \code{conductivity} must be provided, so that \code{\link[=swSCTp]{swSCTp()}}
+can be used to compute salinity.}
 
 \item{temperature}{a numeric vector containing \emph{in-situ} temperature in
 \eqn{^\circ}{deg}C on the ITS-90 scale; see \dQuote{Temperature units} in the

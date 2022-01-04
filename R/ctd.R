@@ -962,34 +962,12 @@ setMethod(f="[[<-",
 #' Salinity values, in which case the processing of the other arguments is
 #' relatively straightforward.
 #'
-#' @param salinity a numeric vector holding Practical Salinity, or something
-#' else from which it and other hydrographic variables can be inferred.  The
-#' choices are as follows.  (As noted in the \dQuote{Description}, the simplest
-#' case is the first, and users should try this, if other cases yield unexpected
-#' results.)
-#'
-#' * It can be a vector holding values of Practical Salinity through the water
-#' column. In this case, `as.ctd()` uses the other function parameters
-#' (`temperature`, `pressure` etc) as specified.
-#'
-#' * It can be a [ctd-class] object, in which case `as.ctd()` simply returns
-#' it, unaltered.
-#'
-#' * It can be an [rsk-class] object (see \dQuote{Converting rsk objects} for details).
-#'
-#' * It can be something (a data frame, a list or an `oce` object) from which
-#' Practical Salinity, in-situ temperature, sea pressure, and possibly
-#' conductivity) can be inferred. In this case, the relevant information is
-#' extracted  and the other arguments to `as.ctd` are ignored, except for
-#' `longitude`, `latitude` and `pressureAtmospheric`, each of which must be
-#' specified.  If the first argument has salinity, etc., in matrix form (as can
-#' happen with some objects of [argo-class]), then only the first column is
-#' used, and a warning to that effect is given, unless the `profile` argument is
-#' specified and then that specific profile is extracted.
-#'
-#' * It can be unspecified, in which case `conductivity` becomes a mandatory
-#' argument, because it will be needed for computing actual salinity, using
-#' [swSCTp()].
+#' @param salinity may be (1) a numeric vector holding Practical Salinity,
+#' (2) a list or data frame holding `salinity` and other
+#' hydrographic variables or (3) an `oce-class` object that holds
+#' hydrographic information. If `salinity` is not provided,
+#' then `conductivity` must be provided, so that [swSCTp()]
+#' can be used to compute salinity.
 #'
 #' @param temperature a numeric vector containing *in-situ* temperature in
 #' \eqn{^\circ}{deg}C on the ITS-90 scale; see \dQuote{Temperature units} in the
@@ -2835,13 +2813,17 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 
 #' Plot a ctd Object
 #'
-#' Plot CTD data, by default in a four-panel display showing (a) profiles of
-#' salinity and temperature, (b) profiles of density and the square of buoyancy
-#' frequency, (c) a TS diagram and (d) a coastline diagram indicating the station
-#' location.
+#' Plot CTD data in any of many different ways. In many cases,
+#' the best choice is to use default values for all parameters
+#' other than the first.  This yields a 4-panel plot that
+#' displays a basic overview of the data, with a combined
+#' profile of salinity and temperature at the top
+#' left, a combined plot of density and the square of buoyancy
+#' frequency at top right, a TS diagram at bottom left, and
+#' a map at bottom right.
 #'
 #' @details
-#' Creates a multi-panel summary plot of data measured in a CTD cast. The
+#' The
 #' default values of `which` and other arguments are chosen to be useful
 #' for quick overviews of data. However, for detailed work it is common
 #' to call the present function with just a single value of `which`, e.g.
@@ -2860,24 +2842,37 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' @param x a [ctd-class] object.
 #'
 #' @param which List of desired plot types, as given below. If `which` is not
-#' supplied, a default will be used. This default will be `c(1,2,3,5)` if the
-#' CTD is in profiling mode (i.e. if `deploymentType` in the `metadata`
-#' slot equals `"profile"`,
-#' or is missing) or
-#' `"moored"`/`"thermosalinograph"`, the default will be `c(30, 3, 31, 5)`.  If it
-#' is `"towyo"`, `c(30, 31, 32, 3)` will be used. Details are as
-#' follows.
+#' supplied, a default will be used. This default depends on `deploymentType`
+#' in the `metadata` slot of `x`.  If `deploymentType` is
+#' `"profile"` or missing, then `which` defaults to
+#' `c(1,2,3,5)`.  If `deploymentType` is
+#' `"moored"` or `"thermosalinograph"` then `which` defaults to
+#' `c(30, 3, 31, 5)`. Finally, if `deploymentType` is `towyo` then
+#' `which` defaults to `c(30, 31, 32, 3)`.
 #'
-#' * `which=1` or `which="salinity+temperature"` gives
-#' a combined profile of temperature and salinity
+#' The details of individual `which` values are as follows. Some of the entries
+#' refer to the EOS (equation of state for seawater), which may either `"gsw"`
+#' for the modern Gibbs Seawater system, or `"unesco"` for the older UNESCO
+#' system. The EOS may be set with the `eos` argument, or by using [options()],
+#' with `options(oceEOS="unesco")` or `options(oceEOS="unesco")`. The default EOS
+#' is `"gsw"`.
 #'
-#' * `which=2` or `which="density+N2"` gives a combined
-#' profile of \eqn{\sigma_\theta}{sigma-theta} and \eqn{N^2}{N^2}
+#' * `which=1` or `which="salinity+temperature"` gives a combined profile of
+#' temperature and salinity.  If the EOS is `"gsw"` then Conservative
+#' Temperature and Absolute Salinity will be shown; otherwise in-situ
+#' temperature and practical salinity will be shown.
 #'
-#' * `which=3` or `which="TS"` gives a TS plot
+#' * `which=2` or `which="density+N2"` gives a combined profile of density
+#' anomaly, computed with [swSigma0()], along with the square of the buoyancy
+#' frequency, computed with [swN2()].  Note that the `eos` parameter is passed
+#' to each of these functions.
 #'
-#' * `which=4` or `which="text"` gives a textual
-#' summary of some aspects of the data
+#' * `which=3` or `which="TS"` gives a TS plot. If the EOS is `"gsw"`, T is
+#' Conservative Temperature and S is Absolute Salinity; otherwise, they are
+#' in-situ temperature and practical salinity, respectively.
+#'
+#' * `which=4` or `which="text"` gives a textual  summary of
+#' some aspects of the data.
 #'
 #' * `which=5` or `which="map"` gives a map plotted
 #' with [plot,coastline-method()], with a dot for
@@ -2888,71 +2883,91 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' about `span`.)
 #'
 #' * `which=5.1` as for `which=5`, except that the file name
-#' is drawn above the map
+#' is drawn above the map.
 #'
-#' * `which=6` or `which="density+dpdt"` gives a
-#' profile of density and \eqn{dP/dt}{dP/dt}, which is useful for
-#' evaluating whether the instrument is dropping properly through the
-#' water column
+#' * `which=6` or `which="density+dpdt"` gives a profile of density and
+#' \eqn{dP/dt}{dP/dt}, which is useful for evaluating whether the instrument is
+#' dropping properly through the water column.  For the `"gsw"` EOS,
+#' \eqn{\sigma_0}{sigma[0]} is shown, while for `"unesco"`,
+#' \eqn{\sigma_\theta}{sigma[theta]} is shown.
 #'
 #' * `which=7` or `which="density+time"` gives a
-#' profile of density and time
+#' profile of density and time.
 #'
 #' * `which=8` or `which="index"` gives a profile of
-#' index number (especially useful for [ctdTrim()])
+#' index number, which can provide useful information for
+#' trimming with [ctdTrim()].
 #'
-#' * `which=9` or `which="salinity"` gives a salinity profile
+#' * `which=9` or `which="salinity"` gives a profile of Absolute
+#' Salinity if the EOS is `"gsw"`, or practical salinity otherwise.
 #'
-#' * `which=10` or `which="temperature"` gives a temperature profile
+#' * `which=10` or `which="temperature"` gives a profile
+#' of Conservative Temperature if the EOS is `"gsw"`, or
+#' in-situ temperature otherwise.
 #'
-#' * `which=11` or `which="density"` gives a density profile
+#' * `which=11` or `which="density"` gives a profile
+#' of density as computed with [swRho()], to whic the `eos`
+#' parameter is passed.
 #'
-#' * `which=12` or `which="N2"` gives an \eqn{N^2}{N^2} profile
+#' * `which=12` or `which="N2"` gives an \eqn{N^2}{N^2} profile.
 #'
-#' * `which=13` or `which="spice"` gives a spiciness profile
+#' * `which=13` or `which="spice"` gives a spiciness profile.
 #'
-#' * `which=14` or `which="tritium"` gives a tritium profile
+#' * `which=14` or `which="tritium"` gives a tritium profile.
 #'
-#' * `which=15` or `which="Rrho"` gives an Rrho profile
+#' * `which=15` or `which="Rrho"` gives a diffusive-case density
+#' ratio profile.
 #'
-#' * `which=16` or `which="RrhoSF"` gives an RrhoSF profile
+#' * `which=16` or `which="RrhoSF"` gives a salt-finger case
+#' density ratio profile.
 #'
-#' * `which=17` or `which="conductivity"` gives a conductivity profile
+#' * `which=17` or `which="conductivity"` gives a conductivity profile.
 #'
-#' * `which=20` or `which="CT"` gives a Conservative Temperature profile
+#' * `which=20` or `which="CT"` gives a profile of Conservative Temperature.
 #'
-#' * `which=21` or `which="SA"` gives an Absolute Salinity profile
+#' * `which=21` or `which="SA"` gives a profile of Absolute Salinity.
 #'
-#' * `which=30` or `which="Sts"` gives a time series of Salinity
+#' * `which=30` or `which="Sts"` gives a time series of Salinity Absolute
+#' Salinity if the EOS is `"gsw"` or practical salinity otherwise.
 #'
-#' * `which=31` or `which="Tts"` gives a time series of Temperature
+#' * `which=31` or `which="Tts"` gives a time series of Conservative Temperature
+#' if the EOS is `"gsw"` or in-situ temperature otherwise.
 #'
 #' * `which=32` or `which="pts"` gives a time series of pressure
 #'
-#' * `which=33` or `which="rhots"` gives a time series of sigmaTheta
+#' * `which=33` or `which="rhots"` gives a time series of density anomaly,
+#' \eqn{\sigma_0}{sigma[0]} if the EOS is `"gsw"`
+#' or \eqn{\sigma_\theta}{sigma[theta]} otherwise.
 #'
-#' @param col Color of lines or symbols.
+#' * otherwise, `which` is checked against the `data` and `dataDerived`
+#' fields returned by `x[["?"]`, and a profile of the corresponding
+#' quantity is plotted.
 #'
-#' @param fill A legacy parameter that will be permitted only temporarily; see
+#' @param col color of lines or symbols.
+#'
+#' @param fill a legacy parameter that will be permitted only temporarily; see
 #' \dQuote{History}.
 #'
-#' @param borderCoastline Color of coastlines and international borders, passed
+#' @param borderCoastline color of coastlines and international borders, passed
 #' to [plot,coastline-method()] if a map is included in `which`.
 #'
-#' @param colCoastline Fill color of coastlines and international borders, passed
+#' @param colCoastline fill color of coastlines and international borders, passed
 #' to [plot,coastline-method()] if a map is included in `which`. Set to
 #' `NULL` to avoid filling.
 #'
-#' @param eos String indicating the equation of state to be used, either
-#' `"unesco"` or `"gsw"`.
+#' @param eos character value indicating the equation of state to be used, either
+#' `"unesco"` or `"gsw"`.  The default is to use a value stored with
+#' [options()] as e.g. `options(oceEOS="unesco")`.
 #'
-#' @param ref.lat Latitude of reference point for distance calculation.
+#' @param ref.lat latitude of reference point for distance calculation.
+#' The permitted range is -90 to 90.
 #'
-#' @param ref.lon Longitude of reference point for distance calculation.
+#' @param ref.lon longitude of reference point for distance calculation.
+#' The permitted range is -180 to 180.
 #'
-#' @param grid Set `TRUE` to get a grid on all plots.
+#' @param grid logical value indicating whether to draw a grid on the plot.
 #'
-#' @param coastline A specification of the coastline to be used for
+#' @param coastline a specification of the coastline to be used for
 #' `which="map"`.  This may be a coastline object, whether built-in or
 #' supplied by the user, or a character string.  If the later, it may be the
 #' name of a built-in coastline (`"coastlineWorld"`,
@@ -2966,32 +2981,12 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' coastline, it makes sense to load it in before the first call, and to
 #' supply the object as an argument, as opposed to the name of the object.
 #'
-#' @param Slim Optional limits of salinity axes.
+#' @param Slim,Clim,Tlim,plim,densitylim,N2lim,Rrholim,dpdtlim,timelim optional numeric vectors
+#' of length 2, that give axis limits for
+#' salinity, conductivity, temperature, pressure, the square of
+#' buoyancy frequency, density ratio, dp/dt, and time, respectively.
 #'
-#' @param Clim Optional limits of conductivity axes.
-#'
-#' @param Tlim Optional limits of temperature axes.
-#'
-#' @param plim Optional limits of pressure axes.
-#'
-#' @param densitylim Optional limits of density axis, whether that axis be horizontal
-#' or vertical.
-#'
-#' @param N2lim Optional limits of \eqn{N^2}{N^2} axis.
-#'
-#' @param Rrholim Optional limits of \eqn{R_rho}{R_rho} axis.
-#'
-#' @param dpdtlim Optional limits of dP/dt axis.
-#'
-#' @param timelim Optional limits of delta-time axis.
-#'
-#' @param lonlim Optional limits of longitude axis of map (ignored if no map
-#' plotted) DEPRECATED 2014-01-07.
-#'
-#' @param latlim Optional limits of latitude axis of map (ignored if no map
-#' plotted) DEPRECATED 2014-01-07.
-#'
-#' @param drawIsobaths An indication of whether to draw depth contours on
+#' @param drawIsobaths logical value indicating whether to draw depth contours on
 #' maps, in addition to the coastline. The argument has no effect except
 #' for panels in which the value of `which` equals `"map"` or
 #' the equivalent numerical code, `5`. If `drawIsobaths` is
@@ -3006,55 +3001,45 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' the resultant contours, e.g. setting particular line types or colors,
 #' users should call these functions directly (see e.g. Example 2).
 #'
-#' @param clongitude Center longitude.
+#' @param clongitude,clatitude,span controls for the map area view,
+#' used only if `which="map"`.
+#' `clongitude` and `clatitude` specify the centre of the view, and
+#' `span` specifies the approximate extend of the view, in
+#' kilometres.  (If `span` is not given, it is be determined as a small
+#' multiple of the distance to the nearest point of land, in an attempt to show
+#' the station in familiar geographical context.)
 #'
-#' @param clatitude Center latitude.
+#' @param showHemi,lonlabels,latlabels controls for axis labelling, used only if `which="map"`.
+#' `showHemi` is logical value indicating whether to show hemisphere in axis tick
+#' labels. `lonlabels` and `latlabels` are numeric and character values that control the
+#' axis labelling.
 #'
-#' @param span Optional span of map, in km.  If not given, this will be determined
-#' as a small multiple of the distance to the nearest point of land, in an
-#' attempt to show some coastline in the plot.
+#' @param latlon.pch,latlon.cex,latlon.col controls for station location,
+#' used only if `which="map"`.  `latlon.pch` sets the symbol code,
+#' `latlon.cex` sets the character expansion
+#' factor, and `latlon.col` sets the colour.
 #'
-#' @param showHemi Logical indicating whether to show hemisphere in axis tick
-#' labels.
+#' @param projection controls the map projection (if any), and ignored unless
+#' `which="map"`. The possibilities are as follows.  (1) If `projection=NULL`
+#' (the default) then no projection will be used; the map will simply show
+#' longitude and latitude in a Cartesian frame, scaled to retain shapes at the
+#' centre.  (2) If `projection=`"automatic"` then either a Mercator or
+#' Stereographic projection will be used, depending on whether the CTD station
+#' is within 70 degrees of the equator or at higher latitudes. (3) If
+#' `projection` is a string in the format used by [mapPlot()], then it is is
+#' passed to that function.
 #'
-#' @param lonlabels,latlabels Values that control the labelling of
-#' longitude and latitude along the sides of the plot, used only if
-#' `projection` is not `NULL`.  See [mapPlot()] for details.
+#' @param cex size to be used for plot symbols (see [par()]).
 #'
-#' @param projection Projection for map, if desired.  If this is `NULL`, no
-#' projection will be used; the map will simply show longitude and latitude in a
-#' cartesian frame, scaled to retain shapes at the centre.  If this is the string
-#' `"automatic"`, then either a Mercator or Stereographic projection will be
-#' used, depending on whether the CTD station is within 70 degrees of the equator
-#' or at higher latitudes.  Finally, if this is a string in the format used by
-#' [mapPlot()], then it is is passed to that function.
+#' @param cex.axis size factor for axis labels (see [par()]).
 #'
-## @param parameters a **deprecated** argument that has been ignored
-## since February 2016; see [oce-deprecated].
-##
-## @param orientation a **deprecated** argument that has been ignored
-## since February 2016; see [oce-deprecated].
+#' @param pch code for plotting symbol (see [par()]).
 #'
-#' @param latlon.pch Symbol code for sample location (ignored if no map plotted).
+#' @param useSmoothScatter logical value indicating whether to
+#' use [smoothScatter()] instead of [plot()] to draw the plot.
 #'
-#' @param latlon.cex Symbol expansion factor for sample location (ignored if no
-#' map plotted).
-#'
-#' @param latlon.col Color of symbol for sample location (ignored if no map
-#' plotted).
-#'
-#' @param cex Size to be used for plot symbols (see [par()]).
-#'
-#' @param cex.axis Size factor for axis labels (see [par()]).
-#'
-#' @param pch Code for plotting symbol (see [par()]).
-#'
-#' @param useSmoothScatter Boolean, set to `TRUE` to use
-#' [smoothScatter()] instead of [plot()] to draw the plot.
-#'
-#' @param df Optional argument that is ignored except for plotting buoyancy
-#' frequency; in that case, it is passed to [swN2()] as the argument
-#' named `df`.
+#' @param df optional numeric argument that is ignored except for plotting buoyancy
+#' frequency; in that case, it is passed to [swN2()].
 #'
 #' @param keepNA logical value indicating whether `NA` values
 #' will yield breaks in lines drawn if `type` is `b`, `l`, or `o`.
@@ -3064,7 +3049,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' would have extraneous lines joining the deepest point in one
 #' profile to the shallowest in the next profile.
 #'
-#' @param type The type of plot to draw, using the same scheme as
+#' @param type the type of plot to draw, using the same scheme as
 #' [plot()]. If supplied, this is increased to be the
 #' same length as `which`, if necessary, and then supplied to
 #' each of the individual plot calls. If it is not supplied,
@@ -3072,11 +3057,11 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' [plotProfile()], using dots for [plotTS()],
 #' etc).
 #'
-#' @param mgp Three-element numerical vector specifying axis-label geometry,
+#' @param mgp three-element numerical vector specifying axis-label geometry,
 #' passed to [par()].
 #' The default establishes tighter margins than in the usual R setup.
 #'
-#' @param mar Four-element numerical vector specifying margin geometry,
+#' @param mar four-element numerical vector specifying margin geometry,
 #' passed to [par()].
 #' The default establishes tighter margins than in the usual R setup.
 #' Note that the value of `mar` is ignored for the map panel
@@ -3085,29 +3070,44 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' make the map plot region equal that of the previously-drawn
 #' profiles and TS plot.
 #'
-#' @param inset Set to `TRUE` for use within [plotInset()].  The
+#' @param inset logical value indicating whether this
+#' function is being used as an inset.  The
 #' effect is to prevent the present function from adjusting margins, which is
 #' necessary because margin adjustment is the basis for the method used by
 #' [plotInset()].
 #'
-#' @param add Logical, indication of whether to add to an existing plot.  This
+#' @param add logical value indicating whether to add to an existing plot.  This
 #' only works if `length(which)=1`, and it will yield odd results if the
 #' value of `which` does not match that in the previous plots.
 #'
 #' @template debugTemplate
 #'
-#' @param ... Optional arguments passed to plotting functions. A common example is
+#' @param ... optional arguments passed to plotting functions. A common example is
 #' to set `df`, for use in [swN2()] calculations.
 #'
 #' @seealso
 #' The documentation for [ctd-class] explains the structure of CTD
 #' objects, and also outlines the other functions dealing with them.
 #'
-#' @section History:
-#' Until February, 2016, [plot,ctd-method()] relied on a now-defunct argument
-#' `fill` to control colors; `colCoastline` is to be used now, instead.
-#' Also, now it is possible to set the color of coasts and international
-#' boundaries, with `borderCoastline`.
+#' @section History of Changes:
+#'
+#' * January 2022:
+#'
+#'     - Add ability to profile anything stored in the `data` slot, and anything
+#'     that can be computed from information in that slot. The list of
+#'     possibilities is found by examining the `data` and `dataDerived` elements
+#'     of `x[["?"]]`.
+#'
+#'     - Drop the `lonlim` and `latlim` parameters, marked for removal in 2014;
+#'     use `clongitude`, `clatitude` and `span` instead (see
+#'     [plot,coastline-method()]).
+#'
+#' * February 2016:
+#'
+#'     - Drop the `fill` parameter for land colour; use `colCoastline` instead.
+#'
+#'     - Add the `borderCoastline` argument, to control the colour of coastlines
+#'     and international boundaries.
 #'
 #' @examples
 #' ## 1. simple plot
@@ -3119,8 +3119,8 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' par(mfrow=c(1,2))
 #' data(section)
 #' stn <- section[["station", 105]]
-#' plot(stn, which='map', drawIsobaths=TRUE)
-#' plot(stn, which='map')
+#' plot(stn, which="map", drawIsobaths=TRUE)
+#' plot(stn, which="map")
 #' data(topoWorld)
 #' tlon <- topoWorld[["longitude"]]
 #' tlat <- topoWorld[["latitude"]]
@@ -3142,16 +3142,14 @@ setMethod(f="plot",
         col=par("fg"),
         fill, # to catch old method
         borderCoastline=NA, colCoastline="lightgray",
-        eos=getOption("oceEOS", default='gsw'),
+        eos=getOption("oceEOS", default="gsw"),
         ref.lat=NaN, ref.lon=NaN,
         grid=TRUE, coastline="best",
-        Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim,
-        dpdtlim, timelim,
-        lonlim, latlim, # FIXME: maybe should be deprecated 2014-01-07
+        Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim, dpdtlim, timelim,
         drawIsobaths=FALSE, clongitude, clatitude, span, showHemi=TRUE,
         lonlabels=TRUE, latlabels=TRUE,
-        projection=NULL,
         latlon.pch=20, latlon.cex=1.5, latlon.col="red",
+        projection=NULL,
         cex=1, cex.axis=par('cex.axis'),
         pch=1,
         useSmoothScatter=FALSE,
@@ -3181,7 +3179,7 @@ setMethod(f="plot",
             warning("In plot,ctd-method() : 'fill' is outdated; use 'colCoastline' instead", call.=FALSE)
         }
         if (missing(which)) {
-            oceDebug(debug, "plot,ctd-method(..., eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
+            oceDebug(debug, "plot,ctd-method(..., eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", style="bold", unindent=1)
             dt <- x@metadata$deploymentType
             if (is.null(dt)) {
                 which <- c(1, 2, 3, 5)
@@ -3230,9 +3228,9 @@ setMethod(f="plot",
         lw <- length(which)
         dots <- list(...)
         dotsNames <- names(dots)
-        ## FIXME: In the below, we could be more clever for single-panel plots
-        ## but it may be better to get users out of the habit of supplying xlim
-        ## etc (which will yield errors in plot.lm(), for example).
+        # FIXME: In the below, we could be more clever for single-panel plots
+        # but it may be better to get users out of the habit of supplying xlim
+        # etc (which will yield errors in plot.lm(), for example).
         if ("xlim" %in% dotsNames)
             stop("in plot,ctd-method() : 'xlim' not allowed; use Slim, Tlim, etc", call.=FALSE)
         if ("ylim" %in% dotsNames)
@@ -3283,37 +3281,36 @@ setMethod(f="plot",
                 }
             }
         }
-        if (!missing(latlim))
-            warning("the latlim argument is deprecated; should instead specify clongitude, clatitude, and span")
-        if (!missing(lonlim))
-            warning("the lonlim argument is deprecated; should instead specify clongitude, clatitude, and span")
-
+        if (any(c("latlim", "lonlim") %in% names(list(...))))
+            warning("In plot,ctd-method() : latlim and lonlim are no longer handled; use clongitude, clatitude and span instead", call.=FALSE)
+        # Convert from numbers to strings.
         whichOrig <- which
         which <- as.character(which)
         for (i in seq_along(which)) {
-            if      (which[i] ==  "1") which[i] <- "salinity+temperature"
-            else if (which[i] ==  "2") which[i] <- "density+N2"
-            else if (which[i] ==  "3") which[i] <- "TS"
-            else if (which[i] ==  "4") which[i] <- "text"
-            else if (which[i] ==  "5") which[i] <- "map"
-            else if (which[i] ==  "6") which[i] <- "density+dpdt"
-            else if (which[i] ==  "7") which[i] <- "density+time"
-            else if (which[i] ==  "8") which[i] <- "index"
-            else if (which[i] ==  "9") which[i] <- "salinity"
-            else if (which[i] == "10") which[i] <- "temperature"
-            else if (which[i] == "11") which[i] <- "density"
-            else if (which[i] == "12") which[i] <- "N2"
-            else if (which[i] == "13") which[i] <- "spice"
-            else if (which[i] == "14") which[i] <- "tritium"
-            else if (which[i] == "15") which[i] <- "Rrho"
-            else if (which[i] == "16") which[i] <- "RrhoSF"
-            else if (which[i] == "17") which[i] <- "conductivity"
-            else if (which[i] == "20") which[i] <- "CT"
-            else if (which[i] == "21") which[i] <- "SA"
-            else if (which[i] == "30") which[i] <- "Sts"
-            else if (which[i] == "31") which[i] <- "Tts"
-            else if (which[i] == "32") which[i] <- "pts"
-            else if (which[i] == "33") which[i] <- "rhots"
+            wi <- which[i]
+            if      (wi ==  "1") which[i] <- "salinity+temperature"
+            else if (wi ==  "2") which[i] <- "density+N2"
+            else if (wi ==  "3") which[i] <- "TS"
+            else if (wi ==  "4") which[i] <- "text"
+            else if (wi ==  "5") which[i] <- "map"
+            else if (wi ==  "6") which[i] <- "density+dpdt"
+            else if (wi ==  "7") which[i] <- "density+time"
+            else if (wi ==  "8") which[i] <- "index"
+            else if (wi ==  "9") which[i] <- "salinity"
+            else if (wi == "10") which[i] <- "temperature"
+            else if (wi == "11") which[i] <- "density"
+            else if (wi == "12") which[i] <- "N2"
+            else if (wi == "13") which[i] <- "spice"
+            else if (wi == "14") which[i] <- "tritium"
+            else if (wi == "15") which[i] <- "Rrho"
+            else if (wi == "16") which[i] <- "RrhoSF"
+            else if (wi == "17") which[i] <- "conductivity"
+            else if (wi == "20") which[i] <- "CT"
+            else if (wi == "21") which[i] <- "SA"
+            else if (wi == "30") which[i] <- "Sts"
+            else if (wi == "31") which[i] <- "Tts"
+            else if (wi == "32") which[i] <- "pts"
+            else if (wi == "33") which[i] <- "rhots"
         }
         # Permit plotting anything contained in the data slot, along with
         # some things that can be computed from those contents.
@@ -3487,10 +3484,8 @@ setMethod(f="plot",
                 omar <- mar
                 if (length(which) > 1)
                     mar <- par("mar")
-                if (!is.null(x[["latitude"]]) &&
-                    !is.null(x[["longitude"]]) &&
-                    any(is.finite(x[["latitude"]])) &&
-                    any(is.finite(x[["longitude"]]))) {
+                if (!is.null(x[["latitude"]]) && !is.null(x[["longitude"]])
+                    && any(is.finite(x[["latitude"]])) && any(is.finite(x[["longitude"]]))) {
                     oceDebug(debug, "plot(ctd, ...) { # of type MAP\n")
                     # Calculate span, if not given
                     if (missing(span)) {
@@ -3580,70 +3575,17 @@ setMethod(f="plot",
                             lonlabels=lonlabels, latlabels=latlabels,
                             debug=debug-1)
                     } else {
-                        if (missing(lonlim)) {
-                            mlon <- mean(x[["longitude"]], na.rm=TRUE)
-                            lonlim.c <- mlon + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - mlon))
-                            clon <- mean(lonlim.c)
-                            if (missing(latlim)) {
-                                mlat <- mean(x[["latitude"]], na.rm=TRUE)
-                                oceDebug(debug, "CASE 1: both latlim and lonlim missing; using projection=",
-                                    if (is.null(projection)) "NULL" else projection, "\n")
-                                latlim.c <- mlat + c(-1, 1) * min(abs(range(coastline[["latitude"]], na.rm=TRUE) - mlat))
-                                latlim.c <- ifelse(latlim.c > 90, 89.99, latlim.c)
-                                oceDebug(debug, "about to plot coastline\n")
-                                oceDebug(debug, "clatitude=", mean(latlim.c), "\n")
-                                oceDebug(debug, "clongitude=", clon, "\n")
-                                oceDebug(debug, "span=", span, "\n")
-                                oceDebug(debug, "projection=", projection, "\n")
-                                oceDebug(debug, "ok, about to call plot(coastline)\n")
-                                plot(coastline,
-                                    clongitude=standardizeLongitude(clon), clatitude=mean(latlim.c), span=span,
-                                    projection=projection,
-                                    border=borderCoastline, col=colCoastline,
-                                    mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                    lonlabels=lonlabels, latlabels=latlabels,
-                                    debug=debug-1)
-                                oceDebug(debug, " ... did plot(coastline)\n")
-                            } else {
-                                oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
-                                clat <- mean(latlim)
-                                plot(coastline,
-                                    clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
-                                    projection=projection,
-                                    border=borderCoastline, col=colCoastline,
-                                    mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                    lonlabels=lonlabels, latlabels=latlabels,
-                                    debug=debug-1)
-                            }
-                            if (is.numeric(which[w]) && round(which[w], 1) == 5.1) # HIDDEN FEATURE
-                                mtext(gsub(".*/", "", x@metadata$filename), side=3, line=0.1, cex=0.7*cex)
-                        } else {
-                            oceDebug(debug, "lonlim was provided\n")
-                            clon <- mean(lonlim)
-                            if (missing(latlim)) {
-                                oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
-                                latlim.c <- mean(x@metadata$latitude, na.rm=TRUE) +
-                                c(-1, 1) * min(abs(range(coastline[["latitude"]], na.rm=TRUE) - x@metadata$latitude))
-                                clat <- mean(latlim.c)
-                                plot(coastline,
-                                    clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
-                                    projection=projection,
-                                    border=borderCoastline, col=colCoastline,
-                                    mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                    lonlabels=lonlabels, latlabels=latlabels,
-                                    debug=debug-1)
-                            } else {
-                                oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
-                                clat <- mean(latlim)
-                                plot(coastline,
-                                    clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
-                                    border=borderCoastline, col=colCoastline,
-                                    projection=projection,
-                                    mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                    lonlabels=lonlabels, latlabels=latlabels,
-                                    debug=debug-1)
-                            }
-                        }
+                        oceDebug(debug, "about to plot coastline with no clongitude,clatitude,span given\n")
+                        clongitude <- mean(x[["longitude"]], na.rm=TRUE)
+                        clatitude <- mean(x[["latitude"]], na.rm=TRUE)
+                        oceDebug(debug, "using projection=", if (is.null(projection)) "NULL" else projection, "\n")
+                        plot(coastline,
+                            clongitude=clongitude, clatitude=clatitude, span=span,
+                            projection=projection,
+                            border=borderCoastline, col=colCoastline,
+                            mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                            lonlabels=lonlabels, latlabels=latlabels,
+                            debug=debug-1)
                     }
                     # draw isobaths
                     xlon <- x[["longitude"]]
@@ -3694,7 +3636,7 @@ setMethod(f="plot",
                             side=3, adj=0, cex=par("cex"), line=0.5)
                     }
                     if (!is.null(x@metadata$startTime) && !is.na(x@metadata$startTime) && 4 < nchar(x@metadata$startTime, "bytes")) {
-                        mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%M:%S"),
+                        mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%M"),
                             side=3, adj=1, cex=par("cex"), line=0.5)
                     } else if (!is.null(x@data$time)) {
                         goodTimes <- which(!is.na(x@data$time))
@@ -3754,22 +3696,34 @@ setMethod(f="plot",
                     yloc <- textItem(xloc, yloc, latlonFormat(xm$latitude, xm$longitude),   " Location: ", cex=cex)
             } else if (which[w] == "Sts") { # S timeseries
                 oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
-                oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S", "y", debug=debug-1))
+                if (eos == "unesco")
+                    oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S", "y", debug=debug-1))
+                else
+                    oce.plot.ts(x[["time"]], x[["SA"]], ylab=resizableLabel("SA", "y", debug=debug-1))
             } else if (which[w] == "Tts") { # T timeseries
                 oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
-                oce.plot.ts(x[["time"]], x[["temperature"]], ylab=resizableLabel("T", "y", debug=debug-1))
+                if (eos == "unesco")
+                    oce.plot.ts(x[["time"]], x[["temperature"]],
+                        ylab=resizableLabel("T", "y", debug=debug-1))
+                else
+                    oce.plot.ts(x[["time"]], x[["CT"]],
+                        ylab=resizableLabel("CT", "y", debug=debug-1))
             } else if (which[w] == "pts") { # p timeseries
                 oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
                 oce.plot.ts(x[["time"]], x[["pressure"]], ylab=resizableLabel("p", "y", debug=debug-1))
             } else if (which[w] =="rhots") { # sigmaTheta timeseries
                 oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
-                oce.plot.ts(x[["time"]], x[["sigmaTheta"]], ylab=resizableLabel("sigmaTheta", "y", debug=debug-1))
+                if (eos == "unesco")
+                    oce.plot.ts(x[["time"]], x[["sigmaTheta"]],
+                        ylab=resizableLabel("sigmaTheta", "y", debug=debug-1))
+                else
+                    oce.plot.ts(x[["time"]], x[["sigma0"]],
+                        ylab=resizableLabel("sigmaTheta", "y", debug=debug-1))
             } else {
-                oceDebug(debug, "not a special case; assuming a \"", whichOrig[w], "\" profile plot\n", sep="")
+                oceDebug(debug, "Not a special case; will try a \"", whichOrig[w], "\" profile plot\n", sep="")
                 if (whichOrig[w] %in% available) {
                     xlab <- resizableLabel(item=whichOrig[w], axis="x",
-                        unit=x@metadata$units[[whichOrig[w]]], debug=debug-1)
-                    oceDebug(debug, "about to call plotProfile() with which=\"", whichOrig[w], "\" and xlab=\"", as.character(xlab), "\"\n", sep="")
+                        unit=x@metadata$units[[whichOrig[w]]])
                     plotProfile(x, xtype=x[[whichOrig[w]]],
                         xlab=xlab,# whichOrig[w],
                         Slim=Slim, Tlim=Tlim, plim=plim,
@@ -3779,7 +3733,7 @@ setMethod(f="plot",
                         col=col[w], cex=cex[w], pch=pch[w],
                         type=if (!missing(type)) type[w],
                         keepNA=keepNA, inset=inset, add=add,
-                        debug=debug-1,
+                        debug=debug-1L,
                         ...)
                 }
             }
@@ -4916,42 +4870,42 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' @family functions that plot oce data
 #' @family things related to ctd data
 plotProfile <- function(x,
-                        xtype="salinity+temperature", ytype="pressure",
-                        eos=getOption("oceEOS", default="gsw"),
-                        lty=1,
-                        xlab=NULL, ylab=NULL,
-                        col='black',
-                        col.salinity="darkgreen",
-                        col.temperature="red",
-                        col.rho="blue",
-                        col.N2="brown",
-                        col.dpdt="darkgreen",
-                        col.time="darkgreen",
-                        pt.bg="transparent",
-                        grid=TRUE,
-                        col.grid="lightgray",
-                        lty.grid="dotted",
-                        Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim,
-                        xlim, ylim,
-                        lwd=par("lwd"),
-                        xaxs="r",
-                        yaxs="r",
-                        cex=1, pch=1,
-                        useSmoothScatter=FALSE,
-                        df,
-                        keepNA=FALSE,
-                        type='l',
-                        mgp=getOption("oceMgp"),
-                        mar,
-                        add=FALSE,
-                        inset=FALSE,
-                        debug=getOption("oceDebug", 0),
-                        ...)
+    xtype="salinity+temperature", ytype="pressure",
+    eos=getOption("oceEOS", default="gsw"),
+    lty=1,
+    xlab=NULL, ylab=NULL,
+    col='black',
+    col.salinity="darkgreen",
+    col.temperature="red",
+    col.rho="blue",
+    col.N2="brown",
+    col.dpdt="darkgreen",
+    col.time="darkgreen",
+    pt.bg="transparent",
+    grid=TRUE,
+    col.grid="lightgray",
+    lty.grid="dotted",
+    Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim,
+    xlim, ylim,
+    lwd=par("lwd"),
+    xaxs="r",
+    yaxs="r",
+    cex=1, pch=1,
+    useSmoothScatter=FALSE,
+    df,
+    keepNA=FALSE,
+    type='l',
+    mgp=getOption("oceMgp"),
+    mar,
+    add=FALSE,
+    inset=FALSE,
+    debug=getOption("oceDebug", 0),
+    ...)
 {
-    debug <- min(debug, 3)
+    debug <- max(0, min(debug, 3))
     oceDebug(debug, "plotProfile(x, xtype=",
              ifelse(is.character(xtype), paste0("\"",xtype,"\""), "(numeric)"),
-             ", xlab=", if (is.null(xlab)) "NULL" else paste('"', xlab, '"', sep=""),
+             #", xlab=", if (is.null(xlab)) "NULL" else paste('"', xlab, '"', sep=""),
              ", debug=", debug, ", ...) {\n", sep="", style="bold", unindent=1)
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (missing(mar)) {
@@ -4963,15 +4917,14 @@ plotProfile <- function(x,
     plimGiven <- !missing(plim)
 
     plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
-                                xlim=NULL, ylim=NULL,
-                                xlab=NULL,
-                                lwd=par("lwd"),
-                                cex=1, pch=1, pt.bg="transparent",
-                                df=df, keepNA=FALSE, debug=getOption("oceDebug", 0))
+        xlim=NULL, ylim=NULL,
+        xlab=NULL,
+        lwd=par("lwd"),
+        cex=1, pch=1, pt.bg="transparent",
+        df=df, keepNA=FALSE, debug=getOption("oceDebug", 0))
     {
         oceDebug(debug, "plotJustProfile(...,",
-                 argShow(col),
-                 ", debug=", debug, ") {\n", sep="", style="bold", unindent=1)
+            argShow(col), ", debug=", debug, ") {\n", sep="", style="bold", unindent=1)
         if (is.null(xlab))
             xlab <- ""
         x <- as.vector(x) # because e.g. argo may be a 1-col matrix
@@ -5019,28 +4972,28 @@ plotProfile <- function(x,
         yname <- ylab
     } else {
         yname <- switch(ytype,
-                        pressure=resizableLabel("p", "y", debug=debug-1),
-                        z=resizableLabel("z", "y", debug=debug-1),
-                        depth=resizableLabel("depth", "y", debug=debug-1),
-                        sigmaTheta=resizableLabel("sigmaTheta", "y", debug=debug-1))
+            pressure=resizableLabel("p", "y", debug=debug-1),
+            z=resizableLabel("z", "y", debug=debug-1),
+            depth=resizableLabel("depth", "y", debug=debug-1),
+            sigmaTheta=resizableLabel("sigmaTheta", "y", debug=debug-1))
     }
-    ## if plim given on a pressure plot, then it takes precedence over ylim;
-    ## same for densitylim
+    # If plim given on a pressure plot, then it takes precedence over ylim; same
+    # for densitylim.
     if (ytype == "pressure" && plimGiven)
         ylim <- plim
     if (ytype == "sigmaTheta" && densitylimGiven)
         ylim <- densitylim
     if (missing(ylim))
         ylim <- switch(ytype,
-                       pressure=rev(range(x[["pressure"]], na.rm=TRUE)),
-                       z=range(swZ(x[["pressure"]]), na.rm=TRUE),
-                       depth=rev(range(x[["depth"]], na.rm=TRUE)),
-                       sigmaTheta=rev(range(x[["sigmaTheta"]], na.rm=TRUE)))
-    ## issue 1137 Dec 27, 2016
-    ## Below, we used to trim the data to ylim, but this made it
-    ## look as though there were no data at top and bottom of the plot.
-    ## The new scheme is to retain 5% of data outside the limit, which
-    ## should be OK for the usual R convention of a 4% gap at axis ends.
+            pressure=rev(range(x[["pressure"]], na.rm=TRUE)),
+            z=range(swZ(x[["pressure"]]), na.rm=TRUE),
+            depth=rev(range(x[["depth"]], na.rm=TRUE)),
+            sigmaTheta=rev(range(x[["sigmaTheta"]], na.rm=TRUE)))
+    # issue 1137 Dec 27, 2016
+    # Below, we used to trim the data to ylim, but this made it
+    # look as though there were no data at top and bottom of the plot.
+    # The new scheme is to retain 5% of data outside the limit, which
+    # should be OK for the usual R convention of a 4% gap at axis ends.
     if (ytype %in% c("pressure", "z", "depth", "sigmaTheta")) {
         yy <- x[[ytype]]
         extra <- 0.05 * diff(range(yy, na.rm=TRUE)) # note larger than 0.04, just in case
@@ -5085,8 +5038,8 @@ plotProfile <- function(x,
             time <- time * x@metadata$sampleInterval
         }
     }
-    ## y <- if (ytype == "pressure") x[["pressure"]] else if (ytype == "z") x[["z"]]
-    ##     else if (ytype == "depth") x[["depth"]] else if (ytype == "sigmaTheta") x[["sigmaTheta"]]
+    # y <- if (ytype == "pressure") x[["pressure"]] else if (ytype == "z") x[["z"]]
+    #     else if (ytype == "depth") x[["depth"]] else if (ytype == "sigmaTheta") x[["sigmaTheta"]]
     if (ytype == "pressure") {
         y <- x[["pressure"]]
         if (plimGiven && !ylimGiven) {
@@ -5106,7 +5059,7 @@ plotProfile <- function(x,
         par(mar=mar, mgp=mgp)
     if (length(xtype) == length(y) && length(y) > 1) {
         oceDebug(debug, "case 1\n")
-        if ('axes' %in% names(list(...))) {
+        if ("axes" %in% names(list(...))) {
             plot(xtype, y, xlab="", ylab=yname, type=type, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, lty=lty, cex=cex, pch=pch, ...)
             if (list(...)$axes) {
                 axis(3)
@@ -5129,7 +5082,13 @@ plotProfile <- function(x,
         if (add) {
             lines(xtype, y, type=type, lty=lty, ...)
         } else {
-            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, lty=lty, cex=cex, pch=pch, ...)
+            message("DAN DAN")
+            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE,
+                xaxs=xaxs, yaxs=yaxs,
+                #xlim=if (!is.null(xlim)) xlim else range(x, na.rm=TRUE),
+                ylim=ylim,
+                lty=lty, cex=cex, pch=pch, ...)
+            message("DAN DAN DAN")
             axis(3)
             mtext(xlab, side=3, line=axisNameLoc, cex=par("cex")) # no unit is provided
             axis(2)
@@ -5625,7 +5584,7 @@ plotProfile <- function(x,
                         cex=cex, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "density") {
-        rho <- swRho(x)
+        rho <- swRho(x, eos=eos)
         look <- if (keepNA) seq_along(y) else !is.na(rho) & !is.na(y)
         ## FIXME: if this works, extend to other x types
         look <- look & (min(ylim) <= y & y <= max(ylim))
@@ -5660,7 +5619,7 @@ plotProfile <- function(x,
     } else if (xtype == "density+N2") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+dpdt\"")
-        sig0 <- swSigma0(x)
+        sig0 <- swSigma0(x, eos=eos)
         if (!any(is.finite(sig0))) {
             warning("no valid sigma-0 data")
             return(invisible(NULL))
@@ -5694,7 +5653,7 @@ plotProfile <- function(x,
             lines(sig0, y, col=col.rho, lwd=lwd, lty=lty)
         }
         par(new=TRUE)
-        N2 <- swN2(x, df=df)
+        N2 <- swN2(x, df=df, eos=eos)
         N2[!is.finite(N2)] <- NA
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
