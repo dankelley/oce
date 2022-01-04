@@ -101,10 +101,10 @@ index number (especially useful for \code{\link[=ctdTrim]{ctdTrim()}})
 \item \code{which=17} or \code{which="conductivity"} gives a conductivity profile
 \item \code{which=20} or \code{which="CT"} gives a Conservative Temperature profile
 \item \code{which=21} or \code{which="SA"} gives an Absolute Salinity profile
-\item \code{which=30} gives a time series of Salinity
-\item \code{which=31} gives a time series of Temperature
-\item \code{which=32} gives a time series of pressure
-\item \code{which=33} gives a time series of sigmaTheta
+\item \code{which=30} or \code{which="Sts"} gives a time series of Salinity
+\item \code{which=31} or \code{which="Tts"} gives a time series of Temperature
+\item \code{which=32} or \code{which="pts"} gives a time series of pressure
+\item \code{which=33} or \code{which="rhots"} gives a time series of sigmaTheta
 }}
 
 \item{col}{Color of lines or symbols.}

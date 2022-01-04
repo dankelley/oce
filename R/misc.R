@@ -2911,7 +2911,9 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
     } else if (item == "S") {
         full <- gettext("Salinity", domain="R-oce")
         abbreviated <- expression(S)
-    } else if (item %in% c("SA", paste("Absolute", "Salinity"))) {
+    } else if (item %in% c("SA",
+            paste("absolute", "salinity"),
+            paste("Absolute", "Salinity"))) {
         var <- gettext("Absolute Salinity", domain="R-oce")
         full <- bquote(.(var)*.(L)*g/kg*.(R))
         abbreviated <- bquote(S[A]*.(L)*g/kg*.(R))

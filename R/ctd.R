@@ -2923,13 +2923,13 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'
 #' * `which=21` or `which="SA"` gives an Absolute Salinity profile
 #'
-#' * `which=30` gives a time series of Salinity
+#' * `which=30` or `which="Sts"` gives a time series of Salinity
 #'
-#' * `which=31` gives a time series of Temperature
+#' * `which=31` or `which="Tts"` gives a time series of Temperature
 #'
-#' * `which=32` gives a time series of pressure
+#' * `which=32` or `which="pts"` gives a time series of pressure
 #'
-#' * `which=33` gives a time series of sigmaTheta
+#' * `which=33` or `which="rhots"` gives a time series of sigmaTheta
 #'
 #' @param col Color of lines or symbols.
 #'
@@ -3137,724 +3137,656 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'
 #' @aliases plot.ctd
 setMethod(f="plot",
-          signature=signature("ctd"),
-          definition=function(x, which,
-                              col=par("fg"),
-                              fill, # to catch old method
-                              borderCoastline=NA, colCoastline="lightgray",
-                              eos=getOption("oceEOS", default='gsw'),
-                              ref.lat=NaN, ref.lon=NaN,
-                              grid=TRUE, coastline="best",
-                              Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim,
-                              dpdtlim, timelim,
-                              lonlim, latlim, # FIXME: maybe should be deprecated 2014-01-07
-                              drawIsobaths=FALSE, clongitude, clatitude, span, showHemi=TRUE,
-                              lonlabels=TRUE, latlabels=TRUE,
-                              projection=NULL,
-                              latlon.pch=20, latlon.cex=1.5, latlon.col="red",
-                              cex=1, cex.axis=par('cex.axis'),
-                              pch=1,
-                              useSmoothScatter=FALSE,
-                              df,
-                              keepNA=FALSE,
-                              type,
-                              mgp=getOption("oceMgp"),
-                              mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1]+1.5, mgp[1]+1),
-                              inset=FALSE,
-                              add=FALSE,
-                              debug=getOption("oceDebug"),
-                              ...)
-          {
-              if (!inherits(x, "ctd"))
-                  stop("method is only for objects of class 'ctd'")
-              eos <- match.arg(eos, c("unesco", "gsw"))
-              if (!missing(fill)) {
-                  ## permit call as documented before 2016-02-03
-                  ## Note: the code permitted fill=TRUE but this was never documented
-                  if (is.character(fill)) {
-                      colCoastline <- fill
-                  } else {
-                      if (is.logical(fill) && !fill) {
-                          colCoastline <- NULL
-                      }
-                  }
-                  warning("In plot,ctd-method() : 'fill' is outdated; use 'colCoastline' instead", call.=FALSE)
-              }
-              if (missing(which)) {
-                  oceDebug(debug, "plot,ctd-method(..., eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
-                  dt <- x@metadata$deploymentType
-                  if (is.null(dt)) {
-                      which <- c(1, 2, 3, 5)
-                      if (missing(type))
-                          type <- c("l", "l", "p", "p")
-                  } else {
-                      types <- c("profile", "moored", "thermosalinograph", "tsg", "towyo")
-                      itype <- pmatch(dt, types, nomatch=0)
-                      if (itype == 0) {
-                          ## warning("unknown deploymentType \"", dt, "\"; using \"profile\" instead")
-                          dt <- "profile"
-                      } else {
-                          dt <- types[itype]
-                      }
-                      if ("profile" == dt) {
-                          which <- c(1, 2, 3, 5) # salinity+temperature density+N2 TS map
-                          if (missing(type))
-                              type <- c("l", "l", "p", "p")
-                      } else if ("moored" == dt) {
-                          which <- c(30, 31, 32, 5) # Sts Tts pts map
-                          if (missing(type))
-                              type <- c("l", "l", "l", "p")
-                      } else if ("thermosalinograph" == dt) {
-                          which <- c(30, 3, 31, 5) # Sts TS Tts
-                          if (missing(type))
-                              type <- c("l", "p", "l", "l")
-                      } else if ("tsg" == dt) {
-                          ## @richardsc -- do you think we still need this?
-                          which <- c(30, 3, 31, 5) # Sts TS Tts map
-                          if (missing(type))
-                              type <- c("l", "p", "l", "p")
-                      } else if ("towyo" == dt) {
-                          which <- c(30, 3, 33, 5) # Sts TS pts map
-                          if (missing(type))
-                              type <- c("l", "l", "l", "p")
-                      } else {
-                          which <- c(1, 2, 3, 5) # salinity+temperature density+N2 TS map
-                          if (missing(type))
-                              type <- c("l", "l", "p", "p")
-                      }
-                  }
-               } else {
-                  oceDebug(debug, "plot,ctd-method(..., which=c(", paste(which, collapse=",", sep=""),
-                           "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
-              }
-              lw <- length(which)
-              dots <- list(...)
-              dotsNames <- names(dots)
-              ## FIXME: In the below, we could be more clever for single-panel plots
-              ## but it may be better to get users out of the habit of supplying xlim
-              ## etc (which will yield errors in plot.lm(), for example).
-              if ("xlim" %in% dotsNames)
-                  stop("in plot,ctd-method() : 'xlim' not allowed; use Slim, Tlim, etc", call.=FALSE)
-              if ("ylim" %in% dotsNames)
-                  stop("in plot,ctd-method() : 'ylim' not allowed; use plim, Tlim, etc", call.=FALSE)
-              opar <- par(no.readonly=TRUE)
-              if (add && lw > 1) {
-                  warning("ignoring add=TRUE because length(which) > 1")
-                  add <- FALSE
-              }
-              if (lw > 1) on.exit(par(opar))
-              if (missing(type))
-                  type <- rep("p", lw)
-              if (length(type) < lw) {
-                  type <- rep(type, lw)
-              }
-              if (length(pch) < lw)
-                  pch <- rep(pch, lw) # FIXME: recycle more sensibly
-              if (length(cex) < lw)
-                  cex <- rep(cex, lw) # FIXME: recycle more sensibly
-              ##dec_deg<-function(x, code="lat")
-              ##{
-              ##    if (code == "lat") {
-              ##        if (x < 0) {
-              ##            x <- -x
-              ##            sprintf("%.0f %.2fS", floor(x), 60 * (x - floor(x)))
-              ##        } else {
-              ##            sprintf("%.0f %.2fN", floor(x), 60 * (x - floor(x)))
-              ##        }
-              ##    } else {
-              ##        if (x < 0) {
-              ##            x <- -x
-              ##            sprintf("% %.2fW", floor(x), 60 * (x - floor(x)))
-              ##        } else {
-              ##            sprintf("% %.2fE", floor(x), 60 * (x - floor(x)))
-              ##        }
-              ##    }
-              ##}
-              if (!inset)
-                  par(mar=mar)
-              par(mgp=mgp)
-              if (lw == 2) {
-                  par(mfcol=c(2, 1))
-              } else if (lw == 3) {
-                  par(mfcol=c(3, 1))
-              } else if (lw == 4) {
-                  par(mfrow=c(2, 2))
-              } else if (lw != 1) {
-                  nnn <- floor(sqrt(lw))
-                  par(mfcol=c(nnn, ceiling(lw/nnn)))
-                  rm(nnn)
-              }
-              ## Ignore any bottom region consisting of NA for temperature and salinity, e.g.
-              ## as created by as.section() or read.section().
-              if (0 == length(x[["salinity"]])) {
-                  warning("no data to plot in this object")
-                  return(invisible(NULL))
-              }
-              last.good <- tail(which(!is.na(x[["salinity"]])),1)
-              if (length(last.good) > 0 && last.good < length("salinity")) {
-                  last.good <- length(x[["temperature"]]) - last.good + 1
-                  for (nc in seq_along(x@data)) {
-                      if (length(x@data[[nc]]) > 1L) { # the 1L prevents extending scalars
-                          cat("last.good action on ", names(x@data)[nc], "\n")
-                          x@data[[nc]] <- x@data[[nc]][1:last.good]
-                      }
-                  }
-              }
-              if (!missing(latlim))
-                  warning("the latlim argument is deprecated; should instead specify clongitude, clatitude, and span")
-              if (!missing(lonlim))
-                  warning("the lonlim argument is deprecated; should instead specify clongitude, clatitude, and span")
+    signature=signature("ctd"),
+    definition=function(x, which,
+        col=par("fg"),
+        fill, # to catch old method
+        borderCoastline=NA, colCoastline="lightgray",
+        eos=getOption("oceEOS", default='gsw'),
+        ref.lat=NaN, ref.lon=NaN,
+        grid=TRUE, coastline="best",
+        Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim,
+        dpdtlim, timelim,
+        lonlim, latlim, # FIXME: maybe should be deprecated 2014-01-07
+        drawIsobaths=FALSE, clongitude, clatitude, span, showHemi=TRUE,
+        lonlabels=TRUE, latlabels=TRUE,
+        projection=NULL,
+        latlon.pch=20, latlon.cex=1.5, latlon.col="red",
+        cex=1, cex.axis=par('cex.axis'),
+        pch=1,
+        useSmoothScatter=FALSE,
+        df,
+        keepNA=FALSE,
+        type,
+        mgp=getOption("oceMgp"),
+        mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1]+1.5, mgp[1]+1),
+        inset=FALSE,
+        add=FALSE,
+        debug=getOption("oceDebug"),
+        ...)
+    {
+        if (!inherits(x, "ctd"))
+            stop("method is only for objects of class 'ctd'")
+        eos <- match.arg(eos, c("unesco", "gsw"))
+        if (!missing(fill)) {
+            ## permit call as documented before 2016-02-03
+            ## Note: the code permitted fill=TRUE but this was never documented
+            if (is.character(fill)) {
+                colCoastline <- fill
+            } else {
+                if (is.logical(fill) && !fill) {
+                    colCoastline <- NULL
+                }
+            }
+            warning("In plot,ctd-method() : 'fill' is outdated; use 'colCoastline' instead", call.=FALSE)
+        }
+        if (missing(which)) {
+            oceDebug(debug, "plot,ctd-method(..., eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
+            dt <- x@metadata$deploymentType
+            if (is.null(dt)) {
+                which <- c(1, 2, 3, 5)
+                if (missing(type))
+                    type <- c("l", "l", "p", "p")
+            } else {
+                types <- c("profile", "moored", "thermosalinograph", "tsg", "towyo")
+                itype <- pmatch(dt, types, nomatch=0)
+                if (itype == 0) {
+                    ## warning("unknown deploymentType \"", dt, "\"; using \"profile\" instead")
+                    dt <- "profile"
+                } else {
+                    dt <- types[itype]
+                }
+                if ("profile" == dt) {
+                    which <- c(1, 2, 3, 5) # salinity+temperature density+N2 TS map
+                    if (missing(type))
+                        type <- c("l", "l", "p", "p")
+                } else if ("moored" == dt) {
+                    which <- c(30, 31, 32, 5) # Sts Tts pts map
+                    if (missing(type))
+                        type <- c("l", "l", "l", "p")
+                } else if ("thermosalinograph" == dt) {
+                    which <- c(30, 3, 31, 5) # Sts TS Tts
+                    if (missing(type))
+                        type <- c("l", "p", "l", "l")
+                } else if ("tsg" == dt) {
+                    ## @richardsc -- do you think we still need this?
+                    which <- c(30, 3, 31, 5) # Sts TS Tts map
+                    if (missing(type))
+                        type <- c("l", "p", "l", "p")
+                } else if ("towyo" == dt) {
+                    which <- c(30, 3, 33, 5) # Sts TS pts map
+                    if (missing(type))
+                        type <- c("l", "l", "l", "p")
+                } else {
+                    which <- c(1, 2, 3, 5) # salinity+temperature density+N2 TS map
+                    if (missing(type))
+                        type <- c("l", "l", "p", "p")
+                }
+            }
+        } else {
+            oceDebug(debug, "plot,ctd-method(..., which=c(", paste(which, collapse=",", sep=""),
+                "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
+        }
+        lw <- length(which)
+        dots <- list(...)
+        dotsNames <- names(dots)
+        ## FIXME: In the below, we could be more clever for single-panel plots
+        ## but it may be better to get users out of the habit of supplying xlim
+        ## etc (which will yield errors in plot.lm(), for example).
+        if ("xlim" %in% dotsNames)
+            stop("in plot,ctd-method() : 'xlim' not allowed; use Slim, Tlim, etc", call.=FALSE)
+        if ("ylim" %in% dotsNames)
+            stop("in plot,ctd-method() : 'ylim' not allowed; use plim, Tlim, etc", call.=FALSE)
+        opar <- par(no.readonly=TRUE)
+        if (add && lw > 1) {
+            warning("ignoring add=TRUE because length(which) > 1")
+            add <- FALSE
+        }
+        if (lw > 1) on.exit(par(opar))
+        if (missing(type))
+            type <- rep("p", lw)
+        if (length(type) < lw)
+            type <- rep(type, lw)
+        if (length(pch) < lw)
+            pch <- rep(pch, lw)  # FIXME: recycle more sensibly
+        if (length(cex) < lw)
+            cex <- rep(cex, lw)  # FIXME: recycle more sensibly
+        if (length(col) < lw)
+            col <- rep(col, lw)  # FIXME: recycle more sensibly
+        if (!inset)
+            par(mar=mar)
+        par(mgp=mgp)
+        if (lw == 2) {
+            par(mfcol=c(2, 1))
+        } else if (lw == 3) {
+            par(mfcol=c(3, 1))
+        } else if (lw == 4) {
+            par(mfrow=c(2, 2))
+        } else if (lw != 1) {
+            nnn <- floor(sqrt(lw))
+            par(mfcol=c(nnn, ceiling(lw/nnn)))
+            rm(nnn)
+        }
+        # Ignore any bottom region consisting of NA for temperature and salinity, e.g.
+        # as created by as.section() or read.section().
+        if (0 == length(x[["salinity"]])) {
+            warning("no data to plot in this object")
+            return(invisible(NULL))
+        }
+        last.good <- tail(which(!is.na(x[["salinity"]])),1)
+        if (length(last.good) > 0 && last.good < length("salinity")) {
+            last.good <- length(x[["temperature"]]) - last.good + 1
+            for (nc in seq_along(x@data)) {
+                if (length(x@data[[nc]]) > 1L) { # the 1L prevents extending scalars
+                    cat("last.good action on ", names(x@data)[nc], "\n")
+                    x@data[[nc]] <- x@data[[nc]][1:last.good]
+                }
+            }
+        }
+        if (!missing(latlim))
+            warning("the latlim argument is deprecated; should instead specify clongitude, clatitude, and span")
+        if (!missing(lonlim))
+            warning("the lonlim argument is deprecated; should instead specify clongitude, clatitude, and span")
 
-              whichOrig <- which
-              which <- oce.pmatch(which,
-                                  list("salinity+temperature"=1,
-                                       "density+N2"=2,
-                                       TS=3,
-                                       text=4,
-                                       map=5,
-                                       "density+dpdt"=6,
-                                       "density+time"=7,
-                                       index=8,
-                                       salinity=9,
-                                       temperature=10,
-                                       density=11,
-                                       N2=12,
-                                       spice=13,
-                                       tritium=14,
-                                       Rrho=15,
-                                       RrhoSF=16,
-                                       "conductivity"=17,
-                                       CT=20,
-                                       SA=21,
-                                       "Sts"=30,
-                                       "Tts"=31,
-                                       "pts"=32,
-                                       "rhots"=33))
-              # Permit plotting anything contained in the data slot, along with
-              # some things that can be computed from those contents.
-              q <- x[["?"]]
-              available <- c(q$data,q$dataDerived)
-              #> message("available: c(\"", paste(available, collapse="\", \""), "\")")
-              for (w in seq_along(which)) {
-                  if (is.na(which[w])) {
-                      if (whichOrig[w] %in% available) {
-                          xlab <- resizableLabel(item=whichOrig[w], axis="x",
-                              unit=x@metadata$units[[whichOrig[w]]], debug=debug-1)
-                          oceDebug(debug, "about to call plotProfile() with which=\"", whichOrig[w], "\" and xlab=\"", as.character(xlab), "\"\n", sep="")
-                          plotProfile(x, xtype=x[[whichOrig[w]]],
-                                      xlab=xlab,# whichOrig[w],
-                                      Slim=Slim, Tlim=Tlim, plim=plim,
-                                      eos=eos,
-                                      useSmoothScatter=useSmoothScatter,
-                                      grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                      col=col, cex=cex, pch=pch,
-                                      type=if (!missing(type)) type[w],
-                                      keepNA=keepNA, inset=inset, add=add,
-                                      debug=debug-1,
-                                      ...)
-                      } else {
-                          warning("plot,ctd-method(): unknown plot type \"", whichOrig[w], "\" requested\n", call.=FALSE)
-                      }
-                  } else if (which[w] == 1) {
-                      plotProfile(x, xtype="salinity+temperature",
-                                  plim=plim, Slim=Slim, Tlim=Tlim,
-                                  eos=eos,
-                                  useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  type=if (!missing(type)) type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] == 2) {
-                      plotProfile(x, xtype="density+N2",
-                                  plim=plim, N2lim=N2lim, densitylim=densitylim,
-                                  eos=eos,
-                                  useSmoothScatter=useSmoothScatter,
-                                  df=df,
-                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  type=if (!missing(type)) type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] == 6) {
-                      plotProfile(x, xtype="density+dpdt",
-                                  plim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
-                                  col=col,
-                                  eos=eos,
-                                  useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  type=if (!missing(type)) type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] == 7) {
-                      plotProfile(x, xtype="density+time",
-                                  plim=plim, densitylim=densitylim, timelim=timelim,
-                                  useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  ##type=type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] == 8) {
-                      plotProfile(x, xtype="index",
-                                  plim=plim,
-                                  col=col,
-                                  eos=eos,
-                                  useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  type=if (!missing(type)) type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] == 9) {
-                      plotProfile(x, xtype="salinity",
-                                  plim=plim,
-                                  Slim=Slim,
-                                  col=col,
-                                  eos=eos,
-                                  useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  type=if (!missing(type)) type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] == 10) {
-                      plotProfile(x, xtype="temperature",
-                                  plim=plim,
-                                  Tlim=Tlim,
-                                  col=col,
-                                  eos=eos,
-                                  useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  type=if (!missing(type)) type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] == 11) {
-                      plotProfile(x, xtype="density",
-                                  plim=plim,
-                                  densitylim=densitylim,
-                                  grid=grid,
-                                  col=col,
-                                  eos=eos,
-                                  useSmoothScatter=useSmoothScatter,
-                                  col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  type=if (!missing(type)) type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] == 12) {
-                      plotProfile(x, xtype="N2",
-                                  plim=plim,
-                                  N2lim=N2lim,
-                                  grid=grid,
-                                  col=col,
-                                  eos=eos,
-                                  df=df,
-                                  useSmoothScatter=useSmoothScatter,
-                                  col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  type=if (!missing(type)) type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] == 13) {
-                      plotProfile(x, xtype="spice",
-                                  plim=plim,
-                                  col=col,
-                                  eos=eos,
-                                  useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  type=if (!missing(type)) type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] == 14) {
-                      plotProfile(x, xtype="tritium",
-                                  plim=plim,
-                                  col=col,
-                                  eos=eos,
-                                  useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  type=if (!missing(type)) type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] == 15) {
-                      plotProfile(x, xtype="Rrho",
-                                  plim=plim,
-                                  col=col,
-                                  eos=eos,
-                                  useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  type=if (!missing(type)) type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] == 16) {
-                      plotProfile(x, xtype="RrhoSF",
-                                  plim=plim,
-                                  col=col,
-                                  eos=eos,
-                                  useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  type=if (!missing(type)) type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] == 17) {
-                      plotProfile(x, xtype="conductivity", Clim=Clim, plim=plim,
-                                  col=col,
-                                  eos=eos,
-                                  useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  type=if (!missing(type)) type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] == 3) {
-                      oceDebug(debug, "which=3, for a TS diagram\n")
-                      ##par(mar=c(3.5,3,2,2))
-                      lwd.rho <- if ("lwd.rho" %in% names(dots)) dots$lwd.rho else par('lwd')
-                      lty.rho <- if ("lty.rho" %in% names(dots)) dots$lty.rho else par('lty')
-                      plotTS(x, Slim=Slim, Tlim=Tlim,
-                          grid=grid, col.grid="lightgray", lty.grid="dotted",
-                          eos=eos,
-                          lwd.rho=lwd.rho, lty.rho=lty.rho,
-                          useSmoothScatter=useSmoothScatter,
-                          col=col, pch=pch, cex=cex,
-                          type=if (!missing(type)) type[w],
-                          inset=inset,
-                          add=add,
-                          debug=debug-1, ...) # FIXME use inset here
-                  } else if (which[w] == 4) {
-                      textItem<-function(xloc, yloc, item, label, cex=0.8, d.yloc=0.8) {
-                          if (!is.null(item) && !is.na(item))
-                              text(xloc, yloc, paste(label, item), adj=c(0, 0), cex=cex)
-                          yloc - d.yloc
-                      }
-                      par(mar=c(0, 0, 0, 0))
-                      plot.new()
-                      plot.window(c(0, 10), c(0, 10))
-                      xloc <- 0
-                      yloc <- 8
-                      cex <- 3/4
-                      xm <- x@metadata
-                      yloc <- textItem(xloc, yloc, xm$station,         " Station:  ", cex=cex)
-                      if (!is.null(xm$filename) && nchar(xm$filename, "bytes") > 0) {
-                          yloc <- textItem(xloc, yloc, xm$filename,    " File:     ", cex=cex)
-                      }
-                      if (!is.null(xm$scientist)) {
-                          yloc <- textItem(xloc, yloc, xm$scientist,   " Scientist:", cex=cex)
-                      }
-                      if (!is.null(xm$institute)) {
-                          yloc <- textItem(xloc, yloc, xm$institute,   " Institute:", cex=cex)
-                      }
-                      if (!is.null(xm$date)) {
-                          yloc <- textItem(xloc, yloc, xm$date,        " Date:     ", cex=cex)
-                      }
-                      if (!is.null(xm$ship)) {
-                          yloc <- textItem(xloc, yloc, xm$ship,        " Ship:     ", cex=cex)
-                      }
-                      if (!is.null(xm$cruise)) {
-                          yloc <- textItem(xloc, yloc, xm$cruise,      " Cruise:   ", cex=cex)
-                      }
-                      if (!is.null(xm$station)) {
-                          yloc <- textItem(xloc, yloc, xm$station,     " Station:  ", cex=cex)
-                      }
-                      if (!is.null(xm$waterDepth)) {
-                          yloc <- textItem(xloc, yloc, xm$waterDepth, " Depth:    ", cex=cex)
-                      }
-                      if (!is.na(xm$longitude) && !is.na(xm$latitude)) {
-                          yloc <- textItem(xloc, yloc, latlonFormat(xm$latitude, xm$longitude),   " Location: ", cex=cex)
-                      }
-                      ## if (!is.na(ref.lat) && !is.na(ref.lon)) {
-                      ##     ##dist <- geodDist(xm$longitude, xm$latitude, ref.lon, ref.lat)
-                      ##     ##kms <- sprintf("%.2f km", dist/1000)
-                      ##     ##rlat <- text(xloc, yloc, paste(" Distance to (", dec_deg(ref.lon),
-                      ##     ##                               ",", dec_deg(ref.lat), ")=", kms), adj=c(0, 0), cex=cex)
-                      ##     yloc <- yloc - d.yloc
-                      ## }
-                  } else if (which[w] == 5) {
-                      oceDebug(debug, "drawing a map\n")
-                      ## obey 'mar' only if length(which)==1.
-                      omar <- mar # AAAAAAAA
-                      if (length(which) > 1)
-                          mar <- par("mar")
-                      ## map
-                      if (!is.null(x[["latitude"]]) &&
-                          !is.null(x[["longitude"]]) &&
-                          any(is.finite(x[["latitude"]])) &&
-                          any(is.finite(x[["longitude"]]))) {
-                          oceDebug(debug, "plot(ctd, ...) { # of type MAP\n")
-                          ## Calculate span, if not given
-                          if (missing(span)) {
-                              oceDebug(debug, "'span' not given\n")
-                              if (requireNamespace("ocedata", quietly=TRUE)) {
-                                  data("coastlineWorldMedium", package="ocedata", envir=environment())
-                                  mcoastline <- get("coastlineWorldMedium")
-                                  d <- geodDist(mcoastline[['longitude']],
-                                                mcoastline[['latitude']],
-                                                mean(x[['longitude']], na.rm=TRUE),
-                                                mean(x[['latitude']], na.rm=TRUE))
-                                  rm(mcoastline)
-                              } else {
-                                  data("coastlineWorld", package="oce", envir=environment())
-                                  mcoastline <- get("coastlineWorld")
-                                  d <- geodDist(mcoastline[['longitude']],
-                                                mcoastline[['latitude']],
-                                                mean(x[['longitude']], na.rm=TRUE),
-                                                mean(x[['latitude']], na.rm=TRUE))
-                              }
-                              ## Previously, used nearest 20 points, but that requires sorting a
-                              ## possibly very long vector. Note the check on the result
-                              ## of bound125(), which is a new function
-                              nearest <- min(d, na.rm=TRUE)
-                              span <- bound125(5 * nearest)
-                              if (span < 5 * nearest)
-                                  span <- 5 * nearest # safety check
-                              oceDebug(debug, "span not given; nearest land ", round(nearest, 0),
-                                       "km, so set span=", round(span, 0), "\n")
-                          }
-                          ## the "non-projection" case is terrible up north (FIXME: prob should not do this)
-                          if (!missing(projection) && !is.na(pmatch(projection, "automatic"))) {
-                              meanlon <- mean(x[["longitude"]], na.rm=TRUE)
-                              meanlat <- mean(x[["latitude"]], na.rm=TRUE)
-                              projection <- if (meanlat > 70)
-                                  paste("+proj=stere +lon_0=", meanlon, sep="") else "+proj=merc"
-                              oceDebug(debug, "using", projection, "projection (chosen automatically)\n")
-                          } else {
-                              oceDebug(debug, "using", projection, "projection (specified)\n")
-                          }
-                          ##message("projection:", projection)
-                          oceDebug(debug, "projection=", if (is.null(projection)) "NULL" else projection, ", span=", span, "km\n")
-                          if (is.character(coastline)) {
-                              oceDebug(debug, "coastline is a string: \"", coastline, "\"\n", sep="")
-                              if (requireNamespace("ocedata", quietly=TRUE)) {
-                                  #library(ocedata) # FIXME: is this needed?
-                                  if (coastline == "best") {
-                                      bestcoastline <- coastlineBest(span=span)
-                                      oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
-                                      if (bestcoastline == "coastlineWorld")
-                                          data(list=bestcoastline, package="oce", envir=environment())
-                                      else
-                                          data(list=bestcoastline, package="ocedata", envir=environment())
-                                      coastline <- get(bestcoastline)
-                                  } else if (coastline == "coastlineWorld") {
-                                      oceDebug(debug, "using 'coastlineWorld'\n")
-                                      data("coastlineWorld", package="oce", envir=environment())
-                                      coastline <- get("coastlineWorld")
-                                  } else if (coastline == "coastlineWorldFine") {
-                                      oceDebug(debug, "using 'coastlineWorldFine'\n")
-                                      data("coastlineWorldFine", package="ocedata", envir=environment())
-                                      coastline <- get("coastlineWorldFine")
-                                  } else if (coastline == "coastlineWorldMedium") {
-                                      oceDebug(debug, "using 'coastlineWorldMedium'\n")
-                                      data("coastlineWorldMedium", package="ocedata", envir=environment())
-                                      coastline <- get("coastlineWorldMedium")
-                                  }  else {
-                                      stop("there is no built-in coastline file of name \"", coastline, "\"")
-                                  }
-                              } else {
-                                  warning("CTD plots will have better coastlines after doing install.packages(\"ocedata\")", call.=FALSE)
-                                  data("coastlineWorld", package="oce", envir=environment())
-                                  coastline <- get("coastlineWorld")
-                              }
-                          }
-                          ## impose the right class, to overcome a bug in ocedata_0.1.6
-                          if (!inherits(coastline, "coastline"))
-                              class(coastline) <- structure("coastline", package="ocedata")
-                          ## ensure that the object holds (or seems to hold) coastline data
-                          if (2 != sum((c("longitude", "latitude") %in% names(coastline@data))))
-                              stop("'coastline' must be a coastline object, or a string naming one")
-                          if (!missing(clongitude) && !missing(clatitude) && !missing(span)) {
-                              plot(coastline,
-                                   clongitude=clongitude, clatitude=clatitude, span=span,
-                                   projection=projection,
-                                   border=borderCoastline, col=colCoastline,
-                                   mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                   lonlabels=lonlabels, latlabels=latlabels,
-                                   debug=debug-1)
-                          } else {
-                              if (missing(lonlim)) {
-                                  mlon <- mean(x[["longitude"]], na.rm=TRUE)
-                                  lonlim.c <- mlon + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - mlon))
-                                  clon <- mean(lonlim.c)
-                                  if (missing(latlim)) {
-                                      mlat <- mean(x[["latitude"]], na.rm=TRUE)
-                                      oceDebug(debug, "CASE 1: both latlim and lonlim missing; using projection=",
-                                               if (is.null(projection)) "NULL" else projection, "\n")
-                                      latlim.c <- mlat + c(-1, 1) * min(abs(range(coastline[["latitude"]], na.rm=TRUE) - mlat))
-                                      latlim.c <- ifelse(latlim.c > 90, 89.99, latlim.c)
-                                      oceDebug(debug, "about to plot coastline\n")
-                                      oceDebug(debug, "clatitude=", mean(latlim.c), "\n")
-                                      oceDebug(debug, "clongitude=", clon, "\n")
-                                      oceDebug(debug, "span=", span, "\n")
-                                      oceDebug(debug, "projection=", projection, "\n")
-                                      oceDebug(debug, "ok, about to call plot(coastline)\n")
-                                      plot(coastline,
-                                           clongitude=standardizeLongitude(clon), clatitude=mean(latlim.c), span=span,
-                                           projection=projection,
-                                           border=borderCoastline, col=colCoastline,
-                                           mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                           lonlabels=lonlabels, latlabels=latlabels,
-                                           debug=debug-1)
-                                      oceDebug(debug, " ... did plot(coastline)\n")
-                                  } else {
-                                      oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
-                                      clat <- mean(latlim)
-                                      plot(coastline,
-                                           clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
-                                           projection=projection,
-                                           border=borderCoastline, col=colCoastline,
-                                           mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                           lonlabels=lonlabels, latlabels=latlabels,
-                                           debug=debug-1)
-                                  }
-                                  if (is.numeric(which[w]) && round(which[w], 1) == 5.1) # HIDDEN FEATURE
-                                      mtext(gsub(".*/", "", x@metadata$filename), side=3, line=0.1, cex=0.7*cex)
-                              } else {
-                                  oceDebug(debug, "lonlim was provided\n")
-                                  clon <- mean(lonlim)
-                                  if (missing(latlim)) {
-                                      oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
-                                      latlim.c <- mean(x@metadata$latitude, na.rm=TRUE) +
-                                      c(-1, 1) * min(abs(range(coastline[["latitude"]], na.rm=TRUE) - x@metadata$latitude))
-                                      clat <- mean(latlim.c)
-                                      plot(coastline,
-                                           clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
-                                           projection=projection,
-                                           border=borderCoastline, col=colCoastline,
-                                           mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                           lonlabels=lonlabels, latlabels=latlabels,
-                                           debug=debug-1)
-                                  } else {
-                                      oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
-                                      clat <- mean(latlim)
-                                      plot(coastline,
-                                           clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
-                                           border=borderCoastline, col=colCoastline,
-                                           projection=projection,
-                                           mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                           lonlabels=lonlabels, latlabels=latlabels,
-                                           debug=debug-1)
-                                  }
-                              }
-                          }
-                          ## draw isobaths
-                          xlon <- x[["longitude"]]
-                          xlat <- x[["latitude"]]
-                          ok <- is.finite(xlon) & is.finite(xlat)
-                          xlon <- xlon[ok]
-                          xlat <- xlat[ok]
-                          stationLon <- standardizeLongitude(xlon)
-                          stationLat <- xlat
-                          if (is.numeric(drawIsobaths) || (is.logical(drawIsobaths) && drawIsobaths)) {
-                              data("topoWorld", package="oce", envir=environment())
-                              topoWorld <- get("topoWorld")
-                              topoLon <- topoWorld[["longitude"]]
-                              topoLat <- topoWorld[["latitude"]]
-                              topoDep <- -topoWorld[["z"]]
-                              topoDep[topoDep < -1] <- -1 # don't want land contours
-                              itopoLon <- which.min(abs(topoLon - stationLon))
-                              itopoLat <- which.min(abs(topoLat - stationLat))
-                              oceDebug(debug, "itopoLon=", itopoLon, ", lon=", topoLon[itopoLon], "\n")
-                              oceDebug(debug, "itopoLat=", itopoLat, ", lon=", topoLat[itopoLat], "\n")
-                              stationDep <- topoDep[itopoLon, itopoLat]
-                              oceDebug(debug, "stationDep=", stationDep, "\n")
-                              ## Auto-select depths differently for stations on the shelf or in
-                              ## the deap sea. (Notice that the first level, which will be 0m, is
-                              ## trimmed, to avoid messing up the coastline with a contour from
-                              ## coarse topography.
-                              levels <- if (is.logical(drawIsobaths))
-                                  if (stationDep < 100) pretty(c(0, 500))[-1] else pretty(c(0, 5500))[-1]
-                                  else drawIsobaths
-                              if (is.null(projection)) {
-                                  contour(topoLon, topoLat, topoDep, col='gray', vfont=c("sans serif", "bold"),
-                                          levels=levels, add=TRUE)
-                              } else {
-                                  mapContour(topoLon, topoLat, topoDep, col='gray', levels=levels)
-                              }
-                          }
-                          ## draw station location
-                          if (is.null(projection)) {
-                              points(stationLon, stationLat, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
-                          } else {
-                              mapScalebar()
-                              ## FIXME: used to be non-standardized lon below.
-                              mapPoints(stationLon, stationLat, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
-                          }
-                          ## draw some text in top margin
-                          if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
-                              mtext(x@metadata$station,
-                                    side=3, adj=0, cex=par("cex"), line=0.5)
-                          }
-                          if (!is.null(x@metadata$startTime) && !is.na(x@metadata$startTime) && 4 < nchar(x@metadata$startTime, "bytes")) {
-                              mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%M:%S"),
-                                    side=3, adj=1, cex=par("cex"), line=0.5)
-                          } else if (!is.null(x@data$time)) {
-                              goodTimes <- which(!is.na(x@data$time))
-                              if (length(goodTimes)) {
-                                  mtext(format(x@data$time[goodTimes[1]], "%Y-%m-%d %H:%M:%S"),
-                                        side=3, adj=1, cex=par("cex"), line=0.5)
-                              }
-                          }
-                      }
-                      mar <- omar # recover mar, which was altered for multi-panel plots
-                      oceDebug(debug, "} # plot(ctd, ...) of type \"map\"\n", unindent=1)
-                  } else if (which[w] == 20) { # CT
-                      plotProfile(x, xtype="CT", xlab=resizableLabel("CT", debug=debug-1),
-                                  Tlim=Tlim, plim=plim, eos="gsw",
-                                  useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  type=if (!missing(type)) type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] == 21) { # SA
-                      plotProfile(x, xtype="SA", xlab=resizableLabel("SA", debug=debug-1),
-                                  Tlim=Tlim, plim=plim, eos="gsw",
-                                  useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
-                                  cex=cex[w], pch=pch[w],
-                                  type=if (!missing(type)) type[w],
-                                  keepNA=keepNA, inset=inset, add=add,
-                                  debug=debug-1,
-                                  ...)
-                  } else if (which[w] ==30) {
-                      ## S timeseries
-                      oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S", "y", debug=debug-1))
-                  } else if (which[w] ==31) {
-                      ## T timeseries
-                      oce.plot.ts(x[["time"]], x[["temperature"]], ylab=resizableLabel("T", "y", debug=debug-1))
-                  } else if (which[w] ==32) {
-                      ## p timeseries
-                      oce.plot.ts(x[["time"]], x[["pressure"]], ylab=resizableLabel("p", "y", debug=debug-1))
-                  } else if (which[w] ==33) {
-                      ## sigmaTheta timeseries
-                      oce.plot.ts(x[["time"]], x[["sigmaTheta"]], ylab=resizableLabel("sigmaTheta", "y", debug=debug-1))
-                  } else {
-                      stop("unknown value of which, ", which[w])
-                  }
-              }
-              oceDebug(debug, "} # plot,ctd-method()\n", unindent=1)
-              invisible(NULL)
-          })
+        whichOrig <- which
+        which <- as.character(which)
+        for (i in seq_along(which)) {
+            if      (which[i] ==  "1") which[i] <- "salinity+temperature"
+            else if (which[i] ==  "2") which[i] <- "density+N2"
+            else if (which[i] ==  "3") which[i] <- "TS"
+            else if (which[i] ==  "4") which[i] <- "text"
+            else if (which[i] ==  "5") which[i] <- "map"
+            else if (which[i] ==  "6") which[i] <- "density+dpdt"
+            else if (which[i] ==  "7") which[i] <- "density+time"
+            else if (which[i] ==  "8") which[i] <- "index"
+            else if (which[i] ==  "9") which[i] <- "salinity"
+            else if (which[i] == "10") which[i] <- "temperature"
+            else if (which[i] == "11") which[i] <- "density"
+            else if (which[i] == "12") which[i] <- "N2"
+            else if (which[i] == "13") which[i] <- "spice"
+            else if (which[i] == "14") which[i] <- "tritium"
+            else if (which[i] == "15") which[i] <- "Rrho"
+            else if (which[i] == "16") which[i] <- "RrhoSF"
+            else if (which[i] == "17") which[i] <- "conductivity"
+            else if (which[i] == "20") which[i] <- "CT"
+            else if (which[i] == "21") which[i] <- "SA"
+            else if (which[i] == "30") which[i] <- "Sts"
+            else if (which[i] == "31") which[i] <- "Tts"
+            else if (which[i] == "32") which[i] <- "pts"
+            else if (which[i] == "33") which[i] <- "rhots"
+        }
+        # Permit plotting anything contained in the data slot, along with
+        # some things that can be computed from those contents.
+        q <- x[["?"]]
+        available <- c(q$data,q$dataDerived)
+        #> message("available: c(\"", paste(available, collapse="\", \""), "\")")
+        for (w in seq_along(which)) {
+            oceDebug(debug, "which[", w, "]\"=", which[w], "\"\n", sep="")
+            # Case 1: non-single-profile plots.
+            if (which[w] == "salinity+temperature") {
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                plotProfile(x, xtype="salinity+temperature",
+                    plim=plim, Slim=Slim, Tlim=Tlim,
+                    eos=eos,
+                    useSmoothScatter=useSmoothScatter,
+                    grid=grid, col.grid="lightgray", lty.grid="dotted",
+                    cex=cex[w], pch=pch[w],
+                    type=if (!missing(type)) type[w],
+                    keepNA=keepNA, inset=inset, add=add,
+                    debug=debug-1,
+                    ...)
+            } else if (which[w] == "density+N2") {
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                plotProfile(x, xtype="density+N2",
+                    plim=plim, N2lim=N2lim, densitylim=densitylim,
+                    eos=eos,
+                    useSmoothScatter=useSmoothScatter,
+                    df=df,
+                    grid=grid, col.grid="lightgray", lty.grid="dotted",
+                    cex=cex[w], pch=pch[w],
+                    type=if (!missing(type)) type[w],
+                    keepNA=keepNA, inset=inset, add=add,
+                    debug=debug-1,
+                    ...)
+            } else if (which[w] == "density+dpdt") {
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                plotProfile(x, xtype="density+dpdt",
+                    plim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
+                    col=col,
+                    eos=eos,
+                    useSmoothScatter=useSmoothScatter,
+                    grid=grid, col.grid="lightgray", lty.grid="dotted",
+                    cex=cex[w], pch=pch[w],
+                    type=if (!missing(type)) type[w],
+                    keepNA=keepNA, inset=inset, add=add,
+                    debug=debug-1,
+                    ...)
+            } else if (which[w] == "density+time") {
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                plotProfile(x, xtype="density+time",
+                    plim=plim, densitylim=densitylim, timelim=timelim,
+                    useSmoothScatter=useSmoothScatter,
+                    grid=grid, col.grid="lightgray", lty.grid="dotted",
+                    cex=cex[w], pch=pch[w],
+                    ##type=type[w],
+                    keepNA=keepNA, inset=inset, add=add,
+                    debug=debug-1,
+                    ...)
+            } else if (which[w] == "salinity") { # a special case because can use Slim and plim
+                plotProfile(x, xtype="salinity",
+                    plim=plim,
+                    Slim=Slim,
+                    col=col,
+                    eos=eos,
+                    useSmoothScatter=useSmoothScatter,
+                    grid=grid, col.grid="lightgray", lty.grid="dotted",
+                    cex=cex[w], pch=pch[w],
+                    type=if (!missing(type)) type[w],
+                    keepNA=keepNA, inset=inset, add=add,
+                    debug=debug-1,
+                    ...)
+            } else if (which[w] %in% c("SA",
+                    paste("absolute", "salinity"),
+                    paste("Absolute", "Salinity"))) { # a special case because can use Slim and plim
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                plotProfile(x, xtype="SA", xlab=resizableLabel("SA", debug=debug-1),
+                    Tlim=Tlim, plim=plim, eos="gsw",
+                    useSmoothScatter=useSmoothScatter,
+                    grid=grid, col.grid="lightgray", lty.grid="dotted",
+                    cex=cex[w], pch=pch[w],
+                    type=if (!missing(type)) type[w],
+                    keepNA=keepNA, inset=inset, add=add,
+                    debug=debug-1,
+                    ...)
+            } else if (which[w] == "temperature") { # a special case because can use Tlim and plim
+                plotProfile(x, xtype="temperature",
+                    plim=plim,
+                    Tlim=Tlim,
+                    col=col,
+                    eos=eos,
+                    useSmoothScatter=useSmoothScatter,
+                    grid=grid, col.grid="lightgray", lty.grid="dotted",
+                    cex=cex[w], pch=pch[w],
+                    type=if (!missing(type)) type[w],
+                    keepNA=keepNA, inset=inset, add=add,
+                    debug=debug-1,
+                    ...)
+            } else if (which[w] %in% c("CT",
+                    paste("conservative", "temperature"),
+                    paste("Conservative", "Temperature"))) { # a special case because can use Tlim and plim
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                plotProfile(x, xtype="CT", xlab=resizableLabel("CT", debug=debug-1),
+                    Tlim=Tlim, plim=plim, eos="gsw",
+                    useSmoothScatter=useSmoothScatter,
+                    grid=grid, col.grid="lightgray", lty.grid="dotted",
+                    cex=cex[w], pch=pch[w],
+                    type=if (!missing(type)) type[w],
+                    keepNA=keepNA, inset=inset, add=add,
+                    debug=debug-1,
+                    ...)
+            } else if (which[w] == "density") { # a special case because can use densitylim and plim
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                plotProfile(x, xtype="density",
+                    plim=plim,
+                    densitylim=densitylim,
+                    grid=grid,
+                    col=col,
+                    eos=eos,
+                    useSmoothScatter=useSmoothScatter,
+                    col.grid="lightgray", lty.grid="dotted",
+                    cex=cex[w], pch=pch[w],
+                    type=if (!missing(type)) type[w],
+                    keepNA=keepNA, inset=inset, add=add,
+                             debug=debug-1,
+                             ...)
+            } else if (which[w] == "TS") { # a special case because can use Slim and Tlim
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                ##par(mar=c(3.5,3,2,2))
+                lwd.rho <- if ("lwd.rho" %in% names(dots)) dots$lwd.rho else par('lwd')
+                lty.rho <- if ("lty.rho" %in% names(dots)) dots$lty.rho else par('lty')
+                plotTS(x, Slim=Slim, Tlim=Tlim,
+                    grid=grid, col.grid="lightgray", lty.grid="dotted",
+                    eos=eos,
+                    lwd.rho=lwd.rho, lty.rho=lty.rho,
+                    useSmoothScatter=useSmoothScatter,
+                    col=col, pch=pch, cex=cex,
+                    type=if (!missing(type)) type[w],
+                    inset=inset,
+                    add=add,
+                    debug=debug-1, ...) # FIXME use inset here
+            } else if (which[w] == "N2") { # a special case because can use N2lim and plim
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                plotProfile(x, xtype="N2",
+                    plim=plim,
+                    N2lim=N2lim,
+                    grid=grid,
+                    col=col,
+                    eos=eos,
+                    df=df,
+                    useSmoothScatter=useSmoothScatter,
+                    col.grid="lightgray", lty.grid="dotted",
+                    cex=cex[w], pch=pch[w],
+                    type=if (!missing(type)) type[w],
+                    keepNA=keepNA, inset=inset, add=add,
+                    debug=debug-1,
+                    ...)
+            } else if (which[w] == "conductivity") { # a special case because can use Clim and plim
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                plotProfile(x, xtype="conductivity", Clim=Clim, plim=plim,
+                    col=col,
+                    eos=eos,
+                    useSmoothScatter=useSmoothScatter,
+                    grid=grid, col.grid="lightgray", lty.grid="dotted",
+                    cex=cex[w], pch=pch[w],
+                    type=if (!missing(type)) type[w],
+                    keepNA=keepNA, inset=inset, add=add,
+                    debug=debug-1,
+                    ...)
+            } else if (which[w] == "map") {
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                omar <- mar
+                if (length(which) > 1)
+                    mar <- par("mar")
+                if (!is.null(x[["latitude"]]) &&
+                    !is.null(x[["longitude"]]) &&
+                    any(is.finite(x[["latitude"]])) &&
+                    any(is.finite(x[["longitude"]]))) {
+                    oceDebug(debug, "plot(ctd, ...) { # of type MAP\n")
+                    # Calculate span, if not given
+                    if (missing(span)) {
+                        oceDebug(debug, "'span' not given\n")
+                        if (requireNamespace("ocedata", quietly=TRUE)) {
+                            data("coastlineWorldMedium", package="ocedata", envir=environment())
+                            mcoastline <- get("coastlineWorldMedium")
+                            d <- geodDist(mcoastline[['longitude']],
+                                mcoastline[['latitude']],
+                                mean(x[['longitude']], na.rm=TRUE),
+                                mean(x[['latitude']], na.rm=TRUE))
+                            rm(mcoastline)
+                        } else {
+                            data("coastlineWorld", package="oce", envir=environment())
+                            mcoastline <- get("coastlineWorld")
+                            d <- geodDist(mcoastline[['longitude']],
+                                mcoastline[['latitude']],
+                                mean(x[['longitude']], na.rm=TRUE),
+                                mean(x[['latitude']], na.rm=TRUE))
+                        }
+                        # Previously, used nearest 20 points, but that requires
+                        # sorting a possibly very long vector. Note the check on
+                        # the result of bound125(), which is a new function
+                        nearest <- min(d, na.rm=TRUE)
+                        span <- bound125(5 * nearest)
+                        if (span < 5 * nearest)
+                            span <- 5 * nearest # safety check
+                        oceDebug(debug, "span not given; nearest land ", round(nearest, 0),
+                            "km, so set span=", round(span, 0), "\n")
+                    }
+                    # the "non-projection" case is terrible up north (FIXME: prob should not do this)
+                    if (!missing(projection) && !is.na(pmatch(projection, "automatic"))) {
+                        meanlon <- mean(x[["longitude"]], na.rm=TRUE)
+                        meanlat <- mean(x[["latitude"]], na.rm=TRUE)
+                        projection <- if (meanlat > 70) paste("+proj=stere +lon_0=", meanlon, sep="")
+                            else "+proj=merc"
+                        oceDebug(debug, "using", projection, "projection (chosen automatically)\n")
+                    } else {
+                        oceDebug(debug, "using", projection, "projection (specified)\n")
+                    }
+                    oceDebug(debug, "projection=", if (is.null(projection)) "NULL" else projection, ", span=", span, "km\n")
+                    if (is.character(coastline)) {
+                        oceDebug(debug, "coastline is a string: \"", coastline, "\"\n", sep="")
+                        if (requireNamespace("ocedata", quietly=TRUE)) {
+                            #library(ocedata) # FIXME: is this needed?
+                            if (coastline == "best") {
+                                bestcoastline <- coastlineBest(span=span)
+                                oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
+                                if (bestcoastline == "coastlineWorld")
+                                    data(list=bestcoastline, package="oce", envir=environment())
+                                else
+                                    data(list=bestcoastline, package="ocedata", envir=environment())
+                                coastline <- get(bestcoastline)
+                            } else if (coastline == "coastlineWorld") {
+                                oceDebug(debug, "using 'coastlineWorld'\n")
+                                data("coastlineWorld", package="oce", envir=environment())
+                                coastline <- get("coastlineWorld")
+                            } else if (coastline == "coastlineWorldFine") {
+                                oceDebug(debug, "using 'coastlineWorldFine'\n")
+                                data("coastlineWorldFine", package="ocedata", envir=environment())
+                                coastline <- get("coastlineWorldFine")
+                            } else if (coastline == "coastlineWorldMedium") {
+                                oceDebug(debug, "using 'coastlineWorldMedium'\n")
+                                data("coastlineWorldMedium", package="ocedata", envir=environment())
+                                coastline <- get("coastlineWorldMedium")
+                            }  else {
+                                stop("there is no built-in coastline file of name \"", coastline, "\"")
+                            }
+                        } else {
+                            warning("CTD plots will have better coastlines after doing install.packages(\"ocedata\")", call.=FALSE)
+                            data("coastlineWorld", package="oce", envir=environment())
+                            coastline <- get("coastlineWorld")
+                        }
+                    }
+                    # impose the right class, to overcome a bug in ocedata_0.1.6
+                    if (!inherits(coastline, "coastline"))
+                        class(coastline) <- structure("coastline", package="ocedata")
+                    # ensure that the object holds (or seems to hold) coastline data
+                    if (2 != sum((c("longitude", "latitude") %in% names(coastline@data))))
+                        stop("'coastline' must be a coastline object, or a string naming one")
+                    if (!missing(clongitude) && !missing(clatitude) && !missing(span)) {
+                        plot(coastline,
+                            clongitude=clongitude, clatitude=clatitude, span=span,
+                            projection=projection,
+                            border=borderCoastline, col=colCoastline,
+                            mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                            lonlabels=lonlabels, latlabels=latlabels,
+                            debug=debug-1)
+                    } else {
+                        if (missing(lonlim)) {
+                            mlon <- mean(x[["longitude"]], na.rm=TRUE)
+                            lonlim.c <- mlon + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - mlon))
+                            clon <- mean(lonlim.c)
+                            if (missing(latlim)) {
+                                mlat <- mean(x[["latitude"]], na.rm=TRUE)
+                                oceDebug(debug, "CASE 1: both latlim and lonlim missing; using projection=",
+                                    if (is.null(projection)) "NULL" else projection, "\n")
+                                latlim.c <- mlat + c(-1, 1) * min(abs(range(coastline[["latitude"]], na.rm=TRUE) - mlat))
+                                latlim.c <- ifelse(latlim.c > 90, 89.99, latlim.c)
+                                oceDebug(debug, "about to plot coastline\n")
+                                oceDebug(debug, "clatitude=", mean(latlim.c), "\n")
+                                oceDebug(debug, "clongitude=", clon, "\n")
+                                oceDebug(debug, "span=", span, "\n")
+                                oceDebug(debug, "projection=", projection, "\n")
+                                oceDebug(debug, "ok, about to call plot(coastline)\n")
+                                plot(coastline,
+                                    clongitude=standardizeLongitude(clon), clatitude=mean(latlim.c), span=span,
+                                    projection=projection,
+                                    border=borderCoastline, col=colCoastline,
+                                    mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                    lonlabels=lonlabels, latlabels=latlabels,
+                                    debug=debug-1)
+                                oceDebug(debug, " ... did plot(coastline)\n")
+                            } else {
+                                oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
+                                clat <- mean(latlim)
+                                plot(coastline,
+                                    clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
+                                    projection=projection,
+                                    border=borderCoastline, col=colCoastline,
+                                    mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                    lonlabels=lonlabels, latlabels=latlabels,
+                                    debug=debug-1)
+                            }
+                            if (is.numeric(which[w]) && round(which[w], 1) == 5.1) # HIDDEN FEATURE
+                                mtext(gsub(".*/", "", x@metadata$filename), side=3, line=0.1, cex=0.7*cex)
+                        } else {
+                            oceDebug(debug, "lonlim was provided\n")
+                            clon <- mean(lonlim)
+                            if (missing(latlim)) {
+                                oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
+                                latlim.c <- mean(x@metadata$latitude, na.rm=TRUE) +
+                                c(-1, 1) * min(abs(range(coastline[["latitude"]], na.rm=TRUE) - x@metadata$latitude))
+                                clat <- mean(latlim.c)
+                                plot(coastline,
+                                    clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
+                                    projection=projection,
+                                    border=borderCoastline, col=colCoastline,
+                                    mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                    lonlabels=lonlabels, latlabels=latlabels,
+                                    debug=debug-1)
+                            } else {
+                                oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
+                                clat <- mean(latlim)
+                                plot(coastline,
+                                    clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
+                                    border=borderCoastline, col=colCoastline,
+                                    projection=projection,
+                                    mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                    lonlabels=lonlabels, latlabels=latlabels,
+                                    debug=debug-1)
+                            }
+                        }
+                    }
+                    # draw isobaths
+                    xlon <- x[["longitude"]]
+                    xlat <- x[["latitude"]]
+                    ok <- is.finite(xlon) & is.finite(xlat)
+                    xlon <- xlon[ok]
+                    xlat <- xlat[ok]
+                    stationLon <- standardizeLongitude(xlon)
+                    stationLat <- xlat
+                    if (is.numeric(drawIsobaths) || (is.logical(drawIsobaths) && drawIsobaths)) {
+                        data("topoWorld", package="oce", envir=environment())
+                        topoWorld <- get("topoWorld")
+                        topoLon <- topoWorld[["longitude"]]
+                        topoLat <- topoWorld[["latitude"]]
+                        topoDep <- -topoWorld[["z"]]
+                        topoDep[topoDep < -1] <- -1 # don't want land contours
+                        itopoLon <- which.min(abs(topoLon - stationLon))
+                        itopoLat <- which.min(abs(topoLat - stationLat))
+                        oceDebug(debug, "itopoLon=", itopoLon, ", lon=", topoLon[itopoLon], "\n")
+                        oceDebug(debug, "itopoLat=", itopoLat, ", lon=", topoLat[itopoLat], "\n")
+                        stationDep <- topoDep[itopoLon, itopoLat]
+                        oceDebug(debug, "stationDep=", stationDep, "\n")
+                        # Auto-select depths differently for stations on the
+                        # shelf or in the deap sea. Notice that the first level,
+                        # which will be 0m, is trimmed, to avoid messing up the
+                        # coastline with a contour from coarse topography.
+                        levels <- if (is.logical(drawIsobaths))
+                            if (stationDep < 100) pretty(c(0, 500))[-1] else pretty(c(0, 5500))[-1]
+                            else drawIsobaths
+                            if (is.null(projection)) {
+                                contour(topoLon, topoLat, topoDep, col='gray', vfont=c("sans serif", "bold"),
+                                    levels=levels, add=TRUE)
+                            } else {
+                                mapContour(topoLon, topoLat, topoDep, col='gray', levels=levels)
+                            }
+                    }
+                    # draw station location
+                    if (is.null(projection)) {
+                        points(stationLon, stationLat, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
+                    } else {
+                        mapScalebar()
+                        # FIXME: used to be non-standardized lon below.
+                        mapPoints(stationLon, stationLat, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
+                    }
+                    # draw some text in top margin
+                    if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
+                        mtext(x@metadata$station,
+                            side=3, adj=0, cex=par("cex"), line=0.5)
+                    }
+                    if (!is.null(x@metadata$startTime) && !is.na(x@metadata$startTime) && 4 < nchar(x@metadata$startTime, "bytes")) {
+                        mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%M:%S"),
+                            side=3, adj=1, cex=par("cex"), line=0.5)
+                    } else if (!is.null(x@data$time)) {
+                        goodTimes <- which(!is.na(x@data$time))
+                        if (length(goodTimes)) {
+                            mtext(format(x@data$time[goodTimes[1]], "%Y-%m-%d %H:%M:%S"),
+                                side=3, adj=1, cex=par("cex"), line=0.5)
+                        }
+                    }
+                }
+                mar <- omar # recover mar, which was altered for multi-panel plots
+                oceDebug(debug, "} # plot(ctd, ...) of type \"map\"\n", unindent=1)
+            } else if (which[w] == "index") {
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                plotProfile(x, xtype="index",
+                    plim=plim,
+                    col=col,
+                    eos=eos,
+                    useSmoothScatter=useSmoothScatter,
+                    grid=grid, col.grid="lightgray", lty.grid="dotted",
+                    cex=cex[w], pch=pch[w],
+                    type=if (!missing(type)) type[w],
+                    keepNA=keepNA, inset=inset, add=add,
+                    debug=debug-1,
+                    ...)
+            } else if (which[w] == "text") {
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                textItem<-function(xloc, yloc, item, label, cex=0.8, d.yloc=0.8) {
+                    if (!is.null(item) && !is.na(item))
+                        text(xloc, yloc, paste(label, item), adj=c(0, 0), cex=cex)
+                    yloc - d.yloc
+                }
+                par(mar=c(0, 0, 0, 0))
+                plot.new()
+                plot.window(c(0, 10), c(0, 10))
+                xloc <- 0
+                yloc <- 8
+                cex <- 3/4
+                xm <- x@metadata
+                yloc <- textItem(xloc, yloc, xm$station,         " Station:  ", cex=cex)
+                if (!is.null(xm$filename) && nchar(xm$filename, "bytes") > 0)
+                    yloc <- textItem(xloc, yloc, xm$filename,    " File:     ", cex=cex)
+                if (!is.null(xm$scientist))
+                    yloc <- textItem(xloc, yloc, xm$scientist,   " Scientist:", cex=cex)
+                if (!is.null(xm$institute))
+                    yloc <- textItem(xloc, yloc, xm$institute,   " Institute:", cex=cex)
+                if (!is.null(xm$date))
+                    yloc <- textItem(xloc, yloc, xm$date,        " Date:     ", cex=cex)
+                if (!is.null(xm$ship))
+                    yloc <- textItem(xloc, yloc, xm$ship,        " Ship:     ", cex=cex)
+                if (!is.null(xm$cruise))
+                    yloc <- textItem(xloc, yloc, xm$cruise,      " Cruise:   ", cex=cex)
+                if (!is.null(xm$station))
+                    yloc <- textItem(xloc, yloc, xm$station,     " Station:  ", cex=cex)
+                if (!is.null(xm$waterDepth))
+                    yloc <- textItem(xloc, yloc, xm$waterDepth, " Depth:    ", cex=cex)
+                if (!is.na(xm$longitude) && !is.na(xm$latitude))
+                    yloc <- textItem(xloc, yloc, latlonFormat(xm$latitude, xm$longitude),   " Location: ", cex=cex)
+            } else if (which[w] == "Sts") { # S timeseries
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S", "y", debug=debug-1))
+            } else if (which[w] == "Tts") { # T timeseries
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oce.plot.ts(x[["time"]], x[["temperature"]], ylab=resizableLabel("T", "y", debug=debug-1))
+            } else if (which[w] == "pts") { # p timeseries
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oce.plot.ts(x[["time"]], x[["pressure"]], ylab=resizableLabel("p", "y", debug=debug-1))
+            } else if (which[w] =="rhots") { # sigmaTheta timeseries
+                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oce.plot.ts(x[["time"]], x[["sigmaTheta"]], ylab=resizableLabel("sigmaTheta", "y", debug=debug-1))
+            } else {
+                oceDebug(debug, "not a special case; assuming a \"", whichOrig[w], "\" profile plot\n", sep="")
+                if (whichOrig[w] %in% available) {
+                    xlab <- resizableLabel(item=whichOrig[w], axis="x",
+                        unit=x@metadata$units[[whichOrig[w]]], debug=debug-1)
+                    oceDebug(debug, "about to call plotProfile() with which=\"", whichOrig[w], "\" and xlab=\"", as.character(xlab), "\"\n", sep="")
+                    plotProfile(x, xtype=x[[whichOrig[w]]],
+                        xlab=xlab,# whichOrig[w],
+                        Slim=Slim, Tlim=Tlim, plim=plim,
+                        eos=eos,
+                        useSmoothScatter=useSmoothScatter,
+                        grid=grid, col.grid="lightgray", lty.grid="dotted",
+                        col=col[w], cex=cex[w], pch=pch[w],
+                        type=if (!missing(type)) type[w],
+                        keepNA=keepNA, inset=inset, add=add,
+                        debug=debug-1,
+                        ...)
+                }
+            }
+        }
+        oceDebug(debug, "} # plot,ctd-method()\n", unindent=1)
+        invisible(NULL)
+    })
 
 
 #' Subset a ctd Object
