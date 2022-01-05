@@ -55,61 +55,57 @@
 \arguments{
 \item{x}{a \linkS4class{ctd} object.}
 
-\item{which}{List of desired plot types, as given below. If \code{which} is not
-supplied, a default will be used. This default depends on \code{deploymentType}
-in the \code{metadata} slot of \code{x}.  If \code{deploymentType} is
-\code{"profile"} or missing, then \code{which} defaults to
-\code{c(1,2,3,5)}.  If \code{deploymentType} is
-\code{"moored"} or \code{"thermosalinograph"} then \code{which} defaults to
-\code{c(30, 3, 31, 5)}. Finally, if \code{deploymentType} is \code{towyo} then
-\code{which} defaults to \code{c(30, 31, 32, 3)}.
+\item{which}{a numeric or character vector specifying desired plot types. If
+\code{which} is not supplied, a default will be used. This default depends on
+\code{deploymentType} in the \code{metadata} slot of \code{x}.  If \code{deploymentType} is
+\code{"profile"} or missing, then \code{which} defaults to \code{c(1,2,3,5)}.  If
+\code{deploymentType} is \code{"moored"} or \code{"thermosalinograph"} then \code{which} defaults
+to \code{c(30, 3, 31, 5)}. Finally, if \code{deploymentType} is \code{towyo} then \code{which}
+defaults to \code{c(30, 31, 32, 3)}.
 
 The details of individual \code{which} values are as follows. Some of the entries
 refer to the EOS (equation of state for seawater), which may either \code{"gsw"}
 for the modern Gibbs Seawater system, or \code{"unesco"} for the older UNESCO
-system. The EOS may be set with the \code{eos} argument, or by using \code{\link[=options]{options()}},
-with \code{options(oceEOS="unesco")} or \code{options(oceEOS="unesco")}. The default EOS
-is \code{"gsw"}.
+system. The EOS may be set with the \code{eos} argument to \verb{plot,ctd-method()} or
+by using \code{\link[=options]{options()}}, with \code{options(oceEOS="unesco")} or
+\code{options(oceEOS="unesco")}. The default EOS is \code{"gsw"}.
 \itemize{
 \item \code{which=1} or \code{which="salinity+temperature"} gives a combined profile of
 temperature and salinity.  If the EOS is \code{"gsw"} then Conservative
-Temperature and Absolute Salinity will be shown; otherwise in-situ
-temperature and practical salinity will be shown.
+Temperature and Absolute Salinity are shown; otherwise in-situ temperature
+and practical salinity are shown.
 \item \code{which=2} or \code{which="density+N2"} gives a combined profile of density
 anomaly, computed with \code{\link[=swSigma0]{swSigma0()}}, along with the square of the buoyancy
-frequency, computed with \code{\link[=swN2]{swN2()}}.  Note that the \code{eos} parameter is passed
-to each of these functions.
+frequency, computed with \code{\link[=swN2]{swN2()}}. The \code{eos} parameter is passed
+to each of these functions, so the desired EOS is used.
 \item \code{which=3} or \code{which="TS"} gives a TS plot. If the EOS is \code{"gsw"}, T is
 Conservative Temperature and S is Absolute Salinity; otherwise, they are
 in-situ temperature and practical salinity, respectively.
 \item \code{which=4} or \code{which="text"} gives a textual  summary of
 some aspects of the data.
-\item \code{which=5} or \code{which="map"} gives a map plotted
-with \code{\link[=plot,coastline-method]{plot,coastline-method()}}, with a dot for
-the station location.  Notes near the top boundary of the map give the
-station number, the sampling date, and the name of the chief scientist,
-if these are known. Note that the longitude will be converted to a value
-between -180 and 180 before plotting.  (See also notes
-about \code{span}.)
+\item \code{which=5} or \code{which="map"} gives a map plotted with
+\code{\link[=plot,coastline-method]{plot,coastline-method()}}, with a dot for the station location.  Notes near
+the top boundary of the map give the station number, the sampling date, and
+the name of the chief scientist, if these are known. Note that the longitude
+will be converted to a value between -180 and 180 before plotting.  (See also
+notes about \code{span}.)
 \item \code{which=5.1} as for \code{which=5}, except that the file name
 is drawn above the map.
 \item \code{which=6} or \code{which="density+dpdt"} gives a profile of density and
 \eqn{dP/dt}{dP/dt}, which is useful for evaluating whether the instrument is
-dropping properly through the water column.  For the \code{"gsw"} EOS,
-\eqn{\sigma_0}{sigma[0]} is shown, while for \code{"unesco"},
+dropping properly through the water column.  If the EOS is \code{"gsw"} then
+\eqn{\sigma_0}{sigma[0]} is shown; otherwise,
 \eqn{\sigma_\theta}{sigma[theta]} is shown.
-\item \code{which=7} or \code{which="density+time"} gives a
-profile of density and time.
-\item \code{which=8} or \code{which="index"} gives a profile of
-index number, which can provide useful information for
-trimming with \code{\link[=ctdTrim]{ctdTrim()}}.
+\item \code{which=7} or \code{which="density+time"} gives a profile of density and time.
+\item \code{which=8} or \code{which="index"} gives a profile of index number, which can
+provide useful information for trimming with \code{\link[=ctdTrim]{ctdTrim()}}.
 \item \code{which=9} or \code{which="salinity"} gives a profile of Absolute
 Salinity if the EOS is \code{"gsw"}, or practical salinity otherwise.
 \item \code{which=10} or \code{which="temperature"} gives a profile
 of Conservative Temperature if the EOS is \code{"gsw"}, or
 in-situ temperature otherwise.
 \item \code{which=11} or \code{which="density"} gives a profile
-of density as computed with \code{\link[=swRho]{swRho()}}, to whic the \code{eos}
+of density as computed with \code{\link[=swRho]{swRho()}}, to which the \code{eos}
 parameter is passed.
 \item \code{which=12} or \code{which="N2"} gives an \eqn{N^2}{N^2} profile.
 \item \code{which=13} or \code{which="spice"} gives a spiciness profile.
@@ -129,9 +125,10 @@ if the EOS is \code{"gsw"} or in-situ temperature otherwise.
 \item \code{which=33} or \code{which="rhots"} gives a time series of density anomaly,
 \eqn{\sigma_0}{sigma[0]} if the EOS is \code{"gsw"}
 or \eqn{\sigma_\theta}{sigma[theta]} otherwise.
-\item otherwise, \code{which} is checked against the \code{data} and \code{dataDerived}
-fields returned by \verb{x[["?"]}, and a profile of the corresponding
-quantity is plotted.
+\item otherwise, \code{which} is interpreted as a character value to be checked
+against the \code{data} and \code{dataDerived} fields returned by \verb{x[["?"]}. If a match
+is found then a profile of the corresponding quantity is plotted.  If there
+is no match, an error is reported.
 }}
 
 \item{col}{color of lines or symbols.}
@@ -172,10 +169,10 @@ the drawing of a coastline.  There is a speed penalty for providing
 coastline, it makes sense to load it in before the first call, and to
 supply the object as an argument, as opposed to the name of the object.}
 
-\item{Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim, dpdtlim, timelim}{optional numeric vectors
-of length 2, that give axis limits for
-salinity, conductivity, temperature, pressure, the square of
-buoyancy frequency, density ratio, dp/dt, and time, respectively.}
+\item{Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim, dpdtlim, timelim}{optional
+numeric vectors of length 2, that give axis limits for salinity,
+conductivity, temperature, pressure, the square of buoyancy frequency,
+density ratio, dp/dt, and time, respectively.}
 
 \item{drawIsobaths}{logical value indicating whether to draw depth contours on
 maps, in addition to the coastline. The argument has no effect except
@@ -275,8 +272,7 @@ be printed. If one function calls another, it usually reduces the value of
 \code{debug} first, so that a user can often obtain deeper debugging
 by specifying higher \code{debug} values.}
 
-\item{...}{optional arguments passed to plotting functions. A common example is
-to set \code{df}, for use in \code{\link[=swN2]{swN2()}} calculations.}
+\item{...}{optional arguments passed to plotting functions.}
 }
 \description{
 Plot CTD data in any of many different ways. In many cases,

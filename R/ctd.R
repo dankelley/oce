@@ -748,11 +748,6 @@ setMethod(f="[[",
               # https://github.com/dankelley/oce/issues/1891
               # Use paste() for two-word items so a text editor won't break strings
               metadataDerived <- c("time", "*Flag", "*Unit")
-              #>dataDerived <- c("SP", "SR", "Sstar", "N2", "density",
-              #>    "sigmaTheta", "sigma0", "sigma1", "sigma2", "sigma3",
-              #>    "sigma4", "theta", paste("potential", "temperature"), "Rrho",
-              #>    "spice", "spiciness", "SA", paste("Absolute", "Salinity"),
-              #>    "CT", paste("Conservative", "Temperature"), "z", "depth")
               if (i == "?")
                   return(list(metadata=sort(names(x@metadata)),
                           metadataDerived=sort(metadataDerived),
@@ -2841,31 +2836,30 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'
 #' @param x a [ctd-class] object.
 #'
-#' @param which List of desired plot types, as given below. If `which` is not
-#' supplied, a default will be used. This default depends on `deploymentType`
-#' in the `metadata` slot of `x`.  If `deploymentType` is
-#' `"profile"` or missing, then `which` defaults to
-#' `c(1,2,3,5)`.  If `deploymentType` is
-#' `"moored"` or `"thermosalinograph"` then `which` defaults to
-#' `c(30, 3, 31, 5)`. Finally, if `deploymentType` is `towyo` then
-#' `which` defaults to `c(30, 31, 32, 3)`.
+#' @param which a numeric or character vector specifying desired plot types. If
+#' `which` is not supplied, a default will be used. This default depends on
+#' `deploymentType` in the `metadata` slot of `x`.  If `deploymentType` is
+#' `"profile"` or missing, then `which` defaults to `c(1,2,3,5)`.  If
+#' `deploymentType` is `"moored"` or `"thermosalinograph"` then `which` defaults
+#' to `c(30, 3, 31, 5)`. Finally, if `deploymentType` is `towyo` then `which`
+#' defaults to `c(30, 31, 32, 3)`.
 #'
 #' The details of individual `which` values are as follows. Some of the entries
 #' refer to the EOS (equation of state for seawater), which may either `"gsw"`
 #' for the modern Gibbs Seawater system, or `"unesco"` for the older UNESCO
-#' system. The EOS may be set with the `eos` argument, or by using [options()],
-#' with `options(oceEOS="unesco")` or `options(oceEOS="unesco")`. The default EOS
-#' is `"gsw"`.
+#' system. The EOS may be set with the `eos` argument to `plot,ctd-method()` or
+#' by using [options()], with `options(oceEOS="unesco")` or
+#' `options(oceEOS="unesco")`. The default EOS is `"gsw"`.
 #'
 #' * `which=1` or `which="salinity+temperature"` gives a combined profile of
 #' temperature and salinity.  If the EOS is `"gsw"` then Conservative
-#' Temperature and Absolute Salinity will be shown; otherwise in-situ
-#' temperature and practical salinity will be shown.
+#' Temperature and Absolute Salinity are shown; otherwise in-situ temperature
+#' and practical salinity are shown.
 #'
 #' * `which=2` or `which="density+N2"` gives a combined profile of density
 #' anomaly, computed with [swSigma0()], along with the square of the buoyancy
-#' frequency, computed with [swN2()].  Note that the `eos` parameter is passed
-#' to each of these functions.
+#' frequency, computed with [swN2()]. The `eos` parameter is passed
+#' to each of these functions, so the desired EOS is used.
 #'
 #' * `which=3` or `which="TS"` gives a TS plot. If the EOS is `"gsw"`, T is
 #' Conservative Temperature and S is Absolute Salinity; otherwise, they are
@@ -2874,29 +2868,26 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' * `which=4` or `which="text"` gives a textual  summary of
 #' some aspects of the data.
 #'
-#' * `which=5` or `which="map"` gives a map plotted
-#' with [plot,coastline-method()], with a dot for
-#' the station location.  Notes near the top boundary of the map give the
-#' station number, the sampling date, and the name of the chief scientist,
-#' if these are known. Note that the longitude will be converted to a value
-#' between -180 and 180 before plotting.  (See also notes
-#' about `span`.)
+#' * `which=5` or `which="map"` gives a map plotted with
+#' [plot,coastline-method()], with a dot for the station location.  Notes near
+#' the top boundary of the map give the station number, the sampling date, and
+#' the name of the chief scientist, if these are known. Note that the longitude
+#' will be converted to a value between -180 and 180 before plotting.  (See also
+#' notes about `span`.)
 #'
 #' * `which=5.1` as for `which=5`, except that the file name
 #' is drawn above the map.
 #'
 #' * `which=6` or `which="density+dpdt"` gives a profile of density and
 #' \eqn{dP/dt}{dP/dt}, which is useful for evaluating whether the instrument is
-#' dropping properly through the water column.  For the `"gsw"` EOS,
-#' \eqn{\sigma_0}{sigma[0]} is shown, while for `"unesco"`,
+#' dropping properly through the water column.  If the EOS is `"gsw"` then
+#' \eqn{\sigma_0}{sigma[0]} is shown; otherwise,
 #' \eqn{\sigma_\theta}{sigma[theta]} is shown.
 #'
-#' * `which=7` or `which="density+time"` gives a
-#' profile of density and time.
+#' * `which=7` or `which="density+time"` gives a profile of density and time.
 #'
-#' * `which=8` or `which="index"` gives a profile of
-#' index number, which can provide useful information for
-#' trimming with [ctdTrim()].
+#' * `which=8` or `which="index"` gives a profile of index number, which can
+#' provide useful information for trimming with [ctdTrim()].
 #'
 #' * `which=9` or `which="salinity"` gives a profile of Absolute
 #' Salinity if the EOS is `"gsw"`, or practical salinity otherwise.
@@ -2906,7 +2897,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' in-situ temperature otherwise.
 #'
 #' * `which=11` or `which="density"` gives a profile
-#' of density as computed with [swRho()], to whic the `eos`
+#' of density as computed with [swRho()], to which the `eos`
 #' parameter is passed.
 #'
 #' * `which=12` or `which="N2"` gives an \eqn{N^2}{N^2} profile.
@@ -2939,9 +2930,10 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' \eqn{\sigma_0}{sigma[0]} if the EOS is `"gsw"`
 #' or \eqn{\sigma_\theta}{sigma[theta]} otherwise.
 #'
-#' * otherwise, `which` is checked against the `data` and `dataDerived`
-#' fields returned by `x[["?"]`, and a profile of the corresponding
-#' quantity is plotted.
+#' * otherwise, `which` is interpreted as a character value to be checked
+#' against the `data` and `dataDerived` fields returned by `x[["?"]`. If a match
+#' is found then a profile of the corresponding quantity is plotted.  If there
+#' is no match, an error is reported.
 #'
 #' @param col color of lines or symbols.
 #'
@@ -2981,10 +2973,10 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' coastline, it makes sense to load it in before the first call, and to
 #' supply the object as an argument, as opposed to the name of the object.
 #'
-#' @param Slim,Clim,Tlim,plim,densitylim,N2lim,Rrholim,dpdtlim,timelim optional numeric vectors
-#' of length 2, that give axis limits for
-#' salinity, conductivity, temperature, pressure, the square of
-#' buoyancy frequency, density ratio, dp/dt, and time, respectively.
+#' @param Slim,Clim,Tlim,plim,densitylim,N2lim,Rrholim,dpdtlim,timelim optional
+#' numeric vectors of length 2, that give axis limits for salinity,
+#' conductivity, temperature, pressure, the square of buoyancy frequency,
+#' density ratio, dp/dt, and time, respectively.
 #'
 #' @param drawIsobaths logical value indicating whether to draw depth contours on
 #' maps, in addition to the coastline. The argument has no effect except
@@ -3082,8 +3074,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'
 #' @template debugTemplate
 #'
-#' @param ... optional arguments passed to plotting functions. A common example is
-#' to set `df`, for use in [swN2()] calculations.
+#' @param ... optional arguments passed to plotting functions.
 #'
 #' @seealso
 #' The documentation for [ctd-class] explains the structure of CTD
@@ -3369,25 +3360,25 @@ setMethod(f="plot",
                     keepNA=keepNA, inset=inset, add=add,
                     debug=debug-1,
                     ...)
-            } else if (which[w] == "salinity") { # a special case because can use Slim and plim
-                plotProfile(x, xtype="salinity",
-                    plim=plim,
-                    Slim=Slim,
-                    col=col,
-                    eos=eos,
-                    useSmoothScatter=useSmoothScatter,
-                    grid=grid, col.grid="lightgray", lty.grid="dotted",
-                    cex=cex[w], pch=pch[w],
-                    type=if (!missing(type)) type[w],
-                    keepNA=keepNA, inset=inset, add=add,
-                    debug=debug-1,
-                    ...)
-            } else if (which[w] %in% c("SA",
-                    paste("absolute", "salinity"),
-                    paste("Absolute", "Salinity"))) { # a special case because can use Slim and plim
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
-                plotProfile(x, xtype="SA", xlab=resizableLabel("SA", debug=debug-1),
-                    Tlim=Tlim, plim=plim, eos="gsw",
+            #> } else if (which[w] == "salinity") { # a special case because can use Slim and plim
+            #>     plotProfile(x, xtype="salinity",
+            #>         plim=plim,
+            #>         Slim=Slim,
+            #>         col=col,
+            #>         eos=eos,
+            #>         useSmoothScatter=useSmoothScatter,
+            #>         grid=grid, col.grid="lightgray", lty.grid="dotted",
+            #>         cex=cex[w], pch=pch[w],
+            #>         type=if (!missing(type)) type[w],
+            #>         keepNA=keepNA, inset=inset, add=add,
+            #>         debug=debug-1,
+            #>         ...)
+            } else if (which[w] %in% c("salinity", "SP",
+                    "SA", paste("absolute", "salinity"), paste("Absolute", "Salinity"),
+                    "Sstar")) { # a special case because can use Slim and plim
+                oceDebug(debug, "handling whichOrig=\"", whichOrig[w], "\" (which=\"",which[w],"\") as a special case\n", sep="")
+                plotProfile(x, xtype=x[[which[w]]], xlab=resizableLabel(which, debug=debug-1),
+                    xlim=Slim, ylim=plim, eos="gsw",
                     useSmoothScatter=useSmoothScatter,
                     grid=grid, col.grid="lightgray", lty.grid="dotted",
                     cex=cex[w], pch=pch[w],
@@ -3735,6 +3726,8 @@ setMethod(f="plot",
                         keepNA=keepNA, inset=inset, add=add,
                         debug=debug-1L,
                         ...)
+                } else {
+                    stop("In plot,ctd-method() : which=\"", which, "\" cannot be handled", call.=FALSE)
                 }
             }
         }
@@ -4904,9 +4897,13 @@ plotProfile <- function(x,
 {
     debug <- max(0, min(debug, 3))
     oceDebug(debug, "plotProfile(x, xtype=",
-             ifelse(is.character(xtype), paste0("\"",xtype,"\""), "(numeric)"),
+             ifelse(is.character(xtype), paste0("\"",xtype,"\""), "NUMERIC"),
              #", xlab=", if (is.null(xlab)) "NULL" else paste('"', xlab, '"', sep=""),
-             ", debug=", debug, ", ...) {\n", sep="", style="bold", unindent=1)
+             ", Slim=", if (missing(Slim)) "MISSING" else paste("c(",paste(Slim, collapse=","),")",sep=""),
+             ", plim=", if (missing(plim)) "MISSING" else paste("c(",paste(plim, collapse=","),")",sep=""),
+             ", xlim=", if (missing(xlim)) "MISSING" else paste("c(",paste(xlim, collapse=","),")",sep=""),
+             ", ylim=", if (missing(ylim)) "MISSING" else paste("c(",paste(ylim, collapse=","),")",sep=""),
+             ", ...) {\n", sep="", style="bold", unindent=1)
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (missing(mar)) {
         ## default behaviour changed 20161020 for issue #1103
@@ -5059,8 +5056,16 @@ plotProfile <- function(x,
         par(mar=mar, mgp=mgp)
     if (length(xtype) == length(y) && length(y) > 1) {
         oceDebug(debug, "case 1\n")
+        #if (!missing(Slim)) cat(vectorShow(Slim))
+        #if (!missing(plim)) cat(vectorShow(plim))
+        #if (!missing(xlim)) cat(vectorShow(xlim))
+        #if (!missing(ylim)) cat(vectorShow(ylim))
         if ("axes" %in% names(list(...))) {
-            plot(xtype, y, xlab="", ylab=yname, type=type, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, lty=lty, cex=cex, pch=pch, ...)
+            oceDebug(debug ,"case 1.1\n")
+            plot(xtype, y, xlab="", ylab=yname, type=type,
+                xaxs=xaxs, yaxs=yaxs,
+                xlim=xlim, ylim=ylim,
+                col=col, lty=lty, cex=cex, pch=pch, ...)
             if (list(...)$axes) {
                 axis(3)
                 mtext(xlab, side=3, line=axisNameLoc, cex=par("cex"))
@@ -5068,27 +5073,30 @@ plotProfile <- function(x,
             }
             box()
         } else {
-            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
-                 ylim=ylim, col=col, lty=lty, cex=cex, pch=pch, ...)
+            oceDebug(debug ,"case 1.2\n")
+            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE,
+                xaxs=xaxs, yaxs=yaxs,
+                xlim=if(!missing(xlim)) xlim, ylim=if(!missing(ylim)) ylim,
+                col=col, lty=lty, cex=cex, pch=pch, ...)
             axis(3)
             mtext(xlab, side=3, line=axisNameLoc, cex=par("cex"))
             axis(2)
             box()
         }
     } else if (is.numeric(xtype)) {
-        oceDebug(debug, "xtype is numeric\n")
+        oceDebug(debug ,"case 2: xtype is numeric\n")
         if (length(xtype) != length(y))
             stop("length(xtype) must match number of levels in the CTD object")
         if (add) {
             lines(xtype, y, type=type, lty=lty, ...)
         } else {
-            message("DAN DAN")
+            message("DANDANDAN")
             plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE,
                 xaxs=xaxs, yaxs=yaxs,
                 #xlim=if (!is.null(xlim)) xlim else range(x, na.rm=TRUE),
                 ylim=ylim,
                 lty=lty, cex=cex, pch=pch, ...)
-            message("DAN DAN DAN")
+            message("DANDANDANDAN")
             axis(3)
             mtext(xlab, side=3, line=axisNameLoc, cex=par("cex")) # no unit is provided
             axis(2)
@@ -5101,6 +5109,7 @@ plotProfile <- function(x,
             }
         }
     } else if (xtype == "index") {
+        oceDebug(debug ,"case 3: xtype is \"index\"\n")
         index <- seq_along(x[["pressure"]])
         plot(index, x[["pressure"]], ylim=ylim, col=col, lty=lty, xlab="", ylab=yname,
              type=type, xaxs=xaxs, yaxs=yaxs, cex=cex, pch=pch, axes=FALSE)
@@ -5113,6 +5122,7 @@ plotProfile <- function(x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "density+time") {
+        oceDebug(debug ,"case 4: xtype is \"density+time\"\n")
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+time\"")
         sig0 <- if (eos == "unesco") swSigma0(x[["salinity"]], x[["temperature"]], x[["pressure"]]) else
@@ -5154,6 +5164,7 @@ plotProfile <- function(x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "density+dpdt") {
+        oceDebug(debug ,"case 5: xtype is \"density+dpdt\"\n")
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+dpdt\"")
         if (missing(densitylim))
@@ -5209,7 +5220,8 @@ plotProfile <- function(x,
             at <- par("xaxp")
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
-    } else if (xtype == "S" || xtype == "SA" || xtype == "salinity") {
+    } else if (xtype %in% c("salinity", "S", "SA")) {
+        oceDebug(debug ,"case 6: xtype is \"S\", \"SA\", or \"salinity\"\n")
         oceDebug(debug, "recognized S, SA, or salinity\n")
         salinity <- if (xtype == "SA") swAbsoluteSalinity(x) else x[["salinity"]]
         if (!any(is.finite(salinity))) {
@@ -5260,7 +5272,8 @@ plotProfile <- function(x,
                             cex=cex, pch=pch, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
-    } else if (xtype == "C" || xtype == "conductivity") {
+    } else if (xtype %in% c("conductivity", "C")) {
+        oceDebug(debug ,"case 7: xtype is \"conductivity\" or \"C\"\n")
         if ('conductivity' %in% names(x@data)) {
             conductivity <- x[["conductivity"]]
         } else {
@@ -5351,7 +5364,8 @@ plotProfile <- function(x,
                             keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate", "tritium",
-                            "u", "v") || 0 < length(grep("^sigma[0-4]$", xtype))) {
+            "u", "v") || 0 < length(grep("^sigma[0-4]$", xtype))) {
+        oceDebug(debug ,"case 8: xtype is \"oxygen\", \"nitrate\", \"nitrite\", \"phosphate\", \"silicate\", \"tritium\", \"u\", or \"v\"\n")
         unit <- x@metadata$units[[xtype]][[1]]
         ##if (!(xtype %in% names(x@data)))
         ##    stop("no ", xtype, " in this station")
@@ -5422,6 +5436,7 @@ plotProfile <- function(x,
                             keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "Rrho" || xtype == "RrhoSF") {
+        oceDebug(debug ,"case 9: xtype is \"Rrho\" or \"RrhoSF\"\n")
         Rrho <- swRrho(x, sense=if (xtype=="Rrho") "diffusive" else "finger")
         look <- if (keepNA) seq_along(y) else !is.na(Rrho) & !is.na(y)
         if (!add) {
@@ -5449,7 +5464,8 @@ plotProfile <- function(x,
         plotJustProfile(Rrho, y[look], type=type, lwd=lwd, lty=lty,
                         cex=cex, col=col, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
-    } else if (xtype == "T" || xtype == "CT" || xtype == "temperature") {
+    } else if (xtype %in% c("T", "CT", "temperature")) {
+        oceDebug(debug ,"case 10: xtype is \"temperature\", \"T\" or \"CT\"\n")
         oceDebug(debug, "recognized T, CT, or temperature\n")
         #>temperature <- if (eos == "gsw" || xtype == "CT") swConservativeTemperature(x) else x[["temperature"]]
         temperature <- if (xtype %in% c("T", "temperature")) x[["temperature"]] 
@@ -5506,6 +5522,7 @@ plotProfile <- function(x,
                             keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "theta" || xtype == "potential temperature") {
+        oceDebug(debug ,"case 11: xtype is \"theta\", \"potential temperature\"\n")
         theta <- if ("theta" %in% names(x@data)) x@data$theta else swTheta(x)
         if (missing(Tlim)) {
             if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(theta, na.rm=TRUE)
@@ -5550,6 +5567,7 @@ plotProfile <- function(x,
                             keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "sigmaTheta") {
+        oceDebug(debug ,"case 12: xtype is \"sigmaTheta\"\n")
         ## FIXME: do as theta above
         st <- swSigmaTheta(x)
         look <- if (keepNA) seq_along(y) else !is.na(st) & !is.na(y)
@@ -5584,6 +5602,7 @@ plotProfile <- function(x,
                         cex=cex, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "density") {
+        oceDebug(debug ,"case 13: xtype is \"density\"\n")
         rho <- swRho(x, eos=eos)
         look <- if (keepNA) seq_along(y) else !is.na(rho) & !is.na(y)
         ## FIXME: if this works, extend to other x types
@@ -5617,6 +5636,7 @@ plotProfile <- function(x,
                         cex=cex, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "density+N2") {
+        oceDebug(debug ,"case 14: xtype is \"density+N2\"\n")
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+dpdt\"")
         sig0 <- swSigma0(x, eos=eos)
@@ -5682,6 +5702,7 @@ plotProfile <- function(x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "N2") {
+        oceDebug(debug ,"case 15: xtype is \"N2\"\n")
         N2 <- swN2(x, df=df)
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
@@ -5704,9 +5725,10 @@ plotProfile <- function(x,
         }
         ## 2014-02-07: use col (not col.rho) here, since no second axis to worry about
         plotJustProfile(x=N2, y=y, col=col, type=type, lwd=lwd, lty=lty,
-                        cex=cex, pch=pch, pt.bg=pt.bg,
-                        keepNA=keepNA, debug=debug-1)
+            cex=cex, pch=pch, pt.bg=pt.bg,
+            keepNA=keepNA, debug=debug-1)
     } else if (xtype == "spice") {
+        oceDebug(debug ,"case 16: xtype is \"spice\"\n")
         spice <-swSpice(x)
         look <- if (keepNA) seq_along(y) else !is.na(spice) & !is.na(y)
         if (!add) {
@@ -5729,6 +5751,7 @@ plotProfile <- function(x,
                         cex=cex, col=col, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "salinity+temperature") {
+        oceDebug(debug ,"case 17: xtype is \"salinity+temperature\"\n")
         if (add)
             warning("argument 'add' is ignored for xtype=\"salinity+temperature\"")
         salinity <- if (eos == "gsw") swAbsoluteSalinity(x) else x[["salinity"]]
@@ -5780,6 +5803,7 @@ plotProfile <- function(x,
         }
         ## lines(salinity, y, col=col.salinity, lwd=if (length(lwd)>1)lwd[2] else lwd[1])
     } else {
+        oceDebug(debug ,"case 19: a general case\n")
         ## Not a special case.
         oceDebug(debug, "plotting a general xtype, i.e. not a special case\n")
         w <- which(names(x@data) == xtype)

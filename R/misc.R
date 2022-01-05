@@ -2687,8 +2687,8 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
         stop("must provide 'item'")
     if (axis != "x" && axis != "y")
         stop("axis must be \"x\" or \"y\"")
-    itemAllowed <- c("S", "SA", "C", "CT", paste("conductivity", "mS/cm"),
-        paste("conductivity", "S/m"), "T", "theta", "sigmaTheta",
+    itemAllowed <- c("salinity", "S", "SA", "C", "CT", paste("conductivity", "mS/cm"),
+        paste("conductivity", "S/m"), "T", "temperature", "theta", "sigmaTheta",
         paste("Conservative", "Temperature"), paste("Absolute", "Salinity"),
         "N2", "nitrate", "nitrite", "oxygen", paste("oxygen", "saturation"),
         paste("oxygen", "mL/L"), paste("oxygen", "umol/L"), paste("oxygen",
@@ -2784,7 +2784,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL,
         var <- gettext("Potential density anomaly wrt 4000 dbar", domain="R-oce")
         full <- bquote(.(var)*.(L)*kg/m^3*.(R))
         abbreviated <- bquote(sigma[4]*.(L)*kg/m^3*.(R))
-    } else if (item == "SP") {
+    } else if (item %in% c("salinity", "SP")) {
         var <- "Salinity"
         abbreviated <- full <- bquote(.(var))
     } else if (item == "SR") {
