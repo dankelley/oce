@@ -3312,7 +3312,7 @@ setMethod(f="plot",
             oceDebug(debug, "which[", w, "]\"=", which[w], "\"\n", sep="")
             # Case 1: non-single-profile plots.
             if (which[w] == "salinity+temperature") {
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 plotProfile(x, xtype="salinity+temperature",
                     plim=plim, Slim=Slim, Tlim=Tlim,
                     eos=eos,
@@ -3324,7 +3324,7 @@ setMethod(f="plot",
                     debug=debug-1,
                     ...)
             } else if (which[w] == "density+N2") {
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 plotProfile(x, xtype="density+N2",
                     plim=plim, N2lim=N2lim, densitylim=densitylim,
                     eos=eos,
@@ -3337,7 +3337,7 @@ setMethod(f="plot",
                     debug=debug-1,
                     ...)
             } else if (which[w] == "density+dpdt") {
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 plotProfile(x, xtype="density+dpdt",
                     plim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
                     col=col,
@@ -3350,7 +3350,7 @@ setMethod(f="plot",
                     debug=debug-1,
                     ...)
             } else if (which[w] == "density+time") {
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 plotProfile(x, xtype="density+time",
                     plim=plim, densitylim=densitylim, timelim=timelim,
                     useSmoothScatter=useSmoothScatter,
@@ -3360,25 +3360,14 @@ setMethod(f="plot",
                     keepNA=keepNA, inset=inset, add=add,
                     debug=debug-1,
                     ...)
-            #> } else if (which[w] == "salinity") { # a special case because can use Slim and plim
-            #>     plotProfile(x, xtype="salinity",
-            #>         plim=plim,
-            #>         Slim=Slim,
-            #>         col=col,
-            #>         eos=eos,
-            #>         useSmoothScatter=useSmoothScatter,
-            #>         grid=grid, col.grid="lightgray", lty.grid="dotted",
-            #>         cex=cex[w], pch=pch[w],
-            #>         type=if (!missing(type)) type[w],
-            #>         keepNA=keepNA, inset=inset, add=add,
-            #>         debug=debug-1,
-            #>         ...)
-            } else if (which[w] %in% c("salinity", "SP",
-                    "SA", paste("absolute", "salinity"), paste("Absolute", "Salinity"),
-                    "Sstar")) { # a special case because can use Slim and plim
-                oceDebug(debug, "handling whichOrig=\"", whichOrig[w], "\" (which=\"",which[w],"\") as a special case\n", sep="")
-                plotProfile(x, xtype=x[[which[w]]], xlab=resizableLabel(which, debug=debug-1),
-                    xlim=Slim, ylim=plim, eos="gsw",
+            } else if (which[w] %in% c("salinity",
+                    "SP",
+                    "SA", paste("absolute", "salinity"),
+                    paste("Absolute", "Salinity"),
+                    "Sstar")) {        # a special case because can use Slim and plim
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
+                plotProfile(x, xtype=x[[which[w]]], xlab=resizableLabel(which[w], debug=debug-1),
+                    xlim=Slim, ylim=plim,
                     useSmoothScatter=useSmoothScatter,
                     grid=grid, col.grid="lightgray", lty.grid="dotted",
                     cex=cex[w], pch=pch[w],
@@ -3386,25 +3375,15 @@ setMethod(f="plot",
                     keepNA=keepNA, inset=inset, add=add,
                     debug=debug-1,
                     ...)
-            } else if (which[w] == "temperature") { # a special case because can use Tlim and plim
-                plotProfile(x, xtype="temperature",
-                    plim=plim,
-                    Tlim=Tlim,
-                    col=col,
-                    eos=eos,
-                    useSmoothScatter=useSmoothScatter,
-                    grid=grid, col.grid="lightgray", lty.grid="dotted",
-                    cex=cex[w], pch=pch[w],
-                    type=if (!missing(type)) type[w],
-                    keepNA=keepNA, inset=inset, add=add,
-                    debug=debug-1,
-                    ...)
-            } else if (which[w] %in% c("CT",
+            } else if (which[w] %in% c("temperature",
+                    "theta",
+                    paste("potential", "temperature"),
                     paste("conservative", "temperature"),
-                    paste("Conservative", "Temperature"))) { # a special case because can use Tlim and plim
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
-                plotProfile(x, xtype="CT", xlab=resizableLabel("CT", debug=debug-1),
-                    Tlim=Tlim, plim=plim, eos="gsw",
+                    paste("Conservative", "Temperature"),
+                    "CT")) {           # a special case because can use Tlim and plim
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
+                plotProfile(x, xtype=x[[which[w]]], xlab=resizableLabel(which[w], debug=debug-1),
+                    xlim=Tlim, ylim=plim,
                     useSmoothScatter=useSmoothScatter,
                     grid=grid, col.grid="lightgray", lty.grid="dotted",
                     cex=cex[w], pch=pch[w],
@@ -3413,7 +3392,7 @@ setMethod(f="plot",
                     debug=debug-1,
                     ...)
             } else if (which[w] == "density") { # a special case because can use densitylim and plim
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 plotProfile(x, xtype="density",
                     plim=plim,
                     densitylim=densitylim,
@@ -3428,7 +3407,7 @@ setMethod(f="plot",
                              debug=debug-1,
                              ...)
             } else if (which[w] == "TS") { # a special case because can use Slim and Tlim
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 ##par(mar=c(3.5,3,2,2))
                 lwd.rho <- if ("lwd.rho" %in% names(dots)) dots$lwd.rho else par('lwd')
                 lty.rho <- if ("lty.rho" %in% names(dots)) dots$lty.rho else par('lty')
@@ -3443,7 +3422,7 @@ setMethod(f="plot",
                     add=add,
                     debug=debug-1, ...) # FIXME use inset here
             } else if (which[w] == "N2") { # a special case because can use N2lim and plim
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 plotProfile(x, xtype="N2",
                     plim=plim,
                     N2lim=N2lim,
@@ -3459,7 +3438,7 @@ setMethod(f="plot",
                     debug=debug-1,
                     ...)
             } else if (which[w] == "conductivity") { # a special case because can use Clim and plim
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 plotProfile(x, xtype="conductivity", Clim=Clim, plim=plim,
                     col=col,
                     eos=eos,
@@ -3471,7 +3450,7 @@ setMethod(f="plot",
                     debug=debug-1,
                     ...)
             } else if (which[w] == "map") {
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 omar <- mar
                 if (length(which) > 1)
                     mar <- par("mar")
@@ -3640,7 +3619,7 @@ setMethod(f="plot",
                 mar <- omar # recover mar, which was altered for multi-panel plots
                 oceDebug(debug, "} # plot(ctd, ...) of type \"map\"\n", unindent=1)
             } else if (which[w] == "index") {
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 plotProfile(x, xtype="index",
                     plim=plim,
                     col=col,
@@ -3653,7 +3632,7 @@ setMethod(f="plot",
                     debug=debug-1,
                     ...)
             } else if (which[w] == "text") {
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 textItem<-function(xloc, yloc, item, label, cex=0.8, d.yloc=0.8) {
                     if (!is.null(item) && !is.na(item))
                         text(xloc, yloc, paste(label, item), adj=c(0, 0), cex=cex)
@@ -3686,13 +3665,13 @@ setMethod(f="plot",
                 if (!is.na(xm$longitude) && !is.na(xm$latitude))
                     yloc <- textItem(xloc, yloc, latlonFormat(xm$latitude, xm$longitude),   " Location: ", cex=cex)
             } else if (which[w] == "Sts") { # S timeseries
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 if (eos == "unesco")
                     oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S", "y", debug=debug-1))
                 else
                     oce.plot.ts(x[["time"]], x[["SA"]], ylab=resizableLabel("SA", "y", debug=debug-1))
             } else if (which[w] == "Tts") { # T timeseries
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 if (eos == "unesco")
                     oce.plot.ts(x[["time"]], x[["temperature"]],
                         ylab=resizableLabel("T", "y", debug=debug-1))
@@ -3700,10 +3679,10 @@ setMethod(f="plot",
                     oce.plot.ts(x[["time"]], x[["CT"]],
                         ylab=resizableLabel("CT", "y", debug=debug-1))
             } else if (which[w] == "pts") { # p timeseries
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 oce.plot.ts(x[["time"]], x[["pressure"]], ylab=resizableLabel("p", "y", debug=debug-1))
             } else if (which[w] =="rhots") { # sigmaTheta timeseries
-                oceDebug(debug, "handling which=\"", whichOrig[w], "\" as a special case\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep="")
                 if (eos == "unesco")
                     oce.plot.ts(x[["time"]], x[["sigmaTheta"]],
                         ylab=resizableLabel("sigmaTheta", "y", debug=debug-1))
@@ -3711,7 +3690,7 @@ setMethod(f="plot",
                     oce.plot.ts(x[["time"]], x[["sigma0"]],
                         ylab=resizableLabel("sigmaTheta", "y", debug=debug-1))
             } else {
-                oceDebug(debug, "Not a special case; will try a \"", whichOrig[w], "\" profile plot\n", sep="")
+                oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a general case\n", sep="")
                 if (whichOrig[w] %in% available) {
                     xlab <- resizableLabel(item=whichOrig[w], axis="x",
                         unit=x@metadata$units[[whichOrig[w]]])
