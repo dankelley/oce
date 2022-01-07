@@ -146,7 +146,7 @@
 #' 9. Yu, X. X. Guo and Z. Wu., 2014. Land Surface Temperature Retrieval from
 #' Landsat 8 TIRS-Comparison between Radiative Transfer Equation-Based Method,
 #' Split Window Algorithm and Single Channel Method, *Remote Sensing*, 6,
-#' 9829-9652.  \url{https://www.mdpi.com/2072-4292/6/10/9829}
+#' 9829-9652.  `https://www.mdpi.com/2072-4292/6/10/9829`
 #'
 #' 10. Rajeshwari, A., and N. D. Mani, 2014.  Estimation of land surface
 #' temperature of Dindigul district using Landsat 8 data. *International

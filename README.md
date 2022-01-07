@@ -4,7 +4,7 @@
 [![status](https://joss.theoj.org/papers/4e11074685a0c614345560332cfd27e8/status.svg)](https://joss.theoj.org/papers/4e11074685a0c614345560332cfd27e8)
 [![R-CMD-check](https://github.com/dankelley/oce/workflows/R-CMD-check/badge.svg)](https://github.com/dankelley/oce/actions)
 [![Codecov test
-coverage](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://codecov.io/gh/dankelley/oce?branch=develop)
+coverage](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://app.codecov.io/gh/dankelley/oce?branch=develop)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/oce)](https://cran.r-project.org/package=oce)
 ![RStudio CRAN mirror
 downloads](https://cranlogs.r-pkg.org/badges/last-month/oce) ![RStudio
