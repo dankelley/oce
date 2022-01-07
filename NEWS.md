@@ -8,8 +8,10 @@
 * Add `adpFlagPastBoundary()`.
 * Add `ctdRepair()`.
 * Add `labelWithUnit()`.
+* Add `swSR()`.
+* Add `swSstar()`.
 * Change `as.ctd()` to drop `other` parameter, deprecated 4y ago.
-* Change `read.odf()` to handle new CODEs and UNITs.
+* Change `read.odf()` to handle more CODE and UNIT values.
 * Change `oce.plot.ts()` by adding `simplify` argument.
 * Change `plot,section-method()`, correcting temperature label to "T" and
   adding many more plot types.

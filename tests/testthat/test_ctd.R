@@ -89,15 +89,23 @@ test_that("as.ctd() with a list of oce objects", {
 
 test_that("ctd[[\"CT\"]], ctd[[\"SA\"]] and ctd[[\"Sstar\"]] require location", {
     a <- as.ctd(35,10,0)
-    expect_error(a[["CT"]])
-    expect_error(a[["SA"]])
-    expect_error(a[["Sstar"]])
-    b <- as.ctd(35,10,0,longitude=0, latitude=0)
+    expect_error(a[["CT"]], "need longitude and latitude to compute")
+    expect_error(a[["SA"]], "need longitude and latitude to compute")
+    expect_error(a[["Sstar"]], "need longitude and latitude to compute")
+    b <- as.ctd(35,10,100,longitude=-40, latitude=30)
     expect_silent(b[["CT"]])
     expect_silent(b[["SA"]])
     expect_silent(b[["Sstar"]])
 })
 
+test_that("ctd[[\"CT\"]], ctd[[\"SA\"]] and ctd[[\"Sstar\"]] give expected values", {
+    b <- as.ctd(35, 10, 1000, longitude=188, latitude=4)
+    expect_silent(b[["CT"]])
+    expect_equal(b[["SA"]], gsw::gsw_SA_from_SP(SP=35,p=1000,longitude=188,latitude=4))
+    expect_equal(b[["Sstar"]], gsw::gsw_Sstar_from_SP(SP=35,p=1000,longitude=188,latitude=4))
+    SA <- b[["SA"]]
+    expect_equal(b[["CT"]], gsw::gsw_CT_from_t(SA, 10, 1000))
+})
 
 test_that("as.ctd() with specified arguments, not including salinity", {
     data(ctd)
@@ -256,6 +264,7 @@ test_that("gsw calculations on ctd data", {
     expect_equal(Sstar, nctd[["Sstar"]])
     SR <- gsw::gsw_SR_from_SP(SP=nctd[["SP"]])
     expect_equal(SR, nctd[["SR"]])
+    expect_equal(SR, swSR(nctd))
     SA <- gsw::gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)
     expect_equal(SA, nctd[["SA"]])
     Sstar <- gsw::gsw_Sstar_from_SA(SA=SA, p=p, longitude=lon, latitude=lat)

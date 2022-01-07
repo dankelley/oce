@@ -1,4 +1,5 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
+
 #' Class to Store Argo Data
 #'
 #' This class stores data from Argo floats.
@@ -1813,6 +1814,7 @@ setMethod(f="plot",
         debug=getOption("oceDebug"),
         ...)
     {
+        debug <- min(3L, max(0L, as.integer(debug)))
         if (!inherits(x, "argo"))
             stop("method is only for objects of class '", "argo", "'")
         oceDebug(debug, "plot.argo(x, which=c(", paste(which, collapse=","), "),",
@@ -1831,10 +1833,10 @@ setMethod(f="plot",
         latitude <- x[["latitude"]]
         dim <- dim(x@data$salinity)
         if (length(longitude) < prod(dim)) {
-            ## Copy across depths. This is inside a conditional because
-            ## possibly argo[["longitude"]] should mimic section[["longitude"]],
-            ## in doing the lengthing by itself unless the second argument is
-            ## "byStation" (issue 1273 ... under consideration 2017jul12)
+            # Copy across depths. This is inside a conditional because possibly
+            # argo[["longitude"]] should mimic section[["longitude"]], in doing
+            # the lengthing by itself unless the second argument is "byStation"
+            # (issue 1273 ... under consideration 2017jul12)
             longitude <- rep(x[["longitude"]], each=dim[1])
             latitude <- rep(x[["latitude"]], each=dim[1])
         }
@@ -1851,8 +1853,8 @@ setMethod(f="plot",
                 "TS"=4,
                 "salinity profile"=5,
                 "temperature profile"=6))
-        if (any(is.na(which)))
-            stop("In plot,argo-method() :\n  unrecognized value(s) of which: ", paste(whichOrig[is.na(which)], collapse=", "), call.=FALSE)
+        #if (any(is.na(which)))
+        #    stop("In plot,argo-method() :\n  unrecognized value(s) of which: ", paste(whichOrig[is.na(which)], collapse=", "), call.=FALSE)
         lw <- length(which)
         par(mgp=mgp)
         if (lw == 2) {
@@ -1867,8 +1869,11 @@ setMethod(f="plot",
             rm(nnn)
         }
         for (w in 1:nw) {
-            if (which[w] == 1) {
-                oceDebug(debug, "which[", w, "] == 1, so plotting a map\n")
+            oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\"\n", sep="")
+            if (is.na(which[w])) {
+                oceDebug(debug, "not a special case, so passing 'which' to plot,ctd-method\n")
+                plot(ctd, which=whichOrig[w], debug=debug-1, ...)
+            } else if (which[w] == 1) {
                 oceDebug(debug, "note: par(\"mfrow\") = ", paste(par("mfrow"), collapse=","), "\n")
                 ## map
                 ## FIXME: coastline selection should be DRY

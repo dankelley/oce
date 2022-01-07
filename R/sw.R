@@ -1,5 +1,64 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+#' Reform longitude and latitude for use in gsw computations.
+#'
+#' This function is mainly intended for use within [swAbsoluteSalinity()] and
+#' similar functions that use the `gsw` package to compute seawater
+#' properties in the Gibbs Seawater formulation.
+#'
+#' The `gsw` functions
+#' require location information to be matched up with hydrographic
+#' information.  The scheme depends on the dimensionality of the
+#' hydrographic variables and the location variables. For example,
+#' the [ctd-class] stores `salinity` etc in vectors, an stores
+#' just one longitude-latitude pair for each vector.  By contrast,
+#' the [argo-class] stores `salinity` etc as matrices, and stores
+#' e.g. `longitude` as a vector of length matching the first
+#' dimension of `salinity`. 
+#'
+#' [locationForGsw] repeats location information as required,
+#' returning values with dimensionality matching `pressure`.
+#'
+#' @param x an [oce-class] object.
+#'
+#' @return A list containing `longitude` and `latitude`, with
+#' dimensionality matching `pressure` in the `data` slot
+#' of `x`.  If `x` lacks location information (in either
+#' its `metadata` or `data` slot) or lacks `pressure` in its
+#' data slot, then the returned list will hold NULL values for
+#' both `longitude` and `latitude`.
+#'
+#' @author Dan Kelley
+#'
+#' @family functions that calculate seawater properties
+locationForGsw <- function(x)
+{
+    if (!inherits(x, "oce"))
+        stop("x must be an oce-class object")
+    pressure <- x@data$pressure
+    if (is.null(pressure))
+        return(list(longitude=NULL, latitude=NULL))
+    longitude <- x[["longitude"]]
+    latitude <- x[["latitude"]]
+    if (is.null(longitude) || is.null(latitude))
+        return(list(longitude=NULL, latitude=NULL))
+    if (is.array(pressure)) {
+        dim <- dim(pressure)
+        longitude <- rep(longitude, each=dim[1])
+        dim(longitude) <- dim
+        latitude <- rep(latitude, each=dim[1])
+        dim(latitude) <- dim
+    } else {
+        np <- length(pressure)
+        longitude <- rep(longitude[1], length.out=np)
+        latitude <- rep(latitude[1], length.out=np)
+    }
+    dim <- dim(pressure)
+    list(longitude=longitude, latitude=latitude)
+}
+
+
+
 #' Available derived water properties
 #'
 #' This checks to see whether `x` is an `oce` object containing
@@ -2632,7 +2691,7 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
             latitude <- salinity[["latitude"]]
     }
     if (is.null(longitude) || is.null(latitude))
-        stop("object lacks location information, so CT cannot be computed")
+        stop("need longitude and latitude to compute CT")
     l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                          longitude=longitude, latitude=latitude))
     dim <- dim(l$salinity)
@@ -2696,22 +2755,25 @@ swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=NULL, latitude
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "oce")) {
-        pressure <- salinity@data$pressure
-        n <- length(pressure)
-        if (is.null(longitude)) {
-            longitude <- salinity[["longitude"]]
-            if (length(longitude) < n)
-                longitude <- rep(longitude[1], n)
-        }
-        if (is.null(latitude)) {
-            latitude <- salinity[["latitude"]]
-            if (length(latitude) < n)
-                latitude <- rep(latitude[1], n)
-        }
-        salinity <- salinity@data$salinity
+        x <- salinity                  # store this for clarity
+        if (!"salinity" %in% names(x@data))
+            stop("this oce object lacks salinity, so SA cannot be computed")
+        location <- locationForGsw(x)
+        if (is.null(longitude))
+            longitude <- location$longitude
+        if (is.null(latitude))
+            latitude <- location$latitude
+        if (is.null(pressure))
+            pressure <- x[["pressure"]]
     }
     if (is.null(longitude) || is.null(latitude))
-        stop("object lacks location information, so CT cannot be computed")
+        stop("need longitude and latitude to compute SA")
+    if (is.null(pressure))
+        stop("need pressure to compute SA")
+    if (length(longitude) != length(pressure))
+        stop("lengths of longitude (", length(longitude), ") and pressure (", length(pressure), ") do not match")
+    if (length(latitude) != length(pressure))
+        stop("lengths of latitude (", length(latitude), ") and pressure (", length(pressure), ") do not match")
     l <- lookWithin(list(salinity=salinity, pressure=pressure, longitude=longitude, latitude=latitude))
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
@@ -2725,3 +2787,139 @@ swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=NULL, latitude
         dim(res) <- dim
     res
 }
+
+
+#' Seawater Preformed Salinity, in GSW formulation
+#'
+#' Compute seawater Preformed Salinity (S*), according to the GSW/TEOS-10
+#' formulation with [gsw::gsw_Sstar_from_SA()] in the \CRANpkg{gsw} package.
+#'
+#' @param salinity either practical salinity (in which case
+#' `pressure` must be provided) *or* an `oce` object with
+#' `salinity` and `pressure` in its data slot, and with
+#' `longitude` and `latitude` either there, or in the metadata
+#' slot.
+#'
+#' @param pressure pressure in dbar.
+#'
+#' @param longitude longitude of observation.
+#'
+#' @param latitude latitude of observation.
+#'
+#' @return Preformed Salinity, S*, in \eqn{g/kg}{g/kg}.
+#'
+#' @author Dan Kelley
+#'
+#' @seealso For some objects, S-star may also be recovered by
+#' indexing as e.g. \code{ctd[["Sstar"]]}.
+#'
+#' @references McDougall, T.J. and P.M. Barker, 2011: Getting started with
+#' TEOS-10 and the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp.,
+#' SCOR/IAPSO WG127, ISBN 978-0-646-55621-5.
+#'
+#' @examples
+#'\dontrun{
+#' sa <- swAbsoluteSalinity(35.5, 300, 260, 16)
+#' stopifnot(abs(35.671358392019094 - sa) < 00.000000000000010)
+#'}
+#'
+#' @family functions that calculate seawater properties
+swSstar <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL)
+{
+    if (missing(salinity))
+        stop("must provide salinity")
+    if (inherits(salinity, "oce")) {
+        x <- salinity                  # store this for clarity
+        for (item in c("salinity", "temperature", "pressure")) {
+            if (!item %in% names(x@data))
+                stop("this oce object lacks ", item, ", so SA cannot be computed")
+        }
+        # https://github.com/dankelley/oce/issues/1911
+        # Create new longitude and latitude, to match the length or
+        # dimensionality of pressure.  The argo-class is a special case,
+        # because it has vectors of longitude and latitude, of length
+        # that matches dim(pressure)[2].  However, it seems prudent
+        # to base our method on the shapes of the data, not on
+        # the object class, as a way to address not only argo but
+        # also perhaps any future-defined object that has this
+        # characteristic.
+        pressure <- x@data$pressure
+        temperature <- x@data$temperature
+        salinity <- x@data$salinity
+        if (is.null(longitude))
+            longitude <- x[["longitude"]]
+        if (is.null(latitude))
+            latitude <- x[["latitude"]]
+        if (is.null(longitude) || is.null(latitude))
+            stop("need longitude and latitude to compute Sstar")
+        if (is.array(pressure)) {
+            nlevels <- dim(pressure)[1]
+            longitude <- rep(longitude, each=nlevels)
+            latitude <- rep(latitude, each=nlevels)
+        } else {
+            np <- length(pressure)
+            longitude <- rep(longitude[1], length.out=np)
+            latitude <- rep(latitude[1], length.out=np)
+        }
+    }
+    if (is.null(longitude) || is.null(latitude))
+        stop("need longitude and latitude to compute Sstar")
+    if (length(longitude) != length(pressure))
+        stop("lengths of longitude and pressure must match")
+    if (length(latitude) != length(pressure))
+        stop("lengths of latitude and pressure must match")
+    l <- lookWithin(list(salinity=salinity, pressure=pressure, longitude=longitude, latitude=latitude))
+    dim <- dim(l$salinity)
+    nS <- length(l$salinity)
+    np <- length(l$pressure)
+    if (nS != np) stop("lengths of salinity (", nS, ") and pressure (", np, ") disagree")
+    bad <- is.na(l$salinity) | is.na(l$pressure) | is.na(l$longitude) | is.na(l$latitude)
+    resGood <- gsw::gsw_Sstar_from_SP(SP=l$salinity[!bad], l$pressure[!bad], longitude=l$longitude[!bad], latitude=l$latitude[!bad])
+    res <- rep(NA, nS)
+    res[!bad] <- resGood
+    if (!is.null(dim))
+        dim(res) <- dim
+    res
+}
+
+
+#' Seawater Reference Salinity, in GSW formulation
+#'
+#' Compute seawater Reference Salinity (SR), according to the GSW/TEOS-10
+#' formulation with [gsw::gsw_SR_from_SP()] in the \CRANpkg{gsw} package.
+#'
+#' @param salinity either practical salinity or an `oce` object
+#' that holds salinity in its data slot.
+#'
+#' @return Reference Salinity, SR, in \eqn{g/kg}{g/kg}.
+#'
+#' @author Dan Kelley
+#'
+#' @seealso For some objects, SR may also be recovered by indexing as e.g.
+#' \code{ctd[["SR"]]}.
+#'
+#' @references McDougall, T.J. and P.M. Barker, 2011: Getting started with
+#' TEOS-10 and the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp.,
+#' SCOR/IAPSO WG127, ISBN 978-0-646-55621-5.
+#'
+#' @examples
+#'\dontrun{
+#' SR <- swAbsoluteSalinity(35.0)
+#' stopifnot(abs(35.16504000000  - SR) < 0.000000000000010)
+#'}
+#'
+#' @family functions that calculate seawater properties
+swSR <- function(salinity)
+{
+    if (missing(salinity))
+        stop("must provide salinity")
+    if (inherits(salinity, "oce")) {
+        x <- salinity                  # store this for clarity
+        if (!"salinity" %in% names(x@data))
+            stop("this oce object lacks salinity, so SR cannot be computed")
+        salinity <- x@data$salinity
+    }
+    gsw::gsw_SR_from_SP(salinity)
+}
+
+

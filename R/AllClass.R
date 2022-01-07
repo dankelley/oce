@@ -455,7 +455,7 @@ setMethod(f="[[",
                   return(C)
               } else if (i %in% c("CT", "Conservative Temperature")) {
                   if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
-                      stop("object lacks location information, so CT cannot be computed")
+                      stop("need longitude and latitude to compute SA (needed for CT)")
                   return(gsw::gsw_CT_from_t(SA=x[["SA"]], t=x[["temperature"]], p=x[["pressure"]]))
               } else if (i == "density") {
                   return(swRho(x))
@@ -554,22 +554,9 @@ setMethod(f="[[",
               } else if (i == "spice") {
                   return(swSpice(x))
               } else if (i == "SR") {
-                  return(gsw::gsw_SR_from_SP(SP=x[["salinity"]]))
+                  return(swSR(x))
               } else if (i == "Sstar") {
-                  if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
-                      stop("object lacks location information, so Sstar cannot be computed")
-                  n <- length(x@data$salinity)
-                  ## Lengthen lon and lat if necessary, by repeating.
-                  lon <- x@metadata$longitude
-                  if (n != length(lon))
-                      lon <- rep(x@metadata$longitude, length.out=n)
-                  lat <- x@metadata$latitude
-                  if (n != length(lat))
-                      lat <- rep(x@metadata$latitude, length.out=n)
-                  lon <- ifelse(lon < 0, lon + 360, lon) # not required because gsw_saar() does this ... but UNDOCUMENTED
-                  ## Do the calculation in two steps
-                  SA <- gsw::gsw_SA_from_SP(SP=x[["salinity"]], p=x[["pressure"]], longitude=lon, latitude=lat)
-                  return(gsw::gsw_Sstar_from_SA(SA=SA, p=x[["pressure"]], longitude=lon, latitude=lat))
+                  return(swSstar(x))
               } else if (i == "temperature") {
                   scale <- x@metadata$units[["temperature"]]$scale
                   if (!is.null(scale) && "IPTS-48" == scale) {

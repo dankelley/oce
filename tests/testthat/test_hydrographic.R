@@ -43,9 +43,9 @@ test_that("base-level [[\"?\"]] gives expected names (UNESCO)", {
 test_that("base-level [[\"?\"]] works on some hydrographic things (UNESCO)", {
     options(oceEOS="unesco")
     expect_equal(ctd[["theta"]], nu[["theta"]])
-    expect_error(nu[["CT"]], "object lacks location information")
-    expect_error(nu[["SA"]], "object lacks location information")
-    expect_error(nu[["Sstar"]], "object lacks location information")
+    expect_error(nu[["CT"]], "need longitude and latitude to compute")
+    expect_error(nu[["SA"]], "need longitude and latitude to compute")
+    expect_error(nu[["Sstar"]], "need longitude and latitude to compute")
 })
 
 
