@@ -18,25 +18,26 @@ R-CMD-check github action reports no problems on
 * windows-latest (release)
 * macOS-latest (release)
 * ubuntu-20.04 (release)
-* ubuntu-20.04 (devel).
+* ubuntu-20.04 (devel)
 
 
 ## Remote Windows Checks
 
-None of
+Using
 ```R
 devtools:::build_win_release()
 devtools:::build_win_oldrelease()
 devtools:::build_win_devel()
 ```
-reports any errors.
+identified no errors.
 
 # Reverse Dependency Checks
 
 Using
 ```
 # devtools::install_github("r-lib/revdepcheck")
-revdepcheck::revdep_check(timeout=30*60,num_workers=4)
+revdepcheck::revdep_check(quiet=FALSE)
 ```
 identified no errors.
+
 
