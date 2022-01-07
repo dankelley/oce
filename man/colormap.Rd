@@ -82,7 +82,7 @@ value of 0 means to use \code{col0[i]} through the interval \code{x0[i]} to
 \code{x1[i]}.  A value of 1 means to use \code{col1[i]} in that interval.  A
 value between 0 and 1 means to blend between the two colors according to
 the stated fraction.  Values exceeding 1 are an error at present, but there
-is a plan to use this to indicate subintervals, so a smooth palette can be
+is a plan to use this to indicate sub-intervals, so a smooth palette can be
 created from a few colors.}
 
 \item{missingColor}{color to use for missing values. This cannot be provided

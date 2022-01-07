@@ -1,15 +1,16 @@
-# Resubmission of 1.4-0 (rejected at pretest stage)
+# Submission of 1.5-0
 
-This resubmission addresses a pretest problem relating to an unlinkable
-reference to a function in the marmap package that I had missed before.
+This resubmission (a) aligns oce with the Rcpp that Dirk Eddelbuettel plans to
+submit to CRAN next week and (b) incorporates 8 months of oce improvements and
+bug fixes.
 
 # Tests
 
 ## Local Tests
 
-Local MacOS-11.1 R-4.0.4 CMD (BUILD, INSTALL, CHECK): no ERRORs or WARNINGs but
-the usual note naming the author, plus another NOTE on sub-directories of 1MB
-or more: (R 3.0Mb, data 1.0Mb, doc 2.0Mb, help 3.4Mb).
+Local MacOS-12.2(beta) R-4.1.2 CMD (BUILD, INSTALL, CHECK): no ERRORs or
+WARNINGs but the usual note naming the author, plus another NOTE on
+sub-directories of 1MB or more: (R 3.0Mb, data 1.0Mb, doc 2.0Mb, help 3.7Mb).
 
 ## Github R-CMD-check Action Tests
 

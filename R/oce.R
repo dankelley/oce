@@ -1157,9 +1157,9 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' the visible time range. Intervals with under 2 finite
 #' `y` data are ignored. In the rest, `y` values
 #' are replaced with their range, and `x` values are replaced
-#' with the repeated midpoint time. Thus, each retained subinterval
+#' with the repeated midpoint time. Thus, each retained sub-interval
 #' has exactly 2 data points.
-#' A warning is printed if this replacment is done.
+#' A warning is printed if this replacement is done.
 #' The default value of `simplify` means that cases with
 #' under 2560 visible points are plotted conventionally.
 #'
@@ -1377,7 +1377,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, log="", logStyle="r", flipy=
         # Tests N=1e8 suggest split(X,findInterval()) is 2X faster than split(X,cut())
         #>>> dfSplit <- split(df, cut(df$x, xgrid))
         dfSplit <- split(df, as.factor(findInterval(df$x, xgrid)))
-        # Compute within the subintervals, inserting NAs when no data there
+        # Compute within the sub-intervals, inserting NAs when no data there
         tz <- attr(x, "tzone")         # cause gridded x to inherit timezone from original x
         x <- rep(unname(sapply(dfSplit, function(DF) if (length(DF$x) > 2) mean(DF$x, na.rm=TRUE) else NA)), each=2)
         x <- numberAsPOSIXct(x, tz=tz)

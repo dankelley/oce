@@ -3154,7 +3154,7 @@ sectionSmooth <- function(section, method="spline",
 #'
 #' @param sectionId Section identifier.
 #'
-#' @param debug an integer value that controlls whether `as.section()` prints information
+#' @param debug an integer value that controls whether `as.section()` prints information
 #' during its work.  The function works quietly if this is 0 and prints out some
 #' information if it is positive.
 #'
